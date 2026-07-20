@@ -602,6 +602,49 @@ test('gets state on route names change', () => {
   });
 });
 
+test('removes preloaded route keys on route names change', () => {
+  // https://github.com/expo/expo/issues/47968
+  const router = TabRouter({});
+
+  expect(
+    router.getStateForRouteNamesChange(
+      {
+        index: 0,
+        key: 'tab-test',
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: 'foo-test', name: 'foo' },
+          { key: 'bar-test', name: 'bar' },
+          { key: 'baz-test', name: 'baz' },
+        ],
+        history: [{ type: 'route', key: 'foo-test' }],
+        stale: false,
+        type: 'tab',
+        preloadedRouteKeys: ['bar-test', 'baz-test'],
+      },
+      {
+        // `bar` is removed
+        routeNames: ['foo', 'baz'],
+        routeParamList: {},
+        routeGetIdList: {},
+        routeKeyChanges: [],
+      }
+    )
+  ).toEqual({
+    index: 0,
+    key: 'tab-test',
+    routeNames: ['foo', 'baz'],
+    routes: [
+      { key: 'foo-test', name: 'foo' },
+      { key: 'baz-test', name: 'baz' },
+    ],
+    history: [{ type: 'route', key: 'foo-test' }],
+    stale: false,
+    type: 'tab',
+    preloadedRouteKeys: ['baz-test'],
+  });
+});
+
 test('preserves focused route on route names change', () => {
   const router = TabRouter({});
 

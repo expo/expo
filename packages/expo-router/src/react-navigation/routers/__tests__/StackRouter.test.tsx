@@ -228,6 +228,44 @@ test('gets state on route names change', () => {
   });
 });
 
+test('removes preloaded routes on route names change', () => {
+  // https://github.com/expo/expo/issues/47968
+  const router = StackRouter({});
+
+  expect(
+    router.getStateForRouteNamesChange(
+      {
+        index: 0,
+        key: 'stack-test',
+        preloadedRoutes: [
+          { key: 'bar-test', name: 'bar', params: {} },
+          { key: 'baz-test', name: 'baz', params: {} },
+          { key: 'qux-test', name: 'qux', params: {} },
+        ],
+        routeNames: ['foo', 'bar', 'baz', 'qux'],
+        routes: [{ key: 'foo-test', name: 'foo' }],
+        stale: false,
+        type: 'stack',
+      },
+      {
+        // `bar` is removed, `qux` gets a key change
+        routeNames: ['foo', 'baz', 'qux'],
+        routeParamList: {},
+        routeGetIdList: {},
+        routeKeyChanges: ['qux'],
+      }
+    )
+  ).toEqual({
+    index: 0,
+    key: 'stack-test',
+    preloadedRoutes: [{ key: 'baz-test', name: 'baz', params: {} }],
+    routeNames: ['foo', 'baz', 'qux'],
+    routes: [{ key: 'foo-test', name: 'foo' }],
+    stale: false,
+    type: 'stack',
+  });
+});
+
 test('gets state on route names change with initialRouteName', () => {
   const router = StackRouter({ initialRouteName: 'qux' });
 
