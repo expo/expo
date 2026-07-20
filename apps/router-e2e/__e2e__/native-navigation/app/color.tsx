@@ -1,11 +1,11 @@
-import { useRouterColor } from 'expo-router';
+import { useColor } from 'expo-router';
 import { useState } from 'react';
 import { Text, View } from 'react-native';
 
 const colorNames = ['primary', 'secondary', 'tertiary', 'error', 'surface', 'outline'] as const;
 
 export default function ColorScreen() {
-  const color = useRouterColor();
+  const color = useColor();
   const [initialPrimary] = useState(() => color.android.dynamic.primary);
   const primary = color.android.dynamic.primary;
 

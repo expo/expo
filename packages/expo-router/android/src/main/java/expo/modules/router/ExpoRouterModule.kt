@@ -21,15 +21,16 @@ class ExpoRouterModule : Module() {
   @Volatile
   private var lastConfiguration: Configuration? = null
 
-  // Retained for cleanup after the React context is destroyed.
-  private var registeredApplication: Application? = null
+  private val registeredApplication: Application?
+    get() = appContext.reactContext?.applicationContext as? Application
 
   // Dynamic color overlays change the assets path.
   private val componentCallbacks = object : ComponentCallbacks {
     override fun onConfigurationChanged(newConfig: Configuration) {
       val previous = lastConfiguration
       lastConfiguration = Configuration(newConfig)
-      if (previous != null && previous.diff(newConfig) and ActivityInfo.CONFIG_ASSETS_PATHS != 0) {
+      val diff = previous?.diff(newConfig) ?: return
+      if (diff and ActivityInfo.CONFIG_ASSETS_PATHS != 0) {
         sendEvent(COLOR_PALETTE_CHANGED_EVENT)
       }
     }
@@ -52,7 +53,7 @@ class ExpoRouterModule : Module() {
 
     OnStartObserving(COLOR_PALETTE_CHANGED_EVENT) {
       unregisterComponentCallbacks()
-      registeredApplication = (appContext.reactContext?.applicationContext as? Application)?.also {
+      registeredApplication?.let {
         lastConfiguration = Configuration(it.resources.configuration)
         it.registerComponentCallbacks(componentCallbacks)
       }
@@ -69,7 +70,6 @@ class ExpoRouterModule : Module() {
 
   private fun unregisterComponentCallbacks() {
     registeredApplication?.unregisterComponentCallbacks(componentCallbacks)
-    registeredApplication = null
   }
 
   private fun materialColor(name: String, scheme: String): String? {

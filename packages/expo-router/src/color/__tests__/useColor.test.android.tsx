@@ -1,10 +1,10 @@
-import { useLayoutEffect } from 'react';
+import { StrictMode, useLayoutEffect } from 'react';
 import { act, render, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { addColorPaletteListener, Material3DynamicColor } from '../materialColor';
-import { useRouterColor } from '../useRouterColor';
-import { renderHook } from '../../testing-library';
+import { ColorProvider, useColor } from '../ColorContext';
+import { renderHook, renderRouter } from '../../testing-library';
 
 let mockColorScheme: 'light' | 'dark' = 'light';
 
@@ -40,20 +40,20 @@ function getCapturedListener(): () => void {
 }
 
 it('exposes the Color API resolving dynamic colors at read time', () => {
-  const { result } = renderHook(() => useRouterColor());
+  const { result } = renderHook(() => useColor(), { wrapper: ColorProvider });
   expect(result.current.android.dynamic.primary).toBe('#primary');
   expect(mockedDynamicColor).toHaveBeenCalledWith('primary');
 });
 
 it('keeps a stable identity across re-renders', () => {
-  const { result, rerender } = renderHook(() => useRouterColor());
+  const { result, rerender } = renderHook(() => useColor(), { wrapper: ColorProvider });
   const first = result.current;
   rerender({});
   expect(result.current).toBe(first);
 });
 
 it('keeps stable nested identities across re-renders', () => {
-  const { result, rerender } = renderHook(() => useRouterColor());
+  const { result, rerender } = renderHook(() => useColor(), { wrapper: ColorProvider });
   const android = result.current.android;
   const dynamic = result.current.android.dynamic;
   rerender({});
@@ -63,7 +63,7 @@ it('keeps stable nested identities across re-renders', () => {
 });
 
 it('returns new nested objects when the native palette change event fires', () => {
-  const { result } = renderHook(() => useRouterColor());
+  const { result } = renderHook(() => useColor(), { wrapper: ColorProvider });
   const android = result.current.android;
   const dynamic = result.current.android.dynamic;
   const listener = getCapturedListener();
@@ -75,7 +75,7 @@ it('returns new nested objects when the native palette change event fires', () =
 });
 
 it('returns a new object when the native palette change event fires', () => {
-  const { result } = renderHook(() => useRouterColor());
+  const { result } = renderHook(() => useColor(), { wrapper: ColorProvider });
   const first = result.current;
   const listener = getCapturedListener();
 
@@ -89,27 +89,104 @@ it('returns a new object when the native palette change event fires', () => {
 it('updates colors in an effect when the color scheme changes', () => {
   const committedColors: object[] = [];
   function Consumer() {
-    const color = useRouterColor();
+    const color = useColor();
     useLayoutEffect(() => {
       committedColors.push(color);
     });
     return null;
   }
 
-  const { rerender } = render(<Consumer />);
+  const { rerender } = render(
+    <ColorProvider>
+      <Consumer />
+    </ColorProvider>
+  );
   const first = committedColors.at(-1);
   committedColors.length = 0;
 
   mockColorScheme = 'dark';
-  rerender(<Consumer />);
+  rerender(
+    <ColorProvider>
+      <Consumer />
+    </ColorProvider>
+  );
 
   expect(committedColors.length).toBe(2);
   expect(committedColors[0]).toBe(first);
   expect(committedColors[1]).not.toBe(first);
 });
 
+it('keeps a single identity on mount', () => {
+  const committedColors: object[] = [];
+  function Consumer() {
+    const color = useColor();
+    useLayoutEffect(() => {
+      committedColors.push(color);
+    });
+    return null;
+  }
+
+  render(
+    <ColorProvider>
+      <Consumer />
+    </ColorProvider>
+  );
+
+  expect(committedColors.length).toBe(1);
+});
+
+it('keeps a single identity on mount in StrictMode', () => {
+  const committedColors: object[] = [];
+  function Consumer() {
+    const color = useColor();
+    useLayoutEffect(() => {
+      committedColors.push(color);
+    });
+    return null;
+  }
+
+  render(
+    <StrictMode>
+      <ColorProvider>
+        <Consumer />
+      </ColorProvider>
+    </StrictMode>
+  );
+
+  // StrictMode re-runs effects via a simulated remount, but the color identity must not change.
+  expect(new Set(committedColors).size).toBe(1);
+});
+
+it('shares one native listener between consumers and updates both together', () => {
+  const colors: { first?: object; second?: object } = {};
+  function First() {
+    colors.first = useColor();
+    return null;
+  }
+  function Second() {
+    colors.second = useColor();
+    return null;
+  }
+
+  render(
+    <ColorProvider>
+      <First />
+      <Second />
+    </ColorProvider>
+  );
+
+  const listener = getCapturedListener();
+  expect(colors.first).toBe(colors.second);
+
+  const before = colors.first;
+  act(() => listener());
+
+  expect(colors.first).not.toBe(before);
+  expect(colors.first).toBe(colors.second);
+});
+
 it('removes the native listener on unmount', () => {
-  const { unmount } = renderHook(() => useRouterColor());
+  const { unmount } = renderHook(() => useColor(), { wrapper: ColorProvider });
   const cleanup = mockedAddListener.mock.results[0]!.value;
   unmount();
   expect(cleanup).toHaveBeenCalled();
@@ -117,10 +194,14 @@ it('removes the native listener on unmount', () => {
 
 it('re-renders a component with new colors after a palette change', () => {
   function Colored() {
-    const color = useRouterColor();
+    const color = useColor();
     return <Text testID="color">{String(color.android.dynamic.primary)}</Text>;
   }
-  render(<Colored />);
+  render(
+    <ColorProvider>
+      <Colored />
+    </ColorProvider>
+  );
   expect(screen.getByTestId('color')).toHaveTextContent('#primary');
 
   const listener = getCapturedListener();
@@ -128,4 +209,19 @@ it('re-renders a component with new colors after a palette change', () => {
   act(() => listener());
 
   expect(screen.getByTestId('color')).toHaveTextContent('#new-primary');
+});
+
+it('throws a helpful error when used outside the router', () => {
+  expect(() => renderHook(() => useColor())).toThrow(
+    /useColor.*expo-router/
+  );
+});
+
+it('is provided automatically by ExpoRoot', () => {
+  function Colored() {
+    const color = useColor();
+    return <Text testID="color">{String(color.android.dynamic.primary)}</Text>;
+  }
+  renderRouter({ index: Colored });
+  expect(screen.getByTestId('color')).toHaveTextContent('#primary');
 });

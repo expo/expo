@@ -97,15 +97,15 @@ The available colors are the same as [Material 3 static colors](#material-design
 
 ### Responding to theme changes on Android
 
-Android Material colors respond to the system's light/dark mode, and dynamic colors additionally change when the user updates their Material You colors (for example, by changing the wallpaper). To make your component re-render in both cases, use the `useRouterColor()` hook and read colors from the object it returns.
+Android Material colors respond to the system's light/dark mode, and dynamic colors additionally change when the user updates their Material You colors (for example, by changing the wallpaper). To make your component re-render in both cases, use the `useColor()` hook and read colors from the object it returns.
 
 ```tsx
-import { useRouterColor } from 'expo-router';
+import { useColor } from 'expo-router';
 import { View, Text } from 'react-native';
 
 function MyComponent() {
   // Re-renders when the system theme or Material You colors change
-  const color = useRouterColor();
+  const color = useColor();
 
   return (
     <View style={{ backgroundColor: color.android.dynamic.surface }}>

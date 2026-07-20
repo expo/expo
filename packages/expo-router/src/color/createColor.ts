@@ -3,7 +3,7 @@ import { PlatformColor } from 'react-native';
 import type { ColorType } from './color';
 import { Material3Color, Material3DynamicColor } from './materialColor';
 
-// Creates fresh identities so `useRouterColor` invalidates memoized colors.
+// Creates fresh identities so `useColor` invalidates memoized colors.
 export function createColor(): ColorType {
   const iosColor = new Proxy({} as ColorType['ios'], {
     get(_, prop: string) {

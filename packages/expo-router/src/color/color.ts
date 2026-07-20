@@ -77,7 +77,7 @@ export interface ColorType {
  *
  * On **iOS**, it is a type-safe wrapper over `PlatformColor`, providing access to system colors. For example, `Color.ios.label`.
  *
- * > **Note**: To ensure the colors align with the system theme on Android, read colors from the object returned by the [`useRouterColor`](#useroutercolor) hook, which re-renders on both light/dark and Material You palette changes. Inline `Color.android.*` reads inside a component may be memoized with stale values, especially when using React Compiler.
+ * > **Note**: To ensure the colors align with the system theme on Android, read colors from the object returned by the [`useColor`](#usecolor) hook, which re-renders on both light/dark and Material You palette changes. Inline `Color.android.*` reads inside a component may be memoized with stale values, especially when using React Compiler.
  *
  * @example
  * ```tsx
@@ -92,12 +92,12 @@ export interface ColorType {
  *
  * @example
  * ```tsx
- * import { useRouterColor } from 'expo-router';
+ * import { useColor } from 'expo-router';
  * import { View, Text } from 'react-native';
  *
  * export default function MyComponent() {
  *   // Re-renders on system theme and Material You palette changes
- *   const color = useRouterColor();
+ *   const color = useColor();
  *   return (
  *     <View style={{ flex: 1, backgroundColor: color.android.dynamic.primary }}>
  *       <Text style={{ color: color.android.dynamic.onPrimary }}>

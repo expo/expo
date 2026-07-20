@@ -1,2 +1,2 @@
 export * from './color';
-export { useRouterColor } from './useRouterColor';
+export { useColor } from './ColorContext';
