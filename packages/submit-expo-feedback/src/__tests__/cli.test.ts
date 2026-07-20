@@ -67,7 +67,9 @@ describe('help output', () => {
       expect(helpOutput).toContain('| skills     | Exact skill name, such as expo-router');
       expect(helpOutput).toContain('| docs       | Full Expo documentation URL');
       expect(helpOutput).toContain('| mcp        | Exact MCP tool name used');
-      expect(helpOutput).toContain('| expo-cli   | Full Expo CLI command, such as npx expo install');
+      expect(helpOutput).toContain(
+        '| expo-cli   | Full Expo CLI command, such as npx expo install'
+      );
       expect(helpOutput).toContain('| eas-cli    | Full EAS CLI command, such as eas build');
       expect(helpOutput).toContain(
         '| unknown    | Concise Expo product, package, feature, or topic, or leave empty'

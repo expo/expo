@@ -24,9 +24,7 @@
     "build": "ncc build ./src/index.ts -o build/ -e typescript",
     "build:prod": "ncc build ./src/index.ts -o build/ -e typescript --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
-    "lint": "oxlint --config oxlint.config.mjs .",
-    "format": "expo-module format",
-    "depscheck": "expo-module depscheck",
+    "lint": "expo-module lint",
     "typecheck": "tsc -p tsconfig.json",
     "test": "jest",
     "prepublishOnly": "pnpm run clean && pnpm run build:prod"
