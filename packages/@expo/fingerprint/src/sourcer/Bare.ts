@@ -22,7 +22,7 @@ export async function getBareAndroidSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
-  if (options.platforms.includes('android')) {
+  if (options.platforms.includes('android') && !options.useCNGForPlatforms.android) {
     const result = await getFileBasedHashSourceAsync(projectRoot, 'android', 'bareNativeDir');
     if (result != null) {
       debug(`Adding bare native dir - ${chalk.dim('android')}`);
@@ -36,7 +36,7 @@ export async function getBareIosSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
-  if (options.platforms.includes('ios')) {
+  if (options.platforms.includes('ios') && !options.useCNGForPlatforms.ios) {
     const result = await getFileBasedHashSourceAsync(projectRoot, 'ios', 'bareNativeDir');
     if (result != null) {
       debug(`Adding bare native dir - ${chalk.dim('ios')}`);

@@ -16,6 +16,7 @@
 ### 🐛 Bug fixes
 
 - Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
+- Skipped hashing prebuild-generated native directories for CNG platforms, so the fingerprint no longer changes after running `expo prebuild`. ([#47949](https://github.com/expo/expo/pull/47949) by [@Oupsla](https://github.com/Oupsla))
 
 ### 💡 Others
 

@@ -5,6 +5,7 @@ import path from 'path';
 
 import type { NormalizedOptions } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
+import { resolveProjectWorkflowAsync } from '../../ProjectWorkflow';
 import {
   getBareAndroidSourcesAsync,
   getBareIosSourcesAsync,
@@ -24,6 +25,7 @@ jest.mock('../../ProjectWorkflow');
 describe('getBareSourcesAsync', () => {
   afterEach(() => {
     vol.reset();
+    jest.mocked(resolveProjectWorkflowAsync).mockReset();
   });
 
   it('should contain android and ios folders in bare react-native project', async () => {
@@ -33,6 +35,17 @@ describe('getBareSourcesAsync', () => {
 
     sources = await getBareIosSourcesAsync('/app', await normalizeOptionsAsync('/app'));
     expect(sources).toContainEqual(expect.objectContaining({ filePath: 'ios', type: 'dir' }));
+  });
+
+  it('should not add bare native dir sources for CNG (managed) platforms', async () => {
+    vol.fromJSON(require('./fixtures/BareReactNative70Project.json'));
+    // A CNG/managed project generates android/ and ios/ via `expo prebuild`, so their
+    // presence must not change the fingerprint. See https://github.com/expo/expo/issues/47943
+    jest.mocked(resolveProjectWorkflowAsync).mockResolvedValue('managed');
+    const options = await normalizeOptionsAsync('/app');
+
+    expect(await getBareAndroidSourcesAsync('/app', options)).toEqual([]);
+    expect(await getBareIosSourcesAsync('/app', options)).toEqual([]);
   });
 });
 
