@@ -71,7 +71,7 @@ jobs:
         working_directory: ../brownfield-tester/expo-app
         run: |
           npx expo prebuild --clean -p android
-          npx expo-brownfield build:android --repo MavenLocal --verbose
+          npx expo-brownfield build:android --fused --repo MavenLocal --verbose
       - uses: eas/start_android_emulator
         with:
           device_name: pixel_4

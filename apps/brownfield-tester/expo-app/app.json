@@ -40,6 +40,11 @@
         {
           "ios": {
             "buildReactNativeFromSource": false
+          },
+          "android": {
+            "publishing": [
+              { "type": "localMaven" }
+            ]
           }
         }
       ]
