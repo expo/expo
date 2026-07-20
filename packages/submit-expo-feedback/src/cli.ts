@@ -451,10 +451,19 @@ function printHelp(): void {
 
   {bold Options}
     --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
-    --subject, -s <subject>    Specific docs URL, skill, CLI command, MCP server, or other subject
-                               the feedback is about
+    --subject, -s <subject>    Exact item the feedback is about, based on the category
     --version, -v              Version number
     --help, -h                 Usage info
+
+  {bold Subject by category}
+    | Category   | Subject                                                           |
+    | ---------- | ----------------------------------------------------------------- |
+    | skills     | Exact skill name, such as expo-router                             |
+    | docs       | Full Expo documentation URL                                       |
+    | mcp        | Exact MCP tool name used                                          |
+    | expo-cli   | Full Expo CLI command, such as npx expo install                   |
+    | eas-cli    | Full EAS CLI command, such as eas build                           |
+    | unknown    | Concise Expo product, package, feature, or topic, or leave empty  |
 `);
 }
 

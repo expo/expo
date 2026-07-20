@@ -8,6 +8,7 @@ import {
   getProjectMetadata,
   getUserMetadataAsync,
   resolveFeedbackAsync,
+  runExpoFeedbackAsync,
   sendFeedbackAsync,
 } from '../cli';
 
@@ -42,6 +43,32 @@ function writeJson(filePath: string, value: unknown): void {
   mkdirSync(path.dirname(filePath), { recursive: true });
   writeFileSync(filePath, JSON.stringify(value, null, 2));
 }
+
+describe('help output', () => {
+  it('explains the expected subject for each category', async () => {
+    const originalArgv = process.argv;
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    process.argv = ['node', 'submit-expo-feedback', '--help'];
+
+    try {
+      await runExpoFeedbackAsync();
+
+      const helpOutput = consoleLogSpy.mock.calls.flat().join('\n');
+      expect(helpOutput).toContain('| Category   | Subject');
+      expect(helpOutput).toContain('| skills     | Exact skill name, such as expo-router');
+      expect(helpOutput).toContain('| docs       | Full Expo documentation URL');
+      expect(helpOutput).toContain('| mcp        | Exact MCP tool name used');
+      expect(helpOutput).toContain('| expo-cli   | Full Expo CLI command, such as npx expo install');
+      expect(helpOutput).toContain('| eas-cli    | Full EAS CLI command, such as eas build');
+      expect(helpOutput).toContain(
+        '| unknown    | Concise Expo product, package, feature, or topic, or leave empty'
+      );
+    } finally {
+      process.argv = originalArgv;
+      consoleLogSpy.mockRestore();
+    }
+  });
+});
 
 describe('feedback message resolution', () => {
   beforeEach(() => {
@@ -277,7 +304,7 @@ describe('feedback submission', () => {
       signal: timeoutSignal,
       headers: expect.objectContaining({
         'Content-Type': 'application/json',
-        'User-Agent': 'submit-expo-feedback/0.0.0',
+        'User-Agent': 'submit-expo-feedback/0.0.1',
         'expo-session': 'session-secret',
       }),
       body: JSON.stringify({
