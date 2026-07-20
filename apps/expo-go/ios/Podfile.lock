@@ -4558,7 +4558,7 @@ SPEC CHECKSUMS:
   EXManifests: f9888c0bf5aaa6ddb7e3d4b224d6d54ac4ca84a4
   Expo: 1064b4f05f3c53f75dab49f636011654d3577245
   ExpoAsset: 1a913b91ccf6db8a5f68ba0c3ab75b8683766cf1
-  ExpoAudio: b69f36525132edba8d87a715b3a20c678ef78b30
+  ExpoAudio: 34f5940d49071f1c5f9d8c5f78e67045b0fbcb5a
   ExpoBackgroundFetch: 53e0cfb119bad134ce6e7e43906b5511dff0b87c
   ExpoBackgroundTask: 8f9167014118cc64a05dd544da16abac5ee6159d
   ExpoBattery: cb2f672d65a375377276722d5e47e1abd6bb5d51
@@ -4635,7 +4635,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 1aac0336ab06465103e89322838baf2911318c89
+  hermes-engine: ff5096b4b68fee24fa4fc7aa9267e0bcccf03713
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: af5937a13536ef73f3784d69cc342b98961acf33
