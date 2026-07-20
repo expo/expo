@@ -19,8 +19,7 @@ const withGradlePropertiesPlugin: ConfigPlugin = (config) => {
     // `include(project(...))` resolve sibling subprojects directly (no mavenLocal
     // round-trip). No-op in non-fused mode.
     const hasFusedOptIn = config.modResults.some(
-      (item) =>
-        item.type === 'property' && item.key === 'android.experimental.fusedLibrarySupport'
+      (item) => item.type === 'property' && item.key === 'android.experimental.fusedLibrarySupport'
     );
     const hasFusedPubFlag = config.modResults.some(
       (item) =>
@@ -47,7 +46,7 @@ const getFusedLibrarySupportConfiguration = (
     items.push(
       {
         type: 'comment',
-        value: "Acknowledge AGP Fused Library Preview status (required to apply the plugin)",
+        value: 'Acknowledge AGP Fused Library Preview status (required to apply the plugin)',
       },
       {
         type: 'property',

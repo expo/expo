@@ -31,7 +31,7 @@ const getFusedLibrarySupportConfiguration = (hasFusedOptIn, hasFusedPubFlag) => 
     if (!hasFusedOptIn) {
         items.push({
             type: 'comment',
-            value: "Acknowledge AGP Fused Library Preview status (required to apply the plugin)",
+            value: 'Acknowledge AGP Fused Library Preview status (required to apply the plugin)',
         }, {
             type: 'property',
             key: 'android.experimental.fusedLibrarySupport',
