@@ -258,6 +258,10 @@ export function StackRouter(options: StackRouterOptions) {
         (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
       );
 
+      const preloadedRoutes = state.preloadedRoutes.filter(
+        (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
+      );
+
       if (routes.length === 0) {
         const initialRouteName =
           options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
@@ -275,6 +279,7 @@ export function StackRouter(options: StackRouterOptions) {
         ...state,
         routeNames,
         routes,
+        preloadedRoutes,
         index: Math.min(state.index, routes.length - 1),
       };
     },

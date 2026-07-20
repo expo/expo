@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash when a preloaded route is removed from the navigator. ([#47972](https://github.com/expo/expo/pull/47972) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 - Upgrade react-native-screens to 4.26.0 ([#47770](https://github.com/expo/expo/pull/47770) by [@Ubax](https://github.com/Ubax))
