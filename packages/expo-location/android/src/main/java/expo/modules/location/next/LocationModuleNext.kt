@@ -23,6 +23,10 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.sharedobjects.SharedRef
+import expo.modules.location.LocationBackgroundUnauthorizedException
+import expo.modules.location.LocationHelpers
+import expo.modules.location.LocationUnauthorizedException
+import expo.modules.location.NoPermissionInManifestException
 import expo.modules.location.NoPermissionsModuleException
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.records.PermissionDetailsLocationAndroid
@@ -34,7 +38,7 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
-class LocationModule : Module() {
+class LocationModuleNext : Module() {
   var defaultLocationProvider: LocationProvider
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
@@ -71,9 +75,12 @@ class LocationModule : Module() {
     }
 
     AsyncFunction("requestBackgroundPermissionsAsync") Coroutine { ->
-
+      return@Coroutine requestBackgroundPermissionsAsync()
     }
 
+    AsyncFunction("getBackgroundPermissionsAsync") Coroutine { ->
+      return@Coroutine getBackgroundPermissionsAsync()
+    }
 
     // Location providers
     Function("setDefaultLocationProvider") { locationProvider: SharedRef<LocationProvider> ->
@@ -92,6 +99,7 @@ class LocationModule : Module() {
 
     // Position
     AsyncFunction("getCurrentPositionAsync") Coroutine { ->
+      ensureForegroundPermissions()
       val pos = Position(coordinates = Coordinates(0.0, 0.0))
       return@Coroutine pos
     }
@@ -116,6 +124,42 @@ class LocationModule : Module() {
     // permission helpers
   }
 
+  // We want to request the ACCESS_BACKGROUND_LOCATION permission,
+  // we need to check if it is in the manifest if so we ask for it,
+  // but only if we need to do it separately.
+  private suspend fun requestBackgroundPermissionsAsync(): PermissionRequestResponse {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      // Before version Q, there are only foreground permissions.
+      return getForegroundPermissionsAsync()
+    }
+    if (!isBackgroundPermissionInManifest()) {
+      throw NoPermissionInManifestException("ACCESS_BACKGROUND_LOCATION")
+    }
+    return appContext.permissions?.let {
+      askForPermissionsWithPermissionsManager(it, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    } ?: throw NoPermissionsModuleException()
+  }
+
+  private suspend fun getBackgroundPermissionsAsync(): PermissionRequestResponse {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      // Before version Q, there are only foreground permissions.
+      return getForegroundPermissionsAsync()
+    }
+    if (!isBackgroundPermissionInManifest()) {
+      throw NoPermissionInManifestException("ACCESS_BACKGROUND_LOCATION")
+    }
+    appContext.permissions?.let {
+      return LocationHelpers.getPermissionsWithPermissionsManager(it, Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    } ?: throw NoPermissionsModuleException()
+  }
+
+  private fun isBackgroundPermissionInManifest(): Boolean {
+    appContext.permissions?.let {
+      return it.isPermissionPresentInManifest(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+    }
+    throw NoPermissionsModuleException()
+  }
+
   internal suspend fun getForegroundPermissionsAsync(): PermissionRequestResponse {
     return appContext.permissions?.let {
       val coarseLocationPermission = getPermissionsWithPermissionsManager(it, Manifest.permission.ACCESS_COARSE_LOCATION)
@@ -135,7 +179,29 @@ class LocationModule : Module() {
       locationPermission
     } ?: throw NoPermissionsModuleException()
   }
+
+  private fun ensureForegroundPermissions() {
+    val permissions = appContext.permissions ?: throw NoPermissionsModuleException()
+    val hasFine = permissions.hasGrantedPermissions(Manifest.permission.ACCESS_FINE_LOCATION)
+    val hasCoarse = permissions.hasGrantedPermissions(Manifest.permission.ACCESS_COARSE_LOCATION)
+    if (!hasFine && !hasCoarse) {
+      throw LocationUnauthorizedException()
+    }
+  }
+
+  private fun ensureBackgroundPermissions() {
+    ensureForegroundPermissions()
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      // Before version Q there were no separate background permissions.
+      return
+    }
+    val permissions = appContext.permissions ?: throw NoPermissionsModuleException()
+    if (!permissions.hasGrantedPermissions(Manifest.permission.ACCESS_BACKGROUND_LOCATION)) {
+      throw LocationBackgroundUnauthorizedException()
+    }
+  }
 }
+
 
 /////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// STRUCTS ///////////////////////////////////////
