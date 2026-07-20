@@ -142,8 +142,14 @@ For example, it can be useful when uploading source maps to Sentry using a [`SEN
 
 ### Setting EAS environment for workflow jobs
 
+When you omit [`jobs.<job_id>.environment`](/eas/workflows/syntax/#jobsjob_idenvironment), the default depends on the job type:
+
 - **Build jobs**: The environment comes from the build profile in **eas.json** (`build.<profile>.environment`). If that field is missing, the automatic defaults described above apply. [Using environment variables with EAS Build](#using-environment-variables-with-eas-build).
-- **Other jobs** (for example, update, submit, fingerprint, Maestro, and custom jobs): Set [`jobs.<job_id>.environment`](/eas/workflows/syntax/#jobsjob_idenvironment). If you omit it, `production` is used. Setting it explicitly helps keep the job in sync with the build profile you used earlier in the workflow.
+- **Submit jobs**: The environment is inherited from the submitted build.
+- **Maestro jobs** (`maestro` and `maestro-cloud`): The environment defaults to `preview`.
+- **Other jobs** (for example, update, fingerprint, deploy, and custom jobs): The environment defaults to `production`.
+
+Set `environment` explicitly on a job to override its default and keep it in sync with the build profile you used earlier in the workflow. For a full explanation, see [The job environment](/eas/workflows/environment/#the-job-environment).
 
 In the following example, a build job is configured to use the `preview` profile, then an update job is configured to use the same EAS environment.
 

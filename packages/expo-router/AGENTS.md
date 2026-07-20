@@ -42,7 +42,7 @@ File-based routing library for React Native and web applications. It provides au
 │   │
 │   ├── native-tabs/           # Native bottom tabs (iOS UITabBar, Android BottomNav)
 │   │   ├── NativeTabs.tsx            # Assignment of Trigger and BottomAccessory to NativeTabs component
-│   │   ├── NativeTabTrigger.tsx      # Tab trigger component for configuring individual tabs. Includes function which convert sub-components (Icon, Label, etc) to options.
+│   │   ├── NativeTabTrigger.tsx      # Tab trigger component for configuring individual tabs. Includes function which converts sub-components (Icon, Label, etc) to options.
 │   │   ├── NativeTabsView.tsx        # Native implementation of tabs using React Native Screens
 │   │   ├── NativeTabsView.web.tsx    # Web fallback implementation
 │   │   ├── NativeBottomTabsNavigator.tsx  # Native bottom tabs navigator common for native and web. Utilizes useNavigationBuilder.
@@ -61,7 +61,7 @@ File-based routing library for React Native and web applications. It provides au
 │   │   ├── preview/           # Link preview UI (iOS peek/pop style)
 │   │   └── zoom/              # Apple-style zoom transitions
 │   │
-│   ├── head/                  # On web a wrapper around react-helmet. On iOs a JS layer for ExpoHeadModule. On Android a no-op.
+│   ├── head/                  # On web a wrapper around react-helmet. On iOS a JS layer for ExpoHeadModule. On Android a no-op.
 │   │
 │   ├── ui/                    # Headless tabs components
 │   │
@@ -302,7 +302,7 @@ After developing a feature, run these commands in `packages/expo-router`:
 
 Then test the feature on the simulator using one of the `apps/router-e2e/__e2e__/` projects. For android, use the `/android-e2e-testing` skill for testing on emulators.
 
-Lastly, span a new fresh senior engineer agent to challenge the implementation, how it fits into general expo-router architecture and find edge cases.
+Lastly, spawn a new fresh senior engineer agent to challenge the implementation, how it fits into general expo-router architecture and find edge cases.
 
 When adding dependencies or changing static/server rendering, run e2e tests in `packages/@expo/cli` (time-consuming, run only when necessary).
 

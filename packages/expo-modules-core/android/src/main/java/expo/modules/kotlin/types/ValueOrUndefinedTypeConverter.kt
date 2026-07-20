@@ -1,6 +1,5 @@
 package expo.modules.kotlin.types
 
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.SingleType
@@ -16,7 +15,7 @@ class ValueOrUndefinedTypeConverter(
     }
   )
 
-  override fun convert(value: Any?, context: AppContext?, forceConversion: Boolean): ValueOrUndefined<*>? {
+  override fun convert(value: Any?, context: ConverterContext, forceConversion: Boolean): ValueOrUndefined<*>? {
     return if (value is ValueOrUndefined.Undefined) {
       ValueOrUndefined.Undefined
     } else {

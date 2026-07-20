@@ -96,6 +96,7 @@ export function Code({ className, children, title }: CodeProps) {
     tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: false,
       ignoreAttributes: true,
+      aria: { content: 'auto', expanded: false },
       content: (reference: Element) =>
         buildTooltipContent(reference.getAttribute('data-tippy-content') ?? ''),
       theme: 'expo',
@@ -109,6 +110,7 @@ export function Code({ className, children, title }: CodeProps) {
     tippyFunc('.tutorial-code-annotation.with-tooltip', {
       allowHTML: false,
       ignoreAttributes: true,
+      aria: { content: 'auto', expanded: false },
       content: (reference: Element) =>
         buildTooltipContent(reference.getAttribute('data-tippy-content') ?? ''),
       theme: 'expo',

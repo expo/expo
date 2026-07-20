@@ -7,7 +7,7 @@ import type { ExpoJsOutput } from '../serializer/jsOutput';
 import { countLinesAndTerminateSourceMap, emptySourceMap } from '../serializer/packedMap';
 import type { TransformResponse } from './transform-worker';
 
-/** Synthesizes the `metro-transform-worker` output for a hand-crafted JS shims
+/** Synthesizes the `metro-transform-worker` output for a hand-crafted JS shim
  *
  * Typically used to skip Babel for JS output that embeds CSS. The CSS files'
  * processing isn't cached in development, making invoking Babel on them very

@@ -94,7 +94,7 @@ export function getApiRoutesForDirectory(cwd: string) {
 }
 
 /**
- * Gets the +middleware file for a given directory. In
+ * Gets the +middleware file for a given directory.
  * @param cwd
  */
 export function getMiddlewareForDirectory(cwd: string): string | null {
