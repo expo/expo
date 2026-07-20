@@ -111,4 +111,20 @@ class GmsLocationProvider(
     }
     return locationWatchHandle
   }
+
+  @SuppressLint("MissingPermission")
+  override suspend fun getLastKnownPosition(): Position? {
+    val location: Location? = suspendCancellableCoroutine { continuation ->
+      try {
+        fusedLocationProvider
+          .lastLocation
+          .addOnSuccessListener { location -> continuation.resume(location) }
+          .addOnFailureListener { e -> continuation.resume(null) }
+          .addOnCanceledListener { continuation.resume(null) }
+      } catch (e: SecurityException) {
+        continuation.resume(null)
+      }
+    }
+    return location?.toPosition()
+  }
 }

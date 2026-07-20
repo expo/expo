@@ -100,8 +100,12 @@ class LocationModuleNext : Module() {
     // Position
     AsyncFunction("getCurrentPositionAsync") Coroutine { ->
       ensureForegroundPermissions()
-      val pos = Position(coordinates = Coordinates(0.0, 0.0))
-      return@Coroutine pos
+      return@Coroutine defaultLocationProvider.getCurrentPosition()
+    }
+
+    AsyncFunction("getLastKnownPositionAsync") Coroutine { ->
+      ensureForegroundPermissions()
+      return@Coroutine defaultLocationProvider.getLastKnownPosition()
     }
 
     Class (LocationWatchHandle::class) {
@@ -292,6 +296,7 @@ class LocationWatchHandle(val session: PositionWatchSession): SharedObject() {}
 interface LocationProvider {
   suspend fun getCurrentPosition(): Position
   fun watchPositionAsync(): LocationWatchHandle
+  suspend fun getLastKnownPosition(): Position?
 }
 
 class LocationUnavailableException: Exception()
@@ -366,6 +371,10 @@ class AndroidLocationProvider: LocationProvider {
     TODO("")
 //    Log.d("LOC", "Watch position async")
   }
+
+  override suspend fun getLastKnownPosition(): Position? {
+    TODO("Not yet implemented")
+  }
 }
 
 
@@ -381,5 +390,11 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>): L
 
   override fun watchPositionAsync(): LocationWatchHandle {
     TODO("Not yet implemented")
+  }
+
+  override suspend fun getLastKnownPosition(): Position? {
+    // "No cached position" is a valid answer, not an error - a null from one
+    // provider means we should ask the next one.
+    return locationProviders.firstNotNullOfOrNull { it.getLastKnownPosition() }
   }
 }
