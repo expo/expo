@@ -439,13 +439,12 @@ export function BaseNavigationContainer({
     () => ({
       state,
       getState,
-      setState,
       getKey,
       setKey,
       getIsInitial,
       addOptionsGetter,
     }),
-    [state, getState, setState, getKey, setKey, getIsInitial, addOptionsGetter]
+    [state, getState, getKey, setKey, getIsInitial, addOptionsGetter]
   );
 
   const onReadyRef = React.useRef(onReady);

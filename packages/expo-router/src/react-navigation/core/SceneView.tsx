@@ -56,12 +56,6 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
     return currentRoute ? currentRoute.state : undefined;
   }, [getState, route.key]);
 
-  // Nested navigators reduce through the container's root reducer (via `dispatchRoot`), so they no
-  // longer patch their slice up into the parent's state here. The compose-up write is gone; this
-  // stays a no-op only because the child navigator still reads `setState` off this context (removed
-  // together with the context state reads in the store-slice step).
-  const setCurrentState = React.useCallback(() => {}, []);
-
   const isInitialRef = React.useRef(true);
 
   React.useEffect(() => {
@@ -114,13 +108,12 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
     () => ({
       state: routeState,
       getState: getCurrentState,
-      setState: setCurrentState,
       getKey,
       setKey,
       getIsInitial,
       addOptionsGetter,
     }),
-    [routeState, getCurrentState, setCurrentState, getKey, setKey, getIsInitial, addOptionsGetter]
+    [routeState, getCurrentState, getKey, setKey, getIsInitial, addOptionsGetter]
   );
 
   const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;

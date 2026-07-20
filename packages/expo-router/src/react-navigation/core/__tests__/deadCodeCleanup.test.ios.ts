@@ -88,3 +88,25 @@ describe('global-state Step 11-b cleanup', () => {
     expect(navigationBuilder).not.toMatch(/params\??\.(screen|state|initial)\b/);
   });
 });
+
+describe('single-source dead surfaces', () => {
+  it('drops the unused per-key reducer accessors from the registry (entry API is the only one)', () => {
+    const storeContext = readGlobalStateFile('storeContext.ts');
+
+    expect(storeContext).not.toContain('addReducer');
+    expect(storeContext).not.toContain('removeReducer');
+    expect(storeContext).not.toContain('getReducer');
+    // The live registry API stays.
+    expect(storeContext).toContain('addEntry');
+    expect(storeContext).toContain('hasReducer');
+  });
+
+  it('drops the never-consumed setState slot from NavigationStateContext (dispatchRoot is the only writer)', () => {
+    const navigationStateContext = readCoreFile('NavigationStateContext.tsx');
+    const sceneView = readCoreFile('SceneView.tsx');
+
+    expect(navigationStateContext).not.toContain('setState');
+    // SceneView no longer provides a no-op state writer into the context.
+    expect(sceneView).not.toContain('setCurrentState');
+  });
+});

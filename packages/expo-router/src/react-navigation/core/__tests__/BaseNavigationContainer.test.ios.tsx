@@ -59,25 +59,6 @@ test('throws when getState is accessed without a container', () => {
   );
 });
 
-test('throws when setState is accessed without a container', () => {
-  expect.assertions(1);
-
-  const Test = () => {
-    const { setState } = React.useContext(NavigationStateContext);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    setState;
-
-    return null;
-  };
-
-  const element = <Test />;
-
-  expect(() => render(element).update(element)).toThrow(
-    "Couldn't find a navigation context. Have you wrapped your app with 'NavigationContainer'?"
-  );
-});
-
 test('throws when nesting containers', () => {
   expect(() =>
     render(

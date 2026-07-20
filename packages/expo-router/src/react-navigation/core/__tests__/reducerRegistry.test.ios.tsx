@@ -22,22 +22,6 @@ function TestNavigator(props: any) {
   );
 }
 
-test('keeps a newer reducer when an older registration cleans up', () => {
-  const registry = createReducerRegistry();
-  const reducer1 = jest.fn(() => null);
-  const reducer2 = jest.fn(() => null);
-
-  registry.addReducer(rootKey, reducer1);
-  registry.addReducer(rootKey, reducer2);
-  registry.removeReducer(rootKey, reducer1);
-
-  expect(registry.getReducer(rootKey)).toBe(reducer2);
-
-  registry.removeReducer(rootKey, reducer2);
-
-  expect(registry.getSnapshot()).toHaveLength(0);
-});
-
 test('keeps a newer entry when an older registration cleans up', () => {
   const registry = createReducerRegistry();
   const entry1 = { reduce: jest.fn(() => null) };
