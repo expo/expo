@@ -185,6 +185,7 @@ module Expo
         configure_header_search_paths(installer)
         configure_codegen_for_prebuilt_modules(installer)
         stub_bundled_pod_targets(installer)
+        quote_swift_compatibility_header_search_paths(installer)
       end
 
       # Runs all precompiled module pre-install steps.
@@ -949,6 +950,26 @@ module Expo
         end
 
         Pod::UI.puts "[Expo] ".blue + "Ensured modular React header flags on #{patched} xcconfig(s)"
+      end
+
+      # Re-quote unquoted `.../Swift Compatibility Header` entries in HEADER_SEARCH_PATHS. The path
+      # has a space, and CocoaPods drops the podspec's quotes when it's supplied via a joined
+      # `pod_target_xcconfig` string, so clang space-splits it and a cross-pod `#import
+      # "<Pod>-Swift.h"` fails in the static-library source build (no framework bundle, and no VFS
+      # overlay since RN removed it). Runs on the final xcconfigs; RN's post-install preserves
+      # quotes, so this stays authoritative. Idempotent (already-quoted tokens are skipped).
+      def quote_swift_compatibility_header_search_paths(installer)
+        # $(…)/${…}PODS_CONFIGURATION_BUILD_DIR / <pod-name> / "Swift Compatibility Header", unquoted only.
+        token = /(?<!")(\$[({]PODS_CONFIGURATION_BUILD_DIR[)}]\/[^\s"\/]+\/Swift Compatibility Header)(?!")/
+        patched = 0
+        Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
+          content = File.read(xcconfig_path)
+          new_content = content.gsub(/^HEADER_SEARCH_PATHS\s*=.*$/) { |line| line.gsub(token, '"\1"') }
+          next if new_content == content
+          File.write(xcconfig_path, new_content)
+          patched += 1
+        end
+        Pod::UI.puts "[Expo] ".blue + "Quoted Swift compatibility header search paths in #{patched} xcconfig(s)" if patched > 0
       end
 
       # Appends `value` to an xcconfig `key` line (preserving $(inherited)), or adds the key if absent.
