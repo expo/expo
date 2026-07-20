@@ -162,6 +162,30 @@ describe('PnpmPackageManager', () => {
     });
   });
 
+  describe('minimumReleaseAge', () => {
+    it('disables the release age gate when installing', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.installAsync();
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'pnpm',
+        ['install', '--config.minimumReleaseAge=0'],
+        expect.anything()
+      );
+    });
+
+    it('disables the release age gate when adding packages', async () => {
+      const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.addAsync(['expo']);
+
+      expect(spawnAsync).toHaveBeenCalledWith(
+        'pnpm',
+        ['add', 'expo', '--config.minimumReleaseAge=0'],
+        expect.anything()
+      );
+    });
+  });
+
   describe('installAsync', () => {
     it('runs normal installation', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
@@ -169,7 +193,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['install'],
+        ['install', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -180,7 +204,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['install', '--ignore-scripts'],
+        ['install', '--ignore-scripts', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -192,7 +216,7 @@ describe('PnpmPackageManager', () => {
 
         expect(spawnAsync).toHaveBeenCalledWith(
           'pnpm',
-          ['install'],
+          ['install', '--config.minimumReleaseAge=0'],
           expect.objectContaining({ cwd: projectRoot })
         );
       });
@@ -205,7 +229,7 @@ describe('PnpmPackageManager', () => {
 
         expect(spawnAsync).toHaveBeenCalledWith(
           'pnpm',
-          ['install', '--no-frozen-lockfile'],
+          ['install', '--no-frozen-lockfile', '--config.minimumReleaseAge=0'],
           expect.objectContaining({ cwd: projectRoot })
         );
       });
@@ -218,7 +242,7 @@ describe('PnpmPackageManager', () => {
 
         expect(spawnAsync).toHaveBeenCalledWith(
           'pnpm',
-          ['install', '--frozen-lockfile'],
+          ['install', '--frozen-lockfile', '--config.minimumReleaseAge=0'],
           expect.objectContaining({ cwd: projectRoot })
         );
       });
@@ -265,7 +289,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['install'],
+        ['install', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -276,7 +300,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['add', '@react-navigation/native'],
+        ['add', '@react-navigation/native', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -287,7 +311,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['add', '@react-navigation/native', '@react-navigation/drawer'],
+        ['add', '@react-navigation/native', '@react-navigation/drawer', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -300,7 +324,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['install'],
+        ['install', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -311,7 +335,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['add', '--save-dev', 'eslint'],
+        ['add', '--save-dev', 'eslint', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -322,7 +346,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['add', '--save-dev', 'eslint', 'prettier'],
+        ['add', '--save-dev', 'eslint', 'prettier', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -335,7 +359,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['install'],
+        ['install', '--config.minimumReleaseAge=0'],
         expect.objectContaining({ cwd: projectRoot })
       );
     });
@@ -346,7 +370,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['add', '--global', 'expo-cli@^5'],
+        ['add', '--global', 'expo-cli@^5', '--config.minimumReleaseAge=0'],
         expect.anything()
       );
     });
@@ -357,7 +381,7 @@ describe('PnpmPackageManager', () => {
 
       expect(spawnAsync).toHaveBeenCalledWith(
         'pnpm',
-        ['add', '--global', 'expo-cli@^5', 'eas-cli'],
+        ['add', '--global', 'expo-cli@^5', 'eas-cli', '--config.minimumReleaseAge=0'],
         expect.anything()
       );
     });

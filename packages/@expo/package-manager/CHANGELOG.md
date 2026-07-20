@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve through package manager release age gates (npm `min-release-age`, pnpm `minimumReleaseAge`, Yarn `npmMinimalAgeGate`, Bun `install.minimumReleaseAge`) during trusted installs. ([#44479](https://github.com/expo/expo/issues/44479))
+
 ### 💡 Others
 
 ## 1.12.0 — 2026-05-20
