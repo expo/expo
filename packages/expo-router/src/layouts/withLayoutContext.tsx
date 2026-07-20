@@ -34,7 +34,6 @@ export function useFilterScreenChildren(
     const customChildren: any[] = [];
 
     const screens: (ScreenProps & { name: string })[] = [];
-    const protectedScreens = new Set<string>();
     // Guarded (guard=false) JS screens stay in `screens`; this maps their name to the redirect
     // target of the innermost failing `Protected` (or `undefined` to use the navigator's anchor).
     const guardedRedirects = new Map<string, Href | undefined>();
@@ -105,7 +104,6 @@ export function useFilterScreenChildren(
     return {
       screens,
       children: customChildren,
-      protectedScreens,
       guardedRedirects,
     };
   }, [children]);
@@ -161,16 +159,13 @@ export function withLayoutContext<
       const contextKey = useContextKey();
       const node = useRouteNode();
 
-      const { screens, protectedScreens, guardedRedirects } = useFilterScreenChildren(
-        userDefinedChildren,
-        {
-          contextKey,
-        }
-      );
+      const { screens, guardedRedirects } = useFilterScreenChildren(userDefinedChildren, {
+        contextKey,
+      });
 
       const processed = processor ? processor(screens ?? [], node) : screens;
 
-      const sorted = useSortedScreens(processed ?? [], protectedScreens, useOnlyUserDefinedScreens);
+      const sorted = useSortedScreens(processed ?? [], guardedRedirects, useOnlyUserDefinedScreens);
       const processedSorted = postProcessor ? postProcessor(sorted, node) : sorted;
 
       // Prevent throwing an error when there are no screens.

@@ -166,6 +166,11 @@ export function BaseNavigationContainer({
   // window: a descendant's mount effect can dispatch (e.g. an untargeted `navigate` or a `preload`)
   // before its ancestor navigators' registration effects run. Rather than reducing locally, we hold
   // the action and replay it through the root reducer after the next commit, once registration lands.
+  //
+  // This is deliberately separate from the module-global `routingQueue` (the imperative-API input
+  // buffer): replays need this dispatch's internal `originKey`/`isReplay` (to re-target the origin
+  // navigator and bound the retry to once), which the public `dispatch` that drains `routingQueue`
+  // doesn't carry. Both still serialize through this `dispatchRoot`, so ordering stays coherent.
   const pendingReplayRef = React.useRef<{ action: NavigationAction; originKey?: string }[]>([]);
   const [replayTick, requestReplay] = React.useReducer((tick: number) => tick + 1, 0);
 
