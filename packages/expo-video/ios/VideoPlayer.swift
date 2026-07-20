@@ -186,14 +186,10 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
   }
 
   override func sharedObjectWillRelease() {
-    if Thread.isMainThread {
-      releasePlayer()
-    } else {
-      // Strong self capture is intentional: it keeps the player alive until the teardown
-      // has run on the main thread, so `deinit` can never race with it.
-      DispatchQueue.main.async {
-        self.releasePlayer()
-      }
+    // Strong self capture is intentional: it keeps the player alive until the teardown
+    // has run on the main thread, so `deinit` can never race with it.
+    runOnMainThread {
+      self.releasePlayer()
     }
   }
 
@@ -346,15 +342,9 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     // We have to replace from the main thread because of KVOs (see comment in VideoSourceLoader).
     // Moreover, in this case we have to keep a strong reference to AVPlayer and remove its item
     // If we don't do this AVPlayer doesn't get deallocated
-    let clear = { [ref] in
+    runOnMainThread { [ref] in
       ref.pause()
       ref.replaceCurrentItem(with: nil)
-    }
-
-    if Thread.isMainThread {
-      clear()
-    } else {
-      DispatchQueue.main.async(execute: clear)
     }
   }
 
