@@ -1,16 +1,16 @@
 {
   "name": "@expo/home",
   "version": "0.0.1",
-  "main": "index.js",
   "private": true,
   "description": "The Expo Go app",
+  "license": "MIT",
+  "author": "Expo",
+  "main": "index.js",
   "scripts": {
     "download-snack-runtime": "node scripts/download-snack-runtime.js",
     "check-snack-runtime-deps": "node scripts/check-snack-runtime-deps.js",
     "bump-snack-runtime-deps": "node scripts/bump-snack-runtime-deps.js"
   },
-  "author": "Expo",
-  "license": "MIT",
   "dependencies": {
     "@expo/ui": "workspace:*",
     "@expo/vector-icons": "^15.0.2",
@@ -83,7 +83,7 @@
     "lottie-react-native": "^7.3.8",
     "react": "19.2.3",
     "react-native": "0.86.0",
-    "react-native-gesture-handler": "~3.0.2",
+    "react-native-gesture-handler": "~3.1.0",
     "react-native-keyboard-controller": "^1.21.9",
     "react-native-maps": "1.27.2",
     "react-native-pager-view": "8.0.2",
