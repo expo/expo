@@ -24,6 +24,7 @@ import type {
   NativeStackNavigatorProps,
 } from '../types';
 import { makePopAction } from '../utils/makePopAction';
+import { useProjectedStack } from '../utils/useProjectedStack';
 import { NativeStackView } from '../views/NativeStackView';
 
 function NativeStackNavigator({
@@ -84,15 +85,19 @@ function NativeStackNavigator({
     });
   }, [meta, navigation, state.index, state.key]);
 
+  // Project preloaded routes as regular routes after `index`, with descriptors covering them.
+  // The view then treats any route positioned after the focused one as preloaded.
+  // TODO: Modify the routing logic to preload routes in the router.
+  const { projectedState, projectedDescriptors } = useProjectedStack(state, descriptors, describe);
+
   const pop = makePopAction(navigation.dispatch, state.key);
 
   return (
     <NavigationContent>
       <NativeStackView
         {...rest}
-        state={state}
-        descriptors={descriptors}
-        describe={describe}
+        state={projectedState}
+        descriptors={projectedDescriptors}
         emit={navigation.emit}
         pop={pop}
       />

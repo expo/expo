@@ -1206,6 +1206,16 @@ export type NativeStackHeaderItem =
 
 export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
 
+/**
+ * The navigator-level state consumed by `NativeStackView`.
+ *
+ * Routes after `index` are preloaded and rendered natively-detached.
+ */
+export type NativeStackViewState = {
+  index: number;
+  routes: { key: string; name: string; params?: object }[];
+};
+
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,
   string | undefined,

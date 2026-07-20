@@ -27,6 +27,7 @@ import {
   NativeStackView,
   type NativeStackNavigatorProps,
   makePopAction,
+  useProjectedStack,
 } from '../../react-navigation/native-stack';
 import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
 import { DescriptorsContext } from './descriptors-context';
@@ -104,12 +105,12 @@ function NativeStackNavigator({
   );
 
   // START FORK
-  const { computedState, computedDescriptors, navigationWrapper } = usePreviewTransition(
-    state,
-    navigation,
-    descriptors,
-    describe
-  );
+  // Project preloaded routes as regular routes after `index`, with descriptors covering them.
+  // The view then treats any route positioned after the focused one as preloaded.
+  // TODO: Modify the routing logic to preload routes in the router.
+  const { projectedState, projectedDescriptors } = useProjectedStack(state, descriptors, describe);
+
+  const { computedState, navigationWrapper } = usePreviewTransition(projectedState, navigation);
 
   const pop = makePopAction(navigation.dispatch, state.key);
 
@@ -117,9 +118,9 @@ function NativeStackNavigator({
   // This allows Expo Router to override gesture behavior without affecting user settings
   const finalDescriptors = React.useMemo(() => {
     let needsNewMap = false;
-    const result: typeof computedDescriptors = {};
-    for (const key of Object.keys(computedDescriptors)) {
-      const descriptor = computedDescriptors[key]!;
+    const result: typeof projectedDescriptors = {};
+    for (const key of Object.keys(projectedDescriptors)) {
+      const descriptor = projectedDescriptors[key]!;
       const options = descriptor.options as NativeStackNavigationOptionsWithInternal;
       const internalGestureEnabled = options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
       const needsGestureFix = internalGestureEnabled !== undefined;
@@ -142,8 +143,8 @@ function NativeStackNavigator({
         result[key] = descriptor;
       }
     }
-    return needsNewMap ? result : computedDescriptors;
-  }, [computedDescriptors]);
+    return needsNewMap ? result : projectedDescriptors;
+  }, [projectedDescriptors]);
   const { registry, contextValue } = useCompositionRegistry();
 
   const mergedDescriptors = React.useMemo(
@@ -169,7 +170,6 @@ function NativeStackNavigator({
             // navigation={navigation}
             // descriptors={descriptors}
             // END FORK
-            describe={describe}
           />
         </CompositionContext>
       </NavigationContent>

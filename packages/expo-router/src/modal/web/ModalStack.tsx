@@ -22,7 +22,11 @@ import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../../react-navigation/native-stack';
-import { makePopAction, NativeStackView } from '../../react-navigation/native-stack';
+import {
+  makePopAction,
+  NativeStackView,
+  usePreloadedDescriptors,
+} from '../../react-navigation/native-stack';
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
 import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
 import type { ModalStackNavigatorProps, ModalStackViewProps } from './types';
@@ -94,11 +98,19 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
     isWeb
   );
 
+  // Project preloaded routes as regular routes after `index`, with descriptors covering them.
+  // `NativeStackView` treats any route positioned after the focused one as preloaded.
   const newStackState = {
     ...state,
-    routes: filteredRoutes,
+    routes: [...filteredRoutes, ...state.preloadedRoutes],
     index: nonModalIndex,
   };
+
+  const projectedDescriptors = usePreloadedDescriptors(
+    state.preloadedRoutes,
+    descriptors,
+    describe
+  );
 
   const pop = makePopAction(navigation.dispatch, state.key);
 
@@ -116,8 +128,7 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
     <div style={{ flex: 1, display: 'flex' }}>
       <NativeStackView
         state={newStackState}
-        descriptors={descriptors}
-        describe={describe}
+        descriptors={projectedDescriptors}
         emit={navigation.emit}
         pop={pop}
       />

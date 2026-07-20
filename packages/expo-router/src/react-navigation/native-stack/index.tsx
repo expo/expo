@@ -13,6 +13,8 @@ export { NativeStackView } from './views/NativeStackView';
  */
 export { useAnimatedHeaderHeight } from './utils/useAnimatedHeaderHeight';
 export { makePopAction } from './utils/makePopAction';
+export { usePreloadedDescriptors } from './utils/usePreloadedDescriptors';
+export { useProjectedStack } from './utils/useProjectedStack';
 
 /**
  * Types
@@ -40,4 +42,5 @@ export type {
   NativeStackOptionsArgs,
   NativeStackScreenNativeProps,
   NativeStackScreenProps,
+  NativeStackViewState,
 } from './types';
