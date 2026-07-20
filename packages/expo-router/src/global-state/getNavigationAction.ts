@@ -1,3 +1,4 @@
+import { NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
@@ -95,13 +96,30 @@ export function getNavigateAction(
         [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
       }
     : {};
+  // The transient `+not-found` / `_sitemap` routes mount as siblings of the real `__root` slot in the
+  // root container. Navigating away from them pops the transient route (`pop`) and reuses the buried
+  // real route (kept mounted by the root container), so its full stack is preserved and no duplicate
+  // route is stacked. A `push` from a transient route can't honor `pop` (the stack router only pops on
+  // NAVIGATE), and stacking a duplicate root is never what's wanted from an error/sitemap screen — so a
+  // push resolves to the target via NAVIGATE instead. `navigate`/`replace` keep their own semantics.
+  //
+  // TODO: Replace the push→NAVIGATE downgrade with `router.batch` once that API lands. Batching will
+  // group multiple navigation operations into a single transition, so a push away from a transient
+  // route can be expressed as [pop the transient, push the target] in one batch — preserving true push
+  // semantics instead of degrading to NAVIGATE.
+  const currentTargetRoute = navigationState.routes[navigationState.index ?? 0];
+  const isLeavingTransientRoute =
+    currentTargetRoute?.name === NOT_FOUND_ROUTE_NAME ||
+    currentTargetRoute?.name === SITEMAP_ROUTE_NAME;
+  const effectiveType = isLeavingTransientRoute && type === 'PUSH' ? 'NAVIGATE' : type;
+
   const subtreePayload = getNavigationPayloadFromStateRoute(
     actionStateRoute || {},
     navigationState,
     expoParams,
     // A push always appends a new route; a navigate reuses one already present in the target
     // navigator (a sibling tab, a preloaded tab), so its subtree must adopt that route's key.
-    type !== 'PUSH'
+    effectiveType !== 'PUSH'
   );
 
   // The nested target is carried entirely as `payload.state` (the compiled, live-keyed subtree the
@@ -109,7 +127,7 @@ export function getNavigateAction(
   // route. A plain `push` must skip a nested navigator's `initialRouteName` anchor, so collapse the
   // subtree to its focused path; `withAnchor` keeps the full subtree so the anchor loads.
   const payloadState =
-    type === 'PUSH' && subtreePayload.state != null && !withAnchor
+    effectiveType === 'PUSH' && subtreePayload.state != null && !withAnchor
       ? collapseToFocusedPath(subtreePayload.state)
       : subtreePayload.state;
 
@@ -117,11 +135,12 @@ export function getNavigateAction(
     name: subtreePayload.name,
     params: subtreePayload.params,
     singular,
+    ...(isLeavingTransientRoute ? { pop: true } : null),
     ...(payloadState ? { state: payloadState } : null),
   };
 
   return {
-    type,
+    type: effectiveType,
     target: navigationState.key,
     payload,
   };

@@ -1,7 +1,7 @@
 'use client';
 
 import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
@@ -200,10 +200,30 @@ function Content() {
     id: INTERNAL_SLOT_NAME,
   });
 
+  // Render every root route (the `__root` slot plus the transient `+not-found` / `_sitemap` siblings)
+  // and keep them all mounted, showing only the focused one. This is what lets navigation away from a
+  // transient route pop it while the real `__root` (and its committed navigator) stays mounted beneath
+  // — so the target commits into the preserved stack instead of stacking a duplicate `__root`. A
+  // consistent `View` wrapper per route (keyed by route key) means a focus change only toggles
+  // visibility; it never remounts `__root`.
+  const focusedKey = state.routes[state.index]!.key;
   return (
-    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    <NavigationContent>
+      {state.routes.map((route) => (
+        <View
+          key={route.key}
+          style={route.key === focusedKey ? rootSlotStyles.focused : rootSlotStyles.hidden}>
+          {descriptors[route.key]!.render()}
+        </View>
+      ))}
+    </NavigationContent>
   );
 }
+
+const rootSlotStyles = StyleSheet.create({
+  focused: { flex: 1 },
+  hidden: { display: 'none' },
+});
 
 let onUnhandledAction: (action: NavigationAction) => void;
 
