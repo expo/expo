@@ -10,7 +10,6 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
-import expo.modules.location.next.LocationEvents
 import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.LocationUnavailableException
 import expo.modules.location.next.LocationWatchHandle
@@ -22,61 +21,74 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
 class GmsWatchSession(val gmsLocationProvider: GmsLocationProvider): PositionWatchSession, LocationCallback() {
+  val request = LocationRequest
+    .Builder(Priority.PRIORITY_HIGH_ACCURACY, 200L)
+    .setMinUpdateDistanceMeters(0f)
+    .build()
+
+  var lastPosition: Position? = null
   var onPosition: (Position) -> Unit = { pos: Position ->
     Log.d("LOC", "On position default function")
   }
-  var currentlyListening: Boolean = false
+  var isPaused: Boolean = false
+  var isStarted: Boolean = false
+  var isReleased: Boolean = false
+  var isSubscribed: Boolean = false
 
   override fun onLocationResult(result: LocationResult) {
     result.lastLocation?.let{
-      onPosition(it.toPosition())
+      val positionNow = it.toPosition()
+      lastPosition = positionNow
+      onPosition(positionNow)
     }
   }
 
   @SuppressLint("MissingPermission")
+  private fun handleLocationUpdatesRequest() {
+    val shouldRequestUpdates = !isPaused && isStarted && !isReleased && !isSubscribed
+    val shouldRemoveRequest = (isPaused || !isStarted || isReleased) && isSubscribed
+    if (shouldRequestUpdates) {
+      gmsLocationProvider.fusedLocationProvider.requestLocationUpdates(
+        request,
+        this,
+        Looper.getMainLooper()
+      )
+      isSubscribed = true
+    }
+    if (shouldRemoveRequest) {
+      gmsLocationProvider.fusedLocationProvider.removeLocationUpdates(this)
+      isSubscribed = false
+    }
+  }
+
   override fun start(onPosition: (Position) -> Unit) {
+    isStarted = true
     this.onPosition = onPosition
-    val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 200L).setMinUpdateDistanceMeters(0f).build()
-    val locationUpdatesRequest = gmsLocationProvider.fusedLocationProvider.requestLocationUpdates(
-      request,
-      this,
-      Looper.getMainLooper()
-    )
-    currentlyListening = true
-  }
-
-  override fun pause() {
-    if (!currentlyListening) {
-      return
-    }
-    currentlyListening = false
-    gmsLocationProvider.fusedLocationProvider.removeLocationUpdates(this)
-  }
-
-  @SuppressLint("MissingPermission")
-  override fun resume() {
-    if (currentlyListening) {
-      return;
-    }
-    val request = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 200L).setMinUpdateDistanceMeters(0f).build()
-    gmsLocationProvider.fusedLocationProvider.requestLocationUpdates(
-      request,
-      this,
-      Looper.getMainLooper()
-    )
+    handleLocationUpdatesRequest()
   }
 
   override fun stop() {
-    // TODO(@HubertBer) Maybe we can remove the callback altogether.
-    if (currentlyListening) {
-      gmsLocationProvider.fusedLocationProvider.removeLocationUpdates(this)
-    }
-    currentlyListening = false
+    isStarted = false
+    handleLocationUpdatesRequest()
   }
 
-  override fun getLastPosition(): Position {
-//    gmsLocationProvider.fusedLocationProvider.lastLocation()
-    TODO("Not yet implemented")
+  override fun pause() {
+    isPaused = true
+    handleLocationUpdatesRequest()
+  }
+
+  override fun resume() {
+    isPaused = false
+    handleLocationUpdatesRequest()
+  }
+
+  override fun release() {
+    isReleased = true
+    handleLocationUpdatesRequest()
+  }
+
+  override fun getLastPosition(): Position? {
+    return lastPosition
   }
 }
 
@@ -101,14 +113,10 @@ class GmsLocationProvider(
     return location.toPosition()
   }
 
-  override fun watchPositionAsync(): LocationWatchHandle {
+  override fun watchPosition(): LocationWatchHandle {
     // TODO(@HubertBer) add configuration options
     val watchSession = GmsWatchSession(this)
     val locationWatchHandle = LocationWatchHandle(watchSession)
-    watchSession.start { position ->
-      // TODO(@HubertBer) Check what's the difference between emiting event from a SharedObject and a Module
-      locationWatchHandle.emit(LocationEvents.POSITION_EVENT_NAME, position)
-    }
     return locationWatchHandle
   }
 

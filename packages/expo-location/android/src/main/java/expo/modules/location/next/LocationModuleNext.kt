@@ -108,15 +108,19 @@ class LocationModuleNext : Module() {
       return@Coroutine defaultLocationProvider.getLastKnownPosition()
     }
 
+    Function("watchPosition") { ->
+      ensureForegroundPermissions()
+      return@Function defaultLocationProvider.watchPosition()
+    }
+    
     Class (LocationWatchHandle::class) {
-      AsyncFunction("pause") { locationWatchHandle: LocationWatchHandle ->
+      Events(POSITION_CHANGED)
+
+      Function("pause") { locationWatchHandle: LocationWatchHandle ->
         locationWatchHandle.session.pause()
       }
-      AsyncFunction("resume") { locationWatchHandle: LocationWatchHandle ->
+      Function("resume") { locationWatchHandle: LocationWatchHandle ->
         locationWatchHandle.session.resume()
-      }
-      AsyncFunction("stop") { locationWatchHandle: LocationWatchHandle ->
-        locationWatchHandle.session.stop()
       }
       Function("getLastPosition") { locationWatchHandle: LocationWatchHandle ->
         locationWatchHandle.session.getLastPosition()
@@ -268,12 +272,6 @@ internal suspend fun getPermissionsWithPermissionsManager(permissionManager: Per
   }
 }
 
-class LocationEvents {
-  companion object {
-    const val POSITION_EVENT_NAME = "EXPO_LOCATION_POSITION_CHANGED"
-  }
-}
-
 /////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// SHARED OBJECTS ////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
@@ -281,13 +279,29 @@ class LocationEvents {
 interface PositionWatchSession {
   fun pause()
   fun resume()
-  fun stop()
-  fun getLastPosition(): Position
-
   fun start(onPosition: (Position) -> Unit)
+  fun stop()
+  fun release()
+  fun getLastPosition(): Position?
 }
 
-class LocationWatchHandle(val session: PositionWatchSession): SharedObject() {}
+class LocationWatchHandle(val session: PositionWatchSession): SharedObject() {
+  override fun onStartListeningToEvent(eventName: String) {
+    if (eventName == POSITION_CHANGED) {
+      session.start { position -> emit(POSITION_CHANGED, position)}
+    }
+  }
+
+  override fun onStopListeningToEvent(eventName: String) {
+    if (eventName == POSITION_CHANGED) {
+      session.stop()
+    }
+  }
+
+  override fun sharedObjectDidRelease() {
+    session.release()
+  }
+}
 
 /////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////// LocationProvider //////////////////////////////
@@ -295,7 +309,7 @@ class LocationWatchHandle(val session: PositionWatchSession): SharedObject() {}
 
 interface LocationProvider {
   suspend fun getCurrentPosition(): Position
-  fun watchPositionAsync(): LocationWatchHandle
+  fun watchPosition(): LocationWatchHandle
   suspend fun getLastKnownPosition(): Position?
 }
 
@@ -367,7 +381,7 @@ class AndroidLocationProvider: LocationProvider {
   }
 
 
-  override fun watchPositionAsync(): LocationWatchHandle {
+  override fun watchPosition(): LocationWatchHandle {
     TODO("")
 //    Log.d("LOC", "Watch position async")
   }
@@ -388,7 +402,7 @@ class FallbackLocationProvider(val locationProviders: List<LocationProvider>): L
     throw MethodNotImplementedException()
   }
 
-  override fun watchPositionAsync(): LocationWatchHandle {
+  override fun watchPosition(): LocationWatchHandle {
     TODO("Not yet implemented")
   }
 
