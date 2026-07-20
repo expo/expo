@@ -129,11 +129,18 @@ public final class FileSystemModule: Module {
         guard context.isCancelled else {
           return
         }
-        self?.deferredPreview = nil
-        promise.reject(FilePreviewInProgressException())
+        self?.rejectDeferredPreview()
       }
     }
     return true
+  }
+
+  private func rejectDeferredPreview() {
+    guard let deferredPreview else {
+      return
+    }
+    self.deferredPreview = nil
+    deferredPreview.promise.reject(FilePreviewInProgressException())
   }
   #endif
 
@@ -141,6 +148,12 @@ public final class FileSystemModule: Module {
     Name("FileSystem")
 
     Events("downloadProgress")
+
+    #if os(iOS)
+    OnDestroy {
+      rejectDeferredPreview()
+    }
+    #endif
 
     Constant("documentDirectory") {
       return documentDirectory?.absoluteString
