@@ -208,11 +208,13 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           // const getId = options.routeGetIdList[action.payload.name];
           // END FORK
           const id = getId?.({ params: action.payload.params });
+          const activeRoutes = state.routes.slice(0, state.index + 1);
+          const preloadedRoutes = state.routes.slice(state.index + 1);
 
           let route: Route<string> | undefined;
 
           if (id !== undefined) {
-            route = state.routes.findLast(
+            route = activeRoutes.findLast(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
@@ -223,14 +225,14 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             if (action.payload.name === currentRoute.name && !isPreviewAction(action)) {
               route = currentRoute;
             } else if (action.payload.pop) {
-              route = state.routes.findLast((route) => route.name === action.payload.name);
+              route = activeRoutes.findLast((route) => route.name === action.payload.name);
             }
           }
 
           // START FORK
           let isPreloadedRoute = false;
           if (isPreviewAction(action) && !route) {
-            route = state.preloadedRoutes.find(
+            route = preloadedRoutes.find(
               (route) => route.name === action.payload.name && id === route.key
             );
             isPreloadedRoute = !!route;
@@ -238,7 +240,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           // END FORK
 
           if (!route) {
-            route = state.preloadedRoutes.find(
+            route = preloadedRoutes.find(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
@@ -276,7 +278,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               routes = [];
 
               // Get all routes until the matching one
-              for (const r of state.routes) {
+              for (const r of activeRoutes) {
                 if (r.key === route.key) {
                   routes.push({
                     ...route,
@@ -288,32 +290,40 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
                 routes.push(r);
               }
+
+              if (!routes.some((r) => r.key === route.key)) {
+                routes.push({
+                  ...route,
+                  path: action.payload.path !== undefined ? action.payload.path : route.path,
+                  params,
+                });
+              }
             } else {
               // START FORK
               // If there is an id, then filter out the existing route with the same id.
               // THIS ACTION IS DANGEROUS. This can cause React Native Screens to freeze
               if (id !== undefined) {
-                routes = state.routes.filter((r) => r.key !== route.key);
-              } else if (action.type === 'NAVIGATE' && state.routes.length > 0) {
+                routes = activeRoutes.filter((r) => r.key !== route.key);
+              } else if (action.type === 'NAVIGATE' && activeRoutes.length > 0) {
                 // The navigation action should only replace the last route if it has the same name and path params.
-                const lastRoute = state.routes[state.routes.length - 1]!;
+                const lastRoute = activeRoutes[activeRoutes.length - 1]!;
                 if (
                   getSingularId(lastRoute.name, { params: lastRoute.params }) ===
                   getSingularId(route.name, { params })
                 ) {
-                  routes = state.routes.slice(0, -1);
+                  routes = activeRoutes.slice(0, -1);
                 } else {
-                  routes = [...state.routes];
+                  routes = [...activeRoutes];
                 }
               } else {
-                routes = [...state.routes];
+                routes = [...activeRoutes];
               }
 
               // If the routes length is the same as the state routes length, then we are navigating to a new route.
               // Otherwise we are replacing an existing route.
               // For preloaded route, we want to use the same key, so that preloaded screen is used.
               const key =
-                routes.length === state.routes.length && !isPreloadedRoute
+                routes.length === activeRoutes.length && !isPreloadedRoute
                   ? `${action.payload.name}-${nanoid()}`
                   : route.key;
 
@@ -340,7 +350,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             }
           } else {
             routes = [
-              ...state.routes,
+              ...activeRoutes,
               {
                 key: `${action.payload.name}-${nanoid()}`,
                 name: action.payload.name,
@@ -355,10 +365,9 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           const result = {
             ...state,
             index: routes.length - 1,
-            preloadedRoutes: state.preloadedRoutes.filter(
-              (route) => routes[routes.length - 1]!.key !== route.key
+            routes: routes.concat(
+              preloadedRoutes.filter((route) => routes[routes.length - 1]!.key !== route.key)
             ),
-            routes,
           };
 
           if (actionSingularOptions) {
@@ -367,7 +376,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
 
           const zoomTransitionId = getZoomTransitionIdFromAction(action);
           if (zoomTransitionId) {
-            const lastRoute = result.routes[result.routes.length - 1]!;
+            const lastRoute = result.routes[result.index]!;
             const key = lastRoute.key;
             const modifiedLastRoute: typeof lastRoute = {
               ...lastRoute,
@@ -378,19 +387,13 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
             };
             return {
               ...result,
-              routes: [...result.routes.slice(0, -1), modifiedLastRoute],
+              routes: result.routes.map((route, index) =>
+                index === result.index ? modifiedLastRoute : route
+              ),
             };
           }
 
           return result;
-          // return {
-          //   ...state,
-          //   index: routes.length - 1,
-          //   preloadedRoutes: state.preloadedRoutes.filter(
-          //     (route) => routes[routes.length - 1].key !== route.key
-          //   ),
-          //   routes,
-          // };
           // END FORK
         }
         case 'PRELOAD': {
@@ -402,11 +405,13 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           // END FORK
           const getId = options.routeGetIdList[action.payload.name];
           const id = getId?.({ params: action.payload.params });
+          const activeRoutes = state.routes.slice(0, state.index + 1);
+          const preloadedRoutes = state.routes.slice(state.index + 1);
 
           let route: Route<string> | undefined;
 
           if (id !== undefined) {
-            route = state.routes.find(
+            route = activeRoutes.find(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
@@ -449,7 +454,7 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
                     ...action.payload.params,
                   }
                 : action.payload.params;
-            const currentPreloadedRoute: (typeof state)['preloadedRoutes'][number] = {
+            const currentPreloadedRoute: (typeof state)['routes'][number] = {
               key: preloadedRouteKey,
               name: action.payload.name,
               params: preloadZoomTransitionId
@@ -468,28 +473,12 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
               // and when navigation will happen, there will be no reshuffling
               // This is a workaround for the link preview navigation issue, when screen would freeze after navigation from native side
               // and reshuffling from react-navigation
-              preloadedRoutes: [currentPreloadedRoute].concat(
-                state.preloadedRoutes.filter(
+              routes: activeRoutes.concat(
+                currentPreloadedRoute,
+                preloadedRoutes.filter(
                   (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
                 )
               ),
-              // preloadedRoutes: state.preloadedRoutes
-              //   .filter(
-              //     (r) =>
-              //       r.name !== action.payload.name ||
-              //       id !== getId?.({ params: r.params })
-              //   )
-              //   .concat({
-              //     key: `${action.payload.name}-${nanoid()}`,
-              //     name: action.payload.name,
-              //     params:
-              //       routeParamList[action.payload.name] !== undefined
-              //         ? {
-              //             ...routeParamList[action.payload.name],
-              //             ...action.payload.params,
-              //           }
-              //         : action.payload.params,
-              //   }),
               // END FORK
             };
           }
@@ -534,7 +523,7 @@ function filterSingular<
   }
 
   // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
-  const currentIndex = state.index || state.routes.length - 1;
+  const currentIndex = state.index ?? state.routes.length - 1;
   const current = state.routes[currentIndex]!;
   const name = current.name;
 
@@ -545,7 +534,10 @@ function filterSingular<
   }
 
   // TypeScript needs a type assertion here for the filter to work.
-  let routes = state.routes as PartialRoute<Route<string, object | undefined>>[];
+  const preloadedRoutes = state.routes.slice(currentIndex + 1);
+  let routes = state.routes.slice(0, currentIndex + 1) as PartialRoute<
+    Route<string, object | undefined>
+  >[];
   routes = routes.filter((route, index) => {
     // If the route is the current route, keep it.
     if (index === currentIndex) {
@@ -559,7 +551,7 @@ function filterSingular<
   return {
     ...state,
     index: routes.length - 1,
-    routes,
+    routes: [...routes, ...preloadedRoutes] as T extends null ? never : NonNullable<T>['routes'],
   };
 }
 

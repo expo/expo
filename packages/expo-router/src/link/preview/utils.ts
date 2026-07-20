@@ -70,14 +70,16 @@ export function getPreloadedRouteFromRootStateByHref(
     const stackState = navigationState as StackNavigationState<ParamListBase>;
     const payload = getPayloadFromStateRoute(actionStateRoute);
 
-    const preloadedRoute = stackState.preloadedRoutes.find(
-      (route) =>
-        route.name === actionStateRoute.name &&
-        deepEqual(
-          removeInternalExpoRouterParams(route.params),
-          removeInternalExpoRouterParams(payload.params)
-        )
-    );
+    const preloadedRoute = stackState.routes
+      .slice(stackState.index + 1)
+      .find(
+        (route) =>
+          route.name === actionStateRoute.name &&
+          deepEqual(
+            removeInternalExpoRouterParams(route.params),
+            removeInternalExpoRouterParams(payload.params)
+          )
+      );
 
     const activeRoute = stackState.routes[stackState.index]!;
     // When the active route is the same as the preloaded route,

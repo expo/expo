@@ -65,7 +65,7 @@ type Options<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 > = {
-  state: State;
+  routes: State['routes'];
   screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
@@ -95,7 +95,7 @@ export function useDescriptors<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 >({
-  state,
+  routes,
   screens,
   navigation,
   screenOptions,
@@ -141,8 +141,8 @@ export function useDescriptors<
     ]
   );
 
-  const { base, navigations } = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
-    state,
+  const navigations = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
+    routes,
     getState,
     navigation,
     setOptions,
@@ -150,7 +150,7 @@ export function useDescriptors<
     emitter,
   });
 
-  const routes = useRouteCache(state.routes);
+  const cachedRoutes = useRouteCache(routes);
 
   const getOptions = (
     route: RouteProp<ParamListBase, string>,
@@ -259,7 +259,7 @@ export function useDescriptors<
     );
   };
 
-  const descriptors = routes.reduce<
+  const descriptors = cachedRoutes.reduce<
     Record<
       string,
       Descriptor<
@@ -272,7 +272,7 @@ export function useDescriptors<
   >((acc, route, i) => {
     const navigation = navigations[route.key]!;
     const customOptions = getOptions(route, navigation, options[route.key]!);
-    const element = render(route, navigation, customOptions, state.routes[i]!.state);
+    const element = render(route, navigation, customOptions, routes[i]?.state);
 
     acc[route.key] = {
       route,
@@ -287,38 +287,5 @@ export function useDescriptors<
     return acc;
   }, {});
 
-  /**
-   * Create a descriptor object for a route.
-   *
-   * @param route Route object for which the descriptor should be created
-   * @param placeholder Whether the descriptor should be a placeholder, e.g. for a route not yet in the state
-   * @returns Descriptor object
-   */
-  const describe = (route: RouteProp<ParamListBase>, placeholder: boolean) => {
-    if (!placeholder) {
-      if (!(route.key in descriptors)) {
-        throw new Error(`Couldn't find a route with the key ${route.key}.`);
-      }
-
-      return descriptors[route.key]!;
-    }
-
-    const navigation = base;
-    const customOptions = getOptions(route, navigation, {});
-    const element = render(route, navigation, customOptions, undefined);
-
-    return {
-      route,
-      navigation,
-      render() {
-        return element;
-      },
-      options: customOptions as ScreenOptions,
-    };
-  };
-
-  return {
-    describe,
-    descriptors,
-  };
+  return descriptors;
 }

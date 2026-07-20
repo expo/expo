@@ -205,7 +205,8 @@ it('strips web-only href attributes', () => {
       style={{ color: 'red' }}
       download="file.png"
       rel="noopener"
-      target="_blank">
+      target="_blank"
+    >
       Link
     </Link>
   );
@@ -342,7 +343,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -354,7 +354,6 @@ describe('singular', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -405,7 +404,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -417,7 +415,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -455,7 +452,8 @@ test('can dynamically route using singular function', () => {
         <Link
           testID="link"
           href="/apple?id=1"
-          dangerouslySingular={(_, params) => params.id?.toString()}>
+          dangerouslySingular={(_, params) => params.id?.toString()}
+        >
           Slug
         </Link>
       ),
@@ -473,7 +471,6 @@ test('can dynamically route using singular function', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -485,7 +482,6 @@ test('can dynamically route using singular function', () => {
         state: {
           index: 4,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['[slug]'],
           routes: [
             {
@@ -547,7 +543,6 @@ test('can dynamically route using singular function', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -559,7 +554,6 @@ test('can dynamically route using singular function', () => {
         state: {
           index: 3,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['[slug]'],
           routes: [
             {
@@ -619,7 +613,6 @@ describe('prefetch', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -629,13 +622,6 @@ describe('prefetch', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [
-              {
-                key: expect.any(String),
-                name: 'test',
-                params: {},
-              },
-            ],
             routeNames: ['index', 'test'],
             routes: [
               {
@@ -643,6 +629,11 @@ describe('prefetch', () => {
                 name: 'index',
                 params: undefined,
                 path: '/',
+              },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
               },
             ],
             stale: false,
@@ -673,7 +664,6 @@ describe('prefetch', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -683,13 +673,6 @@ describe('prefetch', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [
-              {
-                key: expect.any(String),
-                name: 'test',
-                params: {},
-              },
-            ],
             routeNames: ['test', 'index'],
             routes: [
               {
@@ -697,6 +680,11 @@ describe('prefetch', () => {
                 name: 'index',
                 params: undefined,
                 path: '/',
+              },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
               },
             ],
             stale: false,

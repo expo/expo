@@ -47,7 +47,6 @@ type Props = {
   insets: EdgeInsets;
   state: StackNavigationState<ParamListBase>;
   descriptors: StackDescriptorMap;
-  preloadedDescriptors: StackDescriptorMap;
   routes: Route<string>[];
   openingRouteKeys: string[];
   closingRouteKeys: string[];
@@ -232,50 +231,58 @@ export function getAnimationEnabled(animation: StackAnimationName | undefined) {
   return getDefaultAnimation(animation) !== 'none';
 }
 
+const getAllRoutes = (routes: Route<string>[], state: StackNavigationState<ParamListBase>) => {
+  const routeKeys = new Set(routes.map((route) => route.key));
+  return routes.concat(
+    state.routes.slice(state.index + 1).filter((route) => !routeKeys.has(route.key))
+  );
+};
+
+const isInactiveRoute = (route: Route<string>, routes: Route<string>[]) =>
+  !routes.some((currentRoute) => currentRoute.key === route.key);
+
 export class CardStack extends React.Component<Props, State> {
   static getDerivedStateFromProps(props: Props, state: State): Partial<State> | null {
     if (props.routes === state.routes && props.descriptors === state.descriptors) {
       return null;
     }
 
-    const gestures = [...props.routes, ...props.state.preloadedRoutes].reduce<GestureValues>(
-      (acc, curr) => {
-        const descriptor = props.descriptors[curr.key] || props.preloadedDescriptors[curr.key];
-        const { animation } = descriptor?.options || {};
+    const allRoutes = getAllRoutes(props.routes, props.state);
+    const gestures = allRoutes.reduce<GestureValues>((acc, curr) => {
+      const descriptor = props.descriptors[curr.key];
+      const { animation } = descriptor?.options || {};
 
-        acc[curr.key] =
-          state.gestures[curr.key] ||
-          new Animated.Value(
-            (props.openingRouteKeys.includes(curr.key) && getAnimationEnabled(animation)) ||
-              props.state.preloadedRoutes.includes(curr)
-              ? getDistanceFromOptions(state.layout, descriptor?.options, props.direction === 'rtl')
-              : 0
-          );
+      acc[curr.key] =
+        state.gestures[curr.key] ||
+        new Animated.Value(
+          (props.openingRouteKeys.includes(curr.key) && getAnimationEnabled(animation)) ||
+            isInactiveRoute(curr, props.routes)
+            ? getDistanceFromOptions(state.layout, descriptor?.options, props.direction === 'rtl')
+            : 0
+        );
 
-        return acc;
-      },
-      {}
-    );
+      return acc;
+    }, {});
 
-    const modalRouteKeys = getModalRouteKeys([...props.routes, ...props.state.preloadedRoutes], {
-      ...props.descriptors,
-      ...props.preloadedDescriptors,
-    });
+    const modalRouteKeys = getModalRouteKeys(props.routes, props.descriptors);
 
-    const scenes = [...props.routes, ...props.state.preloadedRoutes].map((route, index, self) => {
-      // For preloaded screens, we don't care about the previous and the next screen
-      const isPreloaded = props.state.preloadedRoutes.includes(route);
-      const previousRoute = isPreloaded ? undefined : self[index - 1];
-      const nextRoute = isPreloaded ? undefined : self[index + 1];
+    const scenes = allRoutes.map((route, index, self) => {
+      const isInactive = isInactiveRoute(route, props.routes);
+      const previousRoute = isInactive ? undefined : self[index - 1];
+      const nextRouteCandidate = self[index + 1];
+      const nextRoute =
+        isInactive || (nextRouteCandidate && isInactiveRoute(nextRouteCandidate, props.routes))
+          ? undefined
+          : nextRouteCandidate;
 
-      const oldScene = state.scenes[index];
+      const oldScene = state.scenes.find((scene) => scene.route.key === route.key);
 
       const currentGesture = gestures[route.key]!;
       const previousGesture = previousRoute ? gestures[previousRoute.key]! : undefined;
       const nextGesture = nextRoute ? gestures[nextRoute.key]! : undefined;
 
       const descriptor =
-        (isPreloaded ? props.preloadedDescriptors : props.descriptors)[route.key] ||
+        props.descriptors[route.key] ||
         state.descriptors[route.key] ||
         (oldScene ? oldScene.descriptor : FALLBACK_DESCRIPTOR);
 
@@ -589,11 +596,14 @@ export class CardStack extends React.Component<Props, State> {
     } = this.props;
 
     const { scenes, layout, gestures, activeStates, headerHeights } = this.state;
+    const activeScenes = scenes.filter((scene) =>
+      routes.some((route) => route.key === scene.route.key)
+    );
 
     const focusedRoute = state.routes[state.index]!;
     const focusedHeaderHeight = headerHeights[focusedRoute.key];
 
-    const isFloatHeaderAbsolute = this.state.scenes.slice(-2).some((scene) => {
+    const isFloatHeaderAbsolute = activeScenes.slice(-2).some((scene) => {
       const options = scene.descriptor.options ?? {};
       const { headerMode, headerTransparent, headerShown = true } = options;
 
@@ -609,7 +619,7 @@ export class CardStack extends React.Component<Props, State> {
         {renderHeader({
           mode: 'float',
           layout,
-          scenes,
+          scenes: activeScenes,
           getPreviousScene: this.getPreviousScene,
           getFocusedRoute: this.getFocusedRoute,
           onContentHeightChange: this.handleHeaderLayout,
@@ -626,22 +636,11 @@ export class CardStack extends React.Component<Props, State> {
           enabled={detachInactiveScreens}
           style={styles.container}
           onLayout={this.handleLayout}>
-          {[...routes, ...state.preloadedRoutes].map((route, index) => {
+          {getAllRoutes(routes, state).map((route, index) => {
             const focused = focusedRoute.key === route.key;
             const gesture = gestures[route.key]!;
             const scene = scenes[index]!;
-            // It is possible that for a short period the route appears in both arrays.
-            // Particularly, if the screen is removed with `retain`, then it needs a moment to execute the animation.
-            // However, due to the router action, it immediately populates the `preloadedRoutes` array.
-            // Practically, the logic below takes care that it is rendered only once.
-            const isPreloaded = state.preloadedRoutes.includes(route) && !routes.includes(route);
-            if (
-              state.preloadedRoutes.includes(route) &&
-              routes.includes(route) &&
-              index >= routes.length
-            ) {
-              return null;
-            }
+            const isPreloaded = isInactiveRoute(route, routes);
 
             const {
               headerShown = true,
@@ -661,11 +660,12 @@ export class CardStack extends React.Component<Props, State> {
             const interpolationIndex = getInterpolationIndex(scenes, index);
             const isModal = getIsModal(scene, interpolationIndex, isParentModal);
 
+            const nextScene = isPreloaded ? undefined : activeScenes[index + 1];
             const isNextScreenTransparent =
-              scenes[index + 1]?.descriptor.options.presentation === 'transparentModal';
+              nextScene?.descriptor.options.presentation === 'transparentModal';
 
             const detachCurrentScreen =
-              scenes[index + 1]?.descriptor.options.detachPreviousScreen !== false;
+              nextScene?.descriptor.options.detachPreviousScreen !== false;
 
             const activityState = isPreloaded ? STATE_INACTIVE : activeStates[index]!;
 

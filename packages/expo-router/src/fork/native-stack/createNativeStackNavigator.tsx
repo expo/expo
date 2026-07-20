@@ -27,7 +27,6 @@ import {
   NativeStackView,
   type NativeStackNavigatorProps,
   makePopAction,
-  useProjectedStack,
 } from '../../react-navigation/native-stack';
 import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
 import { DescriptorsContext } from './descriptors-context';
@@ -49,7 +48,7 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -105,12 +104,7 @@ function NativeStackNavigator({
   );
 
   // START FORK
-  // Project preloaded routes as regular routes after `index`, with descriptors covering them.
-  // The view then treats any route positioned after the focused one as preloaded.
-  // TODO: Modify the routing logic to preload routes in the router.
-  const { projectedState, projectedDescriptors } = useProjectedStack(state, descriptors, describe);
-
-  const { computedState, navigationWrapper } = usePreviewTransition(projectedState, navigation);
+  const { computedState, navigationWrapper } = usePreviewTransition(state, navigation);
 
   const pop = makePopAction(navigation.dispatch, state.key);
 
@@ -118,9 +112,9 @@ function NativeStackNavigator({
   // This allows Expo Router to override gesture behavior without affecting user settings
   const finalDescriptors = React.useMemo(() => {
     let needsNewMap = false;
-    const result: typeof projectedDescriptors = {};
-    for (const key of Object.keys(projectedDescriptors)) {
-      const descriptor = projectedDescriptors[key]!;
+    const result: typeof descriptors = {};
+    for (const key of Object.keys(descriptors)) {
+      const descriptor = descriptors[key]!;
       const options = descriptor.options as NativeStackNavigationOptionsWithInternal;
       const internalGestureEnabled = options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
       const needsGestureFix = internalGestureEnabled !== undefined;
@@ -143,8 +137,8 @@ function NativeStackNavigator({
         result[key] = descriptor;
       }
     }
-    return needsNewMap ? result : projectedDescriptors;
-  }, [projectedDescriptors]);
+    return needsNewMap ? result : descriptors;
+  }, [descriptors]);
   const { registry, contextValue } = useCompositionRegistry();
 
   const mergedDescriptors = React.useMemo(

@@ -208,7 +208,7 @@ export function stateToAction(
       }
       payload.params = state.params ? { ...state.params } : {};
 
-      state = state.state?.routes[state.state?.routes.length - 1];
+      state = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
 
       if (state) {
         payload.params ??= {};
@@ -218,7 +218,7 @@ export function stateToAction(
       if (state.name === startAtRoute) {
         foundStartingPoint = true;
       }
-      const nextState = state.state?.routes[state.state?.routes.length - 1];
+      const nextState = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
       if (nextState) {
         state = nextState;
       }

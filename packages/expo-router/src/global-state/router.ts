@@ -91,7 +91,7 @@ export function canDismiss(): boolean {
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
-    if (state.type === 'stack' && state.routes.length > 1) {
+    if (state.type === 'stack' && (state.index ?? 0) > 0) {
       return true;
     }
     if (state.index === undefined) return false;

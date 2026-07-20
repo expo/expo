@@ -20,7 +20,6 @@ import type {
   StandardRouterNavigatorProps,
   StandardUseNavigationBuilderOptions,
 } from './types';
-import { useProjectedDescriptors } from './useProjectedDescriptors';
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
@@ -167,7 +166,7 @@ export function unstable_integrateWithRouter<
       NavigatorProps,
       RouterOptions
     >(props);
-    const { state, navigation, descriptors, describe, NavigationContent } = useNavigationBuilder<
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
@@ -184,7 +183,7 @@ export function unstable_integrateWithRouter<
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
       state: useStandardState(state),
-      descriptors: useProjectedDescriptors(state, descriptors, describe),
+      descriptors,
       actions: useStandardActions(navigation, state.key),
       emitter: useStandardEmitter(navigation),
     };

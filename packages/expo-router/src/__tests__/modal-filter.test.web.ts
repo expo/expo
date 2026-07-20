@@ -28,7 +28,7 @@ describe('modal route filtering on web', () => {
   it('excludes modal routes when EXPO_OS === "web"', () => {
     process.env.EXPO_OS = 'web';
 
-    const state = makeState(['index', 'second']);
+    const state = makeState(['index', 'second'], 1);
     const descriptors: any = {
       index: { options: {} },
       second: { options: { presentation: 'modal' } },
@@ -36,6 +36,30 @@ describe('modal route filtering on web', () => {
 
     const { routes } = convertStackStateToNonModalState(state, descriptors, true);
     expect(routes.map((r) => r.key)).toEqual(['index']);
+  });
+
+  it('preserves preloaded routes without treating them as active modals', () => {
+    const state = makeState(['index', 'second'], 0);
+    const descriptors: any = {
+      index: { options: {} },
+      second: { options: { presentation: 'modal' } },
+    };
+
+    const { routes, index } = convertStackStateToNonModalState(state, descriptors, true);
+    expect(routes.map((route) => route.key)).toEqual(['index', 'second']);
+    expect(index).toBe(0);
+  });
+
+  it('does not promote a preloaded route when all active routes are modals', () => {
+    const state = makeState(['modal', 'preload'], 0);
+    const descriptors: any = {
+      modal: { options: { presentation: 'modal' } },
+      preload: { options: {} },
+    };
+
+    const { routes, index } = convertStackStateToNonModalState(state, descriptors, true);
+    expect(routes).toEqual([]);
+    expect(index).toBe(0);
   });
 
   it('recalculates stack index after filtering out modal routes', () => {

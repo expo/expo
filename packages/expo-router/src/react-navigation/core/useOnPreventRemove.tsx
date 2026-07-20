@@ -19,10 +19,18 @@ type Options = {
 
 const VISITED_ROUTE_KEYS = Symbol('VISITED_ROUTE_KEYS');
 
+export const getPreventableRoutes = (
+  state: NavigationState | { type?: string; index?: number; routes: { key?: string }[] },
+  type = state.type
+) =>
+  type === 'stack'
+    ? state.routes.slice(0, (state.index ?? state.routes.length - 1) + 1)
+    : state.routes;
+
 export const shouldPreventRemove = (
   emitter: NavigationEventEmitter<EventMapCore<any>>,
   beforeRemoveListeners: Record<string, ChildBeforeRemoveListener | undefined>,
-  currentRoutes: { key: string }[],
+  currentRoutes: { key?: string | undefined }[],
   nextRoutes: { key?: string | undefined }[],
   action: NavigationAction
 ) => {
@@ -30,7 +38,10 @@ export const shouldPreventRemove = (
 
   // Call these in reverse order so last screens handle the event first
   const removedRoutes = currentRoutes
-    .filter((route) => !nextRouteKeys.includes(route.key))
+    .filter(
+      (route): route is { key: string } =>
+        route.key !== undefined && !nextRouteKeys.includes(route.key)
+    )
     .reverse();
 
   const visitedRouteKeys: Set<string> =
@@ -82,7 +93,13 @@ export function useOnPreventRemove({ getState, emitter, beforeRemoveListeners }:
       return addKeyedListener?.('beforeRemove', routeKey, (action) => {
         const state = getState();
 
-        return shouldPreventRemove(emitter, beforeRemoveListeners, state.routes, [], action);
+        return shouldPreventRemove(
+          emitter,
+          beforeRemoveListeners,
+          getPreventableRoutes(state),
+          [],
+          action
+        );
       });
     }
   }, [addKeyedListener, beforeRemoveListeners, emitter, getState, routeKey]);

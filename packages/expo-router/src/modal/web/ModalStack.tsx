@@ -22,11 +22,7 @@ import type {
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
 } from '../../react-navigation/native-stack';
-import {
-  makePopAction,
-  NativeStackView,
-  usePreloadedDescriptors,
-} from '../../react-navigation/native-stack';
+import { makePopAction, NativeStackView } from '../../react-navigation/native-stack';
 import { ModalStackRouteDrawer } from './ModalStackRouteDrawer';
 import { TransparentModalStackRouteDrawer } from './TransparentModalStackRouteDrawer';
 import type { ModalStackNavigatorProps, ModalStackViewProps } from './types';
@@ -41,7 +37,7 @@ function ModalStackNavigator({
   children,
   screenOptions,
 }: ModalStackNavigatorProps) {
-  const { state, navigation, descriptors, NavigationContent, describe } = useNavigationBuilder<
+  const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -77,17 +73,12 @@ function ModalStackNavigator({
 
   return (
     <NavigationContent>
-      <ModalStackView
-        state={state}
-        navigation={navigation}
-        descriptors={descriptors}
-        describe={describe}
-      />
+      <ModalStackView state={state} navigation={navigation} descriptors={descriptors} />
     </NavigationContent>
   );
 }
 
-const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStackViewProps) => {
+const ModalStackView = ({ state, navigation, descriptors }: ModalStackViewProps) => {
   const isWeb = process.env.EXPO_OS === 'web';
   const { colors } = useTheme();
   const { preventedRoutes } = usePreventRemoveContext();
@@ -98,19 +89,11 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
     isWeb
   );
 
-  // Project preloaded routes as regular routes after `index`, with descriptors covering them.
-  // `NativeStackView` treats any route positioned after the focused one as preloaded.
   const newStackState = {
     ...state,
-    routes: [...filteredRoutes, ...state.preloadedRoutes],
+    routes: filteredRoutes,
     index: nonModalIndex,
   };
-
-  const projectedDescriptors = usePreloadedDescriptors(
-    state.preloadedRoutes,
-    descriptors,
-    describe
-  );
 
   const pop = makePopAction(navigation.dispatch, state.key);
 
@@ -121,17 +104,19 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
   const overlayRoutes = React.useMemo(() => {
     if (!isWeb) return [];
     const idx = findLastNonModalIndex(state, descriptors);
-    return state.routes.slice(idx + 1);
+    return state.routes.slice(idx + 1, state.index + 1);
   }, [isWeb, state, descriptors]);
 
   return (
     <div style={{ flex: 1, display: 'flex' }}>
-      <NativeStackView
-        state={newStackState}
-        descriptors={projectedDescriptors}
-        emit={navigation.emit}
-        pop={pop}
-      />
+      {newStackState.routes.length > 0 && (
+        <NativeStackView
+          state={newStackState}
+          descriptors={descriptors}
+          emit={navigation.emit}
+          pop={pop}
+        />
+      )}
       {isWeb &&
         overlayRoutes.map((route) => {
           const isTransparentModal = isTransparentModalPresentation(

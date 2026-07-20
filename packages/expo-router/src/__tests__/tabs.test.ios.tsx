@@ -350,7 +350,6 @@ it('can use replace navigation', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {

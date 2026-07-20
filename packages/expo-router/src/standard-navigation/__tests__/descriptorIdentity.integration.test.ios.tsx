@@ -1,4 +1,4 @@
-import { Fragment } from 'react';
+import { Fragment, useEffect } from 'react';
 import { View } from 'react-native';
 import type { NavigatorArgs } from 'standard-navigation';
 
@@ -13,35 +13,7 @@ import { act, renderRouter } from '../../testing-library';
 import { unstable_createStandardRouterNavigator } from '../index';
 
 type EventMap = Record<string, { data: object | undefined; canPreventDefault: boolean }>;
-type Descriptor = { options: object; render: () => React.ReactNode };
-
-const mockProjection: {
-  raw?: Record<string, Descriptor>;
-  projected?: Record<string, Descriptor>;
-  described: Map<string, Descriptor>;
-} = { described: new Map() };
-
-jest.mock('../useProjectedDescriptors', () => {
-  const actual = jest.requireActual(
-    '../useProjectedDescriptors'
-  ) as typeof import('../useProjectedDescriptors');
-  return {
-    useProjectedDescriptors: (
-      state: StackNavigationState<ParamListBase>,
-      descriptors: Record<string, Descriptor>,
-      describe: (route: StackNavigationState<ParamListBase>['routes'][number], placeholder: boolean) => Descriptor
-    ) => {
-      mockProjection.raw = descriptors;
-      const projected = actual.useProjectedDescriptors(state, descriptors, (route, placeholder) => {
-        const descriptor = describe(route, placeholder);
-        mockProjection.described.set(route.key, descriptor);
-        return descriptor;
-      });
-      mockProjection.projected = projected;
-      return projected;
-    },
-  };
-});
+type Descriptor = { navigation: object; options: object; render: () => React.ReactNode };
 
 let contentArgs: NavigatorArgs<object, EventMap> | undefined;
 
@@ -60,19 +32,32 @@ const Stack = unstable_createStandardRouterNavigator<
   StackRouterOptions
 >(Content, StackRouter);
 
-it('passes builder and described descriptor objects through unchanged', () => {
+it('preserves the preloaded route and rendered element through promotion', () => {
+  let mounts = 0;
+  const Second = () => {
+    useEffect(() => {
+      mounts++;
+    }, []);
+    return <View />;
+  };
+
   renderRouter({
     _layout: () => <Stack />,
     index: () => <View />,
-    second: () => <View />,
+    second: Second,
   });
-
-  const activeKey = contentArgs!.state.routes[0]!.key;
-  expect(contentArgs!.descriptors[activeKey]).toBe(mockProjection.raw![activeKey]);
 
   act(() => router.prefetch('/second'));
 
-  const preloadedKey = contentArgs!.state.routes.find((route) => route.name === 'second')!.key;
-  expect(contentArgs!.descriptors[preloadedKey]).toBe(mockProjection.described.get(preloadedKey));
-  expect(contentArgs!.descriptors).toBe(mockProjection.projected);
+  const preloadedRoute = contentArgs!.state.routes.find((route) => route.name === 'second')!;
+  const descriptor = contentArgs!.descriptors[preloadedRoute.key] as Descriptor;
+  const navigation = descriptor.navigation;
+  expect(mounts).toBe(1);
+
+  act(() => router.push('/second'));
+
+  const focusedRoute = contentArgs!.state.routes[contentArgs!.state.index]!;
+  expect(focusedRoute.key).toBe(preloadedRoute.key);
+  expect((contentArgs!.descriptors[focusedRoute.key] as Descriptor).navigation).toBe(navigation);
+  expect(mounts).toBe(1);
 });

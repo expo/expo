@@ -675,7 +675,7 @@ const createNestedStateObject = (
     while ((route = routes.shift() as ParsedRoute)) {
       initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
 
-      const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
+      const nestedStateIndex = nestedState.index ?? nestedState.routes.length - 1;
 
       nestedState.routes[nestedStateIndex]!.state = createStateObject(
         initialRoute,

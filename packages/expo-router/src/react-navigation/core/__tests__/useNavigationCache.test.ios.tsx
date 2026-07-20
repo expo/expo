@@ -36,8 +36,8 @@ test('preserves reference for navigation objects', () => {
     const previous = React.useRef<any>(undefined);
 
     const emitter = useEventEmitter();
-    const { navigations } = useNavigationCache({
-      state,
+    const navigations = useNavigationCache({
+      routes: state.routes,
       getState,
       navigation,
       setOptions,

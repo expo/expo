@@ -80,8 +80,8 @@ export function convertStackStateToNonModalState(
     return { routes: state.routes, index: state.index };
   }
 
-  // Remove every modal-type route from the stack on web.
-  const routes = state.routes.filter((route) => {
+  const preloadedRoutes = state.routes.slice(state.index + 1);
+  const routes = state.routes.slice(0, state.index + 1).filter((route) => {
     return !isModalPresentation(descriptors[route.key]!.options);
   });
 
@@ -92,7 +92,7 @@ export function convertStackStateToNonModalState(
     index = routes.length > 0 ? routes.length - 1 : 0;
   }
 
-  return { routes, index };
+  return { routes: routes.length > 0 ? routes.concat(preloadedRoutes) : routes, index };
 }
 
 /**
@@ -109,7 +109,7 @@ export function findLastNonModalIndex(
   descriptors: Record<string, { options: ExtendedStackNavigationOptions }>
 ) {
   // Iterate backwards through the stack to find the last non-modal route.
-  for (let i = state.routes.length - 1; i >= 0; i--) {
+  for (let i = state.index; i >= 0; i--) {
     if (!isModalPresentation(descriptors[state.routes[i]!.key]!.options)) {
       return i;
     }
