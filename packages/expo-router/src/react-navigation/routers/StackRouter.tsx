@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid/non-secure';
+
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import { createRouteFromAction } from './createRouteFromAction';

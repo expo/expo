@@ -252,10 +252,15 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     });
 
     const args = lastArgs();
-    const second = args.state.routes.find((route) => route.name === 'second')!;
 
-    expect(args.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
-    expect(args.descriptors[second.key]!.options).toMatchObject({ hidden: true });
+    // The guarded screen stays declared (it can be navigated to, then redirects), but like any
+    // other route it is only realized into `state.routes` once visited.
+    expect(args.state.routes.map((route) => route.name)).toEqual(['index']);
+
+    act(() => lastArgs().actions.navigate('second'));
+
+    const second = lastArgs().state.routes.find((route) => route.name === 'second')!;
+    expect(lastArgs().descriptors[second.key]!.options).toMatchObject({ hidden: true });
   });
 
   it('propagates route params into state and href', () => {

@@ -4,7 +4,8 @@ import { use, useEffect } from 'react';
 
 import { CommonActions } from '../react-navigation/native';
 import {
-  getRoutesForRouteNames,
+  getActiveRoutes,
+  getInactiveRoutes,
   type ParamListBase,
   type StackNavigationState,
 } from '../react-navigation/routers';
@@ -34,22 +35,28 @@ export function useClearGuardedRoutes(
     }
 
     const focusedName = state.routes[state.index]?.name;
-    // If focused route becomes guarded then we let the redirect fire
-    const hasGuardedRoute = state.routes.some(
+    // Only the active history (routes up to and including the focused index) is cleared. Routes
+    // after the index are preloaded/inactive: they never show on back navigation, and a guarded
+    // one redirects via its own screen when focused. If the focused route itself becomes guarded,
+    // we let the redirect fire instead of clearing it.
+    const activeRoutes = getActiveRoutes(state);
+    const hasGuardedRoute = activeRoutes.some(
       (route) => route.name !== focusedName && isGuardedRouteName(guards, route.name)
     );
     if (!hasGuardedRoute) {
       return;
     }
 
-    const allowedNames = state.routeNames.filter(
-      (name) => name === focusedName || !isGuardedRouteName(guards, name)
+    const allowedActiveRoutes = activeRoutes.filter(
+      (route) => route.name === focusedName || !isGuardedRouteName(guards, route.name)
     );
 
-    const { routes, index } = getRoutesForRouteNames(state, allowedNames, { routeParamList: {} });
-
     navigation.dispatch({
-      ...CommonActions.reset({ ...state, routes, index }),
+      ...CommonActions.reset({
+        ...state,
+        routes: [...allowedActiveRoutes, ...getInactiveRoutes(state)],
+        index: allowedActiveRoutes.length - 1,
+      }),
       target: state.key,
     });
   }, [guards, state, navigation]);
