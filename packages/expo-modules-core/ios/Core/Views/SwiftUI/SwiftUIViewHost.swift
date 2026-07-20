@@ -25,22 +25,9 @@ extension ExpoSwiftUI {
       #if os(macOS)
       return view
       #else
-      // Hand SwiftUI a disposable container instead of the React-managed
-      // view. SwiftUI mutates the platform view it hosts — autoresizingMask,
-      // frame, visibility — and Menu/ContextMenu can do so asynchronously,
-      // after the surrounding hierarchy has been torn down. When SwiftUI
-      // owns the React view directly, those mutations leak into Fabric
-      // rendering: dismantleUIView is not reliably called on wholesale
-      // teardown (see https://github.com/expo/expo/issues/40604 for a prior
-      // mitigation), and deferred mutations can land after the view has been
-      // unmounted or recycled into an unrelated component, which then
-      // renders zero-sized or invisible
-      // (https://github.com/expo/expo/issues/47706). The container absorbs
-      // all SwiftUI mutations; the React view tracks the container's bounds
-      // while mounted. It keeps its Yoga-assigned frame here — the
-      // matchContents sizing path observes the React view's bounds, so
-      // zeroing it to the empty container would deadlock that feedback loop
-      // at zero.
+      // SwiftUI mutates the view it hosts (autoresizingMask, frame, visibility), sometimes
+      // asynchronously after teardown, corrupting unmounted or recycled React views.
+      // Hand it a disposable container instead. Fixes expo/expo#47706; supersedes the #40604 mitigation.
       let container = ReactViewIsolationContainer()
       container.hostedView = view
       container.addSubview(view)
@@ -53,9 +40,7 @@ extension ExpoSwiftUI {
     }
 
     static func dismantleUIView(_ uiView: UIView, coordinator: Coordinator) {
-      // The isolation container is discarded along with the SwiftUI
-      // hierarchy; SwiftUI never touched the React view, so there is no
-      // state to restore on it (see makeUIView).
+      // Nothing to restore — SwiftUI only ever touched the container.
     }
 
     func makeCoordinator() -> Coordinator {
@@ -91,8 +76,7 @@ extension ExpoSwiftUI {
 
     override func layoutSubviews() {
       super.layoutSubviews()
-      // Skip empty bounds: transient zero sizes (initial layout, teardown)
-      // must not propagate to the React view — see UIViewHost.makeUIView.
+      // Ignore transient zero bounds (initial layout, teardown) — never propagate them.
       guard let hostedView, hostedView.superview === self, !bounds.isEmpty else {
         return
       }
