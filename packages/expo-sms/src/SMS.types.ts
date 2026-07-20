@@ -12,7 +12,7 @@ export type SMSResponse = {
  */
 export type SMSAttachment = {
   /**
-   * The content URI of the attachment. The URI needs be a content URI so that it can be accessed by
+   * The content URI of the attachment. The URI needs to be a content URI so that it can be accessed by
    * other applications outside of Expo. See [FileSystem.getContentUriAsync](./filesystem/#filesystemgetcontenturiasyncfileuri)).
    */
   uri: string;

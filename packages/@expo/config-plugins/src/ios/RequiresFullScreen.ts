@@ -27,7 +27,7 @@ function hasMinimumOrientations(masks: string[]): boolean {
 }
 
 /**
- * Require full screen being disabled requires all ipad interfaces to to be added,
+ * Require full screen being disabled requires all ipad interfaces to be added,
  * otherwise submissions to the iOS App Store will fail.
  *
  * ERROR ITMS-90474: "Invalid Bundle. iPad Multitasking support requires these orientations: 'UIInterfaceOrientationPortrait,UIInterfaceOrientationPortraitUpsideDown,UIInterfaceOrientationLandscapeLeft,UIInterfaceOrientationLandscapeRight'. Found 'UIInterfaceOrientationPortrait,UIInterfaceOrientationPortraitUpsideDown' in bundle 'com.bacon.app'."

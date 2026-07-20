@@ -68,7 +68,7 @@ describe('plugin templates', () => {
 
   /**
    * Expected behavior:
-   * - The overriden template files are used for the android project
+   * - The overridden template files are used for the android project
    */
   it('uses overriden templates for android', async () => {
     const ReactNativeHostManagerContent = '// ReactNativeHostManager.kt';
@@ -95,7 +95,7 @@ describe('plugin templates', () => {
 
   /**
    * Expected behavior:
-   * - The overriden template files are used for the ios project
+   * - The overridden template files are used for the ios project
    */
   it('uses overriden templates for ios', async () => {
     const ReactNativeHostManagerContent = '// ReactNativeHostManager.swift';
@@ -122,7 +122,7 @@ describe('plugin templates', () => {
 
   /**
    * Expected behavior:
-   * - The overriden template files are resolved from the root of the directory first,
+   * - The overridden template files are resolved from the root of the directory first,
    *   then from the platform specific subdirectory
    */
   it('first resolves templates from the root of the directory', async () => {
@@ -148,7 +148,7 @@ describe('plugin templates', () => {
 
   /**
    * Expected behavior:
-   * - The interpolated values are resolved in the overriden templates
+   * - The interpolated values are resolved in the overridden templates
    */
   it('resolves interpolated values in custom templates', async () => {
     const BuildGradleContent = 'version = "${{version}}"';

@@ -792,7 +792,7 @@ export type NavigationContainerEventMap = {
        */
       action: NavigationAction;
       /**
-       * Whether the action was a no-op, i.e. resulted any state changes.
+       * Whether the action was a no-op, i.e. resulted in any state changes.
        */
       noop: boolean;
       /**
@@ -1011,8 +1011,8 @@ type PathConfigAlias = {
    */
   path: string;
   /**
-   * Whether the path should be consider parent paths or use the exact path.
-   * By default, paths are relating to the path config on the parent screen.
+   * Whether the path should consider parent paths or use the exact path.
+   * By default, paths are relative to the path config on the parent screen.
    * If `exact` is set to `true`, the parent path configuration is not used.
    */
   exact?: boolean;

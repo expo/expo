@@ -697,7 +697,7 @@ export function deleteDatabaseSync(databaseName: string, directory?: string): vo
  * @param options.sourceDatabase - The source database to backup from
  * @param options.sourceDatabaseName - The name of the source database. The default value is `main`
  * @param options.destDatabase - The destination database to backup to
- * @param options.destDatabaseName - The name of the destination database. The default value is `m
+ * @param options.destDatabaseName - The name of the destination database. The default value is `main`
  */
 export function backupDatabaseAsync({
   sourceDatabase,
@@ -729,7 +729,7 @@ export function backupDatabaseAsync({
  * @param options.sourceDatabase - The source database to backup from
  * @param options.sourceDatabaseName - The name of the source database. The default value is `main`
  * @param options.destDatabase - The destination database to backup to
- * @param options.destDatabaseName - The name of the destination database. The default value is `m
+ * @param options.destDatabaseName - The name of the destination database. The default value is `main`
  */
 export function backupDatabaseSync({
   sourceDatabase,

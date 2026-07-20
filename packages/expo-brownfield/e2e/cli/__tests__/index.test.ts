@@ -81,7 +81,7 @@ describe('basic cli tests', () => {
 
   /**
    * Command: npx expo-brownfield build:android build:ios
-   * Expected behavior: The CLI should display the unkown arg error message for the first command
+   * Expected behavior: The CLI should display the unknown arg error message for the first command
    */
   it('should allow passing only one command', async () => {
     const { stderr, exitCode } = await executeCLIASync(TEMP_DIR, ['build:android', 'build:ios'], {

@@ -131,7 +131,7 @@ export type DrawerNavigationOptions = HeaderOptions & {
 
   /**
    * Type of the drawer. It determines how the drawer looks and animates.
-   * - `front`: Traditional drawer which covers the screen with a overlay behind it.
+   * - `front`: Traditional drawer which covers the screen with an overlay behind it.
    * - `back`: The drawer is revealed behind the screen on swipe.
    * - `slide`: Both the screen and the drawer slide on swipe to reveal the drawer.
    * - `permanent`: A permanent drawer is shown as a sidebar.
@@ -141,7 +141,7 @@ export type DrawerNavigationOptions = HeaderOptions & {
   drawerType?: 'front' | 'back' | 'slide' | 'permanent';
 
   /**
-   * Whether the statusbar should be hidden when the drawer is pulled or opens,
+   * Whether the statusbar should be hidden when the drawer is pulled or opens.
    */
   drawerHideStatusBarOnOpen?: boolean;
 
