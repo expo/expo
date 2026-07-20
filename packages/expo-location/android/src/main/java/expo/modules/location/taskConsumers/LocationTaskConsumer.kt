@@ -195,7 +195,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       return
     }
 
-    // Service is not running and the user don't want to start foreground service.
+    // Service is not running and the user doesn't want to start foreground service.
     if (!useForegroundService) {
       return
     }

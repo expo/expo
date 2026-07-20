@@ -219,7 +219,7 @@ internal struct MediaHandler {
 
   // Unlike the case of regular images, we have to operate on original data of the image in order to preserve the exif data,
   // otherwise it won't be possible to connect the image and video into a `PHLivePhoto` after reading it from the cache directory later.
-  // As a result a live photo photo cannot be compressed or edited.
+  // As a result a live photo cannot be compressed or edited.
   private func handleLivePhoto(from selectedImage: PHPickerResult) async throws -> AssetInfo {
     let itemProvider = selectedImage.itemProvider
     let livePhotoObject = try await itemProvider.loadObject(ofClass: PHLivePhoto.self)

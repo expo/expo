@@ -684,7 +684,7 @@ it('can navigate back from a nested modal to a nested sibling', async () => {
   act(() => router.push('/slot'));
   expect(screen).toHavePathname('/slot');
 
-  // Ensure it also works fo replace
+  // Ensure it also works for replace
 
   act(() => router.push('/(group)/modal'));
   expect(screen).toHavePathname('/modal');

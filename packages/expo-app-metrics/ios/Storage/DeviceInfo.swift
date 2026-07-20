@@ -1,7 +1,7 @@
 import SystemConfiguration
 import UIKit
 
-/// Provides some basic informations about the device.
+/// Provides some basic information about the device.
 public struct DeviceInfo: Codable, Equatable, Sendable {
   public let modelName: String
   public let modelIdentifier: String

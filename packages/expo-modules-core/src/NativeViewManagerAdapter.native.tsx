@@ -60,7 +60,7 @@ function requireNativeComponent<Props>(
 
     if (!expoViewConfig) {
       console.warn(
-        'Unable to get the view config for %s from module &s',
+        'Unable to get the view config for %s from module %s',
         viewName ?? 'default view',
         moduleName
       );

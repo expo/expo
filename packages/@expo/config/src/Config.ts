@@ -186,7 +186,7 @@ export function getConfig(projectRoot: string, options: GetConfigOptions = {}): 
     }
 
     if (options.isPublicConfig) {
-      // TODD(EvanBacon): Drop plugins array after it's been resolved.
+      // TODO(EvanBacon): Drop plugins array after it's been resolved.
 
       // Remove internal values with references to user's file paths from the public config.
       delete configWithDefaultValues.exp._internal;

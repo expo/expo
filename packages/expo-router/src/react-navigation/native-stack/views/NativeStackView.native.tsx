@@ -237,7 +237,7 @@ const SceneView = ({
   // in non edge-to-edge mode on Android, while on every consecutive render
   // topInset === 0, causing header content to jump, as we add padding on the first frame,
   // just to remove it in next one. To prevent this, when statusBarTranslucent is set,
-  // we apply additional padding in header only if its true.
+  // we apply additional padding in header only if it's true.
   // For more details see: https://github.com/react-navigation/react-navigation/pull/12014
   const headerTopInsetEnabled =
     typeof statusBarTranslucent === 'boolean' ? statusBarTranslucent : topInset !== 0;

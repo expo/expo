@@ -6,7 +6,7 @@ import Foundation
 /**
  Routes component-switching requests from the dev menu's Components section to `DevMenuHostDelegate`
 
- The actual remount logic lives in expo-dev-launcher`. Without a host
+ The actual remount logic lives in `expo-dev-launcher`. Without a host
  delegate that implements `devMenuSwitchToComponent`, the swap is a no-op.
  */
 @objc

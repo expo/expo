@@ -4,7 +4,7 @@ import SwiftUI
 
 extension ExpoSwiftUI {
   /**
-   SwiftUI view that embeds an UIKit-based view.
+   SwiftUI view that embeds a UIKit-based view.
    */
   struct UIViewHost: UIViewRepresentable, AnyChild {
     let view: UIView

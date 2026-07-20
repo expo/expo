@@ -53,7 +53,7 @@ export async function startInterfaceAsync(
   await actions.printDevServerInfoAsync(usageOptions);
 
   const onPressAsync = async (key: string) => {
-    // Auxillary commands all escape.
+    // Auxiliary commands all escape.
     switch (key) {
       case CTRL_C:
       case CTRL_D: {

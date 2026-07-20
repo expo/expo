@@ -234,7 +234,7 @@ export interface ExpoConfig {
      */
     baseUrl?: string;
     /**
-     * @deprecated This field is not longer marked as experimental and will be removed in a future release, use the `buildCacheProvider` field instead.
+     * @deprecated This field is no longer marked as experimental and will be removed in a future release, use the `buildCacheProvider` field instead.
      */
     buildCacheProvider?:
       | 'eas'

@@ -77,7 +77,7 @@ export function getLinkingConfig(
     notFound,
   }: LinkingConfigOptions & RouterOptions
 ): ExpoLinkingOptions {
-  // Returning `undefined` / `null from `getInitialURL` are valid values, so we need to track if it's been called.
+  // Returning `undefined` / `null` from `getInitialURL` are valid values, so we need to track if it's been called.
   let hasCachedInitialUrl = false;
   let initialUrl: ReturnType<typeof getInitialURL> | undefined;
 
@@ -103,7 +103,7 @@ export function getLinkingConfig(
     // then `/index` would be used on web and `/settings` would be used on native.
     getInitialURL() {
       // Expo Router calls `getInitialURL` twice, which may confuse the user if they provide a custom `getInitialURL`.
-      // Therefor we memoize the result.
+      // Therefore we memoize the result.
       if (!hasCachedInitialUrl) {
         if (Platform.OS === 'web') {
           initialUrl = serverUrl ?? getInitialURL();
