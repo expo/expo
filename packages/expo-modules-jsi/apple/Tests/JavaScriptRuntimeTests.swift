@@ -119,6 +119,43 @@ struct JavaScriptRuntimeTests {
     #expect(result == 100)
   }
 
+  @Test
+  func `runOrSchedule runs inline on the JavaScript thread and schedules otherwise`() async {
+    let scheduler = TestRuntimeScheduler()
+    let owningRuntime = await scheduler.run {
+      JavaScriptRuntime()
+    }
+    let runtime = await scheduler.run {
+      owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+    }
+
+    await scheduler.run {
+      nonisolated(unsafe) var didRunInline = false
+      runtime.runOrSchedule {
+        didRunInline = true
+      }
+      #expect(didRunInline)
+    }
+
+    await withCheckedContinuation { continuation in
+      runtime.runOrSchedule {
+        #expect(runtime.isOnJavaScriptThread())
+        continuation.resume()
+      }
+    }
+
+    // The wrapper borrows both the underlying JSI runtime and the scheduler context.
+    withExtendedLifetime(runtime) {}
+    withExtendedLifetime(owningRuntime) {}
+    withExtendedLifetime(scheduler) {}
+  }
+
   // The execute<R> overloads have a same-thread fast path and a cross-thread path that
   // schedules the closure onto the JS thread and pumps the caller's run loop until it
   // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
@@ -959,6 +996,99 @@ struct JavaScriptRuntimeTests {
     _ = wrapper
   }
 }
+
+private final class TestRuntimeScheduler: @unchecked Sendable {
+  // A serial dispatch queue may use different worker threads between callbacks, but
+  // JavaScriptRuntime tracks affinity to the specific thread on which it was created.
+  private let state: State
+  private let thread: Thread
+
+  init() {
+    let state = State()
+    self.state = state
+    self.thread = Thread {
+      state.run()
+    }
+    thread.name = "expo.modules.jsi.tests.runtime"
+    thread.start()
+    state.waitUntilReady()
+  }
+
+  deinit {
+    state.stop()
+  }
+
+  var opaquePointer: UnsafeMutableRawPointer {
+    return Unmanaged.passUnretained(self).toOpaque()
+  }
+
+  func schedule(_ operation: @escaping @convention(block) () -> Void) {
+    state.schedule(operation)
+  }
+
+  func run<R: Sendable>(_ operation: @escaping @Sendable () -> R) async -> R {
+    return await withCheckedContinuation { continuation in
+      schedule {
+        continuation.resume(returning: operation())
+      }
+    }
+  }
+
+  private final class State: @unchecked Sendable {
+    private let condition = NSCondition()
+    private let ready = DispatchSemaphore(value: 0)
+    private var operations: [@convention(block) () -> Void] = []
+    private var isStopped = false
+
+    func schedule(_ operation: @escaping @convention(block) () -> Void) {
+      condition.lock()
+      operations.append(operation)
+      condition.signal()
+      condition.unlock()
+    }
+
+    func waitUntilReady() {
+      ready.wait()
+    }
+
+    func stop() {
+      condition.lock()
+      isStopped = true
+      condition.signal()
+      condition.unlock()
+    }
+
+    func run() {
+      ready.signal()
+
+      while true {
+        condition.lock()
+        while operations.isEmpty && !isStopped {
+          condition.wait()
+        }
+        if isStopped {
+          condition.unlock()
+          return
+        }
+        let operation = operations.removeFirst()
+        condition.unlock()
+
+        operation()
+      }
+    }
+  }
+}
+
+private let scheduleOnTestRuntime:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { schedulerPointer, _, callback in
+    guard let schedulerPointer else {
+      return
+    }
+    let scheduler = Unmanaged<TestRuntimeScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
+    scheduler.schedule(callback)
+  }
 
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
 /// `RuntimeScheduler` that is torn down with work still queued (the #47716 reload scenario).
