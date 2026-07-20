@@ -19,7 +19,7 @@ This guide explains the standard configuration and tools for working on modules 
 Run:
 
 - `expo generate-module [new module directory]`
-  - optional `[new module directory]` parameter lets you specify module name (e.g. `expo generate-module expo-test-module` would create `expo-test-module`. If ommited, the script will prompt you about it.
+  - optional `[new module directory]` parameter lets you specify module name (e.g. `expo generate-module expo-test-module` would create `expo-test-module`. If omitted, the script will prompt you about it.
   - optional `--template <template directory>` will try to use provided `<template directory>` in module creation.
 
 # The Standard Configuration
