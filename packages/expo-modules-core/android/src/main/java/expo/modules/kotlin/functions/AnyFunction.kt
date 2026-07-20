@@ -9,6 +9,7 @@ import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
+import expo.modules.kotlin.types.ConverterContext
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 /**
@@ -64,7 +65,7 @@ abstract class AnyFunction(
    * @throws `CodedException` if conversion isn't possible
    */
   @Throws(CodedException::class)
-  protected fun convertArgs(args: Array<Any?>, appContext: AppContext? = null, forceConversion: Boolean = false): Array<out Any?> {
+  protected fun convertArgs(args: Array<Any?>, converterContext: ConverterContext, forceConversion: Boolean = false): Array<out Any?> {
     if (requiredArgumentsCount > args.size || args.size > desiredArgsTypes.size) {
       throw InvalidArgsNumberException(args.size, desiredArgsTypes.size, requiredArgumentsCount)
     }
@@ -80,7 +81,7 @@ abstract class AnyFunction(
       exceptionDecorator({ cause ->
         ArgumentCastException(desiredType.typeDescriptor, index, element?.javaClass.toString(), cause)
       }) {
-        finalArgs[index] = desiredType.convert(element, appContext, forceConversion)
+        finalArgs[index] = desiredType.convert(element, converterContext, forceConversion)
       }
     }
     return finalArgs
