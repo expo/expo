@@ -308,7 +308,7 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
       )}
       <SimpleActionDemo
         title="Show info({ md5: true })"
-        action={withCurrentFile(async (file) => file.info({ md5: true }))}
+        action={withCurrentFile(async (file) => await file.info({ md5: true }))}
       />
     </>
   );
