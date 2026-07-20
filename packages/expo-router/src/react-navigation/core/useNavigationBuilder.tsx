@@ -462,8 +462,17 @@ export function useNavigationBuilder<
   );
 
   const storeSlice = useStoreSlice(key);
-  // Prefer the subscribed store slice. Fall back to the slice the parent handed down (covers a
-  // committed navigator whose subscription hasn't observed the latest commit yet).
+  // Prefer the subscribed store slice. The store holds every mounted navigator's slice (the
+  // container seeds the focused path; `payload.state` carries the rest), and `useStoreSlice` reads
+  // it synchronously — so for a mounted navigator this should never miss. The parent-handed slice
+  // stays as a crash guard; a miss is a bug, so surface it in dev.
+  if (process.env.NODE_ENV !== 'production' && storeSlice == null && currentState != null) {
+    console.error(
+      `Expo Router: a mounted navigator (${key}) had no committed slice in the store and fell back ` +
+        `to the parent-provided slice. The store should hold every mounted navigator's slice; ` +
+        `please report this with the navigation you performed.`
+    );
+  }
   let state = (storeSlice ?? currentState) as State;
 
   const reconciliationState = state;
@@ -478,7 +487,7 @@ export function useNavigationBuilder<
   // The last committed slice this navigator rendered. `getState` reads the live slice from the
   // store by key, but during a transition (deep link, a slice briefly re-keyed) that lookup can
   // come back empty for a beat; fall back to what we last rendered so imperative reads never see
-  // `undefined`.
+  // `undefined`. This transient miss is exercised by the suite, so the fallback is load-bearing.
   const lastCommittedStateRef = React.useRef(reconciliationState);
   React.useEffect(() => {
     lastCommittedStateRef.current = reconciliationState;
@@ -577,6 +586,22 @@ export function useNavigationBuilder<
     options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
     pendingUnhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
     reconciliationState?.routes.every((r) => !routeNames.includes(r.name));
+  // Invariant: the render-time projection only diverges from the committed slice while a route-names
+  // reconciliation (or a `lastUnhandled` restore) is pending — the layout effect below then commits
+  // the divergence back into the store. If it diverges otherwise, the store and the render have
+  // silently disagreed, which is a bug.
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    state !== reconciliationState &&
+    !needsRouteNamesReconcile &&
+    !shouldRestoreUnhandledState
+  ) {
+    console.error(
+      `Expo Router: render-time route projection for navigator ${key} diverged from its committed ` +
+        `slice with no route-names reconciliation pending. The projection must stay identity outside ` +
+        `a RECONCILE_ROUTE_NAMES window; please report this with the navigation you performed.`
+    );
+  }
 
   const onUnhandledActionParent = use(UnhandledActionContext);
   const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
