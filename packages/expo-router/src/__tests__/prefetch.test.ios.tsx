@@ -1,4 +1,6 @@
 import { screen, act } from '@testing-library/react-native';
+import type { Dispatch, SetStateAction } from 'react';
+import { useState } from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
@@ -794,6 +796,60 @@ it('can still use <Screen /> while prefetching in tabs', () => {
     'Should only change after focus',
     'index',
   ]);
+});
+
+it('drops a prefetched route when a Protected guard removes it from the stack', () => {
+  // https://github.com/expo/expo/issues/47968
+  let setLoggedIn: Dispatch<SetStateAction<boolean>>;
+
+  renderRouter({
+    _layout: function Layout() {
+      const [loggedIn, set] = useState(false);
+      setLoggedIn = set;
+      return (
+        <Stack>
+          <Stack.Protected guard={!loggedIn}>
+            <Stack.Screen name="login" />
+          </Stack.Protected>
+          <Stack.Protected guard={loggedIn}>
+            <Stack.Screen name="home" />
+          </Stack.Protected>
+        </Stack>
+      );
+    },
+    index: () => <Text testID="index">index</Text>,
+    login: () => <Text testID="login">login</Text>,
+    home: () => <Text testID="home">home</Text>,
+  });
+
+  const getPreloadedRoutes = () => {
+    const state = (screen as ReturnType<typeof renderRouter>).getRouterState();
+    const innerState = state?.routes[0]!.state;
+    if (innerState?.type !== 'stack') {
+      throw new Error('Expected a stack navigator');
+    }
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    return (innerState as StackNavigationState<{}>).preloadedRoutes;
+  };
+
+  expect(screen.getByTestId('index')).toBeVisible();
+
+  // Preload the login route while logged out
+  act(() => {
+    router.prefetch('/login');
+  });
+
+  expect(getPreloadedRoutes()).toEqual([expect.objectContaining({ name: 'login' })]);
+
+  // Logging in flips the guards and removes `login` from the stack's screen
+  // list. The stale preloaded route must be dropped too — otherwise the next
+  // render crashes describing a screen that no longer exists.
+  act(() => {
+    setLoggedIn(true);
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(getPreloadedRoutes()).toEqual([]);
 });
 
 it('stamps zoom transition screen ID on preloaded route', () => {

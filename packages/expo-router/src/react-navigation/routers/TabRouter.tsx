@@ -284,6 +284,10 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
           }
       );
 
+      const preloadedRouteKeys = state.preloadedRouteKeys.filter((key) =>
+        routes.some((route) => route.key === key)
+      );
+
       const index = Math.max(0, routeNames.indexOf(state.routes[state.index]!.name));
 
       let history = state.history.filter(
@@ -300,6 +304,7 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
         history,
         routeNames,
         routes,
+        preloadedRouteKeys,
         index,
       };
     },
