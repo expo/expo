@@ -225,7 +225,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
       // Alternatively, check whether `sourcesRoot` helps here
       const artifactBasename = encodeURIComponent(path.basename(artifactFilename) + '.map');
-      src = src.replace(/\/\/# sourceMappingURL=.*/g, `//# sourceMappingURL=${artifactBasename}`);
+      // Match only the trailing sourcemap directive
+      src = src.replace(
+        /(?<=^|\n)\/\/# sourceMappingURL=[^\n]*(?=\s*$)/,
+        `//# sourceMappingURL=${artifactBasename}`
+      );
       const parsedMap = typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
       const mapData: any = {
         ...descriptor,
