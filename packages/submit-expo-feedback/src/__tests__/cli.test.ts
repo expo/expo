@@ -313,7 +313,7 @@ describe('feedback submission', () => {
       signal: timeoutSignal,
       headers: expect.objectContaining({
         'Content-Type': 'application/json',
-        'User-Agent': 'submit-expo-feedback/0.0.1',
+        'User-Agent': 'submit-expo-feedback/0.0.2',
         'expo-session': 'session-secret',
       }),
       body: JSON.stringify({
