@@ -18,9 +18,12 @@ export type NavigateAction = {
   payload: {
     name: string;
     params?: object;
-    path?: string;
     merge?: boolean;
     pop?: boolean;
+    // Dormant. The complete subtree for the created/entered route's not-yet-mounted child
+    // navigator. Nothing emits it until the structure-param wire (Step 8); the root reducer inserts
+    // it at the first unmounted boundary. Until then the routers only attach it when handed one.
+    state?: NavigationState | PartialState<NavigationState>;
   };
   source?: string;
   target?: string;
@@ -32,6 +35,9 @@ type NavigateDeprecatedAction = {
     name: string;
     params?: object;
     merge?: boolean;
+    // Dormant; see `NavigateAction`. Present so the tab reducer can read `payload.state` across
+    // its whole action union without a cast.
+    state?: NavigationState | PartialState<NavigationState>;
   };
   source?: string;
   target?: string;
@@ -93,9 +99,10 @@ export function navigate(
 export function navigate(options: {
   name: string;
   params?: object;
-  path?: string;
   merge?: boolean;
   pop?: boolean;
+  // Dormant. Passes through verbatim as `payload.state`; see `NavigateAction`.
+  state?: NavigationState | PartialState<NavigationState>;
 }): Action;
 
 export function navigate(...args: any): Action {

@@ -33,8 +33,22 @@ test('renders correct focus state', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const root = render(
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third'],
+        routes: [
+          { key: 'first', name: 'first' },
+          { key: 'second', name: 'second' },
+          { key: 'third', name: 'third' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />
@@ -87,7 +101,15 @@ test('returns correct focus state after conditional rendering', () => {
     update = setCondition;
 
     return (
-      <BaseNavigationContainer ref={navigation}>
+      <BaseNavigationContainer
+        ref={navigation}
+        initialState={{
+          stale: false as const,
+          index: 0,
+          key: '0',
+          routeNames: ['foo'],
+          routes: [{ key: 'foo', name: 'foo' }],
+        }}>
         <TestNavigator>
           {condition ? (
             <Screen name="bar" component={TestScreen} />
@@ -98,6 +120,8 @@ test('returns correct focus state after conditional rendering', () => {
       </BaseNavigationContainer>
     );
   };
+
+  MockRouterKey.current = 1;
 
   const element = render(<Test />);
 

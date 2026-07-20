@@ -16,13 +16,23 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathnameWithParams).toBe('/');
   });
 
-  it('handles +not-found route with path', () => {
+  it('handles +not-found route with a not-found rest param', () => {
     const result = getRouteInfoFromState({
-      routes: [{ name: '+not-found', path: '/missing-page' }],
+      routes: [{ name: '+not-found', params: { 'not-found': ['missing-page'] } }],
       index: 0,
     });
 
     expect(result.pathname).toBe('/missing-page');
+    expect(result.segments).toEqual(['+not-found']);
+  });
+
+  it('handles +not-found route with a multi-segment not-found rest param', () => {
+    const result = getRouteInfoFromState({
+      routes: [{ name: '+not-found', params: { 'not-found': ['deep', 'missing', 'page'] } }],
+      index: 0,
+    });
+
+    expect(result.pathname).toBe('/deep/missing/page');
     expect(result.segments).toEqual(['+not-found']);
   });
 
@@ -74,9 +84,7 @@ describe('getRouteInfoFromState', () => {
       params: {},
       searchParams: new URLSearchParams(),
       pathnameWithParams: '/home',
-      unstable_globalHref: '/home',
-      isIndex: false,
-    });
+      unstable_globalHref: '/home',    });
   });
 
   it('dynamic segment: __root → [id] with params {id: "123"}', () => {
@@ -99,9 +107,7 @@ describe('getRouteInfoFromState', () => {
       params: { id: '123' },
       searchParams: new URLSearchParams(),
       pathnameWithParams: '/123',
-      unstable_globalHref: '/123',
-      isIndex: false,
-    });
+      unstable_globalHref: '/123',    });
   });
 
   it('catch-all segment: __root → [...rest] with params {rest: ["a", "b"]}', () => {
@@ -124,9 +130,7 @@ describe('getRouteInfoFromState', () => {
       params: { rest: ['a', 'b'] },
       searchParams: new URLSearchParams(),
       pathnameWithParams: '/a/b',
-      unstable_globalHref: '/a/b',
-      isIndex: false,
-    });
+      unstable_globalHref: '/a/b',    });
   });
 
   it('extra params not in path become searchParams', () => {

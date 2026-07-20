@@ -2,6 +2,7 @@ import * as ExpoLinking from 'expo-linking';
 import { type RefObject, useEffect, useCallback, useRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
+import { getNavigateAction } from '../global-state/getNavigationAction';
 import {
   type LinkingOptions,
   getActionFromState as getActionFromStateDefault,
@@ -175,14 +176,29 @@ export function useLinking(
       const state = navigation ? getStateFromURL(url) : undefined;
 
       if (navigation && state) {
+        const expoPath = extractExpoPathFromURL(prefixes, url);
         // If the link were handled, it gets cleared in NavigationContainer
-        onUnhandledLinking(extractExpoPathFromURL(prefixes, url));
+        onUnhandledLinking(expoPath);
         const rootState = navigation.getRootState();
         if (state.routes.some((r) => !rootState?.routeNames.includes(r.name))) {
           return;
         }
 
-        const action = getActionFromStateRef.current(state, configRef.current);
+        // Route the deep link through the same eager pipeline as imperative navigation:
+        // `getNavigateAction` carries the target subtree as `payload.state`, so a nested navigator
+        // that isn't mounted yet commits its slice at the boundary instead of the react-navigation
+        // default's nested-`{screen}` descent deferring it — which, with the self-seed removed, would
+        // mount that navigator with a `null` slice and crash. Fall back to the default action (then
+        // `resetRoot`) if the path can't be compiled into a navigate action.
+        let action;
+        try {
+          action = getNavigateAction(expoPath, {});
+        } catch {
+          action = undefined;
+        }
+        if (action === undefined) {
+          action = getActionFromStateRef.current(state, configRef.current);
+        }
 
         if (action !== undefined) {
           try {

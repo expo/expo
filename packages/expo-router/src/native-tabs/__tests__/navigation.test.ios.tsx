@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 
 import { router } from '../../imperative-api';
+import { Stack } from '../../layouts/Stack';
 import { Link } from '../../link/Link';
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -45,19 +46,19 @@ describe('Native Bottom Tabs Navigation', () => {
   }
 
   function expectIndexTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/(^|:)index:\d+$/);
     expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
-      /^second-[-\w]+/
+      /(^|:)second:\d+$/
     );
-    expect(lastHostSelectedKey()).toMatch(/^index-[-\w]+/);
+    expect(lastHostSelectedKey()).toMatch(/(^|:)index:\d+$/);
   }
 
   function expectSecondTabFocused(renderNumber = 1) {
-    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/^index-[-\w]+/);
+    expect(TabsScreen.mock.calls[(renderNumber - 1) * 2][0].screenKey).toMatch(/(^|:)index:\d+$/);
     expect(TabsScreen.mock.calls[(renderNumber - 1) * 2 + 1][0].screenKey).toMatch(
-      /^second-[-\w]+/
+      /(^|:)second:\d+$/
     );
-    expect(lastHostSelectedKey()).toMatch(/^second-[-\w]+/);
+    expect(lastHostSelectedKey()).toMatch(/(^|:)second:\d+$/);
   }
 
   beforeEach(() => {
@@ -88,7 +89,9 @@ describe('Native Bottom Tabs Navigation', () => {
       hidden: () => <View testID="hidden" />,
       notSpecified: () => <View testID="not-specified" />,
     });
-    expectOneRender();
+    // The Step 11 committed-slice read path keeps the trigger-only repair before eager preload:
+    // 2 visible tabs x 2 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(4);
     expectIndexTabFocused();
     TabsScreen.mockClear();
   });
@@ -162,4 +165,34 @@ describe('Native Bottom Tabs Navigation', () => {
     act(() => fireEvent.press(screen.getByTestId('second-hidden-link')));
     expectNoRenders();
   });
+});
+
+it('natively selects the compiler-derived route of an unvisited nested Stack tab', () => {
+  renderRouter({
+    _layout: () => (
+      <NativeTabs>
+        <NativeTabs.Trigger name="index" />
+        <NativeTabs.Trigger name="stack" />
+      </NativeTabs>
+    ),
+    index: () => <View testID="index" />,
+    'stack/_layout': {
+      unstable_settings: { initialRouteName: 'a' },
+      default: () => <Stack />,
+    },
+    'stack/index': () => <View testID="stack-index" />,
+    'stack/a': () => <View testID="stack-a" />,
+  });
+
+  const stackScreenKey = TabsScreen.mock.calls[1][0].screenKey;
+  const onTabSelected = TabsHost.mock.calls.at(-1)![0].onTabSelected!;
+
+  act(() => {
+    onTabSelected({
+      nativeEvent: { selectedScreenKey: stackScreenKey, provenance: 1, actionOrigin: 'user' },
+    } as Parameters<typeof onTabSelected>[0]);
+  });
+
+  expect(screen.queryByTestId('stack-index')).toBeNull();
+  expect(screen.getByTestId('stack-a')).toBeVisible();
 });

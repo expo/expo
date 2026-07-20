@@ -62,22 +62,24 @@ describe('Screen', () => {
     expect(screen.getByTestId('index')).toBeVisible();
   });
 
-  it('should not throw an error when name is set inside a protected route with a false guard', () => {
+  it('should not throw when name is set inside a protected route with a false guard', () => {
+    // The guarded route is not the focused one, so no redirect fires and the layout renders cleanly.
     expect(() =>
       renderRouter({
         _layout: () => (
           <Stack>
+            <Stack.Screen name="index" />
             <Stack.Protected guard={false}>
-              <Stack.Screen name="index" />
+              <Stack.Screen name="secret" />
             </Stack.Protected>
           </Stack>
         ),
         index: () => <View testID="index" />,
-        _sitemap: () => <View testID="sitemap" />,
+        secret: () => <View testID="secret" />,
       })
     ).not.toThrow();
 
-    expect(screen.getByTestId('sitemap')).toBeVisible();
+    expect(screen.getByTestId('index')).toBeVisible();
   });
 
   it('should set options when used inside a Layout', () => {

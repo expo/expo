@@ -7,6 +7,7 @@ import { StyleSheet, Text, View, Platform, Image } from 'react-native';
 
 import { usePathname, useRouter } from '../hooks';
 import { Link } from '../link/Link';
+import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
 import { useRoute } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigation } from '../useNavigation';
@@ -45,7 +46,8 @@ function UnmatchedInner() {
   }, []);
 
   const isFocused = navigation.isFocused();
-  const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route);
+  const navigatorType = React.use(NavigatorTypeContext)?.type;
+  const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route, navigatorType);
 
   /** This route may be prefetched if a <Link prefetch href="/<unmatched>" /> is used */
   useSafeLayoutEffect(() => {

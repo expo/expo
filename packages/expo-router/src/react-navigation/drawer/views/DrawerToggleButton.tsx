@@ -3,8 +3,7 @@ import { type ColorValue, Image, type ImageSourcePropType, StyleSheet } from 're
 
 import toggleDrawerIcon from '../../../../assets/react-navigation/drawer/toggle-drawer-icon.png';
 import { HeaderButton } from '../../elements';
-import { DrawerActions, type ParamListBase, useNavigation } from '../../native';
-import type { DrawerNavigationProp } from '../types';
+import { useDrawerActions } from '../utils/useDrawerActions';
 
 type Props = {
   accessibilityLabel?: string;
@@ -20,13 +19,10 @@ export function DrawerToggleButton({
   imageSource = toggleDrawerIcon,
   ...rest
 }: Props) {
-  const navigation = useNavigation<DrawerNavigationProp<ParamListBase>>();
+  const { toggleDrawer } = useDrawerActions();
 
   return (
-    <HeaderButton
-      {...rest}
-      accessibilityLabel={accessibilityLabel}
-      onPress={() => navigation.dispatch(DrawerActions.toggleDrawer())}>
+    <HeaderButton {...rest} accessibilityLabel={accessibilityLabel} onPress={() => toggleDrawer()}>
       <Image
         resizeMode="contain"
         source={imageSource}

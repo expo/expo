@@ -33,7 +33,14 @@ test('renders a stack navigator with screens', async () => {
   const Stack = createStackNavigator<StackParamList>();
 
   const { getByText, queryByText } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['A', 'B'],
+        routes: [{ key: '@:A:0', name: 'A' }],
+      }}>
       <Stack.Navigator>
         <Stack.Screen name="A" component={Test} />
         <Stack.Screen name="B" component={Test} />
@@ -59,7 +66,14 @@ test("doesn't show back button on the first screen", async () => {
   const Stack = createStackNavigator<StackParamList>();
 
   const { getByText, queryByRole } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['A', 'B'],
+        routes: [{ key: '@:A:0', name: 'A' }],
+      }}>
       <Stack.Navigator>
         <Stack.Screen name="A" component={Test} />
         <Stack.Screen name="B" component={Test} />
@@ -96,7 +110,14 @@ test('fires transition events on navigation', async () => {
   const Stack = createStackNavigator<StackParamList>();
 
   const { getByText } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['A', 'B'],
+        routes: [{ key: '@:A:0', name: 'A' }],
+      }}>
       <Stack.Navigator>
         <Stack.Screen name="A" component={FirstScreen} />
         <Stack.Screen name="B" component={SecondScreen} />
@@ -149,7 +170,15 @@ test('handles screens preloading', async () => {
   const navigation = createNavigationContainerRef<StackParamList>();
 
   const { queryByText } = render(
-    <NavigationContainer ref={navigation}>
+    <NavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['A', 'B'],
+        routes: [{ key: '@:A:0', name: 'A' }],
+      }}>
       <Stack.Navigator>
         <Stack.Screen name="A">{() => null}</Stack.Screen>
         <Stack.Screen name="B">{() => <Text>Screen B</Text>}</Stack.Screen>
@@ -183,7 +212,15 @@ test('runs focus effect on focus change on preloaded route', () => {
   const navigation = createNavigationContainerRef<StackParamList>();
 
   render(
-    <NavigationContainer ref={navigation}>
+    <NavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['A', 'B'],
+        routes: [{ key: '@:A:0', name: 'A' }],
+      }}>
       <Stack.Navigator>
         <Stack.Screen name="A">{() => null}</Stack.Screen>
         <Stack.Screen name="B" component={Test} />
@@ -228,7 +265,15 @@ test('renders correct focus state with preloading', () => {
   const navigation = React.createRef<any>();
 
   const { queryByText } = render(
-    <NavigationContainer ref={navigation}>
+    <NavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['A', 'B'],
+        routes: [{ key: '@:A:0', name: 'A' }],
+      }}>
       <Stack.Navigator>
         <Stack.Screen name="A">{() => null}</Stack.Screen>
         <Stack.Screen name="B" component={Test} />
@@ -253,7 +298,7 @@ test('renders correct focus state with preloading', () => {
   expect(queryByText('focused', { includeHiddenElements: true })).toBeNull();
 });
 
-test.only('renders back button in the nested stack', async () => {
+test('renders back button in the nested stack', async () => {
   const StackA = createStackNavigator<NestedStackParamList>();
 
   const StackAScreen = ({ route }: StackScreenProps<StackParamList>) => (
@@ -271,7 +316,37 @@ test.only('renders back button in the nested stack', async () => {
   const StackB = createStackNavigator<StackParamList>();
 
   const { getByText, queryByRole } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'stackB',
+        routeNames: ['A', 'B'],
+        routes: [
+          {
+            key: 'A',
+            name: 'A',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: 'A',
+              routeNames: ['C'],
+              routes: [{ key: 'C', name: 'C' }],
+            },
+          },
+          {
+            key: 'B',
+            name: 'B',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: 'B',
+              routeNames: ['C'],
+              routes: [{ key: 'C', name: 'C' }],
+            },
+          },
+        ],
+      }}>
       <StackB.Navigator screenOptions={{ headerShown: false }}>
         <StackB.Screen name="A" component={StackAScreen} />
         <StackB.Screen name="B" component={StackAScreen} />

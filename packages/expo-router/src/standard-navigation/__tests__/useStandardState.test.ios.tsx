@@ -20,9 +20,7 @@ function makeBuilderState(
     index,
     routeNames: routes.map((r) => r.name),
     routes,
-    type: 'tab',
     stale: false,
-    preloadedRouteKeys: [],
   } as unknown as NavigationState;
 }
 
@@ -100,62 +98,6 @@ describe('useStandardState', () => {
     rerender({ s: makeBuilderState([{ key: 'feed-1', name: 'feed' }]) });
 
     expect(result.current).not.toBe(first);
-  });
-
-  it('appends preloaded routes after the focused route, keeping index unchanged', () => {
-    const builderState = {
-      ...makeBuilderState(
-        [
-          { key: 'feed-1', name: 'feed' },
-          { key: 'profile-1', name: 'profile' },
-        ],
-        1
-      ),
-      type: 'stack',
-      preloadedRoutes: [{ key: 'settings-1', name: 'settings', params: { from: 'preload' } }],
-    } as unknown as NavigationState;
-
-    const { result } = renderHook(() => useStandardState(builderState));
-
-    expect(result.current).toEqual({
-      index: 1,
-      routes: [
-        { href: '/href/feed', key: 'feed-1', name: 'feed', params: undefined },
-        { href: '/href/profile', key: 'profile-1', name: 'profile', params: undefined },
-        {
-          href: '/href/settings',
-          key: 'settings-1',
-          name: 'settings',
-          params: { from: 'preload' },
-        },
-      ],
-    });
-  });
-
-  it('does not project preloadedRoutes of a non-stack state', () => {
-    // A custom router could coincidentally name a state field `preloadedRoutes`; the projection
-    // is only meaningful for stack states.
-    const builderState = {
-      ...makeBuilderState([{ key: 'feed-1', name: 'feed' }]),
-      type: 'tab',
-      preloadedRoutes: [{ key: 'settings-1', name: 'settings' }],
-    } as unknown as NavigationState;
-
-    const { result } = renderHook(() => useStandardState(builderState));
-
-    expect(result.current.routes).toHaveLength(1);
-  });
-
-  it('ignores an empty preloadedRoutes array', () => {
-    const builderState = {
-      ...makeBuilderState([{ key: 'feed-1', name: 'feed' }]),
-      type: 'stack',
-      preloadedRoutes: [],
-    } as unknown as NavigationState;
-
-    const { result } = renderHook(() => useStandardState(builderState));
-
-    expect(result.current.routes).toHaveLength(1);
   });
 
   it('recomputes when buildHref identity changes even if builderState is stable', () => {

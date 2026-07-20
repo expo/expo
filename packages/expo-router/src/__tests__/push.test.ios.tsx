@@ -1,7 +1,7 @@
 import { act, screen } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
@@ -21,9 +21,25 @@ it('stacks should always push a new route', () => {
     '(group)/post/[id]/index': () => null,
   });
 
-  // Initial stale state
+  // Initial complete state (the compiler now emits keyed, non-stale state).
   expect(store.state).toStrictEqual({
-    routes: [{ name: '__root', state: { routes: [{ name: 'index', path: '/' }] } }],
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
+    routes: [
+      {
+        key: expect.any(String),
+        name: '__root',
+        state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', '(group)'],
+          routes: [{ key: expect.any(String), name: 'index' }],
+          stale: false,
+        },
+      },
+    ],
+    stale: false,
   });
 
   /**
@@ -39,44 +55,29 @@ it('stacks should always push a new route', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
-              path: '/',
             },
             {
               key: expect.any(String),
               name: '(group)',
               params: {
                 id: '1',
-                screen: 'post/[id]',
-                params: {
-                  id: '1',
-                  params: {
-                    id: '1',
-                  },
-                  screen: 'index',
-                },
               },
-              path: undefined,
               state: {
                 index: 3,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['user/[id]', 'post/[id]'],
                 routes: [
                   {
@@ -84,16 +85,10 @@ it('stacks should always push a new route', () => {
                     name: 'post/[id]',
                     params: {
                       id: '1',
-                      params: {
-                        id: '1',
-                      },
-                      screen: 'index',
                     },
-                    path: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -102,11 +97,9 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '1',
                           },
-                          path: undefined,
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -114,16 +107,10 @@ it('stacks should always push a new route', () => {
                     name: 'user/[id]',
                     params: {
                       id: '1',
-                      params: {
-                        id: '1',
-                      },
-                      screen: 'index',
                     },
-                    path: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -132,11 +119,9 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '1',
                           },
-                          path: undefined,
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -144,16 +129,10 @@ it('stacks should always push a new route', () => {
                     name: 'post/[id]',
                     params: {
                       id: '2',
-                      params: {
-                        id: '2',
-                      },
-                      screen: 'index',
                     },
-                    path: undefined,
                     state: {
                       index: 0,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -162,11 +141,9 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '2',
                           },
-                          path: undefined,
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                   {
@@ -174,16 +151,10 @@ it('stacks should always push a new route', () => {
                     name: 'user/[id]',
                     params: {
                       id: '1',
-                      params: {
-                        id: '1',
-                      },
-                      screen: 'index',
                     },
-                    path: undefined,
                     state: {
                       index: 1,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index'],
                       routes: [
                         {
@@ -192,7 +163,6 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '1',
                           },
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
@@ -200,26 +170,21 @@ it('stacks should always push a new route', () => {
                           params: {
                             id: '2',
                           },
-                          path: undefined,
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -306,117 +271,84 @@ it('works in a nested layout Stack->Tab->Stack', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 2,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(tabs)', 'd'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
-              path: '/',
             },
             {
               key: expect.any(String),
               name: '(tabs)',
-              params: {
-                params: {},
-                screen: 'a',
-              },
-              path: undefined,
+              params: {},
               state: {
-                history: [
-                  {
-                    key: expect.any(String),
-                    type: 'route',
-                  },
-                  {
-                    key: expect.any(String),
-                    type: 'route',
-                  },
-                ],
-                index: 2,
+                // firstRoute arranges the back stack as `[first, focused, ...rest]`,
+                // so focusing `c` gives `[a, c, b]` with `c` at index 1.
+                index: 1,
                 key: expect.any(String),
-                preloadedRouteKeys: [],
                 routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'a',
                     params: {},
-                    path: undefined,
-                  },
-                  {
-                    key: expect.any(String),
-                    name: 'b',
-                    params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'c',
-                    params: {
-                      params: {},
-                      screen: 'one',
-                    },
-                    path: undefined,
+                    params: {},
                     state: {
                       index: 2,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['one', 'two'],
                       routes: [
                         {
                           key: expect.any(String),
                           name: 'one',
                           params: {},
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
                           name: 'two',
                           params: {},
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
                           name: 'two',
                           params: {},
-                          path: undefined,
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
+                  },
+                  {
+                    key: expect.any(String),
+                    name: 'b',
+                    params: {},
                   },
                 ],
                 stale: false,
-                type: 'tab',
               },
             },
             {
               key: expect.any(String),
               name: 'd',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -457,107 +389,82 @@ it('targets the correct Stack when pushing to a nested layout', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 3,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
               key: expect.any(String),
               name: 'a',
-              params: undefined,
-              path: '/a',
             },
             {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
               name: 'one',
-              params: {
-                params: {},
-                screen: 'index',
-              },
-              path: undefined,
+              params: {},
               state: {
                 index: 2,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['index', 'two', 'page'],
                 routes: [
                   {
                     key: expect.any(String),
                     name: 'index',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'page',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
                     name: 'two',
-                    params: {
-                      params: {},
-                      screen: 'index',
-                    },
-                    path: undefined,
+                    params: {},
                     state: {
                       index: 1,
                       key: expect.any(String),
-                      preloadedRoutes: [],
                       routeNames: ['index', 'page'],
                       routes: [
                         {
                           key: expect.any(String),
                           name: 'index',
                           params: {},
-                          path: undefined,
                         },
                         {
                           key: expect.any(String),
                           name: 'page',
                           params: {},
-                          path: undefined,
                         },
                       ],
                       stale: false,
-                      type: 'stack',
                     },
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
             {
               key: expect.any(String),
               name: 'a',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -575,21 +482,30 @@ it('push should also add anchor routes', () => {
     '(group)/orange': () => null,
   });
 
-  // Initial stale state
+  // Initial complete state (the compiler now emits keyed, non-stale state).
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', '(group)'],
           routes: [
             {
+              key: expect.any(String),
               name: 'index',
-              path: '/',
             },
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 
   act(() => router.push('/orange', { withAnchor: true }));
@@ -597,40 +513,27 @@ it('push should also add anchor routes', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
-              path: '/',
             },
             {
               key: expect.any(String),
               name: '(group)',
-              params: {
-                initial: false,
-                params: {
-                  initial: false,
-                },
-                screen: 'orange',
-              },
-              path: undefined,
+              params: {},
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['apple', 'index', 'orange'],
                 routes: [
                   {
@@ -641,22 +544,18 @@ it('push should also add anchor routes', () => {
                   {
                     key: expect.any(String),
                     name: 'orange',
-                    params: { initial: false },
-                    path: undefined,
+                    params: {},
                   },
                 ],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -678,7 +577,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -690,7 +588,6 @@ describe('singular', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -699,7 +596,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
               {
                 key: expect.any(String),
@@ -707,7 +603,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -715,7 +610,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -723,16 +617,13 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -741,7 +632,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -753,7 +643,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -762,7 +651,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -770,16 +658,13 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
@@ -801,7 +686,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -813,7 +697,6 @@ describe('singular', () => {
           state: {
             index: 4,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -822,7 +705,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
               {
                 key: expect.any(String),
@@ -831,7 +713,6 @@ describe('singular', () => {
                   id: '1',
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -840,7 +721,6 @@ describe('singular', () => {
                   id: '1',
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -849,7 +729,6 @@ describe('singular', () => {
                   id: '2',
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -857,16 +736,13 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -877,7 +753,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -889,7 +764,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -898,7 +772,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -906,16 +779,13 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });

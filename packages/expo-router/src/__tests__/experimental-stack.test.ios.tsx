@@ -1,9 +1,13 @@
 import { act, screen } from '@testing-library/react-native';
-import { type ReactNode } from 'react';
+import { type ReactNode, use } from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
 import { ExperimentalStack } from '../layouts/experimental-stack';
+import {
+  NavigatorTypeContext,
+  type NavigatorTypeContextValue,
+} from '../react-navigation/core/NavigatorTypeContext';
 import { renderRouter } from '../testing-library';
 
 jest.mock('react-native-screens/experimental', () => {
@@ -227,8 +231,8 @@ describe('ExperimentalStack — Screen activityMode', () => {
 
     const props = screenPropsByKey();
     const keys = Object.keys(props);
-    expect(keys.some((k) => k.startsWith('a-'))).toBe(true);
-    expect(keys.some((k) => k.startsWith('b-'))).toBe(true);
+    expect(keys).toContain('@:__root:0:a:0');
+    expect(keys).toContain('@:__root:0:b:0');
   });
 });
 
@@ -247,7 +251,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
-      .find((p: any) => p.screenKey?.startsWith('b-'));
+      .find((p: any) => p.screenKey?.endsWith(':b:0'));
 
     expect(propsB).toBeDefined();
     expect(propsB.onDismiss).toBeUndefined();
@@ -295,7 +299,7 @@ describe('ExperimentalStack — dismiss handlers', () => {
     const propsB = MockedScreen.mock.calls
       .map((c) => c[0])
       .reverse()
-      .find((p: any) => p.screenKey?.startsWith('b-'));
+      .find((p: any) => p.screenKey?.endsWith(':b:0'));
 
     act(() => {
       propsB.onNativeDismiss(propsB.screenKey);
@@ -370,5 +374,25 @@ describe('ExperimentalStack — unsupported option warning', () => {
     } finally {
       warnSpy.mockRestore();
     }
+  });
+});
+
+describe('ExperimentalStack — navigator type', () => {
+  it('announces itself as a stack via NavigatorTypeContext', () => {
+    let captured: NavigatorTypeContextValue | undefined;
+    function Probe() {
+      captured = use(NavigatorTypeContext);
+      return null;
+    }
+
+    renderRouter(
+      {
+        a: Probe,
+        _layout: () => <ExperimentalStack />,
+      },
+      { initialUrl: '/a' }
+    );
+
+    expect(captured?.type).toBe('stack');
   });
 });

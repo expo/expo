@@ -35,7 +35,14 @@ test('renders a bottom tab navigator with screens', async () => {
   const Tab = createBottomTabNavigator<BottomTabParamList>();
 
   const { queryByText, getAllByRole, getByRole } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'tab',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Tab.Navigator>
         <Tab.Screen name="A" component={Test} />
         <Tab.Screen name="B" component={Test} />
@@ -59,7 +66,15 @@ test('handles screens preloading', async () => {
   const navigation = createNavigationContainerRef<BottomTabParamList>();
 
   const { queryByText } = render(
-    <NavigationContainer ref={navigation}>
+    <NavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'tab',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Tab.Navigator>
         <Tab.Screen name="A">{() => null}</Tab.Screen>
         <Tab.Screen name="B">{() => <Text>Screen B</Text>}</Tab.Screen>
@@ -98,7 +113,14 @@ test('tab bar cannot be tapped when hidden', async () => {
   const Tab = createBottomTabNavigator<BottomTabParamList>();
 
   const { queryByText, getByRole } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'tab',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Tab.Navigator
         screenOptions={{
           tabBarHideOnKeyboard: true,
@@ -142,6 +164,13 @@ test('tab bars render appropriate hrefs on web', () => {
 
   const { getByText } = render(
     <NavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: 'tab',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}
       linking={{
         prefixes: [],
         config: {

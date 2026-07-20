@@ -1,20 +1,21 @@
 'use client';
 
 import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import type { ExpoLinkingOptions } from './getLinkingConfig';
-import { store, useStore } from './global-state/router-store';
 import type { ServerContextType } from './global-state/serverLocationContext';
 import { ServerContext } from './global-state/serverLocationContext';
+import { store } from './global-state/store';
 import { StoreContext } from './global-state/storeContext';
-import { shouldAppendNotFound, shouldAppendSitemap } from './global-state/utils';
+import { useStore } from './global-state/useStore';
 import { LinkPreviewContextProvider } from './link/preview/LinkPreviewContext';
 import { handleNavigationOnReady } from './navigationEvents/navigation';
+import { handleSplashScreenOnReady } from './navigationEvents/splash';
 import { Screen } from './primitives';
 import type { LinkingOptions, NavigationAction } from './react-navigation/native';
 import { StackRouter, useNavigationBuilder } from './react-navigation/native';
@@ -89,10 +90,9 @@ const initialUrl =
     ? new URL(window.location.href)
     : undefined;
 
-// TODO(@ubax): Refactor onReady logic and use listeners pattern
 function onNavigationReady() {
   handleNavigationOnReady();
-  store.onReady();
+  handleSplashScreenOnReady();
 }
 
 function ContextNavigator({
@@ -137,6 +137,13 @@ function ContextNavigator({
 
   useDomComponentNavigation();
 
+  // The initial URL resolves asynchronously (async `+native-intent` redirect, Android race) and no
+  // seed exists yet. Render nothing until it resolves — this replaces the readiness fallback that
+  // previously lived in the fork's `NavigationContainer`.
+  if (store.hasPendingInitialURL) {
+    return null;
+  }
+
   if (store.shouldShowTutorial()) {
     SplashScreen.hideAsync();
     if (process.env.NODE_ENV === 'development') {
@@ -156,7 +163,6 @@ function ContextNavigator({
     <StoreContext.Provider value={store}>
       <UpstreamNavigationContainer
         ref={store.navigationRef}
-        initialState={store.state}
         linking={store.linking as LinkingOptions<any>}
         onUnhandledAction={onUnhandledAction}
         onStateChange={store.onStateChange}
@@ -173,13 +179,20 @@ function ContextNavigator({
 }
 
 function Content() {
+  // Render exactly the screens the compiler emitted at the root level, in the same order: the
+  // top-level keys of the linking config are `[__root, +not-found?, _sitemap?]`. Deriving from this
+  // one source keeps the rendered `<Screen>` order identical to the seed's root `routeNames`, so
+  // `useNavigationBuilder` never dispatches a `RECONCILE_ROUTE_NAMES` action to reconcile them. In
+  // particular, when the app declares its own root-level catch-all the compiler omits the internal
+  // `+not-found`, so we must not render the internal NOT_FOUND screen here either.
+  const rootScreens = store.linking?.config?.screens ?? {};
   const children = [
     <Screen key="SLOT" name={INTERNAL_SLOT_NAME} component={store.rootComponent} />,
   ];
-  if (shouldAppendNotFound()) {
+  if (NOT_FOUND_ROUTE_NAME in rootScreens) {
     children.push(<Screen key="NOT-FOUND" name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
   }
-  if (shouldAppendSitemap()) {
+  if (SITEMAP_ROUTE_NAME in rootScreens) {
     children.push(<Screen key="SITEMAP" name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
   }
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
@@ -187,10 +200,30 @@ function Content() {
     id: INTERNAL_SLOT_NAME,
   });
 
+  // Render every root route (the `__root` slot plus the transient `+not-found` / `_sitemap` siblings)
+  // and keep them all mounted, showing only the focused one. This is what lets navigation away from a
+  // transient route pop it while the real `__root` (and its committed navigator) stays mounted beneath
+  // — so the target commits into the preserved stack instead of stacking a duplicate `__root`. A
+  // consistent `View` wrapper per route (keyed by route key) means a focus change only toggles
+  // visibility; it never remounts `__root`.
+  const focusedKey = state.routes[state.index]!.key;
   return (
-    <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    <NavigationContent>
+      {state.routes.map((route) => (
+        <View
+          key={route.key}
+          style={route.key === focusedKey ? rootSlotStyles.focused : rootSlotStyles.hidden}>
+          {descriptors[route.key]!.render()}
+        </View>
+      ))}
+    </NavigationContent>
   );
 }
+
+const rootSlotStyles = StyleSheet.create({
+  focused: { flex: 1 },
+  hidden: { display: 'none' },
+});
 
 let onUnhandledAction: (action: NavigationAction) => void;
 

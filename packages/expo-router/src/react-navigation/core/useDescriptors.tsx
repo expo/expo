@@ -72,10 +72,8 @@ type Options<
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
   onAction: (action: NavigationAction) => boolean;
   getState: () => State;
-  setState: (state: State) => void;
   addListener: AddListener;
   addKeyedListener: AddKeyedListener;
-  onRouteFocus: (key: string) => void;
   router: Router<State, NavigationAction>;
   emitter: NavigationEventEmitter<EventMap>;
 };
@@ -102,17 +100,21 @@ export function useDescriptors<
   screenLayout,
   onAction,
   getState,
-  setState,
   addListener,
   addKeyedListener,
-  onRouteFocus,
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates, stackRef } =
-    use(NavigationBuilderContext);
+  const {
+    dispatchRoot,
+    onDispatchAction,
+    onOptionsChange,
+    scheduleUpdate,
+    flushUpdates,
+    stackRef,
+  } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
@@ -120,7 +122,7 @@ export function useDescriptors<
       onAction,
       addListener,
       addKeyedListener,
-      onRouteFocus,
+      dispatchRoot,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
@@ -132,7 +134,7 @@ export function useDescriptors<
       onAction,
       addListener,
       addKeyedListener,
-      onRouteFocus,
+      dispatchRoot,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
@@ -233,7 +235,6 @@ export function useDescriptors<
         screen={screen}
         routeState={routeState}
         getState={getState}
-        setState={setState}
         options={customOptions}
         clearOptions={clearOptions}
       />

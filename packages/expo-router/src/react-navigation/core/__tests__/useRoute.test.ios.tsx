@@ -5,7 +5,7 @@ import { Screen } from '../Screen';
 import type { RouteProp } from '../types';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useRoute } from '../useRoute';
-import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import { MockRouter, MockRouterKey, mockInitialState } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
@@ -33,7 +33,8 @@ test('gets route prop from context', () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['foo'], routeParamList: { foo: { x: 1 } } })}>
       <TestNavigator>
         <Screen name="foo" component={Test} initialParams={{ x: 1 }} />
       </TestNavigator>

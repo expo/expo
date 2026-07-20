@@ -16,6 +16,13 @@ export interface LinkAction {
   };
 }
 
+// The boundary buffer between the context-less imperative API (`router.push`/`navigate`/`back`/…,
+// callable from anywhere) and React. Actions land here and are drained by `useImperativeApiEmitter`
+// through the container's public `dispatch` once a ref is available (so calls made before the
+// container is ready aren't lost). This is distinct from `dispatchRoot`'s `pendingReplayRef`: that
+// one is an internal mount-window retry keyed by `originKey`/`isReplay`, semantics the public
+// `dispatch` doesn't carry. Both funnel into `dispatchRoot` — the single reduction point — so they
+// stay separate layers (external input adapter vs. internal retry) rather than one queue.
 export const routingQueue = {
   queue: [] as (NavigationAction | LinkAction)[],
   subscribers: new Set<() => void>(),

@@ -22,7 +22,6 @@ import {
 import {
   NavigationProvider,
   type ParamListBase,
-  type RouteProp,
   StackActions,
   type StackNavigationState,
   usePreventRemoveContext,
@@ -456,10 +455,9 @@ type Props = {
   state: StackNavigationState<ParamListBase>;
   navigation: NativeStackNavigationHelpers;
   descriptors: NativeStackDescriptorMap;
-  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
 };
 
-export function NativeStackView({ state, navigation, descriptors, describe }: Props) {
+export function NativeStackView({ state, navigation, descriptors }: Props) {
   const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
@@ -467,23 +465,17 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
 
   const modalRouteKeys = getModalRouteKeys(state.routes, descriptors);
 
-  const preloadedDescriptors = state.preloadedRoutes.reduce<NativeStackDescriptorMap>(
-    (acc, route) => {
-      acc[route.key] = acc[route.key] || describe(route, true);
-      return acc;
-    },
-    {}
-  );
-
   return (
     <SafeAreaProviderCompat>
       <ScreenStack
         nativeContainerStyle={{ backgroundColor: colors.background }}
         style={styles.container}>
-        {state.routes.concat(state.preloadedRoutes).map((route, index) => {
-          const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
+        {state.routes.map((route, index) => {
           const isFocused = state.index === index;
           const isBelowFocused = state.index - 1 === index;
+          // Routes after `index` are preloaded/inactive (drives freeze/activityState below).
+          const isPreloaded = index > state.index;
+          const descriptor = descriptors[route.key]!;
           const previousKey = state.routes[index - 1]?.key;
           const nextKey = state.routes[index + 1]?.key;
           const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
@@ -491,9 +483,6 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
 
           const isModal = modalRouteKeys.includes(route.key);
           const isModalOnIos = isModal && Platform.OS === 'ios';
-
-          const isPreloaded =
-            preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
 
           // On Fabric, when screen is frozen, animated and reanimated values are not updated
           // due to component being unmounted. To avoid this, we don't freeze the previous screen there

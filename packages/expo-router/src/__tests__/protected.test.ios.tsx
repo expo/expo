@@ -3,7 +3,7 @@ import type { Dispatch, SetStateAction } from 'react';
 import { createContext, use, useState } from 'react';
 import { Text } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
@@ -34,7 +34,8 @@ it('redirects a guarded route to the anchor default during the initial load', ()
     { initialUrl: '/a' }
   );
 
-  // Guarded /a is unreachable during initial load: index is shown at /.
+  // The guarded /a route is no longer dropped — it resolves, then redirects to the anchor
+  // (no anchor set, so `/`). Index ends up visible.
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
@@ -49,7 +50,7 @@ it('redirects a guarded route to the anchor default during the initial load', ()
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'index', 'b', 'c']);
+  expect(store.state?.routes[0]?.state?.routes.at(-1)?.name).toBe('a');
 });
 
 it('redirects nested guarded routes to the anchor and unlocks them as guards flip', () => {
@@ -87,8 +88,7 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
     c: () => <Text testID="c">C</Text>,
   });
 
-  // try to navigate to all protected routes should not change the current
-  // route since all the guards are false
+  // All guards are false: navigating to any protected route redirects to the anchor default (`/`).
   act(() => router.replace('/a'));
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
@@ -101,8 +101,8 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
-  // change the guards for routes A and C to true: should make A available but
-  // not C as it is nested under B and the guard for B is still false
+  // Enable guards A and C. A becomes reachable; C is still blocked because its parent B is false,
+  // so navigating to B or C redirects back to the anchor.
   act(() => {
     useStateResultA[1](true);
     useStateResultC[1](true);
@@ -120,8 +120,7 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen).toHavePathname('/');
 
-  // change the guard for route B to true: should make B available and also C
-  // should be available now as all its parents guards are true
+  // Enable guard B: now every route is reachable.
   act(() => {
     useStateResultB[1](true);
   });
@@ -137,8 +136,6 @@ it('redirects nested guarded routes to the anchor and unlocks them as guards fli
   act(() => router.replace('/c'));
   expect(screen.getByTestId('c')).toBeVisible();
   expect(screen).toHavePathname('/c');
-
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'c', 'index']);
 });
 
 it('defaults a guarded route to the navigator anchor', () => {
@@ -172,7 +169,7 @@ it('defaults a guarded route to the navigator anchor', () => {
     { initialUrl: '/a' }
   );
 
-  // Guarded /a is unreachable; the anchor route b is shown instead.
+  // Guarded /a redirects to the anchor `b`.
   expect(screen.getByTestId('b')).toBeVisible();
   expect(screen).toHavePathname('/b');
 
@@ -187,7 +184,6 @@ it('defaults a guarded route to the navigator anchor', () => {
 
   expect(screen.getByTestId('a')).toBeVisible();
   expect(screen).toHavePathname('/a');
-  expect(store.state!.routes[0]!.state!.routeNames).toStrictEqual(['a', 'b', 'index']);
 });
 
 it('redirects a guarded route to an explicit redirectTo target', () => {
@@ -238,8 +234,68 @@ it('redirects a guarded route in a nested navigator to that navigator anchor', (
     { initialUrl: '/nested/secret' }
   );
 
+  // The default target resolves against the nested navigator (prefix `/nested`), not the root.
   expect(screen.getByTestId('home')).toBeVisible();
   expect(screen).toHavePathname('/nested/home');
+});
+
+it('redirects a guarded dynamic route to an explicit redirectTo target', () => {
+  renderRouter(
+    {
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false} redirectTo="/login">
+              <Stack.Screen name="item/[id]" />
+            </Stack.Protected>
+            <Stack.Screen name="login" />
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      login: () => <Text testID="login">login</Text>,
+      'item/[id]': () => <Text testID="item">item</Text>,
+    },
+    { initialUrl: '/item/42' }
+  );
+
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(screen).toHavePathname('/login');
+});
+
+it('redirects when a guard flips to false while the route is focused', () => {
+  let setGuard: Dispatch<SetStateAction<boolean>>;
+
+  renderRouter(
+    {
+      _layout: function Layout() {
+        const [guard, setState] = useState(true);
+        setGuard = setState;
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={guard}>
+              <Stack.Screen name="secret" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+    },
+    { initialUrl: '/secret' }
+  );
+
+  // Guard starts true, so the focused route renders its content.
+  expect(screen.getByTestId('secret')).toBeVisible();
+  expect(screen).toHavePathname('/secret');
+
+  // Flipping the guard to false while focused redirects to the anchor default (`/`).
+  act(() => {
+    setGuard(false);
+  });
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
 });
 
 it('uses the innermost failing guard redirectTo for a nested guarded route', () => {
@@ -266,221 +322,79 @@ it('uses the innermost failing guard redirectTo for a nested guarded route', () 
     { initialUrl: '/secret' }
   );
 
+  // The inner guard is the one that fails, so its redirectTo wins.
   expect(screen.getByTestId('inner')).toBeVisible();
   expect(screen).toHavePathname('/inner');
 });
 
-it('applies the parent guard redirectTo to a route nested in a passing child guard', () => {
-  renderRouter(
-    {
-      _layout: function Layout() {
-        return (
-          <Stack id={undefined}>
-            <Stack.Protected guard={false} redirectTo="/login">
-              <Stack.Protected guard>
-                <Stack.Screen name="secret" />
-              </Stack.Protected>
-            </Stack.Protected>
-            <Stack.Screen name="login" />
-          </Stack>
-        );
-      },
-      index: () => <Text testID="index">index</Text>,
-      login: () => <Text testID="login">login</Text>,
-      secret: () => <Text testID="secret">secret</Text>,
+it('does not redirect a preloaded guarded route until it is focused', () => {
+  renderRouter({
+    _layout: function Layout() {
+      return (
+        <Stack id={undefined}>
+          <Stack.Protected guard={false} redirectTo="/login">
+            <Stack.Screen name="secret" />
+          </Stack.Protected>
+          <Stack.Screen name="login" />
+        </Stack>
+      );
     },
-    { initialUrl: '/secret' }
-  );
+    index: () => <Text testID="index">index</Text>,
+    login: () => <Text testID="login">login</Text>,
+    secret: () => <Text testID="secret">secret</Text>,
+  });
+
+  expect(screen).toHavePathname('/');
+
+  // Preloading mounts the guarded screen unfocused: the redirect (fired in useFocusEffect) must
+  // not run yet, so we stay on index.
+  act(() => {
+    router.prefetch('/secret');
+  });
+
+  expect(screen).toHavePathname('/');
+
+  // Focusing it triggers the redirect to the explicit target.
+  act(() => router.navigate('/secret'));
 
   expect(screen.getByTestId('login')).toBeVisible();
   expect(screen).toHavePathname('/login');
 });
 
-it('does not apply the parent guard redirectTo to a route nested in a passing child guard when parent guard is true', () => {
+it('resolves a direct duplicate-group URL to a guarded route and honors its redirectTo (#37816)', () => {
+  // Regression for #37816 / ENG-22119. A guarded route used to be dropped from `routeNames`, so a
+  // direct URL / refresh whose `getStateFromPath` result referenced it was rejected on rehydration
+  // and fell back to index. The drop-vs-keep logic is shared across platforms; this reproduces the
+  // reported topology (the web-only harness can't run `renderRouter`).
+  //
+  // Duplicate groups `(creator)`/`(guest)` both serve `/detail`; `getStateFromPath` resolves the
+  // shared URL to the higher-sorted `(guest)/detail` (the linking config's key order now mirrors the
+  // rendered navigator's sorted order, and the shorter group name sorts first). Since guarding no
+  // longer drops that route, the URL resolves and the guard's `redirectTo` is honored (rather than
+  // the state being rejected).
   renderRouter(
     {
       _layout: function Layout() {
         return (
           <Stack id={undefined}>
-            <Stack.Protected guard redirectTo="/login">
-              <Stack.Protected guard={false}>
-                <Stack.Screen name="secret" />
-              </Stack.Protected>
+            <Stack.Screen name="(creator)/detail" />
+            <Stack.Protected guard={false} redirectTo="/other">
+              <Stack.Screen name="(guest)/detail" />
             </Stack.Protected>
-            <Stack.Screen name="login" />
+            <Stack.Screen name="other" />
           </Stack>
         );
       },
       index: () => <Text testID="index">index</Text>,
-      login: () => <Text testID="login">login</Text>,
-      secret: () => <Text testID="secret">secret</Text>,
+      other: () => <Text testID="other">other</Text>,
+      '(creator)/detail': () => <Text testID="creator">creator</Text>,
+      '(guest)/detail': () => <Text testID="guest">guest</Text>,
     },
-    { initialUrl: '/secret' }
+    { initialUrl: '/detail' }
   );
 
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
-});
-
-
-it('should move away from a focused route when its guard flips false', () => {
-  let setGuard: Dispatch<SetStateAction<boolean>>;
-
-  renderRouter(
-    {
-      _layout: function Layout() {
-        const [guard, setState] = useState(true);
-        setGuard = setState;
-        return (
-          <Stack id={undefined}>
-            <Stack.Protected guard={guard}>
-              <Stack.Screen name="secret" />
-            </Stack.Protected>
-          </Stack>
-        );
-      },
-      index: () => <Text testID="index">index</Text>,
-      secret: () => <Text testID="secret">secret</Text>,
-    },
-    { initialUrl: '/secret' }
-  );
-
-  expect(screen.getByTestId('secret')).toBeVisible();
-  expect(screen).toHavePathname('/secret');
-
-  act(() => {
-    setGuard(false);
-  });
-
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
-});
-
-it('should remove guarded routes from history when a guard flips false', () => {
-  let setGuard: Dispatch<SetStateAction<boolean>>;
-
-  renderRouter({
-    _layout: function Layout() {
-      const [guard, setState] = useState(true);
-      setGuard = setState;
-      return (
-        <Stack id={undefined}>
-          <Stack.Protected guard={guard}>
-            <Stack.Screen name="secret" />
-          </Stack.Protected>
-          <Stack.Screen name="other" />
-        </Stack>
-      );
-    },
-    index: () => <Text testID="index">index</Text>,
-    secret: () => <Text testID="secret">secret</Text>,
-    other: () => <Text testID="other">other</Text>,
-  });
-
-  act(() => router.push('/secret'));
-  expect(screen.getByTestId('secret')).toBeVisible();
-  expect(screen).toHavePathname('/secret');
-
-  act(() => router.push('/other'));
   expect(screen.getByTestId('other')).toBeVisible();
   expect(screen).toHavePathname('/other');
-
-  act(() => {
-    setGuard(false);
-  });
-
-  act(() => router.back());
-
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
-  expect(router.canGoBack()).toBe(false);
-});
-
-it('should not restore pruned guarded history when a guard flips true->false->true', () => {
-  let setGuard: Dispatch<SetStateAction<boolean>>;
-
-  renderRouter({
-    _layout: function Layout() {
-      const [guard, setState] = useState(true);
-      setGuard = setState;
-      return (
-        <Stack id={undefined}>
-          <Stack.Protected guard={guard}>
-            <Stack.Screen name="secret" />
-          </Stack.Protected>
-          <Stack.Screen name="other" />
-        </Stack>
-      );
-    },
-    index: () => <Text testID="index">index</Text>,
-    secret: () => <Text testID="secret">secret</Text>,
-    other: () => <Text testID="other">other</Text>,
-  });
-
-  act(() => router.push('/secret'));
-  expect(screen.getByTestId('secret')).toBeVisible();
-  expect(screen).toHavePathname('/secret');
-
-  act(() => router.push('/other'));
-  expect(screen.getByTestId('other')).toBeVisible();
-  expect(screen).toHavePathname('/other');
-
-  // Revoke access: the guarded /secret history entry is pruned.
-  act(() => {
-    setGuard(false);
-  });
-
-  // Re-grant access while still on /other.
-  act(() => {
-    setGuard(true);
-  });
-
-  // Flipping the guard back to true must not resurrect the pruned /secret entry.
-  act(() => router.back());
-
-  expect(screen.getByTestId('index')).toBeVisible();
-  expect(screen).toHavePathname('/');
-  expect(router.canGoBack()).toBe(false);
-});
-
-it('should use the anchor when a focused route guard flips false', () => {
-  let setGuard: Dispatch<SetStateAction<boolean>>;
-
-  renderRouter(
-    {
-      _layout: {
-        unstable_settings: {
-          anchor: 'home',
-        },
-        default: function Layout() {
-          const [guard, setState] = useState(true);
-          setGuard = setState;
-          return (
-            <Stack id={undefined}>
-              <Stack.Protected guard={guard}>
-                <Stack.Screen name="secret" />
-              </Stack.Protected>
-              <Stack.Screen name="home" />
-            </Stack>
-          );
-        },
-      },
-      index: () => <Text testID="index">index</Text>,
-      home: () => <Text testID="home">home</Text>,
-      secret: () => <Text testID="secret">secret</Text>,
-    },
-    { initialUrl: '/secret' }
-  );
-
-  expect(screen.getByTestId('secret')).toBeVisible();
-  expect(screen).toHavePathname('/secret');
-
-  act(() => {
-    setGuard(false);
-  });
-
-  expect(screen.getByTestId('home')).toBeVisible();
-  expect(screen).toHavePathname('/home');
 });
 
 it('will wait for React state updates before pushing', async () => {
@@ -535,8 +449,9 @@ it('works with tabs', () => {
         <SetterContext value={setState}>
           <Tabs>
             <Tabs.Screen name="index" />
+            <Tabs.Screen name="other" />
 
-            <Tabs.Protected guard={value}>
+            <Tabs.Protected guard={value} redirectTo="/other">
               <Tabs.Screen name="protected" />
             </Tabs.Protected>
           </Tabs>
@@ -560,21 +475,23 @@ it('works with tabs', () => {
         </Text>
       );
     },
+    other: () => <Text testID="other">other</Text>,
     protected: function Nested() {
       return <Text testID="protected">Protected</Text>;
     },
   });
 
-  expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeNull();
-
+  // A guarded JS tab is no longer dropped: the tab is present, but focusing it redirects to its
+  // `redirectTo`. Landing on `/other` (not `/`) proves the redirect engaged rather than a no-op.
   fireEvent.press(screen.getByTestId('index'));
+  expect(screen).toHavePathname('/other');
 
-  expect(screen).toHavePathname('/');
-
+  // Return to the index tab, then enabling the guard lets the tab render its content.
+  act(() => router.navigate('/'));
   fireEvent(screen.getByTestId('index'), 'longPress');
 
   expect(screen).toHavePathname('/protected');
-  expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
+  expect(screen.queryByLabelText('protected, tab, 3 of 3')).toBeVisible();
 });
 
 describe('routes without /index suffix', () => {

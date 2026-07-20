@@ -1,4 +1,4 @@
-import type { LinkToOptions } from '../global-state/routing';
+import type { LinkToOptions } from '../global-state/types';
 import {
   ROUTER_SET_PARAMS_TYPE,
   ROUTER_DISMISS_TYPE,

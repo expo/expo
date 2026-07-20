@@ -325,6 +325,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
+    // A guarded route (its `Protected` guard is `false`) stays a real screen but renders a
+    // `<Redirect>` instead of its content. `undefined` when the route isn't guarded.
     const guardRedirect = useGuardRedirect(value.route);
 
     const ResolvedSuspenseFallback =
@@ -373,7 +375,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
 
-    if (guardRedirect) {
+    // Guard failed: redirect instead of rendering the route. `Redirect` fires inside
+    // `useFocusEffect`, so a preloaded/unfocused guarded route won't redirect until it's focused.
+    if (guardRedirect != null) {
       return (
         <Route node={value} params={route?.params}>
           <Redirect href={guardRedirect} />

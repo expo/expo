@@ -4,8 +4,10 @@ import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type {
   LinkingOptions,
+  NavigationState,
   ParamListBase,
   PartialRoute,
+  PartialState,
   Route,
 } from '../react-navigation/native';
 import { sortRoutesWithInitial } from '../sortRoutes';
@@ -199,16 +201,23 @@ export function stateToAction(
 
   let foundStartingPoint = startAtRoute === undefined || !state?.state;
 
+  // The compiled child subtree of the jumped-to route. With the render-time param bridge gone, the
+  // action must carry it so a never-visited tab lands on the compiled nested screen instead of its
+  // `initialRouteName`; the container installs it verbatim (and skips it when the tab already exists).
+  let targetSubtree: NavigationState | PartialState<NavigationState> | undefined;
+
   while (state) {
     if (foundStartingPoint) {
       if (payload === rootPayload) {
         payload.name = state.name;
+        targetSubtree = state.state;
       } else {
         payload.screen = state.name;
       }
       payload.params = state.params ? { ...state.params } : {};
 
-      state = state.state?.routes[state.state?.routes.length - 1];
+      // Descend into the active route (a stack may hold preloaded routes after `index`).
+      state = state.state?.routes[state.state.index ?? 0];
 
       if (state) {
         payload.params ??= {};
@@ -218,7 +227,7 @@ export function stateToAction(
       if (state.name === startAtRoute) {
         foundStartingPoint = true;
       }
-      const nextState = state.state?.routes[state.state?.routes.length - 1];
+      const nextState = state.state?.routes[state.state.index ?? 0];
       if (nextState) {
         state = nextState;
       }
@@ -227,6 +236,6 @@ export function stateToAction(
 
   return {
     type: 'JUMP_TO',
-    payload: rootPayload,
+    payload: targetSubtree ? { ...rootPayload, state: targetSubtree } : rootPayload,
   };
 }

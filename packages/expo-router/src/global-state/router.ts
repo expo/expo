@@ -87,19 +87,14 @@ export function canDismiss(): boolean {
       'canDismiss imperative method is not supported. Pass the property to the DOM component instead.'
     );
   }
-  let state = store.state;
-
-  // Keep traversing down the state tree until we find a stack navigator that we can pop
-  while (state) {
-    if (state.type === 'stack' && state.routes.length > 1) {
-      return true;
-    }
-    if (state.index === undefined) return false;
-
-    state = state.routes?.[state.index]?.state as any;
+  // Same not-mounted guard as `canGoBack` above.
+  if (!store.navigationRef.isReady()) {
+    return false;
   }
-
-  return false;
+  // `canDismiss` simulates the `POP` that `dismiss()` dispatches and reports whether some navigator
+  // on the focused chain would handle it (i.e. a poppable stack). See the container-level
+  // `canDismiss` in BaseNavigationContainer.
+  return store.navigationRef?.current?.canDismiss?.() ?? false;
 }
 
 export function setParams(
@@ -218,9 +213,11 @@ export type ImperativeRouter = {
    */
   dismissAll: () => void;
   /**
-   * Checks if it is possible to dismiss the current screen. Returns `true` if the
-   * router is within the stack with more than one screen in stack's history.
+   * Checks if it is possible to dismiss the current screen — that is, whether the [`dismiss`](#dismiss)
+   * `POP` would be handled by a stack on the focused path with more than one screen in its history.
    *
+   * > **Note**: Like `canGoBack`, this does not account for `usePreventRemove`/`beforeRemove`
+   * > guards that can block the actual dismissal.
    */
   canDismiss: () => boolean;
   /**
@@ -235,7 +232,7 @@ export type ImperativeRouter = {
   /**
    * Prefetch a screen in the background before navigating to it
    */
-  prefetch: (name: Href) => void;
+  prefetch: (name: Href, options?: NavigationOptions) => void;
 };
 
 /**

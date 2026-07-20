@@ -4,7 +4,7 @@ import React, { forwardRef, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';

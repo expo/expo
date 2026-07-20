@@ -117,10 +117,15 @@ export function getPathWithConventionsCollapsed({
 
           return `[...${name}]`;
         } else if (params[name]) {
+          // Encode each catch-all segment (like a dynamic param), joining with unencoded `/` so the
+          // URL round-trips — `getStateFromPath` decoded them, so a segment with reserved chars
+          // (e.g. a space) must be re-encoded here or the produced URL loses its escaping.
+          const encodeSegment = (segment: string) =>
+            shouldEncodeURISegment ? encodeURISegment(segment) : segment;
           if (Array.isArray(params[name])) {
-            return params[name].join('/');
+            return params[name].map(encodeSegment).join('/');
           }
-          return params[name];
+          return encodeSegment(params[name]);
         } else if (route.name.startsWith('[') && route.name.endsWith(']')) {
           return '';
         } else if (p === '*not-found') {

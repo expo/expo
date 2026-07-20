@@ -26,19 +26,32 @@ Use `unstable_createStandardRouterNavigator` to turn a content component into a 
 
 The following example builds a minimal tab navigator:
 
+`state.routes` is a subset of the navigator's screens: a screen only appears once it has loaded (it becomes focused, or you preload it). To render a tab for every declared screen from the first frame, preload them. Expose a `preload` action with `createProps` and call it on mount:
+
 ```tsx components/Tabs.tsx
 import {
   unstable_createStandardRouterNavigator,
   TabRouter,
   type NavigatorContentProps,
 } from 'expo-router';
+import { useEffect } from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-// The first type argument is the options you can set per screen
-type TabsContentProps = NavigatorContentProps<{ title?: string }>;
+// The first type argument is the options you can set per screen, the third is the props
+// injected by `createProps` below.
+type TabsContentProps = NavigatorContentProps<
+  { title?: string },
+  Record<string, never>,
+  { routeNames: string[]; preload: (name: string) => void }
+>;
 
-function TabsContent({ state, descriptors, actions }: TabsContentProps) {
+function TabsContent({ state, descriptors, actions, routeNames, preload }: TabsContentProps) {
   const focusedRoute = state.routes[state.index];
+
+  // Preload every declared screen so the tab bar can show all tabs from the first frame.
+  useEffect(() => {
+    routeNames.forEach(preload);
+  }, [routeNames, preload]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -60,7 +73,12 @@ function TabsContent({ state, descriptors, actions }: TabsContentProps) {
   );
 }
 
-export const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter);
+export const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
+  createProps: ({ state, dispatch }) => ({
+    routeNames: state.routeNames,
+    preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+  }),
+});
 ```
 
 The returned navigator has a `.Screen` child for declaring screens, so you can use it in a `_layout` file like any other layout:

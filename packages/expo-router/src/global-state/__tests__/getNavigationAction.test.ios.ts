@@ -1,6 +1,6 @@
 import { applyRedirects } from '../../getRoutesRedirects';
 import { getNavigateAction } from '../getNavigationAction';
-import { findDivergentState, getPayloadFromStateRoute } from '../stateUtils';
+import { findDivergentState, getNavigationPayloadFromStateRoute } from '../stateUtils';
 import { store } from '../store';
 
 jest.mock('../store', () => ({
@@ -16,7 +16,6 @@ jest.mock('../store', () => ({
           routes: [{ key: 'root-key', name: '__root' }],
           index: 0,
           key: 'root-nav',
-          type: 'stack',
           routeNames: ['__root'],
           stale: false,
         })),
@@ -38,8 +37,9 @@ jest.mock('../store', () => ({
 }));
 
 jest.mock('../stateUtils', () => ({
+  ...jest.requireActual('../stateUtils'),
   findDivergentState: jest.fn(),
-  getPayloadFromStateRoute: jest.fn(),
+  getNavigationPayloadFromStateRoute: jest.fn(),
 }));
 
 jest.mock('../../getRoutesRedirects', () => ({
@@ -51,8 +51,8 @@ jest.mock('../../link/href', () => ({
 }));
 
 const mockFindDivergentState = findDivergentState as jest.MockedFunction<typeof findDivergentState>;
-const mockGetPayload = getPayloadFromStateRoute as jest.MockedFunction<
-  typeof getPayloadFromStateRoute
+const mockGetPayload = getNavigationPayloadFromStateRoute as jest.MockedFunction<
+  typeof getNavigationPayloadFromStateRoute
 >;
 const mockApplyRedirects = applyRedirects as jest.MockedFunction<typeof applyRedirects>;
 
@@ -65,7 +65,6 @@ function setupDefaultMocks() {
     actionState: { routes: [{ name: 'home' }] },
     navigationState: {
       key: 'nav-key',
-      type: 'stack',
       routes: [{ key: 'root-key', name: '__root' }],
       index: 0,
       routeNames: ['__root'],
@@ -76,7 +75,7 @@ function setupDefaultMocks() {
   });
 
   mockGetPayload.mockReturnValue({
-    screen: 'home',
+    name: 'home',
     params: {},
   });
 }
@@ -165,32 +164,11 @@ describe(getNavigateAction, () => {
     );
   });
 
-  it('PUSH is downgraded to NAVIGATE when target navigator is not a stack', () => {
-    mockFindDivergentState.mockReturnValue({
-      actionState: { routes: [{ name: 'tab1' }] },
-      navigationState: {
-        key: 'tab-nav-key',
-        type: 'tab',
-        routes: [{ key: 'tab1-key', name: 'tab1' }],
-        index: 0,
-        routeNames: ['tab1'],
-        stale: false,
-      },
-      actionStateRoute: { name: 'tab1' },
-      navigationRoutes: [],
-    });
-
-    const result = getNavigateAction('/tab1', {}, 'PUSH');
-
-    expect(result!.type).toBe('NAVIGATE');
-  });
-
-  it('type becomes JUMP_TO when target navigator is expo-tab', () => {
+  it('NAVIGATE is emitted unchanged for tab-like target navigators', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'tab1' }] },
       navigationState: {
         key: 'expo-tab-key',
-        type: 'expo-tab',
         routes: [{ key: 'tab1-key', name: 'tab1' }],
         index: 0,
         routeNames: ['tab1'],
@@ -202,15 +180,14 @@ describe(getNavigateAction, () => {
 
     const result = getNavigateAction('/tab1', {});
 
-    expect(result!.type).toBe('JUMP_TO');
+    expect(result!.type).toBe('NAVIGATE');
   });
 
-  it('REPLACE becomes JUMP_TO when target navigator is drawer', () => {
+  it('REPLACE is emitted unchanged regardless of target navigator kind', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'screen1' }] },
       navigationState: {
         key: 'drawer-key',
-        type: 'drawer',
         routes: [{ key: 'screen1-key', name: 'screen1' }],
         index: 0,
         routeNames: ['screen1'],
@@ -222,7 +199,7 @@ describe(getNavigateAction, () => {
 
     const result = getNavigateAction('/screen1', {}, 'REPLACE');
 
-    expect(result!.type).toBe('JUMP_TO');
+    expect(result!.type).toBe('REPLACE');
   });
 
   it('sets target to navigationState.key', () => {
@@ -231,43 +208,69 @@ describe(getNavigateAction, () => {
     expect(result!.target).toBe('nav-key');
   });
 
-  it('withAnchor sets initial: false on root and all nested params', () => {
+  // A plain `push` skips a nested navigator's `initialRouteName` anchor by collapsing the compiled
+  // subtree to its focused path; `withAnchor` keeps the full subtree so the anchor loads. The
+  // decision now lives entirely in `payload.state` — there is no legacy `initial` param.
+  it('collapses the subtree to the focused path for a plain push', () => {
     mockGetPayload.mockReturnValue({
-      screen: 'home',
-      params: {
-        screen: 'nested',
-        params: {
-          screen: 'deep',
-          params: {},
-        },
+      name: 'root',
+      params: {},
+      state: {
+        stale: false,
+        key: '@:root:0',
+        index: 1,
+        routeNames: ['anchor', 'leaf'],
+        routes: [
+          { key: '@:root:0:anchor:0', name: 'anchor' },
+          { key: '@:root:0:leaf:0', name: 'leaf' },
+        ],
       },
     });
 
-    const result = getNavigateAction('/home', {}, 'NAVIGATE', true);
+    const result = getNavigateAction('/root/leaf', {}, 'PUSH');
 
-    // withAnchor=true → initial should be set to false at every level (inverted logic)
-    const params = result!.payload.params as Record<string, any>;
-    expect(params.initial).toBe(false);
-    expect(params.params.initial).toBe(false);
-    expect(params.params.params.initial).toBe(false);
+    expect(result!.payload.state).toEqual({
+      stale: false,
+      key: '@:root:0',
+      index: 0,
+      routeNames: ['anchor', 'leaf'],
+      routes: [{ key: '@:root:0:leaf:0', name: 'leaf' }],
+    });
+    expect((result!.payload.params as Record<string, any>).initial).toBeUndefined();
   });
 
-  it('isPreviewNavigation adds preview and no-animation params', () => {
-    const isPreviewNavigation = true;
-    const result = getNavigateAction(
-      '/home',
-      {},
-      'NAVIGATE',
-      false,
-      undefined,
-      isPreviewNavigation
-    );
+  it('withAnchor keeps the full anchored subtree on a push', () => {
+    const anchored = {
+      stale: false,
+      key: '@:root:0',
+      index: 1,
+      routeNames: ['anchor', 'leaf'],
+      routes: [
+        { key: '@:root:0:anchor:0', name: 'anchor' },
+        { key: '@:root:0:leaf:0', name: 'leaf' },
+      ],
+    };
+    mockGetPayload.mockReturnValue({ name: 'root', params: {}, state: anchored });
 
-    expect(result!.payload.params).toEqual(
+    const result = getNavigateAction('/root/leaf', {}, 'PUSH', true);
+
+    expect(result!.payload.state).toEqual(anchored);
+  });
+
+  // The preview/no-animation flags are threaded into the compiled subtree builder as extra params
+  // (it propagates them to the focused leaf via rekeyState), not stitched onto the payload here.
+  it('isPreviewNavigation threads preview and no-animation params into the subtree builder', () => {
+    const isPreviewNavigation = true;
+    getNavigateAction('/home', {}, 'NAVIGATE', false, undefined, isPreviewNavigation);
+
+    expect(mockGetPayload).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
       expect.objectContaining({
         __internal__expo_router_is_preview_navigation: true,
         __internal_expo_router_no_animation: true,
-      })
+      }),
+      true
     );
   });
 
@@ -279,23 +282,39 @@ describe(getNavigateAction, () => {
     expect(result!.payload.singular).toBe(true);
   });
 
-  it('PRELOAD uses lookThroughAllTabs=true on findDivergentState', () => {
+  // Tab navigator keys are captured in React and threaded through the internal option so the
+  // state-layer traversal can look through tabs. They are passed whenever present, regardless of
+  // event type (simplest and harmless).
+  it('threads tabNavigatorKeys from options into findDivergentState as a Set', () => {
+    getNavigateAction('/home', { __internal__tabNavigatorKeys: ['tab-1', 'tab-2'] }, 'PRELOAD');
+
+    expect(mockFindDivergentState).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.anything(),
+      new Set(['tab-1', 'tab-2']),
+      undefined
+    );
+  });
+
+  it('passes undefined tabNavigatorKeys when the option is absent', () => {
     getNavigateAction('/home', {}, 'PRELOAD');
 
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
       expect.anything(),
-      true // lookThroughAllTabs
+      undefined,
+      undefined
     );
   });
 
-  it('non-PRELOAD uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'NAVIGATE');
+  it('threads tabNavigatorKeys for non-PRELOAD events too', () => {
+    getNavigateAction('/home', { __internal__tabNavigatorKeys: ['tab-1'] }, 'NAVIGATE');
 
     expect(mockFindDivergentState).toHaveBeenCalledWith(
       expect.anything(),
       expect.anything(),
-      false
+      new Set(['tab-1']),
+      undefined
     );
   });
 
@@ -312,7 +331,6 @@ describe(getNavigateAction, () => {
       actionState: { routes: [] },
       navigationState: {
         key: 'nav-key',
-        type: 'stack',
         routes: [{ key: 'root-key', name: '__root' }],
         index: 0,
         routeNames: ['__root'],
@@ -322,31 +340,41 @@ describe(getNavigateAction, () => {
       navigationRoutes: [],
     });
 
-    mockGetPayload.mockReturnValue({ screen: undefined, params: {} });
+    mockGetPayload.mockReturnValue({ name: undefined, params: {} });
 
     const result = getNavigateAction('/home', {});
 
-    expect(mockGetPayload).toHaveBeenCalledWith({});
+    // Fourth arg is the reuse-existing-route flag (`true` for a NAVIGATE, `false` for a PUSH).
+    expect(mockGetPayload).toHaveBeenCalledWith({}, expect.anything(), {}, true);
     expect(result).toBeDefined();
   });
 
-  it('PUSH uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'PUSH');
+  // A nested target is emitted purely as `payload.state` (the compiled subtree). The action's own
+  // `name`/`params` describe only the divergent route; there is no legacy nested screen/params chain.
+  it('emits a nested target as payload.state with no legacy screen/params chain', () => {
+    mockGetPayload.mockReturnValue({
+      name: 'root',
+      params: { id: '123' },
+      state: {
+        stale: false,
+        key: '@:root:0',
+        index: 0,
+        routeNames: ['leaf'],
+        routes: [{ key: '@:root:0:leaf:0', name: 'leaf' }],
+      },
+    });
 
-    expect(mockFindDivergentState).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      false
-    );
-  });
+    const result = getNavigateAction('/root/leaf?id=123', {});
 
-  it('REPLACE uses lookThroughAllTabs=false on findDivergentState', () => {
-    getNavigateAction('/home', {}, 'REPLACE');
-
-    expect(mockFindDivergentState).toHaveBeenCalledWith(
-      expect.anything(),
-      expect.anything(),
-      false
-    );
+    expect(result!.payload.name).toBe('root');
+    expect(result!.payload.params).toEqual({ id: '123' });
+    expect((result!.payload.params as Record<string, any>).screen).toBeUndefined();
+    expect(result!.payload.state).toEqual({
+      stale: false,
+      key: '@:root:0',
+      index: 0,
+      routeNames: ['leaf'],
+      routes: [{ key: '@:root:0:leaf:0', name: 'leaf' }],
+    });
   });
 });

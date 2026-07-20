@@ -2,7 +2,7 @@ import { act, screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { router } from '../exports';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { renderRouter } from '../testing-library';
 import { parseUrlUsingCustomBase } from '../utils/url';
 
@@ -25,24 +25,19 @@ it('can push a hash url', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 4,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', 'test'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
-              path: '/',
             },
             {
               key: expect.any(String),
@@ -50,7 +45,6 @@ it('can push a hash url', () => {
               params: {
                 '#': 'a',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -58,7 +52,6 @@ it('can push a hash url', () => {
               params: {
                 '#': 'b',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -66,7 +59,6 @@ it('can push a hash url', () => {
               params: {
                 '#': 'b',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -74,16 +66,13 @@ it('can push a hash url', () => {
               params: {
                 '#': 'c',
               },
-              path: undefined,
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -210,19 +199,28 @@ it('navigating to the same route with a hash will only rerender the screen', () 
   });
 
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index'],
           routes: [
             {
+              key: expect.any(String),
               name: 'index',
-              path: '/',
             },
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 
   act(() => router.navigate('/?#hash1'));
@@ -230,17 +228,14 @@ it('navigating to the same route with a hash will only rerender the screen', () 
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 0,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index'],
           routes: [
             {
@@ -249,15 +244,12 @@ it('navigating to the same route with a hash will only rerender the screen', () 
               params: {
                 '#': 'hash1',
               },
-              path: '/',
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });

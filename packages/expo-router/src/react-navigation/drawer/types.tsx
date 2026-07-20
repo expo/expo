@@ -45,6 +45,13 @@ export type DrawerNavigationOptions = HeaderOptions & {
   title?: string;
 
   /**
+   * Internal: supplied by Expo Router. The compiled href for this route, used by `usePreloadRoutes`
+   * to preload it with its full subtree (via `getNavigateAction`) rather than a bare route that
+   * would leave a nested navigator uncommitted.
+   */
+  unstable_preloadHref?: string;
+
+  /**
    * Whether this screens should render the first time it's accessed. Defaults to `true`.
    * Set it to `false` if you want to render the screen on initial render.
    */

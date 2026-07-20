@@ -20,7 +20,10 @@ it('should return correct pathname for nested stack with initialRouteName', asyn
       indexRenderCount();
       return <Text testID="index-pathname">{usePathname()}</Text>;
     },
-    'inner/_layout': () => <Stack initialRouteName="a" />,
+    'inner/_layout': {
+      unstable_settings: { initialRouteName: 'a' },
+      default: () => <Stack />,
+    },
     'inner/index': function InnerIndex() {
       innerIndexRenderCount();
       return <Text testID="inner-index-pathname">{usePathname()}</Text>;
@@ -64,7 +67,10 @@ it('should return correct pathname for nested stack with initialRouteName, after
       indexRenderCount();
       return <Text testID="index-pathname">{usePathname()}</Text>;
     },
-    'inner/_layout': () => <Stack initialRouteName="a" />,
+    'inner/_layout': {
+      unstable_settings: { initialRouteName: 'a' },
+      default: () => <Stack />,
+    },
     'inner/index': function InnerIndex() {
       innerIndexRenderCount();
       return <Text testID="inner-index-pathname">{usePathname()}</Text>;

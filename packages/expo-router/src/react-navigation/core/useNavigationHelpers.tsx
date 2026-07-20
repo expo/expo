@@ -4,11 +4,13 @@ import { use } from 'react';
 
 import {
   CommonActions,
+  StackActions,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
   type Router,
 } from '../routers';
+import type { DispatchRoot } from './NavigationBuilderContext';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
@@ -24,7 +26,7 @@ type Options<State extends NavigationState, Action extends NavigationAction> = {
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
-  stateRef: React.RefObject<State | null>;
+  dispatchRoot?: DispatchRoot;
 };
 
 /**
@@ -43,13 +45,23 @@ export function useNavigationHelpers<
   getState,
   emitter,
   router,
-  stateRef,
+  dispatchRoot,
 }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
 
   return React.useMemo(() => {
     const dispatch = (op: Action | ((state: State) => Action)) => {
-      const action = typeof op === 'function' ? op(getState()) : op;
+      const state = getState();
+      const action = typeof op === 'function' ? op(state) : op;
+
+      if (dispatchRoot) {
+        // The committed store is the single dispatch path — forward to the root reducer, tagged
+        // with this navigator's key. No local reducer fallback: `dispatchRoot` reports unhandled
+        // actions itself, and it holds+replays actions dispatched before the origin navigator's
+        // reducer has registered (the mount window).
+        dispatchRoot(action, { originKey: state.key });
+        return;
+      }
 
       const handled = onAction(action);
 
@@ -81,10 +93,30 @@ export function useNavigationHelpers<
         return (
           router.getStateForAction(state, CommonActions.goBack() as Action, {
             routeNames: state.routeNames,
+            // goBack never creates routes, so the key-deriving parentRouteKey is irrelevant here.
+            parentRouteKey: undefined,
             routeParamList: {},
             routeGetIdList: {},
           }) !== null ||
           parentNavigationHelpers?.canGoBack() ||
+          false
+        );
+      },
+      canDismiss: () => {
+        const state = getState();
+
+        // Mirror of `canGoBack`, but simulating the `POP` that `dismiss()` dispatches. Only a
+        // StackRouter handles POP; tab/drawer routers fall through to `null`, so we walk up to a
+        // poppable ancestor stack (if any). Like `canGoBack`, this does not account for
+        // `usePreventRemove`/`beforeRemove` guards that can block the actual pop.
+        return (
+          router.getStateForAction(state, StackActions.pop(1) as Action, {
+            routeNames: state.routeNames,
+            parentRouteKey: undefined,
+            routeParamList: {},
+            routeGetIdList: {},
+          }) !== null ||
+          parentNavigationHelpers?.canDismiss?.() ||
           false
         );
       },
@@ -103,15 +135,6 @@ export function useNavigationHelpers<
         return parentNavigationHelpers;
       },
       getState: (): State => {
-        // FIXME: Workaround for when the state is read during render
-        // By this time, we haven't committed the new state yet
-        // Without this `useSyncExternalStore` will keep reading the old state
-        // This may result in `useNavigationState` or `useIsFocused` returning wrong values
-        // Apart from `useSyncExternalStore`, `getState` should never be called during render
-        if (stateRef.current != null) {
-          return stateRef.current;
-        }
-
         return getState();
       },
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
@@ -125,6 +148,6 @@ export function useNavigationHelpers<
     onAction,
     onUnhandledAction,
     navigatorId,
-    stateRef,
+    dispatchRoot,
   ]);
 }

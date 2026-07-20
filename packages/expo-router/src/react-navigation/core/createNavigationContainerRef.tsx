@@ -20,6 +20,7 @@ export function createNavigationContainerRef<
     'dispatch',
     'isFocused',
     'canGoBack',
+    'canDismiss',
     'getRootState',
     'getState',
     'getParent',

@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 
 import type { RouteNode } from '../Route';
 import { sortRoutes } from '../Route';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { matchDynamicName } from '../matchers';
 import type { Href } from '../types';
 
@@ -67,4 +67,43 @@ export function useSitemap(): SitemapType | null {
     [store.routeNode]
   );
   return sitemap;
+}
+
+// Absolute href for every route node in the compiled tree. Route nodes created from a shared
+// multi-group layout intentionally have the same context key, so preserve node identity here: a
+// context-keyed map would make every sibling tab resolve to the final group that was visited.
+export function getRouteNodeHrefMap(): Map<RouteNode, string> {
+  const map = new Map<RouteNode, string>();
+
+  const walk = (route: RouteNode, parents: string[]) => {
+    map.set(route, getInitialRouteHref(route, parents));
+
+    const segments = routeSegments(route, parents);
+    for (const child of route.children) {
+      walk(child, segments);
+    }
+  };
+
+  if (store.routeNode) {
+    walk(store.routeNode, []);
+  }
+
+  return map;
+}
+
+function getInitialRouteHref(route: RouteNode, parents: string[]): string {
+  const initialChild = route.initialRouteName
+    ? route.children.find(
+        (child) =>
+          child.route === route.initialRouteName ||
+          child.route === `${route.initialRouteName}/index`
+      )
+    : undefined;
+
+  if (initialChild == null) {
+    return routeHref(route, parents);
+  }
+
+  const segments = routeSegments(route, parents);
+  return getInitialRouteHref(initialChild, segments);
 }

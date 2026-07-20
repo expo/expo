@@ -1,4 +1,10 @@
 'use client';
+import * as React from 'react';
+
+import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../../core/NavigatorTypeContext';
 import {
   createNavigatorFactory,
   type NavigatorTypeBagBase,
@@ -11,6 +17,10 @@ import {
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
+import { getBackStackAnchorName } from '../../routers/TabRouter';
+import { usePreloadAnchor } from '../../usePreloadAnchor';
+import { usePreloadRoutes } from '../../usePreloadRoutes';
+import { useTabPlaceholders } from '../../useTabPlaceholders';
 import type {
   BottomTabNavigationEventMap,
   BottomTabNavigationOptions,
@@ -32,7 +42,7 @@ function BottomTabNavigator({
   UNSTABLE_router,
   ...rest
 }: BottomTabNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, describe, NavigationContent } = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
     TabActionHelpers<ParamListBase>,
@@ -51,10 +61,60 @@ function BottomTabNavigator({
     UNSTABLE_router,
   });
 
+  // Placeholders reuse the key the router will assign (derived from `state.key`), so the real route
+  // reconciles onto its placeholder instead of remounting.
+  const [tabState, tabDescriptors] = useTabPlaceholders(
+    state,
+    descriptors,
+    describe,
+    state.routeNames
+  );
+
+  // Bottom tabs default to `lazy` (rendered on first access), so only routes that opt out with
+  // `lazy={false}` are preloaded. `lazy` is read from the augmented descriptors so it is available
+  // for routes that haven't materialized yet.
+  const nonLazyRouteNames = React.useMemo(
+    () =>
+      state.routeNames.filter((name) => {
+        const placeholder = tabState.routes.find((route) => route.name === name);
+        return placeholder ? tabDescriptors[placeholder.key]?.options.lazy === false : false;
+      }),
+    [state.routeNames, tabState.routes, tabDescriptors]
+  );
+  // Keep the implicit back-stack anchor loaded at the FRONT of the routes so a deep link to a
+  // non-anchor tab still goes back to it (deep links only materialize anchors declared in the
+  // linking config). The anchor is excluded from the plain preload list below so `FRONT_PRELOAD`
+  // (front) and `PRELOAD` (tail) don't race for the same route.
+  const anchorName = getBackStackAnchorName(state.routeNames, backBehavior, initialRouteName);
+  const nonAnchorRouteNames = React.useMemo(
+    () => nonLazyRouteNames.filter((name) => name !== anchorName),
+    [nonLazyRouteNames, anchorName]
+  );
+  // The compiled href per route is attached to its (placeholder or real) descriptor options by
+  // `TabsClient`, so a preload carries the route's full subtree instead of a bare route.
+  const resolveHref = React.useCallback(
+    (name: string) => {
+      const route = tabState.routes.find((candidate) => candidate.name === name);
+      return route ? tabDescriptors[route.key]?.options.unstable_preloadHref : undefined;
+    },
+    [tabState, tabDescriptors]
+  );
+  usePreloadRoutes(state, navigation, nonAnchorRouteNames, resolveHref);
+  usePreloadAnchor(state, navigation, backBehavior, initialRouteName, resolveHref);
+
+  const navigatorTypeValue = useNavigatorTypeContextValue('tab', state.key);
+
   return (
-    <NavigationContent>
-      <BottomTabView {...rest} state={state} navigation={navigation} descriptors={descriptors} />
-    </NavigationContent>
+    <NavigatorTypeContext value={navigatorTypeValue}>
+      <NavigationContent>
+        <BottomTabView
+          {...rest}
+          state={tabState}
+          navigation={navigation}
+          descriptors={tabDescriptors}
+        />
+      </NavigationContent>
+    </NavigatorTypeContext>
   );
 }
 

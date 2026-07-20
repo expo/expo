@@ -58,7 +58,15 @@ test('builds href in navigator layout', () => {
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [{ key: '@:Foo:0', name: 'Foo' }],
+      }}>
       <Stack.Navigator layout={({ children }) => <Test>{children}</Test>}>
         <Stack.Screen name="Foo">{() => null}</Stack.Screen>
       </Stack.Navigator>
@@ -82,7 +90,15 @@ test('builds href in route context', () => {
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [{ key: '@:Foo:0', name: 'Foo' }],
+      }}>
       <Stack.Navigator
         layout={({ state }) => (
           <NavigationRouteContext.Provider value={state.routes.find((r) => r.name === 'Foo')}>
@@ -111,7 +127,15 @@ test('builds href in stack navigator screen', () => {
   const StackA = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [{ key: '@:Foo:0', name: 'Foo' }],
+      }}>
       <StackA.Navigator>
         <StackA.Screen name="Foo" component={Test} />
       </StackA.Navigator>
@@ -136,7 +160,27 @@ test('builds href in nested navigator layout', () => {
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [
+          {
+            key: '@:Foo:0',
+            name: 'Foo',
+            state: {
+              stale: false,
+              key: '@:Foo:0',
+              index: 0,
+              routeNames: ['Bar'],
+              routes: [{ key: '@:Foo:0:Bar:0', name: 'Bar', params: { id: '42' } }],
+            },
+          },
+        ],
+      }}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (
@@ -167,7 +211,27 @@ test('builds href in nested route context', () => {
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [
+          {
+            key: '@:Foo:0',
+            name: 'Foo',
+            state: {
+              stale: false,
+              key: '@:Foo:0',
+              index: 0,
+              routeNames: ['Bar'],
+              routes: [{ key: '@:Foo:0:Bar:0', name: 'Bar', params: { id: '42' } }],
+            },
+          },
+        ],
+      }}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (
@@ -203,7 +267,27 @@ test('builds href in nested navigator screen', () => {
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [
+          {
+            key: '@:Foo:0',
+            name: 'Foo',
+            state: {
+              stale: false,
+              key: '@:Foo:0',
+              index: 0,
+              routeNames: ['Bar'],
+              routes: [{ key: '@:Foo:0:Bar:0', name: 'Bar', params: { id: '42' } }],
+            },
+          },
+        ],
+      }}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (
@@ -229,7 +313,6 @@ test('builds action from href outside of a navigator', () => {
       type: 'NAVIGATE',
       payload: {
         name: 'Foo',
-        path: '/foo',
         params: {},
         pop: true,
       },
@@ -257,7 +340,6 @@ test('builds action from href in navigator screen', () => {
       type: 'NAVIGATE',
       payload: {
         name: 'Foo',
-        path: '/foo',
         params: {},
         pop: true,
       },
@@ -269,7 +351,15 @@ test('builds action from href in navigator screen', () => {
   const Stack = createStackNavigator<{ Foo: undefined }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [{ key: '@:Foo:0', name: 'Foo' }],
+      }}>
       <Stack.Navigator>
         <Stack.Screen name="Foo" component={Test} />
       </Stack.Navigator>
@@ -293,7 +383,6 @@ test('builds action from href in nested navigator', () => {
           initial: true,
           screen: 'Bar',
           params: { id: '42' },
-          path: '/foo/bar/42',
         },
         pop: true,
       },
@@ -306,7 +395,27 @@ test('builds action from href in nested navigator', () => {
   const StackB = createStackNavigator<{ Bar: { id: string } }>();
 
   render(
-    <NavigationContainer linking={config}>
+    <NavigationContainer
+      linking={config}
+      initialState={{
+        stale: false,
+        key: '@',
+        index: 0,
+        routeNames: ['Foo'],
+        routes: [
+          {
+            key: '@:Foo:0',
+            name: 'Foo',
+            state: {
+              stale: false,
+              key: '@:Foo:0',
+              index: 0,
+              routeNames: ['Bar'],
+              routes: [{ key: '@:Foo:0:Bar:0', name: 'Bar', params: { id: '42' } }],
+            },
+          },
+        ],
+      }}>
       <StackA.Navigator>
         <StackA.Screen name="Foo">
           {() => (

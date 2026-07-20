@@ -1,16 +1,21 @@
 import { getPathFromState, getPathDataFromState, type Options } from '../getPathFromState';
 
-it(`handles nested params.screen/params.params for dynamic routes`, () => {
+it(`builds a path from nested state for dynamic routes`, () => {
+  // The nested target is carried as real `route.state` (the navigate/Link compat decomposes any
+  // legacy `{ screen }` form into this shape before calling `getPathFromState`).
   const state = {
     routes: [
       {
         name: '(group)',
-        params: {
-          screen: 'foo',
-          params: {
-            screen: '[id]/index',
-            params: { id: 'bar' },
-          },
+        state: {
+          routes: [
+            {
+              name: 'foo',
+              state: {
+                routes: [{ name: '[id]/index', params: { id: 'bar' } }],
+              },
+            },
+          ],
         },
       },
     ],
@@ -49,7 +54,6 @@ describe('hash support', () => {
         },
       ],
       stale: true,
-      type: 'stack',
     };
 
     const config = {
@@ -86,7 +90,6 @@ describe('hash support', () => {
         },
       ],
       stale: false,
-      type: 'stack',
     };
 
     const config = {
@@ -146,7 +149,6 @@ describe('state mutation safety', () => {
         },
       ],
       stale: false,
-      type: 'stack',
     };
 
     const config = {

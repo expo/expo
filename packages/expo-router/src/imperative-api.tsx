@@ -2,7 +2,7 @@ import { type RefObject, useEffect, useSyncExternalStore } from 'react';
 
 import type { ImperativeRouter } from './global-state/router';
 import { router } from './global-state/router';
-import { routingQueue } from './global-state/routing';
+import { routingQueue } from './global-state/routingQueue';
 import type { NavigationContainerRef, ParamListBase } from './react-navigation/native';
 
 export type { ImperativeRouter };

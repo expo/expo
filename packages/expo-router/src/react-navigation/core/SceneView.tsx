@@ -10,7 +10,6 @@ import {
 } from './NavigationFocusedRouteStateContext';
 import { NavigationStateContext } from './NavigationStateContext';
 import { StaticContainer } from './StaticContainer';
-import { isArrayEqual } from './isArrayEqual';
 import type { NavigationProp, RouteConfigComponent } from './types';
 import { useOptionsGetters } from './useOptionsGetters';
 
@@ -20,7 +19,6 @@ type Props<State extends NavigationState, ScreenOptions extends object> = {
   route: Route<string>;
   routeState: NavigationState | PartialState<NavigationState> | undefined;
   getState: () => State;
-  setState: (state: State) => void;
   options: object;
   clearOptions: () => void;
 };
@@ -35,7 +33,6 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
   navigation,
   routeState,
   getState,
-  setState,
   options,
   clearOptions,
 }: Props<State, ScreenOptions>) {
@@ -58,31 +55,6 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
 
     return currentRoute ? currentRoute.state : undefined;
   }, [getState, route.key]);
-
-  const setCurrentState = React.useCallback(
-    (child: NavigationState | PartialState<NavigationState> | undefined) => {
-      const state = getState();
-
-      const routes = state.routes.map((r) => {
-        if (r.key === route.key && r.state !== child) {
-          return {
-            ...r,
-            state: child,
-          };
-        }
-
-        return r;
-      });
-
-      if (!isArrayEqual(state.routes, routes)) {
-        setState({
-          ...state,
-          routes,
-        });
-      }
-    },
-    [getState, route.key, setState]
-  );
 
   const isInitialRef = React.useRef(true);
 
@@ -107,7 +79,6 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
           key: route.key,
           name: route.name,
           params: route.params,
-          path: route.path,
         },
       ],
     };
@@ -131,19 +102,18 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
     };
 
     return addState(parentFocusedRouteState);
-  }, [parentFocusedRouteState, route.key, route.name, route.params, route.path]);
+  }, [parentFocusedRouteState, route.key, route.name, route.params]);
 
   const context = React.useMemo(
     () => ({
       state: routeState,
       getState: getCurrentState,
-      setState: setCurrentState,
       getKey,
       setKey,
       getIsInitial,
       addOptionsGetter,
     }),
-    [routeState, getCurrentState, setCurrentState, getKey, setKey, getIsInitial, addOptionsGetter]
+    [routeState, getCurrentState, getKey, setKey, getIsInitial, addOptionsGetter]
   );
 
   const ScreenComponent = screen.getComponent ? screen.getComponent() : screen.component;

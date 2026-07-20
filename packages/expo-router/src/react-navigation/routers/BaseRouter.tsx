@@ -39,40 +39,35 @@ export const BaseRouter = {
       }
 
       case 'RESET': {
+        // RESET requires a complete state: the compiler (via the linking config) is the only source
+        // of navigation state, so a partial/stale payload is unhandled here rather than rehydrated.
         const nextState = action.payload as State | PartialState<State>;
 
         if (
+          nextState.stale !== false ||
           nextState.routes.length === 0 ||
           nextState.routes.some((route: { name: string }) => !state.routeNames.includes(route.name))
         ) {
           return null;
         }
 
-        if (nextState.stale === false) {
-          if (
-            state.routeNames.length !== nextState.routeNames.length ||
-            nextState.routeNames.some((name) => !state.routeNames.includes(name))
-          ) {
-            return null;
-          }
-
-          return {
-            ...nextState,
-            routes: nextState.routes.map((route) =>
-              route.key ? route : { ...route, key: `${route.name}-${nanoid()}` }
-            ),
-          };
+        if (
+          state.routeNames.length !== nextState.routeNames.length ||
+          nextState.routeNames.some((name) => !state.routeNames.includes(name))
+        ) {
+          return null;
         }
 
-        return nextState;
+        return {
+          ...nextState,
+          routes: nextState.routes.map((route) =>
+            route.key ? route : { ...route, key: `${route.name}-${nanoid()}` }
+          ),
+        };
       }
 
       default:
         return null;
     }
-  },
-
-  shouldActionChangeFocus(action: CommonNavigationAction) {
-    return action.type === 'NAVIGATE' || action.type === 'NAVIGATE_DEPRECATED';
   },
 };

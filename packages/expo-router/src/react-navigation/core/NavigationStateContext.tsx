@@ -12,7 +12,6 @@ export const NavigationStateContext = React.createContext<{
   getKey: () => string | undefined;
   setKey: (key: string) => void;
   getState: () => NavigationState | PartialState<NavigationState> | undefined;
-  setState: (state: NavigationState | PartialState<NavigationState> | undefined) => void;
   getIsInitial: () => boolean;
   addOptionsGetter?: (key: string, getter: () => object | undefined | null) => void;
 }>({
@@ -25,9 +24,6 @@ export const NavigationStateContext = React.createContext<{
     throw new Error(MISSING_CONTEXT_ERROR);
   },
   get getState(): any {
-    throw new Error(MISSING_CONTEXT_ERROR);
-  },
-  get setState(): any {
     throw new Error(MISSING_CONTEXT_ERROR);
   },
   get getIsInitial(): any {

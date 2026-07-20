@@ -80,19 +80,21 @@ export function convertStackStateToNonModalState(
     return { routes: state.routes, index: state.index };
   }
 
-  // Remove every modal-type route from the stack on web.
-  const routes = state.routes.filter((route) => {
-    return !isModalPresentation(descriptors[route.key]!.options);
-  });
+  // Remove every modal-type route from the stack on web. Preloaded/inactive routes live after
+  // `index`; keep the active and inactive parts separate so the index never points into the tail.
+  const notModal = (route: { key: string }) =>
+    !isModalPresentation(descriptors[route.key]!.options);
+  const activeRoutes = state.routes.slice(0, state.index + 1).filter(notModal);
+  const inactiveRoutes = state.routes.slice(state.index + 1).filter(notModal);
 
   // Recalculate the active index so it still points at the same non-modal route, or –
-  // if that route was filtered out – at the last remaining route.
-  let index = routes.findIndex((r) => r.key === state.routes[state.index]?.key);
+  // if that route was filtered out – at the last remaining active route.
+  let index = activeRoutes.findIndex((r) => r.key === state.routes[state.index]?.key);
   if (index < 0) {
-    index = routes.length > 0 ? routes.length - 1 : 0;
+    index = activeRoutes.length > 0 ? activeRoutes.length - 1 : 0;
   }
 
-  return { routes, index };
+  return { routes: activeRoutes.concat(inactiveRoutes), index };
 }
 
 /**
@@ -108,8 +110,8 @@ export function findLastNonModalIndex(
   state: StackNavigationState<ParamListBase>,
   descriptors: Record<string, { options: ExtendedStackNavigationOptions }>
 ) {
-  // Iterate backwards through the stack to find the last non-modal route.
-  for (let i = state.routes.length - 1; i >= 0; i--) {
+  // Iterate backwards from the active route to find the last non-modal route.
+  for (let i = state.index; i >= 0; i--) {
     if (!isModalPresentation(descriptors[state.routes[i]!.key]!.options)) {
       return i;
     }

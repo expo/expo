@@ -113,17 +113,14 @@ describe('toHaveRouterState', () => {
             slug: 'home',
             test: 'true',
           },
-          path: '/home?test=true',
         },
         {
           key: expect.any(String),
           name: 'directory/page',
           params: {},
-          path: undefined,
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 

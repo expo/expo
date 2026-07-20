@@ -62,7 +62,16 @@ test('gets path for route in root navigator screen', () => {
   const navigation = createNavigationContainerRef<RootStackParamList>();
 
   render(
-    <NavigationContainer ref={navigation} linking={config}>
+    <NavigationContainer
+      ref={navigation}
+      linking={config}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['a', 'b'],
+        routes: [{ key: '@:a:0', name: 'a' }],
+      }}>
       <Stack.Navigator>
         <Stack.Screen name="a" component={Test} />
         <Stack.Screen name="b" component={Test} />
@@ -93,7 +102,28 @@ test('gets path for route in nested navigator screen', () => {
   const navigation = createNavigationContainerRef<AStackParamList>();
 
   render(
-    <NavigationContainer ref={navigation} linking={config}>
+    <NavigationContainer
+      ref={navigation}
+      linking={config}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '@',
+        routeNames: ['a'],
+        routes: [
+          {
+            key: '@:a:0',
+            name: 'a',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '@:a:0',
+              routeNames: ['b', 'c'],
+              routes: [{ key: '@:a:0:b:0', name: 'b', params: { id: 'apple' } }],
+            },
+          },
+        ],
+      }}>
       <StackA.Navigator>
         <StackA.Screen name="a">
           {() => (

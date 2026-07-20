@@ -11,7 +11,7 @@ import {
   Slot,
   usePathname,
 } from '../exports';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link';
@@ -1569,13 +1569,15 @@ it('should always prefer static routes over dynamic ones', async () => {
   expect(screen).toHavePathname('/nested/grape');
   expect(screen).toHaveSegments(['nested', 'grape']);
 
-  // This matches /(tabs)/nested/[fruit].
+  // Ambiguous between /(stack)/nested/[fruit] and /(tabs)/nested/[fruit] — both equally specific.
+  // The tie is broken by config order, which now mirrors the rendered navigator order (sorted): the
+  // pure group `(stack)` sorts ahead of `(tabs)/nested`, so we land in (stack).
   // We don't match:
-  // - nested/[fruit] because /(tabs)/nested/fruit is more specific
+  // - nested/[fruit] because the grouped /(stack)/nested/[fruit] is more specific
   // - [param]/melon because segments are evaluated left-right. 'nested' is static and '[param]' is dynamic
   act(() => router.push('/nested/melon'));
   expect(screen).toHavePathname('/nested/melon');
-  expect(screen).toHaveSegments(['(tabs)', 'nested', '[fruit]']);
+  expect(screen).toHaveSegments(['(stack)', 'nested', '[fruit]']);
 });
 
 it('can push relative links that are relative to the directory', () => {
@@ -1674,6 +1676,7 @@ describe('navigation action fallbacks', () => {
   it('can fall back correctly for tab navigators', () => {
     renderRouter({
       _layout: () => <Tabs />,
+      index: () => <Text testID="index" />,
       one: () => <Text testID="one" />,
       two: () => <Text testID="two" />,
       redirected: () => <Redirect href="/" />,

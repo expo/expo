@@ -5,7 +5,7 @@ import type { NavigationState, Router } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import { MockRouter, MockRouterKey, mockInitialState } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
@@ -51,8 +51,22 @@ test('fires focus and blur events in root navigator', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third', 'fourth'],
+        routes: [
+          { name: 'first', key: 'first' },
+          { name: 'second', key: 'second' },
+          { name: 'third', key: 'third' },
+          { name: 'fourth', key: 'fourth' },
+        ],
+      }}>
       <TestNavigator ref={navigation}>
         <Screen name="first" component={createComponent(firstFocusCallback, firstBlurCallback)} />
         <Screen
@@ -130,8 +144,20 @@ test('fires focus event after blur', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second'],
+        routes: [
+          { name: 'first', key: 'first' },
+          { name: 'second', key: 'second' },
+        ],
+      }}>
       <TestNavigator ref={navigation}>
         <Screen name="first" component={Test} />
         <Screen name="second" component={Test} />
@@ -203,8 +229,35 @@ test('fires focus and blur events in nested navigator', () => {
   const parent = React.createRef<any>();
   const child = React.createRef<any>();
 
+  // The whole tree is seeded: root key '0', nested key '1'.
+  MockRouterKey.current = 2;
+
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'nested'],
+        routes: [
+          { key: 'first', name: 'first' },
+          { key: 'second', name: 'second' },
+          {
+            key: 'nested',
+            name: 'nested',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['third', 'fourth'],
+              routes: [
+                { key: 'third', name: 'third' },
+                { key: 'fourth', name: 'fourth' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator ref={parent}>
         <Screen name="first" component={createComponent(firstFocusCallback, firstBlurCallback)} />
         <Screen
@@ -299,26 +352,6 @@ test('fires blur event when a route is removed with a delay', async () => {
     return {
       ...router,
 
-      getInitialState({ routeNames, routeParamList }) {
-        const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0];
-
-        return {
-          stale: false,
-          type: 'test',
-          key: 'stack',
-          index: 0,
-          routeNames,
-          routes: [
-            {
-              key: initialRouteName,
-              name: initialRouteName,
-              params: routeParamList[initialRouteName],
-            },
-          ],
-        };
-      },
-
       getStateForAction(state, action, options) {
         switch (action.type) {
           case 'PUSH':
@@ -396,7 +429,14 @@ test('fires blur event when a route is removed with a delay', async () => {
   const navigation = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        key: 'stack',
+        index: 0,
+        routeNames: ['first', 'second'],
+        routes: [{ key: 'first', name: 'first' }],
+      }}>
       <TestNavigator ref={navigation}>
         <Screen name="first" component={First} />
         <Screen name="second" component={Second} />
@@ -453,7 +493,8 @@ test('fires custom events added with addListener', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={createComponent(firstCallback)} />
         <Screen name="second" component={createComponent(secondCallback)} />
@@ -529,7 +570,8 @@ test("doesn't call same listener multiple times with addListener", () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={Test} />
         <Screen name="second" component={Test} />
@@ -567,7 +609,8 @@ test('fires custom events added with listeners prop', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -640,7 +683,8 @@ test("doesn't call same listener multiple times with listeners", () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -690,7 +734,8 @@ test('fires listeners when callback is provided for listeners prop', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={mockInitialState({ routeNames: ['first', 'second', 'third'] })}>
       <TestNavigator ref={ref}>
         <Screen
           name="first"
@@ -793,7 +838,7 @@ test('has option to prevent default', () => {
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['first'] })}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={Test} />
       </TestNavigator>
@@ -848,7 +893,7 @@ test('removes only one listener when unsubscribe is called multiple times', () =
   const ref = React.createRef<any>();
 
   const element = (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['first'] })}>
       <TestNavigator ref={ref}>
         <Screen name="first" component={Test} />
       </TestNavigator>

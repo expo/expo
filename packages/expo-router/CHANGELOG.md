@@ -5,6 +5,9 @@
 ### 🛠 Breaking changes
 
 - Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
+- Remove `backBehavior="fullHistory"` support from tab navigators. It now warns in development and falls back to `history`, which is the closest supported behavior in the global navigation state model. ([#47285](https://github.com/expo/expo/pull/47285) by [@Ubax](https://github.com/Ubax))
+- Remove the `type` field from the navigation state. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
+- Seed the navigation container verbatim from the compiled store state: the container no longer stales the seed, so navigators keep the compiler's deterministic state keys (`navigator<pathname>`) and skip their startup rehydration passes. Until the tab reducer gains front-preloading, a deep link into a tab with an _implicit_ anchor (no `initialRouteName`/`unstable_settings.anchor`) places the anchor after the focused tab, so back bubbles instead of landing on it — declared anchors are unaffected. The internal `+not-found` screen is no longer added when the app declares its own root-level catch-all. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 
@@ -22,6 +25,7 @@
 ### 🐛 Bug fixes
 
 - [android] Disable safe area insets in Native Tabs on Android when tab bar is hidden. ([#47611](https://github.com/expo/expo/pull/47611) by [@debitan](https://github.com/debitan))
+- Restore the navigator-kind consumers broken by removing `type` from the navigation state: `router.canDismiss()` (now simulates the `POP` that `dismiss()` dispatches, so a stack whose only extra route is a preloaded one correctly reports `false`), cross-tab link-preview navigation, scroll-to-top on tab press, and the `NativeTabs.Trigger` placement assertion — navigator kind now flows only from `NavigatorTypeContext` inside React. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
 - Sync config plugin `Props` type with the options schema, adding the missing `redirects`, `rewrites`, `platformRoutes`, and `disableSynchronousScreensUpdates` options. ([#46677](https://github.com/expo/expo/pull/46677) by [@zoontek](https://github.com/zoontek))
 - [android] fix renderingMode for toolbar icons ([#46149](https://github.com/expo/expo/pull/46149) by [@Ubax](https://github.com/Ubax))
 - Allow async routes to rehydrate synchronously by carrying through preloaded modules preventing FOUC in production output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))

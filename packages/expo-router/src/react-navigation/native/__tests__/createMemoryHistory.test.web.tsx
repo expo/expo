@@ -41,12 +41,10 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     routes: [
       {
         name: 'One',
-        path: '/route-one',
         key: 'One-23',
         params: undefined,
       },
     ],
-    type: 'stack',
     stale: false,
   };
 
@@ -69,18 +67,15 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     routes: [
       {
         name: 'One',
-        path: '/route-one',
         key: 'One-23',
         params: undefined,
       },
       {
         name: 'Two',
-        path: '/route-two',
         key: 'Two-34',
         params: {},
       },
     ],
-    type: 'stack',
     stale: false,
   };
   history.push({ path: '/route-two', state: mockStateTwo });
@@ -123,18 +118,15 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     routes: [
       {
         name: 'Three',
-        path: '/route-three',
         key: 'Three-23',
         params: undefined,
       },
       {
         name: 'Two',
-        path: '/route-two',
         key: 'Two-23',
         params: undefined,
       },
     ],
-    type: 'stack',
     stale: false,
   };
   history.replace({ path: '/route-three', state: mockStateThree });
@@ -154,18 +146,15 @@ test('will not attempt to navigate beyond whatever browser history it is possibl
     routes: [
       {
         name: 'Three',
-        path: '/route-three',
         key: 'Three-23',
         params: undefined,
       },
       {
         name: 'One',
-        path: '/route-one',
         key: 'One-23',
         params: undefined,
       },
     ],
-    type: 'stack',
     stale: false,
   };
 

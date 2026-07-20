@@ -2,6 +2,10 @@
 import * as React from 'react';
 
 import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../../core/NavigatorTypeContext';
+import {
   createNavigatorFactory,
   type EventArg,
   type NavigatorTypeBagBase,
@@ -38,7 +42,7 @@ function StackNavigator({
 }: StackNavigatorProps) {
   const { direction } = useLocale();
 
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -82,17 +86,20 @@ function StackNavigator({
     [navigation, state.index, state.key]
   );
 
+  const navigatorTypeValue = useNavigatorTypeContextValue('stack', state.key);
+
   return (
-    <NavigationContent>
-      <StackView
-        {...rest}
-        direction={direction}
-        state={state}
-        describe={describe}
-        descriptors={descriptors}
-        navigation={navigation}
-      />
-    </NavigationContent>
+    <NavigatorTypeContext value={navigatorTypeValue}>
+      <NavigationContent>
+        <StackView
+          {...rest}
+          direction={direction}
+          state={state}
+          descriptors={descriptors}
+          navigation={navigation}
+        />
+      </NavigationContent>
+    </NavigatorTypeContext>
   );
 }
 

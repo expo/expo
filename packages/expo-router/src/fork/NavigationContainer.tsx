@@ -1,6 +1,7 @@
 import React from 'react';
 import { I18nManager } from 'react-native';
 
+import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { useImperativeApiEmitter } from '../imperative-api';
 import type {
   DocumentTitleOptions,
@@ -16,7 +17,6 @@ import {
   DefaultTheme,
   LinkingContext,
   LocaleDirContext,
-  ThemeProvider,
   UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
   getActionFromState,
   getPathFromState,
@@ -24,10 +24,10 @@ import {
   validatePathConfig,
 } from '../react-navigation/native';
 import useLatestCallback from '../utils/useLatestCallback';
+import { extractExpoPathFromURL } from './extractPathFromURL';
 import { useBackButton } from './useBackButton';
 import { useDocumentTitle } from './useDocumentTitle';
 import { useLinking } from './useLinking';
-import { useThenable } from './useThenable';
 
 declare global {
   // eslint-disable-next-line no-var
@@ -42,7 +42,6 @@ globalThis.REACT_NAVIGATION_DEVTOOLS = new WeakMap();
 type Props<ParamList extends object> = NavigationContainerProps & {
   direction?: LocaleDirection;
   linking?: LinkingOptions<ParamList>;
-  fallback?: React.ReactNode;
   documentTitle?: DocumentTitleOptions;
 };
 
@@ -50,14 +49,13 @@ type Props<ParamList extends object> = NavigationContainerProps & {
  * Container component which holds the navigation state designed for React Native apps.
  * This should be rendered at the root wrapping the whole app.
  *
- * @param props.initialState Initial state object for the navigation tree. When deep link handling is enabled, this will override deep links when specified. Make sure that you don't specify an `initialState` when there's a deep link (`Linking.getInitialURL()`).
+ * @param props.initialState Seed for the navigation tree, used verbatim (never staled). Internal/standalone-test seam only — the expo-router app path (`ExpoRoot`) must never pass it, because the store has already compiled the initial URL into the seed (see the persistence TODO in `BaseNavigationContainer`).
  * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
  * @param props.onUnhandledAction Callback which is called when an action is not handled.
  * @param props.direction Text direction of the components. Defaults to `'ltr'`.
  * @param props.theme Theme object for the UI elements.
  * @param props.linking Options for deep linking. Deep link handling is enabled when this prop is provided, unless `linking.enabled` is `false`.
- * @param props.fallback Fallback component to render until we have finished getting initial state when linking is enabled. Defaults to `null`.
  * @param props.documentTitle Options to configure the document title on Web. Updating document title is handled by default unless `documentTitle.enabled` is `false`.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
@@ -67,7 +65,6 @@ function NavigationContainerInner(
     direction = I18nManager.getConstants().isRTL ? 'rtl' : 'ltr',
     theme = DefaultTheme,
     linking,
-    fallback = null,
     documentTitle,
     onReady,
     onStateChange,
@@ -89,7 +86,11 @@ function NavigationContainerInner(
 
   const [lastUnhandledLink, setLastUnhandledLink] = React.useState<string | undefined>();
 
-  const { getInitialState } = useLinking(
+  // The store already compiled the initial URL into the seed, so we no longer consume
+  // `getInitialState` for the initial container state. We still call `useLinking` for its
+  // history-event path (browser back/forward and native deep-link listeners), which dispatches
+  // complete keyed state via `resetRoot`/actions without re-staling.
+  useLinking(
     refContainer,
     {
       enabled: isLinkingEnabled,
@@ -106,28 +107,39 @@ function NavigationContainerInner(
     [lastUnhandledLink, setLastUnhandledLink]
   );
 
-  const onReadyForLinkingHandling = useLatestCallback(() => {
-    // If the screen path matches lastUnhandledLink, we do not track it
-    const path = refContainer.current?.getCurrentRoute()?.path;
+  // Clear `lastUnhandledLink` once the committed state actually reaches it. The current URL is
+  // derived from the committed state (`getRouteInfoFromState`) rather than read off a route's
+  // stashed `path`; both the derived URL and the tracked link are normalized to the same shape
+  // (`extractExpoPathFromURL`) before comparing. The derivation runs only when a link is actually
+  // being tracked — the tracked link only comes from expo-router's linking (a complete `__root`
+  // tree), so `getRouteInfoFromState` never sees a non-expo-router shape here.
+  const clearHandledLink = useLatestCallback(() => {
     setLastUnhandledLink((previousLastUnhandledLink) => {
-      if (previousLastUnhandledLink === path) {
+      if (previousLastUnhandledLink == null) {
+        return previousLastUnhandledLink;
+      }
+
+      const state = refContainer.current?.getRootState();
+      const currentPath =
+        state != null
+          ? extractExpoPathFromURL([], getRouteInfoFromState(state).pathnameWithParams)
+          : undefined;
+
+      if (extractExpoPathFromURL([], previousLastUnhandledLink) === currentPath) {
         return undefined;
       }
       return previousLastUnhandledLink;
     });
+  });
+
+  const onReadyForLinkingHandling = useLatestCallback(() => {
+    clearHandledLink();
     onReady?.();
   });
 
   const onStateChangeForLinkingHandling = useLatestCallback(
     (state: Readonly<NavigationState> | undefined) => {
-      // If the screen path matches lastUnhandledLink, we do not track it
-      const path = refContainer.current?.getCurrentRoute()?.path;
-      setLastUnhandledLink((previousLastUnhandledLink) => {
-        if (previousLastUnhandledLink === path) {
-          return undefined;
-        }
-        return previousLastUnhandledLink;
-      });
+      clearHandledLink();
       onStateChange?.(state);
     }
   );
@@ -150,17 +162,7 @@ function NavigationContainerInner(
     }
   });
 
-  const [isResolved, initialState] = useThenable(getInitialState);
-
   React.useImperativeHandle(ref, () => refContainer.current!);
-
-  const isLinkingReady = rest.initialState != null || !isLinkingEnabled || isResolved;
-
-  if (!isLinkingReady) {
-    // This is temporary until we have Suspense for data-fetching
-    // Then the fallback will be handled by a parent `Suspense` component
-    return <ThemeProvider value={theme}>{fallback}</ThemeProvider>;
-  }
 
   return (
     <LocaleDirContext.Provider value={direction}>
@@ -171,7 +173,6 @@ function NavigationContainerInner(
             theme={theme}
             onReady={onReadyForLinkingHandling}
             onStateChange={onStateChangeForLinkingHandling}
-            initialState={rest.initialState == null ? initialState : rest.initialState}
             ref={refContainer}
           />
         </LinkingContext.Provider>

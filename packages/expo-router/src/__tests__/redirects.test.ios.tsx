@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 import type { RedirectConfig } from '../exports';
 import { router } from '../exports';
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import Stack from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter } from '../testing-library';
@@ -57,19 +57,28 @@ it('deep link to a redirect', () => {
   expect(screen.getByTestId('bar')).toBeTruthy();
 
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
+              key: expect.any(String),
               name: 'bar',
-              path: '/bar',
-            },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 });
 
@@ -92,25 +101,30 @@ it('deep link to a dynamic redirect', () => {
   );
 
   expect(store.state).toEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
-        params: {
-          slug: 'bar',
-        },
+        params: { slug: 'bar' },
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'deeply/nested/route/[slug]', 'foo/[slug]'],
           routes: [
             {
+              key: expect.any(String),
               name: 'deeply/nested/route/[slug]',
-              params: {
-                slug: 'bar',
-              },
-              path: '/deeply/nested/route/bar',
-            },
+              params: { slug: 'bar' },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 });
 
@@ -133,19 +147,28 @@ it('keeps extra params as query params', () => {
   );
 
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'bar', 'foo/[slug]'],
           routes: [
             {
+              key: expect.any(String),
               name: 'bar',
-              path: '/bar',
-            },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 });
 
@@ -168,25 +191,30 @@ it('can redirect from single to catch all', () => {
   );
 
   expect(store.state).toEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
-        params: {
-          slug: ['bar'],
-        },
+        params: { slug: ['bar'] },
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'foo/[slug]', 'bar/[...slug]'],
           routes: [
             {
+              key: expect.any(String),
               name: 'bar/[...slug]',
-              params: {
-                slug: ['bar'],
-              },
-              path: '/bar/bar',
-            },
+              params: { slug: ['bar'] },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 });
 
@@ -204,19 +232,28 @@ it('can push to a redirect', () => {
   });
 
   expect(store.state).toStrictEqual({
+    index: 0,
+    key: expect.any(String),
+    routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
+        key: expect.any(String),
         name: '__root',
         state: {
+          index: 0,
+          key: expect.any(String),
+          routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
+              key: expect.any(String),
               name: 'index',
-              path: '/',
-            },
+            }
           ],
+          stale: false,
         },
       },
     ],
+    stale: false,
   });
 
   act(() => router.push('/foo'));
@@ -224,39 +261,31 @@ it('can push to a redirect', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
-              path: '/',
             },
             {
               key: expect.any(String),
               name: 'bar',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -392,38 +421,30 @@ it('not existing nested route redirects correctly', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', 'explore', 'test/1234', '[id]'],
           routes: [
             {
               key: expect.any(String),
               name: 'index',
-              params: undefined,
-              path: '/',
             },
             {
               key: expect.any(String),
               name: 'explore',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });

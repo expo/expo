@@ -76,7 +76,14 @@ test('renders a material top tab navigator with screens', async () => {
   const Tab = createMaterialTopTabNavigator<TopTabParamList>();
 
   const { findByText, queryByText } = render(
-    <NavigationContainer>
+    <NavigationContainer
+      initialState={{
+        stale: false,
+        index: 0,
+        key: 'tab',
+        routeNames: ['A', 'B'],
+        routes: [{ key: 'A', name: 'A' }],
+      }}>
       <Tab.Navigator>
         <Tab.Screen name="A" component={Test} />
         <Tab.Screen name="B" component={Test} />

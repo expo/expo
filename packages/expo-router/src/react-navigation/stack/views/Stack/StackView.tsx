@@ -9,12 +9,10 @@ import {
   type LocaleDirection,
   type ParamListBase,
   type Route,
-  type RouteProp,
   StackActions,
   type StackNavigationState,
 } from '../../../native';
 import type {
-  StackDescriptor,
   StackDescriptorMap,
   StackNavigationConfig,
   StackNavigationHelpers,
@@ -29,7 +27,6 @@ type Props = StackNavigationConfig & {
   state: StackNavigationState<ParamListBase>;
   navigation: StackNavigationHelpers;
   descriptors: StackDescriptorMap;
-  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => StackDescriptor;
 };
 
 type State = {
@@ -61,10 +58,8 @@ const isArrayEqual = (a: any[], b: any[]) =>
 
 export class StackView extends React.Component<Props, State> {
   static getDerivedStateFromProps(props: Readonly<Props>, state: Readonly<State>) {
-    const allRoutes = [...props.state.routes, ...props.state.preloadedRoutes];
-    const previousRoutes = state.previousState
-      ? [...state.previousState.routes, ...state.previousState.preloadedRoutes]
-      : [];
+    const allRoutes = props.state.routes;
+    const previousRoutes = state.previousState ? state.previousState.routes : [];
 
     // If there was no change in routes, we don't need to compute anything
     if (
@@ -137,10 +132,14 @@ export class StackView extends React.Component<Props, State> {
     // Here we determine which routes were added or removed to animate them
     // We keep a copy of the route being removed in local state to be able to animate it
 
+    // Routes past the focused index are preloaded/inactive. Keep them out of the animated set (so
+    // the focused route stays last and drives push/pop animations), then render them hidden by
+    // appending them below. `CardStack` identifies them by key and positions them offscreen.
+    const preloadedRoutes = props.state.routes.slice(props.state.index + 1);
+
     let routes =
       props.state.index < props.state.routes.length - 1
-        ? // Remove any extra routes from the state
-          // The last visible route should be the focused route, i.e. at current index
+        ? // The last route in the animated set should be the focused route, i.e. at current index
           props.state.routes.slice(0, props.state.index + 1)
         : props.state.routes;
 
@@ -277,8 +276,12 @@ export class StackView extends React.Component<Props, State> {
       return acc;
     }, {});
 
+    const routesWithPreloaded = preloadedRoutes.length
+      ? [...routes, ...preloadedRoutes.filter((r) => !routes.some((e) => e.key === r.key))]
+      : routes;
+
     return {
-      routes,
+      routes: routesWithPreloaded,
       previousState: props.state,
       previousDescriptors: props.descriptors,
       openingRouteKeys,
@@ -430,11 +433,6 @@ export class StackView extends React.Component<Props, State> {
 
     const { routes, descriptors, openingRouteKeys, closingRouteKeys } = this.state;
 
-    const preloadedDescriptors = state.preloadedRoutes.reduce<StackDescriptorMap>((acc, route) => {
-      acc[route.key] = acc[route.key] || this.props.describe(route, true);
-      return acc;
-    }, {});
-
     return (
       <GestureHandlerWrapper style={styles.container}>
         <SafeAreaProviderCompat>
@@ -462,7 +460,6 @@ export class StackView extends React.Component<Props, State> {
                         onGestureStart={this.handleGestureStart}
                         onGestureEnd={this.handleGestureEnd}
                         onGestureCancel={this.handleGestureCancel}
-                        preloadedDescriptors={preloadedDescriptors}
                         {...rest}
                       />
                     )}

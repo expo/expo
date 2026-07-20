@@ -1,7 +1,19 @@
+import { expectComplete, stripCompleteness } from './completeness';
+import { getRouteInfoFromState } from '../../global-state/getRouteInfoFromState';
 import { getMockConfig } from '../../testing-library';
+import { extractExpoPathFromURL } from '../extractPathFromURL';
 import { getPathFromState } from '../getPathFromState';
-import { getStateFromPath } from '../getStateFromPath';
+import { getStateFromPath as getStateFromPathRaw } from '../getStateFromPath';
 import { getUrlWithReactNavigationConcessions, stripBaseUrl } from '../getStateFromPath-forks';
+
+// The compiler's raw output is a complete, keyed superset of these legacy literals. Every call is
+// checked for completeness here, then normalized so the pre-existing `toEqual` literals still match.
+const getStateFromPath: typeof getStateFromPathRaw = (...args) => {
+  const raw = getStateFromPathRaw(...args);
+  // Pass the options' `screens` so completeness can also detect hollow navigator routes.
+  if (raw !== undefined) expectComplete(raw, args[1]?.screens);
+  return stripCompleteness(raw);
+};
 
 beforeEach(() => {
   delete process.env.EXPO_BASE_URL;
@@ -55,7 +67,6 @@ describe('baseUrl', () => {
             routes: [
               {
                 name: 'bar',
-                path: '/bar',
               },
             ],
           },
@@ -81,7 +92,6 @@ describe('baseUrl', () => {
             routes: [
               {
                 name: 'bar',
-                path: '/bar',
               },
             ],
           },
@@ -89,6 +99,77 @@ describe('baseUrl', () => {
       ],
     });
     expect(getPathFromState(getStateFromPath<object>(path, config)!, config)).toBe('/expo/bar');
+  });
+});
+
+// Guard for retiring the `route.path` recompile branch in `useLinking` (Part 2, Step 6): the URL a
+// wildcard/catch-all, encoded, or not-found route was reached by must be reproducible from the
+// compiled state alone. If these hold, `useLinking` no longer needs to stash the original `path` on
+// the route and recompile from it to preserve the URL.
+describe('URL round-trips through the compiled state (no route.path preservation needed)', () => {
+  const roundTrip = (path: string, routes: string[]) => {
+    const config = getMockConfig(routes);
+    return getPathFromState(getStateFromPath<object>(path, config)!, config);
+  };
+
+  it('round-trips a catch-all route', () => {
+    expect(roundTrip('/blog/2024/01/hello', ['index', 'blog/[...rest]'])).toBe(
+      '/blog/2024/01/hello'
+    );
+  });
+
+  it('round-trips a catch-all route with encoded segments', () => {
+    expect(roundTrip('/files/hello%20world/a', ['index', 'files/[...rest]'])).toBe(
+      '/files/hello%20world/a'
+    );
+  });
+
+  it('round-trips an encoded dynamic param', () => {
+    expect(roundTrip('/hello%20world', ['index', '[slug]'])).toBe('/hello%20world');
+  });
+
+  it('round-trips a top-level not-found', () => {
+    expect(roundTrip('/missing/page', ['index', '+not-found'])).toBe('/missing/page');
+  });
+
+  it('round-trips a catch-all with EXPO_BASE_URL', () => {
+    process.env.EXPO_BASE_URL = '/expo/prefix';
+    const config = getMockConfig(['index', 'blog/[...rest]']);
+    expect(
+      getPathFromState(getStateFromPath<object>('/expo/prefix/blog/a/b', config)!, config)
+    ).toBe('/expo/prefix/blog/a/b');
+  });
+});
+
+// Guard for the `NavigationContainer` unhandled-link clear (Part 2, Step 6d): instead of comparing
+// a route's stashed `path` against the tracked link, the container derives the current URL from the
+// committed state via `getRouteInfoFromState` and compares both normalized through
+// `extractExpoPathFromURL`. This locks in that the derivation reproduces the link a handled URL was
+// reached by — including a query string — so the tracked link is actually cleared.
+describe('unhandled-link clear: derived current path matches the source URL (normalized)', () => {
+  const derivedMatchesUrl = (url: string, routes: string[]) => {
+    const config = getMockConfig(routes);
+    const state = getStateFromPathRaw(url, config)!;
+    const derived = extractExpoPathFromURL(
+      [],
+      getRouteInfoFromState(state as Parameters<typeof getRouteInfoFromState>[0]).pathnameWithParams
+    );
+    return { derived, source: extractExpoPathFromURL([], url) };
+  };
+
+  it('matches a plain path', () => {
+    const { derived, source } = derivedMatchesUrl('/one', ['index', 'one']);
+    expect(derived).toBe(source);
+  });
+
+  it('matches a path with a query string', () => {
+    const { derived, source } = derivedMatchesUrl('/one?foo=bar', ['index', 'one']);
+    expect(derived).toBe(source);
+  });
+
+  it('matches a catch-all path', () => {
+    const { derived, source } = derivedMatchesUrl('/blog/a/b', ['index', 'blog/[...rest]']);
+    expect(derived).toBe(source);
   });
 });
 
@@ -140,7 +221,6 @@ describe('hash', () => {
       routes: [
         {
           name: 'hello',
-          path: '/hello#123',
           params: {
             '#': '123',
           },
@@ -165,7 +245,6 @@ describe('hash', () => {
                   '#': '123',
                   hello: 'hello',
                 },
-                path: '/hello#123',
               },
             ],
           },
@@ -186,7 +265,6 @@ describe('hash', () => {
                 params: {
                   '#': '123',
                 },
-                path: '/?#123',
               },
             ],
           },
@@ -209,7 +287,6 @@ it(`supports spaces`, () => {
     routes: [
       {
         name: 'hello world',
-        path: '/hello%20world',
       },
     ],
   });
@@ -228,7 +305,6 @@ it(`supports spaces`, () => {
               params: {
                 'hello world': 'hello world',
               },
-              path: '/hello%20world',
             },
           ],
         },
@@ -289,7 +365,6 @@ it(`matches against dynamic groups`, () => {
                           params: {
                             user: '(explore)',
                           },
-                          path: '',
                         },
                       ],
                     },
@@ -357,7 +432,6 @@ it(`adds dynamic route params from all levels of the path`, () => {
                                   baz: 'baz',
                                   foo: 'foo',
                                 },
-                                path: '/foo/bar/baz/other',
                               },
                             ],
                           },
@@ -390,7 +464,6 @@ it(`handles not-found routes`, () => {
               params: {
                 'not-found': ['missing-page'],
               },
-              path: '/missing-page',
             },
           ],
         },
@@ -415,7 +488,6 @@ it(`handles query params`, () => {
                 hello: 'world',
                 test: 'true',
               },
-              path: '/?test=true&hello=world&array=1&array=2',
             },
           ],
         },
@@ -440,7 +512,6 @@ it(`handles query params`, () => {
                 hello: 'world',
                 test: 'true',
               },
-              path: '/?test=true&hello=world&array=1&array=2',
             },
           ],
         },
@@ -460,7 +531,6 @@ it(`matches routes with multiple spaces in path`, () => {
     routes: [
       {
         name: 'hello beautiful world',
-        path: '/hello%20beautiful%20world',
       },
     ],
   });
@@ -477,7 +547,6 @@ it(`prioritizes hoisted index routes over dynamic groups`, () => {
           routes: [
             {
               name: '(one)/index',
-              path: '',
             },
           ],
         },

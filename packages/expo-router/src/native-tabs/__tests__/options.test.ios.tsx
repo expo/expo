@@ -58,7 +58,8 @@ it('can pass nativeProps via unstable_nativeProps prop', () => {
 
   expect(screen.getByTestId('index')).toBeVisible();
   expect(screen.getByTestId('second')).toBeVisible();
-  expect(NativeTabsView).toHaveBeenCalledTimes(1);
+  // Eager preload adds one extra render pass of the tabs view.
+  expect(NativeTabsView).toHaveBeenCalledTimes(2);
   const call = NativeTabsView.mock.calls[0]![0];
   expect(call.tabs[0]!.options).toMatchObject({
     nativeProps: {
@@ -314,7 +315,8 @@ describe('Icons', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    // Eager preload adds one extra render pass of the tabs view.
+    expect(NativeTabsView).toHaveBeenCalledTimes(2);
     const call = NativeTabsView.mock.calls[0]![0];
     expect(call.tabs[0]!.options).toMatchObject({
       selectedIconColor: 'blue',
@@ -549,7 +551,8 @@ describe('Label', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('one')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    // Eager preload adds one extra render pass of the tabs view.
+    expect(NativeTabsView).toHaveBeenCalledTimes(2);
     expect(NativeTabsView.mock.calls[0]![0].tabs[0]!.options.title).toBe(undefined);
     expect(NativeTabsView.mock.calls[0]![0].tabs[1]!.options.title).toBe(undefined);
   });
@@ -639,7 +642,8 @@ describe('Label', () => {
       one: () => <View testID="one" />,
     });
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    // Eager preload adds one extra render pass of the tabs view.
+    expect(NativeTabsView).toHaveBeenCalledTimes(2);
     const call = NativeTabsView.mock.calls[0]![0];
     expect(call.tabs[0]!.options).toMatchObject({
       selectedLabelStyle: { fontSize: 32, color: 'blue' },
@@ -693,7 +697,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      // Eager preload adds one extra render pass of the tabs view.
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
       const call = NativeTabsView.mock.calls[0]![0];
       expect(call.tabs[0]!.options).toMatchObject({
         title: 'Custom Title',
@@ -756,7 +761,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      // Eager preload adds one extra render pass of the tabs view.
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
       const call = NativeTabsView.mock.calls[0]![0];
       expect(call.tabs[0]!.options).toMatchObject({
         title: 'Custom Title',
@@ -848,7 +854,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      // Eager preload adds one extra render pass of the tabs view.
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
       const call = NativeTabsView.mock.calls[0]![0];
       expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(true);
       expect(call.tabs[1]!.options.disableTransparentOnScrollEdge).toBe(true);
@@ -867,7 +874,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      // Eager preload adds one extra render pass of the tabs view.
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
       const call = NativeTabsView.mock.calls[0]![0];
       // Trigger's value (false) takes precedence over NativeTabs' value (true)
       expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(false);
@@ -888,7 +896,8 @@ describe('Tab options', () => {
       });
 
       expect(screen.getByTestId('index')).toBeVisible();
-      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      // Eager preload adds one extra render pass of the tabs view.
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
       const call = NativeTabsView.mock.calls[0]![0];
       // Trigger's value (true) takes precedence over NativeTabs' value (false)
       expect(call.tabs[0]!.options.disableTransparentOnScrollEdge).toBe(true);
@@ -1165,7 +1174,8 @@ describe('Dynamic options', () => {
     // Tab + preview
     expect(screen.getAllByTestId('second')).toHaveLength(2);
     expect(within(screen.getByTestId('index')).getByTestId('second')).toBeVisible();
-    expect(NativeTabsView).toHaveBeenCalledTimes(1);
+    // Eager preload adds one extra render pass of the tabs view.
+    expect(NativeTabsView).toHaveBeenCalledTimes(2);
     const call = NativeTabsView.mock.calls[0]![0];
     expect(call.tabs[0]!.options.title).toBe('Initial Title');
     expect(call.tabs[0]!.options.icon).toBeUndefined();

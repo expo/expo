@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
+import { useStableTabOrder } from '../../core/useStableTabOrder';
+import { useStoreSlice } from '../../core/useStoreSlice';
 import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
 import {
   CommonActions,
@@ -130,6 +132,7 @@ export const getTabBarHeight = ({
 };
 
 export function BottomTabBar({ state, navigation, descriptors, insets, style }: Props) {
+  const committedState = useStoreSlice(state.key);
   const { colors } = useTheme();
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();
@@ -237,7 +240,9 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
     });
   };
 
-  const { routes } = state;
+  // `state.routes` is ordered by the navigator's back stack; render the bar in stable
+  // declaration order and detect focus by key.
+  const routes = useStableTabOrder(state.routeNames, state.routes);
 
   const tabBarHeight = useFrameSize((dimensions) =>
     getTabBarHeight({
@@ -340,7 +345,7 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
       </View>
       <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
         {routes.map((route, index) => {
-          const focused = index === state.index;
+          const focused = route.key === focusedRoute.key;
           const { options } = descriptors[route.key]!;
 
           const onPress = () => {
@@ -351,10 +356,21 @@ export function BottomTabBar({ state, navigation, descriptors, insets, style }: 
             });
 
             if (!focused && !event.defaultPrevented) {
-              navigation.dispatch({
-                ...CommonActions.navigate(route),
-                target: state.key,
-              });
+              // On the first visit the tab has no committed state, so let the Expo Router-provided
+              // builder navigate by href (installing the tab's complete compiled subtree). A
+              // re-visit already has state, so fall through to a plain focus that preserves it.
+              const committedRoute = committedState?.routes.find((item) => item.key === route.key);
+              const firstVisitAction =
+                committedRoute?.state == null
+                  ? options.unstable_tabBarNavigateAction?.()
+                  : undefined;
+
+              navigation.dispatch(
+                firstVisitAction ?? {
+                  ...CommonActions.navigate(route),
+                  target: state.key,
+                }
+              );
             }
           };
 

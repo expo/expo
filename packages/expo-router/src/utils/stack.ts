@@ -1,17 +1,13 @@
-import type {
-  NavigationState,
-  ParamListBase,
-  StackNavigationState,
-} from '../react-navigation/native';
+import type { NavigationState } from '../react-navigation/native';
 
 export function isRoutePreloadedInStack(
   navigationState: NavigationState | undefined,
-  route: { key: string }
+  route: { key: string },
+  navigatorType: string | undefined
 ): boolean {
-  if (!navigationState || navigationState.type !== 'stack') {
+  if (!navigationState || navigatorType !== 'stack' || navigationState.index === undefined) {
     return false;
   }
-  return (navigationState as StackNavigationState<ParamListBase>).preloadedRoutes.some(
-    (preloaded) => preloaded.key === route.key
-  );
+  const index = navigationState.routes.findIndex((r) => r.key === route.key);
+  return index > navigationState.index;
 }

@@ -289,7 +289,6 @@ type NavigationHelpersCommon<
       ? {
           name: RouteName;
           params: ParamList[RouteName];
-          path?: string;
           merge?: boolean;
           pop?: boolean;
         }
@@ -370,6 +369,13 @@ type NavigationHelpersCommon<
   canGoBack(): boolean;
 
   /**
+   * Check if dispatching a `POP` (stack dismiss) will be handled by some navigator on the focused
+   * chain. Unlike `canGoBack`, tab/drawer switches don't count — only a poppable stack does.
+   * Optional so `NavigationProp`-typed mocks needn't implement it; the real helpers always do.
+   */
+  canDismiss?(): boolean;
+
+  /**
    * Returns the name of the navigator specified in the `name` prop.
    * If no name is specified, returns `undefined`.
    */
@@ -426,9 +432,11 @@ export type NavigationHelpers<
 
 export type NavigationContainerProps = {
   /**
-   * Initial state object for the navigation tree.
+   * Initial state object for the navigation tree. Accepts a legacy partial `InitialState` (keys and
+   * `stale` filled in on rehydration) or the complete, keyed state (`stale: false`) the compiler now
+   * emits as the seed.
    */
-  initialState?: InitialState;
+  initialState?: InitialState | NavigationState;
   /**
    * Callback which is called with the latest navigation state when it changes.
    */
@@ -979,7 +987,6 @@ export type NavigatorScreenParams<ParamList extends {}> =
       merge?: never;
       initial?: never;
       pop?: never;
-      path?: string;
       state: PartialState<NavigationState> | NavigationState | undefined;
     }
   | {
@@ -989,7 +996,6 @@ export type NavigatorScreenParams<ParamList extends {}> =
             params?: ParamList[RouteName];
             merge?: boolean;
             initial?: boolean;
-            path?: string;
             pop?: boolean;
             state?: never;
           }
@@ -998,7 +1004,6 @@ export type NavigatorScreenParams<ParamList extends {}> =
             params: ParamList[RouteName];
             merge?: boolean;
             initial?: boolean;
-            path?: string;
             pop?: boolean;
             state?: never;
           };

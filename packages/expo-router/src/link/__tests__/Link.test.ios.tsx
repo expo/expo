@@ -342,7 +342,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -354,7 +353,6 @@ describe('singular', () => {
           state: {
             index: 3,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -363,7 +361,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: '/apple',
               },
               {
                 key: expect.any(String),
@@ -371,7 +368,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -379,7 +375,6 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -387,16 +382,13 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
 
     // Should push /apple and remove all previous instances of /apple
@@ -405,7 +397,6 @@ describe('singular', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -417,7 +408,6 @@ describe('singular', () => {
           state: {
             index: 1,
             key: expect.any(String),
-            preloadedRoutes: [],
             routeNames: ['[slug]'],
             routes: [
               {
@@ -426,7 +416,6 @@ describe('singular', () => {
                 params: {
                   slug: 'banana',
                 },
-                path: undefined,
               },
               {
                 key: expect.any(String),
@@ -434,16 +423,13 @@ describe('singular', () => {
                 params: {
                   slug: 'apple',
                 },
-                path: undefined,
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });
@@ -473,7 +459,6 @@ test('can dynamically route using singular function', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -485,7 +470,6 @@ test('can dynamically route using singular function', () => {
         state: {
           index: 4,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['[slug]'],
           routes: [
             {
@@ -494,7 +478,6 @@ test('can dynamically route using singular function', () => {
               params: {
                 slug: 'apple',
               },
-              path: '/apple',
             },
             {
               key: expect.any(String),
@@ -503,7 +486,6 @@ test('can dynamically route using singular function', () => {
                 id: '1',
                 slug: 'apple',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -512,7 +494,6 @@ test('can dynamically route using singular function', () => {
                 id: '1',
                 slug: 'apple',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -521,7 +502,6 @@ test('can dynamically route using singular function', () => {
                 id: '2',
                 slug: 'apple',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -529,16 +509,13 @@ test('can dynamically route using singular function', () => {
               params: {
                 slug: 'banana',
               },
-              path: undefined,
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   // Should push /apple and remove all previous instances of /apple
@@ -547,7 +524,6 @@ test('can dynamically route using singular function', () => {
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -559,7 +535,6 @@ test('can dynamically route using singular function', () => {
         state: {
           index: 3,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['[slug]'],
           routes: [
             {
@@ -568,7 +543,6 @@ test('can dynamically route using singular function', () => {
               params: {
                 slug: 'apple',
               },
-              path: '/apple',
             },
             {
               key: expect.any(String),
@@ -577,7 +551,6 @@ test('can dynamically route using singular function', () => {
                 id: '2',
                 slug: 'apple',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -585,7 +558,6 @@ test('can dynamically route using singular function', () => {
               params: {
                 slug: 'banana',
               },
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -594,16 +566,13 @@ test('can dynamically route using singular function', () => {
                 id: '1',
                 slug: 'apple',
               },
-              path: undefined,
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -619,7 +588,6 @@ describe('prefetch', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -629,33 +597,28 @@ describe('prefetch', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [
-              {
-                key: expect.any(String),
-                name: 'test',
-                params: {},
-              },
-            ],
             routeNames: ['index', 'test'],
             routes: [
               {
                 key: expect.any(String),
                 name: 'index',
                 params: undefined,
-                path: '/',
+              },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 
-  it.each([false, true])('prefetches a protected route when guard is %s', (guard) => {
+  it('prefetches a guarded route with guard false without focusing (so it does not redirect)', () => {
     renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -663,7 +626,57 @@ describe('prefetch', () => {
       test: () => null,
       _layout: () => (
         <Stack>
-          <Stack.Protected guard={guard}>
+          <Stack.Protected guard={false}>
+            <Stack.Screen name="test" />
+          </Stack.Protected>
+        </Stack>
+      ),
+    });
+
+    // A guarded route is no longer dropped, so it can be prefetched like any other route. Prefetch
+    // does not focus it, so its guard redirect never fires — `test` sits in the state, unfocused.
+    expect(screen).toHaveRouterState({
+      index: 0,
+      key: expect.any(String),
+      routeNames: ['__root', '+not-found', '_sitemap'],
+      routes: [
+        {
+          key: expect.any(String),
+          name: '__root',
+          params: undefined,
+          state: {
+            index: 0,
+            key: expect.any(String),
+            routeNames: ['test', 'index'],
+            routes: [
+              {
+                key: expect.any(String),
+                name: 'index',
+                params: undefined,
+              },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
+              },
+            ],
+            stale: false,
+          },
+        },
+      ],
+      stale: false,
+    });
+  });
+
+  it('does not throw an exception when prefetching a protected route with guard true', () => {
+    renderRouter({
+      index: () => {
+        return <Link prefetch href="/test" />;
+      },
+      test: () => null,
+      _layout: () => (
+        <Stack>
+          <Stack.Protected guard>
             <Stack.Screen name="test" />
           </Stack.Protected>
         </Stack>
@@ -673,7 +686,6 @@ describe('prefetch', () => {
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -683,29 +695,24 @@ describe('prefetch', () => {
           state: {
             index: 0,
             key: expect.any(String),
-            preloadedRoutes: [
-              {
-                key: expect.any(String),
-                name: 'test',
-                params: {},
-              },
-            ],
             routeNames: ['test', 'index'],
             routes: [
               {
                 key: expect.any(String),
                 name: 'index',
                 params: undefined,
-                path: '/',
+              },
+              {
+                key: expect.any(String),
+                name: 'test',
+                params: {},
               },
             ],
             stale: false,
-            type: 'stack',
           },
         },
       ],
       stale: false,
-      type: 'stack',
     });
   });
 });
@@ -1117,7 +1124,7 @@ describe('Preview', () => {
       expect(screen.getByTestId('slotB-test')).toBeVisible();
       // Initial render, onWillPreviewOpen, setTimeout from prefetch
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
+      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/:slotB:\d+$/);
     });
     it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;
@@ -1163,7 +1170,7 @@ describe('Preview', () => {
       await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
       expect(
         NativeLinkPreview.mock.calls[NativeLinkPreview.mock.calls.length - 1][0].nextScreenId
-      ).toMatch(/slotB\/\[xyz\]-[-\w]+/);
+      ).toMatch(/:slotB\/\[xyz\]:\d+$/);
     });
   });
   describe('external links in preview', () => {

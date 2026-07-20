@@ -64,6 +64,8 @@ const createStore = <T,>(getInitialState: () => T) => {
   };
 };
 
+export type SyncStateStore<T> = ReturnType<typeof createStore<T>>;
+
 export function useSyncState<T>(getInitialState: () => T) {
   const store = React.useRef(createStore(getInitialState)).current;
 
@@ -94,6 +96,7 @@ export function useSyncState<T>(getInitialState: () => T) {
 
   return {
     state,
+    store,
     getState: store.getState,
     setState: store.setState,
     scheduleUpdate,

@@ -5,7 +5,7 @@ import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useTheme } from '../theming/useTheme';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { MockRouter } from './__fixtures__/MockRouter';
+import { MockRouter, mockInitialState } from './__fixtures__/MockRouter';
 
 test('can get current theme with useTheme', () => {
   const TestNavigator = (props: any): any => {
@@ -38,7 +38,9 @@ test('can get current theme with useTheme', () => {
   };
 
   render(
-    <BaseNavigationContainer theme={theme}>
+    <BaseNavigationContainer
+      theme={theme}
+      initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator>
         <Screen name="foo" component={Test} />
       </TestNavigator>
@@ -65,7 +67,7 @@ test("throws if theme isn't passed to BaseNavigationContainer", () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator>
         <Screen name="foo" component={Test} />
       </TestNavigator>
@@ -103,7 +105,9 @@ test('passes theme to options prop', () => {
   };
 
   render(
-    <BaseNavigationContainer theme={theme}>
+    <BaseNavigationContainer
+      theme={theme}
+      initialState={mockInitialState({ routeNames: ['foo'] })}>
       <TestNavigator>
         <Screen
           name="foo"
@@ -138,7 +142,9 @@ test('passes theme to screenOptions prop', () => {
   };
 
   render(
-    <BaseNavigationContainer theme={theme}>
+    <BaseNavigationContainer
+      theme={theme}
+      initialState={mockInitialState({ routeNames: ['foo', 'bar'] })}>
       <TestNavigator screenOptions={({ theme }: any) => ({ title: theme.colors.primary })}>
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />

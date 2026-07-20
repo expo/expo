@@ -8,7 +8,7 @@ import type {
 } from 'react';
 import { Children, forwardRef, useMemo } from 'react';
 
-import { useContextKey, useRouteNode } from '../Route';
+import { type RouteNode, useContextKey, useRouteNode } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
 import type { EventMapBase, NavigationState } from '../react-navigation/native';
 import type { Href, PickPartial } from '../types';
@@ -34,6 +34,8 @@ export function useFilterScreenChildren(
     const customChildren: any[] = [];
 
     const screens: (ScreenProps & { name: string })[] = [];
+    // Guarded (guard=false) JS screens stay in `screens`; this maps their name to the redirect
+    // target of the innermost failing `Protected` (or `undefined` to use the navigator's anchor).
     const guardedRedirects = new Map<string, Href | undefined>();
 
     function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
@@ -60,6 +62,8 @@ export function useFilterScreenChildren(
       if (isProtectedReactElement(child)) {
         const guardFails = !child.props.guard;
         const excludeChildren = exclude || guardFails;
+        // The innermost failing guard's `redirectTo` wins; a passing guard keeps the target
+        // inherited from an outer failing guard.
         const childRedirectTo = guardFails ? child.props.redirectTo : redirectTo;
         Children.forEach(child.props.children, (protectedChild) => {
           flattenChild(protectedChild, excludeChildren, childRedirectTo);
@@ -146,8 +150,9 @@ export function withLayoutContext<
   TEventMap extends EventMapBase,
 >(
   Nav: T,
-  processor?: (options: ScreenProps[]) => ScreenProps[],
-  useOnlyUserDefinedScreens: boolean = false
+  processor?: (options: ScreenProps[], node: RouteNode | null) => ScreenProps[],
+  useOnlyUserDefinedScreens: boolean = false,
+  postProcessor?: (screens: ReactNode[], node: RouteNode | null) => ReactNode[]
 ) {
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
@@ -158,19 +163,20 @@ export function withLayoutContext<
         contextKey,
       });
 
-      const processed = processor ? processor(screens ?? []) : screens;
+      const processed = processor ? processor(screens ?? [], node) : screens;
 
       const sorted = useSortedScreens(processed ?? [], guardedRedirects, useOnlyUserDefinedScreens);
+      const processedSorted = postProcessor ? postProcessor(sorted, node) : sorted;
 
       // Prevent throwing an error when there are no screens.
-      if (!sorted.length) {
+      if (!processedSorted.length) {
         return null;
       }
 
       return (
         <IsWithinLayoutContext value>
           <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+            <Nav {...props} id={contextKey} ref={ref} children={processedSorted} />
           </GuardContextProvider>
         </IsWithinLayoutContext>
       );

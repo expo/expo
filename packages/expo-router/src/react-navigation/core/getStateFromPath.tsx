@@ -38,7 +38,6 @@ type ResultState = PartialState<NavigationState> & {
 
 type ParsedRoute = {
   name: string;
-  path?: string;
   params?: Record<string, unknown> | undefined;
 };
 
@@ -672,7 +671,6 @@ const createNestedStateObject = (
   }
 
   route = findFocusedRoute(state) as ParsedRoute;
-  route.path = path.replace(/\/$/, '');
 
   const params = parseQueryParams(
     path,

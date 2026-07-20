@@ -5,7 +5,6 @@ type Result =
       key?: string;
       name: string;
       params?: object;
-      path?: string;
     }
   | undefined;
 

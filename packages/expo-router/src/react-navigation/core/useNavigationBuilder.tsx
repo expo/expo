@@ -1,24 +1,30 @@
 'use client';
-import deepEqual from 'fast-deep-equal';
 import * as React from 'react';
 import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
+import {
+  type NavigationReducer,
+  NavigationSyncStateContext,
+  type NavigatorRegistryEntry,
+  ReducerRegistryContext,
+} from '../../global-state/storeContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
-  CommonActions,
   type DefaultRouterOptions,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
-  type PartialState,
+  RECONCILE_ROUTE_NAMES,
   type Route,
   type Router,
   type RouterConfigOptions,
   type RouterFactory,
 } from '../routers';
+import { getRouteKey } from '../routers/getRouteKey';
 import { Group } from './Group';
+import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
@@ -38,6 +44,7 @@ import {
   type RouteConfig,
 } from './types';
 import { useChildListeners } from './useChildListeners';
+import { useClientInsertionEffect } from './useClientInsertionEffect';
 import { useClientLayoutEffect } from './useClientLayoutEffect';
 import { useComponent } from './useComponent';
 import { useCurrentRender } from './useCurrentRender';
@@ -50,11 +57,9 @@ import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigationStateListenerProvider } from './useNavigationState';
-import { useOnAction } from './useOnAction';
-import { useOnGetState } from './useOnGetState';
-import { useOnRouteFocus } from './useOnRouteFocus';
+import { shouldPreventRemove, useOnPreventRemove } from './useOnPreventRemove';
 import { useRegisterNavigator } from './useRegisterNavigator';
-import { useScheduleUpdate } from './useScheduleUpdate';
+import { getCachedSlice, useStoreSlice } from './useStoreSlice';
 
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -64,8 +69,6 @@ type NavigatorRoute = {
   key: string;
   params?: NavigatorScreenParams<ParamListBase>;
 };
-
-const CONSUMED_PARAMS = Symbol('CONSUMED_PARAMS');
 
 const isScreen = (
   child: React.ReactElement<unknown>
@@ -267,23 +270,64 @@ const getRouteConfigsFromChildren = <
   return configs;
 };
 
-const getStateFromParams = (params: NavigatorRoute['params']) => {
-  if (params?.state != null) {
-    return params.state;
-  } else if (typeof params?.screen === 'string' && params?.initial !== false) {
+function getStateForRenderableRoutes<State extends NavigationState>(
+  state: State,
+  routeNames: string[],
+  routeKeyChanges: string[],
+  initialRouteName: string | undefined,
+  routeParamList: Record<string, object | undefined>
+): State {
+  const routes = state.routes.filter(
+    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
+  );
+
+  if (routes.length === state.routes.length && isArrayEqual(state.routeNames, routeNames)) {
+    return state;
+  }
+
+  if (routes.length === 0) {
+    const name =
+      initialRouteName !== undefined && routeNames.includes(initialRouteName)
+        ? initialRouteName
+        : routeNames[0];
+
+    if (name == null) {
+      return state;
+    }
+
+    const route: Route<string> =
+      routeParamList[name] !== undefined
+        ? {
+            key: getRouteKey({ stateKey: state.key, name }),
+            name,
+            params: routeParamList[name],
+          }
+        : {
+            key: getRouteKey({ stateKey: state.key, name }),
+            name,
+          };
+
     return {
-      routes: [
-        {
-          name: params.screen,
-          params: params.params,
-          path: params.path,
-        },
-      ],
+      ...state,
+      index: 0,
+      routeNames,
+      routes: [route] as State['routes'],
     };
   }
 
-  return undefined;
-};
+  return {
+    ...state,
+    index: Math.min(
+      Math.max(
+        routes.findIndex((route) => route.key === state.routes[state.index]?.key),
+        0
+      ),
+      routes.length - 1
+    ),
+    routeNames,
+    routes: routes as State['routes'],
+  };
+}
 
 /**
  * Hook for building navigators.
@@ -314,10 +358,10 @@ export function useNavigationBuilder<
 
   const route = use(NavigationRouteContext) as NavigatorRoute | undefined;
 
-  const isNestedParamsConsumed =
-    typeof route?.params === 'object' && route.params != null
-      ? CONSUMED_PARAMS in route.params && route.params[CONSUMED_PARAMS] === route.params
-      : false;
+  // This navigator's own route key, threaded into every routerConfigOptions as `parentRouteKey` so
+  // routers derive their state key and deterministic route keys from it (see `getRouteKey`).
+  // `undefined` at the root container, which yields the `navigator` sentinel state key.
+  const parentRouteKey = route?.key;
 
   const {
     children,
@@ -341,7 +385,7 @@ export function useNavigationBuilder<
       );
     }
 
-    const original = createRouter(rest as unknown as RouterOptions);
+    const original = createRouter(rest as unknown as RouterOptions) as Router<State, any>;
 
     if (UNSTABLE_router != null) {
       const overrides = UNSTABLE_router(original);
@@ -392,370 +436,71 @@ export function useNavigationBuilder<
     );
   }
 
-  const isStateValid = React.useCallback(
-    (state: NavigationState | PartialState<NavigationState>) =>
-      state.type === undefined || state.type === router.type,
-    [router.type]
-  );
+  const { state: currentState, setKey } = use(NavigationStateContext);
 
-  const isStateInitialized = React.useCallback(
-    <T extends NavigationState>(state: T | PartialState<T> | undefined): state is T =>
-      state !== undefined && state.stale === false && isStateValid(state),
-    [isStateValid]
-  );
+  // The committed store is the single source of truth. The parent (or the container) hands this
+  // navigator its committed slice as `currentState`; we take the slice key from it and subscribe to
+  // that slice in the store directly (see `state` below), so a change to this navigator's slice
+  // re-renders it even when an ancestor is memoized. There is no compose-up — the root reducer is the
+  // only writer, and every navigator's slice reaches the store as a compiled subtree: the container
+  // seed for the focused path, and `payload.state` on a PRELOAD/navigate for the rest (a navigator
+  // never mounts without a committed slice).
+  const store = use(NavigationSyncStateContext);
 
-  const doesStateHaveOnlyInvalidRoutes = React.useCallback(
-    (state: NavigationState | PartialState<NavigationState>) =>
-      state.routes.every((r) => !routeNames.includes(r.name)),
-    [routeNames]
-  );
+  if (store == null) {
+    throw new Error("Couldn't find a navigation store. Is your component inside a navigator?");
+  }
 
-  const {
-    state: currentState,
-    getState: getCurrentState,
-    setState: setCurrentState,
-    setKey,
-    getKey,
-    getIsInitial,
-  } = use(NavigationStateContext);
+  const key = currentState?.key;
 
-  const stateCleanupRef = React.useRef<boolean>(false);
-  const lastStateRef = React.useRef<State | PartialState<State> | undefined>(undefined);
-
-  const setState = useLatestCallback((state: State | PartialState<State> | undefined) => {
-    if (stateCleanupRef.current) {
-      // Store the state locally in case the current navigator is in `Activity`
-      lastStateRef.current = state;
-
-      // State might have been already cleaned up due to unmount
-      // We don't want to update `route.state` in parent
-      // Otherwise it will be reused if a new navigator gets mounted
-      return;
-    }
-
-    setCurrentState(state);
-  });
-
-  const [
-    stateBeforeInitialization,
-    initializedState,
-    isFirstStateInitialization,
-    paramsUsedForInitialization,
-  ] = React.useMemo((): [
-    PartialState<State> | undefined,
-    State | undefined,
-    boolean,
-    object | undefined,
-  ] => {
-    // If the state was already cleaned up, but we have it stored in ref,
-    // It likely got cleaned up due to `<Activity mode="hidden">`
-    // We should reuse this state to avoid remounting screens
-    if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
-      const state: State = isStateInitialized(lastStateRef.current)
-        ? lastStateRef.current
-        : router.getRehydratedState(lastStateRef.current, {
-            routeNames,
-            routeParamList,
-            routeGetIdList,
-          });
-
-      return [undefined, state, false, undefined];
-    }
-
-    const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
-      (acc, curr) => {
-        const { initialParams } = screens[curr]!.props;
-        const initialParamsFromParams =
-          route?.params?.state == null &&
-          route?.params?.initial !== false &&
-          route?.params?.screen === curr
-            ? route.params.params
-            : undefined;
-
-        acc[curr] =
-          initialParams !== undefined || initialParamsFromParams !== undefined
-            ? {
-                ...initialParams,
-                ...initialParamsFromParams,
-              }
-            : undefined;
-
-        return acc;
-      },
-      {}
-    );
-
-    // If the current state isn't initialized on first render, we initialize it
-    // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
-    // Otherwise assume that the state was provided as initial state
-    // So we need to rehydrate it to make it usable
-    if (
-      (currentState === undefined || !isStateValid(currentState)) &&
-      route?.params?.state == null &&
-      !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
-      !isNestedParamsConsumed
-    ) {
-      return [
-        undefined,
-        router.getInitialState({
-          routeNames,
-          routeParamList: initialRouteParamList,
-          routeGetIdList,
-        }),
-        true,
-        undefined,
-      ];
-    } else {
-      const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-      const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
-
-      const stateBeforeInitialization = (stateFromParams ?? currentState) as
-        | PartialState<State>
-        | undefined;
-
-      const hydratedState =
-        stateBeforeInitialization == null
-          ? router.getInitialState({
-              routeNames,
-              routeParamList: initialRouteParamList,
-              routeGetIdList,
-            })
-          : router.getRehydratedState(stateBeforeInitialization, {
-              routeNames,
-              routeParamList: initialRouteParamList,
-              routeGetIdList,
-            });
-
-      if (
-        stateBeforeInitialization != null &&
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        doesStateHaveOnlyInvalidRoutes(stateBeforeInitialization)
-      ) {
-        return [stateBeforeInitialization, hydratedState, true, paramsForState];
-      }
-
-      return [undefined, hydratedState, false, paramsForState];
-    }
-    // We explicitly don't include routeNames, route.params etc. in the dep list
-    // below. We want to avoid forcing a new state to be calculated in those cases
-    // Instead, we handle changes to these in the nextState code below. Note
-    // that some changes to routeConfigs are explicitly ignored, such as changes
-    // to initialParams
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentState, router, isStateValid]);
+  const reducerRegistry = use(ReducerRegistryContext);
 
   const previousRouteKeyListRef = React.useRef(routeKeyList);
-
-  React.useEffect(() => {
-    previousRouteKeyListRef.current = routeKeyList;
-  });
-
   const previousRouteKeyList = previousRouteKeyListRef.current;
+  const routeKeyChanges = Object.keys(routeKeyList).filter(
+    (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
+  );
 
-  const [unhandledState, setUnhandledState] = React.useState<
-    NavigationState | PartialState<NavigationState> | undefined
-  >(stateBeforeInitialization);
-
-  // An unhandled state is state that didn't have any valid routes
-  // So it was unhandled, i.e. not used for initializing the state
-  // It's possible that they were absent due to conditional render
-  // Store this state so we can reuse it if the routes change later
-  if (
-    options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-    stateBeforeInitialization &&
-    unhandledState !== stateBeforeInitialization
-  ) {
-    setUnhandledState(stateBeforeInitialization);
+  const storeSlice = useStoreSlice(key);
+  // Prefer the subscribed store slice. The store holds every mounted navigator's slice (the
+  // container seeds the focused path; `payload.state` carries the rest), and `useStoreSlice` reads
+  // it synchronously — so for a mounted navigator this should never miss. The parent-handed slice
+  // stays as a crash guard; a miss is a bug, so surface it in dev.
+  if (process.env.NODE_ENV !== 'production' && storeSlice == null && currentState != null) {
+    console.error(
+      `Expo Router: a mounted navigator (${key}) had no committed slice in the store and fell back ` +
+        `to the parent-provided slice. The store should hold every mounted navigator's slice; ` +
+        `please report this with the navigation you performed.`
+    );
   }
+  let state = (storeSlice ?? currentState) as State;
 
-  let state =
-    // If the state isn't initialized, or stale, use the state we initialized instead
-    // The state won't update until there's a change needed in the state we have initialized locally
-    // So it'll be `undefined` or stale until the first navigation event happens
-    isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
+  const reconciliationState = state;
+  state = getStateForRenderableRoutes(
+    state,
+    routeNames,
+    routeKeyChanges,
+    rest.initialRouteName,
+    routeParamList
+  );
 
-  let nextState: State = state;
-  let shouldClearUnhandledState = false;
-
-  // Previously unhandled state is now valid again
-  // And current state no longer has any valid routes
-  // We should reuse the unhandled state instead of re-calculating the state
-  if (
-    unhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
-    state?.routes.every((r) => !routeNames.includes(r.name))
-  ) {
-    shouldClearUnhandledState = true;
-    nextState = router.getRehydratedState(unhandledState as PartialState<State>, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-    });
-  } else if (
-    !isArrayEqual(state.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList)
-  ) {
-    // When the list of route names change, the router should handle it to remove invalid routes
-    nextState = router.getStateForRouteNamesChange(state, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-      routeKeyChanges: Object.keys(routeKeyList).filter(
-        (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
-      ),
-    });
-  }
-
-  let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
-
-  if (route?.params && !didConsumeNestedParams) {
-    let action: CommonActions.Action | undefined;
-
-    if (
-      typeof route.params.state === 'object' &&
-      route.params.state != null &&
-      !isNestedParamsConsumed
-    ) {
-      didConsumeNestedParams = true;
-
-      if (
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        doesStateHaveOnlyInvalidRoutes(route.params.state)
-      ) {
-        if (route.params.state !== unhandledState) {
-          setUnhandledState(route.params.state);
-        }
-      } else {
-        // If the route was updated with new state, we should reset to it
-        action = CommonActions.reset(route.params.state);
-      }
-    } else if (
-      typeof route.params.screen === 'string' &&
-      ((route.params.initial === false && isFirstStateInitialization) || !isNestedParamsConsumed)
-    ) {
-      didConsumeNestedParams = true;
-
-      if (
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        !routeNames.includes(route.params.screen)
-      ) {
-        const state = getStateFromParams(route.params);
-
-        if (state != null && !deepEqual(state, unhandledState)) {
-          setUnhandledState(state);
-        }
-      } else {
-        // If the route was updated with new screen name and/or params, we should navigate there
-        action = CommonActions.navigate({
-          name: route.params.screen,
-          params: route.params.params,
-          path: route.params.path,
-          merge: route.params.merge,
-          pop: route.params.pop,
-        });
-      }
-    }
-
-    // The update should be limited to current navigator only, so we call the router manually
-    const updatedState = action
-      ? router.getStateForAction(nextState, action, {
-          routeNames,
-          routeParamList,
-          routeGetIdList,
-        })
-      : null;
-
-    nextState =
-      updatedState !== null
-        ? router.getRehydratedState(updatedState, {
-            routeNames,
-            routeParamList,
-            routeGetIdList,
-          })
-        : nextState;
-  }
-
+  // The last committed slice this navigator rendered. `getState` reads the live slice from the
+  // store by key, but during a transition (deep link, a slice briefly re-keyed) that lookup can
+  // come back empty for a beat; fall back to what we last rendered so imperative reads never see
+  // `undefined`. This transient miss is exercised by the suite, so the fallback is load-bearing.
+  const lastCommittedStateRef = React.useRef(reconciliationState);
   React.useEffect(() => {
-    if (didConsumeNestedParams && typeof route?.params === 'object' && route.params != null) {
-      // Track whether the params have been already consumed
-      // Set it to the same object, so merged params can be handled again
-      Object.defineProperty(route.params, CONSUMED_PARAMS, {
-        value: route.params,
-        enumerable: false,
-      });
-    }
-  }, [didConsumeNestedParams, route?.params]);
-
-  const shouldUpdate = state !== nextState;
-
-  useScheduleUpdate(() => {
-    if (shouldUpdate) {
-      // Schedule an update if the state needs to be updated
-      setState(nextState);
-
-      if (shouldClearUnhandledState) {
-        setUnhandledState(undefined);
-      }
-    }
+    lastCommittedStateRef.current = reconciliationState;
   });
 
-  // The up-to-date state will come in next render, but we don't need to wait for it
-  // We can't use the outdated state since the screens have changed, which will cause error due to mismatched config
-  // So we override the state object we return to use the latest state as soon as possible
-  state = nextState;
-
-  // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
-    lastStateRef.current = state;
-  });
-
-  const lastNotifiedStateRef = React.useRef<State | null>(null);
-
-  React.useEffect(() => {
-    // In strict mode, React will double-invoke effects.
-    // So we need to reset the flag if component was not unmounted
-    stateCleanupRef.current = false;
-
     setKey(navigatorKey);
-
-    if (!getIsInitial() && lastNotifiedStateRef.current !== state) {
-      // If it's not initial render, we need to update the state
-      // This will make sure that our container gets notifier of state changes due to new mounts
-      // This is necessary for proper screen tracking, URL updates etc.
-      // We only notify if the state is different what we already notified
-      // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(state);
-      lastNotifiedStateRef.current = state;
-    }
-
-    return () => {
-      // We need to clean up state for this navigator on unmount
-      if (getCurrentState() !== undefined && getKey() === navigatorKey) {
-        setCurrentState(undefined);
-        stateCleanupRef.current = true;
-      }
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // In some cases (e.g. route names change), internal state might have changed
-  // But it hasn't been committed yet, so hasn't propagated to the sync external store
-  // During this time, we need to return the internal state in `getState`
-  // Otherwise it can result in inconsistent state during render in children
-  // To avoid this, we use a ref for render phase, and immediately clear it on commit
-  const stateRef = React.useRef<State | null>(state);
-
-  stateRef.current = state;
-
-  useClientLayoutEffect(() => {
-    stateRef.current = null;
-  });
-
   const getState = useLatestCallback((): State => {
-    const currentState = getCurrentState();
-
-    return deepFreeze(
-      (isStateInitialized(currentState) ? currentState : initializedState) as State
-    );
+    const slice = key == null ? undefined : getCachedSlice(store.getState(), key);
+    return deepFreeze((slice ?? lastCommittedStateRef.current) as State);
   });
 
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
@@ -819,30 +564,46 @@ export function useNavigationBuilder<
 
   const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
 
-  const onAction = useOnAction({
-    router,
-    getState,
-    setState,
-    key: route?.key,
-    actionListeners: childListeners.action,
-    beforeRemoveListeners: keyedListeners.beforeRemove,
-    routerConfigOptions: {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-    },
-    emitter,
+  const routerConfigOptions: RouterConfigOptions = {
+    routeNames,
+    parentRouteKey,
+    routeParamList,
+    routeGetIdList,
+  };
+
+  const latestConfigRef = React.useRef(routerConfigOptions);
+
+  useClientLayoutEffect(() => {
+    latestConfigRef.current = routerConfigOptions;
   });
 
-  const onRouteFocus = useOnRouteFocus({
-    router,
-    key: route?.key,
-    getState,
-    setState,
-  });
+  const { dispatchRoot } = use(NavigationBuilderContext);
+  const needsRouteNamesReconcile =
+    !isArrayEqual(reconciliationState.routeNames, routeNames) ||
+    !isRecordEqual(routeKeyList, previousRouteKeyList);
+  const pendingUnhandledState = reducerRegistry?.getEntry(state.key)?.unhandledState;
+  const shouldRestoreUnhandledState =
+    options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
+    pendingUnhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
+    reconciliationState?.routes.every((r) => !routeNames.includes(r.name));
+  // Invariant: the render-time projection only diverges from the committed slice while a route-names
+  // reconciliation (or a `lastUnhandled` restore) is pending — the layout effect below then commits
+  // the divergence back into the store. If it diverges otherwise, the store and the render have
+  // silently disagreed, which is a bug.
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    state !== reconciliationState &&
+    !needsRouteNamesReconcile &&
+    !shouldRestoreUnhandledState
+  ) {
+    console.error(
+      `Expo Router: render-time route projection for navigator ${key} diverged from its committed ` +
+        `slice with no route-names reconciliation pending. The projection must stay identity outside ` +
+        `a RECONCILE_ROUTE_NAMES window; please report this with the navigation you performed.`
+    );
+  }
 
   const onUnhandledActionParent = use(UnhandledActionContext);
-
   const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
     if (
       options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
@@ -852,7 +613,7 @@ export function useNavigationBuilder<
       typeof action.payload.name === 'string' &&
       !routeNames.includes(action.payload.name)
     ) {
-      const state = {
+      const unhandledState = {
         routes: [
           {
             name: action.payload.name,
@@ -862,18 +623,113 @@ export function useNavigationBuilder<
               action.payload.params !== null
                 ? action.payload.params
                 : undefined,
-            path:
-              'path' in action.payload && typeof action.payload.path === 'string'
-                ? action.payload.path
-                : undefined,
           },
         ],
       };
 
-      setUnhandledState(state);
+      // Persist on the registry entry (looked up live: `onUnhandledAction` fires during a dispatch,
+      // after this navigator has registered). Restored by the layout effect below once the route
+      // names change to include the captured routes.
+      const entry = reducerRegistry?.getEntry(state.key);
+      if (entry) {
+        entry.unhandledState = unhandledState;
+      }
     }
 
     onUnhandledActionParent?.(action);
+  });
+
+  const registryReducer = React.useCallback<NavigationReducer>(
+    (state, action) =>
+      router.getStateForAction(
+        state as State,
+        action,
+        latestConfigRef.current
+      ) as ReturnType<NavigationReducer>,
+    [router]
+  );
+  const registryEntry = React.useMemo<NavigatorRegistryEntry>(
+    () => ({
+      reduce: registryReducer,
+      shouldPreventRemove: (currentState, nextState, action) =>
+        shouldPreventRemove(
+          emitter,
+          keyedListeners.beforeRemove,
+          currentState.routes,
+          nextState.routes,
+          action
+        ),
+      onUnhandledAction,
+      // Carry a captured `unhandledState` across entry re-creation so a pending `lastUnhandled`
+      // restore survives an unrelated dep change between capture and the route-names change.
+      unhandledState: reducerRegistry?.getEntry(state.key)?.unhandledState,
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [emitter, keyedListeners.beforeRemove, onUnhandledAction, registryReducer, router]
+  );
+  const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
+
+  useClientInsertionEffect(() => {
+    reducerRegistry?.addEntry(state.key, registryEntry);
+
+    return () => {
+      reducerRegistry?.removeEntry(state.key, registryEntry);
+    };
+  }, [backBehavior, reducerRegistry, registryEntry, state.key]);
+
+  useClientLayoutEffect(() => {
+    if (!needsRouteNamesReconcile && !shouldRestoreUnhandledState) {
+      previousRouteKeyListRef.current = routeKeyList;
+      return;
+    }
+
+    const handled = dispatchRoot?.(
+      {
+        type: RECONCILE_ROUTE_NAMES,
+        target: reconciliationState.key,
+        payload: {
+          routeNames,
+          parentRouteKey,
+          routeParamList,
+          routeGetIdList,
+          routeKeyChanges,
+          unhandledState: shouldRestoreUnhandledState ? pendingUnhandledState : undefined,
+        },
+      },
+      {
+        originKey: reconciliationState.key,
+        skipBeforeRemove: true,
+        suppressUnhandled: true,
+      }
+    );
+
+    if (handled) {
+      previousRouteKeyListRef.current = routeKeyList;
+
+      if (shouldRestoreUnhandledState) {
+        const entry = reducerRegistry?.getEntry(state.key);
+        if (entry) {
+          entry.unhandledState = undefined;
+        }
+      }
+    }
+  });
+
+  useOnPreventRemove({
+    getState,
+    emitter,
+    beforeRemoveListeners: keyedListeners.beforeRemove,
+  });
+
+  const onAction = useLatestCallback((action: NavigationAction) => {
+    // Forward to the container's root reducer, tagged with this navigator's key. The old local
+    // reducer escape hatch is gone — the store is the only writer.
+    return (
+      dispatchRoot?.(action, {
+        originKey: state.key,
+        suppressUnhandled: true,
+      }) ?? false
+    );
   });
 
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
@@ -883,17 +739,12 @@ export function useNavigationBuilder<
     getState,
     emitter,
     router,
-    stateRef,
+    dispatchRoot,
   });
 
   useFocusedListenersChildrenAdapter({
     navigation,
     focusedListeners: childListeners.focus,
-  });
-
-  useOnGetState({
-    getState,
-    getStateListeners: keyedListeners.getState,
   });
 
   const { describe, descriptors } = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
@@ -904,8 +755,6 @@ export function useNavigationBuilder<
     screenLayout,
     onAction,
     getState,
-    setState,
-    onRouteFocus,
     addListener,
     addKeyedListener,
     router,

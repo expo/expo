@@ -40,7 +40,7 @@ export * as SplashScreen from './views/Splash';
 export { useNavigation } from './useNavigation';
 export { useFocusEffect, type EffectCallback } from './useFocusEffect';
 export { useIsFocused } from './useIsFocused';
-export type { ResultState } from './fork/getStateFromPath';
+export type { CompleteResultState } from './fork/getStateFromPath';
 
 export { DarkTheme } from './react-navigation/native/theming/DarkTheme';
 export { DefaultTheme } from './react-navigation/native/theming/DefaultTheme';

@@ -28,6 +28,13 @@ export type LinkToOptions = {
   dangerouslySingular?: SingularOptions;
 
   __internal__PreviewKey?: string;
+
+  /**
+   * Internal. State keys of the tab navigators that are React ancestors of the navigating link,
+   * captured from `NavigatorTypeContext`. Used by the state-layer traversal to look through tabs
+   * during link-preview navigation.
+   */
+  __internal__tabNavigatorKeys?: string[];
 };
 
 export type NavigationOptions = Omit<LinkToOptions, 'event'>;

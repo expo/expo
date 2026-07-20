@@ -1,11 +1,16 @@
 import type { ComponentProps, ReactElement, ReactNode, PropsWithChildren } from 'react';
-import { Children, Fragment, isValidElement, use, useMemo } from 'react';
+import { Children, Fragment, isValidElement, use, useCallback, useMemo } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
+import { GuardContextProvider } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
+import {
+  NavigatorTypeContext,
+  useNavigatorTypeContextValue,
+} from '../react-navigation/core/NavigatorTypeContext';
 import type {
   DefaultNavigatorOptions,
   ParamListBase,
@@ -14,9 +19,14 @@ import type {
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import { getBackStackAnchorName } from '../react-navigation/routers/TabRouter';
+import { usePreloadAnchor } from '../react-navigation/usePreloadAnchor';
+import { usePreloadRoutes } from '../react-navigation/usePreloadRoutes';
+import { useTabPlaceholders } from '../react-navigation/useTabPlaceholders';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
+import { getRouteNodeHrefMap } from '../views/useSitemap';
 import type { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
 import { TabTriggerMapContext } from './TabContext';
 import { isTabList } from './TabList';
@@ -185,24 +195,79 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
 
+  // Headless tabs follow the bottom-tabs policy: show every declared tab from the first frame via
+  // placeholders. Tabs default to `lazy`, so only routes that opt out with `lazy={false}` preload.
+  const [tabState, tabDescriptors] = useTabPlaceholders(
+    state,
+    descriptors,
+    describe,
+    state.routeNames
+  );
+  const nonLazyRouteNames = useMemo(
+    () =>
+      state.routeNames.filter((name) => {
+        const placeholder = tabState.routes.find((route) => route.name === name);
+        return placeholder ? tabDescriptors[placeholder.key]?.options.lazy === false : false;
+      }),
+    [state.routeNames, tabState.routes, tabDescriptors]
+  );
+  // Keep the implicit back-stack anchor loaded at the FRONT of the routes so a deep link to a
+  // non-anchor tab still goes back to it (deep links only materialize anchors declared in the
+  // linking config). The anchor is excluded from the plain preload list so `FRONT_PRELOAD` (front)
+  // and `PRELOAD` (tail) don't race for the same route.
+  const anchorName = getBackStackAnchorName(state.routeNames, rest.backBehavior, initialRouteName);
+  const nonAnchorRouteNames = useMemo(
+    () => nonLazyRouteNames.filter((name) => name !== anchorName),
+    [nonLazyRouteNames, anchorName]
+  );
+  // Resolve each child's compiled href so preloaded/anchor tabs carry their subtree.
+  const hrefMap = useMemo(() => getRouteNodeHrefMap(), [routeNode]);
+  const resolvePreloadHref = useCallback(
+    (name: string) => {
+      const child = routeNode.children.find((candidate) => candidate.route === name);
+      return child ? hrefMap.get(child) : undefined;
+    },
+    [routeNode, hrefMap]
+  );
+  usePreloadRoutes(state, navigation, nonAnchorRouteNames, resolvePreloadHref);
+  usePreloadAnchor(state, navigation, rest.backBehavior, initialRouteName, resolvePreloadHref);
+
   const navigatorContextValue = useMemo<NavigatorContextValue>(
-    () => ({
-      ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
-      contextKey,
-      router: ExpoTabRouter,
-    }),
-    [navigatorContext, contextKey, ExpoTabRouter]
+    () =>
+      ({
+        ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
+        // Expose the placeholder-augmented state/descriptors so consumers (TabSlot, TabTrigger) see
+        // every declared tab from the first frame, matching the cast used for the spread above.
+        state: tabState,
+        descriptors: tabDescriptors,
+        contextKey,
+        router: ExpoTabRouter,
+      }) as unknown as NavigatorContextValue,
+    [navigatorContext, tabState, tabDescriptors, contextKey, ExpoTabRouter]
   );
 
+  const navigatorTypeValue = useNavigatorTypeContextValue('tab', state.key);
+  const emptyGuardRedirects = useMemo(() => new Map(), []);
+
   const NavigationContent = useComponent((children: React.ReactNode) => (
-    <TabTriggerMapContext.Provider value={triggerMap}>
-      <NavigatorContext.Provider value={navigatorContextValue}>
-        <RNNavigationContent>{children}</RNNavigationContent>
-      </NavigatorContext.Provider>
-    </TabTriggerMapContext.Provider>
+    <NavigatorTypeContext value={navigatorTypeValue}>
+      <TabTriggerMapContext.Provider value={triggerMap}>
+        <NavigatorContext.Provider value={navigatorContextValue}>
+          <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardRedirects}>
+            <RNNavigationContent>{children}</RNNavigationContent>
+          </GuardContextProvider>
+        </NavigatorContext.Provider>
+      </TabTriggerMapContext.Provider>
+    </NavigatorTypeContext>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent, describe };
+  return {
+    state: tabState,
+    descriptors: tabDescriptors,
+    navigation,
+    NavigationContent,
+    describe,
+  };
 }
 
 function parseTriggersFromChildren(

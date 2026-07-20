@@ -35,15 +35,20 @@ export function getActionFromState(
     return undefined;
   }
 
+  // START FORK
+  // Upstream also required `route.key === undefined` here (and below) to pick NAVIGATE over RESET:
+  // key presence marked a live state that should replace the tree wholesale. In this fork every
+  // call site (both useLinking variants and useBuildAction) passes `getStateFromPath` output, and
+  // the fork's compiler always emits keyed states — so key presence can no longer discriminate.
+  // Only the structural checks remain: a single focused route (optionally preceded by the declared
+  // initial route) is NAVIGATE-mergeable; anything wider needs a RESET.
   if (
     !(
-      (routes.length === 1 && routes[0]!.key === undefined) ||
-      (routes.length === 2 &&
-        routes[0]!.key === undefined &&
-        routes[0]!.name === normalizedConfig?.initialRouteName &&
-        routes[1]!.key === undefined)
+      routes.length === 1 ||
+      (routes.length === 2 && routes[0]!.name === normalizedConfig?.initialRouteName)
     )
   ) {
+    // END FORK
     return {
       type: 'RESET',
       payload: state,
@@ -62,10 +67,9 @@ export function getActionFromState(
     | {
         name: string;
         params: NavigatorScreenParams<ParamListBase>;
-        path?: string;
         pop?: boolean;
       }
-    | undefined = route ? { name: route.name, path: route.path, params } : undefined;
+    | undefined = route ? { name: route.name, params } : undefined;
 
   // If the screen contains a navigator, pop other screens to navigate to it
   // This avoid pushing multiple instances of navigators onto a stack
@@ -103,15 +107,13 @@ export function getActionFromState(
       state: undefined,
     });
 
-    if (routes.length === 1 && routes[0]!.key === undefined) {
+    // START FORK
+    // Same as the top-level discriminator: key checks removed (compiled states are always keyed).
+    if (routes.length === 1) {
       params.initial = true;
       params.screen = route.name;
-    } else if (
-      routes.length === 2 &&
-      routes[0]!.key === undefined &&
-      routes[0]!.name === config?.initialRouteName &&
-      routes[1]!.key === undefined
-    ) {
+    } else if (routes.length === 2 && routes[0]!.name === config?.initialRouteName) {
+      // END FORK
       params.initial = false;
       params.screen = route.name;
     } else {
@@ -124,7 +126,6 @@ export function getActionFromState(
       params.pop = true;
       params = params.params as NavigatorScreenParams<ParamListBase>;
     } else {
-      params.path = route.path;
       params.params = route.params;
     }
 

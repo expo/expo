@@ -7,11 +7,12 @@ import * as DrawerEntry from '../Drawer';
 // See https://github.com/expo/expo/issues/46161
 describe('expo-router/drawer re-exports', () => {
   // `createDrawerNavigator` (apps use the `Drawer` layout) and the raw contexts
-  // (`DrawerStatusContext`/`DrawerProgressContext`, superseded by the `useDrawerStatus`/
-  // `useDrawerProgress` hooks) are intentionally not re-exported.
+  // (`DrawerStatusContext`/`DrawerActionsContext`/`DrawerProgressContext`, superseded by the
+  // `useDrawerStatus`/`useDrawerActions`/`useDrawerProgress` hooks) are intentionally not re-exported.
   const INTENTIONALLY_OMITTED = [
     'createDrawerNavigator',
     'DrawerStatusContext',
+    'DrawerActionsContext',
     'DrawerProgressContext',
   ];
 

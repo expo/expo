@@ -17,7 +17,6 @@ test('gets navigate action from state', () => {
                   {
                     name: 'qux',
                     params: { author: 'jane' },
-                    path: '/foo/bar',
                   },
                 ],
               },
@@ -38,7 +37,6 @@ test('gets navigate action from state', () => {
             author: 'jane',
           },
           screen: 'qux',
-          path: '/foo/bar',
           initial: true,
         },
         screen: 'bar',
@@ -57,7 +55,6 @@ test('gets navigate action from state for top-level screen', () => {
       {
         name: 'foo',
         params: { answer: 42 },
-        path: '/foo/bar',
       },
     ],
   };
@@ -66,13 +63,15 @@ test('gets navigate action from state for top-level screen', () => {
     payload: {
       name: 'foo',
       params: { answer: 42 },
-      path: '/foo/bar',
     },
     type: 'NAVIGATE',
   });
 });
 
-test('gets reset action from state with 1 route with key at root', () => {
+// START FORK — upstream returned RESET here because route keys marked a live state. In this fork
+// every caller passes `getStateFromPath` output, which is always keyed, so keys are ignored and the
+// structural NAVIGATE path applies.
+test('keys are ignored: gets navigate action from state with 1 keyed route at root', () => {
   const state = {
     routes: [
       {
@@ -88,7 +87,6 @@ test('gets reset action from state with 1 route with key at root', () => {
                     key: 'test',
                     name: 'qux',
                     params: { author: 'jane' },
-                    path: '/foo/bar',
                   },
                 ],
               },
@@ -101,33 +99,23 @@ test('gets reset action from state with 1 route with key at root', () => {
 
   expect(getActionFromState(state)).toEqual({
     payload: {
-      routes: [
-        {
-          key: 'test',
-          name: 'foo',
-          state: {
-            routes: [
-              {
-                name: 'bar',
-                state: {
-                  routes: [
-                    {
-                      key: 'test',
-                      name: 'qux',
-                      params: { author: 'jane' },
-                      path: '/foo/bar',
-                    },
-                  ],
-                },
-              },
-            ],
-          },
+      name: 'foo',
+      params: {
+        screen: 'bar',
+        initial: true,
+        pop: true,
+        params: {
+          screen: 'qux',
+          initial: true,
+          params: { author: 'jane' },
         },
-      ],
+      },
+      pop: true,
     },
-    type: 'RESET',
+    type: 'NAVIGATE',
   });
 });
+// END FORK
 
 test('gets reset action from state for top-level screen with 2 screens', () => {
   const state = {
@@ -139,7 +127,6 @@ test('gets reset action from state for top-level screen with 2 screens', () => {
       {
         name: 'bar',
         params: { author: 'jane' },
-        path: '/foo/bar',
       },
     ],
   };
@@ -154,7 +141,6 @@ test('gets reset action from state for top-level screen with 2 screens', () => {
         {
           name: 'bar',
           params: { author: 'jane' },
-          path: '/foo/bar',
         },
       ],
     },
@@ -202,7 +188,9 @@ test('gets reset action from state for top-level screen with more than 2 screens
   });
 });
 
-test('gets reset action from state for top-level screen with 2 screens with config', () => {
+// START FORK — was a RESET upstream (the key on the 2nd route marked a live state); keys are
+// ignored in this fork, so the initial-route + focused-route pair takes the NAVIGATE path.
+test('keys are ignored: gets navigate action for top-level screen with 2 screens with config and a keyed route', () => {
   const state = {
     routes: [
       {
@@ -213,48 +201,6 @@ test('gets reset action from state for top-level screen with 2 screens with conf
         name: 'bar',
         key: 'test',
         params: { author: 'jane' },
-        path: '/foo/bar',
-      },
-    ],
-  };
-
-  const config = {
-    initialRouteName: 'foo',
-    screens: {
-      bar: 'bar',
-    },
-  };
-
-  expect(getActionFromState(state, config)).toEqual({
-    payload: {
-      routes: [
-        {
-          name: 'foo',
-          params: { answer: 42 },
-        },
-        {
-          name: 'bar',
-          key: 'test',
-          params: { author: 'jane' },
-          path: '/foo/bar',
-        },
-      ],
-    },
-    type: 'RESET',
-  });
-});
-
-test('gets navigate action from state for top-level screen with 2 screens with config', () => {
-  const state = {
-    routes: [
-      {
-        name: 'foo',
-        params: { answer: 42 },
-      },
-      {
-        name: 'bar',
-        params: { author: 'jane' },
-        path: '/foo/bar',
       },
     ],
   };
@@ -270,7 +216,37 @@ test('gets navigate action from state for top-level screen with 2 screens with c
     payload: {
       name: 'bar',
       params: { author: 'jane' },
-      path: '/foo/bar',
+    },
+    type: 'NAVIGATE',
+  });
+});
+// END FORK
+
+test('gets navigate action from state for top-level screen with 2 screens with config', () => {
+  const state = {
+    routes: [
+      {
+        name: 'foo',
+        params: { answer: 42 },
+      },
+      {
+        name: 'bar',
+        params: { author: 'jane' },
+      },
+    ],
+  };
+
+  const config = {
+    initialRouteName: 'foo',
+    screens: {
+      bar: 'bar',
+    },
+  };
+
+  expect(getActionFromState(state, config)).toEqual({
+    payload: {
+      name: 'bar',
+      params: { author: 'jane' },
     },
     type: 'NAVIGATE',
   });
@@ -287,7 +263,6 @@ test('gets navigate action from state for top-level screen with more than 2 scre
       {
         name: 'bar',
         params: { author: 'jane' },
-        path: '/foo/bar',
       },
       { name: 'baz' },
     ],
@@ -304,7 +279,6 @@ test('gets navigate action from state for top-level screen with more than 2 scre
     payload: {
       name: 'bar',
       params: { author: 'jane' },
-      path: '/foo/bar',
     },
     type: 'NAVIGATE',
   });
@@ -325,7 +299,7 @@ test('gets navigate action from state with 2 screens', () => {
                     name: 'qux',
                     params: { author: 'jane' },
                   },
-                  { name: 'quz', path: '/foo/bar' },
+                  { name: 'quz' },
                 ],
               },
             },
@@ -351,7 +325,7 @@ test('gets navigate action from state with 2 screens', () => {
                   author: 'jane',
                 },
               },
-              { name: 'quz', path: '/foo/bar' },
+              { name: 'quz' },
             ],
           },
         },
@@ -377,7 +351,6 @@ test('gets navigate action from state with 2 screens with lower index', () => {
                   {
                     name: 'qux',
                     params: { author: 'jane' },
-                    path: '/foo/bar',
                   },
                   { name: 'quz' },
                 ],
@@ -402,7 +375,6 @@ test('gets navigate action from state with 2 screens with lower index', () => {
           params: {
             author: 'jane',
           },
-          path: '/foo/bar',
         },
       },
       pop: true,
@@ -480,7 +452,6 @@ test('gets navigate action from state with config', () => {
                   {
                     name: 'qux',
                     params: { author: 'jane' },
-                    path: '/foo/bar',
                   },
                 ],
               },
@@ -514,7 +485,6 @@ test('gets navigate action from state with config', () => {
             author: 'jane',
           },
           screen: 'qux',
-          path: '/foo/bar',
           initial: true,
         },
         screen: 'bar',
@@ -533,7 +503,6 @@ test('gets navigate action from state for top-level screen with config', () => {
       {
         name: 'foo',
         params: { answer: 42 },
-        path: '/foo/bar',
       },
     ],
   };
@@ -554,7 +523,6 @@ test('gets navigate action from state for top-level screen with config', () => {
     payload: {
       name: 'foo',
       params: { answer: 42 },
-      path: '/foo/bar',
     },
     type: 'NAVIGATE',
   });
@@ -575,7 +543,7 @@ test('gets navigate action from state with 2 screens including initial route and
                     name: 'qux',
                     params: { author: 'jane' },
                   },
-                  { name: 'quz', path: '/foo/bar' },
+                  { name: 'quz' },
                 ],
               },
             },
@@ -608,7 +576,6 @@ test('gets navigate action from state with 2 screens including initial route and
         params: {
           screen: 'quz',
           initial: false,
-          path: '/foo/bar',
         },
       },
       pop: true,
@@ -632,7 +599,7 @@ test('gets navigate action from state with 2 screens without initial route and w
                     name: 'qux',
                     params: { author: 'jane' },
                   },
-                  { name: 'quz', path: '/foo/bar' },
+                  { name: 'quz' },
                 ],
               },
             },
@@ -671,7 +638,7 @@ test('gets navigate action from state with 2 screens without initial route and w
                   author: 'jane',
                 },
               },
-              { name: 'quz', path: '/foo/bar' },
+              { name: 'quz' },
             ],
           },
         },
@@ -682,7 +649,9 @@ test('gets navigate action from state with 2 screens without initial route and w
   });
 });
 
-test('gets navigate action from state with 2 screens including route with key on initial route and with config', () => {
+// START FORK — upstream embedded the raw `state` in params because the nested key marked a live
+// state; keys are ignored in this fork, so the initial-route pair collapses to screen/initial params.
+test('keys are ignored: gets navigate action from state with 2 screens including keyed initial route and with config', () => {
   const state = {
     routes: [
       {
@@ -729,18 +698,8 @@ test('gets navigate action from state with 2 screens including route with key on
         initial: true,
         pop: true,
         params: {
-          state: {
-            routes: [
-              {
-                key: 'test',
-                name: 'qux',
-                params: {
-                  author: 'jane',
-                },
-              },
-              { name: 'quz' },
-            ],
-          },
+          screen: 'quz',
+          initial: false,
         },
       },
       pop: true,
@@ -749,7 +708,8 @@ test('gets navigate action from state with 2 screens including route with key on
   });
 });
 
-test('gets navigate action from state with 2 screens including route with key on 2nd route and with config', () => {
+// Same as above with the key on the focused (2nd) route instead — also ignored.
+test('keys are ignored: gets navigate action from state with 2 screens including keyed 2nd route and with config', () => {
   const state = {
     routes: [
       {
@@ -798,20 +758,8 @@ test('gets navigate action from state with 2 screens including route with key on
         initial: true,
         pop: true,
         params: {
-          state: {
-            routes: [
-              {
-                name: 'qux',
-                params: {
-                  author: 'jane',
-                },
-              },
-              {
-                key: 'test',
-                name: 'quz',
-              },
-            ],
-          },
+          screen: 'quz',
+          initial: false,
         },
       },
       pop: true,
@@ -819,6 +767,7 @@ test('gets navigate action from state with 2 screens including route with key on
     type: 'NAVIGATE',
   });
 });
+// END FORK
 
 test('gets navigate action from state with more than 2 screens and with config', () => {
   const state = {
@@ -903,7 +852,6 @@ test('gets navigate action from state with more than 2 screens with lower index'
                   {
                     name: 'qux',
                     params: { author: 'jane' },
-                    path: '/foo/bar',
                   },
                   { name: 'quz' },
                 ],
@@ -938,7 +886,6 @@ test('gets navigate action from state with more than 2 screens with lower index'
         params: {
           screen: 'qux',
           initial: false,
-          path: '/foo/bar',
           params: {
             author: 'jane',
           },

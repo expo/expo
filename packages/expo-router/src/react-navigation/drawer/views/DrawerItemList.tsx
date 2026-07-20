@@ -1,14 +1,15 @@
 'use client';
 import * as React from 'react';
 
+import { useStableTabOrder } from '../../core/useStableTabOrder';
 import {
   CommonActions,
-  DrawerActions,
   type DrawerNavigationState,
   type ParamListBase,
   useLinkBuilder,
 } from '../../native';
 import type { DrawerDescriptorMap, DrawerNavigationHelpers } from '../types';
+import { useDrawerActions } from '../utils/useDrawerActions';
 import { DrawerItem } from './DrawerItem';
 
 type Props = {
@@ -22,6 +23,7 @@ type Props = {
  */
 export function DrawerItemList({ state, navigation, descriptors }: Props) {
   const { buildHref } = useLinkBuilder();
+  const { closeDrawer } = useDrawerActions();
 
   const focusedRoute = state.routes[state.index]!;
   const focusedDescriptor = descriptors[focusedRoute!.key]!;
@@ -34,8 +36,12 @@ export function DrawerItemList({ state, navigation, descriptors }: Props) {
     drawerInactiveBackgroundColor,
   } = focusedOptions;
 
-  return state.routes.map((route, i) => {
-    const focused = i === state.index;
+  // `state.routes` is ordered by the navigator's back stack; render the drawer items
+  // in stable declaration order and detect focus by key.
+  const orderedRoutes = useStableTabOrder(state.routeNames, state.routes);
+
+  return orderedRoutes.map((route) => {
+    const focused = route.key === focusedRoute.key;
 
     const onPress = () => {
       const event = navigation.emit({
@@ -45,10 +51,16 @@ export function DrawerItemList({ state, navigation, descriptors }: Props) {
       });
 
       if (!event.defaultPrevented) {
-        navigation.dispatch({
-          ...(focused ? DrawerActions.closeDrawer() : CommonActions.navigate(route)),
-          target: state.key,
-        });
+        if (focused) {
+          // Tapping the focused route just closes the drawer; navigating elsewhere closes it via
+          // the navigator's navigate-close effect.
+          closeDrawer();
+        } else {
+          navigation.dispatch({
+            ...CommonActions.navigate(route),
+            target: state.key,
+          });
+        }
       }
     };
 

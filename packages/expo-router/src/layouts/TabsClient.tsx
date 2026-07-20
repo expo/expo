@@ -1,8 +1,9 @@
 'use client';
 
-import type { ComponentProps } from 'react';
+import { cloneElement, isValidElement, type ComponentProps } from 'react';
 import { Pressable, Platform } from 'react-native';
 
+import { getNavigateAction } from '../global-state/getNavigationAction';
 import { Link } from '../link/Link';
 import type {
   BottomTabNavigationEventMap,
@@ -11,7 +12,9 @@ import type {
 import { createBottomTabNavigator } from '../react-navigation/bottom-tabs';
 import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
+import type { ScreenProps } from '../useScreens';
 import { Protected } from '../views/Protected';
+import { getRouteNodeHrefMap } from '../views/useSitemap';
 import { withLayoutContext } from './withLayoutContext';
 
 // This is the only way to access the navigator.
@@ -26,44 +29,103 @@ const ExpoTabs = withLayoutContext<
   typeof BottomTabNavigator,
   TabNavigationState<ParamListBase>,
   BottomTabNavigationEventMap
->(BottomTabNavigator, (screens) => {
-  // Support the `href` shortcut prop.
-  return screens.map((screen) => {
-    if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
-      const { href, ...options } = screen.options;
-      if (options.tabBarButton) {
-        throw new Error('Cannot use `href` and `tabBarButton` together.');
+>(
+  BottomTabNavigator,
+  (screens, node) => {
+    const hrefMap = node ? getRouteNodeHrefMap() : undefined;
+
+    return screens.map((screen) => {
+      if (typeof screen.options === 'function') {
+        return screen;
       }
-      return {
-        ...screen,
-        options: {
-          ...options,
-          tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
-          // @ts-expect-error: TODO(@kitten): This isn't properly typed
-          tabBarButton: (props) => {
-            if (href == null) {
-              return null;
-            }
-            const children =
-              Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
-            // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
-            //       While Link expects a TextStyle. We need to reconcile these types.
-            return (
-              <Link
-                {...(props as any)}
-                style={[{ display: 'flex' }, props.style as any]}
-                href={href}
-                asChild={Platform.OS !== 'web'}
-                children={children}
-              />
-            );
+
+      // Explicit `href`: keep the existing shortcut — render the tab button as a `<Link>` (real web
+      // anchors) and hide the tab when `href` is null.
+      if (screen.options?.href !== undefined) {
+        const { href, ...options } = screen.options;
+        if (options.tabBarButton) {
+          throw new Error('Cannot use `href` and `tabBarButton` together.');
+        }
+        return {
+          ...screen,
+          options: {
+            ...options,
+            href,
+            tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
+            // @ts-expect-error: TODO(@kitten): This isn't properly typed
+            tabBarButton: (props) => {
+              if (href == null) {
+                return null;
+              }
+              const children =
+                Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
+              // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
+              //       While Link expects a TextStyle. We need to reconcile these types.
+              return (
+                <Link
+                  {...(props as any)}
+                  style={[{ display: 'flex' }, props.style as any]}
+                  href={href}
+                  asChild={Platform.OS !== 'web'}
+                  children={children}
+                />
+              );
+            },
           },
-        },
-      };
-    }
-    return screen;
-  });
-});
+        };
+      }
+
+      // File-based tab with no explicit href: keep the default tab button (so it still emits
+      // `tabPress` and re-tap pops the nested stack to root) but hand it an action builder derived from
+      // the filesystem route. On the first press `BottomTabBar` dispatches this to establish the tab's
+      // complete compiled subtree (its base/anchor); a re-visit keeps the previous state, since the
+      // store install is a no-op once the tab slice exists.
+      if (hrefMap != null && node != null) {
+        const child = node.children.find((candidate) => candidate.route === screen.name);
+        const derivedHref = child ? hrefMap.get(child) : undefined;
+
+        if (derivedHref != null) {
+          return {
+            ...screen,
+            options: {
+              ...screen.options,
+              unstable_tabBarNavigateAction: () => getNavigateAction(derivedHref, {}),
+              unstable_preloadHref: derivedHref,
+            },
+          };
+        }
+      }
+
+      return screen;
+    });
+  },
+  false,
+  (screens, node) => {
+    const hrefMap = node ? getRouteNodeHrefMap() : undefined;
+
+    return screens.map((screen) => {
+      if (!isValidElement<ScreenProps>(screen) || typeof screen.props.options !== 'function') {
+        return screen;
+      }
+
+      const child = node?.children.find((candidate) => candidate.route === screen.props.name);
+      const href = child ? hrefMap?.get(child) : undefined;
+
+      if (href == null) {
+        return screen;
+      }
+
+      const options = screen.props.options;
+      return cloneElement(screen, {
+        options: (args: any) => ({
+          ...options(args),
+          unstable_tabBarNavigateAction: () => getNavigateAction(href, {}),
+          unstable_preloadHref: href,
+        }),
+      });
+    });
+  }
+);
 
 /**
  * Renders a tabs navigator.

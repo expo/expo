@@ -10,6 +10,7 @@ import { createMaterialTopTabNavigator } from '../react-navigation/material-top-
 import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
 import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
+import { attachPreloadHrefs } from './preloadHref';
 import { withLayoutContext } from './withLayoutContext';
 
 const MaterialTopTabNavigator = createMaterialTopTabNavigator().Navigator;
@@ -19,7 +20,7 @@ const MaterialTopTabs = withLayoutContext<
   typeof MaterialTopTabNavigator,
   TabNavigationState<ParamListBase>,
   MaterialTopTabNavigationEventMap
->(MaterialTopTabNavigator);
+>(MaterialTopTabNavigator, attachPreloadHrefs);
 
 /**
  * Renders a material top tab navigator.

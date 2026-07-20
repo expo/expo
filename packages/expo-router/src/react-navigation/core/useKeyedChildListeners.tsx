@@ -11,7 +11,6 @@ export function useKeyedChildListeners() {
     [K in keyof KeyedListenerMap]: Record<string, KeyedListenerMap[K] | undefined>;
   }>(
     Object.assign(Object.create(null), {
-      getState: {},
       beforeRemove: {},
     })
   );

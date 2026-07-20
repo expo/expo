@@ -5,9 +5,9 @@ import { Text, View } from 'react-native';
 
 import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
-import type { ResultState } from '../../exports';
+import type { CompleteResultState } from '../../exports';
 import { CompositionContext } from '../../fork/native-stack/composition-options';
-import { store } from '../../global-state/router-store';
+import { store } from '../../global-state/store';
 import { getRootStackRouteNames } from '../../global-state/utils';
 import { usePathname } from '../../hooks';
 import {
@@ -30,7 +30,7 @@ export function HrefPreview({ href }: { href: Href }) {
     let routerState: typeof hrefState | undefined = hrefState;
     let rnState = store.state;
     while (routerState && rnState) {
-      const routerRoute: ResultState['routes'][number] = routerState.routes[0]!;
+      const routerRoute: CompleteResultState['routes'][number] = routerState.routes[0]!;
       // When the route we want to show is not present in react-navigation state
       // Then most likely it is a protected route
       if (rnState.stale === false && !rnState.routeNames?.includes(routerRoute.name)) {
@@ -64,7 +64,13 @@ export function HrefPreview({ href }: { href: Href }) {
   );
 }
 
-function PreviewForRootHrefState({ hrefState, href }: { hrefState: ResultState; href: Href }) {
+function PreviewForRootHrefState({
+  hrefState,
+  href,
+}: {
+  hrefState: CompleteResultState;
+  href: Href;
+}) {
   const navigation = useNavigation();
   const { routeNode, params, state } = getParamsAndNodeFromHref(hrefState);
 
@@ -121,7 +127,7 @@ function getHrefState(href: Href) {
   return hrefState;
 }
 
-function getParamsAndNodeFromHref(hrefState: ResultState) {
+function getParamsAndNodeFromHref(hrefState: CompleteResultState) {
   const index = hrefState?.index ?? 0;
   if (hrefState?.routes[index] && hrefState.routes[index].name !== INTERNAL_SLOT_NAME) {
     const name = hrefState.routes[index].name;
@@ -192,7 +198,6 @@ const navigationPropWithWarnings: NavigationProp<ParamListBase> = {
       index: 0,
       routeNames: [],
       routes: [],
-      type: '',
       stale: false,
     };
   },

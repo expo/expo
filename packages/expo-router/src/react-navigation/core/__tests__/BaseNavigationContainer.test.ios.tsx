@@ -1,6 +1,7 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import * as rootReducerModule from '../../../global-state/rootReducer';
 import {
   type DefaultRouterOptions,
   type NavigationState,
@@ -9,6 +10,7 @@ import {
   StackRouter,
   TabRouter,
 } from '../../routers';
+import { getRouteKey, getStateKey } from '../../routers/getRouteKey';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { NavigationIndependentTree } from '../NavigationIndependentTree';
 import { NavigationStateContext } from '../NavigationStateContext';
@@ -16,10 +18,26 @@ import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import type { EventListenerCallback, NavigationContainerEventMap } from '../types';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import {
+  type MockActions,
+  MockRouter,
+  MockRouterKey,
+  mockInitialState,
+} from './__fixtures__/MockRouter';
+
+// Deterministic structural keys for the option-events tests' `foo`/`bar`/`baz` root (TabRouter and
+// StackRouter both mint keys via `getRouteKey`/`getStateKey`, not the `MockRouterKey` counter).
+const optionsRootKey = getStateKey(undefined);
+const optionsFooKey = getRouteKey({ stateKey: optionsRootKey, name: 'foo' });
+const optionsBarKey = getRouteKey({ stateKey: optionsRootKey, name: 'bar' });
+const optionsBazKey = getRouteKey({ stateKey: optionsRootKey, name: 'baz' });
+const optionsBazChildKey = getStateKey(optionsBazKey);
+const optionsQuxKey = getRouteKey({ stateKey: optionsBazChildKey, name: 'qux' });
+const optionsQuxxKey = getRouteKey({ stateKey: optionsBazChildKey, name: 'quxx' });
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+  jest.restoreAllMocks();
 });
 
 test('throws when getState is accessed without a container', () => {
@@ -30,25 +48,6 @@ test('throws when getState is accessed without a container', () => {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     getState;
-
-    return null;
-  };
-
-  const element = <Test />;
-
-  expect(() => render(element).update(element)).toThrow(
-    "Couldn't find a navigation context. Have you wrapped your app with 'NavigationContainer'?"
-  );
-});
-
-test('throws when setState is accessed without a container', () => {
-  expect.assertions(1);
-
-  const Test = () => {
-    const { setState } = React.useContext(NavigationStateContext);
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    setState;
 
     return null;
   };
@@ -90,10 +89,6 @@ test('handle dispatching with ref', () => {
     const RootRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
       ...CurrentMockRouter,
 
-      shouldActionChangeFocus() {
-        return true;
-      },
-
       getStateForAction(state, action, options) {
         if (action.type === 'REVERSE') {
           return {
@@ -125,7 +120,10 @@ test('handle dispatching with ref', () => {
   const onStateChange = jest.fn();
 
   const initialState = {
+    stale: false as const,
     index: 1,
+    key: '0',
+    routeNames: ['foo', 'foo2', 'bar', 'baz'],
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
@@ -152,7 +150,6 @@ test('handle dispatching with ref', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
-    type: 'test',
     index: 1,
     key: '0',
     routeNames: ['foo', 'foo2', 'bar', 'baz'],
@@ -161,6 +158,147 @@ test('handle dispatching with ref', () => {
       { key: 'baz', name: 'baz' },
     ],
   });
+});
+
+test('container dispatch runs the root reducer once and commits the returned root state', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const onStateChange = jest.fn();
+  const action = { type: 'ROOT_REDUCER_ONLY' };
+  const rootReducer = jest.spyOn(rootReducerModule, 'rootReducer').mockImplementation((state) => ({
+    state: {
+      ...state,
+      routes: state.routes.slice().reverse(),
+    },
+    handled: true,
+    noop: false,
+    changedSlices: [],
+  }));
+
+  MockRouterKey.current = 1;
+
+  render(
+    <BaseNavigationContainer
+      ref={ref}
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
+      <TestNavigator>
+        <Screen name="foo">{() => null}</Screen>
+        <Screen name="bar">{() => null}</Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(() => {
+    ref.current?.dispatch(action);
+  });
+
+  expect(rootReducer).toHaveBeenCalledTimes(1);
+  expect(rootReducer.mock.calls[0]![1]).toBe(action);
+  expect(onStateChange).toHaveBeenCalledTimes(1);
+  expect(onStateChange).toHaveBeenLastCalledWith(
+    expect.objectContaining({
+      routes: [
+        expect.objectContaining({ name: 'bar' }),
+        expect.objectContaining({ name: 'foo' }),
+      ],
+    })
+  );
+});
+
+test('navigator dispatch passes local state to thunks and root reducer originKey', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+
+  let thunkState: NavigationState | undefined;
+  let childNavigation: any;
+  const TestScreen = (props: any) => {
+    childNavigation = props.navigation;
+
+    return null;
+  };
+
+  const rootReducer = jest.spyOn(rootReducerModule, 'rootReducer').mockImplementation((state) => ({
+    state,
+    handled: true,
+    noop: true,
+    changedSlices: [],
+  }));
+
+  MockRouterKey.current = 2;
+
+  render(
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['bar'],
+              routes: [{ key: 'bar', name: 'bar' }],
+            },
+          },
+        ],
+      }}>
+      <TestNavigator>
+        <Screen name="foo">
+          {() => (
+            <TestNavigator>
+              <Screen name="bar" component={TestScreen} />
+            </TestNavigator>
+          )}
+        </Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(() => {
+    childNavigation.dispatch((state: NavigationState) => {
+      thunkState = state;
+      return { type: 'CHILD_THUNK' };
+    });
+  });
+
+  expect(thunkState).toEqual(expect.objectContaining({ key: '1', routeNames: ['bar'] }));
+  expect(rootReducer).toHaveBeenCalledWith(
+    expect.any(Object),
+    expect.objectContaining({ type: 'CHILD_THUNK' }),
+    expect.any(Object),
+    expect.objectContaining({ originKey: '1' })
+  );
 });
 
 test('handle resetting state with ref', () => {
@@ -179,7 +317,47 @@ test('handle resetting state with ref', () => {
   const onStateChange = jest.fn();
 
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      onStateChange={onStateChange}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'foo2', 'bar', 'baz'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          {
+            key: 'foo2',
+            name: 'foo2',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['qux1', 'lex1'],
+              routes: [
+                { key: 'qux1', name: 'qux1' },
+                { key: 'lex1', name: 'lex1' },
+              ],
+            },
+          },
+          { key: 'bar', name: 'bar' },
+          {
+            key: 'baz',
+            name: 'baz',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '2',
+              routeNames: ['qux2', 'lex2'],
+              routes: [
+                { key: 'qux2', name: 'qux2' },
+                { key: 'lex2', name: 'lex2' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="foo2">
@@ -203,10 +381,17 @@ test('handle resetting state with ref', () => {
     </BaseNavigationContainer>
   );
 
+  MockRouterKey.current = 3;
+
   render(element).update(element);
 
+  // `resetRoot` requires a complete state: the reset payload is committed verbatim (routes re-keyed
+  // only if keyless), not rehydrated. It must carry the root key, full routeNames, and stale: false.
   const state = {
     index: 1,
+    key: '3',
+    routeNames: ['foo', 'foo2', 'bar', 'baz'],
+    stale: false as const,
     routes: [
       {
         key: 'baz',
@@ -219,6 +404,7 @@ test('handle resetting state with ref', () => {
             { key: 'qux2', name: 'qux2' },
             { key: 'lex2', name: 'lex2' },
           ],
+          stale: false as const,
         },
       },
       { key: 'bar', name: 'bar' },
@@ -247,13 +433,11 @@ test('handle resetting state with ref', () => {
             { key: 'lex2', name: 'lex2' },
           ],
           stale: false,
-          type: 'test',
         },
       },
       { key: 'bar', name: 'bar' },
     ],
     stale: false,
-    type: 'test',
   });
 });
 
@@ -269,7 +453,31 @@ test('handles getRootState', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['qux', 'lex'],
+              routes: [
+                { key: 'qux', name: 'qux' },
+                { key: 'lex', name: 'lex' },
+              ],
+            },
+          },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator initialRouteName="foo">
         <Screen name="foo">
           {() => (
@@ -283,6 +491,8 @@ test('handles getRootState', () => {
       </TestNavigator>
     </BaseNavigationContainer>
   );
+
+  MockRouterKey.current = 2;
 
   render(element);
 
@@ -307,13 +517,11 @@ test('handles getRootState', () => {
             { key: 'lex', name: 'lex' },
           ],
           stale: false,
-          type: 'test',
         },
       },
       { key: 'bar', name: 'bar' },
     ],
     stale: false,
-    type: 'test',
   });
 });
 
@@ -337,8 +545,18 @@ test('emits ready event when the container is ready with synchronous content', (
 
   expect(listener).not.toHaveBeenCalled();
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo'],
+        routes: [{ key: 'foo', name: 'foo' }],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>
@@ -367,14 +585,20 @@ test('emits ready event when the container is ready with asynchronous content', 
     listener(ref.isReady(), ref.getCurrentRoute()?.name);
   });
 
-  const wrapper = render(<BaseNavigationContainer ref={ref}>{null}</BaseNavigationContainer>);
+  const seed = mockInitialState({ routeNames: ['foo', 'bar'] });
+
+  const wrapper = render(
+    <BaseNavigationContainer ref={ref} initialState={seed}>
+      {null}
+    </BaseNavigationContainer>
+  );
 
   expect(listener).not.toHaveBeenCalled();
 
   await Promise.resolve();
 
   wrapper.update(
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer ref={ref} initialState={seed}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -400,7 +624,19 @@ test('emits state events when the state changes', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+          { key: 'baz', name: 'baz' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -408,6 +644,8 @@ test('emits state events when the state changes', () => {
       </TestNavigator>
     </BaseNavigationContainer>
   );
+
+  MockRouterKey.current = 1;
 
   render(element).update(element);
 
@@ -424,7 +662,6 @@ test('emits state events when the state changes', () => {
 
   expect(listener).toHaveBeenCalledTimes(1);
   expect(listener.mock.calls[0]![0].data.state).toEqual({
-    type: 'test',
     stale: false,
     index: 1,
     key: '0',
@@ -442,7 +679,6 @@ test('emits state events when the state changes', () => {
 
   expect(listener).toHaveBeenCalledTimes(2);
   expect(listener.mock.calls[1]![0].data.state).toEqual({
-    type: 'test',
     stale: false,
     index: 2,
     key: '0',
@@ -455,7 +691,7 @@ test('emits state events when the state changes', () => {
   });
 });
 
-test('emits state events when new navigator mounts', () => {
+test('does not re-commit a pre-seeded nested navigator when it mounts', () => {
   jest.useFakeTimers();
 
   const TestNavigator = (props: any) => {
@@ -491,8 +727,37 @@ test('emits state events when new navigator mounts', () => {
 
   const onStateChange = jest.fn();
 
+  MockRouterKey.current = 1;
+
+  const seededState = {
+    stale: false as const,
+    index: 0,
+    key: '0',
+    routeNames: ['foo', 'bar'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      {
+        key: 'bar',
+        name: 'bar',
+        state: {
+          stale: false as const,
+          index: 0,
+          key: '1',
+          routeNames: ['baz', 'bax'],
+          routes: [
+            { key: 'baz', name: 'baz' },
+            { key: 'bax', name: 'bax' },
+          ],
+        },
+      },
+    ],
+  };
+
   const element = (
-    <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={seededState}
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar" component={NestedNavigator} />
@@ -514,37 +779,13 @@ test('emits state events when new navigator mounts', () => {
     jest.runAllTimers();
   });
 
-  const resultState = {
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: '0',
-    routeNames: ['foo', 'bar'],
-    routes: [
-      { key: 'foo', name: 'foo' },
-      {
-        key: 'bar',
-        name: 'bar',
-        state: {
-          stale: false,
-          type: 'test',
-          index: 0,
-          key: '1',
-          routeNames: ['baz', 'bax'],
-          routes: [
-            { key: 'baz', name: 'baz' },
-            { key: 'bax', name: 'bax' },
-          ],
-        },
-      },
-    ],
-  };
-
-  expect(listener).toHaveBeenCalledTimes(1);
-  expect(listener.mock.calls[0]![0].data.state).toEqual(resultState);
-
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenLastCalledWith(resultState);
+  // The nested navigator's slice is committed up front (production always seeds a mounted navigator
+  // via the compiler/PRELOAD wire; there is no self-seed anymore). So when it finally renders it
+  // reads its already-committed slice verbatim — no new commit, hence no `state`/`onStateChange`
+  // event — and the committed tree still equals the seed.
+  expect(listener).not.toHaveBeenCalled();
+  expect(onStateChange).not.toHaveBeenCalled();
+  expect(ref.current?.getRootState()).toEqual(seededState);
 });
 
 test('emits option events when options change with tab router', () => {
@@ -561,7 +802,32 @@ test('emits option events when options change with tab router', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: optionsRootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: optionsFooKey, name: 'foo' },
+          { key: optionsBarKey, name: 'bar' },
+          {
+            key: optionsBazKey,
+            name: 'baz',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: optionsBazChildKey,
+              routeNames: ['qux', 'quxx'],
+              routes: [
+                { key: optionsQuxKey, name: 'qux' },
+                { key: optionsQuxxKey, name: 'quxx' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo" options={{ x: 1 }}>
           {() => null}
@@ -636,7 +902,32 @@ test('emits option events when options change with stack router', () => {
   const ref = createNavigationContainerRef<ParamListBase>();
 
   const element = (
-    <BaseNavigationContainer ref={ref}>
+    <BaseNavigationContainer
+      ref={ref}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: optionsRootKey,
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { key: optionsFooKey, name: 'foo' },
+          { key: optionsBarKey, name: 'bar' },
+          {
+            key: optionsBazKey,
+            name: 'baz',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: optionsBazChildKey,
+              routeNames: ['qux', 'quxx'],
+              routes: [
+                { key: optionsQuxKey, name: 'qux' },
+                { key: optionsQuxxKey, name: 'quxx' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo" options={{ x: 1 }}>
           {() => null}
@@ -715,42 +1006,21 @@ test('throws if there is no navigator rendered', () => {
   spy.mockRestore();
 });
 
-test("throws if the ref hasn't finished initializing", () => {
+test("logs an error when dispatched through before the container's ref is initialized", () => {
   expect.assertions(1);
 
+  // Before any container mounts, the ref's `current` is null; dispatching through it logs the
+  // not-initialized error rather than acting. (Previously this was observed from a screen's mount
+  // effect, which relied on the removed self-seed's extra commit delaying the ref attach; the ref
+  // now attaches via `useImperativeHandle` before passive effects, so exercise the guard directly.)
   const ref = createNavigationContainerRef<ParamListBase>();
+  const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+  ref.dispatch({ type: 'WHATEVER' });
 
-    return (
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    );
-  };
+  expect(spy.mock.calls[0]![0]).toMatch("The 'navigation' object hasn't been initialized yet.");
 
-  const TestScreen = () => {
-    React.useEffect(() => {
-      const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-      ref.current?.dispatch({ type: 'WHATEVER' });
-
-      expect(spy.mock.calls[0]![0]).toMatch("The 'navigation' object hasn't been initialized yet.");
-
-      spy.mockRestore();
-    }, []);
-
-    return null;
-  };
-
-  const element = (
-    <BaseNavigationContainer ref={ref}>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  render(element);
+  spy.mockRestore();
 });
 
 test('fires onReady after navigator is rendered', () => {
@@ -765,9 +1035,10 @@ test('fires onReady after navigator is rendered', () => {
   };
 
   const onReady = jest.fn();
+  const seed = mockInitialState({ routeNames: ['foo'] });
 
   const element = (
-    <BaseNavigationContainer ref={ref} onReady={onReady}>
+    <BaseNavigationContainer ref={ref} onReady={onReady} initialState={seed}>
       {null}
     </BaseNavigationContainer>
   );
@@ -778,7 +1049,7 @@ test('fires onReady after navigator is rendered', () => {
   expect(ref.current?.isReady()).toBe(false);
 
   root.rerender(
-    <BaseNavigationContainer ref={ref} onReady={onReady}>
+    <BaseNavigationContainer ref={ref} onReady={onReady} initialState={seed}>
       <TestNavigator>
         <Screen name="foo">{() => null}</Screen>
       </TestNavigator>
@@ -805,8 +1076,22 @@ test('invokes the unhandled action listener with the unhandled action', () => {
 
   const TestScreen = () => <></>;
 
+  MockRouterKey.current = 1;
+
   render(
-    <BaseNavigationContainer ref={ref} onUnhandledAction={fn}>
+    <BaseNavigationContainer
+      ref={ref}
+      onUnhandledAction={fn}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={TestScreen} />
@@ -841,12 +1126,34 @@ test('works with state change events in independent nested container', () => {
   const onStateChange = jest.fn();
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
             <NavigationIndependentTree>
-              <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
+              <BaseNavigationContainer
+                ref={ref}
+                onStateChange={onStateChange}
+                initialState={{
+                  stale: false as const,
+                  index: 0,
+                  key: '1',
+                  routeNames: ['qux', 'lex'],
+                  routes: [
+                    { key: 'qux', name: 'qux' },
+                    { key: 'lex', name: 'lex' },
+                  ],
+                }}>
                 <TestNavigator>
                   <Screen name="qux">{() => null}</Screen>
                   <Screen name="lex">{() => null}</Screen>
@@ -871,7 +1178,6 @@ test('works with state change events in independent nested container', () => {
       { key: 'lex', name: 'lex' },
     ],
     stale: false,
-    type: 'test',
   });
 
   expect(ref.current?.getRootState()).toEqual({
@@ -883,7 +1189,6 @@ test('works with state change events in independent nested container', () => {
       { key: 'lex', name: 'lex' },
     ],
     stale: false,
-    type: 'test',
   });
 });
 
@@ -901,7 +1206,30 @@ test('warns for duplicate route names nested inside each other', () => {
   const spy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          {
+            key: 'foo',
+            name: 'foo',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '1',
+              routeNames: ['foo', 'baz'],
+              routes: [
+                { key: 'foo', name: 'foo' },
+                { key: 'baz', name: 'baz' },
+              ],
+            },
+          },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="foo">
           {() => (
@@ -921,7 +1249,42 @@ test('warns for duplicate route names nested inside each other', () => {
   );
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '2',
+        routeNames: ['qux'],
+        routes: [
+          {
+            key: 'qux',
+            name: 'qux',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '3',
+              routeNames: ['foo', 'bar'],
+              routes: [
+                {
+                  key: 'foo',
+                  name: 'foo',
+                  state: {
+                    stale: false as const,
+                    index: 0,
+                    key: '4',
+                    routeNames: ['foo', 'baz'],
+                    routes: [
+                      { key: 'foo', name: 'foo' },
+                      { key: 'baz', name: 'baz' },
+                    ],
+                  },
+                },
+                { key: 'bar', name: 'bar' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="qux">
           {() => (
@@ -947,7 +1310,30 @@ test('warns for duplicate route names nested inside each other', () => {
   );
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        stale: false as const,
+        index: 1,
+        key: '5',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          {
+            key: 'bar',
+            name: 'bar',
+            state: {
+              stale: false as const,
+              index: 0,
+              key: '6',
+              routeNames: ['foo', 'baz'],
+              routes: [
+                { key: 'foo', name: 'foo' },
+                { key: 'baz', name: 'baz' },
+              ],
+            },
+          },
+        ],
+      }}>
       <TestNavigator initialRouteName="bar">
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar">

@@ -5,7 +5,7 @@ import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useFocusEffect } from '../useFocusEffect';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
+import { MockRouter, MockRouterKey, mockInitialState } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
@@ -39,8 +39,22 @@ test('runs focus effect on focus change', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third'],
+        routes: [
+          { key: 'first', name: 'first' },
+          { key: 'second', name: 'second' },
+          { key: 'third', name: 'third' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />
@@ -95,7 +109,7 @@ test('runs focus effect on deps change', () => {
   };
 
   const App = ({ count }: { count: number }) => (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['first', 'second'] })}>
       <TestNavigator>
         <Screen name="first">{() => <Test count={count} />}</Screen>
         <Screen name="second">{() => null}</Screen>
@@ -139,7 +153,10 @@ test('runs focus effect when initial state is given', () => {
   };
 
   const initialState = {
+    stale: false as const,
     index: 2,
+    key: '0',
+    routeNames: ['first', 'second', 'third'],
     routes: [
       { key: 'first', name: 'first' },
       { key: 'second', name: 'second' },
@@ -194,8 +211,22 @@ test('runs focus effect when only focused route is rendered', () => {
 
   const navigation = React.createRef<any>();
 
+  MockRouterKey.current = 1;
+
   const element = (
-    <BaseNavigationContainer ref={navigation}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['first', 'second', 'third'],
+        routes: [
+          { key: 'first', name: 'first' },
+          { key: 'second', name: 'second' },
+          { key: 'third', name: 'third' },
+        ],
+      }}>
       <TestNavigator>
         <Screen name="first" component={Test} />
         <Screen name="second">{() => null}</Screen>
@@ -240,7 +271,7 @@ test('runs cleanup when component is unmounted', () => {
   const TestB = () => null;
 
   const App = ({ mounted }: { mounted: boolean }) => (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['first', 'second'] })}>
       <TestNavigator>
         <Screen name="first" component={mounted ? TestA : TestB} />
         <Screen name="second">{() => null}</Screen>
@@ -276,7 +307,7 @@ test('prints error when a dependency array is passed', () => {
   };
 
   const App = () => (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['test'] })}>
       <TestNavigator>
         <Screen name="test" component={Test} />
       </TestNavigator>
@@ -311,7 +342,7 @@ test('prints error when the effect returns a value', () => {
   };
 
   const App = () => (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['test'] })}>
       <TestNavigator>
         <Screen name="test" component={Test} />
       </TestNavigator>
@@ -346,7 +377,7 @@ test('prints error when the effect returns null', () => {
   };
 
   const App = () => (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['test'] })}>
       <TestNavigator>
         <Screen name="test" component={Test} />
       </TestNavigator>
@@ -381,7 +412,7 @@ test('prints error when the effect is an async function', () => {
   };
 
   const App = () => (
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={mockInitialState({ routeNames: ['test'] })}>
       <TestNavigator>
         <Screen name="test" component={Test} />
       </TestNavigator>

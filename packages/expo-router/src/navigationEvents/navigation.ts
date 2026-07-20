@@ -1,17 +1,18 @@
 import { emit } from '.';
-import { storeRef } from '../global-state/store';
+import { store } from '../global-state/store';
 
 let unsubscribe: (() => void) | undefined;
 
 export function handleNavigationOnReady() {
   if (unsubscribe) unsubscribe();
-  unsubscribe = storeRef.current.navigationRef.addListener('__unsafe_action__', (e) => {
-    if (!e.data.noop && storeRef.current.state) {
+  unsubscribe = store.navigationRef.addListener('__unsafe_action__', (e) => {
+    const state = store.state;
+    if (!e.data.noop && state) {
       const action = e.data.action;
       emit('actionDispatched', {
         actionType: action.type,
         payload: action.payload,
-        state: storeRef.current.state,
+        state,
       });
     }
   });

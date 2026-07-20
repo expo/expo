@@ -2,10 +2,17 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { rootReducer } from '../../global-state/rootReducer';
+import { getSeedState } from '../../global-state/seedState';
+import {
+  NavigationSyncStateContext,
+  ReducerRegistryContext,
+  createReducerRegistry,
+} from '../../global-state/storeContext';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
-  type InitialState,
+  StackActions,
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
@@ -42,40 +49,9 @@ const serializableWarnings: string[] = [];
 const duplicateNameWarnings: string[] = [];
 
 /**
- * Remove `key` and `routeNames` from the state objects recursively to get partial state.
- *
- * @param state Initial state object.
- */
-const getPartialState = (
-  state: InitialState | undefined
-): PartialState<NavigationState> | undefined => {
-  if (state === undefined) {
-    return;
-  }
-
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { key, routeNames, ...partialState } = state;
-
-  return {
-    ...partialState,
-    stale: true,
-    routes: state.routes.map((route) => {
-      if (route.state === undefined) {
-        return route as Route<string> & {
-          state?: PartialState<NavigationState>;
-        };
-      }
-
-      return { ...route, state: getPartialState(route.state) };
-    }),
-  };
-};
-
-/**
  * Container component which holds the navigation state.
  * This should be rendered at the root wrapping the whole app.
  *
- * @param props.initialState Initial state object for the navigation tree.
  * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
  * @param props.onUnhandledAction Callback which is called when an action is not handled.
@@ -102,9 +78,16 @@ export function BaseNavigationContainer({
     );
   }
 
-  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(() =>
-    getPartialState(initialState == null ? undefined : initialState)
+  // Seed verbatim — no staling, no `getPartialState`. The app path (ExpoRoot) passes no
+  // `initialState`: the store has already compiled the initial URL into a complete, keyed state
+  // before anything mounts, so it is the seed. An explicit `initialState` (standalone / tests /
+  // future persistence) still wins and is likewise seeded as-is. Navigators render their slice
+  // directly (their init/rehydrate branches become identity on a complete state).
+  // TODO(@ubax): re-add a state-seeding entry point for persistence (Step 8's validate-or-recompile model)
+  const { state, store, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(
+    () => (initialState == null ? getSeedState() : initialState) as State
   );
+  const reducerRegistry = React.useMemo(() => createReducerRegistry(), []);
 
   const isFirstMountRef = React.useRef<boolean>(true);
 
@@ -118,49 +101,240 @@ export function BaseNavigationContainer({
 
   const { listeners, addListener } = useChildListeners();
 
-  const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
+  const { addKeyedListener } = useKeyedChildListeners();
+
+  const emitter = useEventEmitter<NavigationContainerEventMap>();
+
+  const stackRef = React.useRef<string | undefined>(undefined);
+
+  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
+    emitter.emit({
+      type: '__unsafe_action__',
+      data: { action, noop, stack: stackRef.current },
+    });
+  });
+
+  const defaultOnUnhandledAction = useLatestCallback((action: NavigationAction) => {
+    if (process.env.NODE_ENV === 'production') {
+      return;
+    }
+
+    const payload: Record<string, any> | undefined = action.payload;
+
+    let message = `The action '${action.type}'${
+      payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
+    } was not handled by any navigator.`;
+
+    switch (action.type) {
+      case 'PRELOAD':
+      case 'NAVIGATE':
+      case 'PUSH':
+      case 'REPLACE':
+      case 'POP_TO':
+      case 'JUMP_TO':
+        if (payload?.name) {
+          message += `\n\nDo you have a screen named '${payload.name}'?\n\nIf you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.\n\nIf you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.`;
+        } else {
+          message += `\n\nYou need to pass the name of the screen to navigate to.\n\nSee https://reactnavigation.org/docs/navigation-actions for usage.`;
+        }
+
+        break;
+      case 'GO_BACK':
+      case 'POP':
+      case 'POP_TO_TOP':
+        message += `\n\nIs there any screen to go back to?`;
+        break;
+      case 'OPEN_DRAWER':
+      case 'CLOSE_DRAWER':
+      case 'TOGGLE_DRAWER':
+        message += `\n\nIs your screen inside a Drawer navigator?`;
+        break;
+    }
+
+    message += `\n\nThis is a development-only warning and won't be shown in production.`;
+
+    console.error(message);
+  });
+
+  // The committed sync store is the single source of truth for every imperative read and dispatch.
+  // Navigators reduce into it through `dispatchRoot` and read their slice back out of it; the
+  // registry (`hasReducer`) supplies the orthogonal "which navigators are mounted" signal, so there
+  // is no separate compose-up getter chain.
+  const getCommittedRootState = useLatestCallback(() => getState() as NavigationState | undefined);
+
+  // Actions dispatched before their origin navigator's reducer has registered. This is the mount
+  // window: a descendant's mount effect can dispatch (e.g. an untargeted `navigate` or a `preload`)
+  // before its ancestor navigators' registration effects run. Rather than reducing locally, we hold
+  // the action and replay it through the root reducer after the next commit, once registration lands.
+  //
+  // This is deliberately separate from the module-global `routingQueue` (the imperative-API input
+  // buffer): replays need this dispatch's internal `originKey`/`isReplay` (to re-target the origin
+  // navigator and bound the retry to once), which the public `dispatch` that drains `routingQueue`
+  // doesn't carry. Both still serialize through this `dispatchRoot`, so ordering stays coherent.
+  const pendingReplayRef = React.useRef<{ action: NavigationAction; originKey?: string }[]>([]);
+  const [replayTick, requestReplay] = React.useReducer((tick: number) => tick + 1, 0);
+
+  const dispatchRoot = useLatestCallback(
+    (
+      action: NavigationAction,
+      options: {
+        originKey?: string;
+        suppressUnhandled?: boolean;
+        skipBeforeRemove?: boolean;
+        isReplay?: boolean;
+      } = {}
+    ) => {
+      const rootState = getCommittedRootState();
+
+      if (rootState == null) {
+        console.error(NOT_INITIALIZED_ERROR);
+        return false;
+      }
+
+      const result = rootReducer(rootState, action, reducerRegistry, options);
+
+      if (!result.handled) {
+        const originUnregistered =
+          options.originKey != null && !reducerRegistry.hasReducer(options.originKey);
+        const isDeferrable = action.type === 'PRELOAD' || action.target == null;
+
+        if (originUnregistered && isDeferrable && !options.suppressUnhandled && !options.isReplay) {
+          // Mount window: the origin navigator exists in the committed tree but hasn't registered
+          // its reducer yet. Hold the action and replay it after the next commit (see below). If it
+          // is still unhandled on replay, it falls through to the unhandled reporting.
+          pendingReplayRef.current.push({ action, originKey: options.originKey });
+          requestReplay();
+          return false;
+        }
+
+        const originEntry =
+          options.originKey == null ? undefined : reducerRegistry.getEntry(options.originKey);
+
+        if (options.suppressUnhandled) {
+          return false;
+        }
+
+        if (originEntry?.onUnhandledAction != null) {
+          originEntry.onUnhandledAction(action);
+        } else {
+          (onUnhandledAction ?? defaultOnUnhandledAction)(action);
+        }
+        return false;
+      }
+
+      onDispatchAction(action, result.noop);
+
+      if (!result.noop) {
+        const isPrevented = result.changedSlices
+          .slice()
+          .sort((a, b) => {
+            return getStateDepth(result.state, b.key) - getStateDepth(result.state, a.key);
+          })
+          .some(
+            (slice) =>
+              !options.skipBeforeRemove &&
+              slice.entry.shouldPreventRemove?.(slice.previousState, slice.nextState, action)
+          );
+
+        if (isPrevented) {
+          return true;
+        }
+
+        setState(result.state);
+      }
+
+      return true;
+    }
+  );
+
+  // Replay actions held during the mount window. Runs on every commit (and whenever `requestReplay`
+  // fires), which for the initial mount lands after the descendant navigators' registration effects,
+  // so the root reducer now sees the origin registered. `isReplay` stops a still-unhandled replay
+  // from re-queuing, bounding this to a single retry.
+  React.useEffect(() => {
+    if (pendingReplayRef.current.length === 0) {
+      return;
+    }
+
+    const pending = pendingReplayRef.current;
+    pendingReplayRef.current = [];
+
+    for (const { action, originKey } of pending) {
+      dispatchRoot(action, { originKey, isReplay: true });
+    }
+  }, [replayTick, dispatchRoot]);
+
+  const getFocusedOriginKey = React.useCallback(
+    (rootState: NavigationState | undefined) => {
+      if (rootState == null) {
+        return undefined;
+      }
+
+      return getDeepestFocusedRegisteredKey(rootState, reducerRegistry);
+    },
+    [reducerRegistry]
+  );
 
   const dispatch = useLatestCallback(
     (action: NavigationAction | ((state: NavigationState) => NavigationAction)) => {
-      if (listeners.focus[0] == null) {
+      const rootState = getCommittedRootState();
+
+      if (rootState == null) {
         console.error(NOT_INITIALIZED_ERROR);
-      } else {
-        listeners.focus[0]((navigation) => navigation.dispatch(action));
+        return;
       }
+
+      const nextAction = typeof action === 'function' ? action(rootState) : action;
+      dispatchRoot(nextAction, { originKey: getFocusedOriginKey(rootState) });
     }
   );
 
   const canGoBack = useLatestCallback(() => {
-    if (listeners.focus[0] == null) {
+    const rootState = getCommittedRootState();
+
+    if (rootState == null) {
       return false;
     }
 
-    const { result, handled } = listeners.focus[0]((navigation) => navigation.canGoBack());
+    const result = rootReducer(rootState, CommonActions.goBack(), reducerRegistry, {
+      originKey: getFocusedOriginKey(rootState),
+    });
 
-    if (handled) {
-      return result;
-    } else {
+    return result.handled && !result.noop;
+  });
+
+  const canDismiss = useLatestCallback(() => {
+    const rootState = getCommittedRootState();
+
+    if (rootState == null) {
       return false;
     }
+
+    const result = rootReducer(rootState, StackActions.pop(1), reducerRegistry, {
+      originKey: getFocusedOriginKey(rootState),
+    });
+
+    return result.handled && !result.noop;
   });
 
   const resetRoot = useLatestCallback((state?: PartialState<NavigationState> | NavigationState) => {
-    const target = state?.key ?? keyedListeners.getState.root?.().key;
+    // Always target the live root navigator, ignoring the incoming state's key. Compiled states
+    // (from `getStateFromPath`) carry deterministic keys that never match the live-minted root key,
+    // and `resetRoot` means "reset the root" — so the target is the root, not the state.
+    const target = getCommittedRootState()?.key;
 
     if (target == null) {
       console.error(NOT_INITIALIZED_ERROR);
     } else {
-      listeners.focus[0]!((navigation) =>
-        navigation.dispatch({
-          ...CommonActions.reset(state),
-          target,
-        })
-      );
+      dispatchRoot({
+        ...CommonActions.reset(state),
+        target,
+      });
     }
   });
 
   const getRootState = useLatestCallback(() => {
-    return keyedListeners.getState.root?.();
+    return getCommittedRootState();
   });
 
   const getCurrentRoute = useLatestCallback(() => {
@@ -177,11 +351,13 @@ export function BaseNavigationContainer({
 
   const isReady = useLatestCallback(() => listeners.focus[0] != null);
 
-  const emitter = useEventEmitter<NavigationContainerEventMap>();
-
   const { addOptionsGetter, getCurrentOptions } = useOptionsGetters({});
 
-  const navigation: NavigationContainerRef<ParamListBase> = React.useMemo(
+  const navigation: NavigationContainerRef<ParamListBase> & {
+    // Internal: lets the action builder learn which navigators are currently mounted so it can aim
+    // an action at the nearest mounted navigator (the committed state may contain unmounted ones).
+    hasReducer: (key: string) => boolean;
+  } = React.useMemo(
     () => ({
       ...Object.keys(CommonActions).reduce<any>((acc, name) => {
         acc[name] = (...args: any[]) =>
@@ -194,6 +370,7 @@ export function BaseNavigationContainer({
       resetRoot,
       isFocused: () => true,
       canGoBack,
+      canDismiss,
       getParent: () => undefined,
       getState,
       getRootState,
@@ -203,9 +380,11 @@ export function BaseNavigationContainer({
       setOptions: () => {
         throw new Error('Cannot call setOptions outside a screen');
       },
+      hasReducer: (key: string) => reducerRegistry.hasReducer(key),
     }),
     [
       canGoBack,
+      canDismiss,
       dispatch,
       emitter,
       getCurrentOptions,
@@ -214,17 +393,11 @@ export function BaseNavigationContainer({
       getState,
       isReady,
       resetRoot,
+      reducerRegistry,
     ]
   );
 
   React.useImperativeHandle(ref, () => navigation, [navigation]);
-
-  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
-    emitter.emit({
-      type: '__unsafe_action__',
-      data: { action, noop, stack: stackRef.current },
-    });
-  });
 
   const lastEmittedOptionsRef = React.useRef<object | undefined>(undefined);
 
@@ -241,19 +414,26 @@ export function BaseNavigationContainer({
     });
   });
 
-  const stackRef = React.useRef<string | undefined>(undefined);
-
   const builderContext = React.useMemo(
     () => ({
       addListener,
       addKeyedListener,
+      dispatchRoot,
       onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
       flushUpdates,
       stackRef,
     }),
-    [addListener, addKeyedListener, onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates]
+    [
+      addListener,
+      addKeyedListener,
+      dispatchRoot,
+      onDispatchAction,
+      onOptionsChange,
+      scheduleUpdate,
+      flushUpdates,
+    ]
   );
 
   const isInitialRef = React.useRef(true);
@@ -264,13 +444,12 @@ export function BaseNavigationContainer({
     () => ({
       state,
       getState,
-      setState,
       getKey,
       setKey,
       getIsInitial,
       addOptionsGetter,
     }),
-    [state, getState, setState, getKey, setKey, getIsInitial, addOptionsGetter]
+    [state, getState, getKey, setKey, getIsInitial, addOptionsGetter]
   );
 
   const onReadyRef = React.useRef(onReady);
@@ -284,13 +463,16 @@ export function BaseNavigationContainer({
 
   const onReadyCalledRef = React.useRef(false);
 
+  // Runs after every commit rather than only on state change: a navigator can register after the
+  // container has mounted (async / suspended content), flipping `isReady()` to `true` without any
+  // accompanying state change. The `onReadyCalledRef` guard keeps this fire-once.
   React.useEffect(() => {
     if (!onReadyCalledRef.current && isReady()) {
       onReadyCalledRef.current = true;
       onReadyRef.current?.();
       emitter.emit({ type: 'ready' });
     }
-  }, [state, isReady, emitter]);
+  });
 
   React.useEffect(() => {
     const hydratedState = getRootState();
@@ -366,63 +548,72 @@ export function BaseNavigationContainer({
     isFirstMountRef.current = false;
   }, [getRootState, emitter, state]);
 
-  const defaultOnUnhandledAction = useLatestCallback((action: NavigationAction) => {
-    if (process.env.NODE_ENV === 'production') {
-      return;
-    }
-
-    const payload: Record<string, any> | undefined = action.payload;
-
-    let message = `The action '${action.type}'${
-      payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
-    } was not handled by any navigator.`;
-
-    switch (action.type) {
-      case 'PRELOAD':
-      case 'NAVIGATE':
-      case 'PUSH':
-      case 'REPLACE':
-      case 'POP_TO':
-      case 'JUMP_TO':
-        if (payload?.name) {
-          message += `\n\nDo you have a screen named '${payload.name}'?\n\nIf you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.\n\nIf you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.`;
-        } else {
-          message += `\n\nYou need to pass the name of the screen to navigate to.\n\nSee https://reactnavigation.org/docs/navigation-actions for usage.`;
-        }
-
-        break;
-      case 'GO_BACK':
-      case 'POP':
-      case 'POP_TO_TOP':
-        message += `\n\nIs there any screen to go back to?`;
-        break;
-      case 'OPEN_DRAWER':
-      case 'CLOSE_DRAWER':
-      case 'TOGGLE_DRAWER':
-        message += `\n\nIs your screen inside a Drawer navigator?`;
-        break;
-    }
-
-    message += `\n\nThis is a development-only warning and won't be shown in production.`;
-
-    console.error(message);
-  });
-
   return (
     <NavigationIndependentTreeContext.Provider value={false}>
-      <NavigationContainerRefContext.Provider value={navigation}>
-        <NavigationBuilderContext.Provider value={builderContext}>
-          <NavigationStateContext.Provider value={context}>
-            <UnhandledActionContext.Provider value={onUnhandledAction ?? defaultOnUnhandledAction}>
-              <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                <EnsureSingleNavigator>
-                  <ThemeProvider value={theme}>{children}</ThemeProvider>
-                </EnsureSingleNavigator>
-              </DeprecatedNavigationInChildContext.Provider>
-            </UnhandledActionContext.Provider>
-          </NavigationStateContext.Provider>
-        </NavigationBuilderContext.Provider>
-      </NavigationContainerRefContext.Provider>
+      <NavigationSyncStateContext.Provider value={store}>
+        <ReducerRegistryContext.Provider value={reducerRegistry}>
+          <NavigationContainerRefContext.Provider value={navigation}>
+            <NavigationBuilderContext.Provider value={builderContext}>
+              <NavigationStateContext.Provider value={context}>
+                <UnhandledActionContext.Provider
+                  value={onUnhandledAction ?? defaultOnUnhandledAction}>
+                  <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
+                    <EnsureSingleNavigator>
+                      <ThemeProvider value={theme}>{children}</ThemeProvider>
+                    </EnsureSingleNavigator>
+                  </DeprecatedNavigationInChildContext.Provider>
+                </UnhandledActionContext.Provider>
+              </NavigationStateContext.Provider>
+            </NavigationBuilderContext.Provider>
+          </NavigationContainerRefContext.Provider>
+        </ReducerRegistryContext.Provider>
+      </NavigationSyncStateContext.Provider>
     </NavigationIndependentTreeContext.Provider>
   );
+}
+
+function getDeepestFocusedRegisteredKey(
+  state: NavigationState,
+  reducerRegistry: ReturnType<typeof createReducerRegistry>
+): string {
+  let key = state.key;
+  let currentState: NavigationState | undefined = state;
+
+  while (currentState != null) {
+    const route = currentState.routes[currentState.index];
+    const childState = route?.state;
+
+    if (
+      childState == null ||
+      childState.stale !== false ||
+      !reducerRegistry.hasReducer(childState.key)
+    ) {
+      break;
+    }
+
+    key = childState.key;
+    currentState = childState as NavigationState;
+  }
+
+  return key;
+}
+
+function getStateDepth(state: NavigationState, key: string, depth = 0): number {
+  if (state.key === key) {
+    return depth;
+  }
+
+  for (const route of state.routes) {
+    const childState = route.state;
+
+    if (childState != null && childState.stale === false) {
+      const childDepth = getStateDepth(childState as NavigationState, key, depth + 1);
+
+      if (childDepth !== -1) {
+        return childDepth;
+      }
+    }
+  }
+
+  return -1;
 }
