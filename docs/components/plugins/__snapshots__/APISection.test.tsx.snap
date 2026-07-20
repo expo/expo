@@ -3655,7 +3655,7 @@ developers.
         class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        An object representing the tokenized portions of the user's full name. Any of all of the fields
+        An object representing the tokenized portions of the user's full name. Any or all of the fields
 may be 
         <code
           class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
