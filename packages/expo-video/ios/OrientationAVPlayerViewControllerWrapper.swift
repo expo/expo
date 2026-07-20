@@ -51,7 +51,10 @@ internal final class OrientationAVPlayerViewControllerWrapper: VideoPlayerObserv
     #endif
 
     guard hasStalePlayerReference, !isPresenting else {
-      controller.player = player?.ref
+      // Skip redundant assignments to avoid re-creating KVOs
+      if controller.player !== player?.ref {
+        controller.player = player?.ref
+      }
       return false
     }
 

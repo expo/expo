@@ -61,6 +61,7 @@ internal class VideoSourceLoader {
     cancelCurrentTask()
   }
 
+  @VideoLoadingActor
   private func loadImpl(videoSource: VideoSource) async throws -> LoadingResult {
     listeners.forEach { listener in
       listener.value?.onLoadingStarted(loader: self, videoSource: videoSource)
