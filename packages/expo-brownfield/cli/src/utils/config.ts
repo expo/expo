@@ -171,7 +171,7 @@ const resolveTaskArray = (
   const tasks: string[] = options.task ?? [];
   let repositories: string[] = options.repository ?? [];
   if (tasks.length === 0 && repositories.length === 0) {
-    repositories = resolveLocalRepositoriesFromAppConfig();
+    repositories = resolveLocalRepositoriesFromAppConfig(!!options.verbose);
     if (repositories.length > 0) {
       console.info(
         `No --repo or --task specified; defaulting to local repositories from the app config: ${repositories.join(', ')}`
@@ -189,7 +189,7 @@ const resolveTaskArray = (
   return Array.from(new Set([...tasks, ...repoTasks]));
 };
 
-const resolveLocalRepositoriesFromAppConfig = (): string[] => {
+const resolveLocalRepositoriesFromAppConfig = (verbose: boolean): string[] => {
   let publishing: unknown;
   try {
     const { exp } = getConfig(process.cwd(), { skipSDKVersionRequirement: true });
@@ -197,9 +197,16 @@ const resolveLocalRepositoriesFromAppConfig = (): string[] => {
       (entry): entry is [string, any] => Array.isArray(entry) && entry[0] === 'expo-brownfield'
     );
     publishing = plugin?.[1]?.android?.publishing;
-  } catch {
+  } catch (error) {
     // App config could not be evaluated here — fall through to the plugin's
     // default publishing target below.
+    if (verbose) {
+      console.warn(
+        `Could not read \`android.publishing\` from the app config, falling back to MavenLocal: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
   }
 
   const entries =
