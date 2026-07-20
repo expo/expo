@@ -31,7 +31,6 @@
     </intent>
   </queries>
   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="true" android:theme="@style/AppTheme" android:requestLegacyExternalStorage="true" android:networkSecurityConfig="@xml/network_security_config" android:fullBackupContent="@xml/secure_store_backup_rules" android:dataExtractionRules="@xml/secure_store_data_extraction_rules" android:supportsRtl="true">
-    <meta-data android:name="com.facebook.soloader.enabled" android:value="true" tools:replace="android:value"/>
     <meta-data android:name="expo.modules.location.foreground_service_icon" android:resource="@drawable/location_foreground_service_icon"/>
     <meta-data android:name="expo.modules.notifications.default_notification_color" android:resource="@color/notification_icon_color"/>
     <meta-data android:name="expo.modules.notifications.default_notification_icon" android:resource="@drawable/notification_icon"/>

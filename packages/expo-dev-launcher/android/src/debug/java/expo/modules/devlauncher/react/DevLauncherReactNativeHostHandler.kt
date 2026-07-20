@@ -3,10 +3,8 @@ package expo.modules.devlauncher.react
 import android.content.Context
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactHost
-import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerFactory
-import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.DevLauncherController
 import java.lang.ref.WeakReference
@@ -16,8 +14,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandler {
-  private val contextHolder = WeakReference(context)
+class DevLauncherReactNativeHostHandler : ReactNativeHostHandler {
   override fun getDevSupportManagerFactory(): DevSupportManagerFactory {
     return DevLauncherDevSupportManagerFactory()
   }
@@ -26,18 +23,7 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
     return if (DevLauncherController.wasInitialized()) DevLauncherController.instance.useDeveloperSupport else null
   }
 
-  override fun getJavaScriptExecutorFactory(): JavaScriptExecutorFactory? {
-    val context = contextHolder.get() ?: return null
-    val applicationContext = context.applicationContext
-
-    SoLoader.init(applicationContext, /* native exopackage */ false)
-    if (SoLoader.getLibraryPath("libv8android.so") != null) {
-      // Assuming V8 overrides the `getJavaScriptExecutorFactory` in the main ReactNativeHost,
-      // return null here to use the default value.
-      return null
-    }
-    return HermesExecutorFactory()
-  }
+  override fun getJavaScriptExecutorFactory() = HermesExecutorFactory()
 
   override fun onDidCreateReactHost(context: Context, reactNativeHost: ReactHost) {
     reactNativeHost.setDevMenuConfiguration(
