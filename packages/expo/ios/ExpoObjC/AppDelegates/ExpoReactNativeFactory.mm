@@ -12,12 +12,6 @@
 #import "ExpoModulesCore-Swift.h"
 #endif
 
-
-#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
-#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
-#else
-#import "ExpoModulesCore-Swift.h"
-#endif
 #import <ReactCommon/RCTHost.h>
 #import <react/renderer/runtimescheduler/RuntimeSchedulerBinding.h>
 #import <ExpoModulesCore/EXReactSchedulerDispatch.h>
