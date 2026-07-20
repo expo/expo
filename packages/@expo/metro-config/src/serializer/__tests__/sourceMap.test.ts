@@ -764,7 +764,7 @@ describe('sourceMapString', () => {
       jest.resetModules();
     });
 
-    it('replaces both stock exports with Expo's encoder', () => {
+    it("replaces both stock exports with Expo's encoder", () => {
       const stock = require(STOCK_PATH);
       const originalSync = stock.sourceMapString;
       const originalAsync = stock.sourceMapStringNonBlocking;
