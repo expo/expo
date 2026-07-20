@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `ARG_MAX` error when using `multipleFrameworks`.
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26
