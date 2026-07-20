@@ -7,6 +7,7 @@ import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import type { StackScreenProps } from '../layouts/stack-utils';
+import type { NativeStackHeaderProps } from '../react-navigation/native-stack';
 import { renderRouter, testRouter } from '../testing-library';
 
 jest.mock('react-native-screens', () => {
@@ -23,6 +24,45 @@ const { ScreenStackItem } = jest.requireMock(
   'react-native-screens'
 ) as typeof import('react-native-screens');
 const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof ScreenStackItem>;
+
+test('custom headers receive the state route and route-scoped stack navigation', () => {
+  let headerProps: NativeStackHeaderProps | undefined;
+
+  renderRouter(
+    {
+      _layout: () => (
+        <Stack
+          screenOptions={{
+            header: (props) => {
+              if (props.route.name === 'b') {
+                headerProps = props;
+              }
+              return null;
+            },
+          }}
+        />
+      ),
+      a: () => null,
+      b: () => null,
+    },
+    { initialUrl: '/a' }
+  );
+
+  act(() => router.push({ pathname: '/b', params: { id: '42' } }));
+
+  expect(headerProps?.route).toMatchObject({ name: 'b', params: { id: '42' } });
+  expect(headerProps?.navigation).toEqual(
+    expect.objectContaining({
+      goBack: expect.any(Function),
+      pop: expect.any(Function),
+      popTo: expect.any(Function),
+      popToTop: expect.any(Function),
+      push: expect.any(Function),
+      replace: expect.any(Function),
+      setOptions: expect.any(Function),
+    })
+  );
+});
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *

@@ -545,18 +545,12 @@ export function StackRouter(options: StackRouterOptions) {
             (route) =>
               route.key === focusedRoute.key || !action.payload.routeNames.includes(route.name)
           );
-          const nextPreloadedRoutes = preloadedRoutes.filter(
-            (route) => !action.payload.routeNames.includes(route.name)
-          );
 
-          if (
-            routes.length === activeRoutes.length &&
-            nextPreloadedRoutes.length === preloadedRoutes.length
-          ) {
+          if (routes.length === activeRoutes.length) {
             return state;
           }
 
-          return getStateWithRoutes(state, routes, nextPreloadedRoutes);
+          return getStateWithRoutes(state, routes);
         }
 
         case 'POP': {

@@ -4,6 +4,10 @@ import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation
 
 import type { CommonNavigationAction, ParamListBase } from '../../react-navigation/core';
 import {
+  StackRouter,
+  type StackActionHelpers,
+  type StackNavigationState,
+  type StackRouterOptions,
   TabRouter,
   type TabNavigationState,
   type TabRouterOptions,
@@ -103,6 +107,47 @@ function PublicContent(_props: NavigatorContentProps<Opts, EventMap, NavProps>) 
   return null;
 }
 
+type StackCreateProps = { getRouteNavigation: (key: string) => unknown };
+
+function StackContent(
+  props: NavigatorContentProps<Opts, EventMap, object, StackCreateProps>
+) {
+  const descriptor = props.descriptors[props.state.routes[0]!.key]!;
+  descriptor.options.title;
+  descriptor.render();
+  // @ts-expect-error Standard descriptors intentionally exclude raw route data.
+  descriptor.route;
+  // @ts-expect-error Route navigation is injected explicitly instead.
+  descriptor.navigation;
+  return null;
+}
+
+unstable_createStandardRouterNavigator<
+  Opts,
+  StackNavigationState<ParamListBase>,
+  EventMap,
+  object,
+  StackRouterOptions,
+  StackCreateProps,
+  StackActionHelpers<ParamListBase>
+>(StackContent, StackRouter, {
+  createProps: ({ descriptors, navigation }) => {
+    const descriptor = descriptors[Object.keys(descriptors)[0]!]!;
+    descriptor.route.name;
+    descriptor.options.title;
+    descriptor.render();
+    descriptor.navigation.push('details');
+    descriptor.navigation.replace('details');
+    descriptor.navigation.pop();
+    navigation.push('details');
+    navigation.popToTop();
+
+    return {
+      getRouteNavigation: (key) => descriptors[key]!.navigation,
+    };
+  },
+});
+
 function RequiredPublicContent(_props: NavigatorContentProps<Opts, EventMap, RequiredNavProps>) {
   return null;
 }
@@ -150,7 +195,11 @@ const integratePublicNav = unstable_integrateWithRouter<
 // ---------------------------------------------------------------------------
 
 const SplitNav = createSplitNav(SplitContent, TabRouter, {
-  createProps: () => ({ routeNames: [], preload: () => {} }),
+  createProps: ({ navigation }) => {
+    // @ts-expect-error Router action helpers are only present when explicitly declared.
+    navigation.nonexistent();
+    return { routeNames: [], preload: () => {} };
+  },
 });
 type SplitElementProps = ComponentProps<typeof SplitNav>;
 

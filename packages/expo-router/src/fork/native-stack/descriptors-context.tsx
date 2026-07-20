@@ -1,17 +1,9 @@
 import { createContext } from 'react';
+import type { NavigatorDescriptor } from 'standard-navigation';
 
-import type { Descriptor, ParamListBase, RouteProp } from '../../react-navigation/native';
-import type {
-  NativeStackNavigationOptions,
-  NativeStackNavigationProp,
-} from '../../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 
-// Copied from @react-navigation/native
-export type NativeStackDescriptor = Descriptor<
-  NativeStackNavigationOptions,
-  NativeStackNavigationProp<ParamListBase>,
-  RouteProp<ParamListBase>
->;
+export type NativeStackDescriptor = NavigatorDescriptor<NativeStackNavigationOptions>;
 
 export type NativeStackDescriptorMap = {
   [key: string]: NativeStackDescriptor;

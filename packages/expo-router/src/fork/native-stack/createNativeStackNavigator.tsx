@@ -1,124 +1,104 @@
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
-import * as React from 'react';
+import { useEffect, useMemo } from 'react';
+import { createStandardNavigator } from 'standard-navigation';
 
 import { useClearGuardedRoutes } from '../../layouts/useClearGuardedRoutes';
+import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../navigationParams';
 import {
-  INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
-  type InternalNavigationOptions,
-} from '../../navigationParams';
-import {
-  createNavigatorFactory,
   type EventArg,
-  type NavigatorTypeBagBase,
+  type NavigationProp,
+  type NavigationState,
   type ParamListBase,
   type StackActionHelpers,
-  StackActions,
   type StackNavigationState,
+  StackActions,
   StackRouter,
   type StackRouterOptions,
-  type StaticConfig,
-  type TypedNavigator,
-  useNavigationBuilder,
 } from '../../react-navigation/native';
 import {
-  type NativeStackNavigationEventMap,
+  makePopAction,
+  NativeStackView,
+  type InternalNativeStackNavigationEventMap,
   type NativeStackNavigationOptions,
   type NativeStackNavigationProp,
-  NativeStackView,
-  type NativeStackNavigatorProps,
-  makePopAction,
 } from '../../react-navigation/native-stack';
+import {
+  type NavigatorContentProps,
+  unstable_integrateWithRouter,
+} from '../../standard-navigation';
 import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
 import { DescriptorsContext } from './descriptors-context';
 import { usePreviewTransition } from './usePreviewTransition';
 
 const GLASS = isLiquidGlassAvailable();
 
-type NativeStackNavigationOptionsWithInternal = NativeStackNavigationOptions &
-  InternalNavigationOptions;
+type ParentTabEventMap = {
+  tabPress: {
+    data: { __internalTabsType?: 'native' } | undefined;
+    canPreventDefault: true;
+  };
+};
 
-function NativeStackNavigator({
-  id,
-  initialRouteName,
-  children,
-  layout,
-  screenListeners,
-  screenOptions,
-  screenLayout,
-  UNSTABLE_router,
-  ...rest
-}: NativeStackNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
-    StackNavigationState<ParamListBase>,
-    StackRouterOptions,
-    StackActionHelpers<ParamListBase>,
-    NativeStackNavigationOptionsWithInternal,
-    NativeStackNavigationEventMap
-  >(StackRouter, {
-    id,
-    initialRouteName,
-    children,
-    layout,
-    screenListeners,
-    screenOptions,
-    screenLayout,
-    UNSTABLE_router,
-  });
+type TabPressEvent = EventArg<'tabPress', true, ParentTabEventMap['tabPress']['data']>;
 
-  const removeRoutesFromState = React.useCallback(
-    (routeNames: string[]) =>
-      navigation.dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
-    [navigation]
-  );
+type NativeStackCreateProps = {
+  pop: (count: number, sourceRouteKey: string) => void;
+  popToTop: () => void;
+  removeRoutesFromState: (routeNames: string[]) => void;
+  subscribeTabPress: (callback: (event: TabPressEvent, isFocused: boolean) => void) => () => void;
+  getRouteNavigation: (routeKey: string) => NativeStackNavigationProp<ParamListBase>;
+};
+
+type NativeStackContentProps<Options extends NativeStackNavigationOptions> = NavigatorContentProps<
+  Options,
+  InternalNativeStackNavigationEventMap,
+  object,
+  NativeStackCreateProps
+>;
+
+function NativeStackContent<Options extends NativeStackNavigationOptions>({
+  state,
+  descriptors,
+  emitter,
+  pop,
+  popToTop,
+  removeRoutesFromState,
+  subscribeTabPress,
+  getRouteNavigation,
+}: NativeStackContentProps<Options>) {
   useClearGuardedRoutes(removeRoutesFromState);
 
-  React.useEffect(
+  useEffect(
     () =>
-      // @ts-expect-error: there may not be a tab navigator in parent
-      navigation?.addListener?.('tabPress', (e: any) => {
-        const isFocused = navigation.isFocused();
-
-        // Run the operation in the next frame so we're sure all listeners have been run
-        // This is necessary to know if preventDefault() has been called
+      subscribeTabPress((event, isFocused) => {
         requestAnimationFrame(() => {
-          if (state.index > 0 && isFocused && !(e as EventArg<'tabPress', true>).defaultPrevented) {
-            // When user taps on already focused tab and we're inside the tab,
-            // reset the stack to replicate native behaviour
-            // START FORK
-            // navigation.dispatch({
-            //   ...StackActions.popToTop(),
-            //   target: state.key,
-            // });
-            // The popToTop will be automatically triggered on native side for native tabs
-            if (e.data?.__internalTabsType !== 'native') {
-              navigation.dispatch({
-                ...StackActions.popToTop(),
-                target: state.key,
-              });
-            }
-            // END FORK
+          if (
+            state.index > 0 &&
+            isFocused &&
+            !event.defaultPrevented &&
+            event.data?.__internalTabsType !== 'native'
+          ) {
+            popToTop();
           }
         });
       }),
-    [navigation, state.index, state.key]
+    [popToTop, state.index, subscribeTabPress]
   );
 
-  // START FORK
-  const { computedState, navigationWrapper } = usePreviewTransition(state, navigation);
+  const { computedState, navigationWrapper } = usePreviewTransition(state, emitter);
 
-  const pop = makePopAction(navigation.dispatch, state.key);
-
-  // Map internal gesture option to React Navigation's gestureEnabled option
-  // This allows Expo Router to override gesture behavior without affecting user settings
-  const finalDescriptors = React.useMemo(() => {
+  const finalDescriptors = useMemo(() => {
     let needsNewMap = false;
     const result: typeof descriptors = {};
     for (const key of Object.keys(descriptors)) {
       const descriptor = descriptors[key]!;
-      const options = descriptor.options as NativeStackNavigationOptionsWithInternal;
-      const internalGestureEnabled = options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
-      const needsGestureFix = internalGestureEnabled !== undefined;
-      const needsGlassFix = GLASS && options?.presentation === 'formSheet';
+      const options = descriptor.options;
+      const internalGestureEnabled =
+        INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME in options
+          ? options[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME]
+          : undefined;
+      const needsGestureFix = typeof internalGestureEnabled === 'boolean';
+      const needsGlassFix = GLASS && options.presentation === 'formSheet';
 
       if (needsGestureFix || needsGlassFix) {
         needsNewMap = true;
@@ -140,54 +120,75 @@ function NativeStackNavigator({
     return needsNewMap ? result : descriptors;
   }, [descriptors]);
   const { registry, contextValue } = useCompositionRegistry();
-
-  const mergedDescriptors = React.useMemo(
+  const mergedDescriptors = useMemo(
     () => mergeOptions(finalDescriptors, registry, computedState),
     [finalDescriptors, computedState, registry]
   );
-  // END FORK
 
   return (
-    // START FORK
     <DescriptorsContext value={descriptors}>
-      {/* END FORK */}
-      <NavigationContent>
-        <CompositionContext value={contextValue}>
-          <NativeStackView
-            {...rest}
-            // START FORK
-            state={computedState}
-            descriptors={mergedDescriptors}
-            emit={navigationWrapper.emit}
-            pop={pop}
-            // state={state}
-            // navigation={navigation}
-            // descriptors={descriptors}
-            // END FORK
-          />
-        </CompositionContext>
-      </NavigationContent>
-      {/* START FORK */}
+      <CompositionContext value={contextValue}>
+        <NativeStackView
+          state={computedState}
+          descriptors={mergedDescriptors}
+          emit={navigationWrapper.emit}
+          pop={pop}
+          getRouteNavigation={getRouteNavigation}
+        />
+      </CompositionContext>
     </DescriptorsContext>
-    // END FORK
   );
 }
 
 export function createNativeStackNavigator<
-  const ParamList extends ParamListBase,
-  const NavigatorID extends string | undefined = undefined,
-  const TypeBag extends NavigatorTypeBagBase = {
-    ParamList: ParamList;
-    NavigatorID: NavigatorID;
-    State: StackNavigationState<ParamList>;
-    ScreenOptions: NativeStackNavigationOptions;
-    EventMap: NativeStackNavigationEventMap;
-    NavigationList: {
-      [RouteName in keyof ParamList]: NativeStackNavigationProp<ParamList, RouteName, NavigatorID>;
-    };
-    Navigator: typeof NativeStackNavigator;
-  },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(NativeStackNavigator)(config);
+  Options extends NativeStackNavigationOptions = NativeStackNavigationOptions,
+>() {
+  const nativeStackNavigator = createStandardNavigator<
+    Options,
+    InternalNativeStackNavigationEventMap,
+    NativeStackCreateProps
+  >(NativeStackContent<Options>);
+
+  const IntegratedNativeStack = unstable_integrateWithRouter<
+    Options,
+    StackNavigationState<ParamListBase>,
+    InternalNativeStackNavigationEventMap,
+    object,
+    StackRouterOptions,
+    NativeStackCreateProps,
+    StackActionHelpers<ParamListBase>
+  >(nativeStackNavigator, StackRouter, {
+    createProps: ({ state, dispatch, navigation, descriptors }) => ({
+      pop: makePopAction(dispatch, state.key),
+      popToTop: () =>
+        dispatch({
+          ...StackActions.popToTop(),
+          target: state.key,
+        }),
+      removeRoutesFromState: (routeNames) =>
+        dispatch({ type: 'REMOVE_ROUTES', payload: { routeNames } }),
+      subscribeTabPress: (callback) => {
+        const parent =
+          navigation.getParent<
+            NavigationProp<
+              ParamListBase,
+              string,
+              undefined,
+              NavigationState,
+              object,
+              ParentTabEventMap
+            >
+          >();
+        return (
+          parent?.addListener('tabPress', (event) => callback(event, navigation.isFocused())) ??
+          (() => {})
+        );
+      },
+      getRouteNavigation: (routeKey) => descriptors[routeKey]!.navigation,
+    }),
+  });
+
+  return {
+    Navigator: IntegratedNativeStack,
+  };
 }

@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { useLinkPreviewContext } from '../../link/preview/LinkPreviewContext';
-import type { NativeStackViewState } from '../../react-navigation/native-stack';
+import type { NativeStackEmit, NativeStackViewState } from '../../react-navigation/native-stack';
 
 /**
  * Manages the preview transition state for link previews.
@@ -11,7 +11,7 @@ import type { NativeStackViewState } from '../../react-navigation/native-stack';
  * During this window, the hook synthesizes state to keep native and JS state
  * in sync.
  */
-export function usePreviewTransition<TNavigation extends { emit: (...args: any[]) => any }>(
+export function usePreviewTransition<TNavigation extends { emit: NativeStackEmit }>(
   state: NativeStackViewState,
   navigation: TNavigation
 ) {

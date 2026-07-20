@@ -2,15 +2,18 @@
 import * as React from 'react';
 
 import { usePreventRemoveContext } from '../../native';
-import type { NativeStackDescriptorMap } from '../types';
+import type { NativeStackDescriptorMap, NativeStackViewState } from '../types';
 
-export function useInvalidPreventRemoveError(descriptors: NativeStackDescriptorMap) {
+export function useInvalidPreventRemoveError(
+  state: NativeStackViewState,
+  descriptors: NativeStackDescriptorMap
+) {
   const { preventedRoutes } = usePreventRemoveContext();
   const preventedRouteKey = Object.keys(preventedRoutes)[0];
   const preventedDescriptor = descriptors[preventedRouteKey!];
   const isHeaderBackButtonMenuEnabledOnPreventedScreen =
     preventedDescriptor?.options?.headerBackButtonMenuEnabled;
-  const preventedRouteName = preventedDescriptor?.route?.name;
+  const preventedRouteName = state.routes.find((route) => route.key === preventedRouteKey)?.name;
 
   React.useEffect(() => {
     if (preventedRouteKey != null && isHeaderBackButtonMenuEnabledOnPreventedScreen) {

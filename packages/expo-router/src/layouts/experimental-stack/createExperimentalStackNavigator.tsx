@@ -7,11 +7,11 @@ import {
   mergeOptions,
   useCompositionRegistry,
 } from '../../fork/native-stack/composition-options';
-import type { NativeStackDescriptorMap } from '../../fork/native-stack/descriptors-context';
 import {
   createNavigatorFactory,
-  type EventArg,
   NavigationMetaContext,
+  type NavigationProp,
+  type NavigationState,
   type NavigatorTypeBagBase,
   type ParamListBase,
   type StackActionHelpers,
@@ -64,8 +64,7 @@ function ExperimentalStackNavigator({
   const { registry, contextValue } = useCompositionRegistry();
 
   const mergedDescriptors = useMemo(
-    // TODO(@ubax): implement properly when more stack options are available
-    () => mergeOptions(descriptors as NativeStackDescriptorMap, registry, state),
+    () => mergeOptions(descriptors, registry, state),
     [descriptors, registry, state]
   );
 
@@ -77,12 +76,22 @@ function ExperimentalStackNavigator({
       return;
     }
 
-    // @ts-expect-error: there may not be a tab navigator in parent
-    return navigation?.addListener?.('tabPress', (e: any) => {
+    const parent =
+      navigation.getParent<
+        NavigationProp<
+          ParamListBase,
+          string,
+          undefined,
+          NavigationState,
+          object,
+          { tabPress: { data: undefined; canPreventDefault: true } }
+        >
+      >();
+    return parent?.addListener('tabPress', (e) => {
       const isFocused = navigation.isFocused();
 
       requestAnimationFrame(() => {
-        if (state.index > 0 && isFocused && !(e as EventArg<'tabPress', true>).defaultPrevented) {
+        if (state.index > 0 && isFocused && !e.defaultPrevented) {
           navigation.dispatch({
             ...StackActions.popToTop(),
             target: state.key,

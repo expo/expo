@@ -15,6 +15,7 @@ import {
   StackActions,
   StackRouter,
   useNavigationBuilder,
+  useLinkBuilder,
   usePreventRemoveContext,
   useTheme,
 } from '../../react-navigation/native';
@@ -82,6 +83,7 @@ const ModalStackView = ({ state, navigation, descriptors }: ModalStackViewProps)
   const isWeb = process.env.EXPO_OS === 'web';
   const { colors } = useTheme();
   const { preventedRoutes } = usePreventRemoveContext();
+  const { buildHref } = useLinkBuilder();
 
   const { routes: filteredRoutes, index: nonModalIndex } = convertStackStateToNonModalState(
     state,
@@ -113,8 +115,10 @@ const ModalStackView = ({ state, navigation, descriptors }: ModalStackViewProps)
         <NativeStackView
           state={newStackState}
           descriptors={descriptors}
-          emit={navigation.emit}
+          emit={(event) => navigation.emit(event)}
           pop={pop}
+          getRouteNavigation={(routeKey) => descriptors[routeKey]!.navigation}
+          getRouteHref={(route) => buildHref(route.name, route.params)}
         />
       )}
       {isWeb &&

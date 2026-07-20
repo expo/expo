@@ -26,10 +26,7 @@ import {
   StackRouter as RNStackRouter,
   type RouteProp,
 } from '../react-navigation/native';
-import type {
-  NativeStackNavigationEventMap,
-  NativeStackNavigationOptions,
-} from '../react-navigation/native-stack';
+import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import type { SingularOptions } from '../useScreens';
 import { getSingularId } from '../useScreens';
 import { isChildOfType } from '../utils/children';
@@ -45,11 +42,8 @@ import {
   mapProtectedScreen,
   validateStackPresentation,
 } from './stack-utils';
-import { withLayoutContext } from './withLayoutContext';
 
 type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
-
-const NativeStackNavigator = createNativeStackNavigator().Navigator;
 
 /**
  * We extend NativeStackNavigationOptions with our custom props
@@ -95,12 +89,7 @@ export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
   };
 };
 
-const RNStack = withLayoutContext<
-  ExtendedStackNavigationOptions,
-  typeof NativeStackNavigator,
-  StackNavigationState<ParamListBase>,
-  NativeStackNavigationEventMap
->(NativeStackNavigator);
+const RNStack = createNativeStackNavigator<ExtendedStackNavigationOptions>().Navigator;
 
 type RNNavigationAction = Extract<CommonNavigationAction, { type: 'NAVIGATE' }>;
 type RNPreloadAction = Extract<CommonNavigationAction, { type: 'PRELOAD' }>;
@@ -397,12 +386,10 @@ export const stackRouterOverride: NonNullable<ComponentProps<typeof RNStack>['UN
           // END FORK
         }
         case 'PRELOAD': {
-          // START FORK
-          // This will be the case for example for protected route
           if (!state.routeNames.includes(action.payload.name)) {
             return null;
           }
-          // END FORK
+
           const getId = options.routeGetIdList[action.payload.name];
           const id = getId?.({ params: action.payload.params });
           const activeRoutes = state.routes.slice(0, state.index + 1);
@@ -563,7 +550,6 @@ function filterSingular<
 const Stack = Object.assign(
   (props: ComponentProps<typeof RNStack>) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
-
     const screenOptionsWithCompositionAPIOptions = useMemo<NativeStackScreenOptions>(() => {
       const stackHeader = Children.toArray(props.children).find((child) =>
         isChildOfType(child, StackHeader)

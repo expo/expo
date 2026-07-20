@@ -19,11 +19,12 @@ import {
   SafeAreaProviderCompat,
   useFrameSize,
 } from '../../elements';
-import { NavigationProvider, usePreventRemoveContext, useTheme } from '../../native';
+import { NavigationProvider, type Route, usePreventRemoveContext, useTheme } from '../../native';
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
   NativeStackEmit,
+  NativeStackNavigationProp,
   NativeStackViewState,
 } from '../types';
 import { debounce } from '../utils/debounce';
@@ -44,6 +45,9 @@ type SceneViewProps = {
   focused: boolean;
   shouldFreeze: boolean;
   descriptor: NativeStackDescriptor;
+  route: Route<string>;
+  navigation: NativeStackNavigationProp<Record<string, object | undefined>>;
+  previousRoute?: Route<string>;
   previousDescriptor?: NativeStackDescriptor;
   nextDescriptor?: NativeStackDescriptor;
   isPresentationModal?: boolean;
@@ -66,6 +70,9 @@ const SceneView = ({
   focused,
   shouldFreeze,
   descriptor,
+  route,
+  navigation,
+  previousRoute,
   previousDescriptor,
   nextDescriptor,
   isPresentationModal,
@@ -80,7 +87,7 @@ const SceneView = ({
   onGestureCancel,
   onSheetDetentChanged,
 }: SceneViewProps) => {
-  const { route, navigation, options, render } = descriptor;
+  const { options, render } = descriptor;
 
   let {
     animation,
@@ -236,9 +243,10 @@ const SceneView = ({
     typeof statusBarTranslucent === 'boolean' ? statusBarTranslucent : topInset !== 0;
 
   const canGoBack = previousDescriptor != null || parentHeaderBack != null;
-  const backTitle = previousDescriptor
-    ? getHeaderTitle(previousDescriptor.options, previousDescriptor.route.name)
-    : parentHeaderBack?.title;
+  const backTitle =
+    previousDescriptor && previousRoute
+      ? getHeaderTitle(previousDescriptor.options, previousRoute.name)
+      : parentHeaderBack?.title;
 
   const headerBack = React.useMemo(() => {
     if (canGoBack) {
@@ -450,13 +458,16 @@ type Props = {
   descriptors: NativeStackDescriptorMap;
   emit: NativeStackEmit;
   pop: (count: number, sourceRouteKey: string) => void;
+  getRouteNavigation: (
+    routeKey: string
+  ) => NativeStackNavigationProp<Record<string, object | undefined>>;
 };
 
-export function NativeStackView({ state, descriptors, emit, pop }: Props) {
+export function NativeStackView({ state, descriptors, emit, pop, getRouteNavigation }: Props) {
   const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
-  useInvalidPreventRemoveError(descriptors);
+  useInvalidPreventRemoveError(state, descriptors);
 
   // Routes after `index` are preloaded and rendered natively-detached. Only the routes up to the
   // focused one participate in back-affordance and modal-grouping computations.
@@ -474,6 +485,7 @@ export function NativeStackView({ state, descriptors, emit, pop }: Props) {
           const isBelowFocused = state.index - 1 === index;
           const isInactive = index > state.index;
           const previousKey = activeRoutes[index - 1]?.key;
+          const previousRoute = activeRoutes[index - 1];
           const nextKey = activeRoutes[index + 1]?.key;
           const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
           const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
@@ -494,6 +506,9 @@ export function NativeStackView({ state, descriptors, emit, pop }: Props) {
               focused={isFocused}
               shouldFreeze={shouldFreeze}
               descriptor={descriptor}
+              route={route}
+              navigation={getRouteNavigation(route.key)}
+              previousRoute={previousRoute}
               previousDescriptor={previousDescriptor}
               nextDescriptor={nextDescriptor}
               isPresentationModal={isModal}

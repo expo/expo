@@ -3,10 +3,13 @@ import type { createStandardNavigator, NavigatorArgs } from 'standard-navigation
 import type {
   DefaultNavigatorOptions,
   DefaultRouterOptions,
+  Descriptor,
   NavigationAction,
   NavigationHelpers,
+  NavigationProp,
   NavigationState,
   ParamListBase,
+  RouteProp,
 } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
 
@@ -37,10 +40,24 @@ export type StandardUseNavigationBuilderOptions<
   any
 >;
 
-export interface StandardNavigatorCreatePropsFactoryDeps<State extends NavigationState> {
+export interface StandardNavigatorCreatePropsFactoryDeps<
+  State extends NavigationState,
+  NavigatorOptions extends object,
+  EventMap extends StandardNavigatorEventMapBase,
+  ActionHelpers extends Record<string, (...args: any[]) => void>,
+> {
   state: State;
   dispatch: (action: NavigationAction) => void;
-  navigation: NavigationHelpers<ParamListBase>;
+  navigation: NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
+  descriptors: Record<
+    string,
+    Descriptor<
+      NavigatorOptions,
+      NavigationProp<ParamListBase, string, undefined, State, NavigatorOptions, EventMap> &
+        ActionHelpers,
+      RouteProp<ParamListBase>
+    >
+  >;
 }
 
 /**
@@ -59,13 +76,23 @@ export interface StandardNavigatorCreatePropsFactoryDeps<State extends Navigatio
  * })
  * ```
  */
-type CreatePropsFn<State extends NavigationState, CreateProps extends object> = (
-  deps: StandardNavigatorCreatePropsFactoryDeps<State>
+type CreatePropsFn<
+  State extends NavigationState,
+  NavigatorOptions extends object,
+  EventMap extends StandardNavigatorEventMapBase,
+  CreateProps extends object,
+  ActionHelpers extends Record<string, (...args: any[]) => void>,
+> = (
+  deps: StandardNavigatorCreatePropsFactoryDeps<State, NavigatorOptions, EventMap, ActionHelpers>
 ) => CreateProps;
 
-type CreatePropsOption<State extends NavigationState, CreateProps extends object> = [
-  keyof CreateProps,
-] extends [never]
+type CreatePropsOption<
+  State extends NavigationState,
+  NavigatorOptions extends object,
+  EventMap extends StandardNavigatorEventMapBase,
+  CreateProps extends object,
+  ActionHelpers extends Record<string, (...args: any[]) => void>,
+> = [keyof CreateProps] extends [never]
   ? {
       /**
        * Declare injected props with the fourth type argument of `NavigatorContentProps` before
@@ -73,18 +100,21 @@ type CreatePropsOption<State extends NavigationState, CreateProps extends object
        */
       createProps?: never;
     }
-  : { createProps: CreatePropsFn<State, CreateProps> };
+  : { createProps: CreatePropsFn<State, NavigatorOptions, EventMap, CreateProps, ActionHelpers> };
 
 export type IntegrateWithRouterOptions<
   State extends NavigationState = NavigationState,
   CreateProps extends object = object,
+  NavigatorOptions extends object = object,
+  EventMap extends StandardNavigatorEventMapBase = StandardNavigatorEventMapBase,
+  ActionHelpers extends Record<string, (...args: any[]) => void> = Record<never, never>,
 > = {
   /**
    * When `true`, only screens explicitly declared as `<Navigator.Screen>` children are rendered;
    * routes discovered from the filesystem that were not declared are ignored.
    */
   useOnlyUserDefinedScreens?: boolean;
-} & CreatePropsOption<State, CreateProps>;
+} & CreatePropsOption<State, NavigatorOptions, EventMap, CreateProps, ActionHelpers>;
 
 export type StandardNavigatorContentProps<
   NavigatorOptions extends object,

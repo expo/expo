@@ -36,11 +36,31 @@ const STANDARD_NAVIGATOR_TYPE = 'standard';
 
 // A rest tuple is the only way to make the whole argument optional for empty `CreateProps` and
 // required otherwise; a normal optional parameter would accept `undefined` in both cases.
-type IntegrateWithRouterOptionsTuple<State extends NavigationState, CreateProps extends object> = [
-  keyof CreateProps,
-] extends [never]
-  ? [options?: IntegrateWithRouterOptions<State, CreateProps>]
-  : [options: IntegrateWithRouterOptions<State, CreateProps>];
+type IntegrateWithRouterOptionsTuple<
+  State extends NavigationState,
+  NavigatorOptions extends object,
+  EventMap extends StandardNavigatorEventMapBase,
+  CreateProps extends object,
+  ActionHelpers extends Record<string, (...args: any[]) => void>,
+> = [keyof CreateProps] extends [never]
+  ? [
+      options?: IntegrateWithRouterOptions<
+        State,
+        CreateProps,
+        NavigatorOptions,
+        EventMap,
+        ActionHelpers
+      >,
+    ]
+  : [
+      options: IntegrateWithRouterOptions<
+        State,
+        CreateProps,
+        NavigatorOptions,
+        EventMap,
+        ActionHelpers
+      >,
+    ];
 
 type StandardRouterNavigatorComponent<
   NavigatorOptions extends object,
@@ -87,12 +107,19 @@ export function unstable_createStandardRouterNavigator<
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
   CreateProps extends object = object,
+  ActionHelpers extends Record<string, (...args: any[]) => void> = Record<never, never>,
 >(
   NavigatorContent: ComponentType<
     NavigatorContentProps<NavigatorOptions, EventMap, NavigatorProps, CreateProps>
   >,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  ...options: IntegrateWithRouterOptionsTuple<State, NoInfer<CreateProps>>
+  ...options: IntegrateWithRouterOptionsTuple<
+    State,
+    NavigatorOptions,
+    EventMap,
+    NoInfer<CreateProps>,
+    ActionHelpers
+  >
 ): StandardRouterNavigatorComponent<
   NavigatorOptions,
   State,
@@ -111,7 +138,8 @@ export function unstable_createStandardRouterNavigator<
     EventMap,
     NavigatorProps,
     RouterOptions,
-    CreateProps
+    CreateProps,
+    ActionHelpers
   >(navigator, router, ...options);
 }
 
@@ -142,10 +170,17 @@ export function unstable_integrateWithRouter<
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
   CreateProps extends object = object,
+  ActionHelpers extends Record<string, (...args: any[]) => void> = Record<never, never>,
 >(
   navigator: StandardNavigator<NavigatorOptions, EventMap, NavigatorProps & CreateProps>,
   router: RouterFactory<State, NavigationAction, RouterOptions>,
-  ...[options]: IntegrateWithRouterOptionsTuple<State, NoInfer<CreateProps>>
+  ...[options]: IntegrateWithRouterOptionsTuple<
+    State,
+    NavigatorOptions,
+    EventMap,
+    NoInfer<CreateProps>,
+    ActionHelpers
+  >
 ) {
   assertStandardNavigator(navigator);
   const { NavigatorContent } = navigator;
@@ -169,7 +204,7 @@ export function unstable_integrateWithRouter<
     const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
       State,
       RouterOptions,
-      Record<string, (...args: unknown[]) => void>,
+      ActionHelpers,
       NavigatorOptions,
       EventMap
     >(router, useNavigationBuilderProps);
@@ -177,13 +212,24 @@ export function unstable_integrateWithRouter<
     const { dispatch } = navigation;
 
     const derivedProps = useMemo<Partial<CreateProps>>(
-      () => options?.createProps?.({ state, dispatch, navigation }) ?? {},
-      [state, dispatch, navigation, options]
+      () => options?.createProps?.({ state, dispatch, navigation, descriptors }) ?? {},
+      [state, dispatch, navigation, descriptors, options]
+    );
+
+    const standardDescriptors = useMemo(
+      () =>
+        Object.fromEntries(
+          Object.entries(descriptors).map(([key, descriptor]) => [
+            key,
+            { options: descriptor.options, render: descriptor.render },
+          ])
+        ),
+      [descriptors]
     );
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
       state: useStandardState(state),
-      descriptors,
+      descriptors: standardDescriptors,
       actions: useStandardActions(navigation, state.key),
       emitter: useStandardEmitter(navigation),
     };

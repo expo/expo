@@ -8,6 +8,7 @@ import {
   StackRouter,
   type StackNavigationState,
   type StackRouterOptions,
+  useNavigation,
 } from '../../react-navigation/native';
 import {
   TabActions,
@@ -331,6 +332,53 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().focusedName).toBe('second');
   });
 
+  it('updates descriptor-derived createProps when route options change', () => {
+    function Content(
+      args: NavigatorContentProps<
+        TestOptions,
+        TestEventMap,
+        object,
+        { focusedTitle: string | undefined }
+      >
+    ) {
+      contentSpy(args);
+      return args.descriptors[args.state.routes[args.state.index]!.key]!.render();
+    }
+
+    const StandardWithDescriptorProps = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions,
+      { focusedTitle: string | undefined }
+    >(Content, TabRouter, {
+      createProps: ({ state, descriptors }) => ({
+        focusedTitle: descriptors[state.routes[state.index]!.key]!.options.title,
+      }),
+    });
+
+    function Index() {
+      const navigation = useNavigation();
+      return (
+        <Pressable testID="update-options" onPress={() => navigation.setOptions({ title: 'Updated' })} />
+      );
+    }
+
+    renderRouter({
+      _layout: () => (
+        <StandardWithDescriptorProps>
+          <StandardWithDescriptorProps.Screen name="index" options={{ title: 'Initial' }} />
+        </StandardWithDescriptorProps>
+      ),
+      index: Index,
+    });
+
+    expect(lastArgs().focusedTitle).toBe('Initial');
+    fireEvent.press(screen.getByTestId('update-options'));
+    expect(lastArgs().focusedTitle).toBe('Updated');
+  });
+
   // Covers the `dispatch` path of `createProps` (the part flagged as internal and most likely to
   // break): a prop built from the raw dispatch must actually mutate the navigator state when called.
   it('exposes a working dispatch via createProps to NavigatorContent', () => {
@@ -416,17 +464,15 @@ describe('preloaded routes projected through the integration (StackRouter)', () 
     expect(lastArgs().state.index).toBe(0);
   });
 
-  it('covers the projected preloaded route with a descriptor exposing render + navigation', () => {
+  it('keeps standard descriptors narrow for projected preloaded routes', () => {
     renderStack();
     act(() => router.prefetch('/second'));
 
     const preloadedKey = lastArgs().state.routes[1]!.key;
     const descriptor = lastArgs().descriptors[preloadedKey]!;
     expect(typeof descriptor.render).toBe('function');
-    // The integration forwards the real react-navigation descriptor, so `.navigation` is usable
-    // by headers/screens even while the route is only preloaded.
-    const withNavigation = descriptor as unknown as { navigation?: { navigate?: unknown } };
-    expect(typeof withNavigation.navigation?.navigate).toBe('function');
+    expect(descriptor).not.toHaveProperty('route');
+    expect(descriptor).not.toHaveProperty('navigation');
   });
 
   it('reuses the preloaded route on navigate instead of duplicating it', () => {

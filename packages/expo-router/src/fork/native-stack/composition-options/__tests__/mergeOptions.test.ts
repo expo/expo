@@ -6,10 +6,7 @@ import type { CompositionRegistry } from '../types';
 function createMockDescriptor(options: Record<string, any> = {}): NativeStackDescriptorMap[string] {
   return {
     options,
-    // Minimal mocks for other descriptor fields
     render: jest.fn(),
-    navigation: {} as any,
-    route: {} as any,
   };
 }
 
@@ -196,16 +193,12 @@ describe('mergeOptions', () => {
     expect(result['route-1']).toBe(descriptors['route-1']);
   });
 
-  it('preserves non-options descriptor fields', () => {
+  it('preserves the descriptor render function', () => {
     const mockRender = jest.fn();
-    const mockNavigation = { navigate: jest.fn() } as any;
-    const mockRoute = { key: 'route-1', name: 'index' } as any;
     const descriptor: NativeStackDescriptorMap = {
       'route-1': {
         options: { title: 'Original' },
         render: mockRender,
-        navigation: mockNavigation,
-        route: mockRoute,
       },
     };
     const registry: CompositionRegistry = {
@@ -216,7 +209,28 @@ describe('mergeOptions', () => {
     const result = mergeOptions(descriptor, registry, state);
 
     expect(result['route-1']!.render).toBe(mockRender);
-    expect(result['route-1']!.navigation).toBe(mockNavigation);
-    expect(result['route-1']!.route).toBe(mockRoute);
+  });
+
+  it('preserves additional descriptor fields and their types', () => {
+    const route = { key: 'route-1', name: 'index' };
+    const navigation = { push: jest.fn() };
+    const descriptors = {
+      'route-1': {
+        options: { title: 'Original' },
+        render: jest.fn(),
+        route,
+        navigation,
+      },
+    };
+
+    const result = mergeOptions(
+      descriptors,
+      { 'route-1': [{ title: 'Modified' }] },
+      createMockState()
+    );
+
+    expect(result['route-1']!.route).toBe(route);
+    expect(result['route-1']!.navigation).toBe(navigation);
+    expect(result['route-1']!.options.title).toBe('Modified');
   });
 });

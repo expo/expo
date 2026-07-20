@@ -12,8 +12,12 @@ import {
   Screen,
   useHeaderHeight,
 } from '../../elements';
-import { useLinkBuilder } from '../../native';
-import type { NativeStackDescriptorMap, NativeStackEmit, NativeStackViewState } from '../types';
+import type {
+  NativeStackDescriptorMap,
+  NativeStackEmit,
+  NativeStackNavigationProp,
+  NativeStackViewState,
+} from '../types';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 
 type Props = {
@@ -22,13 +26,16 @@ type Props = {
   // These are used for the native implementation of the stack.
   emit: NativeStackEmit;
   pop: (count: number, sourceRouteKey: string) => void;
+  getRouteNavigation: (
+    routeKey: string
+  ) => NativeStackNavigationProp<Record<string, object | undefined>>;
+  getRouteHref?: (route: NativeStackViewState['routes'][number]) => string | undefined;
 };
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 
-export function NativeStackView({ state, descriptors }: Props) {
+export function NativeStackView({ state, descriptors, getRouteNavigation, getRouteHref }: Props) {
   const parentHeaderBack = use(HeaderBackContext);
-  const { buildHref } = useLinkBuilder();
 
   // Routes after `index` are preloaded and rendered hidden. Only the routes up to the focused one
   // participate in the back-affordance computations.
@@ -39,17 +46,20 @@ export function NativeStackView({ state, descriptors }: Props) {
       {state.routes.map((route, i) => {
         const isFocused = state.index === i;
         const previousKey = activeRoutes[i - 1]?.key;
+        const previousRoute = activeRoutes[i - 1];
         const nextKey = activeRoutes[i + 1]?.key;
         const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
         const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
-        const { options, navigation, render } = descriptors[route.key]!;
+        const { options, render } = descriptors[route.key]!;
+        const navigation = getRouteNavigation(route.key);
 
-        const headerBack = previousDescriptor
-          ? {
-              title: getHeaderTitle(previousDescriptor.options, previousDescriptor.route.name),
-              href: buildHref(previousDescriptor.route.name, previousDescriptor.route.params),
-            }
-          : parentHeaderBack;
+        const headerBack =
+          previousDescriptor && previousRoute
+            ? {
+                title: getHeaderTitle(previousDescriptor.options, previousRoute.name),
+                href: previousRoute.href ?? getRouteHref?.(previousRoute),
+              }
+            : parentHeaderBack;
 
         const canGoBack = headerBack != null;
 

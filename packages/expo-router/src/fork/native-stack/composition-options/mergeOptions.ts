@@ -1,6 +1,9 @@
 import type { NativeStackViewState } from '../../../react-navigation/native-stack';
-import type { NativeStackDescriptorMap } from '../descriptors-context';
+import type { NativeStackDescriptor } from '../descriptors-context';
 import type { CompositionRegistry } from './types';
+
+type MergedDescriptor<Descriptor extends NativeStackDescriptor> = Omit<Descriptor, 'options'> &
+  NativeStackDescriptor;
 
 /**
  * Merges composition component options into navigation descriptors.
@@ -12,12 +15,12 @@ import type { CompositionRegistry } from './types';
  * 2. If route is preloaded (positioned after the focused route) → skip composition (pass through)
  * 3. Otherwise → merge descriptor.options with composition options (composition wins)
  */
-export function mergeOptions(
-  descriptors: NativeStackDescriptorMap,
+export function mergeOptions<Descriptor extends NativeStackDescriptor>(
+  descriptors: Record<string, Descriptor>,
   registry: CompositionRegistry,
   state: NativeStackViewState
-): NativeStackDescriptorMap {
-  const result: NativeStackDescriptorMap = {};
+): Record<string, MergedDescriptor<Descriptor>> {
+  const result: Record<string, MergedDescriptor<Descriptor>> = {};
 
   for (const key in descriptors) {
     const descriptor = descriptors[key]!;
@@ -39,7 +42,7 @@ export function mergeOptions(
     // Merge: descriptor options as base, composition options override
     const mergedOptions = Object.assign({}, descriptor.options, ...routeOptions);
 
-    const merged = {
+    const merged: MergedDescriptor<Descriptor> = {
       ...descriptor,
       options: mergedOptions,
     };

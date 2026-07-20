@@ -1,7 +1,7 @@
 import { renderHook, act, type RenderHookOptions } from '@testing-library/react-native';
 
 import { useLinkPreviewContext } from '../../../link/preview/LinkPreviewContext';
-import type { NativeStackViewState } from '../../../react-navigation/native-stack';
+import type { NativeStackEmit, NativeStackViewState } from '../../../react-navigation/native-stack';
 import { usePreviewTransition } from '../usePreviewTransition';
 
 type HookProps = {
@@ -28,7 +28,8 @@ function makeState(overrides: Partial<NativeStackViewState> = {}): NativeStackVi
 }
 
 function makeNavigation() {
-  return { emit: jest.fn((..._args: any[]) => ({ defaultPrevented: false })) };
+  const emit = jest.fn((event) => event) as jest.MockedFunction<NativeStackEmit>;
+  return { emit };
 }
 
 describe('usePreviewTransition', () => {
@@ -267,6 +268,7 @@ describe('usePreviewTransition', () => {
     const { result } = renderHook(() => usePreviewTransition(state, navigation));
 
     act(() => {
+      // @ts-expect-error Exercises the runtime guard for a malformed event without data.
       result.current.navigationWrapper.emit({
         type: 'transitionStart',
         target: 'preview-key',

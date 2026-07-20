@@ -1,23 +1,24 @@
 import { Fragment, useEffect } from 'react';
 import { View } from 'react-native';
-import type { NavigatorArgs } from 'standard-navigation';
 
 import { router } from '../../imperative-api';
 import type { ParamListBase } from '../../react-navigation/core';
 import {
   StackRouter,
+  type StackActionHelpers,
   type StackNavigationState,
   type StackRouterOptions,
 } from '../../react-navigation/native';
 import { act, renderRouter } from '../../testing-library';
 import { unstable_createStandardRouterNavigator } from '../index';
+import type { NavigatorContentProps } from '../types';
 
 type EventMap = Record<string, { data: object | undefined; canPreventDefault: boolean }>;
-type Descriptor = { navigation: object; options: object; render: () => React.ReactNode };
+type CreateProps = { getRouteNavigation: (key: string) => object };
 
-let contentArgs: NavigatorArgs<object, EventMap> | undefined;
+let contentArgs: NavigatorContentProps<object, EventMap, object, CreateProps> | undefined;
 
-function Content(args: NavigatorArgs<object, EventMap>) {
+function Content(args: NavigatorContentProps<object, EventMap, object, CreateProps>) {
   contentArgs = args;
   return args.state.routes.map((route) => (
     <Fragment key={route.key}>{args.descriptors[route.key]!.render()}</Fragment>
@@ -29,8 +30,14 @@ const Stack = unstable_createStandardRouterNavigator<
   StackNavigationState<ParamListBase>,
   EventMap,
   object,
-  StackRouterOptions
->(Content, StackRouter);
+  StackRouterOptions,
+  CreateProps,
+  StackActionHelpers<ParamListBase>
+>(Content, StackRouter, {
+  createProps: ({ descriptors }) => ({
+    getRouteNavigation: (key) => descriptors[key]!.navigation,
+  }),
+});
 
 it('preserves the preloaded route and rendered element through promotion', () => {
   let mounts = 0;
@@ -50,14 +57,13 @@ it('preserves the preloaded route and rendered element through promotion', () =>
   act(() => router.prefetch('/second'));
 
   const preloadedRoute = contentArgs!.state.routes.find((route) => route.name === 'second')!;
-  const descriptor = contentArgs!.descriptors[preloadedRoute.key] as Descriptor;
-  const navigation = descriptor.navigation;
+  const navigation = contentArgs!.getRouteNavigation(preloadedRoute.key);
   expect(mounts).toBe(1);
 
   act(() => router.push('/second'));
 
   const focusedRoute = contentArgs!.state.routes[contentArgs!.state.index]!;
   expect(focusedRoute.key).toBe(preloadedRoute.key);
-  expect((contentArgs!.descriptors[focusedRoute.key] as Descriptor).navigation).toBe(navigation);
+  expect(contentArgs!.getRouteNavigation(focusedRoute.key)).toBe(navigation);
   expect(mounts).toBe(1);
 });

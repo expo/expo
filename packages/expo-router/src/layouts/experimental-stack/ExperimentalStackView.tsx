@@ -40,7 +40,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const isPreloaded = index > state.index;
-          const options = (descriptor.options ?? {}) as ExperimentalStackNavigationOptions;
+          const { options } = descriptor;
 
           return (
             <ScreenView

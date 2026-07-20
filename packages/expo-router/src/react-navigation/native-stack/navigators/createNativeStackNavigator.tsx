@@ -16,6 +16,7 @@ import {
   type StaticConfig,
   type TypedNavigator,
   useNavigationBuilder,
+  useLinkBuilder,
 } from '../../native';
 import type {
   NativeStackNavigationEventMap,
@@ -57,6 +58,7 @@ function NativeStackNavigator({
   });
 
   const meta = use(NavigationMetaContext);
+  const { buildHref } = useLinkBuilder();
 
   React.useEffect(() => {
     if (meta && 'type' in meta && meta.type === 'native-tabs') {
@@ -92,8 +94,10 @@ function NativeStackNavigator({
         {...rest}
         state={state}
         descriptors={descriptors}
-        emit={navigation.emit}
+        emit={(event) => navigation.emit(event)}
         pop={pop}
+        getRouteNavigation={(routeKey) => descriptors[routeKey]!.navigation}
+        getRouteHref={(route) => buildHref(route.name, route.params)}
       />
     </NavigationContent>
   );

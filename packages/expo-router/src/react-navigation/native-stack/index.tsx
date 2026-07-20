@@ -18,6 +18,7 @@ export { makePopAction } from './utils/makePopAction';
  * Types
  */
 export type {
+  InternalNativeStackNavigationEventMap,
   NativeStackEmit,
   NativeStackHeaderBackProps,
   NativeStackHeaderItem,
