@@ -1,4 +1,5 @@
 import {
+  Button,
   DisclosureGroup,
   Host,
   Section,
@@ -83,7 +84,9 @@ import {
   redacted,
   unredacted,
   privacySensitive,
+  buttonStyle,
 } from '@expo/ui/swift-ui/modifiers';
+import { type NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useAssets } from 'expo-asset';
 import { useState } from 'react';
 import {
@@ -96,7 +99,11 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function ModifiersScreen() {
+type ModifiersScreenProps = {
+  navigation: NativeStackNavigationProp<{ 'Searchable modifier': undefined }>;
+};
+
+export default function ModifiersScreen({ navigation }: ModifiersScreenProps) {
   const [playSounds, setPlaySounds] = useState(true);
   const [isDisabled, setIsDisabled] = useState(false);
   const dimensions = useWindowDimensions();
@@ -162,6 +169,18 @@ export default function ModifiersScreen() {
               width: dimensions.width,
             }),
           ]}>
+          <Section title="Modifier examples">
+            <Button
+              onPress={() => navigation.navigate('Searchable modifier')}
+              modifiers={[buttonStyle('plain')]}>
+              <HStack>
+                <Text>Searchable</Text>
+                <Spacer />
+                <Image systemName="chevron.right" size={14} color="#8E8E93" />
+              </HStack>
+            </Button>
+          </Section>
+
           {/* Badge modifiers */}
           <Section title="Badge modifier">
             <Text modifiers={[badge(''), badgeProminence(badgeType[badgeIndex])]}>Badge empty</Text>
