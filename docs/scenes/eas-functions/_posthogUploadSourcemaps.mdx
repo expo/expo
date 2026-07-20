@@ -1,0 +1,18 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { NoIcon } from '~/ui/components/DocIcons';
+
+| Property       | Type    | Required   | Description                                                                                                              |
+| -------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |
+| `directory`    | string  | <NoIcon /> | The directory that contains the bundle and source maps, relative to the working directory. Defaults to `dist`.           |
+| `api_key`      | string  | <NoIcon /> | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires source map upload access. |
+| `project_id`   | string  | <NoIcon /> | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                       |
+| `ignore_error` | boolean | <NoIcon /> | When `true`, a failed upload is logged but does not fail the step. Defaults to `false`.                                  |
+
+<BoxLink
+  title="eas/posthog_upload_sourcemaps source code"
+  description="View the source code for the eas/posthog_upload_sourcemaps function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/uploadPosthogSourcemaps.ts"
+/>
