@@ -8,7 +8,14 @@
 // ExpoModulesCore, so import its generated Swift header rather than `Expo-Swift.h`.
 // This keeps the ObjC target from depending on the `Expo` Swift target (which would
 // be a SwiftPM target cycle).
+// With precompiled xcframeworks / use_frameworks! the header is inside the ExpoModulesCore
+// module (angle-bracket form); in the static-library source build it's reachable only as a
+// double-quoted local include.
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
 #import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#elif __has_include("ExpoModulesCore-Swift.h")
+#import "ExpoModulesCore-Swift.h"
+#endif
 
 // Make the legacy wrapper conform to the protocol for subscribers.
 @interface EXLegacyAppDelegateWrapper () <EXAppDelegateSubscriberProtocol>
