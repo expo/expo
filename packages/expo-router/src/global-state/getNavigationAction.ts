@@ -7,6 +7,7 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
+import { getCachedRouteInfo } from './routeInfoCache';
 import {
   collapseToFocusedPath,
   findDivergentState,
@@ -37,7 +38,12 @@ export function getNavigateAction(
   }
   const rootState = navigationRef.getRootState();
 
-  href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
+  // Resolve relative segments against the route info of the exact committed state we diverge from
+  // below, not `store.getRouteInfo()`. `getRootState()` reflects the latest commit synchronously
+  // while `store.getRouteInfo()` can lag it (its derivation runs off a later effect), which would
+  // resolve a relative href against a stale base. `getCachedRouteInfo` memoizes on the state object,
+  // so this is the same object as `store.getRouteInfo()` whenever they already agree.
+  href = resolveHrefStringWithSegments(href, getCachedRouteInfo(rootState), options);
   href = applyRedirects(href, store.redirects) ?? undefined;
 
   // If the href is undefined, it means that the redirect has already been handled the navigation
@@ -188,7 +194,17 @@ export function getPreloadAction(
     return undefined;
   }
 
-  let href: string | undefined = resolveHrefStringWithSegments(baseHref, store.getRouteInfo(), {});
+  // Resolve against the latest committed state's route info (see `getNavigateAction`), avoiding the
+  // possibly-lagging `store.getRouteInfo()`.
+  const rootState = navigationRef.getRootState();
+  if (rootState == null) {
+    return undefined;
+  }
+  let href: string | undefined = resolveHrefStringWithSegments(
+    baseHref,
+    getCachedRouteInfo(rootState),
+    {}
+  );
   href = applyRedirects(href, store.redirects) ?? undefined;
   if (!href) {
     return undefined;
