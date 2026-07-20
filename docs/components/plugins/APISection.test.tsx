@@ -2,7 +2,7 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import { createRequire } from 'node:module';
 
-import { renderWithHeadings } from '~/common/test-utilities';
+import { axe, renderWithHeadings } from '~/common/test-utilities';
 
 import APISection from './APISection';
 
@@ -19,6 +19,17 @@ describe('APISection', () => {
     expect(screen.getAllByText('No API data file found, sorry!')).toHaveLength(1);
 
     expect(container).toMatchSnapshot();
+  });
+
+  test('has no axe violations', async () => {
+    const { container } = renderWithHeadings(
+      <APISection
+        packageName="expo-apple-authentication"
+        forceVersion="unversioned"
+        testRequire={require}
+      />
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   test('expo-apple-authentication', () => {

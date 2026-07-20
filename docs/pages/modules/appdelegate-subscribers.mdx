@@ -23,12 +23,12 @@ Now you can subscribe to events by adding delegate functions to your subscriber 
 
 Delegate functions that need to return a value have some additional logic to reconcile responses from multiple subscribers and try to satisfy all of them. There are two good examples of such edge cases:
 
-#### `application(_:didFinishLaunchingWithOptions:) -> Bool`
+### `application(_:didFinishLaunchingWithOptions:) -> Bool`
 
 According to the [Apple documentation](https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622921-application), you should return `false` if the app cannot handle the URL resource or continue a user activity, otherwise `true` should be returned. The return value is ignored if the app is launched because of a remote notification.
 In such situations, if at least one of the subscribers returns `true`, the `ExpoAppDelegate` will return `true` as well.
 
-#### `application(_:didReceiveRemoteNotification:fetchCompletionHandler:)`
+### `application(_:didReceiveRemoteNotification:fetchCompletionHandler:)`
 
 This method tells the app delegate that a remote notification arrived and gives the app the opportunity to fetch new data. It receives a completion block to execute when the fetch operation is completed. This block should be called with the fetch result value that best describes the results of your fetch request. Possible values are: `UIBackgroundFetchResult.newData`, `UIBackgroundFetchResult.noData` or `UIBackgroundFetchResult.failed`.
 In this scenario, `ExpoAppDelegate` passes a new completion block to each subscriber, waits until all are completed and collects the results before calling the original completion block. The final result depends on the results collected from the subscribers, as follows in the following order:
