@@ -159,8 +159,6 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }) {
                 key: `${name}-${(0, non_secure_1.nanoid)()}`,
                 params: routeParamList[name],
             });
-            // Drop preloaded keys that no longer reference an existing route.
-            // Not in upstream 7.x (the fork's baseline); matches upstream v8.
             const preloadedRouteKeys = state.preloadedRouteKeys.filter((key) => routes.some((route) => route.key === key));
             const index = Math.max(0, routeNames.indexOf(state.routes[state.index].name));
             let history = state.history.filter(
