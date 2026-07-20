@@ -14,21 +14,18 @@ extension VideoSourceLoaderListener {
 
 final class WeakVideoSourceLoaderListener: Hashable {
   private(set) weak var value: VideoSourceLoaderListener?
+  private let id: ObjectIdentifier
 
-  init(value: VideoSourceLoaderListener? = nil) {
+  init(value: VideoSourceLoaderListener) {
     self.value = value
+    self.id = ObjectIdentifier(value)
   }
 
   static func == (lhs: WeakVideoSourceLoaderListener, rhs: WeakVideoSourceLoaderListener) -> Bool {
-    guard let lhsValue = lhs.value, let rhsValue = rhs.value else {
-      return lhs.value == nil && rhs.value == nil
-    }
-    return ObjectIdentifier(lhsValue) == ObjectIdentifier(rhsValue)
+    return lhs.id == rhs.id
   }
 
   func hash(into hasher: inout Hasher) {
-    if let value {
-      hasher.combine(ObjectIdentifier(value))
-    }
+    hasher.combine(id)
   }
 }
