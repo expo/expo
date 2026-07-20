@@ -29,11 +29,11 @@ const styles = StyleSheet.create({
 /**
  * A bridging container that hosts SwiftUI views on iOS and Jetpack Compose views on Android.
  * On platforms without a native UI-toolkit binding (web, RN fallback), renders a plain `View`.
- * The `colorScheme`, `layoutDirection`, and `matchContents` props are accepted for API parity but have no effect.
  */
 export function Host({
   children,
   colorScheme = 'unspecified',
+  seedColor,
   ignoreSafeArea,
   layoutDirection,
   matchContents = false,
@@ -43,9 +43,8 @@ export function Host({
   useViewportSizeMeasurement = false,
   ...rest
 }: UniversalHostProps) {
-  // TODO(@zoontek): add support for the colorScheme and seedColor prop
   const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
-  const primaryColorScale = useMemo(() => generatePrimaryColorScale('#007aff'), []);
+  const primaryColorScale = useMemo(() => generatePrimaryColorScale(seedColor), [seedColor]);
 
   const dir =
     layoutDirection === 'leftToRight'
@@ -61,7 +60,7 @@ export function Host({
 
   return (
     <>
-      <style href="eui-host" precedence="eui">
+      <style href="expo-ui-host" precedence="expo-ui">
         {globalCss}
       </style>
 

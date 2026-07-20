@@ -6,16 +6,19 @@ import ExpoModulesCore
 class Asset: SharedObject {
   let id: String
   let localIdentifier: String
+  private let assetMapper: AssetMapper
   var phAsset: PHAsset?
 
-  init(id: String) {
+  init(id: String, assetMapper: AssetMapper) {
     self.id = id
     self.localIdentifier = String(id.dropFirst("ph://".count))
+    self.assetMapper = assetMapper
   }
 
-  init(localIdentifier: String) {
+  init(localIdentifier: String, assetMapper: AssetMapper) {
     self.id = "ph://\(localIdentifier)"
     self.localIdentifier = localIdentifier
+    self.assetMapper = assetMapper
   }
 
   func getHeight() async throws -> Int {
@@ -38,23 +41,17 @@ class Asset: SharedObject {
 
   func getDuration() async throws -> Int? {
     let phAsset = try await requirePHAsset()
-    return phAsset.duration > 0 ? Int(phAsset.duration * 1000) : nil
+    return assetMapper.mapDuration(phAsset.duration)
   }
 
   func getFilename() async throws -> String {
     let phAsset = try await requirePHAsset()
-    guard let filename = phAsset.value(forKey: "filename") as? String else {
-      throw FailedToGetPropertyException("filename")
-    }
-    return filename
+    return try assetMapper.mapFilename(phAsset)
   }
 
   func getCreationTime() async throws -> Int? {
     let phAsset = try await requirePHAsset()
-    guard let date = phAsset.creationDate else {
-      return nil
-    }
-    return date.millisecondsSince1970
+    return assetMapper.mapCreationTime(phAsset.creationDate)
   }
 
   func getLocation() async throws -> Location? {
@@ -70,10 +67,7 @@ class Asset: SharedObject {
 
   func getModificationTime() async throws -> Int? {
     let phAsset = try await requirePHAsset()
-    guard let date = phAsset.modificationDate else {
-      return nil
-    }
-    return date.millisecondsSince1970
+    return assetMapper.mapModificationTime(phAsset.modificationDate)
   }
 
   func getFavorite() async throws -> Bool {
@@ -83,7 +77,7 @@ class Asset: SharedObject {
 
   func getMediaType() async throws -> MediaTypeNext {
     let phAsset = try await requirePHAsset()
-    return MediaTypeNext.from(phAsset.mediaType)
+    return assetMapper.mapMediaType(phAsset.mediaType)
   }
 
   func getMediaSubtypes() async throws -> [String] {
@@ -116,9 +110,11 @@ class Asset: SharedObject {
 
   func getOrientation() async throws -> Int? {
     let phAsset = try await requirePHAsset()
+    let options = PHContentEditingInputRequestOptions()
+    options.isNetworkAccessAllowed = true
     guard
       phAsset.mediaType == .image,
-      let contentEditingInput = try await phAsset.requestContentEditingInput().input
+      let contentEditingInput = try await phAsset.requestContentEditingInput(options: options).input
     else {
       return nil
     }
@@ -140,28 +136,18 @@ class Asset: SharedObject {
 
   func getUri() async throws -> String {
     let phAsset = try await requirePHAsset()
-    return try await UriExtractor.extract(from: phAsset).absoluteString
+    return try await assetMapper.mapUri(phAsset)
   }
 
   func getInfo() async throws -> AssetInfo {
-    return await AssetInfo(
-      id: id,
-      creationTime: try getCreationTime(),
-      duration: try getDuration(),
-      uri: try getUri(),
-      filename: try getFilename(),
-      height: try getHeight(),
-      width: try getWidth(),
-      mediaType: try getMediaType(),
-      modificationTime: try getModificationTime(),
-      isFavorite: try getFavorite()
-    )
+    let phAsset = try await requirePHAsset()
+    return try await assetMapper.toDto(phAsset)
   }
 
   func getAlbums() async throws -> [Album] {
     let phAsset = try await requirePHAsset()
     let collections = AssetCollectionRepository.shared.get(containing: phAsset)
-    return collections.map { Album(id: $0.localIdentifier) }
+    return collections.map { Album(id: $0.localIdentifier, assetMapper: assetMapper) }
   }
 
   func delete() async throws {
@@ -210,11 +196,11 @@ class Asset: SharedObject {
     self.phAsset = nil
   }
 
-  static func from(filePath: URL) async throws -> Asset {
+  static func from(filePath: URL, assetMapper: AssetMapper) async throws -> Asset {
     guard FileManager.default.fileExists(atPath: filePath.path) else {
       throw FailedToCreateAssetException("File does not exist at path: \(filePath.path)")
     }
     let localIdentifier = try await AssetRepository.shared.add(from: filePath)
-    return Asset(localIdentifier: localIdentifier)
+    return Asset(localIdentifier: localIdentifier, assetMapper: assetMapper)
   }
 }

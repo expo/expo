@@ -1,8 +1,5 @@
 import chalk from 'chalk';
 
-import type { StartOptions } from './commandsTable';
-import { BLT, printHelp, printItem, printUsage } from './commandsTable';
-import { createDevToolsMenuItems } from './createDevToolsMenuItems';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { learnMore } from '../../utils/link';
@@ -11,16 +8,56 @@ import { selectAsync } from '../../utils/prompts';
 import { printQRCode } from '../../utils/qr';
 import { getDependencyCheckMessage } from '../checkDependenciesOnStart';
 import type { DevServerManager } from '../server/DevServerManager';
+import type { DevToolsPlugin } from '../server/DevToolsPlugin';
 import {
   openJsInspector,
   queryAllInspectorAppsAsync,
   promptInspectorAppAsync,
 } from '../server/middleware/inspector/JsInspector';
-
-const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
+import type { StartOptions } from './commandsTable';
+import { BLT, printHelp, printItem, printUsage } from './commandsTable';
+import { createDevToolsMenuItems } from './createDevToolsMenuItems';
+import { event } from './events';
 
 interface MoreToolMenuItem extends ExpoChoice<string> {
   action?: () => unknown;
+}
+
+export function getDevToolsPluginCliBannerItems(
+  plugins: DevToolsPlugin[],
+  defaultServerUrl: string
+): { title: string; url: string }[] {
+  return plugins
+    .filter((plugin) => plugin.cliBanner && plugin.webpageEndpoint != null)
+    .map((plugin) => ({
+      title: plugin.bannerTitle,
+      url: new URL(plugin.webpageEndpoint!, defaultServerUrl).toString(),
+    }));
+}
+
+export async function printDevToolsPluginCliBannersAsync(
+  devServerManager: DevServerManager
+): Promise<number> {
+  if (!devServerManager.getNativeDevServerPort()) {
+    return 0;
+  }
+
+  try {
+    const plugins = await devServerManager.devtoolsPluginManager.queryPluginsAsync();
+    const bannerItems = getDevToolsPluginCliBannerItems(
+      plugins,
+      devServerManager.getDefaultDevServer().getUrlCreator().constructUrl({ scheme: 'http' })
+    );
+
+    for (const { title, url } of bannerItems) {
+      Log.log(printItem(chalk`${title}: {underline ${url}}`));
+    }
+
+    return bannerItems.length;
+  } catch (error: any) {
+    event('banners_failed', { error: event.error(error as Error) });
+    return 0;
+  }
 }
 
 /** Wraps the DevServerManager and adds an interface for user actions. */
@@ -30,7 +67,7 @@ export class DevServerManagerActions {
     private options: Pick<StartOptions, 'devClient' | 'platforms'>
   ) {}
 
-  printDevServerInfo(
+  async printDevServerInfoAsync(
     options: Pick<
       StartOptions,
       'devClient' | 'isWebSocketsEnabled' | 'platforms' | 'dependencyCheckRef'
@@ -89,8 +126,9 @@ export class DevServerManagerActions {
         } else {
           const serverUrl = devServer.getDevServerUrl();
           Log.log(printItem(chalk`Metro: {underline ${serverUrl}}`));
+          rows--;
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
-          rows -= 2;
+          rows--;
         }
       }
     }
@@ -103,6 +141,8 @@ export class DevServerManagerActions {
         rows--;
       }
     }
+
+    rows -= await printDevToolsPluginCliBannersAsync(this.devServerManager);
 
     const dependencyCheckLines = getDependencyCheckMessage(options.dependencyCheckRef?.result);
     rows -= dependencyCheckLines.length;
@@ -185,7 +225,7 @@ export class DevServerManagerActions {
         this.devServerManager.broadcastMessage('sendDevCommand', { name: menuItem.value });
       }
     } catch (error: any) {
-      debug(error);
+      event('action_failed', { error: event.error(error as Error) });
       // do nothing
     } finally {
       printHelp();

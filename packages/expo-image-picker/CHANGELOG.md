@@ -6,14 +6,20 @@
 
 ### 🎉 New features
 
+- [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Allow `launchCameraAsync` to be invoked on the simulator. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
+
+- [ios] Fix broken bounds when cropping images when launching with `launchCameraAsync`. ([#45554](https://github.com/expo/expo/pull/45554) by [@behenate](https://github.com/behenate))
+- [Android] Grant the camera app explicit access to the output URI, so image capture keeps working as Android removes the implicit URI grant for `ACTION_IMAGE_CAPTURE`. ([#46954](https://github.com/expo/expo/pull/46954) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix `videoMaxDuration` option ([#47504](https://github.com/expo/expo/pull/47504) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
 - [Web] Drop dependency on `expo-modules-core` `Platform` in favor of inline `window`/`document` checks. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
 - Switch package entry to TypeScript source and emit declarations only. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Migrate `ExpoCropImageActivity` away from `CropImageActivity` ([#47141](https://github.com/expo/expo/pull/47141) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.14 — 2026-05-26
 

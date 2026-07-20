@@ -2,51 +2,56 @@
   "name": "expo-brownfield",
   "version": "56.0.15",
   "description": "Toolkit and APIs for adding brownfield setup to Expo projects",
+  "keywords": [
+    "brownfield",
+    "expo",
+    "react-native"
+  ],
+  "homepage": "https://docs.expo.dev/versions/unversioned/sdk/brownfield/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-brownfield"
+  },
+  "bin": "./bin/cli.js",
+  "sideEffects": false,
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
-  "bin": "./bin/cli.js",
   "exports": {
     ".": {
-      "source": "./src/index.ts",
-      "types": "./build/index.d.ts",
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json",
     "./app.plugin.js": "./app.plugin.js",
     "./plugin": "./plugin/build/index.js"
   },
-  "sideEffects": false,
   "scripts": {
-    "build": "expo-module build",
+    "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:cli",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint && expo-module lint plugin && expo-module lint cli",
-    "lint:fix": "expo-module lint --fix && expo-module lint plugin --fix && expo-module lint cli --fix",
-    "test": "expo-module test",
-    "test:e2e-cli": "expo-module test --config e2e/cli/jest.config.js",
-    "test:e2e-plugin": "expo-module test --config e2e/plugin/jest.config.js",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "lint:fix": "oxlint --config oxlint.config.mjs . --fix",
+    "format": "expo-module format",
+    "test": "jest",
+    "test:e2e-cli": "jest --config e2e/cli/jest.config.js",
+    "test:e2e-plugin": "jest --config e2e/plugin/jest.config.js",
     "prepack": "node scripts/resolve-symlinks.js resolve",
     "postpack": "node scripts/resolve-symlinks.js restore",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
-  "keywords": [
-    "react-native",
-    "expo",
-    "brownfield"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-brownfield"
-  },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/unversioned/sdk/brownfield/",
-  "jest": {
-    "preset": "expo-module-scripts"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
     "@expo/env": "workspace:~2.3.0",
@@ -62,6 +67,7 @@
   "devDependencies": {
     "@bacons/xcode": "1.0.0-alpha.29",
     "@types/diff": "^5.2.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/prompts": "^2.0.6",
     "@types/react": "~19.2.0",
@@ -73,5 +79,8 @@
   "peerDependencies": {
     "expo": "*",
     "react": "*"
+  },
+  "jest": {
+    "preset": "expo-module-scripts"
   }
 }

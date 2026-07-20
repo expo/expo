@@ -14,6 +14,7 @@ import expo.modules.devmenu.DevMenuFragment
 import expo.modules.devmenu.DevMenuPreferences
 import expo.modules.devmenu.DevMenuSettings
 import expo.modules.devmenu.GoHomeAction
+import expo.modules.devmenu.SwitchToComponentAction
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
@@ -48,7 +49,8 @@ object DevMenuApi {
     preferences: DevMenuPreferences = DevMenuDefaultPreferences(activity.application),
     goToHomeAction: GoHomeAction? = null,
     reloadAction: (() -> Unit)? = null,
-    appInfoProvider: AppInfoProvider = { application, reactHost -> AppInfo.getAppInfo(application, reactHost) }
+    appInfoProvider: AppInfoProvider = { application, reactHost -> AppInfo.getAppInfo(application, reactHost) },
+    switchToComponentAction: SwitchToComponentAction? = null
   ): ViewGroup {
     return DevMenuFragment.createFragmentHost(
       activity,
@@ -56,7 +58,8 @@ object DevMenuApi {
       preferences,
       goToHomeAction,
       reloadAction,
-      appInfoProvider
+      appInfoProvider,
+      switchToComponentAction
     )
   }
 

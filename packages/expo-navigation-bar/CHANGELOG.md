@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Apply `setStyle` and `setHidden` to React Native `<Modal>` windows via `ExtraWindowEventListener` on Android. ([#46491](https://github.com/expo/expo/pull/46491) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
+
+- Polyfill `enforceContrast` on Android 8 and 9. ([#47382](https://github.com/expo/expo/pull/47382) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 

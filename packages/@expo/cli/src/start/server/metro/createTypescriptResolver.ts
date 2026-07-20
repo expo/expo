@@ -5,19 +5,18 @@
 // existence, realpath, and node_modules resolution.
 
 import JsonFile from '@expo/json-file';
-import type Bundler from '@expo/metro/metro/Bundler';
-import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
 import type FileMap from '@expo/metro/metro-file-map';
 import type { FileSystem, ChangeEvent } from '@expo/metro/metro-file-map';
 import { RootPathUtils } from '@expo/metro/metro-file-map/lib/RootPathUtils';
 import type { ResolutionContext, Resolution } from '@expo/metro/metro-resolver';
+import type Bundler from '@expo/metro/metro/Bundler';
+import type DependencyGraph from '@expo/metro/metro/node-haste/DependencyGraph';
 import path from 'path';
 
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
+import { event } from './resolveEvents';
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
-
-const debug = require('debug')('expo:start:server:metro:typescript-resolver') as typeof console.log;
 
 interface ParsedTsConfig {
   baseUrl?: string;
@@ -155,7 +154,6 @@ export function _resolveWithTsConfigPaths(
     for (const alias of exactPaths) {
       const result = resolve(alias);
       if (result != null) {
-        debug(`${moduleName} -> ${alias}`);
         return result;
       }
     }
@@ -180,7 +178,6 @@ export function _resolveWithTsConfigPaths(
           const possibleResult = alias.replace('*', star);
           const result = resolve(possibleResult);
           if (result != null) {
-            debug(`${moduleName} -> ${possibleResult}`);
             return result;
           }
         }
@@ -201,7 +198,6 @@ export function _resolveWithTsConfigPaths(
             const possibleResult = alias.replace('*', star);
             const result = resolve(possibleResult);
             if (result != null) {
-              debug(`${moduleName} -> ${possibleResult}`);
               return result;
             }
           }
@@ -220,7 +216,6 @@ export function _resolveWithTsConfigPaths(
     const possibleResult = joinBaseUrl(config.baseUrl, moduleName);
     const result = resolve(possibleResult);
     if (result) {
-      debug(`baseUrl: ${moduleName} -> ${possibleResult}`);
       return result;
     }
   }
@@ -326,7 +321,7 @@ function loadTsConfigPaths(projectRoot: string, depGraph: DependencyGraph): Pars
     return _loadTsConfigWithExtends(projectRoot, configPath, depGraph);
   } catch (error: any) {
     if (error?.isJsonFileError || error?.name === 'SyntaxError') {
-      debug(`Failed to parse ${configPath}: ${error.message}`);
+      event('tsconfig_parse_failed', { path: configPath, error: error.message });
       return null;
     }
     throw error;

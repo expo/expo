@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
-import type { ToolbarColors, ToolbarPlacement } from './context';
 import type { NativeStackNavigationOptions } from '../../../react-navigation/native-stack';
+import type { ToolbarColors, ToolbarPlacement } from './context';
 
 /**
  * Default/web noop. On iOS, the `.ios.tsx` variant converts children to

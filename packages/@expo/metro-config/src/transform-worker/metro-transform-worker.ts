@@ -11,12 +11,6 @@
 import { transformFromAstSync, parse, types as t, template } from '@babel/core';
 import type { ParseResult, PluginItem, NodePath } from '@babel/core';
 import generate from '@babel/generator';
-import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
-import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
-import {
-  importLocationsPlugin,
-  locToKey,
-} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import type { BabelTransformer, BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
 import { stableHash } from '@expo/metro/metro-cache';
 import { getCacheKey as getMetroCacheKey } from '@expo/metro/metro-cache-key';
@@ -28,8 +22,24 @@ import type {
   JsTransformOptions,
   Type,
 } from '@expo/metro/metro-transform-worker';
+import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
+import generateImportNames from '@expo/metro/metro/ModuleGraph/worker/generateImportNames';
+import {
+  importLocationsPlugin,
+  locToKey,
+} from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import assert from 'node:assert';
 
+import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
+import {
+  countLinesAndTerminateSourceMap,
+  emptySourceMap,
+  packDecodedMappings,
+  packRawMappings,
+  type SerializableSourceMap,
+} from '../serializer/packedMap';
+import { rawMappingsToEncodedMap, type BabelSourceMapSegment } from '../serializer/sourceMap';
+import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import * as assetTransformer from './asset-transformer';
 import type {
   Dependency,
@@ -42,17 +52,8 @@ import type {
 import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from './collect-dependencies';
+import { debugEvent } from './events';
 import { shouldMinify } from './resolveOptions';
-import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
-import {
-  countLinesAndTerminateSourceMap,
-  emptySourceMap,
-  packDecodedMappings,
-  packRawMappings,
-  type SerializableSourceMap,
-} from '../serializer/packedMap';
-import { rawMappingsToEncodedMap, type BabelSourceMapSegment } from '../serializer/sourceMap';
-import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
 export { JsTransformOptions };
@@ -146,6 +147,7 @@ export const minifyCode = async (
 
   const minify = getMinifier(config.minifierPath);
 
+  const done = debugEvent.span();
   try {
     const minified = await minify({
       code,
@@ -155,6 +157,7 @@ export const minifyCode = async (
       config: config.minifierConfig,
     });
 
+    done('minify', { file: debugEvent.path(filename) });
     return {
       code: minified.code,
       sourceMap: minified.map
@@ -270,6 +273,7 @@ export function applyImportSupport<TFile extends t.File>(
 
   // TODO: This MUST be run even though no plugins are added, otherwise the babel runtime generators are broken.
   if (plugins.length) {
+    const done = debugEvent.span();
     const result = nullthrows(
       transformFromAstSync(ast, '', {
         ast: true,
@@ -292,6 +296,7 @@ export function applyImportSupport<TFile extends t.File>(
         cloneInputAst: false,
       })
     );
+    done('import_support', { file: debugEvent.path(filename) });
     return {
       ast: result.ast as TFile,
       metadata: result.metadata,
@@ -318,6 +323,7 @@ function performConstantFolding(ast: t.File | ParseResult, { filename }: { filen
   // Run the constant folding plugin in its own pass, avoiding race conditions
   // with other plugins that have exit() visitors on Program (e.g. the ESM
   // transform).
+  const done = debugEvent.span();
   const result = transformFromAstSync(ast, '', {
     ast: true,
     babelrc: false,
@@ -333,6 +339,7 @@ function performConstantFolding(ast: t.File | ParseResult, { filename }: { filen
     // This isn't needed anymore since `clearProgramScopePlugin` re-crawls the AST’s scope instead.
     cloneInputAst: false,
   })?.ast;
+  done('constant_folding', { file: debugEvent.path(filename) });
 
   return nullthrows(result) as ParseResult;
 }
@@ -429,6 +436,7 @@ async function transformJS(
         collectOnly: optimize === true,
       };
 
+      const doneDeps = debugEvent.span();
       ({ ast, dependencies, dependencyMapName } = collectDependencies(ast, {
         ...collectDependenciesOptions,
         // This setting shouldn't be shared with the tree shaking transformer.
@@ -439,6 +447,10 @@ async function transformJS(
             ? (loc: t.SourceLocation) => importDeclarationLocs.has(locToKey(loc))
             : null,
       }));
+      doneDeps('collect_dependencies', {
+        file: debugEvent.path(file.filename),
+        count: dependencies.length,
+      });
 
       // Ensure we use the same name for the second pass of the dependency collection in the serializer.
       collectDependenciesOptions = {
@@ -494,6 +506,7 @@ async function transformJS(
     );
   }
 
+  const doneCodegen = debugEvent.span();
   const result = generate(
     wrappedAst,
     {
@@ -506,6 +519,7 @@ async function transformJS(
     },
     file.code
   );
+  doneCodegen('codegen', { file: debugEvent.path(file.filename) });
 
   // `rawMappings` is omitted from `@types/babel__generator`'s
   // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.

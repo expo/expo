@@ -6,6 +6,8 @@
  */
 import type { types as t } from '@babel/core';
 import generate from '@babel/generator';
+import type { SerializerConfigT } from '@expo/metro/metro-config';
+import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import type {
   MixedOutput,
   Module,
@@ -15,21 +17,8 @@ import type {
 import * as JsFileWrapping from '@expo/metro/metro/ModuleGraph/worker/JsFileWrapping';
 import { locToKey } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import type { SerializerConfigT } from '@expo/metro/metro-config';
-import { normalizePseudoGlobals } from '@expo/metro/metro-transform-plugins';
 import assert from 'assert';
-import util from 'node:util';
 
-import type { ExpoJsOutput } from './jsOutput';
-import { isExpoJsOutput } from './jsOutput';
-import {
-  countLinesAndTerminateSourceMap,
-  installPackedMap,
-  packRawMappings,
-  type SerializableSourceMap,
-} from './packedMap';
-import { hasSideEffectWithDebugTrace } from './sideEffects';
-import { type BabelSourceMapSegment } from './sourceMap';
 import type { Dependency, DependencyData } from '../transform-worker/collect-dependencies';
 import collectDependencies, {
   getKeyForDependency,
@@ -41,12 +30,20 @@ import {
   InvalidRequireCallError,
   minifyCode,
 } from '../transform-worker/metro-transform-worker';
+import type { ExpoJsOutput } from './jsOutput';
+import { isExpoJsOutput } from './jsOutput';
+import {
+  countLinesAndTerminateSourceMap,
+  installPackedMap,
+  packRawMappings,
+  type SerializableSourceMap,
+} from './packedMap';
+import { hasSideEffectWithDebugTrace } from './sideEffects';
+import { type BabelSourceMapSegment } from './sourceMap';
 
 type Serializer = NonNullable<SerializerConfigT['customSerializer']>;
 
 type SerializerParameters = Parameters<Serializer>;
-
-const debug = require('debug')('expo:treeshaking') as typeof console.log;
 
 const FORCE_REQUIRE_NAME_HINTS = false;
 
@@ -98,12 +95,6 @@ export function sortDependencies(
     if (dep.data.isOptional) {
       return null;
     }
-
-    debug(
-      'failed to finding matching dependency',
-      util.inspect(dep, { colors: true, depth: 6 }),
-      util.inspect(accordingTo, { colors: true, depth: 6 })
-    );
 
     throw new Error(
       `Dependency ${dep.data.key} (${dep.name}) not found in the original module during optimization pass. Available keys: ${Array.from(
@@ -181,7 +172,6 @@ export async function reconcileTransformSerializerPlugin(
       value.path.endsWith('.json') ||
       value.path.match(/\.(s?css|sass)$/)
     ) {
-      debug('Skipping post transform for non-js/module: ' + value.path);
       return outputItem;
     }
 

@@ -173,7 +173,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/color-schemes/': '/develop/user-interface/color-themes/',
   '/development/introduction/': '/develop/development-builds/introduction/',
-  '/development/create-development-builds/': '/develop/development-builds/create-a-build/',
+  '/develop/development-builds/create-a-build/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
+  '/develop/development-builds/expo-go-to-dev-build/':
+    '/develop/development-builds/introduction/#build-locally',
+  '/develop/development-builds/next-steps/': '/develop/development-builds/faq/',
+  '/development/create-development-builds/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/development/use-development-builds/': '/develop/development-builds/use-development-builds/',
   '/development/development-workflows/': '/develop/development-builds/development-workflows/',
   '/workflow/expo-cli/': '/more/expo-cli/',
@@ -181,8 +187,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/debugging/': '/debugging/runtime-issues/',
   '/debugging/runtime-issue/': '/debugging/runtime-issues/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
-  '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
+  '/develop/development-builds/installation/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
+
+  // MCP server moved out of the EAS section to the top-level /mcp route
+  '/eas/ai/mcp/': '/mcp/',
 
   // Picker replaced by SegmentedButton
   '/versions/latest/sdk/ui/jetpack-compose/picker/':
@@ -210,8 +220,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
-  '/development/build/': '/develop/development-builds/create-a-build/',
-  '/development/getting-started/': '/develop/development-builds/create-a-build/',
+  '/development/build/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
+  '/development/getting-started/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/development/troubleshooting/': '/develop/development-builds/introduction/',
   '/development/upgrading/': '/develop/development-builds/introduction/',
   '/development/extensions/': '/develop/development-builds/development-workflows/',
@@ -244,6 +256,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
 
+  // Redirects and rewrites guide was consolidated into the reference page
+  '/router/advanced/redirects/': '/router/reference/redirects/',
+
   // Redirects after Expo Router docs reorganization from Home to Guides
   '/routing/next-steps/': '/router/introduction/',
   '/routing/introduction/': '/router/introduction/',
@@ -272,7 +287,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/get-started/': '/get-started/create-a-project/',
   '/guides/detach/': '/archive/glossary/#detach',
   '/workflow/snack/': '/more/glossary-of-terms/#snack',
-  '/eas/submit/': '/submit/introduction/',
+  '/eas/submit/': '/deploy/submit-to-app-stores/',
+  '/submit/introduction/': '/deploy/submit-to-app-stores/',
   '/development/tools/expo-dev-client/':
     '/develop/development-builds/introduction/#what-is-expo-dev-client',
   '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#add-a-custom-font',
@@ -314,14 +330,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/expokit/': '/archive/glossary/#expokit',
-  '/submit/classic-builds/': '/submit/introduction/',
+  '/submit/classic-builds/': '/deploy/submit-to-app-stores/',
   '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
   '/technical-specs/latest/': '/technical-specs/expo-updates-1/',
   '/archive/expokit/overview/': '/archive/glossary/',
   '/expokit/overview/': '/archive/glossary/',
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
   '/workflow/already-used-react-native/': '/workflow/overview/',
-  '/development/installation/': '/develop/development-builds/create-a-build/',
+  '/development/installation/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/guides/routing-and-navigation/': '/routing/introduction/',
   '/build-reference/custom-build-config/': '/custom-builds/get-started/',
   '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
@@ -643,4 +660,17 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After archiving Configure JS engines guide
   '/guides/configuring-js-engines/': '/archive/configuring-js-engines/',
+
+  // Trailing-slash variants of `_redirects` rules that only matched the no-slash form
+  '/versions/latest/sdk/admob/': '/versions/latest/',
+  '/versions/latest/workflow/linking/': '/guides/linking/',
+  '/versions/latest/introduction/faq/': '/faq/',
+  '/guides/setting-up-continuous-integration/': '/build/building-on-ci/',
+  '/eas-update/debug-advanced/': '/eas-update/debug/',
+  '/eas-update/publish/': '/eas-update/getting-started/',
+  '/clients/installation/': '/versions/latest/sdk/dev-client/',
+  '/module-api/': '/modules/module-api/',
+  '/module-config/': '/modules/module-config/',
+  '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
+  '/router/advance/router-setttings/': '/router/advanced/router-settings/',
 };

@@ -1,8 +1,40 @@
 # Shared helpers for managing ExpoModulesJSI.xcframework.
 #
-# Sourced by create-stub-xcframework.sh and build-xcframework.sh. Defines the
-# canonical slice metadata and the Info.plist writer used by both scripts so
-# the manifest is produced from a single place.
+# Sourced by create-stub-xcframework.sh, build-xcframework.sh and
+# clear-caches.sh. Defines the canonical slice metadata and the Info.plist
+# writer used by those scripts so the manifest is produced from a single place.
+
+# safe_remove_dirs DIR...
+# Deletes directories tolerantly. Xcode's background indexer keeps writing into
+# the SwiftPM index store under `.build`, which can make a plain `rm -rf` fail
+# with ENOTEMPTY mid-walk and abort the caller under `set -e`. Renaming each
+# directory away first (atomic within the filesystem) detaches the live path, so
+# the delete of the leftover can race harmlessly; its failure is ignored.
+safe_remove_dirs() {
+  local dir
+  for dir in "$@"; do
+    [[ -e "$dir" ]] || continue
+    local trash="${dir}.trash.$$"
+    if mv "$dir" "$trash" 2>/dev/null; then
+      rm -rf "$trash" 2>/dev/null || true
+    else
+      rm -rf "$dir" 2>/dev/null || true
+    fi
+  done
+}
+
+# clean_xcframework_state PACKAGE_DIR
+# Removes the built xcframework and the SwiftPM/Xcode build state next to the
+# package. Shared by build-xcframework.sh's --clean path and clear-caches.sh.
+clean_xcframework_state() {
+  local package_dir="$1"
+
+  safe_remove_dirs \
+    "${package_dir}/Products/ExpoModulesJSI.xcframework" \
+    "${package_dir}/.DerivedData" \
+    "${package_dir}/.build" \
+    "${package_dir}/.swiftpm"
+}
 
 # resolve_pods_root PACKAGE_DIR
 # Sets PODS_ROOT, preferring an explicit value (e.g. from CocoaPods build phase)
@@ -31,8 +63,10 @@ resolve_pods_root() {
 EXPO_MODULES_JSI_KNOWN_SLICES=(
   "ios-arm64|ios||arm64"
   "ios-arm64_x86_64-simulator|ios|simulator|arm64 x86_64"
+  "ios-arm64_x86_64-maccatalyst|ios|maccatalyst|arm64 x86_64"
   "tvos-arm64|tvos||arm64"
   "tvos-arm64_x86_64-simulator|tvos|simulator|arm64 x86_64"
+  "macos-arm64_x86_64|macos||arm64 x86_64"
 )
 
 # Slice IDs the xcframework must always declare, even when only a subset has
@@ -42,8 +76,10 @@ EXPO_MODULES_JSI_KNOWN_SLICES=(
 EXPO_MODULES_JSI_REQUIRED_SLICE_IDS=(
   "ios-arm64"
   "ios-arm64_x86_64-simulator"
+  "ios-arm64_x86_64-maccatalyst"
   "tvos-arm64"
   "tvos-arm64_x86_64-simulator"
+  "macos-arm64_x86_64"
 )
 
 # xcframework_slice_descriptor SLICE_ID

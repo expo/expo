@@ -134,6 +134,7 @@ struct DevMenuFABView: View {
   @State private var isDragging = false
   @State private var isPressed = false
   @State private var dragStartPosition: CGPoint = .zero
+  @State private var didPosition = false
 
   // Get safe area from window since .ignoresSafeArea() may zero out geometry values
   private var windowSafeArea: UIEdgeInsets {
@@ -169,23 +170,7 @@ struct DevMenuFABView: View {
         .position(x: currentFrame.midX, y: currentFrame.midY)
         .gesture(dragGesture(bounds: geometry.size, safeArea: safeArea))
         .onAppear {
-          let initialPos: CGPoint
-          if let storedPos = Self.loadStoredPosition() {
-            let margin = FABConstants.margin
-            let minX = margin / 2
-            let maxX = geometry.size.width - fabSize.width - margin / 2
-            let minY = safeArea.top + FABConstants.verticalPadding
-            let maxY = geometry.size.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
-
-            initialPos = CGPoint(
-              x: storedPos.x.clamped(to: minX...maxX),
-              y: storedPos.y.clamped(to: minY...maxY)
-            )
-          } else {
-            initialPos = defaultPosition(bounds: geometry.size, safeArea: safeArea)
-          }
-          position = initialPos
-          onFrameChange(CGRect(origin: initialPos, size: fabSize))
+          placeInitially(bounds: geometry.size, safeArea: safeArea)
         }
         .onChange(of: geometry.size) { newSize in
           let newPos = snapToEdge(
@@ -197,7 +182,7 @@ struct DevMenuFABView: View {
           position = newPos
           onFrameChange(CGRect(origin: newPos, size: fabSize))
         }
-        .animation(isDragging ? dragSpring : FABConstants.snapAnimation, value: position)
+        .animation(didPosition ? (isDragging ? dragSpring : FABConstants.snapAnimation) : nil, value: position)
     }
     .ignoresSafeArea()
   }
@@ -249,6 +234,31 @@ struct DevMenuFABView: View {
           }
         }
       }
+  }
+
+  private func placeInitially(bounds: CGSize, safeArea: EdgeInsets) {
+    let initialPos: CGPoint
+    if let storedPos = Self.loadStoredPosition() {
+      let margin = FABConstants.margin
+      let minX = margin / 2
+      let maxX = bounds.width - fabSize.width - margin / 2
+      let minY = safeArea.top + FABConstants.verticalPadding
+      let maxY = bounds.height - fabSize.height - safeArea.bottom - FABConstants.verticalPadding
+
+      initialPos = CGPoint(
+        x: storedPos.x.clamped(to: minX...maxX),
+        y: storedPos.y.clamped(to: minY...maxY)
+      )
+    } else {
+      initialPos = defaultPosition(bounds: bounds, safeArea: safeArea)
+    }
+    position = initialPos
+    onFrameChange(CGRect(origin: initialPos, size: fabSize))
+    // Enable position animations only after the initial placement so the
+    // button appears at its final spot instead of sliding in from (0, 0).
+    DispatchQueue.main.async {
+      didPosition = true
+    }
   }
 
   private func defaultPosition(bounds: CGSize, safeArea: EdgeInsets) -> CGPoint {

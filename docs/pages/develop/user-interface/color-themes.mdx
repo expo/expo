@@ -33,7 +33,14 @@ You can also configure `userInterfaceStyle` property for a specific platforms by
 
 When you are creating a development build, you have to install [`expo-system-ui`](/versions/latest/sdk/system-ui/#installation) to support the appearance styles for Android. Otherwise, the `userInterfaceStyle` property is ignored.
 
-<Terminal cmd={['$ npx expo install expo-system-ui']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-system-ui'],
+    yarn: ['$ yarn expo install expo-system-ui'],
+    pnpm: ['$ pnpm expo install expo-system-ui'],
+    bun: ['$ bun expo install expo-system-ui'],
+  }}
+/>
 
 If the project is misconfigured and doesn't have `expo-system-ui` installed, the following warning will be shown in the terminal:
 
@@ -45,9 +52,16 @@ If the project is misconfigured and doesn't have `expo-system-ui` installed, the
 
 You can also use the following command to check if the project is misconfigured:
 
-<Terminal cmd={['$ npx expo config --type introspect']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo config --type introspect'],
+    yarn: ['$ yarn expo config --type introspect'],
+    pnpm: ['$ pnpm expo config --type introspect'],
+    bun: ['$ bun expo config --type introspect'],
+  }}
+/>
 
-<Collapsible summary="Using bare React Native app?">
+<Collapsible summary="Using an existing React Native project?">
 
 #### Android
 

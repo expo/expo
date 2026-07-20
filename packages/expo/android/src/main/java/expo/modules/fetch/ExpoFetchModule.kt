@@ -4,6 +4,7 @@ package expo.modules.fetch
 
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.modules.blob.BlobModule
 import com.facebook.react.modules.network.CookieJarContainer
 import com.facebook.react.modules.network.ForwardingCookieHandler
 import com.facebook.react.modules.network.OkHttpClientProvider
@@ -26,7 +27,7 @@ class ExpoFetchModule : Module() {
     OkHttpClientProvider.createClient(reactContext)
       .newBuilder()
       .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
-      .addInterceptor(CompressionInterceptor)
+      .addInterceptor(TransparentCompressionInterceptor)
       .build()
   }
   private val cookieHandler by lazy { ForwardingCookieHandler(reactContext) }
@@ -47,6 +48,13 @@ class ExpoFetchModule : Module() {
 
     OnCreate {
       cookieJarContainer.setCookieJar(JavaNetCookieJar(cookieHandler))
+    }
+
+    // TODO(kudo,20260706): remove this when we install expo-blob as globalThis.Blob
+    AsyncFunction("unstable_createBlobData") { data: ByteArray ->
+      val blobModule = reactContext.getNativeModule(BlobModule::class.java)
+        ?: throw FetchBlobModuleUnavailableException()
+      return@AsyncFunction blobModule.store(data)
     }
 
     OnDestroy {

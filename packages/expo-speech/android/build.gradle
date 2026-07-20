@@ -13,3 +13,8 @@ android {
     versionName "56.0.3"
   }
 }
+
+dependencies {
+  testImplementation 'io.mockk:mockk:1.14.9'
+  testImplementation 'junit:junit:4.13.2'
+}

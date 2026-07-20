@@ -178,6 +178,26 @@ describe('disabled', () => {
   });
 });
 
+describe('testID and accessibilityLabel', () => {
+  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0]).toMatchObject({
+      tabBarItemTestID: 'home-tab',
+      tabBarItemAccessibilityLabel: 'Home tab',
+    } as TabsScreenProps);
+  });
+});
+
 describe('Icons', () => {
   let consoleWarnMock: jest.Mock;
   beforeEach(() => {
@@ -1003,6 +1023,24 @@ describe('Tab options', () => {
     expect(Children.count(children)).toBe(1);
     expect(isValidElement(children)).toBe(true);
     // Type assertion to satisfy TypeScript
+    if (!isValidElement(children)) throw new Error();
+    expect(children.type).not.toBe(SafeAreaView);
+  });
+
+  it('does not wrap the screen content with SafeAreaView when the tab bar is hidden', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs hidden>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <Text testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    const children = TabsScreen.mock.calls[0][0].children;
+    expect(isValidElement(children)).toBe(true);
     if (!isValidElement(children)) throw new Error();
     expect(children.type).not.toBe(SafeAreaView);
   });

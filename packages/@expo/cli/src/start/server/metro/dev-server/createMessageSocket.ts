@@ -1,10 +1,11 @@
 import { parse } from 'node:url';
 import { type WebSocket, WebSocketServer, type RawData as WebSocketRawData } from 'ws';
 
+import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
+import { event } from '../hmrEvents';
 import { createBroadcaster } from './utils/createSocketBroadcaster';
 import { createSocketMap, type SocketId } from './utils/createSocketMap';
 import { parseRawMessage, serializeMessage } from './utils/socketMessages';
-import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 
 type MessageSocketOptions = {
   logger: {
@@ -12,8 +13,6 @@ type MessageSocketOptions = {
   };
   serverBaseUrl: string;
 };
-
-const debug = require('debug')('expo:metro:devserver:messageSocket') as typeof console.log;
 
 const CLIENT_BROADCAST_ALLOWED_METHODS = new Set(['reload', 'devMenu']);
 
@@ -98,7 +97,7 @@ function createClientMessageHandler(
     // Handle broadcast messages
     if (messageIsBroadcast(message)) {
       if (!isTrustedClient || !CLIENT_BROADCAST_ALLOWED_METHODS.has(message.method)) {
-        debug(`Refused broadcast message from untrusted client (method: ${message.method})`);
+        event('untrusted_broadcast_refused', { method: message.method });
         return;
       }
       return broadcast(null, data.toString());

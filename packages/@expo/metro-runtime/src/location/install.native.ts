@@ -1,6 +1,7 @@
-// This MUST be first to ensure that `fetch` is defined in the React Native environment.
+// WARN(@kitten): We must ensure that the core react-native globals are initialized before ours
+// Otherwise we're relying on `getModulesRunBeforeMainModule` which is unstable or can be missing
+// See: `expo/winter/runtime.native.ts`
 import 'react-native/Libraries/Core/InitializeCore';
-
 // Ensure fetch is installed before adding our fetch polyfill to ensure Headers and Request are available globally.
 import 'whatwg-fetch';
 // This MUST be imported to ensure URL is installed.
@@ -9,8 +10,8 @@ import 'expo';
 // https://wintercg.org/
 import Constants from 'expo-constants';
 
-import { install, setLocationHref } from './Location';
 import getDevServer from '../getDevServer';
+import { install, setLocationHref } from './Location';
 
 interface ExpoExtraRouterConfig {
   router?: {
@@ -70,6 +71,8 @@ export function wrapFetchWithWindowLocation(fetch: Function & { [polyfillSymbol]
 
   return _fetch;
 }
+
+declare const global: typeof globalThis;
 
 const extra = manifest?.extra as ExpoExtraRouterConfig | null;
 if (extra?.router?.origin !== false) {

@@ -29,7 +29,7 @@ async function getDevicesAsync({
       (
         await Promise.all([
           AppleDevice.getConnectedDevicesAsync(),
-          await profile(SimControl.getDevicesAsync)(),
+          profile(SimControl.getDevicesAsync)(),
           // resolveDestinationsAsync(buildProps),
         ])
       ).flat(),

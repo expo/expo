@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>DevTools Plugin</title>
+  </head>
+  <body>
+    <main>
+      <h1>Hello from Expo DevTools</h1>
+      <p>This static page is served from the plugin.</p>
+      <button id="call-server">Call plugin server</button>
+      <pre id="server-result" hidden></pre>
+      <button id="open-socket">Open WebSocket</button>
+      <pre id="socket-log" hidden></pre>
+    </main>
+    <script>
+      const pluginPathname = location.pathname.replace(/\/$/, '');
+      const button = document.getElementById('call-server');
+      const result = document.getElementById('server-result');
+      button.addEventListener('click', async () => {
+        result.hidden = false;
+        result.textContent = 'Loading…';
+        try {
+          const response = await fetch(`${pluginPathname}/api/hello`);
+          result.textContent = JSON.stringify(await response.json(), null, 2);
+        } catch (error) {
+          result.textContent = String(error);
+        }
+      });
+
+      const socketButton = document.getElementById('open-socket');
+      const socketLog = document.getElementById('socket-log');
+      let socket;
+      socketButton.addEventListener('click', () => {
+        if (socket) {
+          socket.close();
+          return;
+        }
+        socketLog.hidden = false;
+        socketLog.textContent = '';
+        const append = (line) => {
+          socketLog.textContent += `${line}\n`;
+        };
+        socket = new WebSocket(`${pluginPathname}/ws?source=webpage`);
+        socket.addEventListener('open', () => {
+          append('open');
+          socketButton.textContent = 'Close WebSocket';
+          socket.send('Hello from the webpage!');
+        });
+        socket.addEventListener('message', (event) => append(`message: ${event.data}`));
+        socket.addEventListener('close', () => {
+          append('close');
+          socketButton.textContent = 'Open WebSocket';
+          socket = undefined;
+        });
+        socket.addEventListener('error', () => append('error'));
+      });
+    </script>
+    <style>
+      :root {
+        font-family: system-ui, sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+        margin: 0;
+        display: grid;
+        place-items: center;
+        background: #f6f7f9;
+        color: #111318;
+      }
+
+      main {
+        width: min(480px, calc(100vw - 48px));
+        padding: 32px;
+        border: 1px solid #d9dde5;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 12px 30px rgba(18, 22, 30, 0.08);
+      }
+
+      h1 {
+        margin: 0 0 12px;
+        font-size: 28px;
+        line-height: 1.15;
+      }
+
+      p {
+        margin: 0;
+        color: #515866;
+        font-size: 16px;
+        line-height: 1.5;
+      }
+
+      button {
+        margin-top: 16px;
+        padding: 8px 16px;
+        border: 1px solid #d9dde5;
+        border-radius: 6px;
+        background: #f6f7f9;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      pre {
+        margin: 12px 0 0;
+        padding: 12px;
+        border-radius: 6px;
+        background: #f0f1f4;
+        font-size: 13px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    </style>
+  </body>
+</html>

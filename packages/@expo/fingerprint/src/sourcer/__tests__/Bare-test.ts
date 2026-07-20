@@ -244,7 +244,7 @@ describe('getCoreAutolinkingSources', () => {
       });
       const sources = await testFn('/root/apps/demo', await normalizeOptionsAsync('/app'));
       for (const source of sources) {
-        if (source.type === 'dir' || source.type === 'file') {
+        if (source.type === 'dir' || source.type === 'file' || source.type === 'package') {
           expect(source.filePath).not.toMatch(/^\/root/);
         } else {
           expect(source.contents).not.toMatch(/"\/root\//);

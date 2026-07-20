@@ -6,6 +6,7 @@
  */
 import type { ExpoConfig } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
@@ -15,10 +16,6 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
 
-import { getVirtualFaviconAssetsAsync } from './favicon';
-import { persistMetroAssetsAsync } from './persistMetroAssets';
-import type { ExportAssetMap } from './saveAssets';
-import { getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
 import type {
   ExpoRouterRuntimeManifest,
@@ -32,8 +29,12 @@ import {
   sortMatchedAssetsByEntryPoints,
 } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
-
-const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
+import { event, debugEvent } from './events';
+import { generateFaviconAssetAsync } from './favicon';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
+import type { ExportAssetMap } from './saveAssets';
+import { getFilesFromSerialAssets } from './saveAssets';
+import type { StaticManifest } from './static';
 
 type ExtraScriptTag = {
   platform: string;
@@ -100,7 +101,9 @@ export async function getFilesToExportFromServerAsync(
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
-    serverManifest: RoutesManifest;
+    // Optional: the `if (!exportServer && serverManifest)` guard below handles its absence,
+    // and callers exporting only HTML (e.g. tests) don't provide it.
+    serverManifest?: RoutesManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
     /**
@@ -115,9 +118,10 @@ export async function getFilesToExportFromServerAsync(
 ): Promise<ExportAssetMap> {
   if (!exportServer && serverManifest) {
     // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
-    // EAS Hosting to recognize the `headers` and `redirects` configs
-    const subsetServerManifest = {
+    // EAS Hosting to recognize the `headers`, `pageHeaders`, and `redirects` configs
+    const subsetServerManifest: StaticManifest = {
       headers: serverManifest.headers,
+      pageHeaders: serverManifest.pageHeaders,
       redirects: serverManifest.redirects,
     };
     files.set('_expo/.routes.json', {
@@ -224,7 +228,7 @@ export async function exportFromServerAsync(
   const isExportingWithSSR =
     exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
-  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
+  const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
     outputDir,
     baseUrl,
     files,
@@ -241,7 +245,17 @@ export async function exportFromServerAsync(
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
-  debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
+  debugEvent('static:routes_manifest', {
+    routes: inspect(manifest, { colors: true, depth: null }),
+  });
+
+  const loaderReferenceCount = new Set(
+    resources.artifacts?.flatMap((artifact) => artifact.metadata?.loaderReferences ?? [])
+  ).size;
+  event('static:routes', {
+    total: getHtmlFiles({ manifest, includeGroupVariations: false }).length,
+    withLoaders: loaderReferenceCount,
+  });
 
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
@@ -254,7 +268,7 @@ export async function exportFromServerAsync(
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
       const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
-      let renderOpts;
+      const renderOpts: GetStaticContentOptions = {};
 
       if (useServerLoaders) {
         const loaderResponse = await executeLoaderAsync(normalizedPathname, route);
@@ -271,8 +285,12 @@ export async function exportFromServerAsync(
             loaderId: loaderKey,
           });
 
-          renderOpts = { loader: { data, key: loaderKey } };
+          renderOpts.loader = { data, key: loaderKey };
         }
+      }
+
+      if (faviconAsset) {
+        renderOpts.assets = { css: [], js: [], favicon: faviconAsset.href };
       }
 
       const template = await renderAsync(normalizedPathname, route, renderOpts);
@@ -284,10 +302,6 @@ export async function exportFromServerAsync(
         route,
         hydrate: true,
       });
-
-      if (injectFaviconTag) {
-        html = injectFaviconTag(html);
-      }
 
       if (scriptTags) {
         // Inject script tags into the HTML.
@@ -364,6 +378,14 @@ export async function exportFromServerAsync(
         .filter((asset) => asset.type === 'css')
         .map((asset) => toAssetUrl(asset.filename));
 
+      // External stylesheets (`@import url(https://...)`) are extracted out of the bundled CSS.
+      const externalCssAssets = resources.artifacts
+        .filter((asset) => asset.type === 'css-external')
+        .map((asset) => ({
+          href: asset.filename,
+          media: asset.metadata.media,
+        }));
+
       const jsArtifacts = resources.artifacts.filter((asset) => asset.type === 'js');
       const orderedJsAssets = assetsRequiresSort(jsArtifacts);
       const syncJs = orderedJsAssets.filter((asset) => !asset.metadata.isAsync);
@@ -406,7 +428,12 @@ export async function exportFromServerAsync(
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
-          manifest.assets = { css: cssAssets, js: syncJsAssets };
+          manifest.assets = {
+            css: cssAssets,
+            externalCss: externalCssAssets,
+            js: syncJsAssets,
+            favicon: faviconAsset?.href,
+          };
           manifest.rendering = {
             mode: 'ssr',
             file: '_expo/server/render.js',
@@ -727,12 +754,11 @@ async function exportLoadersAsync({
   }
 
   if (entryPoints.length === 0) {
-    debug('No routes with loaders to bundle');
     return;
   }
 
   const entryPointModules = entryPoints.map((e) => e.page);
-  debug('Bundling loaders for routes:', entryPointModules);
+  debugEvent('static:bundling_loaders', { modules: entryPointModules });
 
   await devServer.exportExpoRouterLoadersAsync({
     platform,
@@ -754,8 +780,6 @@ async function exportLoadersAsync({
       }
     },
   });
-
-  debug('Exported loaders for routes:', entryPointModules);
 }
 
 // NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of

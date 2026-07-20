@@ -3,6 +3,7 @@ import { getConfig } from '@expo/config';
 import { resolveOptionsAsync } from '../resolveOptions';
 
 jest.mock('@expo/config', () => ({
+  ...jest.requireActual('@expo/config'),
   getConfig: jest.fn(() => ({
     pkg: {},
     exp: {
@@ -36,6 +37,21 @@ describe(resolveOptionsAsync, () => {
       resolveOptionsAsync('/', { '--platform': ['android', 'ios'] })
     ).resolves.toMatchObject({
       platforms: ['android', 'ios'],
+    });
+  });
+
+  it(`resolves the tvos platform`, async () => {
+    jest.mocked(getConfig).mockReturnValueOnce({
+      // `tvos` is an out-of-tree platform not present in the `ExpoConfig` platform union.
+      exp: {
+        platforms: ['ios', 'android', 'tvos'],
+        experiments: {
+          outOfTreePlatforms: true,
+        },
+      },
+    } as unknown as ReturnType<typeof getConfig>);
+    await expect(resolveOptionsAsync('/', { '--platform': ['tvos'] })).resolves.toMatchObject({
+      platforms: ['tvos'],
     });
   });
 

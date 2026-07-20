@@ -8,6 +8,7 @@
   "build": {
     "base": {
       "node": "22.17.1",
+      "pnpm": "10.33.0",
       "credentialsSource": "local",
       "android": {
         "image": "ubuntu-24.04-jdk-17-ndk-r27b-sdk-55",
@@ -18,7 +19,7 @@
           "EXPO_ROOT_DIR": "/home/expo/workingdir/build",
           "SHARP_IGNORE_GLOBAL_LIBVIPS": "1",
           "EAS_BUILD_DISABLE_BUNDLE_JAVASCRIPT_STEP": "1",
-          "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-Xmx20g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.vfs.watch=false -Dorg.gradle.daemon=false",
+          "GRADLE_OPTS": "-Dorg.gradle.jvmargs=\"-Xmx12g -XX:MaxMetaspaceSize=1g -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8\" -Dorg.gradle.vfs.watch=false -Dorg.gradle.daemon=false",
           "EAS_RESTORE_CACHE": "0"
         }
       },

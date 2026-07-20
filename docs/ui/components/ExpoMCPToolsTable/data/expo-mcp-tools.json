@@ -2,9 +2,9 @@
   "source": {
     "server": "https://mcp.expo.dev/mcp",
     "localRepo": "expo/expo-mcp",
-    "fetchedAt": "2026-03-18T10:06:19.629Z"
+    "fetchedAt": "2026-06-25T15:20:39.129Z"
   },
-  "totalTools": 25,
+  "totalTools": 31,
   "totalPrompts": 1,
   "tools": [
     {
@@ -14,17 +14,17 @@
       "availability": "Server"
     },
     {
+      "name": "read_documentation",
+      "description": "Fetch a single Expo documentation page and return its content as markdown. Returns up to ~5000 tokens per call. Use offset to paginate through long pages.",
+      "examplePrompt": "read the Expo Router docs page",
+      "availability": "Server"
+    },
+    {
       "name": "search_documentation",
       "description": "Search the official Expo documentation and return page URLs ranked by relevance for a user query. Use read_documentation to fetch the full content of specific pages, starting from the top.",
       "examplePrompt": "search documentation for CNG",
       "availability": "Server",
       "requirements": "requires an EAS paid plan"
-    },
-    {
-      "name": "read_documentation",
-      "description": "Fetch a single Expo documentation page and return its content as markdown. Returns up to ~5000 tokens per call. Use offset to paginate through long pages.",
-      "examplePrompt": "read the Expo Router docs page",
-      "availability": "Server"
     },
     {
       "name": "learn",
@@ -120,6 +120,42 @@
       "name": "testflight_feedback",
       "description": "Fetch screenshot feedback from TestFlight. Returns feedback metadata including device info, user comments, and screenshot URLs.",
       "examplePrompt": "show TestFlight feedback for my app",
+      "availability": "Server"
+    },
+    {
+      "name": "appstore_reviews",
+      "description": "Fetch public App Store customer reviews for an app (rating, title, body, reviewer, territory). For TestFlight beta feedback use testflight_feedback instead.",
+      "examplePrompt": "",
+      "availability": "Server"
+    },
+    {
+      "name": "appstore_reply_review",
+      "description": "Post or edit the public developer response to an App Store customer review. This is a write action: the response is visible to everyone on the App Store, and Apple publishes it after a short review. App Store Connect allows a single response per review, so any existing response is replaced.",
+      "examplePrompt": "",
+      "availability": "Server"
+    },
+    {
+      "name": "appstore_delete_review_response",
+      "description": "Delete the public developer response on an App Store customer review. This is a write action: it removes the response from the App Store. No-op-safe — if the review has no response, it reports that nothing was deleted.",
+      "examplePrompt": "",
+      "availability": "Server"
+    },
+    {
+      "name": "playstore_crashes",
+      "description": "Fetch crash and ANR data from Google Play (Android Vitals). Without issueId, lists recent crash/ANR issues. With issueId, returns the full error report with stack trace.",
+      "examplePrompt": "",
+      "availability": "Server"
+    },
+    {
+      "name": "playstore_reviews",
+      "description": "Fetch user reviews from Google Play. Returns review metadata including author, star rating, device info, and comment text. Note: Google Play only exposes production reviews with text from approximately the last week.",
+      "examplePrompt": "",
+      "availability": "Server"
+    },
+    {
+      "name": "playstore_reply_review",
+      "description": "Post a public developer reply to a Google Play user review, or edit the existing reply. This is a write action: the reply is visible to users on the store listing. Each review has a single developer reply, so replying again replaces it. Reply text is limited to 350 characters.",
+      "examplePrompt": "",
       "availability": "Server"
     },
     {

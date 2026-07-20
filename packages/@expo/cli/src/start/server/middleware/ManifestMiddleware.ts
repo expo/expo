@@ -5,17 +5,6 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 import { resolve } from 'url';
 
-import { ExpoMiddleware } from './ExpoMiddleware';
-import {
-  createBundleUrlPath,
-  getBaseUrlFromExpoConfig,
-  getAsyncRoutesFromExpoConfig,
-  createBundleUrlPathFromExpoConfig,
-} from './metroOptions';
-import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import type { RuntimePlatform } from './resolvePlatform';
-import { parsePlatformHeader } from './resolvePlatform';
-import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
 import * as Log from '../../../log';
@@ -26,8 +15,18 @@ import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
 import type { PlatformBundlers } from '../platformBundlers';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
-
-const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
+import { ExpoMiddleware } from './ExpoMiddleware';
+import { manifestDebugEvent } from './events';
+import {
+  createBundleUrlPath,
+  getBaseUrlFromExpoConfig,
+  getAsyncRoutesFromExpoConfig,
+  createBundleUrlPathFromExpoConfig,
+} from './metroOptions';
+import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
+import type { RuntimePlatform } from './resolvePlatform';
+import { parsePlatformHeader } from './resolvePlatform';
+import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -164,7 +163,7 @@ export abstract class ManifestMiddleware<
     }
 
     const entry = resolveRelativeEntryPoint(this.projectRoot, props);
-    debug(`Resolved entry point: ${entry} (project root: ${this.projectRoot})`);
+    manifestDebugEvent('resolved_entry', { path: manifestDebugEvent.path(entry) });
     return entry;
   }
 

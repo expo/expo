@@ -119,7 +119,7 @@ Pod::Spec.new do |s|
     s.static_framework = true
     s.header_dir     = 'ExpoModulesCore'
     s.source_files = 'ios/**/*.{h,m,mm,swift,cpp}', 'common/cpp/**/*.{h,cpp}'
-    s.exclude_files = ['ios/Tests', 'ios/Worklets', 'ios/WorkletsAdapter']
+    s.exclude_files = ['ios/Tests', 'ios/Worklets', 'ios/WorkletsTests', 'ios/WorkletsAdapter']
     s.compiler_flags = compiler_flags
     s.private_header_files = ['ios/**/*+Private.h', 'ios/**/Swift.h']
   end
@@ -127,6 +127,22 @@ Pod::Spec.new do |s|
   s.test_spec 'Tests' do |test_spec|
     test_spec.dependency 'ExpoModulesTestCore'
 
-    test_spec.source_files = 'ios/Tests/**/*.{m,swift}'
+    test_spec.source_files = 'ios/Tests/**/*.{h,m,mm,swift}'
+
+    # The Obj-C++ tests include React renderer headers, which need the library's folly
+    # config. It reaches them through the library's `compiler_flags`, which test specs
+    # inherit and CocoaPods applies per-file to C-family sources.
+    #
+    # OTHER_LDFLAGS: the library's -lc++ lives in `user_target_xcconfig` (for consuming
+    # apps), which a test_spec target doesn't inherit. The test bundle links
+    # libExpoModulesCore.a (C++), so link libc++ explicitly.
+    #
+    # SWIFT_OBJC_BRIDGING_HEADER: a test target has no module for its own Obj-C sources,
+    # so the Swift tests see the Obj-C test doubles (`ios/Tests/Mocks`) through the
+    # bridging header.
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++',
+      'SWIFT_OBJC_BRIDGING_HEADER' => '$(PODS_TARGET_SRCROOT)/ios/Tests/Tests-Bridging-Header.h'
+    }
   end
 end

@@ -4,9 +4,18 @@ import DeclaredAgeRange
 internal enum AgeRangeDeclaration: String, Enumerable {
   case selfDeclared
   case guardianDeclared
+  case confirmed
 
   @available(iOS 26.0, *)
   public init(_ range: AgeRangeService.AgeRangeDeclaration) {
+    #if compiler(>=6.3.2) // Xcode 26.5+ (Swift 6.3.2) ships the iOS 26.5 SDK that defines `.confirmed`.
+    // `#available` alone isn't enough: it gates the runtime, but the `.confirmed` symbol must also
+    // exist at compile time, which it doesn't in SDKs before iOS 26.5.
+    if #available(iOS 26.5, *), range == .confirmed {
+      self = .confirmed
+      return
+    }
+    #endif
     switch range {
     case .selfDeclared:
       self = .selfDeclared

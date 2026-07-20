@@ -15,13 +15,20 @@ The following guide explains how to install and configure `expo-dev-client` in a
 
 If you're starting with a new project, create it using the `with-dev-client` template:
 
-<Terminal cmd={['$ npx create-expo-app -e with-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-expo-app -e with-dev-client'],
+    yarn: ['$ yarn create expo-app -e with-dev-client'],
+    pnpm: ['$ pnpm create expo-app -e with-dev-client'],
+    bun: ['$ bun create expo -e with-dev-client'],
+  }}
+/>
 
 </Collapsible>
 
 <Collapsible summary="Do you use Continuous Native Generation (CNG) in your project?">
 
-To use `expo-dev-client` in a project that uses [CNG](/workflow/continuous-native-generation/), see [Create a development build](/develop/development-builds/create-a-build/).
+To use `expo-dev-client` in a project that uses [CNG](/workflow/continuous-native-generation/), see [Create a development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
 
 </Collapsible>
 
@@ -39,11 +46,25 @@ To use `expo-dev-client` in a project that uses [CNG](/workflow/continuous-nativ
 
 Add the `expo-dev-client` library to your **package.json**:
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 
 If your project has an **ios** directory on disk, run the following command to fully install the native code for `expo-dev-client`:
 
-<Terminal cmd={['$ npx pod-install']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx pod-install'],
+    yarn: ['$ yarn dlx pod-install'],
+    pnpm: ['$ pnpm dlx pod-install'],
+    bun: ['$ bunx pod-install'],
+  }}
+/>
 
 If your project doesn't have an **ios** directory, you can skip this step.
 
@@ -58,13 +79,36 @@ Expo CLI uses a deep link to launch your project, and it's also useful if you us
 If you haven't configured a `scheme` for your app yet to support deep linking, then use `uri-scheme` library to do this for you.
 
 <Terminal
-  cmd={[
-    "# List your project's schemes",
-    '$ npx uri-scheme list',
-    '',
-    '# Add a scheme to your project',
-    '$ npx uri-scheme add your-scheme',
-  ]}
+  cmd={{
+    npm: [
+      "# List your project's schemes",
+      '$ npx uri-scheme list',
+      '',
+      '# Add a scheme to your project',
+      '$ npx uri-scheme add your-scheme',
+    ],
+    yarn: [
+      "# List your project's schemes",
+      '$ yarn dlx uri-scheme list',
+      '',
+      '# Add a scheme to your project',
+      '$ yarn dlx uri-scheme add your-scheme',
+    ],
+    pnpm: [
+      "# List your project's schemes",
+      '$ pnpm dlx uri-scheme list',
+      '',
+      '# Add a scheme to your project',
+      '$ pnpm dlx uri-scheme add your-scheme',
+    ],
+    bun: [
+      "# List your project's schemes",
+      '$ bunx uri-scheme list',
+      '',
+      '# Add a scheme to your project',
+      '$ bunx uri-scheme add your-scheme',
+    ],
+  }}
 />
 
 For more information, see the [`uri-scheme` library](https://www.npmjs.com/package/uri-scheme).
@@ -75,6 +119,6 @@ For more information, see the [`uri-scheme` library](https://www.npmjs.com/packa
 
 ## Build and install the app
 
-Create a debug build of your app using the tools of your choice. For example, you can do this [locally with Expo CLI](/guides/local-app-development/) or [in the cloud with EAS Build](/develop/development-builds/create-a-build/).
+Create a debug build of your app using the tools of your choice. For example, you can do this [locally with Expo CLI](/guides/local-app-development/) or [in the cloud with EAS Build](/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas).
 
 </Step>

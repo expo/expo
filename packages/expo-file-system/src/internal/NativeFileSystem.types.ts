@@ -5,9 +5,11 @@ import type { DirectoryCreateOptions, DirectoryInfo } from '../Directory.types';
 import type { File as PublicFile } from '../File';
 import type {
   FileCreateOptions,
+  FileCanPreviewOptions,
   FileHandle,
   FileInfo,
   FileMode,
+  FilePreviewOptions,
   FileWriteOptions,
   InfoOptions,
   PickMultipleFilesOptions,
@@ -205,13 +207,13 @@ export declare class NativeFileSystemFile {
    * Writes content to the file.
    * @param content The content to write into the file.
    */
-  write(content: string | Uint8Array, options?: FileWriteOptions): Promise<void>;
+  write(content: string | Uint8Array | ArrayBuffer, options?: FileWriteOptions): Promise<void>;
 
   /**
    * Writes content to the file.
    * @param content The content to write into the file.
    */
-  writeSync(content: string | Uint8Array, options?: FileWriteOptions): void;
+  writeSync(content: string | Uint8Array | ArrayBuffer, options?: FileWriteOptions): void;
 
   /**
    * Deletes a file.
@@ -291,6 +293,14 @@ export declare class NativeFileSystemFile {
    * @throws Error if the file does not exist or cannot be opened.
    */
   open(mode?: FileMode): FileHandle;
+  /**
+   * Determines whether the platform can preview this file.
+   */
+  canPreview(options?: FileCanPreviewOptions): Promise<boolean>;
+  /**
+   * Opens this file with the platform's file preview flow.
+   */
+  preview(options?: FilePreviewOptions): Promise<void>;
   upload(url: string, options?: UploadOptions): Promise<UploadResult>;
   createUploadTask(url: string, options?: UploadOptions): UploadTask;
   watch(

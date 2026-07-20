@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 
 import type {
   ExpoTimelineEntry,
@@ -6,22 +6,28 @@ import type {
   NativeLiveActivity,
   NativeLiveActivityFactory,
   NativeWidgetObject,
+  WidgetConfigurationEnum,
 } from './Widgets.types';
 
 const noopSubscription: EventSubscription = { remove() {} };
 
 class WidgetStub {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
-  constructor(_name: string, _layout: string) {}
+  constructor(_name: string, _layout: string, _initialProps?: Record<string, any>) {}
   reload(): void {}
+  updateSnapshot(_props: Record<string, any>): void {}
   updateTimeline(_entries: ExpoTimelineEntry[]): void {}
   async getTimeline(): Promise<ExpoTimelineEntry[]> {
     return [];
   }
+  setConfigurationParameterEnum(
+    _parameterName: string,
+    _options?: WidgetConfigurationEnum[]
+  ): void {}
 }
 
 class LiveActivityStub {
-  async update(_props: string): Promise<void> {}
+  async update(_props?: string): Promise<void> {}
   async end(
     _dismissalPolicy?: string,
     _afterDate?: number,
@@ -39,7 +45,7 @@ class LiveActivityStub {
 class LiveActivityFactoryStub {
   // eslint-disable-next-line @typescript-eslint/no-useless-constructor
   constructor(_name: string, _layout: string) {}
-  start(_props: string, _url?: string): NativeLiveActivity {
+  start(_props?: string, _url?: string): NativeLiveActivity {
     return new LiveActivityStub() as NativeLiveActivity;
   }
   getInstances(): NativeLiveActivity[] {
@@ -48,6 +54,7 @@ class LiveActivityFactoryStub {
 }
 
 const ExpoWidgetsModule = {
+  widgetsDirectory: '',
   reloadAllWidgets(): void {},
   Widget: WidgetStub as typeof NativeWidgetObject,
   LiveActivityFactory: LiveActivityFactoryStub as typeof NativeLiveActivityFactory,

@@ -1,5 +1,5 @@
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -86,13 +86,23 @@ struct JavaScriptObjectTests {
     }
 
     @Test
-    func `get property as object`() {
+    func `get property as object`() throws {
       let object = JavaScriptObject(runtime)
       let nested = JavaScriptObject(runtime)
       nested.setProperty("inner", value: "value")
       object.setProperty("nested", nested)
-      let retrieved = object.getPropertyAsObject("nested")
+      let retrieved = try object.getPropertyAsObject("nested")
       #expect(retrieved.getProperty("inner").getString() == "value")
+    }
+
+    @Test
+    func `get property as object throws when property is not an object`() {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("notAnObject", value: 42)
+
+      #expect(throws: Error.self) {
+        _ = try object.getPropertyAsObject("notAnObject")
+      }
     }
 
     @Test
@@ -101,7 +111,7 @@ struct JavaScriptObjectTests {
       let object = JavaScriptObject(runtime)
       let result = try runtime.eval("(function(x) { return x * 2; })")
       object.setProperty("double", value: result)
-      let fn = object.getPropertyAsFunction("double")
+      let fn = try object.getPropertyAsFunction("double")
       let callResult = try fn.call(arguments: 21)
       #expect(callResult.getInt() == 42)
     }
@@ -205,12 +215,38 @@ struct JavaScriptObjectTests {
     }
 
     @Test
-    func `set property with object`() {
+    func `set property with object`() throws {
       let object = JavaScriptObject(runtime)
       let nested = JavaScriptObject(runtime)
       nested.setProperty("value", value: 42.0)
       object.setProperty("nested", nested)
-      #expect(object.getPropertyAsObject("nested").getProperty("value").getInt() == 42)
+      #expect(try object.getPropertyAsObject("nested").getProperty("value").getInt() == 42)
+    }
+
+    @Test
+    @JavaScriptActor
+    func `set property with sync function closure`() throws {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("double") { this, arguments in
+        return JavaScriptValue(self.runtime, arguments[0].getInt() * 2)
+      }
+      let fn = try object.getPropertyAsFunction("double")
+      #expect(try fn.call(arguments: 21).getInt() == 42)
+    }
+
+    @Test
+    @JavaScriptActor
+    func `set property with async function closure`() async throws {
+      let object = JavaScriptObject(runtime)
+      object.setProperty("addAsync") { this, arguments in
+        let sum = arguments[0].getInt() + arguments[1].getInt()
+        return {
+          return JavaScriptValue(self.runtime, sum)
+        }
+      }
+      let fn = try object.getPropertyAsFunction("addAsync")
+      let result = try await fn.call(arguments: 20, 22).getPromise().await()
+      #expect(result.getInt() == 42)
     }
 
     @Test
@@ -242,7 +278,7 @@ struct JavaScriptObjectTests {
       object.defineProperty("test", descriptor: .init(value: JavaScriptValue(runtime, true)))
       #expect(object.hasProperty("test") == true)
       #expect(object.getProperty("test").getBool() == true)
-      #expect(object.getPropertyNames().contains("test") == false) // non-enumerable by default
+      #expect(object.getPropertyNames().contains("test") == false)  // non-enumerable by default
     }
 
     @Test
@@ -283,14 +319,14 @@ struct JavaScriptObjectTests {
     func `define property with all options`() {
       let object = JavaScriptObject(runtime)
       object.defineProperty("fullAccess", value: 100, options: [.configurable, .enumerable, .writable])
-      
+
       #expect(object.getProperty("fullAccess").getInt() == 100)
       #expect(object.getPropertyNames().contains("fullAccess") == true)
-      
+
       // Can modify
       object.setProperty("fullAccess", value: 200.0)
       #expect(object.getProperty("fullAccess").getInt() == 200)
-      
+
       // Can reconfigure
       object.defineProperty("fullAccess", descriptor: .init(value: JavaScriptValue(runtime, 300)))
       #expect(object.getProperty("fullAccess").getInt() == 300)
@@ -436,7 +472,7 @@ struct JavaScriptObjectTests {
     func `call function that throws error`() throws {
       let obj = try runtime.eval("({ throwError() { throw new Error('test error'); } })")
       let jsObject = obj.getObject()
-      
+
       #expect(throws: Error.self) {
         try jsObject.callFunction("throwError")
       }
@@ -492,7 +528,8 @@ struct JavaScriptObjectTests {
     @Test
     func `PropertyDescriptor with all properties`() {
       let value = JavaScriptValue(runtime, "test")
-      let descriptor = JavaScriptObject.PropertyDescriptor(configurable: true, enumerable: true, writable: true, value: value)
+      let descriptor = JavaScriptObject.PropertyDescriptor(
+        configurable: true, enumerable: true, writable: true, value: value)
       let object = descriptor.toObject(runtime)
       #expect(object.hasProperty("configurable") == true)
       #expect(object.getProperty("configurable").getBool() == true)
@@ -506,7 +543,8 @@ struct JavaScriptObjectTests {
 
     @Test
     func `PropertyDescriptor to object conversion`() {
-      let descriptor = JavaScriptObject.PropertyDescriptor(configurable: false, enumerable: true, writable: false, value: JavaScriptValue(runtime, 42))
+      let descriptor = JavaScriptObject.PropertyDescriptor(
+        configurable: false, enumerable: true, writable: false, value: JavaScriptValue(runtime, 42))
       let object = descriptor.toObject(runtime)
       #expect(object.getProperty("enumerable").getBool() == true)
       #expect(object.getProperty("value").getInt() == 42)

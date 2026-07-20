@@ -1,15 +1,14 @@
 import { promises as fs } from 'fs';
 
-import { getAccessToken, getSession, setSessionAsync } from './UserSettings';
-import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
 import * as Log from '../../log';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { env } from '../../utils/env';
 import { getExpoWebsiteBaseUrl } from '../endpoint';
+import { debugEvent } from '../events';
 import { UserQuery, type Actor } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
-
-const debug = require('debug')('expo:api:user') as typeof console.log;
+import { getAccessToken, getSession, setSessionAsync } from './UserSettings';
+import { getSessionUsingBrowserAuthFlowAsync } from './expoSsoLauncher';
 
 let currentUser: Actor | undefined;
 
@@ -90,7 +89,7 @@ export async function logoutAsync(): Promise<void> {
     try {
       await fetchAsync('auth/logout', { method: 'POST' });
     } catch (error) {
-      debug('Failed to invalidate session secret on server:', error);
+      debugEvent('logout_server_failed', { error: debugEvent.error(error as Error) });
     }
   }
   currentUser = undefined;

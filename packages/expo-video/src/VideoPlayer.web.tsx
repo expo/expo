@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
+import { useState } from 'react';
 
 import type {
   BufferOptions,
   PlayerError,
+  PlayerBuilderOptions,
   VideoPlayerStatus,
   VideoSource,
   VideoPlayer,
@@ -19,15 +21,32 @@ import resolveAssetSource from './resolveAssetSource';
 
 export function useVideoPlayer(
   source: VideoSource,
-  setup?: (player: VideoPlayer) => void
+  setup?: (player: VideoPlayer) => void,
+  _playerBuilderOptions?: PlayerBuilderOptions
 ): VideoPlayer {
   const parsedSource = typeof source === 'string' ? { uri: source } : source;
+  const [forceRecreateCount, setForceRecreateCount] = useState(0);
 
-  return useMemo(() => {
-    const player = new VideoPlayerWeb(parsedSource);
-    setup?.(player);
-    return player;
-  }, [JSON.stringify(source)]);
+  return useReleasingSharedObjectWithLifecycle(
+    {
+      factory: () => {
+        const player = new VideoPlayerWeb(parsedSource);
+        setup?.(player);
+        return player;
+      },
+      shouldRecreate: (_player, { previousDependencies, dependencies }) => {
+        // Recreate if replaceAsync failed ([1]).
+        return previousDependencies[1] !== dependencies[1];
+      },
+      update: (player) => {
+        // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
+        player.replaceAsync(parsedSource).catch(() => {
+          setForceRecreateCount((c) => c + 1);
+        });
+      },
+    },
+    [JSON.stringify(source), forceRecreateCount] // [0] source, [1] recreate counter
+  );
 }
 
 export function getSourceUri(source?: VideoSource): string | null {
@@ -71,7 +90,7 @@ export default class VideoPlayerWeb
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
   _error: PlayerError | null = null;
-  _timeUpdateLoop: number | null = null;
+  _timeUpdateLoop: ReturnType<typeof setTimeout> | null = null;
   _timeUpdateEventInterval: number = 0;
   audioMixingMode: AudioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.

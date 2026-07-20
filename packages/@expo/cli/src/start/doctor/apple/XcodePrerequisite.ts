@@ -8,8 +8,7 @@ import { AbortCommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
 import { Prerequisite } from '../Prerequisite';
-
-const debug = require('debug')('expo:doctor:apple:xcode') as typeof console.log;
+import { debugEvent } from '../events';
 
 // Based on the Apple announcement (last updated: Aug 2023).
 // https://developer.apple.com/news/upcoming-requirements/?id=04252023a
@@ -33,7 +32,7 @@ export const getXcodeVersionAsync = async ({
   silent,
   force,
 }: { silent?: boolean; force?: boolean } = {}): Promise<string | null | false> => {
-  const logError = silent ? debug : Log.warn;
+  const logError = silent ? (_msg: string) => {} : Log.warn;
   const getVersion = async (): Promise<{ value: string | null | false; error?: string }> => {
     try {
       const { stdout } = await spawnAsync('xcodebuild', ['-version']);
@@ -117,7 +116,7 @@ export class XcodePrerequisite extends Prerequisite {
    */
   async assertImplementation(): Promise<void> {
     const version = await profile(getXcodeVersionAsync)({ force: process.env.NODE_ENV === 'test' });
-    debug(`Xcode version: ${version}`);
+    debugEvent('xcode_version', { version });
     if (!version) {
       // A couple different issues could have occurred, let's check them after we're past the point of no return
       // since we no longer need to be fast about validation.
@@ -125,7 +124,7 @@ export class XcodePrerequisite extends Prerequisite {
       // Ensure Xcode.app can be found before we prompt to sudo select it.
       if (getXcodeInstalled()) {
         const selectPath = profile(getXcodeSelectPathAsync)();
-        debug(`Xcode select path: ${selectPath}`);
+        debugEvent('xcode_select_path', { path: selectPath });
         if (!selectPath) {
           Log.error(
             [
@@ -144,7 +143,7 @@ export class XcodePrerequisite extends Prerequisite {
           );
           throw new AbortCommandError();
         } else {
-          debug(`Unexpected Xcode setup (version: ${version}, select: ${selectPath})`);
+          debugEvent('xcode_setup_unexpected', { version, path: selectPath });
         }
       }
 

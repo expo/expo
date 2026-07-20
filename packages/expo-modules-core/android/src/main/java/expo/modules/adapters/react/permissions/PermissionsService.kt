@@ -27,6 +27,7 @@ import java.util.Queue
 
 private const val PERMISSIONS_REQUEST: Int = 13
 private const val PREFERENCE_FILENAME = "expo.modules.permissions.asked"
+private const val BLOCKED_PERMISSION_KEY_PREFIX = "blocked:"
 
 open class PermissionsService(val context: Context) : InternalModule, Permissions, LifecycleEventListener {
   private var mActivityProvider: ActivityProvider? = null
@@ -48,6 +49,42 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
       permissions.forEach { putBoolean(it, true) }
     }
   }
+
+  /**
+   * Android can't tell a permanently denied permission apart from a re-askable one ("Ask every time", or a revoked
+   * one-time grant) at query time, so we record it ourselves.
+   */
+  private fun isBlocked(permission: String): Boolean =
+    mAskedPermissionsCache.getBoolean(blockedPermissionKey(permission), false)
+
+  private fun setBlocked(permission: String, blocked: Boolean) {
+    mAskedPermissionsCache.edit(commit = true) {
+      putBoolean(blockedPermissionKey(permission), blocked)
+    }
+  }
+
+  private fun blockedPermissionKey(permission: String): String = "$BLOCKED_PERMISSION_KEY_PREFIX$permission"
+
+  /**
+   * Record whether each permission became permanently denied. A denied result with no rationale to show means the user blocked it.
+   * Anything else clears the flag. This is the only time the denied states are distinguishable,
+   * so we persist the result for later ``getPermissions` calls.
+   */
+  private fun withBlockedTracking(listener: PermissionsResponseListener): PermissionsResponseListener =
+    PermissionsResponseListener { result ->
+      listener.onResult(
+        result.mapValues { (permission, response) ->
+          if (response.status == PermissionsStatus.DENIED) {
+            val blocked = !shouldShowRequestPermissionRationale(permission)
+            setBlocked(permission, blocked)
+            PermissionsResponse(response.status, !blocked)
+          } else {
+            setBlocked(permission, false)
+            response
+          }
+        }
+      )
+    }
 
   override fun getExportedInterfaces(): List<Class<out Any>> = listOf(Permissions::class.java)
 
@@ -155,10 +192,10 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
           newListener.onResult(mutableMapOf())
           return
         }
-        askForManifestPermissions(permissionsToAsk, newListener)
+        askForManifestPermissions(permissionsToAsk, withBlockedTracking(newListener))
       }
     } else {
-      askForManifestPermissions(permissions, responseListener)
+      askForManifestPermissions(permissions, withBlockedTracking(responseListener))
     }
   }
 
@@ -213,7 +250,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     return ContextCompat.checkSelfPermission(context, permission)
   }
 
-  private fun canAskAgain(permission: String): Boolean {
+  protected open fun shouldShowRequestPermissionRationale(permission: String): Boolean {
     return mActivityProvider?.currentActivity?.let {
       ActivityCompat.shouldShowRequestPermissionRationale(it, permission)
     } == true
@@ -236,7 +273,7 @@ open class PermissionsService(val context: Context) : InternalModule, Permission
     return PermissionsResponse(
       status,
       if (status == PermissionsStatus.DENIED) {
-        canAskAgain(permission)
+        !isBlocked(permission)
       } else {
         true
       }

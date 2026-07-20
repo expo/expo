@@ -1,12 +1,11 @@
 import { format as prettyFormat, plugins as prettyPlugins } from 'pretty-format';
 import { WebSocketServer } from 'ws';
 
+import { event } from '../hmrEvents';
 import type { createMessagesSocket } from './createMessageSocket';
 import { createBroadcaster } from './utils/createSocketBroadcaster';
 import { createSocketMap } from './utils/createSocketMap';
 import { parseRawMessage, serializeMessage } from './utils/socketMessages';
-
-const debug = require('debug')('expo:metro:devserver:eventsSocket') as typeof console.log;
 
 type EventsSocketOptions = {
   /** The message endpoint broadcaster, used to relay commands from Metro */
@@ -47,7 +46,7 @@ export function createEventsSocket(options: EventsSocketOptions) {
       if (message.type === 'command') {
         options.broadcast(message.command, message.params);
       } else {
-        debug(`Received unknown message type: ${message.type}`);
+        event('events_unknown_message', { type: message.type });
       }
     });
   });

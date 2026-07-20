@@ -21,11 +21,25 @@ import { CODE } from '~/ui/components/Text';
 
 If you wish to use `@expo/fingerprint` as a standalone package, you can install it by running the command:
 
-<Terminal cmd={['$ npx expo install @expo/fingerprint']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo/fingerprint'],
+    yarn: ['$ yarn expo install @expo/fingerprint'],
+    pnpm: ['$ pnpm expo install @expo/fingerprint'],
+    bun: ['$ bun expo install @expo/fingerprint'],
+  }}
+/>
 
 ## CLI Usage
 
-<Terminal cmd={['$ npx @expo/fingerprint --help']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx @expo/fingerprint --help'],
+    yarn: ['$ yarn dlx @expo/fingerprint --help'],
+    pnpm: ['$ pnpm dlx @expo/fingerprint --help'],
+    bun: ['$ bunx @expo/fingerprint --help'],
+  }}
+/>
 
 ## Configuration
 

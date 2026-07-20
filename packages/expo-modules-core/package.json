@@ -2,77 +2,97 @@
   "name": "expo-modules-core",
   "version": "56.0.13",
   "description": "The core of Expo Modules architecture",
-  "main": "src/index.ts",
-  "types": "build/index.d.ts",
-  "sideEffects": [
-    "*.fx.ts",
-    "./src/polyfill/*.ts"
-  ],
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
-    },
-    "./types": "./types.d.ts",
-    "./src/polyfill/dangerous-internal": {
-      "types": "./build/polyfill/dangerous-internal.d.ts",
-      "default": "./src/polyfill/dangerous-internal.ts"
-    },
-    "./src/uuid": {
-      "types": "./build/uuid/index.d.ts",
-      "default": "./src/uuid/index.ts"
-    }
-  },
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:rsc": "jest --config jest-rsc.config.js",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
     "expo",
-    "modules",
     "expo-modules",
-    "unimodules",
-    "react-native"
+    "modules",
+    "react-native",
+    "unimodules"
   ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-core",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-modules-core"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "sideEffects": [
+    "*.fx.ts",
+    "*.fx.js",
+    "./src/polyfill/*.ts",
+    "./build/polyfill/*.js"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./types": {
+      "types": {
+        "expo-source": "./src/types.ts",
+        "default": "./build/types.d.ts"
+      },
+      "expo-source": "./src/types.ts",
+      "default": "./build/types.js"
+    },
+    "./src/polyfill/dangerous-internal": {
+      "types": {
+        "expo-source": "./src/polyfill/dangerous-internal.ts",
+        "default": "./build/polyfill/dangerous-internal.d.ts"
+      },
+      "expo-source": "./src/polyfill/dangerous-internal.ts",
+      "default": "./build/polyfill/dangerous-internal.js"
+    },
+    "./src/uuid": {
+      "types": {
+        "expo-source": "./src/uuid/index.ts",
+        "default": "./build/uuid/index.d.ts"
+      },
+      "expo-source": "./src/uuid/index.ts",
+      "default": "./build/uuid/index.js"
+    },
+    "./package.json": "./package.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-core",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "@expo/expo-modules-macros-plugin": "~0.0.9",
+    "@expo/expo-modules-macros-plugin": "0.8.0",
     "expo-modules-jsi": "workspace:~56.0.7",
     "invariant": "^2.2.4"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^13.3.0",
+    "@types/invariant": "^2.2.33",
+    "@types/react": "~19.2.0",
+    "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
     "react": "*",
     "react-native": "*",
-    "react-native-worklets": "^0.7.4 || ^0.8.0"
+    "react-native-worklets": "^0.7.4 || ^0.8.0 || ^0.9.0 || ^0.10.0"
   },
   "peerDependenciesMeta": {
     "react-native-worklets": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@testing-library/react-native": "^13.3.0",
-    "@types/react": "~19.2.0",
-    "@types/invariant": "^2.2.33",
-    "expo-module-scripts": "workspace:*"
   }
 }

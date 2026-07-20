@@ -3,11 +3,8 @@
 package expo.modules.kotlin.jni
 
 import android.view.View
-import com.facebook.react.bridge.CatalystInstance
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.FrameworkAPI
-import com.facebook.react.uimanager.UIBlock
-import com.facebook.react.uimanager.UIManagerModule
 import com.google.common.truth.Truth
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
@@ -26,7 +23,6 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 
 private fun defaultAppContextMock(): Pair<AppContext, MainRuntime> {
@@ -37,7 +33,6 @@ private fun defaultAppContextMock(): Pair<AppContext, MainRuntime> {
   every { runtimeContext.classRegistry } answers { classRegistry }
   every { runtimeContext.appContext } answers { appContextMock }
   every { appContextMock.findView<View>(capture(slot())) } answers { mockk() }
-  every { appContextMock.hostingRuntimeContext } answers { runtimeContext }
   every { appContextMock.runtime } answers { runtimeContext }
 
   return appContextMock to runtimeContext
@@ -50,38 +45,22 @@ private fun defaultAppContextMock(): Pair<AppContext, MainRuntime> {
 internal inline fun withJSIInterop(
   vararg modules: Module,
   numberOfReloads: Int = 1,
+  jsHeapAccessExecutor: JSHeapAccessExecutor? = null,
   block: JSIContext.(methodQueue: TestScope) -> Unit
 ) {
   val (appContextMock, runtimeContext) = defaultAppContextMock()
   val methodQueue = TestScope()
 
-  val uiManagerModuleMock = mockk<UIManagerModule>()
-  val slot = slot<UIBlock>()
-  every { uiManagerModuleMock.addUIBlock(capture(slot)) } answers {
-    methodQueue.launch {
-      slot.captured.execute(mockk())
-    }
-  }
-
-  val catalystInstanceMock = mockk<CatalystInstance>()
-  every { catalystInstanceMock.getNativeModule(UIManagerModule::class.java) } answers { uiManagerModuleMock }
-
   val reactContextMock = mockk<ReactContext>()
   every { reactContextMock.isBridgeless } answers { false }
   every { reactContextMock.hasCatalystInstance() } answers { true }
   every { reactContextMock.hasActiveReactInstance() } answers { true }
-  every { reactContextMock.catalystInstance } answers { catalystInstanceMock }
 
   every { appContextMock.modulesQueue } answers { methodQueue }
   every { appContextMock.mainQueue } answers { methodQueue }
   every { appContextMock.backgroundCoroutineScope } answers { methodQueue }
   every { appContextMock.reactContext } answers { reactContextMock }
   every { appContextMock.assertMainThread() } answers { }
-
-  val functionSlot = slot<() -> Unit>()
-  every { appContextMock.dispatchOnMainUsingUIManager(capture(functionSlot)) } answers {
-    functionSlot.captured.invoke()
-  }
 
   val jniDeallocator = JNIDeallocator(shouldCreateDestructorThread = false)
   repeat(numberOfReloads) {
@@ -112,6 +91,7 @@ internal inline fun withJSIInterop(
         runtimePtr,
         callInvokerHolder
       )
+    jsiContext.setJSHeapAccessExecutor(jsHeapAccessExecutor)
 
     every { runtimeContext.jsiContext } answers { jsiContext }
 

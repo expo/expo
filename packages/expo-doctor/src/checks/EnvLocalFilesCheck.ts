@@ -2,8 +2,8 @@ import { getEnvFiles, KNOWN_MODES } from '@expo/env';
 import fs from 'fs';
 import path from 'path';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { isFileIgnoredAsync } from '../utils/files';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class EnvLocalFilesCheck implements DoctorCheck {
   description = 'Check that local environment files are not committed';

@@ -1,38 +1,53 @@
 {
   "name": "expo-app-metrics",
-  "title": "Expo App Metrics",
   "version": "56.0.14",
   "description": "Expo module that collects app startup, frame rate, memory, and session metrics",
-  "main": "src/index.ts",
-  "types": "build/index.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
+  "keywords": [
+    "ExpoAppMetrics",
+    "expo",
+    "expo-app-metrics",
+    "metrics",
+    "react-native"
+  ],
   "homepage": "https://docs.expo.dev/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-app-metrics"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-app-metrics",
-    "ExpoAppMetrics",
-    "metrics"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
   "dependencies": {
     "expo-updates-interface": "workspace:~56.0.1"
   },
   "devDependencies": {
+    "@testing-library/react-native": "^13.3.0",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"
@@ -41,5 +56,6 @@
     "expo": "*",
     "react": "*",
     "react-native": "*"
-  }
+  },
+  "title": "Expo App Metrics"
 }

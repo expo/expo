@@ -1,7 +1,7 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import { Platform } from 'expo';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { BiometricsSecurityLevel } from 'expo-local-authentication';
-import { Platform } from 'expo-modules-core';
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 

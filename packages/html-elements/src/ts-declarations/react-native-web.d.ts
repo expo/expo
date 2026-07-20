@@ -42,7 +42,6 @@ declare module 'react-native-web/dist/exports/View' {
 // See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/exports/View/types.js
 declare module 'react-native-web/dist/exports/View/types' {
   import type { ColorValue, GenericStyleProp, LayoutEvent } from 'react-native-web/dist/types';
-
   import type {
     AnimationStyles,
     BorderStyles,
@@ -452,7 +451,7 @@ declare module 'react-native-web/dist/modules/useElementLayout' {
 
   export default function useElementLayout(
     ref: ElementRef<any>,
-    onLayout?: ?((e: LayoutEvent) => void)
+    onLayout?: ((e: LayoutEvent) => void) | undefined | null
   ): void;
 }
 
@@ -481,8 +480,8 @@ declare module 'react-native-web/dist/modules/useMergeRefs' {
 
 // See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/usePlatformMethods/index.js
 declare module 'react-native-web/dist/modules/usePlatformMethods' {
-  import type { GenericStyleProp } from 'react-native-web/dist/types';
   import type { ViewProps } from 'react-native-web/dist/exports/View/types';
+  import type { GenericStyleProp } from 'react-native-web/dist/types';
 
   /**
    * Adds non-standard methods to the hode element. This is temporarily until an
@@ -503,8 +502,8 @@ declare module 'react-native-web/dist/modules/useResponderEvents' {
 
 // See: https://github.com/necolas/react-native-web/blob/0.20.0/packages/react-native-web/src/modules/useResponderEvents/createResponderEvent.js
 declare module 'react-native-web/dist/modules/useResponderEvents/createResponderEvent' {
-  import type { TouchHistory } from 'react-native-web/src/modules/useResponderEvents/ResponderTouchHistoryStore';
   import type { TouchEvent } from 'react-native-web/src/modules/useResponderEvents/ResponderEventTypes';
+  import type { TouchHistory } from 'react-native-web/src/modules/useResponderEvents/ResponderTouchHistoryStore';
 
   export type ResponderEvent = {
     bubbles: boolean;
@@ -1010,7 +1009,7 @@ declare module 'react-native-web/dist/types/styles' {
           | { translateZ: NumberOrString }
           | { translate3d: string }
         )[];
-    transformOrigin?: ?(string | NumberOrString[]);
-    transformStyle?: ?('flat' | 'preserve-3d');
+    transformOrigin?: string | NumberOrString[] | undefined | null;
+    transformStyle?: 'flat' | 'preserve-3d' | undefined | null;
   };
 }

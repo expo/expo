@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import ExpoAppMetrics
+import ExpoModulesCore
 
 internal let observeLogger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
@@ -10,6 +10,7 @@ internal struct Config: Record {
   @Field var dispatchingEnabled: Bool?
   @Field var dispatchInDebug: Bool?
   @Field var sampleRate: Double?
+  @Field var integrations: [String: Any]?
 }
 
 internal struct BundleDefaults: Record {
@@ -18,17 +19,18 @@ internal struct BundleDefaults: Record {
 }
 
 public final class ObserveModule: Module {
+  private var lastIntegrations: [String: Any] = [:]
+
   public func definition() -> ModuleDefinition {
     Name("ExpoObserve")
+
+    Events("configure")
 
     OnCreate {
       // The observability manager needs to know the project id. Currently it's available only through `expo-constants`,
       // which is not great as it requires the app context. Ideally if we move EAS-specific config to `expo-eas-client` at some point.
       if let manifest = getManifest(appContext), let projectId = getProjectId(manifest: manifest) {
         let baseUrl = getBaseUrl(manifest)
-        let useOpenTelemetry = getUseOpenTelemetry(manifest)
-        ObservabilityManager.setUseOpenTelemetry(useOpenTelemetry)
-        // Set the endpoint URL after enabling Open Telemetry
         ObservabilityManager.setEndpointUrl(baseUrl, projectId: projectId)
       }
     }
@@ -52,13 +54,21 @@ public final class ObserveModule: Module {
           AppMetrics.setEnvironment(resolvedEnvironment)
         }
       }
+
+      // Broadcast the integrations config so integration libraries (e.g. expo-image) can activate.
+      self.lastIntegrations = config.integrations ?? [:]
+      self.emit(event: "configure", payload: ["integrations": self.lastIntegrations])
+    }
+
+    Function("getIntegrations") {
+      return self.lastIntegrations
     }
 
     Function("setBundleDefaults") { (defaults: BundleDefaults) in
       guard !defaults.environment.isEmpty else {
         observeLogger.warn(
-          "[EAS Observe] setBundleDefaults received empty environment; skipping. " +
-          "This is a bug in the JS layer — `process.env.NODE_ENV` should always resolve."
+          "[EAS Observe] setBundleDefaults received empty environment; skipping. "
+            + "This is a bug in the JS layer — `process.env.NODE_ENV` should always resolve."
         )
         return
       }
@@ -93,14 +103,8 @@ private func getBaseUrl(_ manifest: [String: Any]) -> String? {
   return getManifestProperty("extra.eas.observe.endpointUrl", manifest) as? String
 }
 
-private func getUseOpenTelemetry(_ manifest: [String: Any]) -> Bool? {
-  return getManifestProperty("extra.eas.observe.useOpenTelemetry", manifest) as? Bool
-}
-
-/**
- * Traverses the manifest using a dot-separated property chain.
- * For example, "extra.eas.projectId" will navigate manifest["extra"]["eas"]["projectId"].
- */
+/// Traverses the manifest using a dot-separated property chain.
+/// For example, "extra.eas.projectId" will navigate manifest["extra"]["eas"]["projectId"].
 private func getManifestProperty(_ propertyChain: String, _ manifest: [String: Any]) -> Any? {
   let keys = propertyChain.split(separator: ".").map { String($0) }
   var value: Any? = manifest

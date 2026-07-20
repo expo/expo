@@ -72,7 +72,7 @@ However, **Expo Go is a limited playground and not useful for building productio
 
 <Collapsible summary="Development builds">
 
-A development build is a debug build of your app that contains `expo-dev-client` library. It helps you iterate as quickly as possible and provides a more flexible, reliable, and complete development environment than Expo Go. You can install any native library and configure or apply changes to a [native project](#android-and-ios-native-projects) using [app config](/workflow/configuration/) or by creating a [config plugin](/config-plugins/introduction/). You can create a development build [locally](/guides/local-app-development/#local-builds-with-expo-dev-client) or use [EAS Build](/develop/development-builds/create-a-build/) to create a build in the cloud.
+A development build is a debug build of your app that contains `expo-dev-client` library. It helps you iterate as quickly as possible and provides a more flexible, reliable, and complete development environment than Expo Go. You can install any native library and configure or apply changes to a [native project](#android-and-ios-native-projects) using [app config](/workflow/configuration/) or by creating a [config plugin](/config-plugins/introduction/). You can create a development build [locally](/guides/local-app-development/#local-builds-with-expo-dev-client) or use [EAS Build](/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas) to create a build in the cloud.
 
 </Collapsible>
 
@@ -104,13 +104,36 @@ The default behavior encourages the use of [Continuous Native Generation](/workf
 The following three commands result in more or less the same project:
 
 <Terminal
-  cmd={[
-    '$ npx create-expo-app@latest --template default@sdk-56 MyApp && cd MyApp && npx expo prebuild',
-    '',
-    '$ npx create-expo-app --template bare-minimum',
-    '',
-    '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx create-expo-app@latest --template default@sdk-57 MyApp && cd MyApp && npx expo prebuild',
+      '',
+      '$ npx create-expo-app --template bare-minimum',
+      '',
+      '$ npx @react-native-community/cli@latest init MyApp && cd MyApp && npx install-expo-modules',
+    ],
+    yarn: [
+      '$ yarn create expo-app --template default@sdk-57 MyApp && cd MyApp && yarn expo prebuild',
+      '',
+      '$ yarn create expo-app --template bare-minimum',
+      '',
+      '$ yarn dlx @react-native-community/cli@latest init MyApp && cd MyApp && yarn dlx install-expo-modules',
+    ],
+    pnpm: [
+      '$ pnpm create expo-app --template default@sdk-57 MyApp && cd MyApp && pnpm expo prebuild',
+      '',
+      '$ pnpm create expo-app --template bare-minimum',
+      '',
+      '$ pnpm dlx @react-native-community/cli@latest init MyApp && cd MyApp && pnpm dlx install-expo-modules',
+    ],
+    bun: [
+      '$ bun create expo --template default@sdk-57 MyApp && cd MyApp && bun expo prebuild',
+      '',
+      '$ bun create expo --template bare-minimum',
+      '',
+      '$ bunx @react-native-community/cli@latest init MyApp && cd MyApp && bunx install-expo-modules',
+    ],
+  }}
 />
 
 </Collapsible>
@@ -166,7 +189,7 @@ In most cases, you will create and use a development build of your project. You 
 <BoxLink
   title="Create a development build using EAS"
   description="Learn how to a create development build for your project using EAS."
-  href="/develop/development-builds/create-a-build/"
+  href="/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas"
   Icon={DocsLogo}
 />
 
@@ -235,7 +258,7 @@ If you compile your app locally, you can create [production builds locally](/gui
 
 ## Release app to stores
 
-To release your app on the app stores, you can use [EAS Submit](/submit/introduction/). For more information on using EAS Submit, see [Submit to Google Play Store](/submit/android/) and [Submit to Apple App Store](/submit/ios/).
+To release your app on the app stores, you can use [EAS Submit](/deploy/submit-to-app-stores/). For more information on using EAS Submit, see [Submit to Google Play Store](/submit/android/) and [Submit to Apple App Store](/submit/ios/).
 
 To create a production build locally, see the [guide](/guides/local-app-production/) on the same and then go through the app stores guide to submit your app.
 

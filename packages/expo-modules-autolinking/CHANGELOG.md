@@ -6,11 +6,30 @@
 
 ### 🎉 New features
 
+- [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
+- [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
+- Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
+- Added support for compile-only inline module files, which are compiled into the target without being registered as Expo modules. ([#46969](https://github.com/expo/expo/pull/46969) by [@behenate](https://github.com/behenate))
+
 ### 🐛 Bug fixes
 
+- [iOS] Only stub a source pod bundled inside a prebuilt XCFramework (e.g. `SDWebImage` in `ExpoImage.xcframework`) when one of its consumers also links the owning prebuilt pod. An app extension that depends on such a pod on its own now keeps building it from source instead of failing to link with undefined symbols. ([#47847](https://github.com/expo/expo/pull/47847) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Pass target name to the generateModulesProviderCommand to match it against inline modules targets, when checking if inline modules should be autolinked with that target. ([#47502](https://github.com/expo/expo/pull/47502) by [@HubertBer](https://github.com/HubertBer))
+- [Android] Scan the whole Kotlin file for its `package` declaration when registering inline modules, so modules with long comments (for example, a license header) before the `package` declaration are no longer silently skipped. ([#47656](https://github.com/expo/expo/pull/47656) by [@HubertBer](https://github.com/HubertBer))
+- [iOS] Fix a duplicate pod error (`multiple dependencies with different sources`) for precompiled modules in a Podfile with multiple targets. `prebuilt_react_active?` now mirrors React Native's default for `RCT_USE_PREBUILT_RNCORE` (prebuilt unless explicitly `0`), since `use_react_native!` only sets it after `use_expo_modules!` has run. ([#47329](https://github.com/expo/expo/pull/47329) by [@janicduplessis](https://github.com/janicduplessis))
+- [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.4.1` upstream defaults, adding the `CSS/core/transition` and `PseudoStyles` header mappings along with the missing `IOS_CSS_CORE_ANIMATION` and `USE_ANIMATION_BACKEND` feature flags so its XCFramework builds. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
+- Fixed the macro plugin flag not being applied to test targets, so macros couldn't be used in unit tests. ([#46595](https://github.com/expo/expo/pull/46595) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Respect an explicit `ios.usePrecompiledModules: false` even when `EXPO_USE_PRECOMPILED_MODULES` is already set in the environment (e.g. EAS Build). ([#46983](https://github.com/expo/expo/pull/46983) by [@ryanda9910](https://github.com/ryanda9910))
+- [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.5.0`'s generated component and native view sources. ([#47201](https://github.com/expo/expo/pull/47201) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Add the missing `ENABLE_CROSS_RUNTIME_STACK_TRACES` flag to the `react-native-worklets` precompile config so its prebuilt XCFramework matches the package's `staticFlags.json`. ([#47478](https://github.com/expo/expo/pull/47478) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Under precompiled modules, preserve a dynamic-framework subgraph set up by an earlier `pre_install` hook (e.g. `@rnmapbox/maps`) — both the dynamic frameworks and the pods that link against them — instead of forcing them back to static libraries. ([#47500](https://github.com/expo/expo/pull/47500) by [@kudo](https://github.com/kudo))
+- [iOS] Raise resource bundle targets to their pod's effective deployment target, fixing builds failing on Xcode 27 for pods whose podspec declares a deployment target below iOS 15.0 (e.g. `ReachabilitySwift`). ([#47562](https://github.com/expo/expo/pull/47562) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
+
+- [Android] Make the autolinking Gradle plugin compatible with Android Gradle Plugin 9. ([#46766](https://github.com/expo/expo/pull/46766) by [@lukmccall](https://github.com/lukmccall))
+- Add experimental `tvos` and `macos` resolution ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
 
 ## 56.0.13 — 2026-05-26
 

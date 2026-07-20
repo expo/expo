@@ -205,7 +205,26 @@ module Expo
 
         pods_to_downgrade = Set.new(installer.podfile.framework_modules_to_patch)
 
+        # Pods an earlier pre_install hook already switched to dynamic frameworks —
+        # e.g. @rnmapbox/maps flips its Mapbox binary pods (MapboxCommon,
+        # MapboxCoreMaps, MapboxMaps, Turf) to dynamic. Forcing these back to static
+        # breaks that required linkage and makes CocoaPods abort with "transitive
+        # dependencies that include statically linked binaries".
+        # `build_type` is a private reader on Pod::Target, so read it via `send`;
+        # hooks that override it define a public method, which `send` resolves too.
+        dynamic_framework_pods = installer.pod_targets
+          .select { |t| t.send(:build_type).dynamic_framework? }
+          .map(&:name)
+          .to_set
+
         installer.pod_targets.each do |t|
+          # Leave the dynamic framework itself untouched.
+          next if dynamic_framework_pods.include?(t.name)
+          # Leave a pod that links against one untouched too: a consumer like
+          # rnmapbox-maps is built as a framework under use_frameworks! and imports
+          # the dynamic pod with framework-style headers (#import <Mapbox…/…>), so a
+          # static-library downgrade breaks its compile.
+          next if t.root_spec.dependencies.any? { |d| dynamic_framework_pods.include?(d.name) }
           if has_vendored_xcframeworks?(t)
             pods_to_downgrade.add(t.name)
           elsif t.root_spec.dependencies.any? { |d| d.name.start_with?('React-Core') }
@@ -931,7 +950,13 @@ module Expo
 
         installer.pods_project.targets.each do |target|
           target_root = target.name.split('-').first.split('/').first
-          next unless bundled.include?(target.name) || bundled.include?(target_root)
+          framework_name = [target.name, target_root].find { |name| bundled.include?(name) }
+          next unless framework_name
+
+          unless stub_bundled_pod_target?(installer, target_root, framework_name)
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Keeping '#{target.name}' built from source: no consumer links a prebuilt xcframework bundling it"
+            next
+          end
 
           compile_phase = target.build_phases.find { |p| p.is_a?(Xcodeproj::Project::Object::PBXSourcesBuildPhase) }
           next unless compile_phase
@@ -973,8 +998,12 @@ module Expo
       # ──────────────────────────────────────────────────────────────────────
 
       # Returns true when the prebuilt React.xcframework is in use.
+      #
+      # Must mirror React Native's default (`!= '0'`): `use_react_native!` defaults
+      # `RCT_USE_PREBUILT_RNCORE` to "1" but runs after `use_expo_modules!`, so reading
+      # `== '1'` here would see the value before React Native sets it.
       def prebuilt_react_active?
-        ENV['RCT_USE_PREBUILT_RNCORE'] == '1'
+        ENV['RCT_USE_PREBUILT_RNCORE'] != '0'
       end
 
       # Builds a `file://` URI for a local filesystem path, percent-encoding
@@ -1740,13 +1769,46 @@ module Expo
       # @return [Set<String>] Framework names bundled across all prebuilt pods
       def all_bundled_frameworks
         @all_bundled_frameworks ||= begin
-          bundled = Set.new
-          pod_lookup_map.each do |pod_name, info|
-            next unless resolve_prebuilt_info(pod_name)
-            (info[:spm_dependency_frameworks] || []).each { |f| bundled.add(f) }
-          end
+          bundled = Set.new(bundled_framework_owners.keys)
           Pod::UI.puts "#{'[Expo-precompiled] '.blue}Bundled SPM frameworks: #{bundled.to_a.join(', ')}" if bundled.any?
           bundled
+        end
+      end
+
+      # Maps each bundled SPM framework name to the prebuilt pods whose xcframeworks
+      # bundle it (e.g. "SDWebImage" => Set{"ExpoImage"}).
+      #
+      # @return [Hash<String, Set<String>>] Framework name to owning prebuilt pod names
+      def bundled_framework_owners
+        @bundled_framework_owners ||= begin
+          owners = {}
+          pod_lookup_map.each do |pod_name, info|
+            next unless resolve_prebuilt_info(pod_name)
+            (info[:spm_dependency_frameworks] || []).each do |framework|
+              (owners[framework] ||= Set.new).add(pod_name)
+            end
+          end
+          owners
+        end
+      end
+
+      # Whether a bundled source pod target needs stubbing. Stubbing is only needed when
+      # a consumer of the source pod also links a prebuilt xcframework that bundles the
+      # same framework — otherwise the consumer would get duplicate classes. A pod whose
+      # consumers link no owning prebuilt pod must keep building from source: e.g. an app
+      # extension that depends on SDWebImage never links expo-image's bundled
+      # SDWebImage.xcframework, so stubbing would leave its symbols unresolved.
+      def stub_bundled_pod_target?(installer, pod_name, framework_name)
+        owners = bundled_framework_owners[framework_name]
+        return true if owners.nil? || owners.empty?
+
+        consumers = installer.aggregate_targets.select do |aggregate_target|
+          aggregate_target.pod_targets.any? { |pod_target| pod_target.pod_name == pod_name }
+        end
+        return true if consumers.empty?
+
+        consumers.any? do |aggregate_target|
+          aggregate_target.pod_targets.any? { |pod_target| owners.include?(pod_target.pod_name) }
         end
       end
 
@@ -1823,7 +1885,7 @@ module Expo
         end
       end
 
-      # Returns the Hermes version, accounting for Hermes v1 opt-in.
+      # Returns the Hermes version. Hermes v1 is the default; classic Hermes is opt-out.
       # Mirrors the TypeScript resolution logic in tools/src/prebuilds/Utils.ts.
       def hermes_version
         @hermes_version ||= begin

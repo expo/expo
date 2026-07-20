@@ -1,11 +1,10 @@
-import type { RuntimePlatform } from './resolvePlatform';
 import { env } from '../../../utils/env';
 import {
   ExpoUpdatesCLIModuleNotFoundError,
   expoUpdatesCommandAsync,
 } from '../../../utils/expoUpdatesCli';
-
-const debug = require('debug')('expo:start:server:middleware:resolveRuntimeVersion');
+import { manifestDebugEvent } from './events';
+import type { RuntimePlatform } from './resolvePlatform';
 
 export async function resolveRuntimeVersionWithExpoUpdatesAsync({
   projectRoot,
@@ -15,7 +14,6 @@ export async function resolveRuntimeVersionWithExpoUpdatesAsync({
   platform: RuntimePlatform;
 }): Promise<string | null> {
   try {
-    debug('Using expo-updates runtimeversion:resolve CLI for runtime version resolution');
     const extraArgs = env.EXPO_DEBUG ? ['--debug'] : [];
     const resolvedRuntimeVersionJSONResult = await expoUpdatesCommandAsync(projectRoot, [
       'runtimeversion:resolve',
@@ -26,8 +24,7 @@ export async function resolveRuntimeVersionWithExpoUpdatesAsync({
     const runtimeVersionResult: { runtimeVersion: string | null } = JSON.parse(
       resolvedRuntimeVersionJSONResult
     );
-    debug('runtimeversion:resolve output:');
-    debug(resolvedRuntimeVersionJSONResult);
+    manifestDebugEvent('runtime_version_resolved', { result: resolvedRuntimeVersionJSONResult });
 
     return runtimeVersionResult.runtimeVersion ?? null;
   } catch (e: any) {

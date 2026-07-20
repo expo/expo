@@ -9,25 +9,26 @@ import path from 'node:path';
 import { parentPort, workerData } from 'node:worker_threads';
 
 import {
-  buildAgentInstructions,
+  buildFeedbackSection,
   buildPageSpecificNote,
   shouldAppendAgentInstructions,
   urlPathFromHtmlPath,
+  wrapAgentInstructions,
 } from './agent-instructions.ts';
+import { buildNavigationSection } from './docs-navigation.ts';
 import {
   checkMarkdownQuality,
   convertMdxInstructionToMarkdown,
   convertHtmlToMarkdown,
   extractFrontmatter,
   findMdxSource,
+  injectSceneVariants,
   type ResolvedMdxImport,
 } from './generate-markdown-pages-utils.ts';
 import { SCENE_PAGES } from './scene-page-manifest.ts';
 
 const outDir: string = workerData.outDir;
 const pagesDir: string = workerData.pagesDir;
-const SCENE_MODE_HEADING = '## How would you like to develop?';
-const NEXT_STEP_HEADING = '## Next step';
 
 function toPosixPath(filePath: string): string {
   return filePath.split(path.sep).join('/');
@@ -67,73 +68,6 @@ function shiftHeadingLevels(markdown: string, levelOffset: number): string {
     .join('\n');
 }
 
-function findSceneSectionStart(
-  markdown: string,
-  defaultHeading: string | null,
-  nextStepIdx: number
-): number {
-  if (defaultHeading) {
-    const withLeadingNewline = `\n${defaultHeading}`;
-    let byHeading = markdown.indexOf(withLeadingNewline);
-    if (byHeading === -1 && markdown.startsWith(defaultHeading)) {
-      byHeading = 0;
-    }
-    if (byHeading !== -1 && (nextStepIdx === -1 || byHeading < nextStepIdx)) {
-      return byHeading;
-    }
-  }
-
-  const modeHeadingIdx = markdown.indexOf(SCENE_MODE_HEADING);
-  if (modeHeadingIdx === -1) {
-    return -1;
-  }
-
-  const headingRegex = /\n##\s+.+/g;
-  headingRegex.lastIndex = modeHeadingIdx + SCENE_MODE_HEADING.length;
-  const sceneHeadingMatch = headingRegex.exec(markdown);
-  if (!sceneHeadingMatch) {
-    return -1;
-  }
-  if (nextStepIdx !== -1 && sceneHeadingMatch.index >= nextStepIdx) {
-    return -1;
-  }
-  return sceneHeadingMatch.index;
-}
-
-function injectSceneVariants(
-  baseMarkdown: string,
-  sceneSections: string[],
-  defaultHeading: string | null
-) {
-  if (sceneSections.length === 0) {
-    return baseMarkdown;
-  }
-
-  const nextStepNeedle = `\n${NEXT_STEP_HEADING}`;
-  const nextStepIdx = baseMarkdown.indexOf(nextStepNeedle);
-  const sceneStartIdx = findSceneSectionStart(baseMarkdown, defaultHeading, nextStepIdx);
-  const sceneBlock = sceneSections.join('\n\n---\n\n');
-
-  if (sceneStartIdx !== -1 && nextStepIdx !== -1 && sceneStartIdx < nextStepIdx) {
-    const before = baseMarkdown.slice(0, sceneStartIdx).trimEnd();
-    const after = baseMarkdown.slice(nextStepIdx).trimStart();
-    return `${before}\n\n${sceneBlock}\n\n${after}`;
-  }
-
-  if (sceneStartIdx !== -1 && nextStepIdx === -1) {
-    const before = baseMarkdown.slice(0, sceneStartIdx).trimEnd();
-    return `${before}\n\n${sceneBlock}\n`;
-  }
-
-  if (nextStepIdx !== -1) {
-    const before = baseMarkdown.slice(0, nextStepIdx).trimEnd();
-    const after = baseMarkdown.slice(nextStepIdx).trimStart();
-    return `${before}\n\n${sceneBlock}\n\n${after}`;
-  }
-
-  return `${baseMarkdown.trimEnd()}\n\n${sceneBlock}\n`;
-}
-
 parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
   if (msg.type === 'done') {
     process.exit(0);
@@ -145,6 +79,7 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     const html = fs.readFileSync(htmlPath, 'utf-8');
     let markdown = convertHtmlToMarkdown(html);
 
+    const sceneWarnings: string[] = [];
     const scenePage = SCENE_PAGES.find(page => page.htmlPath === relHtmlPath);
     if (scenePage) {
       const sceneSections: string[] = [];
@@ -186,17 +121,33 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
         sceneSections.push(`## ${variant.heading}\n\n${nestedMarkdown}`);
       }
 
-      markdown = injectSceneVariants(markdown, sceneSections, defaultVariantHeading);
+      const sceneResult = injectSceneVariants(
+        markdown,
+        sceneSections,
+        defaultVariantHeading,
+        scenePage.endHeading ?? null
+      );
+      markdown = sceneResult.markdown;
+      if (sceneResult.warning) {
+        sceneWarnings.push(sceneResult.warning);
+      }
     }
 
-    const warnings = checkMarkdownQuality(markdown, relHtmlPath);
+    const warnings = [...sceneWarnings, ...checkMarkdownQuality(markdown, relHtmlPath)];
 
     const mdxPath = findMdxSource(htmlPath, outDir, pagesDir);
     const frontmatter = mdxPath ? extractFrontmatter(mdxPath) : null;
     const pathname = urlPathFromHtmlPath(relHtmlPath);
-    const agentBlock = shouldAppendAgentInstructions(markdown)
-      ? buildAgentInstructions(pathname)
-      : null;
+    const instructionSections: string[] = [];
+    if (shouldAppendAgentInstructions(markdown)) {
+      instructionSections.push(buildFeedbackSection(pathname));
+    }
+    const navigationSection = buildNavigationSection(pathname);
+    if (navigationSection) {
+      instructionSections.push(navigationSection);
+    }
+    const agentInstructions =
+      instructionSections.length > 0 ? wrapAgentInstructions(instructionSections) : null;
     const pageNote = buildPageSpecificNote(pathname);
 
     const parts: string[] = [];
@@ -206,8 +157,8 @@ parentPort!.on('message', (msg: { type: string; htmlPath?: string }) => {
     if (pageNote) {
       parts.push(pageNote);
     }
-    if (agentBlock) {
-      parts.push(agentBlock);
+    if (agentInstructions) {
+      parts.push(agentInstructions);
     }
     parts.push(markdown);
     markdown = parts.join('\n');

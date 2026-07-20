@@ -22,7 +22,7 @@ import {
 } from './packageManagerStore';
 import type { PackageManagerKey } from './packageManagerStore';
 
-type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
+export type PackageManagerCommandSet = Partial<Record<PackageManagerKey, string[]>>;
 
 type TerminalProps = {
   cmd: string[] | PackageManagerCommandSet;
@@ -238,7 +238,9 @@ const BrowserAction = ({ href, label }: BrowserActionProps) => (
   <SnippetAction
     alwaysDark
     className="max-sm:gap-0 [&_p]:max-sm:hidden"
-    rightSlot={<ArrowUpRightIcon className="icon-sm shrink-0 text-icon-secondary" />}
+    rightSlot={
+      <ArrowUpRightIcon aria-hidden="true" className="icon-sm shrink-0 text-icon-secondary" />
+    }
     onClick={() => {
       if (typeof window !== 'undefined') {
         window.open(href, '_blank', 'noopener,noreferrer');

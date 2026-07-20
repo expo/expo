@@ -8,6 +8,7 @@ import CLIError from './error';
 import {
   ensureCorrectFlavor,
   enumerateAllPrebuildModules,
+  enumeratePrebuildModulesRaw,
   resolvedFixedXCFrameworks,
 } from './precompiled';
 import { withSpinner } from './spinner';
@@ -43,6 +44,7 @@ export const enumerateSourceBuiltDeps = async (
     return [];
   }
 
+  const hostProvided = new Set(config.hostProvidedFrameworks);
   const names = new Set<string>();
   for (const line of stdout.split('\n')) {
     const match = line.trim().match(/^@rpath\/([^/]+)\.framework\//);
@@ -50,7 +52,9 @@ export const enumerateSourceBuiltDeps = async (
       names.add(match[1]);
     }
   }
-  return Array.from(names).filter((name) => name !== config.scheme && !alreadyCovered.has(name));
+  return Array.from(names).filter(
+    (name) => name !== config.scheme && !alreadyCovered.has(name) && !hostProvided.has(name)
+  );
 };
 
 /**
@@ -225,7 +229,13 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
     // Single source of truth: enumerates all three layers (pod → bundled-npm → shared
     // `.spm-deps/`) and runs the strict completeness check. Failing here surfaces missing
     // deps at packaging time (rather than as `Library not loaded: @rpath/...` at runtime).
-    const modules = enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration);
+    // Host-provided frameworks are filtered out here so they're neither copied to the artifact
+    // dir nor counted as a missing SPM-dep.
+    const modules = enumerateAllPrebuildModules(
+      process.cwd(),
+      config.buildConfiguration,
+      config.hostProvidedFrameworks
+    );
 
     // Reconcile flavor once per pod — replace-xcframework.js extracts the whole tarball
     // (main + sibling SPM-dep xcframeworks) in one shot, so re-running per-xcframework would
@@ -275,7 +285,11 @@ export const copyXCFrameworks = async (config: IosConfig, dest: string) => {
 const collectCoveredFrameworkNames = (config: IosConfig): Set<string> => {
   const covered = new Set<string>([config.scheme, ...resolvedFixedXCFrameworks()]);
   if (config.usePrebuilds) {
-    for (const module of enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration)) {
+    for (const module of enumerateAllPrebuildModules(
+      process.cwd(),
+      config.buildConfiguration,
+      config.hostProvidedFrameworks
+    )) {
       covered.add(module.name);
     }
   }
@@ -427,7 +441,11 @@ export const generatePackageMetadataFile = async (config: IosConfig, packagePath
   // xcframework that lands on disk is also declared as a `.binaryTarget` here (and vice-versa).
   // The check fails fast — Package.swift never gets written if a declared SPM dep is missing.
   const precompiledModules = config.usePrebuilds
-    ? enumerateAllPrebuildModules(process.cwd(), config.buildConfiguration).map(({ name }) => ({
+    ? enumerateAllPrebuildModules(
+        process.cwd(),
+        config.buildConfiguration,
+        config.hostProvidedFrameworks
+      ).map(({ name }) => ({
         name,
         targets: [name],
       }))
@@ -539,8 +557,107 @@ export const printIosConfig = (config: IosConfig) => {
     console.log(` - Package name: ${chalk.blue(config.output.packageName)}`);
   }
   console.log(` - Bundle precompiled modules: ${chalk.blue(config.usePrebuilds)}`);
+  if (config.hostProvidedFrameworks.length > 0) {
+    console.log(
+      ` - Host-provided frameworks: ${chalk.blue(config.hostProvidedFrameworks.join(', '))}`
+    );
+  }
 
   console.log();
+};
+
+export const validateHostProvided = (config: IosConfig): void => {
+  if (config.hostProvidedFrameworks.length === 0) {
+    return;
+  }
+
+  if (!config.usePrebuilds) {
+    CLIError.handle('ios-host-provided-without-prebuilds');
+    return;
+  }
+
+  // Use the same three-layer enumeration the build path uses, so a host-provided framework
+  // resolved out of `node_modules/<pkg>/prebuilds/output/` or `packages/precompile/.build/.spm-deps/`
+  // (rather than `ios/Pods/`) is still detected and doesn't spuriously trigger the unused-entry
+  // warning. `enumeratePrebuildModulesRaw` skips the host-provided filter and missing-dep check
+  // that `enumerateAllPrebuildModules` would otherwise apply.
+  const { modules } = enumeratePrebuildModulesRaw(process.cwd(), config.buildConfiguration);
+  const pathsByName = new Map<string, string>();
+  for (const module of modules) {
+    if (!pathsByName.has(module.name)) {
+      pathsByName.set(module.name, module.xcframeworkPath);
+    }
+  }
+
+  for (const name of config.hostProvidedFrameworks) {
+    const xcframeworkPath = pathsByName.get(name);
+    if (xcframeworkPath === undefined) {
+      console.warn(
+        chalk.yellow(
+          `expo-brownfield: '${name}' is listed in ios.hostProvidedFrameworks but no matching xcframework was found in ios/Pods/, node_modules/<pkg>/prebuilds/output/, or the shared .spm-deps/ cache. Remove it from the config, or re-run \`pod install\` if the source module isn't installed yet.`
+        )
+      );
+      continue;
+    }
+    const version = readXcframeworkShortVersion(xcframeworkPath);
+    const versionLabel = version ?? 'unknown version';
+    console.log(
+      chalk.dim(
+        `expo-brownfield: excluding ${name} (${versionLabel}) — the host iOS app must provide ${name} at a compatible version at link time.`
+      )
+    );
+  }
+};
+
+/**
+ * Reads the first `Info.plist` we can find inside an xcframework and returns
+ * the `CFBundleShortVersionString` value.
+ */
+const readXcframeworkShortVersion = (xcframeworkPath: string): string | null => {
+  let slices: fs.Dirent[];
+  try {
+    slices = fs.readdirSync(xcframeworkPath, { withFileTypes: true });
+  } catch {
+    return null;
+  }
+  for (const slice of slices) {
+    if (!slice.isDirectory()) {
+      continue;
+    }
+    const sliceDir = path.join(xcframeworkPath, slice.name);
+    let frameworks: fs.Dirent[];
+    try {
+      frameworks = fs.readdirSync(sliceDir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const fw of frameworks) {
+      if (!fw.isDirectory() || !fw.name.endsWith('.framework')) {
+        continue;
+      }
+      const infoPlistCandidates = [
+        path.join(sliceDir, fw.name, 'Info.plist'),
+        path.join(sliceDir, fw.name, 'Resources', 'Info.plist'),
+      ];
+      for (const plist of infoPlistCandidates) {
+        if (!fs.existsSync(plist)) {
+          continue;
+        }
+        try {
+          const xml = fs.readFileSync(plist, 'utf8');
+          const match = xml.match(
+            /<key>CFBundleShortVersionString<\/key>\s*<string>([^<]+)<\/string>/
+          );
+          if (match?.[1]) {
+            return match[1].trim();
+          }
+        } catch {
+          // Ignore — this is best-effort.
+        }
+      }
+    }
+  }
+  return null;
 };
 
 export const shipFrameworks = async (config: IosConfig) => {

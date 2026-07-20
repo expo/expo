@@ -1,17 +1,14 @@
 import type { PackageJSONConfig } from '@expo/config';
 import npmPackageArg from 'npm-package-arg';
 
-import { getVersionedNativeModulesAsync } from './bundledNativeModules';
-import { hasExpoCanaryAsync } from './resolvePackages';
 import type { SDKVersion } from '../../../api/getVersions';
 import { getVersionsAsync } from '../../../api/getVersions';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
-
-const debug = require('debug')(
-  'expo:doctor:dependencies:getVersionedPackages'
-) as typeof console.log;
+import { debugEvent } from '../events';
+import { getVersionedNativeModulesAsync } from './bundledNativeModules';
+import { hasExpoCanaryAsync } from './resolvePackages';
 
 export type DependencyList = Record<string, string>;
 
@@ -84,11 +81,10 @@ export async function getRemoteVersionsForSdkAsync({
 
     // We only want versioned dependencies so skip if they cannot be found.
     if (!sdkVersion || !(sdkVersion in sdkVersions)) {
-      debug(
-        `Skipping versioned dependencies because the SDK version is not found. (sdkVersion: ${sdkVersion}, available: ${Object.keys(
-          sdkVersions
-        ).join(', ')})`
-      );
+      debugEvent('sdk_version_not_found', {
+        sdkVersion,
+        available: Object.keys(sdkVersions),
+      });
       return {};
     }
 

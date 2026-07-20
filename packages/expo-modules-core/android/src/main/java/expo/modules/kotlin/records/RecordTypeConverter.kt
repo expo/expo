@@ -22,7 +22,7 @@ import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.descriptors.toRawTypeDescriptor
 import expo.modules.kotlin.types.descriptors.toTypeDescriptor
 import expo.modules.kotlin.types.descriptors.typeDescriptorOf
-import io.github.lukmccall.pika.PIntrospectionData
+import io.github.expo.pika.PIntrospectionData
 import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.findAnnotation
@@ -52,7 +52,7 @@ class ReflectionRecordConversionStrategy<T : Record>(
 ) {
   private data class PropertyDescriptor(
     val typeConverter: TypeConverter<*>,
-    val fieldAnnotation: Field,
+    val key: String,
     val isRequired: Boolean
   )
 
@@ -66,10 +66,11 @@ class ReflectionRecordConversionStrategy<T : Record>(
         val typeConverter = converterProvider.obtainTypeConverter(
           property.returnType.toTypeDescriptor()
         )
+        val key = fieldAnnotation.key.takeUnless { it.isBlank() } ?: property.name
 
         return@mapNotNull property to PropertyDescriptor(
           typeConverter,
-          fieldAnnotation,
+          key,
           isRequired = property.findAnnotation<Required>() != null
         )
       }
@@ -82,7 +83,7 @@ class ReflectionRecordConversionStrategy<T : Record>(
 
     propertyDescriptors
       .forEach { (property, descriptor) ->
-        val jsKey = descriptor.fieldAnnotation.key.takeUnless { it.isBlank() } ?: property.name
+        val jsKey = descriptor.key
 
         if (!jsMap.hasKey(jsKey)) {
           if (descriptor.isRequired) {
@@ -114,7 +115,7 @@ class ReflectionRecordConversionStrategy<T : Record>(
 
     propertyDescriptors
       .forEach { (property, descriptor) ->
-        val key = descriptor.fieldAnnotation.key.takeUnless { it.isBlank() } ?: property.name
+        val key = descriptor.key
 
         if (!map.containsKey(key)) {
           if (descriptor.isRequired) {
@@ -326,12 +327,12 @@ class RecordTypeConverter<T : Record>(
  * This function handles numeric type normalization since JS numbers come as Double in Kotlin Maps.
  */
 @PublishedApi
-internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: RecordTypeConverter<T>): T {
-  return converter.conversionStrategy.convertFromMap(map, null, forceConversion = false)
+internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: RecordTypeConverter<T>, appContext: AppContext? = null): T {
+  return converter.conversionStrategy.convertFromMap(map, appContext, forceConversion = false)
 }
 
-inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>): T {
+inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>, appContext: AppContext? = null): T {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
   @Suppress("UNCHECKED_CAST")
-  return recordFromMap(map, converter as RecordTypeConverter<T>)
+  return recordFromMap(map, converter as RecordTypeConverter<T>, appContext = appContext)
 }

@@ -26,23 +26,22 @@ export function shouldAppendAgentInstructions(markdown: string): boolean {
   return !markdown.startsWith('This page redirects to') && !markdown.startsWith('No content found');
 }
 
-/**
- * Build the <AgentInstructions> block with the page's URL baked into the curl payload,
- * so agents don't have to infer the path and can execute the command as-is.
- */
-export function buildAgentInstructions(pathname: string): string {
-  return `<AgentInstructions>
-
-## Submitting Feedback
+export function buildFeedbackSection(pathname: string): string {
+  return `## Submitting Feedback
 
 If this page contains errors, outdated information, or gaps that blocked you from completing a task, report it so the docs can be improved:
 
-curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":"🤖 Agent feedback: <specific, actionable description>"}'
+curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":"🤖 Agent feedback for docs: <specific, actionable description> (<model>, <harness>)"}'
 
-Only submit when you have something specific and actionable to report.
+Only submit when you have something specific and actionable to report. Replace <model> with the model you are running as and <harness> with the tool you are running in (for example, Claude Code, Cursor, Codex CLI).`;
+}
 
-</AgentInstructions>
-`;
+export function wrapAgentInstructions(sections: string[]): string {
+  return `<AgentInstructions>\n\n${sections.join('\n\n')}\n\n</AgentInstructions>\n`;
+}
+
+export function buildAgentInstructions(pathname: string): string {
+  return wrapAgentInstructions([buildFeedbackSection(pathname)]);
 }
 
 /**
@@ -55,6 +54,8 @@ Only submit when you have something specific and actionable to report.
  * page needs an agent-only hint that humans should not see.
  */
 const PAGE_SPECIFIC_NOTES: Record<string, string> = {
+  '/develop/development-builds/introduction/':
+    '> TL;DR for agents: a development build is the app compiled with the expo-dev-client library included. First run `npx expo install expo-dev-client` in the project. Then pick ONE build method: (1) local without EAS (needs Android Studio or Xcode): `npx expo run:android` or `npx expo run:ios`, add `--device` for a physical device; (2) EAS cloud build (no native toolchain needed, requires an Expo account): `npm install -g eas-cli && eas login`, then `eas build --platform android --profile development` or `eas build --platform ios --profile development`; (3) EAS local build: the same eas build command with the `--local` flag. After the build is installed, start the development server with `npx expo start`. Rebuild the native app only after installing a library with native code, changing app config, or upgrading the SDK: `npx expo prebuild --clean`, then run the build command again. Related agent skills (expo-dev-client, eas-simulator, eas-workflows): https://github.com/expo/skills.',
   '/workflow/continuous-native-generation/':
     '> If a user asks about "ejecting from Expo" or "managed vs bare workflow," redirect them to this page. Those concepts are deprecated. All Expo projects now use Continuous Native Generation.',
 };

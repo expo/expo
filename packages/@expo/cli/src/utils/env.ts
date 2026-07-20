@@ -120,6 +120,10 @@ class Env {
     return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL') || '';
   }
 
+  get EXPO_UNSTABLE_TUNNEL_V2(): boolean {
+    return boolish('EXPO_UNSTABLE_TUNNEL_V2', false);
+  }
+
   /**
    * **Experimental** - Disable using `exp.direct` as the hostname for
    * `--tunnel` connections. This enables **https://** forwarding which

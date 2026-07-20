@@ -5,9 +5,11 @@ import { useDevToolsPluginClient } from 'expo/devtools';
 import { useDevToolsConnection } from '../useDevToolsConnection';
 
 // Mock expo-sqlite
-jest.mock('../../../node_modules/expo-sqlite/build/ExpoSQLite.js', () =>
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('../../../../src/__mocks__/ExpoSQLite')
+jest.mock(
+  '../../../../src/ExpoSQLite',
+  () =>
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('../../../../src/__mocks__/ExpoSQLite')
 );
 
 // Mock the expo/devtools module

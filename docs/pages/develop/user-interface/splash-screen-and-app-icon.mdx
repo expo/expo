@@ -136,7 +136,14 @@ If your app does not use [Expo Prebuild](/more/glossary-of-terms/#prebuild) to g
 
 For SDK 52 and earlier, in iOS development builds, launch screens can sometimes remain cached between builds, making it harder to test new images. Apple recommends clearing the _derived data_ directory before rebuilding, this can be done with Expo CLI by running:
 
-<Terminal cmd={['$ npx expo run:ios --no-build-cache']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios --no-build-cache'],
+    yarn: ['$ yarn expo run:ios --no-build-cache'],
+    pnpm: ['$ pnpm expo run:ios --no-build-cache'],
+    bun: ['$ bun expo run:ios --no-build-cache'],
+  }}
+/>
 
 See [Apple's guide on testing launch screens](https://developer.apple.com/documentation/technotes/tn3118-debugging-your-apps-launch-screen) for more information.
 
@@ -182,7 +189,7 @@ Further customization of the Android icon is possible using the [`android.adapti
 
 The Android Adaptive Icon is formed from two separate layers — a foreground image and a background color or image. This allows the OS to mask the icon into different shapes and also supports visual effects. For Android 13 and later, the OS supports a themed app icon that uses a wallpaper and theme to determine the color set by the device's theme.
 
-The design you provide should follow the [Android Adaptive Icon Guidelines](https://developer.android.com/develop/ui/views/launch/icon_design_adaptive) for launcher icons. You should also:
+The design you provide should follow the [Android Adaptive Icon Guidelines](https://developer.android.com/develop/ui/compose/system/icon_design_adaptive) for launcher icons. You should also:
 
 - Use **.png** files.
 - Use the `android.adaptiveIcon.foregroundImage` property to specify the path to your foreground image.
@@ -219,7 +226,7 @@ For iOS, your app's icon should follow the [Apple Human Interface Guidelines](ht
 Alternatively, the previous approach of providing an image is still supported. You should:
 
 - Use a **.png** file.
-- 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. In case of a bare React Native project, generate the icons on your own. The largest size EAS Build generates is 1024x1024.
+- 1024x1024 is a good size. If you have an Expo project created using `npx create-expo-app`, [EAS Build](/build/setup/) will generate the other sizes for you. In case of an [existing React Native project](/bare/overview/), generate the icons on your own. The largest size EAS Build generates is 1024x1024.
 - The icon must be exactly square. For example, a 1023x1024 icon is not valid.
 - Make sure the icon fills the whole square, with no rounded corners or other transparent pixels. The operating system will mask your icon when appropriate.
 - Use `ios.icon` to specify different icons for various system appearances (for example, dark and tinted) can be provided. If specified, this overrides the top-level icon key in the app config file. See the example below:

@@ -1,24 +1,21 @@
-import { ScrollView, StyleSheet, useColorScheme } from 'react-native';
+import { ScrollView, StyleSheet } from 'react-native';
 
+import { useUniversalLifecycle } from '../hooks';
+import { colors } from '../webUtils';
 import { groupFieldGroupChildren } from './groupChildren';
 import type { FieldGroupProps } from './types';
-import { useUniversalLifecycle } from '../hooks';
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#f2f2f7',
+    backgroundColor: colors.gray[50],
     flex: 1,
-  },
-  containerDark: {
-    backgroundColor: '#000000',
   },
   hidden: {
     display: 'none',
   },
   contentContainer: {
-    paddingHorizontal: 16,
-    paddingVertical: 16,
     gap: 24,
+    padding: 16,
   },
 });
 
@@ -39,16 +36,9 @@ export function FieldGroup({
 }: FieldGroupProps) {
   useUniversalLifecycle(onAppear, onDisappear);
 
-  const isDarkScheme = useColorScheme() === 'dark';
-
   return (
     <ScrollView
-      style={[
-        styles.container,
-        isDarkScheme && styles.containerDark,
-        style,
-        hidden && styles.hidden,
-      ]}
+      style={[styles.container, style, hidden && styles.hidden]}
       contentContainerStyle={styles.contentContainer}
       testID={testID}>
       {groupFieldGroupChildren(children)}

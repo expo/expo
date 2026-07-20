@@ -1,0 +1,172 @@
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+## Build locally
+
+Compile the app yourself with [Expo CLI](/more/expo-cli/) and your native toolchain. No Expo account is required and this is the only way to install a development build on an iPhone without a paid Apple Developer account.
+
+### Host platform support
+
+|             | Android    | iOS Simulator | iPhone device |
+| ----------- | ---------- | ------------- | ------------- |
+| **macOS**   | <YesIcon/> | <YesIcon/>    | <YesIcon/>    |
+| **Windows** | <YesIcon/> | <NoIcon />    | <NoIcon />    |
+| **Linux**   | <YesIcon/> | <NoIcon />    | <NoIcon />    |
+
+<Prerequisites>
+  <Requirement title="Native build tools">
+    Set up your development environment for the platforms you build for: [Android Studio and
+    Emulator](/workflow/android-studio-emulator/) for Android, [Xcode and iOS
+    Simulator](/workflow/ios-simulator/) for iOS.
+  </Requirement>
+</Prerequisites>
+
+<Step label="1">
+
+### Install expo-dev-client
+
+Run the following command in your project's root directory:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
+
+<Collapsible summary="Are you using this library in an existing React Native project?">
+
+Apps that don't use [Continuous Native Generation](/workflow/continuous-native-generation/) or are created with `npx react-native`, require further configuration after installing this library. See steps 1 and 2 from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
+
+</Collapsible>
+
+<Collapsible summary="What does a development build look like?">
+
+<ContentSpotlight
+  alt="expo-dev-client launcher and menu UIs on Android and iOS."
+  src="/static/images/dev-client/launcher-screen-android-ios.webp"
+  caption={`When you run a development build it will look like this, only with your app name and icon included rather than "RHT". The launcher UI is pictured in iOS on the left and Android on the right. In between, you can see an app running inside of the development build, with the customizable developer menu open.`}
+/>
+
+</Collapsible>
+
+> It is possible to use development builds without the `expo-dev-client` library. In that case, start the development server with `npx expo start --dev-client` to target your development build instead of Expo Go.
+
+</Step>
+
+<Step label="2">
+
+### Build and run the app
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
+
+By default the app installs on a running Android Emulator. For a physical device, plug it in via USB, allow **USB debugging** when prompted, and add the `--device` flag.
+
+</Tab>
+
+<Tab label="iOS">
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
+
+By default the app installs on the iOS Simulator. For an iPhone, plug it in, enable [developer mode](/guides/ios-developer-mode/), make sure your app config has a unique `ios.bundleIdentifier`, and add the `--device` flag.
+
+</Tab>
+
+</Tabs>
+
+This command runs [prebuild](/workflow/continuous-native-generation/#prebuild) to generate the native **android** and **ios** directories if they don't exist, then compiles the app, installs it, and starts the development server.
+
+</Step>
+
+<Step label="3">
+
+### Rebuild when native code changes
+
+The `expo run:android|ios` command reuses the native **android** and **ios** directories on later runs. When you only change your app's TypeScript/JavaScript code, there is no need to rebuild the native app. Instead, start the development server with:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+You only need to regenerate the native directories (**android** and **ios**) when:
+
+- Installing or updating a [library containing native code](/workflow/using-libraries/#determining-third-party-library-compatibility)
+- Changing your [app config](/workflow/configuration/) (**app.json**)
+- Upgrading your Expo SDK version
+
+In these cases, regenerate the native directories with:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild --clean'],
+    yarn: ['$ yarn expo prebuild --clean'],
+    pnpm: ['$ pnpm expo prebuild --clean'],
+    bun: ['$ bun expo prebuild --clean'],
+  }}
+/>
+
+Then, rebuild your app with the updated native code, with:
+
+<Tabs>
+
+<Tab label="Build for Android">
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
+
+</Tab>
+
+<Tab label="Build for iOS">
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
+
+</Tab>
+
+</Tabs>
+
+> All Expo build tools (`npx expo run:android|ios` and `eas build`) run prebuild automatically if no native directories exist, so you don't need to run it manually the first time. Learn more about [Continuous Native Generation (CNG)](/workflow/continuous-native-generation/).
+
+</Step>

@@ -71,6 +71,28 @@ public class EXDevLauncherURLHelper: NSObject {
     return components.url ?? url
   }
 
+  // Expo CLI's manifest endpoint only accepts `ios`/`android`/`web`, so on
+  // platforms like `macos` we ask it for `ios` and rewrite the `platform`
+  // query param on the bundle URL it returns to match the actual runtime.
+  @objc
+  public static func bundleURL(_ bundleURL: URL, withResolvedPlatform platform: String) -> URL {
+    guard !bundleURL.isFileURL,
+          var components = URLComponents(url: bundleURL, resolvingAgainstBaseURL: false),
+          var queryItems = components.queryItems else {
+      return bundleURL
+    }
+    var didReplace = false
+    for i in queryItems.indices where queryItems[i].name == "platform" {
+      queryItems[i] = URLQueryItem(name: "platform", value: platform)
+      didReplace = true
+    }
+    guard didReplace else {
+      return bundleURL
+    }
+    components.queryItems = queryItems
+    return components.url ?? bundleURL
+  }
+
   @objc
   public static func getQueryParamsForUrl(_ url: URL) -> [String: String] {
     guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false),

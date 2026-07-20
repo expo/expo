@@ -9,6 +9,7 @@ import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 
 import {
+  annotate,
   createMaestroFlowAsync,
   ensureDirAsync,
   getStartMode,
@@ -16,7 +17,7 @@ import {
   prettyPrintTestSuiteLogs,
   printImageComparisonServerLogs,
   runCustomMaestroFlowsAsync,
-  MAESTRO_ENV_VARS,
+  runMaestroAsync,
   TEST_DURATION_LABEL,
   startGroup,
   endGroup,
@@ -50,19 +51,40 @@ const __dirname = dirname(__filename);
     }
     if (startMode === 'TEST' || startMode === 'BUILD_AND_TEST') {
       const e2eDir = path.join(projectRoot, 'e2e');
-      await runCustomMaestroFlowsAsync(e2eDir, 'ios', (maestroFlowFilePath) =>
-        testAsync(maestroFlowFilePath, deviceId, appBinaryPath, e2eDir)
-      );
+
+      // The simulator, the app and the maestro driver survive across maestro invocations,
+      // so set everything up only once instead of paying for it on every flow and retry.
+      await startSimulatorAsync(deviceId);
+      await preApproveDeepLinkPromptAsync(deviceId);
+      await installAppAsync(deviceId, appBinaryPath);
+      await launchAppWithInspectorAsync(deviceId);
+
+      await runCustomMaestroFlowsAsync(e2eDir, 'ios', async (flowRelativePaths, { attempt }) => {
+        if (attempt > 1) {
+          // Relaunch to reset any app state left over by the failed flows (e.g. a video stuck
+          // in fullscreen) and to restore the inspector dylib in case the app crashed.
+          await launchAppWithInspectorAsync(deviceId);
+        }
+        return await testAsync(flowRelativePaths, deviceId, e2eDir);
+      });
 
       const maestroNativeModulesFlowFilePath = await createMaestroFlowAsync({
         appId: APP_ID,
         e2eDir,
-        confirmFirstRunPromptIOS: true,
       });
+      const nativeModulesFlowRelativePath = path.relative(e2eDir, maestroNativeModulesFlowFilePath);
 
-      await retryAsync((retryNumber) => {
+      await retryAsync(async (retryNumber) => {
         console.log(`Native modules test suite attempt ${retryNumber + 1} of ${NUM_OF_RETRIES}`);
-        return testAsync(maestroNativeModulesFlowFilePath, deviceId, appBinaryPath, e2eDir);
+        const failedFlows = await testAsync([nativeModulesFlowRelativePath], deviceId, e2eDir);
+        if (failedFlows.length > 0) {
+          annotate(
+            retryNumber + 1 >= NUM_OF_RETRIES ? 'error' : 'warning',
+            'Native modules test suite failed',
+            `attempt ${retryNumber + 1} of ${NUM_OF_RETRIES} failed`
+          );
+          throw new Error('Native modules test suite failed.');
+        }
       }, NUM_OF_RETRIES);
     }
   } catch (e) {
@@ -159,9 +181,8 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 180_000) 
     );
     const label = 'device startup duration';
     console.time(label);
-    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b'], {
-      stdio: 'inherit',
-    });
+    // Capture (don't inherit) stdio so the verbose boot/data-migration progress doesn't flood the logs.
+    const bootProc = spawnAsync('xcrun', ['simctl', 'bootstatus', deviceId, '-b']);
 
     let timeoutHandle: NodeJS.Timeout | null = null;
     const timeoutPromise = new Promise((_, reject) => {
@@ -187,36 +208,65 @@ async function startSimulatorAsync(deviceId: string, timeout: number = 180_000) 
   }, 3);
 }
 
+async function preApproveDeepLinkPromptAsync(deviceId: string): Promise<void> {
+  // Approve the bareexpo:// scheme in the simulator's LaunchServices store so the "Open in
+  // BareExpo?" prompt never shows up; unlike a tapped approval it also survives clearState.
+  console.log('\n🔓 Pre-approving the deep link confirmation prompt');
+  await spawnAsync('xcrun', [
+    'simctl',
+    'spawn',
+    deviceId,
+    'defaults',
+    'write',
+    'com.apple.launchservices.schemeapproval',
+    'com.apple.CoreSimulator.CoreSimulatorBridge-->bareexpo',
+    '-string',
+    APP_ID,
+  ]);
+}
+
+async function installAppAsync(deviceId: string, appBinaryPath: string): Promise<void> {
+  console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
+  await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
+}
+
+async function launchAppWithInspectorAsync(deviceId: string): Promise<void> {
+  const dylibPath = getDylibPath();
+  console.log(`\n💉 Launching app with dylib injected - dylibPath[${dylibPath}]`);
+
+  try {
+    // The dylib is only injected at launch time, so make sure the app isn't already running.
+    await spawnAsync('xcrun', ['simctl', 'terminate', deviceId, APP_ID], { stdio: 'pipe' });
+  } catch {
+    // The app might not be running, which is fine.
+  }
+
+  try {
+    await spawnAsync('xcrun', ['simctl', 'launch', deviceId, APP_ID], {
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        SIMCTL_CHILD_DYLD_INSERT_LIBRARIES: dylibPath,
+      },
+    });
+  } catch (error: any) {
+    console.warn('⚠️  App launch with dylib failed:', error.message);
+  }
+}
+
+// The maestro driver only needs to be installed by the first invocation; later invocations
+// reuse it, which saves about a minute each.
+let reinstallMaestroDriver = true;
+
 async function testAsync(
-  maestroFlowFilePath: string,
+  flowRelativePaths: string[],
   deviceId: string,
-  appBinaryPath: string,
-  maestroWorkspaceRoot: string
-): Promise<void> {
-  startGroup(maestroFlowFilePath);
+  e2eDir: string
+): Promise<string[]> {
+  startGroup(flowRelativePaths.join(', '));
   const stopLogCollectionController = new AbortController();
 
   try {
-    await startSimulatorAsync(deviceId);
-    console.log(`\n🔌 Installing App - deviceId[${deviceId}] appBinaryPath[${appBinaryPath}]`);
-    await spawnAsync('xcrun', ['simctl', 'install', deviceId, appBinaryPath], { stdio: 'inherit' });
-
-    // Launch app with dylib injected
-    const dylibPath = getDylibPath();
-    console.log(`\n💉 Launching app with dylib injected - dylibPath[${dylibPath}]`);
-
-    try {
-      await spawnAsync('xcrun', ['simctl', 'launch', deviceId, APP_ID], {
-        stdio: 'inherit',
-        env: {
-          ...process.env,
-          SIMCTL_CHILD_DYLD_INSERT_LIBRARIES: dylibPath,
-        },
-      });
-    } catch (error: any) {
-      console.warn('⚠️  App launch with dylib failed:', error.message);
-    }
-
     const getTestSuiteLogs = setupLogger(
       '(subsystem == "com.facebook.react.log")',
       stopLogCollectionController.signal
@@ -226,23 +276,24 @@ async function testAsync(
       stopLogCollectionController.signal
     );
 
-    console.log(`\n📷 Starting Maestro tests - maestroFlowFilePath[${maestroFlowFilePath}]`);
+    console.log(`\n📷 Starting Maestro tests - flows[${flowRelativePaths.join(', ')}]`);
+    console.time(TEST_DURATION_LABEL);
+    let failedFlows: string[];
     try {
-      console.time(TEST_DURATION_LABEL);
-
-      await spawnAsync('maestro', ['--device', deviceId, 'test', maestroFlowFilePath], {
-        stdio: 'inherit',
-        cwd: maestroWorkspaceRoot,
-        env: {
-          ...process.env,
-          ...MAESTRO_ENV_VARS,
-        },
+      failedFlows = await runMaestroAsync({
+        deviceArgs: ['--device', deviceId],
+        flowRelativePaths,
+        e2eDir,
+        reinstallDriver: reinstallMaestroDriver,
       });
+    } finally {
       console.timeEnd(TEST_DURATION_LABEL);
-    } catch {
+    }
+    reinstallMaestroDriver = false;
+
+    if (failedFlows.length > 0) {
       stopLogCollectionController.abort();
-      console.timeEnd(TEST_DURATION_LABEL);
-      console.warn(`\n⚠️ Maestro flow failed, because:\n\n`);
+      console.warn(`\n⚠️ Maestro flows failed: ${failedFlows.join(', ')}\n\n`);
 
       console.log(prettyPrintTestSuiteLogs(await getTestSuiteLogs()));
       await printImageComparisonServerLogs();
@@ -262,11 +313,8 @@ async function testAsync(
       }
 
       console.log('\n\n');
-      throw new Error('e2e tests have failed.');
     }
-  } catch (e: unknown) {
-    console.error('Uncaught Error', e);
-    throw e;
+    return failedFlows;
   } finally {
     endGroup();
     stopLogCollectionController.abort();

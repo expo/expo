@@ -1,15 +1,10 @@
 import spawnAsync from '@expo/spawn-async';
 import { glob } from 'glob';
 import fs from 'node:fs';
-import path from 'node:path';
 import os from 'node:os';
+import path from 'node:path';
 
-import {
-  executeCommandAsync,
-  executeCreateExpoCLIAsync,
-  executeExpoCLIAsync,
-  sleep,
-} from './process';
+import { executeCreateExpoCLIAsync, executeExpoCLIAsync, sleep } from './process';
 import type { PluginProps, TemplateEntry } from './types';
 
 const PROJECT_NAME = 'testapp';
@@ -117,13 +112,9 @@ const createProjectWithTemplate = async (at: string, projectName: string) => {
     throw new Error(`Template directory not found at: ${templatePath}`);
   }
 
-  let tarballs = await glob('*.tgz', { cwd: templatePath });
+  const tarballs = await glob('*.tgz', { cwd: templatePath });
   if (tarballs.length === 0) {
-    await executeCommandAsync(templatePath, 'pnpm', ['pack', '--json']);
-    tarballs = await glob('*.tgz', { cwd: templatePath });
-    if (tarballs.length === 0) {
-      throw new Error(`No tarballs found in template directory: ${templatePath}`);
-    }
+    throw new Error(`No template tarball found in ${templatePath}.`);
   }
 
   await executeCreateExpoCLIAsync(at, [
@@ -138,11 +129,11 @@ const listWorkspaces = async (): Promise<Record<string, string>> => {
   const { stdout } = await spawnAsync('pnpm', ['list', '--depth=-1', '-r', '--json'], {
     cwd: path.join(__dirname, '../../'),
   });
-  const workspaces: { name: string; path: string; }[] = JSON.parse(stdout);
-  return workspaces.reduce((acc, entry) => {
+  const workspaces: { name: string; path: string }[] = JSON.parse(stdout);
+  return workspaces.reduce<Record<string, string>>((acc, entry) => {
     acc[entry.name] = entry.path;
     return acc;
-  }, {} as Record<string, string>);
+  }, {});
 };
 
 /**

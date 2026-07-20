@@ -8,14 +8,19 @@
 - `FileHandle.readBytes()` and `FileHandle.writeBytes()` are now asynchronous and return a Promise. Use `FileHandle.readBytesSync()` and `FileHandle.writeBytesSync()` for synchronous behavior. ([#46280](https://github.com/expo/expo/pull/46280) by [@wh201906](https://github.com/wh201906))
 - `File.info()` is now asynchronous and returns a Promise. Use `File.infoSync()` for synchronous behavior. ([#46403](https://github.com/expo/expo/pull/46403) by [@wh201906](https://github.com/wh201906))
 
-
 ### 🎉 New features
 
-- Added `File.getMd5Async()` to Calculate the file MD5 asynchronously. ([#46403](https://github.com/expo/expo/pull/46403) by [@wh201906](https://github.com/wh201906))
+- Add `File.preview()` and `File.canPreview()` methods for opening files with platform-native preview flows. (by [@eliotgevers](https://github.com/eliotgevers))
+- Added `File.getMd5Async()` to calculate the file MD5 asynchronously. ([#46403](https://github.com/expo/expo/pull/46403) by [@wh201906](https://github.com/wh201906))
 
 ### 🐛 Bug fixes
 
+- Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
+
+- Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376) by [@wh201906](https://github.com/wh201906))
+- Improved `FileHandle` docs. ([#46849](https://github.com/expo/expo/pull/46849) by [@barthap](https://github.com/barthap))
 
 ## 56.0.7 — 2026-05-20
 

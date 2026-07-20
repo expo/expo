@@ -8,7 +8,6 @@
 // `@expo/metro-runtime` MUST be the first import to ensure Fast Refresh works
 // on web.
 import '@expo/metro-runtime';
-
 import { renderRootComponent } from 'expo-router/build/renderRootComponent';
 import { App } from 'expo-router/build/rsc/entry';
 

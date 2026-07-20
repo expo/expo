@@ -1,9 +1,8 @@
 import * as Log from '../../log';
 import { logCmdError } from '../../utils/errors';
+import { event } from './events';
 
 const CTRL_C = '\u0003';
-
-const debug = require('debug')('expo:start:interface:keyPressHandler') as typeof console.log;
 
 /** An abstract key stroke interceptor. */
 export class KeyPressHandler {
@@ -39,7 +38,7 @@ export class KeyPressHandler {
     }
     this.isHandlingKeyPress = true;
     try {
-      debug(`Key pressed: ${key}`);
+      event('key_pressed', { key });
       await this.onPress(key);
     } catch (error: any) {
       await logCmdError(error);

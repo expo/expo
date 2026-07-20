@@ -498,15 +498,17 @@ export const prepareInputsStep: Step<PrebuildContext> = {
     } else if (request.externalOnly) {
       logger.info(`📦 Discovering external packages with spm.config.json...`);
     } else {
+      const scope = request.allPackages ? 'all' : 'the default distributed set of';
       const externalNote = request.includeExternal ? ' (including external packages)' : '';
-      logger.info(`📦 Discovering packages with spm.config.json${externalNote}...`);
+      logger.info(`📦 Discovering ${scope} packages with spm.config.json${externalNote}...`);
     }
 
-    // 1. Verify packages exist and have spm.config.json (or discover all)
+    // 1. Verify packages exist and have spm.config.json (or discover the default set)
     const requestedPackages = await verifyAllPackagesAsync(
       request.packageNames,
       request.includeExternal,
-      request.externalOnly
+      request.externalOnly,
+      request.allPackages
     );
 
     // 2. Auto-add unbuilt dependencies to the build set

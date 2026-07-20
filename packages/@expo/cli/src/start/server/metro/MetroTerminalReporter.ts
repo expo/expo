@@ -1,8 +1,19 @@
+import { events } from '2g';
+import type { SpanEnd } from '2g';
 import type { Terminal } from '@expo/metro/metro-core';
 import chalk from 'chalk';
 import path from 'path';
 import { format as utilFormat, stripVTControlCharacters } from 'util';
 
+import { stripAnsi } from '../../../utils/ansi';
+import { env } from '../../../utils/env';
+import { isInteractive, shouldReduceLogs } from '../../../utils/interactive';
+import { learnMore } from '../../../utils/link';
+import {
+  logLikeMetro,
+  maybeSymbolicateAndFormatJSErrorStackLogAsync,
+  parseErrorStringToObject,
+} from '../serverLogLikeMetro';
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import type {
   BuildPhase,
@@ -12,17 +23,7 @@ import type {
   TerminalReportableEvent,
 } from './TerminalReporter.types';
 import { NODE_STDLIB_MODULES } from './externals';
-import { env } from '../../../utils/env';
-import { learnMore } from '../../../utils/link';
-import {
-  logLikeMetro,
-  maybeSymbolicateAndFormatJSErrorStackLogAsync,
-  parseErrorStringToObject,
-} from '../serverLogLikeMetro';
 import { attachImportStackToRootMessage, nearestImportStack } from './metroErrorInterface';
-import { events, shouldReduceLogs } from '../../../events';
-import { stripAnsi } from '../../../utils/ansi';
-import { isInteractive } from '../../../utils/interactive';
 
 type ClientLogLevel =
   | 'trace'
@@ -35,53 +36,50 @@ type ClientLogLevel =
   | 'groupEnd'
   | 'debug';
 
-const debug = require('debug')('expo:metro:logger') as typeof console.log;
+declare module '2g' {
+  interface EventRegistry {
+    'metro:bundling:done': {
+      id: string | null;
+      platform?: null | string;
+      environment?: null | string;
+      entry?: string;
+      total: number;
+    };
+    'metro:bundling:failed': {
+      id: string | null;
+      filename: string | null;
+      message: string | null;
+      importStack: string | null;
+      targetModuleName: string | null;
+      originModulePath: string | null;
+    };
+    'metro:bundling:progress': {
+      id: string | null;
+      progress: number;
+      current: number;
+      total: number;
+    };
+    'metro:server_log': {
+      level: 'info' | 'warn' | 'error' | null;
+      data: string | unknown[] | null;
+    };
+    'metro:client_log': {
+      level: ClientLogLevel | null;
+      data: unknown[] | null;
+    };
+    'metro:hmr_client_error': {
+      message: string;
+    };
+    'metro:cache_write_error': {
+      message: string;
+    };
+    'metro:cache_read_error': {
+      message: string;
+    };
+  }
+}
 
-// prettier-ignore
-export const event = events('metro', (t) => [
-  t.event<'bundling:started', {
-    id: string;
-    platform: null | string;
-    environment: null | string;
-    entry: string;
-  }>(),
-  t.event<'bundling:done', {
-    id: string | null;
-    ms: number | null;
-    total: number;
-  }>(),
-  t.event<'bundling:failed', {
-    id: string | null;
-    filename: string | null;
-    message: string | null;
-    importStack: string | null;
-    targetModuleName: string | null;
-    originModulePath: string | null;
-  }>(),
-  t.event<'bundling:progress', {
-    id: string | null;
-    progress: number;
-    current: number;
-    total: number;
-  }>(),
-  t.event<'server_log', {
-    level: 'info' | 'warn' | 'error' | null;
-    data: string | unknown[] | null;
-  }>(),
-  t.event<'client_log', {
-    level: ClientLogLevel | null;
-    data: unknown[] | null;
-  }>(),
-  t.event<'hmr_client_error', {
-    message: string;
-  }>(),
-  t.event<'cache_write_error', {
-    message: string;
-  }>(),
-  t.event<'cache_read_error', {
-    message: string;
-  }>(),
-]);
+export const event = events('metro');
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -92,6 +90,13 @@ const LIGHT_BLOCK_CHAR = '\u2591';
  */
 export class MetroTerminalReporter extends TerminalReporter {
   #lastFailedBuildID: string | undefined;
+  #bundleSpans = new Map<
+    string,
+    {
+      end: SpanEnd<'metro'>;
+      start: { id: string; platform: null | string; environment: null | string; entry: string };
+    }
+  >();
 
   constructor(
     public serverRoot: string,
@@ -200,11 +205,17 @@ export class MetroTerminalReporter extends TerminalReporter {
       }
 
       if (phase === 'done') {
-        event('bundling:done', {
-          id: progress.bundleDetails.buildID ?? null,
-          total: progress.totalFileCount,
-          ms,
-        });
+        const buildID = progress.bundleDetails.buildID;
+        const span = buildID != null ? this.#bundleSpans.get(buildID) : undefined;
+        if (span) {
+          this.#bundleSpans.delete(buildID!);
+          span.end('bundling:done', { ...span.start, total: progress.totalFileCount });
+        } else {
+          event('bundling:done', {
+            id: buildID ?? null,
+            total: progress.totalFileCount,
+          });
+        }
       }
 
       // iOS Bundled 150ms
@@ -292,6 +303,7 @@ export class MetroTerminalReporter extends TerminalReporter {
    */
   _logBundleBuildFailed(buildID: string): void {
     this.#lastFailedBuildID = buildID;
+    this.#bundleSpans.delete(buildID);
     super._logBundleBuildFailed(buildID);
   }
 
@@ -350,7 +362,11 @@ export class MetroTerminalReporter extends TerminalReporter {
       let hasStack = false;
       const parsed = data.map((msg) => {
         // Quick check to see if an unsymbolicated stack is being logged.
-        if (typeof msg === 'string' && msg.includes('.bundle//&platform=')) {
+        if (
+          typeof msg === 'string' &&
+          // Native stack frames use `.bundle//&platform=...`; web stack frames use `.bundle?platform=...`.
+          (msg.includes('.bundle//&platform=') || msg.includes('.bundle?platform='))
+        ) {
           const stack = parseErrorStringToObject(msg);
           if (stack) {
             hasStack = true;
@@ -385,7 +401,6 @@ export class MetroTerminalReporter extends TerminalReporter {
           const fallbackIndices: number[] = [];
           const symbolicated = (await Promise.allSettled(symbolicating)).map((s, index) => {
             if (s.status === 'rejected') {
-              debug('Error formatting stack', parsed[index], s.reason);
               return parsed[index];
             } else if (!s.value) {
               return parsed[index];
@@ -427,12 +442,16 @@ export class MetroTerminalReporter extends TerminalReporter {
           evt.bundleDetails.customTransformOptions.dom.includes(path.sep)
             ? evt.bundleDetails.customTransformOptions.dom.replace(/^(\.?\.[\\/])+/, '')
             : this.#normalizePath(evt.bundleDetails.entryFile);
-        return event('bundling:started', {
-          id: evt.buildID,
-          platform: evt.bundleDetails.platform ?? null,
-          environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
-          entry,
+        this.#bundleSpans.set(evt.buildID, {
+          end: event.span(),
+          start: {
+            id: evt.buildID,
+            platform: evt.bundleDetails.platform ?? null,
+            environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
+            entry,
+          },
         });
+        return;
       }
       case 'unstable_server_log':
         return event('server_log', {

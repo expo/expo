@@ -51,6 +51,7 @@ fun DevMenuBottomSheet(
 
   BottomSheetScaffold(
     state = bottomSheetState,
+    onMenuKeyPress = { onAction(DevMenuAction.Toggle) },
     onDismiss = {
       if (isOpen) {
         shouldShowOnboarding.value = false
@@ -72,6 +73,9 @@ fun DevMenuBottomSheet(
       appInfo = appInfo,
       devToolsSettings = state.devToolsSettings,
       customItems = state.customItems,
+      availableAppKeys = state.availableAppKeys,
+      currentAppKey = state.currentAppKey,
+      openSubScreen = state.openSubScreen,
       shouldShowOnboarding = shouldShowOnboarding.value,
       showFab = state.showFab,
       hasGoHomeAction = state.hasGoHomeAction,

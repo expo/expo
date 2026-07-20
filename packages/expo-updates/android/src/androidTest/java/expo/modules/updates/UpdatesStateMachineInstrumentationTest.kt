@@ -167,7 +167,7 @@ class UpdatesStateMachineInstrumentationTest {
   }
 
   @Test
-  fun test_handleDownloadAndDownloadComplete() {
+  fun test_handleCompletedDownloadWithUpdate() {
     val testStateChangeEventManager = TestStateChangeEventManager()
     val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.entries.toSet())
 
@@ -199,6 +199,21 @@ class UpdatesStateMachineInstrumentationTest {
   }
 
   @Test
+  fun should_handle_completed_download_with_rollback() {
+    val testStateChangeEventManager = TestStateChangeEventManager()
+    val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.entries.toSet())
+
+    machine.processEventTest(UpdatesStateEvent.Download())
+    Assert.assertEquals(UpdatesStateValue.Downloading, machine.getState())
+
+    machine.processEventTest(UpdatesStateEvent.DownloadCompleteWithRollback())
+    Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
+    Assert.assertFalse(machine.context.isDownloading)
+    Assert.assertNull(machine.context.downloadError)
+    Assert.assertTrue(machine.context.isUpdatePending)
+  }
+
+  @Test
   fun test_handleDownloadProgress() {
     val testStateChangeEventManager = TestStateChangeEventManager()
     val machine = UpdatesStateMachine(logger, testStateChangeEventManager, UpdatesStateValue.entries.toSet())
@@ -211,7 +226,7 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertEquals(UpdatesStateValue.Downloading, machine.getState())
     Assert.assertEquals(0.5, testStateChangeEventManager.lastContext!!.downloadProgress, 0.001)
 
-    machine.processEventTest(UpdatesStateEvent.DownloadComplete())
+    machine.processEventTest(UpdatesStateEvent.DownloadCompleteUnavailable())
     Assert.assertEquals(UpdatesStateValue.Idle, machine.getState())
     Assert.assertEquals(1.0, testStateChangeEventManager.lastContext!!.downloadProgress, 0.001)
   }
@@ -284,7 +299,7 @@ class UpdatesStateMachineInstrumentationTest {
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
 
     Assert.assertThrows(AssertionError::class.java) {
-      machine.processEventTest(UpdatesStateEvent.DownloadComplete())
+      machine.processEventTest(UpdatesStateEvent.DownloadCompleteUnavailable())
     }
     Assert.assertEquals(UpdatesStateValue.Checking, machine.getState())
   }

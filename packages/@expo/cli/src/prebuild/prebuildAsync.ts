@@ -4,15 +4,6 @@ import type { ModPlatform } from '@expo/config-plugins';
 import { updateXcodeProject } from '@expo/inline-modules';
 import chalk from 'chalk';
 
-import {
-  clearNativeFolder,
-  promptToClearMalformedNativeProjectsAsync,
-  maybeBailOnNativeModuleAsync,
-} from './clearNativeFolder';
-import { configureProjectAsync } from './configureProjectAsync';
-import { ensureConfigAsync } from './ensureConfigAsync';
-import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
-import { updateFromTemplateAsync } from './updateFromTemplate';
 import { installAsync } from '../install/installAsync';
 import { Log } from '../log';
 import { env } from '../utils/env';
@@ -21,8 +12,17 @@ import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
 import { confirmAsync } from '../utils/prompts';
-
-const debug = require('debug')('expo:prebuild') as typeof console.log;
+import {
+  clearNativeFolder,
+  getExistingNativePlatformsAsync,
+  promptToClearMalformedNativeProjectsAsync,
+  maybeBailOnNativeModuleAsync,
+} from './clearNativeFolder';
+import { configureProjectAsync } from './configureProjectAsync';
+import { ensureConfigAsync } from './ensureConfigAsync';
+import { event } from './events';
+import { assertPlatforms, ensureValidPlatforms, resolveTemplateOption } from './resolveOptions';
+import { updateFromTemplateAsync } from './updateFromTemplate';
 
 export type PrebuildResults = {
   /** Expo config. */
@@ -85,17 +85,22 @@ export async function prebuildAsync(
     }
   }
   if (options.clean) {
-    const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
-    // Clean the project folders...
-    if (await maybeBailOnGitStatusAsync()) {
-      return null;
+    // Only run the destructive-path guards when there are native folders to delete, so a
+    // first-ever prebuild doesn't prompt on git status or native module detection.
+    const existingPlatforms = await getExistingNativePlatformsAsync(projectRoot, options.platforms);
+    if (existingPlatforms.length) {
+      const { maybeBailOnGitStatusAsync } = await import('../utils/git.js');
+      // Clean the project folders...
+      if (await maybeBailOnGitStatusAsync()) {
+        return null;
+      }
+      // Check if the target project is actually a native module, which we don't want to erase
+      if (await maybeBailOnNativeModuleAsync(projectRoot)) {
+        return null;
+      }
+      // Clear the native folders before syncing
+      await clearNativeFolder(projectRoot, options.platforms);
     }
-    // Check if the target project is actually a native module, which we don't want to erase
-    if (await maybeBailOnNativeModuleAsync(projectRoot)) {
-      return null;
-    }
-    // Clear the native folders before syncing
-    await clearNativeFolder(projectRoot, options.platforms);
   } else {
     // Check if the existing project folders are malformed.
     await promptToClearMalformedNativeProjectsAsync(projectRoot, options.platforms);
@@ -105,6 +110,8 @@ export async function prebuildAsync(
   options.platforms = ensureValidPlatforms(options.platforms);
   // Assert if no platforms are left over after filtering.
   assertPlatforms(options.platforms);
+
+  const donePrebuild = event.span();
 
   // Get the Expo config, create it if missing.
   const { exp, pkg } = await ensureConfigAsync(projectRoot, { platforms: options.platforms });
@@ -138,12 +145,17 @@ export async function prebuildAsync(
           initial: true,
         })
       ) {
+        const startedAt = Date.now();
         await installAsync([], {
           npm: !!options.packageManager?.npm,
           yarn: !!options.packageManager?.yarn,
           pnpm: !!options.packageManager?.pnpm,
           bun: !!options.packageManager?.bun,
           silent: !(env.EXPO_DEBUG || env.CI),
+        });
+        event('dependencies:installed', {
+          packageManager: resolvePackageManagerName(options.packageManager),
+          ms: Date.now() - startedAt,
         });
       }
     }
@@ -179,16 +191,26 @@ export async function prebuildAsync(
   if (options.platforms.includes('ios') && options.install && needsPodInstall) {
     const { installCocoaPodsAsync } = await import('../utils/cocoapods.js');
 
+    const startedAt = Date.now();
     podsInstalled = await installCocoaPodsAsync(projectRoot);
+    event('pods:installed', { ms: Date.now() - startedAt, skipped: false });
   } else {
-    debug('Skipped pod install');
+    event('pods:installed', { ms: 0, skipped: true });
   }
   const inlineModules = exp.experiments?.inlineModules ?? false;
   if (inlineModules && options.platforms.includes('ios')) {
     await updateXcodeProject(projectRoot, {
       watchedDirectories: inlineModules.watchedDirectories ?? [],
+      xcodeProjectTargets: inlineModules.xcodeProjectTargets,
+      name: exp.name,
     });
   }
+
+  donePrebuild('done', {
+    platforms: options.platforms,
+    clean: !!options.clean,
+    template: options.template,
+  });
 
   return {
     nodeInstall: !!options.install,
@@ -197,4 +219,16 @@ export async function prebuildAsync(
     hasNewProjectFiles,
     exp,
   };
+}
+
+function resolvePackageManagerName(packageManager?: {
+  npm?: boolean;
+  yarn?: boolean;
+  pnpm?: boolean;
+  bun?: boolean;
+}): string {
+  if (packageManager?.yarn) return 'yarn';
+  if (packageManager?.pnpm) return 'pnpm';
+  if (packageManager?.bun) return 'bun';
+  return 'npm';
 }

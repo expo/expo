@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../ExpoHeader.pch"
+#include "../ArrayBuffer.h"
 #include "../JSIContext.h"
 #include "../JSharedObject.h"
 #include "../JNIUtils.h"
@@ -161,6 +162,13 @@ template<>
 struct JNIToJSIConverter<JavaScriptTypedArray *> {
   static jsi::Value convert(JNIEnv *, jsi::Runtime &rt, JavaScriptTypedArray *value) {
     return jsi::Value{rt, *value->get()};
+  }
+};
+
+template<>
+struct JNIToJSIConverter<ArrayBuffer *> {
+  static jsi::Value convert(JNIEnv *, jsi::Runtime &rt, ArrayBuffer *value) {
+    return value->toJSIValue(rt);
   }
 };
 

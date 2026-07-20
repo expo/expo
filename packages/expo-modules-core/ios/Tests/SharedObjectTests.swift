@@ -131,6 +131,16 @@ struct SharedObjectTests {
   // MARK: - Native object
 
   @Test
+  func `releases the native object when release() is called from JS`() throws {
+    let registrySizeBefore = appContext.sharedObjectRegistry.size
+    try runtime.eval([
+      "sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()",
+      "sharedObject.release()"
+    ])
+    #expect(appContext.sharedObjectRegistry.size == registrySizeBefore)
+  }
+
+  @Test
   func `emits events`() throws {
     // Create the shared object
     let jsObject = try runtime
@@ -241,8 +251,59 @@ struct SharedObjectTests {
     detached.emit(event: "ignored", payload: .undefined)
   }
 
+  // MARK: - native(from:)
+
   @Test
-  func `emits NativeArrayBuffer`() throws {
+  func `native(from:) recovers the paired native object as its concrete subclass`() throws {
+    let runtime = try runtime
+    let nativeObject = SharedObjectExample()
+    let jsObject = runtime.createObject()
+    appContext.sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
+
+    // The `as:` overload returns the concrete subclass directly.
+    let recovered = try SharedObject.native(from: jsObject, as: SharedObjectExample.self)
+
+    #expect(recovered === nativeObject)
+  }
+
+  @Test
+  func `native(from:) throws for a foreign object without native state`() throws {
+    let runtime = try runtime
+    // A plain object carries no `SharedObjectNativeState`.
+    let foreignObject = try runtime.eval("({})").asObject()
+
+    #expect(throws: SharedObject.NotFoundException.self) {
+      _ = try SharedObject.native(from: foreignObject)
+    }
+  }
+
+  @Test
+  func `native(from:) throws not-found before the subclass cast`() throws {
+    let runtime = try runtime
+    // A foreign object reports not-found rather than a type mismatch: the `as:` overload checks for a
+    // paired native object before attempting the subclass cast.
+    let foreignObject = try runtime.eval("({})").asObject()
+
+    #expect(throws: SharedObject.NotFoundException.self) {
+      _ = try SharedObject.native(from: foreignObject, as: SharedObjectExample.self)
+    }
+  }
+
+  @Test
+  func `native(from:) throws when the native object is a different subclass`() throws {
+    let runtime = try runtime
+    let nativeObject = SharedObjectExample()
+    let jsObject = runtime.createObject()
+    appContext.sharedObjectRegistry.add(native: nativeObject, javaScript: jsObject)
+
+    // The object is paired with a `SharedObjectExample`, so requesting a different subclass mismatches.
+    #expect(throws: SharedObject.TypeMismatchException.self) {
+      _ = try SharedObject.native(from: jsObject, as: OtherSharedObjectExample.self)
+    }
+  }
+
+  @Test
+  func `emits ArrayBuffer`() throws {
     let jsObject = try runtime
       .eval("sharedObject = new expo.modules.SharedObjectModule.SharedObjectExample()")
       .asObject()
@@ -254,7 +315,7 @@ struct SharedObjectTests {
 
     let nativeObject = appContext.sharedObjectRegistry.toNativeObject(jsObject)
 
-    let nativeBuffer = NativeArrayBuffer.allocate(size: 16, initializeToZero: false)
+    let nativeBuffer = ArrayBuffer(size: 16, initializeToZero: false)
     nativeBuffer.withUnsafeBytes { raw in
       let mutable = UnsafeMutableRawPointer(mutating: raw.baseAddress!)
       for index in 0..<16 {
@@ -301,3 +362,6 @@ private class SharedObjectModule: Module {
 }
 
 private final class SharedObjectExample: SharedObject {}
+
+/// A second, unrelated subclass used to exercise the type-mismatch path of `native(from:)`.
+private final class OtherSharedObjectExample: SharedObject {}

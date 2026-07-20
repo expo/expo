@@ -29,7 +29,3 @@ struct ExpoScreen: View {
         .navigationTitle("Expo")
     }
 }
-
-#Preview {
-    ContentView()
-}

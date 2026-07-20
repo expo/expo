@@ -89,8 +89,12 @@ Now link the manifest in your HTML file. The method here depends on the output m
 If you're using a single-page app, you can link the manifest in your HTML file by first creating a template HTML in **public/index.html**:
 
 <Terminal
-  cmd={['$ npx expo customize public/index.html']}
-  cmdCopy="npx expo customize public/index.html"
+  cmd={{
+    npm: ['$ npx expo customize public/index.html'],
+    yarn: ['$ yarn expo customize public/index.html'],
+    pnpm: ['$ pnpm expo customize public/index.html'],
+    bun: ['$ bun expo customize public/index.html'],
+  }}
 />
 
 Then add the manifest to the `<head>` tag:
@@ -157,8 +161,12 @@ For example, here's a possible flow for setting up Workbox:
 Create a new project with the following command:
 
 <Terminal
-  cmd={['$ npm create expo -t tabs my-app', '', '$ cd my-app']}
-  cmdCopy="npm create expo -t tabs my-app && cd my-app"
+  cmd={{
+    npm: ['$ npm create expo -t tabs my-app', '', '$ cd my-app'],
+    yarn: ['$ yarn create expo -t tabs my-app', '', '$ cd my-app'],
+    pnpm: ['$ pnpm create expo -t tabs my-app', '', '$ cd my-app'],
+    bun: ['$ bun create expo -t tabs my-app', '', '$ cd my-app'],
+  }}
 />
 
 </Step>
@@ -176,8 +184,12 @@ Next add a service worker registration script to the root **index.html**.
 First create a template HTML in **public/index.html** if one does not already exist:
 
 <Terminal
-  cmd={['$ npx expo customize public/index.html']}
-  cmdCopy="npx expo customize public/index.html"
+  cmd={{
+    npm: ['$ npx expo customize public/index.html'],
+    yarn: ['$ yarn expo customize public/index.html'],
+    pnpm: ['$ pnpm expo customize public/index.html'],
+    bun: ['$ bun expo customize public/index.html'],
+  }}
 />
 
 Then create the service worker registration script in the `<head>` tag:
@@ -260,7 +272,14 @@ if ('serviceWorker' in navigator) {
 
 Now build the website before running the wizard:
 
-<Terminal cmd={['$ npx expo export -p web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export -p web'],
+    yarn: ['$ yarn expo export -p web'],
+    pnpm: ['$ pnpm expo export -p web'],
+    bun: ['$ bun expo export -p web'],
+  }}
+/>
 
 </Step>
 
@@ -269,15 +288,44 @@ Now build the website before running the wizard:
 Run the wizard command, select `dist` as the root of the app, and the defaults for everything else:
 
 <Terminal
-  cmd={[
-    '$ npx workbox-cli wizard',
-    '',
-    '? What is the root of your web app (that is which directory do you deploy)? dist/',
-    '? Which file types would you like to precache? js, html, ttf, ico, json',
-    '? Where would you like your service worker file to be saved? dist/sw.js',
-    '? Where would you like to save these configuration options? workbox-config.js',
-    "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
-  ]}
+  cmd={{
+    npm: [
+      '$ npx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    yarn: [
+      '$ yarn dlx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    pnpm: [
+      '$ pnpm dlx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+    bun: [
+      '$ bunx workbox-cli wizard',
+      '',
+      '? What is the root of your web app (that is which directory do you deploy)? dist/',
+      '? Which file types would you like to precache? js, html, ttf, ico, json',
+      '? Where would you like your service worker file to be saved? dist/sw.js',
+      '? Where would you like to save these configuration options? workbox-config.js',
+      "? Does your web app manifest include search parameter(s) in the 'start_url', other than 'utm_' or 'fbclid' (like '?source=pwa')? No",
+    ],
+  }}
 />
 
 </Step>

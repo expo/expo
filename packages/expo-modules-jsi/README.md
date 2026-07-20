@@ -16,7 +16,7 @@ This package has no JavaScript runtime code &mdash; it is consumed natively on i
 Three-layer design bridging JSI C++ to Swift:
 
 1. **Swift Layer** (`apple/Sources/ExpoModulesJSI/`) &mdash; Public API. Type-safe wrappers around JSI concepts: `JavaScriptRuntime`, `JavaScriptValue`, `JavaScriptObject`, `JavaScriptFunction`, etc. All JS value types are non-copyable (`~Copyable`) and conform to `JavaScriptType`. Use `JavaScriptRef<T>` to convert to reference semantics when needed (escaping closures, containers).
-2. **C++ Utilities Layer** (`apple/Sources/ExpoModulesJSI-Cxx/`) &mdash; Internal C++ helpers that bridge Swift and JSI.
+2. **C++ Utilities Layer** (`apple/Sources/ExpoModulesJSI-Cxx/`) &mdash; C++ helpers that bridge Swift and JSI. Most headers under `include/` are in-package only, but a small set under `include/Public/` (today just `NativeState.h`) is shipped from the xcframework so non-interop C++ consumers (e.g. `expo-modules-core`'s shared cross-platform sources) can include them via `<ExpoModulesJSI/NativeState.h>` and probe their availability with `__has_include`.
 3. **JSI / Hermes** &mdash; Binary xcframeworks (`React`, `hermes-engine`, `ReactNativeDependencies`) consumed as SPM binary targets.
 
 # Public API
@@ -60,8 +60,8 @@ The build is wired up in `apple/ExpoModulesJSI.podspec`:
 You can also build and test the package directly:
 
 ```sh
-pnpm build   # rebuild the xcframework outside of a Pods install
-pnpm test    # run the Swift Testing suite on an iOS Simulator
+pnpm build:xcframework   # rebuild the xcframework outside of a Pods install
+pnpm test                # run the Swift Testing suite on an iOS Simulator
 ```
 
 `pnpm test` runs against an installed host app's `Pods` directory (defaults to `apps/bare-expo`); set `PODS_ROOT` to point at a different one. Extra arguments are forwarded to `xcodebuild` (e.g. `pnpm test -only-testing TestName`).

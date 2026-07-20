@@ -46,12 +46,34 @@ This keeps `@/` imports working after moving your app directory into **src**.
 Restart your development server.
 
 {/* prettier-ignore */}
-<Terminal cmd={[
-  '$ npx expo start',
-  '',
-  '# Or export for production',
-  '$ npx expo export'
-]} />
+<Terminal
+  cmd={{
+    npm: [
+      '$ npx expo start',
+      '',
+      '# Or export for production',
+      '$ npx expo export',
+    ],
+    yarn: [
+      '$ yarn expo start',
+      '',
+      '# Or export for production',
+      '$ yarn expo export',
+    ],
+    pnpm: [
+      '$ pnpm expo start',
+      '',
+      '# Or export for production',
+      '$ pnpm expo export',
+    ],
+    bun: [
+      '$ bun expo start',
+      '',
+      '# Or export for production',
+      '$ bun expo export',
+    ],
+  }}
+/>
 
 </Step>
 

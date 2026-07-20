@@ -6,11 +6,15 @@ searchRank: 9
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
-import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Tabs, Tab, TabsGroup } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
+<TabsGroup>
+
 EAS Observe tracks your app's startup performance in production. This guide walks you through installing the library, setting up your app, and viewing your first metrics.
+
+> **important** EAS Observe is not available in Expo Go because it relies on the `expo-observe` native library. To use it, create a [development build](/develop/development-builds/introduction/) or a production build.
 
 ## Prerequisites
 
@@ -35,7 +39,14 @@ EAS Observe tracks your app's startup performance in production. This guide walk
 
 Make sure you are using the latest version of `expo`, then install `expo-observe`:
 
-<Terminal cmd={['$ npx expo install --fix', '', '$ npx expo install expo-observe']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install --fix', '', '$ npx expo install expo-observe'],
+    yarn: ['$ yarn expo install --fix', '', '$ yarn expo install expo-observe'],
+    pnpm: ['$ pnpm expo install --fix', '', '$ pnpm expo install expo-observe'],
+    bun: ['$ bun expo install --fix', '', '$ bun expo install expo-observe'],
+  }}
+/>
 
 </Step>
 
@@ -94,7 +105,7 @@ Call `markInteractive()` when your app is fully ready for user interaction. This
 
 <Tabs>
 
-<Tab label="SDK 56">
+<Tab label="SDK 56 and later">
 
 ```tsx app/_layout.tsx
 import { Stack } from 'expo-router';
@@ -227,3 +238,5 @@ You can also query metrics from the terminal using the EAS CLI:
 Run any of these commands with `--help` to see the available flags and arguments.
 
 </Step>
+
+</TabsGroup>

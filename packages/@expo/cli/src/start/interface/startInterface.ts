@@ -1,9 +1,5 @@
 import chalk from 'chalk';
 
-import { KeyPressHandler } from './KeyPressHandler';
-import type { StartOptions } from './commandsTable';
-import { BLT, printHelp, printUsage } from './commandsTable';
-import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
 import { AbortCommandError } from '../../utils/errors';
@@ -12,8 +8,10 @@ import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
 import type { DevServerManager } from '../server/DevServerManager';
-
-const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
+import { KeyPressHandler } from './KeyPressHandler';
+import type { StartOptions } from './commandsTable';
+import { BLT, printHelp, printUsage } from './commandsTable';
+import { DevServerManagerActions } from './interactiveActions';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -52,7 +50,7 @@ export async function startInterfaceAsync(
     ...options,
   };
 
-  actions.printDevServerInfo(usageOptions);
+  await actions.printDevServerInfoAsync(usageOptions);
 
   const onPressAsync = async (key: string) => {
     // Auxillary commands all escape.
@@ -147,7 +145,7 @@ export async function startInterfaceAsync(
         Log.clear();
         if (await devServerManager.toggleRuntimeMode()) {
           usageOptions.devClient = devServerManager.options.devClient;
-          actions.printDevServerInfo(usageOptions);
+          await actions.printDevServerInfoAsync(usageOptions);
           return;
         }
         break;
@@ -166,17 +164,15 @@ export async function startInterfaceAsync(
 
         const isDisabled = !platforms.includes('web');
         if (isDisabled) {
-          debug('Web is disabled');
           // Use warnings from the web support setup.
           break;
         }
 
         // Ensure the Webpack dev server is running first
         if (!devServerManager.getWebDevServer()) {
-          debug('Starting up webpack dev server');
           await devServerManager.ensureWebDevServerRunningAsync();
           // When this is the first time webpack is started, reprint the connection info.
-          actions.printDevServerInfo(usageOptions);
+          await actions.printDevServerInfoAsync(usageOptions);
         }
 
         Log.log(`${BLT} Open in the web browser...`);
@@ -192,7 +188,7 @@ export async function startInterfaceAsync(
       }
       case 'c':
         Log.clear();
-        actions.printDevServerInfo(usageOptions);
+        await actions.printDevServerInfoAsync(usageOptions);
         return;
       case 'j':
         return actions.openJsInspectorAsync();

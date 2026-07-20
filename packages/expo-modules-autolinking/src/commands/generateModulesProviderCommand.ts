@@ -1,14 +1,15 @@
 import type commander from 'commander';
 import fs from 'fs';
 
-import type { AutolinkingCommonArguments } from './autolinkingOptions';
-import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 import { findModulesAsync } from '../autolinking/findModules';
 import { generateModulesProviderAsync } from '../autolinking/generatePackageList';
 import { resolveModulesAsync } from '../autolinking/resolveModules';
+import type { AutolinkingCommonArguments } from './autolinkingOptions';
+import { createAutolinkingOptionsLoader, registerAutolinkingArguments } from './autolinkingOptions';
 
 interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
   target: string;
+  targetName?: string;
   podfilePropertiesFilePath: string;
   entitlement?: string;
   packages?: string[] | null;
@@ -17,6 +18,7 @@ interface GenerateModulesProviderArguments extends AutolinkingCommonArguments {
 
 type PartialPodfileProperties = {
   'expo.inlineModules.watchedDirectories'?: string;
+  'expo.inlineModules.xcodeProjectTargets'?: string;
 };
 
 /** Generates a source file listing all packages to link in the runtime */
@@ -25,6 +27,10 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
     .option(
       '-t, --target <path>',
       'Path to the target file, where the package list should be written to.'
+    )
+    .option(
+      '--target-name <name>',
+      'Name of the user target the package list is generated for. Used to match against the inline modules targets.'
     )
     .option('--entitlement <path>', 'Path to the Apple code signing entitlements file.')
     .option(
@@ -68,11 +74,17 @@ export function generateModulesProviderCommand(cli: commander.CommanderStatic) {
           podfileProperties['expo.inlineModules.watchedDirectories'] ?? '[]'
         );
 
+        const inlineModulesTargets = JSON.parse(
+          podfileProperties['expo.inlineModules.xcodeProjectTargets'] ?? '{"targets":[]}'
+        );
+
         await generateModulesProviderAsync(filteredModules, {
           platform,
           targetPath: commandArguments.target,
+          targetName: commandArguments.targetName,
           entitlementPath: commandArguments.entitlement ?? null,
           watchedDirectories,
+          inlineModulesTargets,
           appRoot,
         });
       }

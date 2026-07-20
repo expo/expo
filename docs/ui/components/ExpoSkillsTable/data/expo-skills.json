@@ -2,84 +2,135 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-05-25T01:22:55.986Z"
+    "fetchedAt": "2026-07-15T08:48:49.153Z"
   },
-  "totalSkills": 15,
+  "totalSkills": 21,
   "skills": [
     {
-      "name": "add-app-clip",
-      "description": "Add an iOS App Clip target to an Expo app. Use when the user mentions App Clip, AASA, apple-app-site-association, appclips, smart app banner, or wants to ship a lightweight iOS Clip invoked from a URL alongside their parent app.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/add-app-clip/SKILL.md"
+      "name": "eas-app-stores",
+      "category": "eas",
+      "description": "Deploy Expo apps to the app stores with EAS - build and submit to the iOS App Store, Google Play Store, and TestFlight, configure eas.json build and submit profiles, manage app versions and build numbers, and publish App Store metadata and ASO. Use whenever the user wants to deploy, release, or ship an app to production or the app stores, is preparing a production build, running eas build or eas submit, shipping to TestFlight, bumping version or build numbers, or setting up store listing metadata. For deploying an Expo website or API routes, use the eas-hosting skill.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-app-stores/SKILL.md"
     },
     {
-      "name": "building-native-ui",
-      "description": "Complete guide for building beautiful apps with Expo Router. Covers fundamentals, styling, components, navigation, animations, patterns, and native tabs.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/building-native-ui/SKILL.md"
+      "name": "eas-hosting",
+      "category": "eas",
+      "description": "Deploy Expo websites and Expo Router API routes to EAS Hosting - export the web bundle, run eas deploy for production and PR preview URLs, manage environment secrets and custom domains, and work within the Cloudflare Workers runtime. Also covers authoring API routes (+api.ts handlers, HTTP methods, request handling, CORS). Use when deploying an Expo web app or API routes, setting up EAS Hosting, or configuring hosting environments and domains. Not for native builds or store releases - use the eas-app-stores skill for those.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-hosting/SKILL.md"
+    },
+    {
+      "name": "eas-observe",
+      "category": "eas",
+      "description": "Use for anything related to EAS Observe - adding `expo-observe` to an Expo project (AppMetricsRoot/ObserveRoot HOC, markInteractive, the useObserve hook, the Expo Router / React Navigation integrations for per-route metrics, and user-defined events via `Observe.logEvent`), querying via the EAS CLI (`eas observe:metrics-summary`, `observe:metrics`, `observe:routes`, `observe:events`, `observe:versions`), or interpreting the resulting metrics (cold/warm launch, TTR, TTI, navigation cold/warm TTR, update download, and the TTI frameRate params for triaging slow startups).",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-observe/SKILL.md"
+    },
+    {
+      "name": "eas-simulator",
+      "category": "eas",
+      "description": "Run and control a user's app on a remote iOS/Android simulator hosted on EAS cloud. Read before running any `eas simulator:*` commands - it has the current syntax for this experimental API. Use whenever the user needs a simulator they can't run locally - 'run my app on a cloud simulator', 'use eas simulator to run/install/screenshot my app', 'I'm on Linux/Cursor and need an iOS device', 'no sim on this box / headless CI', 'let an agent click through my app and screenshot it', 'test my dev build on a remote sim with live reload', 'stream a sim to my browser' - even when they don't say 'EAS Simulator' or 'cloud'. On a host WITHOUT a local simulator (Linux, CI, cloud sandbox) it's the default; on macOS, do NOT auto-trigger for a plain 'run on the simulator' - use it only for a cloud/remote/shareable sim, an iOS version they lack, or an agent-driven session. NOT for local sims (expo run:ios, Xcode, Android Studio), EAS Build/Update, web preview, or physical devices.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-simulator/SKILL.md"
     },
     {
       "name": "eas-update-insights",
-      "description": "Check the health of published EAS Updates: crash rates, install/launch counts, unique users, payload size, and the split between embedded and OTA users per channel. Use when the user asks how an update is performing, whether a rollout is healthy, how many users are on the embedded build vs OTA, or wants to gate CI on update health.",
+      "category": "eas",
+      "description": "Check the health of published EAS Update: crash rates, install/launch counts, unique users, payload size, and the split between embedded and OTA users per channel. Use when the user asks how an update is performing, whether a rollout is healthy, how many users are on the embedded build vs OTA, or wants to gate CI on update health.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-update-insights/SKILL.md"
     },
     {
-      "name": "expo-api-routes",
-      "description": "Guidelines for creating API routes in Expo Router with EAS Hosting.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-api-routes/SKILL.md"
+      "name": "eas-workflows",
+      "category": "eas",
+      "description": "Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-workflows/SKILL.md"
+    },
+    {
+      "name": "expo-app-clip",
+      "category": "framework",
+      "description": "Add an iOS App Clip target to an Expo app. Use when the user mentions App Clip, AASA, apple-app-site-association, appclips, smart app banner, or wants to ship a lightweight iOS Clip invoked from a URL alongside their parent app.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-app-clip/SKILL.md"
     },
     {
       "name": "expo-brownfield",
+      "category": "framework",
       "description": "Integrate Expo and React Native into an existing native iOS or Android app. Use when the user mentions brownfield, embedding React Native in a native app, AAR/XCFramework, or adding Expo to an existing Kotlin/Swift project. Covers both the isolated approach and the integrated approach.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-brownfield/SKILL.md"
     },
     {
-      "name": "expo-cicd-workflows",
-      "description": "Helps understand and write EAS workflow YAML files for Expo projects. Use this skill when the user asks about CI/CD or workflows in an Expo or EAS context, mentions .eas/workflows/, or wants help with EAS build pipelines or deployment automation.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-cicd-workflows/SKILL.md"
-    },
-    {
-      "name": "expo-deployment",
-      "description": "Deploying Expo apps to iOS App Store, Android Play Store, web hosting, and API routes.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-deployment/SKILL.md"
+      "name": "expo-data-fetching",
+      "category": "framework",
+      "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders (`useLoaderData`).",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-data-fetching/SKILL.md"
     },
     {
       "name": "expo-dev-client",
-      "description": "Build and distribute Expo development clients locally or via TestFlight.",
+      "category": "framework",
+      "description": "Build and distribute Expo development clients locally or via TestFlight for internal testing. For production TestFlight releases and store submission, use the eas-app-stores skill.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-dev-client/SKILL.md"
     },
     {
+      "name": "expo-dom",
+      "category": "framework",
+      "description": "Use Expo DOM components to run web code in a webview on native and as-is on web. Migrate web code to native incrementally. For the end-to-end migration of a whole web app, use the expo-web-to-native skill.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-dom/SKILL.md"
+    },
+    {
+      "name": "expo-examples",
+      "category": "framework",
+      "description": "Expo's official example projects - the expo/examples repo of ~70 `with-*` integrations (Stripe, Clerk, Supabase, OpenAI, maps, Reanimated, SQLite, Skia, NativeWind, and more). Use when integrating a third-party library or service into an existing Expo app and you want the canonical, version-matched pattern to adapt, or when scaffolding a new project from one with `npx create-expo --example`.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-examples/SKILL.md"
+    },
+    {
       "name": "expo-module",
+      "category": "framework",
       "description": "Guide for creating and writing Expo native modules and views using the Expo Modules API (Swift, Kotlin, TypeScript). Covers module definition DSL, native views, shared objects, config plugins, lifecycle hooks, autolinking, and type system. Use when building or modifying native modules for Expo.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-module/SKILL.md"
     },
     {
+      "name": "expo-native-ui",
+      "category": "framework",
+      "description": "Build beautiful, native-feeling Expo screens. Covers Apple HIG styling, semantic colors, native controls, SF Symbols, media, animations, visual effects, gradients, storage, and responsive layout. For routing and navigation, use the expo-router skill.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-native-ui/SKILL.md"
+    },
+    {
+      "name": "expo-project-structure",
+      "category": "framework",
+      "description": "Folder structure for a new Expo app. Use when scaffolding or laying out a new Expo project with Expo Router, or deciding where a file should live in one. For new projects only — never restructure an existing app to match.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-project-structure/SKILL.md"
+    },
+    {
+      "name": "expo-router",
+      "category": "framework",
+      "description": "Navigation and routing for Expo Router. Covers file-based routes, groups and dynamic routes, folder organization, Link with previews and context menus, native Stack, page titles, modals and form sheets, NativeTabs, headers and toolbars, and header search bars.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-router/SKILL.md"
+    },
+    {
+      "name": "expo-skill-feedback",
+      "category": "framework",
+      "description": "Submit feedback on an Expo skill — or on Expo itself — or turn the bundled anonymous usage telemetry on or off (off by default / opt-in; the user saying \"enable Expo skills telemetry\" in conversation is the switch). Use when an Expo skill was useful, confusing, broken, missing context, or worth improving; when something fell short because of Expo (an SDK bug or confusing framework behavior) rather than the skill; or when the user wants to enable, turn on, opt in to, disable, turn off, opt out of, check the status of, or understand the anonymous usage tracking these skills can send.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-skill-feedback/SKILL.md"
+    },
+    {
       "name": "expo-tailwind-setup",
+      "category": "framework",
       "description": "Set up Tailwind CSS v4 in Expo with react-native-css and NativeWind v5 for universal styling.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-tailwind-setup/SKILL.md"
     },
     {
-      "name": "expo-ui-jetpack-compose",
-      "description": "`@expo/ui/jetpack-compose` package lets you use Jetpack Compose Views and modifiers in your app.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui-jetpack-compose/SKILL.md"
+      "name": "expo-ui",
+      "category": "framework",
+      "description": "Build native UI with the @expo/ui package: real SwiftUI on iOS and Jetpack Compose on Android rendered from React in an Expo or React Native app. Covers universal cross-platform components (Host, Column, Row, Button, Text, List, and more imported from @expo/ui), drop-in replacements for popular React Native community libraries (BottomSheet, DateTimePicker, Slider, Menu, etc.), and platform-specific SwiftUI (@expo/ui/swift-ui, iOS only) and Jetpack Compose (@expo/ui/jetpack-compose, Android only) trees and modifiers. Use when adding or reviewing @expo/ui Host/RNHostView trees, building native-feeling UI where standard React Native components fall short (grouped settings forms with toggles, sections, menus, sheets, pickers, sliders), choosing between universal and platform-specific components, or replacing an RN community UI library with a native @expo/ui equivalent. Not for custom native modules, Expo Router navigation, Reanimated, or data fetching.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui/SKILL.md"
     },
     {
-      "name": "expo-ui-swift-ui",
-      "description": "`@expo/ui/swift-ui` package lets you use SwiftUI Views and modifiers in your app.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-ui-swift-ui/SKILL.md"
-    },
-    {
-      "name": "native-data-fetching",
-      "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders (`useLoaderData`).",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/native-data-fetching/SKILL.md"
-    },
-    {
-      "name": "upgrading-expo",
+      "name": "expo-upgrade",
+      "category": "framework",
       "description": "Guidelines for upgrading Expo SDK versions and fixing dependency issues.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/upgrading-expo/SKILL.md"
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-upgrade/SKILL.md"
     },
     {
-      "name": "use-dom",
-      "description": "Use Expo DOM components to run web code in a webview on native and as-is on web. Migrate web code to native incrementally.",
-      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/use-dom/SKILL.md"
+      "name": "expo-web-to-native",
+      "category": "framework",
+      "description": "Migrate an existing web React app to a native iOS/Android app with Expo. Use when the user wants to turn a website into a mobile app, port a Next.js/Vite/CRA React codebase to React Native, reuse web code on native incrementally, or asks how web idioms (the DOM, CSS, React Router, localStorage, window) map to native. This is the end-to-end migration guide; use the `expo-dom` skill for the DOM-component mechanism itself.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-web-to-native/SKILL.md"
     }
   ]
 }

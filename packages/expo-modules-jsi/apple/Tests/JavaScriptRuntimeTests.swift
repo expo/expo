@@ -1,6 +1,6 @@
-import Testing
 import ExpoModulesJSI
 import Foundation
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -281,9 +281,10 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
+      """)
 
     #expect(result.getString().contains("set failed"))
   }
@@ -302,9 +303,11 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
 
     #expect(result[0].getString() == "read only")
     #expect(result[1].getString() == "ERR_READ_ONLY")
@@ -322,9 +325,10 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo; 'no error' } catch (e) { e.message }
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo; 'no error' } catch (e) { e.message }
+      """)
 
     #expect(result.getString().contains("get failed"))
   }
@@ -342,9 +346,11 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
 
     #expect(result[0].getString() == "missing")
     #expect(result[1].getString() == "ERR_MISSING")
@@ -372,17 +378,19 @@ struct JavaScriptRuntimeTests {
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
     // First write throws and is caught in JS.
-    let firstAttempt = try runtime.eval("""
-      try { globalThis.hostObj.value = 1; 'no error' } catch (e) { e.message }
-    """)
+    let firstAttempt = try runtime.eval(
+      """
+        try { globalThis.hostObj.value = 1; 'no error' } catch (e) { e.message }
+      """)
     #expect(firstAttempt.getString().contains("boom"))
 
     // Subsequent write must succeed — verifies the C++ thread-local error
     // state is cleared after being rethrown, not leaked to the next call.
     shouldThrow = false
-    let secondAttempt = try runtime.eval("""
-      try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
-    """)
+    let secondAttempt = try runtime.eval(
+      """
+        try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
+      """)
     #expect(secondAttempt.getInt() == 7)
   }
 
@@ -407,10 +415,11 @@ struct JavaScriptRuntimeTests {
 
     // A failing set followed by a successful get must not surface the
     // earlier set error — checks the thread-local error slot is cleared.
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.value = 1 } catch (e) {}
-      globalThis.hostObj.ok
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.value = 1 } catch (e) {}
+        globalThis.hostObj.ok
+      """)
 
     #expect(result.getInt() == 123)
   }
@@ -425,9 +434,10 @@ struct JavaScriptRuntimeTests {
 
     // No `set` was provided — the C++ side raises a `jsi::JSError` directly,
     // without crossing the Swift boundary.
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
+      """)
     let message = result.getString()
 
     #expect(message.contains("read-only host object"))
@@ -445,23 +455,25 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
-    """)
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
+      """)
 
     #expect(result.getInt() == 7)
   }
 
   @Test
   func `host getter that calls failing JS preserves the original error`() throws {
-    try runtime.eval("""
-      globalThis.throwTagged = function () {
-        const e = new Error('inner failure');
-        e.code = 'ERR_INNER';
-        throw e;
-      };
-    """)
-    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+    try runtime.eval(
+      """
+        globalThis.throwTagged = function () {
+          const e = new Error('inner failure');
+          e.code = 'ERR_INNER';
+          throw e;
+        };
+      """)
+    let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
       get: { _ in
@@ -473,9 +485,11 @@ struct JavaScriptRuntimeTests {
     )
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo; null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
 
     #expect(result[0].getString() == "inner failure")
     #expect(result[1].getString() == "ERR_INNER")
@@ -483,14 +497,15 @@ struct JavaScriptRuntimeTests {
 
   @Test
   func `host setter that calls failing JS preserves the original error`() throws {
-    try runtime.eval("""
-      globalThis.throwTagged = function () {
-        const e = new Error('inner setter failure');
-        e.code = 'ERR_SETTER';
-        throw e;
-      };
-    """)
-    let throwTagged = runtime.global().getPropertyAsFunction("throwTagged")
+    try runtime.eval(
+      """
+        globalThis.throwTagged = function () {
+          const e = new Error('inner setter failure');
+          e.code = 'ERR_SETTER';
+          throw e;
+        };
+      """)
+    let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
       get: { _ in .undefined },
@@ -500,9 +515,11 @@ struct JavaScriptRuntimeTests {
     )
     runtime.global().setProperty("hostObj", value: hostObject.asValue())
 
-    let result = try runtime.eval("""
-      try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        try { globalThis.hostObj.foo = 1; null } catch (e) { [e.message, e.code] }
+      """
+    ).getArray()
 
     #expect(result[0].getString() == "inner setter failure")
     #expect(result[1].getString() == "ERR_SETTER")
@@ -522,9 +539,10 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("failing", value: fn.asValue())
 
-    let result = try runtime.eval("""
-      try { failing(); 'no error' } catch (e) { e.message }
-    """)
+    let result = try runtime.eval(
+      """
+        try { failing(); 'no error' } catch (e) { e.message }
+      """)
 
     #expect(result.getString().contains("something went wrong"))
   }
@@ -541,12 +559,14 @@ struct JavaScriptRuntimeTests {
 
     runtime.global().setProperty("throwIt", value: fn.asValue())
 
-    let result = try runtime.eval("""
-      var caught = false;
-      var message = '';
-      try { throwIt(); } catch (e) { caught = true; message = e.message; }
-      [caught, message]
-    """).getArray()
+    let result = try runtime.eval(
+      """
+        var caught = false;
+        var message = '';
+        try { throwIt(); } catch (e) { caught = true; message = e.message; }
+        [caught, message]
+      """
+    ).getArray()
 
     #expect(result[0].getBool() == true)
     #expect(result[1].getString().contains("custom error message"))
@@ -570,7 +590,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function returns promise`() throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
     let result = try fn.call()
 
@@ -581,7 +603,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function propagates promise construction failure`() throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
     runtime.global().setProperty("asyncFn", value: fn.asValue())
     try runtime.eval("globalThis.Promise = undefined")
@@ -594,7 +618,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function resolves with value`() async throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
 
     let result = try await fn.call().getPromise().await()
@@ -604,9 +630,12 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function receives arguments`() async throws {
     let fn = runtime.createAsyncFunction("add") { this, arguments in
+      // Decode phase: the buffer is only borrowed here and cannot escape into the body.
       let a = arguments[0].getInt()
       let b = arguments[1].getInt()
-      return JavaScriptValue(self.runtime, a + b)
+      return {
+        return JavaScriptValue(self.runtime, a + b)
+      }
     }
 
     let result = try await fn.call(arguments: 20, 22).getPromise().await()
@@ -614,13 +643,15 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
-  func `async function rejects on error`() async throws {
+  func `async function rejects on error thrown from the body`() async throws {
     struct TestError: Error {
       var localizedDescription: String { "something went wrong" }
     }
 
     let fn = runtime.createAsyncFunction("failing") { this, arguments in
-      throw TestError()
+      return {
+        throw TestError()
+      }
     }
 
     await #expect(throws: Error.self) {
@@ -629,16 +660,84 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `async function rejects on error thrown from the decode phase`() async throws {
+    struct TestError: Error {
+      var localizedDescription: String { "something went wrong" }
+    }
+
+    let fn = runtime.createAsyncFunction("failing") { this, arguments in
+      throw TestError()
+    }
+
+    // The closure throws before any suspension, but the call itself must not throw —
+    // matching JavaScript's async-function semantics, the returned promise rejects instead.
+    let promise = try fn.call().getPromise()
+    await #expect(throws: Error.self) {
+      try await promise.await()
+    }
+  }
+
+  @Test
   func `async function callable from JavaScript`() async throws {
     let fn = runtime.createAsyncFunction("greet") { this, arguments in
       let name = arguments[0].getString()
-      return JavaScriptValue(self.runtime, "Hello, \(name)!")
+      return {
+        return JavaScriptValue(self.runtime, "Hello, \(name)!")
+      }
     }
 
     runtime.global().setProperty("greet", value: fn.asValue())
     let result = try await runtime.evalAsync("Promise.resolve(greet('World'))")
 
     #expect(result.getString() == "Hello, World!")
+  }
+
+  @Test
+  func `async function call dropped by a dying scheduler does not touch a freed runtime`() throws {
+    // Regression test for the reload crash (#47716): the React runtime scheduler tears down with
+    // async host function tasks still queued, and the dropped task closures used to own a copy of
+    // the arguments buffer (and `this`). Their `jsi::Value` destructors then ran wherever the
+    // dropped closures were released, against the already destroyed Hermes runtime — the
+    // `JavaScriptValuesBuffer.deinit` use-after-free. With the two-phase `AsyncFunctionClosure`,
+    // the decode happens within the host call and the scheduled task captures no JSI-owned values,
+    // so dropping it after teardown is harmless.
+    heldSchedulerTasks.removeAll()
+    do {
+      let baseRuntime = JavaScriptRuntime()
+      let schedulerRuntime = baseRuntime.withUnsafePointee { pointer in
+        JavaScriptRuntime(
+          unsafePointer: pointer,
+          // Opaque scheduler handle, never dereferenced by `holdSchedulerTask`.
+          scheduler: UnsafeMutableRawPointer(bitPattern: 0x1)!,
+          dispatch: unsafeBitCast(holdSchedulerTask, to: UnsafeRawPointer.self)
+        )
+      }
+      // The body deliberately captures nothing: a captured runtime wrapper would outlive the
+      // runtime inside the dropped task and tear down its cached `jsi::PropNameID`s against freed
+      // memory — a separate, pre-existing hazard of wrappers outliving their runtime.
+      let fn = schedulerRuntime.createAsyncFunction("asyncFn") { this, arguments in
+        return {
+          return .undefined
+        }
+      }
+      // Call with a JS object argument — the kind whose destruction after teardown crashes.
+      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue())
+      // The decode phase ran synchronously within the call; the async body is queued on the
+      // scheduler, emulating a task that React never gets to run before the reload.
+      #expect(heldSchedulerTasks.count == 1)
+      // Leaving the scope destroys the Hermes runtime (emulating the reload) while the scheduler
+      // still holds the task. The teardown sweep releases the promise's JSI state on this thread.
+    }
+    // The dying scheduler drops the task without ever running it. Releasing the last reference to
+    // its closure must not touch the freed runtime — this is the crash point of #47716. Drained
+    // through a local copy defensively: releasing a task can schedule follow-up work (e.g. the
+    // promise wrapper's deinit schedules its cleanup while its runtime is still alive), which
+    // would append to `heldSchedulerTasks` while `removeAll()` is mutating it.
+    do {
+      let droppedTasks = heldSchedulerTasks
+      heldSchedulerTasks.removeAll()
+      _ = consume droppedTasks
+    }
   }
 
   // MARK: - Class creation
@@ -754,7 +853,105 @@ struct JavaScriptRuntimeTests {
     let result = try newRuntime.eval("1 + 2")
     #expect(result.getInt() == 3)
   }
+
+  @Test
+  func `id is equal across wrappers of the same underlying runtime`() {
+    // A second wrapper around the same underlying `jsi::Runtime` shares the runtime's identity, even
+    // though it is a distinct `JavaScriptRuntime` instance (so `===` differs). This is the guarantee
+    // `id` provides over wrapper identity.
+    let otherWrapper = runtime.withUnsafePointee { JavaScriptRuntime(unsafePointer: $0) }
+    #expect(otherWrapper.id == runtime.id)
+    #expect(otherWrapper !== runtime)
+  }
+
+  @Test
+  func `id differs between distinct runtimes`() {
+    let otherRuntime = JavaScriptRuntime()
+    #expect(otherRuntime.id != runtime.id)
+  }
+
+  @Test
+  func `creating and releasing standalone runtimes repeatedly does not crash`() throws {
+    // Each standalone runtime owns its Hermes runtime and destroys it on `deinit`. Cycling through
+    // many create/use/release rounds exercises that teardown and would surface a use-after-free or
+    // double-free (destroying a runtime must not corrupt a subsequently created one). Calling `is`
+    // caches a `PropNameID` on the runtime, so this also covers releasing cached JSI objects before
+    // the runtime is freed.
+    for index in 0..<20 {
+      let localRuntime = JavaScriptRuntime()
+      let value = try localRuntime.eval("({ index: \(index) })")
+      #expect(value.is("Object") == true)
+      #expect(value.getObject().getProperty("index").getInt() == index)
+    }
+  }
+
+  // MARK: - Long-lived objects teardown
+
+  /// Records whether `allowRelease()` was called.
+  final class TrackedObject: LongLivedObject {
+    private(set) var released = false
+
+    func allowRelease() {
+      released = true
+    }
+  }
+
+  @Test
+  func `tearing down the runtime clears its long-lived objects`() {
+    let tracked = TrackedObject()
+
+    do {
+      let localRuntime = JavaScriptRuntime()
+      localRuntime.longLivedObjects.add(tracked)
+      #expect(localRuntime.longLivedObjects.count == 1)
+      // Leaving the scope releases the runtime. Its `deinit` destroys the owned Hermes runtime,
+      // tearing down the JS heap, which drops the teardown object's native state and fires its
+      // deallocator, sweeping the collection.
+    }
+
+    #expect(tracked.released == true)
+  }
+
+  @Test
+  func `an object removed before teardown is not released by the sweep`() {
+    let tracked = TrackedObject()
+
+    do {
+      let localRuntime = JavaScriptRuntime()
+      localRuntime.longLivedObjects.add(tracked)
+      localRuntime.longLivedObjects.remove(tracked)
+    }
+
+    #expect(tracked.released == false)
+  }
+
+  @Test
+  func `wrapping the same runtime again does not sweep the first wrapper's objects`() {
+    // Each wrapper pins its own teardown object under a per-wrapper property name. A second wrapper
+    // of the same underlying runtime must not overwrite the first's pinned object (which would let
+    // it be collected early and sweep the first wrapper's collection while the runtime is alive).
+    let tracked = TrackedObject()
+    runtime.longLivedObjects.add(tracked)
+    _ = runtime.withUnsafePointee { JavaScriptRuntime(unsafePointer: $0) }
+    #expect(tracked.released == false)
+    #expect(runtime.longLivedObjects.count == 1)
+  }
 }
+
+/// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
+/// `RuntimeScheduler` that is torn down with work still queued (the #47716 reload scenario).
+/// Safe without synchronization: the dispatch always runs synchronously on the test's thread.
+nonisolated(unsafe) private var heldSchedulerTasks: [() -> Void] = []
+
+/// A `dispatch` trampoline for `JavaScriptRuntime.init(unsafePointer:scheduler:dispatch:)` that
+/// holds the scheduled tasks instead of running them, so a test controls when (and whether) they
+/// are released. Matches `expo.RuntimeScheduler.ScheduleFn`.
+private let holdSchedulerTask:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { _, _, callback in
+    heldSchedulerTasks.append(callback)
+  }
 
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the
 /// async test. The thread has a real run loop, which the cross-thread `execute` path pumps.

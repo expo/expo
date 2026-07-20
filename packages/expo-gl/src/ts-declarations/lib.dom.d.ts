@@ -1,3 +1,5 @@
-declare const global: Global & {
-  __EXGLContexts?: Record<string, any>;
-};
+export {};
+
+declare global {
+  var __EXGLContexts: Record<string, any> | undefined;
+}

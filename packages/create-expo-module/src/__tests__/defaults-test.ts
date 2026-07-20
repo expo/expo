@@ -28,8 +28,8 @@ describe('buildDefaultsWarning', () => {
       { field: 'authorName', value: 'Jane' },
     ])!;
     const lines = result.split('\n').slice(1, -1); // skip header and footer
-    const col0 = lines[0].indexOf('MyModule');
-    const col1 = lines[1].indexOf('Jane');
+    const col0 = lines[0]!.indexOf('MyModule');
+    const col1 = lines[1]!.indexOf('Jane');
     expect(col0).toBe(col1);
   });
 

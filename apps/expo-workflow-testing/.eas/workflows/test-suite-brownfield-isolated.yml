@@ -11,6 +11,10 @@ on:
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
   pull_request:
     paths:
       - apps/expo-workflow-testing/.eas/workflows/test-suite-brownfield-isolated.yml
@@ -19,6 +23,10 @@ on:
       - '!**/*.md'
       - '!**/__tests__/**'
       - '!**/__mocks__/**'
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/communication.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/navigation.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/dev-menu.yml
+      - packages/expo-brownfield/e2e/maestro/__tests__/common/_nested-flows/**
 
 concurrency:
   group: ${{ workflow.filename }}-${{ github.ref }}
@@ -27,6 +35,7 @@ concurrency:
 defaults:
   tools:
     node: 22.14.0
+    pnpm: '10.34.5'
 
 jobs:
   detect_platform:
@@ -62,8 +71,6 @@ jobs:
       - uses: eas/checkout
       - uses: eas/use_npm_token
       - uses: eas/install_node_modules
-      - name: Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
       - name: Remove EAS Gradle init script
         run: rm -f /home/expo/.gradle/init.gradle
       - name: Build and publish Android brownfield artifacts
@@ -136,8 +143,6 @@ jobs:
           platform: ios
       - name: Install xcodeproj gem
         run: gem install xcodeproj
-      - name: Build Expo CLI
-        run: pnpm --filter @expo/cli prepare
       - name: Build iOS artifacts (Release)
         working_directory: ../brownfield-tester/expo-app
         run: |

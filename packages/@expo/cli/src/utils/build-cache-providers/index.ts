@@ -8,12 +8,11 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
 import * as Log from '../../log';
+import { debugEvent } from '../../run/events';
 import { ensureDependenciesAsync } from '../../start/doctor/dependencies/ensureDependenciesAsync';
 import { CommandError } from '../errors';
-
-const debug = require('debug')('expo:run:build-cache-provider') as typeof console.log;
+import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
 
 export const resolveBuildCacheProvider = async (
   provider: Required<ExpoConfig>['buildCacheProvider'] | undefined,
@@ -119,7 +118,7 @@ export async function uploadBuildCache({
     runOptions,
   });
   if (!fingerprintHash) {
-    debug('No fingerprint hash found, skipping upload');
+    debugEvent('build_cache:no_fingerprint', {});
     return;
   }
 

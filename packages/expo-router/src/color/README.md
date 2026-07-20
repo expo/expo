@@ -4,16 +4,11 @@ Android color types were generated from the [Android documentation](https://deve
 
 ```js
 function scrapColorsWithAPILevels() {
-  const colors = Array.from(
-    document.querySelectorAll("div[data-version-added]")
-  )
+  const colors = Array.from(document.querySelectorAll('div[data-version-added]'))
     .map((div) => {
-      const name = div.querySelector("h3.api-name")?.getAttribute("data-text");
-      const addedIn = parseInt(div.getAttribute("data-version-added"), 10);
-      const deprecatedIn = parseInt(
-        div.getAttribute("data-version-deprecated"),
-        10
-      );
+      const name = div.querySelector('h3.api-name')?.getAttribute('data-text');
+      const addedIn = parseInt(div.getAttribute('data-version-added'), 10);
+      const deprecatedIn = parseInt(div.getAttribute('data-version-deprecated'), 10);
 
       return { name, addedIn, deprecatedIn };
     })
@@ -21,7 +16,7 @@ function scrapColorsWithAPILevels() {
   const grouped = {};
 
   for (const c of colors) {
-    if(!c.deprecatedIn) {
+    if (!c.deprecatedIn) {
       if (!grouped[c.addedIn]) grouped[c.addedIn] = [];
       grouped[c.addedIn].push(c.name);
     }
@@ -31,11 +26,9 @@ function scrapColorsWithAPILevels() {
   const deprecated = colors.filter((c) => c.deprecatedIn).map((c) => c.name);
 
   // --- Generate TS output ---
-  let output = "";
+  let output = '';
 
-  for (const sdk of Object.keys(grouped).sort(
-    (a, b) => Number(a) - Number(b)
-  )) {
+  for (const sdk of Object.keys(grouped).sort((a, b) => Number(a) - Number(b))) {
     const names = grouped[sdk];
     output += `export interface AndroidBaseColorSDK${sdk} {\n`;
     for (const n of names) {
@@ -74,24 +67,19 @@ Android attr types were generated from the [Android documentation](https://devel
 
 ```js
 function scrapColorsAttrWithAPILevels() {
-  const colors = Array.from(
-    document.querySelectorAll("div[data-version-added]")
-  )
+  const colors = Array.from(document.querySelectorAll('div[data-version-added]'))
     .map((div) => {
-      const name = div.querySelector("h3.api-name")?.getAttribute("data-text");
-      const addedIn = parseInt(div.getAttribute("data-version-added"), 10);
-      const deprecatedIn = parseInt(
-        div.getAttribute("data-version-deprecated"),
-        10
-      );
+      const name = div.querySelector('h3.api-name')?.getAttribute('data-text');
+      const addedIn = parseInt(div.getAttribute('data-version-added'), 10);
+      const deprecatedIn = parseInt(div.getAttribute('data-version-deprecated'), 10);
 
       return { name, addedIn, deprecatedIn };
     })
-    .filter((c) => c.name && !isNaN(c.addedIn) && c.name.startsWith("color") && c.name !== "color");
+    .filter((c) => c.name && !isNaN(c.addedIn) && c.name.startsWith('color') && c.name !== 'color');
   const grouped = {};
 
   for (const c of colors) {
-    if(!c.deprecatedIn) {
+    if (!c.deprecatedIn) {
       if (!grouped[c.addedIn]) grouped[c.addedIn] = [];
       grouped[c.addedIn].push(c.name);
     }
@@ -101,11 +89,9 @@ function scrapColorsAttrWithAPILevels() {
   const deprecated = colors.filter((c) => c.deprecatedIn).map((c) => c.name);
 
   // --- Generate TS output ---
-  let output = "";
+  let output = '';
 
-  for (const sdk of Object.keys(grouped).sort(
-    (a, b) => Number(a) - Number(b)
-  )) {
+  for (const sdk of Object.keys(grouped).sort((a, b) => Number(a) - Number(b))) {
     const names = grouped[sdk];
     output += `export interface AndroidColorAttrSDK${sdk} {\n`;
     for (const n of names) {

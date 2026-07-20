@@ -1,5 +1,7 @@
 import AppMetrics from 'expo-app-metrics';
 
+import type { ObserveIntegrationsConfig } from '../../types';
+import { getNavigationMetricParams } from '../navigationConfig';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
@@ -11,11 +13,14 @@ import { type RouterIntegrationStorage } from './storage';
 // relying on the web stubs in `expo-app-metrics/module.web.ts`.
 
 let initialized = false;
+let routerIntegrationConfig: ObserveIntegrationsConfig['expo-router'];
 
 export const isInitialized = () => initialized;
+export const getRouterIntegrationConfig = () => routerIntegrationConfig;
 
-export function initRouterIntegration() {
+export function initRouterIntegration(config?: ObserveIntegrationsConfig['expo-router']) {
   initialized = true;
+  routerIntegrationConfig = config;
   optionalRouter?.unstable_navigationEvents.enable();
 }
 
@@ -48,8 +53,8 @@ export function initListeners(
 
   const unsubscribeFocus = navigationEvents.addListener('pageFocused', async (e) => {
     // Snapshot both clocks once so every metric written below is stamped with
-    // the moment the focus event fired, not the moment `addCustomMetricToSession`
-    // happens to run after the awaited `getMainSession()` round-trip.
+    // the moment the focus event fired, not the moment `addMetric` happens to run
+    // after the surrounding async work.
     const now = performance.now();
     const timestamp = new Date().toISOString();
 
@@ -100,28 +105,31 @@ export function initListeners(
       storage.interactiveScreensIds.add(e.screenId);
     }
 
-    // All async work happens after storage is updated.
-    const mainSessionId = (await AppMetrics.getMainSession())?.id;
-    if (!mainSessionId) return;
+    const mainSession = AppMetrics.getMainSession();
+    const navigationParams = getNavigationMetricParams(
+      routerIntegrationConfig,
+      e.params,
+      e.pathname
+    );
 
-    AppMetrics.addCustomMetricToSession({
-      sessionId: mainSessionId,
+    mainSession.addMetric({
       timestamp,
       category: 'navigation',
       name,
       routeName: routePattern,
       value: ttrSeconds,
-      params: { isAppLaunch, routeParams: e.params, url: e.pathname },
+      params: { isAppLaunch, ...navigationParams },
     });
     if (hasPendingInteractive) {
       await emitTTI({
-        sessionId: mainSessionId,
+        session: mainSession,
         timestamp,
         routeName: routePattern,
         value: ttrSeconds,
         isAppLaunch,
         routeParams: e.params,
         url: e.pathname,
+        config: routerIntegrationConfig,
       });
     }
   });

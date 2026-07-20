@@ -15,7 +15,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
@@ -67,7 +67,7 @@ fun Onboarding(onOnboardingFinished: () -> Unit = {}) {
 
     Spacer(NewAppTheme.spacing.`3`)
 
-    Button(
+    UnstyledButton(
       onClick = onOnboardingFinished,
       shape = RoundedCornerShape(NewAppTheme.borderRadius.md),
       backgroundColor = NewAppTheme.colors.buttons.primary.background,

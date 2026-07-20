@@ -1,13 +1,13 @@
 import crypto from 'node:crypto';
 
-import { FetchClient } from './clients/FetchClient';
-import { FetchDetachedClient } from './clients/FetchDetachedClient';
-import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
-import { createContext } from './utils/context';
 import { getAnonymousId } from '../../api/user/UserSettings';
 import { env } from '../env';
-
-const debug = require('debug')('expo:telemetry') as typeof console.log;
+import { FetchClient } from './clients/FetchClient';
+import { FetchDetachedClient } from './clients/FetchDetachedClient';
+import { debugEvent as event } from './events';
+import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
+import { getAgentTelemetryContext } from './utils/agent';
+import { createContext } from './utils/context';
 
 type TelemetryOptions = {
   /** A locally generated ID, untracable to an actual user */
@@ -62,7 +62,7 @@ export class Telemetry {
     // Abort when debugging the telemetry
     if (env.EXPO_NO_TELEMETRY_DETACH && strategy !== 'debug') return;
 
-    debug('Switching strategy from %s to %s', this.client.strategy, strategy);
+    event('strategy_changed', { from: this.client.strategy, to: strategy! });
 
     // Load and instantiate the correct client, based on strategy
     const client = createClientFromStrategy(strategy);
@@ -90,6 +90,8 @@ export class Telemetry {
   }
 
   private recordInternal(records: TelemetryRecord[]) {
+    const agent = getAgentTelemetryContext();
+
     return this.client.record(
       records.map((record) => ({
         ...record,
@@ -101,6 +103,7 @@ export class Telemetry {
         context: {
           ...this.context,
           sessionId: this.actor.sessionId,
+          ...(agent ? { agent } : {}),
           client: { mode: this.client.strategy },
         },
       }))
@@ -109,8 +112,6 @@ export class Telemetry {
 
   record(record: TelemetryRecord | TelemetryRecord[]) {
     const records = Array.isArray(record) ? record : [record];
-
-    debug('Recording %d event(s)', records.length);
 
     if (!this.isInitialized) {
       this.earlyRecords.push(...records);
@@ -121,7 +122,6 @@ export class Telemetry {
   }
 
   flush() {
-    debug('Flushing events...');
     this.flushEarlyRecords();
     return this.client.flush();
   }

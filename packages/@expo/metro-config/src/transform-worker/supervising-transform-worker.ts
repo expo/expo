@@ -1,6 +1,7 @@
 import type { JsTransformerConfig, JsTransformOptions } from '@expo/metro/metro-transform-worker';
 import path from 'path';
 
+import { event } from './events';
 import * as worker from './metro-transform-worker';
 import type { TransformResponse } from './transform-worker';
 import { patchNodeModuleResolver } from './utils/moduleMapper';
@@ -13,10 +14,6 @@ declare module '@expo/metro/metro-transform-worker' {
     expo_customTransformerPath?: string;
   }
 }
-
-const debug = require('debug')(
-  'expo:metro-config:supervising-transform-worker'
-) as typeof console.log;
 
 const getCustomTransform = (() => {
   let _transformerPath: string | undefined;
@@ -47,14 +44,18 @@ const getCustomTransform = (() => {
       // We only load the user transformer once and cache it
       // If the user didn't add a custom transformer, we don't load it,
       // but the user maybe has a custom Babel transformer
-      debug(`Loading custom transformer at "${_transformerPath}"`);
       try {
         _transformer = require.call(null, _transformerPath);
+        event('custom_transformer:loaded', { path: _transformerPath });
       } catch (error: any) {
         // If the user's transformer throws and fails initialization, we customize the
         // error and output a path to the user to clarify that it's the transformer that
         // failed to initialize
         const relativeTransformerPath = path.relative(projectRoot, _transformerPath);
+        event('custom_transformer:failed', {
+          path: _transformerPath,
+          error: event.error(error as Error),
+        });
         throw new Error(
           `Your custom Metro transformer has failed to initialize. Check: "${relativeTransformerPath}"\n` +
             (typeof error.message === 'string' ? error.message : `${error}`)

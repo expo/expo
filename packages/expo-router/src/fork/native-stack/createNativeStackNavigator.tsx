@@ -1,9 +1,7 @@
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 
-import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
-import { DescriptorsContext } from './descriptors-context';
-import { usePreviewTransition } from './usePreviewTransition';
+import { useClearGuardedRoutes } from '../../layouts/useClearGuardedRoutes';
 import {
   INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
   type InternalNavigationOptions,
@@ -29,6 +27,9 @@ import {
   NativeStackView,
   type NativeStackNavigatorProps,
 } from '../../react-navigation/native-stack';
+import { CompositionContext, mergeOptions, useCompositionRegistry } from './composition-options';
+import { DescriptorsContext } from './descriptors-context';
+import { usePreviewTransition } from './usePreviewTransition';
 
 const GLASS = isLiquidGlassAvailable();
 
@@ -62,6 +63,8 @@ function NativeStackNavigator({
     screenLayout,
     UNSTABLE_router,
   });
+
+  useClearGuardedRoutes(state, navigation);
 
   React.useEffect(
     () =>

@@ -22,6 +22,8 @@ Expo UI BottomSheet matches the official SwiftUI [sheet API](<https://developer.
   alt="A BottomSheet at medium detent showing a Sort By list with Most Recent selected"
 />
 
+> **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
+
 ## Installation
 
 <APIInstallSection />
@@ -70,6 +72,47 @@ export default function BottomSheetFitsContentExample() {
             <Text>This sheet automatically sizes to fit its content.</Text>
             <Button label="Close" onPress={() => setIsPresented(false)} />
           </VStack>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Custom background color
+
+By default, a sheet uses the system's translucent material background (Liquid Glass on iOS 26). Use the [`presentationBackground`](modifiers/#presentationbackgroundcolor) modifier on `Group` to paint the sheet with a solid color instead, which also opts the sheet out of that translucent material.
+
+> **info** Prefer `presentationBackground` over a `background` modifier on the sheet's content. A `background` sits _behind_ the content's own background, so a `Form` or `List` covers it, and the color shows inconsistently as the sheet moves between detents. `presentationBackground` colors the sheet surface itself, so it stays consistent at every detent. When the content is a `Form` or `List`, also add [`scrollContentBackground('hidden')`](modifiers/#scrollcontentbackgroundvisible) so the sheet color shows through the grouped background.
+
+```tsx BottomSheetBackgroundColorExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  presentationBackground,
+  presentationDetents,
+  padding,
+  foregroundStyle,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function BottomSheetBackgroundColorExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <Group
+            modifiers={[
+              presentationDetents(['medium', 'large']),
+              presentationBackground('#ffffff'),
+            ]}>
+            <VStack modifiers={[padding({ all: 20 })]}>
+              <Text modifiers={[foregroundStyle('#000000')]}>Solid white sheet background.</Text>
+              <Button label="Close" onPress={() => setIsPresented(false)} />
+            </VStack>
+          </Group>
         </BottomSheet>
       </VStack>
     </Host>
@@ -323,6 +366,48 @@ export default function BottomSheetWithFlexRNContentExample() {
                 <RNText style={{ color: 'white', marginTop: 8 }}>
                   This content fills the available space in the sheet.
                 </RNText>
+              </View>
+            </RNHostView>
+          </Group>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Scrollable React Native content
+
+Nest a scrollable React Native list such as `FlatList`, `ScrollView`, or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list) inside the sheet with `RNHostView`. Size the sheet with [`presentationDetents`](modifiers/#presentationdetentsdetents-options) and the list scrolls within that height.
+
+```tsx BottomSheetWithScrollableContentExample.tsx
+import { useState } from 'react';
+import { FlatList, Text as RNText, View } from 'react-native';
+import { Host, BottomSheet, Button, Group, RNHostView, VStack } from '@expo/ui/swift-ui';
+import { presentationDetents, presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
+
+const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
+
+export default function BottomSheetWithScrollableContentExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host matchContents>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <Group
+            modifiers={[
+              presentationDetents(['medium', 'large']),
+              presentationDragIndicator('visible'),
+            ]}>
+            <RNHostView>
+              <View style={{ padding: 16 }}>
+                <FlatList
+                  data={DATA}
+                  keyExtractor={item => item}
+                  renderItem={({ item }) => <RNText style={{ paddingVertical: 16 }}>{item}</RNText>}
+                />
               </View>
             </RNHostView>
           </Group>

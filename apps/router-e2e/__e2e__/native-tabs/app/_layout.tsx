@@ -15,12 +15,21 @@ export default function Layout() {
   return (
     <ThemeProvider value={scheme === 'dark' ? DarkTheme : DefaultTheme}>
       <NativeTabs rippleColor="#f00" labelVisibilityMode="labeled">
-        <NativeTabs.Trigger name="index">
+        <NativeTabs.Trigger name="index" testID="index-tab" accessibilityLabel="Index tab">
           <NativeTabs.Trigger.Label>Index label</NativeTabs.Trigger.Label>
           <NativeTabs.Trigger.Icon sf="applewatch.side.right" md="watch" />
         </NativeTabs.Trigger>
-        <NativeTabs.Trigger name="nested" rippleColor="#0f0" indicatorColor="#ff0">
-          <NativeTabs.Trigger.Icon drawable="ic_lock_open" />
+        <NativeTabs.Trigger
+          name="nested"
+          rippleColor="#0f0"
+          indicatorColor="#ff0"
+          disabled
+          listeners={{
+            tabPress: () => {
+              console.log('disabled tab press');
+            },
+          }}>
+          <NativeTabs.Trigger.Icon drawable="ic_lock_open" sf="lock" />
           <NativeTabs.Trigger.Label hidden={Platform.OS !== 'web'} />
           <NativeTabs.Trigger.Badge>1</NativeTabs.Trigger.Badge>
         </NativeTabs.Trigger>

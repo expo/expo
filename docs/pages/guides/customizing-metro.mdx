@@ -18,7 +18,14 @@ You can customize the Metro bundler by creating a **metro.config.js** file at th
 
 Run the following command to generate the template file:
 
-<Terminal cmd={['$ npx expo customize metro.config.js']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo customize metro.config.js'],
+    yarn: ['$ yarn expo customize metro.config.js'],
+    pnpm: ['$ pnpm expo customize metro.config.js'],
+    bun: ['$ bun expo customize metro.config.js'],
+  }}
+/>
 
 The **metro.config.js** file looks as below:
 
@@ -174,7 +181,14 @@ Modify your [app config](/workflow/configuration) to enable the feature using th
 
 To start the development server run the following command:
 
-<Terminal cmd={['$ npx expo start --web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
 
 Alternatively, press <kbd>W</kbd> in the Expo CLI terminal UI.
 
@@ -194,7 +208,7 @@ In the future, this will work universally across platforms with EAS Update hosti
 
 Expo's Metro config supports the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's **tsconfig.json** (or **jsconfig.json**) file. This enables absolute imports and aliases in the project. See [TypeScript](/guides/typescript) guide for more information.
 
-This feature requires additional setup in bare projects. See the [Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
+This feature requires additional setup in [existing React Native projects](/bare/overview/). See the [Metro setup guide](/versions/latest/config/metro#existing-react-native-apps) for more information.
 
 ## CSS
 

@@ -1,12 +1,14 @@
 import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
 import { use, useCallback, useEffect, useRef } from 'react';
 
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
+import { getNavigationRouteParams } from '../navigationConfig';
 import { ObserveReactNavigationIntegrationContext } from './context';
 import { emitTTI } from './emitTTI';
-import { isInitialized } from './init';
+import { getPathname } from './getPathname';
+import { getReactNavigationIntegrationConfig, isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
 import type { NavigationStateLike } from './types';
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 type MarkInteractive = (typeof AppMetrics)['markInteractive'];
 
@@ -17,6 +19,7 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
   const route = optionalReactNavigation?.useRoute();
   const navigation = optionalReactNavigation?.useNavigation();
   const stateForPath = optionalReactNavigation?.useStateForPath();
+  const reactNavigationIntegrationConfig = getReactNavigationIntegrationConfig();
 
   useAssertValueDoesNotChange(
     initialized,
@@ -59,21 +62,24 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
 
       if (!contextValue) {
         throw new Error(
-          '[expo-observe] markInteractive was called without an active ObserveNavigationContainer. Wrap your tree in <ObserveNavigationContainer>.'
+          '[expo-observe] markInteractive was called without an active React Navigation integration. Wrap your tree in <ObserveNavigationContainer>, or <ObserveNavigationProvider>.'
         );
       }
-      const { storage, getPathname } = contextValue;
+      const { storage } = contextValue;
 
       if (!route) {
         return;
       }
       // `useStateForPath` returns the navigation state subtree rooted at the
       // current screen's path, not the full root state. That's intentional:
-      // `getPathFromState` only walks routes/state/params downward, so feeding
+      // `getPathname` only walks the focused route chain downward, so feeding
       // it the subtree produces the same pathname as the full state without
       // requiring access to the root navigation state from inside a leaf hook.
       const pathname = getPathname(stateForPath as NavigationStateLike | undefined) ?? route.name;
-      const routeParams = (route.params as object | undefined) ?? {};
+      const navigationParams = getNavigationRouteParams(
+        reactNavigationIntegrationConfig,
+        (route.params as object | undefined) ?? {}
+      );
 
       // Snapshot times BEFORE writing the new interactive timestamp so the
       // duplicate-detection logic below sees the previous call, not this one.
@@ -111,18 +117,15 @@ export function useObserveForReactNavigation(): MarkInteractive | null {
       }
 
       const interactiveTimeSeconds = (now - currentScreenData.dispatchTime) / 1000;
-      const mainSessionId = (await AppMetrics.getMainSession())?.id;
-      if (mainSessionId) {
-        await emitTTI({
-          sessionId: mainSessionId,
-          timestamp,
-          routeName: pathname,
-          value: interactiveTimeSeconds,
-          routeParams,
-        });
-      }
+      await emitTTI({
+        session: AppMetrics.getMainSession(),
+        timestamp,
+        routeName: pathname,
+        value: interactiveTimeSeconds,
+        ...navigationParams,
+      });
     },
-    [screenId, navigation, route, contextValue, stateForPath]
+    [screenId, navigation, route, contextValue, stateForPath, reactNavigationIntegrationConfig]
   );
 
   return initialized ? markInteractive : null;

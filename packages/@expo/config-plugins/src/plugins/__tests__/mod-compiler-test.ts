@@ -55,7 +55,9 @@ describe(compileModsAsync, () => {
     expect(config.ios?.infoPlist).toBeUndefined();
     expect(config.ios?.entitlements).toBeUndefined();
     // Adds base mods
-    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(
+      true
+    );
 
     expect(action).not.toHaveBeenCalled();
   });
@@ -98,7 +100,9 @@ describe(compileModsAsync, () => {
     expect(config.ios?.infoPlist).toBeUndefined();
     expect(config.ios?.entitlements).toBeUndefined();
     // Adds base mods
-    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(
+      true
+    );
   });
 
   it('compiles mods', async () => {
@@ -111,7 +115,7 @@ describe(compileModsAsync, () => {
         ios: {
           async infoPlist(config) {
             // Store the incoming value
-            internalValue = config.modResults.CFBundleDevelopmentRegion;
+            internalValue = config.modResults.CFBundleDevelopmentRegion!;
             // Modify the data
             config.modResults.CFBundleDevelopmentRegion =
               'CFBundleDevelopmentRegion-crazy-random-value';
@@ -128,12 +132,14 @@ describe(compileModsAsync, () => {
 
     // App config should have been modified
     expect(config.name).toBe('app');
-    expect(config.ios.infoPlist).toBeDefined();
+    expect(config.ios!.infoPlist).toBeDefined();
     // No entitlements mod means this won't be defined
-    expect(config.ios.entitlements).toBeUndefined();
+    expect(config.ios!.entitlements).toBeUndefined();
 
     // Plugins should all be functions
-    expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
+    expect(Object.values(config.mods!.ios!).every((value) => typeof value === 'function')).toBe(
+      true
+    );
 
     // Test that the actual file was rewritten.
     const data = await fs.promises.readFile('/app/ios/HelloWorld/Info.plist', 'utf8');
@@ -166,7 +172,7 @@ describe(compileModsAsync, () => {
 
 describe(sortMods, () => {
   it('should sort the commands based on precedences', () => {
-    const commands = [
+    const commands: [string, any][] = [
       ['command1', { data: 'command1Data' }],
       ['command2', { data: 'command2Data' }],
       ['command3', { data: 'command3Data' }],
@@ -187,7 +193,7 @@ describe(sortMods, () => {
   });
 
   it('should handle commands with missing precedences', () => {
-    const commands = [
+    const commands: [string, any][] = [
       ['command1', { data: 'command1Data' }],
       ['command2', { data: 'command2Data' }],
       ['command3', { data: 'command3Data' }],
@@ -226,7 +232,7 @@ describe(sortMods, () => {
   });
 
   it('should deduplicate commands by keys and keep the first occurrence', () => {
-    const commands = [
+    const commands: [string, any][] = [
       ['command1', { data: 'command1Data' }],
       ['command2', { data: 'command2Data' }],
       ['command3', { data: 'command3Data' }],
@@ -248,7 +254,7 @@ describe(sortMods, () => {
   });
 
   it('should sort negative precedence values at first', () => {
-    const commands = [
+    const commands: [string, any][] = [
       ['command1', { data: 'command1Data' }],
       ['command2', { data: 'command2Data' }],
       ['command3', { data: 'command3Data' }],

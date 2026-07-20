@@ -7,13 +7,6 @@ import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 
-import { compileAsync } from './compile';
-import {
-  importExpoWebpackConfigFromProject,
-  importWebpackDevServerFromProject,
-  importWebpackFromProject,
-} from './resolveFromProject';
-import { ensureEnvironmentSupportsTLSAsync } from './tls';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
@@ -23,8 +16,13 @@ import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { BundlerDevServer } from '../BundlerDevServer';
-
-const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
+import { compileAsync } from './compile';
+import {
+  importExpoWebpackConfigFromProject,
+  importWebpackDevServerFromProject,
+  importWebpackFromProject,
+} from './resolveFromProject';
+import { ensureEnvironmentSupportsTLSAsync } from './tls';
 
 export type WebpackConfiguration = webpack.Configuration & {
   devServer?: {
@@ -170,14 +168,11 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       },
     });
 
-    debug('Starting webpack on port: ' + port);
-
     if (resetDevServer) {
       await this.clearWebProjectCacheAsync(this.projectRoot, mode);
     }
 
     if (https) {
-      debug('Configuring TLS to enable HTTPS support');
       await ensureEnvironmentSupportsTLSAsync(this.projectRoot).catch((error) => {
         Log.error(`Error creating TLS certificates: ${error}`);
       });

@@ -1,9 +1,9 @@
 'use strict';
-import { fetch } from 'expo/fetch';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
 import { File, Directory, Paths, FileMode } from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
+import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 export const name = 'FileSystem';

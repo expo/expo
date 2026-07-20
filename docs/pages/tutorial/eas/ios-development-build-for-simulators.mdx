@@ -128,7 +128,14 @@ You can use [Expo Orbit](https://expo.dev/orbit) to install the development buil
 
 Start the development server by running the `npx expo start` command from the project directory:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 Press <kbd>I</kbd> in the terminal window to open the project on the iOS Simulator.
 
@@ -137,10 +144,6 @@ Press <kbd>I</kbd> in the terminal window to open the project on the iOS Simulat
 ## Summary
 
 <ProgressTracker
-  currentChapterIndex={2}
   name="EAS_TUTORIAL"
-  summary="We successfully used EAS Build to create and run development builds on iOS Simulators."
-  nextChapterDescription="In the next chapter, let's create a development build for iOS, install it on a device, and get it running."
-  nextChapterTitle="Create and run a cloud build for iOS device"
-  nextChapterLink="/tutorial/eas/ios-development-build-for-devices/"
+  currentChapterSlug="/tutorial/eas/ios-development-build-for-simulators"
 />

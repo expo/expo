@@ -146,3 +146,30 @@ export async function pathExistsAsync(filePath: string): Promise<boolean> {
     return false;
   }
 }
+
+/**
+ * Given a posix path inside `node_modules`, return the owning package's `package.json` path.
+ * Returns null when the path is not inside `node_modules`. Handles scoped packages (`@scope/name`).
+ */
+export function getNodeModulesPackageJsonPath(relativePosixPath: string): string | null {
+  const marker = 'node_modules/';
+  const markerIndex = relativePosixPath.lastIndexOf(marker);
+  if (markerIndex === -1) {
+    return null;
+  }
+  const prefix = relativePosixPath.slice(0, markerIndex + marker.length);
+  const segments = relativePosixPath.slice(markerIndex + marker.length).split('/');
+  if (!segments[0]) {
+    return null;
+  }
+  let packageDir: string;
+  if (segments[0].startsWith('@')) {
+    if (!segments[1]) {
+      return null;
+    }
+    packageDir = `${prefix}${segments[0]}/${segments[1]}`;
+  } else {
+    packageDir = `${prefix}${segments[0]}`;
+  }
+  return `${packageDir}/package.json`;
+}

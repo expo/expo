@@ -29,14 +29,14 @@ We recommend creating a new Expo app using `create-expo-app` to create a project
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
-    yarn: ['$ yarn create expo-app --template default@sdk-56'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
-    bun: ['$ bun create expo --template default@sdk-56'],
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+    bun: ['$ bun create expo --template default@sdk-57'],
   }}
 />
 
-> **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project.
+> **Note:** During the SDK 57 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-57` to create an SDK 57 project.
 
 </Step>
 
@@ -44,7 +44,14 @@ We recommend creating a new Expo app using `create-expo-app` to create a project
 
 Now, you can start your project by running:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 - To view your app on a mobile device, we recommend starting with [Expo Go](/get-started/set-up-your-environment/#how-would-you-like-to-develop). As your application grows in complexity and you need more control, you can create a [development build](/develop/development-builds/introduction/).
 - Open the project in a web browser by pressing <kbd>W</kbd> in the Terminal UI. Press <kbd>A</kbd> for Android (Android Studio is required), or <kbd>I</kbd> for iOS (macOS with Xcode is required).

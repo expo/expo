@@ -2,21 +2,52 @@
   "name": "@expo/metro-config",
   "version": "56.0.13",
   "description": "A Metro config for running React Native projects with the Metro bundler",
+  "keywords": [
+    "expo",
+    "metro"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-config#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/metro-config"
+  },
+  "files": [
+    "build",
+    "file-store",
+    "babel-transformer"
+  ],
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
     ".": {
-      "types": "./build/index.d.ts",
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
       "require": "./build/index.js",
       "default": "./build/index.js"
     },
     "./babel-transformer": {
-      "types": "./build/babel-transformer.d.ts",
+      "types": {
+        "expo-source": "./src/babel-transformer.ts",
+        "default": "./build/babel-transformer.d.ts"
+      },
+      "expo-source": "./src/babel-transformer.ts",
       "require": "./build/babel-transformer.js",
       "default": "./build/babel-transformer.js"
     },
     "./file-store": {
-      "types": "./build/file-store.d.ts",
+      "types": {
+        "expo-source": "./src/file-store.ts",
+        "default": "./build/file-store.d.ts"
+      },
+      "expo-source": "./src/file-store.ts",
       "require": "./build/file-store.js",
       "default": "./build/file-store.js"
     },
@@ -26,35 +57,21 @@
     "./*": "./*.js",
     "./*.js": "./*.js"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
-    "build": "expo-module tsc",
+    "build": "expo-build cjs:src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "prepublishOnly": "pnpm run clean && pnpm run build",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck",
-    "watch": "expo-module tsc --watch --preserveWatchOutput"
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/expo/expo.git",
-    "directory": "packages/@expo/metro-config"
-  },
-  "keywords": [
-    "expo",
-    "metro"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/metro-config#readme",
-  "files": [
-    "build",
-    "file-store",
-    "babel-transformer"
-  ],
   "dependencies": {
+    "2g": "^0.4.3",
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
@@ -72,21 +89,12 @@
     "debug": "^4.3.2",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
-    "hermes-parser": "^0.33.3",
+    "hermes-parser": "^0.36.0",
     "jsc-safe-url": "^0.2.4",
     "lightningcss": "^1.30.1",
-    "msgpackr": "^2.0.1",
     "picomatch": "^4.0.4",
     "postcss": "^8.5.14",
     "resolve-from": "^5.0.0"
-  },
-  "peerDependencies": {
-    "expo": "*"
-  },
-  "peerDependenciesMeta": {
-    "expo": {
-      "optional": true
-    }
   },
   "devDependencies": {
     "@jridgewell/trace-mapping": "^0.3.31",
@@ -96,12 +104,17 @@
     "@types/getenv": "^1.0.0",
     "@types/picomatch": "^4.0.2",
     "dedent": "^1.5.3",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0",
     "metro-minify-terser": "^0.84.2",
     "sass": "^1.60.0"
   },
-  "publishConfig": {
-    "access": "public"
+  "peerDependencies": {
+    "expo": "*"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
   }
 }

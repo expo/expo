@@ -6,9 +6,16 @@
 
 ### 🎉 New features
 
+- [Android] Add `android.cmakeVersion` to override the CMake version used to build native code. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
+- [Android] Make the precompiled header reusable by passing `-Xclang -fno-pch-timestamp`, so ccache can reuse it across builds. ([#46915](https://github.com/expo/expo/pull/46915) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Pin the C++ dialect of PCH consumer targets to `-std=c++20`. ([#47788](https://github.com/expo/expo/pull/47788) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
+
+- [Android] Compile the precompiled header once in a shared owner target and reuse it across all codegen targets, instead of building a separate PCH per target. ([#46915](https://github.com/expo/expo/pull/46915) by [@lukmccall](https://github.com/lukmccall))
 
 ## 56.0.15 — 2026-05-26
 

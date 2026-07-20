@@ -6,7 +6,13 @@
 
 ### 🎉 New features
 
+- [iOS] Add `cancelButtonTitle` and `showsCancelButton` options to contact forms. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Add `preventAnimation` option to `presentCreateForm`. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🐛 Bug fixes
+
+- [iOS] Fix `ContactField.THUMBNAIL` crash in bulk `getAllDetails` by reading `thumbnailImageData` instead of `imageData`. ([#47779](https://github.com/expo/expo/pull/47779) by [@hryhoriiK97](https://github.com/hryhoriiK97))
+- Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 

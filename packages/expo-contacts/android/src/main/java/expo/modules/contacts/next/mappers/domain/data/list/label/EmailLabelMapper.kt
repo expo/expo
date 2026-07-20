@@ -30,6 +30,8 @@ object EmailLabelMapper {
       is EmailLabel.Mobile -> "mobile"
       is EmailLabel.Other -> "other"
       is EmailLabel.Custom -> label.label
+      is EmailLabel.MalformedType -> label.label
+      is EmailLabel.MalformedCustom -> null
     }
   }
 }

@@ -47,6 +47,8 @@ const swiftDeclarationKind = {
   varParameter: 'source.lang.swift.decl.var.parameter',
   closure: 'source.lang.swift.expr.closure',
   enumcase: 'source.lang.swift.decl.enumcase',
+  varStatic: 'source.lang.swift.decl.var.static',
+  varGlobal: 'source.lang.swift.decl.var.global',
 };
 
 function isSwiftDictionary(type: string): boolean {
@@ -80,6 +82,14 @@ function isEitherTypeIdentifier(typeIdentifier: string): boolean {
 
 function isEnumStructure(structure: Structure): boolean {
   return structure['key.kind'] === swiftDeclarationKind.enum;
+}
+
+function isClassStructure(structure: Structure): boolean {
+  return structure['key.kind'] === swiftDeclarationKind.class;
+}
+
+function isStructStructure(structure: Structure): boolean {
+  return structure['key.kind'] === swiftDeclarationKind.struct;
 }
 
 function isRecordStructure(structure: Structure): boolean {
@@ -228,6 +238,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
       returnType.type = BasicType.NUMBER;
       break;
     case 'Void':
+    case '()': // `()` type is the same as `Void` in Swift. SourceKit will somtimes output `()` instead of `Void` when queried about the type.
       returnType.type = BasicType.VOID;
       break;
     default:
@@ -253,6 +264,66 @@ function getIdentifierFromOffsetObject(offsetObject: Structure, file: FileType) 
   const startIndex = offsetObject['key.offset'];
   const endIndex = offsetObject['key.offset'] + offsetObject['key.length'];
   return file.content.substring(startIndex, endIndex).replaceAll('"', '');
+}
+
+function getLiteralOrResolvedIdentifier(offsetObject: Structure, ctx: ParseContext): string {
+  const { namespaces, file } = ctx;
+  const startIndex = offsetObject['key.offset'];
+  const endIndex = offsetObject['key.offset'] + offsetObject['key.length'];
+  const literalOrIdentifier = file.content.substring(startIndex, endIndex);
+
+  if (literalOrIdentifier.startsWith('"')) {
+    return literalOrIdentifier.replaceAll('"', '');
+  }
+
+  const parts = literalOrIdentifier.split('.');
+
+  const traverse = (baseObj: namespace | string | null, keys: string[]) => {
+    let current = baseObj;
+    for (const key of keys) {
+      if (typeof current === 'string' || current === null) {
+        return undefined;
+      }
+      const subNamespace = current[key];
+      if (subNamespace === undefined) {
+        return undefined;
+      }
+      current = subNamespace;
+    }
+    return current;
+  };
+
+  const n0 = traverse(namespaces, parts);
+  if (typeof n0 === 'string') {
+    return n0.replaceAll('"', '');
+  }
+
+  const n1 = traverse(namespaces[''] || {}, parts);
+  if (typeof n1 === 'string') {
+    return n1.replaceAll('"', '');
+  }
+
+  return parts[parts.length - 1] ?? literalOrIdentifier;
+}
+
+function isStringLiteral(str: string): boolean {
+  return str.length > 1 && str[0] === '"' && str[str.length - 1] === '"';
+}
+
+function getInitializerValue(structure: Structure, file: FileType): string | null {
+  const nameEnd = structure['key.nameoffset'] + structure['key.namelength'];
+  const declarationEnd = structure['key.offset'] + structure['key.length'];
+  if (!nameEnd || !declarationEnd) {
+    return null;
+  }
+  const valueSubstring = file.content.substring(nameEnd, declarationEnd);
+  const indexOfInitializerStart = valueSubstring.indexOf('=');
+  const initializer = valueSubstring.slice(indexOfInitializerStart + 1).trim();
+
+  if (!isStringLiteral(initializer)) {
+    return null;
+  }
+  return initializer;
 }
 
 function hasSubstructure(structure: Structure) {
@@ -517,9 +588,10 @@ function getClosureBodyStructure(structure: Structure): Structure | null {
 
 async function parseModuleClassStructure(
   structure: Structure,
-  file: FileType,
-  options: SwiftFileTypeInformationOptions
+  options: SwiftFileTypeInformationOptions,
+  ctx: ParseContext
 ): Promise<ClassDeclaration> {
+  const { file } = ctx;
   const nestedModuleSubstructure = getClosureBodyStructure(structure)?.['key.substructure'];
   const nameSubstrucutre = structure['key.substructure']?.[0];
   const name = nameSubstrucutre
@@ -541,10 +613,10 @@ async function parseModuleClassStructure(
   // `parseModuleStructure` returns `ModuleClassDeclaration` with a found name or with the provided 'UNUSED_NAME', we don't need it here.
   const classTypeInfo = await parseModuleStructure(
     nestedModuleSubstructure,
-    file,
     'UNUSED_NAME',
     structure['key.offset'],
-    options
+    options,
+    ctx
   );
   return {
     name,
@@ -559,7 +631,8 @@ async function parseModuleClassStructure(
 async function parseModuleFunctionSubstructure(
   substructure: Structure,
   file: FileType,
-  options: SwiftFileTypeInformationOptions
+  options: SwiftFileTypeInformationOptions,
+  isStatic: boolean
 ): Promise<FunctionDeclaration> {
   const definitionParams = substructure['key.substructure'];
   const nameSubstrucutre = definitionParams[0];
@@ -581,7 +654,34 @@ async function parseModuleFunctionSubstructure(
     parameters: [], // TODO(@HubertBer): Module function is not generic. I think so. Check it
     arguments: types?.parameters?.map(mapSourcekittenParameterToType) ?? [],
     definitionOffset: substructure['key.offset'],
+    isStatic,
   };
+}
+
+async function parseModuleAsyncFunctionSubstructure(
+  substructure: Structure,
+  file: FileType,
+  options: SwiftFileTypeInformationOptions,
+  isStatic: boolean
+): Promise<FunctionDeclaration> {
+  const functionDeclaration = await parseModuleFunctionSubstructure(
+    substructure,
+    file,
+    options,
+    isStatic
+  );
+  const lastArgument = functionDeclaration.arguments[functionDeclaration.arguments.length - 1];
+  if (!lastArgument) {
+    return functionDeclaration;
+  }
+
+  const isPromiseType =
+    lastArgument.type.kind === TypeKind.IDENTIFIER &&
+    (lastArgument.type.type as TypeIdentifier) === 'Promise';
+  if (isPromiseType) {
+    functionDeclaration.arguments.pop();
+  }
+  return functionDeclaration;
 }
 
 async function parseModulePropDeclaration(
@@ -612,9 +712,10 @@ async function parseModulePropDeclaration(
 
 async function parseModuleViewDeclaration(
   substructure: Structure,
-  file: FileType,
-  options: SwiftFileTypeInformationOptions
+  options: SwiftFileTypeInformationOptions,
+  ctx: ParseContext
 ): Promise<ViewDeclaration | null> {
+  const { file } = ctx;
   // The View arguments is a.self for some class a we want.
   const suffixLength = 5;
   const nameSubstrucutre = substructure['key.substructure']?.[0];
@@ -631,17 +732,20 @@ async function parseModuleViewDeclaration(
 
   return await parseModuleStructure(
     viewSubstructure,
-    file,
     name,
     viewStructure['key.offset'],
-    options
+    options,
+    ctx
   );
 }
 
-function parseModuleEventDeclaration(structure: Structure, file: FileType, events: string[]) {
-  structure['key.substructure'].forEach((substructure) =>
-    events.push(getIdentifierFromOffsetObject(substructure, file))
-  );
+function parseModuleEventDeclaration(structure: Structure, events: string[], ctx: ParseContext) {
+  structure['key.substructure'].forEach((substructure) => {
+    const eventName = getLiteralOrResolvedIdentifier(substructure, ctx);
+    if (eventName) {
+      events.push(eventName);
+    }
+  });
 }
 
 function hasFieldAttribute(attributes: Attribute[] | null, file: FileType): boolean {
@@ -693,10 +797,12 @@ function parseEnumStructure(enumStructure: Structure): EnumType {
     .flatMap((sub) => sub['key.substructure'])
     .map((sub) => sub['key.name'].split('(', 1)[0])
     .filter((enumcase) => enumcase !== undefined);
+  const stringBacked = !enumStructure['key.inheritedtypes']?.find((v) => v['key.name'] === 'Int');
 
   return {
     name: enumStructure['key.name'],
     cases: enumcases,
+    stringBacked,
   };
 }
 
@@ -735,13 +841,23 @@ function parsePropertyString(
   };
 }
 
+type namespace = {
+  [key: string]: namespace | string | null;
+};
+
+type ParseContext = {
+  file: FileType;
+  namespaces: { [key: string]: namespace };
+};
+
 async function parseModuleStructure(
   moduleStructure: Structure[],
-  file: FileType,
   name: string,
   definitionOffset: number,
-  options: SwiftFileTypeInformationOptions
+  options: SwiftFileTypeInformationOptions,
+  ctx: ParseContext
 ): Promise<ModuleClassDeclaration> {
+  const { file } = ctx;
   const moduleClassDeclaration: ModuleClassDeclaration = {
     name,
     constants: [],
@@ -779,7 +895,7 @@ async function parseModuleStructure(
       }
       case 'Function': {
         moduleClassDeclaration.functions.push(
-          await parseModuleFunctionSubstructure(structure, file, options)
+          await parseModuleFunctionSubstructure(structure, file, options, false)
         );
         break;
       }
@@ -792,7 +908,7 @@ async function parseModuleStructure(
       }
       case 'Class':
         moduleClassDeclaration.classes.push(
-          await parseModuleClassStructure(structure, file, options)
+          await parseModuleClassStructure(structure, options, ctx)
         );
         break;
       case 'Property': {
@@ -804,7 +920,17 @@ async function parseModuleStructure(
       }
       case 'AsyncFunction':
         moduleClassDeclaration.asyncFunctions.push(
-          await parseModuleFunctionSubstructure(structure, file, options)
+          await parseModuleAsyncFunctionSubstructure(structure, file, options, false)
+        );
+        break;
+      case 'StaticAsyncFunction':
+        moduleClassDeclaration.asyncFunctions.push(
+          await parseModuleAsyncFunctionSubstructure(structure, file, options, true)
+        );
+        break;
+      case 'StaticFunction':
+        moduleClassDeclaration.functions.push(
+          await parseModuleFunctionSubstructure(structure, file, options, true)
         );
         break;
       case 'Constructor':
@@ -820,14 +946,14 @@ async function parseModuleStructure(
         );
         break;
       case 'View': {
-        const viewDeclaration = await parseModuleViewDeclaration(structure, file, options);
+        const viewDeclaration = await parseModuleViewDeclaration(structure, options, ctx);
         if (viewDeclaration) {
           moduleClassDeclaration.views.push(viewDeclaration);
         }
         break;
       }
       case 'Events':
-        parseModuleEventDeclaration(structure, file, moduleClassDeclaration.events);
+        parseModuleEventDeclaration(structure, moduleClassDeclaration.events, ctx);
         break;
       default:
         console.warn(`Module substructure not supported. ${structure['key.name']}`);
@@ -978,6 +1104,41 @@ function collectModuleTypeIdentifiers(
   });
 }
 
+function parseNamespaces(
+  structure: Structure,
+  namespaces: { [key: string]: namespace },
+  file: FileType,
+  currentNamespace: namespace
+) {
+  if (
+    isModuleStructure(structure) ||
+    isRecordStructure(structure) ||
+    isStructStructure(structure) ||
+    isEnumStructure(structure) ||
+    isClassStructure(structure)
+  ) {
+    const moduleName = structure['key.name'];
+    namespaces[moduleName] = namespaces[moduleName] || {};
+    const ns: namespace = namespaces[moduleName];
+    currentNamespace[moduleName] = ns;
+    structure['key.substructure'].forEach((substructure) => {
+      parseNamespaces(substructure, namespaces, file, ns);
+    });
+    return;
+  }
+  if (
+    structure['key.kind'] === swiftDeclarationKind.varStatic ||
+    structure['key.kind'] === swiftDeclarationKind.varGlobal
+  ) {
+    currentNamespace[structure['key.name']] = getInitializerValue(structure, file);
+    return;
+  }
+  const substructures = structure['key.substructure'];
+  substructures?.forEach((substructure) =>
+    parseNamespaces(substructure, namespaces, file, currentNamespace)
+  );
+}
+
 export type SwiftFileTypeInformationOptions = {
   typeInference: boolean;
 };
@@ -991,13 +1152,12 @@ export async function getSwiftFileTypeInformation(
   const modulesStructures: { name: string; structure: Structure }[] = [];
   const recordsStructures: Structure[] = [];
   const enumsStructures: Structure[] = [];
-  parseStructure(
-    getStructureFromFile(file),
-    '',
-    modulesStructures,
-    recordsStructures,
-    enumsStructures
-  );
+  const fileStructure = getStructureFromFile(file);
+  parseStructure(fileStructure, '', modulesStructures, recordsStructures, enumsStructures);
+
+  const namespaces: { [key: string]: namespace } = {};
+  namespaces[''] = {};
+  parseNamespaces(fileStructure, namespaces, file, namespaces['']);
 
   const inferredTypeParametersCount = new Map<string, number>();
   const moduleClasses: ModuleClassDeclaration[] = [];
@@ -1019,14 +1179,16 @@ export async function getSwiftFileTypeInformation(
   const recordsPromise = taskAll(recordsStructures, recordMap);
   const moduleClassDeclarationsPromise = taskAll(
     modulesStructures.filter(({ structure }) => hasSubstructure(structure)),
-    ({ structure, name }) =>
-      parseModuleStructure(
+    ({ structure, name }) => {
+      namespaces[name] = namespaces[name] || {};
+      return parseModuleStructure(
         structure['key.substructure'],
-        file,
         name,
         structure['key.offset'],
-        options
-      )
+        options,
+        { namespaces, file }
+      );
+    }
   );
 
   const [records, moduleClassDeclarations] = await Promise.all([
@@ -1086,30 +1248,51 @@ function removeComments(fileContent: string): string {
   });
 }
 
-function returnExpressionEnd(fileContent: string, returnIndex: number): number {
+// The assumption that after return there is an scope closing bracket '}' doesn't hold when switch cases and statements like `#if`, `#else` etc. are present
+// If they are we don't want to perform the substitution
+function stringSubstitutionIsValid(str: string): boolean {
+  const dangerousSubstrings = ['case ', '#if', '#else', '#endif'];
+  for (const substring of dangerousSubstrings) {
+    if (str.indexOf(substring) !== -1) {
+      return false;
+    }
+  }
+  return true;
+}
+
+type ExpressionEndResult = { expressionEnd: number; ok: boolean };
+function returnExpressionEnd(fileContent: string, returnIndex: number): ExpressionEndResult {
   let inString = false;
   let escaped = false;
-  let parenCount = 0;
   let braceCount = 0;
-  // TODO(@HubertBer): figure out what also changes the typical end of expression
-
+  // Doing a little cheat here to simplify the logic, we assume that the expression end is right before the scope closing `}`.
+  // While this isn't neccessarily true, in our case we only want to replace:
+  //
+  // return expression
+  //
+  // with:
+  //
+  // let return_expression = expression
+  // return return_expression
+  //
+  // such that return_expression variable has the return type of the expression and the file still parses correctly (This might not even be neccessary,
+  // sourcekitten seems to be quite flexible, it may parse part of malformed files just fine).
   let i = returnIndex;
   while (i < fileContent.length) {
     const char = fileContent[i];
     let escapedNow = false;
+    if (inString && char !== '"') {
+      i += 1;
+      continue;
+    }
     switch (char) {
-      case '(':
-        parenCount += 1;
-        break;
-      case ')':
-        parenCount -= 1;
-        break;
       case '{':
         braceCount += 1;
         break;
       case '}':
         if (braceCount === 0) {
-          return i;
+          const ok = stringSubstitutionIsValid(fileContent.substring(returnIndex, i));
+          return { expressionEnd: i, ok };
         }
         braceCount -= 1;
         break;
@@ -1118,56 +1301,99 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): number {
           inString = !inString;
         }
         break;
-      case ';':
-        return i;
-      case '\n':
-      case '\r':
-        if (!inString && parenCount === 0 && braceCount === 0) {
-          return i;
-        }
-        break;
       case '\\':
         escapedNow = true;
     }
     escaped = escapedNow;
     i += 1;
   }
-  return i;
+  return { expressionEnd: i, ok: false };
+}
+
+type SourceKittenPreprocessingOptions = {
+  preprocessReturns?: boolean;
+  mapUnicodeCharacters?: boolean;
+};
+
+function getSpaceIndentationCount(fileContent: string, index: number): number {
+  const lastNewLineIndex = fileContent.lastIndexOf('\n', index - 1);
+  let spaceCount = 0;
+  let i = lastNewLineIndex === -1 ? 0 : 1 + lastNewLineIndex;
+  while (i < index && fileContent[i] === ' ') {
+    spaceCount += 1;
+    i += 1;
+  }
+  return spaceCount;
 }
 
 // Preprocessing to help sourcekitten functions
 // For now we create a new variable for each return statement,
 // we can find it's type easily with sourcekitten
-// TODO(@HubertBer): This has many problems which need fixing:
+// TODO(@HubertBer): This has many problems which may need fixing:
 // - return can be inside a string
-// - return Expression end parses incorrectly in case of some strings (check how it parses expo-video)
-export function preprocessSwiftFile(originalFileContent: string): string {
+// - the substitution may break the Swift code
+function preprocessReturnStatements(originalFileContent: string): string {
   const newFileContent: string[] = [];
   const fileContent = removeComments(originalFileContent);
-  const returnPositions: { start: number; end: number }[] = [];
+  const returnPositions: { start: number; end: number; spacesIndentation: number }[] = [];
   let startPos = 0;
   while (startPos < fileContent.length) {
     const returnIndex = fileContent.indexOf('return ', startPos);
     if (returnIndex < 0 || returnIndex >= fileContent.length) {
       break;
     }
+    const { expressionEnd, ok } = returnExpressionEnd(fileContent, returnIndex);
+    if (!ok) {
+      startPos += 1;
+      continue;
+    }
     returnPositions.push({
       start: returnIndex,
-      end: returnExpressionEnd(fileContent, returnIndex),
+      end: expressionEnd,
+      spacesIndentation: getSpaceIndentationCount(fileContent, returnIndex),
     });
-    startPos = returnIndex + 1;
+    // Going to expressionEnd instead of next index to avoid nested return statements, which in this simple method we cannot handle properly.
+    startPos = expressionEnd + 1;
   }
 
   let prevEnd = 0;
 
-  for (const { start, end } of returnPositions) {
+  for (const { start, end, spacesIndentation } of returnPositions) {
     newFileContent.push(fileContent.substring(prevEnd, start));
+    // Make sure the return statement has the same indentation as in original file, to make debugging easier
+    const spaces = ' '.repeat(spacesIndentation);
     newFileContent.push(
-      `\nlet returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}\n`
+      `\n${spaces}let returnValueDeclaration_${start}_${end} = ${fileContent.substring(start + 6, end)}`
     );
-    newFileContent.push(`return returnValueDeclaration_${start}_${end}\n`);
+    newFileContent.push(`\n${spaces}return returnValueDeclaration_${start}_${end}\n`);
     prevEnd = end;
   }
   newFileContent.push(fileContent.substring(prevEnd, fileContent.length));
   return newFileContent.join('');
+}
+
+/**
+ * Maps all non-ASCII characters to ASCII strings.
+ * @param fileConent A string with Swift code.
+ * @returns the fileContent string with each non-ASCII character mapped to an ASCII string.
+ */
+function preprocessUnicodeCharacters(fileConent: string): string {
+  return fileConent.replace(/[^\x00-\x7F]/gu, (c) => {
+    const hex = c.codePointAt(0)?.toString(16)?.toUpperCase() ?? '_';
+    return `_u${hex}_`;
+  });
+}
+
+export function preprocessSwiftFile(
+  originalFileContent: string,
+  { preprocessReturns, mapUnicodeCharacters }: SourceKittenPreprocessingOptions
+): string {
+  let fileContent = originalFileContent;
+  if (preprocessReturns) {
+    fileContent = preprocessReturnStatements(fileContent);
+  }
+  if (mapUnicodeCharacters) {
+    fileContent = preprocessUnicodeCharacters(fileContent);
+  }
+  return fileContent;
 }

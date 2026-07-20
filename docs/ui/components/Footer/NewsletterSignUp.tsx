@@ -2,6 +2,7 @@ import { Button, mergeClasses } from '@expo/styleguide';
 import { isMarketingConsented } from '@expo/styleguide-cookie-consent';
 import { Mail01Icon } from '@expo/styleguide-icons/outline/Mail01Icon';
 import { useState } from 'react';
+import { useIntl } from 'react-intl';
 
 import { Input } from '~/ui/components/Form';
 import { A, CALLOUT, FOOTNOTE, LABEL } from '~/ui/components/Text';
@@ -22,6 +23,7 @@ function getHutk() {
 }
 
 export const NewsletterSignUp = () => {
+  const intl = useIntl();
   const [email, setEmail] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [userSignedUp, setUserSignedUp] = useState(false);
@@ -65,8 +67,8 @@ export const NewsletterSignUp = () => {
   return (
     <div className="max-w-87.5 flex-1 max-md:max-w-full">
       <CALLOUT className="flex items-center gap-2 font-medium text-secondary" id="newsletter-label">
-        <Mail01Icon className="shrink-0 text-icon-tertiary" />
-        Sign up for the Expo Newsletter
+        <Mail01Icon aria-hidden="true" className="shrink-0 text-icon-tertiary" />
+        {intl.formatMessage({ id: 'footerNewsletterTitle' })}
       </CALLOUT>
       <form
         className="relative"
@@ -75,7 +77,9 @@ export const NewsletterSignUp = () => {
           void signUpAsync();
         }}>
         {userSignedUp ? (
-          <LABEL className="my-2.5 flex h-12 items-center">Thank you for the sign up! 💙</LABEL>
+          <LABEL className="my-2.5 flex h-12 items-center">
+            {intl.formatMessage({ id: 'footerThankYouSignUp' })}
+          </LABEL>
         ) : (
           <Input
             onChange={event => {
@@ -98,16 +102,16 @@ export const NewsletterSignUp = () => {
             className="absolute top-2 right-2.5 min-w-17"
             disabled={userSignedUp || email.length === 0}
             onClick={signUpAsync}>
-            {userSignedUp ? 'Done!' : 'Sign Up'}
+            {intl.formatMessage({ id: 'footerSignUp' })}
           </Button>
         ) : null}
       </form>
       <FOOTNOTE theme="tertiary">
-        Unsubscribe at any time. Read our{' '}
+        {intl.formatMessage({ id: 'footerUnsubscribePrefix' })}
         <A href="https://expo.dev/privacy" openInNewTab>
-          privacy policy
+          {intl.formatMessage({ id: 'footerPrivacyPolicy' })}
         </A>
-        .
+        {intl.formatMessage({ id: 'footerUnsubscribeSuffix' })}
       </FOOTNOTE>
     </div>
   );

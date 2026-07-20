@@ -1,5 +1,13 @@
 import fs from 'fs';
 
+import { resolveExpoModule } from '../autolinking/findModules';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import { createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
+import { createMemoizer, type Memoizer } from '../memoize';
+import { getSupportPackageForPlatform } from '../platforms';
+import type { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
+import { resolveReactNativeModule } from '../reactNativeConfig';
+import { loadConfigAsync } from '../reactNativeConfig/config';
 import type { PackageRevision, SupportedPlatform } from '../types';
 import { scanDependenciesRecursively } from './resolution';
 import { scanDependenciesFromRNProjectConfig } from './rncliLocal';
@@ -10,13 +18,6 @@ import {
   DependencyResolutionSource,
 } from './types';
 import { filterMapResolutionResult, mergeResolutionResults } from './utils';
-import { resolveExpoModule } from '../autolinking/findModules';
-import type { AutolinkingOptions } from '../commands/autolinkingOptions';
-import { createAutolinkingOptionsLoader } from '../commands/autolinkingOptions';
-import { createMemoizer, type Memoizer } from '../memoize';
-import type { RNConfigReactNativeProjectConfig } from '../reactNativeConfig';
-import { resolveReactNativeModule } from '../reactNativeConfig';
-import { loadConfigAsync } from '../reactNativeConfig/config';
 
 export interface CachedDependenciesSearchOptions {
   includeNames: Set<string>;
@@ -162,6 +163,16 @@ export async function scanDependencyResolutionsForPlatform(
       }
       return resolution;
     });
+
+    // OOT platforms (tvos/macos) ship their react-native fork as a separately-named package
+    // Include it in the sticky output so the module resolver can deduplicate and redirect to it
+    const supportPackage = getSupportPackageForPlatform(platform);
+    if (supportPackage && supportPackage !== 'react-native') {
+      const supportResolution = resolutions[supportPackage];
+      if (supportResolution) {
+        dependencies[supportPackage] = { ...supportResolution, name: supportPackage };
+      }
+    }
 
     return dependencies;
   });

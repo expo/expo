@@ -1,10 +1,7 @@
-import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
+import { IS_DOM } from 'expo/dom';
 import { Platform } from 'react-native';
 
-import { routingQueue } from './routingQueue';
-import { store } from './store';
-import type { LinkToOptions, NavigationOptions } from './types';
 import {
   emitDomDismiss,
   emitDomDismissAll,
@@ -15,6 +12,9 @@ import {
 import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
 import { shouldLinkExternally } from '../utils/url';
+import { routingQueue } from './routingQueue';
+import { store } from './store';
+import type { LinkToOptions, NavigationOptions } from './types';
 
 export function navigate(url: Href, options?: NavigationOptions) {
   return linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
@@ -112,9 +112,9 @@ export function setParams(
   return (store.navigationRef?.current?.setParams as any)(params);
 }
 
-export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
-  originalHref = typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
-  let href: string | undefined | null = originalHref;
+export function linkTo(originalHref: Href | string, options: LinkToOptions = {}) {
+  let href: string | undefined | null =
+    typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
 
   if (emitDomLinkEvent(href, options)) {
     return;

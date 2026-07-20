@@ -39,14 +39,19 @@ const Observe: ObserveModule = new Proxy(native, {
         }
 
         if (shouldInitRouterIntegration) {
-          initRouterIntegration();
+          initRouterIntegration(config.integrations?.['expo-router']);
         } else if (shouldInitReactNavigationIntegration) {
-          initReactNavigationIntegration();
+          initReactNavigationIntegration(config.integrations?.['react-navigation']);
         }
         return target.configure(config);
       };
     }
-    if (typeof prop === 'string' && !(prop in target)) {
+
+    // On Android, the native module is a JSI host object, so `prop in target` (and `hasOwnProperty`) report
+    // `true` for names it doesn't implement — a host object has no `has` hook. `Object.keys(target)`
+    // goes through `getPropertyNames`, which lists the module's actual members, so use it to forward
+    // anything not really there (e.g. `logEvent`) to the AppMetrics module.
+    if (typeof prop === 'string' && !Object.keys(target).includes(prop)) {
       return Reflect.get(AppMetrics, prop);
     }
     return Reflect.get(target, prop, receiver);

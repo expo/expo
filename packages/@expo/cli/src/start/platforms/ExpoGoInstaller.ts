@@ -1,6 +1,5 @@
 import semver from 'semver';
 
-import type { DeviceManager } from './DeviceManager';
 import { getVersionsAsync } from '../../api/getVersions';
 import * as Log from '../../log';
 import { downloadExpoGoAsync } from '../../utils/downloadExpoGoAsync';
@@ -10,8 +9,8 @@ import { isInteractive } from '../../utils/interactive';
 import { learnMore } from '../../utils/link';
 import { logNewSection } from '../../utils/ora';
 import { confirmAsync } from '../../utils/prompts';
-
-const debug = require('debug')('expo:utils:ExpoGoInstaller') as typeof console.log;
+import type { DeviceManager } from './DeviceManager';
+import { event } from './events';
 
 /** Given a platform, appId, and sdkVersion, this module will ensure that Expo Go is up-to-date on the provided device. */
 export class ExpoGoInstaller<IDevice> {
@@ -35,9 +34,10 @@ export class ExpoGoInstaller<IDevice> {
       return true;
     }
 
-    debug(
-      `Expected Expo Go version: ${expectedExpoGoVersion}, installed version: ${installedVersion}`
-    );
+    event('expo_go_version_check', {
+      expectedVersion: expectedExpoGoVersion,
+      installedVersion,
+    });
     return expectedExpoGoVersion ? !semver.eq(installedVersion, expectedExpoGoVersion) : true;
   }
 
@@ -59,7 +59,6 @@ export class ExpoGoInstaller<IDevice> {
     const cacheId = `${this.platform}-${deviceManager.identifier}`;
 
     if (ExpoGoInstaller.cache[cacheId]) {
-      debug('skipping subsequent upgrade check');
       return false;
     }
     ExpoGoInstaller.cache[cacheId] = true;

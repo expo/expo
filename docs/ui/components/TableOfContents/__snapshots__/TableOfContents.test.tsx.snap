@@ -11,6 +11,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
       data-text="true"
     >
       <svg
+        aria-hidden="true"
         class="text-icon-default translate-z shrink-0 icon-sm"
         fill="none"
         role="img"
@@ -29,7 +30,8 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
           />
         </g>
       </svg>
-       On this page
+       
+      On this page
       <button
         class="cursor-pointer inline-flex border border-solid rounded-full font-medium items-center whitespace-nowrap gap-1.5 h-8 text-xs border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 mr-2 ml-auto px-2 transition-opacity duration-300 pointer-events-none opacity-0"
         type="button"
@@ -61,10 +63,11 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
       </button>
     </p>
     <div
-      role="tree"
+      role="list"
     >
       <div
         class="flex items-center"
+        role="listitem"
       >
         <a
           class="mb-1.5 flex items-center justify-between truncate text-pretty! focus-visible:relative focus-visible:z-10"
@@ -81,6 +84,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
       </div>
       <div
         class="flex items-center"
+        role="listitem"
       >
         <a
           class="mb-1.5 flex items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
@@ -97,6 +101,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
       </div>
       <div
         class="flex items-center"
+        role="listitem"
       >
         <a
           class="mb-1.5 flex items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"

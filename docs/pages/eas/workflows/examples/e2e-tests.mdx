@@ -30,8 +30,16 @@ Follow the [Get started with EAS Workflows guide](/eas/workflows/get-started/) t
 This is what the UI of the app created from the default Expo template looks like:
 
 <div style={{ display: 'flex', justifyContent: 'center' }}>
-  <ContentSpotlight src="/static/images/eas-build/tests/01-home.png" className="max-w-[360px]" />
-  <ContentSpotlight src="/static/images/eas-build/tests/02-explore.png" className="max-w-[360px]" />
+  <ContentSpotlight
+    alt="The default Expo template app's Home screen on an iOS simulator, with a 'Welcome!' heading and getting-started steps."
+    src="/static/images/eas-build/tests/01-home.png"
+    className="max-w-[360px]"
+  />
+  <ContentSpotlight
+    alt="The default Expo template app's Explore screen on an iOS simulator, listing collapsible sections such as file-based routing and custom fonts."
+    src="/static/images/eas-build/tests/02-explore.png"
+    className="max-w-[360px]"
+  />
 </div>
 
 Let's create two simple Maestro flows for the example app. Start by creating a directory called **.maestro** in the root of your project directory. This directory will contain the flows you'll configure and should be at the same level as **eas.json**.
@@ -165,7 +173,7 @@ You can run the E2E test workflow in two ways:
 
 1. **Manually using the EAS CLI**
 
-<Terminal cmd={['$ npx eas-cli@latest workflow:run .eas/workflows/e2e-test-android.yml']} />
+<Terminal cmd={['$ eas workflow:run .eas/workflows/e2e-test-android.yml']} />
 
 2. **Automatically when you open a pull request**
 
@@ -173,7 +181,10 @@ The workflow uses a `pull_request` trigger to run automatically when someone ope
 
 After the workflow starts, you can track its progress and view the results in the EAS dashboard. Here's a screenshot of a completed workflow run:
 
-<ContentSpotlight src="/static/images/eas-build/tests/e2e-workflow.png" />
+<ContentSpotlight
+  alt="The EAS dashboard showing a completed end-to-end test workflow run, with its iOS build and Maestro test jobs finished."
+  src="/static/images/eas-build/tests/e2e-workflow.png"
+/>
 
 </Step>
 
@@ -190,6 +201,13 @@ After the workflow starts, you can track its progress and view the results in th
   title="Example CI/CD workflows"
   description="Learn more about example CI/CD workflows for EAS Workflows."
   href="/eas/workflows/examples/introduction/"
+  Icon={Dataflow03Icon}
+/>
+
+<BoxLink
+  title="Maestro insights"
+  description="Track pass, flake, and failure trends for your Maestro tests over time."
+  href="/eas-insights/maestro/"
   Icon={Dataflow03Icon}
 />
 

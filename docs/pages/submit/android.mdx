@@ -1,6 +1,7 @@
 ---
-title: Submit to the Google Play Store
-description: Learn how to submit your app to the Google Play Store from your computer and CI/CD services.
+title: Submit to the Google Play Store with EAS Submit
+sidebar_title: Submit to Google Play Store
+description: Learn how to submit your Android app to the Google Play Store with EAS Submit.
 ---
 
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
@@ -8,105 +9,25 @@ import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-This guide outlines how to submit your app to the Google Play Store from your computer or from a CI/CD service.
+[EAS Submit](/deploy/submit-to-app-stores/) is the recommended way to upload your Android app to the Google Play Store. The `eas submit` command works the same way on your machine and inside CI/CD. [EAS Workflows](/eas/workflows/introduction/) is the simplest way to run it automatically after a build.
 
-## Submitting your app from your computer
+## Prerequisites
 
-<Prerequisites>
-  <Requirement title="Sign up for a Google Play Developer account">
-    A Google Play Developer account is required to submit your app to the Google Play Store. You can sign up for a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
+<Prerequisites numberOfRequirements={5}>
+  <Requirement number={1} title="Sign up for a Google Play Developer account">
+    A Google Play Developer account is required to submit your app to the Google Play Store. Sign up on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
   </Requirement>
-  <Requirement title="Create an app on Google Play Console">
+  <Requirement number={2} title="Create an app on Google Play Console">
     Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
   </Requirement>
-  <Requirement title="Create a Google Service Account">
-    EAS requires you to upload and configure a Google Service Account Key to submit your Android app to the Google Play Store. You can create one with the [uploading a Google Service Account Key for Play Store submissions with EAS](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide.
-  </Requirement>
-  <Requirement title="Install EAS CLI and authenticate with your Expo account">
-    Install EAS CLI and login with your Expo account:
+  <Requirement number={3} title="Create a Google Service Account key and upload it to EAS">
+    EAS requires a Google Service Account key to submit on your behalf. Follow the [Creating a Google Service Account key](https://expo.fyi/creating-google-service-account) guide to create one. Then, upload the key to your project's credentials with the EAS dashboard or EAS CLI:
 
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
-
-  </Requirement>
-  <Requirement title="Include a package name in app.json">
-    Include your app's package name in **app.json**:
-
-    ```json app.json
-    {
-      "android": {
-        "package": "com.yourcompany.yourapp"
-      }
-    }
-    ```
-
-  </Requirement>
-  <Requirement title="Build a production app">
-    You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
-
-    <Terminal cmd={['$ eas build --platform android --profile production']} />
-
-    Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
-
-  </Requirement>
-  <Requirement title="Upload your app manually at least once">
-    You have to upload your app manually at least once. This is a limitation of the Google Play Store API.
-
-    Learn how with the [first submission of an Android app](https://expo.fyi/first-android-submission) guide.
-
-  </Requirement>
-</Prerequisites>
-
-Once you have completed all the prerequisites, you can start the submission process.
-
-Run the following command to submit a build to the Google Play Store:
-
-<Terminal cmd={['$ eas submit --platform android']} />
-
-The command will lead you step by step through the process of submitting the app. You can configure the submission process by adding a submission profile in **eas.json**. Learn about all the options you can provide in the [eas.json reference](/eas/json/#android-specific-options-1).
-
-To speed up the submission process, you can use the `--auto-submit` flag to automatically submit a build after it's built:
-
-<Terminal cmd={['$ eas build --platform android --auto-submit']} />
-
-Learn more about the `--auto-submit` flag in the [automate submissions](/build/automate-submissions/) guide.
-
-## Submitting your app using CI/CD services
-
-<Prerequisites>
-  <Requirement title="Sign up for a Google Play Developer account">
-    A Google Play Developer account is required to submit your app to the Google Play Store. You can sign up for a Google Play Developer account on the [Google Play Console sign-up page](https://play.google.com/apps/publish/signup/).
-  </Requirement>
-  <Requirement title="Create an app on Google Play Console">
-    Create an app by clicking **Create app** in the [Google Play Console](https://play.google.com/apps/publish/).
-  </Requirement>
-  <Requirement title="Create a Google Service Account">
-    EAS requires you to upload and configure a Google Service Account Key to submit your Android app to the Google Play Store. You can create one with the [uploading a Google Service Account Key for Play Store submissions with EAS](https://github.com/expo/fyi/blob/main/creating-google-service-account.md) guide.
-  </Requirement>
-  <Requirement title="Install EAS CLI and authenticate with your Expo account">
-    Install EAS CLI and login with your Expo account:
-
-    <Terminal cmd={['$ npm install -g eas-cli && eas login']} />
-
-  </Requirement>
-  <Requirement title="Include a package name in app.json">
-    Include your app's package name in **app.json**:
-
-    ```json app.json
-    {
-      "android": {
-        "package": "com.yourcompany.yourapp"
-      }
-    }
-    ```
-
-  </Requirement>
-  <Requirement title="Upload your Google Service Account key to EAS dashboard">
-    Then, you need to upload your Google Service Account key to EAS dashboard under project's credentials.
     <Tabs>
     <Tab label="EAS dashboard">
     - Go to your project's EAS dashboard, click **Credentials**, and under **Android**, click your app's **Application identifier**.
     - Under **Service Credentials**, click **Add a Google Service Account Key**.
-    - Under **Change Google Service Account Key**, ensure **Upload new key** is selected and upload the downloaded JSON key. This will add the key to your project's credentials.
+    - Ensure **Upload new key** is selected and upload the downloaded JSON key.
 
     <ContentSpotlight
       alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
@@ -115,77 +36,114 @@ Learn more about the `--auto-submit` flag in the [automate submissions](/build/a
     />
     </Tab>
     <Tab label="EAS CLI">
-    You can also upload the JSON key to the EAS dashboard using EAS CLI:
     - Run `eas credentials --platform android`
     - When prompted **Which build profile do you want to configure?**, select **production**
     - When prompted **What do you want to do?**, select **Google Service Account** > **Upload a Google Service Account Key**
-    - Then add the JSON key file path to the upload the file to EAS dashboard
-
-    <ContentSpotlight
-      alt="Uploading the Google Service Account key to EAS dashboard under Service Credentials"
-      src="/static/images/tutorial/eas/credentials-03.png"
-      className="max-w-[540px]"
-    />
-
+    - Enter the path to the JSON key file
     </Tab>
     </Tabs>
 
   </Requirement>
-  <Requirement title="Build a production app">
-    You'll need a production build ready for store submission. You can create one using [EAS Build](/build/introduction/):
+  <Requirement number={4} title="Include a package name in app config">
+    Include your app's package name in **app.json**:
 
-    <Terminal cmd={['$ eas build --platform android --profile production']} />
-
-    Alternatively, you can build the app on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
+    ```json app.json
+    {
+      "android": {
+        "package": "com.yourcompany.yourapp"
+      }
+    }
+    ```
 
   </Requirement>
-  <Requirement title="Upload your app manually at least once">
-    You have to upload your app manually at least once. This is a limitation of the Google Play Store API.
+  <Requirement number={5} title="Install EAS CLI and authenticate with your Expo account">
+    Install EAS CLI and log in with your Expo account:
 
-    Learn how with the [first submission of an Android app](https://expo.fyi/first-android-submission) guide.
+    <Terminal
+      cmd={{
+        npm: ['$ npm install --global eas-cli && eas login'],
+        yarn: ['$ yarn global add eas-cli && eas login'],
+        pnpm: ['$ pnpm add --global eas-cli && eas login'],
+        bun: ['$ bun add --global eas-cli && eas login'],
+      }}
+    />
 
   </Requirement>
 </Prerequisites>
 
-Once you have completed all the prerequisites, you can set up a CI/CD pipeline to submit your app to the Google Play Store.
+## Build a production app
 
-### Use EAS Workflows CI/CD
+You need a production **.aab** (Android App Bundle) to submit. Google Play requires new apps to be published as app bundles instead of **.apk** files, and generates optimized APKs for each device from the bundle. Create one with [EAS Build](/build/introduction/):
 
-You can use [EAS Workflows](/eas/workflows/get-started/) to build and submit your app automatically.
+<Terminal cmd={['$ eas build --platform android --profile production']} />
 
-1. Create a workflow file named **.eas/workflows/submit-android.yml** at the root of your project.
-2. Inside **submit-android.yml**, you can use the following workflow to kick off a job that submits an Android app:
+Alternatively, build on your own computer with `eas build --platform android --profile production --local` or with Android Studio.
 
-   ```yaml .eas/workflows/submit-android.yml
-   on:
-     push:
-       branches: ['main']
+The default `production` profile produces a **.aab**. A build profile only produces a **.apk** when it sets [`android.buildType`](/eas/json/#buildtype) to `apk`, which is useful for [installing on an emulator or device](/build-reference/apk/) but cannot be submitted to the Google Play Store.
 
-   jobs:
-     build_android:
-       name: Build Android app
-       type: build
-       params:
-         platform: android
-         profile: production
+## First-time submission
 
-     # @info #
-     submit_android:
-       name: Submit to Google Play Store
-       needs: [build_android]
-       type: submit
-       params:
-         profile: production
-         build_id: ${{ needs.build_android.outputs.build_id }}
-     # @end #
-   ```
+If this is your app's first submission, the default `eas submit` command works out of the box and creates your app's first release on the [internal testing track](/eas/json/#track). Before running it, complete the [prerequisites](#prerequisites) so that your app exists on Google Play Console and EAS has a [Google Service Account key](https://expo.fyi/creating-google-service-account) to submit on your behalf. The app stays in draft status in Play Console until you complete the store listing and setup tasks, which are required before a release can be promoted to production.
 
-   The workflow above will build the Android app and then submit it to the Google Play Store.
+- **Prefer doing the first upload yourself?** Follow the [manual submission guide](/submit/android-manual/) to create the first release in Play Console.
+- **Want to upload without rolling out?** Set [`releaseStatus`](/eas/json/#releasestatus) to `draft` in the submission profile in **eas.json**, and complete the release in Play Console.
 
-### Use other CI/CD services
+## Submit with `eas submit`
 
-You can use other CI/CD services to submit your app with EAS Submit, like GitHub Actions, GitLab CI, and more by running the following command:
+Once the build is ready, submit it to the Google Play Store:
+
+<Terminal cmd={['$ eas submit --platform android']} />
+
+The command will walk you through selecting a build and uploading it. Configure the submission process by adding a submission profile in **eas.json**. See the [eas.json reference](/eas/json/#android-specific-options-1) for every available option.
+
+### Build and submit in one step
+
+Pass `--auto-submit` to `eas build` to hand the finished build off to EAS Submit automatically:
+
+<Terminal cmd={['$ eas build --platform android --auto-submit']} />
+
+See [Automate submissions](/build/automate-submissions/) for details.
+
+## Automate with EAS Workflows
+
+[EAS Workflows](/eas/workflows/introduction/) runs the same `eas submit` command on EAS infrastructure, triggered by a git push or run manually from CLI. Workflows authenticate with Google Play using the Google Service Account key you uploaded in the [prerequisites](#prerequisites).
+
+Create a workflow file named **.eas/workflows/submit-android.yml** with the following contents:
+
+```yaml .eas/workflows/submit-android.yml
+name: Submit Android
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  build_android:
+    name: Build Android app
+    type: build
+    params:
+      platform: android
+      profile: production
+
+  submit_android:
+    name: Submit to Google Play Store
+    needs: [build_android]
+    type: submit
+    params:
+      profile: production
+      build_id: ${{ needs.build_android.outputs.build_id }}
+```
+
+This builds an Android app on every push to `main` and submits it to Google Play. Trigger it manually with:
+
+<Terminal cmd={['$ eas workflow:run submit-android.yml']} />
+
+See the [workflow examples guide](/eas/workflows/examples/introduction/) for more patterns.
+
+## Use other CI/CD services
+
+You can run `eas submit` from any CI/CD service, such as GitHub Actions, GitLab CI, and others:
 
 <Terminal cmd={['$ eas submit --platform android --profile production']} />
 
-This command requires a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to authenticate with your Expo account. Once you have one, provide the `EXPO_TOKEN` environment variable in the CI/CD service, which will allow the `eas submit` command to run.
+This requires a [personal access token](/accounts/programmatic-access/#personal-access-tokens) to authenticate with your Expo account. Set the `EXPO_TOKEN` environment variable in your CI service so `eas submit` can run non-interactively.

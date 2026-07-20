@@ -7,7 +7,9 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import expo.modules.image.ExpoImageModule
 import expo.modules.image.ExpoImageViewWrapper
+import expo.modules.image.decodedsource.DecodedModel
 import expo.modules.image.enums.ImageCacheType
 import expo.modules.image.records.ImageErrorEvent
 import expo.modules.image.records.ImageLoadEvent
@@ -70,6 +72,14 @@ class GlideRequestListener(
           )
         )
       )
+
+      // The observe check needs a real URL (`model.toString()`). An in-memory `DecodedModel` —
+      // used when `source` is a `SharedRef<Drawable>`/`SharedRef<Bitmap>` instead of a URL.
+      if (model !is DecodedModel) {
+        appContext.registry
+          .getModule<ExpoImageModule>()
+          ?.emitImageLoaded(model.toString(), intrinsicWidth, intrinsicHeight)
+      }
     }
 
     return false
