@@ -131,6 +131,13 @@ async function runAsync(): Promise<void> {
     args['--subject'],
     args['--resume']
   );
+  if (args['--resume'] !== undefined && metadata.feedbackId !== args['--resume']) {
+    console.log(
+      chalk.yellow(
+        `The provided feedback ID is invalid, so a new one was generated: ${metadata.feedbackId}`
+      )
+    );
+  }
 
   console.log(
     chalk.dim(
@@ -510,18 +517,13 @@ function normalizeSubject(value?: string): string | undefined {
 }
 
 export function resolveFeedbackId(value?: string): string {
-  if (value === undefined) {
-    return randomBytes(GENERATED_FEEDBACK_ID_BYTES).toString('hex');
-  }
-
   if (
+    value === undefined ||
     value.length < MIN_FEEDBACK_ID_LENGTH ||
     value.length > MAX_FEEDBACK_ID_LENGTH ||
     !FEEDBACK_ID_PATTERN.test(value)
   ) {
-    throw new CommandError(
-      `Invalid feedback ID. Expected ${MIN_FEEDBACK_ID_LENGTH}-${MAX_FEEDBACK_ID_LENGTH} letters, numbers, hyphens, or underscores.`
-    );
+    return randomBytes(GENERATED_FEEDBACK_ID_BYTES).toString('hex');
   }
 
   return value;

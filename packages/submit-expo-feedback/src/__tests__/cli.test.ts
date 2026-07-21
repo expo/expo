@@ -91,11 +91,9 @@ describe('feedback session ID', () => {
   });
 
   it.each(['short', 'contains spaces', 'contains/slash', 'a'.repeat(65)])(
-    'rejects invalid ID %p',
+    'generates a new ID for invalid ID %p',
     (feedbackId) => {
-      expect(() => resolveFeedbackId(feedbackId)).toThrow(
-        'Invalid feedback ID. Expected 6-64 letters, numbers, hyphens, or underscores.'
-      );
+      expect(resolveFeedbackId(feedbackId)).toMatch(/^[a-f0-9]{12}$/);
     }
   );
 });
@@ -397,6 +395,29 @@ describe('feedback submission', () => {
       });
       expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
         'To continue the feedback session use:\nnpx submit-expo-feedback --resume session_ABC-123'
+      );
+    } finally {
+      process.argv = originalArgv;
+    }
+  });
+
+  it('replaces an invalid feedback ID and reports the generated ID', async () => {
+    const originalArgv = process.argv;
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
+    process.argv = ['node', 'submit-expo-feedback', '--resume', 'invalid/id', 'one more detail'];
+
+    try {
+      await runExpoFeedbackAsync();
+
+      const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+      const feedbackId = requestBody.metadata.feedbackId;
+      expect(feedbackId).toMatch(/^[a-f0-9]{12}$/);
+      expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+        `The provided feedback ID is invalid, so a new one was generated: ${feedbackId}`
+      );
+      expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+        `npx submit-expo-feedback --resume ${feedbackId}`
       );
     } finally {
       process.argv = originalArgv;
