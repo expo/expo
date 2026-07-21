@@ -91,6 +91,18 @@ describe(createFaviconAsString, () => {
     expect(createFaviconAsString('/favicon.ico')).toBe('<link rel="icon" href="/favicon.ico"/>');
   });
 
+  it('adds `type="image/svg+xml"` when the href points to an SVG', () => {
+    expect(createFaviconAsString('/favicon.svg')).toBe(
+      '<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>'
+    );
+  });
+
+  it('adds the SVG type for a baseUrl-prefixed SVG href', () => {
+    expect(createFaviconAsString('/app/favicon.svg')).toBe(
+      '<link rel="icon" type="image/svg+xml" href="/app/favicon.svg"/>'
+    );
+  });
+
   it('escapes attribute-unsafe characters in the href', () => {
     expect(createFaviconAsString('/icons?size=32&q="x"')).toBe(
       '<link rel="icon" href="/icons?size=32&amp;q=&quot;x&quot;"/>'
