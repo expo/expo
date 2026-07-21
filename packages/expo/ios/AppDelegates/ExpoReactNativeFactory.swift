@@ -4,6 +4,7 @@ import React
 
 public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
+  private var _bundleConfiguration: RCTBundleConfiguration?
 
   @MainActor
   private lazy var reactDelegate: ExpoReactDelegate = {
@@ -24,6 +25,22 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     ?? RCTReleaseLevel.Stable
 
     super.init(delegate: delegate, releaseLevel: releaseLevel)
+  }
+
+  public override var bundleConfiguration: RCTBundleConfiguration {
+    get {
+      if let _bundleConfiguration {
+        return _bundleConfiguration
+      }
+#if os(iOS) || os(tvOS)
+      return ExpoBundleConfiguration.configuration(bundleURL: self.delegate?.bundleURL())
+#else
+      return super.bundleConfiguration
+#endif
+    }
+    set {
+      _bundleConfiguration = newValue
+    }
   }
 
   @MainActor
