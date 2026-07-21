@@ -336,7 +336,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     NowPlayingManager.shared.unregisterPlayer(self)
     VideoManager.shared.unregister(videoPlayer: self)
 
-    videoSourceLoader.cancelCurrentTask()
+    videoSourceLoader.close()
     tracksLoadingTask?.cancel()
 
     // We have to replace from the main thread because of KVOs (see comment in VideoSourceLoader).
