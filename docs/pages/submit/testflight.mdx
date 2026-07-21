@@ -11,6 +11,7 @@ import { FAQ } from '~/ui/components/FAQ';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
 **TestFlight** is Apple's internal and beta app distribution service. After you create an iOS production build, your app can reach testers' devices through TestFlight before the app is released publicly on the App Store.
 
@@ -42,7 +43,11 @@ There are two kinds of testing and the difference decides how quickly your build
 
 ## Quick start
 
-If you have an Apple Developer account and nothing else set up yet, you can use the following command to create an app record on App Store Connect, build a production **.ipa**, and submit it to TestFlight:
+If you have an Apple Developer account and nothing else set up yet, you can create an app record on App Store Connect, build a production **.ipa**, and submit it to TestFlight with a single command:
+
+<Tabs>
+
+<Tab label="npx testflight">
 
 <Terminal
   cmd={{
@@ -53,7 +58,23 @@ If you have an Apple Developer account and nothing else set up yet, you can use 
   }}
 />
 
-The above command creates your credentials, runs a production build on EAS Build, and submits it for internal testing via TestFlight. The rest of the guide covers internal and external testing in more detail.
+The above command creates your credentials, runs a production build on EAS Build, and submits it for internal testing via TestFlight. It is a shorthand for building and submitting in one step with EAS CLI.
+
+</Tab>
+
+<Tab label="EAS CLI">
+
+<Terminal cmd={['$ eas build --platform ios --auto-submit']} />
+
+The [`--auto-submit`](/build/automate-submissions/) flag hands the finished build off to EAS Submit automatically. You can also build and submit as separate steps. If you already have a production build, a rebuild isn't necessary. Submit the existing build directly:
+
+<Terminal cmd={['$ eas submit --platform ios']} />
+
+</Tab>
+
+</Tabs>
+
+The rest of the guide covers internal and external testing in more detail.
 
 ## Internal versus external testing
 
