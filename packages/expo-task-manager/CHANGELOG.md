@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix a crash when a task execution request is evaluated re-entrantly, by making its completion callback fire exactly once. ([#47594](https://github.com/expo/expo/pull/47594) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Fix `TaskService` leaking a `TaskExecutionCallback` (and the `JobService` it retains) for every executed background task. ([#47844](https://github.com/expo/expo/pull/47844) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 
