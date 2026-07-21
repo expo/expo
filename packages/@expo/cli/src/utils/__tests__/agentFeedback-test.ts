@@ -1,4 +1,4 @@
-import { installAgentFeedback } from '../agentFeedback';
+import { installAgentFeedback, printAgentFeedback } from '../agentFeedback';
 import { isInteractive } from '../interactive';
 import { getAgentTelemetryContext } from '../telemetry/utils/agent';
 
@@ -28,6 +28,23 @@ it('prints a compact feedback command when an agent exits in non-interactive mod
   onExit();
   expect(write).toHaveBeenCalledWith(
     '\nExpo CLI issue? Report it: npx --yes submit-expo-feedback@latest --category expo-cli --subject "export" "<what happened and how to reproduce>"\n'
+  );
+});
+
+it('prints feedback once when a long-running command is ready', () => {
+  const once = jest.spyOn(process, 'once').mockImplementation(() => process);
+  const removeListener = jest.spyOn(process, 'removeListener').mockImplementation(() => process);
+  const write = jest.spyOn(process.stdout, 'write').mockImplementation(() => true);
+
+  installAgentFeedback('start');
+  const onExit = once.mock.calls[0]![1]! as () => void;
+  printAgentFeedback();
+  onExit();
+
+  expect(removeListener).toHaveBeenCalledWith('exit', onExit);
+  expect(write).toHaveBeenCalledTimes(1);
+  expect(write).toHaveBeenCalledWith(
+    '\nExpo CLI issue? Report it: npx --yes submit-expo-feedback@latest --category expo-cli --subject "start" "<what happened and how to reproduce>"\n'
   );
 });
 
