@@ -70,17 +70,30 @@ Useful properties the base branch already gives us (don't break these):
 
 ## Design
 
-### D1 — deliver rendered state through React, keep the store as imperative truth
+### D1 — committed state lives in the global store; render delivery goes through React
 
-The committed sync store **stays** the single source of truth for every imperative read
-(`getState`, `getRootState`, `store.state`, next-dispatch base, `canGoBack`, action targeting).
-What changes is the *render* delivery:
+Two ownership changes, one for each side of the "store is truth, render is projection" split:
+
+**Committed state: one global owner, no ref indirection.** Today `store.state` reads the committed
+state *through the navigation ref* (`navigationRef.getRootState()`), and the state itself lives in
+the container's private `createStore` instance. That indirection goes away: the committed state
+moves into the global-state store (`global-state/store.ts`), written there by `dispatchRoot` on
+every `rootReducer` commit. Every imperative read — `store.state`, `getState`/`getRootState`,
+next-dispatch base, `canGoBack`, action targeting, `getStateForHref` — reads that one field
+directly. The ref's `getRootState()` becomes a thin compatibility wrapper over the same store
+value, never the source. (The `storeRef.current.state` pre-mount seed field disappears too: the
+store holds the seed from compile time and the committed state after, one field, no mount-time
+handover.) Caveat to resolve in the flip step: `NavigationIndependentTree` currently gets
+isolation from per-container stores — decide whether independent trees keep a container-local
+store or are unsupported for global-state reads, and test whichever we pick.
+
+**Render delivery: React state instead of uSES.** What changes for rendering:
 
 - `BaseNavigationContainer` holds the rendered tree in React state:
   `const [renderedState, setRenderedState] = useState(seed)`.
-- `dispatchRoot` keeps writing the store synchronously (single writer, unchanged), then calls
+- `dispatchRoot` writes the global store synchronously (single writer, unchanged), then calls
   `setRenderedState(next)` **inside a container-owned `startTransition`** in the same call stack.
-  `dispatchRoot` is the single reduction point every source funnels through — imperative queue,
+  `dispatchRoot` is the single reduction point every source funnels through — the imperative API,
   `Link`/`navigation.dispatch`, mount-window replays, and native-event dispatches — so one wrap
   site makes *every* navigation a transition, uniformly. No per-callsite flags, no parallel API.
 - The container owns the transition via `useTransition`, so its `isPending` is the global
@@ -95,12 +108,12 @@ What changes is the *render* delivery:
 
 Consequences to design for, not around:
 
-- **Store leads render during a pending transition.** `navigationRef.getRootState()` returns the
-  already-reduced state while the old screen is still on screen. That is the *correct* reading for
-  imperative consumers (a second dispatch must reduce against the latest state), and it is the
-  same "store is truth, render is projection" model the base branch documents — it just becomes
-  observable for longer windows. Audit every `getRootState`/`store.state` consumer and classify:
-  imperative/navigation logic → latest (store); UI/derived-display → rendered.
+- **Store leads render during a pending transition.** `store.state` returns the already-reduced
+  state while the old screen is still on screen. That is the *correct* reading for imperative
+  consumers (a second dispatch must reduce against the latest state), and it is the same "store is
+  truth, render is projection" model the base branch documents — it just becomes observable for
+  longer windows. Audit every `store.state` consumer and classify: imperative/navigation logic →
+  latest (store); UI/derived-display → rendered.
 - **Rendered-tree consistency improves.** All consumers read one React-committed value per render
   — strictly stronger than N independent uSES snapshots (no inter-slice tearing).
 - **Commit-time effects move with the transition.** `onStateChange`, the `'state'` emitter event,
@@ -118,17 +131,26 @@ Consequences to design for, not around:
   an unfixable wall.
 - *React concurrent-store API*: not shipped; nothing to build on today.
 
-### D2 — make the dispatch path synchronous
+### D2 — remove the routing queue; dispatch is a plain synchronous call
 
-`routingQueue.add` drains immediately (calls `run(ref)`) when the container ref is attached and
-ready; the queue keeps buffering only for the pre-ready window (actions before mount, exactly its
-original job). `useImperativeApiEmitter` reduces to draining the buffered backlog once on
-ready. This preserves:
+`routingQueue` and `useImperativeApiEmitter` are **deleted**, not made synchronous. `router.push`
+et al. resolve their action (`getNavigateAction`) and call the container's `dispatch` directly, in
+the caller's own call stack. This:
 
-- the sync `startTransition` scope for `startTransition(() => router.push(…))`;
-- React 19 async-transition tracking for `startTransition(async () => { …; router.push(…) })`;
-- and it deletes a full effect-tick of latency from every imperative navigation — independently
-  valuable and landable first.
+- preserves the sync `startTransition` scope for `startTransition(() => router.push(…))` and
+  React 19 async-transition tracking for `startTransition(async () => { …; router.push(…) })`;
+- deletes a full effect-tick of latency and one uSES read site from every imperative navigation;
+- removes a whole class of "action silently dropped because the ref was null" bugs the queue's
+  `run()` carries today.
+
+What replaces the queue's one real job (buffering actions dispatched before the container is
+ready): nothing, deliberately. An imperative navigation before the root layout has mounted is
+already an error (`store.assertIsReady` throws with the "Attempted to navigate before mounting
+the Root Layout" message); direct dispatch makes that the uniform behavior. Dispatches from
+*descendant mount effects* during the registration window are not the queue's job and keep
+working — `dispatchRoot`'s `pendingReplayRef` mount-window replay handles them, unchanged. The
+characterization step must sweep for any remaining legitimate pre-ready caller (tests, deep-link
+race on cold start); if one exists it moves onto the replay mechanism, not a resurrected queue.
 
 `Link` presses and `useLinkTo`-style dispatches already go through `navigationRef.dispatch`
 synchronously; verify and add coverage rather than change.
@@ -162,7 +184,7 @@ reconciliation of an accomplished fact, and a transition may delay that JS commi
   JS state still contains it, or freeze re-freezing mid-gesture. The store commits synchronously
   (unchanged), so anything reading committed state is fine; only *rendered-tree*-driven native
   props are at risk.
-- Step 0 must characterize: native swipe-back with a suspending remaining screen; native tab press
+- The spike (Step 3) must characterize: native swipe-back with a suspending remaining screen; native tab press
   where the target tab's JS suspends; rapid gesture + imperative interleaving. If a specific
   reconciliation proves gesture-critical, the escape hatch is marking *that dispatch* urgent
   (plain `setState`, no transition) — an internal, per-action-source decision, not user API. The
@@ -179,17 +201,19 @@ that imperative `store.getRouteInfo()` consumers that feed navigation logic (e.g
 they reduce against — relative navigation during a pending transition must resolve against the
 committed store, not the stale render. Fix discrepancies found, per-consumer.
 
-## Risks / open questions (resolve during Step 0 spike)
+## Risks / open questions (resolve during the Step 3 spike)
 
-1. **react-native-screens + react-freeze.** Inactive screens are frozen via Suspense. A transition
-   whose render lands in a frozen subtree can be starved (freeze holds the suspension → transition
-   never commits → `isPending` forever). Must be characterized in the spike; likely mitigations:
-   scope freeze interaction, or ensure transition renders only unfrozen targets (new screens are
-   not yet frozen — probably fine, but *prove* it).
+1. **react-native-screens + react-freeze — decided: freeze is disabled for all screens.**
+   Inactive screens frozen via Suspense can starve a transition (freeze holds the suspension →
+   transition never commits → `isPending` forever), so expo-router forces `freezeOnBlur: false`
+   on every screen it renders — native-stack, JS stack, bottom-tabs, drawer, `ui` TabSlot —
+   overriding both the screen option and the app-level `enableFreeze()` default. Residual risk to
+   measure in the characterization step: blurred screens now re-render on state changes freeze
+   used to absorb; the slice-identity bail-outs (risk 3) are what keeps that cheap.
 2. **Test environment.** Jest + `@testing-library/react-native` + React 19 concurrent semantics:
    confirm `startTransition` + Suspense behave realistically under `renderRouter` (act batching
    can mask pending windows). May need `jest.useFakeTimers` patterns or async `act` helpers; the
-   testing recipe is a Step 0 deliverable since every later step's red tests depend on it.
+   testing recipe is a Step 3 (spike) deliverable since the flip and everything after depend on it.
 3. **Render-count regressions.** Losing uSES per-slice snapshot bail-outs in favor of context
    propagation re-renders the navigator layer on every commit. Slice identity + existing memo
    boundaries should keep screen subtrees quiet; the base branch's render-count tests
@@ -217,57 +241,100 @@ committed store, not the stale render. Fix discrepancies found, per-consumer.
 
 ## Steps
 
-Order: 0 → 1 → 2 → 3 (atomic core) → 4 → 5 → 6 → 7. Each step keeps the full suite green;
-Step 3 is the only one allowed to be atomic-across-one-commit (uSES removal + context reads flip
-together).
+Order: 1 → 2 → 3 (spike) → 4 → 5 (atomic core) → 6 → 7 → 8 → 9. Each step keeps the full suite
+green; Step 5 is the only one allowed to be atomic-across-one-commit (uSES removal + context
+reads + transition wrap flip together).
 
-### Step 0 — Spike + characterization tests
-Deliverables: (a) a `router-e2e` playground app with a lazy/suspending screen; (b) failing-or-
-documenting tests that pin today's behavior (transition de-opt: `startTransition(() => router.push)`
-still swaps screens synchronously / shows fallback); (c) the concurrent-testing recipe (risk 2);
-(d) react-freeze interplay characterized (risk 1); (e) native-event reconciliation under delayed
-JS commits characterized on the simulator — swipe-back, native tab press, hardware back (D5,
-risk 9); (f) written answers to risks 4–8 unknowns. No production code changes.
+### Step 1 — Delete the routing queue (D2)
+Remove `routingQueue` and `useImperativeApiEmitter`. `router.push`/`navigate`/`back`/… resolve
+their action and call the container's `dispatch` directly, synchronously, in the caller's stack.
+Pre-ready imperative navigation uniformly throws via `store.assertIsReady` (it is an error today
+on most paths already); mount-window dispatches keep working through `pendingReplayRef`.
+Red: `router.push` inside an event handler commits state in the same task (no effect tick);
+pre-ready `router.push` throws the root-layout error; mount-window replay tests stay green.
+Files: `global-state/routingQueue.ts` (deleted), `global-state/router.ts`, `imperative-api.tsx`,
+`fork/NavigationContainer.tsx`.
 
-### Step 1 — Synchronous queue drain (D2)
-`routingQueue.add` drains immediately when a ready ref is attached; `useImperativeApiEmitter`
-drains only the pre-ready backlog. Red: a test asserting `router.push` inside an event handler
-commits state in the same task (no effect tick); existing before-mount buffering tests stay green.
-Files: `global-state/routingQueue.ts`, `imperative-api.tsx`, `fork/NavigationContainer.tsx`.
+### Step 2 — Committed state moves into the global store; rendered tree into React state (D1)
+Two halves of the same ownership change, behavior-neutral (no transition wrap yet):
+(a) the committed state becomes a field on the global-state store, written by `dispatchRoot` on
+every commit; `store.state` reads it directly, `navigationRef.getRootState()` becomes a wrapper
+over it, and the pre-mount seed handover disappears (one field from seed to commit);
+(b) `BaseNavigationContainer` holds the rendered tree in `useState`; `dispatchRoot` writes the
+store, then `setRenderedState`. `useSyncState` dissolves (store factory goes to `store.ts`;
+`scheduleUpdate`/`flushUpdates` stay in the container). uSES read sites still subscribe to the
+store, which still notifies, so nothing observable changes yet.
+Red: commit ordering, replay/mount-window behavior, `onStateChange` timing, `store.state` identical
+before/during/after mount.
+Files: `global-state/store.ts`, `react-navigation/core/BaseNavigationContainer.tsx`,
+`react-navigation/core/useSyncState.tsx` (deleted or absorbed).
 
-### Step 2 — Rendered state moves into React state (D1, container half)
-`BaseNavigationContainer`: `useState` for the rendered tree; `dispatchRoot` writes store then
-`setRenderedState` (not yet transition-wrapped — that flips in Step 3 with the reads, so this step
-is behavior-neutral). `useSyncState` shrinks to the store factory + `scheduleUpdate`/`flushUpdates`
-(or inlines into the container). uSES stays temporarily in `useStoreSlice` etc. — they still
-subscribe to the store, which still notifies, so behavior is unchanged.
-Red: container renders from React state (assert commit ordering, replay/mount-window behavior,
-`onStateChange` timing unchanged).
-Files: `react-navigation/core/BaseNavigationContainer.tsx`, `react-navigation/core/useSyncState.tsx`.
+### Step 3 — Spike + characterization tests
+With the plumbing from Steps 1–2 in place, pin down reality before the flip. Deliverables:
+(a) a `router-e2e` playground app with a lazy/suspending screen; (b) failing-or-documenting tests
+that pin current behavior (uSES still de-opts: `startTransition(() => router.push)` swaps screens
+synchronously / shows fallback); (c) the concurrent-testing recipe (risk 2); (d) native-event
+reconciliation under delayed JS commits characterized on the simulator — swipe-back, native tab
+press, hardware back (D5, risk 9); (e) a sweep for any legitimate pre-Step-1 pre-ready caller that
+the queue removal orphaned (D2); (f) written answers to risks 4–8 unknowns. No production code
+changes beyond the playground app.
 
-### Step 3 — Slice reads flip to rendered context + transition-wrapped commit (atomic core)
-Two halves that must land together:
-(a) `useStoreSlice` → read `NavigationStateContext` state + `getCachedSlice`; convert
-`useNavigationState`, `useIsFocused`; remove the render subscription path from the store (keep
-`subscribe` only for non-render consumers, e.g. the pre-ready queue). Keep the identity assertions.
-(b) `dispatchRoot` wraps `setRenderedState` in the container's `useTransition`, making **every**
-navigation — imperative, Link, replay, native-event — a transition (D1/D5).
-This is the moment transitions start actually deferring — the Step 0 characterization tests flip
-polarity here.
-Red: (from Step 0) bare `router.push` to a suspending screen keeps the previous screen mounted
-with no fallback flash; container `isPending` lifecycle; native-event dispatch reconciliation
-tests (risk 9, as far as jest can pin them); render-count budget tests (risk 3).
+### Step 4 — Disable freeze for all screens (risk 1)
+Force `freezeOnBlur: false` on every screen expo-router renders — native-stack, JS stack,
+bottom-tabs, drawer, `ui` TabSlot — overriding the per-screen option and the app-level
+`enableFreeze()` default, so no frozen subtree can starve a pending transition.
+Red: screens render with freeze disabled even when `enableFreeze()` was called / the option is set;
+blurred-screen render-count baseline recorded for risk 3.
+Files: `fork/native-stack/`, `react-navigation/{bottom-tabs,drawer,stack}/views/`, `ui/TabSlot.tsx`,
+`layouts/StackClient.tsx`.
+
+### Step 5 — The flip: navigators read React state, and every commit is a transition (atomic core)
+In plain English: today, every navigator independently subscribes to the store and re-reads its
+slice whenever anything changes — that subscription (`useSyncExternalStore`) is exactly what
+forces React to render navigation synchronously and ignore transitions. After this step, only the
+container knows when state changes. It puts the new tree into React state inside
+`startTransition`, and every navigator simply reads the tree its parent passed down through
+context (`NavigationStateContext`), picking out its own slice with the existing `getCachedSlice`.
+Nothing subscribes to the store for rendering anymore.
+
+The payoff, and why both halves land in one commit: once the reads come from React state *and* the
+write is wrapped in the container's `useTransition`, React can prepare the next screen in the
+background — the old screen stays mounted and interactive, no Suspense fallback flashes, and this
+applies to **every** navigation (imperative, Link, replay, native-event) because they all funnel
+through `dispatchRoot`. Landing only one half either changes nothing (wrap without reads: uSES
+still de-opts) or tears (reads without wrap is fine, but then the step isn't the flip).
+
+Converted read sites: `useStoreSlice`, `useNavigationState`, `useIsFocused`, the
+`useNavigationBuilder` projection. The store's render-notify subscription path is removed; the
+identity assertions stay.
+Red: (from Step 3, polarity flipped) bare `router.push` to a suspending screen keeps the previous
+screen mounted with no fallback flash; container `isPending` lifecycle; native-event dispatch
+reconciliation tests (risk 9, as far as jest can pin them); render-count budget tests (risk 3).
 Files: `react-navigation/core/useStoreSlice.tsx`, `useNavigationState.tsx`, `useIsFocused.tsx`,
-`core/useNavigationBuilder.tsx` (projection read), `core/BaseNavigationContainer.tsx`,
-`global-state/storeContext.ts`.
+`core/useNavigationBuilder.tsx`, `core/BaseNavigationContainer.tsx`, `global-state/storeContext.ts`.
 
-### Step 4 — Route-info + imperative-read audit (D4)
-Classify every `store.state` / `getRootState` / `getRouteInfo` consumer (rendered vs latest);
-tests: pathname hooks report old route during pending transition; relative href resolution during
-pending transition reduces against the committed store; sitemap/devtools unaffected.
-Files: `global-state/store.ts`, `global-state/router.ts`, `hooks/*`, audit-driven.
+### Step 6 — Decide what every state reader means during a pending navigation (D4)
+In plain English: once navigations are transitions, there are two truthful answers to "what is the
+current route" — the **latest** state (the store, already reduced, possibly ahead of the screen)
+and the **rendered** state (what the user is actually looking at). Today the codebase never had to
+distinguish them because they were never apart for longer than a tick. This step walks through
+every place that reads state and makes the choice explicit, with a test per reader:
 
-### Step 5 — Transition semantics test pass
+- Hooks that components render with — `usePathname`, `useSegments`, `useLocalSearchParams`,
+  `useGlobalSearchParams`, sitemap — must describe the **rendered** screen. While a navigation is
+  pending, they keep reporting the old route, then update together with the screen when the
+  transition commits. (Their update path is already effect-timed, so this is mostly *verifying*,
+  not rewriting.)
+- Functions that feed the *next* navigation — relative-href resolution
+  (`resolveHrefStringWithSegments`), action targeting, `canGoBack`, `getStateForHref` — must use
+  the **latest** store state, because a second dispatch has to build on what the first one already
+  did, even if it hasn't rendered yet.
+- Anything found reading the wrong side (or reading the store mid-render, which would tear) gets
+  fixed and pinned with a test.
+Files: `global-state/store.ts`, `global-state/router.ts`, `global-state/useRouteInfo.ts`,
+`hooks/*` — audit-driven.
+
+### Step 7 — Transition semantics test pass
 End-to-end unit coverage of the headline behaviors: bare `router.push` (router-owned transition),
 caller `startTransition` composition and caller `isPending`, async transition (React 19 action),
 interruption (second navigation while pending; back while pending; native event while pending),
@@ -275,13 +342,13 @@ interruption (second navigation while pending; back while pending; native event 
 `NavigationIndependentTree`, `testing-library` ergonomics (risk 8). Mostly tests; fix what
 they catch.
 
-### Step 6 — Pending-state API: `useNavigationTransitionPending` + `useLinkStatus` (D3)
+### Step 8 — Pending-state API: `useNavigationTransitionPending` + `useLinkStatus` (D3)
 Expose the container's `isPending` via context behind `useNavigationTransitionPending()` (final
 name decided here); `useLinkStatus()` exposes `{ pending }` via context from the nearest Link,
 backed by a per-Link `useTransition`. Red-first per hook; RSC tests for the new exports.
 Files: `link/Link.tsx`, `link/useLinkStatus.tsx` (new), `hooks/`, `exports.ts`.
 
-### Step 7 — Verification, docs, changelog
+### Step 9 — Verification, docs, changelog
 `et check-packages expo-router`; manual verification in `apps/router-e2e` on iOS simulator + web
 (lazy screen via push, swipe-back and native tab press with suspending targets, pending
 indicators); docs: new guide section (transitions with Expo Router — including the fallback →
