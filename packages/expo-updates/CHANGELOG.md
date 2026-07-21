@@ -35,6 +35,7 @@
 - [Android] Skip and repair updates that are missing their launch asset instead of selecting them for launch, which previously failed every cold start with "Launch asset not found for update". ([#49470](https://github.com/expo/expo/pull/49470) by [@alanjhughes](https://github.com/alanjhughes), based on [#48733](https://github.com/expo/expo/pull/48733) by [@martintreurnicht](https://github.com/martintreurnicht))
 - [iOS] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49504](https://github.com/expo/expo/pull/49504) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Adopt the existing asset row when registering a new asset whose key is already in the database, instead of replacing it, which cascade-deleted every update referencing that asset. ([#49505](https://github.com/expo/expo/pull/49505) by [@alanjhughes](https://github.com/alanjhughes))
+- Drop the previous native state change listener before registering a new one, so re-evaluating `UpdatesEmitter` no longer stacks a subscription that retains the whole module scope — a leak that grew per request under server rendering until the dev server crashed with OOM. ([#47938](https://github.com/expo/expo/issues/47938) by [@ahmdshrif](https://github.com/ahmdshrif))
 
 ### 💡 Others
 
