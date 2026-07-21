@@ -4,6 +4,7 @@ import { detectAgent } from 'agent-cli-detector';
 import arg from 'arg';
 import chalk from 'chalk';
 import * as ciInfo from 'ci-info';
+import { randomBytes } from 'crypto';
 import { existsSync, readFileSync } from 'fs';
 import { homedir } from 'os';
 import path from 'path';
@@ -12,6 +13,10 @@ import { detectSandbox } from 'sandbox-cli-detector';
 
 const CLI_NAME = 'submit-expo-feedback';
 const FEEDBACK_TIMEOUT_MS = 15_000;
+const GENERATED_FEEDBACK_ID_BYTES = 6;
+const MIN_FEEDBACK_ID_LENGTH = 6;
+const MAX_FEEDBACK_ID_LENGTH = 64;
+const FEEDBACK_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
 const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'unknown'] as const;
 
 type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
@@ -35,6 +40,7 @@ type ConfigFilePaths = {
 
 type FeedbackMetadata = {
   category: FeedbackCategory;
+  feedbackId: string;
   subject?: string;
   cli: {
     name: typeof CLI_NAME;
@@ -94,6 +100,7 @@ async function runAsync(): Promise<void> {
       '--version': Boolean,
       '--category': String,
       '--subject': String,
+      '--resume': String,
       '-h': '--help',
       '-v': '--version',
       '-c': '--category',
@@ -121,7 +128,8 @@ async function runAsync(): Promise<void> {
     process.cwd(),
     session,
     category,
-    args['--subject']
+    args['--subject'],
+    args['--resume']
   );
 
   console.log(
@@ -136,6 +144,9 @@ async function runAsync(): Promise<void> {
   });
 
   console.log(chalk.green('Thanks for the feedback!'));
+  console.log(
+    `To continue the feedback session use:\nnpx submit-expo-feedback --resume ${metadata.feedbackId}`
+  );
 }
 
 export async function resolveFeedbackAsync(
@@ -191,12 +202,15 @@ export async function createFeedbackMetadataAsync(
   projectRoot: string,
   session = getSession(),
   category: FeedbackCategory = 'unknown',
-  subjectValue?: string
+  subjectValue?: string,
+  feedbackIdValue?: string
 ): Promise<FeedbackMetadata> {
   const subject = normalizeSubject(subjectValue);
+  const feedbackId = resolveFeedbackId(feedbackIdValue);
 
   return {
     category,
+    feedbackId,
     ...(subject ? { subject } : {}),
     cli: {
       name: CLI_NAME,
@@ -464,6 +478,7 @@ function printHelp(): void {
   {bold Options}
     --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
     --subject, -s <subject>    Exact item the feedback is about, based on the category
+    --resume <feedbackId>      Continue a feedback session using its ID
     --version, -v              Version number
     --help, -h                 Usage info
 
@@ -492,6 +507,24 @@ function resolveFeedbackCategory(value?: string): FeedbackCategory {
 function normalizeSubject(value?: string): string | undefined {
   const subject = value?.trim();
   return subject || undefined;
+}
+
+export function resolveFeedbackId(value?: string): string {
+  if (value === undefined) {
+    return randomBytes(GENERATED_FEEDBACK_ID_BYTES).toString('hex');
+  }
+
+  if (
+    value.length < MIN_FEEDBACK_ID_LENGTH ||
+    value.length > MAX_FEEDBACK_ID_LENGTH ||
+    !FEEDBACK_ID_PATTERN.test(value)
+  ) {
+    throw new CommandError(
+      `Invalid feedback ID. Expected ${MIN_FEEDBACK_ID_LENGTH}-${MAX_FEEDBACK_ID_LENGTH} letters, numbers, hyphens, or underscores.`
+    );
+  }
+
+  return value;
 }
 
 function getPackageVersion(): string {

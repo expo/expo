@@ -8,6 +8,7 @@ import {
   getProjectMetadata,
   getUserMetadataAsync,
   resolveFeedbackAsync,
+  resolveFeedbackId,
   runExpoFeedbackAsync,
   sendFeedbackAsync,
 } from '../cli';
@@ -72,11 +73,31 @@ describe('help output', () => {
       expect(helpOutput).toContain(
         '| unknown    | Concise Expo product, package, feature, or topic, or leave empty'
       );
+      expect(helpOutput).toContain('--resume <feedbackId>');
     } finally {
       process.argv = originalArgv;
       consoleLogSpy.mockRestore();
     }
   });
+});
+
+describe('feedback session ID', () => {
+  it('generates a short hexadecimal ID when one is not provided', () => {
+    expect(resolveFeedbackId()).toMatch(/^[a-f0-9]{12}$/);
+  });
+
+  it('uses a valid provided ID', () => {
+    expect(resolveFeedbackId('session_ABC-123')).toBe('session_ABC-123');
+  });
+
+  it.each(['short', 'contains spaces', 'contains/slash', 'a'.repeat(65)])(
+    'rejects invalid ID %p',
+    (feedbackId) => {
+      expect(() => resolveFeedbackId(feedbackId)).toThrow(
+        'Invalid feedback ID. Expected 6-64 letters, numbers, hyphens, or underscores.'
+      );
+    }
+  );
 });
 
 describe('feedback message resolution', () => {
@@ -324,6 +345,7 @@ describe('feedback submission', () => {
     expect(AbortSignal.timeout).toHaveBeenCalledWith(15_000);
     expect(metadata).toMatchObject({
       category: 'mcp',
+      feedbackId: expect.stringMatching(/^[a-f0-9]{12}$/),
       subject: 'expo-mcp',
       agentEnvironment: {
         detected: true,
@@ -349,5 +371,35 @@ describe('feedback submission', () => {
         username: 'expo-user',
       },
     });
+  });
+
+  it('resumes a feedback session and prints instructions using the provided ID', async () => {
+    const originalArgv = process.argv;
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
+    process.argv = [
+      'node',
+      'submit-expo-feedback',
+      '--resume',
+      'session_ABC-123',
+      'one more detail',
+    ];
+
+    try {
+      await runExpoFeedbackAsync();
+
+      const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+      expect(requestBody).toMatchObject({
+        feedback: 'one more detail',
+        metadata: {
+          feedbackId: 'session_ABC-123',
+        },
+      });
+      expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+        'To continue the feedback session use:\nnpx submit-expo-feedback --resume session_ABC-123'
+      );
+    } finally {
+      process.argv = originalArgv;
+    }
   });
 });
