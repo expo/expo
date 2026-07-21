@@ -42,6 +42,14 @@
       },
       "expo-source": "./src/legacy/index.ts",
       "default": "./build/legacy/index.js"
+    },
+    "./next": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
     }
   },
   "scripts": {
