@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Clear headless task manager on context destroy ([#47958](https://github.com/expo/expo/pull/47958) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
 
 ## 57.0.20 — 2026-09-24

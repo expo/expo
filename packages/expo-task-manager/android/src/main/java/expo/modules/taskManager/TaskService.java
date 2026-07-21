@@ -242,6 +242,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
     // It may be called with null when the host activity is destroyed.
     if (taskManager == null) {
       sTaskManagers.remove(appScopeKey);
+      sHeadlessTaskManagers.remove(appScopeKey);
       return;
     }
 
@@ -611,9 +612,7 @@ public class TaskService implements SingletonModule, TaskServiceInterface {
   private void invalidateAppRecord(String appScopeKey) {
     HeadlessAppLoader appLoader = getAppLoader();
     if (appLoader != null) {
-      if (getAppLoader().invalidateApp(appScopeKey)) {
-        sHeadlessTaskManagers.remove(appScopeKey);
-      }
+      appLoader.invalidateApp(appScopeKey);
     }
   }
 
