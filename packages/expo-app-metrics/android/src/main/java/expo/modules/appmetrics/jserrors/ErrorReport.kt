@@ -55,7 +55,8 @@ data class ErrorReport(
 /** How the error was captured. A closed set so the `expo.error.source` attribute stays consistent. */
 enum class ErrorSource(val rawValue: String) : Enumerable {
   GLOBAL("global"),
-  ERROR_BOUNDARY("errorBoundary")
+  ERROR_BOUNDARY("errorBoundary"),
+  REPORTED_BY_USER("reportedByUser")
 }
 
 /**
