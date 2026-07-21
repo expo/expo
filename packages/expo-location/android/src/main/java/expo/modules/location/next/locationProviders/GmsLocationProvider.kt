@@ -11,10 +11,10 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
 import expo.modules.location.next.LocationProvider
-import expo.modules.location.next.LocationUnavailableException
 import expo.modules.location.next.LocationWatchHandle
 import expo.modules.location.next.PositionWatchSession
 import expo.modules.location.next.Position
+import expo.modules.location.next.ProviderOutcome
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
@@ -96,7 +96,7 @@ class GmsLocationProvider(
   val fusedLocationProvider: FusedLocationProviderClient
 ): LocationProvider {
   @SuppressLint("MissingPermission")
-  override suspend fun getCurrentPosition(): Position {
+  override suspend fun getCurrentPosition(): ProviderOutcome<Position> {
     val cts = CancellationTokenSource()
     val location: Location? = suspendCancellableCoroutine { continuation ->
       // TODO(@HubertBer) add option to select Priority
@@ -108,16 +108,16 @@ class GmsLocationProvider(
         .addOnCanceledListener { continuation.cancel() }
     }
     if (location == null) {
-      throw LocationUnavailableException()
+      return ProviderOutcome.Unavailable
     }
-    return location.toPosition()
+    return ProviderOutcome.Success(location.toPosition())
   }
 
-  override fun watchPosition(): LocationWatchHandle {
+  override fun watchPosition(): ProviderOutcome<LocationWatchHandle> {
     // TODO(@HubertBer) add configuration options
     val watchSession = GmsWatchSession(this)
     val locationWatchHandle = LocationWatchHandle(watchSession)
-    return locationWatchHandle
+    return ProviderOutcome.Success(locationWatchHandle)
   }
 
   @SuppressLint("MissingPermission")

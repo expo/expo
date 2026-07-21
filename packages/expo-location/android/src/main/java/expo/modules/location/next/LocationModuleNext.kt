@@ -1,15 +1,10 @@
 package expo.modules.location.next
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.os.CancellationSignal
-import android.os.Looper
 import com.google.android.gms.location.LocationServices
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
@@ -28,10 +23,10 @@ import expo.modules.location.LocationHelpers
 import expo.modules.location.LocationUnauthorizedException
 import expo.modules.location.NoPermissionInManifestException
 import expo.modules.location.NoPermissionsModuleException
+import expo.modules.location.next.locationProviders.AndroidLocationProvider
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.records.PermissionDetailsLocationAndroid
 import expo.modules.location.records.PermissionRequestResponse
-import kotlinx.coroutines.suspendCancellableCoroutine
 import java.io.Serializable
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -39,24 +34,21 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 
 class LocationModuleNext : Module() {
-  var defaultLocationProvider: LocationProvider
+  lateinit var mContext: Context
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
     val gmsLocationProvider = GmsLocationProvider(fusedLocationProvider)
     SharedRef(gmsLocationProvider)
   }
   val androidLocationProviderInstance: SharedRef<LocationProvider> by lazy {
-    SharedRef(AndroidLocationProvider())
+    SharedRef(AndroidLocationProvider(mContext))
   }
-  lateinit var mContext: Context
-
-  init {
-    defaultLocationProvider = androidLocationProviderInstance.ref
-  }
+  lateinit var defaultLocationProvider: LocationProvider
 
   override fun definition() = ModuleDefinition {
     OnCreate {
       mContext = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+      defaultLocationProvider = androidLocationProviderInstance.ref
     }
 
     // Permissions
@@ -100,7 +92,7 @@ class LocationModuleNext : Module() {
     // Position
     AsyncFunction("getCurrentPositionAsync") Coroutine { ->
       ensureForegroundPermissions()
-      return@Coroutine defaultLocationProvider.getCurrentPosition()
+      return@Coroutine defaultLocationProvider.getCurrentPosition().unpack()
     }
 
     AsyncFunction("getLastKnownPositionAsync") Coroutine { ->
@@ -110,7 +102,7 @@ class LocationModuleNext : Module() {
 
     Function("watchPosition") { ->
       ensureForegroundPermissions()
-      return@Function defaultLocationProvider.watchPosition()
+      return@Function defaultLocationProvider.watchPosition().unpack()
     }
     
     Class (LocationWatchHandle::class) {
@@ -119,9 +111,11 @@ class LocationModuleNext : Module() {
       Function("pause") { locationWatchHandle: LocationWatchHandle ->
         locationWatchHandle.session.pause()
       }
+
       Function("resume") { locationWatchHandle: LocationWatchHandle ->
         locationWatchHandle.session.resume()
       }
+
       Function("getLastPosition") { locationWatchHandle: LocationWatchHandle ->
         locationWatchHandle.session.getLastPosition()
       }
@@ -307,14 +301,29 @@ class LocationWatchHandle(val session: PositionWatchSession): SharedObject() {
 ///////////////////////////////// LocationProvider //////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////
 
+
+sealed interface ProviderOutcome<out T> {
+  data class Success<T>(val value: T): ProviderOutcome<T>
+  object Unavailable: ProviderOutcome<Nothing>
+  object Unsupported: ProviderOutcome<Nothing>
+
+  fun unpack(): T = when (this) {
+    is Success -> value
+    Unavailable -> throw LocationUnavailableException()
+    Unsupported -> throw LocationOperationNotSupportedException()
+  }
+}
+
+
 interface LocationProvider {
-  suspend fun getCurrentPosition(): Position
-  fun watchPosition(): LocationWatchHandle
+  suspend fun getCurrentPosition(): ProviderOutcome<Position>
+  fun watchPosition(): ProviderOutcome<LocationWatchHandle>
   suspend fun getLastKnownPosition(): Position?
 }
 
-class LocationUnavailableException: Exception()
-internal class MethodNotImplementedException: Exception()
+class LocationUnavailableException: CodedException("Location fix is currently unavailable")
+class LocationOperationNotSupportedException: CodedException("This location operation is not supported")
+
 internal class ConversionException(fromClass: Class<*>, toClass: Class<*>, message: String? = "") :
   CodedException("Couldn't cast from ${fromClass::class.simpleName} to ${toClass::class.java.simpleName}: $message")
 
@@ -350,65 +359,4 @@ fun Location.toPosition(): Position {
     verticalAccuracy = verticalAccuracy(),
     speedAccuracy = speedAccuracy(),
   )
-}
-
-class AndroidLocationProvider: LocationProvider {
-  lateinit var context: Context
-
-  @SuppressLint("MissingPermission")
-  override suspend fun getCurrentPosition(): Position {
-    // TODO(@HubertBer) Add options, handle the other older android API versions
-    val provider = LocationManager.GPS_PROVIDER
-    val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-    val location: Location = suspendCancellableCoroutine { continuation ->
-      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val signal = CancellationSignal()
-        continuation.invokeOnCancellation { signal.cancel() }
-        return@suspendCancellableCoroutine locationManager.getCurrentLocation(
-          provider,
-          signal,
-          context.mainExecutor
-        ) { location ->
-          continuation.resume(location)
-        }
-      }
-
-      val listener = LocationListener { TODO("Not yet implemented") }
-      locationManager.requestLocationUpdates(provider, 0L, 0f, listener, Looper.getMainLooper())
-      continuation.invokeOnCancellation { locationManager.removeUpdates(listener) }
-    }
-    return location.toPosition()
-  }
-
-
-  override fun watchPosition(): LocationWatchHandle {
-    TODO("")
-//    Log.d("LOC", "Watch position async")
-  }
-
-  override suspend fun getLastKnownPosition(): Position? {
-    TODO("Not yet implemented")
-  }
-}
-
-
-class FallbackLocationProvider(val locationProviders: List<LocationProvider>): LocationProvider {
-  override suspend fun getCurrentPosition(): Position {
-    for (locationProvider in locationProviders) {
-      val position = locationProvider.getCurrentPosition()
-      return position
-    }
-
-    throw MethodNotImplementedException()
-  }
-
-  override fun watchPosition(): LocationWatchHandle {
-    TODO("Not yet implemented")
-  }
-
-  override suspend fun getLastKnownPosition(): Position? {
-    // "No cached position" is a valid answer, not an error - a null from one
-    // provider means we should ask the next one.
-    return locationProviders.firstNotNullOfOrNull { it.getLastKnownPosition() }
-  }
 }
