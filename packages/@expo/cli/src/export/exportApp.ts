@@ -237,44 +237,52 @@ export async function exportAppAsync(
                 .flat()
             ),
           ];
-          await Promise.all(
-            // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
-            expoDomComponentReferences.map(async (filePath) => {
-              const { bundle: platformDomComponentsBundle, htmlOutputName } =
-                await exportDomComponentAsync({
-                  filePath,
-                  projectRoot,
-                  dev,
-                  devServer,
-                  isHermes,
-                  includeSourceMaps: sourceMaps,
-                  exp,
-                  files,
-                  useMd5Filename: true,
-                });
+          // NOTE: This must run sequentially, not via `Promise.all(map(...))`.
+          // `domComponentAssetsMetadata[platform]` is accumulated with a
+          // read-modify-write (`[...(domComponentAssetsMetadata[platform] ||
+          // []), ...newEntries]`), which is not atomic. When multiple DOM
+          // components are exported concurrently, callbacks can read the
+          // array before earlier callbacks have written their update back,
+          // silently dropping entries — apps with 2+ DOM components can end
+          // up with some of their HTML bundles missing from metadata.json,
+          // which 404s in the corresponding WebView after an EAS Update.
+          // See: https://github.com/expo/expo/issues/37269
+          // TODO: Make a version of this which uses `this.metro.getBundler().buildGraphForEntries([])` to bundle all the DOM components at once.
+          for (const filePath of expoDomComponentReferences) {
+            const { bundle: platformDomComponentsBundle, htmlOutputName } =
+              await exportDomComponentAsync({
+                filePath,
+                projectRoot,
+                dev,
+                devServer,
+                isHermes,
+                includeSourceMaps: sourceMaps,
+                exp,
+                files,
+                useMd5Filename: true,
+              });
 
-              // Merge the assets from the DOM component into the output assets, deduplicating by hash.
-              const existingHashes = new Set(bundle.assets.map((a) => a.hash));
-              (bundle.assets as (typeof bundle.assets)[0][]).push(
-                ...platformDomComponentsBundle.assets.filter((a) => !existingHashes.has(a.hash))
-              );
+            // Merge the assets from the DOM component into the output assets, deduplicating by hash.
+            const existingHashes = new Set(bundle.assets.map((a) => a.hash));
+            (bundle.assets as (typeof bundle.assets)[0][]).push(
+              ...platformDomComponentsBundle.assets.filter((a) => !existingHashes.has(a.hash))
+            );
 
-              transformNativeBundleForMd5Filename({
-                domComponentReference: filePath,
-                nativeBundle: bundle,
+            transformNativeBundleForMd5Filename({
+              domComponentReference: filePath,
+              nativeBundle: bundle,
+              files,
+              htmlOutputName,
+            });
+            domComponentAssetsMetadata[platform] = [
+              ...(domComponentAssetsMetadata[platform] || []),
+              ...(await addDomBundleToMetadataAsync(platformDomComponentsBundle)),
+              ...transformDomEntryForMd5Filename({
                 files,
                 htmlOutputName,
-              });
-              domComponentAssetsMetadata[platform] = [
-                ...(domComponentAssetsMetadata[platform] || []),
-                ...(await addDomBundleToMetadataAsync(platformDomComponentsBundle)),
-                ...transformDomEntryForMd5Filename({
-                  files,
-                  htmlOutputName,
-                }),
-              ];
-            })
-          );
+              }),
+            ];
+          }
 
           if (platform === 'web') {
             const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
