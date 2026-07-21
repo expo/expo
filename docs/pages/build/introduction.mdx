@@ -1,161 +1,409 @@
----
-title: EAS Build
-sidebar_title: Introduction
-description: EAS Build is a hosted service for building app binaries for your Expo and React Native projects.
----
+import React, { useState, useEffect } from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  Image,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  Alert,
+  Linking,
+  ActivityIndicator,
+  SafeAreaView,
+  StatusBar
+} from 'react-native';
 
-import { Cube01Icon } from '@expo/styleguide-icons/outline/Cube01Icon';
+// Firebase Compatibility Imports
+import firebase from 'firebase/app';
+import 'firebase/firestore';
 
-import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
-import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
-import { FAQ } from '~/ui/components/FAQ';
-import { Terminal } from '~/ui/components/Snippet';
+// 1. Firebase Config (Inafanana na ya Admin)
+const firebaseConfig = {
+  apiKey: "AIzaSyDvEyLYbxPBS1q_eigerzK8IGd48M0tuLw",
+  authDomain: "kavishe-news-room.firebaseapp.com",
+  projectId: "kavishe-news-room",
+  storageBucket: "kavishe-news-room.firebasestorage.app",
+  messagingSenderId: "939462200150",
+  appId: "1:939462200150:web:674d14e4afc6ccd3d424f7"
+};
 
-**EAS Build** is a hosted Expo Application Services (EAS) service that builds app binaries (also called [standalone apps](/more/glossary-of-terms/#standalone-app)) for your Expo and React Native projects.
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.firestore();
 
-EAS Build makes building your apps for distribution simple and easy to automate by providing defaults that work well for Expo and React Native projects out of the box, and by handling your app signing credentials for you (if you wish). It also makes sharing builds with your team easier than ever with [internal distribution](/build/internal-distribution/) (using [ad hoc](/build/internal-distribution/) and/or enterprise "universal" provisioning), deeply integrates with EAS Submit for app store submissions, and has first-class support for the [`expo-updates`](/build/updates/) library.
+export default function App() {
+  const [news, setNews] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedNews, setSelectedNews] = useState(null);
+  
+  // Matangazo State (Box 1-4)
+  const [ads, setAds] = useState({});
+  const [showOuterAd, setShowOuterAd] = useState(false);
+  const [showInnerAd, setShowInnerAd] = useState(false);
 
-EAS Build is also designed to work for any native project, whether or not you use Expo and React Native. It's the fastest way to get from `npx create-expo-app` or `npx @react-native-community/cli@latest init` to app stores.
+  // Feedback State
+  const [feedbackModal, setFeedbackModal] = useState(false);
+  const [userMsg, setUserMsg] = useState('');
+  const [userName, setUserName] = useState('');
 
-## Quick start
+  // Check User Status (Simulated ID or Device ID)
+  const [isBlocked, setIsBlocked] = useState(false);
+  const [blockMessage, setBlockMessage] = useState('');
 
-> **info** The `eas` commands below require EAS CLI. See [How to install EAS CLI](/eas/cli/#installation) for more information.
+  useEffect(() => {
+    // A. Vuta Habari Live kutoka Firebase
+    const unsubscribeNews = db.collection('news')
+      .orderBy('createdAt', 'desc')
+      .onSnapshot(snapshot => {
+        const newsList = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setNews(newsList);
+        setLoading(false);
+      });
 
-To build your app, run the following command:
+    // B. Vuta Matangazo Live (Box 1, 2, 3, 4)
+    const unsubscribeAds = db.collection('advertisements').onSnapshot(snapshot => {
+      let adsData = {};
+      snapshot.forEach(doc => {
+        adsData[doc.id] = doc.data();
+      });
+      setAds(adsData);
 
-<Terminal cmd={['$ eas build --platform all']} />
+      // Onyesha Tangazo la Nje (Box 2) pindi App inapofunguka kama lipo
+      if (adsData['payment_outer'] && adsData['payment_outer'].isActive) {
+        setShowOuterAd(true);
+      }
+    });
 
-This command sends your project to EAS Build and produces installable binaries for Android and iOS. You can also build for one platform at a time by passing in `--platform android` or `--platform ios` as desired. For complete setup instructions, see [Create your first build](/build/setup/).
+    return () => {
+      unsubscribeNews();
+      unsubscribeAds();
+    };
+  }, []);
 
-## Key features
+  // Fungua Habari & Onyesha Tangazo la Ndani (Box 3)
+  const openNewsDetail = (item) => {
+    if (isBlocked) {
+      Alert.alert("Akaunti Imefungiwa", blockMessage || "Umemungiwa kutumia huduma hii.");
+      return;
+    }
+    setSelectedNews(item);
+    if (ads['payment_inner'] && ads['payment_inner'].isActive) {
+      setShowInnerAd(true);
+    }
+  };
 
-- Cloud builds for Android and iOS with consistent environments
-- Automatically provision and manage app signing credentials or use your own
-- Share [internal distribution](/build/internal-distribution/) builds with a URL
-- Automate builds with [build profiles](/build/eas-json/#build-profiles) in **eas.json** (named sets of build settings) and integrations with [EAS Workflows](/eas/workflows/get-started/) or [CI pipelines](/build/building-on-ci/)
-- Auto-submit successful builds to app stores via [`--auto-submit`](/build/automate-submissions/) and EAS Submit
-- First-class [`expo-updates` integration](/build/updates/) with per-profile channels and [runtime version](/eas-update/runtime-versions/) guidance
-- Reuse [development builds](/develop/development-builds/introduction/) across your team. When two team members run `eas build:dev` and the project fingerprint matches, the existing build is downloaded from EAS instead of creating a new one
-- Faster builds via [dependency caching and custom cache paths](/build-reference/caching/)
-- Install builds and updates on devices with [Expo Orbit](https://expo.dev/orbit)
+  // Tuma Maoni
+  const sendFeedback = async () => {
+    if (!userMsg.trim()) return Alert.alert("Kosa", "Tafadhali andika maoni yako.");
+    try {
+      await db.collection('feedbacks').add({
+        userName: userName || 'Msomaji',
+        message: userMsg,
+        createdAt: new Date().toISOString()
+      });
+      Alert.alert("Asante!", "Maoni yako yamefika kwa Mwandishi Kavishe.");
+      setUserMsg('');
+      setFeedbackModal(false);
+    } catch (e) {
+      Alert.alert("Kosa", "Imeshindikana kutuma maoni.");
+    }
+  };
 
-## When to use EAS Build
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
 
-| Scenario                                                                             | Recommendation |
-| ------------------------------------------------------------------------------------ | -------------- |
-| Build production-ready binaries for app stores                                       | <YesIcon />    |
-| Share builds with testers via [internal distribution](/build/internal-distribution/) | <YesIcon />    |
-| Consistent builds across team members without local environment setup                | <YesIcon />    |
-| Automate builds from CI or [EAS Workflows](/eas/workflows/get-started/)              | <YesIcon />    |
-| Managed app signing credentials                                                      | <YesIcon />    |
-| Debugging native code locally                                                        | <NoIcon />     |
+      {/* HEADER BAR */}
+      <View style={styles.header}>
+        <Text style={styles.headerTitle}>KAVISHE <Text style={{color: '#3b82f6'}}>NEWS ROOM</Text></Text>
+        <TouchableOpacity onPress={() => setFeedbackModal(true)} style={styles.feedbackBtn}>
+          <Text style={styles.feedbackBtnText}>💬 Maoni</Text>
+        </TouchableOpacity>
+      </View>
 
-## Frequently asked questions
+      {/* BANNER PROMO YA APP ZANGU (BOX 4 - DIRECT APK LINK) */}
+      {ads['my_apps_apk'] && ads['my_apps_apk'].isActive && (
+        <TouchableOpacity 
+          style={styles.box4Banner}
+          onPress={() => ads['my_apps_apk'].targetUrl && Linking.openURL(ads['my_apps_apk'].targetUrl)}
+        >
+          <Image source={{ uri: ads['my_apps_apk'].bannerUrl }} style={styles.box4Icon} />
+          <View style={{flex: 1, marginLeft: 10}}>
+            <Text style={styles.box4Title}>{ads['my_apps_apk'].title}</Text>
+            <Text style={styles.box4Sub}>Bonyeza hapa kupakua App hii moja kwa moja!</Text>
+          </View>
+          <View style={styles.downloadBtn}>
+            <Text style={styles.downloadBtnText}>Pakua APK</Text>
+          </View>
+        </TouchableOpacity>
+      )}
 
-<FAQ>
+      {/* ORODHA YA HABARI (NEWS FEED) */}
+      {loading ? (
+        <View style={styles.centerLoading}>
+          <ActivityIndicator size="large" color="#2563eb" />
+          <Text style={{marginTop: 10, color: '#64748b', fontSize: 12}}>Mwandishi Kavishe Anapakia Habari...</Text>
+        </View>
+      ) : (
+        <ScrollView style={styles.feedContainer} showsVerticalScrollIndicator={false}>
+          {news.map((item, index) => (
+            <React.Fragment key={item.id}>
+              
+              {/* CARD YA HABARI */}
+              <TouchableOpacity style={styles.newsCard} activeOpacity={0.85} onPress={() => openNewsDetail(item)}>
+                
+                {/* CONTAINER YA PICHA SAMA NA WATERMARK YA KAVISHE */}
+                <View style={styles.imageWrapper}>
+                  <Image source={{ uri: item.imageUrl }} style={styles.newsImage} />
+                  
+                  {/* WATERMARK YA KAVISHE (KAM MILARD AYO) */}
+                  <View style={styles.watermarkContainer}>
+                    <Text style={styles.watermarkText}>KAVISHE NEWS</Text>
+                  </View>
+                </View>
 
-<Collapsible summary="How do I share builds with my team before submitting to app stores?">
+                <View style={styles.newsContent}>
+                  <Text style={styles.categoryBadge}>{item.category || 'Trending'}</Text>
+                  <Text style={styles.newsTitle}>{item.title}</Text>
+                  <Text style={styles.newsTagline}>{item.authorTagline}</Text>
+                </View>
+              </TouchableOpacity>
 
-Use [internal distribution](/build/internal-distribution/) to share builds with a URL. Set `"distribution": "internal"` in your [build profile](/build/eas-json/#build-profiles) in **eas.json** to generate installable Android Package (APK) files for Android or [ad hoc builds](/build/internal-distribution/) for iOS.
+              {/* BOX 1: TANGAZO LA BIASHARA (Inajitokeza baadhi ya habari) */}
+              {index === 1 && ads['business_banner'] && ads['business_banner'].isActive && (
+                <TouchableOpacity 
+                  style={styles.businessAdCard}
+                  onPress={() => ads['business_banner'].targetUrl && Linking.openURL(ads['business_banner'].targetUrl)}
+                >
+                  <Text style={styles.adLabel}>TANGAZO LA BIASHARA</Text>
+                  <Image source={{ uri: ads['business_banner'].bannerUrl }} style={styles.adImage} />
+                  <Text style={styles.adTitle}>{ads['business_banner'].title}</Text>
+                </TouchableOpacity>
+              )}
 
-</Collapsible>
+            </React.Fragment>
+          ))}
+        </ScrollView>
+      )}
 
-<Collapsible summary="Can I use EAS Build with existing React Native projects?">
+      {/* MODAL 1: SOMA HABARI KAMILI */}
+      <Modal visible={!!selectedNews} animationType="slide" onRequestClose={() => setSelectedNews(null)}>
+        {selectedNews && (
+          <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
+            <ScrollView style={{flex: 1}}>
+              <View style={styles.imageWrapperDetail}>
+                <Image source={{ uri: selectedNews.imageUrl }} style={styles.detailImage} />
+                
+                {/* WATERMARK YENYE GUO KISASA (DETAIL SCREEN) */}
+                <View style={styles.watermarkContainerDetail}>
+                  <Text style={styles.watermarkTextDetail}>KAVISHE NEWS ROOM</Text>
+                </View>
+              </View>
 
-Yes. EAS Build works with existing React Native projects created with `npx react-native init` or similar tools. See [Overview of using Expo with existing React Native apps](/bare/overview/) for more information.
+              <View style={{p: 16, padding: 16}}>
+                <Text style={styles.categoryBadge}>{selectedNews.category}</Text>
+                <Text style={styles.detailTitle}>{selectedNews.title}</Text>
+                <Text style={styles.detailAuthor}>{selectedNews.authorTagline}</Text>
+                <View style={styles.divider} />
+                <Text style={styles.detailBody}>{selectedNews.content}</Text>
+              </View>
+            </ScrollView>
+            
+            <TouchableOpacity style={styles.closeDetailBtn} onPress={() => setSelectedNews(null)}>
+              <Text style={{color: '#fff', fontWeight: 'bold'}}>Rudi Kwenye Habari</Text>
+            </TouchableOpacity>
+          </SafeAreaView>
+        )}
+      </Modal>
 
-</Collapsible>
+      {/* MODAL 2: TANGAZO LA NJE (BOX 2 - ON LAUNCH) */}
+      <Modal visible={showOuterAd} transparent animationType="fade">
+        <View style={styles.modalOverlay}>
+          <View style={styles.adPopUpBox}>
+            <Text style={styles.popUpHeader}>TAARIFA MAALUM</Text>
+            {ads['payment_outer']?.bannerUrl && (
+              <Image source={{ uri: ads['payment_outer'].bannerUrl }} style={styles.popUpImage} />
+            )}
+            <Text style={styles.popUpTitle}>{ads['payment_outer']?.title}</Text>
+            <TouchableOpacity 
+              style={styles.popUpActionBtn}
+              onPress={() => {
+                if (ads['payment_outer']?.targetUrl) Linking.openURL(ads['payment_outer'].targetUrl);
+                setShowOuterAd(false);
+              }}
+            >
+              <Text style={styles.popUpActionText}>Kamilisha / Endelea</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowOuterAd(false)} style={{marginTop: 10}}>
+              <Text style={{color: '#94a3b8', fontSize: 12}}>Funga Tangazo</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
-<Collapsible summary="Does EAS Build handle app signing credentials?">
+      {/* MODAL 3: TANGAZO LA NDANI (BOX 3 - POPUP WHEN READING) */}
+      <Modal visible={showInnerAd} transparent animationType="slide">
+        <View style={styles.modalOverlay}>
+          <View style={[styles.adPopUpBox, {borderColor: '#a855f7', borderWidth: 2}]}>
+            <Text style={[styles.popUpHeader, {color: '#a855f7'}]}>HUDUMA YA PREMIUM</Text>
+            {ads['payment_inner']?.bannerUrl && (
+              <Image source={{ uri: ads['payment_inner'].bannerUrl }} style={styles.popUpImage} />
+            )}
+            <Text style={styles.popUpTitle}>{ads['payment_inner']?.title}</Text>
+            <TouchableOpacity 
+              style={[styles.popUpActionBtn, {backgroundColor: '#9333ea'}]}
+              onPress={() => {
+                if (ads['payment_inner']?.targetUrl) Linking.openURL(ads['payment_inner'].targetUrl);
+                setShowInnerAd(false);
+              }}
+            >
+              <Text style={styles.popUpActionText}>Lipia / Angalia</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowInnerAd(false)} style={{marginTop: 10}}>
+              <Text style={{color: '#94a3b8', fontSize: 12}}>Endelea Kusoma Habari</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
 
-Yes. EAS Build can generate and manage Android [keystores](/app-signing/app-credentials/#android), iOS [provisioning profiles](/app-signing/app-credentials/#ios) and [distribution certificates](/app-signing/app-credentials/#ios), or use credentials you provide. See [App signing credentials](/app-signing/app-credentials/) for more information.
+      {/* MODAL 4: SEND FEEDBACK */}
+      <Modal visible={feedbackModal} animationType="slide" transparent>
+        <View style={styles.modalOverlay}>
+          <View style={styles.feedbackBox}>
+            <Text style={styles.feedbackHeader}>Tuma Maoni kwa Mwandishi Kavishe</Text>
+            <TextInput 
+              placeholder="Jina Lako (Sio lazima)" 
+              style={styles.input}
+              value={userName}
+              onChangeText={setUserName}
+            />
+            <TextInput 
+              placeholder="Andika maoni au ushauri wako hapa..." 
+              style={[styles.input, {height: 80}]} 
+              multiline
+              value={userMsg}
+              onChangeText={setUserMsg}
+            />
+            <View style={{flexDirection: 'row', gap: 10}}>
+              <TouchableOpacity onPress={() => setFeedbackModal(false)} style={[styles.modalBtn, {backgroundColor: '#64748b'}]}>
+                <Text style={{color: '#fff', fontWeight: 'bold'}}>Ghairi</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={sendFeedback} style={[styles.modalBtn, {backgroundColor: '#2563eb'}]}>
+                <Text style={{color: '#fff', fontWeight: 'bold'}}>Tuma</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
-</Collapsible>
+    </SafeAreaView>
+  );
+}
 
-<Collapsible summary="Can I run builds locally instead of in the cloud?">
+// STYLESHEET
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f8fafc' },
+  header: { 
+    backgroundColor: '#0f172a', 
+    padding: 16, 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center' 
+  },
+  headerTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold', letterSpacing: 1 },
+  feedbackBtn: { backgroundColor: '#1e293b', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
+  feedbackBtnText: { color: '#e2e8f0', fontSize: 12, fontWeight: '600' },
+  
+  centerLoading: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  feedContainer: { flex: 1, padding: 12 },
 
-Yes. Use [local builds](/build-reference/local-builds/) with `eas build --local` to run builds on your machine. This is useful for debugging or for security policies that require local builds.
+  // CARD YA HABARI & WATERMARK (STYLE YA MILARD AYO)
+  newsCard: { backgroundColor: '#fff', borderRadius: 12, overflow: 'hidden', marginBottom: 16, elevation: 3 },
+  imageWrapper: { position: 'relative', width: '100%', height: 200 },
+  newsImage: { width: '100%', height: '100%', resizeMode: 'cover' },
+  
+  // WATERMARK STYLING
+  watermarkContainer: {
+    position: 'absolute',
+    bottom: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.45)', // Kufifia
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  watermarkText: {
+    color: 'rgba(255, 255, 255, 0.85)',
+    fontSize: 11,
+    fontWeight: 'bold',
+    letterSpacing: 1.5,
+    textTransform: 'uppercase'
+  },
 
-</Collapsible>
+  newsContent: { padding: 12 },
+  categoryBadge: { color: '#2563eb', fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 4 },
+  newsTitle: { fontSize: 15, fontWeight: 'bold', color: '#0f172a', lineHeight: 20 },
+  newsTagline: { fontSize: 11, color: '#64748b', marginTop: 6, fontStyle: 'italic' },
 
-<Collapsible summary="Can I use EAS Build with EAS Workflows or CI pipelines?">
+  // BOX 4 BANNER (APP ZANGU APK)
+  box4Banner: { 
+    backgroundColor: '#eff6ff', 
+    padding: 10, 
+    marginHorizontal: 12, 
+    marginTop: 8, 
+    borderRadius: 10, 
+    flexDirection: 'row', 
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#bfdbfe'
+  },
+  box4Icon: { width: 40, height: 40, borderRadius: 8 },
+  box4Title: { fontSize: 12, fontWeight: 'bold', color: '#1e3a8a' },
+  box4Sub: { fontSize: 9, color: '#3b82f6' },
+  downloadBtn: { backgroundColor: '#2563eb', paddingHorizontal: 10, paddingVertical: 6, borderRadius: 6 },
+  downloadBtnText: { color: '#fff', fontSize: 10, fontWeight: 'bold' },
 
-Yes. EAS Build integrates with [EAS Workflows](/eas/workflows/get-started/) using the `build` job type. Add a build job to your workflow configuration, for example:
+  // BOX 1 BANNER (BIASHARA)
+  businessAdCard: { backgroundColor: '#f1f5f9', p: 10, padding: 10, borderRadius: 10, marginBottom: 16, borderLeftWidth: 4, borderLeftColor: '#16a34a' },
+  adLabel: { fontSize: 9, fontWeight: 'bold', color: '#16a34a', marginBottom: 4 },
+  adImage: { width: '100%', height: 120, borderRadius: 8, marginVertical: 6 },
+  adTitle: { fontSize: 12, fontWeight: 'bold', color: '#334155' },
 
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-```
+  // DETAIL SCREEN & WATERMARK
+  imageWrapperDetail: { position: 'relative', width: '100%', height: 260 },
+  detailImage: { width: '100%', height: '100%' },
+  watermarkContainerDetail: {
+    position: 'absolute',
+    bottom: 12,
+    right: 12,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+    borderRadius: 8,
+  },
+  watermarkTextDetail: { color: 'rgba(255,255,255,0.9)', fontSize: 12, fontWeight: 'bold', letterSpacing: 2 },
+  detailTitle: { fontSize: 18, fontWeight: 'bold', color: '#0f172a', marginVertical: 8 },
+  detailAuthor: { fontSize: 12, color: '#2563eb', fontWeight: '600' },
+  divider: { height: 1, backgroundColor: '#e2e8f0', marginVertical: 12 },
+  detailBody: { fontSize: 14, color: '#334155', lineHeight: 22 },
+  closeDetailBtn: { backgroundColor: '#0f172a', padding: 16, alignItems: 'center' },
 
-The build job supports builds for both platforms or conditional builds based on the branch:
+  // MODAL & POPUP STYLES
+  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', padding: 20 },
+  adPopUpBox: { backgroundColor: '#fff', width: '100%', padding: 20, borderRadius: 16, alignItems: 'center' },
+  popUpHeader: { fontSize: 11, fontWeight: 'bold', color: '#d97706', letterSpacing: 1, marginBottom: 8 },
+  popUpImage: { width: '100%', height: 150, borderRadius: 10, marginBottom: 12 },
+  popUpTitle: { fontSize: 14, fontWeight: 'bold', textAlign: 'center', color: '#1e293b', marginBottom: 16 },
+  popUpActionBtn: { backgroundColor: '#d97706', width: '100%', padding: 12, borderRadius: 10, alignItems: 'center' },
+  popUpActionText: { color: '#fff', fontWeight: 'bold', fontSize: 13 },
 
-```yaml
-jobs:
-  build:
-    type: build
-    params:
-      platform: all
-      profile: ${{ github.ref_name == 'main' && 'production' || 'preview' }}
-```
-
-For more information and other usage examples, see the [EAS Workflows build job](/eas/workflows/pre-packaged-jobs#build).
-
-EAS Build supports [builds from GitHub](/build/building-from-github/) and [building on CI](/build/building-on-ci/) with any provider.
-
-</Collapsible>
-
-<Collapsible summary="What build server infrastructure does EAS Build use?">
-
-Android builds run on Linux runners hosted in Google Cloud Platform, and iOS builds run on macOS runners hosted in Expo's macOS cloud. See [Build server infrastructure](/build-reference/infrastructure/).
-
-</Collapsible>
-
-</FAQ>
-
-## Get started
-
-<BoxLink
-  title="Create your first build"
-  description="It should only take a few minutes in total to get up and running for iOS and/or Android."
-  href="/build/setup"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Share your apps with internal testers"
-  description="EAS Build can help share preview builds of your app with a single URL."
-  href="/build/internal-distribution"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Automate submissions"
-  description="Learn how EAS Build can take your successful builds and handle uploading them to app stores automatically."
-  href="/build/automate-submissions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="App version management"
-  description="Automate version bumps so you never have to think about them again."
-  href="/build-reference/app-versions"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Run builds locally or on your own infrastructure"
-  description="EAS Build is a hosted service, and it can also run on your own machine, for example, to debug or to comply with company security policies."
-  href="/build-reference/local-builds"
-  Icon={Cube01Icon}
-/>
-
-<BoxLink
-  title="Limitations"
-  description="EAS Build is new and rapidly evolving, so we recommend getting familiar with the current limitations."
-  href="/build-reference/limitations"
-  Icon={Cube01Icon}
-/>
+  feedbackBox: { backgroundColor: '#fff', width: '100%', padding: 20, borderRadius: 16 },
+  feedbackHeader: { fontSize: 14, fontWeight: 'bold', color: '#0f172a', marginBottom: 12 },
+  input: { backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#cbd5e1', padding: 10, borderRadius: 8, marginBottom: 10, fontSize: 12 },
+  modalBtn: { flex: 1, padding: 12, borderRadius: 8, alignItems: 'center' }
+});
