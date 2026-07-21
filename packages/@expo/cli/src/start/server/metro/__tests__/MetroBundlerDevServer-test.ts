@@ -3,6 +3,7 @@ import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
 import { ImmutableRequest } from 'expo-server/private';
 import { vol } from 'memfs';
 
+import type { ExportAssetMap } from '../../../../export/saveAssets';
 import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
@@ -415,5 +416,40 @@ describe('getStaticPageAsync', () => {
     await expect(devServer['getStaticPageAsync']('/posts/123', htmlRoute)).rejects.toThrow(
       'development streaming SSR requires a request'
     );
+  });
+});
+
+describe('exportServerRouteAsync', () => {
+  it('rewrites only the trailing source map directive', async () => {
+    // https://github.com/expo/expo/issues/47960
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    const files: ExportAssetMap = new Map();
+
+    const src = [
+      `const n='This is string data, not a comment.\\n//# sourceMappingURL=embedded.js.map\\nEnd of data.';`,
+      '//# sourceMappingURL=index.map',
+    ].join('\n');
+
+    await devServer['exportServerRouteAsync']({
+      contents: {
+        src,
+        map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
+      },
+      artifactFilename: '_expo/server/render.js',
+      files,
+      includeSourceMaps: true,
+      descriptor: {},
+    });
+
+    expect(files.get('_expo/server/render.js')?.contents).toBe(
+      [
+        `const n='This is string data, not a comment.\\n//# sourceMappingURL=embedded.js.map\\nEnd of data.';`,
+        '//# sourceMappingURL=render.js.map',
+      ].join('\n')
+    );
+    expect(files.has('_expo/server/render.js.map')).toBe(true);
   });
 });
