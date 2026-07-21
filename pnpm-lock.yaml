@@ -4351,6 +4351,45 @@ importers:
         specifier: workspace:*
         version: link:../expo-module-scripts
 
+  packages/submit-expo-feedback:
+    devDependencies:
+      '@expo/config':
+        specifier: workspace:*
+        version: link:../@expo/config
+      '@expo/package-manager':
+        specifier: workspace:*
+        version: link:../@expo/package-manager
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
+      '@types/prompts':
+        specifier: ^2.0.6
+        version: 2.4.9
+      '@vercel/ncc':
+        specifier: ^0.38.3
+        version: 0.38.4
+      agent-cli-detector:
+        specifier: ^0.1.2
+        version: 0.1.2
+      arg:
+        specifier: ^5.0.2
+        version: 5.0.2
+      chalk:
+        specifier: ^4.0.0
+        version: 4.1.2
+      ci-info:
+        specifier: ^3.3.0
+        version: 3.9.0
+      expo-module-scripts:
+        specifier: workspace:*
+        version: link:../expo-module-scripts
+      prompts:
+        specifier: ^2.3.2
+        version: 2.4.2
+      sandbox-cli-detector:
+        specifier: ^0.2.0
+        version: 0.2.0
+
   packages/expo-file-system:
     dependencies:
       react-native:
@@ -14661,6 +14700,11 @@ packages:
 
   safer-buffer@2.1.2:
     resolution: {integrity: sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==}
+
+  sandbox-cli-detector@0.2.0:
+    resolution: {integrity: sha512-4lyHX0ZU0AZKwjgZ1InxZAa3PNpyEb8rOQ+Zss1ReYmhNzW0Q+h1zE5nvniXN0HaAWZaZE1zgVNEirb0R7LmNg==}
+    engines: {node: '>=18.18'}
+    hasBin: true
 
   sass@1.98.0:
     resolution: {integrity: sha512-+4N/u9dZ4PrgzGgPlKnaaRQx64RO0JBKs9sDhQ2pLgN6JQZ25uPQZKQYaBJU48Kd5BxgXoJ4e09Dq7nMcOUW3A==}
@@ -25687,6 +25731,8 @@ snapshots:
       ret: 0.1.15
 
   safer-buffer@2.1.2: {}
+
+  sandbox-cli-detector@0.2.0: {}
 
   sass@1.98.0:
     dependencies:
