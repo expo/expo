@@ -19,6 +19,7 @@
 - [iOS] Deactivate the audio session off the main thread to avoid app hangs. ([#47066](https://github.com/expo/expo/pull/47066) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Don't start playback when the system denies audio focus, and log a warning explaining that background playback needs an active media playback foreground service. ([#46957](https://github.com/expo/expo/pull/46957) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix playlist `currentIndex` freezing after the first auto-advance. ([#47257](https://github.com/expo/expo/pull/47257) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Create a fresh recording file each time `prepareToRecordAsync` is called, matching Android — repeated takes no longer overwrite the previous recording at the same URL. ([#48002](https://github.com/expo/expo/pull/48002) by [@idoyana](https://github.com/idoyana))
 
 ### 💡 Others
 
