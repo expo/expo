@@ -173,7 +173,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable or the captured
   /// byte range is invalid.
   public func withJSBytes<R: Sendable>(
-    _ body: @escaping (UnsafeRawBufferPointer) throws -> R
+    _ body: @escaping @Sendable (UnsafeRawBufferPointer) throws -> R
   ) async throws -> R {
     switch storageBox.currentStorage() {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
@@ -218,7 +218,7 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable or the captured
   /// byte range is invalid.
   public func withMutableJSBytes<R: Sendable>(
-    _ body: @escaping (UnsafeMutableRawBufferPointer) throws -> R
+    _ body: @escaping @Sendable (UnsafeMutableRawBufferPointer) throws -> R
   ) async throws -> R {
     switch storageBox.currentStorage() {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
