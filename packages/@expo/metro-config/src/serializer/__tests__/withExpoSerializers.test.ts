@@ -43,7 +43,7 @@ describe(withSerializerPlugins, () => {
     // Create a fake serializer, running `getRunBeforeMainModules` from the config
     const customProcessor = jest.fn((...res) => res);
     const customSerializer = jest.fn((_entryPoint, _preModules, _graph, options) => {
-      // Mimick serializer behavior where we call getModulesRunBeforeMainModule
+      // Mimic serializer behavior where we call getModulesRunBeforeMainModule
       options.getModulesRunBeforeMainModule('path/to/entry.js');
     });
 
@@ -74,7 +74,7 @@ describe(withSerializerPlugins, () => {
     // Ensure the serializer was invoked correctly
     expect(customProcessor).toHaveBeenCalledWith('a', 'b', 'c', configWithSerializer.serializer);
     expect(customSerializer).toHaveBeenCalledWith('a', 'b', 'c', configWithSerializer.serializer);
-    // Ensure the serializer invoked the overriden config property
+    // Ensure the serializer invoked the overridden config property
     expect(defaultGetMainModules).not.toHaveBeenCalled();
     expect(overrideGetMainModules).toHaveBeenCalled();
   });

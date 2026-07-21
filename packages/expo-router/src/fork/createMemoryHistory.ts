@@ -95,7 +95,7 @@ export function createMemoryHistory() {
 
       if (!items.length || items.findIndex((item) => item.id === id) < 0) {
         // There are two scenarios for creating an array with only one history record:
-        // - When loaded id not found in the items array, this function by default will replace
+        // - When loaded id is not found in the items array, this function by default will replace
         //   the first item. We need to keep only the new updated object, otherwise it will break
         //   the page when navigating forward in history.
         // - This is the first time any state modifications are done
@@ -114,11 +114,11 @@ export function createMemoryHistory() {
       window.history.replaceState({ id }, '', pathWithHash);
     },
 
-    // `history.go(n)` is asynchronous, there are couple of things to keep in mind:
+    // `history.go(n)` is asynchronous, there are a couple of things to keep in mind:
     // - it won't do anything if we can't go `n` steps, the `popstate` event won't fire.
     // - each `history.go(n)` call will trigger a separate `popstate` event with correct location.
     // - the `popstate` event fires before the next frame after calling `history.go(n)`.
-    // This method differs from `history.go(n)` in the sense that it'll go back as many steps it can.
+    // This method differs from `history.go(n)` in the sense that it'll go back as many steps as it can.
     go(n: number) {
       interrupt();
 

@@ -96,7 +96,7 @@ public final class VideoModule: Module {
 
           view.playerViewController.allowsVideoFrameAnalysis = newValue
 
-          // Setting the `allowsVideoFrameAnalysis` to false after the scanning was already perofrmed doesn't update the UI.
+          // Setting the `allowsVideoFrameAnalysis` to false after the scanning was already performed doesn't update the UI.
           // We can force the desired behaviour by quickly toggling the property. Setting it to true clears existing requests,
           // which updates the UI, hiding the button, then setting it to false before it detects any text keeps it in the desired state.
           // Tested in iOS 17.5

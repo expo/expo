@@ -139,7 +139,7 @@ export async function scanDependencyResolutionsForPlatform(
       } else if (opts.includeNames.has(resolution.name)) {
         return resolution;
       } else if (resolution.source === DependencyResolutionSource.RN_CLI_LOCAL) {
-        // If the dependency was resolved frpom the React Native project config, we'll only
+        // If the dependency was resolved from the React Native project config, we'll only
         // attempt to resolve it as a React Native module
         const reactNativeModuleDesc = await resolveReactNativeModule(
           resolution,

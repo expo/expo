@@ -270,7 +270,7 @@ export default class FallbackWatcher extends AbstractWatcher {
     try {
       const stat = await fsPromises.lstat(fullPath);
       if (stat.isDirectory()) {
-        // win32 emits usless change events on dirs.
+        // win32 emits useless change events on dirs.
         if (event === 'change') {
           return;
         }

@@ -238,7 +238,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
       returnType.type = BasicType.NUMBER;
       break;
     case 'Void':
-    case '()': // `()` type is the same as `Void` in Swift. SourceKit will somtimes output `()` instead of `Void` when queried about the type.
+    case '()': // `()` type is the same as `Void` in Swift. SourceKit will sometimes output `()` instead of `Void` when queried about the type.
       returnType.type = BasicType.VOID;
       break;
     default:
@@ -549,7 +549,7 @@ function getClosureBodyStructure(structure: Structure): Structure | null {
   //.  }
   // }
   //
-  // The strucutre for a ClassDeclaration (from SourceKitten) looks like this:
+  // The structure for a ClassDeclaration (from SourceKitten) looks like this:
   // {
   //   "key.name": "Class",
   //   "key.substructure": [
@@ -1266,7 +1266,7 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): Expressi
   let escaped = false;
   let braceCount = 0;
   // Doing a little cheat here to simplify the logic, we assume that the expression end is right before the scope closing `}`.
-  // While this isn't neccessarily true, in our case we only want to replace:
+  // While this isn't necessarily true, in our case we only want to replace:
   //
   // return expression
   //
@@ -1275,7 +1275,7 @@ function returnExpressionEnd(fileContent: string, returnIndex: number): Expressi
   // let return_expression = expression
   // return return_expression
   //
-  // such that return_expression variable has the return type of the expression and the file still parses correctly (This might not even be neccessary,
+  // such that return_expression variable has the return type of the expression and the file still parses correctly (This might not even be necessary,
   // sourcekitten seems to be quite flexible, it may parse part of malformed files just fine).
   let i = returnIndex;
   while (i < fileContent.length) {

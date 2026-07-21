@@ -19,7 +19,7 @@ export function endTimer(label = LABEL, clear: boolean = true): number {
     }
     return delta;
   }
-  throw new Error(`Timer '${label}' has not be started yet`);
+  throw new Error(`Timer '${label}' has not been started yet`);
 }
 
 /**

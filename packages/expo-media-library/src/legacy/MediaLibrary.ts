@@ -14,7 +14,7 @@ let loggedExpoGoWarning = false;
 
 if (isExpoGo && !loggedExpoGoWarning) {
   console.warn(
-    'Due to changes in Androids permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build. https://docs.expo.dev/develop/development-builds/create-a-build'
+    "Due to changes in Android's permission requirements, Expo Go can no longer provide full access to the media library. To test the full functionality of this module, you can create a development build. https://docs.expo.dev/develop/development-builds/create-a-build"
   );
   loggedExpoGoWarning = true;
 }

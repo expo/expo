@@ -66,7 +66,7 @@ export function getIcons(config: Pick<ExpoConfig, 'icon' | 'ios'>): IOSIcons | s
       }
     }
 
-    // in iOS 18 introduced the ability to specify dark and tinted icons, which users can specify as an object
+    // iOS 18 introduced the ability to specify dark and tinted icons, which users can specify as an object
     if (!iosSpecificIcons.light && !iosSpecificIcons.dark && !iosSpecificIcons.tinted) {
       return config.icon || null;
     }

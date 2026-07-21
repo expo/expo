@@ -22,7 +22,7 @@ public final class ReaperSelectionPolicyDevelopmentClient: NSObject, ReaperSelec
     if maxUpdatesToKeep <= 0 {
       NSException.init(
         name: .invalidArgumentException,
-        reason: "Cannot initiailize ReaperSelectionPolicy with maxUpdatesToKeep <= 0"
+        reason: "Cannot initialize ReaperSelectionPolicy with maxUpdatesToKeep <= 0"
       )
       .raise()
     }

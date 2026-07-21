@@ -21,7 +21,7 @@ enum class AttendeeStatus(val value: String) : Enumerable {
 
   companion object {
     /**
-     * @param constant value from `CalendarContract.Attendees.ATTENDE_STATUS_*`
+     * @param constant value from `CalendarContract.Attendees.ATTENDEE_STATUS_*`
      */
     fun fromContentProviderValue(constant: Int): AttendeeStatus =
       when (constant) {

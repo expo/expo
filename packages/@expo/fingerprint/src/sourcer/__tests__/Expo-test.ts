@@ -155,7 +155,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
     expect(sources).toMatchSnapshot();
   });
 
-  it('should not containt absolute path in contents', async () => {
+  it('should not contain absolute path in contents', async () => {
     let sources = await getExpoAutolinkingAndroidSourcesAsync(
       '/app',
       await normalizeOptionsAsync('/app'),

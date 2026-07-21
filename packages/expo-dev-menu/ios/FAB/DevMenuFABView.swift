@@ -67,7 +67,7 @@ struct FabPill: View {
     .animation(.easeInOut(duration: 0.3), value: isIdle)
     .task {
       // [Alan] This is poor practice but without it, the label is not included in the drag gesture
-      // and remains in it's original posistion.
+      // and remains in its original position.
       try? await Task.sleep(nanoseconds: UInt64(1_000_000_000 * FABConstants.labelDismissDelay))
       await MainActor.run {
         withAnimation(.easeOut(duration: 0.3)) {
