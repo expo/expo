@@ -19,6 +19,7 @@
           "name": "ExpoImagePicker",
           "path": "ios",
           "pattern": "**/*.swift",
+          "exclude": ["Tests/**"],
           "dependencies": [
             "Hermes",
             "React",
