@@ -6,8 +6,9 @@ import Foundation
  Global actor for video source and track loading.
 
  Creating `AVURLAsset`/`AVPlayerItem` and parsing tracks costs 10-20ms+ and must never run on
- the main thread. Tasks on the default (global) executor are not enough to guarantee that:
- the runtime is free to run even a detached task's job on the main thread.
+ the main thread. Plain `Task {}` doesn't guarantee that: an unstructured task inherits the
+ enclosing actor, so one created from a `@MainActor` context runs on the main thread. Similarly,
+ under `NonisolatedNonsendingByDefault` nonisolated async functions run on the caller's actor, which can also be the main one.
  The loading pipeline should always run on this actor.
  */
 @globalActor
