@@ -1,7 +1,9 @@
+import dynamic from 'next/dynamic';
 import { ImgHTMLAttributes, useState } from 'react';
-import { Lightbox } from 'yet-another-react-lightbox';
-import 'yet-another-react-lightbox/styles.css';
-import Zoom from 'yet-another-react-lightbox/plugins/zoom';
+
+// Loaded on first click so the lightbox JS and its stylesheet stay out of the
+// render-blocking path; the inline image below is independent of it.
+const LightboxModal = dynamic(() => import('./LightboxModal'), { ssr: false });
 
 type Props = ImgHTMLAttributes<HTMLImageElement> & {
   src: string;
@@ -9,34 +11,27 @@ type Props = ImgHTMLAttributes<HTMLImageElement> & {
 
 export function LightboxImage({ src, alt, ...rest }: Props) {
   const [open, setOpen] = useState(false);
+  const [lightboxRequested, setLightboxRequested] = useState(false);
 
   return (
     <>
       <button
         type="button"
         onClick={() => {
+          setLightboxRequested(true);
           setOpen(true);
         }}>
         <img src={src} alt={alt} {...rest} />
       </button>
-      <Lightbox
-        open={open}
-        close={() => {
-          setOpen(false);
-        }}
-        slides={[{ src }]}
-        styles={{ container: { backgroundColor: 'rgba(0, 0, 0, .8)' } }}
-        controller={{
-          aria: true,
-          closeOnBackdropClick: true,
-        }}
-        carousel={{ finite: true }}
-        render={{
-          buttonPrev: () => null,
-          buttonNext: () => null,
-        }}
-        plugins={[Zoom]}
-      />
+      {lightboxRequested && (
+        <LightboxModal
+          src={src}
+          open={open}
+          close={() => {
+            setOpen(false);
+          }}
+        />
+      )}
     </>
   );
 }
