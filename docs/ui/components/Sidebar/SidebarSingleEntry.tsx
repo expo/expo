@@ -39,7 +39,7 @@ export const SidebarSingleEntry = ({
             allowCompactDisplay && 'compact-height:justify-center compact-height:bg-subtle',
             secondary && 'text-sm',
             isActive &&
-              'bg-palette-blue3! font-medium text-link hocus:bg-palette-blue4! hocus:text-link'
+              'bg-palette-blue3! text-[#0c6ec4] font-medium dark:text-link dark:hocus:text-link hocus:bg-palette-blue4! hocus:text-[#0c6ec4]'
           )}
           {...(shouldLeakReferrer && { target: '_blank', referrerPolicy: 'origin' })}
           {...(isActive && mainSection && { 'data-main-section': mainSection })}>
