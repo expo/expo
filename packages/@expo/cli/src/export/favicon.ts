@@ -9,18 +9,28 @@ import { debugEvent } from './events';
 import { getUserDefinedFile } from './publicFolder';
 import type { ExportAssetMap } from './saveAssets';
 
-/** @returns the file system path for a user-defined favicon.ico file in the public folder. */
+/** @returns whether the given path looks like an SVG (by file extension). */
+function isSvgPath(p: string): boolean {
+  return path.extname(p).toLowerCase() === '.svg';
+}
+
+/** @returns the file system path for a user-defined favicon file in the public folder. */
 export function getUserDefinedFaviconFile(projectRoot: string): string | null {
-  return getUserDefinedFile(projectRoot, ['./favicon.ico']);
+  // SVG first: when a user drops both files, they almost certainly want the
+  // SVG to win in modern browsers. Older browsers ignore the SVG `<link>` and
+  // auto-discover `/favicon.ico`, so the ICO still functions as a fallback.
+  return getUserDefinedFile(projectRoot, ['./favicon.svg', './favicon.ico']);
 }
 
 /**
- * Generate a favicon.ico from `web.favicon` in the Expo config and write it into the asset map
- * (or to disk if no asset map is provided).
+ * Generate a favicon from `web.favicon` in the Expo config and write it into the asset map
+ * (or to disk if no asset map is provided). Accepts either a raster image (rasterized to a
+ * multi-size `favicon.ico`) or an SVG (copied byte-for-byte to `favicon.svg`, preserving
+ * features like `prefers-color-scheme` media queries inside the SVG).
  *
- * @returns the public href for the generated favicon, or `null` when a user-supplied
- *   `favicon.ico` already exists in the public folder (browsers resolve it at `/favicon.ico`
- *   automatically) or when no `web.favicon` is configured.
+ * @returns the public href for the generated favicon (`.ico` or `.svg`), or `null` when a
+ *   user-supplied `favicon.ico` already exists in the public folder (browsers resolve it at
+ *   `/favicon.ico` automatically), or when no `web.favicon` is configured.
  */
 export async function generateFaviconAssetAsync(
   projectRoot: string,
@@ -33,6 +43,13 @@ export async function generateFaviconAssetAsync(
 ): Promise<{ href: string } | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {
+    if (isSvgPath(existing)) {
+      // A user-supplied `public/favicon.svg` is copied to the output by
+      // `copyPublicFolderAsync`; we still need to inject the `<link>` tag,
+      // because browsers don't auto-discover SVG favicons the way they do
+      // `/favicon.ico`.
+      return { href: `${baseUrl}/favicon.svg` };
+    }
     return null;
   }
 
@@ -66,6 +83,26 @@ export async function getFaviconFromExpoConfigAsync(
   const src = exp.web?.favicon ?? null;
   if (!src) {
     return null;
+  }
+
+  // SVG: copy the file raw. Rasterizing it would defeat the point of an SVG
+  // favicon — features like `prefers-color-scheme` media queries inside the
+  // SVG need the original markup to survive into the served asset. It would
+  // also crash the export today, since `@expo/image-utils` rejects SVG in
+  // `ensureImageOptionsAsync` (unsupported MIME) and this function's
+  // `try/catch` only handles `ENOENT`.
+  if (isSvgPath(src)) {
+    try {
+      const absSrc = path.resolve(projectRoot, src);
+      const source = await fs.promises.readFile(absSrc);
+      return { source, path: 'favicon.svg' };
+    } catch (error: any) {
+      if (!force && error.code === 'ENOENT') {
+        Log.warn(`Favicon source file in Expo config (web.favicon) does not exist: ${src}`);
+        return null;
+      }
+      throw error;
+    }
   }
 
   const dims = [16, 32, 48];

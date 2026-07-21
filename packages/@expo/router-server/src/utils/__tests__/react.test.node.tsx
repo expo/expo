@@ -18,10 +18,26 @@ describe(createFaviconAsNode, () => {
     expect(node.key).toBe('favicon');
   });
 
+  it('includes `type="image/svg+xml"` when the href points to an SVG', () => {
+    const node = createFaviconAsNode('/favicon.svg') as ReactElement<{
+      rel: string;
+      type?: string;
+      href: string;
+    }>;
+    expect(node.props.type).toBe('image/svg+xml');
+    expect(node.props.href).toBe('/favicon.svg');
+  });
+
   it('renders to the expected static markup', () => {
     expect(
       ReactDOMServer.renderToStaticMarkup(createFaviconAsNode('/favicon.ico') as ReactElement)
     ).toBe('<link rel="icon" href="/favicon.ico"/>');
+  });
+
+  it('renders SVG hrefs with the SVG MIME type — byte-equivalent to createFaviconAsString', () => {
+    expect(
+      ReactDOMServer.renderToStaticMarkup(createFaviconAsNode('/favicon.svg') as ReactElement)
+    ).toBe('<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>');
   });
 });
 

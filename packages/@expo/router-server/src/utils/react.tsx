@@ -76,6 +76,9 @@ export function getBootstrapContents({
 }
 
 export function createFaviconAsNode(href: string): ReactNode {
+  if (href.endsWith('.svg')) {
+    return <link key="favicon" rel="icon" type="image/svg+xml" href={href} />;
+  }
   return <link key="favicon" rel="icon" href={href} />;
 }
 
