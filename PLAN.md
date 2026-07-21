@@ -80,75 +80,101 @@ Useful properties the base branch already gives us (don't break these):
 
 ## Design
 
-### D1 — render delivery goes through React; committed-state ownership is an open decision
+### D1 — the state lives in a root `useReducer`; all navigation logic happens in the reducer
 
-**Render delivery: React state instead of uSES.**
+**Decided (supersedes the earlier "root-owned cell" design):** the navigation state is React
+state at the root, full stop — `const [state, dispatch] = useReducer(rootNavigationReducer, seed)`
+in `BaseNavigationContainer`. There is no committed cell outside React and no external store
+feeding render. `router.push` (and every other source) does exactly one thing: **dispatch an
+action**. All logic — href resolution, action targeting, chaining, reduction — happens inside the
+reducer.
 
-- `BaseNavigationContainer` holds the rendered tree in React state:
-  `const [renderedState, setRenderedState] = useState(seed)`.
-- `dispatchRoot` writes the committed store synchronously (single writer, unchanged), then calls
-  `setRenderedState(next)` — wrapped in `startTransition` for JS-initiated sources, plain (urgent)
-  for native-induced ones (D5). Dispatch is therefore **source-tagged**: the entry points mark
-  actions as transition-eligible or urgent, and `dispatchRoot` is the single point that applies
-  the wrap. Use the module-level **`React.startTransition`**, not a `useTransition` hook's
-  function: `dispatchRoot` is a `useLatestCallback`, and capturing a hook's `startTransition` in a
-  stable callback risks calling a stale identity (a transition that silently detaches from
-  `isPending`). The pending signal comes from an explicit counter instead (D3).
+Why the "synchronous read-after-write" objection to `useState` dissolves under `useReducer`:
+React chains queued actions natively. `dispatch(a); dispatch(b)` in one tick queues both, and
+React reduces them in order at render time — `b` against `a`'s output. Nothing outside the
+reducer ever needs "the state after `a` but before render", *provided the logic that needs it
+lives in the reducer*. That is exactly the boundary this design draws, and it forces the right
+factoring:
+
+- **Raw intent in, resolution inside.** `router.push(href, options)` dispatches
+  `{ type: 'ROUTER_LINK', href, options }` verbatim. The reducer resolves the href (relative
+  resolution against route info derived from *its own state argument* — the chained latest),
+  computes the target, and reduces: today's `getNavigateAction` + `rootReducer` fuse into one
+  pure `(state, action, registry) → state`. Same for `dismiss`/`goBack`/`setParams`.
+- **Transitions are just the dispatch wrapper.** JS-initiated sources call
+  `React.startTransition(() => dispatch(action))`; native-induced sources call `dispatch(action)`
+  plain (urgent, D5). Source-tagging is nothing more than which wrapper the entry point uses.
+  (Module-level `React.startTransition`, not a `useTransition` hook's function — stale-identity
+  hazard per the review; the pending signal is the explicit counter, D3.)
 - A caller's own `startTransition(() => router.push(…))` composes for the **sync** case: D2 makes
-  the dispatch synchronous, so the caller's scope is active when the setState schedules and their
-  `isPending` tracks it. This is load-bearing — sync dispatch is a correctness requirement for
-  composition, not just a latency win. The **async** case (Goal 2) is a spike deliverable.
-- Navigators stop subscribing to the store. `useStoreSlice` becomes a read of the rendered tree
-  from context (`NavigationStateContext` already carries `state`) + the existing `getCachedSlice`
-  keyed by rendered-tree identity. `useNavigationState` and **`useRouteInfo`** (see D4) convert
-  the same way. Unchanged slices keep their identity (root reducer guarantees it) — but see
-  risk 3: context propagation bypasses `React.memo`, so identity alone does not preserve today's
-  per-navigator bail-outs.
+  dispatch synchronous, so the caller's scope is active when the dispatch schedules and their
+  `isPending` tracks it. Load-bearing, not a latency nicety. The **async** case (Goal 2) is a
+  spike deliverable.
+- Navigators read the reduced tree from context, as before: `useStoreSlice` → context +
+  `getCachedSlice` keyed by tree identity; `useNavigationState` and **`useRouteInfo`** (D4)
+  convert the same way; `useIsFocused` does not (event subscription). Unchanged slices keep their
+  identity (root reducer guarantees it) — but see risk 3: context propagation bypasses
+  `React.memo`, so identity alone does not preserve today's per-navigator bail-outs.
 
-**Committed state: a cell owned by the expo-router root, inside the React hierarchy (decided).**
-The committed state — the last `rootReducer` output, the base for the next dispatch — lives in a
-mutable cell **created by the root component** (the container `ExpoRoot` renders), not at module
-level and not read through the navigation ref. One constraint forces the cell shape: dispatch
-needs synchronous read-after-write. Two dispatches in the same tick must chain (the second reduces
-against the first's output, before any render), and under transitions the render lags arbitrarily
-— so the committed value cannot itself be `useState` (a `setState` is not readable in the same
-tick, and the rendered value is by design behind). The cell is therefore a `useRef`-style mutable
-field owned by the root's instance, with `dispatchRoot` as its single writer; the rendered
-`useState` tree is fed *from* it.
+**The purity contract (new, load-bearing).** The reducer now runs inside React's render — during
+transitions, speculatively, possibly replayed after an interruption — and React may also invoke
+it eagerly at dispatch as a bail-out optimization. It must be strictly pure: no listener
+callbacks, no console output, no registry mutation, no module-global writes, no side-channel
+outputs consumed at dispatch time. Three behaviors that are dispatch-time today relocate:
 
-On mount, the root **installs the cell into `global-state/store.ts`** (and uninstalls on unmount),
-so every imperative read — `store.state`, `getStateForHref`, relative-href resolution,
-`canGoBack`, action targeting — is a direct field read with no `navigationRef.getRootState()` hop.
-This resolves the review's blocker without giving up direct global reads: a fresh root mount means
-a fresh cell and a fresh install, so `renderRouter` gets defined reset semantics with exactly one
-writer (no render-time-reset vs commit-time-write race), and `getSeedState()` can never observe a
-previous test's final state. `NavigationIndependentTree`: every container owns its own cell (it
-lives on the instance), but only the app root installs into the global store — independent trees
-are out of scope for the global imperative API, which is already conceptually true
-(`router.push`/`usePathname` target *the* app router, not embedded containers).
+1. **`beforeRemove` / `shouldPreventRemove`** cannot run inside the reducer (guards are arbitrary
+   user code — confirmation dialogs, side effects — and replayed renders would fire them
+   repeatedly). They move to a thin **dispatch interceptor**: before dispatching, run the same
+   pure reducer eagerly against the last committed state, diff the changed slices, ask the
+   guards; a veto means the action is never dispatched. Deliberate semantics change: guards now
+   protect the *rendered/committed* route — what the user sees — which is what the review
+   recommended. Caveat to pin with a test: same-tick chains (push + back before a commit) are
+   veto-evaluated against the same base state.
+2. **Unhandled-action reporting and the `__unsafe_action__` devtools event** move to the same
+   eager interceptor pass (dev builds — the same shadow-reduce trick the base branch used to
+   de-risk its own Step 8 flip).
+3. **Mount-window replay** detection moves to an effect (a pure reducer cannot requeue); replay
+   dispatches stay urgent (D5).
 
-**Mixed-priority semantics (decided, must be tested).** Urgent and transition updates to the same
-`useState` are not independent: an urgent (native) dispatch that lands while a JS transition is
-pending forces React to interrupt the transition, process the urgent update synchronously, then
-re-run the transition behind it. We accept this: the native fact wins, the JS transition re-renders
-against the post-native state and continues or becomes moot. Interleaving tests (Step 7) pin this
-so it's chosen behavior, not surprise. Note the consequence honestly: a native gesture during a
-pending JS navigation can force a synchronous render of the in-flight destination — if that
-destination still suspends at urgent priority, its fallback shows. That is the trade-off of A
-(native synchronous) and it is bounded to gesture-during-pending interleavings.
+The interceptor's eager reduce is not a second source of truth: same pure function, called with
+the last committed state, used only for veto/reporting. React's own reduction at render time is
+the one that produces state.
+
+**"Store leads render" disappears.** There is no leading committed state — unreduced actions live
+invisibly in React's queue. Every read outside the reducer reads the last *committed* tree:
+`store.state` becomes a mirror of it (maintained alongside the existing route-info derivation),
+serving imperative consumers (`getStateForHref`, sitemap, devtools). Queries that ask "what would
+happen" — `canGoBack`, `canDismiss` — call the pure reducer imperatively against the last
+committed state (a pure function is callable anywhere). D4's audit shrinks accordingly: hooks
+read rendered; the only "latest" reader left is the reducer itself.
+
+**Registry at reduce time.** The reducer consults the reducer registry when React runs it (render
+time), not at dispatch time. Registration happens in layout effects — between renders — so the
+registry is stable within a render pass, but reduce-time may see a *newer* registry than
+dispatch-time did (a navigator mounted in between). Usually strictly better (fewer unhandled
+actions); the spike pins the replay semantics (an interrupted transition re-reduces the same
+action against a possibly different registry — purity guarantees no corruption, but the outcome
+can differ; decide and test what we promise).
+
+**Install lifecycle.** The root installs its `dispatch` (and the committed-tree mirror) into
+`global-state/store.ts` on mount, uninstalls on unmount — `router.*` reaches React through that.
+Test isolation and `NavigationIndependentTree` resolve per root instance by construction; only
+the app root installs globally.
+
+**Mixed-priority semantics (decided, must be tested).** Urgent and transition dispatches to the
+same `useReducer` are not independent: an urgent (native) dispatch that lands while a JS
+transition is pending forces React to interrupt the transition, process the urgent update
+synchronously, then re-run the transition behind it. We accept this: the native fact wins, the JS
+transition re-reduces against the post-native state and continues or becomes moot. Interleaving
+tests (Step 7) pin this so it's chosen behavior, not surprise. Note the consequence honestly: a
+native gesture during a pending JS navigation can force a synchronous render of the in-flight
+destination — if that destination still suspends at urgent priority, its fallback shows. That is
+the trade-off of A (native synchronous) and it is bounded to gesture-during-pending interleavings.
 
 Consequences to design for, not around:
 
-- **Store leads render during a pending transition.** `store.state` returns the already-reduced
-  state while the old screen is still on screen. That is the *correct* reading for imperative
-  consumers (a second dispatch must reduce against the latest state) — it just becomes observable
-  for longer windows. Audit every committed-state consumer and classify: imperative/navigation
-  logic → latest (store); UI/derived-display → rendered. The audit explicitly includes
-  `useNavigationBuilder`'s `getState()` (public `navigation.getState()` surface — reads the live
-  store while the render reads context) and the `beforeRemove` path (D4).
 - **Rendered-tree consistency improves.** All render consumers read one React-committed value per
-  render — no inter-slice tearing. (Tearing across rendered-vs-store *imperative* reads is the
-  audit's subject, not a render problem.)
+  render — no inter-slice tearing, and no leading/lagging split to audit for render code.
 - **Commit-time effects move with the transition — per-consumer, not blanket.** `onStateChange`,
   the `'state'` emitter event, focus events, and route info all fire from effects, i.e. at
   transition commit. For pathname hooks that is the desired timing (updates together with the
@@ -169,10 +195,11 @@ Consequences to design for, not around:
 ### D2 — remove the routing-queue machinery; dispatch is a plain synchronous call
 
 The queue *mechanism* — `useImperativeApiEmitter`'s uSES subscription + `useEffect` drain — is
-**deleted**. `router.push` et al. resolve their action and call the container's `dispatch`
-directly, in the caller's own call stack. This preserves the sync `startTransition` scope, deletes
-a full effect-tick of latency and one uSES read site, and removes the "action silently dropped
-because the ref was null" class of bugs in the queue's `run()`.
+**deleted**. `router.push` et al. call the installed root `dispatch` directly, in the caller's own
+call stack, passing the raw intent action (D1 — no resolution at call time). This preserves the
+sync `startTransition` scope, deletes a full effect-tick of latency and one uSES read site, and
+removes the "action silently dropped because the ref was null" class of bugs in the queue's
+`run()`.
 
 Two corrections from the review:
 
@@ -184,11 +211,11 @@ Two corrections from the review:
   So: keep a dumb array that buffers only pre-ready actions and drains synchronously the moment
   the ref attaches; post-ready, every call dispatches directly with no intermediary. (A buffered
   pre-ready action cannot carry a transition scope — acceptable: nothing is rendered yet.)
-- **The rewiring is bigger than "call dispatch".** `ROUTER_LINK` → action resolution
-  (`getNavigateAction`) currently happens at drain time inside `routingQueue.run`; it moves into
-  the imperative methods at call time. That shifts relative-href resolution from drain-time route
-  info to call-time route info — more correct under store-leads-render, but a behavior change to
-  pin with a test.
+- **The rewiring goes further than "call dispatch".** `ROUTER_LINK` → action resolution
+  (`getNavigateAction`) currently happens at drain time inside `routingQueue.run`; per D1 it moves
+  **into the reducer**. Relative-href resolution therefore happens against the reducer's chained
+  state at reduce time — strictly more correct than both drain-time and call-time (two same-tick
+  relative pushes chain properly); pin with a test.
 
 `Link` presses and `useLinkTo`-style dispatches already go through `navigationRef.dispatch`
 synchronously; verify and add coverage rather than change.
@@ -199,8 +226,8 @@ synchronously; verify and add coverage rather than change.
   navigations are transitions by default (D1); native-induced are urgent (D5); callers can layer
   their own `startTransition`/`useTransition` for scoped `isPending`.
 - **`useNavigationTransitionPending()`** (name TBD): the global pending signal. Backed by an
-  **explicit pending counter** — incremented when `dispatchRoot` starts a transition-wrapped
-  commit, decremented when that commit lands (transition-completion effect) — exposed via context.
+  **explicit pending counter** — incremented around a transition-wrapped `dispatch`, decremented
+  when the resulting commit lands (transition-completion effect) — exposed via context.
   Not backed by `useTransition().isPending`: hook-`isPending` only tracks transitions started by
   that hook's own `startTransition` and is fragile for dispatches originating on non-React stacks
   (review blocker). The counter is renderer-agnostic and interruption-safe (superseded transitions
@@ -211,8 +238,8 @@ synchronously; verify and add coverage rather than change.
 
 ### D5 — native-induced actions stay synchronous (for now)
 
-**Decision (post-review):** native-originated dispatches commit urgently — plain `setState`, no
-transition. The review established this is structural, not incidental:
+**Decision (post-review):** native-originated dispatches commit urgently — a plain, unwrapped
+`dispatch`, no transition. The review established this is structural, not incidental:
 
 - **Native tabs are JS-controlled.** The native tab host renders the selection JS *requests*
   (`navStateRequest={{ selectedScreenKey, baseProvenance }}` in `NativeTabsView`), derived from
@@ -230,7 +257,7 @@ transition. The review established this is structural, not incidental:
 So `dispatchRoot` takes a source tag (D1); native entry points (`onDismissed`,
 `onNativeDismissCancelled`, `onHeaderBackButtonClicked`, native tab press, `useBackButton`) mark
 their dispatches urgent. Mount-window **replay dispatches are also urgent** — they reconcile an
-already-committed store, and replays run from a commit-gated effect that a transition would
+already-committed navigation fact, and replays run from a commit-gated effect that a transition would
 delay (review finding). Deep links and the imperative API/`Link` stay transitions.
 
 **Revisit later:** making native-induced navigations transitions is deferred, not rejected. It
@@ -244,10 +271,10 @@ Correction from the review: `useRouteInfo` is itself a uSES read site (the plan'
 lists it) — leaving it subscribed de-opts every transition for any screen using
 `usePathname`/params hooks, i.e. almost all of them. So this is **a conversion, not just an
 audit**: route info moves onto the same React-state/context channel as the rendered tree (derived
-from `renderedState` at the container, delivered via context), so it updates atomically with the
-screen, inside the transition. The module-level cache and `store.getRouteInfo()` remain for
-imperative consumers (which want latest — e.g. `resolveHrefStringWithSegments` relative-href
-resolution must resolve against the committed store, not the stale render).
+from the `useReducer` state at the container, delivered via context), so it updates atomically
+with the screen, inside the transition. The module-level cache and `store.getRouteInfo()` remain
+for imperative consumers reading the last committed value; relative-href resolution no longer
+consumes them at dispatch — it happens inside the reducer against the chained state (D1).
 
 The audit half (Step 6) then classifies every remaining reader — rendered vs latest — including
 `useNavigationBuilder.getState()`, `usePreventRemove`/`beforeRemove` (which state does a guard
@@ -281,13 +308,13 @@ protect during a pending window?), URL/history sync, and focus-event timing.
 4. **Interruption + mixed priority.** Navigate-while-pending, back-while-pending, native-urgent
    during pending JS transition (the flush semantics decided in D1). Explicit test matrix in
    Step 7.
-5. **`NavigationIndependentTree` / nested containers.** Rendered state and the committed cell are
-   both per-container instance (D1), so independent trees keep working; only the app root installs
-   its cell into the global store, so the global imperative API addresses the app router only.
-   Pin with the existing two-container test plus one asserting an independent tree neither reads
-   nor clobbers `store.state`.
+5. **`NavigationIndependentTree` / nested containers.** State lives on each container's
+   `useReducer` (D1), so independent trees keep working; only the app root installs its `dispatch`
+   and committed mirror into the global store, so the global imperative API addresses the app
+   router only. Pin with the existing two-container test plus one asserting an independent tree
+   neither reads nor clobbers `store.state`.
 6. **SSR / static rendering / RSC.** uSES's `getServerSnapshot` gave defined SSR semantics and
-   hydration-mismatch warnings; `useState(seed)` loses that detection — divergence becomes
+   hydration-mismatch warnings; `useReducer(…, seed)` loses that detection — divergence becomes
    silent. Verify seed determinism explicitly (key minting, registration order under streaming
    SSR); verify `rsc/web` projects and static rendering snapshots.
 7. **DevTools & `__unsafe_action__`** stay dispatch-timed while `onStateChange` is commit-timed —
@@ -335,18 +362,24 @@ relative-href resolution timing pinned at call time; mount-window replay tests s
 Files: `global-state/routingQueue.ts` (mostly deleted), `global-state/router.ts`,
 `imperative-api.tsx`, `fork/NavigationContainer.tsx`.
 
-### Step 2 — Root-owned committed cell + rendered tree into React state (D1)
-(a) the committed state becomes a mutable cell created by the root container instance, written
-only by `dispatchRoot`; the root installs it into `global-state/store.ts` on mount and uninstalls
-on unmount, so `store.state` and all imperative reads are direct field reads (no
-`navigationRef.getRootState()` hop, no seed→live handover: the cell is initialized from the seed);
-(b) `BaseNavigationContainer` holds the rendered tree in `useState`, fed from the cell by
-`dispatchRoot` (not yet transition-wrapped — behavior-neutral). `useSyncState` dissolves. uSES
-read sites still subscribe to the store, which still notifies, so nothing observable changes yet.
-Red: commit ordering (two same-tick dispatches chain against the cell), replay/mount-window
-behavior, `onStateChange` timing, `store.state` identical before/during/after mount,
-`renderRouter` isolation across sequential renders, independent-tree non-interference (risk 5).
-Files: `global-state/store.ts`, `react-navigation/core/BaseNavigationContainer.tsx`,
+### Step 2 — State moves into a root `useReducer`, shadowed for behavior-neutrality (D1)
+`BaseNavigationContainer` replaces `useSyncState` with
+`useReducer(rootNavigationReducer, seed)`. `dispatchRoot` becomes the thin dispatch interceptor:
+eager pure reduce against the last committed tree (guards, unhandled reporting,
+`__unsafe_action__`) → `dispatch(action)` (not yet transition-wrapped). `getNavigateAction` fuses
+into the reducer (raw `ROUTER_LINK` in, resolution inside). The root installs `dispatch` + the
+committed mirror into `global-state/store.ts` on mount, uninstalls on unmount.
+Staging trick for behavior-neutrality: the interceptor's eager reduce result is written to the
+store mirror synchronously and the store still notifies, so the existing uSES read sites behave
+exactly as today — while React's `useReducer` reduces the same actions in parallel and a dev
+assertion checks both trees deep-equal every commit (the same shadow-compare that de-risked the
+base branch's own flip). Step 5 flips authority to the `useReducer` tree.
+Red: two same-tick dispatches chain correctly (incl. relative hrefs), veto-before-dispatch
+semantics, replay/mount-window behavior, `onStateChange` timing, shadow deep-equal across the
+suite, `renderRouter` isolation across sequential renders, independent-tree non-interference
+(risk 5).
+Files: `global-state/store.ts`, `global-state/rootReducer.ts`,
+`global-state/getNavigationAction.ts`, `react-navigation/core/BaseNavigationContainer.tsx`,
 `react-navigation/core/useSyncState.tsx` (deleted or absorbed).
 
 ### Step 3 — Spike + characterization tests
@@ -363,7 +396,10 @@ commit as a transition, and does the explicit-counter design (D3) track it throu
 now to *validate* the urgent-by-rule decision (D5) and characterize the urgent-flush semantics
 (D1), not to discover them;
 (g) the starvation/timeout policy decision (risk 2), written down;
-(h) written answers to risks 4–7 and 10 unknowns.
+(h) **useReducer mechanics** (D1): registry-at-reduce-time semantics under interrupted/replayed
+transitions, and React's eager reducer invocation at dispatch (confirm the interceptor +
+eager-bail-out interplay does no double work and the purity contract holds);
+(i) written answers to risks 4–7 and 10 unknowns.
 No production code changes beyond the playground app.
 
 ### Step 4 — Disable freeze (risk 1)
@@ -380,23 +416,26 @@ Files: `fork/native-stack/`, `react-navigation/{bottom-tabs,drawer,stack}/views/
 In plain English: today, every navigator independently subscribes to the store and re-reads its
 slice whenever anything changes — that subscription (`useSyncExternalStore`) is exactly what
 forces React to render navigation synchronously and ignore transitions. After this step, only the
-container knows when state changes. It puts the new tree into React state — inside
-`React.startTransition` for JS-initiated sources, plain for native/replay (source tag, D1/D5) —
-and every navigator simply reads the tree its parent passed down through context
+container knows when state changes: the `useReducer` tree (authoritative since Step 2, shadowed
+until now) becomes what everything renders from, dispatches are wrapped in
+`React.startTransition` for JS-initiated sources and left plain for native/replay (source tag,
+D1/D5), and every navigator simply reads the tree its parent passed down through context
 (`NavigationStateContext`), picking out its own slice with the existing `getCachedSlice`. Nothing
-subscribes to the store for rendering anymore.
+subscribes to the store for rendering anymore; the store mirror updates at commit, not at
+dispatch, and the interceptor's eager reduce keeps only its veto/reporting role.
 
-Why both halves land in one commit: once the reads come from React state *and* the JS-initiated
-write is transition-wrapped, React can prepare the next screen in the background — the old screen
-stays mounted and interactive, no Suspense fallback flashes. Landing only one half either changes
-nothing (wrap without reads: uSES still de-opts) or isn't the flip (reads without wrap).
+Why both halves land in one commit: once the reads come from the `useReducer` tree *and* the
+JS-initiated dispatch is transition-wrapped, React can prepare the next screen in the background —
+the old screen stays mounted and interactive, no Suspense fallback flashes. Landing only one half
+either changes nothing (wrap without reads: uSES still de-opts) or isn't the flip (reads without
+wrap).
 
 Converted read sites: `useStoreSlice`, `useNavigationState`, the `useNavigationBuilder`
-projection, and **`useRouteInfo`** (route info derives from `renderedState` at the container and
-flows through context — D4). `useIsFocused` is deliberately **not** converted (event
-subscription, not a store read). The store's render-notify subscription path is removed; identity
-assertions stay. The render-count mitigation from risk 3 (slice-keyed memo layer, if the spike
-confirmed it's needed) lands here too.
+projection, and **`useRouteInfo`** (route info derives from the `useReducer` state at the
+container and flows through context — D4). `useIsFocused` is deliberately **not** converted
+(event subscription, not a store read). The store's render-notify subscription path and the
+Step-2 shadow assertion are removed; identity assertions stay. The render-count mitigation from
+risk 3 (slice-keyed memo layer, if the spike confirmed it's needed) lands here too.
 Red: (from Step 3, polarity flipped) bare `router.push` to a suspending screen keeps the previous
 screen mounted with no fallback flash (asserted via rendered-tree queries per the recipe); pending
 counter lifecycle incl. interruption; native-urgent dispatch commits synchronously and flushes a
@@ -406,19 +445,21 @@ Files: `react-navigation/core/useStoreSlice.tsx`, `useNavigationState.tsx`,
 `global-state/storeContext.ts`, `global-state/useRouteInfo.ts`, `global-state/routeInfoCache.ts`.
 
 ### Step 6 — Decide what every state reader means during a pending navigation (D4)
-In plain English: once navigations are transitions, there are two truthful answers to "what is
-the current route" — the **latest** state (the store, already reduced, possibly ahead of the
-screen) and the **rendered** state (what the user is actually looking at). Today the codebase
-never had to distinguish them because they were never apart for longer than a tick. This step
-walks through every reader and makes the choice explicit, with a test per reader:
+In plain English: once navigations are transitions, "what is the current route" has a pending
+window between a dispatch and its commit. Under the `useReducer` model (D1) the split is simple:
+**everything outside the reducer reads the last committed tree; only the reducer sees the chained
+latest.** This step walks through every reader, verifies it lands on the right side, with a test
+per reader:
 
 - Hooks that components render with — `usePathname`, `useSegments`, `useLocalSearchParams`,
   `useGlobalSearchParams`, sitemap — describe the **rendered** screen: they keep reporting the
   old route while pending, then update together with the screen (mechanically guaranteed after
   Step 5's `useRouteInfo` conversion; this step verifies).
-- Functions that feed the *next* navigation — relative-href resolution
-  (`resolveHrefStringWithSegments`), action targeting, `canGoBack`, `getStateForHref` — use the
-  **latest** store state: a second dispatch builds on what the first already did.
+- Logic that feeds the *next* navigation lives **inside the reducer** (relative-href resolution,
+  action targeting — D1) and chains automatically. Imperative queries — `canGoBack`,
+  `canDismiss`, `getStateForHref` — call the pure reducer against the last committed tree; verify
+  each caller tolerates the pending window (a `canGoBack` during a pending push answers for the
+  committed state, by design).
 - The review's specific hazards get explicit decisions + tests here:
   **browser URL/history sync** (subscribes to the `'state'` event — must it be dispatch-timed so
   the URL bar never lags the store arbitrarily during a suspension?);
