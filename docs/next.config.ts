@@ -18,6 +18,7 @@ import packageJson from '~/package.json';
 import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
+import remarkImageSize from './mdx-plugins/remark-image-size.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
 import remarkSDKCompatibility from './mdx-plugins/remark-sdk-compatibility.js';
 import navigation from './public/static/constants/navigation.json';
@@ -124,6 +125,7 @@ const nextConfig: NextConfig = {
               remarkCodeTitle,
               remarkExportHeadings,
               remarkLinkRewrite,
+              remarkImageSize,
               remarkSDKCompatibility,
               [remarkCreateStaticProps, `{ meta: meta || {}, headings: headings || [] }`],
             ],

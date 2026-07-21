@@ -25,6 +25,8 @@ type ContentSpotlightProps = {
   alt?: string;
   src?: string;
   darkSrc?: string;
+  width?: number;
+  height?: number;
   file?: string;
   videoId?: string;
   caption?: string;
@@ -43,6 +45,8 @@ export function ContentSpotlight({
   alt,
   src,
   darkSrc,
+  width,
+  height,
   file,
   videoId,
   caption,
@@ -112,6 +116,8 @@ export function ContentSpotlight({
         <LightboxImage
           src={activeSrc ?? src}
           alt={alt}
+          width={width}
+          height={height}
           className={mergeClasses(
             'inline rounded-md transition-opacity duration-default ease-in-out hover:opacity-80',
             className
