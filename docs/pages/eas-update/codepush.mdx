@@ -96,7 +96,7 @@ This is possible using `Updates.setUpdateURLAndRequestHeadersOverride()`. Learn 
 
 <Collapsible summary="How do I handle different environments (such as staging and production) with EAS Update?">
 
-With EAS Update, you can use channels and branches to manage different environments and rollouts. [Learn more](/eas-update/eas-cli/).
+With EAS Update, you can use channels and branches to manage different environments and rollouts. See [how to manage branches and channels with EAS CLI](/eas-update/eas-cli/).
 
 </Collapsible>
 
@@ -108,7 +108,7 @@ You can roll back updates using `eas update:rollback`. Learn more in the [Rollba
 
 <Collapsible summary="How do I gradually roll out updates with EAS Update?">
 
-EAS Update supports various strategies for gradually rolling out updates, so you can pick which approach best fits your needs. [Learn more](/eas-update/rollouts/).
+EAS Update supports various strategies for gradually rolling out updates, so you can pick which approach best fits your needs. See the [rollouts guide](/eas-update/rollouts/).
 
 </Collapsible>
 
@@ -127,8 +127,8 @@ Yes, EAS Update supports end-to-end code signing. It is available for EAS Produc
 <Collapsible summary="What else should I know about?">
 
 - Expo Orbit: The macOS, Windows, and Linux desktop launcher app. You can [launch updates](/review/with-orbit/) directly from the website with it in one click, among other features.
-- You can monitor the adoption of updates from the EAS website. [Learn more](/eas-update/download-updates/#monitoring-adoption-of-updates). You can also roll out and roll back updates from the website.
-- You can use EAS Update to achieve a web-like preview workflow. [Learn more](/eas-update/preview).
+- You can monitor the adoption of updates from the EAS website. See [monitoring adoption of updates](/eas-update/download-updates/#monitoring-adoption-of-updates). You can also roll out and roll back updates from the website.
+- You can use EAS Update to achieve a web-like preview workflow. See [how to preview updates](/eas-update/preview).
 - Each update and build created with EAS is associated with a [fingerprint](/versions/latest/sdk/fingerprint/). You can diff these fingerprints through the website UI or with `eas fingerprint:compare` to see what changed in the native runtime of your app between your builds and updates, to understand build/update compatibility, and guide your decision about when to bump the [`runtimeVersion`](/eas-update/runtime-versions/).
 
 </Collapsible>
