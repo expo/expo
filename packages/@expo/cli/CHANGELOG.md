@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix GraphQL `data` results with all-null fields being treated as failed, obscuring underlying failure states ([#47860](https://github.com/expo/expo/pull/47860) by [@kitten](https://github.com/kitten))
+- Prevent `expo export` from corrupting server bundles that contain `//# sourceMappingURL=` inside a string literal ([#47981](https://github.com/expo/expo/pull/47981) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
