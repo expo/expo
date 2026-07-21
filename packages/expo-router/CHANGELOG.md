@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Add `useColor` hook that returns the `Color` API object and re-renders when the system theme or Material You colors change. ([#47848](https://github.com/expo/expo/pull/47848) by [@Ubax](https://github.com/Ubax))
 - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Support `Stack.Toolbar.Badge` on `Stack.Toolbar.Menu` icons in header left/right placements ([#47276](https://github.com/expo/expo/pull/47276) by [@Ubax](https://github.com/Ubax))
 - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))

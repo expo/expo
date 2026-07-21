@@ -4,6 +4,7 @@ import { type PropsWithChildren, Fragment, type ComponentType, useMemo } from 'r
 import { Platform } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
+import { ColorProvider } from './color/ColorContext';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from './constants';
 import { useDomComponentNavigation } from './domComponents/useDomComponentNavigation';
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
@@ -69,11 +70,13 @@ export function ExpoRoot({ wrapper: ParentWrapper = Fragment, ...props }: ExpoRo
         return (
           <ParentWrapper>
             <LinkPreviewContextProvider>
-              <SafeAreaProvider
-                // SSR support
-                initialMetrics={INITIAL_METRICS}>
-                {children}
-              </SafeAreaProvider>
+              <ColorProvider>
+                <SafeAreaProvider
+                  // SSR support
+                  initialMetrics={INITIAL_METRICS}>
+                  {children}
+                </SafeAreaProvider>
+              </ColorProvider>
             </LinkPreviewContextProvider>
           </ParentWrapper>
         );

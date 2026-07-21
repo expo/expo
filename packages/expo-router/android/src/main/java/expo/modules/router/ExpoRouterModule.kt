@@ -1,6 +1,9 @@
 package expo.modules.router
 
+import android.app.Application
+import android.content.ComponentCallbacks
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.graphics.Color
 import expo.modules.kotlin.exception.Exceptions
@@ -9,12 +12,36 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import androidx.appcompat.view.ContextThemeWrapper
 import com.google.android.material.color.MaterialColors
 
+private const val COLOR_PALETTE_CHANGED_EVENT = "onColorPaletteChanged"
+
 class ExpoRouterModule : Module() {
   private val context: Context
     get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
+  @Volatile
+  private var lastConfiguration: Configuration? = null
+
+  private val registeredApplication: Application?
+    get() = appContext.reactContext?.applicationContext as? Application
+
+  // Dynamic color overlays change the assets path.
+  private val componentCallbacks = object : ComponentCallbacks {
+    override fun onConfigurationChanged(newConfig: Configuration) {
+      val previous = lastConfiguration
+      lastConfiguration = Configuration(newConfig)
+      val diff = previous?.diff(newConfig) ?: return
+      if (diff and ActivityInfo.CONFIG_ASSETS_PATHS != 0) {
+        sendEvent(COLOR_PALETTE_CHANGED_EVENT)
+      }
+    }
+
+    override fun onLowMemory() = Unit
+  }
+
   override fun definition() = ModuleDefinition {
     Name("ExpoRouter")
+
+    Events(COLOR_PALETTE_CHANGED_EVENT)
 
     Function("Material3Color") { name: String, scheme: String ->
       materialColor(name, scheme)
@@ -23,6 +50,26 @@ class ExpoRouterModule : Module() {
     Function("Material3DynamicColor") { name: String, scheme: String ->
       dynamicColor(name, scheme)
     }
+
+    OnStartObserving(COLOR_PALETTE_CHANGED_EVENT) {
+      unregisterComponentCallbacks()
+      registeredApplication?.let {
+        lastConfiguration = Configuration(it.resources.configuration)
+        it.registerComponentCallbacks(componentCallbacks)
+      }
+    }
+
+    OnStopObserving(COLOR_PALETTE_CHANGED_EVENT) {
+      unregisterComponentCallbacks()
+    }
+
+    OnDestroy {
+      unregisterComponentCallbacks()
+    }
+  }
+
+  private fun unregisterComponentCallbacks() {
+    registeredApplication?.unregisterComponentCallbacks(componentCallbacks)
   }
 
   private fun materialColor(name: String, scheme: String): String? {

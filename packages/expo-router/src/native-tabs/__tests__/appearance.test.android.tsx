@@ -12,6 +12,7 @@ import type {
 } from '../types';
 
 jest.mock('../../color', (): typeof import('../../color') => ({
+  ...(jest.requireActual('../../color') as typeof import('../../color')),
   Color: {
     android: {
       dynamic: {

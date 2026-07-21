@@ -1,0 +1,23 @@
+appId: com.android.settings
+---
+- launchApp:
+    appId: com.android.settings
+    stopApp: true
+- pressKey: BACK
+- pressKey: BACK
+- pressKey: BACK
+- launchApp:
+    appId: com.android.settings
+    stopApp: false
+- scrollUntilVisible:
+    element: Wallpaper & style
+- tapOn: Wallpaper & style
+- runFlow:
+    when:
+      visible: Basic colors
+    commands:
+      - tapOn: Basic colors
+- tapOn:
+    id: ".*option_tile.*"
+    index: ${COLOR_INDEX}
+- waitForAnimationToEnd
