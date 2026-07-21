@@ -108,19 +108,35 @@ factoring:
   reducer resolves the href (relative resolution against route info derived from *its own state
   argument* — the chained latest), computes the target, and reduces: today's `getNavigateAction`
   + `rootReducer` fuse into one pure function. Same for `dismiss`/`goBack`/`setParams`.
-  Two corrections the review forced on how this is done:
-  - **The reducer's inputs must be explicit and stable.** `getNavigateAction` today reads
-    module-global mutables (`store.linking`/`getStateFromPath`, `store.redirects`, and — worst —
-    `navigationRef.getRootState()` live, plus `store.assertIsReady` which throws). Inside a
-    render-pure, replayable reducer those are purity violations. The fused reducer signature is
-    `(state, action, registry, config) → state` where `config` (linking config + redirects) is
-    captured once at root init (it is init-time-stable), the state read is *only* the reducer's
-    argument, and nothing reads through the ref or throws for readiness.
-  - **The six standalone `getNavigateAction` callers convert to raw intents.** Deep links
-    (`fork/useLinking.native.ts`), `usePreloadRoutes`/`usePreloadAnchor`, `TabsClient`'s
-    `unstable_tabBarNavigateAction`, native-tabs first-visit tab press, and the link-preview
-    `__internal__PreviewKey` path all build actions before dispatch today; they dispatch raw
-    intent actions instead (the preview/PRELOAD variants become intent-action fields).
+  Corrections the reviews forced on how this is done:
+  - **The reducer's inputs must be explicit — and *current*, not init-frozen.** `getNavigateAction`
+    today reads module-global mutables (`store.linking`/`getStateFromPath`, `store.redirects`,
+    and — worst — `navigationRef.getRootState()` live, plus `store.assertIsReady` which throws).
+    Inside a render-pure, replayable reducer those are purity violations. The fused reducer
+    signature is `(state, action, registry, config) → state`, the state read is *only* the
+    reducer's argument, and nothing reads through the ref or throws for readiness. Round-3
+    correction: `config` **cannot be captured once at init** — `useStore` rebuilds
+    `linking`/`redirects` on every render (Fast Refresh / route-file changes regenerate the
+    linking config), so an init capture would misroute `router.push('/new-route')` after any
+    route-tree change. `config` is threaded per reduction from a render-updated source (stable
+    within a render pass — still an explicit input, just the current one), pinned with a
+    Fast-Refresh/route-change test.
+  - **Five standalone `getNavigateAction` callers convert to raw intents; one keeps resolving.**
+    `usePreloadRoutes`/`usePreloadAnchor`, native-tabs first-visit tab press, the link-preview
+    `__internal__PreviewKey` path, and warm deep links dispatch raw intent actions (the
+    preview/PRELOAD variants become intent-action fields; preload `originKey` rides on the
+    intent). **Exception: `TabsClient`'s `unstable_tabBarNavigateAction`** — it is a public typed
+    option (`() => NavigationAction`) dispatched as-is by the vendored `BottomTabBar`; converting
+    it breaks an external contract the other sites don't have. It keeps returning a resolved
+    action (or its signature change gets its own CHANGELOG entry — decide at Step 2).
+  - **Deep links, corrected (round 3).** Cold-start deep links never dispatch at all — `useStore`
+    compiles the initial URL into the *seed* (the `hasPendingInitialURL` gate holds mount), so the
+    mount-window worry doesn't apply to them. Warm links today dispatch **targeted** resolved
+    actions (never deferrable); the raw-intent conversion must not regress that: the reducer
+    resolves link intents into targeted reductions (carrying `payload.state` at the divergent
+    boundary, as `getNavigateAction` does today) so they are never queue-eligible, and the
+    malformed-link fallback (today: `getActionFromState` → `resetRoot`) gets an explicit
+    reducer-side story rather than silently disappearing with the old try/catch.
 - **Transitions are just the dispatch wrapper.** JS-initiated sources call
   `React.startTransition(() => dispatch(action))`; native-induced sources call `dispatch(action)`
   plain (urgent, D5). Source-tagging is nothing more than which wrapper the entry point uses.
@@ -150,32 +166,46 @@ here:
    `usePreventRemove`/`usePreventRemoveContext`/`PreventRemoveProvider` surface, **and the
    render-time native lock it feeds** (`preventNativeDismiss` on `ScreenStackItem`, the
    experimental-stack equivalent, web `ModalStack` `dismissible` gating, and the
-   header-back-menu gating). Accepted regression until the follow-up: no screen can block a
-   native swipe-back / modal dismiss. These exports are public on the
-   `expo-router/react-navigation` subpath — breaking-change CHANGELOG entry required.
+   header-back-menu gating). Accepted regressions until the follow-up, enumerated (round 3):
+   (a) no screen can block a native swipe-back; (b) **web modals with unsaved state become
+   gesture-dismissible** (vaul's `dismissible={false}` is a data-loss guard, not styling);
+   (c) the header-back-button long-press menu can no longer be disabled for guarded routes
+   (multi-screen route-around); (d) the `useInvalidPreventRemoveError` diagnostic goes with it.
+   These exports are public on the `expo-router/react-navigation` subpath — breaking-change
+   CHANGELOG entry required.
    **TODO(prevent-remove)** markers at every removal site are the reintroduction checklist; the
    follow-up design is planned separately. Note (review correction): protected/guarded routes are
    unaffected — they are conditional rendering (`Protected` → `Redirect` + guarded-route reset),
    independent of prevent-remove, not reducer logic.
-2. **The unhandled-action machinery is removed fully (base-branch step R2), including
-   `lastUnhandled`.** The `handled`/`noop` verdict, `UnhandledActionContext`, the
-   `onUnhandledAction` container prop, the default console error, ExpoRoot's test-env throw, and
-   the `UNSTABLE_routeNamesChangeBehavior: 'lastUnhandled'` route-restore feature that rides on
-   the context all go — the reducer simply returns state unchanged for actions it cannot handle.
-   R2 also removes **`__unsafe_action__`** and expo-router's public `actionDispatched` re-emit.
-   **TODO(action-telemetry): `expo-observe` consumes `__unsafe_action__` for EAS Observe action
-   timing, and `actionDispatched` is public — a follow-up provides a replacement dispatch-time
-   telemetry signal and migrates `expo-observe`; leave `TODO(action-telemetry)` markers at the
-   removal sites.** Breaking-change CHANGELOG entries for `onUnhandledAction`, `lastUnhandled`,
-   and `actionDispatched`.
+2. **The unhandled-action *reporting* machinery is removed fully (base-branch step R2), including
+   `lastUnhandled` — but the verdict fields survive R2 (round-3 correction).**
+   `UnhandledActionContext`, the `onUnhandledAction` container prop, the default console error,
+   ExpoRoot's test-env throw, and the `UNSTABLE_routeNamesChangeBehavior: 'lastUnhandled'`
+   route-restore feature that rides on the context all go in R2. R2 also removes
+   **`__unsafe_action__`** and expo-router's public `actionDispatched` re-emit. But the
+   `handled`/`noop` verdict fields themselves are **load-bearing beyond reporting** on the base
+   branch — `canGoBack`/`canDismiss` consume them, the noop-`setState` skip depends on them, and
+   the replay gate reads `handled` — so removing them in R2 would break the build. The verdict is
+   eliminated on the *transitions* branch in Step 2, where `pendingActions` replaces the replay
+   gate and `canGoBack`/`canDismiss` switch to referential identity
+   (`rootReducer(state, GO_BACK, …) !== state` — the reducer already returns identical state for
+   noops). Shared verdict-shape test assertions are **rewritten** to referential-identity form,
+   not deleted. **TODO(action-telemetry): `expo-observe` consumes `__unsafe_action__` for EAS
+   Observe action timing, and `actionDispatched` is public — a follow-up provides a replacement
+   dispatch-time telemetry signal and migrates `expo-observe`; leave `TODO(action-telemetry)`
+   markers at the removal sites.** Breaking-change CHANGELOG entries for `onUnhandledAction`,
+   `lastUnhandled`, and `actionDispatched`.
 3. **Mount-window replay** is redesigned to fit the pure reducer — see below.
-4. **`RECONCILE_ROUTE_NAMES` needs a new completion signal** (review finding).
+4. **`RECONCILE_ROUTE_NAMES` needs a new completion signal** (review finding, sharpened round 3).
    `useNavigationBuilder` dispatches it from a layout effect and reads the returned `handled`
-   verdict synchronously to advance its route-key bookkeeping; a dev invariant tolerates render
-   divergence only while a reconcile is pending. Under `useReducer`, dispatch returns void. The
-   reconcile dispatch is urgent (it is internal bookkeeping, not navigation), and the effect
-   detects completion by observing the committed slice instead of a return value. Spike item (h)
-   covers it; the flip step implements it.
+   verdict synchronously to advance its route-key ref **within the same commit**; the dev
+   identity-invariant tolerates render divergence only while a reconcile is pending — a
+   same-commit contract. Under `useReducer`, dispatch returns void and the reconcile lands one
+   commit later, adding an intermediate commit the invariant as written would false-positive on.
+   The redesign: the reconcile dispatch is urgent (internal bookkeeping, not navigation); the ref
+   advance happens in the same render that first observes the reconciled committed slice; and the
+   invariant's tolerance widens to "reconcile pending **or** reconcile committed but ref not yet
+   advanced". Spike item (h) covers it; Step 5 implements it with this exact shape.
 
 **What mount-window replay is.** Navigator reducers register into the registry from *layout
 effects*, i.e. only after a commit. So there is a window — the "mount window" — where a route is
@@ -196,11 +226,16 @@ moves the queue **into the state itself**, hardened per the round-2 review (deci
 - When the reducer receives an unhandled action, it returns state with the action appended to a
   `pendingActions` field. The append is **idempotent, keyed by action identity** — React invokes
   the reducer eagerly at dispatch *and* again at render (and again on replayed transitions), so a
-  non-idempotent append would double-queue.
-- **The `isDeferrable` gate carries over verbatim**: only `PRELOAD` and target-less actions are
-  ever queued (as in today's `dispatchRoot`). Native dispatches always carry an explicit
-  `target`, which is exactly what makes a replayed double-pop impossible — a targeted native
-  `POP`/`JUMP_TO` must never enter `pendingActions` (pinned by test).
+  non-idempotent append would double-queue. (Two identical pushes are distinct objects and both
+  land; verify none of the converted call sites dispatch a *reused* action object twice.)
+- **Deferrability is gated by source, not just target (round-3 correction).** The old gate
+  (`PRELOAD` or target-less) is not enough: native *dismiss* paths carry `target`, but Android
+  hardware back dispatches `GO_BACK` and the native-tabs press fallback dispatches `NAVIGATE` —
+  both target-less. Under the old gate a native GO_BACK in a mount window would be queued and
+  urgently replayed: the double-pop the plan previously called impossible. The rule:
+  **urgent-native-source actions never enter `pendingActions`, regardless of target** (the D5
+  source tag decides), and JS-side deferrability keeps the `PRELOAD`/target-less shape. Pinned by
+  tests covering *untargeted* native GO_BACK/NAVIGATE, not just targeted POP/JUMP_TO.
 - A container effect runs after every commit (registration effects have run by then),
   re-dispatches anything in `pendingActions` **urgently** (D5) with a replay marker, and the
   reducer clears the field; a replay-marked action that still finds no reducer is **dropped**.
@@ -222,7 +257,10 @@ anywhere). Review correction to own explicitly: **today `store.state` reflects a
 synchronously** (the sync store's closure updates inside `dispatchRoot` before it returns), so
 `router.push(); router.canGoBack()` in one tick currently answers post-push — under this design
 it answers for the committed (pre-push) state. Deliberate, but a behavior change: CHANGELOG note
-+ test. The audit (Step 6) must also cover the two bare `store.state` readers the review found
++ test. Also owned plainly (round 3): re-introducing a committed-tree mirror **reverts the base
+branch's own "retire the state mirror" commit** (which made `store.state` a live ref read) —
+`navigationRef.getRootState()` re-points at the mirror, published from the container's commit
+path, and the base branch's single-source-of-truth note gets updated accordingly. The audit (Step 6) must also cover the two bare `store.state` readers the review found
 unprotected: `HrefPreview` (reads `store.state` in a loop to render a parallel preview tree — the
 sharpest tearing edge) and `getSeedState`. D4's audit otherwise shrinks: hooks read rendered; the
 only "latest" reader left is the reducer itself.
@@ -235,10 +273,13 @@ actions); the spike pins the replay semantics (an interrupted transition re-redu
 action against a possibly different registry — purity guarantees no corruption, but the outcome
 can differ; decide and test what we promise).
 
-**Install lifecycle.** The root installs its `dispatch` (and the committed-tree mirror) into
-`global-state/store.ts` on mount, uninstalls on unmount — `router.*` reaches React through that.
-Test isolation and `NavigationIndependentTree` resolve per root instance by construction; only
-the app root installs globally.
+**Install lifecycle — scoped precisely (round 3).** The root installs its `dispatch` and the
+committed-tree mirror into `global-state/store.ts` on mount, uninstalls on unmount — `router.*`
+reaches React through that. **Only those two install on mount**: the seed, `linking`,
+`redirects`, and `routeNode` stay render-populated by `useStore` exactly as today, because
+`getSeedState` (the `useReducer` initializer) and `HrefPreview` read them *during the first
+render*, before any effect. Test isolation and `NavigationIndependentTree` resolve per root
+instance by construction; only the app root installs globally.
 
 **Mixed-priority semantics (decided, must be tested).** Urgent and transition dispatches to the
 same `useReducer` are not independent: an urgent (native) dispatch that lands while a JS
@@ -251,10 +292,13 @@ destination — if that destination still suspends at urgent priority, its fallb
 round-2 review is right that this interleaving is **common, not rare**: the dead-tap UX (risk 8)
 itself provokes the second gesture (tap slow link → nothing visible → user swipes back or taps a
 tab, landing an urgent dispatch exactly while the push transition is pending). So the spike must
-evaluate **supersede-over-flush**: the reducer sees the urgent action and can *drop* the stale
-pending navigation (reduce the urgent action against committed state and discard the queued
-intent) instead of letting React flush the abandoned destination's fallback. The `useReducer`
-model makes this expressible; decide it in the spike, test it in Step 7.
+evaluate **supersede-over-flush** — with the round-3 correction on what is mechanically possible:
+React's queue cannot *dequeue* a pending update; the superseded transition action **will**
+re-reduce after the urgent one. Supersede is therefore **reduce-to-no-op**: the reducer must
+recognize, from committed state alone, that a re-reduced transition action is stale (the urgent
+action recorded enough for that judgment) and return state unchanged — recording the abandoned
+navigation id (D3). The spike's deliverable is that staleness predicate, not a yes/no; Step 7
+tests it.
 
 Consequences to design for, not around:
 
@@ -311,18 +355,26 @@ synchronously; verify and add coverage rather than change.
   navigations are transitions by default (D1); native-induced are urgent (D5); callers can layer
   their own `startTransition`/`useTransition` for scoped `isPending`.
 - **`useNavigationTransitionPending()`** (name TBD): the global pending signal, redesigned per
-  the round-2 review. A naive increment-at-dispatch / decrement-at-commit counter is **not
-  well-defined** under React's transition semantics: transitions scheduled before a commit
-  entangle into one commit (two increments, one completion) and a superseded transition never
-  "completes" — the counter deadlocks at pending. Instead, pending is **derived from committed
-  state via monotonic ids**: every transition-wrapped dispatch is tagged with a monotonic
-  navigation id; "last issued id" lives in a small piece of state updated **urgently** (outside
-  the transition scope — mandatory, or the indicator would be deferred behind the very slow
-  commit it exists to cover); the reducer records "last reduced id" inside the navigation state;
-  `pending = lastIssued > lastCommitted`, computed from committed values — no transition
-  lifecycle to reconcile, interruption-safe by construction (a superseding dispatch bumps both).
-  Not backed by `useTransition().isPending`: hook-`isPending` only tracks that hook's own
-  `startTransition` and is fragile for dispatches originating on non-React stacks.
+  the round-2 review and pinned down per round 3. A naive increment-at-dispatch /
+  decrement-at-commit counter is **not well-defined** under React's transition semantics
+  (entangled transitions: two increments, one completion; superseded transitions never
+  "complete"). Instead, pending is **derived from committed state via monotonic ids**: every
+  transition-wrapped dispatch is tagged with a monotonic navigation id; "last issued id" lives in
+  a small piece of state updated **urgently** (outside the transition scope — mandatory, or the
+  indicator would be deferred behind the very slow commit it exists to cover); the reducer
+  records the id inside the navigation state; `pending = lastIssued > lastReduced`, computed from
+  committed values. **The accounting invariant (round 3 — this is what makes it correct): every
+  issued id is eventually recorded in committed state, as applied or abandoned.** Concretely,
+  the reducer sets `lastReduced = max(lastReduced, action.navId)` whenever the action carries an
+  id — including when the reduction is a **noop** (recording the id changes state identity, which
+  also defeats React's identical-state bailout that would otherwise swallow the commit), when the
+  action is **appended to `pendingActions`** and later **dropped** (the drop is itself a
+  reduction that records the id), and when a **supersede** turns the replayed transition action
+  into a no-op (abandonment counts as accounted). Urgent native dispatches carry no id and never
+  touch the field. Without this invariant, a superseded or dropped navigation wedges the
+  indicator at `pending: true` forever. Not backed by `useTransition().isPending`:
+  hook-`isPending` only tracks that hook's own `startTransition` and is fragile for dispatches
+  originating on non-React stacks.
 - **`useLinkStatus()`**: `Link`-scoped `{ pending: boolean }` for pending indicators. Backed by a
   per-Link `useTransition` wrapping that Link's dispatch (Link presses are JS-initiated → always
   transition-eligible), which stays correct under interruption.
@@ -435,10 +487,15 @@ focus-event timing.
    across separate awaited `act` boundaries; rendered-tree queries (`getByTestId`) instead of
    store-reading helpers for "what's on screen"; explicit statement of what is jest-assertable
    (final states, fallback-absence across an awaited act) vs simulator-only (pending-window
-   duration, mid-flight pending values, native-urgent-flush interleavings). **Step 3's exit
-   criteria include the binding decision** — stand up a concurrent root for the transition tests,
-   or reclassify those assertions simulator-only and shrink Step 5's jest red tests to
-   final-state + fallback-absence — made *before* Step 5 starts, not discovered during it.
+   duration, mid-flight pending values, native-urgent-flush interleavings). **Round-3 verdict:
+   the concurrent-root branch is effectively dead** — React 19 + RNTL 13.3 renders through
+   react-test-renderer's legacy root with forced fake timers; a transition cannot yield
+   mid-render in that stack. So the decision is made now, not at Step 3: **mid-flight assertions
+   (pending values, urgent-flush, supersede) are simulator-only**; jest keeps final committed
+   states, fallback-absence across an awaited `act` (rendered-tree queries + controllable
+   promises), `pendingActions` replay final states, the same-tick `canGoBack` change, and the
+   Step-2 shadow deep-equal. Step 3's recipe work is reduced to building the fixtures and
+   confirming this classification, and Step 5's red list is scoped to the jest-able set up front.
 10. **StrictMode.** Explicit coverage for the mount-window replay under transitions and for
     `getState`/`deepFreeze` idempotency under interrupted (speculative) transition renders — pin
     the "no `getState()` consumer has side effects" invariant.
@@ -457,9 +514,12 @@ top). Remove the entire prevent-remove path per D1 item 1: `shouldPreventRemove`
 `beforeRemove` emission, `usePreventRemove`/`usePreventRemoveContext`/`PreventRemoveProvider`,
 and the render-time consumers (`preventNativeDismiss` + header-back-menu gating in
 native-stack, the experimental-stack equivalent, web `ModalStack` `dismissible` gating).
-`TODO(prevent-remove)` markers at every removal site. Delete the feature's tests with it.
+`TODO(prevent-remove)` markers at every removal site. Delete the feature's tests with it — and
+rework the tests that depend on the wrapper indirectly: `SuspenseFallback.test` filters a
+console-error spy by the `PreventRemoveProvider` component name, so its premise must be
+re-examined when the wrapper disappears from every navigator's tree.
 Red: suite green with the surface gone; an iOS characterization note records the accepted
-regression (guarded screens become natively swipeable). Breaking-change CHANGELOG entry
+regressions (D1 item 1's enumerated list). Breaking-change CHANGELOG entry
 (`expo-router/react-navigation` subpath exports).
 Files: `react-navigation/core/{usePreventRemove,usePreventRemoveContext,PreventRemoveProvider,
 useOnPreventRemove}*`, `core/BaseNavigationContainer.tsx`, `global-state/rootReducer.ts`,
@@ -499,30 +559,40 @@ Files: `global-state/routingQueue.ts` (mostly deleted), `global-state/router.ts`
 `useReducer(rootNavigationReducer, seed)` (R1/R2 already stripped the dispatch-time side
 channels on the base branch, so `dispatchRoot` collapses to `dispatch(action)` — not yet
 transition-wrapped). `getNavigateAction` fuses into the reducer as
-`(state, action, registry, config) → state` with `config` (linking + redirects) captured at root
-init and no module-global/ref reads (D1); the six standalone `getNavigateAction` callers convert
-to raw intent dispatches. Mount-window replay becomes the hardened state-carried `pendingActions`
-mechanism (idempotent identity-keyed append, `isDeferrable` gate carried over, urgent replay,
-drop-after-one-retry — D1). The root installs `dispatch` + the committed mirror into
-`global-state/store.ts` on mount, uninstalls on unmount.
+`(state, action, registry, config) → state` with `config` (linking + redirects) threaded per
+reduction from the render-updated source and no module-global/ref reads (D1); five standalone
+`getNavigateAction` callers convert to raw intent dispatches (`unstable_tabBarNavigateAction`
+keeps resolving — D1), with link intents resolving to *targeted* reductions and the
+malformed-link fallback preserved (D1). Mount-window replay becomes the hardened state-carried
+`pendingActions` mechanism (idempotent identity-keyed append, source-gated deferrability —
+urgent-native never queues, urgent replay, drop-after-one-retry — D1). The root installs
+`dispatch` + the committed mirror into `global-state/store.ts` on mount, uninstalls on unmount
+(seed/linking/redirects stay render-populated — D1 install lifecycle).
 Staging scaffolding for behavior-neutrality: a temporary eager reduce (same pure fused reducer,
 last committed tree, same `config`) feeds the store mirror synchronously through the sync
 `setState` path (not the batched one — same-tick chaining depends on it), so the existing uSES
-read sites behave exactly as today — while React's `useReducer` reduces the same actions in
-parallel and a dev assertion checks both trees deep-equal every commit (the shadow-compare that
-de-risked the base branch's own flip). Two review-found caveats: the deep-equal can legitimately
-diverge on the two nanoid-minting paths (keyless `RESET` payloads in `BaseRouter`, the
-empty-reconciliation fallback in `StackRouter`) — special-case or make those keys deterministic
-first; and with R1/R2 landed the reducer path has no side effects left, which is what makes
-double-reduction safe at all. This scaffolding has no product role and is deleted in Step 5.
+read sites behave exactly as today. The shadow `useReducer` reduces the same actions in parallel
+**but its output drives no render** (compute-and-compare only, discarded until Step 5) — round-3
+correction: letting both trees drive rendering would double renders per dispatch and split the
+slice cache across two tree identities, so the shadow is **value-neutral by construction, and
+render-count budgets are meaningless until Step 5 regardless**. A dev assertion checks both trees
+deep-equal every commit (the shadow-compare that de-risked the base branch's own flip). Two more
+review-found caveats: the deep-equal can legitimately diverge on the two nanoid-minting paths
+(keyless `RESET` payloads in `BaseRouter`, the empty-reconciliation fallback in `StackRouter`) —
+special-case or make those keys deterministic first; and with R1/R2 landed the reducer path has
+no side effects left, which is what makes double-reduction safe at all. This scaffolding has no
+product role and is deleted in Step 5. Step 2 also performs the verdict elimination deferred from
+R2 (D1 item 2): `handled`/`noop` fields go, `canGoBack`/`canDismiss` switch to referential
+identity, verdict-shape tests rewritten.
 Red: two same-tick dispatches chain correctly (incl. relative hrefs), replay/mount-window behavior
-via `pendingActions` (incl. targeted-native-action-never-queued), `onStateChange` timing,
+via `pendingActions` (incl. native-source-never-queued, targeted *and* untargeted —
+GO_BACK/tab-NAVIGATE), `onStateChange` timing,
 same-tick `push(); canGoBack()` behavior change pinned, shadow deep-equal across the suite,
 `renderRouter` isolation across sequential renders, independent-tree non-interference (risk 5).
 Files: `global-state/store.ts`, `global-state/rootReducer.ts`,
 `global-state/getNavigationAction.ts`, `global-state/router.ts`,
 `react-navigation/core/BaseNavigationContainer.tsx`,
-`react-navigation/core/useSyncState.tsx` (deleted or absorbed), the six raw-intent call sites.
+`react-navigation/core/useSyncState.tsx` (deleted or absorbed), the five raw-intent call sites.
 
 ### Step 3 — Spike + characterization tests
 Pin down reality before the flip. Deliverables:
@@ -545,8 +615,9 @@ transitions, React's eager reducer invocation at dispatch (purity contract holds
 work with the Step-2 shadow scaffolding), the state-carried `pendingActions` replay under
 interrupted transitions, and the `RECONCILE_ROUTE_NAMES` completion-signal redesign;
 (i) written answers to risks 4–7 and 10 unknowns.
-**Exit criteria include the testing-recipe decision (risk 9)**: concurrent root for transition
-tests, or reclassify the mid-flight assertions simulator-only — decided here, before Step 5.
+**Exit criteria (risk 9, pre-decided per round 3)**: confirm the simulator-only classification of
+mid-flight assertions and deliver the jest fixtures (controllable suspending promises, non-sync
+import-mode escape hatch) for the jest-able set.
 No production code changes beyond the playground app.
 
 ### Step 4 — Disable freeze (risk 1)
@@ -559,8 +630,13 @@ against `enableFreeze(true)`), so no frozen subtree can starve a pending transit
 entry (this overrides a public option and reverses PR #38837's direction); consider an opt-out.
 Red: screens render unfrozen even when `enableFreeze()` was called / the option is set;
 blurred-screen render-count baseline recorded for risk 3 (multi-tab × deep-stack case included).
-Files: `fork/native-stack/`, `react-navigation/{bottom-tabs,drawer,stack}/views/`,
-`ui/TabSlot.tsx`, `layouts/StackClient.tsx`.
+Files (round-3 corrected — `fork/native-stack/`'s view wrapper is dead code and
+`layouts/StackClient.tsx` renders no screen):
+`react-navigation/native-stack/views/NativeStackView.native.tsx`,
+`react-navigation/stack/views/Stack/CardStack.tsx`,
+`react-navigation/bottom-tabs/views/BottomTabView.tsx`,
+`react-navigation/drawer/views/DrawerView.tsx`, `ui/TabSlot.tsx` (forwards straight to
+rn-screens' `<Screen>` — no react-freeze anywhere in expo-router, prop injection suffices).
 
 ### Step 5 — The flip: navigators read React state; JS-initiated commits become transitions (atomic core)
 In plain English: today, every navigator independently subscribes to the store and re-reads its
@@ -652,9 +728,11 @@ Files: `link/Link.tsx`, `link/useLinkStatus.tsx` (new), `hooks/`, `exports.ts`.
 (lazy screen via push, suspending loader, swipe-back and native tab press with suspending targets,
 pending indicators). Docs: new guide section (transitions with Expo Router) that **leads with the
 UX inversion** (risk 8: tap → inert until ready; wire pending indicators; lazy-bundle
-recommendation) and includes a **concrete root-`_layout` overlay pattern for a global pending
-indicator** (review finding: native screen stacks have no natural host for one — show exactly
-where to mount it, and steer to per-Link `useLinkStatus` as the primary pattern) + API reference
+recommendation) and includes a **concrete global-pending-indicator pattern that actually works on
+iOS** (round-3 finding: a sibling `View` in the root `_layout` does *not* overlay a native
+`ScreenStack` or modal presentations — the pattern must use react-native-screens'
+`FullWindowOverlay`, or steer to per-Link `useLinkStatus` rendered inside the screen as the
+primary recommendation) + API reference
 (`useNavigationTransitionPending`, `useLinkStatus`) via
 `et generate-docs-api-data --packageName expo-router`; CHANGELOG entries: behavior change +
 migration note, freeze override (risk 1), same-tick `canGoBack` change (D1); R1/R2 already carry
