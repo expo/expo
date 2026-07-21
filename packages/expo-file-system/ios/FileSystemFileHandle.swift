@@ -29,7 +29,7 @@ internal final class FileSystemFileHandle: SharedRef<FileHandle> {
   let handle: FileHandle
   private let didAccessSecurityScope: Bool
   private var isClosed = false
-  private let lock = NSLock()
+  private let lock = NSLock()  // non-reentrant. Don't use it in recursive calls
 
   init(file: FileSystemFile, mode: FileMode?) throws {
     self.file = file
