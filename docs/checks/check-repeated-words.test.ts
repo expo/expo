@@ -8,7 +8,7 @@ const API_DATA_DIR = path.join(DOCS_ROOT, 'public', 'static', 'data');
 // Case-insensitive, lowercase entries. For intentional doubles like "had had".
 const ALLOWED_REPEATS = new Set<string>([]);
 
-const REPEATED_WORD = /\b([A-Za-z]{2,})\s+\1\b/gi;
+const REPEATED_WORD = /\b([a-z]{2,})\s+\1\b/gi;
 
 interface Violation {
   where: string;
@@ -80,8 +80,8 @@ function tsdocSource(relFile: string): string {
 // is a directive consumed by InlineHelp, not rendered prose.
 function proseOnly(markdown: string): string {
   return markdown
-    .replace(/```[\s\S]*?```/g, ' ~ ')
-    .replace(/`[^`\n]*`/g, ' ~ ')
+    .replace(/```[\S\s]*?```/g, ' ~ ')
+    .replace(/`[^\n`]*`/g, ' ~ ')
     .replace(/^(\s*>\s*)\*\*(warning|error|info|important)\*\*\s*/gim, '$1')
     .replace(/\[([^\]]*)]\([^)]*\)/g, '$1')
     .replace(/[*_]/g, '');
