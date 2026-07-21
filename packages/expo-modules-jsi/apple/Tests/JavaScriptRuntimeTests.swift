@@ -1082,12 +1082,13 @@ private final class TestRuntimeScheduler: @unchecked Sendable {
 private let scheduleOnTestRuntime:
   @convention(c) (
     UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
-  ) -> Void = { schedulerPointer, _, callback in
+  ) -> Bool = { schedulerPointer, _, callback in
     guard let schedulerPointer else {
-      return
+      return false
     }
     let scheduler = Unmanaged<TestRuntimeScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
     scheduler.schedule(callback)
+    return true
   }
 
 /// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
@@ -1101,8 +1102,9 @@ nonisolated(unsafe) private var heldSchedulerTasks: [() -> Void] = []
 private let holdSchedulerTask:
   @convention(c) (
     UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
-  ) -> Void = { _, _, callback in
+  ) -> Bool = { _, _, callback in
     heldSchedulerTasks.append(callback)
+    return true
   }
 
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the

@@ -23,9 +23,9 @@ using facebook::react::RuntimeScheduler;
   // A null handle is what `createReactSchedulerHandle` returns when there was no
   // scheduler to reference, so dispatching through it must be a safe no-op.
   __block BOOL called = NO;
-  expo::dispatchOnReactScheduler(nullptr, /* NormalPriority */ 3, ^{
+  XCTAssertFalse(expo::dispatchOnReactScheduler(nullptr, /* NormalPriority */ 3, ^{
     called = YES;
-  });
+  }));
 
   XCTAssertFalse(called);
 }
@@ -40,7 +40,7 @@ using facebook::react::RuntimeScheduler;
   void *handle = expo::createReactSchedulerHandle(scheduler);
   XCTAssertNotEqual(handle, nullptr);
 
-  expo::dispatchOnReactScheduler(handle, /* UserBlockingPriority */ 2, ^{});
+  XCTAssertTrue(expo::dispatchOnReactScheduler(handle, /* UserBlockingPriority */ 2, ^{}));
 
   // The scheduler requested a work loop from the runtime executor, which is how a scheduled
   // task reaches the JS thread. Running the loop requires a jsi::Runtime, so this test only
@@ -64,9 +64,9 @@ using facebook::react::RuntimeScheduler;
   scheduler.reset();
 
   __block BOOL called = NO;
-  expo::dispatchOnReactScheduler(handle, /* ImmediatePriority */ 1, ^{
+  XCTAssertFalse(expo::dispatchOnReactScheduler(handle, /* ImmediatePriority */ 1, ^{
     called = YES;
-  });
+  }));
 
   XCTAssertFalse(called);
   XCTAssertEqual(*scheduledWorkCount, 0);
