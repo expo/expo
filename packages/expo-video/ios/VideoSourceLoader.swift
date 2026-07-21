@@ -129,8 +129,24 @@ internal class VideoSourceLoader {
         return LoadingResult(value: nil, isCancelled: false)
       }
 
-      let safeUrl = try await url.toUrlWithPermissions()
+      // A resolution failure (only possible for `ph://` sources) shouldn't reject the load.
+      // Build the item with the raw, unplayable URL instead, so the player transitions to the
+      // `.error` status the same way it does for any other failing source, with `transportError`
+      // carrying the real resolution error to that status change.
+      var safeUrl: URL?
+      var resolutionError: Error?
+      do {
+        safeUrl = try await url.toUrlWithPermissions()
+      } catch let error as CancellationError {
+        throw error
+      } catch {
+        resolutionError = error
+      }
+
       let playerItem = try await VideoPlayerItem(videoSource: videoSource, urlOverride: safeUrl)
+      if let resolutionError {
+        playerItem?.urlAsset.transportError = resolutionError
+      }
 
       try Task.checkCancellation()
       return LoadingResult(value: playerItem, isCancelled: false)
@@ -205,7 +221,11 @@ internal class VideoSourceLoader {
       guard let self else {
         return
       }
-      for weakListener in listeners {
+      // Deliver only to listeners that were registered when the event was recorded (`listeners`)
+      // and still are now — a listener that unregistered in the meantime stops receiving events
+      // immediately, and one registered after the event doesn't get a transition it never observed.
+      let currentListeners = self.state.withLock { $0.listeners }
+      for weakListener in listeners.intersection(currentListeners) {
         guard let listener = weakListener.value else {
           continue
         }
