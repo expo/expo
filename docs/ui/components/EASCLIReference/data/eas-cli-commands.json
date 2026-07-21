@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-07-17T08:45:53.173Z",
+    "fetchedAt": "2026-07-21T08:56:11.517Z",
     "cliVersion": "21.0.2"
   },
-  "totalCommands": 126,
+  "totalCommands": 125,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -262,11 +262,6 @@
       "usage": "USAGE\n  $ eas diagnostics\n\nDESCRIPTION\n  display environment info"
     },
     {
-      "command": "eas env:create [ENVIRONMENT]",
-      "description": "create an environment variable for the current project or account",
-      "usage": "USAGE\n  $ eas env:create [ENVIRONMENT] [--name <value>] [--value <value>] [--force] [--type string|file] [--visibility\n    plaintext|sensitive|secret] [--scope project|account] [--environment <value>...] [--non-interactive]\n\nARGUMENTS\n  [ENVIRONMENT]  Environment to create the variable in. Default environments are 'production', 'preview', and\n                 'development'.\n\nFLAGS\n  --environment=<value>...  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --force                   Overwrite existing variable\n  --name=<value>            Name of the variable\n  --non-interactive         Run the command in non-interactive mode.\n  --scope=<option>          [default: project] Scope for the variable\n                            <options: project|account>\n  --type=<option>           The type of variable\n                            <options: string|file>\n  --value=<value>           Text value or the variable\n  --visibility=<option>     Visibility of the variable\n                            <options: plaintext|sensitive|secret>\n\nDESCRIPTION\n  create an environment variable for the current project or account"
-    },
-    {
       "command": "eas env:delete [ENVIRONMENT]",
       "description": "delete an environment variable for the current project or account",
       "usage": "USAGE\n  $ eas env:delete [ENVIRONMENT] [--variable-name <value>] [--variable-environment <value>] [--scope\n    project|account] [--non-interactive]\n\nARGUMENTS\n  [ENVIRONMENT]  Current environment of the variable to delete. Default environments are 'production', 'preview', and\n                 'development'.\n\nFLAGS\n  --non-interactive               Run the command in non-interactive mode.\n  --scope=<option>                [default: project] Scope for the variable\n                                  <options: project|account>\n  --variable-environment=<value>  Current environment of the variable to delete\n  --variable-name=<value>         Name of the variable to delete\n\nDESCRIPTION\n  delete an environment variable for the current project or account"
@@ -297,9 +292,9 @@
       "usage": "USAGE\n  $ eas env:push [ENVIRONMENT] [--environment <value>...] [--path <value>] [--force]\n\nARGUMENTS\n  [ENVIRONMENT]  Environment to push variables to. Default environments are 'production', 'preview', and 'development'.\n\nFLAGS\n  --environment=<value>...  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --force                   Skip confirmation and automatically override existing variables\n  --path=<value>            [default: .env.local] Path to the input `.env` file\n\nDESCRIPTION\n  push environment variables from .env file to the selected environment"
     },
     {
-      "command": "eas env:update [ENVIRONMENT]",
-      "description": "update an environment variable on the current project or account",
-      "usage": "USAGE\n  $ eas env:update [ENVIRONMENT] [--variable-name <value>] [--variable-environment <value>] [--name <value>]\n    [--value <value>] [--type string|file] [--visibility plaintext|sensitive|secret] [--scope project|account]\n    [--environment <value>...] [--non-interactive]\n\nARGUMENTS\n  [ENVIRONMENT]  Current environment of the variable to update. Default environments are 'production', 'preview', and\n                 'development'.\n\nFLAGS\n  --environment=<value>...        Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --name=<value>                  New name of the variable\n  --non-interactive               Run the command in non-interactive mode.\n  --scope=<option>                [default: project] Scope for the variable\n                                  <options: project|account>\n  --type=<option>                 The type of variable\n                                  <options: string|file>\n  --value=<value>                 New value or the variable\n  --variable-environment=<value>  Current environment of the variable to update\n  --variable-name=<value>         Current name of the variable\n  --visibility=<option>           Visibility of the variable\n                                  <options: plaintext|sensitive|secret>\n\nDESCRIPTION\n  update an environment variable on the current project or account"
+      "command": "eas env:set [ENVIRONMENT]",
+      "description": "set (create or update) an environment variable on the current project or account",
+      "usage": "USAGE\n  $ eas env:set [ENVIRONMENT] [--name <value>] [--value <value>] [--type string|file] [--visibility\n    plaintext|sensitive|secret] [--scope project|account] [--environment <value>...] [--json] [--non-interactive]\n\nARGUMENTS\n  [ENVIRONMENT]  Environment to set the variable in. Default environments are 'production', 'preview', and\n                 'development'.\n\nFLAGS\n  --environment=<value>...  Environment variable's environment, e.g. 'production', 'preview', 'development'\n  --json                    Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --name=<value>            Name of the variable\n  --non-interactive         Run the command in non-interactive mode.\n  --scope=<option>          [default: project] Scope for the variable\n                            <options: project|account>\n  --type=<option>           The type of variable\n                            <options: string|file>\n  --value=<value>           Text value of the variable\n  --visibility=<option>     Visibility of the variable\n                            <options: plaintext|sensitive|secret>\n\nDESCRIPTION\n  set (create or update) an environment variable on the current project or account"
     },
     {
       "command": "eas fingerprint:compare [HASH1] [HASH2]",
