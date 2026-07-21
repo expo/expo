@@ -1,49 +1,50 @@
-# Prompt: implement the transitions plan
+# Prompt: execute the first step of the transitions plan (R1)
 
 You are a senior engineer working in the `expo/expo` monorepo, in `packages/expo-router`.
 
-Your task is to execute `PLAN.md` (repo root) — adding React transition
-(`startTransition`/`useTransition`) support to Expo Router. The plan is final: it has survived
-three rounds of adversarial review and every design decision in it is settled. Do not re-litigate
-decisions; when you hit something the plan genuinely didn't anticipate, stop and surface it
+Execute **only Step R1** of `PLAN.md` (repo root) — the first step in its order. Do not start any
+other step; when R1 is committed, pushed, and green, stop and report. Each later step gets its
+own fresh prompt and context.
+
+The plan is final (three adversarial review rounds; decisions settled). Do not re-litigate it;
+if R1's spec genuinely doesn't survive contact with the code, stop and surface the mismatch
 instead of improvising.
 
 ## Before you start
 
-1. Read `PLAN.md` in full. Then read `packages/expo-router/AGENTS.md` and the repo's
-   `.claude/CLAUDE.md` (tooling: `et`, test conventions, commit format).
-2. Understand the branch layout:
-   - Base branch: `@ubax/eng-21996-change-the-state-in-expo-router-to-be-global`.
-   - This branch (stacked on it): `@ubax/eng-transitions-support-in-expo-router` — where
-     `PLAN.md` lives and Steps 1–9 land.
-   - **Steps R1 and R2 land on the base branch**, then this branch rebases on top.
+1. Read `PLAN.md` in full — especially D1 purity-contract item 1 and the Step R1 section.
+2. Read `packages/expo-router/AGENTS.md` and the repo's `.claude/CLAUDE.md` (tooling: `et`,
+   test conventions, commit format).
+3. Branch layout: R1 lands **on the base branch**
+   `@ubax/eng-21996-change-the-state-in-expo-router-to-be-global` — check it out for the
+   implementation. (`PLAN.md` lives on the stacked branch
+   `@ubax/eng-transitions-support-in-expo-router`; after R1 lands, rebasing the stacked branch is
+   a later concern, not yours.)
 
-## Execution rules (per step, from the base branch's proven workflow)
+## The task (from PLAN.md Step R1)
 
-1. Write a short step note (`steps/Step-<n>.md` on this branch): what changes, files, the
-   red→green test list, unknowns. Scannable, not a restatement of the plan.
+Remove prevent-remove fully: `shouldPreventRemove` in `dispatchRoot`, the `changedSlices`
+production in `rootReducer` (sole consumer), the `beforeRemove` emission,
+`usePreventRemove`/`usePreventRemoveContext`/`PreventRemoveProvider`, and the render-time
+consumers (`preventNativeDismiss` + header-back-menu gating in native-stack, the
+experimental-stack equivalent, web `ModalStack` `dismissible` gating). `TODO(prevent-remove)`
+markers at every removal site. Delete the feature's tests; rework tests that depend on the
+wrapper indirectly (`SuspenseFallback.test` filters a console-error spy by the
+`PreventRemoveProvider` component name). Breaking-change CHANGELOG entry
+(`expo-router/react-navigation` subpath exports; note the enumerated regressions from D1 item 1).
+
+## Workflow (per the base branch's meta-plan)
+
+1. Write a short step note `steps/Step-R1.md`: what changes, files, the red→green test list,
+   unknowns. Scannable, not a restatement.
 2. Challenge the note with 3 parallel review agents (correctness / architecture-fit /
-   test-strategy lenses). Fold findings in.
-3. Implement red-first: write the failing test, watch it fail, implement to green. Keep the full
-   suite green (`CI=1 pnpm test` in `packages/expo-router`); only Step 5 may be atomic across one
-   commit.
+   test-strategy). Fold findings in.
+3. Implement red-first where a behavior changes; keep the full suite green
+   (`CI=1 pnpm test` in `packages/expo-router`).
 4. Challenge the implementation with 3 fresh review agents aimed at the diff + tests. Address
    findings.
-5. Run `et check-packages expo-router` before committing. Commit `[step <n>] <one line>` — no
-   body, never mention Claude. Push after every step.
-6. Update `PLAN.md` if the step revealed a correction (mark it landed, note the deviation).
+5. Run `et check-packages expo-router`. Commit `[step r1] <one line>` — no body, never mention
+   Claude. Push.
+6. Update `PLAN.md` (on the stacked branch) only if R1 revealed a correction; otherwise leave it.
 
-## Order
-
-R1 → R2 (on the base branch, then rebase this branch) → 1 → 2 → 3 (spike) → 4 → 5 (atomic
-flip) → 6 → 7 → 8 → 9. Start with R1 now.
-
-## Hard constraints
-
-- The reducer purity contract (PLAN.md D1) is non-negotiable: no side effects, no module-global
-  reads, no throws inside `rootNavigationReducer`.
-- `TODO(prevent-remove)` and `TODO(action-telemetry)` markers at every R1/R2 removal site.
-- Breaking-change CHANGELOG entries where the plan says so.
-- Native-induced dispatches stay urgent; only JS-initiated ones are transitions.
-- Simulator verification for anything the plan classifies as not jest-observable (risk 9); use
-  the argent tooling per the repo rules when you get there.
+Stop after step 6 and report what landed, what deviated, and anything the next step should know.
