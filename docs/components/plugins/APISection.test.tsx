@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { createRequire } from 'node:module';
 
 import { axe, renderWithHeadings } from '~/common/test-utilities';
+import { ApiDataProvider } from '~/providers/api-data';
 
 import APISection from './APISection';
 
@@ -101,6 +102,29 @@ describe('APISection', () => {
 
     expect(screen.queryAllByText('Props')).toHaveLength(0);
     expect(screen.queryAllByText('Enums')).toHaveLength(0);
+  });
+
+  test('renders from provider data without testRequire', () => {
+    const { children } = require('~/public/static/data/unversioned/expo-pedometer.json');
+
+    renderWithHeadings(
+      <ApiDataProvider data={{ 'unversioned/expo-pedometer': children }}>
+        <APISection packageName="expo-pedometer" forceVersion="unversioned" />
+      </ApiDataProvider>
+    );
+
+    expect(screen.getAllByRole('heading', { level: 2 })).toHaveLength(4);
+    expect(screen.getAllByRole('heading', { level: 3 })).toHaveLength(12);
+    expect(screen.getAllByRole('table')).toHaveLength(5);
+  });
+
+  test('renders the fallback when provider data is missing', () => {
+    console.error = jest.fn();
+
+    render(<APISection packageName="expo-pedometer" forceVersion="unversioned" />);
+
+    expect(console.error).toHaveBeenCalled();
+    expect(screen.getAllByText('No API data file found, sorry!')).toHaveLength(1);
   });
 
   test('expo-router/native-tabs collapses huge mixed literal unions', () => {
