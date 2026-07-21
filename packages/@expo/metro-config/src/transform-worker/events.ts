@@ -18,6 +18,9 @@ declare module '2g' {
 
     // per-file sub-phase spans (nested under transform:file)
     'transform:babel': { file: string };
+    'transform:asset_data': { file: string; platform: string | null; files: string[] };
+    'transform:asset_hashes': { file: string; files: string[] };
+    'transform:asset_hash_file': { file: string };
     'transform:import_support': { file: string };
     'transform:constant_folding': { file: string };
     'transform:collect_dependencies': { file: string; count: number };

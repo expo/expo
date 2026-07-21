@@ -11,6 +11,7 @@ import type { DevServerManager } from '../server/DevServerManager';
 import { KeyPressHandler } from './KeyPressHandler';
 import type { StartOptions } from './commandsTable';
 import { BLT, printHelp, printUsage } from './commandsTable';
+import { event } from './events';
 import { DevServerManagerActions } from './interactiveActions';
 
 const CTRL_C = '\u0003';
@@ -101,8 +102,10 @@ export async function startInterfaceAsync(
     if (isWebSocketsEnabled) {
       switch (key) {
         case 'm':
+          event('toggle-dev-menu', {});
           return actions.toggleDevMenu();
         case 'M':
+          event('open-more-tools', {});
           return actions.openMoreToolsAsync();
       }
     }
@@ -113,6 +116,10 @@ export async function startInterfaceAsync(
       const platform = key.toLowerCase() === 'i' ? 'ios' : 'android';
 
       const shouldPrompt = ['I', 'A'].includes(key);
+      event('open-platform', {
+        platform,
+        target: shouldPrompt ? 'prompt' : PLATFORM_SETTINGS[platform]!.launchTarget,
+      });
       if (shouldPrompt) {
         Log.clear();
       }
@@ -142,6 +149,7 @@ export async function startInterfaceAsync(
 
     switch (key) {
       case 's': {
+        event('toggle-runtime-mode', {});
         Log.clear();
         if (await devServerManager.toggleRuntimeMode()) {
           usageOptions.devClient = devServerManager.options.devClient;
@@ -151,6 +159,7 @@ export async function startInterfaceAsync(
         break;
       }
       case 'w': {
+        event('open-platform', { platform: 'web', target: 'desktop' });
         try {
           await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
           if (!platforms.includes('web')) {
@@ -187,14 +196,18 @@ export async function startInterfaceAsync(
         break;
       }
       case 'c':
+        event('clear-terminal', {});
         Log.clear();
         await actions.printDevServerInfoAsync(usageOptions);
         return;
       case 'j':
+        event('open-debugger', {});
         return actions.openJsInspectorAsync();
       case 'r':
+        event('reload', {});
         return actions.reloadApp();
       case 'o':
+        event('open-editor', {});
         Log.log(`${BLT} Opening the editor...`);
         return openInEditorAsync(devServerManager.projectRoot);
     }
