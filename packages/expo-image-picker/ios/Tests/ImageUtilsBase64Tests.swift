@@ -14,9 +14,6 @@ private func isJpeg(_ data: Data) -> Bool {
   return data.count >= 2 && data[0] == 0xFF && data[1] == 0xD8
 }
 
-// Regression test for https://github.com/expo/expo/issues/47988: base64 export must always be
-// JPEG regardless of the source image's original format. This guards the helper used by every
-// export path, including the PHPicker path taken when `allowsEditing` is false.
 @Suite("ImageUtils base64")
 struct ImageUtilsBase64Tests {
   @Test
