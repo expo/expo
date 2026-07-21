@@ -105,17 +105,27 @@ Useful properties the base branch already gives us (don't break these):
   risk 3: context propagation bypasses `React.memo`, so identity alone does not preserve today's
   per-navigator bail-outs.
 
-**Committed state ownership — OPEN DECISION (b), see the review.** The plan originally moved the
-committed state into the module-global `global-state/store.ts` (no ref indirection, one field from
-seed to commit). The review found this breaks jest test isolation (`renderRouter` runs dozens of
-times per file with no module reset; `getSeedState()` reads `store.state` and would seed from the
-previous test's final state; `useStore`'s render-time reset and `dispatchRoot`'s commit-time write
-become two writers with unspecified ordering) and cannot represent two live containers
-(`NavigationIndependentTree` has a real two-container test). Options on the table:
-per-container (as today, `store.state` stays a thin ref wrapper), module-global with an explicit
-install/uninstall lifecycle per container, or module-global with independent trees declared
-unsupported for global reads. **Step 2(a) is blocked on this decision; everything else in the plan
-is independent of it.**
+**Committed state: a cell owned by the expo-router root, inside the React hierarchy (decided).**
+The committed state — the last `rootReducer` output, the base for the next dispatch — lives in a
+mutable cell **created by the root component** (the container `ExpoRoot` renders), not at module
+level and not read through the navigation ref. One constraint forces the cell shape: dispatch
+needs synchronous read-after-write. Two dispatches in the same tick must chain (the second reduces
+against the first's output, before any render), and under transitions the render lags arbitrarily
+— so the committed value cannot itself be `useState` (a `setState` is not readable in the same
+tick, and the rendered value is by design behind). The cell is therefore a `useRef`-style mutable
+field owned by the root's instance, with `dispatchRoot` as its single writer; the rendered
+`useState` tree is fed *from* it.
+
+On mount, the root **installs the cell into `global-state/store.ts`** (and uninstalls on unmount),
+so every imperative read — `store.state`, `getStateForHref`, relative-href resolution,
+`canGoBack`, action targeting — is a direct field read with no `navigationRef.getRootState()` hop.
+This resolves the review's blocker without giving up direct global reads: a fresh root mount means
+a fresh cell and a fresh install, so `renderRouter` gets defined reset semantics with exactly one
+writer (no render-time-reset vs commit-time-write race), and `getSeedState()` can never observe a
+previous test's final state. `NavigationIndependentTree`: every container owns its own cell (it
+lives on the instance), but only the app root installs into the global store — independent trees
+are out of scope for the global imperative API, which is already conceptually true
+(`router.push`/`usePathname` target *the* app router, not embedded containers).
 
 **Mixed-priority semantics (decided, must be tested).** Urgent and transition updates to the same
 `useState` are not independent: an urgent (native) dispatch that lands while a JS transition is
@@ -271,9 +281,11 @@ protect during a pending window?), URL/history sync, and focus-event timing.
 4. **Interruption + mixed priority.** Navigate-while-pending, back-while-pending, native-urgent
    during pending JS transition (the flush semantics decided in D1). Explicit test matrix in
    Step 7.
-5. **`NavigationIndependentTree` / nested containers** — tied to open decision (b). Rendered
-   React state is per-container either way; the committed-state decision determines whether
-   independent trees keep working with imperative reads.
+5. **`NavigationIndependentTree` / nested containers.** Rendered state and the committed cell are
+   both per-container instance (D1), so independent trees keep working; only the app root installs
+   its cell into the global store, so the global imperative API addresses the app router only.
+   Pin with the existing two-container test plus one asserting an independent tree neither reads
+   nor clobbers `store.state`.
 6. **SSR / static rendering / RSC.** uSES's `getServerSnapshot` gave defined SSR semantics and
    hydration-mismatch warnings; `useState(seed)` loses that detection — divergence becomes
    silent. Verify seed determinism explicitly (key minting, registration order under streaming
@@ -307,8 +319,7 @@ protect during a pending window?), URL/history sync, and focus-event timing.
 ## Steps
 
 Order: 1 → 2 → 3 (spike) → 4 → 5 (atomic core) → 6 → 7 → 8 → 9. Each step keeps the full suite
-green; Step 5 is the only one allowed to be atomic-across-one-commit. Step 2(a) is blocked on
-open decision (b); Step 2(b) and everything else can proceed regardless.
+green; Step 5 is the only one allowed to be atomic-across-one-commit.
 
 ### Step 1 — Delete the routing-queue machinery, keep a minimal pre-ready buffer (D2)
 Remove `useImperativeApiEmitter` and the uSES/effect drain. **Before deleting anything, sweep for
@@ -324,16 +335,17 @@ relative-href resolution timing pinned at call time; mount-window replay tests s
 Files: `global-state/routingQueue.ts` (mostly deleted), `global-state/router.ts`,
 `imperative-api.tsx`, `fork/NavigationContainer.tsx`.
 
-### Step 2 — Rendered tree into React state; committed-state ownership per decision (b) (D1)
-(a) **[blocked on decision (b)]** committed-state ownership lands per the decision: per-container
-(store.state stays a ref wrapper), or module-global with an explicit per-container
-install/uninstall lifecycle and defined reset semantics for `renderRouter`.
-(b) `BaseNavigationContainer` holds the rendered tree in `useState`; `dispatchRoot` writes the
-committed store, then `setRenderedState` (not yet transition-wrapped — behavior-neutral).
-`useSyncState` dissolves. uSES read sites still subscribe to the store, which still notifies, so
-nothing observable changes yet.
-Red: commit ordering, replay/mount-window behavior, `onStateChange` timing, `store.state`
-identical before/during/after mount, `renderRouter` isolation across sequential renders.
+### Step 2 — Root-owned committed cell + rendered tree into React state (D1)
+(a) the committed state becomes a mutable cell created by the root container instance, written
+only by `dispatchRoot`; the root installs it into `global-state/store.ts` on mount and uninstalls
+on unmount, so `store.state` and all imperative reads are direct field reads (no
+`navigationRef.getRootState()` hop, no seed→live handover: the cell is initialized from the seed);
+(b) `BaseNavigationContainer` holds the rendered tree in `useState`, fed from the cell by
+`dispatchRoot` (not yet transition-wrapped — behavior-neutral). `useSyncState` dissolves. uSES
+read sites still subscribe to the store, which still notifies, so nothing observable changes yet.
+Red: commit ordering (two same-tick dispatches chain against the cell), replay/mount-window
+behavior, `onStateChange` timing, `store.state` identical before/during/after mount,
+`renderRouter` isolation across sequential renders, independent-tree non-interference (risk 5).
 Files: `global-state/store.ts`, `react-navigation/core/BaseNavigationContainer.tsx`,
 `react-navigation/core/useSyncState.tsx` (deleted or absorbed).
 
@@ -426,7 +438,7 @@ caller `startTransition` composition and caller `isPending` (sync), async transi
 spike's verdict, the interruption + mixed-priority matrix (second navigation while pending; back
 while pending; native-urgent while pending — decided flush semantics), `beforeRemove`/protected
 routes during pending transitions, StrictMode (incl. mount-window replay under transitions),
-`NavigationIndependentTree` (per decision (b)), `testing-library` ergonomics (risks 8–9). Mostly
+`NavigationIndependentTree` (per risk 5), `testing-library` ergonomics (risks 8–9). Mostly
 tests; fix what they catch.
 
 ### Step 8 — Pending-state API: `useNavigationTransitionPending` + `useLinkStatus` (D3)
