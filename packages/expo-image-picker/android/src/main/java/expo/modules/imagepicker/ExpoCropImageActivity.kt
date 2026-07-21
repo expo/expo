@@ -1,6 +1,5 @@
 package expo.modules.imagepicker
 
-import android.content.Intent
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
@@ -333,7 +332,7 @@ class ExpoCropImageActivity :
 
   override fun onSetImageUriComplete(view: CropImageView, uri: Uri, error: Exception?) {
     if (error != null) {
-      setResult(null, error, 1)
+      setResultError()
       return
     }
     if (cropImageOptions.initialCropWindowRectangle != null) {
@@ -350,7 +349,11 @@ class ExpoCropImageActivity :
   }
 
   override fun onCropImageComplete(view: CropImageView, result: CropImageView.CropResult) {
-    setResult(result.uriContent, result.error, result.sampleSize)
+    if (result.error != null) {
+      setResultError()
+      return
+    }
+    setResultOK()
   }
   // endregion
 
@@ -411,7 +414,7 @@ class ExpoCropImageActivity :
   // region Crop Result
   private fun cropImage() {
     if (cropImageOptions.noOutputImage) {
-      setResult(null, null, 1)
+      setResultOK()
     } else {
       cropImageView?.croppedImageAsync(
         saveCompressFormat = cropImageOptions.outputCompressFormat,
@@ -429,26 +432,14 @@ class ExpoCropImageActivity :
     finish()
   }
 
-  private fun setResult(uri: Uri?, error: Exception?, sampleSize: Int) {
-    setResult(
-      error?.let { CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE } ?: RESULT_OK,
-      getResultIntent(uri, error, sampleSize)
-    )
+  private fun setResultError() {
+    setResult(CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE)
     finish()
   }
 
-  private fun getResultIntent(uri: Uri?, error: Exception?, sampleSize: Int): Intent {
-    val result = CropImage.ActivityResult(
-      originalUri = cropImageView?.imageUri,
-      uriContent = uri,
-      error = error,
-      cropPoints = cropImageView?.cropPoints,
-      cropRect = cropImageView?.cropRect,
-      rotation = cropImageView?.rotatedDegrees ?: 0,
-      wholeImageRect = cropImageView?.wholeImageRect,
-      sampleSize = sampleSize
-    )
-    return Intent().putExtra(CropImage.CROP_IMAGE_EXTRA_RESULT, result)
+  private fun setResultOK() {
+    setResult(RESULT_OK)
+    finish()
   }
   // endregion
 
