@@ -78,14 +78,18 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     let rootView: UIView
     if let factory = self.rootViewFactory as? ExpoReactRootViewFactory {
       // RCTDevMenuConfiguration is only available in react-native 0.83+
+      // bundleConfiguration is only accepted in react-native 0.84+
 #if os(iOS) || os(tvOS)
+      let bundleConfiguration = ExpoBundleConfiguration.configuration(
+        bundleURL: withBundleURL ?? configuration?.bundleURLBlock()
+      )
       // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
       rootView = factory.superView(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions ?? [:],
-        bundleConfiguration: RCTBundleConfiguration.default(),
+        bundleConfiguration: bundleConfiguration,
         devMenuConfiguration: self.devMenuConfiguration
       )
 #else
@@ -97,11 +101,14 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
 #endif
     } else {
 #if os(iOS) || os(tvOS)
+      let bundleConfiguration = ExpoBundleConfiguration.configuration(
+        bundleURL: withBundleURL ?? configuration?.bundleURLBlock()
+      )
       rootView = rootViewFactory.view(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions,
-        bundleConfiguration: RCTBundleConfiguration.default(),
+        bundleConfiguration: bundleConfiguration,
         devMenuConfiguration: self.devMenuConfiguration ?? RCTDevMenuConfiguration.default()
       )
 #else
