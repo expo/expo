@@ -78,7 +78,7 @@ The rest of the guide covers internal and external testing in more detail.
 
 ## Internal versus external testing
 
-Before you can publicly release your app on Apple App Store, you can distribute it to testers through TestFlight in two ways: **Internal testing** and **External testing**. The difference is how quickly your build reaches your testers:
+Before you can publicly release your app on the Apple App Store, you can distribute it to testers through TestFlight in two ways: **Internal testing** and **External testing**. The difference is how quickly your build reaches your testers:
 
 | Purpose                 | Internal testing                     | External testing                                                                       |
 | ----------------------- | ------------------------------------ | -------------------------------------------------------------------------------------- |
@@ -92,7 +92,7 @@ Before you can publicly release your app on Apple App Store, you can distribute 
 | Build expiry            | 90 days from upload                  | 90 days from upload                                                                    |
 | Devices per tester      | 30                                   | 30                                                                                     |
 
-> **warning** **Internal distribution is not internal testing**. Both of these terms sound identical. **EAS** [internal distribution](/build/internal-distribution/) produces an [ad hoc or enterprise-signed build](/build/internal-distribution/#overview-of-distribution-mechanisms), which are installed from a URL and are limited to registered unique device identifiers (UDIDs). TestFlight internal testing needs `"distribution": "store"` and goes through Apple.
+> **warning** **Internal distribution is not internal testing**. Both of these terms sound identical. **EAS** [internal distribution](/build/internal-distribution/) produces an [ad hoc or enterprise-signed build](/build/internal-distribution/#overview-of-distribution-mechanisms), which is installed from a URL and are limited to registered unique device identifiers (UDIDs). TestFlight internal testing needs `"distribution": "store"` and goes through Apple.
 
 ## Set up internal testing
 
@@ -154,6 +154,8 @@ Then, click the plus (`+`) icon next to **Testers** to add testers to the group.
 
 <Step label="4">
 
+### Invite testers
+
 On the tester's device, tap the link in the invitation email. The app will appear in TestFlight, from where the tester can install it.
 
 </Step>
@@ -181,9 +183,9 @@ In **App Store Connect** > **TestFlight** > click the plus (`+`) icon next to **
 
 <Step label="2">
 
-### Use a pre-existing internal build
+### Use an existing internal build
 
-You can use a pre-existing internal build for external testing. Click **Add Builds** > under **Select a Build to Test**, select the build you want to use > click **Next**.
+You can use an existing internal build for external testing. Click **Add Builds** > under **Select a Build to Test**, select the build you want to use > click **Next**.
 
 <ContentSpotlight
   alt="New external testing group showing the Add Builds and Invite Testers steps"
