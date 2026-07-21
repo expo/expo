@@ -8,7 +8,6 @@ import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
   type DefaultRouterOptions,
-  type EventMapBase,
   type NavigationAction,
   type NavigationState,
   type RouterFactory,
@@ -57,7 +56,7 @@ type StandardRouterNavigatorComponent<
       StandardRouterNavigatorProps<State, NavigatorOptions, EventMap, NavigatorProps, RouterOptions>
     >,
     State,
-    EventMap & EventMapBase
+    EventMap
   >
 >;
 
@@ -209,12 +208,11 @@ export function unstable_integrateWithRouter<
     );
   }
 
-  return withLayoutContext<
-    NavigatorOptions,
-    typeof StandardRouterNavigator,
-    State,
-    EventMap & EventMapBase
-  >(StandardRouterNavigator, undefined, options?.useOnlyUserDefinedScreens);
+  return withLayoutContext<NavigatorOptions, typeof StandardRouterNavigator, State, EventMap>(
+    StandardRouterNavigator,
+    undefined,
+    options?.useOnlyUserDefinedScreens
+  );
 }
 
 /**

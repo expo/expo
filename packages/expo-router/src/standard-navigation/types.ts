@@ -32,7 +32,7 @@ export type StandardUseNavigationBuilderOptions<
   string | undefined,
   State,
   NavigatorOptions,
-  EventMap & StandardNavigatorEventMapBase,
+  EventMap,
   // `useNavigationBuilder` itself types the screenListeners `navigation` argument as `any`.
   any
 >;
