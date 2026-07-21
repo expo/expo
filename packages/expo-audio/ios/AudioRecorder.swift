@@ -92,7 +92,10 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
     }
 
-    if let options {
+    // Fall back to the stored options so an argless prepare also creates a fresh
+    // recorder — and a fresh file URL — matching Android, where every prepare
+    // records to a new file.
+    if let options = options ?? currentOptions {
       let newRecorder: AVAudioRecorder
       do {
         newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
