@@ -48,6 +48,7 @@ public final class ScreenCaptureModule: Module {
 
     AsyncFunction("allowScreenCapture") {
       self.allowScreenshots()
+      self.blockView?.removeFromSuperview()
 
       NotificationCenter.default.removeObserver(
         self,
