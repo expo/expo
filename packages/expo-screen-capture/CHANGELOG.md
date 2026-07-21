@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed the screen-recording overlay staying attached (permanent black screen) after `allowScreenCaptureAsync` is called while a recording is active. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@bluespore](https://github.com/bluespore))
+- [iOS] Fixed the screen-recording overlay staying attached (permanent black screen) after `allowScreenCaptureAsync` is called while a recording is active. ([#48000](https://github.com/expo/expo/pull/48000) by [@bluespore](https://github.com/bluespore))
 
 ### 💡 Others
 
