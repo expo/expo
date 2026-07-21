@@ -38,7 +38,6 @@ import type {
 } from './types';
 import { useChildListeners } from './useChildListeners';
 import { useEventEmitter } from './useEventEmitter';
-import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useNavigationIndependentTree } from './useNavigationIndependentTree';
 import { useOptionsGetters } from './useOptionsGetters';
 import { useSyncState } from './useSyncState';
@@ -100,8 +99,6 @@ export function BaseNavigationContainer({
   }, []);
 
   const { listeners, addListener } = useChildListeners();
-
-  const { addKeyedListener } = useKeyedChildListeners();
 
   const emitter = useEventEmitter<NavigationContainerEventMap>();
 
@@ -180,7 +177,6 @@ export function BaseNavigationContainer({
       options: {
         originKey?: string;
         suppressUnhandled?: boolean;
-        skipBeforeRemove?: boolean;
         isReplay?: boolean;
       } = {}
     ) => {
@@ -224,22 +220,10 @@ export function BaseNavigationContainer({
 
       onDispatchAction(action, result.noop);
 
+      // TODO(prevent-remove): a per-navigator `shouldPreventRemove` gate ran here before committing,
+      // and could veto the reduced state. Reintroduce it on the reducer model when navigation
+      // prevention returns.
       if (!result.noop) {
-        const isPrevented = result.changedSlices
-          .slice()
-          .sort((a, b) => {
-            return getStateDepth(result.state, b.key) - getStateDepth(result.state, a.key);
-          })
-          .some(
-            (slice) =>
-              !options.skipBeforeRemove &&
-              slice.entry.shouldPreventRemove?.(slice.previousState, slice.nextState, action)
-          );
-
-        if (isPrevented) {
-          return true;
-        }
-
         setState(result.state);
       }
 
@@ -417,7 +401,6 @@ export function BaseNavigationContainer({
   const builderContext = React.useMemo(
     () => ({
       addListener,
-      addKeyedListener,
       dispatchRoot,
       onDispatchAction,
       onOptionsChange,
@@ -425,15 +408,7 @@ export function BaseNavigationContainer({
       flushUpdates,
       stackRef,
     }),
-    [
-      addListener,
-      addKeyedListener,
-      dispatchRoot,
-      onDispatchAction,
-      onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
-    ]
+    [addListener, dispatchRoot, onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates]
   );
 
   const isInitialRef = React.useRef(true);
@@ -596,24 +571,4 @@ function getDeepestFocusedRegisteredKey(
   }
 
   return key;
-}
-
-function getStateDepth(state: NavigationState, key: string, depth = 0): number {
-  if (state.key === key) {
-    return depth;
-  }
-
-  for (const route of state.routes) {
-    const childState = route.state;
-
-    if (childState != null && childState.stale === false) {
-      const childDepth = getStateDepth(childState as NavigationState, key, depth + 1);
-
-      if (childDepth !== -1) {
-        return childDepth;
-      }
-    }
-  }
-
-  return -1;
 }

@@ -16,11 +16,8 @@ export type NavigationReducer = (
 
 export type NavigatorRegistryEntry = {
   reduce: NavigationReducer;
-  shouldPreventRemove?: (
-    currentState: NavigationState,
-    nextState: NavigationState,
-    action: NavigationAction
-  ) => boolean;
+  // TODO(prevent-remove): a per-navigator `shouldPreventRemove` predicate lived here and was
+  // consulted at dispatch time before committing. Reintroduce with the redesigned feature.
   onUnhandledAction?: (action: NavigationAction) => void;
   // Last NAVIGATE/RESET target this navigator couldn't handle (its routes weren't yet valid), held
   // for `UNSTABLE_routeNamesChangeBehavior: 'lastUnhandled'` to restore once the route names change

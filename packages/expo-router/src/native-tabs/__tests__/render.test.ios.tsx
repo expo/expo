@@ -7,7 +7,6 @@ import { usePathname } from '../../hooks';
 import { router } from '../../imperative-api';
 import { Stack } from '../../layouts/Stack';
 import { Redirect } from '../../link/Redirect';
-import { usePreventRemove } from '../../react-navigation/core';
 import { act, fireEvent, renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
 import { NativeTabsView } from '../NativeTabsView';
@@ -941,28 +940,6 @@ describe('Native props validation', () => {
 });
 
 describe('Misc', () => {
-  it('usePreventRemove can be used inside the stack nested in tabs', () => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs>
-          <NativeTabs.Trigger name="index" />
-          <NativeTabs.Trigger name="stack" />
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
-      'stack/_layout': () => {
-        return <Stack />;
-      },
-      'stack/index': function InnerIndex() {
-        usePreventRemove(true, () => {});
-        return <View testID="stack-index" />;
-      },
-    });
-
-    router.navigate('/stack');
-    expect(screen.getByTestId('stack-index')).toBeVisible();
-  });
-
   it('passes the bottom accessory to NativeTabsView', () => {
     const BottomAccessoryContent = jest.fn(() => <View testID="bottom-accessory" />);
     renderRouter({

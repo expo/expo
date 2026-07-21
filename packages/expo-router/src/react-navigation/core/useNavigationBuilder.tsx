@@ -29,7 +29,6 @@ import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
-import { PreventRemoveProvider } from './PreventRemoveProvider';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
@@ -53,11 +52,9 @@ import { useEventEmitter } from './useEventEmitter';
 import { useFocusEvents } from './useFocusEvents';
 import { useFocusedListenersChildrenAdapter } from './useFocusedListenersChildrenAdapter';
 import { FocusedRouteKeyContext } from './useIsFocused';
-import { useKeyedChildListeners } from './useKeyedChildListeners';
 import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigationStateListenerProvider } from './useNavigationState';
-import { shouldPreventRemove, useOnPreventRemove } from './useOnPreventRemove';
 import { useRegisterNavigator } from './useRegisterNavigator';
 import { getCachedSlice, useStoreSlice } from './useStoreSlice';
 
@@ -562,8 +559,6 @@ export function useNavigationBuilder<
 
   const { listeners: childListeners, addListener } = useChildListeners();
 
-  const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
-
   const routerConfigOptions: RouterConfigOptions = {
     routeNames,
     parentRouteKey,
@@ -648,24 +643,18 @@ export function useNavigationBuilder<
       ) as ReturnType<NavigationReducer>,
     [router]
   );
+  // TODO(prevent-remove): re-add a per-navigator `shouldPreventRemove` here when navigation
+  // prevention is redesigned on the reducer model.
   const registryEntry = React.useMemo<NavigatorRegistryEntry>(
     () => ({
       reduce: registryReducer,
-      shouldPreventRemove: (currentState, nextState, action) =>
-        shouldPreventRemove(
-          emitter,
-          keyedListeners.beforeRemove,
-          currentState.routes,
-          nextState.routes,
-          action
-        ),
       onUnhandledAction,
       // Carry a captured `unhandledState` across entry re-creation so a pending `lastUnhandled`
       // restore survives an unrelated dep change between capture and the route-names change.
       unhandledState: reducerRegistry?.getEntry(state.key)?.unhandledState,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [emitter, keyedListeners.beforeRemove, onUnhandledAction, registryReducer, router]
+    [onUnhandledAction, registryReducer, router]
   );
   const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
 
@@ -698,7 +687,6 @@ export function useNavigationBuilder<
       },
       {
         originKey: reconciliationState.key,
-        skipBeforeRemove: true,
         suppressUnhandled: true,
       }
     );
@@ -713,12 +701,6 @@ export function useNavigationBuilder<
         }
       }
     }
-  });
-
-  useOnPreventRemove({
-    getState,
-    emitter,
-    beforeRemoveListeners: keyedListeners.beforeRemove,
   });
 
   const onAction = useLatestCallback((action: NavigationAction) => {
@@ -756,7 +738,6 @@ export function useNavigationBuilder<
     onAction,
     getState,
     addListener,
-    addKeyedListener,
     router,
     // @ts-expect-error: this should have both core and custom events, but too much work right now
     emitter,
@@ -783,8 +764,9 @@ export function useNavigationBuilder<
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
           <NavigationStateListenerProvider state={state}>
+            {/* TODO(prevent-remove): a navigation-prevention provider wrapped `element` here. */}
             <FocusedRouteKeyContext.Provider value={state.routes[state.index]!.key}>
-              <PreventRemoveProvider>{element}</PreventRemoveProvider>
+              {element}
             </FocusedRouteKeyContext.Provider>
           </NavigationStateListenerProvider>
         </NavigationHelpersContext.Provider>

@@ -9,11 +9,7 @@ import type {
   PartialState,
   Router,
 } from '../routers';
-import {
-  type AddKeyedListener,
-  type AddListener,
-  NavigationBuilderContext,
-} from './NavigationBuilderContext';
+import { type AddListener, NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationProvider } from './NavigationProvider';
 import { SceneView } from './SceneView';
 import { ThemeContext } from './theming/ThemeContext';
@@ -73,7 +69,6 @@ type Options<
   onAction: (action: NavigationAction) => boolean;
   getState: () => State;
   addListener: AddListener;
-  addKeyedListener: AddKeyedListener;
   router: Router<State, NavigationAction>;
   emitter: NavigationEventEmitter<EventMap>;
 };
@@ -101,7 +96,6 @@ export function useDescriptors<
   onAction,
   getState,
   addListener,
-  addKeyedListener,
   router,
   emitter,
 }: Options<State, ScreenOptions, EventMap>) {
@@ -121,7 +115,6 @@ export function useDescriptors<
       navigation,
       onAction,
       addListener,
-      addKeyedListener,
       dispatchRoot,
       onDispatchAction,
       onOptionsChange,
@@ -133,7 +126,6 @@ export function useDescriptors<
       navigation,
       onAction,
       addListener,
-      addKeyedListener,
       dispatchRoot,
       onDispatchAction,
       onOptionsChange,

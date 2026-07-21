@@ -107,8 +107,7 @@ export function useNavigationHelpers<
 
         // Mirror of `canGoBack`, but simulating the `POP` that `dismiss()` dispatches. Only a
         // StackRouter handles POP; tab/drawer routers fall through to `null`, so we walk up to a
-        // poppable ancestor stack (if any). Like `canGoBack`, this does not account for
-        // `usePreventRemove`/`beforeRemove` guards that can block the actual pop.
+        // poppable ancestor stack (if any).
         return (
           router.getStateForAction(state, StackActions.pop(1) as Action, {
             routeNames: state.routeNames,

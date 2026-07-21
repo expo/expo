@@ -93,13 +93,8 @@ describe('Screen', () => {
       index: () => <View />,
     });
 
-    expect(headerTitle).toHaveBeenCalledTimes(2);
+    expect(headerTitle).toHaveBeenCalledTimes(1);
     expect(headerTitle.mock.calls[0]![0]).toEqual(
-      expect.objectContaining({
-        children: 'Test Title',
-      })
-    );
-    expect(headerTitle.mock.calls[1]![0]).toEqual(
       expect.objectContaining({
         children: 'Test Title',
       })

@@ -24,7 +24,6 @@ import {
   type ParamListBase,
   StackActions,
   type StackNavigationState,
-  usePreventRemoveContext,
   useTheme,
 } from '../../native';
 import type {
@@ -36,7 +35,6 @@ import { debounce } from '../utils/debounce';
 import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 import { useDismissedRouteError } from '../utils/useDismissedRouteError';
-import { useInvalidPreventRemoveError } from '../utils/useInvalidPreventRemoveError';
 import { useHeaderConfigProps } from './useHeaderConfigProps';
 
 const ANDROID_DEFAULT_HEADER_HEIGHT = 56;
@@ -197,8 +195,6 @@ const SceneView = ({
     })
   );
 
-  const { preventedRoutes } = usePreventRemoveContext();
-
   const [headerHeight, setHeaderHeight] = React.useState(defaultHeaderHeight);
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -257,13 +253,12 @@ const SceneView = ({
     return undefined;
   }, [canGoBack, backTitle]);
 
-  const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
-
+  // TODO(prevent-remove): a prevented route forced `headerBackButtonMenuEnabled` off (so the
+  // long-press back menu couldn't route around the guard). Restore that override with the feature.
   const headerConfig = useHeaderConfigProps({
     ...options,
     route,
-    headerBackButtonMenuEnabled:
-      isRemovePrevented !== undefined ? !isRemovePrevented : headerBackButtonMenuEnabled,
+    headerBackButtonMenuEnabled,
     headerBackTitle: options.headerBackTitle !== undefined ? options.headerBackTitle : undefined,
     headerHeight,
     headerShown: header !== undefined ? false : headerShown,
@@ -384,7 +379,8 @@ const SceneView = ({
         gestureResponseDistance={gestureResponseDistance}
         nativeBackButtonDismissalEnabled={false} // on Android
         onHeaderBackButtonClicked={onHeaderBackButtonClicked}
-        preventNativeDismiss={isRemovePrevented} // on iOS
+        // TODO(prevent-remove): a prevented route set `preventNativeDismiss` here to block the iOS
+        // swipe-back / interactive dismiss. Restore when navigation prevention returns.
         scrollEdgeEffects={{
           bottom: scrollEdgeEffects?.bottom ?? 'automatic',
           top: scrollEdgeEffects?.top ?? 'automatic',
@@ -461,7 +457,8 @@ export function NativeStackView({ state, navigation, descriptors }: Props) {
   const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
-  useInvalidPreventRemoveError(descriptors);
+  // TODO(prevent-remove): `useInvalidPreventRemoveError(descriptors)` warned when a prevented route
+  // also set `headerBackButtonMenuEnabled`. Restore the diagnostic with the feature.
 
   const modalRouteKeys = getModalRouteKeys(state.routes, descriptors);
 

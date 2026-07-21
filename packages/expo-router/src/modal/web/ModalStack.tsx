@@ -15,7 +15,6 @@ import {
   StackActions,
   StackRouter,
   useNavigationBuilder,
-  usePreventRemoveContext,
   useTheme,
 } from '../../react-navigation/native';
 import type {
@@ -81,7 +80,6 @@ function ModalStackNavigator({
 const ModalStackView = ({ state, navigation, descriptors }: ModalStackViewProps) => {
   const isWeb = process.env.EXPO_OS === 'web';
   const { colors } = useTheme();
-  const { preventedRoutes } = usePreventRemoveContext();
 
   const { routes: filteredRoutes, index: nonModalIndex } = convertStackStateToNonModalState(
     state,
@@ -114,20 +112,19 @@ const ModalStackView = ({ state, navigation, descriptors }: ModalStackViewProps)
             descriptors[route.key]!.options
           );
 
-          const isRemovePrevented = preventedRoutes[route.key]?.preventRemove;
-
           const ModalComponent = isTransparentModal
             ? TransparentModalStackRouteDrawer
             : ModalStackRouteDrawer;
 
           return (
+            // TODO(prevent-remove): a prevented route passed `dismissible={false}` here to block the
+            // gesture/overlay dismiss of a web modal with unsaved state. Restore with the feature.
             <ModalComponent
               key={route.key}
               routeKey={route.key}
               options={descriptors[route.key]!.options as ExtendedStackNavigationOptions}
               renderScreen={descriptors[route.key]!.render}
               onDismiss={dismiss}
-              dismissible={isRemovePrevented ? false : undefined}
               themeColors={colors}
             />
           );

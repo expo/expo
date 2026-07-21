@@ -276,27 +276,6 @@ describe(rootReducer, () => {
     expect(result.state.routes[0]!.state).toBe(nextChildState);
   });
 
-  it('returns ordered changed slices for centralized beforeRemove checks', () => {
-    const registry = createReducerRegistry();
-    const action: NavigationAction = { type: 'JUMP_TO', target: 'home-state' };
-    const childState = rootState.routes[0]!.state as NavigationState;
-    const nextChildState = { ...childState, index: 1 };
-    const entry = { reduce: jest.fn(() => nextChildState) };
-
-    registry.addEntry('home-state', entry);
-
-    const result = rootReducer(rootState, action, registry);
-
-    expect(result.changedSlices).toEqual([
-      {
-        key: 'home-state',
-        previousState: childState,
-        nextState: nextChildState,
-        entry,
-      },
-    ]);
-  });
-
   it('returns the original tree for unhandled actions', () => {
     const registry = registerNullReducers();
     const action: NavigationAction = { type: 'UNKNOWN' };

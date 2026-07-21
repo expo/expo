@@ -7,7 +7,7 @@ import {
   type NavigationState,
   type PartialState,
 } from '../react-navigation/routers';
-import type { NavigatorRegistryEntry, ReducerRegistry } from './storeContext';
+import type { ReducerRegistry } from './storeContext';
 
 type PayloadState = NavigationState | PartialState<NavigationState>;
 
@@ -15,7 +15,9 @@ export type RootReducerResult = {
   state: NavigationState;
   handled: boolean;
   noop: boolean;
-  changedSlices: RootReducerChangedSlice[];
+  // TODO(prevent-remove): this result used to carry a `changedSlices` side-channel (the per-slice
+  // before/after states `focusAncestors` also fed) that the dispatch-time prevent-remove gate
+  // consumed. Reintroduce it (or an equivalent) when navigation prevention returns.
   // Set only when a NAVIGATE/RESET carried a nested `screen`/`state` intent that could not be
   // applied in this pass: `deferred` when the destination child navigator is not yet committed and
   // registered (the container replays it after bootstrap), `rejected` when a registered child
@@ -42,13 +44,6 @@ export type RootReducerNestedBoundary =
       action: NavigationAction;
     };
 
-export type RootReducerChangedSlice = {
-  key: string;
-  previousState: NavigationState;
-  nextState: NavigationState;
-  entry: NavigatorRegistryEntry;
-};
-
 type PathEntry = {
   state: NavigationState;
   routeIndex?: number;
@@ -64,7 +59,7 @@ export function rootReducer(
   const path = findStatePath(tree, target);
 
   if (path == null) {
-    return { state: tree, handled: false, noop: true, changedSlices: [] };
+    return { state: tree, handled: false, noop: true };
   }
 
   let currentTree = tree;
@@ -72,7 +67,6 @@ export function rootReducer(
   let pathIndex = currentPath.length - 1;
   let handled = false;
   let changed = false;
-  const changedSlices: RootReducerChangedSlice[] = [];
   const reducedKeys = new Set<string>();
   let currentAction = action;
   let nestedBoundary: RootReducerNestedBoundary | undefined;
@@ -85,16 +79,16 @@ export function rootReducer(
 
     if (reducedKeys.has(state.key)) {
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
-        : { state: tree, handled: false, noop: true, changedSlices };
+        ? { state: currentTree, handled: true, noop: !changed, nestedBoundary }
+        : { state: tree, handled: false, noop: true };
     }
 
     const entry = registry.getEntry(state.key);
 
     if (entry == null) {
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
-        : { state: tree, handled: false, noop: true, changedSlices };
+        ? { state: currentTree, handled: true, noop: !changed, nestedBoundary }
+        : { state: tree, handled: false, noop: true };
     }
 
     let reduced = entry.reduce(state, currentAction);
@@ -126,7 +120,7 @@ export function rootReducer(
       }
 
       if (currentAction.target === state.key) {
-        return { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary };
+        return { state: currentTree, handled: true, noop: !changed, nestedBoundary };
       }
 
       if (currentAction.target == null) {
@@ -135,8 +129,8 @@ export function rootReducer(
       }
 
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
-        : { state: tree, handled: false, noop: true, changedSlices };
+        ? { state: currentTree, handled: true, noop: !changed, nestedBoundary }
+        : { state: tree, handled: false, noop: true };
     }
 
     reducedKeys.add(state.key);
@@ -153,12 +147,6 @@ export function rootReducer(
           );
     if (nextState !== state) {
       changed = true;
-      changedSlices.push({
-        key: state.key,
-        previousState: state,
-        nextState,
-        entry,
-      });
     }
     currentTree = replacePathState(currentTree, currentPath.slice(0, pathIndex + 1), nextState);
 
@@ -166,15 +154,14 @@ export function rootReducer(
       const focusResult = focusAncestors(
         currentTree,
         currentPath.slice(0, pathIndex + 1),
-        registry,
-        changedSlices
+        registry
       );
       currentTree = focusResult.state;
       changed ||= focusResult.changed;
     }
 
     if (currentAction.type === 'GO_BACK') {
-      return { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary };
+      return { state: currentTree, handled: true, noop: !changed, nestedBoundary };
     }
 
     const focusedRoute = nextState.routes[nextState.index];
@@ -196,11 +183,11 @@ export function rootReducer(
         };
       }
 
-      return { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary };
+      return { state: currentTree, handled: true, noop: !changed, nestedBoundary };
     }
 
     if (nestedAction == null && reducedKeys.has(childState.key)) {
-      return { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary };
+      return { state: currentTree, handled: true, noop: !changed, nestedBoundary };
     }
 
     if (nestedAction != null) {
@@ -212,8 +199,8 @@ export function rootReducer(
   }
 
   return handled
-    ? { state: currentTree, handled: true, noop: !changed, changedSlices, nestedBoundary }
-    : { state: tree, handled: false, noop: true, changedSlices };
+    ? { state: currentTree, handled: true, noop: !changed, nestedBoundary }
+    : { state: tree, handled: false, noop: true };
 }
 
 function completeNavigationState(state: NavigationState): NavigationState {
@@ -280,8 +267,7 @@ function replacePathState(
 function focusAncestors(
   tree: NavigationState,
   path: PathEntry[],
-  registry: ReducerRegistry,
-  changedSlices: RootReducerChangedSlice[]
+  registry: ReducerRegistry
 ): { state: NavigationState; changed: boolean } {
   let nextTree = tree;
   let changed = false;
@@ -315,12 +301,6 @@ function focusAncestors(
     }
 
     changed = true;
-    changedSlices.push({
-      key: parentState.key,
-      previousState: parentState,
-      nextState: focusedState,
-      entry: parentEntry,
-    });
     nextTree = replacePathState(nextTree, parentPath, focusedState);
   }
 

@@ -51,8 +51,9 @@ export { NavigationProvider } from './NavigationProvider';
  * @deprecated Will be removed in a future SDK.
  */
 export { NavigationRouteContext } from './NavigationProvider';
-export { PreventRemoveContext } from './PreventRemoveContext';
-export { PreventRemoveProvider } from './PreventRemoveProvider';
+// TODO(prevent-remove): re-export the navigation-prevention surface once redesigned on the reducer
+// model. `PreventRemoveContext`/`PreventRemoveProvider`/`usePreventRemove`/`usePreventRemoveContext`
+// were removed with the prevent-remove feature.
 export {
   /**
    * @deprecated Expo Router builds components from the file-based route tree. Will be removed in a future SDK.
@@ -120,8 +121,6 @@ export { useNavigationBuilder } from './useNavigationBuilder';
 export { useNavigationContainerRef } from './useNavigationContainerRef';
 export { useNavigationIndependentTree } from './useNavigationIndependentTree';
 export { useNavigationState } from './useNavigationState';
-export { usePreventRemove } from './usePreventRemove';
-export { usePreventRemoveContext } from './usePreventRemoveContext';
 /**
  * @deprecated Import `useRoute` from `expo-router` instead. Will be removed in a future SDK.
  */

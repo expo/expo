@@ -6,21 +6,12 @@ import {
   type NavigationState,
   type ParamListBase,
   type Router,
-  StackActions,
-  StackRouter,
 } from '../../routers';
-import { getRouteKey, getStateKey } from '../../routers/getRouteKey';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
-
-// Deterministic structural keys for the root stack (`foo`/`bar`/`baz`).
-const rootKey = getStateKey(undefined);
-const fooKey = getRouteKey({ stateKey: rootKey, name: 'foo' });
-const barKey = getRouteKey({ stateKey: rootKey, name: 'bar' });
-const bazKey = getRouteKey({ stateKey: rootKey, name: 'baz' });
 
 jest.mock('nanoid/non-secure', () => {
   const m = { nanoid: () => String(++m.__key), __key: 0 };
@@ -715,143 +706,4 @@ test('logs error if no navigator handled the action', () => {
   );
 
   spy.mockRestore();
-});
-
-test("prevents removing a screen with 'beforeRemove' event", () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const onBeforeRemove = jest.fn();
-
-  let shouldPrevent = true;
-  let shouldContinue = false;
-
-  const TestScreen = (props: any) => {
-    React.useEffect(
-      () =>
-        props.navigation.addListener('beforeRemove', (e: any) => {
-          onBeforeRemove();
-
-          if (shouldPrevent) {
-            e.preventDefault();
-
-            if (shouldContinue) {
-              props.navigation.dispatch(e.data.action);
-            }
-          }
-        }),
-      [props.navigation]
-    );
-
-    return null;
-  };
-
-  const onStateChange = jest.fn();
-
-  const ref = createNavigationContainerRef<ParamListBase>();
-
-  const element = (
-    <BaseNavigationContainer
-      ref={ref}
-      initialState={{
-        stale: false as const,
-        index: 0,
-        key: rootKey,
-        routeNames: ['foo', 'bar', 'baz'],
-        routes: [{ key: fooKey, name: 'foo' }],
-      }}
-      onStateChange={onStateChange}>
-      <TestNavigator>
-        <Screen name="foo">{() => null}</Screen>
-        <Screen name="bar" component={TestScreen} />
-        <Screen name="baz">{() => null}</Screen>
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  render(element);
-
-  act(() => ref.current?.navigate('bar'));
-
-  expect(onStateChange).toHaveBeenCalledTimes(1);
-  expect(onStateChange).toHaveBeenCalledWith({
-    index: 1,
-    key: rootKey,
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: fooKey, name: 'foo' },
-      { key: barKey, name: 'bar' },
-    ],
-    stale: false,
-  });
-
-  act(() => ref.current?.navigate('baz'));
-
-  expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onStateChange).toHaveBeenCalledWith({
-    index: 2,
-    key: rootKey,
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: fooKey, name: 'foo' },
-      { key: barKey, name: 'bar' },
-      {
-        key: bazKey,
-        name: 'baz',
-      },
-    ],
-    stale: false,
-  });
-
-  act(() => ref.current?.dispatch(StackActions.popTo('foo')));
-
-  expect(onStateChange).toHaveBeenCalledTimes(2);
-  expect(onBeforeRemove).toHaveBeenCalledTimes(1);
-
-  expect(ref.current?.getRootState()).toEqual({
-    index: 2,
-    key: rootKey,
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      { key: fooKey, name: 'foo' },
-      { key: barKey, name: 'bar' },
-      { key: bazKey, name: 'baz' },
-    ],
-    stale: false,
-  });
-
-  shouldPrevent = false;
-
-  act(() => ref.current?.dispatch(StackActions.popTo('foo')));
-
-  expect(onStateChange).toHaveBeenCalledTimes(3);
-  expect(onStateChange).toHaveBeenCalledWith({
-    index: 0,
-    key: rootKey,
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: fooKey, name: 'foo' }],
-    stale: false,
-  });
-
-  shouldPrevent = true;
-  shouldContinue = true;
-
-  act(() => ref.current?.navigate('bar'));
-  act(() => ref.current?.navigate('foo'));
-
-  expect(onStateChange).toHaveBeenCalledTimes(5);
-  expect(onStateChange).toHaveBeenCalledWith({
-    index: 0,
-    key: rootKey,
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: fooKey, name: 'foo' }],
-    stale: false,
-  });
 });

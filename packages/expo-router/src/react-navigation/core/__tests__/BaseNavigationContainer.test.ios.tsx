@@ -181,7 +181,6 @@ test('container dispatch runs the root reducer once and commits the returned roo
     },
     handled: true,
     noop: false,
-    changedSlices: [],
   }));
 
   MockRouterKey.current = 1;
@@ -247,7 +246,6 @@ test('navigator dispatch passes local state to thunks and root reducer originKey
     state,
     handled: true,
     noop: true,
-    changedSlices: [],
   }));
 
   MockRouterKey.current = 2;

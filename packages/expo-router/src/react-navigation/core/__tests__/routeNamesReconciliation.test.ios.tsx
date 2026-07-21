@@ -14,7 +14,6 @@ import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { usePreventRemove } from '../usePreventRemove';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 let isBuildingNavigator = false;
@@ -173,51 +172,6 @@ test('restores lastUnhandled route names outside useNavigationBuilder render', (
     })
   );
   expect(root).toMatchInlineSnapshot(`"[qux]"`);
-});
-
-test('route-name reconciliation bypasses beforeRemove prevention', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-  const onPreventRemove = jest.fn();
-
-  function PreventedScreen() {
-    usePreventRemove(true, onPreventRemove);
-
-    return null;
-  }
-
-  const root = render(
-    <BaseNavigationContainer
-      ref={ref}
-      initialState={{
-        stale: false as const,
-        index: 0,
-        key: '@',
-        routeNames: ['first', 'second'],
-        routes: [{ key: '@:first:0', name: 'first' }],
-      }}>
-      <StackNavigator>
-        <Screen name="first">{() => null}</Screen>
-        <Screen name="second" component={PreventedScreen} />
-      </StackNavigator>
-    </BaseNavigationContainer>
-  );
-
-  act(() => ref.current?.navigate('second'));
-
-  act(() => {
-    root.update(
-      <BaseNavigationContainer ref={ref}>
-        <StackNavigator>
-          <Screen name="first">{() => null}</Screen>
-        </StackNavigator>
-      </BaseNavigationContainer>
-    );
-  });
-
-  expect(onPreventRemove).not.toHaveBeenCalled();
-  expect(ref.current?.getRootState()?.routes).toEqual([
-    expect.objectContaining({ name: 'first' }),
-  ]);
 });
 
 test('reconciles route key changes for an unchanged route name', () => {

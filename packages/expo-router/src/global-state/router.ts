@@ -215,9 +215,6 @@ export type ImperativeRouter = {
   /**
    * Checks if it is possible to dismiss the current screen — that is, whether the [`dismiss`](#dismiss)
    * `POP` would be handled by a stack on the focused path with more than one screen in its history.
-   *
-   * > **Note**: Like `canGoBack`, this does not account for `usePreventRemove`/`beforeRemove`
-   * > guards that can block the actual dismissal.
    */
   canDismiss: () => boolean;
   /**

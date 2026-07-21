@@ -7,7 +7,6 @@ import {
   type ParamListBase,
   StackActions,
   type StackNavigationState,
-  usePreventRemoveContext,
 } from '../../react-navigation/native';
 import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
@@ -32,7 +31,6 @@ type Props = {
 
 export function ExperimentalStackView({ state, navigation, descriptors }: Props) {
   const { setNextDismissedKey } = useDismissedRouteError(state);
-  const { preventedRoutes } = usePreventRemoveContext();
 
   return (
     <View style={styles.container}>
@@ -49,7 +47,8 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
               descriptor={descriptor}
               options={options}
               isPreloaded={isPreloaded}
-              preventNativeDismiss={preventedRoutes[route.key]?.preventRemove ?? false}
+              // TODO(prevent-remove): a prevented route set `preventNativeDismiss` here to block the
+              // native swipe-to-dismiss. Restore when navigation prevention returns.
               onWillAppear={() => {
                 navigation.emit({
                   type: 'transitionStart',
@@ -80,8 +79,7 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
               }}
               onNativeDismiss={() => {
                 // Native dismissal (e.g. swipe-to-dismiss). JS state still has the route —
-                // catch up by dispatching pop and arming useDismissedRouteError so a stuck
-                // beforeRemove listener surfaces an actionable console.error.
+                // catch up by dispatching pop and arming useDismissedRouteError.
                 navigation.dispatch({
                   ...StackActions.pop(),
                   source: route.key,
@@ -109,7 +107,6 @@ type ScreenViewProps = {
   descriptor: ExperimentalStackDescriptor;
   options: ExperimentalStackNavigationOptions;
   isPreloaded: boolean;
-  preventNativeDismiss: boolean;
   onWillAppear: () => void;
   onWillDisappear: () => void;
   onDidAppear: () => void;
@@ -118,14 +115,7 @@ type ScreenViewProps = {
   onNativeDismissPrevented: () => void;
 };
 
-function ScreenView({
-  routeKey,
-  descriptor,
-  options,
-  isPreloaded,
-  preventNativeDismiss,
-  ...lifecycle
-}: ScreenViewProps) {
+function ScreenView({ routeKey, descriptor, options, isPreloaded, ...lifecycle }: ScreenViewProps) {
   useUnsupportedOptionsWarning(options, descriptor.route.name);
 
   const headerConfigProps = {
@@ -140,7 +130,6 @@ function ScreenView({
     <ScreensStackV5.Screen
       activityMode={isPreloaded ? 'detached' : 'attached'}
       screenKey={routeKey}
-      preventNativeDismiss={preventNativeDismiss}
       {...lifecycle}>
       <View style={styles.scene}>{descriptor.render()}</View>
       <ScreensStackV5.HeaderConfig {...headerConfigProps} />

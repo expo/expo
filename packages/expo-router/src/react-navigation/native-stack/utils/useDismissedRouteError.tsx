@@ -12,10 +12,11 @@ export function useDismissedRouteError(state: StackNavigationState<ParamListBase
 
   React.useEffect(() => {
     if (dismissedRouteName) {
+      // TODO(prevent-remove): this used to also point at `beforeRemove`/`usePreventRemove` as a
+      // cause; restore that guidance if navigation prevention returns.
       const message =
         `The screen '${dismissedRouteName}' was removed natively but didn't get removed from JS state. ` +
-        `This can happen if the action was prevented in a 'beforeRemove' listener, which is not fully supported in native-stack.\n\n` +
-        `Consider using a 'usePreventRemove' hook with 'headerBackButtonMenuEnabled: false' to prevent users from natively going back multiple screens.`;
+        `This usually means a native dismissal wasn't reflected back into the router's navigation state.`;
 
       console.error(message);
     }

@@ -1,7 +1,5 @@
 import { useRouter } from 'expo-router';
-import { usePreventRemove } from 'expo-router/react-navigation';
-import { useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 const styles = StyleSheet.create({
   button: {
@@ -17,11 +15,7 @@ const styles = StyleSheet.create({
 });
 
 export default function Page() {
-  const [isPrevented, setIsPrevented] = useState(false);
   const router = useRouter();
-  usePreventRemove(isPrevented, () => {
-    Alert.alert('Prevented!', 'You cannot dismiss this modal right now.');
-  });
   return (
     <View style={{ flex: 1, padding: 60, backgroundColor: 'rgba(255, 0, 0, 0.3)' }}>
       <Text style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 16 }}>Transparent Modal</Text>
@@ -44,12 +38,6 @@ export default function Page() {
           router.dismissAll();
         }}>
         <Text style={styles.button}>Dismiss all</Text>
-      </Pressable>
-      <Pressable
-        onPress={() => {
-          setIsPrevented((p) => !p);
-        }}>
-        <Text style={styles.button}>{isPrevented ? 'Disable' : 'Enable'} preventRemove</Text>
       </Pressable>
     </View>
   );

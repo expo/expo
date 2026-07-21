@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Remove the prevent-remove navigation-prevention feature. `usePreventRemove`, `usePreventRemoveContext`, `PreventRemoveProvider`, and `PreventRemoveContext` are no longer exported from the `expo-router/react-navigation` subpath, and screens can no longer block removal. As a result: screens can no longer block a native swipe-back / interactive dismiss; web modals with unsaved state become gesture-dismissible; the header back-button long-press menu can no longer be disabled for guarded routes; and the `headerBackButtonMenuEnabled`-conflict diagnostic is gone. Navigation prevention is planned to return, redesigned on the global-state reducer model. ([#00000](https://github.com/expo/expo/pull/00000) by [@Ubax](https://github.com/Ubax))
 - Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
 - Remove `backBehavior="fullHistory"` support from tab navigators. It now warns in development and falls back to `history`, which is the closest supported behavior in the global navigation state model. ([#47285](https://github.com/expo/expo/pull/47285) by [@Ubax](https://github.com/Ubax))
 - Remove the `type` field from the navigation state. ([#47025](https://github.com/expo/expo/pull/47025) by [@Ubax](https://github.com/Ubax))
