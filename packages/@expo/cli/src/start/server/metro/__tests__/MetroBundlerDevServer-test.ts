@@ -2,7 +2,8 @@ import { getConfig } from '@expo/config';
 import type { ChangeEvent } from '@expo/metro/metro-file-map/flow-types';
 import { vol } from 'memfs';
 
-import { BundlerStartOptions } from '../../BundlerDevServer';
+import type { ExportAssetMap } from '../../../../export/saveAssets';
+import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { instantiateMetroAsync } from '../instantiateMetro';
@@ -204,5 +205,40 @@ describe('API Route output warning', () => {
       rootDir: '/',
     });
     expect(warnInvalidWebOutput).not.toHaveBeenCalled();
+  });
+});
+
+describe('exportServerRouteAsync', () => {
+  it('rewrites only the trailing source map directive', async () => {
+    // https://github.com/expo/expo/issues/47960
+    const devServer = new MetroBundlerDevServer(
+      '/',
+      getPlatformBundlers('/', { web: { bundler: 'metro' } })
+    );
+    const files: ExportAssetMap = new Map();
+
+    const src = [
+      `const n='This is string data, not a comment.\\n//# sourceMappingURL=embedded.js.map\\nEnd of data.';`,
+      '//# sourceMappingURL=index.map',
+    ].join('\n');
+
+    await devServer['exportServerRouteAsync']({
+      contents: {
+        src,
+        map: JSON.stringify({ version: 3, sources: [], names: [], mappings: '' }),
+      },
+      artifactFilename: '_expo/server/render.js',
+      files,
+      includeSourceMaps: true,
+      descriptor: {},
+    });
+
+    expect(files.get('_expo/server/render.js')?.contents).toBe(
+      [
+        `const n='This is string data, not a comment.\\n//# sourceMappingURL=embedded.js.map\\nEnd of data.';`,
+        '//# sourceMappingURL=render.js.map',
+      ].join('\n')
+    );
+    expect(files.has('_expo/server/render.js.map')).toBe(true);
   });
 });
