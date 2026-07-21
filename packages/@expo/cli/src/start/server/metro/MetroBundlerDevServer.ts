@@ -45,7 +45,6 @@ import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
-import { getFreePortAsync } from '../../../utils/port';
 import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
 import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -151,12 +150,6 @@ declare namespace globalThis {
   let __expo_rsc_inject_module: (params: { code: string; id: string }) => void | undefined;
 }
 
-/** Default port to use for apps running in Expo Go. */
-const EXPO_GO_METRO_PORT = 8081;
-
-/** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
-const DEV_CLIENT_METRO_PORT = 8081;
-
 declare module '2g' {
   interface EventRegistry {
     'devserver:start': {
@@ -187,20 +180,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   get name(): string {
     return 'metro';
-  }
-
-  async resolvePortAsync(options: Partial<BundlerStartOptions> = {}): Promise<number> {
-    const port =
-      // If the manually defined port is busy then an error should be thrown...
-      options.port ??
-      // Otherwise use the default port based on the runtime target.
-      (options.devClient
-        ? // Don't check if the port is busy if we're using the dev client since most clients are hardcoded to 8081.
-          Number(process.env.RCT_METRO_PORT) || DEV_CLIENT_METRO_PORT
-        : // Otherwise (running in Expo Go) use a free port that falls back on the classic 8081 port.
-          await getFreePortAsync(EXPO_GO_METRO_PORT));
-
-    return port;
   }
 
   private async exportServerRouteAsync({
@@ -1270,7 +1249,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
-    options.port = await this.resolvePortAsync(options);
+    assert(options.port, 'Expected a port to be defined before starting the Metro dev server');
+
     await this.initUrlCreator(options);
 
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
