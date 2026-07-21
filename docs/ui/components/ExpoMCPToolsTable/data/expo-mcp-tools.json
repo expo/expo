@@ -2,7 +2,7 @@
   "source": {
     "server": "https://mcp.expo.dev/mcp",
     "localRepo": "expo/expo-mcp",
-    "fetchedAt": "2026-06-25T15:20:39.129Z"
+    "fetchedAt": "2026-07-21T17:40:57.510Z"
   },
   "totalTools": 31,
   "totalPrompts": 1,
@@ -160,38 +160,38 @@
     },
     {
       "name": "expo_router_sitemap",
-      "description": "Query the all routes of the current expo-router project. This is useful if you were using expo-router and want to know all the routes of the app.",
+      "description": "List all routes (the sitemap) of the current Expo Router project. Use this when you are working with Expo Router and need to know which routes or screens exist in the app.",
       "examplePrompt": "check the expo-router-sitemap output",
       "availability": "Local",
       "requirements": "requires `expo-router` library"
     },
     {
       "name": "open_devtools",
-      "description": "Open the React Native DevTools.",
+      "description": "Open React Native DevTools for the running app to debug JavaScript, inspect the component tree, and view console output. Requires a running dev server (Metro) for the project.",
       "examplePrompt": "open devtools",
       "availability": "Local"
     },
     {
       "name": "collect_app_logs",
-      "description": "Collect logs from native device (logcat/syslog) or JavaScript console.",
+      "description": "Collect logs over a short time window from the native device (Android logcat / iOS syslog) and/or the JavaScript console. Use this to debug runtime errors, crashes, or unexpected behavior in a running app.",
       "examplePrompt": "collect app logs from the iOS simulator",
       "availability": "Local"
     },
     {
       "name": "automation_tap",
-      "description": "Tap on the device at the given coordinates (x, y) or by react-native testID. Provide either (x AND y) or testID.",
+      "description": "Tap on the running app at the given screen coordinates (x, y) or on the view with the given React Native testID. Provide either both x and y, or testID. Prefer testID when available, as it is resilient to layout changes.",
       "examplePrompt": "tap the screen at x=12, y=22",
       "availability": "Local"
     },
     {
       "name": "automation_take_screenshot",
-      "description": "Take screenshot of the full app or a specific view by react-native testID. Optionally provide testID to screenshot a specific view.",
+      "description": "Take a screenshot of the running app — the full screen, or a specific view if a React Native testID is provided. Use this to visually verify the current UI state.",
       "examplePrompt": "take a screenshot and verify the blue circle view",
       "availability": "Local"
     },
     {
       "name": "automation_find_view",
-      "description": "Find view and dump its properties. This is useful to verify the view is rendered correctly.",
+      "description": "Find a view by its React Native testID and return its properties (position, size, and visibility). Use this to verify a view rendered correctly, or to obtain coordinates before calling automation_tap.",
       "examplePrompt": "dump properties for testID 'button-123'",
       "availability": "Local"
     }
