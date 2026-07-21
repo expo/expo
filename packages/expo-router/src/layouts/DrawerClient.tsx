@@ -1,17 +1,40 @@
 'use client';
 
-import type { DrawerNavigationOptions, DrawerNavigationEventMap } from '../react-navigation/drawer';
-import { createDrawerNavigator } from '../react-navigation/drawer';
-import type { DrawerNavigationState, ParamListBase } from '../react-navigation/native';
-import { withLayoutContext } from './withLayoutContext';
+import type { ComponentProps } from 'react';
 
-const DrawerNavigator = createDrawerNavigator().Navigator;
+import {
+  createStandardDrawerNavigator,
+  type DrawerNavigationOptions,
+} from '../react-navigation/drawer';
+import type {
+  DrawerNavigatorCreateProps,
+  DrawerNavigatorConfig,
+  StandardDrawerNavigationEventMap,
+} from '../react-navigation/drawer/navigators/createDrawerNavigator';
+import type { DrawerNavigationHelpers } from '../react-navigation/drawer/types';
+import {
+  DrawerRouter,
+  type DrawerNavigationState,
+  type DrawerRouterOptions,
+  type ParamListBase,
+} from '../react-navigation/native';
+import { unstable_integrateWithRouter } from '../standard-navigation';
 
-export const Drawer = withLayoutContext<
+export const Drawer = unstable_integrateWithRouter<
   DrawerNavigationOptions,
-  typeof DrawerNavigator,
   DrawerNavigationState<ParamListBase>,
-  DrawerNavigationEventMap
->(DrawerNavigator);
+  StandardDrawerNavigationEventMap,
+  DrawerNavigatorConfig,
+  DrawerRouterOptions,
+  DrawerNavigatorCreateProps
+>(createStandardDrawerNavigator, DrawerRouter, {
+  createProps: ({ state, navigation }) => ({
+    drawerState: state,
+    // `createProps` exposes base helpers, but `DrawerRouter` adds drawer action helpers at runtime.
+    navigation: navigation as DrawerNavigationHelpers,
+  }),
+});
+
+export type DrawerNavigatorProps = ComponentProps<typeof Drawer>;
 
 export default Drawer;
