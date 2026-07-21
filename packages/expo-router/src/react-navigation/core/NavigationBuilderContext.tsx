@@ -27,7 +27,6 @@ export type DispatchRoot = (
   action: NavigationAction,
   options?: {
     originKey?: string;
-    suppressUnhandled?: boolean;
   }
 ) => boolean;
 
@@ -38,13 +37,10 @@ export const NavigationBuilderContext = React.createContext<{
   onAction?: (action: NavigationAction, visitedNavigators?: Set<string>) => boolean;
   addListener?: AddListener;
   dispatchRoot?: DispatchRoot;
-  onDispatchAction: (action: NavigationAction, noop: boolean) => void;
   onOptionsChange: (options: object) => void;
   scheduleUpdate: (callback: () => void) => void;
   flushUpdates: () => void;
-  stackRef?: React.MutableRefObject<string | undefined>;
 }>({
-  onDispatchAction: () => undefined,
   onOptionsChange: () => undefined,
   scheduleUpdate: () => {
     throw new Error("Couldn't find a context for scheduling updates.");

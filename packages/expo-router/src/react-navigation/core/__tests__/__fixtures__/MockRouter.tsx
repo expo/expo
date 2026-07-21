@@ -5,10 +5,7 @@ import {
   type Router,
   asFocusChildAction,
   asReconcileRouteNamesAction,
-  isUnhandledStateRestore,
   type NavigationState,
-  type PartialState,
-  type Route,
   type RouterConfigOptions,
 } from '../../../routers';
 
@@ -44,61 +41,6 @@ export function mockInitialState({
 }
 
 export function MockRouter(options: DefaultRouterOptions) {
-  function getRehydratedState(
-    partialState: PartialState<NavigationState> | NavigationState,
-    { routeNames, routeParamList }: RouterConfigOptions
-  ): NavigationState {
-    const state = partialState;
-
-    if (state.stale === false) {
-      return state;
-    }
-
-    const routes = state.routes
-      .filter((route) => routeNames.includes(route.name))
-      .map(
-        (route) =>
-          ({
-            ...route,
-            key: route.key || `${route.name}-${MockRouterKey.current++}`,
-            params:
-              routeParamList[route.name] !== undefined
-                ? {
-                    ...routeParamList[route.name],
-                    ...route.params,
-                  }
-                : route.params,
-          }) as Route<string>
-      );
-
-    if (routes.length === 0) {
-      routes.push({
-        name: routeNames[0]!,
-        key: `${routeNames[0]}-${MockRouterKey.current++}`,
-        params: routeParamList[routeNames[0]!],
-      });
-    }
-
-    const previousIndex = state.index;
-    const index = Math.min(
-      Math.max(
-        previousIndex != null
-          ? routes.findIndex((route) => route.name === state.routes[previousIndex]?.name)
-          : 0,
-        0
-      ),
-      routes.length - 1
-    );
-
-    return {
-      stale: false,
-      key: String(MockRouterKey.current++),
-      index,
-      routeNames,
-      routes,
-    };
-  }
-
   function getStateForRouteNamesChange(
     state: NavigationState,
     { routeNames }: RouterConfigOptions & { routeKeyChanges: string[] }
@@ -139,9 +81,7 @@ export function MockRouter(options: DefaultRouterOptions) {
         }
 
         const config = reconcile.payload;
-        return isUnhandledStateRestore(state, config.routeNames, config.unhandledState)
-          ? getRehydratedState(config.unhandledState, config)
-          : getStateForRouteNamesChange(state, config);
+        return getStateForRouteNamesChange(state, config);
       }
 
       const focusChildAction = asFocusChildAction(action);

@@ -101,14 +101,8 @@ export function useDescriptors<
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const {
-    dispatchRoot,
-    onDispatchAction,
-    onOptionsChange,
-    scheduleUpdate,
-    flushUpdates,
-    stackRef,
-  } = use(NavigationBuilderContext);
+  const { dispatchRoot, onOptionsChange, scheduleUpdate, flushUpdates } =
+    use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
@@ -116,23 +110,11 @@ export function useDescriptors<
       onAction,
       addListener,
       dispatchRoot,
-      onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
       flushUpdates,
-      stackRef,
     }),
-    [
-      navigation,
-      onAction,
-      addListener,
-      dispatchRoot,
-      onDispatchAction,
-      onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
-      stackRef,
-    ]
+    [navigation, onAction, addListener, dispatchRoot, onOptionsChange, scheduleUpdate, flushUpdates]
   );
 
   const { base, navigations } = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({

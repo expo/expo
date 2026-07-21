@@ -230,7 +230,6 @@ function partitionNavigatorProps<
     screenLayout,
     screenListeners,
     screenOptions,
-    UNSTABLE_routeNamesChangeBehavior,
     UNSTABLE_router,
     ...extraProps
   } = props;
@@ -251,7 +250,6 @@ function partitionNavigatorProps<
     screenLayout,
     screenListeners,
     screenOptions,
-    UNSTABLE_routeNamesChangeBehavior,
     UNSTABLE_router,
   };
   return {

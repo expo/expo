@@ -168,8 +168,8 @@ describe('ZoomTransitionEnabler with gestureEnabled', () => {
 function navigateViaPreviewZoomLink() {
   // Simulate preview navigation: navigate with __internal__PreviewKey which sets
   // INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME on the route params.
-  // The zoom source ID is included as a param so the stack's getRehydratedState
-  // will attach the screen ID automatically.
+  // The zoom source ID is included as a param so the stack reducer attaches the screen ID
+  // automatically.
   act(() =>
     router.navigate(
       {

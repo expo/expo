@@ -509,8 +509,8 @@ describe('Stack nested in Tabs render counts', () => {
 describe('Seeded deep-link startup render counts', () => {
   it('renders each component in the seeded tree exactly once', () => {
     // The verbatim compiled seed does not need rehydration re-renders:
-    // each navigator receives the complete keyed state verbatim, so
-    // getRehydratedState is a no-op and no render cycles are triggered.
+    // each navigator receives the complete keyed state verbatim, so no
+    // rehydration pass runs and no render cycles are triggered.
     const layoutRender = jest.fn();
     const nestedLayoutRender = jest.fn();
     const pageRender = jest.fn();

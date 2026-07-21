@@ -25,7 +25,6 @@ import { NavigationBuilderContext } from './NavigationBuilderContext';
 import { NavigationContainerRefContext } from './NavigationContainerRefContext';
 import { NavigationIndependentTreeContext } from './NavigationIndependentTreeContext';
 import { NavigationStateContext } from './NavigationStateContext';
-import { UnhandledActionContext } from './UnhandledActionContext';
 import { checkDuplicateRouteNames } from './checkDuplicateRouteNames';
 import { checkSerializable } from './checkSerializable';
 import { NOT_INITIALIZED_ERROR } from './createNavigationContainerRef';
@@ -53,7 +52,6 @@ const duplicateNameWarnings: string[] = [];
  *
  * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
- * @param props.onUnhandledAction Callback which is called when an action is not handled.
  * @param props.theme Theme object for the UI elements.
  * @param props.children Child elements to render the content.
  * @param props.ref Ref object which refers to the navigation object containing helper methods.
@@ -63,7 +61,6 @@ export function BaseNavigationContainer({
   initialState,
   onStateChange,
   onReady,
-  onUnhandledAction,
   navigationInChildEnabled = false,
   theme,
   children,
@@ -102,57 +99,6 @@ export function BaseNavigationContainer({
 
   const emitter = useEventEmitter<NavigationContainerEventMap>();
 
-  const stackRef = React.useRef<string | undefined>(undefined);
-
-  const onDispatchAction = useLatestCallback((action: NavigationAction, noop: boolean) => {
-    emitter.emit({
-      type: '__unsafe_action__',
-      data: { action, noop, stack: stackRef.current },
-    });
-  });
-
-  const defaultOnUnhandledAction = useLatestCallback((action: NavigationAction) => {
-    if (process.env.NODE_ENV === 'production') {
-      return;
-    }
-
-    const payload: Record<string, any> | undefined = action.payload;
-
-    let message = `The action '${action.type}'${
-      payload ? ` with payload ${JSON.stringify(action.payload)}` : ''
-    } was not handled by any navigator.`;
-
-    switch (action.type) {
-      case 'PRELOAD':
-      case 'NAVIGATE':
-      case 'PUSH':
-      case 'REPLACE':
-      case 'POP_TO':
-      case 'JUMP_TO':
-        if (payload?.name) {
-          message += `\n\nDo you have a screen named '${payload.name}'?\n\nIf you're trying to navigate to a screen in a nested navigator, see https://reactnavigation.org/docs/nesting-navigators#navigating-to-a-screen-in-a-nested-navigator.\n\nIf you're using conditional rendering, navigation will happen automatically and you shouldn't navigate manually, see.`;
-        } else {
-          message += `\n\nYou need to pass the name of the screen to navigate to.\n\nSee https://reactnavigation.org/docs/navigation-actions for usage.`;
-        }
-
-        break;
-      case 'GO_BACK':
-      case 'POP':
-      case 'POP_TO_TOP':
-        message += `\n\nIs there any screen to go back to?`;
-        break;
-      case 'OPEN_DRAWER':
-      case 'CLOSE_DRAWER':
-      case 'TOGGLE_DRAWER':
-        message += `\n\nIs your screen inside a Drawer navigator?`;
-        break;
-    }
-
-    message += `\n\nThis is a development-only warning and won't be shown in production.`;
-
-    console.error(message);
-  });
-
   // The committed sync store is the single source of truth for every imperative read and dispatch.
   // Navigators reduce into it through `dispatchRoot` and read their slice back out of it; the
   // registry (`hasReducer`) supplies the orthogonal "which navigators are mounted" signal, so there
@@ -176,7 +122,6 @@ export function BaseNavigationContainer({
       action: NavigationAction,
       options: {
         originKey?: string;
-        suppressUnhandled?: boolean;
         isReplay?: boolean;
       } = {}
     ) => {
@@ -194,31 +139,23 @@ export function BaseNavigationContainer({
           options.originKey != null && !reducerRegistry.hasReducer(options.originKey);
         const isDeferrable = action.type === 'PRELOAD' || action.target == null;
 
-        if (originUnregistered && isDeferrable && !options.suppressUnhandled && !options.isReplay) {
+        if (originUnregistered && isDeferrable && !options.isReplay) {
           // Mount window: the origin navigator exists in the committed tree but hasn't registered
           // its reducer yet. Hold the action and replay it after the next commit (see below). If it
-          // is still unhandled on replay, it falls through to the unhandled reporting.
+          // is still unhandled on replay, it is dropped.
           pendingReplayRef.current.push({ action, originKey: options.originKey });
           requestReplay();
-          return false;
         }
 
-        const originEntry =
-          options.originKey == null ? undefined : reducerRegistry.getEntry(options.originKey);
-
-        if (options.suppressUnhandled) {
-          return false;
-        }
-
-        if (originEntry?.onUnhandledAction != null) {
-          originEntry.onUnhandledAction(action);
-        } else {
-          (onUnhandledAction ?? defaultOnUnhandledAction)(action);
-        }
+        // Unhandled actions are otherwise silent: the default console error, the `onUnhandledAction`
+        // container prop, and the per-navigator handler were removed with the reporting surface.
         return false;
       }
 
-      onDispatchAction(action, result.noop);
+      // TODO(action-telemetry): every dispatched action was re-emitted here as `__unsafe_action__`
+      // (expo-observe consumed it for EAS Observe action timing, re-exposed as the public
+      // `actionDispatched` event). Removed with the telemetry surface; a replacement dispatch-time
+      // signal + the expo-observe migration are follow-up work.
 
       // TODO(prevent-remove): a per-navigator `shouldPreventRemove` gate ran here before committing,
       // and could veto the reduced state. Reintroduce it on the reducer model when navigation
@@ -402,13 +339,11 @@ export function BaseNavigationContainer({
     () => ({
       addListener,
       dispatchRoot,
-      onDispatchAction,
       onOptionsChange,
       scheduleUpdate,
       flushUpdates,
-      stackRef,
     }),
-    [addListener, dispatchRoot, onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates]
+    [addListener, dispatchRoot, onOptionsChange, scheduleUpdate, flushUpdates]
   );
 
   const isInitialRef = React.useRef(true);
@@ -530,14 +465,11 @@ export function BaseNavigationContainer({
           <NavigationContainerRefContext.Provider value={navigation}>
             <NavigationBuilderContext.Provider value={builderContext}>
               <NavigationStateContext.Provider value={context}>
-                <UnhandledActionContext.Provider
-                  value={onUnhandledAction ?? defaultOnUnhandledAction}>
-                  <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                    <EnsureSingleNavigator>
-                      <ThemeProvider value={theme}>{children}</ThemeProvider>
-                    </EnsureSingleNavigator>
-                  </DeprecatedNavigationInChildContext.Provider>
-                </UnhandledActionContext.Provider>
+                <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
+                  <EnsureSingleNavigator>
+                    <ThemeProvider value={theme}>{children}</ThemeProvider>
+                  </EnsureSingleNavigator>
+                </DeprecatedNavigationInChildContext.Provider>
               </NavigationStateContext.Provider>
             </NavigationBuilderContext.Provider>
           </NavigationContainerRefContext.Provider>

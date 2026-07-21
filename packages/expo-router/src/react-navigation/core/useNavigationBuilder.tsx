@@ -30,7 +30,6 @@ import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
 import { Screen } from './Screen';
-import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
 import { isRecordEqual } from './isRecordEqual';
@@ -576,20 +575,13 @@ export function useNavigationBuilder<
   const needsRouteNamesReconcile =
     !isArrayEqual(reconciliationState.routeNames, routeNames) ||
     !isRecordEqual(routeKeyList, previousRouteKeyList);
-  const pendingUnhandledState = reducerRegistry?.getEntry(state.key)?.unhandledState;
-  const shouldRestoreUnhandledState =
-    options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-    pendingUnhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
-    reconciliationState?.routes.every((r) => !routeNames.includes(r.name));
   // Invariant: the render-time projection only diverges from the committed slice while a route-names
-  // reconciliation (or a `lastUnhandled` restore) is pending — the layout effect below then commits
-  // the divergence back into the store. If it diverges otherwise, the store and the render have
-  // silently disagreed, which is a bug.
+  // reconciliation is pending — the layout effect below then commits the divergence back into the
+  // store. If it diverges otherwise, the store and the render have silently disagreed, which is a bug.
   if (
     process.env.NODE_ENV !== 'production' &&
     state !== reconciliationState &&
-    !needsRouteNamesReconcile &&
-    !shouldRestoreUnhandledState
+    !needsRouteNamesReconcile
   ) {
     console.error(
       `Expo Router: render-time route projection for navigator ${key} diverged from its committed ` +
@@ -597,42 +589,6 @@ export function useNavigationBuilder<
         `a RECONCILE_ROUTE_NAMES window; please report this with the navigation you performed.`
     );
   }
-
-  const onUnhandledActionParent = use(UnhandledActionContext);
-  const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
-    if (
-      options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-      action.type === 'NAVIGATE' &&
-      action.payload != null &&
-      'name' in action.payload &&
-      typeof action.payload.name === 'string' &&
-      !routeNames.includes(action.payload.name)
-    ) {
-      const unhandledState = {
-        routes: [
-          {
-            name: action.payload.name,
-            params:
-              'params' in action.payload &&
-              typeof action.payload.params === 'object' &&
-              action.payload.params !== null
-                ? action.payload.params
-                : undefined,
-          },
-        ],
-      };
-
-      // Persist on the registry entry (looked up live: `onUnhandledAction` fires during a dispatch,
-      // after this navigator has registered). Restored by the layout effect below once the route
-      // names change to include the captured routes.
-      const entry = reducerRegistry?.getEntry(state.key);
-      if (entry) {
-        entry.unhandledState = unhandledState;
-      }
-    }
-
-    onUnhandledActionParent?.(action);
-  });
 
   const registryReducer = React.useCallback<NavigationReducer>(
     (state, action) =>
@@ -648,13 +604,9 @@ export function useNavigationBuilder<
   const registryEntry = React.useMemo<NavigatorRegistryEntry>(
     () => ({
       reduce: registryReducer,
-      onUnhandledAction,
-      // Carry a captured `unhandledState` across entry re-creation so a pending `lastUnhandled`
-      // restore survives an unrelated dep change between capture and the route-names change.
-      unhandledState: reducerRegistry?.getEntry(state.key)?.unhandledState,
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [onUnhandledAction, registryReducer, router]
+    [registryReducer, router]
   );
   const backBehavior = (rest as { backBehavior?: unknown }).backBehavior;
 
@@ -667,7 +619,7 @@ export function useNavigationBuilder<
   }, [backBehavior, reducerRegistry, registryEntry, state.key]);
 
   useClientLayoutEffect(() => {
-    if (!needsRouteNamesReconcile && !shouldRestoreUnhandledState) {
+    if (!needsRouteNamesReconcile) {
       previousRouteKeyListRef.current = routeKeyList;
       return;
     }
@@ -682,24 +634,15 @@ export function useNavigationBuilder<
           routeParamList,
           routeGetIdList,
           routeKeyChanges,
-          unhandledState: shouldRestoreUnhandledState ? pendingUnhandledState : undefined,
         },
       },
       {
         originKey: reconciliationState.key,
-        suppressUnhandled: true,
       }
     );
 
     if (handled) {
       previousRouteKeyListRef.current = routeKeyList;
-
-      if (shouldRestoreUnhandledState) {
-        const entry = reducerRegistry?.getEntry(state.key);
-        if (entry) {
-          entry.unhandledState = undefined;
-        }
-      }
     }
   });
 
@@ -709,7 +652,6 @@ export function useNavigationBuilder<
     return (
       dispatchRoot?.(action, {
         originKey: state.key,
-        suppressUnhandled: true,
       }) ?? false
     );
   });
@@ -717,7 +659,6 @@ export function useNavigationBuilder<
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({
     id: options.id,
     onAction,
-    onUnhandledAction,
     getState,
     emitter,
     router,

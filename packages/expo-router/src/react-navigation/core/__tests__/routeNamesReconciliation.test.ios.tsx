@@ -1,11 +1,9 @@
-import { jest } from '@jest/globals';
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
 import {
   asReconcileRouteNamesAction,
   type DefaultRouterOptions,
-  isUnhandledStateRestore,
   type NavigationState,
   type ParamListBase,
   StackRouter,
@@ -31,18 +29,12 @@ function PhaseProbeMockRouter(options: DefaultRouterOptions) {
   return {
     ...router,
     // Route-names reconciliation is now a `RECONCILE_ROUTE_NAMES` case of `getStateForAction`. Record
-    // which branch fires if it ever runs during the render phase (it must not — the action is
-    // dispatched from an effect). The unhandled-state-restore branch stands in for the former
-    // `getRehydratedState`; the route-names-change branch for `getStateForRouteNamesChange`.
+    // it if it ever runs during the render phase (it must not — the action is dispatched from an
+    // effect).
     getStateForAction(...args: Parameters<typeof router.getStateForAction>) {
       const reconcile = asReconcileRouteNamesAction(args[1]);
       if (isBuildingNavigator && reconcile) {
-        const config = reconcile.payload;
-        renderPhaseCalls.push(
-          isUnhandledStateRestore(args[0], config.routeNames, config.unhandledState)
-            ? 'getRehydratedState'
-            : 'getStateForRouteNamesChange'
-        );
+        renderPhaseCalls.push('getStateForRouteNamesChange');
       }
 
       return router.getStateForAction(...args);
@@ -118,60 +110,6 @@ test('reconciles removed route names outside useNavigationBuilder render', () =>
     routes: [{ key: 'first', name: 'first' }],
   });
   expect(root).toMatchInlineSnapshot(`"[first]"`);
-});
-
-test('restores lastUnhandled route names outside useNavigationBuilder render', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-  const onStateChange = jest.fn();
-  const initialState: NavigationState = {
-    stale: false,
-    key: '0',
-    index: 0,
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo', name: 'foo' }],
-  };
-
-  const TestScreen = ({ route }: any) => `[${route.name}]`;
-
-  const root = render(
-    <BaseNavigationContainer ref={ref} initialState={initialState} onStateChange={onStateChange}>
-      <TestNavigator UNSTABLE_routeNamesChangeBehavior="lastUnhandled">
-        <Screen name="foo" component={TestScreen} />
-        <Screen name="bar" component={TestScreen} />
-        <Screen name="baz" component={TestScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
-  act(() => ref.current?.navigate('qux'));
-
-  spy.mockRestore();
-  renderPhaseCalls.length = 0;
-
-  act(() => {
-    root.update(
-      <BaseNavigationContainer ref={ref} onStateChange={onStateChange}>
-        <TestNavigator UNSTABLE_routeNamesChangeBehavior="lastUnhandled">
-          <Screen name="bar" component={TestScreen} />
-          <Screen name="baz" component={TestScreen} />
-          <Screen name="qux" component={TestScreen} />
-        </TestNavigator>
-      </BaseNavigationContainer>
-    );
-  });
-
-  expect(renderPhaseCalls).not.toContain('getRehydratedState');
-  expect(ref.current?.getRootState()).toEqual(
-    expect.objectContaining({
-      stale: false,
-      index: 0,
-      routeNames: ['bar', 'baz', 'qux'],
-      routes: [expect.objectContaining({ key: 'qux-0', name: 'qux' })],
-    })
-  );
-  expect(root).toMatchInlineSnapshot(`"[qux]"`);
 });
 
 test('reconciles route key changes for an unchanged route name', () => {

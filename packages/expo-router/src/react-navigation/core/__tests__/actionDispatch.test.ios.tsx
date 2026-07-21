@@ -245,7 +245,6 @@ test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => 
   const TestScreen = () => null;
 
   const onStateChange = jest.fn();
-  const onUnhandledAction = jest.fn();
 
   const navigation = createNavigationContainerRef<ParamListBase>();
 
@@ -278,8 +277,7 @@ test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => 
           },
         ],
       }}
-      onStateChange={onStateChange}
-      onUnhandledAction={onUnhandledAction}>
+      onStateChange={onStateChange}>
       <TestNavigator>
         <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={TestScreen} />
@@ -297,24 +295,17 @@ test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => 
 
   render(element);
 
+  // `lex` is only a route of the nested `baz` navigator, which isn't focused. An untargeted
+  // NAVIGATE/NAVIGATE_DEPRECATED must not down-bubble into it, so the action goes unhandled: no
+  // state change and focus stays on `foo`.
   act(() => navigation.navigate('lex'));
 
   expect(onStateChange).not.toHaveBeenCalled();
-  expect(onUnhandledAction).toHaveBeenCalledTimes(1);
-  expect(onUnhandledAction).toHaveBeenCalledWith(
-    expect.objectContaining({
-      type: 'NAVIGATE',
-      payload: { name: 'lex' },
-    })
-  );
-
   expect(navigation.getCurrentRoute()?.name).toBe('foo');
 
   act(() => navigation.navigateDeprecated('lex'));
 
   expect(onStateChange).not.toHaveBeenCalled();
-  expect(onUnhandledAction).toHaveBeenCalledTimes(2);
-
   expect(navigation.getCurrentRoute()?.name).toBe('foo');
 });
 
@@ -630,11 +621,9 @@ test("action doesn't bubble if target is specified", () => {
   expect(onStateChange).not.toHaveBeenCalled();
 });
 
-test('logs error if no navigator handled the action', () => {
-  const TestRouter = MockRouter;
-
+test('an unhandled action is a silent no-op (no throw, no console error)', () => {
   const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(TestRouter, props);
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
 
     return (
       <NavigationContent>
@@ -643,67 +632,47 @@ test('logs error if no navigator handled the action', () => {
     );
   };
 
+  // Dispatches an action no navigator can reduce once mounted. With the unhandled-action reporting
+  // removed, it neither throws nor logs — it just falls through as a no-op.
   const TestScreen = (props: any) => {
     React.useEffect(() => {
       props.navigation.dispatch({ type: 'UNKNOWN' });
-
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return null;
   };
 
-  const initialState = {
-    stale: false as const,
-    index: 1,
-    key: '0',
-    routeNames: ['foo', 'bar', 'baz'],
-    routes: [
-      {
-        key: 'baz',
-        name: 'baz',
-        state: {
-          stale: false as const,
-          index: 0,
-          key: '4',
-          routeNames: ['qux', 'lex'],
-          routes: [
-            { key: 'qux', name: 'qux' },
-            { key: 'lex', name: 'lex' },
-          ],
-        },
-      },
-      { key: 'bar', name: 'bar' },
-    ],
-  };
+  const navigation = createNavigationContainerRef<ParamListBase>();
 
   MockRouterKey.current = 5;
 
   const element = (
-    <BaseNavigationContainer initialState={initialState}>
+    <BaseNavigationContainer
+      ref={navigation}
+      initialState={{
+        stale: false as const,
+        index: 0,
+        key: '0',
+        routeNames: ['foo', 'bar'],
+        routes: [
+          { key: 'foo', name: 'foo' },
+          { key: 'bar', name: 'bar' },
+        ],
+      }}>
       <TestNavigator>
-        <Screen name="foo">{() => null}</Screen>
+        <Screen name="foo" component={TestScreen} />
         <Screen name="bar" component={TestScreen} />
-        <Screen name="baz">
-          {() => (
-            <TestNavigator>
-              <Screen name="qux">{() => null}</Screen>
-              <Screen name="lex">{() => null}</Screen>
-            </TestNavigator>
-          )}
-        </Screen>
       </TestNavigator>
     </BaseNavigationContainer>
   );
 
   const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-  render(element).update(element);
+  expect(() => render(element).update(element)).not.toThrow();
 
-  expect(spy).toHaveBeenCalledTimes(1);
-  expect(spy).toHaveBeenCalledWith(
-    expect.stringContaining("The action 'UNKNOWN' was not handled by any navigator.")
-  );
+  expect(spy).not.toHaveBeenCalled();
+  expect(navigation.getCurrentRoute()?.name).toBe('foo');
 
   spy.mockRestore();
 });

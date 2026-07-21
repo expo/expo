@@ -1058,56 +1058,6 @@ test('fires onReady after navigator is rendered', () => {
   expect(ref.current?.isReady()).toBe(true);
 });
 
-test('invokes the unhandled action listener with the unhandled action', () => {
-  const ref = createNavigationContainerRef<ParamListBase>();
-  const fn = jest.fn();
-
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>
-        {state.routes.map((route) => descriptors[route.key]!.render())}
-      </NavigationContent>
-    );
-  };
-
-  const TestScreen = () => <></>;
-
-  MockRouterKey.current = 1;
-
-  render(
-    <BaseNavigationContainer
-      ref={ref}
-      onUnhandledAction={fn}
-      initialState={{
-        stale: false as const,
-        index: 0,
-        key: '0',
-        routeNames: ['foo', 'bar'],
-        routes: [
-          { key: 'foo', name: 'foo' },
-          { key: 'bar', name: 'bar' },
-        ],
-      }}>
-      <TestNavigator>
-        <Screen name="foo" component={TestScreen} />
-        <Screen name="bar" component={TestScreen} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  act(() => ref.current!.navigate('bar'));
-  act(() => ref.current!.navigate('baz'));
-
-  expect(fn).toHaveBeenCalledWith({
-    payload: {
-      name: 'baz',
-    },
-    type: 'NAVIGATE',
-  });
-});
-
 test('works with state change events in independent nested container', () => {
   const TestNavigator = (props: any) => {
     const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);

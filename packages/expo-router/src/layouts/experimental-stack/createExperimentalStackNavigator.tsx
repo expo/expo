@@ -38,7 +38,6 @@ import type {
 function ExperimentalStackNavigator({
   id,
   initialRouteName,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -56,7 +55,6 @@ function ExperimentalStackNavigator({
   >(StackRouter, {
     id,
     initialRouteName,
-    UNSTABLE_routeNamesChangeBehavior,
     children,
     layout,
     screenListeners,

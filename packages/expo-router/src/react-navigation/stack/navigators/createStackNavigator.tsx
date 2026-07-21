@@ -31,7 +31,6 @@ import { StackView } from '../views/Stack/StackView';
 function StackNavigator({
   id,
   initialRouteName,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -51,7 +50,6 @@ function StackNavigator({
   >(StackRouter, {
     id,
     initialRouteName,
-    UNSTABLE_routeNamesChangeBehavior,
     children,
     layout,
     screenListeners,

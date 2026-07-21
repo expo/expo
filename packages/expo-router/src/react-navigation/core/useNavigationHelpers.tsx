@@ -22,7 +22,6 @@ PrivateValueStore;
 type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
   onAction: (action: NavigationAction) => boolean;
-  onUnhandledAction: (action: NavigationAction) => void;
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
@@ -38,15 +37,7 @@ export function useNavigationHelpers<
   ActionHelpers extends Record<string, () => void>,
   Action extends NavigationAction,
   EventMap extends Record<string, any>,
->({
-  id: navigatorId,
-  onAction,
-  onUnhandledAction,
-  getState,
-  emitter,
-  router,
-  dispatchRoot,
-}: Options<State, Action>) {
+>({ id: navigatorId, onAction, getState, emitter, router, dispatchRoot }: Options<State, Action>) {
   const parentNavigationHelpers = use(NavigationContext);
 
   return React.useMemo(() => {
@@ -56,18 +47,13 @@ export function useNavigationHelpers<
 
       if (dispatchRoot) {
         // The committed store is the single dispatch path — forward to the root reducer, tagged
-        // with this navigator's key. No local reducer fallback: `dispatchRoot` reports unhandled
-        // actions itself, and it holds+replays actions dispatched before the origin navigator's
-        // reducer has registered (the mount window).
+        // with this navigator's key. No local reducer fallback: it holds+replays actions dispatched
+        // before the origin navigator's reducer has registered (the mount window).
         dispatchRoot(action, { originKey: state.key });
         return;
       }
 
-      const handled = onAction(action);
-
-      if (!handled) {
-        onUnhandledAction?.(action);
-      }
+      onAction(action);
     };
 
     const actions = {
@@ -145,7 +131,6 @@ export function useNavigationHelpers<
     emitter.emit,
     getState,
     onAction,
-    onUnhandledAction,
     navigatorId,
     dispatchRoot,
   ]);

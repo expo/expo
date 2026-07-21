@@ -4,7 +4,6 @@ import React, { forwardRef, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
-import { store } from '../global-state/store';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
@@ -572,10 +571,7 @@ it('resets when focused tab is pressed again', async () => {
   expect(screen).toHaveSegments(['stack']);
 });
 
-it('dispatches only one action when re-tapping active tab with nested stack', async () => {
-  // Track all dispatched actions using a listener on the navigation container
-  const dispatchedActions: unknown[] = [];
-
+it('pops the nested stack to root when re-tapping the active tab', async () => {
   renderRouter({
     _layout: () => (
       <Tabs>
@@ -613,30 +609,15 @@ it('dispatches only one action when re-tapping active tab with nested stack', as
   act(() => router.push('/movies/nested/details'));
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
-  // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = store.navigationRef.current!.addListener('__unsafe_action__', (e) => {
-    dispatchedActions.push(e.data.action);
-  });
-
-  // Re-tap the movies tab
+  // Re-tapping the active tab pops its nested stack straight back to the root screen.
   await userEvent.press(screen.getByTestId('goto-movies'));
 
-  // Wait for navigation to complete
   await waitFor(() => expect(screen.getByTestId('movies-index')).toBeVisible());
-
-  unsubscribe();
-
-  expect(dispatchedActions).toHaveLength(1);
-
-  expect(dispatchedActions[0]).toMatchObject({
-    type: 'POP_TO_TOP',
-  });
+  expect(screen.queryByTestId('movies-nested')).toBeNull();
+  expect(screen.queryByTestId('movies-nested-details')).toBeNull();
 });
 
-it('JSTabs dispatches only one action when re-tapping active tab with nested stack', async () => {
-  // Track all dispatched actions using a listener on the navigation container
-  const dispatchedActions: unknown[] = [];
-
+it('JSTabs pops the nested stack to root when re-tapping the active tab', async () => {
   renderRouter({
     _layout: () => <JSTabs />,
     index: () => <Text testID="index">Index</Text>,
@@ -662,24 +643,12 @@ it('JSTabs dispatches only one action when re-tapping active tab with nested sta
   act(() => router.push('/movies/nested/details'));
   expect(screen.getByTestId('movies-nested-details')).toBeVisible();
 
-  // Set up listener to track dispatched actions before re-tapping
-  const unsubscribe = store.navigationRef.current!.addListener('__unsafe_action__', (e) => {
-    dispatchedActions.push(e.data.action);
-  });
-
-  // Re-tap the movies tab
+  // Re-tapping the active tab pops its nested stack straight back to the root screen.
   await userEvent.press(screen.getByLabelText('movies, tab, 2 of 2'));
 
-  // Wait for navigation to complete
   await waitFor(() => expect(screen.getByTestId('movies-index')).toBeVisible());
-
-  unsubscribe();
-
-  expect(dispatchedActions).toHaveLength(1);
-
-  expect(dispatchedActions[0]).toMatchObject({
-    type: 'POP_TO_TOP',
-  });
+  expect(screen.queryByTestId('movies-nested')).toBeNull();
+  expect(screen.queryByTestId('movies-nested-details')).toBeNull();
 });
 
 it('does not reset when focused tab is pressed again, but the press is prevented', async () => {

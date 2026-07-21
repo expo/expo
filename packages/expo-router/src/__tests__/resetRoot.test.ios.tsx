@@ -28,8 +28,9 @@ it('resetRoot with a compiled state resets to that state', () => {
 
   const compiled = getStateFromPath('/', getMockConfig(app));
 
-  // In test env an unhandled action throws (see ExpoRoot `onUnhandledAction`), so a mis-targeted
-  // RESET would fail this call outright.
+  // `resetRoot` always targets the live root navigator (ignoring the compiled state's key), so the
+  // reset lands even though the compiled key never matches the live-minted one — the pathname
+  // assertions below would catch a mis-targeted RESET.
   act(() => {
     store.navigationRef.current?.resetRoot(compiled);
   });

@@ -33,16 +33,25 @@ export function initListeners(
   const appLaunchTime = performance.now();
   const cleanup = new Set<() => void>();
 
-  const unsubscribeAction = navigationEvents.addListener('actionDispatched', (event) => {
-    // PRELOAD comes from router.prefetch() — a route warm-up, not a user
-    // navigation — so it must not seed dispatchTime.
-    if (event.actionType === 'PRELOAD') return;
-    storage.pendingActions.push({
-      actionType: event.actionType,
-      dispatchTime: performance.now(),
+  // TODO(action-telemetry): expo-router removed its `actionDispatched` navigation event (part of
+  // dropping the dispatch-telemetry surface). Guard the subscription so a host on the new
+  // expo-router doesn't throw from `addListener`; a follow-up reseeds dispatch time via the
+  // replacement telemetry signal, restoring warm-navigation TTR.
+  try {
+    const unsubscribeAction = navigationEvents.addListener('actionDispatched', (event) => {
+      // PRELOAD comes from router.prefetch() — a route warm-up, not a user
+      // navigation — so it must not seed dispatchTime.
+      if (event.actionType === 'PRELOAD') return;
+      storage.pendingActions.push({
+        actionType: event.actionType,
+        dispatchTime: performance.now(),
+      });
     });
-  });
-  cleanup.add(unsubscribeAction);
+    cleanup.add(unsubscribeAction);
+  } catch {
+    // `actionDispatched` isn't available on this expo-router version — action-dispatch timing stays
+    // unseeded (warm_ttr won't emit) until the replacement signal lands. See TODO above.
+  }
 
   const unsubscribePreload = navigationEvents.addListener('pagePreloaded', (e) => {
     // The screen rendered as part of a preload. Mark it as already rendered so

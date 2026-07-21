@@ -17,8 +17,7 @@ import {
 //
 // Step 3 goal these guard: the compiled `getStateFromPath` state seeds the container verbatim, so on
 // a deep-link startup no route-names reconciliation fires — the `RECONCILE_ROUTE_NAMES` case of
-// `getStateForAction` (which absorbed the former `getRehydratedState` / `getStateForRouteNamesChange`)
-// must never run.
+// `getStateForAction` (which absorbed the former `getStateForRouteNamesChange`) must never run.
 
 type AnyRouterState = NavigationState<ParamListBase>;
 // The concrete router options/actions differ per navigator; the wrapper is agnostic to them.

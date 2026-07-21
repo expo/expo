@@ -5,11 +5,7 @@ import {
   type DrawerNavigationState,
   DrawerRouter,
   focusChild,
-  type NavigationState,
   type ParamListBase,
-  type PartialState,
-  RECONCILE_ROUTE_NAMES,
-  type ReconcileRouteNamesAction,
   type RouterConfigOptions,
   StackActions,
   TabActions,
@@ -17,163 +13,9 @@ import {
 
 const names = (state: { routes: { name: string }[] }) => state.routes.map((route) => route.name);
 
-type ReconcileConfig = RouterConfigOptions & { routeKeyChanges?: string[] };
-
-// Route-names reconciliation moved into `getStateForAction` as a `RECONCILE_ROUTE_NAMES` case. The
-// former `getRehydratedState` is now its unhandled-state-restore branch, which fires only when the
-// committed routes are disjoint from the new route names — so we reduce against a synthetic committed
-// state with a single absent route. On this branch the drawerStatus comes from the restored unhandled
-// state (default when absent), so the synthetic committed state's own status never leaks through.
-function restoreUnhandled(
-  router: ReturnType<typeof DrawerRouter>,
-  unhandledState: PartialState<NavigationState> | NavigationState,
-  config: ReconcileConfig
-) {
-  const committed: DrawerNavigationState<ParamListBase> = {
-    stale: false,
-    key: '__committed__',
-    index: 0,
-    routeNames: ['__absent__'],
-    routes: [{ key: '__absent__', name: '__absent__' }],
-    drawerStatus: 'closed',
-  };
-  const action: ReconcileRouteNamesAction = {
-    type: RECONCILE_ROUTE_NAMES,
-    target: committed.key,
-    payload: { routeKeyChanges: [], ...config, unhandledState },
-  };
-  return router.getStateForAction(
-    committed,
-    action as unknown as Parameters<typeof router.getStateForAction>[1],
-    config
-  );
-}
-
 // The drawer's open/closed status lives in the drawer navigator's local React state, so the router
 // delegates entirely to the tab router (no dedicated drawer key). In the new model `routes` is a
 // SUBSET of `routeNames` (presence is the loaded signal) and there is no `preloadedRouteKeys` field.
-
-test('rehydrates preserving the persisted subset and appending the anchor', () => {
-  const router = DrawerRouter({});
-
-  const options: RouterConfigOptions = {
-    routeNames: ['bar', 'baz', 'qux'],
-    routeParamList: {
-      baz: { answer: 42 },
-      qux: { name: 'Jane' },
-    },
-    parentRouteKey: undefined,
-    routeGetIdList: {},
-  };
-
-  // Persisted subset [bar, qux], focused index 1 (qux). firstRoute keeps the anchor (bar)
-  // leading; baz is NOT materialized (never loaded) -> [bar, qux] focused qux index 1.
-  expect(
-    restoreUnhandled(
-    router,
-      {
-        index: 1,
-        routes: [
-          { key: 'bar-0', name: 'bar' },
-          { key: 'qux-1', name: 'qux' },
-        ],
-      },
-      options
-    )
-  ).toEqual({
-    drawerStatus: 'closed',
-    index: 1,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-0', name: 'bar' },
-      { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
-    ],
-    stale: false,
-  });
-});
-
-test('rehydrates focusing the previously-focused route and falling back to 0', () => {
-  const router = DrawerRouter({});
-
-  const options: RouterConfigOptions = {
-    routeNames: ['bar', 'baz', 'qux'],
-    routeParamList: {
-      baz: { answer: 42 },
-      qux: { name: 'Jane' },
-    },
-    parentRouteKey: undefined,
-    routeGetIdList: {},
-  };
-
-  // No index given -> focused falls back to the single persisted route 'baz'. firstRoute adds
-  // the anchor 'bar' in front -> subset [bar, baz] index 1.
-  expect(
-    restoreUnhandled(
-    router,
-      {
-        routes: [{ key: 'baz-0', name: 'baz' }],
-      },
-      options
-    )
-  ).toEqual({
-    drawerStatus: 'closed',
-    index: 1,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: '@:bar:0', name: 'bar' },
-      { key: 'baz-0', name: 'baz', params: { answer: 42 } },
-    ],
-    stale: false,
-  });
-
-  // Empty routes -> materialize the first declared route, index 0.
-  expect(
-    restoreUnhandled(
-    router,
-      {
-        index: 4,
-        routes: [],
-      },
-      options
-    )
-  ).toEqual({
-    drawerStatus: 'closed',
-    index: 0,
-    key: '@',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [{ key: '@:bar:0', name: 'bar' }],
-    stale: false,
-  });
-});
-
-test('restores an already-complete unhandled state verbatim', () => {
-  const router = DrawerRouter({});
-
-  const state: DrawerNavigationState<ParamListBase> = {
-    index: 0,
-    key: 'drawer-test',
-    routeNames: ['bar', 'baz', 'qux'],
-    routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-    ],
-    drawerStatus: 'closed',
-    stale: false as const,
-  };
-
-  // A complete unhandled state is returned by identity, drawerStatus and all.
-  expect(
-    restoreUnhandled(router, state, {
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {},
-      parentRouteKey: undefined,
-      routeGetIdList: {},
-    })
-  ).toBe(state);
-});
 
 test('handles navigate action by focusing the target route in place', () => {
   const router = DrawerRouter({});

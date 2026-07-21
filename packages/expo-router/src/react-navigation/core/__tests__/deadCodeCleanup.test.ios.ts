@@ -109,16 +109,4 @@ describe('single-source dead surfaces', () => {
     // SceneView no longer provides a no-op state writer into the context.
     expect(sceneView).not.toContain('setCurrentState');
   });
-
-  it('keeps the captured lastUnhandled state on the registry entry, not in builder component state', () => {
-    const navigationBuilder = readCoreFile('useNavigationBuilder.tsx');
-    const storeContext = readGlobalStateFile('storeContext.ts');
-
-    // No component-level state/ref mirrors of the captured navigation target.
-    expect(navigationBuilder).not.toContain('unhandledStateRef');
-    expect(navigationBuilder).not.toContain('setUnhandledState');
-    // It lives on the navigator's registry entry instead.
-    expect(storeContext).toContain('unhandledState');
-    expect(navigationBuilder).toContain('.unhandledState');
-  });
 });

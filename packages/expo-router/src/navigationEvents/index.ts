@@ -1,34 +1,20 @@
 /// <reference path="../ts-declarations/expo-global.d.ts" />
 
-import type {
-  PagePreloadedEvent,
-  PageFocusedEvent,
-  PageBlurredEvent,
-  PageRemoved,
-  ActionDispatchedEvent,
-} from './types';
+import type { PagePreloadedEvent, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
 
-export type {
-  PagePreloadedEvent,
-  PageFocusedEvent,
-  PageBlurredEvent,
-  PageRemoved,
-  ActionDispatchedEvent,
-} from './types';
+export type { PagePreloadedEvent, PageFocusedEvent, PageBlurredEvent, PageRemoved } from './types';
 
-export type AnalyticsEvent =
-  | PagePreloadedEvent
-  | PageFocusedEvent
-  | PageBlurredEvent
-  | PageRemoved
-  | ActionDispatchedEvent;
+export type AnalyticsEvent = PagePreloadedEvent | PageFocusedEvent | PageBlurredEvent | PageRemoved;
 
+// TODO(action-telemetry): an `actionDispatched` event (fed by the container's `__unsafe_action__`
+// emit) was published here — expo-observe consumed it for EAS Observe action timing. Removed with
+// the telemetry surface; a replacement dispatch-time signal + the expo-observe migration are
+// follow-up work.
 const availableEvents: AnalyticsEvent['type'][] = [
   'pagePreloaded',
   'pageFocused',
   'pageBlurred',
   'pageRemoved',
-  'actionDispatched',
 ];
 
 type EventTypeName = AnalyticsEvent['type'];

@@ -6,7 +6,7 @@ import {
   type TabRouterOptions,
 } from './TabRouter';
 import { asFocusChildAction } from './focusChild';
-import { asReconcileRouteNamesAction, isUnhandledStateRestore } from './reconcileRouteNames';
+import { asReconcileRouteNamesAction } from './reconcileRouteNames';
 import type { CommonNavigationAction, ParamListBase, Router } from './types';
 
 export type DrawerStatus = 'open' | 'closed';
@@ -106,8 +106,7 @@ export function DrawerRouter({
 
       // Reconcile delegates to the tab router's handling, then re-applies drawerStatus the same way
       // the tab-shaped result is wrapped elsewhere: the route-names-change branch spreads the current
-      // state (so it already carries `drawerStatus`), while the unhandled-restore branch produces a
-      // fresh state whose status comes from the restored unhandled state (default when absent).
+      // state, so it already carries `drawerStatus` (default when absent).
       const reconcile = asReconcileRouteNamesAction(action);
       if (reconcile) {
         // The reconcile action is handled by every router's `getStateForAction` but isn't part of any
@@ -120,16 +119,9 @@ export function DrawerRouter({
         if (tabResult == null) {
           return null;
         }
-        const source = isUnhandledStateRestore(
-          state,
-          reconcile.payload.routeNames,
-          reconcile.payload.unhandledState
-        )
-          ? reconcile.payload.unhandledState
-          : state;
         return withDrawerStatus(
           tabResult as DrawerNavigationState<ParamListBase>,
-          (source as Partial<DrawerNavigationState<ParamListBase>>).drawerStatus ?? defaultStatus
+          state.drawerStatus ?? defaultStatus
         );
       }
 

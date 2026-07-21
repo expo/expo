@@ -103,27 +103,6 @@ export type DefaultNavigatorOptions<
   UNSTABLE_router?: <Action extends NavigationAction>(
     original: Router<State, Action>
   ) => Partial<Router<State, Action>>;
-
-  /**
-   * What should happen when the available route names change.
-   * e.g. when different screens are rendered based on a condition.
-   *
-   * - 'firstMatch': Navigate to the first route in the new list of routes (default).
-   * - 'lastUnhandled': Restore the last state that was unhandled due to conditional render.
-   *
-   * Example cases where previous state might have been unhandled:
-   * - Opened a deep link to a screen, but a login screen was shown.
-   * - Navigated to a screen containing a navigator, but a different screen was shown.
-   * - Reset the navigator to a state with different routes not matching the current list of routes.
-   *
-   * In these cases, 'lastUnhandled' will reuse the unhandled state if present.
-   * If there's no unhandled state, it will fallback to 'firstMatch' behavior.
-   *
-   * Caveats:
-   * - Direct navigation is only handled for `NAVIGATE` actions.
-   * - Unhandled state is restored only if the current state becomes invalid, i.e. it doesn't contain any currently defined screens.
-   */
-  UNSTABLE_routeNamesChangeBehavior?: 'firstMatch' | 'lastUnhandled';
 } & (NavigatorID extends string
     ? {
         /**
@@ -445,10 +424,6 @@ export type NavigationContainerProps = {
    * Callback which is called after the navigation tree mounts.
    */
   onReady?: () => void;
-  /**
-   * Callback which is called when an action is not handled.
-   */
-  onUnhandledAction?: (action: Readonly<NavigationAction>) => void;
   /**
    * Whether child navigator should handle a navigation action.
    * The child navigator needs to be mounted before it can handle the action.
@@ -788,27 +763,6 @@ export type NavigationContainerEventMap = {
    * Event that fires when current options changes.
    */
   options: { data: { options: object } };
-  /**
-   * Event that fires when an action is dispatched.
-   * Only intended for debugging purposes, don't use it for app logic.
-   * This event will be emitted before state changes have been applied.
-   */
-  __unsafe_action__: {
-    data: {
-      /**
-       * The action object that was dispatched.
-       */
-      action: NavigationAction;
-      /**
-       * Whether the action was a no-op, i.e. resulted any state changes.
-       */
-      noop: boolean;
-      /**
-       * Stack trace of the action, this will only be available during development.
-       */
-      stack: string | undefined;
-    };
-  };
 };
 
 type NotUndefined<T> = T extends undefined ? never : T;

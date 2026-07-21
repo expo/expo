@@ -19,16 +19,9 @@ const committedState = () => store.navigationRef.current?.getRootState();
 function expectDismissMatchesCanDismiss() {
   const canDismiss = router.canDismiss();
   const before = JSON.stringify(committedState());
-  // When the POP isn't handled, the store rethrows the unhandled-action warning (test env only;
-  // production just logs it). That rethrow tears the container down, so an unhandled dismiss ends
-  // with no committed state at all — which is still "no state change", since nothing was reduced.
-  try {
-    act(() => router.dismiss());
-  } catch (e) {
-    if (!String(e).includes('was not handled by any navigator')) {
-      throw e;
-    }
-  }
+  // An unhandled POP is a silent no-op (no reporting, no throw), so the committed state is simply
+  // left unchanged.
+  act(() => router.dismiss());
   const after = committedState();
   const changed = after != null && JSON.stringify(after) !== before;
   expect(changed).toBe(canDismiss);

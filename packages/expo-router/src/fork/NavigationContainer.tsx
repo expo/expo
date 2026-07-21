@@ -52,7 +52,6 @@ type Props<ParamList extends object> = NavigationContainerProps & {
  * @param props.initialState Seed for the navigation tree, used verbatim (never staled). Internal/standalone-test seam only — the expo-router app path (`ExpoRoot`) must never pass it, because the store has already compiled the initial URL into the seed (see the persistence TODO in `BaseNavigationContainer`).
  * @param props.onReady Callback which is called after the navigation tree mounts.
  * @param props.onStateChange Callback which is called with the latest navigation state when it changes.
- * @param props.onUnhandledAction Callback which is called when an action is not handled.
  * @param props.direction Text direction of the components. Defaults to `'ltr'`.
  * @param props.theme Theme object for the UI elements.
  * @param props.linking Options for deep linking. Deep link handling is enabled when this prop is provided, unless `linking.enabled` is `false`.

@@ -18,12 +18,6 @@ export type NavigatorRegistryEntry = {
   reduce: NavigationReducer;
   // TODO(prevent-remove): a per-navigator `shouldPreventRemove` predicate lived here and was
   // consulted at dispatch time before committing. Reintroduce with the redesigned feature.
-  onUnhandledAction?: (action: NavigationAction) => void;
-  // Last NAVIGATE/RESET target this navigator couldn't handle (its routes weren't yet valid), held
-  // for `UNSTABLE_routeNamesChangeBehavior: 'lastUnhandled'` to restore once the route names change
-  // to include those routes. Lives on the registry entry rather than in builder component state, so
-  // the store/registry stays the single home for per-navigator navigation data.
-  unhandledState?: NavigationState | PartialState<NavigationState>;
 };
 
 export type ReducerRegistry = {

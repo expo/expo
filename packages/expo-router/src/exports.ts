@@ -93,7 +93,6 @@ export type {
   PageFocusedEvent,
   PageBlurredEvent,
   PageRemoved,
-  ActionDispatchedEvent,
   AnalyticsEvent,
 } from './navigationEvents';
 
