@@ -75,8 +75,9 @@ Useful properties the base branch already gives us (don't break these):
 - **Slice identity**: `rootReducer` splices only along the acted-on path; `useNavigationBuilder`
   asserts the render projection is identity outside route-names reconciliation. This is what makes
   cheap bail-outs possible once state moves into React.
-- **Dispatch-time semantics**: `shouldPreventRemove` / `beforeRemove` and `__unsafe_action__` run
-  synchronously at dispatch, independent of when React renders the result.
+- ~~Dispatch-time semantics~~ — the base branch runs `shouldPreventRemove` / `beforeRemove` and
+  `__unsafe_action__` synchronously at dispatch; **this branch removes both surfaces** (D1 purity
+  contract, items 1–2) rather than preserving them.
 
 ## Design
 
@@ -120,25 +121,49 @@ factoring:
 transitions, speculatively, possibly replayed after an interruption — and React may also invoke
 it eagerly at dispatch as a bail-out optimization. It must be strictly pure: no listener
 callbacks, no console output, no registry mutation, no module-global writes, no side-channel
-outputs consumed at dispatch time. Three behaviors that are dispatch-time today relocate:
+outputs consumed at dispatch time. Three dispatch-time behaviors are affected — two are removed,
+one is redesigned:
 
-1. **`beforeRemove` / `shouldPreventRemove`** cannot run inside the reducer (guards are arbitrary
-   user code — confirmation dialogs, side effects — and replayed renders would fire them
-   repeatedly). They move to a thin **dispatch interceptor**: before dispatching, run the same
-   pure reducer eagerly against the last committed state, diff the changed slices, ask the
-   guards; a veto means the action is never dispatched. Deliberate semantics change: guards now
-   protect the *rendered/committed* route — what the user sees — which is what the review
-   recommended. Caveat to pin with a test: same-tick chains (push + back before a commit) are
-   veto-evaluated against the same base state.
-2. **Unhandled-action reporting and the `__unsafe_action__` devtools event** move to the same
-   eager interceptor pass (dev builds — the same shadow-reduce trick the base branch used to
-   de-risk its own Step 8 flip).
-3. **Mount-window replay** detection moves to an effect (a pure reducer cannot requeue); replay
-   dispatches stay urgent (D5).
+1. **`beforeRemove` / `shouldPreventRemove` are removed from this branch** (decided). The whole
+   prevent-remove path goes: the `shouldPreventRemove` consultation in `dispatchRoot`, the
+   `changedSlices` side-channel the root reducer produces for it, and the `usePreventRemove` /
+   `beforeRemove` guard surface. Guards are arbitrary user code (confirmation dialogs, side
+   effects) and fundamentally cannot live inside a pure, replayable reducer — and a redesigned
+   prevention mechanism is planned separately.
+   **TODO(prevent-remove): a follow-up design replaces `usePreventRemove`/`beforeRemove` on top
+   of the reducer model — leave `TODO(prevent-remove)` markers at every removal site so the
+   surface is easy to reintroduce.** Until then, protected/guarded routes rely only on the
+   guarded-routes handling that lives inside the reducer itself (pure, already reconciled on the
+   base branch).
+2. **Unhandled-action reporting and the `__unsafe_action__` devtools event are removed**
+   (decided — not needed). `dispatchRoot` no longer produces a `handled`/`noop` verdict at
+   dispatch time; the reducer simply returns the state unchanged for actions it cannot handle.
+   The dev-ergonomics loss (the "was not handled by any navigator" console error) is accepted;
+   if it proves painful in practice, a dev-only post-commit comparison can restore a warning
+   without touching dispatch.
+3. **Mount-window replay** is redesigned to fit the pure reducer — see below.
 
-The interceptor's eager reduce is not a second source of truth: same pure function, called with
-the last committed state, used only for veto/reporting. React's own reduction at render time is
-the one that produces state.
+**What mount-window replay is.** Navigator reducers register into the registry from *layout
+effects*, i.e. only after a commit. So there is a window — the "mount window" — where a route is
+already in the tree but its navigator's reducer is not yet registered: the first render before
+any effects run, or right after a navigation commits a subtree whose navigators haven't
+registered yet. An action dispatched *inside that window* (canonical case: a descendant's mount
+effect calls `router.navigate(…)` or `preload` — e.g. a `<Redirect>` screen — before its
+ancestor navigators' registration effects have run) cannot be reduced: the root reducer walks the
+registry and finds no reducer at the origin key. The base branch handles this in `dispatchRoot`
+(`pendingReplayRef` + `replayTick`): the unhandled action is stashed, and after the next commit —
+by which point the registration effects have run — it is re-dispatched exactly once (`isReplay`
+bounds the retry), falling through to unhandled reporting if it still cannot be reduced.
+
+Under `useReducer` the stash-and-retry cannot live in `dispatchRoot` (there is no dispatch-time
+reduction to produce the "unhandled" verdict, and a pure reducer cannot requeue). The redesign
+moves the queue **into the state itself**: when the reducer receives an action whose target/origin
+has no registered reducer, it returns state with the action appended to a `pendingActions` field
+— a pure, replay-safe operation. A container effect runs after every commit (registration effects
+have run by then), re-dispatches anything in `pendingActions` (urgent, D5) with a replay marker,
+and the reducer clears the field; a replay-marked action that still finds no reducer is dropped.
+Same semantics as today (one bounded retry after the next commit), expressed as data instead of a
+ref side-channel. Spike item (h) validates this under interrupted transitions.
 
 **"Store leads render" disappears.** There is no leading committed state — unreduced actions live
 invisibly in React's queue. Every read outside the reducer reads the last *committed* tree:
@@ -179,10 +204,10 @@ Consequences to design for, not around:
   the `'state'` emitter event, focus events, and route info all fire from effects, i.e. at
   transition commit. For pathname hooks that is the desired timing (updates together with the
   screen). For others it is **not** (review finding): browser URL/history sync subscribes to the
-  `'state'` event and must not lag the store arbitrarily; `usePreventRemove` registers its guard
-  in an effect, so a screen mounted during a pending transition has no guard at dispatch time
-  (bypass window); `useFocusEffect` cleanups keep running for the whole suspend window. Each gets
-  an explicit decision + test in Step 6.
+  `'state'` event and must not lag the store arbitrarily; `useFocusEffect` cleanups keep running
+  for the whole suspend window. Each gets an explicit decision + test in Step 6. (The review's
+  third hazard here — `usePreventRemove` guard-registration lag — is mooted by removing the
+  prevent-remove surface, D1 item 1.)
 
 **Alternatives considered.**
 - *`useDeferredValue` layering* (container reads uSES, children render a deferred copy): gives
@@ -317,8 +342,9 @@ protect during a pending window?), URL/history sync, and focus-event timing.
    hydration-mismatch warnings; `useReducer(…, seed)` loses that detection — divergence becomes
    silent. Verify seed determinism explicitly (key minting, registration order under streaming
    SSR); verify `rsc/web` projects and static rendering snapshots.
-7. **DevTools & `__unsafe_action__`** stay dispatch-timed while `onStateChange` is commit-timed —
-   during a pending transition the two visibly diverge. Document; confirm devtools tolerate it.
+7. **DevTools.** The `__unsafe_action__` event is removed (D1 item 2) — confirm nothing in the
+   devtools/logging ecosystem hard-depends on it, and note the removal in the CHANGELOG.
+   `onStateChange` becomes commit-timed; confirm devtools tolerate the new timing.
 8. **The behavior change is a UX inversion for slow destinations — headline it.** Deferred commit
    means: tap → no push animation, no spinner, visually inert until data/bundle resolves → then
    push. Native platform convention is the opposite (push immediately, spinner inside). Apps must
@@ -364,20 +390,24 @@ Files: `global-state/routingQueue.ts` (mostly deleted), `global-state/router.ts`
 
 ### Step 2 — State moves into a root `useReducer`, shadowed for behavior-neutrality (D1)
 `BaseNavigationContainer` replaces `useSyncState` with
-`useReducer(rootNavigationReducer, seed)`. `dispatchRoot` becomes the thin dispatch interceptor:
-eager pure reduce against the last committed tree (guards, unhandled reporting,
-`__unsafe_action__`) → `dispatch(action)` (not yet transition-wrapped). `getNavigateAction` fuses
-into the reducer (raw `ROUTER_LINK` in, resolution inside). The root installs `dispatch` + the
-committed mirror into `global-state/store.ts` on mount, uninstalls on unmount.
-Staging trick for behavior-neutrality: the interceptor's eager reduce result is written to the
-store mirror synchronously and the store still notifies, so the existing uSES read sites behave
+`useReducer(rootNavigationReducer, seed)`. This step also performs the two decided removals:
+the prevent-remove path (`shouldPreventRemove` in `dispatchRoot`, the `changedSlices`
+side-channel, `usePreventRemove`/`beforeRemove` — leaving `TODO(prevent-remove)` markers at every
+removal site) and unhandled-action reporting + `__unsafe_action__`. `dispatchRoot` collapses to
+`dispatch(action)` (not yet transition-wrapped). `getNavigateAction` fuses into the reducer (raw
+`ROUTER_LINK` in, resolution inside); mount-window replay becomes the state-carried
+`pendingActions` mechanism (D1). The root installs `dispatch` + the committed mirror into
+`global-state/store.ts` on mount, uninstalls on unmount.
+Staging scaffolding for behavior-neutrality: a temporary eager reduce (same pure function, last
+committed tree) feeds the store mirror synchronously so the existing uSES read sites behave
 exactly as today — while React's `useReducer` reduces the same actions in parallel and a dev
 assertion checks both trees deep-equal every commit (the same shadow-compare that de-risked the
-base branch's own flip). Step 5 flips authority to the `useReducer` tree.
-Red: two same-tick dispatches chain correctly (incl. relative hrefs), veto-before-dispatch
-semantics, replay/mount-window behavior, `onStateChange` timing, shadow deep-equal across the
-suite, `renderRouter` isolation across sequential renders, independent-tree non-interference
-(risk 5).
+base branch's own flip). This scaffolding has no product role and is deleted in Step 5, which
+flips authority to the `useReducer` tree.
+Red: two same-tick dispatches chain correctly (incl. relative hrefs), replay/mount-window behavior
+via `pendingActions`, `onStateChange` timing, shadow deep-equal across the suite, `renderRouter`
+isolation across sequential renders, independent-tree non-interference (risk 5); prevent-remove
+and unsafe-action tests are deleted with their features.
 Files: `global-state/store.ts`, `global-state/rootReducer.ts`,
 `global-state/getNavigationAction.ts`, `react-navigation/core/BaseNavigationContainer.tsx`,
 `react-navigation/core/useSyncState.tsx` (deleted or absorbed).
@@ -397,8 +427,9 @@ now to *validate* the urgent-by-rule decision (D5) and characterize the urgent-f
 (D1), not to discover them;
 (g) the starvation/timeout policy decision (risk 2), written down;
 (h) **useReducer mechanics** (D1): registry-at-reduce-time semantics under interrupted/replayed
-transitions, and React's eager reducer invocation at dispatch (confirm the interceptor +
-eager-bail-out interplay does no double work and the purity contract holds);
+transitions, React's eager reducer invocation at dispatch (purity contract holds, no double
+work with the Step-2 shadow scaffolding), and the state-carried `pendingActions` replay under
+interrupted transitions;
 (i) written answers to risks 4–7 and 10 unknowns.
 No production code changes beyond the playground app.
 
@@ -422,7 +453,7 @@ until now) becomes what everything renders from, dispatches are wrapped in
 D1/D5), and every navigator simply reads the tree its parent passed down through context
 (`NavigationStateContext`), picking out its own slice with the existing `getCachedSlice`. Nothing
 subscribes to the store for rendering anymore; the store mirror updates at commit, not at
-dispatch, and the interceptor's eager reduce keeps only its veto/reporting role.
+dispatch, and the Step-2 shadow scaffolding is deleted.
 
 Why both halves land in one commit: once the reads come from the `useReducer` tree *and* the
 JS-initiated dispatch is transition-wrapped, React can prepare the next screen in the background —
@@ -462,25 +493,23 @@ per reader:
   committed state, by design).
 - The review's specific hazards get explicit decisions + tests here:
   **browser URL/history sync** (subscribes to the `'state'` event — must it be dispatch-timed so
-  the URL bar never lags the store arbitrarily during a suspension?);
-  **`usePreventRemove`/`beforeRemove`** (guards register in effects → a screen mounted during a
-  pending transition has no guard at dispatch time; and does a guard protect the rendered route
-  or the leading one?); **`useFocusEffect` cleanup** (blur fires at transition commit — outgoing
-  screen's camera/audio/polling keeps running through the suspend window: acceptable? document or
-  fix); **`useNavigationBuilder.getState()`** (public surface reading the live store while render
-  reads context).
+  the URL bar never lags arbitrarily during a suspension?);
+  **`useFocusEffect` cleanup** (blur fires at transition commit — outgoing screen's
+  camera/audio/polling keeps running through the suspend window: acceptable? document or fix);
+  **`useNavigationBuilder.getState()`** (public surface — must return the last committed tree,
+  consistent with everything else outside the reducer).
 Files: `global-state/store.ts`, `global-state/router.ts`, `global-state/useRouteInfo.ts`,
-`react-navigation/native/useLinking.ts`, `react-navigation/core/usePreventRemove.tsx`,
-`core/useNavigationBuilder.tsx`, `hooks/*` — audit-driven.
+`react-navigation/native/useLinking.ts`, `core/useNavigationBuilder.tsx`, `hooks/*` —
+audit-driven.
 
 ### Step 7 — Transition semantics test pass
 End-to-end unit coverage of the headline behaviors: bare `router.push` (router-owned transition),
 caller `startTransition` composition and caller `isPending` (sync), async transition per the
 spike's verdict, the interruption + mixed-priority matrix (second navigation while pending; back
-while pending; native-urgent while pending — decided flush semantics), `beforeRemove`/protected
-routes during pending transitions, StrictMode (incl. mount-window replay under transitions),
-`NavigationIndependentTree` (per risk 5), `testing-library` ergonomics (risks 8–9). Mostly
-tests; fix what they catch.
+while pending; native-urgent while pending — decided flush semantics), protected/guarded routes
+(reducer-internal) during pending transitions, StrictMode (incl. `pendingActions` replay under
+transitions), `NavigationIndependentTree` (per risk 5), `testing-library` ergonomics
+(risks 8–9). Mostly tests; fix what they catch.
 
 ### Step 8 — Pending-state API: `useNavigationTransitionPending` + `useLinkStatus` (D3)
 The explicit pending counter (incremented at transition-wrapped dispatch, decremented on commit,
@@ -500,6 +529,10 @@ migration note, freeze override (risk 1).
 
 ## Non-goals
 
+- **TODO(prevent-remove): re-introduce navigation prevention** — `usePreventRemove`/`beforeRemove`
+  are removed on this branch (D1 item 1); a separately-planned follow-up designs their
+  replacement on top of the reducer model. The `TODO(prevent-remove)` markers left at the removal
+  sites are the checklist.
 - **Making native-induced navigations transitions** — deferred (decision A): requires driving
   native-controlled props (`navStateRequest`, dismiss bookkeeping) from the committed store
   instead of the rendered tree. Follow-up work.
