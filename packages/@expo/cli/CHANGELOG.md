@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent `expo export` from corrupting server bundles that contain `//# sourceMappingURL=` inside a string literal ([#47981](https://github.com/expo/expo/pull/47981) by [@hassankhan](https://github.com/hassankhan))
+
 ### 💡 Others
 
 ## 57.0.9 — 2026-07-17
