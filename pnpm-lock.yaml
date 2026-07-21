@@ -1964,6 +1964,9 @@ importers:
       resolve-from:
         specifier: ^5.0.0
         version: 5.0.0
+      sandbox-cli-detector:
+        specifier: ^0.2.0
+        version: 0.2.0
       semver:
         specifier: ^7.6.0
         version: 7.7.4
