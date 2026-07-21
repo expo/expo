@@ -568,7 +568,7 @@ export async function presentPermissionsPickerAsync(
  * must be a local path, so it must start with `file:///`
  *
  * @param album An [Album](#album) or its ID. If provided, the asset will be added to this album upon creation, otherwise it will be added to the default album for the media type.
- * The album has exist.
+ * The album has to exist.
  * @return A promise which fulfils with an object representing an [`Asset`](#asset).
  */
 export async function createAssetAsync(localUri: string, album?: AlbumRef): Promise<Asset> {

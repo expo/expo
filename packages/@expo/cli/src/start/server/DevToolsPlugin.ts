@@ -18,8 +18,7 @@ export type { DevToolsPluginRequestHandler } from './DevToolsPluginServerHelpers
  *
  * Responsibilities:
  * - Validates plugin configuration against schema
- * - Provides access to plugin metadata (name, description
- * , endpoints)
+ * - Provides access to plugin metadata (name, description, endpoints)
  * - Manages CLI command execution via DevToolsPluginExecutor
  * - Lazily initializes executor when needed
  * - Constructs web endpoint URLs based on server configuration

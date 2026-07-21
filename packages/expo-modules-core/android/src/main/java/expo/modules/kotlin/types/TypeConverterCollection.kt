@@ -1,7 +1,6 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.exception.toCodedException
@@ -42,7 +41,7 @@ class TypeConverterCollection<Type : Any>(
     return this
   }
 
-  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): Type {
+  override fun convertNonNullable(value: Any, context: ConverterContext, forceConversion: Boolean): Type {
     val possibleConverters = converters
       .map { (key, converter) -> key to converter }
       .filter { (key, _) -> key.jClass.toBoxedIfPrimitive().isInstance(value) }

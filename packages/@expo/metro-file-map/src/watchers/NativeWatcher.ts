@@ -24,7 +24,7 @@ const RECRAWL_EVENT = 'recrawl';
  * NativeWatcher uses Node's native fs.watch API with recursive: true.
  *
  * Supported on macOS (and potentially Windows), because both natively have a
- * concept of recurisve watching, via FSEvents and ReadDirectoryChangesW
+ * concept of recursive watching, via FSEvents and ReadDirectoryChangesW
  * respectively. Notably Linux lacks this capability at the OS level.
  *
  * Node.js has at times supported the `recursive` option to fs.watch on Linux

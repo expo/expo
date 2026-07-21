@@ -21,8 +21,8 @@ const logs: LogBoxLog[] = [
 ];
 
 /**
- * Empty App skeleton used as a workaround to prebuilt the Expo LogBox DOM Component.
- * (DOM Components are build during `expo export:embed`)
+ * Empty App skeleton used as a workaround to prebuild the Expo LogBox DOM Component.
+ * (DOM Components are built during `expo export:embed`)
  *
  * Also used for the DOM Component UI preview via `pnpm start`.
  */

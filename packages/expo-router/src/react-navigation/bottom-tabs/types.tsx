@@ -290,7 +290,7 @@ export type BottomTabNavigationOptions = HeaderOptions & {
    * Supported values:
    * - 'none': don't animate the screen (default)
    * - 'fade': cross-fade the screens.
-   * - 'shift': shift the screens slightly shift to left/right.
+   * - 'shift': shift the screens slightly to left/right.
    */
   animation?: TabAnimationName;
 

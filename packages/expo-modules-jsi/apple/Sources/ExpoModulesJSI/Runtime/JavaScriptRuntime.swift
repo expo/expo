@@ -598,6 +598,19 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     }
   }
 
+  /// Runs a closure synchronously when already on the JavaScript thread, or schedules it
+  /// asynchronously otherwise. Unlike ``schedule(priority:_:)``, this can reenter the caller.
+  public func runOrSchedule(
+    priority: SchedulerPriority = .normal,
+    @_implicitSelfCapture _ closure: @escaping @JavaScriptActor () -> Void
+  ) {
+    if isOnJavaScriptThread() {
+      JavaScriptActor.assumeIsolated(closure)
+    } else {
+      schedule(priority: priority, closure)
+    }
+  }
+
   /// Checks whether the function is called on the JavaScript thread.
   @inline(__always)
   public final func isOnJavaScriptThread() -> Bool {

@@ -22,7 +22,7 @@ export const nativeApplicationVersion: string | null = ExpoApplication
 // @needsAudit
 /**
  * The internal build version of the native application that the app stores may use to distinguish
- * between different binaries. At the time when native app is built, On Android, this is the version
+ * between different binaries. At the time when native app is built, on Android, this is the version
  * code set by `android.versionCode` in app config, and on iOS, the `Info.plist` value for
  * `CFBundleVersion` (set with `ios.buildNumber` value in app config in a standalone app).
  * On web, this value is `null`. The return type on Android and iOS is `string`.
