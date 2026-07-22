@@ -33,6 +33,7 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
         return _bundleConfiguration
       }
 #if os(iOS) || os(tvOS)
+      adoptInfoPlistMetroPort()
       return ExpoBundleConfiguration.configuration(bundleURL: self.delegate?.bundleURL())
 #else
       return super.bundleConfiguration
@@ -42,6 +43,31 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
       _bundleConfiguration = newValue
     }
   }
+
+#if os(iOS) || os(tvOS)
+  private func adoptInfoPlistMetroPort() {
+#if DEBUG
+    if NSClassFromString("EXDevLauncherController") != nil {
+      return
+    }
+    guard let port = Bundle.main.object(forInfoDictionaryKey: "RCTMetroPort") as? String,
+      !port.isEmpty else {
+      return
+    }
+    var host = "localhost"
+    if let ipPath = Bundle.main.path(forResource: "ip", ofType: "txt"),
+      let ip = try? String(contentsOfFile: ipPath, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines),
+      !ip.isEmpty {
+      host = ip
+    }
+    let settings = RCTBundleURLProvider.sharedSettings()
+    let target = "\(host):\(port)"
+    if settings.jsLocation != target {
+      settings.jsLocation = target
+    }
+#endif
+  }
+#endif
 
   @MainActor
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
@@ -91,6 +117,10 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
         return bundleURL
       }
     }
+
+#if os(iOS) || os(tvOS)
+    adoptInfoPlistMetroPort()
+#endif
 
     let rootView: UIView
     if let factory = self.rootViewFactory as? ExpoReactRootViewFactory {
