@@ -4,6 +4,7 @@ import React
 
 public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
+  private var _bundleConfiguration: RCTBundleConfiguration?
 
   @MainActor
   private lazy var reactDelegate: ExpoReactDelegate = {
@@ -24,6 +25,22 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     ?? RCTReleaseLevel.Stable
 
     super.init(delegate: delegate, releaseLevel: releaseLevel)
+  }
+
+  public override var bundleConfiguration: RCTBundleConfiguration {
+    get {
+      if let _bundleConfiguration {
+        return _bundleConfiguration
+      }
+#if os(iOS) || os(tvOS)
+      return ExpoBundleConfiguration.configuration(bundleURL: self.delegate?.bundleURL())
+#else
+      return super.bundleConfiguration
+#endif
+    }
+    set {
+      _bundleConfiguration = newValue
+    }
   }
 
   @MainActor
@@ -78,14 +95,18 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     let rootView: UIView
     if let factory = self.rootViewFactory as? ExpoReactRootViewFactory {
       // RCTDevMenuConfiguration is only available in react-native 0.83+
+      // bundleConfiguration is only accepted in react-native 0.84+
 #if os(iOS) || os(tvOS)
+      let bundleConfiguration = ExpoBundleConfiguration.configuration(
+        bundleURL: withBundleURL ?? configuration?.bundleURLBlock()
+      )
       // When calling `recreateRootViewWithBundleURL:` from `EXReactRootViewFactory`,
       // we don't want to loop the ReactDelegate again. Otherwise, it will be an infinite loop.
       rootView = factory.superView(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions ?? [:],
-        bundleConfiguration: RCTBundleConfiguration.default(),
+        bundleConfiguration: bundleConfiguration,
         devMenuConfiguration: self.devMenuConfiguration
       )
 #else
@@ -97,11 +118,14 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
 #endif
     } else {
 #if os(iOS) || os(tvOS)
+      let bundleConfiguration = ExpoBundleConfiguration.configuration(
+        bundleURL: withBundleURL ?? configuration?.bundleURLBlock()
+      )
       rootView = rootViewFactory.view(
         withModuleName: moduleName ?? defaultModuleName,
         initialProperties: initialProps,
         launchOptions: launchOptions,
-        bundleConfiguration: RCTBundleConfiguration.default(),
+        bundleConfiguration: bundleConfiguration,
         devMenuConfiguration: self.devMenuConfiguration ?? RCTDevMenuConfiguration.default()
       )
 #else
