@@ -8,6 +8,7 @@ import {
   getProjectMetadata,
   getUserMetadataAsync,
   resolveFeedbackAsync,
+  resolveFeedbackId,
   runExpoFeedbackAsync,
   sendFeedbackAsync,
 } from '../cli';
@@ -72,11 +73,32 @@ describe('help output', () => {
       expect(helpOutput).toContain(
         '| unknown    | Concise Expo product, package, feature, or topic, or leave empty'
       );
+      expect(helpOutput).toContain('--resume <feedbackId>');
+      expect(helpOutput).toContain(
+        'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected'
+      );
     } finally {
       process.argv = originalArgv;
       consoleLogSpy.mockRestore();
     }
   });
+});
+
+describe('feedback session ID', () => {
+  it('generates a short hexadecimal ID when one is not provided', () => {
+    expect(resolveFeedbackId()).toMatch(/^[a-f0-9]{12}$/);
+  });
+
+  it('uses a valid provided ID', () => {
+    expect(resolveFeedbackId('session_ABC-123')).toBe('session_ABC-123');
+  });
+
+  it.each(['short', 'contains spaces', 'contains/slash', 'a'.repeat(65)])(
+    'generates a new ID for invalid ID %p',
+    (feedbackId) => {
+      expect(resolveFeedbackId(feedbackId)).toMatch(/^[a-f0-9]{12}$/);
+    }
+  );
 });
 
 describe('feedback message resolution', () => {
@@ -277,6 +299,8 @@ describe('feedback submission', () => {
     };
     delete env.EXPO_STAGING;
     delete env.EXPO_TOKEN;
+    delete env.DO_NOT_TRACK;
+    delete env.EXPO_NO_TELEMETRY;
     process.env = env;
     writeJson(path.join(projectRoot, 'package.json'), {
       name: 'not-an-expo-app',
@@ -324,6 +348,7 @@ describe('feedback submission', () => {
     expect(AbortSignal.timeout).toHaveBeenCalledWith(15_000);
     expect(metadata).toMatchObject({
       category: 'mcp',
+      feedbackId: expect.stringMatching(/^[a-f0-9]{12}$/),
       subject: 'expo-mcp',
       agentEnvironment: {
         detected: true,
@@ -350,4 +375,101 @@ describe('feedback submission', () => {
       },
     });
   });
+
+  it('resumes a feedback session and prints instructions using the provided ID', async () => {
+    const originalArgv = process.argv;
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
+    process.argv = [
+      'node',
+      'submit-expo-feedback',
+      '--resume',
+      'session_ABC-123',
+      'one more detail',
+    ];
+
+    try {
+      await runExpoFeedbackAsync();
+
+      const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+      expect(requestBody).toMatchObject({
+        feedback: 'one more detail',
+        metadata: {
+          feedbackId: 'session_ABC-123',
+        },
+      });
+      expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+        'To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume session_ABC-123'
+      );
+    } finally {
+      process.argv = originalArgv;
+    }
+  });
+
+  it('replaces an invalid feedback ID and reports the generated ID', async () => {
+    const originalArgv = process.argv;
+    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+    jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
+    process.argv = ['node', 'submit-expo-feedback', '--resume', 'invalid/id', 'one more detail'];
+
+    try {
+      await runExpoFeedbackAsync();
+
+      const requestBody = JSON.parse(fetchMock.mock.calls[0][1].body);
+      const feedbackId = requestBody.metadata.feedbackId;
+      expect(feedbackId).toMatch(/^[a-f0-9]{12}$/);
+      expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+        `The provided feedback ID is invalid, so a new one was generated: ${feedbackId}`
+      );
+      expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+        `npx submit-expo-feedback@latest --resume ${feedbackId}`
+      );
+    } finally {
+      process.argv = originalArgv;
+    }
+  });
+
+  it.each(['DO_NOT_TRACK', 'EXPO_NO_TELEMETRY'] as const)(
+    'omits telemetry data and authentication when %s=1',
+    async (environmentVariable) => {
+      const originalArgv = process.argv;
+      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+      jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
+      process.env[environmentVariable] = '1';
+      process.env.EXPO_TOKEN = 'token';
+      process.argv = [
+        'node',
+        'submit-expo-feedback',
+        '--category',
+        'mcp',
+        '--subject',
+        'expo-mcp',
+        '--resume',
+        'session_ABC-123',
+        'private feedback',
+      ];
+
+      try {
+        await runExpoFeedbackAsync();
+
+        const request = fetchMock.mock.calls[0][1];
+        expect(JSON.parse(request.body)).toEqual({
+          feedback: 'private feedback',
+          metadata: {
+            category: 'mcp',
+            feedbackId: 'session_ABC-123',
+            subject: 'expo-mcp',
+          },
+        });
+        expect(request.headers).toEqual({
+          'Content-Type': 'application/json',
+        });
+        expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+          'Submitting feedback without telemetry data because telemetry collection is disabled.'
+        );
+      } finally {
+        process.argv = originalArgv;
+      }
+    }
+  );
 });
