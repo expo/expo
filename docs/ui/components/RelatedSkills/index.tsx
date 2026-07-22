@@ -2,6 +2,7 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import expoSkillsData from '~/ui/components/ExpoSkillsTable/data/expo-skills.json';
+import { renderDescription } from '~/ui/components/utils/renderDescription';
 
 type Skill = {
   name: string;
@@ -31,7 +32,9 @@ export function RelatedSkills({ names, descriptions }: RelatedSkillsProps) {
         <BoxLink
           key={skill.name}
           title={skill.name}
-          description={descriptions?.[skill.name] ?? firstSentence(skill.description)}
+          description={renderDescription(
+            descriptions?.[skill.name] ?? firstSentence(skill.description)
+          )}
           href={skill.githubUrl}
           Icon={GithubIcon}
         />
