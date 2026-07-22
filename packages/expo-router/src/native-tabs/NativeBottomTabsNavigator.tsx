@@ -5,12 +5,12 @@ import type { NavigatorArgs, NavigatorDescriptor, NavigatorRoute } from 'standar
 
 import { useRouteNode } from '../Route';
 import { getNavigateAction } from '../global-state/getNavigationAction';
+import { store } from '../global-state/store';
 import {
   NavigatorTypeContext,
   useNavigatorTypeContextValue,
 } from '../react-navigation/core/NavigatorTypeContext';
 import { useStableTabOrder } from '../react-navigation/core/useStableTabOrder';
-import { useStoreSlice } from '../react-navigation/core/useStoreSlice';
 import type {
   NavigationAction,
   ParamListBase,
@@ -89,7 +89,11 @@ function NativeTabsContent({
   const { routes } = state;
   const routeNode = useRouteNode();
   const hrefMap = useMemo(() => getRouteNodeHrefMap(), [routeNode]);
-  const committedState = useStoreSlice(stateKey);
+  // First-visit detection must read the *committed* slice, not the rendered `state`: post the
+  // transitions flip the rendered tree can lead the committed one during a pending navigation.
+  const committedState = store.getCommittedSlice(stateKey) as
+    | TabNavigationState<ParamListBase>
+    | undefined;
 
   // TODO: Consider supporting lazy routes here (preload only non-lazy tabs, like the JS navigators)
   // instead of always mounting every tab - would defer offscreen tab cost on the native side.

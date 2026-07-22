@@ -317,6 +317,21 @@ describe(rootReducer, () => {
     });
   });
 
+  it('returns the identical root reference on a nested no-op (does not rebuild ancestors)', () => {
+    const registry = createReducerRegistry();
+
+    // A nested (non-root) target whose reducer returns its slice unchanged: the reduction is a
+    // genuine no-op, so the whole tree — including every ancestor `replacePathState` walks through —
+    // must come back referentially identical. Referential identity (not `toMatchObject`) is what
+    // `canGoBack`/`canDismiss` rely on post-flip (`reduceRoot(...).state === committed`).
+    registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
+
+    const result = rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry);
+
+    expect(result.noop).toBe(true);
+    expect(result.state).toBe(rootState);
+  });
+
   it('does not revisit an ancestor after a focused child cannot handle the action', () => {
     const registry = createReducerRegistry();
     const action: NavigationAction = {

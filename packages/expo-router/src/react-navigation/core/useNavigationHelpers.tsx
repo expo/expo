@@ -21,7 +21,7 @@ PrivateValueStore;
 
 type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
-  onAction: (action: NavigationAction) => boolean;
+  onAction: (action: NavigationAction) => void;
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;

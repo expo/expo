@@ -11,8 +11,8 @@ import {
 } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
+import { store } from '../../../global-state/store';
 import { useStableTabOrder } from '../../core/useStableTabOrder';
-import { useStoreSlice } from '../../core/useStoreSlice';
 import { getDefaultSidebarWidth, getLabel, MissingIcon, useFrameSize } from '../../elements';
 import {
   CommonActions,
@@ -132,7 +132,10 @@ export const getTabBarHeight = ({
 };
 
 export function BottomTabBar({ state, navigation, descriptors, insets, style }: Props) {
-  const committedState = useStoreSlice(state.key);
+  // First-visit detection must read the *committed* slice, not the rendered `state`: post the
+  // transitions flip the rendered tree can lead the committed one during a pending navigation, so
+  // `state` might already show a speculatively-rendered tab that hasn't committed.
+  const committedState = store.getCommittedSlice(state.key);
   const { colors } = useTheme();
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();

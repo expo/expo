@@ -2,7 +2,7 @@ import React from 'react';
 import { I18nManager } from 'react-native';
 
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
-import { useImperativeApiEmitter } from '../imperative-api';
+import { useFlushPreReadyActions } from '../imperative-api';
 import type {
   DocumentTitleOptions,
   LinkingOptions,
@@ -81,7 +81,7 @@ function NavigationContainerInner(
 
   useBackButton(refContainer);
   useDocumentTitle(refContainer, documentTitle);
-  useImperativeApiEmitter(refContainer);
+  useFlushPreReadyActions();
 
   const [lastUnhandledLink, setLastUnhandledLink] = React.useState<string | undefined>();
 

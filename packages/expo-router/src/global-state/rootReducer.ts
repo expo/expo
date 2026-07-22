@@ -7,7 +7,9 @@ import {
   type NavigationState,
   type PartialState,
 } from '../react-navigation/routers';
+import { type ResolveNavigateConfig, resolveNavigateAction } from './getNavigationAction';
 import type { ReducerRegistry } from './storeContext';
+import type { LinkToOptions } from './types';
 
 type PayloadState = NavigationState | PartialState<NavigationState>;
 
@@ -49,10 +51,10 @@ type PathEntry = {
   routeIndex?: number;
 };
 
-// Public entry point. Kept as a thin delegator over `reduceRoot` so that a test spying on this
-// export (or the eager dispatch path) observes exactly one reduction per dispatch: the Step-2 shadow
-// `useReducer` reduces through `reduceRoot` directly (see `createShadowReducer`), bypassing this
-// symbol, so it doesn't inflate that call count.
+// Imperative "would this action change the committed tree?" entry point — `canGoBack`/`canDismiss`
+// call it against the last committed tree and compare the result by identity (a no-op returns the
+// identical tree). The authoritative render path is `reduceRootNavigation` (the root `useReducer`),
+// which calls `reduceRoot` directly.
 export function rootReducer(
   tree: NavigationState,
   action: NavigationAction,
@@ -62,24 +64,125 @@ export function rootReducer(
   return reduceRoot(tree, action, registry, options);
 }
 
-export type ShadowState = { tree: NavigationState; seq: number };
-export type ShadowEnvelope = {
-  action: NavigationAction;
-  options?: { originKey?: string };
-  seq: number;
+// A raw `ROUTER_LINK` intent (`router.push`/`Link`/deep link) resolved inside the reducer via
+// `resolveNavigateAction` against the reducer's own committed tree — so a link that targets a nested
+// navigator still mid-mount resolves after React's deferred reduction has run the registration
+// effects (the queue's old one-cycle deferral, now native to the render flip). The external-redirect
+// / malformed-link side effects stay in the dispatch funnel, so a `ROUTER_LINK` that reaches the
+// reducer is always an internal, resolvable link.
+interface RouterLinkAction {
+  type: 'ROUTER_LINK';
+  payload: { href: string; options: LinkToOptions };
+}
+
+// The authoritative root `useReducer` state. `tree` is the committed navigation tree everything
+// renders from; `pendingActions` holds mount-window actions that couldn't reduce yet (the origin
+// navigator's reducer wasn't registered at reduce time) for the container to replay after the next
+// commit — the state-carried replacement for the old `pendingReplayRef`.
+export type RootNavigationState = {
+  tree: NavigationState;
+  pendingActions: PendingAction[];
 };
 
-// The reducer for the Step-2 shadow `useReducer`, closing over the registry. It calls `reduceRoot`
-// directly (not the `rootReducer` export) so a spy on `rootReducer` sees only the eager path, and
-// consumes an envelope carrying the same `originKey` the eager path used plus the dispatch's `seq`
-// (so the container can compare the shadow against the eager tree of the *same* dispatch, immune to
-// the shadow's one-commit lag). TODO(step-5): the shadow becomes the authoritative reducer and this
-// adapter is deleted.
-export function createShadowReducer(registry: ReducerRegistry) {
-  return (state: ShadowState, envelope: ShadowEnvelope): ShadowState => ({
-    tree: reduceRoot(state.tree, envelope.action, registry, envelope.options ?? {}).state,
-    seq: envelope.seq,
-  });
+type PendingAction = {
+  action: NavigationAction;
+  originKey?: string;
+  // Identity of the action object as dispatched, so an append is idempotent under React's eager +
+  // render (+ replayed-transition) double reducer invocation. For a `ROUTER_LINK` this is the raw
+  // intent object (stable — `router.push` dispatches one), never the freshly-resolved action.
+  id: object;
+};
+
+export type RootReducerEnvelope = {
+  action: NavigationAction;
+  originKey?: string;
+  // A native-induced (urgent) dispatch or a mount-window replay. Urgent-source actions never enter
+  // `pendingActions` regardless of target (D5); a replay-marked action still unhandled is dropped.
+  urgent?: boolean;
+  isReplay?: boolean;
+  // Per-reduction resolver config (linking + redirects + registry predicate), threaded from a
+  // render-updated source so `ROUTER_LINK` resolution sees the current linking config (Fast Refresh /
+  // route-file changes regenerate it). Absent for non-link actions and in contexts without linking.
+  config?: ResolveNavigateConfig;
+};
+
+// The authoritative reducer for the root `useReducer`. Closes over the registry (stable per
+// container). Resolves `ROUTER_LINK` intents, reduces through `reduceRoot`, and maintains
+// `pendingActions` for the mount-window replay — all purely, so React may invoke it eagerly at
+// dispatch and again at render without side effects or divergence.
+export function createRootNavigationReducer(registry: ReducerRegistry) {
+  return (state: RootNavigationState, envelope: RootReducerEnvelope): RootNavigationState =>
+    reduceRootNavigation(state, envelope, registry);
+}
+
+export function reduceRootNavigation(
+  state: RootNavigationState,
+  envelope: RootReducerEnvelope,
+  registry: ReducerRegistry
+): RootNavigationState {
+  const { originKey, urgent, isReplay, config } = envelope;
+  let { action } = envelope;
+  // The identity key for idempotent pending-append: the raw intent for a link, else the action.
+  const id: object = action;
+
+  if (action.type === 'ROUTER_LINK') {
+    const link = action as RouterLinkAction;
+    if (config == null) {
+      // No linking config to resolve against (non-router container / not ready). Nothing to reduce.
+      return state;
+    }
+    const resolved = resolveNavigateAction(
+      link.payload.href,
+      link.payload.options,
+      state.tree,
+      config,
+      link.payload.options.event,
+      link.payload.options.withAnchor,
+      link.payload.options.dangerouslySingular,
+      !!link.payload.options.__internal__PreviewKey
+    );
+    // A redirect already consumed the navigation, or the path didn't compile — reduce to a no-op
+    // (matching the old drain's "skip dispatch when getNavigateAction returns undefined").
+    if (resolved == null) {
+      return state;
+    }
+    action = resolved as NavigationAction;
+  }
+
+  const result = reduceRoot(state.tree, action, registry, { originKey });
+
+  // A replay always leaves the queue: the entry drains whether it reduced or is now dropped
+  // (drop-after-one-retry). A fresh (non-replay) reduction leaves the queue untouched unless it
+  // needs to append (below).
+  const pendingAfterReplay = isReplay
+    ? state.pendingActions.filter((entry) => entry.id !== id)
+    : state.pendingActions;
+
+  if (!result.handled) {
+    const originUnregistered = originKey != null && !registry.hasReducer(originKey);
+    const isDeferrable = action.type === 'PRELOAD' || action.target == null;
+    // Source-gated (D5): urgent-native actions never queue regardless of target; a replay-marked
+    // action that still can't reduce is dropped (bounding the retry to once — it left the queue
+    // via `pendingAfterReplay` and is not re-appended).
+    if (originUnregistered && isDeferrable && !urgent && !isReplay) {
+      if (state.pendingActions.some((entry) => entry.id === id)) {
+        return state; // Idempotent: already queued (double reducer invocation).
+      }
+      return {
+        tree: state.tree,
+        pendingActions: [...state.pendingActions, { action: envelope.action, originKey, id }],
+      };
+    }
+    return pendingAfterReplay === state.pendingActions
+      ? state
+      : { tree: state.tree, pendingActions: pendingAfterReplay };
+  }
+
+  if (result.state === state.tree && pendingAfterReplay === state.pendingActions) {
+    return state;
+  }
+
+  return { tree: result.state, pendingActions: pendingAfterReplay };
 }
 
 export function reduceRoot(
@@ -112,7 +215,7 @@ export function reduceRoot(
 
     if (reducedKeys.has(state.key)) {
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, nestedBoundary }
+        ? { state: changed ? currentTree : tree, handled: true, noop: !changed, nestedBoundary }
         : { state: tree, handled: false, noop: true };
     }
 
@@ -120,7 +223,7 @@ export function reduceRoot(
 
     if (entry == null) {
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, nestedBoundary }
+        ? { state: changed ? currentTree : tree, handled: true, noop: !changed, nestedBoundary }
         : { state: tree, handled: false, noop: true };
     }
 
@@ -153,7 +256,12 @@ export function reduceRoot(
       }
 
       if (currentAction.target === state.key) {
-        return { state: currentTree, handled: true, noop: !changed, nestedBoundary };
+        return {
+          state: changed ? currentTree : tree,
+          handled: true,
+          noop: !changed,
+          nestedBoundary,
+        };
       }
 
       if (currentAction.target == null) {
@@ -162,7 +270,7 @@ export function reduceRoot(
       }
 
       return handled
-        ? { state: currentTree, handled: true, noop: !changed, nestedBoundary }
+        ? { state: changed ? currentTree : tree, handled: true, noop: !changed, nestedBoundary }
         : { state: tree, handled: false, noop: true };
     }
 
@@ -194,7 +302,7 @@ export function reduceRoot(
     }
 
     if (currentAction.type === 'GO_BACK') {
-      return { state: currentTree, handled: true, noop: !changed, nestedBoundary };
+      return { state: changed ? currentTree : tree, handled: true, noop: !changed, nestedBoundary };
     }
 
     const focusedRoute = nextState.routes[nextState.index];
@@ -216,11 +324,11 @@ export function reduceRoot(
         };
       }
 
-      return { state: currentTree, handled: true, noop: !changed, nestedBoundary };
+      return { state: changed ? currentTree : tree, handled: true, noop: !changed, nestedBoundary };
     }
 
     if (nestedAction == null && reducedKeys.has(childState.key)) {
-      return { state: currentTree, handled: true, noop: !changed, nestedBoundary };
+      return { state: changed ? currentTree : tree, handled: true, noop: !changed, nestedBoundary };
     }
 
     if (nestedAction != null) {
@@ -232,7 +340,7 @@ export function reduceRoot(
   }
 
   return handled
-    ? { state: currentTree, handled: true, noop: !changed, nestedBoundary }
+    ? { state: changed ? currentTree : tree, handled: true, noop: !changed, nestedBoundary }
     : { state: tree, handled: false, noop: true };
 }
 

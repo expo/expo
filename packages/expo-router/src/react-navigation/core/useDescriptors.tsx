@@ -66,7 +66,7 @@ type Options<
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
   screenLayout: ScreenLayout<ScreenOptions> | undefined;
-  onAction: (action: NavigationAction) => boolean;
+  onAction: (action: NavigationAction) => void;
   getState: () => State;
   addListener: AddListener;
   router: Router<State, NavigationAction>;
@@ -101,8 +101,7 @@ export function useDescriptors<
 }: Options<State, ScreenOptions, EventMap>) {
   const theme = use(ThemeContext);
   const [options, setOptions] = React.useState<Record<string, ScreenOptions>>({});
-  const { dispatchRoot, onOptionsChange, scheduleUpdate, flushUpdates } =
-    use(NavigationBuilderContext);
+  const { dispatchRoot, onOptionsChange } = use(NavigationBuilderContext);
 
   const context = React.useMemo(
     () => ({
@@ -111,10 +110,8 @@ export function useDescriptors<
       addListener,
       dispatchRoot,
       onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
     }),
-    [navigation, onAction, addListener, dispatchRoot, onOptionsChange, scheduleUpdate, flushUpdates]
+    [navigation, onAction, addListener, dispatchRoot, onOptionsChange]
   );
 
   const { base, navigations } = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({

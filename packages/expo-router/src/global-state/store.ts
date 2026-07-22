@@ -79,6 +79,27 @@ function assertStateIsComplete(state: ReactNavigationState, path: string[] = [])
   }
 }
 
+// Depth-first search for the committed sub-state whose key matches, mirroring the old
+// `getCachedSlice` lookup but against the imperative committed tree rather than the render store.
+function findSliceByKey(
+  state: ReactNavigationState | undefined,
+  key: string
+): ReactNavigationState | undefined {
+  if (state == null || (state as { stale?: unknown }).stale !== false) {
+    return undefined;
+  }
+  if (state.key === key) {
+    return state;
+  }
+  for (const route of state.routes) {
+    const slice = findSliceByKey(route.state as ReactNavigationState | undefined, key);
+    if (slice != null) {
+      return slice;
+    }
+  }
+  return undefined;
+}
+
 export const store = {
   shouldShowTutorial() {
     return !storeRef.current.routeNode && process.env.NODE_ENV === 'development';
@@ -106,6 +127,13 @@ export const store = {
   },
   getRouteInfo(): UrlObject {
     return storeRef.current.routeInfo || defaultRouteInfo;
+  },
+  // The committed slice for a navigator key, walked from the last committed tree. Used where a
+  // navigator must distinguish "already committed" from the rendered tree, which — post the Step-5
+  // transitions flip — can lead the committed tree during a pending navigation (e.g. a tab's
+  // first-visit detection must not treat a speculatively-rendered tab as already visited).
+  getCommittedSlice(key: string): ReactNavigationState | undefined {
+    return findSliceByKey(store.state, key);
   },
   get redirects() {
     return storeRef.current.redirects || [];
