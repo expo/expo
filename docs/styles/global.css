@@ -3,6 +3,15 @@
 
 @import './tailwind-compat.css';
 
+:root {
+  /* AA contrast on palette blue3/blue4 backgrounds, where text-link falls short */
+  --expo-theme-text-link-on-blue: #0c6bbf;
+}
+
+.dark-theme {
+  --expo-theme-text-link-on-blue: var(--blue-11);
+}
+
 @layer base {
   html {
     @apply bg-default;
