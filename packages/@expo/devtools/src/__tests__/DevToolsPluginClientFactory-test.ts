@@ -5,13 +5,11 @@ import { TextDecoder, TextEncoder } from 'node:util';
 import {
   cleanupDevToolsPluginInstances,
   getDevToolsPluginClientAsync,
+  setGetConnectionInfo,
 } from '../DevToolsPluginClientFactory';
 import { DevToolsPluginClientImplApp } from '../DevToolsPluginClientImplApp';
 import { DevToolsPluginClientImplBrowser } from '../DevToolsPluginClientImplBrowser';
-import { getConnectionInfo } from '../getConnectionInfo';
 import MockWebSocket from './MockWebSocket';
-
-jest.mock('../getConnectionInfo');
 
 // @ts-expect-error - We don't mock all properties from WebSocket
 globalThis.WebSocket = MockWebSocket;
@@ -23,7 +21,12 @@ globalThis.TextEncoder ??= TextEncoder;
 const TEST_PROTOCOL_VERSION = 1;
 
 describe(getDevToolsPluginClientAsync, () => {
-  const mockGetConnectionInfo = getConnectionInfo as jest.MockedFunction<typeof getConnectionInfo>;
+  let mockConnectionInfo: ReturnType<Parameters<typeof setGetConnectionInfo>[0]>;
+
+  function setConnectionInfo(info: typeof mockConnectionInfo) {
+    mockConnectionInfo = info;
+    setGetConnectionInfo(() => mockConnectionInfo);
+  }
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -31,7 +34,7 @@ describe(getDevToolsPluginClientAsync, () => {
   });
 
   it('should return a DevToolsPluginClientImplApp client when sender is from app', async () => {
-    mockGetConnectionInfo.mockReturnValue({
+    setConnectionInfo({
       protocolVersion: TEST_PROTOCOL_VERSION,
       useWss: false,
       sender: 'app',
@@ -42,7 +45,7 @@ describe(getDevToolsPluginClientAsync, () => {
   });
 
   it('should return a DevToolsPluginClientImplApp client when sender is from browser', async () => {
-    mockGetConnectionInfo.mockReturnValue({
+    setConnectionInfo({
       protocolVersion: TEST_PROTOCOL_VERSION,
       useWss: false,
       sender: 'browser',
@@ -53,7 +56,7 @@ describe(getDevToolsPluginClientAsync, () => {
   });
 
   it('should return the same client from the same plugin name when called multiple times', async () => {
-    mockGetConnectionInfo.mockReturnValue({
+    setConnectionInfo({
       protocolVersion: TEST_PROTOCOL_VERSION,
       useWss: false,
       sender: 'app',
@@ -67,7 +70,7 @@ describe(getDevToolsPluginClientAsync, () => {
   });
 
   it('should return a new client from the same plugin name from disconnected', async () => {
-    mockGetConnectionInfo.mockReturnValue({
+    setConnectionInfo({
       protocolVersion: TEST_PROTOCOL_VERSION,
       useWss: false,
       sender: 'app',
@@ -84,7 +87,7 @@ describe(getDevToolsPluginClientAsync, () => {
   it('should return a new client from the same plugin name when devServer changed', async () => {
     const pluginName = 'testPlugin';
 
-    mockGetConnectionInfo.mockReturnValueOnce({
+    setConnectionInfo({
       protocolVersion: TEST_PROTOCOL_VERSION,
       useWss: false,
       sender: 'app',
@@ -92,19 +95,20 @@ describe(getDevToolsPluginClientAsync, () => {
     });
     const client = await getDevToolsPluginClientAsync(pluginName);
 
-    mockGetConnectionInfo.mockReturnValueOnce({
+    // Update the connection info to point to a different devServer
+    mockConnectionInfo = {
       protocolVersion: TEST_PROTOCOL_VERSION,
       useWss: false,
       sender: 'app',
       devServer: 'localhost:8082',
-    });
+    };
     const client2 = await getDevToolsPluginClientAsync(pluginName);
 
     expect(client).not.toBe(client2);
   });
 
   it('should have at most one client per plugin name', async () => {
-    mockGetConnectionInfo.mockReturnValue({
+    setConnectionInfo({
       protocolVersion: TEST_PROTOCOL_VERSION,
       useWss: false,
       sender: 'app',
