@@ -142,6 +142,17 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     }
   }
 
+  var maxResolution: VideoSize? {
+    didSet {
+      let resolution = maxResolution?.toCGSize() ?? .zero
+      if resolution == .zero && maxResolution != nil {
+        appContext?.jsLogger.warn("[expo-video] Ignoring invalid `maxResolution`: `width` and `height` must both be greater than zero. Clearing the resolution limit.")
+        maxResolution = nil
+      }
+      ref.currentItem?.preferredMaximumResolution = resolution
+    }
+  }
+
   var bufferedPosition: Double {
     return getBufferedPosition()
   }
@@ -421,6 +432,7 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
     )
     safeEmit(event: "sourceChange", payload: payload)
     newVideoPlayerItem?.preferredForwardBufferDuration = bufferOptions.preferredForwardBufferDuration
+    newVideoPlayerItem?.preferredMaximumResolution = maxResolution?.toCGSize() ?? .zero
   }
 
   func onTimeUpdate(player: AVPlayer, timeUpdate: TimeUpdate) {
