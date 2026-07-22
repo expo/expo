@@ -400,9 +400,18 @@ synchronously; verify and add coverage rather than change.
   indicator at `pending: true` forever. Not backed by `useTransition().isPending`:
   hook-`isPending` only tracks that hook's own `startTransition` and is fragile for dispatches
   originating on non-React stacks.
-- **`useLinkStatus()`**: `Link`-scoped `{ pending: boolean }` for pending indicators. Backed by a
-  per-Link `useTransition` wrapping that Link's dispatch (Link presses are JS-initiated → always
-  transition-eligible), which stays correct under interruption.
+- **`useLinkStatus()`**: `Link`-scoped `{ pending: boolean }` for pending indicators.
+  > **Correction (executed 2026-07-22 — Step 8). Backed by the monotonic-id mechanism scoped to the
+  > Link's issued id, NOT a per-Link `useTransition`.** The `useTransition` backing predates the
+  > post-flip code: `dispatchRoot` unconditionally re-wraps every JS-initiated dispatch in its own
+  > module-level `React.startTransition` (D1's deliberate choice), so a per-Link `useTransition`
+  > wrapping the Link's dispatch tracks nothing — the container's transition owns the update, not the
+  > Link's. Instead the Link snapshots the monotonic id its own press mints (via a small
+  > `trackPress` that adopts the id only if the press actually dispatched) and reports `pending =
+  > myIssued > lastReduced` from the same committed signal as `useNavigationTransitionPending`. Stays
+  > `{ pending: false }` in DOM components (press forwarded to the host WebView, no dispatch) and for
+  > `Link.Preview` iOS peek-and-pop (the preview commit fires from a native callback, not the tracked
+  > press — a Step-9 simulator-only signal).
 
 ### D5 — native-induced actions stay synchronous (for now)
 
@@ -926,10 +935,31 @@ tests; fix what they catch.
 
 The monotonic-id pending signal (urgent "last issued id" + reducer-recorded "last reduced id";
 pending derived from committed values — D3) exposed via context behind
-`useNavigationTransitionPending()` (final name decided here); `useLinkStatus()` exposes
-`{ pending }` via context from the nearest Link, backed by a per-Link `useTransition`. Red-first
-per hook; RSC tests for the new exports.
-Files: `link/Link.tsx`, `link/useLinkStatus.tsx` (new), `hooks/`, `exports.ts`.
+`useNavigationTransitionPending()` (final name kept — reviewers' shorter `useNavigationPending` is a
+PR-discussion item); `useLinkStatus()` exposes `{ pending }` via context from the nearest Link. Red-
+first per hook; RSC tests for the new exports.
+Files: `global-state/rootReducer.ts`, `global-state/transitionPendingContext.ts` (new),
+`react-navigation/core/BaseNavigationContainer.tsx`, `hooks/useNavigationTransitionPending.ts` (new),
+`hooks/index.ts`, `exports.ts`, `link/useLinkStatus.tsx` (new), `link/BaseExpoRouterLink.tsx`,
+`link/index.ts`.
+
+> **Corrections (executed 2026-07-22 — Step 8).**
+> - **`useLinkStatus` backing swapped `useTransition` → per-Link monotonic id** (see the D3
+>   correction): the container's unconditional `React.startTransition` re-wrap makes a per-Link
+>   `useTransition` track nothing.
+> - **Supersede predicate sharpened.** Step 8 lands the nav-id carrier + the **pure READ predicate**
+>   (`navId < lastReduced` → recorded tree-noop) + the id-accounting / anti-wedge invariant, all
+>   jest-pinned at the reducer-unit level. The mid-flight **WRITE trigger** (a real pending JS
+>   navigation abandoned when a higher-id/urgent one commits first) stays Step-9 simulator-only,
+>   matching the Step-7 classification. **No separate `abandonedNavId` field** — `lastReduced` is
+>   already the high-water mark; a re-reduced action with `navId < lastReduced` is stale by
+>   construction (minimalism).
+> - **Bug found + fixed: PRELOAD re-render loop.** Minting a nav-id for the self-healing
+>   `usePreloadRoutes`/`usePreloadAnchor` commit-effect dispatches breaks their "no-op → no re-render"
+>   invariant (`setLastIssued` re-renders on a reducer no-op → effect re-fires → infinite loop / heap
+>   OOM). Fixed by excluding `PRELOAD`/`FRONT_PRELOAD` from id-minting in `dispatchRoot`.
+> - **Baseline:** Step-7's note cited 355 suites / 4656 tests; actual at Step-8 start was 358 / 4666
+>   (Step 8 adds to it: 365 suites / 4687 tests green).
 
 ### Step 9 — Verification, docs, changelog
 `et check-packages expo-router`; manual verification in `apps/router-e2e` on iOS simulator + web
