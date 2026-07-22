@@ -38,6 +38,15 @@ type ClientLogLevel =
 
 declare module '2g' {
   interface EventRegistry {
+    'metro:bundling:start': {
+      id: string | null;
+      platform: string | null;
+      environment: string | null;
+      entry: string;
+      bundleType: string;
+      dev: boolean;
+      minify: boolean;
+    };
     'metro:bundling:done': {
       id: string | null;
       platform?: null | string;
@@ -450,6 +459,15 @@ export class MetroTerminalReporter extends TerminalReporter {
             environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
             entry,
           },
+        });
+        event('bundling:start', {
+          id: evt.buildID ?? null,
+          platform: evt.bundleDetails.platform ?? null,
+          environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
+          entry,
+          bundleType: evt.bundleDetails.bundleType,
+          dev: evt.bundleDetails.dev,
+          minify: evt.bundleDetails.minify,
         });
         return;
       }

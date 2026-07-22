@@ -160,7 +160,7 @@ export function _resolveWithTsConfigPaths(
     return null;
   }
 
-  // Widlcard matches contain '*' and we first match the preceding string before it with a regex
+  // Wildcard matches contain '*' and we first match the preceding string before it with a regex
   if (config.prefixRe != null) {
     const match = config.prefixRe.exec(moduleName);
     if (match != null) {

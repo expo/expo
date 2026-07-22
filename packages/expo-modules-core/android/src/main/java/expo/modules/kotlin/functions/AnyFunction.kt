@@ -45,7 +45,7 @@ abstract class AnyFunction(
     }
 
   /**
-   * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
+   * A minimum number of arguments the function needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
    */
   private val requiredArgumentsCount = run {
     val nonNullableArgIndex = desiredArgsTypes

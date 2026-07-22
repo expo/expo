@@ -108,9 +108,9 @@ export default class NativeWatcher extends AbstractWatcher {
       }
 
       // For directory "rename" events, notify that we need a recrawl since we
-      // wont' receive events for unmodified files underneath a moved (or
+      // won't receive events for unmodified files underneath a moved (or
       // cloned) directory. Renames are fired by the OS on moves, clones, and
-      // creations. We ignore "change" events because they indiciate a change
+      // creations. We ignore "change" events because they indicate a change
       // to directory metadata, rather than its path or existence.
       if (type === 'd' && event === 'rename') {
         debug('Directory rename detected on %s, requesting recrawl', relativePath);

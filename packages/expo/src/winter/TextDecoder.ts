@@ -168,7 +168,7 @@ ENCODING_MAP.forEach((category) => {
   });
 });
 
-// Registry of of encoder/decoder factories, by encoding name.
+// Registry of encoder/decoder factories, by encoding name.
 const DECODERS: { [key: string]: (options: { fatal: boolean }) => UTF8Decoder } = {
   'UTF-8': (options) => new UTF8Decoder(options),
 };

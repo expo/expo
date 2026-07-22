@@ -129,7 +129,7 @@ export class ExpoModuleConfig {
   androidProjects(defaultProjectName: string): ExpoAndroidProjectConfig[] {
     const androidProjects: ExpoAndroidProjectConfig[] = [];
 
-    // Adding the "root" Android project - it might not be valide.
+    // Adding the "root" Android project - it might not be valid.
     androidProjects.push(
       new ExpoAndroidProjectConfig(
         this.rawConfig.android?.name ?? defaultProjectName,

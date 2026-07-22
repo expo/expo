@@ -29,6 +29,8 @@ class VideoPlayerItem: AVPlayerItem {
   }
 
   init?(videoSource: VideoSource, urlOverride: URL? = nil) async throws {
+    try Task.checkCancellation()
+
     guard let url = urlOverride ?? videoSource.uri else {
       return nil
     }
@@ -43,10 +45,13 @@ class VideoPlayerItem: AVPlayerItem {
       try await asset.prepareForLoadingIfNeeded()
       _ = try await asset.load(.duration, .preferredTransform, .isPlayable)
     } catch {
-        // Catch block is intentionally left empty
+      // Asset errors are surfaced through the player status, but cancellation must stop obsolete work.
+      try Task.checkCancellation()
     }
 
+    try Task.checkCancellation()
     super.init(asset: urlAsset, automaticallyLoadedAssetKeys: nil)
+    try Task.checkCancellation()
     self.createTracksLoadingTask()
   }
 

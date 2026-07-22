@@ -516,7 +516,7 @@ test('handles parse in nested object for second route depth', () => {
   expect(getStateFromPath<object>(getPathFromState<object>(state, config), config)).toEqual(state);
 });
 
-test('handles parse in nested object for second route depth and and path and parse in roots', () => {
+test('handles parse in nested object for second route depth and path and parse in roots', () => {
   const path = '/baz';
   const config = {
     screens: {

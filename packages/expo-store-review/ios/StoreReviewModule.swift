@@ -47,7 +47,7 @@ public class StoreReviewModule: Module {
     return false
     #endif
 
-    // For apps distributed through TestFlight or intalled from Xcode the receipt file is named "StoreKit/sandboxReceipt"
+    // For apps distributed through TestFlight or installed from Xcode the receipt file is named "StoreKit/sandboxReceipt"
     // instead of "StoreKit/receipt"
     let isSandboxEnv = Bundle.main.appStoreReceiptURL?.lastPathComponent == "sandboxReceipt"
 

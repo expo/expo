@@ -108,9 +108,7 @@ export async function downloadAndExtractGitHubRepositoryAsync(
 
   const isValid = await isValidGitHubRepoAsync(info);
   if (!isValid) {
-    throw new Error(
-      `Could not to locate repository for "${repoUrl}", ensure this repository exists`
-    );
+    throw new Error(`Could not locate repository for "${repoUrl}", ensure this repository exists`);
   }
 
   const url = `https://codeload.github.com/${info.owner}/${info.name}/tar.gz/${info.branch}`;

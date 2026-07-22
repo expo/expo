@@ -1,7 +1,7 @@
 import { useLayoutEffect } from 'react';
 import { Platform } from 'react-native';
 
-// Node environment may render in multiple processes causing the warning to log mutiple times
+// Node environment may render in multiple processes causing the warning to log multiple times
 // Hence we skip the warning in these environments.
 const canWarn = Platform.select({
   native: process.env.NODE_ENV !== 'production',

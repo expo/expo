@@ -438,18 +438,18 @@ it('targets the correct Stack when pushing to a nested layout', () => {
     }
   );
 
-  act(() => router.push('/b')); // Should at at index 1 on the root stack
+  act(() => router.push('/b')); // Should be at index 1 on the root stack
 
-  act(() => router.push('/one')); // Should at at index 2 on the root stack
+  act(() => router.push('/one')); // Should be at index 2 on the root stack
   expect(screen.getByTestId('one')).toBeOnTheScreen();
 
-  act(() => router.push('/one/page')); // Should at at index 1, nested inside index 2 on the root stack
+  act(() => router.push('/one/page')); // Should be at index 1, nested inside index 2 on the root stack
   expect(screen.getByTestId('one/page')).toBeOnTheScreen();
 
-  act(() => router.push('/one/two')); // Should at at index 2, nested inside index 2 on the root stack
+  act(() => router.push('/one/two')); // Should be at index 2, nested inside index 2 on the root stack
   expect(screen.getByTestId('one/two')).toBeOnTheScreen();
 
-  act(() => router.push('/one/two/page')); // Should at at index 1, nested inside index 2, inside index 2 on the root stack
+  act(() => router.push('/one/two/page')); // Should be at index 1, nested inside index 2, inside index 2 on the root stack
   expect(screen.getByTestId('one/two/page')).toBeOnTheScreen();
 
   act(() => router.push('/a')); // Should push to the root stack
