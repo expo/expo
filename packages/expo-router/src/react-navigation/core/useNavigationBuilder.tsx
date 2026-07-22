@@ -897,7 +897,7 @@ export function useNavigationBuilder<
   });
 
   const { describe, descriptors } = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
-    state,
+    routes: state.routes,
     screens,
     navigation,
     screenOptions,

@@ -238,33 +238,31 @@ export class CardStack extends React.Component<Props, State> {
       return null;
     }
 
-    const gestures = [...props.routes, ...props.state.preloadedRoutes].reduce<GestureValues>(
-      (acc, curr) => {
-        const descriptor = props.descriptors[curr.key] || props.preloadedDescriptors[curr.key];
-        const { animation } = descriptor?.options || {};
+    const preloadedRoutes = props.state.preloadedRoutes;
+    const gestures = [...props.routes, ...preloadedRoutes].reduce<GestureValues>((acc, curr) => {
+      const descriptor = props.descriptors[curr.key] || props.preloadedDescriptors[curr.key];
+      const { animation } = descriptor?.options || {};
 
-        acc[curr.key] =
-          state.gestures[curr.key] ||
-          new Animated.Value(
-            (props.openingRouteKeys.includes(curr.key) && getAnimationEnabled(animation)) ||
-              props.state.preloadedRoutes.includes(curr)
-              ? getDistanceFromOptions(state.layout, descriptor?.options, props.direction === 'rtl')
-              : 0
-          );
+      acc[curr.key] =
+        state.gestures[curr.key] ||
+        new Animated.Value(
+          (props.openingRouteKeys.includes(curr.key) && getAnimationEnabled(animation)) ||
+            preloadedRoutes.includes(curr)
+            ? getDistanceFromOptions(state.layout, descriptor?.options, props.direction === 'rtl')
+            : 0
+        );
 
-        return acc;
-      },
-      {}
-    );
+      return acc;
+    }, {});
 
-    const modalRouteKeys = getModalRouteKeys([...props.routes, ...props.state.preloadedRoutes], {
+    const modalRouteKeys = getModalRouteKeys([...props.routes, ...preloadedRoutes], {
       ...props.descriptors,
       ...props.preloadedDescriptors,
     });
 
-    const scenes = [...props.routes, ...props.state.preloadedRoutes].map((route, index, self) => {
+    const scenes = [...props.routes, ...preloadedRoutes].map((route, index, self) => {
       // For preloaded screens, we don't care about the previous and the next screen
-      const isPreloaded = props.state.preloadedRoutes.includes(route);
+      const isPreloaded = preloadedRoutes.includes(route);
       const previousRoute = isPreloaded ? undefined : self[index - 1];
       const nextRoute = isPreloaded ? undefined : self[index + 1];
 
@@ -589,8 +587,10 @@ export class CardStack extends React.Component<Props, State> {
     } = this.props;
 
     const { scenes, layout, gestures, activeStates, headerHeights } = this.state;
+    const activeRoutes = state.routes;
+    const preloadedRoutes = state.preloadedRoutes;
 
-    const focusedRoute = state.routes[state.index]!;
+    const focusedRoute = activeRoutes[state.index]!;
     const focusedHeaderHeight = headerHeights[focusedRoute.key];
 
     const isFloatHeaderAbsolute = this.state.scenes.slice(-2).some((scene) => {
@@ -626,7 +626,7 @@ export class CardStack extends React.Component<Props, State> {
           enabled={detachInactiveScreens}
           style={styles.container}
           onLayout={this.handleLayout}>
-          {[...routes, ...state.preloadedRoutes].map((route, index) => {
+          {[...routes, ...preloadedRoutes].map((route, index) => {
             const focused = focusedRoute.key === route.key;
             const gesture = gestures[route.key]!;
             const scene = scenes[index]!;
@@ -634,9 +634,9 @@ export class CardStack extends React.Component<Props, State> {
             // Particularly, if the screen is removed with `retain`, then it needs a moment to execute the animation.
             // However, due to the router action, it immediately populates the `preloadedRoutes` array.
             // Practically, the logic below takes care that it is rendered only once.
-            const isPreloaded = state.preloadedRoutes.includes(route) && !routes.includes(route);
+            const isPreloaded = preloadedRoutes.includes(route) && !routes.includes(route);
             if (
-              state.preloadedRoutes.includes(route) &&
+              preloadedRoutes.includes(route) &&
               routes.includes(route) &&
               index >= routes.length
             ) {

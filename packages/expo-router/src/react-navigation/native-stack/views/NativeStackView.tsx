@@ -35,21 +35,20 @@ const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModa
 export function NativeStackView({ state, descriptors, describe }: Props) {
   const parentHeaderBack = use(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
+  const activeRoutes = state.routes;
+  const preloadedRoutes = state.preloadedRoutes;
 
-  const preloadedDescriptors = state.preloadedRoutes.reduce<NativeStackDescriptorMap>(
-    (acc, route) => {
-      acc[route.key] = acc[route.key] || describe(route, true);
-      return acc;
-    },
-    {}
-  );
+  const preloadedDescriptors = preloadedRoutes.reduce<NativeStackDescriptorMap>((acc, route) => {
+    acc[route.key] = acc[route.key] || describe(route, true);
+    return acc;
+  }, {});
 
   return (
     <SafeAreaProviderCompat>
-      {state.routes.concat(state.preloadedRoutes).map((route, i) => {
+      {activeRoutes.concat(preloadedRoutes).map((route, i) => {
         const isFocused = state.index === i;
-        const previousKey = state.routes[i - 1]?.key;
-        const nextKey = state.routes[i + 1]?.key;
+        const previousKey = activeRoutes[i - 1]?.key;
+        const nextKey = activeRoutes[i + 1]?.key;
         const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
         const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
         const { options, navigation, render } = (descriptors[route.key] ??

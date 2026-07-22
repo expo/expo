@@ -35,8 +35,10 @@ type Props = {
 export function ExperimentalStackView({ state, navigation, descriptors, describe }: Props) {
   const { setNextDismissedKey } = useDismissedRouteError(state);
   const { preventedRoutes } = usePreventRemoveContext();
+  const activeRoutes = state.routes;
+  const preloadedRoutes = state.preloadedRoutes;
 
-  const preloadedDescriptors = state.preloadedRoutes.reduce<ExperimentalStackDescriptorMap>(
+  const preloadedDescriptors = preloadedRoutes.reduce<ExperimentalStackDescriptorMap>(
     (acc, route) => {
       acc[route.key] = acc[route.key] || describe(route, true);
       return acc;
@@ -47,7 +49,7 @@ export function ExperimentalStackView({ state, navigation, descriptors, describe
   return (
     <View style={styles.container}>
       <ScreensStackV5.Host>
-        {state.routes.concat(state.preloadedRoutes).map((route) => {
+        {activeRoutes.concat(preloadedRoutes).map((route) => {
           const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
           const isPreloaded =
             preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;

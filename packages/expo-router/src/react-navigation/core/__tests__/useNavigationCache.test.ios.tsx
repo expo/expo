@@ -37,7 +37,7 @@ test('preserves reference for navigation objects', () => {
 
     const emitter = useEventEmitter();
     const { navigations } = useNavigationCache({
-      state,
+      routes: state.routes,
       getState,
       navigation,
       setOptions,

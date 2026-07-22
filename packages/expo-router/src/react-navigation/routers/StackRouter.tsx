@@ -65,6 +65,29 @@ export type StackNavigationState<ParamList extends ParamListBase> = NavigationSt
   preloadedRoutes: NavigationRoute<ParamList, keyof ParamList>[];
 };
 
+export function getStackRoutes<ParamList extends ParamListBase>(
+  state: StackNavigationState<ParamList>
+) {
+  return {
+    activeRoutes: state.routes,
+    preloadedRoutes: state.preloadedRoutes,
+  };
+}
+
+function reconcileStackRoutes<ParamList extends ParamListBase>(
+  state: StackNavigationState<ParamList>,
+  activeRoutes: Route<string>[],
+  preloadedRoutes = state.preloadedRoutes,
+  index = activeRoutes.length - 1
+) {
+  return {
+    ...state,
+    index,
+    routes: activeRoutes,
+    preloadedRoutes,
+  };
+}
+
 export type StackActionHelpers<ParamList extends ParamListBase> = {
   /**
    * Replace the current route with a new one.
@@ -174,7 +197,8 @@ export function getRoutesForRouteNames(
     initialRouteName?: string;
   }
 ): Pick<StackNavigationState<ParamListBase>, 'routes' | 'index'> {
-  const routes = state.routes.filter(
+  const { activeRoutes } = getStackRoutes(state);
+  const routes = activeRoutes.filter(
     (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
   );
 
@@ -239,7 +263,9 @@ export function StackRouter(options: StackRouterOptions) {
         return state;
       }
 
-      const routes = state.routes
+      const activeRoutes = state.routes;
+      const stalePreloadedRoutes = state.preloadedRoutes;
+      const routes = activeRoutes
         .filter((route) => routeNames.includes(route.name))
         .map((route) => ({
           ...route,
@@ -254,7 +280,7 @@ export function StackRouter(options: StackRouterOptions) {
         }));
 
       const preloadedRoutes =
-        state.preloadedRoutes
+        stalePreloadedRoutes
           ?.filter((route) => routeNames.includes(route.name))
           .map(
             (route) =>
@@ -306,7 +332,8 @@ export function StackRouter(options: StackRouterOptions) {
     },
 
     getStateForRouteFocus(state, key) {
-      const index = state.routes.findIndex((r) => r.key === key);
+      const { activeRoutes } = getStackRoutes(state);
+      const index = activeRoutes.findIndex((r) => r.key === key);
 
       if (index === -1 || index === state.index) {
         return state;
@@ -315,18 +342,19 @@ export function StackRouter(options: StackRouterOptions) {
       return {
         ...state,
         index,
-        routes: state.routes.slice(0, index + 1),
+        routes: activeRoutes.slice(0, index + 1),
       };
     },
 
     getStateForAction(state, action, options) {
       const { routeParamList } = options;
+      const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
 
       switch (action.type) {
         case 'REPLACE': {
           const currentIndex =
             action.target === state.key && action.source
-              ? state.routes.findIndex((r) => r.key === action.source)
+              ? activeRoutes.findIndex((r) => r.key === action.source)
               : state.index;
 
           if (currentIndex === -1) {
@@ -341,7 +369,7 @@ export function StackRouter(options: StackRouterOptions) {
           const id = getId?.({ params: action.payload.params });
 
           // Re-use preloaded route if available
-          let route = state.preloadedRoutes.find(
+          let route = preloadedRoutes.find(
             (route) =>
               route.name === action.payload.name && id === getId?.({ params: route.params })
           );
@@ -350,11 +378,12 @@ export function StackRouter(options: StackRouterOptions) {
             route = createRouteFromAction({ action, routeParamList });
           }
 
-          return {
-            ...state,
-            routes: state.routes.map((r, i) => (i === currentIndex ? route : r)),
-            preloadedRoutes: state.preloadedRoutes.filter((r) => r.key !== route.key),
-          };
+          return reconcileStackRoutes(
+            state,
+            activeRoutes.map((r, i) => (i === currentIndex ? route : r)),
+            preloadedRoutes.filter((r) => r.key !== route.key),
+            state.index
+          );
         }
 
         case 'PUSH':
@@ -369,23 +398,23 @@ export function StackRouter(options: StackRouterOptions) {
           let route: Route<string> | undefined;
 
           if (id !== undefined) {
-            route = state.routes.findLast(
+            route = activeRoutes.findLast(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
           } else if (action.type === 'NAVIGATE') {
-            const currentRoute = state.routes[state.index]!;
+            const currentRoute = activeRoutes[state.index]!;
 
             // If the route matches the current one, then navigate to it
             if (action.payload.name === currentRoute.name) {
               route = currentRoute;
             } else if (action.payload.pop) {
-              route = state.routes.findLast((route) => route.name === action.payload.name);
+              route = activeRoutes.findLast((route) => route.name === action.payload.name);
             }
           }
 
           if (!route) {
-            route = state.preloadedRoutes.find(
+            route = preloadedRoutes.find(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
@@ -414,7 +443,7 @@ export function StackRouter(options: StackRouterOptions) {
               routes = [];
 
               // Get all routes until the matching one
-              for (const r of state.routes) {
+              for (const r of activeRoutes) {
                 if (r.key === route.key) {
                   routes.push({
                     ...route,
@@ -427,7 +456,7 @@ export function StackRouter(options: StackRouterOptions) {
                 routes.push(r);
               }
             } else {
-              routes = state.routes.filter((r) => r.key !== route.key);
+              routes = activeRoutes.filter((r) => r.key !== route.key);
               routes.push({
                 ...route,
                 path:
@@ -439,7 +468,7 @@ export function StackRouter(options: StackRouterOptions) {
             }
           } else {
             routes = [
-              ...state.routes,
+              ...activeRoutes,
               {
                 key: `${action.payload.name}-${nanoid()}`,
                 name: action.payload.name,
@@ -449,14 +478,11 @@ export function StackRouter(options: StackRouterOptions) {
             ];
           }
 
-          return {
-            ...state,
-            index: routes.length - 1,
-            preloadedRoutes: state.preloadedRoutes.filter(
-              (route) => routes[routes.length - 1]!.key !== route.key
-            ),
+          return reconcileStackRoutes(
+            state,
             routes,
-          };
+            preloadedRoutes.filter((route) => routes[routes.length - 1]!.key !== route.key)
+          );
         }
 
         case 'NAVIGATE_DEPRECATED': {
@@ -465,7 +491,7 @@ export function StackRouter(options: StackRouterOptions) {
           }
 
           if (
-            state.preloadedRoutes.find(
+            preloadedRoutes.find(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             )
@@ -480,18 +506,18 @@ export function StackRouter(options: StackRouterOptions) {
           const id = getId?.({ params: action.payload.params });
 
           if (id !== undefined) {
-            index = state.routes.findIndex(
+            index = activeRoutes.findIndex(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
-          } else if (state.routes[state.index]!.name === action.payload.name) {
+          } else if (activeRoutes[state.index]!.name === action.payload.name) {
             index = state.index;
           } else {
-            index = state.routes.findLastIndex((route) => route.name === action.payload.name);
+            index = activeRoutes.findLastIndex((route) => route.name === action.payload.name);
           }
 
           if (index === -1) {
-            const routes = [...state.routes, createRouteFromAction({ action, routeParamList })];
+            const routes = [...activeRoutes, createRouteFromAction({ action, routeParamList })];
 
             return {
               ...state,
@@ -500,7 +526,7 @@ export function StackRouter(options: StackRouterOptions) {
             };
           }
 
-          const route = state.routes[index]!;
+          const route = activeRoutes[index]!;
 
           let params;
 
@@ -521,20 +547,20 @@ export function StackRouter(options: StackRouterOptions) {
             ...state,
             index,
             routes: [
-              ...state.routes.slice(0, index),
-              params !== route.params ? { ...route, params } : state.routes[index]!,
+              ...activeRoutes.slice(0, index),
+              params !== route.params ? { ...route, params } : activeRoutes[index]!,
             ],
           };
         }
 
         case 'REMOVE_ROUTES': {
-          const focusedRoute = state.routes[state.index]!;
-          const routes = state.routes.filter(
+          const focusedRoute = activeRoutes[state.index]!;
+          const routes = activeRoutes.filter(
             (route) =>
               route.key === focusedRoute.key || !action.payload.routeNames.includes(route.name)
           );
 
-          if (routes.length === state.routes.length) {
+          if (routes.length === activeRoutes.length) {
             return state;
           }
 
@@ -548,14 +574,14 @@ export function StackRouter(options: StackRouterOptions) {
         case 'POP': {
           const currentIndex =
             action.target === state.key && action.source
-              ? state.routes.findIndex((r) => r.key === action.source)
+              ? activeRoutes.findIndex((r) => r.key === action.source)
               : state.index;
 
           if (currentIndex > 0) {
             const count = Math.max(currentIndex - action.payload.count + 1, 1);
-            const routes = state.routes
+            const routes = activeRoutes
               .slice(0, count)
-              .concat(state.routes.slice(currentIndex + 1));
+              .concat(activeRoutes.slice(currentIndex + 1));
 
             return {
               ...state,
@@ -572,7 +598,7 @@ export function StackRouter(options: StackRouterOptions) {
             state,
             {
               type: 'POP',
-              payload: { count: state.routes.length - 1 },
+              payload: { count: activeRoutes.length - 1 },
             },
             options
           );
@@ -580,7 +606,7 @@ export function StackRouter(options: StackRouterOptions) {
         case 'POP_TO': {
           const currentIndex =
             action.target === state.key && action.source
-              ? state.routes.findLastIndex((r) => r.key === action.source)
+              ? activeRoutes.findLastIndex((r) => r.key === action.source)
               : state.index;
 
           if (currentIndex === -1) {
@@ -598,15 +624,15 @@ export function StackRouter(options: StackRouterOptions) {
           const id = getId?.({ params: action.payload.params });
 
           if (id !== undefined) {
-            index = state.routes.findIndex(
+            index = activeRoutes.findIndex(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
-          } else if (state.routes[currentIndex]!.name === action.payload.name) {
+          } else if (activeRoutes[currentIndex]!.name === action.payload.name) {
             index = currentIndex;
           } else {
             for (let i = currentIndex; i >= 0; i--) {
-              if (state.routes[i]!.name === action.payload.name) {
+              if (activeRoutes[i]!.name === action.payload.name) {
                 index = i;
                 break;
               }
@@ -616,7 +642,7 @@ export function StackRouter(options: StackRouterOptions) {
           // If the route doesn't exist, remove the current route and add the new one
           if (index === -1) {
             // Re-use preloaded route if available
-            let route = state.preloadedRoutes.find(
+            let route = preloadedRoutes.find(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
@@ -625,17 +651,16 @@ export function StackRouter(options: StackRouterOptions) {
               route = createRouteFromAction({ action, routeParamList });
             }
 
-            const routes = state.routes.slice(0, currentIndex).concat(route);
+            const routes = activeRoutes.slice(0, currentIndex).concat(route);
 
-            return {
-              ...state,
-              index: routes.length - 1,
+            return reconcileStackRoutes(
+              state,
               routes,
-              preloadedRoutes: state.preloadedRoutes.filter((r) => r.key !== route.key),
-            };
+              preloadedRoutes.filter((r) => r.key !== route.key)
+            );
           }
 
-          const route = state.routes[index]!;
+          const route = activeRoutes[index]!;
 
           let params;
 
@@ -656,8 +681,8 @@ export function StackRouter(options: StackRouterOptions) {
             ...state,
             index,
             routes: [
-              ...state.routes.slice(0, index),
-              params !== route.params ? { ...route, params } : state.routes[index]!,
+              ...activeRoutes.slice(0, index),
+              params !== route.params ? { ...route, params } : activeRoutes[index]!,
             ],
           };
         }
@@ -685,7 +710,7 @@ export function StackRouter(options: StackRouterOptions) {
           let route: Route<string> | undefined;
 
           if (id !== undefined) {
-            route = state.routes.find(
+            route = activeRoutes.find(
               (route) =>
                 route.name === action.payload.name && id === getId?.({ params: route.params })
             );
@@ -694,7 +719,7 @@ export function StackRouter(options: StackRouterOptions) {
           if (route) {
             return {
               ...state,
-              routes: state.routes.map((r) => {
+              routes: activeRoutes.map((r) => {
                 if (r.key !== route?.key) {
                   return r;
                 }
@@ -707,7 +732,7 @@ export function StackRouter(options: StackRouterOptions) {
           } else {
             return {
               ...state,
-              preloadedRoutes: state.preloadedRoutes
+              preloadedRoutes: preloadedRoutes
                 .filter(
                   (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
                 )

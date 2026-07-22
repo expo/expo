@@ -33,8 +33,9 @@ export function usePreviewTransition<TNavigation extends { emit: (...args: any[]
 
   React.useEffect(() => {
     if (previewTransitioningScreenId) {
+      const activeRoutes = state.routes;
       // State was updated after the preview transition
-      if (state.routes.some((route) => route.key === previewTransitioningScreenId)) {
+      if (activeRoutes.some((route) => route.key === previewTransitioningScreenId)) {
         // No longer need to track the preview transitioning screen
         setPreviewTransitioningScreenId(undefined);
       }
@@ -71,17 +72,19 @@ export function usePreviewTransition<TNavigation extends { emit: (...args: any[]
   const { computedState, computedDescriptors } = React.useMemo(() => {
     // The preview screen was pushed on the native side, but react-navigation state was not updated yet
     if (previewTransitioningScreenId) {
-      const preloadedRoute = state.preloadedRoutes.find(
+      const activeRoutes = state.routes;
+      const preloadedRoutes = state.preloadedRoutes;
+      const preloadedRoute = preloadedRoutes.find(
         (route) => route.key === previewTransitioningScreenId
       );
       if (preloadedRoute) {
         const newState = {
           ...state,
           // On native side the screen is already pushed, so we need to update the state
-          preloadedRoutes: state.preloadedRoutes.filter(
+          preloadedRoutes: preloadedRoutes.filter(
             (route) => route.key !== previewTransitioningScreenId
           ),
-          routes: [...state.routes, preloadedRoute],
+          routes: [...activeRoutes, preloadedRoute],
           index: state.index + 1,
         };
 

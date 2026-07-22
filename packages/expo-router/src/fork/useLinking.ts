@@ -15,6 +15,7 @@ import {
   type ParamListBase,
   useNavigationIndependentTree,
 } from '../react-navigation/native';
+import { getHistoryLength } from '../utils/stack';
 import { createMemoryHistory } from './createMemoryHistory';
 import { appendBaseUrl } from './getPathFromState';
 
@@ -33,8 +34,8 @@ const findMatchingState = <T extends NavigationState>(
   }
 
   // Tab and drawer will have `history` property, but stack will have history in `routes`
-  const aHistoryLength = a.history ? a.history.length : a.routes.length;
-  const bHistoryLength = b.history ? b.history.length : b.routes.length;
+  const aHistoryLength = getHistoryLength(a);
+  const bHistoryLength = getHistoryLength(b);
 
   const aRoute = a.routes[a.index]!;
   const bRoute = b.routes[b.index]!;
@@ -424,10 +425,7 @@ export function useLinking(
         path !== pendingPath
       ) {
         const historyDelta =
-          (focusedState.history ? focusedState.history.length : focusedState.routes.length) -
-          (previousFocusedState.history
-            ? previousFocusedState.history.length
-            : previousFocusedState.routes.length);
+          getHistoryLength(focusedState) - getHistoryLength(previousFocusedState);
 
         if (historyDelta > 0) {
           // If history length is increased, we should pushState

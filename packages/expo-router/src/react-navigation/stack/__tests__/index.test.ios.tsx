@@ -253,7 +253,7 @@ test('renders correct focus state with preloading', () => {
   expect(queryByText('focused', { includeHiddenElements: true })).toBeNull();
 });
 
-test.only('renders back button in the nested stack', async () => {
+test('renders back button in the nested stack', async () => {
   const StackA = createStackNavigator<NestedStackParamList>();
 
   const StackAScreen = ({ route }: StackScreenProps<StackParamList>) => (

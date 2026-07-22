@@ -21,9 +21,13 @@ function NativeStackViewInner(props: ComponentProps<typeof RNNativeStackView>) {
       return props.state;
     }
 
+    const activeRoutes = props.state.routes;
+    const preloadedRoutes = props.state.preloadedRoutes;
+
     return {
       ...props.state,
-      routes: props.state.routes.concat(rootModals.routes),
+      routes: activeRoutes.concat(rootModals.routes),
+      preloadedRoutes,
     };
   }, [props.state, rootModals.routes]);
 
