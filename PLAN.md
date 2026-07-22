@@ -751,6 +751,18 @@ rn-screens' `<Screen>` — no react-freeze anywhere in expo-router, prop injecti
 >    fuse `getNavigateAction` into the reducer (`(state, action, registry, config)`); convert the five
 >    raw-intent callers; keep the minimal pre-ready buffer. Pin with the two repro canaries
 >    (`issues.test` nested-first-render single-mount; `tabs.test` dynamic-href param).
+>    **Correction (executed 2026-07-22 — Step 5):** only `ROUTER_LINK` (the `router.push`/`Link`/deep-link
+>    path) is fused into the reducer — that is the sole load-bearing mount-window case (resolution
+>    *timing*, not location, is what the queue's deferral solved, per Steps 1/2). The other four
+>    "callers" (`usePreloadRoutes`/`usePreloadAnchor` via `getPreloadAction`, native-tabs first-visit,
+>    `TabsClient.unstable_tabBarNavigateAction`, warm deep link in `useLinking.native`) resolve from
+>    post-commit effects against the already-committed tree, so they stay safe where they run and keep
+>    a thin store-reading `getNavigateAction` wrapper — their residual `store`-global reads are a
+>    **Step-6 purity-audit item**, not a Step-5 fusion. Also (correctness): the reducer resolver must
+>    be a **pure** core — the effectful pre-steps (`Linking.openURL` on an external redirect,
+>    malformed-link drop/log) stay in the `router.ts` dispatch funnel *before* dispatch, so external
+>    and malformed links never become a `ROUTER_LINK` reduction (a pure `resolveRedirects` split off
+>    `applyRedirects` backs this).
 > 6. **State-carried `pendingActions`** (b) — replace `pendingReplayRef` with the hardened
 >    identity-keyed append; source-gated deferrability (needs the D5 tag from step 4).
 > 7. **Install lifecycle** (d) — install `dispatch` + committed mirror into `global-state/store.ts`.
@@ -805,6 +817,16 @@ plus the absorbed D2 queue deletion — `global-state/routingQueue.ts` (mostly d
 `global-state/router.ts`, `imperative-api.tsx`, `fork/NavigationContainer.tsx`.
 
 ### Step 6 — Decide what every state reader means during a pending navigation (D4)
+**Inherited from Step 5:** audit the four post-commit-effect resolvers that kept a store-reading
+`getNavigateAction`/`getPreloadAction` wrapper instead of reducer-fusion (`usePreloadRoutes`/
+`usePreloadAnchor`, native-tabs first-visit, `TabsClient.unstable_tabBarNavigateAction`, warm deep
+link in `useLinking.native`) — confirm each reads the committed tree at the right time and classify
+its residual `store`-global reads (they run post-commit, so they are on the "reads committed" side,
+but pin it). Also confirm the import-cycle cut edge holds (Step 5 note): `fork/getPathFromState-forks.ts`
+must import `validatePathConfig` from the leaf module, not the `react-navigation/native` barrel, or
+the container's static `store`/`rootReducer`/`RouteInfoProvider` imports reintroduce a module-eval
+cycle jest hides but Metro breaks — a `no-restricted-imports` guard is the durable fix.
+
 In plain English: once navigations are transitions, "what is the current route" has a pending
 window between a dispatch and its commit. Under the `useReducer` model (D1) the split is simple:
 **everything outside the reducer reads the last committed tree; only the reducer sees the chained
