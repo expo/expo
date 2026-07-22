@@ -115,7 +115,7 @@ export function defaultTabsSlotRender(
   descriptor: TabsDescriptor,
   { isFocused, loaded, detachInactiveScreens }: TabsSlotRenderOptions
 ) {
-  const { lazy = true, unmountOnBlur, freezeOnBlur } = descriptor.options;
+  const { lazy = true, unmountOnBlur } = descriptor.options;
 
   if (unmountOnBlur && !isFocused) {
     return null;
@@ -131,7 +131,9 @@ export function defaultTabsSlotRender(
       key={descriptor.route.key}
       enabled={detachInactiveScreens}
       activityState={isFocused ? 2 : 0}
-      freezeOnBlur={freezeOnBlur}
+      // Forced off so a Suspense-frozen subtree can't starve a pending React transition;
+      // overrides both the per-screen `freezeOnBlur` option and `enableFreeze()`.
+      freezeOnBlur={false}
       style={[styles.screen, isFocused ? styles.focused : styles.unfocused]}>
       {descriptor.render()}
     </Screen>

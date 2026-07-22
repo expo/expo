@@ -239,7 +239,6 @@ export function BottomTabView(props: Props) {
           // navigated to or preloaded), so the lazy gate never trips here.
 
           const {
-            freezeOnBlur,
             header = ({ layout, options }: BottomTabHeaderProps) => (
               <Header {...options} layout={layout} title={getHeaderTitle(options, route.name)} />
             ),
@@ -277,7 +276,11 @@ export function BottomTabView(props: Props) {
               style={[StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]}
               active={activityState}
               enabled={detachInactiveScreens}
-              freezeOnBlur={freezeOnBlur}
+              // Forced off so a Suspense-frozen subtree can't starve a pending React transition;
+              // overrides both the per-screen `freezeOnBlur` option and `enableFreeze()`.
+              freezeOnBlur={false}
+              // TODO(transitions-freeze): inert while `freezeOnBlur={false}` (rn-screens gates
+              // freeze behind `freezeOnBlur`); kept as the freeze re-enable breadcrumb.
               shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}>
               <BottomTabBarHeightContext.Provider
                 value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
