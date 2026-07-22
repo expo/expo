@@ -72,7 +72,7 @@ async function getOrgPackagesAsync() {
   );
 
   if (!response || typeof response !== 'object' || !Array.isArray(response.objects)) {
-    throw new Error('Invalid response structure or data type: ${JSON.stringify(response)}');
+    throw new Error(`Invalid response structure or data type: ${JSON.stringify(response)}`);
   }
 
   return response.objects.map((pkg) => pkg.package.name);
@@ -86,7 +86,7 @@ async function getPackageOwnersAsync(packageName) {
   });
 
   if (!response || typeof response !== 'object' || !Array.isArray(response.maintainers)) {
-    throw new Error('Invalid response structure or data type: ${JSON.stringify(response)}');
+    throw new Error(`Invalid response structure or data type: ${JSON.stringify(response)}`);
   }
 
   return response.maintainers.map((owner) => owner.name);
