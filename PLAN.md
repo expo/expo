@@ -511,6 +511,16 @@ focus-event timing.
    promises), `pendingActions` replay final states, the same-tick `canGoBack` change, and the
    Step-2 shadow deep-equal. Step 3's recipe work is reduced to building the fixtures and
    confirming this classification, and Step 5's red list is scoped to the jest-able set up front.
+   **Step-3 confirmation (empirical, `transitions-characterization.test.ios.tsx`):** the
+   classification holds. The two jest-observable suspense shapes are (i) fallback-present +
+   origin-unmounted immediately after `act(() => router.push())` to a still-pending screen, and
+   (ii) destination committed when the promise resolves *inside the same act* that commits the
+   navigation (no timer flush needed). The fallback→content *recovery* across separate act
+   boundaries is **not** observable (no fake/real-timer or `runAllTimersAsync` flush surfaces it) —
+   direct evidence for the simulator-only verdict. So a route's own `SuspenseFallback` at a leaf is
+   ignored (only layout fallbacks are honored — `useScreens.tsx`); attach it at a nested layout.
+   Step 5's red list asserts final committed states via rendered-tree queries, never a mid-flight
+   recovery. See `steps/Step-3.md`.
 10. **StrictMode.** Explicit coverage for the mount-window replay under transitions and for
     `getState`/`deepFreeze` idempotency under interrupted (speculative) transition renders — pin
     the "no `getState()` consumer has side effects" invariant.
