@@ -12,6 +12,7 @@ import { JSErrorsSection } from '@/components/JSErrorsSection';
 import { LogEventsSection } from '@/components/LogEventsSection';
 import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
 import { RenderErrorSection } from '@/components/RenderErrorSection';
+import { ReportErrorSection } from '@/components/ReportErrorSection';
 import CrashTester from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
@@ -38,6 +39,8 @@ export default function Debug() {
       <CrashReportsSection />
       {CrashTester != null ? <Divider /> : null}
       <JSErrorsSection />
+      <Divider />
+      <ReportErrorSection />
       <Divider />
       <RenderErrorSection />
       <Divider />

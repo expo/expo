@@ -6,12 +6,16 @@
 
 ### 🎉 New features
 
+- [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
 - [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
 - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
 - Added support for compile-only inline module files, which are compiled into the target without being registered as Expo modules. ([#46969](https://github.com/expo/expo/pull/46969) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
+- [iOS] Only stub a source pod bundled inside a prebuilt XCFramework (e.g. `SDWebImage` in `ExpoImage.xcframework`) when one of its consumers also links the owning prebuilt pod. An app extension that depends on such a pod on its own now keeps building it from source instead of failing to link with undefined symbols. ([#47847](https://github.com/expo/expo/pull/47847) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Pass target name to the generateModulesProviderCommand to match it against inline modules targets, when checking if inline modules should be autolinked with that target. ([#47502](https://github.com/expo/expo/pull/47502) by [@HubertBer](https://github.com/HubertBer))
+- [Android] Scan the whole Kotlin file for its `package` declaration when registering inline modules, so modules with long comments (for example, a license header) before the `package` declaration are no longer silently skipped. ([#47656](https://github.com/expo/expo/pull/47656) by [@HubertBer](https://github.com/HubertBer))
 - [iOS] Fix a duplicate pod error (`multiple dependencies with different sources`) for precompiled modules in a Podfile with multiple targets. `prebuilt_react_active?` now mirrors React Native's default for `RCT_USE_PREBUILT_RNCORE` (prebuilt unless explicitly `0`), since `use_react_native!` only sets it after `use_expo_modules!` has run. ([#47329](https://github.com/expo/expo/pull/47329) by [@janicduplessis](https://github.com/janicduplessis))
 - [iOS] Align the `react-native-reanimated` precompile config with `react-native-reanimated@4.4.1` upstream defaults, adding the `CSS/core/transition` and `PseudoStyles` header mappings along with the missing `IOS_CSS_CORE_ANIMATION` and `USE_ANIMATION_BACKEND` feature flags so its XCFramework builds. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
@@ -117,7 +121,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] removed fix for FB 54066 which is now merged and ready to be used. Introduced in #40219. ([#44290](https://github.com/expo/expo/pull/44290) by [@chrfalch](https://github.com/chrfalch))
 - Add `package.json:exports` with no-op reexport paths ([#44002](https://github.com/expo/expo/pull/44002) by [@kitten](https://github.com/kitten), [@hassankhan](https://github.com/hassankhan))
-- [iOS] Add early escape in generateModulesProviderAsync to avoid touching files that hasn't changed ([#44289](https://github.com/expo/expo/pull/44289) by [@chrfalch](https://github.com/chrfalch))
+- [iOS] Add early escape in generateModulesProviderAsync to avoid touching files that haven't changed ([#44289](https://github.com/expo/expo/pull/44289) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Added `@OptimizedFunction` macros support for Expo modules. ([#44262](https://github.com/expo/expo/pull/44262) by [@kudo](https://github.com/kudo))
 - [iOS] Add more detailed warnings when a package is not linked due to a mismatch between project and package deployment target. ([#44200](https://github.com/expo/expo/pull/44200) by [@behenate](https://github.com/behenate))
 - Fixed `ExpoModulesMacros` precompiling. ([#44863](https://github.com/expo/expo/pull/44863) by [@kudo](https://github.com/kudo))
@@ -417,7 +421,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [Android] Improved erorr message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Improved error message when we don't support Kotlin version provided by the user. ([#37802](https://github.com/expo/expo/pull/37802) by [@lukmccall](https://github.com/lukmccall))
 - Prevent Expo Modules from being detected as C++-only React Native modules ([#38658](https://github.com/expo/expo/pull/38658) by [@kitten](https://github.com/kitten))
 - Ignore optional peer dependencies in dependency traversal ([#38713](https://github.com/expo/expo/pull/38713) by [@kitten](https://github.com/kitten))
 
@@ -619,7 +623,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
+- Removed `expo_patch_react_imports!` and align more standard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 - Exported a new `findProjectRootSync` API. ([#31966](https://github.com/expo/expo/pull/31966) by [@kudo](https://github.com/kudo))
 
 ## 1.11.2 - 2024-08-14

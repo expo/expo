@@ -12,6 +12,8 @@
 - Bump `hermes-parser` to `^0.36.0` to parse newer Flow syntax (e.g. `readonly` property modifiers) shipped in recent React Native versions ([#46636](https://github.com/expo/expo/pull/46636) by [@zoontek](https://github.com/zoontek))
 - Treat dynamic imports with rejection handlers as optional dependencies, ported from [react/metro#1697](https://github.com/react/metro/pull/1697) ([#47334](https://github.com/expo/expo/pull/47334) by [@kitten](https://github.com/kitten))
 - Fix `resolver.useWatchman: true` not re-enabling watchman as intended ([#47662](https://github.com/expo/expo/issues/47662) by [@isaka1022](https://github.com/isaka1022))
+- Fix `composeSourceMaps` crashing on Hermes source-map segments with a negative original position ([#47752](https://github.com/expo/expo/pull/47752) by [@kitten](https://github.com/kitten))
+- Depend on `@react-native/js-polyfills` directly for `getPolyfills` instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.88. ([#48034](https://github.com/expo/expo/pull/48034) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -19,6 +21,8 @@
 - Vendor `msgpackr` dependency to remove `msgpackr-extract` postinstall warning ([#46676](https://github.com/expo/expo/pull/46676) by [@kitten](https://github.com/kitten))
 - [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - [Internal] Pass through the `media` query of `css-external` assets in metadata ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
+- Add `woff` and `woff2` to default list of `assetExts` ([#47565](https://github.com/expo/expo/pull/47565) by [@kitten](https://github.com/kitten))
+- [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
 
 ## 56.0.13 — 2026-05-26
 
@@ -569,7 +573,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Exclude `beforeAssetSerializationPlugins.preModules` from `stableChunkSource` ([#33344](https://github.com/expo/expo/pull/33344) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- Use POSIX-formatted relative module paths to stabelize module IDs across platforms. ([#33393](https://github.com/expo/expo/pull/33393) by [@byCedric](https://github.com/byCedric))
+- Use POSIX-formatted relative module paths to stabilize module IDs across platforms. ([#33393](https://github.com/expo/expo/pull/33393) by [@byCedric](https://github.com/byCedric))
 - Use POSIX-formatted filenames when transforming CSS modules for consistent class names. ([#33394](https://github.com/expo/expo/pull/33394) by [@byCedric](https://github.com/byCedric))
 - Use POSIX-formatted relative CSS asset paths for URL consistency across platforms. ([#33395](https://github.com/expo/expo/pull/33395) by [@byCedric](https://github.com/byCedric))
 - Use POSIX-formatted check to handle virtual RSC module with correctly escaped client boundary paths across platforms. ([#33396](https://github.com/expo/expo/pull/33396) by [@byCedric](https://github.com/byCedric))

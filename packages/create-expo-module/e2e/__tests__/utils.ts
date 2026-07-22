@@ -23,7 +23,7 @@ export function getTestPath(...args: string[]) {
   return path.join(projectRoot, ...args);
 }
 
-/** Get the path witihin the default project root, and ensure that folder exists */
+/** Get the path within the default project root, and ensure that folder exists */
 export function createTestPath(...args: string[]) {
   const testPath = getTestPath(...args);
   ensureFolderExists(testPath);

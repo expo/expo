@@ -11,10 +11,9 @@ import { isInteractive } from '../utils/interactive';
 import { learnMore } from '../utils/link';
 import { confirmAsync } from '../utils/prompts';
 import { joinWithCommasAnd } from '../utils/strings';
+import { debugEvent } from './events';
 import { fixPackagesAsync } from './fixPackages';
 import type { Options } from './resolveOptions';
-
-const debug = require('debug')('expo:install:check') as typeof console.log;
 
 /**
  * Handles `expo install --fix|check'.
@@ -90,7 +89,7 @@ export async function checkPackagesAsync(
     (isInteractive() && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
 
   if (value) {
-    debug('Installing fixed dependencies:', dependencies);
+    debugEvent('fixing_dependencies', { packages: dependencies.map((d) => d.packageName) });
     // Install the corrected dependencies.
     return fixPackagesAsync(projectRoot, {
       packageManager,

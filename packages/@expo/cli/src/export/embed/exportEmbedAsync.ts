@@ -30,6 +30,7 @@ import { copyAsync, removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { ensureProcessExitsAfterDelay } from '../../utils/exit';
 import { setNodeEnv, loadEnvFiles } from '../../utils/nodeEnv';
+import { debugEvent } from '../events';
 import { exportDomComponentAsync } from '../exportDomComponents';
 import { isEnableHermesManaged } from '../exportHermes';
 import { persistMetroAssetsAsync } from '../persistMetroAssets';
@@ -41,15 +42,13 @@ import type { Options } from './resolveOptions';
 import { deserializeEagerKey, getExportEmbedOptionsKey } from './resolveOptions';
 import { isExecutingFromXcodebuild, logMetroErrorInXcode } from './xcodeCompilerLogger';
 
-const debug = require('debug')('expo:export:embed');
-
 function guessCopiedAppleBundlePath(bundleOutput: string) {
   // Ensure the path is familiar before guessing.
   if (
     !bundleOutput.match(/\/Xcode\/DerivedData\/.*\/Build\/Products\//) &&
     !bundleOutput.match(/\/CoreSimulator\/Devices\/.*\/data\/Containers\/Bundle\/Application\//)
   ) {
-    debug('Bundling to non-standard location:', bundleOutput);
+    debugEvent('embed:nonstandard_location', { bundleOutput });
     return false;
   }
   const bundleName = path.basename(bundleOutput);
@@ -60,7 +59,7 @@ function guessCopiedAppleBundlePath(bundleOutput: string) {
     // bundle identifiers can start with dots.
     dot: true,
   })[0];
-  debug('Possible path for previous bundle:', possiblePath);
+  debugEvent('embed:possible_previous_bundle', { possiblePath: possiblePath ?? '' });
   return possiblePath;
 }
 
@@ -133,7 +132,7 @@ export async function exportEmbedInternalAsync(projectRoot: string, options: Opt
   if (isApplePlatform(options.platform)) {
     const previousPath = guessCopiedAppleBundlePath(options.bundleOutput);
     if (previousPath && fs.existsSync(previousPath)) {
-      debug('Removing previous iOS bundle:', previousPath);
+      debugEvent('embed:removing_previous_bundle', { previousPath });
       await removeAsync(previousPath);
     }
   }

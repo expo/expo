@@ -543,7 +543,7 @@ export type AppleMapsViewType = {
    * Update camera position.
    * Animation duration is not supported on iOS.
    *
-   * @param config New camera postion.
+   * @param config New camera position.
    */
   setCameraPosition: (config?: CameraPosition) => void;
 

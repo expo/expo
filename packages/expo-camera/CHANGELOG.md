@@ -17,7 +17,15 @@
 - Replace the deprecated `videoOrientation` API with `AVCaptureDevice.RotationCoordinator` for the iOS camera preview. ([#47172](https://github.com/expo/expo/pull/47172) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix dark frames and the preview rotating into place on iOS launch by fully configuring the camera session before it starts running. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
 - Default the iOS camera `pictureSize` to `photo` instead of `high`. ([#47173](https://github.com/expo/expo/pull/47173) by [@alanjhughes](https://github.com/alanjhughes))
+- Process captured photos off the main thread on iOS so full-resolution captures no longer hang the UI on older devices. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- Fix iOS captures being saved above their native resolution due to orientation normalization rendering at the screen scale. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
+- Remove a redundant full-resolution JPEG re-encode when saving captured photos on iOS. ([#47477](https://github.com/expo/expo/pull/47477) by [@boojamya](https://github.com/boojamya))
 - [iOS] Fix the ZXing barcode fallback scanner returning raw AVFoundation type strings (e.g. `org.iso.PDF417`) instead of short expo `BarcodeType` values (e.g. `pdf417`) for `pdf417`, `code39`, and `codabar`, restoring the fix from [#44726](https://github.com/expo/expo/pull/44726) that was reverted by the `ExpoCameraBarcodeScanning` pod extraction in [#44766](https://github.com/expo/expo/pull/44766). ([#47613](https://github.com/expo/expo/pull/47613) by [@jensdev](https://github.com/jensdev))
+- [iOS] Disable deferred photo delivery so responsive capture no longer hangs the capture promise on iOS 17 and later. ([#47816](https://github.com/expo/expo/pull/47816) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fire `onMountError` instead of crashing the app when the camera can't be started, such as a device reporting zero available cameras. ([#47818](https://github.com/expo/expo/pull/47818) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Preserve the capture orientation as EXIF metadata instead of rotating captured pixels, so `takePictureAsync` and `savePictureAsync` return the real orientation tag and dimensions. ([#47824](https://github.com/expo/expo/pull/47824) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Return zeroed `bounds` and `cornerPoints` from the ZXing fallback scanner so scanning a `pdf417`, `code39`, or `codabar` code no longer crashes with `Cannot read property 'origin' of undefined`. ([#47854](https://github.com/expo/expo/pull/47854) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix `responsiveOrientationWhenOrientationLocked: false` being ignored — photos and videos captured while the app orientation is locked now follow the locked interface orientation instead of the physical device rotation. ([#47881](https://github.com/expo/expo/pull/47881) by [@jiunshinn](https://github.com/jiunshinn))
 
 ### 💡 Others
 
@@ -316,9 +324,9 @@ _This version does not introduce any user-facing changes._
 - [iOS] Fix setting `videoQuality` prop. ([#34082](https://github.com/expo/expo/pull/34082) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix an issue where the camera image is pixelated when using the gl integration. ([#34174](https://github.com/expo/expo/pull/34174) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix setting the camera preview provider. ([#34302](https://github.com/expo/expo/pull/34302) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix initial roation when used with `react-native-screens`. ([#34721](https://github.com/expo/expo/pull/34721) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix initial rotation when used with `react-native-screens`. ([#34721](https://github.com/expo/expo/pull/34721) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix performance regression. ([#34750](https://github.com/expo/expo/pull/34750) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Attempt to fix `setLinearZoom` incompatability with some devices. ([#34757](https://github.com/expo/expo/pull/34757) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Attempt to fix `setLinearZoom` incompatibility with some devices. ([#34757](https://github.com/expo/expo/pull/34757) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix flash. ([#34893](https://github.com/expo/expo/pull/34893) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Attempts to address crash that occurs more frequently on iPads. ([#34915](https://github.com/expo/expo/pull/34915) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Control barcode scanner on session queue. ([#35107](https://github.com/expo/expo/pull/35107) by [@alanjhughes](https://github.com/alanjhughes))
@@ -395,7 +403,7 @@ _This version does not introduce any user-facing changes._
 - Add missing `react` and `react-native` peer dependencies for isolated modules. ([#30462](https://github.com/expo/expo/pull/30462) by [@byCedric](https://github.com/byCedric))
 - Only import from `expo/config-plugins` to follow proper dependency chains. ([#30499](https://github.com/expo/expo/pull/30499) by [@byCedric](https://github.com/byCedric))
 - Add missing `react-native-web` optional peer dependency for isolated modules. ([#30689](https://github.com/expo/expo/pull/30689) by [@byCedric](https://github.com/byCedric))
-- Fixed issue regarding using the "back"-facing on mobile web browswer. ([#30811](https://github.com/expo/expo/pull/30811) by [@entiendoNull](https://github.com/entiendoNull))
+- Fixed issue regarding using the "back"-facing on mobile web browser. ([#30811](https://github.com/expo/expo/pull/30811) by [@entiendoNull](https://github.com/entiendoNull))
 - Fix `takePictureAsync` `quality` option when set to 0. ([#31587](https://github.com/expo/expo/pull/31587) by [@davidavz](https://github.com/davidavz))
 - [iOS] Fix crash related to `sublayers` on 0.75 and above on the new architecture. ([#32194](https://github.com/expo/expo/pull/32194) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix regression in running the cameras cleanup function. ([#32333](https://github.com/expo/expo/pull/32333) by [@alanjhughes](https://github.com/alanjhughes))
@@ -496,7 +504,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fix documention for `maxDuration` in `CameraRecordingOptions`. ([#28749](https://github.com/expo/expo/pull/28749) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix documentation for `maxDuration` in `CameraRecordingOptions`. ([#28749](https://github.com/expo/expo/pull/28749) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.5 — 2024-05-09
 
@@ -563,9 +571,9 @@ _This version does not introduce any user-facing changes._
 - On `iOS`, fix method call on an optional variable. ([#27235](https://github.com/expo/expo/pull/27235) by [@alanjhughes](https://github.com/alanjhughes))
 - Fix scanned frame bounds when scanning a barcode. ([#27207](https://github.com/expo/expo/pull/27207) by [@tamagokun](https://github.com/tamagokun))
 - Fix incorrect prop name `flash` being passed to native. ([#27394](https://github.com/expo/expo/pull/27394) by [@alanjhughes](https://github.com/alanjhughes))
-- Ensure `mute` prop is passed to native so it is correctly initialiased even when not provided from JS. ([#27546](https://github.com/expo/expo/pull/27546) by [@alanjhughes](https://github.com/alanjhughes))
+- Ensure `mute` prop is passed to native so it is correctly initialised even when not provided from JS. ([#27546](https://github.com/expo/expo/pull/27546) by [@alanjhughes](https://github.com/alanjhughes))
 - On `iOS`, fix camera orientation on initial render. ([#27545](https://github.com/expo/expo/pull/27545) by [@alanjhughes](https://github.com/alanjhughes))
-- On `iOS`, fix an issue where the configuration can be interuppted when the dev menu is presented on intial launch. ([#27572](https://github.com/expo/expo/pull/27572) by [@alanjhughes](https://github.com/alanjhughes))
+- On `iOS`, fix an issue where the configuration can be interrupted when the dev menu is presented on initial launch. ([#27572](https://github.com/expo/expo/pull/27572) by [@alanjhughes](https://github.com/alanjhughes))
 - On `iOS`, fix `getAvailablePictureSizes` in the legacy package. ([#27642](https://github.com/expo/expo/pull/27642) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 14.0.6 - 2024-03-07

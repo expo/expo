@@ -93,7 +93,7 @@ const isSelfReferencingRefEntry = (target: RefPath, source: RefPath) => {
 /** Return sorted refs entries. Longest target paths will be returned first */
 const getSortedRefEntries = (refs: Map<RefPath, RefPath>): readonly [RefPath, RefPath][] => {
   const entries = [...refs.entries()].sort((a, b) => b[1].length - a[1].length);
-  // Filter out self-referenceing paths. If we set nested targets to source values, we'd
+  // Filter out self-referencing paths. If we set nested targets to source values, we'd
   // create unserializable circular references
   return entries.filter((entry) => !isSelfReferencingRefEntry(entry[0], entry[1]));
 };

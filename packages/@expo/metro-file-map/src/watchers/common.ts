@@ -50,7 +50,7 @@ export function includedByGlob(
  * (on Windows only) system separators to posix separators.
  *
  * Conversion to posix is for backwards compatibility with the previous
- * anymatch matcher, which normlises all inputs[1]. This may not be consistent
+ * anymatch matcher, which normalises all inputs[1]. This may not be consistent
  * with other parts of metro-file-map.
  *
  * [1]: https://github.com/micromatch/anymatch/blob/3.1.1/index.js#L50

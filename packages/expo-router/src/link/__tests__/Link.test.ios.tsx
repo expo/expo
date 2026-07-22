@@ -655,7 +655,7 @@ describe('prefetch', () => {
     });
   });
 
-  it('does not throw an exception when prefetching a protected route with guard false', () => {
+  it.each([false, true])('prefetches a protected route when guard is %s', (guard) => {
     renderRouter({
       index: () => {
         return <Link prefetch href="/test" />;
@@ -663,42 +663,7 @@ describe('prefetch', () => {
       test: () => null,
       _layout: () => (
         <Stack>
-          <Stack.Protected guard={false}>
-            <Stack.Screen name="test" />
-          </Stack.Protected>
-        </Stack>
-      ),
-    });
-
-    // There was no state update, because prefetch of protected route didn't make any state changes, so we received the initial state
-    // This is stale state created by router
-    expect(screen).toHaveRouterState({
-      routes: [
-        {
-          name: '__root',
-          state: {
-            routes: [
-              {
-                name: 'index',
-                params: undefined,
-                path: '/',
-              },
-            ],
-          },
-        },
-      ],
-    });
-  });
-
-  it('does not throw an exception when prefetching a protected route with guard true', () => {
-    renderRouter({
-      index: () => {
-        return <Link prefetch href="/test" />;
-      },
-      test: () => null,
-      _layout: () => (
-        <Stack>
-          <Stack.Protected guard>
+          <Stack.Protected guard={guard}>
             <Stack.Screen name="test" />
           </Stack.Protected>
         </Stack>

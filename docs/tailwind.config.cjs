@@ -35,6 +35,7 @@ module.exports = {
     backgroundImage: {
       'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
       'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
+      'cell-workflows-pattern': "url('/static/images/home/WorkflowsPattern.svg')",
     },
     keyframes: {
       wave: {

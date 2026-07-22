@@ -70,7 +70,7 @@ object MediaLibraryUtils {
     }
     FileInputStream(src).channel.use { input ->
       FileOutputStream(newFile).channel.use { output ->
-        val transferred = input.transferTo(0, input.size(), output)
+        val transferred = input.transferAllTo(output)
         if (transferred != input.size()) {
           newFile.delete()
           throw IOException("Could not save file to $destDir Not enough space.")
@@ -239,7 +239,7 @@ object MediaLibraryUtils {
     return if (useCameraDir) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_PICTURES
   }
 
-  @Deprecated("It uses deprecated Android method under the hood. See implementation for details.")
+  // It uses deprecated Android method under the hood. See implementation for details.
   fun getEnvDirectoryForAssetType(mimeType: String?, useCameraDir: Boolean): File =
     Environment.getExternalStoragePublicDirectory(getRelativePathForAssetType(mimeType, useCameraDir))
 

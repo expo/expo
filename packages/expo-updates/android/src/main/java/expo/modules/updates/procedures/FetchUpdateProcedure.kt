@@ -116,7 +116,7 @@ class FetchUpdateProcedure(
       callback(IUpdatesController.FetchUpdateResult.RollBackToEmbedded())
     } else {
       if (availableUpdate == null) {
-        procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
+        procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteUnavailable())
         callback(IUpdatesController.FetchUpdateResult.Failure())
       } else {
         procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteWithUpdate(availableUpdate.manifest))

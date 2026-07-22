@@ -1,10 +1,9 @@
 import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
-import { getLogFile, shouldReduceLogs } from '../events';
 import * as Log from '../log';
 import { env } from '../utils/env';
-import { isInteractive } from '../utils/interactive';
+import { isInteractive, shouldReduceLogs } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import {
   checkDependencies,
@@ -30,7 +29,6 @@ import { getPlatformBundlers } from './server/platformBundlers';
 async function getMultiBundlerStartOptions(
   projectRoot: string,
   options: Options,
-  settings: { webOnly?: boolean },
   platformBundlers: PlatformBundlers
 ): Promise<[BundlerStartOptions, MultiBundlerStartOptions]> {
   const commonOptions: BundlerStartOptions = {
@@ -46,8 +44,6 @@ async function getMultiBundlerStartOptions(
       scheme: options.scheme,
     },
   };
-  const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, settings);
-
   const optionalBundlers: Partial<PlatformBundlers> = { ...platformBundlers };
   // In the default case, we don't want to start multiple bundlers since this is
   // a bit slower. Our priority (for legacy) is native platforms.
@@ -56,6 +52,8 @@ async function getMultiBundlerStartOptions(
   }
 
   const bundlers = [...new Set(Object.values(optionalBundlers))];
+  const multiBundlerSettings = await resolvePortsAsync(projectRoot, options, bundlers);
+
   const multiBundlerStartOptions = bundlers.map((bundler) => {
     const port =
       bundler === 'webpack' ? multiBundlerSettings.webpackPort : multiBundlerSettings.metroPort;
@@ -78,10 +76,6 @@ export async function startAsync(
 ) {
   if (!shouldReduceLogs()) {
     Log.log(chalk.gray(`Starting project at ${projectRoot}`));
-    const logFile = getLogFile();
-    if (!isInteractive() && logFile) {
-      Log.log(chalk.gray(`Logs: ${logFile}`));
-    }
   }
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
@@ -107,7 +101,6 @@ export async function startAsync(
   const [defaultOptions, startOptions] = await getMultiBundlerStartOptions(
     projectRoot,
     options,
-    settings,
     platformBundlers
   );
 

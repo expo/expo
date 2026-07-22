@@ -4,7 +4,6 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
@@ -16,7 +15,7 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 class DateTypeConverter : DynamicAwareTypeConverters<LocalDate>() {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): LocalDate {
+  override fun convertFromDynamic(value: Dynamic, context: ConverterContext, forceConversion: Boolean): LocalDate {
     return when (value.type) {
       ReadableType.String -> LocalDate.parse(value.asString(), DateTimeFormatter.ISO_DATE_TIME)
       ReadableType.Number -> convertFromLong(value.asDouble().toLong())
@@ -24,7 +23,7 @@ class DateTypeConverter : DynamicAwareTypeConverters<LocalDate>() {
     }
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): LocalDate {
+  override fun convertFromAny(value: Any, context: ConverterContext, forceConversion: Boolean): LocalDate {
     return when (value) {
       is String -> LocalDate.parse(value, DateTimeFormatter.ISO_DATE_TIME)
       is Long -> convertFromLong(value)

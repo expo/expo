@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `ignoreSafeArea="container"` option to `<Host>`, which ignores the device and container safe area insets (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Use it to keep a `matchContents` host pinned to a screen edge interactive. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `redacted`, `unredacted`, `privacySensitive`, and `invalidatableContent` modifiers, mapping SwiftUI's redaction family for native skeleton-loading and sensitive-content states. ([#47269](https://github.com/expo/expo/pull/47269) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added a `modifiers` prop to `ListItem` to override its default `buttonStyle(.plain)`. ([#47124](https://github.com/expo/expo/pull/47124) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the SwiftUI `presentationSizing` modifier (`automatic`/`fitted`/`form`/`page`) to control sheet sizing, and applied `fitted` in `community/bottom-sheet` dynamic sizing so the sheet hugs its content on iPad instead of opening near full-screen. ([#47050](https://github.com/expo/expo/pull/47050) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -40,6 +41,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix the `community/datetime-picker` (and Jetpack Compose `DateTimePicker`) year-selector chevron always rendering black regardless of `navigationContentColor` or dark mode — Material3 tints it from the ambient `LocalContentColor` (which defaults to black) instead of the navigation color — and let the `accentColor`/`color` prop tint the date/time dialog's confirm and dismiss buttons. ([#47773](https://github.com/expo/expo/issues/47773) by [@fwielstra](https://github.com/fwielstra)) ([#47817](https://github.com/expo/expo/pull/47817) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix RN `Modal`s (and other presented view controllers) becoming untappable and missing from the accessibility tree after a `community/bottom-sheet` `BottomSheet` is dismissed. `RNHostView` attached an `RCTSurfaceTouchHandler` to the hosted RN view but never detached it, so it rode the recycled Fabric component view into the next surface and terminated that surface's touch responder. The handler is now detached when the host disappears. ([#47708](https://github.com/expo/expo/issues/47708) by [@oeddyo](https://github.com/oeddyo)) ([#47713](https://github.com/expo/expo/pull/47713) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `BottomSheet` opening at an unpredictable detent when multiple detents are set without a `selection`. The initial detent now follows the first entry in the array instead of the unordered set. ([#47652](https://github.com/expo/expo/pull/47652) by [@nishan](https://github.com/intergalacticspacehighway))
 - [Android] Fix components crashing on Android 7 (API 24/25), where `android.graphics.Color` props had no type converter below API 26. `Color` props and the seeded Material color palette now work on those versions. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
@@ -270,7 +272,7 @@ _This version does not introduce any user-facing changes._
 - [jetpack-compose] Added `expand` and `partialExpand` to `ModalBottomSheet`. ([#44682](https://github.com/expo/expo/pull/44682) by [@kudo](https://github.com/kudo))
 - Removed iOS universal `Host` workaround. ([#45173](https://github.com/expo/expo/pull/45173) by [@kudo](https://github.com/kudo))
 - [iOS] Unblocked precompiled-xcframework distribution via the runtime worklets provider. ([#45026](https://github.com/expo/expo/pull/45026) by [@chrfalch](https://github.com/chrfalch))
-- Fine tine docs for universal components. ([#45406](https://github.com/expo/expo/pull/45406) by [@kudo](https://github.com/kudo))
+- Fine tune docs for universal components. ([#45406](https://github.com/expo/expo/pull/45406) by [@kudo](https://github.com/kudo))
 
 ## 55.0.15 - 2026-05-05
 
@@ -589,7 +591,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Add `getItemAsync` to `ShareLink` ([#40391](https://github.com/expo/expo/pull/40391) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Add Grid component and modifiers `gridCellUnsizedAxes`, `gridCellColumns`, `gridColumnAlignment`, `gridCellAnchor` ([#40485](https://github.com/expo/expo/pull/40485) by [@doombladeoff](https://github.com/doombladeoff))
 - [iOS] Add `labelView` to LabeledContent component ([#40798](https://github.com/expo/expo/pull/40798) by [@focux](https://github.com/focux))
-- [iOS] - Add shape in `background` modifier and fix `foregroundStyle` modifer in `Label` ([#40748](https://github.com/expo/expo/pull/40748) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] - Add shape in `background` modifier and fix `foregroundStyle` modifier in `Label` ([#40748](https://github.com/expo/expo/pull/40748) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] - Add `systemImage` property to `Switch` component ([#40838](https://github.com/expo/expo/pull/40838) by [@focux](https://github.com/focux))
 - [iOS] Add `icon` property to Label component ([#41178](https://github.com/expo/expo/pull/41178) by [@focux](https://github.com/focux))
 

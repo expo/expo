@@ -479,6 +479,12 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'The 3 tools you need to build mobile apps with AI',
+    event: 'Expo Tutorials',
+    videoId: 'WLGAuwagI8o',
+    uploadDate: '2026-07-13',
+  },
+  {
     title: 'Introducing "Observe": Performance monitoring for React Native apps',
     event: 'Expo Tutorials',
     videoId: '5JqK9JLD140',

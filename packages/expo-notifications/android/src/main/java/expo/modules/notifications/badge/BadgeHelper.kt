@@ -21,7 +21,7 @@ object BadgeHelper {
       BadgeHelper.badgeCount = badgeCount
       true
     } catch (e: ShortcutBadgeException) {
-      Log.d("expo-notifications", "Could not have set badge count: ${e.message}", e)
+      Log.d("expo-notifications", "Could not set badge count: ${e.message}", e)
       e.printStackTrace()
       false
     }

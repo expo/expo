@@ -4,18 +4,17 @@ import { getAnonymousId } from '../../api/user/UserSettings';
 import { env } from '../env';
 import { FetchClient } from './clients/FetchClient';
 import { FetchDetachedClient } from './clients/FetchDetachedClient';
+import { debugEvent as event } from './events';
 import type { TelemetryClient, TelemetryClientStrategy, TelemetryRecord } from './types';
 import { getAgentTelemetryContext } from './utils/agent';
 import { createContext } from './utils/context';
 
-const debug = require('debug')('expo:telemetry') as typeof console.log;
-
 type TelemetryOptions = {
-  /** A locally generated ID, untracable to an actual user */
+  /** A locally generated ID, untraceable to an actual user */
   anonymousId?: string;
   /** A locally generated ID, per CLI invocation */
   sessionId?: string;
-  /** The authenticated user ID, this is used to generate an untracable hash */
+  /** The authenticated user ID, this is used to generate an untraceable hash */
   userId?: string;
   /** The underlying telemetry strategy to use */
   strategy?: TelemetryClientStrategy;
@@ -23,7 +22,7 @@ type TelemetryOptions = {
 
 type TelemetryActor = Required<Pick<TelemetryOptions, 'anonymousId' | 'sessionId'>> & {
   /**
-   * Hashed version of the user ID, untracable to an actual user.
+   * Hashed version of the user ID, untraceable to an actual user.
    * If this value is set to `undefined`, telemetry is considered uninitialized and will wait until its set.
    * If this value is set to `null`, telemetry is considered initialized without an authenticated user.
    * If this value is set to a string, telemetry is considered initialized with an authenticated user.
@@ -63,7 +62,7 @@ export class Telemetry {
     // Abort when debugging the telemetry
     if (env.EXPO_NO_TELEMETRY_DETACH && strategy !== 'debug') return;
 
-    debug('Switching strategy from %s to %s', this.client.strategy, strategy);
+    event('strategy_changed', { from: this.client.strategy, to: strategy! });
 
     // Load and instantiate the correct client, based on strategy
     const client = createClientFromStrategy(strategy);
@@ -114,8 +113,6 @@ export class Telemetry {
   record(record: TelemetryRecord | TelemetryRecord[]) {
     const records = Array.isArray(record) ? record : [record];
 
-    debug('Recording %d event(s)', records.length);
-
     if (!this.isInitialized) {
       this.earlyRecords.push(...records);
       return;
@@ -125,7 +122,6 @@ export class Telemetry {
   }
 
   flush() {
-    debug('Flushing events...');
     this.flushEarlyRecords();
     return this.client.flush();
   }
@@ -154,7 +150,7 @@ function createMessageId(record: TelemetryRecord) {
   return `node-${md5}-${uuid}`;
 }
 
-/** Hash the user identifier to make it untracable */
+/** Hash the user identifier to make it untraceable */
 function hashUserId(userId: string) {
   return crypto.createHash('sha256').update(userId).digest('hex');
 }

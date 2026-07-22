@@ -5,8 +5,7 @@ import { URL } from 'url';
 import * as Log from '../../log';
 import type { GatewayInfo } from '../../utils/ip';
 import { getGateway, getGatewayAsync } from '../../utils/ip';
-
-const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
+import { debugEvent } from './events';
 
 export interface CreateURLOptions {
   /** URL scheme to use when opening apps in custom runtimes. */
@@ -56,7 +55,7 @@ export class UrlCreator {
       url.search = new URLSearchParams({ platform }).toString();
     }
     const loadingUrl = url.toString();
-    debug(`Loading URL: ${loadingUrl}`);
+    debugEvent('loading_url', { url: loadingUrl });
     return loadingUrl;
   }
 
@@ -71,7 +70,7 @@ export class UrlCreator {
       // Prohibit the use of `_` characters in the protocol, Node will throw an error when parsing these URLs
       protocol.includes('_')
     ) {
-      debug(`Invalid protocol for dev client URL: ${protocol}`);
+      debugEvent('dev_client_url_invalid_protocol', { protocol: protocol ?? '' });
       return null;
     }
 
@@ -82,7 +81,7 @@ export class UrlCreator {
     const devClientUrl = `${protocol}://expo-development-client/?url=${encodeURIComponent(
       manifestUrl
     )}`;
-    debug(`Dev client URL: ${devClientUrl} -- manifestUrl: ${manifestUrl} -- %O`, options);
+    debugEvent('dev_client_url', { url: devClientUrl, manifestUrl });
     return devClientUrl;
   }
 
@@ -93,7 +92,6 @@ export class UrlCreator {
       ...options,
     });
     const url = joinUrlComponents(urlComponents);
-    debug(`URL: ${url}`);
     return url;
   }
 

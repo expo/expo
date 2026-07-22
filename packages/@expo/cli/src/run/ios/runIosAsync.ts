@@ -8,6 +8,7 @@ import type { Options } from './XcodeBuild.types';
 import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
 import { resolveOptionsAsync } from './options/resolveOptions';
 import { getValidBinaryPathAsync } from './validateExternalBinary';
+import { event, debugEvent } from '../events';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import * as Log from '../../log';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
@@ -23,8 +24,6 @@ import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
 
-const debug = require('debug')('expo:run:ios');
-
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
   loadEnvFiles(projectRoot);
@@ -39,6 +38,16 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   // Resolve the CLI arguments into useable options.
   const props = await profile(resolveOptionsAsync)(projectRoot, options);
+
+  if (props.device) {
+    event('device:selected', {
+      platform: 'ios',
+      name: props.device.name,
+      id: props.device.udid,
+      os: props.device.osType ?? null,
+      type: props.isSimulator ? 'simulator' : 'device',
+    });
+  }
 
   // We only support build cache for simulator builds for now.
   if (!options.binary && props.buildCacheProvider && props.isSimulator) {
@@ -130,9 +139,22 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     }
 
     // Spawn the `xcodebuild` process to create the app binary.
-    const buildOutput = await XcodeBuild.buildAsync({
-      ...props,
-      eagerBundleOptions,
+    const done = event.span();
+    let buildOutput: string;
+    try {
+      buildOutput = await XcodeBuild.buildAsync({
+        ...props,
+        eagerBundleOptions,
+      });
+    } catch (error) {
+      event('build:failed', { platform: 'ios', error: event.error(error as Error) });
+      throw error;
+    }
+    done('build:done', {
+      platform: 'ios',
+      scheme: props.scheme,
+      configuration: props.configuration,
+      deviceId: props.device?.udid ?? null,
     });
 
     // Find the path to the built app binary, this will be used to install the binary
@@ -147,7 +169,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     binaryPath = await copyBinaryToOutputAsync(binaryPath, options.output);
   }
 
-  debug('Binary path:', binaryPath);
+  debugEvent('ios:binary_path', { path: binaryPath });
 
   // Generic build (--device generic) - skip install/launch, just output the binary path.
   if (!props.device) {
@@ -180,7 +202,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       await simctlAsync(['terminate', props.device.udid, launchInfo.bundleId]);
     } catch (error) {
       // If we failed it's likely that the app was not running to begin with and we will get an `invalid device` error
-      debug('Failed to terminate app (possibly because it was not running):', error);
+      debugEvent('ios:terminate_failed', { error: debugEvent.error(error as Error) });
     }
   }
 
@@ -242,7 +264,7 @@ async function copyBinaryToOutputAsync(binaryPath: string, outputDir: string): P
   const appName = path.basename(binaryPath);
   const outputPath = path.join(absoluteOutputDir, appName);
 
-  debug('Copying binary to output directory:', outputPath);
+  debugEvent('ios:binary_copy', { path: outputPath });
 
   // Create the output directory if it doesn't exist.
   await fs.promises.mkdir(absoluteOutputDir, { recursive: true });

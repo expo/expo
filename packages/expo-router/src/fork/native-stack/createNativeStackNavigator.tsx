@@ -1,6 +1,7 @@
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import * as React from 'react';
 
+import { useClearGuardedRoutes } from '../../layouts/useClearGuardedRoutes';
 import {
   INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME,
   type InternalNavigationOptions,
@@ -62,6 +63,8 @@ function NativeStackNavigator({
     screenLayout,
     UNSTABLE_router,
   });
+
+  useClearGuardedRoutes(state, navigation);
 
   React.useEffect(
     () =>

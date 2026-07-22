@@ -71,6 +71,7 @@
     "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
+    "2g": "^0.4.3",
     "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.20.0",
     "@babel/generator": "^7.20.5",
@@ -83,6 +84,7 @@
     "@jridgewell/gen-mapping": "^0.3.13",
     "@jridgewell/remapping": "^2.3.5",
     "@jridgewell/sourcemap-codec": "^1.5.5",
+    "@react-native/js-polyfills": "0.86.0",
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",

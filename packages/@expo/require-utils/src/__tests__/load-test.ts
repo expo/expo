@@ -55,7 +55,8 @@ describe('evalModule', () => {
       path.join(basepath, 'eval.ts')
     );
 
-    expect(mod).toEqual({
+    expect(mod.__esModule).toBe(true);
+    expect(mod).toMatchObject({
       default: {
         mjs: { test: 'test' },
         cjs: { test: 'test' },
@@ -72,9 +73,8 @@ describe('evalModule', () => {
       path.join(basepath, 'eval.ts')
     );
 
-    expect(mod).toEqual({
-      default: 'test',
-    });
+    expect(mod.__esModule).toBe(true);
+    expect(mod).toMatchObject({ default: 'test' });
   });
 
   it('evaluates .js using import.meta as ESM instead of CommonJS', () => {

@@ -29,7 +29,7 @@ export function addEventListener(type: 'url', handler: URLListener): EmitterSubs
  * Parses the deep link information out of the URL used to open the experience initially.
  * If no link opened the app, all the fields will be `null`.
  * > On the web it parses the current window URL.
- * @return A promise that resolves with `ParsedURL` object.
+ * @return A promise that resolves with a `ParsedURL` object.
  */
 export async function parseInitialURLAsync(): Promise<ParsedURL> {
   const initialUrl = await RNLinking.getInitialURL();
@@ -61,7 +61,7 @@ export async function sendIntent(action: string, extras?: SendIntentExtras[]): P
 
 // @needsAudit
 /**
- * Open the operating system settings app and displays the app’s custom settings, if it has any.
+ * Open the operating system settings app and display the app’s custom settings, if it has any.
  */
 export async function openSettings(): Promise<void> {
   if (Platform.OS === 'web') {
@@ -107,7 +107,7 @@ export function clearInitialURL(): void {
  * Attempt to open the given URL with an installed app. See the [Linking guide](/linking/overview)
  * for more information.
  * @param url A URL for the operating system to open. For example: `tel:5555555`, `exp://`.
- * @return A `Promise` that is fulfilled with `true` if the link is opened operating system
+ * @return A `Promise` that is fulfilled with `true` if the link is opened by the operating system
  * automatically or the user confirms the prompt to open the link. The `Promise` rejects if there
  * are no applications registered for the URL or the user cancels the dialog.
  */
@@ -122,7 +122,7 @@ export async function openURL(url: string): Promise<true> {
  * On web this always returns `true` because there is no API for detecting what URLs can be opened.
  * @param url The URL that you want to test can be opened.
  * @return A `Promise` object that is fulfilled with `true` if the URL can be handled, otherwise it
- * `false` if not.
+ * is `false` if not.
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
  * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/linking/into-other-apps/#custom-url-schemes).
  */

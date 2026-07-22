@@ -77,6 +77,7 @@ import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.recordFromMap
+import expo.modules.kotlin.types.ConverterContext
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.views.ComposableScope
@@ -88,7 +89,7 @@ import expo.modules.ui.convertibles.resolveAnimatable
 typealias ModifierType = Map<String, Dynamic>
 typealias ModifierList = List<ModifierType>
 typealias ModifierEventDispatcher = (String, Map<String, Any?>) -> Unit
-typealias ModifierFactory = @Composable (ModifierType, ComposableScope?, AppContext?, ModifierEventDispatcher) -> Modifier
+typealias ModifierFactory = @Composable (ModifierType, ComposableScope?, ConverterContext, ModifierEventDispatcher) -> Modifier
 
 // region Modifier Params
 
@@ -578,15 +579,15 @@ object ModifierRegistry {
     }
 
     register("graphicsLayer") { map, _, appContext, _ ->
-      val rotationX = resolveAnimatable(map, "rotationX", 0f)
-      val rotationY = resolveAnimatable(map, "rotationY", 0f)
-      val rotationZ = resolveAnimatable(map, "rotationZ", 0f)
-      val scaleX = resolveAnimatable(map, "scaleX", 1f)
-      val scaleY = resolveAnimatable(map, "scaleY", 1f)
-      val alphaVal = resolveAnimatable(map, "alpha", 1f)
-      val translationX = resolveAnimatable(map, "translationX", 0f)
-      val translationY = resolveAnimatable(map, "translationY", 0f)
-      val shadowElevation = resolveAnimatable(map, "shadowElevation", 0f)
+      val rotationX = resolveAnimatable(map, "rotationX", 0f, appContext)
+      val rotationY = resolveAnimatable(map, "rotationY", 0f, appContext)
+      val rotationZ = resolveAnimatable(map, "rotationZ", 0f, appContext)
+      val scaleX = resolveAnimatable(map, "scaleX", 1f, appContext)
+      val scaleY = resolveAnimatable(map, "scaleY", 1f, appContext)
+      val alphaVal = resolveAnimatable(map, "alpha", 1f, appContext)
+      val translationX = resolveAnimatable(map, "translationX", 0f, appContext)
+      val translationY = resolveAnimatable(map, "translationY", 0f, appContext)
+      val shadowElevation = resolveAnimatable(map, "shadowElevation", 0f, appContext)
 
       // Non-animatable params parsed via Record
       val params = recordFromMap<GraphicsLayerParams>(map, appContext)

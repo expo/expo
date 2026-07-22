@@ -39,38 +39,6 @@ PODS:
     - Yoga
   - expo-dev-launcher (56.0.16):
     - EXManifests
-    - expo-dev-launcher/Main (= 56.0.16)
-    - expo-dev-menu
-    - expo-dev-menu-interface
-    - ExpoModulesCore
-    - EXUpdatesInterface
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-Core-prebuilt
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-jsinspector
-    - React-NativeModulesApple
-    - React-RCTAppDelegate
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactAppDependencyProvider
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
-  - expo-dev-launcher/Main (56.0.16):
-    - EXManifests
-    - expo-dev-launcher/Unsafe
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
@@ -115,36 +83,6 @@ PODS:
     - React-Core
     - React-Core-prebuilt
     - React-CoreModules
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-jsinspector
-    - React-NativeModulesApple
-    - React-RCTAppDelegate
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactAppDependencyProvider
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - ReactNativeDependencies
-    - Yoga
-  - expo-dev-launcher/Unsafe (56.0.16):
-    - EXManifests
-    - expo-dev-menu
-    - expo-dev-menu-interface
-    - ExpoModulesCore
-    - EXUpdatesInterface
-    - hermes-engine
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-Core-prebuilt
     - React-debug
     - React-Fabric
     - React-featureflags
@@ -2520,7 +2458,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNGestureHandler (2.32.0):
+  - RNGestureHandler (3.1.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2645,7 +2583,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNScreens (4.26.0-nightly-20260625-9b9b39fa5):
+  - RNScreens (4.26.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2667,9 +2605,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNScreens/common (= 4.26.0-nightly-20260625-9b9b39fa5)
+    - RNScreens/common (= 4.26.0)
     - Yoga
-  - RNScreens/common (4.26.0-nightly-20260625-9b9b39fa5):
+  - RNScreens/common (4.26.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -2904,9 +2842,9 @@ DEPENDENCIES:
   - "ReactCommon/turbomodule/core (from `../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native/ReactCommon`)"
   - "ReactNativeDependencies (from `../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native/third-party-podspecs/ReactNativeDependencies.podspec`)"
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0_@babel+core@7.29.0_@rea_cf519709f40b69ef0ba3b80a98db0b39/node_modules/@react-native-masked-view/masked-view`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0_@babel+core@7.29.0_@react-nativ_8313629b77c6557c08d7b3ab032d2fe3/node_modules/react-native-gesture-handler`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.86.0_@babel+core@7.29.0_@react-native_f0957e3912a3002fa439f41439d8e38a/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_bcfe01e02589bb9be0f75e9d7d147503/node_modules/react-native-reanimated`)"
-  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.86.0_@babel+core@_9065dac1b4c05235ca8dad70cb3f3647/node_modules/react-native-screens`)"
+  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0_react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-p_0de600cb780b6b45bea3c60febec69c4/node_modules/react-native-screens`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_e98144a6c5d6242836167e9069761b53/node_modules/react-native-worklets`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
   - UMAppLoader/Tests (from `../../../packages/unimodules-app-loader/ios`)
@@ -3147,11 +3085,11 @@ EXTERNAL SOURCES:
   RNCMaskedView:
     :path: "../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0_@babel+core@7.29.0_@rea_cf519709f40b69ef0ba3b80a98db0b39/node_modules/@react-native-masked-view/masked-view"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0_@babel+core@7.29.0_@react-nativ_8313629b77c6557c08d7b3ab032d2fe3/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.86.0_@babel+core@7.29.0_@react-native_f0957e3912a3002fa439f41439d8e38a/node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_bcfe01e02589bb9be0f75e9d7d147503/node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.86.0_@babel+core@_9065dac1b4c05235ca8dad70cb3f3647/node_modules/react-native-screens"
+    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0_react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-p_0de600cb780b6b45bea3c60febec69c4/node_modules/react-native-screens"
   RNWorklets:
     :path: "../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_e98144a6c5d6242836167e9069761b53/node_modules/react-native-worklets"
   UMAppLoader:
@@ -3165,7 +3103,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
   Expo: 848f62d607a8a550d4b8064f8f3f69feaf0555c6
-  expo-dev-launcher: f761f01b43a9d7cc32f4bbac53269b0ffe17b349
+  expo-dev-launcher: ca577f99be535273f7278a27e94cda779432ba89
   expo-dev-menu: d9ea09994a5a9bec05005bd7ccbdfcca8f970772
   expo-dev-menu-interface: 65402d4affb8b418aa6cec29b3abb0e313c8f443
   ExpoAppMetrics: 5cdb64cf96504ddef0aa2b87e0be3c337416c75d
@@ -3185,7 +3123,7 @@ SPEC CHECKSUMS:
   EXUpdates: c6488f0bebe92d6decb5f9b685d33ee91feeccf0
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: 0195e08bbc1ef6f012db66639dac3d0abe1c92a3
+  hermes-engine: e355eb94d3f8b7f4c08531a4d42af958d36c13de
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -3267,9 +3205,9 @@ SPEC CHECKSUMS:
   ReactCommon: d5c1bb4427bf51c443de5926aac332c89ddd9363
   ReactNativeDependencies: fa0a54b3f5319ae0e3b9aff32bfee7a424b88e66
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
-  RNGestureHandler: 92172e79df6e88e0e93b6341f9dcd8b5a02746ba
+  RNGestureHandler: a426f18ab9021991fe2cbc8bf1677b740e20e70c
   RNReanimated: acf36f3396b05d25e998c917bcf834524ea6fc71
-  RNScreens: ccbb8554b95292b74535617f1cdb6ddb6350d40c
+  RNScreens: 62693e770c4b73093c018aa7845b691f5ba9988d
   RNWorklets: 2e32d9b0895989f340df9804902643ce46a6b6d4
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf
   SDWebImageAVIFCoder: afe194a084e851f70228e4be35ef651df0fc5c57

@@ -322,6 +322,8 @@ PODS:
     - ExpoModulesCore
   - ExpoAudio (56.0.11):
     - ExpoModulesCore
+  - ExpoAudio/Tests (56.0.11):
+    - ExpoModulesCore
   - ExpoBackgroundFetch (56.0.15):
     - ExpoModulesCore
   - ExpoBackgroundTask (56.0.15):
@@ -344,6 +346,8 @@ PODS:
   - ExpoCalendar (56.0.8):
     - ExpoModulesCore
   - ExpoCamera (56.0.7):
+    - ExpoModulesCore
+  - ExpoCamera/Tests (56.0.7):
     - ExpoModulesCore
   - ExpoCameraBarcodeScanning (56.0.7):
     - ExpoCamera
@@ -2985,7 +2989,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - RNGestureHandler (2.32.0):
+  - RNGestureHandler (3.1.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3110,7 +3114,7 @@ PODS:
     - ReactNativeDependencies
     - RNWorklets
     - Yoga
-  - RNScreens (4.26.0-nightly-20260625-9b9b39fa5):
+  - RNScreens (4.26.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3132,9 +3136,9 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
-    - RNScreens/common (= 4.26.0-nightly-20260625-9b9b39fa5)
+    - RNScreens/common (= 4.26.0)
     - Yoga
-  - RNScreens/common (4.26.0-nightly-20260625-9b9b39fa5):
+  - RNScreens/common (4.26.0):
     - hermes-engine
     - RCTRequired
     - RCTTypeSafety
@@ -3351,6 +3355,7 @@ DEPENDENCIES:
   - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
+  - ExpoAudio/Tests (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
   - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
@@ -3361,6 +3366,7 @@ DEPENDENCIES:
   - ExpoBrownfield (from `../../../packages/expo-brownfield/ios`)
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
+  - ExpoCamera/Tests (from `../../../packages/expo-camera/ios`)
   - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
@@ -3525,9 +3531,9 @@ DEPENDENCIES:
   - "RNCMaskedView (from `../../../node_modules/.pnpm/@react-native-masked-view+masked-view@0.3.2_react-native@0.86.0_@babel+core@7.29.0_@rea_cf519709f40b69ef0ba3b80a98db0b39/node_modules/@react-native-masked-view/masked-view`)"
   - "RNCPicker (from `../../../node_modules/.pnpm/@react-native-picker+picker@2.11.4_react-native@0.86.0_@babel+core@7.29.0_@react-native_df9b5bdf4983a534926d94e4f6b171c1/node_modules/@react-native-picker/picker`)"
   - "RNDateTimePicker (from `../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.86.0_@ba_3ff387633cd73d92abf33032fa835aa1/node_modules/@react-native-community/datetimepicker`)"
-  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0_@babel+core@7.29.0_@react-nativ_8313629b77c6557c08d7b3ab032d2fe3/node_modules/react-native-gesture-handler`)"
+  - "RNGestureHandler (from `../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.86.0_@babel+core@7.29.0_@react-native_f0957e3912a3002fa439f41439d8e38a/node_modules/react-native-gesture-handler`)"
   - "RNReanimated (from `../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_bcfe01e02589bb9be0f75e9d7d147503/node_modules/react-native-reanimated`)"
-  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.86.0_@babel+core@_9065dac1b4c05235ca8dad70cb3f3647/node_modules/react-native-screens`)"
+  - "RNScreens (from `../../../node_modules/.pnpm/react-native-screens@4.26.0_react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-p_0de600cb780b6b45bea3c60febec69c4/node_modules/react-native-screens`)"
   - "RNSVG (from `../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-pres_7db2513d16ccc60642452ad7fe65813d/node_modules/react-native-svg`)"
   - "RNWorklets (from `../../../node_modules/.pnpm/react-native-worklets@0.10.1_patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501_e98144a6c5d6242836167e9069761b53/node_modules/react-native-worklets`)"
   - TestExpoUi (from `../modules/test-expo-ui/ios`)
@@ -3992,11 +3998,11 @@ EXTERNAL SOURCES:
   RNDateTimePicker:
     :path: "../../../node_modules/.pnpm/@react-native-community+datetimepicker@8.6.0_expo@packages+expo_react-native@0.86.0_@ba_3ff387633cd73d92abf33032fa835aa1/node_modules/@react-native-community/datetimepicker"
   RNGestureHandler:
-    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@2.32.0_react-native@0.86.0_@babel+core@7.29.0_@react-nativ_8313629b77c6557c08d7b3ab032d2fe3/node_modules/react-native-gesture-handler"
+    :path: "../../../node_modules/.pnpm/react-native-gesture-handler@3.1.0_react-native@0.86.0_@babel+core@7.29.0_@react-native_f0957e3912a3002fa439f41439d8e38a/node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../../../node_modules/.pnpm/react-native-reanimated@4.5.1_patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d_bcfe01e02589bb9be0f75e9d7d147503/node_modules/react-native-reanimated"
   RNScreens:
-    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0-nightly-20260625-9b9b39fa5_react-native@0.86.0_@babel+core@_9065dac1b4c05235ca8dad70cb3f3647/node_modules/react-native-screens"
+    :path: "../../../node_modules/.pnpm/react-native-screens@4.26.0_react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-p_0de600cb780b6b45bea3c60febec69c4/node_modules/react-native-screens"
   RNSVG:
     :path: "../../../node_modules/.pnpm/react-native-svg@15.15.4_react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-pres_7db2513d16ccc60642452ad7fe65813d/node_modules/react-native-svg"
   RNWorklets:
@@ -4030,7 +4036,7 @@ SPEC CHECKSUMS:
   ExpoAppleAuthentication: 3dd8ddd3016396a8171f06af8cc5e3e008e8eaf4
   ExpoAppMetrics: 5cdb64cf96504ddef0aa2b87e0be3c337416c75d
   ExpoAsset: c2e7b5ba1fe75be683282d6264e38fd7cd8defbb
-  ExpoAudio: 7774082d316ceecc2b26efeb10480bea2fa4d67e
+  ExpoAudio: 828b0248bfa4597468f69891aee39d444539d8bb
   ExpoBackgroundFetch: eff0b77ce55180ad479c5091616d6d2c3bf5ca58
   ExpoBackgroundTask: d2ab6bf83921dc84ad3995fed08d56491ca8cba8
   ExpoBattery: a42e918404ceee07a957db4312918ec0c52bc0d6
@@ -4039,7 +4045,7 @@ SPEC CHECKSUMS:
   ExpoBrightness: db4e1904c09d8cad3e120cd82466fdb3cfb8ff85
   ExpoBrownfield: c9213f348af9d80b746838ac6485beecbdb6c5e8
   ExpoCalendar: abe02062604dad8fac03539ea769e29870d4feee
-  ExpoCamera: fc1d2688e9824984e28cf606062da40d2d80b13e
+  ExpoCamera: 81c10b3e5d0652becc62d496b36e41bd9e8f4dd4
   ExpoCameraBarcodeScanning: a6a8781886a0cf5ebe78184dcc895c0c88e1b8b5
   ExpoCellular: 61e540ab0138c7f441639b51a27b3cca2bbc5ae8
   ExpoClipboard: 40221903a1caa68259e022517af49d12962821fe
@@ -4102,7 +4108,7 @@ SPEC CHECKSUMS:
   EXUpdates: c6488f0bebe92d6decb5f9b685d33ee91feeccf0
   EXUpdatesInterface: 25408a97d682355eb9fb37e5aa6e22caece1881f
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: 4c998771d5218e20701b63d8358199a520a54447
+  hermes-engine: e355eb94d3f8b7f4c08531a4d42af958d36c13de
   JestMockSchema: 96b4cfec246644f6323d1c30693b6a02044be1e6
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
@@ -4198,9 +4204,9 @@ SPEC CHECKSUMS:
   RNCMaskedView: eb2b2e538afa907f05a5848a1a1ac26092e6fec9
   RNCPicker: d74667bdfc08ed389a2a277d95b8faf2349290a9
   RNDateTimePicker: b9e20c2a3af26f4ab10646359777205bbad1fdac
-  RNGestureHandler: 92172e79df6e88e0e93b6341f9dcd8b5a02746ba
+  RNGestureHandler: a426f18ab9021991fe2cbc8bf1677b740e20e70c
   RNReanimated: acf36f3396b05d25e998c917bcf834524ea6fc71
-  RNScreens: ccbb8554b95292b74535617f1cdb6ddb6350d40c
+  RNScreens: 62693e770c4b73093c018aa7845b691f5ba9988d
   RNSVG: 3fe8590403ac9f107b4d14591bc6e54da4894e5c
   RNWorklets: 2e32d9b0895989f340df9804902643ce46a6b6d4
   SDWebImage: e9fc87c1aab89a8ab1bbd74eba378c6f53be8abf

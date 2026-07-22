@@ -40,7 +40,7 @@ export function setOptions(options: SplashScreenOptions): void {}
 export function hide(): void {}
 
 /**
- * Hides the native splash screen immediately. This method is provided for backwards compatability. See the
+ * Hides the native splash screen immediately. This method is provided for backwards compatibility. See the
  * ["Usage"](#usage) section for an example.
  */
 export async function hideAsync(): Promise<void> {}

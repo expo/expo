@@ -222,7 +222,7 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     ).toEqual(['index', 'second']);
   });
 
-  it('filters out Protected screens whose guard is false', () => {
+  it('keeps Protected screens whose guard is false hidden', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -236,7 +236,11 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
+    const args = lastArgs();
+    const second = args.state.routes.find((route) => route.name === 'second')!;
+
+    expect(args.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
+    expect(args.descriptors[second.key]!.options).toMatchObject({ hidden: true });
   });
 
   it('propagates route params into state and href', () => {
@@ -301,8 +305,9 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
-      { focusedName?: string },
-      TabRouterOptions
+      object,
+      TabRouterOptions,
+      { focusedName: string }
     >(NavigatorContent, TabRouter, {
       useOnlyUserDefinedScreens: true,
       createProps: ({ state }) => ({ focusedName: state.routes[state.index]!.name }),
@@ -333,8 +338,9 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
-      { goToSecond?: () => void },
-      TabRouterOptions
+      object,
+      TabRouterOptions,
+      { goToSecond: () => void }
     >(NavigatorContent, TabRouter, {
       useOnlyUserDefinedScreens: true,
       createProps: ({ dispatch }) => ({
@@ -585,16 +591,15 @@ describe('custom-navigators guide example', () => {
   // `preloadedNames` is derived from the raw `state` — exactly the "router-specific information that
   // is not part of the standard state" that `createProps` exists to expose (TabRouter keeps preloaded
   // routes in `preloadedRouteKeys`, which the standard contract does not project).
-  // Props supplied by `createProps` are declared optional so they are not required on the `<Tabs>`
-  // element (it is rendered without them); the content still receives them at runtime.
   type CreatePropsProps = {
-    activeRouteKey?: string;
-    preload?: (name: string) => void;
-    preloadedNames?: string[];
+    activeRouteKey: string;
+    preload: (name: string) => void;
+    preloadedNames: string[];
   };
   type ContentProps = NavigatorContentProps<
     { title?: string },
     Record<string, never>,
+    object,
     CreatePropsProps
   >;
 
@@ -611,8 +616,9 @@ describe('custom-navigators guide example', () => {
     { title?: string },
     TabNavigationState<ParamListBase>,
     Record<string, never>,
-    CreatePropsProps,
-    TabRouterOptions
+    object,
+    TabRouterOptions,
+    CreatePropsProps
   >(TabsContent, TabRouter, {
     useOnlyUserDefinedScreens: true,
     createProps: ({ state, dispatch }) => ({
@@ -649,7 +655,7 @@ describe('custom-navigators guide example', () => {
     renderExample();
     expect(lastProps().preloadedNames).toEqual([]);
 
-    act(() => lastProps().preload!('settings'));
+    act(() => lastProps().preload('settings'));
 
     // The action reached the TabRouter: `settings` is now preloaded, and focus stayed on `index`.
     expect(lastProps().preloadedNames).toEqual(['settings']);

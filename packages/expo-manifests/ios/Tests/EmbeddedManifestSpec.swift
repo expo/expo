@@ -34,7 +34,7 @@ class EmbeddedManifestSpec : ExpoSpec {
         expect(manifest.easProjectId()).to(beNil())
         expect(manifest.expoGoSDKVersion()).to(beNil())
 
-        // from base base class
+        // from base class
         expect(manifest.legacyId()) == "0eef8214-4833-4089-9dff-b4138a14f196"
         expect(manifest.revisionId()).to(beNil())
         expect(manifest.slug()).to(beNil())

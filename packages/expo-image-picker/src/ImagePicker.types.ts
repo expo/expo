@@ -517,7 +517,7 @@ export type ImagePickerOptions = {
    * - **On iOS**, when `allowsEditing` is set to `true`, maximum duration is limited to 10 minutes.
    *   This limit is applied automatically, if `0` or no value is specified.
    * - **On Android**, effect of this option depends on support of installed camera app.
-   * - **On Web** this option has no effect - the limit is browser-dependant.
+   * - **On Web** this option has no effect - the limit is browser-dependent.
    */
   videoMaxDuration?: number;
   /**

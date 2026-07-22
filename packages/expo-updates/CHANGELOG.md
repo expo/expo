@@ -13,9 +13,11 @@
 - [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [iOS] Isolate UpdatesLogReaderTests from concurrent suites. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
+- Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- Rename the no-update `downloadComplete` state to `downloadCompleteUnavailable` in native update events. ([#47902](https://github.com/expo/expo/pull/47902) by [@kudo](https://github.com/kudo))
 - [Android] Use `OkHttpClientProvider` instead of raw `OkHttpClient` in `FileDownloader` so React Native's shared client and its interceptors are applied. ([#46926](https://github.com/expo/expo/pull/46926) by [@cortinico](https://github.com/cortinico))
 - [Android] Log purge completion errors via `android.util.Log.e` directly instead of `logger.error`, so the failure path doesn't re-enter the `PersistentFileLog` dispatch queue from inside one of its own tasks. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Internal] Align find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
@@ -341,7 +343,7 @@ _This version does not introduce any user-facing changes._
 - [CI] Removed Detox dependency and unused files in E2E code. ([#37751](https://github.com/expo/expo/pull/37751) by [@douglowder](https://github.com/douglowder))
 - Updates imports from `@expo/config`, `@expo/config-plugins` to `expo/config`, `expo/config-plugins`. ([#37860](https://github.com/expo/expo/pull/37860) by [@aleqsio](https://github.com/aleqsio))
 - [Android] Migrate loaders and file downloader to coroutines. ([#37959](https://github.com/expo/expo/pull/37959) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Fix procedure scope no surviving app reloads. ([#38073](https://github.com/expo/expo/pull/38073) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix procedure scope not surviving app reloads. ([#38073](https://github.com/expo/expo/pull/38073) by [@alanjhughes](https://github.com/alanjhughes))
 - [Internal] Replace dependency chain to `@expo/cli` internals with an internal entrypoint ([#38574](https://github.com/expo/expo/pull/38574) by [@kitten](https://github.com/kitten))
 
 ### 📚 3rd party library updates
@@ -617,7 +619,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Rollback to system SQLite3 and fix incompatible issue when any third-party library uses iOS system SQLite3. ([#30826](https://github.com/expo/expo/pull/30826) by [@kudo](https://github.com/kudo))
 - Use expo-updates as source of truth for runtime version in dev client ([#31453](https://github.com/expo/expo/pull/31453) by [@wschurman](https://github.com/wschurman))
 - Fixed iOS reload crash on New Architecture mode. ([#31789](https://github.com/expo/expo/pull/31789) by [@kudo](https://github.com/kudo))
-- [cli] Disable console during runtime and fingeprint evaluation ([#31874](https://github.com/expo/expo/pull/31874) by [@wschurman](https://github.com/wschurman))
+- [cli] Disable console during runtime and fingerprint evaluation ([#31874](https://github.com/expo/expo/pull/31874) by [@wschurman](https://github.com/wschurman))
 - Refactor state machine event emitting and initial state ([#31819](https://github.com/expo/expo/pull/31819) by [@wschurman](https://github.com/wschurman))
 - Re-emit state on every observer observe event ([#32103](https://github.com/expo/expo/pull/32103) by [@wschurman](https://github.com/wschurman))
 
@@ -1181,7 +1183,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Improved README and other chagnes for E2E tests. ([#21331](https://github.com/expo/expo/pull/21331) by [@douglowder](https://github.com/douglowder))
+- Improved README and other changes for E2E tests. ([#21331](https://github.com/expo/expo/pull/21331) by [@douglowder](https://github.com/douglowder))
 - Protocol 1 support and rollback test in E2E tests. ([#21197](https://github.com/expo/expo/pull/21197) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
 - Convert to Swift. ([#21320](https://github.com/expo/expo/pull/21320), [#21329](https://github.com/expo/expo/pull/21329), [#21332](https://github.com/expo/expo/pull/21332), [#21391](https://github.com/expo/expo/pull/21391), [#21394](https://github.com/expo/expo/pull/21394), [#21450](https://github.com/expo/expo/pull/21450), [#21451](https://github.com/expo/expo/pull/21451), [#21467](https://github.com/expo/expo/pull/21467), [#21471](https://github.com/expo/expo/pull/21471), [#21478](https://github.com/expo/expo/pull/21478), [#21493](https://github.com/expo/expo/pull/21493), [#21495](https://github.com/expo/expo/pull/21495), [#21512](https://github.com/expo/expo/pull/21512), [#21535](https://github.com/expo/expo/pull/21535), [#21536](https://github.com/expo/expo/pull/21536), [#21570](https://github.com/expo/expo/pull/21570), [#21591](https://github.com/expo/expo/pull/21591), [#21596](https://github.com/expo/expo/pull/21596), [#21599](https://github.com/expo/expo/pull/21599), [#21649](https://github.com/expo/expo/pull/21649) by [@wschurman](https://github.com/wschurman))
@@ -1562,7 +1564,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fixing app.manifest does not generated from Xcode build phase script. ([#14438](https://github.com/expo/expo/pull/14438) by [@kudo](https://github.com/kudo))
+- Fixing app.manifest not generated from Xcode build phase script. ([#14438](https://github.com/expo/expo/pull/14438) by [@kudo](https://github.com/kudo))
 
 ## 0.9.1 — 2021-09-09
 
@@ -1910,7 +1912,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fixed an issue with recovering from an unexpectedly deleted asset on iOS.
-- Fixed handling of invalid EXPO_UDPATE_URL values on Android.
+- Fixed handling of invalid EXPO_UPDATE_URL values on Android.
 - Updates Configuration Conditional From Equal To Prefix Check. ([#8225](https://github.com/expo/expo/pull/8225) by [@thorbenprimke](https://github.com/thorbenprimke))
 
 ## 0.1.3

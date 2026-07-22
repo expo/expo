@@ -109,7 +109,7 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
 
 /**
  A Layout designed for the `useViewportSizeMeasurement` behavior.
- If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand it's children size.
+ If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand its children size.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 private struct ViewportSizeMeasurementLayout: Layout {
@@ -169,7 +169,7 @@ private struct ViewportSizeMeasurementLayout: Layout {
 }
 
 /**
- A ViewModifier that listens for view size change the dispatch the `onLayoutContent` event
+ A ViewModifier that listens for view size changes and dispatches the `onLayoutContent` event
  */
 private struct GeometryChangeModifier: ViewModifier {
   let props: HostViewProps

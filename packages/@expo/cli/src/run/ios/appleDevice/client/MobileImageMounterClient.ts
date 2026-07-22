@@ -5,15 +5,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import Debug from 'debug';
 import * as fs from 'fs';
 import type { Socket } from 'net';
 
 import { ResponseError, ServiceClient } from './ServiceClient';
 import type { LockdownCommand, LockdownResponse } from '../protocol/LockdownProtocol';
 import { isLockdownResponse, LockdownProtocolClient } from '../protocol/LockdownProtocol';
-
-const debug = Debug('expo:apple-device:client:mobile_image_mounter');
 
 export type MIMMountResponse = LockdownResponse;
 
@@ -47,8 +44,6 @@ export class MobileImageMounterClient extends ServiceClient<LockdownProtocolClie
   }
 
   async mountImage(imagePath: string, imageSig: Buffer) {
-    debug(`mountImage: ${imagePath}`);
-
     const resp = await this.protocolClient.sendMessage({
       Command: 'MountImage',
       ImagePath: imagePath,
@@ -62,8 +57,6 @@ export class MobileImageMounterClient extends ServiceClient<LockdownProtocolClie
   }
 
   async uploadImage(imagePath: string, imageSig: Buffer) {
-    debug(`uploadImage: ${imagePath}`);
-
     const imageSize = fs.statSync(imagePath).size;
     return this.protocolClient.sendMessage(
       {
@@ -89,8 +82,6 @@ export class MobileImageMounterClient extends ServiceClient<LockdownProtocolClie
   }
 
   async lookupImage() {
-    debug('lookupImage');
-
     return this.protocolClient.sendMessage<MIMLookupResponse>({
       Command: 'LookupImage',
       ImageType: 'Developer',

@@ -61,3 +61,5 @@ minimumReleaseAgeExclude:
   - 'expo-modules-jsi'
   - 'babel-preset-expo'
   - 'jest-expo'
+  - '2g'
+  - 'sandbox-cli-detector'

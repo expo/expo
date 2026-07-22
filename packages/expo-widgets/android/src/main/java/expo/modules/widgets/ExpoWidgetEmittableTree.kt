@@ -10,6 +10,8 @@ import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.recordFromMap
+import expo.modules.kotlin.runtime.Runtime
+import expo.modules.kotlin.types.ConverterContext
 import expo.modules.kotlin.views.ComposeProps
 import expo.modules.kotlin.views.OptimizedComposeProps
 import expo.modules.kotlin.views.createComposeProps
@@ -86,9 +88,16 @@ import io.github.jakex7.peek.emittables.TextAlign as PeekTextAlign
 import io.github.jakex7.peek.emittables.TextDecoration as PeekTextDecoration
 import io.github.jakex7.peek.emittables.VerticalAlignment as PeekVerticalAlignment
 
+private class WidgetConverterContext(
+  override val applicationContext: Context
+) : ConverterContext {
+  override val runtime: Runtime? = null
+}
+
 internal fun ReadableMap.toPeekRoot(context: Context, source: String): PeekRoot {
+  val converterContext = WidgetConverterContext(context)
   return PeekRoot().also { root ->
-    root.children += toPeekNodes(context, source)
+    root.children += toPeekNodes(converterContext, source)
   }
 }
 
@@ -105,69 +114,69 @@ private fun createErrorText(message: String): EmittableText {
   }
 }
 
-private fun ReadableMap.toPeekNodes(context: Context, source: String): List<Emittable> {
+private fun ReadableMap.toPeekNodes(converterContext: ConverterContext, source: String): List<Emittable> {
   return when (typeName()) {
-    "BoxView" -> listOf(toPeekBox(context, source))
-    "CheckboxView" -> listOf(toPeekCheckBox())
-    "CircularProgressIndicatorView" -> listOf(toPeekCircularProgress())
-    "ColumnView" -> listOf(toPeekColumn(context, source))
-    "LinearProgressIndicatorView" -> listOf(toPeekLinearProgress())
-    "LoadingIndicatorView" -> listOf(toPeekLoadingIndicator())
-    "RadioButtonView" -> listOf(toPeekRadioButton())
-    "react.fragment" -> children().flatMap { it.toPeekNodes(context, source) }
-    "RowView" -> listOf(toPeekRow(context, source))
-    "SpacerView" -> listOf(toPeekSpacer())
-    "SwitchView" -> listOf(toPeekSwitch())
-    "TextView" -> listOf(toPeekText())
+    "BoxView" -> listOf(toPeekBox(converterContext, source))
+    "CheckboxView" -> listOf(toPeekCheckBox(converterContext))
+    "CircularProgressIndicatorView" -> listOf(toPeekCircularProgress(converterContext))
+    "ColumnView" -> listOf(toPeekColumn(converterContext, source))
+    "LinearProgressIndicatorView" -> listOf(toPeekLinearProgress(converterContext))
+    "LoadingIndicatorView" -> listOf(toPeekLoadingIndicator(converterContext))
+    "RadioButtonView" -> listOf(toPeekRadioButton(converterContext))
+    "react.fragment" -> children().flatMap { it.toPeekNodes(converterContext, source) }
+    "RowView" -> listOf(toPeekRow(converterContext, source))
+    "SpacerView" -> listOf(toPeekSpacer(converterContext))
+    "SwitchView" -> listOf(toPeekSwitch(converterContext))
+    "TextView" -> listOf(toPeekText(converterContext))
     "Button", "FilledTonalButton", "OutlinedButton", "ElevatedButton", "TextButton" -> listOf(
-      toPeekButton(context, source)
+      toPeekButton(converterContext, source)
     )
 
     else -> listOf(createErrorText("View not found"))
   }
 }
 
-private fun ReadableMap.toPeekBox(context: Context, source: String): EmittableBox {
-  val props = props<LayoutProps>()
+private fun ReadableMap.toPeekBox(converterContext: ConverterContext, source: String): EmittableBox {
+  val props = props<LayoutProps>(converterContext)
   return EmittableBox().also {
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
     it.contentAlignment = props.contentAlignment?.toPeekAlignment() ?: PeekAlignment.TopStart
-    it.children += children().flatMap { child -> child.toPeekNodes(context, source) }
+    it.children += children().flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
 }
 
-private fun ReadableMap.toPeekRow(context: Context, source: String): EmittableRow {
-  val props = props<LayoutProps>()
+private fun ReadableMap.toPeekRow(converterContext: ConverterContext, source: String): EmittableRow {
+  val props = props<LayoutProps>(converterContext)
   return EmittableRow().also {
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
     it.horizontalAlignment = props.toPeekHorizontalAlignment()
     it.verticalAlignment = props.toPeekVerticalAlignment()
-    it.children += children().flatMap { child -> child.toPeekNodes(context, source) }
+    it.children += children().flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
 }
 
-private fun ReadableMap.toPeekColumn(context: Context, source: String): EmittableColumn {
-  val props = props<LayoutProps>()
+private fun ReadableMap.toPeekColumn(converterContext: ConverterContext, source: String): EmittableColumn {
+  val props = props<LayoutProps>(converterContext)
   return EmittableColumn().also {
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
     it.verticalAlignment = props.toPeekVerticalAlignment()
     it.horizontalAlignment = props.toPeekHorizontalAlignment()
-    it.children += children().flatMap { child -> child.toPeekNodes(context, source) }
+    it.children += children().flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
 }
 
-private fun ReadableMap.toPeekSpacer(): EmittableSpacer {
+private fun ReadableMap.toPeekSpacer(converterContext: ConverterContext): EmittableSpacer {
   return EmittableSpacer().also {
-    it.modifier = props<SpacerProps>().modifiers.toPeekModifier()
+    it.modifier = props<SpacerProps>(converterContext).modifiers.toPeekModifier(converterContext)
   }
 }
 
-private fun ReadableMap.toPeekText(): EmittableText {
-  val props = props<TextProps>()
+private fun ReadableMap.toPeekText(converterContext: ConverterContext): EmittableText {
+  val props = props<TextProps>(converterContext)
   val typography = props.typography?.toPeekTypography()
   return EmittableText().also {
     it.text = props.textContent()
-    it.modifier = props.textModifier()
+    it.modifier = props.textModifier(converterContext)
     it.color = props.color.toPeekColorProvider() ?: typography?.color ?: it.color
     it.fontSize = props.fontSize?.sp ?: typography?.fontSize ?: TextUnit.Unspecified
     it.fontWeight =
@@ -179,14 +188,14 @@ private fun ReadableMap.toPeekText(): EmittableText {
   }
 }
 
-private fun ReadableMap.toPeekButton(context: Context, source: String): Emittable {
-  val props = props<WidgetButtonProps>()
+private fun ReadableMap.toPeekButton(converterContext: ConverterContext, source: String): Emittable {
+  val props = props<WidgetButtonProps>(converterContext)
   val children = children()
   val action =
-    props.target?.let { target -> WidgetInteraction(source, target).toPeekAction(context) }
-  val modifier = props.buttonModifier()
+    props.target?.let { target -> WidgetInteraction(source, target).toPeekAction(converterContext.context) }
+  val modifier = props.buttonModifier(converterContext)
   val contentColor = props.contentColorProvider()
-  val textContent = children.textContent() ?: props.label
+  val textContent = children.textContent(converterContext) ?: props.label
   if (textContent != null && (children.isEmpty() || children.isTextOnlyContent())) {
     return EmittableButton().also {
       it.text = textContent
@@ -204,16 +213,16 @@ private fun ReadableMap.toPeekButton(context: Context, source: String): Emittabl
       modifier
     }
     it.contentAlignment = PeekAlignment.Center
-    it.children += children.flatMap { child -> child.toPeekNodes(context, source) }
+    it.children += children.flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
 }
 
-private fun ReadableMap.toPeekCheckBox(): EmittableCheckBox {
-  val props = props<CheckboxProps>()
+private fun ReadableMap.toPeekCheckBox(converterContext: ConverterContext): EmittableCheckBox {
+  val props = props<CheckboxProps>(converterContext)
   return EmittableCheckBox().also {
     it.checked = props.value
     it.enabled = props.enabled
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
     it.color = if (props.value) {
       props.colors.checkedColor.toPeekColorProvider() ?: it.color
     } else {
@@ -222,12 +231,12 @@ private fun ReadableMap.toPeekCheckBox(): EmittableCheckBox {
   }
 }
 
-private fun ReadableMap.toPeekSwitch(): EmittableSwitch {
-  val props = props<SwitchProps>()
+private fun ReadableMap.toPeekSwitch(converterContext: ConverterContext): EmittableSwitch {
+  val props = props<SwitchProps>(converterContext)
   return EmittableSwitch().also {
     it.checked = props.value
     it.enabled = props.enabled
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
     it.color = if (props.value) {
       props.colors.checkedThumbColor.toPeekColorProvider() ?: it.color
     } else {
@@ -236,70 +245,70 @@ private fun ReadableMap.toPeekSwitch(): EmittableSwitch {
   }
 }
 
-private fun ReadableMap.toPeekRadioButton(): EmittableRadioButton {
-  val props = props<RadioButtonProps>()
+private fun ReadableMap.toPeekRadioButton(converterContext: ConverterContext): EmittableRadioButton {
+  val props = props<RadioButtonProps>(converterContext)
   return EmittableRadioButton().also {
     it.checked = props.selected
     it.enabled = props.clickable
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
   }
 }
 
-private fun ReadableMap.toPeekLinearProgress(): EmittableLinearProgressIndicator {
-  val props = props<LinearProgressIndicatorProps>()
+private fun ReadableMap.toPeekLinearProgress(converterContext: ConverterContext): EmittableLinearProgressIndicator {
+  val props = props<LinearProgressIndicatorProps>(converterContext)
   return EmittableLinearProgressIndicator().also {
     it.progress = props.progress
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
     it.color = props.color.toPeekColorProvider() ?: it.color
     it.trackColor = props.trackColor.toPeekColorProvider() ?: it.trackColor
   }
 }
 
-private fun ReadableMap.toPeekCircularProgress(): EmittableCircularProgressIndicator {
-  val props = props<CircularProgressIndicatorProps>()
+private fun ReadableMap.toPeekCircularProgress(converterContext: ConverterContext): EmittableCircularProgressIndicator {
+  val props = props<CircularProgressIndicatorProps>(converterContext)
   return EmittableCircularProgressIndicator().also {
     it.progress = props.progress
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
     it.color = props.color.toPeekColorProvider() ?: it.color
     it.trackColor = props.trackColor.toPeekColorProvider() ?: it.trackColor
   }
 }
 
-private fun ReadableMap.toPeekLoadingIndicator(): EmittableCircularProgressIndicator {
-  val props = props<LoadingIndicatorProps>()
+private fun ReadableMap.toPeekLoadingIndicator(converterContext: ConverterContext): EmittableCircularProgressIndicator {
+  val props = props<LoadingIndicatorProps>(converterContext)
   return EmittableCircularProgressIndicator().also {
-    it.modifier = props.modifiers.toPeekModifier()
+    it.modifier = props.modifiers.toPeekModifier(converterContext)
     it.color = props.color.toPeekColorProvider() ?: it.color
   }
 }
 
-private fun ModifierList.toPeekModifier(): PeekModifier {
+private fun ModifierList.toPeekModifier(converterContext: ConverterContext): PeekModifier {
   var result: PeekModifier = PeekModifier
   for (config in this) {
-    result = result.then(config.toPeekModifier())
+    result = result.then(config.toPeekModifier(converterContext))
   }
   return result
 }
 
-private fun ModifierType.toPeekModifier(): PeekModifier {
+private fun ModifierType.toPeekModifier(converterContext: ConverterContext): PeekModifier {
   return when (this["\$type"]?.asString()) {
-    "paddingAll" -> asRecord<PaddingAllParams>()?.let { PeekModifier.padding(it.all.dp) }
-    "padding" -> asRecord<PaddingParams>()?.let {
+    "paddingAll" -> asRecord<PaddingAllParams>(converterContext)?.let { PeekModifier.padding(it.all.dp) }
+    "padding" -> asRecord<PaddingParams>(converterContext)?.let {
       PeekModifier.padding(
         start = it.start.dp, top = it.top.dp, end = it.end.dp, bottom = it.bottom.dp
       )
     }
 
-    "size" -> asRecord<SizeParams>()?.let { PeekModifier.size(it.width.dp, it.height.dp) }
-    "width" -> asRecord<WidthParams>()?.let { PeekModifier.width(it.width.dp) }
-    "height" -> asRecord<HeightParams>()?.let { PeekModifier.height(it.height.dp) }
-    "defaultMinSize" -> asRecord<DefaultMinSizeParams>()?.toPeekModifier()
-    "wrapContentWidth" -> asRecord<WrapContentWidthParams>()?.let { PeekModifier.wrapContentWidth() }
-    "wrapContentHeight" -> asRecord<WrapContentHeightParams>()?.let { PeekModifier.wrapContentHeight() }
-    "fillMaxSize" -> asRecord<FillMaxSizeParams>()?.let { PeekModifier.fillMaxSize() }
-    "fillMaxWidth" -> asRecord<FillMaxWidthParams>()?.let { PeekModifier.fillMaxWidth() }
-    "fillMaxHeight" -> asRecord<FillMaxHeightParams>()?.let { PeekModifier.fillMaxHeight() }
-    "background" -> asRecord<BackgroundParams>()?.color?.toPeekColorProvider()
+    "size" -> asRecord<SizeParams>(converterContext)?.let { PeekModifier.size(it.width.dp, it.height.dp) }
+    "width" -> asRecord<WidthParams>(converterContext)?.let { PeekModifier.width(it.width.dp) }
+    "height" -> asRecord<HeightParams>(converterContext)?.let { PeekModifier.height(it.height.dp) }
+    "defaultMinSize" -> asRecord<DefaultMinSizeParams>(converterContext)?.toPeekModifier()
+    "wrapContentWidth" -> asRecord<WrapContentWidthParams>(converterContext)?.let { PeekModifier.wrapContentWidth() }
+    "wrapContentHeight" -> asRecord<WrapContentHeightParams>(converterContext)?.let { PeekModifier.wrapContentHeight() }
+    "fillMaxSize" -> asRecord<FillMaxSizeParams>(converterContext)?.let { PeekModifier.fillMaxSize() }
+    "fillMaxWidth" -> asRecord<FillMaxWidthParams>(converterContext)?.let { PeekModifier.fillMaxWidth() }
+    "fillMaxHeight" -> asRecord<FillMaxHeightParams>(converterContext)?.let { PeekModifier.fillMaxHeight() }
+    "background" -> asRecord<BackgroundParams>(converterContext)?.color?.toPeekColorProvider()
       ?.let { PeekModifier.background(it) }
     // TODO(@jakex7): Unsupported Expo UI modifiers are intentionally ignored until Peek
     //  can represent them as RemoteViews without changing semantics.
@@ -314,20 +323,20 @@ private fun DefaultMinSizeParams.toPeekModifier(): PeekModifier {
   )
 }
 
-private inline fun <reified T : Record> ModifierType.asRecord(): T? {
-  return runCatching { recordFromMap<T>(this) }.getOrNull()
+private inline fun <reified T : Record> ModifierType.asRecord(converterContext: ConverterContext): T? {
+  return runCatching { recordFromMap<T>(this, converterContext) }.getOrNull()
 }
 
-private fun TextProps.textModifier(): PeekModifier {
-  var modifier = modifiers.toPeekModifier()
+private fun TextProps.textModifier(converterContext: ConverterContext): PeekModifier {
+  var modifier = modifiers.toPeekModifier(converterContext)
   background.toPeekColorProvider()?.let {
     modifier = modifier.background(it)
   }
   return modifier
 }
 
-private fun WidgetButtonProps.buttonModifier(): PeekModifier {
-  var modifier = modifiers.toPeekModifier()
+private fun WidgetButtonProps.buttonModifier(converterContext: ConverterContext): PeekModifier {
+  var modifier = modifiers.toPeekModifier(converterContext)
   val color = if (enabled) {
     colors.containerColor
   } else {
@@ -489,8 +498,8 @@ private fun TypographyStyle.toPeekTypography(): PeekTypography {
   }
 }
 
-private inline fun <reified Props : ComposeProps> ReadableMap.props(): Props {
-  return createComposeProps(propsMap())
+private inline fun <reified Props : ComposeProps> ReadableMap.props(converterContext: ConverterContext): Props {
+  return createComposeProps(propsMap(), converterContext)
 }
 
 private fun TextProps.textContent(): String {
@@ -529,8 +538,10 @@ private fun ReadableMap.children(): List<ReadableMap> {
 private fun ReadableArray.children(): List<ReadableMap> {
   return buildList {
     for (index in 0 until size()) {
-      if (getType(index) == ReadableType.Map) {
-        getMap(index)?.let(::add)
+      when (getType(index)) {
+        ReadableType.Map -> getMap(index)?.let(::add)
+        ReadableType.Array -> getArray(index)?.let { addAll(it.children()) }
+        else -> Unit
       }
     }
   }
@@ -548,15 +559,15 @@ private fun ReadableMap.isTextOnlyContent(): Boolean {
   }
 }
 
-private fun List<ReadableMap>.textContent(): String? {
-  return mapNotNull { it.textFromTextNode() }.joinToString(separator = "")
+private fun List<ReadableMap>.textContent(converterContext: ConverterContext): String? {
+  return mapNotNull { it.textFromTextNode(converterContext) }.joinToString(separator = "")
     .takeIf { it.isNotEmpty() }
 }
 
-private fun ReadableMap.textFromTextNode(): String? {
+private fun ReadableMap.textFromTextNode(converterContext: ConverterContext): String? {
   return when (typeName()) {
-    "TextView" -> propsMap()?.let { createComposeProps<TextProps>(it).textContent() }
-    "react.fragment" -> children().textContent()
+    "TextView" -> propsMap()?.let { createComposeProps<TextProps>(it, converterContext).textContent() }
+    "react.fragment" -> children().textContent(converterContext)
     else -> null
   }
 }

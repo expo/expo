@@ -1,6 +1,6 @@
 {
   "name": "devtools-e2e",
   "version": "0.0.0",
-  "description": "Expo DevTools plugin for E2E tests.",
-  "private": true
+  "private": true,
+  "description": "Expo DevTools plugin for E2E tests."
 }

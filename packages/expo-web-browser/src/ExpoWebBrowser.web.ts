@@ -86,7 +86,7 @@ export default {
 
     if (skipRedirectCheck !== true) {
       const redirectUrl = window.localStorage.getItem(getRedirectUrlHandle(handle));
-      // Compare the original redirect url against the current url with it's query params removed.
+      // Compare the original redirect url against the current url with its query params removed.
       const currentUrl = normalizeUrl(window.location);
       if (redirectUrl !== currentUrl) {
         return {
@@ -104,7 +104,7 @@ export default {
     if (!parent) {
       throw new CodedError(
         'ERR_WEB_BROWSER_REDIRECT',
-        `The window cannot complete the redirect request because the invoking window doesn't have a reference to it's parent. This can happen if the parent window was reloaded.`
+        `The window cannot complete the redirect request because the invoking window doesn't have a reference to its parent. This can happen if the parent window was reloaded.`
       );
     }
     // Send the URL back to the opening window.
@@ -165,7 +165,7 @@ export default {
           return;
         }
         const { data } = event;
-        // Use a crypto hash to invalid message.
+        // Use a crypto hash to validate message.
         const handle = window.localStorage.getItem(getHandle());
         // Ensure the sender is also from expo-web-browser
         if (data.expoSender === handle) {

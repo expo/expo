@@ -4,10 +4,9 @@ import { WebSocketServer } from 'ws';
 import { env, envIsHeadless } from '../../../../utils/env';
 import { isLocalSocket, isMatchingOrigin } from '../../../../utils/net';
 import type { TerminalReporter } from '../TerminalReporter';
+import { event } from '../inspectorEvents';
 import { createHandlersFactory } from './createHandlersFactory';
 import { recordNetworkResponse } from './messageHandlers/NetworkResponse';
-
-const debug = require('debug')('expo:metro:debugging:middleware') as typeof console.log;
 
 interface DebugMiddleware {
   debugMiddleware: NextHandleFunction;
@@ -135,7 +134,7 @@ function createNetworkWebsocket(debuggerWebsocket: WebSocketServer) {
           });
         }
       } catch (error) {
-        debug('Failed to handle Network CDP event', error);
+        event('network_cdp_failed', { error: event.error(error as Error) });
       }
     });
   });

@@ -13,6 +13,9 @@
 
 ### 🐛 Bug fixes
 
+- Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
+- Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
+
 ### 💡 Others
 
 - Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376) by [@wh201906](https://github.com/wh201906))
