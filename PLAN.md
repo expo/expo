@@ -323,6 +323,21 @@ Consequences to design for, not around:
 
 ### D2 — remove the routing-queue machinery; dispatch is a plain synchronous call
 
+> **Correction (found during execution, 2026-07-22 — Step 1). This deletion cannot happen before the
+> Step 5 render-flip; it is moved into Step 5** (see Steps). The routing queue's `useSyncExternalStore`
+> notify + `useEffect` drain provide a **one-React-cycle deferral** that turns out to be load-bearing:
+> a navigation that targets — or is fired from the mount effect of — a **nested navigator still
+> mid-mount** must resolve *after* that navigator has populated its committed nested state (which
+> lands a later commit). Resolving synchronously at dispatch — whether at the call site **or inside
+> the reducer** (both verified empirically) — sees the nested route *without* its state, so
+> `getNavigateAction` emits a root-level **subtree-replacing** action → the nested layout **remounts**
+> and params attach at the wrong level. Only a render path driven by React's **deferred reduction**
+> (the Step 5 `useReducer` flip) reproduces the queue's deferral natively — Step 2's eager-reduce
+> render path is still synchronous, so removing the queue at Step 1 *or* Step 2 regresses
+> nested-navigator navigation (repro: `__tests__/issues.test` "can navigate during first render of
+> nested navigator" → double-mount; `__tests__/tabs.test` "set params for dynamic route via href,
+> nested stack" → param lands as `[id]`). The design below is the end state; it now lands in **Step 5**.
+
 The queue *mechanism* — `useImperativeApiEmitter`'s uSES subscription + `useEffect` drain — is
 **deleted**. `router.push` et al. call the installed root `dispatch` directly, in the caller's own
 call stack, passing the raw intent action (D1 — no resolution at call time). This preserves the
@@ -502,9 +517,11 @@ focus-event timing.
 
 ## Steps
 
-Order: **R1 → R2 (standalone, on the base branch)**, then 1 → 2 → 3 (spike) → 4 → 5 (atomic
-core) → 6 → 7 → 8 → 9 on the transitions branch. Each step keeps the full suite green; Step 5 is
-the only one allowed to be atomic-across-one-commit.
+Order: **R1 → R2 (standalone, on the base branch)**, then 2 → 3 (spike) → 4 → 5 (atomic core;
+**absorbs the former Step 1** queue deletion — see below) → 6 → 7 → 8 → 9 on the transitions branch.
+Each step keeps the full suite green; Step 5 is the only one allowed to be atomic-across-one-commit.
+(**Step 1 was resequenced into Step 5 during execution** — the routing queue can't be removed until
+the render path is driven by deferred reduction; see the D2 correction and the Step 1 note below.)
 
 ### Step R1 (base branch) — Remove prevent-remove fully
 Landed as a standalone step directly on
@@ -541,7 +558,17 @@ Files: `core/BaseNavigationContainer.tsx`, `core/UnhandledActionContext.tsx`,
 `core/useNavigationBuilder.tsx`, `navigationEvents/`, `ExpoRoot.tsx`, navigator factories,
 `core/types.tsx`.
 
-### Step 1 — Delete the routing-queue machinery, keep a minimal pre-ready buffer (D2)
+### Step 1 — Delete the routing-queue machinery, keep a minimal pre-ready buffer (D2) — RESEQUENCED INTO STEP 5
+> **Resequenced (2026-07-22).** Attempted as a standalone step; execution proved the queue's
+> one-React-cycle deferral is load-bearing until the Step 5 `useReducer` render-flip (see the D2
+> correction). Removing the queue here — before deferred reduction drives rendering — regresses
+> nested-navigator-during-mount navigation, and no resolution-site move fixes it (call-time **and**
+> reduce-time both verified to fail; the committed nested route has no state yet at synchronous
+> resolution time). So the queue deletion + pre-ready buffer **move into Step 5**, which is the first
+> point a synchronous dispatch resolves against a fully-populated tree. The original spec below is
+> preserved as the *design* for that deletion, to be applied in Step 5. (Workflow artifacts from the
+> attempt: a red-first test rewrite that proved the mismatch — reverted; not committed.)
+
 Remove `useImperativeApiEmitter` and the uSES/effect drain. **Before deleting anything, sweep for
 pre-ready callers** (tests, `<Redirect>` in root layouts, cold-start deep links) — the review
 showed `push`/`dismiss`/`dismissAll` are silently buffered pre-ready today, so this sweep informs
@@ -650,6 +677,17 @@ D1/D5), and every navigator simply reads the tree its parent passed down through
 subscribes to the store for rendering anymore; the store mirror updates at commit, not at
 dispatch, and the Step-2 shadow scaffolding is deleted.
 
+**Absorbs the former Step 1 (D2 queue deletion), now safe here.** With rendering driven by the
+`useReducer` (reduction deferred to render, after mount/registration effects), the routing queue's
+one-React-cycle deferral is finally redundant, so this step also deletes `useImperativeApiEmitter`'s
+uSES subscription + `useEffect` drain, points `router.*` at the installed `dispatch` directly (raw
+intents resolved in the reducer — D1/D2), and keeps the **minimal pre-ready buffer** (a dumb array
+that buffers only pre-ready intents and drains when the ref attaches). This is the first point a
+synchronous dispatch resolves against a fully-populated committed tree, so the
+nested-navigator-during-mount regression that blocked doing it earlier does not occur — pin it with
+the two repro tests from the D2 correction (`issues.test` nested-first-render single-mount;
+`tabs.test` dynamic-href param). See the preserved Step 1 spec for the deletion's design detail.
+
 Why both halves land in one commit: once the reads come from the `useReducer` tree *and* the
 JS-initiated dispatch is transition-wrapped, React can prepare the next screen in the background —
 the old screen stays mounted and interactive, no Suspense fallback flashes. Landing only one half
@@ -671,7 +709,9 @@ per the recipe); native-urgent dispatch semantics per the supersede-vs-flush dec
 render-count budget tests incl. the multi-tab worst case.
 Files: `react-navigation/core/useStoreSlice.tsx`, `useNavigationState.tsx`,
 `core/useNavigationBuilder.tsx`, `core/BaseNavigationContainer.tsx`,
-`global-state/storeContext.ts`, `global-state/useRouteInfo.ts`, `global-state/routeInfoCache.ts`.
+`global-state/storeContext.ts`, `global-state/useRouteInfo.ts`, `global-state/routeInfoCache.ts`;
+plus the absorbed D2 queue deletion — `global-state/routingQueue.ts` (mostly deleted),
+`global-state/router.ts`, `imperative-api.tsx`, `fork/NavigationContainer.tsx`.
 
 ### Step 6 — Decide what every state reader means during a pending navigation (D4)
 In plain English: once navigations are transitions, "what is the current route" has a pending
