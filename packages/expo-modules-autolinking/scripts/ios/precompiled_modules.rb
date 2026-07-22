@@ -815,6 +815,7 @@ module Expo
       # Prevents swiftinterface verification failures when BUILD_LIBRARY_FOR_DISTRIBUTION=YES
       # is propagated from brownfield/framework user targets to pod targets by CocoaPods 1.16+.
       def disable_swift_interface_verification(installer)
+        return unless enabled?
         return unless prebuilt_react_active?
 
         Pod::UI.puts "[Expo] ".blue + "Disabling SWIFT_EMIT_MODULE_INTERFACE for pod targets (prebuilt React compatibility)"
@@ -846,6 +847,7 @@ module Expo
       # phase deletes and re-extracts the entire React-Core-prebuilt/ directory at
       # build time when switching Debug↔Release configurations.
       def configure_use_frameworks(installer)
+        return unless enabled?
         return unless prebuilt_react_active?
         return if linkage(installer).nil?
 
