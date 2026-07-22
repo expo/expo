@@ -149,7 +149,7 @@ async function runAsync(): Promise<void> {
   console.log(
     chalk.dim(
       telemetryDisabled
-        ? 'Submitting feedback without telemetry data because DO_NOT_TRACK=1.'
+        ? 'Submitting feedback without telemetry data because telemetry collection is disabled.'
         : 'Submitting feedback with available agent, sandbox, environment, project, and Expo account metadata.'
     )
   );
@@ -503,7 +503,8 @@ function printHelp(): void {
   {bold Data collection}
     Feedback includes available agent/session identifiers, sandbox and environment
     details, Expo project metadata, and Expo account identifiers.
-    Set DO_NOT_TRACK=1 to omit automatically collected metadata and authentication.
+    Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected
+    metadata and authentication.
 
   {bold Options}
     --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
@@ -540,7 +541,7 @@ function normalizeSubject(value?: string): string | undefined {
 }
 
 function isTelemetryDisabled(): boolean {
-  return process.env.DO_NOT_TRACK === '1';
+  return process.env.DO_NOT_TRACK === '1' || process.env.EXPO_NO_TELEMETRY === '1';
 }
 
 export function resolveFeedbackId(value?: string): string {

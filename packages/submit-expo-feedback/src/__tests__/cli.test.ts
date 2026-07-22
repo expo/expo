@@ -75,7 +75,7 @@ describe('help output', () => {
       );
       expect(helpOutput).toContain('--resume <feedbackId>');
       expect(helpOutput).toContain(
-        'Set DO_NOT_TRACK=1 to omit automatically collected metadata and authentication.'
+        'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected'
       );
     } finally {
       process.argv = originalArgv;
@@ -300,6 +300,7 @@ describe('feedback submission', () => {
     delete env.EXPO_STAGING;
     delete env.EXPO_TOKEN;
     delete env.DO_NOT_TRACK;
+    delete env.EXPO_NO_TELEMETRY;
     process.env = env;
     writeJson(path.join(projectRoot, 'package.json'), {
       name: 'not-an-expo-app',
@@ -428,44 +429,47 @@ describe('feedback submission', () => {
     }
   });
 
-  it('omits telemetry data and authentication when DO_NOT_TRACK=1', async () => {
-    const originalArgv = process.argv;
-    const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
-    jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
-    process.env.DO_NOT_TRACK = '1';
-    process.env.EXPO_TOKEN = 'token';
-    process.argv = [
-      'node',
-      'submit-expo-feedback',
-      '--category',
-      'mcp',
-      '--subject',
-      'expo-mcp',
-      '--resume',
-      'session_ABC-123',
-      'private feedback',
-    ];
+  it.each(['DO_NOT_TRACK', 'EXPO_NO_TELEMETRY'] as const)(
+    'omits telemetry data and authentication when %s=1',
+    async (environmentVariable) => {
+      const originalArgv = process.argv;
+      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+      jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
+      process.env[environmentVariable] = '1';
+      process.env.EXPO_TOKEN = 'token';
+      process.argv = [
+        'node',
+        'submit-expo-feedback',
+        '--category',
+        'mcp',
+        '--subject',
+        'expo-mcp',
+        '--resume',
+        'session_ABC-123',
+        'private feedback',
+      ];
 
-    try {
-      await runExpoFeedbackAsync();
+      try {
+        await runExpoFeedbackAsync();
 
-      const request = fetchMock.mock.calls[0][1];
-      expect(JSON.parse(request.body)).toEqual({
-        feedback: 'private feedback',
-        metadata: {
-          category: 'mcp',
-          feedbackId: 'session_ABC-123',
-          subject: 'expo-mcp',
-        },
-      });
-      expect(request.headers).toEqual({
-        'Content-Type': 'application/json',
-      });
-      expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
-        'Submitting feedback without telemetry data because DO_NOT_TRACK=1.'
-      );
-    } finally {
-      process.argv = originalArgv;
+        const request = fetchMock.mock.calls[0][1];
+        expect(JSON.parse(request.body)).toEqual({
+          feedback: 'private feedback',
+          metadata: {
+            category: 'mcp',
+            feedbackId: 'session_ABC-123',
+            subject: 'expo-mcp',
+          },
+        });
+        expect(request.headers).toEqual({
+          'Content-Type': 'application/json',
+        });
+        expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
+          'Submitting feedback without telemetry data because telemetry collection is disabled.'
+        );
+      } finally {
+        process.argv = originalArgv;
+      }
     }
-  });
+  );
 });
