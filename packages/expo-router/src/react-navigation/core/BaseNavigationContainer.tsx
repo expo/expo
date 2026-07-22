@@ -2,8 +2,9 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import { rootReducer } from '../../global-state/rootReducer';
+import { createShadowReducer, rootReducer } from '../../global-state/rootReducer';
 import { getSeedState } from '../../global-state/seedState';
+import { shadowTreesMatch } from '../../global-state/shadowCompare';
 import {
   NavigationSyncStateContext,
   ReducerRegistryContext,
@@ -46,6 +47,18 @@ type State = NavigationState | PartialState<NavigationState> | undefined;
 const serializableWarnings: string[] = [];
 const duplicateNameWarnings: string[] = [];
 
+// Step-2 scaffolding (deleted at the Step-5 flip). A shadow `useReducer` reduces every action in
+// parallel with the authoritative sync store but drives no render; a dev-only assertion checks the
+// two commit to matching trees, de-risking the flip that makes the reducer render-authoritative.
+// Off in production. Unit tests that mock `rootReducer` (so the eager path and the shadow diverge by
+// construction) disable it via `__setShadowAssertEnabled`; everywhere real reduction happens it
+// stays live, which is where behavior-neutrality is proven.
+let shadowAssertEnabled = true;
+
+export function __setShadowAssertEnabled(enabled: boolean) {
+  shadowAssertEnabled = enabled;
+}
+
 /**
  * Container component which holds the navigation state.
  * This should be rendered at the root wrapping the whole app.
@@ -84,6 +97,28 @@ export function BaseNavigationContainer({
     () => (initialState == null ? getSeedState() : initialState) as State
   );
   const reducerRegistry = React.useMemo(() => createReducerRegistry(), []);
+
+  // Step-2 shadow: a real `useReducer` seeded identically to the sync store, reducing the same
+  // actions through the same `reduceRoot` logic (via `createShadowReducer`, which bypasses the
+  // `rootReducer` export so it doesn't inflate that call count). Its output drives no render — a
+  // post-commit effect compares it against the eager tree from the *same* dispatch. Deleted at the
+  // Step-5 flip, when it becomes the authoritative reducer. Enabled in dev only.
+  //
+  // The shadow's `useReducer` state lands a commit after the synchronous sync-store `setState`, so
+  // comparing it against the *live* store would false-alarm on that one-commit lag. Instead each
+  // eager commit is tagged with a monotonic `seq` and remembered; the shadow carries the matching
+  // `seq` in its own state, so the effect compares like-for-like (shadow vs. the eager tree of the
+  // same dispatch), immune to the lag.
+  const shadowReducer = React.useMemo(
+    () => createShadowReducer(reducerRegistry),
+    [reducerRegistry]
+  );
+  const [shadowState, shadowDispatch] = React.useReducer(shadowReducer, undefined, () => ({
+    tree: getState() as NavigationState,
+    seq: 0,
+  }));
+  const eagerSeqRef = React.useRef(0);
+  const eagerBySeqRef = React.useRef(new Map<number, NavigationState>());
 
   const isFirstMountRef = React.useRef<boolean>(true);
 
@@ -162,6 +197,15 @@ export function BaseNavigationContainer({
       // prevention returns.
       if (!result.noop) {
         setState(result.state);
+        // Step-2 shadow: reduce the same action (with the same `originKey`) through the parallel
+        // `useReducer`. Tag the dispatch with a monotonic `seq` and remember the eager tree under it,
+        // so the compare effect matches the shadow to the eager tree of the same dispatch. Skipped on
+        // noops to match the `setState` skip above, so the two never drift on a no-op reduction.
+        if (process.env.NODE_ENV !== 'production') {
+          const seq = ++eagerSeqRef.current;
+          eagerBySeqRef.current.set(seq, result.state);
+          shadowDispatch({ action, options, seq });
+        }
       }
 
       return true;
@@ -383,6 +427,38 @@ export function BaseNavigationContainer({
       emitter.emit({ type: 'ready' });
     }
   });
+
+  // Step-2 shadow assertion (dev only). When the shadow `useReducer` commits, compare its tree
+  // against the eager tree of the *same* dispatch (matched by `seq`) — that is the behavior-
+  // neutrality proof for the Step-5 flip. Matching by `seq` sidesteps the shadow's one-commit lag
+  // behind the synchronous sync store. The two may only legitimately differ on freshly minted nanoid
+  // route keys (two reductions mint different ones), which the comparison normalizes. A mismatch is a
+  // hard dev error. Deleted at the Step-5 flip.
+  if (process.env.NODE_ENV !== 'production') {
+    // eslint-disable-next-line react-hooks/rules-of-hooks -- `NODE_ENV` is a stable build constant.
+    React.useEffect(() => {
+      const eager = eagerBySeqRef.current.get(shadowState.seq);
+      // Drop every entry up to the one just checked. In practice each `dispatchRoot` commits the
+      // shadow separately (`seq` advances by one per effect run), so nothing older lingers; the
+      // sweep only matters if React ever coalesced several dispatches into one shadow commit, where
+      // the effect sees the final `seq` and the intermediate eager trees would otherwise leak.
+      for (const seq of eagerBySeqRef.current.keys()) {
+        if (seq <= shadowState.seq) {
+          eagerBySeqRef.current.delete(seq);
+        }
+      }
+      if (!shadowAssertEnabled || eager == null) {
+        return;
+      }
+      if (!shadowTreesMatch(shadowState.tree, eager)) {
+        console.error(
+          'Expo Router: the shadow reducer diverged from the committed navigation store. This is a ' +
+            'bug in the Step-2 useReducer substrate swap — the two must reduce every action to the ' +
+            'same tree. Please report it with the navigation you performed.'
+        );
+      }
+    }, [shadowState]);
+  }
 
   React.useEffect(() => {
     const hydratedState = getRootState();

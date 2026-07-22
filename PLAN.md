@@ -582,6 +582,29 @@ Files: `global-state/routingQueue.ts` (mostly deleted), `global-state/router.ts`
 `imperative-api.tsx`, `fork/NavigationContainer.tsx`.
 
 ### Step 2 — State moves into a root `useReducer`, shadowed for behavior-neutrality (D1)
+> **Corrections (found during execution, 2026-07-22 — Step 2).** With the routing-queue deletion
+> resequenced into Step 5 (the `[step 1]` note), four of Step 2's originally-bundled sub-changes are
+> entangled with the Step-5 render-flip and **move to Step 5**, each for a code-verified reason.
+> Step 2 as executed = **the substrate swap + shadow-compare only** (behavior-neutral). Deferred to
+> Step 5: **(a) resolution fusion** — `getNavigateAction`→reducer and the five raw-intent caller
+> conversions (same nested-navigator-during-mount regression that resequenced Step 1: reduce-time
+> resolution before the target navigator registers, and the queue's deferral is load-bearing until
+> the flip); **(b) state-carried `pendingActions`** — its premise "a pure reducer cannot requeue" is
+> false while the reducer is still invoked imperatively in `dispatchRoot`, which keeps
+> `pendingReplayRef`; converting ref→state buys no Step-2 behavior and costs nanoid/serialization/
+> idempotency hazards, so mount-window replay stays ref-based in Step 2; **(c) verdict elimination**
+> (`handled`/`noop` removal, `canGoBack`/`canDismiss` → referential identity) — `dispatchRoot`'s
+> boolean return has live consumers in `useNavigationBuilder` (`RECONCILE_ROUTE_NAMES` reads it
+> same-commit from a layout effect; the RECONCILE completion-signal redesign is D1-item-4 = Step 5),
+> and referential identity is unsound before the flip (`replacePathState` returns a fresh root on
+> nested handled-noops); **(d) install lifecycle** — neither the committed mirror nor the installed
+> `dispatch` has a Step-2 consumer (`store.state` works through `getRootState()`; the queue still
+> targets `navigationRef.dispatch`). The Step-2 Red-list items depending on (a)–(d)
+> (replay/mount-window via `pendingActions`, native-source-never-queued, same-tick
+> `push();canGoBack()` behavior *change*) are correspondingly **Step-5 pins or Step-2
+> characterizations** (behavior unchanged in Step 2). See `steps/Step-2.md` for the full analysis.
+> The design paragraphs below are the end state; the deferred parts land in Step 5.
+
 `BaseNavigationContainer` replaces `useSyncState` with
 `useReducer(rootNavigationReducer, seed)` (R1/R2 already stripped the dispatch-time side
 channels on the base branch, so `dispatchRoot` collapses to `dispatch(action)` — not yet
@@ -666,6 +689,18 @@ Files (round-3 corrected — `fork/native-stack/`'s view wrapper is dead code an
 rn-screens' `<Screen>` — no react-freeze anywhere in expo-router, prop injection suffices).
 
 ### Step 5 — The flip: navigators read React state; JS-initiated commits become transitions (atomic core)
+> **Pickup from Step 2 (2026-07-22).** Step 2 executed as the substrate-swap + shadow-compare only;
+> four sub-changes deferred here, each entangled with the flip: **(a)** resolution fusion
+> (`getNavigateAction`→reducer + the five raw-intent caller conversions — already listed below as the
+> absorbed D2 work); **(b)** the state-carried `pendingActions` mount-window replay redesign (Step 2
+> keeps `pendingReplayRef` — the render-authoritative pure reducer that genuinely can't requeue is
+> this step); **(c)** verdict elimination (`handled`/`noop` removal, `canGoBack`/`canDismiss` →
+> referential identity — coupled to the `RECONCILE_ROUTE_NAMES` completion-signal redesign already
+> scoped here, and only sound once the flip guarantees noop identity); **(d)** the install lifecycle
+> (`dispatch` + committed mirror into the global store — the queue deletion below needs the installed
+> `dispatch`, the flip needs the mirror). Step 2 also deleted the shadow scaffolding's counterpart
+> `handled`/`noop` test rewrites from its own scope — they belong to (c) here. See `steps/Step-2.md`.
+
 In plain English: today, every navigator independently subscribes to the store and re-reads its
 slice whenever anything changes — that subscription (`useSyncExternalStore`) is exactly what
 forces React to render navigation synchronously and ignore transitions. After this step, only the

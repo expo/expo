@@ -49,7 +49,40 @@ type PathEntry = {
   routeIndex?: number;
 };
 
+// Public entry point. Kept as a thin delegator over `reduceRoot` so that a test spying on this
+// export (or the eager dispatch path) observes exactly one reduction per dispatch: the Step-2 shadow
+// `useReducer` reduces through `reduceRoot` directly (see `createShadowReducer`), bypassing this
+// symbol, so it doesn't inflate that call count.
 export function rootReducer(
+  tree: NavigationState,
+  action: NavigationAction,
+  registry: ReducerRegistry,
+  options: { originKey?: string } = {}
+): RootReducerResult {
+  return reduceRoot(tree, action, registry, options);
+}
+
+export type ShadowState = { tree: NavigationState; seq: number };
+export type ShadowEnvelope = {
+  action: NavigationAction;
+  options?: { originKey?: string };
+  seq: number;
+};
+
+// The reducer for the Step-2 shadow `useReducer`, closing over the registry. It calls `reduceRoot`
+// directly (not the `rootReducer` export) so a spy on `rootReducer` sees only the eager path, and
+// consumes an envelope carrying the same `originKey` the eager path used plus the dispatch's `seq`
+// (so the container can compare the shadow against the eager tree of the *same* dispatch, immune to
+// the shadow's one-commit lag). TODO(step-5): the shadow becomes the authoritative reducer and this
+// adapter is deleted.
+export function createShadowReducer(registry: ReducerRegistry) {
+  return (state: ShadowState, envelope: ShadowEnvelope): ShadowState => ({
+    tree: reduceRoot(state.tree, envelope.action, registry, envelope.options ?? {}).state,
+    seq: envelope.seq,
+  });
+}
+
+export function reduceRoot(
   tree: NavigationState,
   action: NavigationAction,
   registry: ReducerRegistry,

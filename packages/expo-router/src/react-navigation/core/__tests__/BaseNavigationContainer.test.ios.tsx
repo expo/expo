@@ -11,7 +11,7 @@ import {
   TabRouter,
 } from '../../routers';
 import { getRouteKey, getStateKey } from '../../routers/getRouteKey';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
+import { BaseNavigationContainer, __setShadowAssertEnabled } from '../BaseNavigationContainer';
 import { NavigationIndependentTree } from '../NavigationIndependentTree';
 import { NavigationStateContext } from '../NavigationStateContext';
 import { Screen } from '../Screen';
@@ -38,6 +38,8 @@ const optionsQuxxKey = getRouteKey({ stateKey: optionsBazChildKey, name: 'quxx' 
 beforeEach(() => {
   MockRouterKey.current = 0;
   jest.restoreAllMocks();
+  // Re-enable after any test that mocked `rootReducer` and disabled the shadow assertion.
+  __setShadowAssertEnabled(true);
 });
 
 test('throws when getState is accessed without a container', () => {
@@ -174,6 +176,10 @@ test('container dispatch runs the root reducer once and commits the returned roo
   const ref = createNavigationContainerRef<ParamListBase>();
   const onStateChange = jest.fn();
   const action = { type: 'ROOT_REDUCER_ONLY' };
+  // Mocking `rootReducer` reverses the routes on the eager path only; the Step-2 shadow reduces the
+  // real (unreversed) tree, so it diverges by construction. Disable the shadow assertion here — this
+  // test pins the eager dispatch seam, not shadow agreement.
+  __setShadowAssertEnabled(false);
   const rootReducer = jest.spyOn(rootReducerModule, 'rootReducer').mockImplementation((state) => ({
     state: {
       ...state,
@@ -242,6 +248,9 @@ test('navigator dispatch passes local state to thunks and root reducer originKey
     return null;
   };
 
+  // `noop: true` means `dispatchRoot` skips both `setState` and the shadow dispatch, so the shadow
+  // stays at its seed and can't diverge — no `__setShadowAssertEnabled(false)` needed here (unlike
+  // the reversing-mock test above, which commits a stubbed tree).
   const rootReducer = jest.spyOn(rootReducerModule, 'rootReducer').mockImplementation((state) => ({
     state,
     handled: true,
