@@ -29,6 +29,10 @@ describe(resolvePackageManager, () => {
     process.env.npm_config_user_agent = 'bun';
     expect(resolvePackageManager()).toBe('bun');
   });
+  it('should use nub due to the user agent', () => {
+    process.env.npm_config_user_agent = 'nub/0.4.13 npm/? node/v22.13.0 darwin arm64';
+    expect(resolvePackageManager()).toBe('nub');
+  });
   it('should use npm due to the user agent', () => {
     process.env.npm_config_user_agent = 'npm/8.1.0 node/v16.13.0 darwin x64 workspaces/false';
     expect(resolvePackageManager()).toBe('npm');

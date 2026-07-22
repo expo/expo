@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- Detect and support the nub package manager ([#PRNUM](https://github.com/expo/expo/pull/PRNUM) by [@colinhacks](https://github.com/colinhacks))
 - Reuse agent files from `@expo/llm-configs` ([#46968](https://github.com/expo/expo/pull/46968) by [@davidmokos](https://github.com/davidmokos))
 - Improved monorepo support ([#46434](https://github.com/expo/expo/pull/46434) by [@douglowder](https://github.com/douglowder))
 
