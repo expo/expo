@@ -41,7 +41,7 @@ function ExperimentalStackNavigator({
   UNSTABLE_router,
   ...rest
 }: ExperimentalStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -97,7 +97,6 @@ function ExperimentalStackNavigator({
           state={state}
           navigation={navigation}
           descriptors={mergedDescriptors}
-          describe={describe}
         />
       </CompositionContext>
     </NavigationContent>

@@ -36,7 +36,7 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -89,7 +89,6 @@ function NativeStackNavigator({
         {...rest}
         state={state}
         descriptors={descriptors}
-        describe={describe}
         emit={navigation.emit}
         pop={pop}
       />

@@ -1,4 +1,5 @@
 import { screen, act } from '@testing-library/react-native';
+import { useEffect } from 'react';
 import { Text } from 'react-native';
 
 import { router } from '../imperative-api';
@@ -12,11 +13,16 @@ import {
 import type { StackNavigationState } from '../react-navigation/native';
 import type { NativeStackNavigationOptions } from '../react-navigation/native-stack';
 import { renderRouter } from '../testing-library';
+import { useNavigation } from '../useNavigation';
 
 type HeaderTitleFunction = Extract<
   NativeStackNavigationOptions['headerTitle'],
   (...args: any) => any
 >;
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 it('prefetch a sibling route', () => {
   renderRouter({
@@ -754,6 +760,30 @@ it('can still use <Screen /> while prefetching in stack', () => {
     [{ tintColor: 'rgb(0, 122, 255)', children: 'index' }],
     [{ tintColor: 'rgb(0, 122, 255)', children: 'Should only change after focus' }],
   ]);
+});
+
+it('ignores navigation actions dispatched while prefetching in stack', () => {
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  renderRouter({
+    _layout: () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    second: function Second() {
+      const navigation = useNavigation();
+
+      useEffect(() => navigation.goBack(), [navigation]);
+      return null;
+    },
+  });
+
+  act(() => router.prefetch('/second'));
+
+  expect(warn).toHaveBeenCalledWith(
+    expect.stringContaining("preloaded screen 'second'")
+  );
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen).toHavePathname('/');
+
 });
 
 it('can still use <Screen /> while prefetching in tabs', () => {

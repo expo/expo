@@ -69,8 +69,8 @@ export function getPreloadedRouteFromRootStateByHref(
   if (navigationState.type === 'stack') {
     const stackState = navigationState as StackNavigationState<ParamListBase>;
     const payload = getPayloadFromStateRoute(actionStateRoute);
-    const activeRoutes = stackState.routes;
-    const preloadedRoutes = stackState.preloadedRoutes;
+    const activeRoutes = stackState.routes.slice(0, stackState.index + 1);
+    const preloadedRoutes = stackState.routes.slice(stackState.index + 1);
 
     const preloadedRoute = preloadedRoutes.find(
       (route) =>

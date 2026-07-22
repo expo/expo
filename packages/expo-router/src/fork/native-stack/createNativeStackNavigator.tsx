@@ -47,7 +47,7 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -103,12 +103,7 @@ function NativeStackNavigator({
   );
 
   // START FORK
-  const { computedState, computedDescriptors, emit } = usePreviewTransition(
-    state,
-    navigation.emit,
-    descriptors,
-    describe
-  );
+  const { computedState, emit } = usePreviewTransition(state, navigation.emit);
 
   const pop = makePopAction(navigation.dispatch, state.key);
 
@@ -116,9 +111,9 @@ function NativeStackNavigator({
   // This allows Expo Router to override gesture behavior without affecting user settings
   const finalDescriptors = React.useMemo(() => {
     let needsNewMap = false;
-    const result: typeof computedDescriptors = {};
-    for (const key of Object.keys(computedDescriptors)) {
-      const descriptor = computedDescriptors[key]!;
+    const result: typeof descriptors = {};
+    for (const key of Object.keys(descriptors)) {
+      const descriptor = descriptors[key]!;
       const options = descriptor.options as NativeStackNavigationOptionsWithInternal;
       const internalGestureEnabled = options?.[INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME];
       const needsGestureFix = internalGestureEnabled !== undefined;
@@ -141,8 +136,8 @@ function NativeStackNavigator({
         result[key] = descriptor;
       }
     }
-    return needsNewMap ? result : computedDescriptors;
-  }, [computedDescriptors]);
+    return needsNewMap ? result : descriptors;
+  }, [descriptors]);
   const { registry, contextValue } = useCompositionRegistry();
 
   const mergedDescriptors = React.useMemo(
@@ -168,7 +163,6 @@ function NativeStackNavigator({
             // navigation={navigation}
             // descriptors={descriptors}
             // END FORK
-            describe={describe}
           />
         </CompositionContext>
       </NavigationContent>
