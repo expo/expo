@@ -2,6 +2,49 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { EASFunctionExampleTabs } from '~/ui/components/EASFunctionDescription';
+import { Tab } from '~/ui/components/Tabs';
+
+export const modes = ['Workflow', 'Custom Build'];
+
+Enables, disables, or rolls out a [PostHog feature flag](https://posthog.com/docs/feature-flags). The function looks up the flag by key and then updates it. Provide at least one of `active`, `rollout_percentage`, or `payload`.
+
+<EASFunctionExampleTabs>
+
+<Tab label="Workflow">
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_flag_rollout
+        # @end #
+        with:
+          flag: new-checkout
+          rollout_percentage: 25
+```
+
+</Tab>
+
+<Tab label="Custom Build">
+
+```yaml posthog-flag-rollout.yml
+build:
+  name: Roll out a PostHog feature flag
+  steps:
+    - eas/posthog_flag_rollout:
+        name: Roll out the flag to 25 percent
+        inputs:
+          flag: new-checkout
+          rollout_percentage: 25
+```
+
+</Tab>
+
+</EASFunctionExampleTabs>
+
+##### Properties
 
 | Property             | Type    | Required    | Description                                                                                                                                                                                                                                                             |
 | -------------------- | ------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
