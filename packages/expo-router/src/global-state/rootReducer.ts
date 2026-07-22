@@ -82,6 +82,12 @@ interface RouterLinkAction {
 export type RootNavigationState = {
   tree: NavigationState;
   pendingActions: PendingAction[];
+  // Highest navigation id the reducer has reduced (applied, no-op, queued, dropped, or superseded).
+  // The global pending signal is `lastIssued > lastReduced` (D3): the container mints a monotonic id
+  // per JS-initiated dispatch and bumps `lastIssued` urgently; the reducer records it here. Recording
+  // on every path is the accounting invariant that keeps the indicator from wedging — a superseded or
+  // dropped navigation still advances `lastReduced`, so it eventually equals `lastIssued`.
+  lastReduced?: number;
 };
 
 type PendingAction = {
@@ -104,6 +110,10 @@ export type RootReducerEnvelope = {
   // render-updated source so `ROUTER_LINK` resolution sees the current linking config (Fast Refresh /
   // route-file changes regenerate it). Absent for non-link actions and in contexts without linking.
   config?: ResolveNavigateConfig;
+  // Monotonic navigation id for the global pending signal (D3). Present only on JS-initiated
+  // (transition) dispatches; the reducer records it into `lastReduced` on every path. Absent on
+  // urgent-native and replay dispatches, which never touch the pending accounting.
+  navId?: number;
 };
 
 // The authoritative reducer for the root `useReducer`. Closes over the registry (stable per
@@ -120,16 +130,32 @@ export function reduceRootNavigation(
   envelope: RootReducerEnvelope,
   registry: ReducerRegistry
 ): RootNavigationState {
-  const { originKey, urgent, isReplay, config } = envelope;
+  const { originKey, urgent, isReplay, config, navId } = envelope;
   let { action } = envelope;
   // The identity key for idempotent pending-append: the raw intent for a link, else the action.
   const id: object = action;
 
+  // Monotonic-id accounting (D3): the id this reduction must record into committed state, so the
+  // pending signal (`lastIssued > lastReduced`) always un-wedges. Every return below routes through
+  // `withNavId`, which folds this in and breaks state identity when it advances (defeating React's
+  // identical-state bailout that would otherwise swallow the commit carrying the id catch-up).
+  const nextLastReduced =
+    navId == null ? state.lastReduced : Math.max(state.lastReduced ?? 0, navId);
+  const idAdvanced = nextLastReduced !== state.lastReduced;
+  const withNavId = (next: RootNavigationState): RootNavigationState =>
+    next === state && idAdvanced ? { ...state, lastReduced: nextLastReduced } : next;
+  const withNavIdTree = (tree: NavigationState, pending: PendingAction[]): RootNavigationState =>
+    tree === state.tree && pending === state.pendingActions
+      ? withNavId(state)
+      : { tree, pendingActions: pending, lastReduced: nextLastReduced };
+
   if (action.type === 'ROUTER_LINK') {
     const link = action as RouterLinkAction;
     if (config == null) {
-      // No linking config to resolve against (non-router container / not ready). Nothing to reduce.
-      return state;
+      // No linking config to resolve against (non-router container / not ready). Nothing to reduce —
+      // but still record the id, or a push that lands here before the container is ready wedges the
+      // indicator.
+      return withNavId(state);
     }
     const resolved = resolveNavigateAction(
       link.payload.href,
@@ -142,11 +168,20 @@ export function reduceRootNavigation(
       !!link.payload.options.__internal__PreviewKey
     );
     // A redirect already consumed the navigation, or the path didn't compile — reduce to a no-op
-    // (matching the old drain's "skip dispatch when getNavigateAction returns undefined").
+    // (matching the old drain's "skip dispatch when getNavigateAction returns undefined"), recording
+    // the id so a redirect-consumed push does not wedge the indicator.
     if (resolved == null) {
-      return state;
+      return withNavId(state);
     }
     action = resolved as NavigationAction;
+  }
+
+  // Supersede staleness predicate (D1 round-3, Step 8 READ half): a higher-id navigation has already
+  // reduced past this one (`navId < lastReduced`). React cannot dequeue a pending update, so a
+  // superseded transition action re-reduces here — reduce it to a tree-no-op while recording its id
+  // (abandonment counts as accounted). The mid-flight trigger that produces this is simulator-only.
+  if (navId != null && state.lastReduced != null && navId < state.lastReduced) {
+    return withNavId(state);
   }
 
   const result = reduceRoot(state.tree, action, registry, { originKey });
@@ -166,23 +201,18 @@ export function reduceRootNavigation(
     // via `pendingAfterReplay` and is not re-appended).
     if (originUnregistered && isDeferrable && !urgent && !isReplay) {
       if (state.pendingActions.some((entry) => entry.id === id)) {
-        return state; // Idempotent: already queued (double reducer invocation).
+        return withNavId(state); // Idempotent: already queued (double reducer invocation).
       }
       return {
         tree: state.tree,
         pendingActions: [...state.pendingActions, { action: envelope.action, originKey, id }],
+        lastReduced: nextLastReduced,
       };
     }
-    return pendingAfterReplay === state.pendingActions
-      ? state
-      : { tree: state.tree, pendingActions: pendingAfterReplay };
+    return withNavIdTree(state.tree, pendingAfterReplay);
   }
 
-  if (result.state === state.tree && pendingAfterReplay === state.pendingActions) {
-    return state;
-  }
-
-  return { tree: result.state, pendingActions: pendingAfterReplay };
+  return withNavIdTree(result.state, pendingAfterReplay);
 }
 
 export function reduceRoot(

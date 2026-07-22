@@ -13,6 +13,7 @@ export {
   useRootNavigationState,
   useLoaderData,
   useCurrentRouteInfo,
+  useNavigationTransitionPending,
 } from './hooks';
 
 export { router, type ImperativeRouter } from './imperative-api';

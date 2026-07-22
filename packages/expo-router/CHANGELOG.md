@@ -15,6 +15,7 @@
 
 ### 🎉 New features
 
+- Add `useNavigationTransitionPending()` and `useLinkStatus()` for navigation pending indicators. `useNavigationTransitionPending()` returns `true` while any JS-initiated navigation (a `router.*` call, `Link` press, or deep link) is in flight — including while a suspending destination prepares — so you can show a global spinner. `useLinkStatus()`, rendered inside a `Link`'s children, returns `{ pending }` scoped to that `Link`'s own navigation (a Next.js-style API). Both return the resting value when there is no navigation container (server rendering); `useLinkStatus()` is a no-op (`{ pending: false }`) in DOM components, where the press is forwarded to the host WebView. ([#00000](https://github.com/expo/expo/pull/00000) by [@Ubax](https://github.com/Ubax))
 - [android] Support `Stack.Toolbar.Badge` in header left/right placements ([#46537](https://github.com/expo/expo/pull/46537) by [@benjaminkomen](https://github.com/benjaminkomen))
 - [android] Support `Stack.Toolbar.Badge` on `Stack.Toolbar.Menu` icons in header left/right placements ([#47276](https://github.com/expo/expo/pull/47276) by [@Ubax](https://github.com/Ubax))
 - Add `standard-navigation` integration ([#46456](https://github.com/expo/expo/pull/46456) by [@Ubax](https://github.com/Ubax))

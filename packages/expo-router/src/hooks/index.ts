@@ -11,3 +11,4 @@ export { useLocalSearchParams } from './useLocalSearchParams';
 export { useSearchParams } from './useSearchParams';
 export { useLoaderData } from './useLoaderData';
 export { useCurrentRouteInfo } from './useCurrentRouteInfo';
+export { useNavigationTransitionPending } from './useNavigationTransitionPending';

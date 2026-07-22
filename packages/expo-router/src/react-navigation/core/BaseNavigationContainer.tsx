@@ -17,6 +17,7 @@ import {
 import { getSeedState } from '../../global-state/seedState';
 import { store } from '../../global-state/store';
 import { ReducerRegistryContext, createReducerRegistry } from '../../global-state/storeContext';
+import { NavigationTransitionPendingContext } from '../../global-state/transitionPendingContext';
 import { RouteInfoProvider } from '../../global-state/useRouteInfo';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
@@ -166,6 +167,16 @@ export function BaseNavigationContainer({
   // itself — the reducer does, against its own chained latest — and returns nothing (the verdict is
   // gone; imperative "would this do anything" queries call the pure reducer directly, see
   // `canGoBack`).
+  // Monotonic "last issued navigation id" for the global pending signal (D3). Bumped URGENTLY (a
+  // plain `useState` setter, outside the `React.startTransition` scope below) for every JS-initiated
+  // dispatch, so `pending` flips on immediately even while the transition it covers is deferred
+  // behind a slow commit. The same id is threaded onto the envelope, so the urgent "issued" bump and
+  // the reducer's "reduced" record carry the same number. Urgent/replay dispatches carry no id.
+  const [lastIssued, setLastIssued] = React.useState(0);
+  const lastIssuedRef = React.useRef(0);
+
+  // Returns the id this dispatch minted (JS-initiated), or `undefined` (urgent/replay) — the per-Link
+  // `useLinkStatus` uses it to learn which id its own press produced.
   const dispatchRoot = useLatestCallback(
     (
       action: NavigationAction,
@@ -174,20 +185,37 @@ export function BaseNavigationContainer({
         isReplay?: boolean;
         urgent?: boolean;
       } = {}
-    ) => {
+    ): number | undefined => {
+      const urgent = options.urgent || options.isReplay;
+      // Preload is background prefetch, not a "navigation in flight" — it must not mint an id (D3),
+      // and it must not force a container re-render on a no-op re-dispatch: the self-healing preload
+      // effect (`usePreloadRoutes`) re-dispatches every commit and relies on a no-op producing no
+      // state change / no re-render, so bumping `lastIssued` here would loop it.
+      const tracked = !urgent && action.type !== 'PRELOAD' && action.type !== 'FRONT_PRELOAD';
+      const navId = tracked ? lastIssuedRef.current + 1 : undefined;
+
       const envelope = {
         action,
         originKey: options.originKey,
         isReplay: options.isReplay,
         urgent: options.urgent,
         config: resolveConfig,
+        navId,
       };
 
-      if (options.urgent || options.isReplay) {
+      if (urgent) {
         rootDispatch(envelope);
-      } else {
-        React.startTransition(() => rootDispatch(envelope));
+        return undefined;
       }
+
+      if (tracked) {
+        // Bump `lastIssued` urgently (this setter is NOT inside the `startTransition` below), so the
+        // pending indicator flips on immediately while the transition it covers is deferred.
+        lastIssuedRef.current = navId!;
+        setLastIssued(navId!);
+      }
+      React.startTransition(() => rootDispatch(envelope));
+      return navId;
     }
   );
 
@@ -389,6 +417,16 @@ export function BaseNavigationContainer({
     [state, getState, getKey, setKey, getIsInitial, addOptionsGetter]
   );
 
+  // Global pending signal (D3): a JS-initiated navigation is in flight while its issued id has not
+  // yet been recorded by the reducer. Memoized explicitly so the value identity is stable when
+  // neither input changed (compiler-off path — AGENTS.md dual-mode).
+  const lastReduced = rootNavigationState.lastReduced ?? 0;
+  const getLastIssued = React.useCallback(() => lastIssuedRef.current, []);
+  const transitionPending = React.useMemo(
+    () => ({ pending: lastIssued > lastReduced, lastReduced, getLastIssued }),
+    [lastIssued, lastReduced, getLastIssued]
+  );
+
   const onReadyRef = React.useRef(onReady);
   const onStateChangeRef = React.useRef(onStateChange);
 
@@ -499,13 +537,15 @@ export function BaseNavigationContainer({
         <NavigationContainerRefContext.Provider value={navigation}>
           <NavigationBuilderContext.Provider value={builderContext}>
             <NavigationStateContext.Provider value={context}>
-              <RouteInfoProvider state={state}>
-                <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
-                  <EnsureSingleNavigator>
-                    <ThemeProvider value={theme}>{children}</ThemeProvider>
-                  </EnsureSingleNavigator>
-                </DeprecatedNavigationInChildContext.Provider>
-              </RouteInfoProvider>
+              <NavigationTransitionPendingContext.Provider value={transitionPending}>
+                <RouteInfoProvider state={state}>
+                  <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
+                    <EnsureSingleNavigator>
+                      <ThemeProvider value={theme}>{children}</ThemeProvider>
+                    </EnsureSingleNavigator>
+                  </DeprecatedNavigationInChildContext.Provider>
+                </RouteInfoProvider>
+              </NavigationTransitionPendingContext.Provider>
             </NavigationStateContext.Provider>
           </NavigationBuilderContext.Provider>
         </NavigationContainerRefContext.Provider>
