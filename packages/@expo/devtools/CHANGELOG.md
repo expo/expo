@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Added helper API for creating CLI extensions with communication between the Expo CLI and running apps.
 - Split platform-specific `getConnectionInfo` resolution to support CLI extensions.
 - Ship a Node/CJS entry so CLI extensions can load `@expo/devtools` when spawned by the Expo CLI.
 

@@ -39,6 +39,7 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
         executor.validate({
           command: 'invalid-command',
           args: { foo: 'bar' },
+          app: MOCK_APP,
         })
       ).toThrow();
     });
@@ -57,6 +58,7 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
         executor.validate({
           command: 'test-command',
           args: {},
+          app: MOCK_APP,
         })
       ).toThrow();
     });
@@ -75,6 +77,7 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
         executor.validate({
           command: 'test-command',
           args: { invalidParam: 'value' },
+          app: MOCK_APP,
         })
       ).toThrow();
     });
@@ -94,6 +97,7 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
         executor.validate({
           command: 'test-command',
           args: { param1: 42 as any, param2: 42 },
+          app: MOCK_APP,
         })
       ).toThrow(/expected string \(declared "text"\), got number/);
     });
@@ -187,6 +191,7 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
       const commandString = executor.getCommandString({
         command: 'test-command',
         args: {},
+        app: MOCK_APP,
       });
       expect(commandString).toBe(`node index.js test-command`);
     });
@@ -204,6 +209,7 @@ describe('DevToolsPluginCliExtensionExecutor', () => {
       const commandString = executor.getCommandString({
         command: 'test-command',
         args: { param1: 'value1', param2: 42 },
+        app: MOCK_APP,
       });
       expect(commandString).toBe(`node index.js test-command {"param1":"value1","param2":42}`);
     });
@@ -257,6 +263,7 @@ const executePluginCommandAsync = async (params: {
     command: 'test-command',
     args,
     metroServerOrigin: 'http://localhost:8081',
+    app: MOCK_APP,
   });
 
   const close = async (exitCode: number) => {
@@ -272,6 +279,16 @@ const executePluginCommandAsync = async (params: {
 
 const PROJECT_ROOT = '/path/to/project';
 const PLUGIN_DESCRIPTOR = { packageName: 'test-plugin', packageRoot: '/path/to/test-plugin' };
+const MOCK_APP = {
+  id: '1',
+  title: 'Test App',
+  appId: 'com.test.app',
+  description: 'Test',
+  type: 'node' as const,
+  devtoolsFrontendUrl: '',
+  webSocketDebuggerUrl: '',
+  deviceName: 'iPhone 15',
+};
 const COMMAND = {
   name: 'test-command',
   title: 'Test Command',

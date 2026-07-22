@@ -97,9 +97,10 @@ export class DevToolsPluginCliExtensionExecutor {
     command,
     args,
     metroServerOrigin,
+    app,
     onOutput,
   }: DevToolsPluginExecutorArguments): Promise<DevToolsPluginOutput> => {
-    this.validate({ command, args });
+    this.validate({ command, args, app });
     return new Promise<DevToolsPluginOutput>((resolve) => {
       let finished = false;
       let timeout: ReturnType<typeof setTimeout> | undefined;
@@ -110,7 +111,13 @@ export class DevToolsPluginCliExtensionExecutor {
       try {
         child = this.spawnFunc(
           process.execPath,
-          [this.resolvedEntryPoint, command, `${JSON.stringify(args)}`, `${metroServerOrigin}`],
+          [
+            this.resolvedEntryPoint,
+            command,
+            `${JSON.stringify(args)}`,
+            `${metroServerOrigin}`,
+            `${JSON.stringify(app)}`,
+          ],
           {
             cwd: this.projectRoot,
             /**
