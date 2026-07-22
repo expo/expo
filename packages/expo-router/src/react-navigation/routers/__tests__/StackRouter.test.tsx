@@ -1095,6 +1095,35 @@ test('ensures unique ID for navigate (legacy)', () => {
   });
 });
 
+test('ignores legacy navigate when the matching route is preloaded', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar'],
+    routeParamList: {},
+    routeGetIdList: {
+      bar: ({ params }) => params?.foo,
+    },
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        type: 'stack',
+        key: 'root',
+        index: 0,
+        routeNames: ['baz', 'bar'],
+        routes: [
+          { key: 'baz', name: 'baz' },
+          { key: 'bar', name: 'bar', params: { foo: 'a' } },
+        ],
+      },
+      CommonActions.navigateDeprecated('bar', { foo: 'a' }),
+      options
+    )
+  ).toBeNull();
+});
+
 test('ensure unique ID is only per route name for navigate (legacy)', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {
