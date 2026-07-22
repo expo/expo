@@ -36,29 +36,29 @@ export default function VideoChangePlayerOutputScreen() {
 
   const [viewPlayers, setViewPlayers] = useState([player, player2, null, null]);
 
+  const movePlayerTo = useCallback(
+    (playerIndex: number, newViewIndex: number) => {
+      const currentIndex = players.current[playerIndex].viewIndex;
+      setViewPlayers((prev) => {
+        const newViewPlayers = [...prev];
+        if (!useIncorrectReplace) {
+          newViewPlayers[currentIndex] = null;
+        }
+        newViewPlayers[newViewIndex] = players.current[playerIndex].ref;
+        return newViewPlayers;
+      });
+      players.current[playerIndex].viewIndex = newViewIndex;
+    },
+    [useIncorrectReplace]
+  );
+
   const advancePlayer = useCallback(
     (playerIndex: number) => {
       const currentIndex = players.current[playerIndex].viewIndex;
       const newIndex = (currentIndex + 1) % 4;
       movePlayerTo(playerIndex, newIndex);
     },
-    [viewPlayers, useIncorrectReplace]
-  );
-
-  const movePlayerTo = useCallback(
-    (playerIndex: number, newViewIndex: number) => {
-      const currentIndex = players.current[playerIndex].viewIndex;
-      const newViewPlayers = [...viewPlayers];
-
-      if (!useIncorrectReplace) {
-        newViewPlayers[currentIndex] = null;
-      }
-      newViewPlayers[newViewIndex] = players.current[playerIndex].ref;
-      setViewPlayers(newViewPlayers);
-
-      players.current[playerIndex].viewIndex = newViewIndex;
-    },
-    [viewPlayers, useIncorrectReplace]
+    [movePlayerTo]
   );
 
   return (
