@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `ARG_MAX` error when using `multipleFrameworks`. ([#47999](https://github.com/expo/expo/pull/47999) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26
