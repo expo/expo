@@ -1,15 +1,23 @@
 'use client';
+import isEqual from 'fast-deep-equal';
 import * as React from 'react';
 import { use } from 'react';
 
-import { createShadowReducer, rootReducer } from '../../global-state/rootReducer';
-import { getSeedState } from '../../global-state/seedState';
-import { shadowTreesMatch } from '../../global-state/shadowCompare';
+import { type ResolveNavigateConfig } from '../../global-state/getNavigationAction';
+// The container owns the root navigation reducer, so it depends on the `global-state` layer. This
+// arc (`core` → `global-state` → route-info → … ) closes a require cycle back into `core`; it is
+// load-bearing and worked because the back-edges import leaf modules, not barrels. Do not switch a
+// `global-state`→`core` import to a barrel (e.g. `react-navigation/native`) — that re-closes the
+// cycle at init time and breaks it (see `fork/getPathFromState-forks.ts`).
 import {
-  NavigationSyncStateContext,
-  ReducerRegistryContext,
-  createReducerRegistry,
-} from '../../global-state/storeContext';
+  type RootNavigationState,
+  createRootNavigationReducer,
+  rootReducer,
+} from '../../global-state/rootReducer';
+import { getSeedState } from '../../global-state/seedState';
+import { store } from '../../global-state/store';
+import { ReducerRegistryContext, createReducerRegistry } from '../../global-state/storeContext';
+import { RouteInfoProvider } from '../../global-state/useRouteInfo';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -40,24 +48,11 @@ import { useChildListeners } from './useChildListeners';
 import { useEventEmitter } from './useEventEmitter';
 import { useNavigationIndependentTree } from './useNavigationIndependentTree';
 import { useOptionsGetters } from './useOptionsGetters';
-import { useSyncState } from './useSyncState';
 
 type State = NavigationState | PartialState<NavigationState> | undefined;
 
 const serializableWarnings: string[] = [];
 const duplicateNameWarnings: string[] = [];
-
-// Step-2 scaffolding (deleted at the Step-5 flip). A shadow `useReducer` reduces every action in
-// parallel with the authoritative sync store but drives no render; a dev-only assertion checks the
-// two commit to matching trees, de-risking the flip that makes the reducer render-authoritative.
-// Off in production. Unit tests that mock `rootReducer` (so the eager path and the shadow diverge by
-// construction) disable it via `__setShadowAssertEnabled`; everywhere real reduction happens it
-// stays live, which is where behavior-neutrality is proven.
-let shadowAssertEnabled = true;
-
-export function __setShadowAssertEnabled(enabled: boolean) {
-  shadowAssertEnabled = enabled;
-}
 
 /**
  * Container component which holds the navigation state.
@@ -93,32 +88,61 @@ export function BaseNavigationContainer({
   // future persistence) still wins and is likewise seeded as-is. Navigators render their slice
   // directly (their init/rehydrate branches become identity on a complete state).
   // TODO(@ubax): re-add a state-seeding entry point for persistence (Step 8's validate-or-recompile model)
-  const { state, store, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(
-    () => (initialState == null ? getSeedState() : initialState) as State
-  );
   const reducerRegistry = React.useMemo(() => createReducerRegistry(), []);
 
-  // Step-2 shadow: a real `useReducer` seeded identically to the sync store, reducing the same
-  // actions through the same `reduceRoot` logic (via `createShadowReducer`, which bypasses the
-  // `rootReducer` export so it doesn't inflate that call count). Its output drives no render — a
-  // post-commit effect compares it against the eager tree from the *same* dispatch. Deleted at the
-  // Step-5 flip, when it becomes the authoritative reducer. Enabled in dev only.
-  //
-  // The shadow's `useReducer` state lands a commit after the synchronous sync-store `setState`, so
-  // comparing it against the *live* store would false-alarm on that one-commit lag. Instead each
-  // eager commit is tagged with a monotonic `seq` and remembered; the shadow carries the matching
-  // `seq` in its own state, so the effect compares like-for-like (shadow vs. the eager tree of the
-  // same dispatch), immune to the lag.
-  const shadowReducer = React.useMemo(
-    () => createShadowReducer(reducerRegistry),
+  // The navigation tree is React state at the root: `router.push` (and every other source) does
+  // exactly one thing — dispatch an action — and all logic (href resolution, targeting, chaining,
+  // the mount-window replay queue) happens inside the pure reducer, which React runs at render time.
+  // This is what makes JS-initiated navigation a `startTransition`: reads flow from this value
+  // through context, and a transition-wrapped dispatch lets React prepare the next screen in the
+  // background without de-opting on an external-store mutation (the retired uSES render path).
+  const rootReducerFn = React.useMemo(
+    () => createRootNavigationReducer(reducerRegistry),
     [reducerRegistry]
   );
-  const [shadowState, shadowDispatch] = React.useReducer(shadowReducer, undefined, () => ({
-    tree: getState() as NavigationState,
-    seq: 0,
-  }));
-  const eagerSeqRef = React.useRef(0);
-  const eagerBySeqRef = React.useRef(new Map<number, NavigationState>());
+  const [rootNavigationState, rootDispatch] = React.useReducer(
+    rootReducerFn,
+    undefined,
+    (): RootNavigationState => ({
+      tree: (initialState == null ? getSeedState() : initialState) as NavigationState,
+      pendingActions: [],
+    })
+  );
+
+  const state = rootNavigationState.tree as State;
+
+  // Commit-time mirror of the committed tree for imperative readers (`store.state` /
+  // `navigationRef.getRootState()` / `getStateForHref` / sitemap / devtools). It is written from a
+  // post-commit effect below, not at dispatch, so — unlike the retired sync store — it answers for
+  // the last *committed* tree. During a pending transition it therefore lags the dispatch by a
+  // commit (a `router.push(); router.canGoBack()` in one tick answers for the pre-push tree). Seed
+  // it so a synchronous read before the first commit effect still returns the initial tree.
+  const committedTreeRef = React.useRef<NavigationState>(rootNavigationState.tree);
+  const getState = useLatestCallback(() => committedTreeRef.current as State);
+  const getCommittedRootState = useLatestCallback(
+    () => committedTreeRef.current as NavigationState | undefined
+  );
+
+  // Per-render resolver config for `ROUTER_LINK` reduction (D1): the current linking config +
+  // redirects, threaded into every dispatch so a link resolves against the config as of this render
+  // (Fast Refresh / route-file changes regenerate it — an init capture would misroute a push to a
+  // route added after mount). `hasReducer` lets the divergence stop at the nearest mounted navigator.
+  const resolveConfig = React.useMemo<ResolveNavigateConfig | undefined>(() => {
+    const linking = store.linking;
+    if (linking?.getStateFromPath == null) {
+      return undefined;
+    }
+    return {
+      getStateFromPath: linking.getStateFromPath,
+      linkingConfig: linking.config,
+      redirects: store.redirects,
+      hasReducer: (key: string) => reducerRegistry.hasReducer(key),
+    };
+    // `store.linking`/`store.redirects` are module globals `useStore` repopulates each render; the
+    // container re-renders when they change (the seed/route tree changed), so reading them in the
+    // memo body with a render-scoped dep list is the render-updated source D1 requires.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reducerRegistry, store.linking, store.redirects]);
 
   const isFirstMountRef = React.useRef<boolean>(true);
 
@@ -134,100 +158,52 @@ export function BaseNavigationContainer({
 
   const emitter = useEventEmitter<NavigationContainerEventMap>();
 
-  // The committed sync store is the single source of truth for every imperative read and dispatch.
-  // Navigators reduce into it through `dispatchRoot` and read their slice back out of it; the
-  // registry (`hasReducer`) supplies the orthogonal "which navigators are mounted" signal, so there
-  // is no separate compose-up getter chain.
-  const getCommittedRootState = useLatestCallback(() => getState() as NavigationState | undefined);
-
-  // Actions dispatched before their origin navigator's reducer has registered. This is the mount
-  // window: a descendant's mount effect can dispatch (e.g. an untargeted `navigate` or a `preload`)
-  // before its ancestor navigators' registration effects run. Rather than reducing locally, we hold
-  // the action and replay it through the root reducer after the next commit, once registration lands.
-  //
-  // This is deliberately separate from the module-global `routingQueue` (the imperative-API input
-  // buffer): replays need this dispatch's internal `originKey`/`isReplay` (to re-target the origin
-  // navigator and bound the retry to once), which the public `dispatch` that drains `routingQueue`
-  // doesn't carry. Both still serialize through this `dispatchRoot`, so ordering stays coherent.
-  const pendingReplayRef = React.useRef<{ action: NavigationAction; originKey?: string }[]>([]);
-  const [replayTick, requestReplay] = React.useReducer((tick: number) => tick + 1, 0);
-
+  // Every write to the tree goes through here: a single `rootDispatch` of an envelope the pure
+  // reducer reduces at render time. JS-initiated sources (the imperative API, `Link`, deep links)
+  // arrive as non-urgent and are wrapped in `React.startTransition`, so the current screen stays
+  // mounted while a suspending destination prepares; native-induced and mount-window replays pass
+  // `urgent` and commit synchronously (D5). `dispatchRoot` no longer reads or reduces the tree
+  // itself — the reducer does, against its own chained latest — and returns nothing (the verdict is
+  // gone; imperative "would this do anything" queries call the pure reducer directly, see
+  // `canGoBack`).
   const dispatchRoot = useLatestCallback(
     (
       action: NavigationAction,
       options: {
         originKey?: string;
         isReplay?: boolean;
+        urgent?: boolean;
       } = {}
     ) => {
-      const rootState = getCommittedRootState();
+      const envelope = {
+        action,
+        originKey: options.originKey,
+        isReplay: options.isReplay,
+        urgent: options.urgent,
+        config: resolveConfig,
+      };
 
-      if (rootState == null) {
-        console.error(NOT_INITIALIZED_ERROR);
-        return false;
+      if (options.urgent || options.isReplay) {
+        rootDispatch(envelope);
+      } else {
+        React.startTransition(() => rootDispatch(envelope));
       }
-
-      const result = rootReducer(rootState, action, reducerRegistry, options);
-
-      if (!result.handled) {
-        const originUnregistered =
-          options.originKey != null && !reducerRegistry.hasReducer(options.originKey);
-        const isDeferrable = action.type === 'PRELOAD' || action.target == null;
-
-        if (originUnregistered && isDeferrable && !options.isReplay) {
-          // Mount window: the origin navigator exists in the committed tree but hasn't registered
-          // its reducer yet. Hold the action and replay it after the next commit (see below). If it
-          // is still unhandled on replay, it is dropped.
-          pendingReplayRef.current.push({ action, originKey: options.originKey });
-          requestReplay();
-        }
-
-        // Unhandled actions are otherwise silent: the default console error, the `onUnhandledAction`
-        // container prop, and the per-navigator handler were removed with the reporting surface.
-        return false;
-      }
-
-      // TODO(action-telemetry): every dispatched action was re-emitted here as `__unsafe_action__`
-      // (expo-observe consumed it for EAS Observe action timing, re-exposed as the public
-      // `actionDispatched` event). Removed with the telemetry surface; a replacement dispatch-time
-      // signal + the expo-observe migration are follow-up work.
-
-      // TODO(prevent-remove): a per-navigator `shouldPreventRemove` gate ran here before committing,
-      // and could veto the reduced state. Reintroduce it on the reducer model when navigation
-      // prevention returns.
-      if (!result.noop) {
-        setState(result.state);
-        // Step-2 shadow: reduce the same action (with the same `originKey`) through the parallel
-        // `useReducer`. Tag the dispatch with a monotonic `seq` and remember the eager tree under it,
-        // so the compare effect matches the shadow to the eager tree of the same dispatch. Skipped on
-        // noops to match the `setState` skip above, so the two never drift on a no-op reduction.
-        if (process.env.NODE_ENV !== 'production') {
-          const seq = ++eagerSeqRef.current;
-          eagerBySeqRef.current.set(seq, result.state);
-          shadowDispatch({ action, options, seq });
-        }
-      }
-
-      return true;
     }
   );
 
-  // Replay actions held during the mount window. Runs on every commit (and whenever `requestReplay`
-  // fires), which for the initial mount lands after the descendant navigators' registration effects,
-  // so the root reducer now sees the origin registered. `isReplay` stops a still-unhandled replay
-  // from re-queuing, bounding this to a single retry.
+  // Replay actions held during the mount window. The pure reducer appends an action it couldn't
+  // reduce (origin navigator not yet registered) to `pendingActions`; this commit effect — which
+  // runs after the registration effects — re-dispatches each urgently with `isReplay`, and the
+  // reducer drains the entry whether it reduces or is now dropped (drop-after-one-retry).
   React.useEffect(() => {
-    if (pendingReplayRef.current.length === 0) {
+    if (rootNavigationState.pendingActions.length === 0) {
       return;
     }
 
-    const pending = pendingReplayRef.current;
-    pendingReplayRef.current = [];
-
-    for (const { action, originKey } of pending) {
-      dispatchRoot(action, { originKey, isReplay: true });
+    for (const { action, originKey } of rootNavigationState.pendingActions) {
+      dispatchRoot(action, { originKey, isReplay: true, urgent: true });
     }
-  }, [replayTick, dispatchRoot]);
+  }, [rootNavigationState.pendingActions, dispatchRoot]);
 
   const getFocusedOriginKey = React.useCallback(
     (rootState: NavigationState | undefined) => {
@@ -254,6 +230,11 @@ export function BaseNavigationContainer({
     }
   );
 
+  // "Would a GO_BACK / dismiss change anything?" — call the pure reducer against the last committed
+  // tree and check by referential identity. A no-op returns the identical tree (guaranteed at every
+  // nesting depth by `reduceRoot`), so `result.state !== rootState` is true iff the action would
+  // actually pop. This answers for the committed tree: during a pending transition it reflects the
+  // pre-transition state, by design (the imperative store no longer leads render).
   const canGoBack = useLatestCallback(() => {
     const rootState = getCommittedRootState();
 
@@ -261,11 +242,11 @@ export function BaseNavigationContainer({
       return false;
     }
 
-    const result = rootReducer(rootState, CommonActions.goBack(), reducerRegistry, {
-      originKey: getFocusedOriginKey(rootState),
-    });
-
-    return result.handled && !result.noop;
+    return (
+      rootReducer(rootState, CommonActions.goBack(), reducerRegistry, {
+        originKey: getFocusedOriginKey(rootState),
+      }).state !== rootState
+    );
   });
 
   const canDismiss = useLatestCallback(() => {
@@ -275,11 +256,11 @@ export function BaseNavigationContainer({
       return false;
     }
 
-    const result = rootReducer(rootState, StackActions.pop(1), reducerRegistry, {
-      originKey: getFocusedOriginKey(rootState),
-    });
-
-    return result.handled && !result.noop;
+    return (
+      rootReducer(rootState, StackActions.pop(1), reducerRegistry, {
+        originKey: getFocusedOriginKey(rootState),
+      }).state !== rootState
+    );
   });
 
   const resetRoot = useLatestCallback((state?: PartialState<NavigationState> | NavigationState) => {
@@ -367,7 +348,11 @@ export function BaseNavigationContainer({
   const lastEmittedOptionsRef = React.useRef<object | undefined>(undefined);
 
   const onOptionsChange = useLatestCallback((options: object) => {
-    if (lastEmittedOptionsRef.current === options) {
+    // Dedupe by value, not identity: the resolved options object is rebuilt fresh every render
+    // (`getOptions` reduces into a new `{}`), and post-flip a JS navigation commits across more than
+    // one render (the transition prepares then commits), so an identity check would emit the same
+    // options twice. Deep-equal collapses those to one `'options'` event.
+    if (isEqual(lastEmittedOptionsRef.current, options)) {
       return;
     }
 
@@ -384,10 +369,8 @@ export function BaseNavigationContainer({
       addListener,
       dispatchRoot,
       onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
     }),
-    [addListener, dispatchRoot, onOptionsChange, scheduleUpdate, flushUpdates]
+    [addListener, dispatchRoot, onOptionsChange]
   );
 
   const isInitialRef = React.useRef(true);
@@ -428,37 +411,13 @@ export function BaseNavigationContainer({
     }
   });
 
-  // Step-2 shadow assertion (dev only). When the shadow `useReducer` commits, compare its tree
-  // against the eager tree of the *same* dispatch (matched by `seq`) — that is the behavior-
-  // neutrality proof for the Step-5 flip. Matching by `seq` sidesteps the shadow's one-commit lag
-  // behind the synchronous sync store. The two may only legitimately differ on freshly minted nanoid
-  // route keys (two reductions mint different ones), which the comparison normalizes. A mismatch is a
-  // hard dev error. Deleted at the Step-5 flip.
-  if (process.env.NODE_ENV !== 'production') {
-    // eslint-disable-next-line react-hooks/rules-of-hooks -- `NODE_ENV` is a stable build constant.
-    React.useEffect(() => {
-      const eager = eagerBySeqRef.current.get(shadowState.seq);
-      // Drop every entry up to the one just checked. In practice each `dispatchRoot` commits the
-      // shadow separately (`seq` advances by one per effect run), so nothing older lingers; the
-      // sweep only matters if React ever coalesced several dispatches into one shadow commit, where
-      // the effect sees the final `seq` and the intermediate eager trees would otherwise leak.
-      for (const seq of eagerBySeqRef.current.keys()) {
-        if (seq <= shadowState.seq) {
-          eagerBySeqRef.current.delete(seq);
-        }
-      }
-      if (!shadowAssertEnabled || eager == null) {
-        return;
-      }
-      if (!shadowTreesMatch(shadowState.tree, eager)) {
-        console.error(
-          'Expo Router: the shadow reducer diverged from the committed navigation store. This is a ' +
-            'bug in the Step-2 useReducer substrate swap — the two must reduce every action to the ' +
-            'same tree. Please report it with the navigation you performed.'
-        );
-      }
-    }, [shadowState]);
-  }
+  // Publish the committed tree to the imperative mirror before any commit-time consumer reads it.
+  // A layout effect runs before the passive `state` effect below (and before descendant layout
+  // effects that might read `store.state`), so `getRootState()`/`store.state` reflect this commit
+  // by the time `onStateChange`, the `'state'` emit, and route-info derivation run.
+  React.useInsertionEffect(() => {
+    committedTreeRef.current = rootNavigationState.tree;
+  }, [rootNavigationState.tree]);
 
   React.useEffect(() => {
     const hydratedState = getRootState();
@@ -536,21 +495,21 @@ export function BaseNavigationContainer({
 
   return (
     <NavigationIndependentTreeContext.Provider value={false}>
-      <NavigationSyncStateContext.Provider value={store}>
-        <ReducerRegistryContext.Provider value={reducerRegistry}>
-          <NavigationContainerRefContext.Provider value={navigation}>
-            <NavigationBuilderContext.Provider value={builderContext}>
-              <NavigationStateContext.Provider value={context}>
+      <ReducerRegistryContext.Provider value={reducerRegistry}>
+        <NavigationContainerRefContext.Provider value={navigation}>
+          <NavigationBuilderContext.Provider value={builderContext}>
+            <NavigationStateContext.Provider value={context}>
+              <RouteInfoProvider state={state}>
                 <DeprecatedNavigationInChildContext.Provider value={navigationInChildEnabled}>
                   <EnsureSingleNavigator>
                     <ThemeProvider value={theme}>{children}</ThemeProvider>
                   </EnsureSingleNavigator>
                 </DeprecatedNavigationInChildContext.Provider>
-              </NavigationStateContext.Provider>
-            </NavigationBuilderContext.Provider>
-          </NavigationContainerRefContext.Provider>
-        </ReducerRegistryContext.Provider>
-      </NavigationSyncStateContext.Provider>
+              </RouteInfoProvider>
+            </NavigationStateContext.Provider>
+          </NavigationBuilderContext.Provider>
+        </NavigationContainerRefContext.Provider>
+      </ReducerRegistryContext.Provider>
     </NavigationIndependentTreeContext.Provider>
   );
 }

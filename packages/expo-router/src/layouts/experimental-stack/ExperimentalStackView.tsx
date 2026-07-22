@@ -79,12 +79,17 @@ export function ExperimentalStackView({ state, navigation, descriptors }: Props)
               }}
               onNativeDismiss={() => {
                 // Native dismissal (e.g. swipe-to-dismiss). JS state still has the route —
-                // catch up by dispatching pop and arming useDismissedRouteError.
-                navigation.dispatch({
-                  ...StackActions.pop(),
-                  source: route.key,
-                  target: state.key,
-                });
+                // catch up by dispatching pop and arming useDismissedRouteError. The native side
+                // already committed the dismissal, so the JS echo commits urgently (D5), never
+                // deferred behind a transition.
+                navigation.dispatch(
+                  {
+                    ...StackActions.pop(),
+                    source: route.key,
+                    target: state.key,
+                  },
+                  { urgent: true }
+                );
                 setNextDismissedKey(route.key);
               }}
               onNativeDismissPrevented={() => {

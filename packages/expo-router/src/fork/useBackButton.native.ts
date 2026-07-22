@@ -4,7 +4,11 @@
 import * as React from 'react';
 import { BackHandler } from 'react-native';
 
-import type { NavigationContainerRef, ParamListBase } from '../react-navigation/native';
+import {
+  CommonActions,
+  type NavigationContainerRef,
+  type ParamListBase,
+} from '../react-navigation/native';
 
 export function useBackButton(ref: React.RefObject<NavigationContainerRef<ParamListBase>>) {
   React.useEffect(() => {
@@ -16,7 +20,9 @@ export function useBackButton(ref: React.RefObject<NavigationContainerRef<ParamL
       }
 
       if (navigation.canGoBack()) {
-        navigation.goBack();
+        // Hardware back is native-induced: the OS already committed the back gesture, so the JS
+        // echo must land synchronously (D5), not be deferred behind a transition.
+        navigation.dispatch(CommonActions.goBack(), { urgent: true });
 
         return true;
       }

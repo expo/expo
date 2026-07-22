@@ -101,9 +101,10 @@ describe('Tabs visibility', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
     expect(screen.queryByTestId('third')).toBeNull();
-    // Route-name reconciliation now lands through the root reducer before eager preload runs, so
-    // the visible tabs render in the initial pass plus the preload pass: 2 tabs x 2 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    // The extraneous `third` file makes the trigger list a subset of the compiled route names, so a
+    // `RECONCILE_ROUTE_NAMES` reconciles through the root reducer as its own commit under the flip:
+    // initial seed pass + reconcile pass + eager-preload pass = 2 visible tabs x 3 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
   });
 
   it('does not render hidden tabs', () => {
@@ -128,10 +129,10 @@ describe('Tabs visibility', () => {
     expect(screen.queryByTestId('third')).toBeNull();
     expect(screen.queryByTestId('fourth')).toBeNull();
     expect(screen.getByTestId('fifth')).toBeVisible();
-    // A hidden trigger no longer forces an extra self-healing render: reconciliation and eager
-    // preload converge through the root reducer in the same two passes as the non-hidden case
-    // (initial pass plus preload pass): 3 visible tabs x 2 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(6);
+    // The hidden trigger and extraneous `third` file make the trigger list a subset of the compiled
+    // route names, so a `RECONCILE_ROUTE_NAMES` reconciles as its own commit under the flip: initial
+    // seed pass + reconcile pass + eager-preload pass = 3 visible tabs x 3 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(9);
   });
 
   it('does not render tabs, when route does not exist', () => {
@@ -192,12 +193,13 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    // Route-name reconciliation now lands through the root reducer before eager preload runs, so
-    // the visible tabs render in the initial pass plus the preload pass: 2 tabs x 2 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    // The declared trigger order (`second`, `index`) differs from the compiled route-name order, so a
+    // `RECONCILE_ROUTE_NAMES` reconciles as its own commit under the flip: initial seed pass +
+    // reconcile pass + eager-preload pass = 2 visible tabs x 3 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
     expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)second:\d+$/);
     expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)index:\d+$/);
-    expect(TabsHost).toHaveBeenCalledTimes(2);
+    expect(TabsHost).toHaveBeenCalledTimes(3);
     expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
   });
 
@@ -235,8 +237,10 @@ describe('First focused tab', () => {
       expect(screen.getByTestId('first')).toBeVisible();
       expect(screen.getByTestId('second')).toBeVisible();
       expect(screen.queryByTestId('index')).toBeNull();
-      // The Step 11 committed-slice read path avoids the old seeded re-preload pass here.
-      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      // The trigger list is a subset of the compiled route names (index is hidden / absent), so a
+      // `RECONCILE_ROUTE_NAMES` reconciles as its own commit under the flip, adding a navigator pass
+      // on top of the seed and eager-preload passes.
+      expect(NativeTabsView).toHaveBeenCalledTimes(4);
     });
   });
 
@@ -383,12 +387,13 @@ describe('First focused tab', () => {
 
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.getByTestId('second')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
-    expect(TabsScreen.mock.calls[2][0].screenKey).toMatch(/(^|:)index:\d+$/);
-    expect(TabsScreen.mock.calls[3][0].screenKey).toMatch(/(^|:)second:\d+$/);
-    expect(TabsHost).toHaveBeenCalledTimes(2);
-    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)index:\d+$/);
-    expect(TabsHost.mock.calls[1][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)second:\d+$/);
+    // `second` is already preloaded (committed) from mount, so navigating to it is a single-commit
+    // focus change — one render pass of the two visible tabs.
+    expect(TabsScreen).toHaveBeenCalledTimes(2);
+    expect(TabsScreen.mock.calls[0][0].screenKey).toMatch(/(^|:)index:\d+$/);
+    expect(TabsScreen.mock.calls[1][0].screenKey).toMatch(/(^|:)second:\d+$/);
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].navStateRequest.selectedScreenKey).toMatch(/(^|:)second:\d+$/);
 
     TabsScreen.mockClear();
     TabsHost.mockClear();

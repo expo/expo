@@ -1,11 +1,12 @@
 import { NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
-import { applyRedirects } from '../getRoutesRedirects';
+import { applyRedirects, resolveRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
+import type { NavigationState } from '../react-navigation/routers';
 import type { SingularOptions } from '../useScreens';
 import { getCachedRouteInfo } from './routeInfoCache';
 import {
@@ -14,8 +15,80 @@ import {
   getNavigationPayloadFromStateRoute,
 } from './stateUtils';
 import { store } from './store';
-import type { LinkToOptions } from './types';
+import type { LinkToOptions, StoreRedirects } from './types';
 
+// Everything the pure resolver needs, threaded explicitly instead of read from module globals so it
+// can run inside the render-pure root reducer (during a transition, possibly replayed). The reducer
+// passes its own committed `rootState` and a per-render `config`; nothing here reads through the
+// navigation ref, throws for readiness, or emits a side effect. The effectful pre-steps (external
+// redirects, malformed-link reporting) stay in the dispatch funnel — see `resolveLinkForDispatch`.
+type GetStateFromPath = NonNullable<NonNullable<typeof store.linking>['getStateFromPath']>;
+
+export interface ResolveNavigateConfig {
+  getStateFromPath: GetStateFromPath;
+  linkingConfig: NonNullable<typeof store.linking>['config'];
+  redirects: StoreRedirects[];
+  hasReducer?: (key: string) => boolean;
+}
+
+// Pure href → resolved `NavigationAction`. Resolves relative segments against the route info of the
+// passed committed `rootState` (never `store.getRouteInfo()`), follows internal redirects, and
+// diverges against `rootState`. Returns `undefined` when a redirect already consumed the navigation
+// or the path can't compile — the caller decides how to report/drop (the reducer reduces to a no-op;
+// the funnel logs). It never calls `Linking.openURL` or `console.error`: an *external* redirect is
+// detected and handled by `resolveLinkForDispatch` before this runs, so `applyRedirects` here only
+// ever follows internal hops.
+export function resolveNavigateAction(
+  baseHref: string,
+  options: LinkToOptions,
+  rootState: NavigationState,
+  config: ResolveNavigateConfig,
+  type = 'NAVIGATE',
+  withAnchor?: boolean,
+  singular?: SingularOptions,
+  isPreviewNavigation?: boolean
+) {
+  let href: string | undefined = baseHref;
+
+  href = resolveHrefStringWithSegments(href, getCachedRouteInfo(rootState), options);
+  // Pure redirect resolution: an external redirect is already opened + consumed by the dispatch
+  // funnel before this action reaches the reducer, so treat an external result as nothing to reduce.
+  const redirected = resolveRedirects(href, config.redirects);
+  if (redirected.external) {
+    return undefined;
+  }
+  href = redirected.href ?? undefined;
+
+  // If the href is undefined, it means that the redirect has already been handled the navigation
+  if (!href) {
+    return undefined;
+  }
+
+  const state = config.getStateFromPath(href, config.linkingConfig);
+
+  if (!state || state.routes.length === 0) {
+    return undefined;
+  }
+
+  return buildNavigateAction(
+    state,
+    rootState,
+    href,
+    options,
+    config.hasReducer,
+    type,
+    withAnchor,
+    singular,
+    isPreviewNavigation
+  );
+}
+
+// Store-reading wrapper preserved for the callers that resolve outside the reducer, from a
+// post-commit effect against the already-committed tree (`TabsClient`'s public
+// `unstable_tabBarNavigateAction`, native-tabs first-visit, the warm-deep-link path in
+// `useLinking.native`). These are safe where they run and keep the pre-Step-5 signature/throws.
+// `router.push`/`Link`/deep links no longer call this — they dispatch a raw `ROUTER_LINK` the
+// reducer resolves via `resolveNavigateAction`.
 export function getNavigateAction(
   baseHref: string,
   options: LinkToOptions,
@@ -57,6 +130,33 @@ export function getNavigateAction(
     console.error('Could not generate a valid navigation state for the given path: ' + href);
     return;
   }
+
+  const hasReducer = (navigationRef as { hasReducer?: (key: string) => boolean }).hasReducer;
+
+  return buildNavigateAction(
+    state,
+    rootState as NavigationState,
+    href,
+    options,
+    hasReducer,
+    type,
+    withAnchor,
+    singular,
+    isPreviewNavigation
+  );
+}
+
+function buildNavigateAction(
+  state: NonNullable<ReturnType<GetStateFromPath>>,
+  rootState: NavigationState,
+  href: string,
+  options: LinkToOptions,
+  hasReducer: ((key: string) => boolean) | undefined,
+  type: string,
+  withAnchor?: boolean,
+  singular?: SingularOptions,
+  isPreviewNavigation?: boolean
+) {
   /**
    * We need to find the deepest navigator where the action and current state diverge, If they do not diverge, the
    * lowest navigator is the target.
@@ -83,8 +183,6 @@ export function getNavigateAction(
   // `hasReducer` lets the traversal stop at the nearest mounted navigator so the rest of the target
   // subtree is carried as `payload.state` (installed by the container) rather than aimed at a
   // navigator that has no reducer to handle it.
-  const hasReducer = (navigationRef as { hasReducer?: (key: string) => boolean }).hasReducer;
-
   const { actionStateRoute, navigationState } = findDivergentState(
     state,
     rootState,

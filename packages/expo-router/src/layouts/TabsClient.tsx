@@ -109,19 +109,29 @@ const ExpoTabs = withLayoutContext<
       }
 
       const child = node?.children.find((candidate) => candidate.route === screen.props.name);
-      const href = child ? hrefMap?.get(child) : undefined;
+      const derivedHref = child ? hrefMap?.get(child) : undefined;
 
-      if (href == null) {
+      if (derivedHref == null) {
         return screen;
       }
 
       const options = screen.props.options;
       return cloneElement(screen, {
-        options: (args: any) => ({
-          ...options(args),
-          unstable_tabBarNavigateAction: () => getNavigateAction(href, {}),
-          unstable_preloadHref: href,
-        }),
+        options: (args: any) => {
+          const resolved = options(args);
+          // An explicit `href` renders the tab as a `<Link>` (set in the pre-sort `processor` above),
+          // so pressing it already navigates by that concrete href. Deriving the first-visit action
+          // from the filesystem route pattern (e.g. `/[id]`) instead would dispatch a navigation with
+          // the *unresolved* dynamic segment as a param, racing the Link's navigation and leaving a
+          // nested navigator's leaf pinned to the literal `[id]`. Prefer the concrete explicit href so
+          // both navigations agree; fall back to the filesystem route for file-based tabs.
+          const href = typeof resolved.href === 'string' ? resolved.href : derivedHref;
+          return {
+            ...resolved,
+            unstable_tabBarNavigateAction: () => getNavigateAction(href, {}),
+            unstable_preloadHref: href,
+          };
+        },
       });
     });
   }

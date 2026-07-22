@@ -1,11 +1,5 @@
-import type { RefObject } from 'react';
-
-import type {
-  NavigationAction,
-  ParamListBase,
-  NavigationContainerRef,
-} from '../react-navigation/native';
-import { getNavigateAction } from './getNavigationAction';
+import type { NavigationAction } from '../react-navigation/native';
+import { store } from './store';
 import type { LinkToOptions } from './types';
 
 export interface LinkAction {
@@ -16,60 +10,34 @@ export interface LinkAction {
   };
 }
 
-// The boundary buffer between the context-less imperative API (`router.push`/`navigate`/`back`/…,
-// callable from anywhere) and React. Actions land here and are drained by `useImperativeApiEmitter`
-// through the container's public `dispatch` once a ref is available (so calls made before the
-// container is ready aren't lost). This is distinct from `dispatchRoot`'s `pendingReplayRef`: that
-// one is an internal mount-window retry keyed by `originKey`/`isReplay`, semantics the public
-// `dispatch` doesn't carry. Both funnel into `dispatchRoot` — the single reduction point — so they
-// stay separate layers (external input adapter vs. internal retry) rather than one queue.
-export const routingQueue = {
-  queue: [] as (NavigationAction | LinkAction)[],
-  subscribers: new Set<() => void>(),
-  subscribe(callback: () => void) {
-    routingQueue.subscribers.add(callback);
-    return () => {
-      routingQueue.subscribers.delete(callback);
-    };
-  },
-  snapshot() {
-    return routingQueue.queue;
-  },
-  add(action: NavigationAction | LinkAction) {
-    routingQueue.queue.push(action);
-    for (const callback of routingQueue.subscribers) {
-      callback();
-    }
-  },
-  run(ref: RefObject<NavigationContainerRef<ParamListBase> | null>) {
-    // Reset the identity of the queue.
-    const events = routingQueue.queue;
-    routingQueue.queue = [];
-    let action: NavigationAction | LinkAction | undefined;
-    while ((action = events.shift())) {
-      // TODO: Consider warning when ref.current is null — actions are silently dropped
-      if (ref.current) {
-        if (action.type === 'ROUTER_LINK') {
-          const {
-            payload: { href, options },
-          } = action as LinkAction;
+// Pre-ready buffer for the context-less imperative API (`router.push`/`navigate`/`back`/…, callable
+// from anywhere). Post-ready, every call dispatches the raw intent directly through the container's
+// public `dispatch` in the caller's own call stack — no queue, no `useSyncExternalStore` read, no
+// effect tick — so a JS-initiated dispatch keeps its `React.startTransition` scope and a link
+// resolves against the reducer's chained tree. The only thing buffered is a call made *before* the
+// container is ready (e.g. `router.replace` in a root layout's first render): those wait here and
+// drain the moment the ref attaches. `router.*` resolution now lives in the reducer, so the buffer
+// holds raw *unresolved* intents (`ROUTER_LINK` and the plain `POP`/`GO_BACK`/… actions).
+const preReadyActions: (NavigationAction | LinkAction)[] = [];
 
-          action = getNavigateAction(
-            href,
-            options,
-            options.event,
-            options.withAnchor,
-            options.dangerouslySingular,
-            !!options.__internal__PreviewKey
-          );
-          // TODO: Consider warning when getNavigateAction returns undefined
-          if (action) {
-            ref.current.dispatch(action);
-          }
-        } else {
-          ref.current.dispatch(action);
-        }
-      }
-    }
-  },
-};
+// The single dispatch funnel. Ready → dispatch the raw intent immediately; not ready → buffer it.
+export function dispatchAction(action: NavigationAction | LinkAction) {
+  if (store.navigationRef.isReady()) {
+    store.navigationRef.dispatch(action as NavigationAction);
+  } else {
+    preReadyActions.push(action);
+  }
+}
+
+// Drain the pre-ready buffer once the container is ready. Called from a container commit effect; a
+// no-op when the buffer is empty or the ref hasn't attached yet.
+export function flushPreReadyActions() {
+  if (preReadyActions.length === 0 || !store.navigationRef.isReady()) {
+    return;
+  }
+
+  const pending = preReadyActions.splice(0, preReadyActions.length);
+  for (const action of pending) {
+    store.navigationRef.dispatch(action as NavigationAction);
+  }
+}

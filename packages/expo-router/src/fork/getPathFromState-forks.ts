@@ -1,7 +1,12 @@
 import * as queryString from 'query-string';
 
 import { matchDynamicName, matchGroupName } from '../matchers';
-import { validatePathConfig as RNValidatePathConfig, type Route } from '../react-navigation/native';
+// Import from the leaf module, not the `react-navigation/native` barrel: the barrel re-exports the
+// full surface (incl. the lazy `DarkTheme` getter), and pulling it in here closes a core↔global-state
+// require cycle (`rootReducer` → route-info → this file → the barrel) that leaves `DarkTheme`
+// undefined when a test spreads the barrel mid-initialization.
+import { validatePathConfig as RNValidatePathConfig } from '../react-navigation/core/validatePathConfig';
+import type { Route } from '../react-navigation/native';
 import type { Options, State, StringifyConfig } from './getPathFromState';
 
 export type ExpoOptions = {

@@ -33,7 +33,11 @@ describe('global-state Step 11 cleanup', () => {
 
     expect(navigationBuilder).not.toContain('useOnAction');
     expect(navigationBuilder).not.toContain('useScheduleUpdate');
-    expect(navigationBuilder).toContain('useStoreSlice');
+    // Post-flip the builder renders from the slice its parent hands down through
+    // `NavigationStateContext` (a `SceneView` provides `state: routeState`), not from a per-navigator
+    // uSES subscription — the retired `useStoreSlice` read is gone with the store's render channel.
+    expect(navigationBuilder).not.toContain('useStoreSlice');
+    expect(navigationBuilder).toContain('NavigationStateContext');
     expect(navigationHelpers).not.toContain('stateRef');
   });
 

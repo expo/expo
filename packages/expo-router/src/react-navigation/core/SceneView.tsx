@@ -27,7 +27,7 @@ type Props<State extends NavigationState, ScreenOptions extends object> = {
  * Component which takes care of rendering the screen for a route.
  * It provides all required contexts and applies optimizations when applicable.
  */
-export function SceneView<State extends NavigationState, ScreenOptions extends object>({
+function SceneViewImpl<State extends NavigationState, ScreenOptions extends object>({
   screen,
   route,
   navigation,
@@ -138,3 +138,46 @@ export function SceneView<State extends NavigationState, ScreenOptions extends o
     </NavigationStateContext.Provider>
   );
 }
+
+// Per-slice bail-out boundary (risk 3). Post the transitions flip, navigators render from a tree
+// delivered via context, which bypasses `React.memo` — so without this boundary every navigator's
+// `SceneView` re-runs on every root commit (the retired uSES subscription used to bail unchanged
+// slices out). The root reducer keeps an unchanged child slice's `routeState` referentially stable
+// (hardened by the reducer's no-op identity guarantee), so memoizing on `routeState` identity — plus
+// the other identity-stable inputs and a shallow `options` compare (options churn a fresh object each
+// parent render but only matter when their values change) — restores the bail-out: navigating one tab
+// no longer re-renders the others' subtrees. `clearOptions` is a stable-behavior closure recreated
+// each render; it is consumed only by an unmount effect and `useOptionsGetters`, so it is not a
+// bail-out signal. `useIsFocused` stays correct because a focus change moves `state.index`, which
+// changes `routeState` identity and re-renders the boundary.
+function shallowEqualOptions(a: object, b: object): boolean {
+  if (a === b) {
+    return true;
+  }
+  const aKeys = Object.keys(a) as (keyof typeof a)[];
+  const bKeys = Object.keys(b);
+  if (aKeys.length !== bKeys.length) {
+    return false;
+  }
+  return aKeys.every((key) => a[key] === (b as typeof a)[key]);
+}
+
+export const SceneView = React.memo(SceneViewImpl, (prev, next) => {
+  // Only bail out for a route that hosts a nested navigator (a defined `routeState`) whose slice is
+  // referentially unchanged — that is where the win is (a whole nested subtree skips re-rendering
+  // when a sibling navigates). A LEAF route (`routeState == null`) must never bail: it has to
+  // re-render when it gains/loses focus (its `<Stack.Screen>` options, `useIsFocused`, focus effects
+  // all depend on a focus change that does not alter its own — empty — `routeState`). Leaves are
+  // cheap; the budget the memo protects is the deep nested subtrees.
+  if (prev.routeState == null || next.routeState == null) {
+    return false;
+  }
+  return (
+    prev.routeState === next.routeState &&
+    prev.route === next.route &&
+    prev.screen === next.screen &&
+    prev.navigation === next.navigation &&
+    prev.getState === next.getState &&
+    shallowEqualOptions(prev.options, next.options)
+  );
+}) as typeof SceneViewImpl;

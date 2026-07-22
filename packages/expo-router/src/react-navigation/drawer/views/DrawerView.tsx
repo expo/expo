@@ -174,11 +174,14 @@ function DrawerViewBase({
         return false;
       }
 
-      if (defaultStatus === 'open') {
-        openDrawer();
-      } else {
-        closeDrawer();
-      }
+      // Hardware back is native-induced (D5): dispatch urgently instead of routing through
+      // `openDrawer`/`closeDrawer`, which are also reached from JS presses (toggle button, drawer
+      // items) and must stay interruptible transitions there.
+      const action =
+        defaultStatus === 'open'
+          ? DrawerRouterActions.openDrawer()
+          : DrawerRouterActions.closeDrawer();
+      navigation.dispatch(action, { urgent: true });
 
       return true;
     };
@@ -187,7 +190,7 @@ function DrawerViewBase({
     // This way we can make sure that the listener is added as late as possible
     // This will make sure that our handler will run first when back button is pressed
     return addCancelListener(handleHardwareBack);
-  }, [defaultStatus, drawerStatus, drawerType, closeDrawer, openDrawer, navigation]);
+  }, [defaultStatus, drawerStatus, drawerType, navigation]);
 
   const renderDrawerContent = () => {
     return (

@@ -5,17 +5,20 @@ import { Text, View } from "react-native";
 import type { SuspenseFallbackProps } from "../exports";
 import { Slot } from "../exports";
 import { router } from "../imperative-api";
+import Stack from "../layouts/StackClient";
 import { renderRouter } from "../testing-library";
 
 /**
- * Step 3 (spike) characterization tests. These pin the *current*, pre-flip behavior so the Step 5
- * transition flip has a baseline to invert.
+ * Transition-flip behavior tests (Step 5). Originally Step-3 spike characterizations of the pre-flip
+ * synchronous-Suspense behavior; the flip inverts them: a JS-initiated `router.push` is now a
+ * `React.startTransition`, so a suspending destination prepares in the background without flashing
+ * the fallback.
  *
  * What this stack CAN observe in jest, order-independently (established empirically here):
- *  1. Fallback-present while a pushed screen suspends — the origin screen is unmounted and the
- *     fallback replaces it (today's plain synchronous Suspense commit).
+ *  1. Origin stays mounted with NO fallback while a pushed screen suspends — the transition keeps the
+ *     previous screen up (the inversion of the pre-flip synchronous commit that unmounted it).
  *  2. Final committed content when the suspending promise resolves within the act that commits the
- *     navigation (the "fallback-absence across an awaited act" shape Step 5's red list will use).
+ *     navigation (the "fallback-absence across an awaited act" shape the flip guarantees).
  *
  * What it CANNOT observe reliably: the fallback -> content *recovery* when the promise resolves in a
  * *later* act than the one that committed the fallback. In isolation that recovery does not happen —
@@ -78,11 +81,11 @@ function renderSuspendingApp(promise: Promise<string>) {
   });
 }
 
-describe("suspending navigation — current (pre-transition-flip) behavior", () => {
+describe("suspending navigation — transition behavior (post-flip)", () => {
   it("commits the destination when the suspending promise resolves within the navigation act", async () => {
     // Final-committed-state shape (jest-able per risk 9): resolving the promise within the same act
-    // that commits the navigation surfaces the destination, no fallback left. This is the shape
-    // Step 5's red list uses for "fallback-absence across an awaited act" once the flip lands.
+    // that commits the navigation surfaces the destination, no fallback left. This is the
+    // "fallback-absence across an awaited act" shape the flip guarantees.
     const deferred = createDeferred<string>();
     renderSuspendingApp(deferred.promise);
 
@@ -97,7 +100,7 @@ describe("suspending navigation — current (pre-transition-flip) behavior", () 
     expect(screen.queryByTestId("slow-fallback")).toBeNull();
   });
 
-  it("replaces the origin screen with the Suspense fallback while a pushed screen suspends", () => {
+  it("keeps the origin screen mounted with no fallback flash while a pushed screen suspends", () => {
     const deferred = createDeferred<string>();
     renderSuspendingApp(deferred.promise);
 
@@ -105,19 +108,53 @@ describe("suspending navigation — current (pre-transition-flip) behavior", () 
 
     act(() => router.push("/detail"));
 
-    // Falsifiable pair: the destination content is NOT on screen, the fallback IS. Today the
-    // fallback shows because this is a plain synchronous Suspense commit — nothing wraps the
-    // dispatch in `startTransition` yet (that is Step 5). Do not read this as "uSES de-opts";
-    // nothing is a transition at this step.
+    // The headline transition behavior (Goal 1): a JS-initiated `router.push` to a suspending
+    // destination is wrapped in `React.startTransition` and the navigators read the React-state tree,
+    // so React prepares the destination in the background — the origin screen stays mounted and
+    // interactive and the Suspense fallback never flashes. This is the exact inversion of the Step-3
+    // pre-flip characterization (which showed the fallback replacing the unmounted origin).
+    expect(screen.getByTestId("index")).toBeVisible();
+    expect(screen.queryByTestId("slow-fallback")).toBeNull();
     expect(screen.queryByTestId("slow-content")).toBeNull();
-    expect(screen.getByTestId("slow-fallback")).toBeVisible();
 
-    // Pre-flip characterization to pin for Step 5: the origin screen is UNMOUNTED while the
-    // destination suspends — the fallback replaces it. Step 5 (Goal 1 part b) inverts this: the
-    // previous screen stays mounted, no fallback flashes. Asserting the current (unmounted) state
-    // makes the polarity Step 5 flips explicit. The deferred is intentionally left unresolved (the
-    // pending window is the point); keeping it the file's last test is a precaution, not required —
-    // the two tests are verified order-independent.
-    expect(screen.queryByTestId("index")).toBeNull();
+    // Falsifiability note: these three assertions alone would also hold if the push had silently
+    // no-op'd. The guard against that false pass is the *sibling* test above — it drives the exact
+    // same `router.push('/detail')` to the exact same suspending route and, by resolving in the
+    // navigation act, proves the push genuinely reaches `/detail` and renders `slow-content`. So the
+    // pair is falsifiable: a broken/dropped push fails the sibling; a fallback-flash regression fails
+    // this one. (A cross-act fallback→content recovery is not observable in this jest stack — risk 9
+    // — so the pending window itself is asserted only as "origin up, no fallback".)
+  });
+});
+
+describe("imperative store lags render during a pending transition (D1 same-tick behavior change)", () => {
+  it("router.canGoBack() answers for the committed (pre-push) tree within the same tick as the push", () => {
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        index: () => <Text testID="index">Index</Text>,
+        detail: () => <Text testID="detail">Detail</Text>,
+      },
+      { initialUrl: "/" }
+    );
+
+    expect(screen.getByTestId("index")).toBeVisible();
+    expect(router.canGoBack()).toBe(false);
+
+    // Read `canGoBack()` in the SAME synchronous tick as the push, before the transition commits.
+    // Post-flip the imperative store no longer leads render: `router.push` is a transition, and
+    // `canGoBack()` reads the last *committed* tree — so it still answers `false` (pre-push) here,
+    // where pre-flip it would have answered `true` immediately. NOT wrapped in one `act` around both
+    // (that would flush the transition and make this a tautology).
+    let sameTickCanGoBack: boolean | undefined;
+    act(() => {
+      router.push("/detail");
+      sameTickCanGoBack = router.canGoBack();
+    });
+    expect(sameTickCanGoBack).toBe(false);
+
+    // Once committed (the push flushed by the surrounding act), it reflects the pushed stack.
+    expect(screen.getByTestId("detail")).toBeVisible();
+    expect(router.canGoBack()).toBe(true);
   });
 });

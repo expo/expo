@@ -221,8 +221,14 @@ type NavigationHelpersCommon<
    * The update function will receive the current state,
    *
    * @param action Action object or update function.
+   * @param options Internal: `{ urgent: true }` marks a native-induced dispatch so it commits
+   * synchronously (outside `React.startTransition`) — the native side already changed, the JS echo
+   * must not be deferred (D5). Omitted for JS-initiated navigation, which is a transition.
    */
-  dispatch(action: NavigationAction | ((state: Readonly<State>) => NavigationAction)): void;
+  dispatch(
+    action: NavigationAction | ((state: Readonly<State>) => NavigationAction),
+    options?: { urgent?: boolean }
+  ): void;
 
   /**
    * Navigate to a screen in the current or parent navigator.

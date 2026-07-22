@@ -47,7 +47,7 @@ export interface StandardNavigatorCreatePropsFactoryDeps<
   NavigatorOptions extends object = object,
 > {
   state: State;
-  dispatch: (action: NavigationAction) => void;
+  dispatch: (action: NavigationAction, options?: { urgent?: boolean }) => void;
   navigation: NavigationHelpers<ParamListBase>;
   descriptors: Record<string, NavigatorDescriptor<NavigatorOptions>>;
   describe: (route: Route<string>, placeholder: boolean) => NavigatorDescriptor<NavigatorOptions>;

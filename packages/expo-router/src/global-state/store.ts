@@ -20,9 +20,10 @@ type StoreRef = {
   navigationRef: NavigationContainerRefWithCurrent<ReactNavigation.RootParamList>;
   routeNode: RouteNode | null;
   rootComponent: ComponentType<any>;
-  // Pre-mount seed only: the compiled initial state `useSyncState` initialises from (via
-  // `getSeedState`). Once the container mounts, `store.state` reads the live committed state from
-  // `navigationRef.getRootState()` and never consults this field again — it is not a state mirror.
+  // Pre-mount seed only: the compiled initial state the container's `useReducer` initialises from
+  // (via `getSeedState`). Once the container mounts, `store.state` reads the committed state from
+  // `navigationRef.getRootState()` (the container's commit-time mirror) and never consults this
+  // field again.
   state?: ReactNavigationState;
   linking?: ExpoLinkingOptions;
   config: any;
@@ -79,14 +80,36 @@ function assertStateIsComplete(state: ReactNavigationState, path: string[] = [])
   }
 }
 
+// Depth-first search for the committed sub-state whose key matches, mirroring the old
+// `getCachedSlice` lookup but against the imperative committed tree rather than the render store.
+function findSliceByKey(
+  state: ReactNavigationState | undefined,
+  key: string
+): ReactNavigationState | undefined {
+  if (state == null || (state as { stale?: unknown }).stale !== false) {
+    return undefined;
+  }
+  if (state.key === key) {
+    return state;
+  }
+  for (const route of state.routes) {
+    const slice = findSliceByKey(route.state as ReactNavigationState | undefined, key);
+    if (slice != null) {
+      return slice;
+    }
+  }
+  return undefined;
+}
+
 export const store = {
   shouldShowTutorial() {
     return !storeRef.current.routeNode && process.env.NODE_ENV === 'development';
   },
   get state(): ReactNavigationState | undefined {
-    // Single source of truth: the committed container store, read live through the navigation ref.
-    // Before the container mounts (its ref isn't attached yet) there is nothing to read, so fall
-    // back to the compiled seed — the state `useSyncState` will initialise the container from.
+    // Single source of truth: the committed tree, read through the navigation ref (the container's
+    // commit-time mirror). Before the container mounts (its ref isn't attached yet) there is nothing
+    // to read, so fall back to the compiled seed — the state the container's `useReducer` initialises
+    // from. During a pending JS transition this answers for the last *committed* tree, by design.
     const { navigationRef } = storeRef.current;
     if (navigationRef?.current != null) {
       return navigationRef.getRootState() as ReactNavigationState | undefined;
@@ -106,6 +129,13 @@ export const store = {
   },
   getRouteInfo(): UrlObject {
     return storeRef.current.routeInfo || defaultRouteInfo;
+  },
+  // The committed slice for a navigator key, walked from the last committed tree. Used where a
+  // navigator must distinguish "already committed" from the rendered tree, which — post the Step-5
+  // transitions flip — can lead the committed tree during a pending navigation (e.g. a tab's
+  // first-visit detection must not treat a speculatively-rendered tab as already visited).
+  getCommittedSlice(key: string): ReactNavigationState | undefined {
+    return findSliceByKey(store.state, key);
   },
   get redirects() {
     return storeRef.current.redirects || [];

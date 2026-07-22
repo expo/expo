@@ -6,7 +6,6 @@ import { isValidElementType } from 'react-is';
 
 import {
   type NavigationReducer,
-  NavigationSyncStateContext,
   type NavigatorRegistryEntry,
   ReducerRegistryContext,
 } from '../../global-state/storeContext';
@@ -55,7 +54,6 @@ import { useLazyValue } from './useLazyValue';
 import { useNavigationHelpers } from './useNavigationHelpers';
 import { NavigationStateListenerProvider } from './useNavigationState';
 import { useRegisterNavigator } from './useRegisterNavigator';
-import { getCachedSlice, useStoreSlice } from './useStoreSlice';
 
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -434,42 +432,29 @@ export function useNavigationBuilder<
 
   const { state: currentState, setKey } = use(NavigationStateContext);
 
-  // The committed store is the single source of truth. The parent (or the container) hands this
-  // navigator its committed slice as `currentState`; we take the slice key from it and subscribe to
-  // that slice in the store directly (see `state` below), so a change to this navigator's slice
-  // re-renders it even when an ancestor is memoized. There is no compose-up — the root reducer is the
-  // only writer, and every navigator's slice reaches the store as a compiled subtree: the container
-  // seed for the focused path, and `payload.state` on a PRELOAD/navigate for the rest (a navigator
-  // never mounts without a committed slice).
-  const store = use(NavigationSyncStateContext);
-
-  if (store == null) {
-    throw new Error("Couldn't find a navigation store. Is your component inside a navigator?");
-  }
-
+  // The navigation tree lives in the container's root `useReducer`; each navigator renders from the
+  // committed slice its parent hands down through `NavigationStateContext` (a `SceneView` provides
+  // `state: routeState` for every child). The root reducer is the only writer, and every mounted
+  // navigator's slice reaches the tree as a compiled subtree — the container seed for the focused
+  // path, `payload.state` on a PRELOAD/navigate for the rest — so a mounted navigator always has a
+  // handed slice. The per-slice bail-out that the retired uSES subscription used to give is restored
+  // by the `React.memo` boundary at `SceneView` keyed on `routeState` identity.
   const key = currentState?.key;
 
   const reducerRegistry = use(ReducerRegistryContext);
 
   const previousRouteKeyListRef = React.useRef(routeKeyList);
   const previousRouteKeyList = previousRouteKeyListRef.current;
+  // The declared key-list a `RECONCILE_ROUTE_NAMES` is currently in flight for, so the completion
+  // effect doesn't re-dispatch the same reconcile every commit while its deferred reduction lands.
+  const reconcileInFlightRef = React.useRef<Record<string, React.Key | undefined> | undefined>(
+    undefined
+  );
   const routeKeyChanges = Object.keys(routeKeyList).filter(
     (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
   );
 
-  const storeSlice = useStoreSlice(key);
-  // Prefer the subscribed store slice. The store holds every mounted navigator's slice (the
-  // container seeds the focused path; `payload.state` carries the rest), and `useStoreSlice` reads
-  // it synchronously — so for a mounted navigator this should never miss. The parent-handed slice
-  // stays as a crash guard; a miss is a bug, so surface it in dev.
-  if (process.env.NODE_ENV !== 'production' && storeSlice == null && currentState != null) {
-    console.error(
-      `Expo Router: a mounted navigator (${key}) had no committed slice in the store and fell back ` +
-        `to the parent-provided slice. The store should hold every mounted navigator's slice; ` +
-        `please report this with the navigation you performed.`
-    );
-  }
-  let state = (storeSlice ?? currentState) as State;
+  let state = currentState as State;
 
   const reconciliationState = state;
   state = getStateForRenderableRoutes(
@@ -480,12 +465,12 @@ export function useNavigationBuilder<
     routeParamList
   );
 
-  // The last committed slice this navigator rendered. `getState` reads the live slice from the
-  // store by key, but during a transition (deep link, a slice briefly re-keyed) that lookup can
-  // come back empty for a beat; fall back to what we last rendered so imperative reads never see
-  // `undefined`. This transient miss is exercised by the suite, so the fallback is load-bearing.
+  // The last committed slice this navigator rendered, updated from a layout effect (commit time).
+  // `getState` (the imperative navigator-state reader) returns it rather than the render value: a
+  // speculative transition render must never be observed as committed. It is frozen only here, on
+  // the committed value — never the in-flight `useReducer` render value.
   const lastCommittedStateRef = React.useRef(reconciliationState);
-  React.useEffect(() => {
+  useClientLayoutEffect(() => {
     lastCommittedStateRef.current = reconciliationState;
   });
 
@@ -495,8 +480,7 @@ export function useNavigationBuilder<
   }, []);
 
   const getState = useLatestCallback((): State => {
-    const slice = key == null ? undefined : getCachedSlice(store.getState(), key);
-    return deepFreeze((slice ?? lastCommittedStateRef.current) as State);
+    return deepFreeze(lastCommittedStateRef.current as State);
   });
 
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
@@ -572,17 +556,19 @@ export function useNavigationBuilder<
   });
 
   const { dispatchRoot } = use(NavigationBuilderContext);
+  // The committed slice still carries route names / keys that differ from what this navigator now
+  // declares (screens added/removed, a route's key changed): a `RECONCILE_ROUTE_NAMES` must run to
+  // bring the committed slice in line. Under the `useReducer` flip the reconcile lands one commit
+  // later (urgent dispatch, reduced at the next render) instead of synchronously.
+  const committedReflectsDeclared = isArrayEqual(reconciliationState.routeNames, routeNames);
   const needsRouteNamesReconcile =
-    !isArrayEqual(reconciliationState.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList);
+    !committedReflectsDeclared || !isRecordEqual(routeKeyList, previousRouteKeyList);
   // Invariant: the render-time projection only diverges from the committed slice while a route-names
-  // reconciliation is pending — the layout effect below then commits the divergence back into the
-  // store. If it diverges otherwise, the store and the render have silently disagreed, which is a bug.
-  if (
-    process.env.NODE_ENV !== 'production' &&
-    state !== reconciliationState &&
-    !needsRouteNamesReconcile
-  ) {
+  // reconciliation is unresolved. The tolerance spans the whole async window — from the render that
+  // first needs a reconcile until the ref advances one commit after the reconcile commits.
+  const reconcilePending =
+    needsRouteNamesReconcile || !isRecordEqual(routeKeyList, previousRouteKeyListRef.current);
+  if (process.env.NODE_ENV !== 'production' && state !== reconciliationState && !reconcilePending) {
     console.error(
       `Expo Router: render-time route projection for navigator ${key} diverged from its committed ` +
         `slice with no route-names reconciliation pending. The projection must stay identity outside ` +
@@ -619,12 +605,36 @@ export function useNavigationBuilder<
   }, [backBehavior, reducerRegistry, registryEntry, state.key]);
 
   useClientLayoutEffect(() => {
-    if (!needsRouteNamesReconcile) {
+    // The completion signal that replaces the old synchronous `handled` read: reconciliation is done
+    // once the committed slice reflects this navigator's declared route names (for a key-only change
+    // the reconcile recreates the routes, so committed names still match declared afterward). Advance
+    // the declared-key ref (monotonic — once observed it never un-advances, so an interrupted
+    // transition regressing the handed slice for a beat can't flap it) and disarm the in-flight guard.
+    if (committedReflectsDeclared) {
       previousRouteKeyListRef.current = routeKeyList;
+      reconcileInFlightRef.current = undefined;
+    }
+
+    if (!needsRouteNamesReconcile) {
       return;
     }
 
-    const handled = dispatchRoot?.(
+    // Under the flip the reconcile reduces one commit later, so this effect re-runs (reconcile still
+    // needed) before the reduction lands. Dispatch RECONCILE only once per distinct declared
+    // key-list — re-dispatching every commit while the same reduction is in flight is the runaway
+    // loop the async dispatch introduced. The guard is disarmed above once committed catches up, so a
+    // genuinely new divergence re-arms it.
+    if (
+      reconcileInFlightRef.current != null &&
+      isRecordEqual(reconcileInFlightRef.current, routeKeyList)
+    ) {
+      return;
+    }
+    reconcileInFlightRef.current = routeKeyList;
+
+    // Route names/keys diverged from what's committed: reconcile urgently (internal bookkeeping, not
+    // navigation — a transition would delay it behind a slow commit).
+    dispatchRoot?.(
       {
         type: RECONCILE_ROUTE_NAMES,
         target: reconciliationState.key,
@@ -638,22 +648,16 @@ export function useNavigationBuilder<
       },
       {
         originKey: reconciliationState.key,
+        urgent: true,
       }
     );
-
-    if (handled) {
-      previousRouteKeyListRef.current = routeKeyList;
-    }
   });
 
   const onAction = useLatestCallback((action: NavigationAction) => {
     // Forward to the container's root reducer, tagged with this navigator's key. The old local
-    // reducer escape hatch is gone — the store is the only writer.
-    return (
-      dispatchRoot?.(action, {
-        originKey: state.key,
-      }) ?? false
-    );
+    // reducer escape hatch is gone — the root reducer is the only writer. Dispatch returns void now
+    // (the verdict is eliminated); callers that asked "did this do anything" use the pure reducer.
+    dispatchRoot?.(action, { originKey: state.key });
   });
 
   const navigation = useNavigationHelpers<State, ActionHelpers, NavigationAction, EventMap>({

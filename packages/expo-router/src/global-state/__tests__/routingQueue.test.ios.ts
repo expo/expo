@@ -1,186 +1,90 @@
-import type { RefObject } from 'react';
+import { dispatchAction, flushPreReadyActions } from '../routingQueue';
+import { store } from '../store';
 
-import type { NavigationContainerRef, ParamListBase } from '../../react-navigation/native';
-import { getNavigateAction } from '../getNavigationAction';
-import { routingQueue } from '../routingQueue';
-
-jest.mock('../getNavigationAction', () => ({
-  getNavigateAction: jest.fn(),
+// Post the Step-5 flip the routing queue is a dumb pre-ready buffer: `dispatchAction` dispatches a
+// raw intent straight through `store.navigationRef.dispatch` when the container is ready, else it
+// buffers it; `flushPreReadyActions` drains the buffer once ready. `ROUTER_LINK` is dispatched raw
+// (resolved inside the reducer), so this layer no longer calls `getNavigateAction`.
+jest.mock('../store', () => ({
+  store: {
+    navigationRef: {
+      isReady: jest.fn(() => true),
+      dispatch: jest.fn(),
+    },
+  },
 }));
 
-const mockGetNavigateAction = getNavigateAction as jest.MockedFunction<typeof getNavigateAction>;
-
-function makeRef(
-  overrides: Partial<NavigationContainerRef<ParamListBase>> = {}
-): RefObject<NavigationContainerRef<ParamListBase>> {
-  return {
-    current: {
-      dispatch: jest.fn(),
-      navigate: jest.fn(),
-      reset: jest.fn(),
-      goBack: jest.fn(),
-      isFocused: jest.fn(),
-      canGoBack: jest.fn(),
-      getState: jest.fn(),
-      getRootState: jest.fn(),
-      getParent: jest.fn(),
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
-      isReady: jest.fn(() => true),
-      setParams: jest.fn(),
-      getCurrentRoute: jest.fn(),
-      getCurrentOptions: jest.fn(),
-      getId: jest.fn(),
-      resetRoot: jest.fn(),
-      ...overrides,
-    } as unknown as NavigationContainerRef<ParamListBase>,
-  };
-}
+const mockStore = store as unknown as {
+  navigationRef: { isReady: jest.Mock; dispatch: jest.Mock };
+};
 
 beforeEach(() => {
   jest.clearAllMocks();
-  // Drain any leftover queue state
-  routingQueue.queue = [];
-  routingQueue.subscribers.clear();
+  mockStore.navigationRef.isReady.mockReturnValue(true);
+  // Drain any buffered actions left over from a prior test's pre-ready path.
+  mockStore.navigationRef.isReady.mockReturnValue(true);
+  flushPreReadyActions();
+  mockStore.navigationRef.dispatch.mockClear();
 });
 
-describe('routingQueue', () => {
-  it('add() pushes action to queue and notifies subscribers', () => {
-    const callback = jest.fn();
-    routingQueue.subscribe(callback);
+describe('routing queue (pre-ready buffer)', () => {
+  it('dispatchAction dispatches the raw intent directly when ready', () => {
+    dispatchAction({ type: 'GO_BACK' });
 
-    routingQueue.add({ type: 'GO_BACK' });
-
-    expect(routingQueue.queue).toHaveLength(1);
-    expect(routingQueue.queue[0]).toEqual({ type: 'GO_BACK' });
-    expect(callback).toHaveBeenCalledTimes(1);
+    expect(mockStore.navigationRef.dispatch).toHaveBeenCalledTimes(1);
+    expect(mockStore.navigationRef.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
   });
 
-  it('subscribe() returns unsubscribe function', () => {
-    const callback = jest.fn();
-    const unsubscribe = routingQueue.subscribe(callback);
-
-    routingQueue.add({ type: 'GO_BACK' });
-    expect(callback).toHaveBeenCalledTimes(1);
-    callback.mockClear();
-
-    unsubscribe();
-
-    routingQueue.add({ type: 'GO_BACK' });
-    expect(callback).not.toHaveBeenCalled();
-  });
-
-  it('snapshot() returns the current queue array', () => {
-    routingQueue.add({ type: 'GO_BACK' });
-    routingQueue.add({ type: 'POP_TO_TOP' });
-
-    const snapshot = routingQueue.snapshot();
-
-    expect(snapshot).toHaveLength(2);
-    expect(snapshot[0]).toEqual({ type: 'GO_BACK' });
-    expect(snapshot[1]).toEqual({ type: 'POP_TO_TOP' });
-  });
-
-  it('run() drains the queue', () => {
-    const ref = makeRef();
-
-    routingQueue.add({ type: 'GO_BACK' });
-    routingQueue.add({ type: 'POP_TO_TOP' });
-
-    routingQueue.run(ref);
-
-    expect(routingQueue.queue).toHaveLength(0);
-  });
-
-  it('run() dispatches plain actions via ref.current.dispatch()', () => {
-    const ref = makeRef();
-
-    routingQueue.add({ type: 'GO_BACK' });
-
-    routingQueue.run(ref);
-
-    expect(ref.current!.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
-  });
-
-  it('run() converts ROUTER_LINK actions via getNavigateAction then dispatches', () => {
-    const ref = makeRef();
-    const navigateAction = {
-      type: 'NAVIGATE',
-      payload: { name: 'home', params: {}, singular: false },
-      target: '123',
-    };
-    mockGetNavigateAction.mockReturnValueOnce(navigateAction);
-
-    routingQueue.add({
-      type: 'ROUTER_LINK',
+  it('dispatchAction dispatches a raw ROUTER_LINK intent unresolved (the reducer resolves it)', () => {
+    const link = {
+      type: 'ROUTER_LINK' as const,
       payload: { href: '/home', options: { event: 'NAVIGATE' } },
-    });
+    };
 
-    routingQueue.run(ref);
+    dispatchAction(link);
 
-    expect(mockGetNavigateAction).toHaveBeenCalledWith(
-      '/home',
-      { event: 'NAVIGATE' },
-      'NAVIGATE',
-      undefined,
-      undefined,
-      false
-    );
-    expect(ref.current!.dispatch).toHaveBeenCalledWith(navigateAction);
+    // No resolution here — the raw intent is handed to the container's dispatch verbatim.
+    expect(mockStore.navigationRef.dispatch).toHaveBeenCalledTimes(1);
+    expect(mockStore.navigationRef.dispatch).toHaveBeenCalledWith(link);
   });
 
-  it('run() does not dispatch when getNavigateAction returns undefined', () => {
-    const ref = makeRef();
-    mockGetNavigateAction.mockReturnValueOnce(undefined);
+  it('dispatchAction buffers (does not dispatch) when not ready', () => {
+    mockStore.navigationRef.isReady.mockReturnValue(false);
 
-    routingQueue.add({
-      type: 'ROUTER_LINK',
-      payload: { href: '/redirect', options: { event: 'NAVIGATE' } },
-    });
+    dispatchAction({ type: 'GO_BACK' });
 
-    routingQueue.run(ref);
-
-    expect(ref.current!.dispatch).not.toHaveBeenCalled();
+    expect(mockStore.navigationRef.dispatch).not.toHaveBeenCalled();
   });
 
-  it('run() does nothing when ref.current is null', () => {
-    const ref = { current: null };
+  it('flushPreReadyActions drains buffered actions in order once ready', () => {
+    mockStore.navigationRef.isReady.mockReturnValue(false);
+    dispatchAction({ type: 'GO_BACK' });
+    dispatchAction({ type: 'POP_TO_TOP' });
+    expect(mockStore.navigationRef.dispatch).not.toHaveBeenCalled();
 
-    routingQueue.add({ type: 'GO_BACK' });
+    mockStore.navigationRef.isReady.mockReturnValue(true);
+    flushPreReadyActions();
 
-    routingQueue.run(ref as any);
-
-    // Queue should still be drained (reset identity happens before dispatch loop)
-    expect(routingQueue.queue).toHaveLength(0);
+    expect(mockStore.navigationRef.dispatch).toHaveBeenCalledTimes(2);
+    expect(mockStore.navigationRef.dispatch).toHaveBeenNthCalledWith(1, { type: 'GO_BACK' });
+    expect(mockStore.navigationRef.dispatch).toHaveBeenNthCalledWith(2, { type: 'POP_TO_TOP' });
   });
 
-  it('run() resets queue identity so new actions during run go to a fresh array', () => {
-    const ref = makeRef();
+  it('flushPreReadyActions is a no-op when still not ready (buffer retained)', () => {
+    mockStore.navigationRef.isReady.mockReturnValue(false);
+    dispatchAction({ type: 'GO_BACK' });
 
-    routingQueue.add({ type: 'GO_BACK' });
+    flushPreReadyActions();
+    expect(mockStore.navigationRef.dispatch).not.toHaveBeenCalled();
 
-    const oldQueue = routingQueue.queue;
-
-    routingQueue.run(ref);
-
-    // The queue should be a new array reference
-    expect(routingQueue.queue).not.toBe(oldQueue);
-    expect(routingQueue.queue).toHaveLength(0);
+    // Still buffered: becomes dispatchable once ready.
+    mockStore.navigationRef.isReady.mockReturnValue(true);
+    flushPreReadyActions();
+    expect(mockStore.navigationRef.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
   });
 
-  it('multiple subscribers all get notified on add()', () => {
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
-    const callback3 = jest.fn();
-
-    routingQueue.subscribe(callback1);
-    routingQueue.subscribe(callback2);
-    routingQueue.subscribe(callback3);
-
-    routingQueue.add({ type: 'GO_BACK' });
-
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback3).toHaveBeenCalledTimes(1);
+  it('flushPreReadyActions is a no-op when the buffer is empty', () => {
+    flushPreReadyActions();
+    expect(mockStore.navigationRef.dispatch).not.toHaveBeenCalled();
   });
 });

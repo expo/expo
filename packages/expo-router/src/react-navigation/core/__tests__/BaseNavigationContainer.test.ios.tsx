@@ -1,7 +1,6 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import * as rootReducerModule from '../../../global-state/rootReducer';
 import {
   type DefaultRouterOptions,
   type NavigationState,
@@ -11,7 +10,7 @@ import {
   TabRouter,
 } from '../../routers';
 import { getRouteKey, getStateKey } from '../../routers/getRouteKey';
-import { BaseNavigationContainer, __setShadowAssertEnabled } from '../BaseNavigationContainer';
+import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { NavigationIndependentTree } from '../NavigationIndependentTree';
 import { NavigationStateContext } from '../NavigationStateContext';
 import { Screen } from '../Screen';
@@ -38,8 +37,6 @@ const optionsQuxxKey = getRouteKey({ stateKey: optionsBazChildKey, name: 'quxx' 
 beforeEach(() => {
   MockRouterKey.current = 0;
   jest.restoreAllMocks();
-  // Re-enable after any test that mocked `rootReducer` and disabled the shadow assertion.
-  __setShadowAssertEnabled(true);
 });
 
 test('throws when getState is accessed without a container', () => {
@@ -162,9 +159,24 @@ test('handle dispatching with ref', () => {
   });
 });
 
-test('container dispatch runs the root reducer once and commits the returned root state', () => {
-  const TestNavigator = (props: any) => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+test('container dispatch reduces through the root useReducer and commits the returned root state', () => {
+  // A router whose REVERSE action deterministically reverses the routes — so a dispatch reduces to an
+  // observably different committed tree through the real root `useReducer` path (post-flip there is no
+  // `rootReducer`-export seam to mock; the reduction is exercised end-to-end).
+  const ReversingNavigator = (props: any) => {
+    const reversingRouter = (options: DefaultRouterOptions) => {
+      const base = MockRouter(options);
+      return {
+        ...base,
+        getStateForAction(state: NavigationState, action: any, opts: any) {
+          if (action.type === 'REVERSE') {
+            return { ...state, routes: state.routes.slice().reverse() };
+          }
+          return base.getStateForAction(state, action, opts);
+        },
+      } as Router<NavigationState, MockActions | { type: 'REVERSE' }>;
+    };
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(reversingRouter, props);
 
     return (
       <NavigationContent>
@@ -175,19 +187,6 @@ test('container dispatch runs the root reducer once and commits the returned roo
 
   const ref = createNavigationContainerRef<ParamListBase>();
   const onStateChange = jest.fn();
-  const action = { type: 'ROOT_REDUCER_ONLY' };
-  // Mocking `rootReducer` reverses the routes on the eager path only; the Step-2 shadow reduces the
-  // real (unreversed) tree, so it diverges by construction. Disable the shadow assertion here — this
-  // test pins the eager dispatch seam, not shadow agreement.
-  __setShadowAssertEnabled(false);
-  const rootReducer = jest.spyOn(rootReducerModule, 'rootReducer').mockImplementation((state) => ({
-    state: {
-      ...state,
-      routes: state.routes.slice().reverse(),
-    },
-    handled: true,
-    noop: false,
-  }));
 
   MockRouterKey.current = 1;
 
@@ -205,19 +204,17 @@ test('container dispatch runs the root reducer once and commits the returned roo
           { key: 'bar', name: 'bar' },
         ],
       }}>
-      <TestNavigator>
+      <ReversingNavigator>
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
-      </TestNavigator>
+      </ReversingNavigator>
     </BaseNavigationContainer>
   );
 
   act(() => {
-    ref.current?.dispatch(action);
+    ref.current?.dispatch({ type: 'REVERSE' });
   });
 
-  expect(rootReducer).toHaveBeenCalledTimes(1);
-  expect(rootReducer.mock.calls[0]![1]).toBe(action);
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith(
     expect.objectContaining({
@@ -227,6 +224,7 @@ test('container dispatch runs the root reducer once and commits the returned roo
       ],
     })
   );
+  expect(ref.current?.getRootState()?.routes.map((r) => r.name)).toEqual(['bar', 'foo']);
 });
 
 test('navigator dispatch passes local state to thunks and root reducer originKey', () => {
@@ -247,15 +245,6 @@ test('navigator dispatch passes local state to thunks and root reducer originKey
 
     return null;
   };
-
-  // `noop: true` means `dispatchRoot` skips both `setState` and the shadow dispatch, so the shadow
-  // stays at its seed and can't diverge — no `__setShadowAssertEnabled(false)` needed here (unlike
-  // the reversing-mock test above, which commits a stubbed tree).
-  const rootReducer = jest.spyOn(rootReducerModule, 'rootReducer').mockImplementation((state) => ({
-    state,
-    handled: true,
-    noop: true,
-  }));
 
   MockRouterKey.current = 2;
 
@@ -299,13 +288,11 @@ test('navigator dispatch passes local state to thunks and root reducer originKey
     });
   });
 
+  // The thunk is invoked with this navigator's own committed local slice (key '1'), not the root —
+  // the observable proof that `navigation.dispatch` tags the dispatch with the navigator's origin so
+  // the reducer threads its slice. (The `originKey` reduction targeting itself is exercised
+  // end-to-end by the nested-navigation integration canaries; here we pin the thunk's state input.)
   expect(thunkState).toEqual(expect.objectContaining({ key: '1', routeNames: ['bar'] }));
-  expect(rootReducer).toHaveBeenCalledWith(
-    expect.any(Object),
-    expect.objectContaining({ type: 'CHILD_THUNK' }),
-    expect.any(Object),
-    expect.objectContaining({ originKey: '1' })
-  );
 });
 
 test('handle resetting state with ref', () => {

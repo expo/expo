@@ -532,27 +532,38 @@ export function NativeStackView({ state, navigation, descriptors }: Props) {
                 });
               }}
               onDismissed={(event) => {
-                navigation.dispatch({
-                  ...StackActions.pop(event.nativeEvent.dismissCount),
-                  source: route.key,
-                  target: state.key,
-                });
+                // Native swipe-back / dismiss already removed the screen — commit the JS echo
+                // urgently (D5), never deferred behind a transition.
+                navigation.dispatch(
+                  {
+                    ...StackActions.pop(event.nativeEvent.dismissCount),
+                    source: route.key,
+                    target: state.key,
+                  },
+                  { urgent: true }
+                );
 
                 setNextDismissedKey(route.key);
               }}
               onHeaderBackButtonClicked={() => {
-                navigation.dispatch({
-                  ...StackActions.pop(),
-                  source: route.key,
-                  target: state.key,
-                });
+                navigation.dispatch(
+                  {
+                    ...StackActions.pop(),
+                    source: route.key,
+                    target: state.key,
+                  },
+                  { urgent: true }
+                );
               }}
               onNativeDismissCancelled={(event) => {
-                navigation.dispatch({
-                  ...StackActions.pop(event.nativeEvent.dismissCount),
-                  source: route.key,
-                  target: state.key,
-                });
+                navigation.dispatch(
+                  {
+                    ...StackActions.pop(event.nativeEvent.dismissCount),
+                    source: route.key,
+                    target: state.key,
+                  },
+                  { urgent: true }
+                );
               }}
               onGestureCancel={() => {
                 navigation.emit({

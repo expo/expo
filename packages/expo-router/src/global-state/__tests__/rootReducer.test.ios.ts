@@ -7,7 +7,7 @@ import {
   type NavigationState,
 } from '../../react-navigation/routers';
 import { createReducerRegistry } from '../storeContext';
-import { rootReducer } from '../rootReducer';
+import { type RootReducerEnvelope, reduceRootNavigation, rootReducer } from '../rootReducer';
 
 const rootState: NavigationState = {
   stale: false,
@@ -317,6 +317,21 @@ describe(rootReducer, () => {
     });
   });
 
+  it('returns the identical root reference on a nested no-op (does not rebuild ancestors)', () => {
+    const registry = createReducerRegistry();
+
+    // A nested (non-root) target whose reducer returns its slice unchanged: the reduction is a
+    // genuine no-op, so the whole tree — including every ancestor `replacePathState` walks through —
+    // must come back referentially identical. Referential identity (not `toMatchObject`) is what
+    // `canGoBack`/`canDismiss` rely on post-flip (`reduceRoot(...).state === committed`).
+    registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
+
+    const result = rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry);
+
+    expect(result.noop).toBe(true);
+    expect(result.state).toBe(rootState);
+  });
+
   it('does not revisit an ancestor after a focused child cannot handle the action', () => {
     const registry = createReducerRegistry();
     const action: NavigationAction = {
@@ -459,4 +474,79 @@ describe(rootReducer, () => {
     expect((tree.routes[0]!.state as NavigationState).routes[0]!.params).toEqual({ callback });
   });
 
+});
+
+// State-carried mount-window replay (the `pendingActions` field on the root `useReducer` state).
+// Source-gated deferrability (D5): a JS-initiated action whose origin navigator isn't registered yet
+// is queued for replay; an urgent (native-induced) action with the same shape is NEVER queued; a
+// replay that still can't reduce is dropped (drop-after-one-retry), not re-queued.
+describe('reduceRootNavigation pendingActions (source-gated mount-window replay)', () => {
+  // An untargeted action whose declared origin navigator has no registered reducer — the mount window.
+  const untargetedAction: NavigationAction = { type: 'GO_BACK' };
+  const seed = () => ({ tree: rootState, pendingActions: [] });
+
+  it('queues a JS-initiated untargeted action whose origin is not yet registered', () => {
+    const registry = createReducerRegistry(); // nothing registered → origin unregistered
+    const envelope: RootReducerEnvelope = {
+      action: untargetedAction,
+      originKey: 'unregistered-navigator',
+    };
+
+    const next = reduceRootNavigation(seed(), envelope, registry);
+
+    expect(next.pendingActions).toHaveLength(1);
+    expect(next.pendingActions[0]!.action).toBe(untargetedAction);
+    expect(next.tree).toBe(rootState);
+  });
+
+  it('never queues an urgent (native-induced) action, even untargeted with an unregistered origin', () => {
+    const registry = createReducerRegistry();
+    const envelope: RootReducerEnvelope = {
+      action: untargetedAction,
+      originKey: 'unregistered-navigator',
+      urgent: true,
+    };
+
+    const next = reduceRootNavigation(seed(), envelope, registry);
+
+    // Source-gated: the native fact is already committed on the native side; its JS echo is never
+    // deferred/replayed. It reduces to a no-op here (unhandled), leaving the queue empty.
+    expect(next.pendingActions).toHaveLength(0);
+  });
+
+  it('is idempotent under repeated reduction of the same action object (React double-invoke)', () => {
+    const registry = createReducerRegistry();
+    const envelope: RootReducerEnvelope = {
+      action: untargetedAction,
+      originKey: 'unregistered-navigator',
+    };
+
+    const once = reduceRootNavigation(seed(), envelope, registry);
+    // Reduce the SAME envelope again against the already-queued state (React invokes the reducer
+    // eagerly at dispatch and again at render): the identity-keyed append must not double-queue.
+    const twice = reduceRootNavigation(once, envelope, registry);
+
+    expect(twice.pendingActions).toHaveLength(1);
+  });
+
+  it('drops a replay-marked action that still cannot reduce (drop-after-one-retry)', () => {
+    const registry = createReducerRegistry();
+    const queued = reduceRootNavigation(
+      seed(),
+      { action: untargetedAction, originKey: 'unregistered-navigator' },
+      registry
+    );
+    expect(queued.pendingActions).toHaveLength(1);
+
+    // The container's replay effect re-dispatches the SAME action object urgently with `isReplay`;
+    // the origin is still unregistered, so it drops rather than re-queues — the entry (keyed by the
+    // action's identity, which the reducer recomputes) leaves the queue.
+    const replayed = reduceRootNavigation(
+      queued,
+      { action: untargetedAction, originKey: 'unregistered-navigator', isReplay: true, urgent: true },
+      registry
+    );
+
+    expect(replayed.pendingActions).toHaveLength(0);
+  });
 });
