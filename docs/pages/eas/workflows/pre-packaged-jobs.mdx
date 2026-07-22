@@ -38,6 +38,9 @@ jobs:
       profile: string # optional - default: production
       message: string # optional
       refresh_ad_hoc_provisioning_profile: boolean # optional
+    hooks:
+      before_install_node_modules: step[] # optional - steps to run before dependencies are installed.
+      after_install_node_modules: step[] # optional - steps to run after dependencies are installed.
 ```
 
 #### Parameters
@@ -74,6 +77,15 @@ You can reference the following outputs in subsequent jobs:
 | runtime_version   | string | The runtime version used.                                          |
 | sdk_version       | string | The SDK version used.                                              |
 | simulator         | string | Whether the build is for simulator.                                |
+
+#### Hooks
+
+The following hooks are supported for the Build job:
+
+- `before_install_node_modules`: steps to run before the build installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the build installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -905,6 +917,9 @@ jobs:
       rollout_percentage: number # optional - 0 to 100, defaults to 100
       private_key_path: string # optional
       upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
+    hooks:
+      before_update: step[] # optional - steps to run before the update is published.
+      after_update: step[] # optional - steps to run after the update is published.
 ```
 
 #### Environment variables
@@ -933,6 +948,15 @@ You can reference the following outputs in subsequent jobs:
 | --------------------- | ------ | ------------------------------------------------------------- |
 | first_update_group_id | string | The ID of the first update group.                             |
 | updates_json          | string | A JSON string containing information about all update groups. |
+
+#### Hooks
+
+The following hooks are supported for the Update job:
+
+- `before_update`: steps to run before the update is published.
+- `after_update`: steps to run after the update is published. Files produced during publishing (for example, sourcemaps in the **dist** directory) are available to the hook steps.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -1006,6 +1030,31 @@ jobs:
     params:
       branch: ${{ github.ref_name }}
       message: 'Update for branch: ${{ github.ref_name }}'
+```
+
+</Collapsible>
+
+<Collapsible summary="Upload sourcemaps after publishing an update">
+
+This workflow publishes an update and then uploads the generated sourcemaps to an error tracking service (PostHog in this example). Sourcemaps are produced in the **dist** directory during publishing and are only available on the worker that ran the job, so uploading them must happen in an `after_update` hook rather than in a separate job. Hook steps inherit the job's environment, so credentials such as `POSTHOG_CLI_API_KEY` can be provided as [EAS environment variables](/eas/environment-variables/).
+
+```yaml .eas/workflows/update-with-sourcemaps.yml
+name: Update with sourcemaps
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  update:
+    name: Publish update
+    type: update
+    params:
+      channel: production
+    hooks:
+      after_update:
+        - name: Upload sourcemaps to PostHog
+          run: npx -y @posthog/cli hermes upload --directory dist
 ```
 
 </Collapsible>
