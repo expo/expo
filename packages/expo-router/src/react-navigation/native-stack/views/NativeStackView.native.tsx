@@ -475,6 +475,8 @@ export function NativeStackView({
 }: Props) {
   const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
+  const activeRoutes = state.routes;
+  const preloadedRoutes = state.preloadedRoutes;
 
   const parentPresentation = use(ScreenPresentationContext);
   const isInTransparentPresentation =
@@ -484,15 +486,12 @@ export function NativeStackView({
 
   useInvalidPreventRemoveError(descriptors);
 
-  const modalRouteKeys = getModalRouteKeys(state.routes, descriptors);
+  const modalRouteKeys = getModalRouteKeys(activeRoutes, descriptors);
 
-  const preloadedDescriptors = state.preloadedRoutes.reduce<NativeStackDescriptorMap>(
-    (acc, route) => {
-      acc[route.key] = acc[route.key] || describe(route, true);
-      return acc;
-    },
-    {}
-  );
+  const preloadedDescriptors = preloadedRoutes.reduce<NativeStackDescriptorMap>((acc, route) => {
+    acc[route.key] = acc[route.key] || describe(route, true);
+    return acc;
+  }, {});
 
   return (
     <SafeAreaProviderCompat>
@@ -502,12 +501,12 @@ export function NativeStackView({
         }
         style={styles.container}
         {...unstable_nativeProps}>
-        {state.routes.concat(state.preloadedRoutes).map((route, index) => {
+        {activeRoutes.concat(preloadedRoutes).map((route, index) => {
           const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
           const isFocused = state.index === index;
           const isBelowFocused = state.index - 1 === index;
-          const previousKey = state.routes[index - 1]?.key;
-          const nextKey = state.routes[index + 1]?.key;
+          const previousKey = activeRoutes[index - 1]?.key;
+          const nextKey = activeRoutes[index + 1]?.key;
           const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
           const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
 

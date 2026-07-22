@@ -8,11 +8,13 @@ import { useBuildHref } from './useBuildHref';
 export function useStandardState(builderState: NavigationState): NavigatorState {
   const buildHref = useBuildHref();
   return useMemo<NavigatorState>(() => {
+    const activeRoutes = builderState.routes;
+    const preloadedRoutes = getPreloadedRoutes(builderState);
     // TODO(@ubax): https://linear.app/expo/issue/ENG-21638/merge-preloaded-and-active-routes-into-single-array
     // Stack states keep preloaded routes in a separate `preloadedRoutes` array. The standard
     // contract has no such concept, so they are projected as regular routes positioned after
     // `index`
-    const routes = [...builderState.routes, ...getPreloadedRoutes(builderState)];
+    const routes = [...activeRoutes, ...preloadedRoutes];
     return {
       index: builderState.index,
       routes: routes.map<NavigatorState['routes'][number]>((route) => ({

@@ -5,9 +5,10 @@ import type { ParamListBase, StackNavigationState } from '../../native';
 
 export function useDismissedRouteError(state: StackNavigationState<ParamListBase>) {
   const [nextDismissedKey, setNextDismissedKey] = React.useState<string | null>(null);
+  const activeRoutes = state.routes;
 
   const dismissedRouteName = nextDismissedKey
-    ? state.routes.find((route) => route.key === nextDismissedKey)?.name
+    ? activeRoutes.find((route) => route.key === nextDismissedKey)?.name
     : null;
 
   React.useEffect(() => {

@@ -87,6 +87,7 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
   const isWeb = process.env.EXPO_OS === 'web';
   const { colors } = useTheme();
   const { preventedRoutes } = usePreventRemoveContext();
+  const activeRoutes = state.routes;
 
   const { routes: filteredRoutes, index: nonModalIndex } = convertStackStateToNonModalState(
     state,
@@ -109,8 +110,8 @@ const ModalStackView = ({ state, navigation, descriptors, describe }: ModalStack
   const overlayRoutes = React.useMemo(() => {
     if (!isWeb) return [];
     const idx = findLastNonModalIndex(state, descriptors);
-    return state.routes.slice(idx + 1);
-  }, [isWeb, state, descriptors]);
+    return activeRoutes.slice(idx + 1);
+  }, [isWeb, activeRoutes, state, descriptors]);
 
   return (
     <div style={{ flex: 1, display: 'flex' }}>

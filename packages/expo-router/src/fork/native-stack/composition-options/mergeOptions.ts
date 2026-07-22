@@ -16,7 +16,9 @@ export function mergeOptions(
   state: StackNavigationState<ParamListBase>
 ): NativeStackDescriptorMap {
   const result: NativeStackDescriptorMap = {};
-  const focusedKey = state.routes[state.index]?.key;
+  const activeRoutes = state.routes;
+  const preloadedRoutes = state.preloadedRoutes;
+  const focusedKey = activeRoutes[state.index]?.key;
 
   for (const key in descriptors) {
     const descriptor = descriptors[key]!;
@@ -29,7 +31,7 @@ export function mergeOptions(
     }
 
     // Check if route is preloaded and not focused → skip composition
-    const isPreloaded = state.preloadedRoutes?.some((r) => r.key === key) ?? false;
+    const isPreloaded = preloadedRoutes?.some((r) => r.key === key) ?? false;
     if (isPreloaded && key !== focusedKey) {
       result[key] = descriptor;
       continue;

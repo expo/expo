@@ -65,7 +65,7 @@ type Options<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 > = {
-  state: State;
+  routes: State['routes'];
   screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
@@ -95,7 +95,7 @@ export function useDescriptors<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 >({
-  state,
+  routes,
   screens,
   navigation,
   screenOptions,
@@ -142,7 +142,7 @@ export function useDescriptors<
   );
 
   const { base, navigations } = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
-    state,
+    routes,
     getState,
     navigation,
     setOptions,
@@ -150,7 +150,7 @@ export function useDescriptors<
     emitter,
   });
 
-  const routes = useRouteCache(state.routes);
+  const cachedRoutes = useRouteCache(routes);
 
   const getOptions = (
     route: RouteProp<ParamListBase, string>,
@@ -259,7 +259,7 @@ export function useDescriptors<
     );
   };
 
-  const descriptors = routes.reduce<
+  const descriptors = cachedRoutes.reduce<
     Record<
       string,
       Descriptor<
@@ -272,7 +272,7 @@ export function useDescriptors<
   >((acc, route, i) => {
     const navigation = navigations[route.key]!;
     const customOptions = getOptions(route, navigation, options[route.key]!);
-    const element = render(route, navigation, customOptions, state.routes[i]!.state);
+    const element = render(route, navigation, customOptions, routes[i]!.state);
 
     acc[route.key] = {
       route,
