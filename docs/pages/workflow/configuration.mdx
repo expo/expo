@@ -75,6 +75,8 @@ For more customization, you can use the JavaScript (**app.config.js**) or [TypeS
 - Provide environment information to your app.
 - Does not support Promises.
 
+> **info** **Note**: **app.config.mts**, **app.config.cts**, **app.config.mjs**, and **app.config.cjs** files are also discovered. By default, the config is transpiled to CommonJS and both `.js` and `.ts` files can mix ESM and CommonJS syntax. When that mix causes import or require issues, use one of the explicit extensions to lock the config to a single module format.
+
 For example, you can export an object to define your custom config:
 
 ```js app.config.js
