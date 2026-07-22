@@ -300,6 +300,16 @@ action recorded enough for that judgment) and return state unchanged — recordi
 navigation id (D3). The spike's deliverable is that staleness predicate, not a yes/no; Step 7
 tests it.
 
+> **Correction (executed 2026-07-22 — Step 7). "Step 7 tests it" is superseded — the staleness
+> predicate's state carrier is Step 8, so Step 7 cannot pin it.** The predicate needs the abandoned
+> /monotonic navigation id (D3), which the reducer does not carry until Step 8. Step 7 confirmed the
+> gap empirically: a separate-act pending interleave (push `/a`, leave it suspended/pending, then push
+> `/b` and resolve `/a` in a later act) commits **neither** — final state `['index']` — the
+> supersede/abandon behavior, which is a mid-flight fact and therefore simulator-only (risk 9). So
+> Step 7 pins only the jest-able single-act interruption final states; the supersede staleness
+> predicate moves to **Step 8** (see the "Inherited from Step 7" pointer there), and its mid-flight
+> drop is Step-9 simulator verification.
+
 Consequences to design for, not around:
 
 - **Rendered-tree consistency improves.** All render consumers read one React-committed value per
@@ -524,6 +534,18 @@ focus-event timing.
 10. **StrictMode.** Explicit coverage for the mount-window replay under transitions and for
     `getState`/`deepFreeze` idempotency under interrupted (speculative) transition renders — pin
     the "no `getState()` consumer has side effects" invariant.
+    > **Correction (executed 2026-07-22 — Step 7). The `pendingActions`/mount-window-replay-under
+    > -StrictMode pin is NOT app-reachable — it is a reducer-unit mechanism (already pinned in
+    > `rootReducer.test`), and the app-level StrictMode invariant is reducer PURITY under
+    > double-invoke.** Instrumenting the reducer showed every app-level push — including a descendant's
+    > focus-effect push into a freshly-mounted nested stack — reduces as a plain synchronous
+    > root-handled PUSH (`handled: true`, no `nestedBoundary`, no `isReplay`): the origin navigator has
+    > already registered by the time any mount/focus effect runs, so `pendingActions` (populated only
+    > by an envelope with an unregistered `originKey`) never fires through navigation. Step 7 pins the
+    > app-reachable fact instead — a single dispatch reduced twice by StrictMode commits exactly once
+    > (reducer purity), with a non-StrictMode control and an anti-pattern sibling — plus the
+    > `getState`/`deepFreeze` idempotency invariant. The `pendingActions` idempotency-under
+    > -double-reduction invariant stays covered at the reducer-unit level (`rootReducer.test`).
 
 ## Steps
 
@@ -876,7 +898,32 @@ transitions, StrictMode (incl. `pendingActions` replay under transitions),
 `NavigationIndependentTree` (per risk 5), `testing-library` ergonomics (risks 8–9). Mostly
 tests; fix what they catch.
 
+> **Correction (executed 2026-07-22 — Step 7). Half the listed items are mid-flight and therefore
+> simulator-only (risk 9), not jest-able — Step 7 pins only the jest-able final states; the rest move
+> to the Step-9 on-device list.** Simulator-only (recorded for Step 9): caller `isPending` mid-flight
+> value; async-transition scope survival across `await` (Goal 2); native-urgent-flush ordering; the
+> supersede-drop of a stale pending JS navigation (its id carrier is Step 8 — see the supersede
+> correction under risk 1). What Step 7 landed (3 new `src/__tests__/transition-*.test.ios.tsx`
+> files, no product change): single-act interruption final states (second-nav / push-then-back
+> chaining), protected-route-honored-under-a-transition-push, reducer purity under StrictMode
+> double-invoke + `getState`/`deepFreeze` idempotency (the risk-10 correction reframes the StrictMode
+> pin), and verify-and-cite for risk-5 non-interference (install-gate + the vendored two-container
+> test + Step-6 seed-isolation — a live independent-tree embedding needs vendored fixtures that don't
+> fit the expo harness cleanly). The `NavigationIndependentTree`/`store.state`-lag and the
+> banned-helper ergonomics are pinned/documented in Steps 5–6; Step 7 does not re-pin them (and the
+> "helpers lead/lag" framing is corrected in the Step-7 note: post-flip the store helpers are
+> committed mirrors that *lag*, not lead).
+
 ### Step 8 — Pending-state API: `useNavigationTransitionPending` + `useLinkStatus` (D3)
+> **Inherited from Step 7 (2026-07-22).** The monotonic navigation-id carrier this step introduces is
+> also the missing state carrier for the **supersede staleness predicate** (risk 1 / D1 round-3) that
+> Step 7 could not pin. Step 8 must make that predicate well-defined against the concrete behavior
+> Step 7 measured: a second navigation dispatched while a first push is still pending (across a
+> separate act) currently commits **neither** (final state `['index']`). The id accounting (every
+> issued id eventually recorded as applied or abandoned — D3) is what turns that into a defined
+> supersede-to-no-op with the abandoned id recorded; its mid-flight drop is Step-9 simulator
+> verification, not jest.
+
 The monotonic-id pending signal (urgent "last issued id" + reducer-recorded "last reduced id";
 pending derived from committed values — D3) exposed via context behind
 `useNavigationTransitionPending()` (final name decided here); `useLinkStatus()` exposes
