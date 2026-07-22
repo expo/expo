@@ -534,7 +534,7 @@ function filterSingular<
   }
 
   // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
-  const currentIndex = state.index || state.routes.length - 1;
+  const currentIndex = state.index ?? state.routes.length - 1;
   const current = state.routes[currentIndex]!;
   const name = current.name;
 
