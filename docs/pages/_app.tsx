@@ -16,6 +16,7 @@ import { websiteSchema } from '~/constants/structured-data';
 import { useAnalyticsPageTracking } from '~/providers/Analytics';
 import { CodeBlockSettingsProvider } from '~/providers/CodeBlockSettingsProvider';
 import { TutorialChapterCompletionProvider } from '~/providers/TutorialChapterCompletionProvider';
+import { ApiDataProvider } from '~/providers/api-data';
 import { HreflangAlternates } from '~/ui/components/HreflangAlternates';
 import { markdownComponents } from '~/ui/components/Markdown';
 import { CodeSelectionCopy } from '~/ui/components/Snippet/CodeSelectionCopy';
@@ -99,7 +100,9 @@ export default function App({ Component, pageProps }: AppProps) {
                 <CodeBlockSettingsProvider>
                   <MDXProvider components={rootMarkdownComponents}>
                     <Tooltip.Provider>
-                      <Component {...pageProps} />
+                      <ApiDataProvider data={pageProps.apiSectionData}>
+                        <Component {...pageProps} />
+                      </ApiDataProvider>
                       <CodeSelectionCopy />
                     </Tooltip.Provider>
                   </MDXProvider>
