@@ -399,7 +399,7 @@ describe('feedback submission', () => {
         },
       });
       expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
-        'To continue the feedback session use:\nnpx submit-expo-feedback --resume session_ABC-123'
+        'To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume session_ABC-123'
       );
     } finally {
       process.argv = originalArgv;
@@ -422,7 +422,7 @@ describe('feedback submission', () => {
         `The provided feedback ID is invalid, so a new one was generated: ${feedbackId}`
       );
       expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
-        `npx submit-expo-feedback --resume ${feedbackId}`
+        `npx submit-expo-feedback@latest --resume ${feedbackId}`
       );
     } finally {
       process.argv = originalArgv;

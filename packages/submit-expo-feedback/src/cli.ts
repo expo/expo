@@ -161,7 +161,7 @@ async function runAsync(): Promise<void> {
 
   console.log(chalk.green('Thanks for the feedback!'));
   console.log(
-    `To continue the feedback session use:\nnpx submit-expo-feedback --resume ${metadata.feedbackId}`
+    `To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume ${metadata.feedbackId}`
   );
 }
 
