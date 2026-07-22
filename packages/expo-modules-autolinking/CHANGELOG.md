@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Propagate `buildFromSource` across the precompiled dependency graph, so building a prebuilt dependency from source (e.g. `react-native-worklets`) also forces its dependents (e.g. `react-native-reanimated`) to build from source, instead of linking a prebuilt XCFramework against a source-built dependency. ([#48041](https://github.com/expo/expo/pull/48041) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 57.0.9 — 2026-07-22
+
+### 🐛 Bug fixes
+
+- [iOS] Propagate `buildFromSource` across the precompiled dependency graph, so building a prebuilt dependency from source (e.g. `react-native-worklets`) also forces its dependents (e.g. `react-native-reanimated`) to build from source, instead of linking a prebuilt XCFramework against a source-built dependency. ([#48041](https://github.com/expo/expo/pull/48041) by [@chrfalch](https://github.com/chrfalch))
 
 ## 57.0.8 — 2026-07-17
 

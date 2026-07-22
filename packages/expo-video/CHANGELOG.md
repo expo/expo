@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.2 — 2026-07-22
+
+### 🐛 Bug fixes
+
 - [iOS] Fix a race when registering video player observer delegates. ([#47976](https://github.com/expo/expo/pull/47976) by [@behenate](https://github.com/behenate))
 - [iOS] Update the way the VideoPlayer releases to comply with the modified SharedObject lifecycle. ([#47828](https://github.com/expo/expo/pull/47828) by [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 57.0.1 — 2026-07-15
 

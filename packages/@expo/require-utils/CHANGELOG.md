@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.4 — 2026-07-22
+
+### 💡 Others
+
 - Engage Node.js `stripTypeScriptTypes` fallback when `typescript@^7.0.0` is installed ([#47759](https://github.com/expo/expo/pull/47759) by [@kitten](https://github.com/kitten))
 
 ## 57.0.3 — 2026-07-15

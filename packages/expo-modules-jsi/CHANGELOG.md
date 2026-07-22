@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.4 — 2026-07-22
+
+### 💡 Others
+
 - Added a script to clear local build caches and artifacts. ([#47603](https://github.com/expo/expo/pull/47603) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.3 — 2026-07-15
