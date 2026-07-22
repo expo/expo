@@ -1,0 +1,92 @@
+---
+title: Navigation transitions and pending UI
+description: Learn how Expo Router runs every JS-initiated navigation as a React transition, and how to show pending indicators while a slow destination prepares.
+---
+
+Every JS-initiated navigation in Expo Router is a [React transition](https://react.dev/reference/react/startTransition). When you call `router.push()` (or `navigate`/`replace`/`back`), press a `<Link>`, or open a deep link, the state update commits inside `startTransition`. If the destination suspends — a lazy bundle-split screen, a [data loader](/router/web/data-loaders/), or any component that reads a promise with `use()` — the **current screen stays mounted and interactive** while the destination prepares, instead of flashing a Suspense fallback.
+
+Native-induced navigation stays synchronous: a swipe-back gesture, a native tab press, and the hardware or header back button commit immediately, because the native side has already moved and the JS state is only catching up.
+
+> **important** This changes how a slow navigation feels, and it is the opposite of the usual native convention. Read the next section before shipping.
+
+## The UX inversion: slow destinations show nothing until ready
+
+On native platforms the convention is: tap, push the new screen immediately, then show a spinner _inside_ it while its data loads. Because a JS navigation is now a transition, Expo Router does the opposite: it keeps the **current** screen up and shows **nothing new** until the destination is ready, then commits it in one step.
+
+For a fast destination this is invisible. For a slow one — most commonly a lazy bundle-split screen whose chunk has to download — the app looks inert between the tap and the commit: no push animation, no spinner, until the destination is ready.
+
+**So you must wire a pending indicator yourself.** Expo Router gives you two hooks for this, and you should reach for the per-`Link` one first.
+
+## `useLinkStatus` — a per-link pending indicator (recommended)
+
+[`useLinkStatus`](/versions/latest/sdk/router/#uselinkstatus) reports the pending status of the nearest parent `<Link>`. Render a component that calls it **inside the `Link`'s children**, and it turns `{ pending: true }` from the moment that link's navigation starts until its destination commits:
+
+```tsx app/index.tsx
+import { Link, useLinkStatus } from 'expo-router';
+import { ActivityIndicator, Text } from 'react-native';
+
+function LinkSpinner() {
+  const { pending } = useLinkStatus();
+  return pending ? <ActivityIndicator /> : null;
+}
+
+export default function Index() {
+  return (
+    <Link href="/slow">
+      <Text>Open slow screen</Text>
+      <LinkSpinner />
+    </Link>
+  );
+}
+```
+
+This is the recommended primary pattern because it renders **inside your own screen**, so it always paints — there is no question of it being covered by a native screen or modal.
+
+`useLinkStatus` stays `{ pending: false }` in two cases where the press does not dispatch an in-tree navigation:
+
+- **DOM components** — the press is forwarded to the host WebView, so no navigation is dispatched.
+- **`Link.Preview` (iOS peek-and-pop)** — the navigation is committed from a native callback rather than the tracked press, so the per-link status cannot observe it.
+
+## `useNavigationTransitionPending` — a global indicator
+
+[`useNavigationTransitionPending`](/versions/latest/sdk/router/#usenavigationtransitionpending) returns `true` while **any** JS-initiated navigation is in flight, regardless of where it started. Use it for an app-wide indicator such as a top loading bar:
+
+```tsx app/_layout.tsx
+import { Stack, useNavigationTransitionPending } from 'expo-router';
+import { FullWindowOverlay } from 'react-native-screens';
+import { ActivityIndicator } from 'react-native';
+
+function GlobalPending() {
+  const pending = useNavigationTransitionPending();
+  if (!pending) return null;
+  // A plain sibling View does NOT render above a native stack or modal — use FullWindowOverlay.
+  return (
+    <FullWindowOverlay>
+      <ActivityIndicator style={{ position: 'absolute', top: 60, alignSelf: 'center' }} />
+    </FullWindowOverlay>
+  );
+}
+
+export default function Layout() {
+  return (
+    <>
+      <Stack />
+      <GlobalPending />
+    </>
+  );
+}
+```
+
+> **warning** A plain sibling `<View>` inside your root layout will **not** overlay a native stack (`ScreenStack`) or a native modal presentation — the native screens render above it. To draw a global indicator over native screens on iOS, wrap it in [`FullWindowOverlay`](https://github.com/software-mansion/react-native-screens) from `react-native-screens`. If you don't need a true global overlay, prefer `useLinkStatus` rendered inside the screen (above) — it always paints.
+
+Both hooks return their resting value (`false` / `{ pending: false }`) when there is no navigation container, such as during server rendering, so they are safe to call anywhere.
+
+## Lazy bundle-split screens
+
+A lazy screen (a route whose module is code-split and loaded on demand) is the most common slow destination: the first navigation to it must download and evaluate its chunk before it can render. With transitions, that download happens with the current screen still up and no fallback flashing — which is exactly why the pending indicator matters most here. Attach a `useLinkStatus` spinner to the link that navigates into a lazy route, or a global indicator, so the user sees that something is happening while the chunk loads.
+
+## Migration notes
+
+- **`router.canGoBack()` / `router.canDismiss()` in the same tick as a navigation.** These imperative queries now answer for the last **committed** navigation state. `router.push(); router.canGoBack()` in the same synchronous block reflects the state **before** the push (the push has been dispatched as a transition but not committed). Read them after the navigation has committed, or derive from the rendered route instead.
+- **`freezeOnBlur` is forced off on router-rendered screens.** To guarantee a Suspense-frozen background subtree can't starve an in-flight transition, Expo Router forces `freezeOnBlur: false` on the screens it renders. The per-screen `freezeOnBlur` option and `enableFreeze()` no longer re-enable freeze on those screens. On the native stack only, `unstable_nativeProps={{ freezeOnBlur: true }}` can re-enable it as an advanced, at-your-own-risk escape hatch (doing so reintroduces the starvation this prevents).
+- **State readers report the committed route.** Rendering hooks — `usePathname`, `useSegments`, `useLocalSearchParams`, `useGlobalSearchParams` — and the imperative store (`getRootState()`) report the route that is currently on screen. During a pending navigation they keep reporting the origin, then update together with the destination when it commits.
