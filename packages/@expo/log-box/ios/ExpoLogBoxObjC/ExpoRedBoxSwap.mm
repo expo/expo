@@ -3,7 +3,16 @@
 #import <objc/runtime.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTUtils.h>
+// ExpoLogBoxScreenProvider is a Swift @objc class in the sibling ExpoLogBox target.
+// Under SwiftPM the generated interface header is exposed to this dependent Clang
+// target; the CocoaPods build uses the double-quoted form.
+#if __has_include(<ExpoLogBox/ExpoLogBox-Swift.h>)
+#import <ExpoLogBox/ExpoLogBox-Swift.h>
+#elif __has_include(<ExpoLogBox-Swift.h>)
+#import <ExpoLogBox-Swift.h>
+#else
 #import "ExpoLogBox-Swift.h"
+#endif
 
 @implementation RCTRedBox (WithExpoLogBox)
 
