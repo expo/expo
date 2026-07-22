@@ -90,4 +90,28 @@ describe('RelatedSkills', () => {
 
     expect(screen.getByText('Trailing period is missing.')).toBeInTheDocument();
   });
+
+  it('uses a custom description from the descriptions prop', () => {
+    render(
+      <RelatedSkills
+        names={['skill-multi-sentence']}
+        descriptions={{ 'skill-multi-sentence': 'Custom short line.' }}
+      />
+    );
+
+    expect(screen.getByText('Custom short line.')).toBeInTheDocument();
+    expect(screen.queryByText('Build things quickly.')).not.toBeInTheDocument();
+  });
+
+  it('falls back to the first sentence for skills without a custom description', () => {
+    render(
+      <RelatedSkills
+        names={['skill-multi-sentence', 'skill-single-sentence']}
+        descriptions={{ 'skill-multi-sentence': 'Custom short line.' }}
+      />
+    );
+
+    expect(screen.getByText('Custom short line.')).toBeInTheDocument();
+    expect(screen.getByText('Set up a single thing.')).toBeInTheDocument();
+  });
 });

@@ -5,6 +5,7 @@ description: Learn how to deploy your web app using EAS Hosting.
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { CODE } from '~/ui/components/Text';
 
@@ -80,6 +81,12 @@ The workflow above will create a web deployment on every commit to your project'
 <Terminal cmd={['$ eas workflow:run deploy-web.yml']} />
 
 Learn more about common patterns with the [workflows examples guide](/eas/workflows/examples/introduction).
+
+### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it how to deploy your web app. The following skill is related to web deployments:
+
+<RelatedSkills names={['eas-hosting']} />
 
 ## Learn more
 

@@ -12,6 +12,7 @@ type Skill = {
 
 type RelatedSkillsProps = {
   names: string[];
+  descriptions?: Record<string, string>;
 };
 
 function firstSentence(description: string) {
@@ -19,7 +20,7 @@ function firstSentence(description: string) {
   return sentence.endsWith('.') ? sentence : `${sentence}.`;
 }
 
-export function RelatedSkills({ names }: RelatedSkillsProps) {
+export function RelatedSkills({ names, descriptions }: RelatedSkillsProps) {
   const skills = names
     .map(name => (expoSkillsData.skills as Skill[]).find(skill => skill.name === name))
     .filter((skill): skill is Skill => skill !== undefined);
@@ -30,7 +31,7 @@ export function RelatedSkills({ names }: RelatedSkillsProps) {
         <BoxLink
           key={skill.name}
           title={skill.name}
-          description={firstSentence(skill.description)}
+          description={descriptions?.[skill.name] ?? firstSentence(skill.description)}
           href={skill.githubUrl}
           Icon={GithubIcon}
         />
