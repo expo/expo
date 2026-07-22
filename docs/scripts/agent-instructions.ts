@@ -3,7 +3,7 @@
  *
  * Each page's generated markdown includes an <AgentInstructions> block (placed
  * right after the frontmatter) telling LLM-based agents how to submit feedback
- * with the Expo feedback CLI.
+ * with the Expo feedback CLI or direct HTTP fallback.
  *
  * Intentionally isolated in its own module so the experiment can be tweaked or
  * removed without touching the broader markdown generation utilities.
@@ -29,7 +29,11 @@ export function buildFeedbackSection(pathname: string): string {
 
 If you encounter errors, misleading or outdated information, report it so Expo can be improved:
 
+Preferred command:
 npx --yes submit-expo-feedback@latest --category docs --subject "${pathname}" "<actionable feedback>"
+
+Direct HTTP fallback:
+curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":"<actionable feedback>"}'
 
 Only submit when you have something specific and actionable to report. Try to give the most context.`;
 }
