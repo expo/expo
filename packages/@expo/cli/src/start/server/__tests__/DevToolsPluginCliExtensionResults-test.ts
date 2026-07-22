@@ -26,7 +26,11 @@ describe('DevToolsPluginCliExtensionResults', () => {
       const valueToTest = new DevToolsPluginCliExtensionResults();
       valueToTest.append(JSON.stringify([{ anotherValue: 234, text: 'Unexpected number' }]));
       expect(valueToTest.getOutput()).toEqual([
-        { type: 'text', text: 'Invalid JSON: Invalid input', level: 'error' },
+        {
+          type: 'text',
+          text: 'Invalid JSON: "[0].type" must be "text" (got "undefined"); "[0].level" is required',
+          level: 'error',
+        },
       ]);
     });
 

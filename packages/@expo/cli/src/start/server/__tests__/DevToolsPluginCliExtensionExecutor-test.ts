@@ -1,3 +1,5 @@
+import { PassThrough } from 'stream';
+
 import type { DevToolsPluginInfo } from '../DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionExecutor } from '../DevToolsPluginCliExtensionExecutor';
 
@@ -223,6 +225,10 @@ const executePluginCommandAsync = async (params: {
   let log = '';
   let err = '';
   const kill = jest.fn();
+  const stdout = new PassThrough();
+  const stderr = new PassThrough();
+  stdout.on('data', (data) => (log += data.toString()));
+  stderr.on('data', (data) => (err += data.toString()));
   const mock = {
     spawn:
       spawnFunc ??
@@ -234,8 +240,8 @@ const executePluginCommandAsync = async (params: {
           });
         },
         kill,
-        stdout: { on: (t: string) => (log += t) },
-        stderr: { on: (t: string) => (err += t) },
+        stdout,
+        stderr,
       }),
   };
   jest.doMock('child_process', () => mock);
@@ -243,6 +249,7 @@ const executePluginCommandAsync = async (params: {
   const executor = new DevToolsPluginCliExtensionExecutor(
     pluginDescriptor,
     PROJECT_ROOT,
+    false,
     mock.spawn,
     timeoutMs
   );

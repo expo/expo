@@ -1,5 +1,6 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
 import path from 'path';
+import { createInterface } from 'readline';
 
 import { isPathInside } from '../../utils/dir';
 import type {
@@ -31,6 +32,7 @@ export class DevToolsPluginCliExtensionExecutor {
   constructor(
     private plugin: DevToolsPluginInfo,
     private projectRoot: string,
+    private enableColorTTY = true,
     private spawnFunc: typeof spawn = spawn, // Used for injection when testing,
     private timeoutMs = DEFAULT_TIMEOUT_MS // Timeout for command execution
   ) {
@@ -111,7 +113,11 @@ export class DevToolsPluginCliExtensionExecutor {
           [this.resolvedEntryPoint, command, `${JSON.stringify(args)}`, `${metroServerOrigin}`],
           {
             cwd: this.projectRoot,
-            env: { ...process.env },
+            /**
+             * FORCE_COLOR tells chalk (and other color libraries) to emit ANSI color codes
+             * even when the child process is not attached to a TTY.
+             */
+            env: { ...process.env, ...(this.enableColorTTY ? { FORCE_COLOR: '1' } : {}) },
           }
         );
       } catch (err: any) {
@@ -121,22 +127,31 @@ export class DevToolsPluginCliExtensionExecutor {
         return;
       }
 
+      // Use readline to handle line-buffered output.
+      const stdoutRL = createInterface({ input: child.stdout, crlfDelay: Infinity });
+      const stderrRL = createInterface({ input: child.stderr, crlfDelay: Infinity });
+      const closeReadline = () => {
+        stdoutRL.close();
+        stderrRL.close();
+      };
+
       const finishOnTruncation = () => {
         if (pluginResults.isTruncated() && !finished) {
           finished = true;
           if (timeout) clearTimeout(timeout);
+          closeReadline();
           child.kill('SIGKILL');
           resolve(pluginResults.getOutput());
         }
       };
 
       // Collect output/error data
-      child.stdout.on('data', (data) => {
-        pluginResults.append(data.toString());
+      stdoutRL.on('line', (line) => {
+        pluginResults.append(line);
         finishOnTruncation();
       });
-      child.stderr.on('data', (data) => {
-        pluginResults.append(data.toString(), 'error');
+      stderrRL.on('line', (line) => {
+        pluginResults.append(line, 'error');
         finishOnTruncation();
       });
 
@@ -144,6 +159,7 @@ export class DevToolsPluginCliExtensionExecutor {
       timeout = setTimeout(() => {
         if (!finished) {
           finished = true;
+          closeReadline();
           child.kill('SIGKILL');
           pluginResults.append('Command timed out', 'error');
           resolve(pluginResults.getOutput());
@@ -154,6 +170,7 @@ export class DevToolsPluginCliExtensionExecutor {
         if (finished) return;
         if (timeout) clearTimeout(timeout);
         finished = true;
+        closeReadline();
         pluginResults.exit(code);
         resolve(pluginResults.getOutput());
       });
@@ -162,6 +179,7 @@ export class DevToolsPluginCliExtensionExecutor {
         if (finished) return;
         if (timeout) clearTimeout(timeout);
         finished = true;
+        closeReadline();
         pluginResults.append(err.toString(), 'error');
         resolve(pluginResults.getOutput());
       });

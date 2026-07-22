@@ -106,7 +106,8 @@ describe(addMcpCapabilities, () => {
           commands: [command],
         },
       },
-      PROJECT_ROOT
+      PROJECT_ROOT,
+      false // no color for MCP
     );
     expect(executeMock).toHaveBeenCalledWith({
       command: 'run-analysis',
