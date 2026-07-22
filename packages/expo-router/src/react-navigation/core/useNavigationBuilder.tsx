@@ -429,102 +429,95 @@ export function useNavigationBuilder<
     setCurrentState(state);
   });
 
-  const [
-    initializedState,
-    isFirstStateInitialization,
-    paramsUsedForInitialization,
-  ] = React.useMemo((): [
-    State | undefined,
-    boolean,
-    object | undefined,
-  ] => {
-    // If the state was already cleaned up, but we have it stored in ref,
-    // It likely got cleaned up due to `<Activity mode="hidden">`
-    // We should reuse this state to avoid remounting screens
-    if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
-      const state: State = isStateInitialized(lastStateRef.current)
-        ? lastStateRef.current
-        : router.getRehydratedState(lastStateRef.current, {
-            routeNames,
-            routeParamList,
-            routeGetIdList,
-          });
-
-      return [state, false, undefined];
-    }
-
-    const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
-      (acc, curr) => {
-        const { initialParams } = screens[curr]!.props;
-        const initialParamsFromParams =
-          route?.params?.state == null &&
-          route?.params?.initial !== false &&
-          route?.params?.screen === curr
-            ? route.params.params
-            : undefined;
-
-        acc[curr] =
-          initialParams !== undefined || initialParamsFromParams !== undefined
-            ? {
-                ...initialParams,
-                ...initialParamsFromParams,
-              }
-            : undefined;
-
-        return acc;
-      },
-      {}
-    );
-
-    // If the current state isn't initialized on first render, we initialize it
-    // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
-    // Otherwise assume that the state was provided as initial state
-    // So we need to rehydrate it to make it usable
-    if (
-      (currentState === undefined || !isStateValid(currentState)) &&
-      route?.params?.state == null &&
-      !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
-      !isNestedParamsConsumed
-    ) {
-      return [
-        router.getInitialState({
-          routeNames,
-          routeParamList: initialRouteParamList,
-          routeGetIdList,
-        }),
-        true,
-        undefined,
-      ];
-    } else {
-      const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-      const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
-
-      const stateBeforeInitialization = (stateFromParams ?? currentState) as
-        | PartialState<State>
-        | undefined;
-
-      const hydratedState =
-        stateBeforeInitialization == null
-          ? router.getInitialState({
+  const [initializedState, isFirstStateInitialization, paramsUsedForInitialization] =
+    React.useMemo((): [State | undefined, boolean, object | undefined] => {
+      // If the state was already cleaned up, but we have it stored in ref,
+      // It likely got cleaned up due to `<Activity mode="hidden">`
+      // We should reuse this state to avoid remounting screens
+      if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
+        const state: State = isStateInitialized(lastStateRef.current)
+          ? lastStateRef.current
+          : router.getRehydratedState(lastStateRef.current, {
               routeNames,
-              routeParamList: initialRouteParamList,
-              routeGetIdList,
-            })
-          : router.getRehydratedState(stateBeforeInitialization, {
-              routeNames,
-              routeParamList: initialRouteParamList,
+              routeParamList,
               routeGetIdList,
             });
 
-      return [hydratedState, false, paramsForState];
-    }
-    // We explicitly don't include routeNames, route.params etc. in the dep list
-    // below. We want to avoid forcing a new state to be calculated in those cases
-    // Instead, we handle changes to these in the nextState code below. Note
-    // that some changes to routeConfigs are explicitly ignored, such as changes
-    // to initialParams
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentState, router, isStateValid]);
+        return [state, false, undefined];
+      }
+
+      const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
+        (acc, curr) => {
+          const { initialParams } = screens[curr]!.props;
+          const initialParamsFromParams =
+            route?.params?.state == null &&
+            route?.params?.initial !== false &&
+            route?.params?.screen === curr
+              ? route.params.params
+              : undefined;
+
+          acc[curr] =
+            initialParams !== undefined || initialParamsFromParams !== undefined
+              ? {
+                  ...initialParams,
+                  ...initialParamsFromParams,
+                }
+              : undefined;
+
+          return acc;
+        },
+        {}
+      );
+
+      // If the current state isn't initialized on first render, we initialize it
+      // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
+      // Otherwise assume that the state was provided as initial state
+      // So we need to rehydrate it to make it usable
+      if (
+        (currentState === undefined || !isStateValid(currentState)) &&
+        route?.params?.state == null &&
+        !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
+        !isNestedParamsConsumed
+      ) {
+        return [
+          router.getInitialState({
+            routeNames,
+            routeParamList: initialRouteParamList,
+            routeGetIdList,
+          }),
+          true,
+          undefined,
+        ];
+      } else {
+        const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
+        const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
+
+        const stateBeforeInitialization = (stateFromParams ?? currentState) as
+          | PartialState<State>
+          | undefined;
+
+        const hydratedState =
+          stateBeforeInitialization == null
+            ? router.getInitialState({
+                routeNames,
+                routeParamList: initialRouteParamList,
+                routeGetIdList,
+              })
+            : router.getRehydratedState(stateBeforeInitialization, {
+                routeNames,
+                routeParamList: initialRouteParamList,
+                routeGetIdList,
+              });
+
+        return [hydratedState, false, paramsForState];
+      }
+      // We explicitly don't include routeNames, route.params etc. in the dep list
+      // below. We want to avoid forcing a new state to be calculated in those cases
+      // Instead, we handle changes to these in the nextState code below. Note
+      // that some changes to routeConfigs are explicitly ignored, such as changes
+      // to initialParams
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentState, router, isStateValid]);
 
   const previousRouteKeyListRef = React.useRef(routeKeyList);
 
