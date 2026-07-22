@@ -386,14 +386,7 @@ export function getDefaultConfig(
           return [];
         }
 
-        const reactNativeHostPath = getReactNativeHostPath(projectRoot, platform);
-        const polyfillsModule =
-          resolveFrom.silent(reactNativeHostPath, './rn-get-polyfills') ??
-          resolveFrom.silent(reactNativeHostPath, '@react-native/js-polyfills');
-        if (!polyfillsModule) {
-          return [];
-        }
-        return require(polyfillsModule)();
+        return require('@react-native/js-polyfills')();
       },
     },
     server: {
