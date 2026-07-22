@@ -5,7 +5,6 @@ import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 
 import {
   type ParamListBase,
-  type RouteProp,
   StackActions,
   type StackNavigationState,
   usePreventRemoveContext,
@@ -29,30 +28,18 @@ type Props = {
   state: StackNavigationState<ParamListBase>;
   navigation: ExperimentalStackNavigationHelpers;
   descriptors: ExperimentalStackDescriptorMap;
-  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => ExperimentalStackDescriptor;
 };
 
-export function ExperimentalStackView({ state, navigation, descriptors, describe }: Props) {
+export function ExperimentalStackView({ state, navigation, descriptors }: Props) {
   const { setNextDismissedKey } = useDismissedRouteError(state);
   const { preventedRoutes } = usePreventRemoveContext();
-  const activeRoutes = state.routes;
-  const preloadedRoutes = state.preloadedRoutes;
-
-  const preloadedDescriptors = preloadedRoutes.reduce<ExperimentalStackDescriptorMap>(
-    (acc, route) => {
-      acc[route.key] = acc[route.key] || describe(route, true);
-      return acc;
-    },
-    {}
-  );
 
   return (
     <View style={styles.container}>
       <ScreensStackV5.Host>
-        {activeRoutes.concat(preloadedRoutes).map((route) => {
-          const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
-          const isPreloaded =
-            preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
+        {state.routes.map((route, index) => {
+          const descriptor = descriptors[route.key]!;
+          const isPreloaded = index > state.index;
           const options = (descriptor.options ?? {}) as ExperimentalStackNavigationOptions;
 
           return (

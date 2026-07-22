@@ -181,7 +181,6 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     state,
     descriptors,
     navigation,
-    describe,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
 
@@ -202,7 +201,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     </TabTriggerMapContext.Provider>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent, describe };
+  return { state, descriptors, navigation, NavigationContent };
 }
 
 function parseTriggersFromChildren(

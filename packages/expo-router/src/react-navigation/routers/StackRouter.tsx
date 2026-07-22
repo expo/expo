@@ -6,7 +6,6 @@ import { createRouteFromAction } from './createRouteFromAction';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
-  NavigationRoute,
   NavigationState,
   ParamListBase,
   Route,
@@ -59,32 +58,28 @@ export type StackNavigationState<ParamList extends ParamListBase> = NavigationSt
    * Type of the router, in this case, it's stack.
    */
   type: 'stack';
-  /**
-   * List of routes, which are supposed to be preloaded before navigating to.
-   */
-  preloadedRoutes: NavigationRoute<ParamList, keyof ParamList>[];
 };
 
 export function getStackRoutes<ParamList extends ParamListBase>(
   state: StackNavigationState<ParamList>
 ) {
   return {
-    activeRoutes: state.routes,
-    preloadedRoutes: state.preloadedRoutes,
+    activeRoutes: state.routes.slice(0, state.index + 1),
+    preloadedRoutes: state.routes.slice(state.index + 1),
   };
 }
 
 function reconcileStackRoutes<ParamList extends ParamListBase>(
   state: StackNavigationState<ParamList>,
   activeRoutes: Route<string>[],
-  preloadedRoutes = state.preloadedRoutes,
-  index = activeRoutes.length - 1
+  preloadedRoutes = getStackRoutes(state).preloadedRoutes
 ) {
+  const activeKeys = new Set(activeRoutes.map((route) => route.key));
+
   return {
     ...state,
-    index,
-    routes: activeRoutes,
-    preloadedRoutes,
+    index: activeRoutes.length - 1,
+    routes: activeRoutes.concat(preloadedRoutes.filter((route) => !activeKeys.has(route.key))),
   };
 }
 
@@ -197,8 +192,11 @@ export function getRoutesForRouteNames(
     initialRouteName?: string;
   }
 ): Pick<StackNavigationState<ParamListBase>, 'routes' | 'index'> {
-  const { activeRoutes } = getStackRoutes(state);
+  const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
   const routes = activeRoutes.filter(
+    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
+  );
+  const filteredPreloadedRoutes = preloadedRoutes.filter(
     (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
   );
 
@@ -215,10 +213,9 @@ export function getRoutesForRouteNames(
     });
   }
 
-  return {
-    routes,
-    index: Math.min(state.index, routes.length - 1),
-  };
+  const result = reconcileStackRoutes(state, routes, filteredPreloadedRoutes);
+
+  return { routes: result.routes, index: result.index };
 }
 
 /**
@@ -245,7 +242,6 @@ export function StackRouter(options: StackRouterOptions) {
         key: `stack-${nanoid()}`,
         index: 0,
         routeNames,
-        preloadedRoutes: [],
         routes: [
           {
             key: `${initialRouteName}-${nanoid()}`,
@@ -263,9 +259,11 @@ export function StackRouter(options: StackRouterOptions) {
         return state;
       }
 
-      const activeRoutes = state.routes;
-      const stalePreloadedRoutes = state.preloadedRoutes;
-      const routes = activeRoutes
+      const index = state.index ?? state.routes.length - 1;
+      const activeRoutes = state.routes.slice(0, index + 1);
+      const stalePreloadedRoutes = state.routes.slice(index + 1);
+
+      const routes: Route<string>[] = activeRoutes
         .filter((route) => routeNames.includes(route.name))
         .map((route) => ({
           ...route,
@@ -314,8 +312,7 @@ export function StackRouter(options: StackRouterOptions) {
         key: `stack-${nanoid()}`,
         index: routes.length - 1,
         routeNames,
-        routes,
-        preloadedRoutes,
+        routes: routes.concat(preloadedRoutes),
       };
     },
 
@@ -342,7 +339,7 @@ export function StackRouter(options: StackRouterOptions) {
       return {
         ...state,
         index,
-        routes: activeRoutes.slice(0, index + 1),
+        routes: activeRoutes.slice(0, index + 1).concat(state.routes.slice(state.index + 1)),
       };
     },
 
@@ -381,8 +378,7 @@ export function StackRouter(options: StackRouterOptions) {
           return reconcileStackRoutes(
             state,
             activeRoutes.map((r, i) => (i === currentIndex ? route : r)),
-            preloadedRoutes.filter((r) => r.key !== route.key),
-            state.index
+            preloadedRoutes.filter((r) => r.key !== route.key)
           );
         }
 
@@ -455,6 +451,15 @@ export function StackRouter(options: StackRouterOptions) {
 
                 routes.push(r);
               }
+
+              // Promote the route when it is preloaded and therefore absent from the active routes.
+              if (!routes.some((r) => r.key === route.key)) {
+                routes.push({
+                  ...route,
+                  path: action.payload.path !== undefined ? action.payload.path : route.path,
+                  params,
+                });
+              }
             } else {
               routes = activeRoutes.filter((r) => r.key !== route.key);
               routes.push({
@@ -518,12 +523,7 @@ export function StackRouter(options: StackRouterOptions) {
 
           if (index === -1) {
             const routes = [...activeRoutes, createRouteFromAction({ action, routeParamList })];
-
-            return {
-              ...state,
-              routes,
-              index: routes.length - 1,
-            };
+            return reconcileStackRoutes(state, routes);
           }
 
           const route = activeRoutes[index]!;
@@ -543,14 +543,10 @@ export function StackRouter(options: StackRouterOptions) {
             params = createParamsFromAction({ action, routeParamList });
           }
 
-          return {
-            ...state,
-            index,
-            routes: [
-              ...activeRoutes.slice(0, index),
-              params !== route.params ? { ...route, params } : activeRoutes[index]!,
-            ],
-          };
+          return reconcileStackRoutes(state, [
+            ...activeRoutes.slice(0, index),
+            params !== route.params ? { ...route, params } : activeRoutes[index]!,
+          ]);
         }
 
         case 'REMOVE_ROUTES': {
@@ -559,16 +555,18 @@ export function StackRouter(options: StackRouterOptions) {
             (route) =>
               route.key === focusedRoute.key || !action.payload.routeNames.includes(route.name)
           );
+          const nextPreloadedRoutes = preloadedRoutes.filter(
+            (route) => !action.payload.routeNames.includes(route.name)
+          );
 
-          if (routes.length === activeRoutes.length) {
+          if (
+            routes.length === activeRoutes.length &&
+            nextPreloadedRoutes.length === preloadedRoutes.length
+          ) {
             return state;
           }
 
-          return {
-            ...state,
-            index: routes.findIndex((route) => route.key === focusedRoute.key),
-            routes,
-          };
+          return reconcileStackRoutes(state, routes, nextPreloadedRoutes);
         }
 
         case 'POP': {
@@ -583,11 +581,7 @@ export function StackRouter(options: StackRouterOptions) {
               .slice(0, count)
               .concat(activeRoutes.slice(currentIndex + 1));
 
-            return {
-              ...state,
-              index: routes.length - 1,
-              routes,
-            };
+            return reconcileStackRoutes(state, routes);
           }
 
           return null;
@@ -598,7 +592,7 @@ export function StackRouter(options: StackRouterOptions) {
             state,
             {
               type: 'POP',
-              payload: { count: activeRoutes.length - 1 },
+              payload: { count: state.index },
             },
             options
           );
@@ -677,14 +671,10 @@ export function StackRouter(options: StackRouterOptions) {
             params = createParamsFromAction({ action, routeParamList });
           }
 
-          return {
-            ...state,
-            index,
-            routes: [
-              ...activeRoutes.slice(0, index),
-              params !== route.params ? { ...route, params } : activeRoutes[index]!,
-            ],
-          };
+          return reconcileStackRoutes(state, [
+            ...activeRoutes.slice(0, index),
+            params !== route.params ? { ...route, params } : activeRoutes[index]!,
+          ]);
         }
 
         case 'GO_BACK':
@@ -719,7 +709,7 @@ export function StackRouter(options: StackRouterOptions) {
           if (route) {
             return {
               ...state,
-              routes: activeRoutes.map((r) => {
+              routes: state.routes.map((r) => {
                 if (r.key !== route?.key) {
                   return r;
                 }
@@ -730,14 +720,15 @@ export function StackRouter(options: StackRouterOptions) {
               }),
             };
           } else {
-            return {
-              ...state,
-              preloadedRoutes: preloadedRoutes
+            return reconcileStackRoutes(
+              state,
+              activeRoutes,
+              preloadedRoutes
                 .filter(
                   (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
                 )
-                .concat(createRouteFromAction({ action, routeParamList })),
-            };
+                .concat(createRouteFromAction({ action, routeParamList }))
+            );
           }
         }
 

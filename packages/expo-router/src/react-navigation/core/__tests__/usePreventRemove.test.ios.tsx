@@ -1,7 +1,9 @@
 import { act, render } from '@testing-library/react-native';
+import { use, useEffect } from 'react';
 
-import { type ParamListBase, StackActions, StackRouter } from '../../routers';
+import { CommonActions, type ParamListBase, StackActions, StackRouter } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
+import { type PreventedRoutes, PreventRemoveContext } from '../PreventRemoveContext';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigationBuilder } from '../useNavigationBuilder';
@@ -18,6 +20,126 @@ beforeEach(() => {
   MockRouterKey.current = 0;
 
   require('nanoid/non-secure').__key = 0;
+});
+
+test('only enables preventRemove after a preloaded screen is promoted', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  const onPreventRemove = jest.fn();
+  let preventedRoutes: PreventedRoutes | undefined;
+  const ProtectedScreen = () => {
+    usePreventRemove(true, onPreventRemove);
+    preventedRoutes = use(PreventRemoveContext)?.preventedRoutes;
+    return null;
+  };
+  const ref = createNavigationContainerRef<ParamListBase>();
+
+  render(
+    <BaseNavigationContainer ref={ref}>
+      <TestNavigator>
+        <Screen name="first">{() => null}</Screen>
+        <Screen name="second">{() => null}</Screen>
+        <Screen name="protected" component={ProtectedScreen} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(() => {
+    ref.current?.navigate('second');
+    ref.current?.dispatch(CommonActions.preload('protected'));
+  });
+  const preloadedRoute = ref.current?.getRootState().routes.at(-1)!;
+
+  expect(preventedRoutes?.[preloadedRoute.key]).toBeUndefined();
+  act(() => ref.current?.goBack());
+
+  expect(onPreventRemove).not.toHaveBeenCalled();
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual([
+    'first',
+    'protected',
+  ]);
+  expect(ref.current?.getRootState().index).toBe(0);
+
+  act(() => ref.current?.navigate('protected'));
+  const promotedState = ref.current?.getRootState();
+
+  expect(preventedRoutes?.[preloadedRoute.key]).toEqual({ preventRemove: true });
+  act(() => ref.current?.goBack());
+
+  expect(onPreventRemove).toHaveBeenCalledTimes(1);
+  expect(ref.current?.getRootState()).toEqual(promotedState);
+});
+
+test('does not propagate preventRemove from a preloaded nested stack', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  const onPreventRemove = jest.fn();
+  let parentPreventedRoutes: PreventedRoutes | undefined;
+  const ProtectedScreen = () => {
+    usePreventRemove(true, onPreventRemove);
+    return null;
+  };
+  const ParentPreventedRoutesObserver = () => {
+    parentPreventedRoutes = use(PreventRemoveContext)?.preventedRoutes;
+    return null;
+  };
+  const NestedStack = (props: any) => {
+    const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder(
+      StackRouter,
+      props
+    );
+
+    useEffect(() => navigation.dispatch(CommonActions.preload('protected')), [navigation]);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  const ref = createNavigationContainerRef<ParamListBase>();
+
+  render(
+    <BaseNavigationContainer ref={ref}>
+      <TestNavigator>
+        <Screen name="home">{() => null}</Screen>
+        <Screen name="nested">
+          {() => (
+            <>
+              <ParentPreventedRoutesObserver />
+              <NestedStack>
+                <Screen name="index">{() => null}</Screen>
+                <Screen name="protected" component={ProtectedScreen} />
+              </NestedStack>
+            </>
+          )}
+        </Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(() => ref.current?.navigate('nested'));
+  const nestedRoute = ref.current?.getRootState().routes.at(-1)!;
+
+  expect(parentPreventedRoutes?.[nestedRoute.key]).toBeUndefined();
+  act(() => ref.current?.goBack());
+
+  expect(onPreventRemove).not.toHaveBeenCalled();
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['home']);
 });
 
 test("prevents removing a screen with 'usePreventRemove' hook", () => {

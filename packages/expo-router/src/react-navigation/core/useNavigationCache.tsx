@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { isRoutePreloadedInStack } from '../../utils/stack';
 import {
   CommonActions,
   type NavigationAction,
@@ -61,60 +62,13 @@ export function useNavigationCache<
 }: Options<State, ScreenOptions, EventMap>) {
   const { stackRef } = use(NavigationBuilderContext);
 
-  const base = React.useMemo((): NavigationItem<State, ScreenOptions, EventMap> & ActionHelpers => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { emit, ...rest } = navigation;
-
-    const actions = {
-      ...router.actionCreators,
-      ...CommonActions,
-    };
-
-    const dispatch = () => {
-      throw new Error('Actions cannot be dispatched from a placeholder screen.');
-    };
-
-    const helpers = Object.keys(actions).reduce<Record<string, () => void>>((acc, name) => {
-      acc[name] = dispatch;
-
-      return acc;
-    }, {}) as ActionHelpers;
-
-    return {
-      ...rest,
-      ...helpers,
-      addListener: () => {
-        // Event listeners are not supported for placeholder screens
-
-        return () => {
-          // Empty function
-        };
-      },
-      removeListener: () => {
-        // Event listeners are not supported for placeholder screens
-      },
-      dispatch,
-      getParent: (id?: string) => {
-        if (id !== undefined && id === rest.getId()) {
-          return base;
-        }
-
-        return rest.getParent(id);
-      },
-      setOptions: () => {
-        throw new Error('Options cannot be set from a placeholder screen.');
-      },
-      isFocused: () => false,
-    };
-  }, [navigation, router.actionCreators]);
-
   // Cache object which holds navigation objects for each screen
   // We use `React.useMemo` instead of `React.useRef` coz we want to invalidate it when deps change
   // In reality, these deps will rarely change, if ever
   const cache = React.useMemo(
     () => ({ current: {} as NavigationCache<State, ScreenOptions, EventMap> }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [base, getState, navigation, setOptions, emitter]
+    [getState, navigation, setOptions, emitter]
   );
 
   cache.current = routes.reduce<NavigationCache<State, ScreenOptions, EventMap>>((acc, route) => {
@@ -127,7 +81,18 @@ export function useNavigationCache<
       acc[route.key] = previous;
     } else {
       const dispatch = (thunk: Thunk) => {
-        const action = typeof thunk === 'function' ? thunk(getState()) : thunk;
+        const state = getState();
+
+        if (isRoutePreloadedInStack(state, route)) {
+          if (process.env.NODE_ENV !== 'production') {
+            console.warn(
+              `Ignored a navigation action dispatched from the preloaded screen '${route.name}'. The screen is rendered for preloading and is not focused, so its actions would unexpectedly modify the visible stack. Wait until the screen is focused before dispatching.`
+            );
+          }
+          return;
+        }
+
+        const action = typeof thunk === 'function' ? thunk(state) : thunk;
 
         if (action != null) {
           navigation.dispatch({ source: route.key, ...action });
@@ -167,20 +132,23 @@ export function useNavigationCache<
         return acc;
       }, {});
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { emit, ...rest } = navigation;
+
       acc[route.key] = {
-        ...base,
+        ...rest,
         ...helpers,
         // FIXME: too much work to fix the types for now
         ...(emitter.create(route.key) as any),
         dispatch: (thunk: Thunk) => withStack(() => dispatch(thunk)),
         getParent: (id?: string) => {
-          if (id !== undefined && id === base.getId()) {
+          if (id !== undefined && id === rest.getId()) {
             // If the passed id is the same as the current navigation id,
             // we return the cached navigation object for the relevant route
             return acc[route.key];
           }
 
-          return base.getParent(id);
+          return rest.getParent(id);
         },
         setOptions: (options: object) => {
           setOptions((o) => ({
@@ -189,7 +157,7 @@ export function useNavigationCache<
           }));
         },
         isFocused: () => {
-          const state = base.getState();
+          const state = rest.getState();
 
           if (state.routes[state.index]!.key !== route.key) {
             return false;
@@ -205,8 +173,5 @@ export function useNavigationCache<
     return acc;
   }, {});
 
-  return {
-    base,
-    navigations: cache.current,
-  };
+  return cache.current;
 }

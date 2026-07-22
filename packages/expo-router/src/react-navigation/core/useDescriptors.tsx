@@ -141,7 +141,7 @@ export function useDescriptors<
     ]
   );
 
-  const { base, navigations } = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
+  const navigations = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
     routes,
     getState,
     navigation,
@@ -288,39 +288,5 @@ export function useDescriptors<
     return acc;
   }, {});
 
-  /**
-   * Create a descriptor object for a route.
-   *
-   * @param route Route object for which the descriptor should be created
-   * @param placeholder Whether the descriptor should be a placeholder, e.g. for a route not yet in the state
-   * @returns Descriptor object
-   */
-  const describe = (route: RouteProp<ParamListBase>, placeholder: boolean) => {
-    if (!placeholder) {
-      if (!(route.key in descriptors)) {
-        throw new Error(`Couldn't find a route with the key ${route.key}.`);
-      }
-
-      return descriptors[route.key]!;
-    }
-
-    const navigation = base;
-    const customOptions = getOptions(route, navigation, {});
-    const element = render(route, navigation, customOptions, undefined);
-
-    return {
-      route,
-      navigation,
-      render() {
-        return element;
-      },
-      options: customOptions as ScreenOptions,
-      routeSource: screens[route.name]?.props.routeSource,
-    };
-  };
-
-  return {
-    describe,
-    descriptors,
-  };
+  return descriptors;
 }

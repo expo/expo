@@ -1,8 +1,10 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
+import { CommonActions, type ParamListBase, StackRouter } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
+import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useEventEmitter } from '../useEventEmitter';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useNavigationCache } from '../useNavigationCache';
@@ -10,6 +12,10 @@ import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
 });
 
 test('preserves reference for navigation objects', () => {
@@ -200,4 +206,50 @@ test('returns correct value for isFocused after changing screens', () => {
   );
 
   expect(navigation.isFocused()).toBe(false);
+});
+
+test('ignores dispatches from a preloaded stack screen until it is promoted', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+
+    return (
+      <NavigationContent>
+        {state.routes.map((route) => descriptors[route.key]!.render())}
+      </NavigationContent>
+    );
+  };
+  let navigation: any;
+  const TestScreen = (props: any) => {
+    navigation = props.navigation;
+    return null;
+  };
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+  render(
+    <BaseNavigationContainer ref={ref}>
+      <TestNavigator>
+        <Screen name="first">{() => null}</Screen>
+        <Screen name="second" component={TestScreen} />
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  act(() => ref.current?.dispatch(CommonActions.preload('second')));
+  const preloadedNavigation = navigation;
+  const preloadedState = ref.current?.getRootState();
+
+  act(() => preloadedNavigation.goBack());
+
+  expect(warn).toHaveBeenCalledWith(
+    "Ignored a navigation action dispatched from the preloaded screen 'second'. The screen is rendered for preloading and is not focused, so its actions would unexpectedly modify the visible stack. Wait until the screen is focused before dispatching."
+  );
+  expect(ref.current?.getRootState()).toEqual(preloadedState);
+
+  act(() => ref.current?.navigate('second'));
+
+  expect(navigation).toBe(preloadedNavigation);
+  act(() => preloadedNavigation.goBack());
+  expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['first']);
+
 });

@@ -6,6 +6,7 @@
 
 - Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
 - Migrate the `Drawer` navigator to the `standard-navigation` integration. ([#47839](https://github.com/expo/expo/pull/47839) by [@Ubax](https://github.com/Ubax))
+- Remove `StackNavigationState.preloadedRoutes`; routes after `state.index` are now preloaded. Resetting navigation with `navigation.reset({ routes, index })` and an index before the last route now treats the remaining routes as preloaded instead of active. ([#47961](https://github.com/expo/expo/pull/47961) by [@Ubax](https://github.com/Ubax))
 
 ### 🎉 New features
 

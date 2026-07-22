@@ -9,12 +9,10 @@ import {
   type LocaleDirection,
   type ParamListBase,
   type Route,
-  type RouteProp,
   StackActions,
   type StackNavigationState,
 } from '../../../native';
 import type {
-  StackDescriptor,
   StackDescriptorMap,
   StackNavigationConfig,
   StackNavigationHelpers,
@@ -29,7 +27,6 @@ type Props = StackNavigationConfig & {
   state: StackNavigationState<ParamListBase>;
   navigation: StackNavigationHelpers;
   descriptors: StackDescriptorMap;
-  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => StackDescriptor;
 };
 
 type State = {
@@ -61,12 +58,13 @@ const isArrayEqual = (a: any[], b: any[]) =>
 
 export class StackView extends React.Component<Props, State> {
   static getDerivedStateFromProps(props: Readonly<Props>, state: Readonly<State>) {
-    const activeRoutes = props.state.routes;
-    const preloadedRoutes = props.state.preloadedRoutes;
-    const allRoutes = [...activeRoutes, ...preloadedRoutes];
-    const previousRoutes = state.previousState
-      ? [...state.previousState.routes, ...state.previousState.preloadedRoutes]
-      : [];
+    const allRoutes = props.state.routes;
+    const previousRoutes = state.previousState?.routes ?? [];
+    const previousFocusedRoute = state.previousState
+      ? state.previousState.routes[state.previousState.index]
+      : undefined;
+    const nextFocusedRouteFromState = props.state.routes[props.state.index];
+    const activeRoutes = props.state.routes.slice(0, props.state.index + 1);
 
     // If there was no change in routes, we don't need to compute anything
     if (
@@ -74,6 +72,7 @@ export class StackView extends React.Component<Props, State> {
         allRoutes.map((r) => r.key),
         previousRoutes.map((r) => r.key)
       ) &&
+      previousFocusedRoute?.key === nextFocusedRouteFromState?.key &&
       state.routes.length
     ) {
       // If there were any routes being closed or replaced,
@@ -137,12 +136,7 @@ export class StackView extends React.Component<Props, State> {
     // Here we determine which routes were added or removed to animate them
     // We keep a copy of the route being removed in local state to be able to animate it
 
-    let routes =
-      props.state.index < activeRoutes.length - 1
-        ? // Remove any extra routes from the state
-          // The last visible route should be the focused route, i.e. at current index
-          activeRoutes.slice(0, props.state.index + 1)
-        : activeRoutes;
+    let routes = activeRoutes;
 
     let { openingRouteKeys, closingRouteKeys, replacingRouteKeys } = state;
 
@@ -154,11 +148,7 @@ export class StackView extends React.Component<Props, State> {
 
     // Get previous focused route from previousState (actual focused route, not last in previousRoutes
     // which can be a preloaded route that was never focused)
-    const previousFocusedRoute = state.previousState
-      ? state.previousState.routes[state.previousState.index]!
-      : undefined;
-
-    const nextFocusedRoute = routes[routes.length - 1]!;
+    const nextFocusedRoute = activeRoutes[activeRoutes.length - 1]!;
 
     const isAnimationEnabled = (key: string) => {
       const descriptor = props.descriptors[key] || state.descriptors[key];
@@ -271,7 +261,11 @@ export class StackView extends React.Component<Props, State> {
       throw new Error('There should always be at least one route in the navigation state.');
     }
 
-    const descriptors = allRoutes.reduce<StackDescriptorMap>((acc, route) => {
+    const routeKeys = new Set(routes.map((route) => route.key));
+    const descriptors = [
+      ...routes,
+      ...allRoutes.filter((route) => !routeKeys.has(route.key)),
+    ].reduce<StackDescriptorMap>((acc, route) => {
       acc[route.key] = (props.descriptors[route.key] || state.descriptors[route.key])!;
 
       return acc;
@@ -318,7 +312,7 @@ export class StackView extends React.Component<Props, State> {
   private handleOpenRoute = ({ route }: { route: Route<string> }) => {
     const { state, navigation } = this.props;
     const { closingRouteKeys, replacingRouteKeys } = this.state;
-    const activeRoutes = state.routes;
+    const activeRoutes = state.routes.slice(0, state.index + 1);
 
     if (
       closingRouteKeys.some((key) => key === route.key) &&
@@ -329,12 +323,17 @@ export class StackView extends React.Component<Props, State> {
       // If route isn't present in current state, but was closing, assume that a close animation was cancelled
       // So we need to add this route back to the state
       navigation.dispatch((state) => {
-        const activeRoutes = state.routes;
-        const routes = [...activeRoutes.filter((r) => r.key !== route.key), route];
+        const activeRoutes = state.routes
+          .slice(0, state.index + 1)
+          .filter((r) => r.key !== route.key);
+        const preloadedRoutes = state.routes
+          .slice(state.index + 1)
+          .filter((r) => r.key !== route.key);
+        const routes = [...activeRoutes, route];
 
         return CommonActions.reset({
           ...state,
-          routes,
+          routes: routes.concat(preloadedRoutes),
           index: routes.length - 1,
         });
       });
@@ -367,7 +366,7 @@ export class StackView extends React.Component<Props, State> {
 
   private handleCloseRoute = ({ route }: { route: Route<string> }) => {
     const { state, navigation } = this.props;
-    const activeRoutes = state.routes;
+    const activeRoutes = state.routes.slice(0, state.index + 1);
 
     if (activeRoutes.some((r) => r.key === route.key)) {
       // If a route exists in state, trigger a pop
@@ -432,12 +431,6 @@ export class StackView extends React.Component<Props, State> {
     } = this.props;
 
     const { routes, descriptors, openingRouteKeys, closingRouteKeys } = this.state;
-    const preloadedRoutes = state.preloadedRoutes;
-
-    const preloadedDescriptors = preloadedRoutes.reduce<StackDescriptorMap>((acc, route) => {
-      acc[route.key] = acc[route.key] || this.props.describe(route, true);
-      return acc;
-    }, {});
 
     return (
       <GestureHandlerWrapper style={styles.container}>
@@ -466,7 +459,6 @@ export class StackView extends React.Component<Props, State> {
                         onGestureStart={this.handleGestureStart}
                         onGestureEnd={this.handleGestureEnd}
                         onGestureCancel={this.handleGestureCancel}
-                        preloadedDescriptors={preloadedDescriptors}
                         {...rest}
                       />
                     )}

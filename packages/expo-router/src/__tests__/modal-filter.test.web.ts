@@ -38,6 +38,43 @@ describe('modal route filtering on web', () => {
     expect(routes.map((r) => r.key)).toEqual(['index']);
   });
 
+  it('preserves preloaded routes without treating them as active modals', () => {
+    const state = makeState(['index', 'second'], 0);
+    const descriptors: any = {
+      index: { options: {} },
+      second: { options: { presentation: 'modal' } },
+    };
+
+    const { routes, index } = convertStackStateToNonModalState(state, descriptors, true);
+    expect(routes.map((route) => route.key)).toEqual(['index', 'second']);
+    expect(index).toBe(0);
+  });
+
+  it('does not promote a preloaded route when all active routes are modals', () => {
+    const state = makeState(['modal', 'preload'], 0);
+    const descriptors: any = {
+      modal: { options: { presentation: 'modal' } },
+      preload: { options: {} },
+    };
+
+    const { routes, index } = convertStackStateToNonModalState(state, descriptors, true);
+    expect(routes.map((route) => route.key)).toEqual(['preload']);
+    expect(index).toBe(-1);
+  });
+
+  it('preserves the order of multiple preloaded routes when all active routes are modals', () => {
+    const state = makeState(['modal', 'first-preload', 'second-preload'], 0);
+    const descriptors: any = {
+      modal: { options: { presentation: 'modal' } },
+      'first-preload': { options: {} },
+      'second-preload': { options: {} },
+    };
+
+    const { routes, index } = convertStackStateToNonModalState(state, descriptors, true);
+    expect(routes.map((route) => route.key)).toEqual(['first-preload', 'second-preload']);
+    expect(index).toBe(-1);
+  });
+
   it('recalculates stack index after filtering out modal routes', () => {
     process.env.EXPO_OS = 'web';
 

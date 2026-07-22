@@ -17,7 +17,11 @@ import {
 } from './NavigationBuilderContext';
 import type { EventMapCore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
-import { shouldPreventRemove, useOnPreventRemove } from './useOnPreventRemove';
+import {
+  getPreventableRoutes,
+  shouldPreventRemove,
+  useOnPreventRemove,
+} from './useOnPreventRemove';
 
 type Options<State extends NavigationState> = {
   router: Router<State, NavigationAction>;
@@ -89,8 +93,8 @@ export function useOnAction<State extends NavigationState>({
             const isPrevented = shouldPreventRemove(
               emitter,
               beforeRemoveListeners,
-              state.routes,
-              result.routes,
+              getPreventableRoutes(state),
+              getPreventableRoutes(result, state.type),
               action
             );
 
