@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [web] Fixed crash when browser storage is blocked (e.g. Safari's "Block All Cookies"), where reading `localStorage` throws a `SecurityError` instead of returning `null`. ([#XXXX](https://github.com/expo/expo/pull/XXXX) by [@Ignigena](https://github.com/Ignigena))
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-05-26
