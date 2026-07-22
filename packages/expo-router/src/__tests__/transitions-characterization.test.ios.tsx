@@ -1,11 +1,11 @@
-import { screen, act } from '@testing-library/react-native';
-import { use } from 'react';
-import { Text, View } from 'react-native';
+import { screen, act } from "@testing-library/react-native";
+import { use } from "react";
+import { Text, View } from "react-native";
 
-import type { SuspenseFallbackProps } from '../exports';
-import { Slot } from '../exports';
-import { router } from '../imperative-api';
-import { renderRouter } from '../testing-library';
+import type { SuspenseFallbackProps } from "../exports";
+import { Slot } from "../exports";
+import { router } from "../imperative-api";
+import { renderRouter } from "../testing-library";
 
 /**
  * Step 3 (spike) characterization tests. These pin the *current*, pre-flip behavior so the Step 5
@@ -24,14 +24,15 @@ import { renderRouter } from '../testing-library';
  * risk 9's "mid-flight assertions are simulator-only" verdict. We deliberately do NOT assert a
  * mid-flight recovery as an in-file test.
  *
- * Isolation note (precautionary): an earlier investigation once observed a *later* separate-act
- * resolve appearing to recover when preceded by a test that left an unresolved suspense — suggesting
- * router module-global / React pending-work leakage across renderRouter calls in a file. That
- * spurious recovery did NOT reproduce on re-runs, so treat the exact leak mechanism as unconfirmed.
- * The two committed tests below are verified order-INDEPENDENT (run in both orders, repeatedly, no
- * flakes). Regardless, keep suspending tests isolated (one suspending nav per file, or no dangling
- * unresolved promises) as a precaution, and Step 5's red list must assert final committed states
- * (shape 2), never a mid-flight recovery.
+ * Isolation note: the two committed tests are verified order-INDEPENDENT (run in both orders,
+ * repeatedly, no flakes). An early one-off observation suggested a *later* separate-act resolve
+ * might "recover" a committed fallback when preceded by a test leaving an unresolved suspense
+ * (hinting at module-global leakage — `storeRef`/`routingQueue` do persist across renderRouter
+ * calls). Three independent controlled re-runs (byte-identical scratch pairs, with/without the
+ * dangling test, with/without explicit unmount) could NOT reproduce it: recovery never occurred in
+ * any configuration. Treat the leak as a false observation, not a real hazard; keeping suspending
+ * tests isolated is cheap hygiene, not a fix for a proven bug. Step 5's red list must assert final
+ * committed states (shape 2), never a mid-flight recovery.
  *
  * No product code is exercised beyond what a normal navigation to a suspending screen touches.
  */
@@ -69,47 +70,47 @@ function renderSuspendingApp(promise: Promise<string>) {
   return renderRouter({
     _layout: () => <Slot />,
     index: () => <Text testID="index">Index</Text>,
-    '(slow)/_layout': {
+    "(slow)/_layout": {
       default: () => <Slot />,
       SuspenseFallback: SlowFallback,
     },
-    '(slow)/detail': SuspendingRoute,
+    "(slow)/detail": SuspendingRoute,
   });
 }
 
-describe('suspending navigation — current (pre-transition-flip) behavior', () => {
-  it('commits the destination when the suspending promise resolves within the navigation act', async () => {
+describe("suspending navigation — current (pre-transition-flip) behavior", () => {
+  it("commits the destination when the suspending promise resolves within the navigation act", async () => {
     // Final-committed-state shape (jest-able per risk 9): resolving the promise within the same act
     // that commits the navigation surfaces the destination, no fallback left. This is the shape
     // Step 5's red list uses for "fallback-absence across an awaited act" once the flip lands.
     const deferred = createDeferred<string>();
     renderSuspendingApp(deferred.promise);
 
-    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByTestId("index")).toBeVisible();
 
     await act(async () => {
-      router.push('/detail');
-      deferred.resolve('done');
+      router.push("/detail");
+      deferred.resolve("done");
     });
 
-    expect(screen.getByTestId('slow-content')).toBeVisible();
-    expect(screen.queryByTestId('slow-fallback')).toBeNull();
+    expect(screen.getByTestId("slow-content")).toBeVisible();
+    expect(screen.queryByTestId("slow-fallback")).toBeNull();
   });
 
-  it('replaces the origin screen with the Suspense fallback while a pushed screen suspends', () => {
+  it("replaces the origin screen with the Suspense fallback while a pushed screen suspends", () => {
     const deferred = createDeferred<string>();
     renderSuspendingApp(deferred.promise);
 
-    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByTestId("index")).toBeVisible();
 
-    act(() => router.push('/detail'));
+    act(() => router.push("/detail"));
 
     // Falsifiable pair: the destination content is NOT on screen, the fallback IS. Today the
     // fallback shows because this is a plain synchronous Suspense commit — nothing wraps the
     // dispatch in `startTransition` yet (that is Step 5). Do not read this as "uSES de-opts";
     // nothing is a transition at this step.
-    expect(screen.queryByTestId('slow-content')).toBeNull();
-    expect(screen.getByTestId('slow-fallback')).toBeVisible();
+    expect(screen.queryByTestId("slow-content")).toBeNull();
+    expect(screen.getByTestId("slow-fallback")).toBeVisible();
 
     // Pre-flip characterization to pin for Step 5: the origin screen is UNMOUNTED while the
     // destination suspends — the fallback replaces it. Step 5 (Goal 1 part b) inverts this: the
@@ -117,6 +118,6 @@ describe('suspending navigation — current (pre-transition-flip) behavior', () 
     // makes the polarity Step 5 flips explicit. The deferred is intentionally left unresolved (the
     // pending window is the point); keeping it the file's last test is a precaution, not required —
     // the two tests are verified order-independent.
-    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.queryByTestId("index")).toBeNull();
   });
 });
