@@ -3,6 +3,29 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon } from '~/ui/components/DocIcons';
 
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      - name: Build Android app
+        run: cd android && ./gradlew assembleRelease
+      # @info #
+      - uses: eas/save_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      # @end #
+```
+
+##### Properties
+
 | Property | Type     | Required    | Description                                                                                                                                                                                                       |
 | -------- | -------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `key`    | `string` | <YesIcon /> | The cache key to save the cache under. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes. This should match the key used when restoring the cache. |

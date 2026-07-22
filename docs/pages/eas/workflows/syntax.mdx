@@ -1777,169 +1777,33 @@ Below is a list of built-in functions you can use in your workflow steps.
 
 #### `eas/checkout`
 
-Checks out your project source files.
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      # @info #
-      - uses: eas/checkout
-        # @end #
-```
-
-<EASFunctionDescription name="checkout" />
+<EASFunctionDescription name="checkout" exampleMode="Workflow" />
 
 #### `eas/install_node_modules`
 
-Installs node_modules using the package manager (bun, npm, pnpm, or Yarn) detected based on your project. Works with monorepos.
-
-```yaml example.yml
-jobs:
-  my_job:
-    steps:
-      - uses: eas/checkout
-      # @info #
-      - uses: eas/install_node_modules
-      # @end #
-```
-
-<EASFunctionDescription name="install_node_modules" />
+<EASFunctionDescription name="install_node_modules" exampleMode="Workflow" />
 
 #### `eas/download_build`
 
 Downloads application archive of a given build. By default, the downloaded artifact can be an **.apk**, **.aab**, **.ipa**, or **.app** file, or a **.tar.gz** archive containing one or more of these files. If the artifact is a **.tar.gz** archive, it will be extracted and the first file matching the specified extensions will be returned. If the build produced no application archive, the step will fail.
 
-```yaml
-jobs:
-  my_job:
-    steps:
-      - uses: eas/download_build
-        with:
-          build_id: string # Required. ID of the build to download.
-          extensions: [apk, aab, ipa, app] # Optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
-```
-
-<EASFunctionDescription name="download_build" />
-
-Example usage:
-
-```yaml
-jobs:
-  build_ios:
-    type: build
-    params:
-      platform: ios
-      profile: production
-
-  my_job:
-    needs: [build_ios]
-    steps:
-      - uses: eas/download_build
-        id: download_build
-        with:
-          build_id: ${{ needs.build_ios.outputs.build_id }}
-      - name: Print artifact path
-        run: |
-          echo "Artifact path: ${{ steps.download_build.outputs.artifact_path }}"
-```
+<EASFunctionDescription name="download_build" exampleMode="Workflow" />
 
 #### `eas/prebuild`
 
-Runs the `expo prebuild` command using the package manager (bun, npm, pnpm, or Yarn) detected based on your project with the command best suited for your build type and build environment.
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-      # @info #
-      - uses: eas/prebuild
-      # @end #
-```
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - uses: eas/resolve_apple_team_id_from_credentials
-        id: resolve_apple_team_id_from_credentials
-      # @info #
-      - uses: eas/prebuild
-        with:
-          clean: false
-          apple_team_id: ${{ steps.resolve_apple_team_id_from_credentials.outputs.apple_team_id }}
-      # @end #
-```
-
-<EASFunctionDescription name="prebuild" />
+<EASFunctionDescription name="prebuild" exampleMode="Workflow" />
 
 #### `eas/restore_cache`
 
 Restores a previously saved cache from a specified key. This is useful for speeding up builds by reusing cached artifacts like compiled dependencies, build tools, or other intermediate build outputs.
 
-```yaml
-jobs:
-  my_job:
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - uses: eas/prebuild
-      # @info #
-      - uses: eas/restore_cache
-        with:
-          key: cache-${{ hashFiles('package-lock.json') }}
-          restore_keys: cache
-          path: /path/to/cache
-      # @end #
-```
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - uses: eas/prebuild
-      # @info #
-      - uses: eas/restore_cache
-        with:
-          key: cache-${{ hashFiles('package-lock.json') }}
-          path: /path/to/cache
-      # @end #
-```
-
-<EASFunctionDescription name="restore_cache" />
+<EASFunctionDescription name="restore_cache" exampleMode="Workflow" />
 
 #### `eas/save_cache`
 
 Saves a cache to a specified key. This allows you to persist build artifacts, compiled dependencies, or other intermediate outputs that can be reused in subsequent builds to speed up the build process.
 
-```yaml
-jobs:
-  my_job:
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - uses: eas/prebuild
-      - uses: eas/restore_cache
-        with:
-          key: cache-${{ hashFiles('package-lock.json') }}
-          path: /path/to/cache
-      - name: Build Android app
-        run: cd android && ./gradlew assembleRelease
-      # @info #
-      - uses: eas/save_cache
-        with:
-          key: cache-${{ hashFiles('package-lock.json') }}
-          path: /path/to/cache
-      # @end #
-```
-
-<EASFunctionDescription name="save_cache" />
+<EASFunctionDescription name="save_cache" exampleMode="Workflow" />
 
 #### `eas/send_slack_message`
 
@@ -1949,68 +1813,19 @@ You can reference build job properties and [use other steps outputs](#jobsjob_id
 
 Either `message` or `payload` has to be specified, but not both.
 
-```yaml
-jobs:
-  my_job:
-    steps:
-      # @info #
-      - uses: eas/send_slack_message
-        # @end #
-        with:
-          message: 'This is a message sent to a Slack channel'
-          slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}
-```
-
-<EASFunctionDescription name="send_slack_message" />
+<EASFunctionDescription name="send_slack_message" exampleMode="Workflow" />
 
 #### `eas/use_npm_token`
 
-Configures Node package managers (bun, npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
-
-Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
-
-```yaml example.yml
-jobs:
-  my_job:
-    name: Install private npm modules
-    steps:
-      - uses: eas/checkout
-      # @info #
-      - uses: eas/use_npm_token
-      # @end #
-      - name: Install dependencies
-        run: npm install # <---- Can now install private packages
-```
-
-<EASFunctionDescription name="use_npm_token" />
+<EASFunctionDescription name="use_npm_token" exampleMode="Workflow" />
 
 #### `eas/upload_artifact`
 
-Uploads files from the job's workspace as an artifact attached to the workflow run. Uploaded artifacts appear in the run's **Artifacts** section and can be retrieved in a later job with [`eas/download_artifact`](#easdownload_artifact).
+Uploads files from the job's workspace as an artifact attached to the run. Uploaded artifacts appear in the run's **Artifacts** section and can be retrieved in a later job with [`eas/download_artifact`](#easdownload_artifact).
 
 > **info** In a custom (non-build) job, set `type: other` to upload a generic artifact. The `application-archive` and `build-artifact` types are reserved for build jobs — using them in a custom job fails with an error like `Uploading application archives outside of builds is not supported`.
 
-```yaml
-jobs:
-  my_job:
-    steps:
-      - uses: eas/checkout
-      - name: Run tests
-        run: ./scripts/run-tests.sh # writes results into ./results
-      # @info Upload whatever the previous step produced. #
-      - uses: eas/upload_artifact
-        # @info `if: always()` uploads results even when a previous step failed. #
-        if: ${{ always() }}
-        with:
-          type: other
-          name: test-results
-          path: |
-            results/**/*
-```
-
-##### Properties
-
-<EASFunctionDescription name="upload_artifact" />
+<EASFunctionDescription name="upload_artifact" exampleMode="Workflow" />
 
 #### `eas/download_artifact`
 
@@ -2025,8 +1840,6 @@ jobs:
           name: string # Required if artifact_id is not provided. Name of the artifact to download.
           artifact_id: string # Required if artifact_name is not provided. ID of the artifact to download.
 ```
-
-##### Properties
 
 <EASFunctionDescription name="download_artifact" />
 
@@ -2054,137 +1867,27 @@ The following functions connect your workflow to [PostHog](/guides/using-posthog
 
 #### `eas/posthog_capture_event`
 
-Sends an analytics event to [PostHog](https://posthog.com/). Use it to mark builds, releases, and other milestones on your PostHog timeline.
-
-When you do not provide a `distinct_id`, the event is sent anonymously and does not create a PostHog [person profile](https://posthog.com/docs/data/persons), which keeps workflow events out of your list of people.
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      # @info #
-      - uses: eas/posthog_capture_event
-        # @end #
-        with:
-          event: ota_update_published
-          properties:
-            branch: main
-```
-
-##### Properties
-
-<EASFunctionDescription name="posthog_capture_event" />
+<EASFunctionDescription name="posthog_capture_event" exampleMode="Workflow" />
 
 #### `eas/posthog_flag_rollout`
 
-Enables, disables, or rolls out a [PostHog feature flag](https://posthog.com/docs/feature-flags). The function looks up the flag by key and then updates it. Provide at least one of `active`, `rollout_percentage`, or `payload`.
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      # @info #
-      - uses: eas/posthog_flag_rollout
-        # @end #
-        with:
-          flag: new-checkout
-          rollout_percentage: 25
-```
-
-##### Properties
-
-<EASFunctionDescription name="posthog_flag_rollout" />
+<EASFunctionDescription name="posthog_flag_rollout" exampleMode="Workflow" />
 
 #### `eas/posthog_wait_for_metric`
 
-Pauses the workflow until a [HogQL](https://posthog.com/docs/hogql) query returns a number that satisfies a comparison. Use it to gate a rollout on a metric, such as holding until the error count over the last few minutes stays low.
-
-The function runs the query every `interval_seconds` until the comparison is true or `timeout_seconds` elapses. A query that cannot be read, such as invalid HogQL, fails the step immediately, while transient errors are retried until the timeout.
-
-> **info** This step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      # @info #
-      - uses: eas/posthog_wait_for_metric
-        # @end #
-        with:
-          query: SELECT count() FROM events WHERE event = '$exception' AND timestamp > now() - INTERVAL 15 MINUTE
-          operator: lt
-          threshold: 10
-```
-
-##### Properties
-
-<EASFunctionDescription name="posthog_wait_for_metric" />
+<EASFunctionDescription name="posthog_wait_for_metric" exampleMode="Workflow" />
 
 #### `eas/posthog_wait_for_query`
 
-Pauses the workflow until a [HogQL](https://posthog.com/docs/hogql) query returns true. Use it when the condition is easier to express in the query itself. For a numeric comparison with an explicit threshold, use [`eas/posthog_wait_for_metric`](#easposthog_wait_for_metric) instead.
-
-The step clears when the first column of the first row is `true` or a nonzero number, so write the query to select a single boolean, such as `SELECT count() > 100 FROM events`.
-
-> **info** Like `eas/posthog_wait_for_metric`, this step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      # @info #
-      - uses: eas/posthog_wait_for_query
-        # @end #
-        with:
-          query: SELECT count() > 0 FROM events WHERE event = 'smoke_test_passed' AND timestamp > now() - INTERVAL 30 MINUTE
-```
-
-##### Properties
-
-<EASFunctionDescription name="posthog_wait_for_query" />
+<EASFunctionDescription name="posthog_wait_for_query" exampleMode="Workflow" />
 
 #### `eas/posthog_annotation`
 
-Creates a [PostHog annotation](https://posthog.com/docs/data/annotations) on the project timeline. Annotations show up on your PostHog charts, which makes them useful for marking builds, releases, and other milestones next to the metrics they affect.
-
-```yaml
-jobs:
-  my_job:
-    steps:
-      # @info #
-      - uses: eas/posthog_annotation
-        # @end #
-        with:
-          content: Published update to production
-```
-
-##### Properties
-
-<EASFunctionDescription name="posthog_annotation" />
+<EASFunctionDescription name="posthog_annotation" exampleMode="Workflow" />
 
 #### `eas/posthog_upload_sourcemaps`
 
-Uploads JavaScript source maps to PostHog so that PostHog symbolicates stack traces in [error tracking](/guides/using-posthog/#error-tracking). Run it after the step that produces your bundle, in the same job, so the bundle and source maps are available on disk. Export with `npx expo export --source-maps`, and configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
-
-> **warning** This step runs the PostHog CLI, which cannot tell a permissions error apart from any other failure. Unlike the other PostHog functions, setting `ignore_error: true` also hides authentication and scope errors.
-
-```yaml
-jobs:
-  publish_update:
-    steps:
-      - uses: eas/checkout
-      - uses: eas/install_node_modules
-      - run: npx expo export --source-maps
-      # @info #
-      - uses: eas/posthog_upload_sourcemaps
-        # @end #
-        with:
-          directory: dist
-```
-
-##### Properties
-
-<EASFunctionDescription name="posthog_upload_sourcemaps" />
+<EASFunctionDescription name="posthog_upload_sourcemaps" exampleMode="Workflow" />
 
 ## Built-in shell functions
 
