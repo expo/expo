@@ -14,7 +14,7 @@ import type {
  * During this window, the hook synthesizes state to keep native and JS state
  * in sync.
  */
-export function usePreviewTransition<TNavigation extends { emit: (...args: any[]) => any }>(
+export function usePreviewTransition(
   state: NativeStackViewState,
   originalEmit: NativeStackViewEmit
 ) {
