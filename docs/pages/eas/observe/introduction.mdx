@@ -13,6 +13,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { FAQ } from '~/ui/components/FAQ';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
@@ -48,6 +49,18 @@ Debugging performance in React Native has traditionally been limited to developm
 />
 
 Wrap your root layout with the `AppMetricsRoot` component (SDK 55) or the `ObserveRoot` component (SDK 56 and later) and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
+
+### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it how to set up `expo-observe` and query your app's performance metrics:
+
+<RelatedSkills
+  names={['eas-observe']}
+  descriptions={{
+    'eas-observe':
+      'Set up expo-observe, query metrics with the EAS CLI, and interpret startup and navigation performance data.',
+  }}
+/>
 
 ## Why EAS Observe
 
