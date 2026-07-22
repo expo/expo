@@ -1,6 +1,7 @@
 package expo.modules.location.next
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.os.Build
@@ -38,6 +39,7 @@ class LocationModuleNext : Module() {
   val fusedLocationProviderInstance: SharedRef<LocationProvider> by lazy {
     val fusedLocationProvider = LocationServices.getFusedLocationProviderClient(mContext)
     val gmsLocationProvider = GmsLocationProvider(fusedLocationProvider)
+
     SharedRef(gmsLocationProvider)
   }
   val androidLocationProviderInstance: SharedRef<LocationProvider> by lazy {
@@ -116,8 +118,8 @@ class LocationModuleNext : Module() {
         locationWatchHandle.session.resume()
       }
 
-      Function("getLastPosition") { locationWatchHandle: LocationWatchHandle ->
-        locationWatchHandle.session.getLastPosition()
+      Function("getLastKnownPosition") { locationWatchHandle: LocationWatchHandle ->
+        locationWatchHandle.session.getLastKnownPosition()
       }
     }
 
@@ -276,7 +278,73 @@ interface PositionWatchSession {
   fun start(onPosition: (Position) -> Unit)
   fun stop()
   fun release()
-  fun getLastPosition(): Position?
+  fun getLastKnownPosition(): Position?
+}
+
+interface WatchSession {
+  fun startUpdates()
+  fun stopUpdates()
+}
+
+class PausableWatchSession(
+  val sessionImpl: (onPosition: (Position) -> Unit) -> WatchSession
+): PositionWatchSession {
+  var lastPosition: Position? = null
+  var isPaused: Boolean = false
+  var isStarted: Boolean = false
+  var isReleased: Boolean = false
+  var isSubscribed: Boolean = false
+  var session: WatchSession? = null
+
+  @SuppressLint("MissingPermission")
+  private fun handleLocationUpdatesRequest() {
+    val shouldRequestUpdates = !isPaused && isStarted && !isReleased && !isSubscribed
+    val shouldRemoveRequest = (isPaused || !isStarted || isReleased) && isSubscribed
+    if (session == null) {
+      return
+    }
+    if (shouldRequestUpdates) {
+      session?.startUpdates()
+      isSubscribed = true
+    }
+    if (shouldRemoveRequest) {
+      session?.stopUpdates()
+      isSubscribed = false
+    }
+  }
+
+  override fun start(onPosition: (Position) -> Unit) {
+    isStarted = true
+    this.session = sessionImpl{ pos ->
+      lastPosition = pos
+      onPosition(pos)
+    }
+    handleLocationUpdatesRequest()
+  }
+
+  override fun stop() {
+    isStarted = false
+    handleLocationUpdatesRequest()
+  }
+
+  override fun pause() {
+    isPaused = true
+    handleLocationUpdatesRequest()
+  }
+
+  override fun resume() {
+    isPaused = false
+    handleLocationUpdatesRequest()
+  }
+
+  override fun release() {
+    isReleased = true
+    handleLocationUpdatesRequest()
+  }
+
+  override fun getLastKnownPosition(): Position? {
+    return lastPosition
+  }
 }
 
 class LocationWatchHandle(val session: PositionWatchSession): SharedObject() {

@@ -10,15 +10,73 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.Priority
 import com.google.android.gms.tasks.CancellationTokenSource
+import expo.modules.location.next.PausableWatchSession
 import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.LocationWatchHandle
 import expo.modules.location.next.PositionWatchSession
 import expo.modules.location.next.Position
 import expo.modules.location.next.ProviderOutcome
+import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
+
+fun gmsWatchSessionImpl(fusedLocationProvider: FusedLocationProviderClient): (onPosition: (Position) -> Unit) -> WatchSession {
+  val request = LocationRequest
+    .Builder(Priority.PRIORITY_HIGH_ACCURACY, 200L)
+    .setMinUpdateDistanceMeters(0f)
+    .build()
+
+  return {  onPosition: (Position) -> Unit ->
+    object: WatchSession, LocationCallback() {
+      @SuppressLint("MissingPermission")
+      override fun startUpdates() {
+        fusedLocationProvider.requestLocationUpdates(
+          request,
+          this,
+          Looper.getMainLooper()
+        )
+      }
+
+      override fun stopUpdates() {
+        fusedLocationProvider.removeLocationUpdates(this)
+      }
+
+      override fun onLocationResult(result: LocationResult) {
+        result.lastLocation?.let{
+          onPosition(it.toPosition())
+        }
+      }
+    }
+  }
+}
+
+//class GmsWatchSessionContext: LocationCallback() {
+//  val request = LocationRequest
+//    .Builder(Priority.PRIORITY_HIGH_ACCURACY, 200L)
+//    .setMinUpdateDistanceMeters(0f)
+//    .build()
+//
+//  override fun onLocationResult(result: LocationResult) {
+//    result.lastLocation?.let{
+//      val positionNow = it.toPosition()
+//      lastPosition = positionNow
+//      onPosition(positionNow)
+//    }
+//  }
+//}
+//
+//class GmsWatchSession2(val gmsLocationProvider: GmsLocationProvider): PositionWatchSession, DefaultWatchSession<GmsWatchSessionContext>(
+//  GmsWatchSessionContext(),
+//  { ctx ->
+//    gmsLocationProvider.fusedLocationProvider.requestLocationUpdates(
+//    ctx.request,
+//    ctx,
+//    Looper.getMainLooper()
+//  ) },
+//  {}
+//)
 
 class GmsWatchSession(val gmsLocationProvider: GmsLocationProvider): PositionWatchSession, LocationCallback() {
   val request = LocationRequest
@@ -87,14 +145,14 @@ class GmsWatchSession(val gmsLocationProvider: GmsLocationProvider): PositionWat
     handleLocationUpdatesRequest()
   }
 
-  override fun getLastPosition(): Position? {
+  override fun getLastKnownPosition(): Position? {
     return lastPosition
   }
 }
 
 class GmsLocationProvider(
   val fusedLocationProvider: FusedLocationProviderClient
-): LocationProvider {
+): LocationProvider, LocationCallback() {
   @SuppressLint("MissingPermission")
   override suspend fun getCurrentPosition(): ProviderOutcome<Position> {
     val cts = CancellationTokenSource()
@@ -114,8 +172,28 @@ class GmsLocationProvider(
   }
 
   override fun watchPosition(): ProviderOutcome<LocationWatchHandle> {
-    // TODO(@HubertBer) add configuration options
-    val watchSession = GmsWatchSession(this)
+    val locationRequest = LocationRequest
+      .Builder(Priority.PRIORITY_HIGH_ACCURACY, 200L)
+      .setMinUpdateDistanceMeters(0f)
+      .build()
+    val watchSession = PausableWatchSession { onPosition: (Position) -> Unit ->
+      return@PausableWatchSession object: WatchSession, LocationCallback() {
+        @SuppressLint("MissingPermission")
+        override fun startUpdates() {
+          fusedLocationProvider.requestLocationUpdates(locationRequest, this, Looper.getMainLooper())
+        }
+
+        override fun stopUpdates() {
+          fusedLocationProvider.removeLocationUpdates(this)
+        }
+
+        override fun onLocationResult(locationResult: LocationResult) {
+          locationResult.lastLocation?.let {
+            onPosition(it.toPosition())
+          }
+        }
+      }
+    }
     val locationWatchHandle = LocationWatchHandle(watchSession)
     return ProviderOutcome.Success(locationWatchHandle)
   }
