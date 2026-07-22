@@ -675,6 +675,18 @@ import-mode escape hatch) for the jest-able set.
 No production code changes beyond the playground app.
 
 ### Step 4 — Disable freeze (risk 1)
+> **Correction (found during execution, 2026-07-22 — Step 4).** The Red-line "blurred-screen
+> render-count baseline recorded for risk 3 (multi-tab × deep-stack case included)" is **not
+> jest-assertable pre-flip** — render-count budgets are meaningless until the Step-5 render-flip
+> (uSES still de-opts; the slice-keyed memo layer risk 3 depends on lands in Step 5), consistent
+> with the Step-2/risk-9 pre-decisions. Step 4 records the baseline as a written note (freeze-off
+> means *attached-but-blurred* screens re-render where they previously froze; detached screens are
+> unaffected — freeze is orthogonal to `detachInactiveScreens`) and the **worst-case measurement
+> (5 tabs × deep stacks) moves to Step 5**, which owns the memo layer and the render-count budget
+> tests. Step 4's committed tests are prop-contract level (each render site forwards
+> `freezeOnBlur={false}`, incl. a `freezeOnBlur: true` input case so it is a real override proof).
+> See `steps/Step-4.md`.
+
 Inject `freezeOnBlur: false` at the five render sites — this is a code change, not a config
 toggle: expo-router today only *forwards* `descriptor.options.freezeOnBlur`, so the override must
 be applied where each navigator renders its screen (`ScreenStackItem` in native-stack,
@@ -730,7 +742,11 @@ rn-screens' `<Screen>` — no react-freeze anywhere in expo-router, prop injecti
 > 4. **The flip** — navigators read the `useReducer` tree via context; JS-initiated dispatch wrapped
 >    in `React.startTransition` (source tag, D5); native/replay stay urgent; slice-keyed memo layer
 >    (risk 3); delete the Step-2 shadow scaffolding (grep `shadow`/`createShadowReducer`/`reduceRoot`
->    split/`__setShadowAssertEnabled`/`shadowCompare.ts`).
+>    split/`__setShadowAssertEnabled`/`shadowCompare.ts`). **Inherited from Step 4:** the risk-3
+>    render-count worst-case measurement (5 tabs × deep stacks) belongs here — Step 4 deferred it
+>    because budgets are meaningless until this flip (freeze is now off, so blurred-but-attached
+>    screens re-render; this step's memo layer restores per-slice bail-out and its budget tests pin
+>    the worst case).
 > 5. **Queue deletion + resolution fusion** (a) — delete `useImperativeApiEmitter` uSES/effect drain;
 >    fuse `getNavigateAction` into the reducer (`(state, action, registry, config)`); convert the five
 >    raw-intent callers; keep the minimal pre-ready buffer. Pin with the two repro canaries
