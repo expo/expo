@@ -109,17 +109,14 @@ function handleOutput(output: DevToolsPluginOutput, spinner: Ora) {
     switch (line.type) {
       case 'text':
         appendSpinnerText(
-          line.url
-            ? link(line.url, { text: normalizeText(line.text, line.level), dim: false })
+          line.uri
+            ? link(line.uri, { text: normalizeText(line.text, line.level), dim: false })
             : normalizeText(line.text, line.level),
           spinner
         );
         break;
-      case 'audio':
-        appendSpinnerText(link(line.url, { text: line.text ?? 'Audio', dim: false }), spinner);
-        break;
-      case 'image':
-        appendSpinnerText(link(line.url, { text: line.text ?? 'Image', dim: false }), spinner);
+      case 'uri':
+        appendSpinnerText(link(line.uri, { text: line.text ?? 'uri', dim: false }), spinner);
         break;
     }
   });
