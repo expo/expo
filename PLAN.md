@@ -825,7 +825,15 @@ its residual `store`-global reads (they run post-commit, so they are on the "rea
 but pin it). Also confirm the import-cycle cut edge holds (Step 5 note): `fork/getPathFromState-forks.ts`
 must import `validatePathConfig` from the leaf module, not the `react-navigation/native` barrel, or
 the container's static `store`/`rootReducer`/`RouteInfoProvider` imports reintroduce a module-eval
-cycle jest hides but Metro breaks — a `no-restricted-imports` guard is the durable fix.
+cycle jest hides but Metro breaks.
+
+> **Correction (Step 6, 2026-07-22).** The "a `no-restricted-imports` guard is the durable fix"
+> pointer is **superseded**: the package lints with `oxlint` (not ESLint — an `.eslintrc.js` would be
+> inert), and `oxlint.config.mjs` already sets `import/no-cycle: 'error'`, which **already catches this
+> exact edge** — verified empirically by switching the import to the barrel (oxlint errors
+> `import(no-cycle): Dependency cycle detected`) and reverting (lints clean). So the durable guard is
+> the existing `import/no-cycle` rule; **no new lint config is added** (a bespoke `no-restricted-imports`
+> rule would be redundant). The cross-referencing comments (landed Step 5) stay as human context.
 
 In plain English: once navigations are transitions, "what is the current route" has a pending
 window between a dispatch and its commit. Under the `useReducer` model (D1) the split is simple:
