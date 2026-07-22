@@ -233,11 +233,15 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   var maxResolution: VideoSize? = null
     set(value) {
-      field = value
+      val normalized = value?.takeIf { it.width > 0 && it.height > 0 }
+      if (value != null && normalized == null) {
+        appContext?.jsLogger?.warn("[expo-video] Ignoring invalid `maxResolution` (${value.width}x${value.height}): `width` and `height` must both be greater than zero. Clearing the resolution limit.")
+      }
+      field = normalized
       appContext?.mainQueue?.launch {
         val parameters = player.trackSelectionParameters.buildUpon()
-        if (value != null && value.width > 0 && value.height > 0) {
-          parameters.setMaxVideoSize(value.width, value.height)
+        if (normalized != null) {
+          parameters.setMaxVideoSize(normalized.width, normalized.height)
         } else {
           parameters.clearVideoSizeConstraints()
         }

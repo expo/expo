@@ -228,9 +228,14 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    * Specifies the maximum resolution that the player will select when choosing between the video tracks of an adaptive stream.
    * The player picks the highest-quality track that does not exceed this resolution.
    *
-   * Set this property to `null` to remove the limit and allow all available resolutions.
+   * Set this property to `null` to remove the limit and allow all available resolutions. Dimensions
+   * which are not greater than zero are treated the same as `null`.
    *
-   * > Note: on iOS this property only applies to HTTP Live Streaming (HLS) sources.
+   * The cap is enforced differently per platform:
+   * - On Android it is a hard constraint, unless no track satisfies it, in which case the lowest-resolution track is used.
+   * - On iOS it is a preferred maximum, which the player treats as a soft hint when selecting a track.
+   *
+   * > **Note:** On iOS this property only applies to HTTP Live Streaming (HLS) sources.
    *
    * @default null
    * @platform android

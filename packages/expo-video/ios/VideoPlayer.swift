@@ -144,7 +144,12 @@ internal final class VideoPlayer: SharedRef<AVPlayer>, Hashable, VideoPlayerObse
 
   var maxResolution: VideoSize? {
     didSet {
-      ref.currentItem?.preferredMaximumResolution = maxResolution?.toCGSize() ?? .zero
+      let resolution = maxResolution?.toCGSize() ?? .zero
+      if resolution == .zero && maxResolution != nil {
+        appContext?.jsLogger.warn("[expo-video] Ignoring invalid `maxResolution`: `width` and `height` must both be greater than zero. Clearing the resolution limit.")
+        maxResolution = nil
+      }
+      ref.currentItem?.preferredMaximumResolution = resolution
     }
   }
 
