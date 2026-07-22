@@ -57,7 +57,7 @@ To add a migration, use the following steps:
    3. Make sure the old database filename is returned in `filename`.
 4. Add this new migration to `EXUpdatesDatabaseMigrationRegistry`.
 5. Double check that your migration produces a schema _identical_ to the one in EXUpdatesDatabaseInitialization.m. Unlike on Android, we don't currently have an automated way of ensuring the migration produces an identical schema, so this is really critical to get right.
-6. Finally, add a new test to EXUpdatesDatabaseInitializationTests.m to ensure data is preserved and migration correctly.
+6. Finally, add a new test to EXUpdatesDatabaseInitializationTests.m to ensure data is preserved and migrated correctly.
    1. You can follow the examples at the bottom of this file.
    2. Again, you should be able to reuse most of the SQL statements if you already did the Android migration test.
    3. You don't need to enable foreign keys manually; the `EXUpdatesDatabaseInitialization` class will do this for you.

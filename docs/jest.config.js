@@ -5,7 +5,11 @@ const jestConfig = {
   displayName: 'docs',
   testEnvironment: 'jsdom',
   testMatch: ['**/*.test.(js|ts|tsx)'],
-  setupFilesAfterEnv: ['@testing-library/jest-dom/jest-globals'],
+  setupFilesAfterEnv: [
+    '@testing-library/jest-dom/jest-globals',
+    '<rootDir>/jest.axe-setup.ts',
+    '<rootDir>/jest.jsdom-setup.ts',
+  ],
   clearMocks: true,
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/$1',

@@ -91,7 +91,7 @@ describe('bare project test', () => {
     expect(hash).not.toBe(hash2);
   });
 
-  it('should have same hash for specifing android platform after changing podfile', async () => {
+  it('should have same hash for specifying android platform after changing podfile', async () => {
     const hash = await createProjectHashAsync(projectRoot, { platforms: ['android'] });
     const hashCLI = await getFingerprintHashFromCLIAsync(projectRoot, ['--platform', 'android']);
     expect(hash).toEqual(hashCLI);

@@ -311,7 +311,7 @@ export function getDefaultConfig(
       platforms: ['ios', 'android', 'tvos', 'macos'],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
-          // Additional font files mising from default values
+          // Additional font files missing from default values
           ['woff', 'woff2'],
           // Add default support for `expo-image` file types.
           ['heic', 'avif'],
@@ -386,9 +386,7 @@ export function getDefaultConfig(
           return [];
         }
 
-        return require(
-          path.join(getReactNativeHostPath(projectRoot, platform), 'rn-get-polyfills')
-        )();
+        return require('@react-native/js-polyfills')();
       },
     },
     server: {

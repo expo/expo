@@ -141,7 +141,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
       return true
     }
     if (uri.isAssetUri) {
-      // TODO: Consider adding a check for asset URIs – this returns asset files of Expo Go (such as root-cert), but these are already freely available on apk mirrors ect.
+      // TODO: Consider adding a check for asset URIs – this returns asset files of Expo Go (such as root-cert), but these are already freely available on apk mirrors etc.
       return true
     }
     return checkPermissionForPath(javaFile.path, permission)

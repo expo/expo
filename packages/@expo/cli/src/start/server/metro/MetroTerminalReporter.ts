@@ -38,6 +38,15 @@ type ClientLogLevel =
 
 declare module '2g' {
   interface EventRegistry {
+    'metro:bundling:start': {
+      id: string | null;
+      platform: string | null;
+      environment: string | null;
+      entry: string;
+      bundleType: string;
+      dev: boolean;
+      minify: boolean;
+    };
     'metro:bundling:done': {
       id: string | null;
       platform?: null | string;
@@ -451,6 +460,15 @@ export class MetroTerminalReporter extends TerminalReporter {
             entry,
           },
         });
+        event('bundling:start', {
+          id: evt.buildID ?? null,
+          platform: evt.bundleDetails.platform ?? null,
+          environment: evt.bundleDetails.customTransformOptions?.environment ?? null,
+          entry,
+          bundleType: evt.bundleDetails.bundleType,
+          dev: evt.bundleDetails.dev,
+          minify: evt.bundleDetails.minify,
+        });
         return;
       }
       case 'unstable_server_log':
@@ -537,7 +555,7 @@ function maybeAppendCodeFrame(message: string, rawMessage: string): string {
   return message;
 }
 
-/** Extract fist code frame presented in the error message */
+/** Extract first code frame presented in the error message */
 export function extractCodeFrame(errorMessage: string): string {
   const codeFrameLine = /^(?:\s*(?:>?\s*\d+\s*\||\s*\|).*\n?)+/;
   let wasPreviousLineCodeFrame: boolean | null = null;

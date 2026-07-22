@@ -193,7 +193,7 @@ open class ExpoNotificationBuilder(
   }
 
   /**
-   * Marshalls [NotificationRequest] into to a byte array.
+   * Marshalls [NotificationRequest] into a byte array.
    *
    * @param request Notification request to marshall
    * @return Given request marshalled to a byte array or null if the process failed.
@@ -210,7 +210,7 @@ open class ExpoNotificationBuilder(
       // The request is only used to extract source request when fetching displayed notifications.
       Log.e(
         "expo-notifications",
-        "Could not marshalled notification request: ${request.identifier}.",
+        "Could not marshall notification request: ${request.identifier}.",
         e
       )
       return null
@@ -334,7 +334,7 @@ open class ExpoNotificationBuilder(
           return BitmapFactory.decodeResource(context.resources, resourceId)
         }
       } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not have fetched large notification icon.", e)
+        Log.e("expo-notifications", "Could not fetch large notification icon.", e)
       }
       return null
     }
@@ -356,7 +356,7 @@ open class ExpoNotificationBuilder(
           return ai.metaData.getInt(META_DATA_DEFAULT_ICON_KEY)
         }
       } catch (e: Exception) {
-        Log.e("expo-notifications", "Could not have fetched default notification icon.", e)
+        Log.e("expo-notifications", "Could not fetch default notification icon.", e)
       }
       return context.applicationInfo.icon
     }
@@ -386,7 +386,7 @@ open class ExpoNotificationBuilder(
         } catch (e: Exception) {
           Log.e(
             "expo-notifications",
-            "Could not have fetched default notification color.",
+            "Could not fetch default notification color.",
             e
           )
         }

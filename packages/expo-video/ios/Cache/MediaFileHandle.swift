@@ -17,7 +17,7 @@ internal class MediaFileHandle {
     do {
       return try FileManager.default.attributesOfItem(atPath: filePath)
     } catch let error as NSError {
-      log.warn("[expo-video] An error occured while reading the file attributes at \(filePath) error: \(error)")
+      log.warn("[expo-video] An error occurred while reading the file attributes at \(filePath) error: \(error)")
     }
     return nil
   }

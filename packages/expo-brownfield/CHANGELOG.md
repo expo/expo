@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Add hostProvidedFrameworks option to skip Frameworks provided by the host app ([#46355](https://github.com/expo/expo/pull/46355) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [android] Add support for publishing a single fused AAR via AGP Fused Library ([#47921](https://github.com/expo/expo/pull/45878) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 

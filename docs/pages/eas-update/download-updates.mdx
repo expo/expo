@@ -93,7 +93,7 @@ There is no first-class support for critical/mandatory updates in the `expo-upda
 
 The typical way to use EAS Update is to have a single update URL and a set of request headers (such as update channel name) embedded in a build of your app. To control which update is loaded, you make changes on the server through the `eas update` command or the EAS dashboard. For example, you publish a new update to a channel that your build is pointing to, then the build fetches that update on the next launch. Updates published to a channel different from the one your build is pointing to will not be downloaded with this approach.
 
-You can override the update URL and request headers at runtime using the `Updates.setUpdateURLAndRequestHeadersOverride()` method. This can be useful if you want to load a specific update or change the update channel while the app is running. [Learn more](/eas-update/override/).
+You can override the update URL and request headers at runtime using the `Updates.setUpdateURLAndRequestHeadersOverride()` method. This can be useful if you want to load a specific update or change the update channel while the app is running. See [how to override update configuration at runtime](/eas-update/override/).
 
 ## Monitoring adoption of updates
 

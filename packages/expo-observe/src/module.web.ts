@@ -1,6 +1,7 @@
 import { NativeModule, registerWebModule } from 'expo';
 import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
 
+import { reportCaughtError } from './reportCaughtError';
 import type {
   ObserveConfig,
   ObserveIntegrationsConfig,
@@ -17,6 +18,9 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   }
   logEvent(name: string, options?: LogEventOptions): void {
     AppMetrics.logEvent(name, options);
+  }
+  reportError(error: unknown): void {
+    reportCaughtError(error);
   }
   markFirstRender(): void {
     AppMetrics.markFirstRender();

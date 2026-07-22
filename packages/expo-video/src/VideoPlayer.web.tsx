@@ -14,6 +14,7 @@ import type {
   AudioTrack,
   ScrubbingModeOptions,
   SeekTolerance,
+  VideoSize,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
 import type { VideoThumbnail } from './VideoThumbnail';
@@ -106,6 +107,7 @@ export default class VideoPlayerWeb
   availableAudioTracks: AudioTrack[] = []; // Not supported on web. Dummy to match the interface.
   videoTrack: VideoTrack | null = null; // Not supported on web. Dummy to match the interface.
   availableVideoTracks: VideoTrack[] = []; // Not supported on web. Dummy to match the interface.
+  maxResolution: VideoSize | null = null; // Not supported on web. Dummy to match the interface.
   isExternalPlaybackActive: boolean = false; // Not supported on web. Dummy to match the interface.
   keepScreenOnWhilePlaying: boolean = false; // Not supported on web. Dummy to match the interface
   seekTolerance: SeekTolerance = {} as SeekTolerance; // Not supported on web. Dummy to match the interface.

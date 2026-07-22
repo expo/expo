@@ -181,7 +181,7 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
   const iosFolder = 'ios';
   const pbxprojPaths = withSortedGlobResult(
     globSync('ios/**/*.xcodeproj', { cwd: projectRoot, ignore: ignoredPaths })
-      // Drop leading `/` from glob results to mimick glob@<9 behavior
+      // Drop leading `/` from glob results to mimic glob@<9 behavior
       .map((filePath) => filePath.replace(/^\//, ''))
       .filter(
         (project) => !/test|example|sample/i.test(project) || path.dirname(project) === iosFolder

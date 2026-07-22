@@ -4,12 +4,12 @@ import XCTest
 
 extension XCTest {
   func assertViewExists(tag: String) {
-    XCTAssertNotNil(DevMenuUIMatchers.findView(tag: tag), "View with tag \(tag) does not exists.")
+    XCTAssertNotNil(DevMenuUIMatchers.findView(tag: tag), "View with tag \(tag) does not exist.")
   }
 
   func assertViewExists(text: String) {
     let view = DevMenuUIMatchers.findView(text: text)
-    XCTAssertNotNil(view, "View with text \(text) does not exists.")
+    XCTAssertNotNil(view, "View with text \(text) does not exist.")
   }
 
   func waitForView(tag: String) {

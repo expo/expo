@@ -25,6 +25,7 @@
 - [iOS] Fix `Linking.getInitialURL()` returning `null` and deep links being dropped when a URL cold-starts an app on the UIKit scene life cycle. ([#47628](https://github.com/expo/expo/pull/47628) by [@tsapeta](https://github.com/tsapeta))
 - Fix `import.meta.url` being `null` on web when read after the bundle's synchronous execution (from effects, async code, or dynamic imports). ([#47802](https://github.com/expo/expo/pull/47802) by [@zoontek](https://github.com/zoontek))
 - [iOS] Mark `ExpoAppSceneDelegate` as unavailable in `iOSApplicationExtension` for widgets. ([#47894](https://github.com/expo/expo/pull/47894) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add ExpoBundleConfiguration to derive RCTBundleConfiguration from the normalized bundle URL instead of default shared settings singleton ([#48010](https://github.com/expo/expo/pull/48010) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
@@ -34,7 +35,7 @@
 - [Internal] Return thenable with sync-bailout for async require calls ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
 - [Internal] Update logbox imports ([#46640](https://github.com/expo/expo/pull/46640) by [@kitten](https://github.com/kitten))
 - Re-export more expo-modules-core APIs ([#45987](https://github.com/expo/expo/pull/45987) by [@Wenszel](https://github.com/Wenszel))
-- Update `URL` and `URLSearchParams` implementation to support IDNA/TR-46 and improve performance. Spec-adherance has increased and few gaps should now be noticeable compared to browsers ([#47813](https://github.com/expo/expo/pull/47813) by [@kitten](https://github.com/kitten))
+- Update `URL` and `URLSearchParams` implementation to support IDNA/TR-46 and improve performance. Spec-adherence has increased and few gaps should now be noticeable compared to browsers ([#47813](https://github.com/expo/expo/pull/47813) by [@kitten](https://github.com/kitten))
 
 ## 56.0.5 — 2026-05-26
 
@@ -1206,7 +1207,7 @@ _This version does not introduce any user-facing changes._
 - Re-exported `EventEmitter`, `SharedObject` and `NativeModule` classes from `expo-modules-core`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
 - Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
 - Added public assets support for DOM components. ([#30975](https://github.com/expo/expo/pull/30975) by [@kudo](https://github.com/kudo))
-- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
+- Removed `expo_patch_react_imports!` and align more standard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 - Added a default `AppEntryNotFound` component and prevent the `Invariant Violation: "main" has not been registered.` error. ([#31813](https://github.com/expo/expo/pull/31813) by [@kudo](https://github.com/kudo))
 - Decoupled the usage from `@react-native-community/cli-tools`. ([#31966](https://github.com/expo/expo/pull/31966) by [@kudo](https://github.com/kudo))
 - Promoted `DevToolsPluginClient.useTransportationNext` as default and removed the option. ([#31852](https://github.com/expo/expo/pull/31852) by [@kudo](https://github.com/kudo))
@@ -1585,8 +1586,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `concurrentRoot` is missing from intialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
-- Use explicit `@expo/metro-config` dependendecy to avoid unexpected versions in monorepos. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
+- [Android] Fixed `concurrentRoot` is missing from initialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
+- Use explicit `@expo/metro-config` dependency to avoid unexpected versions in monorepos. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
 - Fixed `Unable to resolve "fbemitter"` issue when using DevTools Plugins. ([#25856](https://github.com/expo/expo/pull/25856) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

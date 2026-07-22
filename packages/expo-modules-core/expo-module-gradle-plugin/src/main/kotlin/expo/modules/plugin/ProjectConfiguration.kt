@@ -85,7 +85,7 @@ internal fun Project.applyDefaultAndroidSdkVersions() {
 
 /**
  * Applies the necessary configuration for publishing to the local Maven repository.
- * It need to be called when DSL is finalized.
+ * It needs to be called when DSL is finalized.
  */
 internal fun Project.applyPublishing(expoModulesExtension: ExpoModuleExtension) {
   if (!expoModulesExtension.canBePublished) {

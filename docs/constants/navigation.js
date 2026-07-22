@@ -477,6 +477,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/environment.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
     makePage('eas/workflows/rest-api.mdx'),
     makePage('eas/workflows/troubleshooting.mdx'),
@@ -554,6 +555,7 @@ export const eas = [
   makeSection('EAS Submit', [
     makePage('submit/android.mdx'),
     makePage('submit/ios.mdx'),
+    makePage('submit/testflight.mdx'),
     makePage('submit/android-manual.mdx'),
     makePage('submit/ios-manual.mdx'),
     makePage('submit/eas-json.mdx'),

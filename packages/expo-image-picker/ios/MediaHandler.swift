@@ -156,11 +156,15 @@ internal struct MediaHandler {
 
         // Conditionally read raw data only if needed to avoid unnecessary I/O
         var rawData: Data?
-        if options.base64 || options.exif {
+        if options.exif {
           rawData = try? Data(contentsOf: cachedUrl)
         }
 
-        let base64 = options.base64 ? rawData?.base64EncodedString() : nil
+        // Always export base64 as JPEG, matching the `allowsEditing` path, so callers get a
+        // consistent format regardless of the source file (e.g. HEIC).
+        let base64 = options.base64
+          ? try? ImageUtils.readJpegBase64From(fileUrl: cachedUrl, compressionQuality: options.quality)
+          : nil
         let exif = options.exif ? (rawData.flatMap { ImageUtils.readExifFrom(data: $0) }) : nil
 
         return AssetInfo(
@@ -200,7 +204,11 @@ internal struct MediaHandler {
 
     // We need to get EXIF from original image data, as it is being lost in UIImage
     let exif = options.exif ? ImageUtils.readExifFrom(data: rawData) : nil
-    let base64 = options.base64 ? imageData?.base64EncodedString() : nil
+    // Always export base64 as JPEG, matching the `allowsEditing` path, so callers get a
+    // consistent format regardless of the source file (e.g. HEIC).
+    let base64 = options.base64
+      ? try ImageUtils.readJpegBase64From(image: image, compressionQuality: options.quality)
+      : nil
 
     let size = CGSize(width: image.size.width, height: image.size.height)
 
@@ -219,7 +227,7 @@ internal struct MediaHandler {
 
   // Unlike the case of regular images, we have to operate on original data of the image in order to preserve the exif data,
   // otherwise it won't be possible to connect the image and video into a `PHLivePhoto` after reading it from the cache directory later.
-  // As a result a live photo photo cannot be compressed or edited.
+  // As a result a live photo cannot be compressed or edited.
   private func handleLivePhoto(from selectedImage: PHPickerResult) async throws -> AssetInfo {
     let itemProvider = selectedImage.itemProvider
     let livePhotoObject = try await itemProvider.loadObject(ofClass: PHLivePhoto.self)

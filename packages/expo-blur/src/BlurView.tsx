@@ -57,7 +57,7 @@ export default class BlurView extends React.Component<BlurViewProps, BlurViewSta
 
     if (this.props.experimentalBlurMethod != null) {
       console.warn(
-        'The `experimentalBlurMethod` prop has been depracated. Please use the `blurMethod` prop instead.'
+        'The `experimentalBlurMethod` prop has been deprecated. Please use the `blurMethod` prop instead.'
       );
     }
   }

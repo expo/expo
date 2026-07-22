@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed iOS file previews rejecting a new preview while the previous Quick Look dismissal animation is still finishing. ([#47947](https://github.com/expo/expo/pull/47947) by [@eliotgevers](https://github.com/eliotgevers))
+- Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
 - Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
 - Fixed potential file offset races when asynchronous and synchronous `FileHandle` operations overlap on Android and iOS. ([#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
 

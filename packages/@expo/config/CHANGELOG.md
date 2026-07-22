@@ -309,7 +309,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Bump `sucrase@3.34.0` to `sucrase@3.35.0` to to remove transitive dependency on `glob@7` ([#32274](https://github.com/expo/expo/pull/32274) by [@kitten](https://github.com/kitten))
+- Bump `sucrase@3.34.0` to `sucrase@3.35.0` to remove transitive dependency on `glob@7` ([#32274](https://github.com/expo/expo/pull/32274) by [@kitten](https://github.com/kitten))
 
 ## 10.0.0 — 2024-10-22
 

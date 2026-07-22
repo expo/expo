@@ -90,7 +90,7 @@ describe(getPackageJsonScriptSourcesAsync, () => {
     });
   });
 
-  it('by default, should not touch pacakge.json scripts if items contain "run" with custom scripts', async () => {
+  it('by default, should not touch package.json scripts if items contain "run" with custom scripts', async () => {
     await jest.isolateModulesAsync(async () => {
       const scripts = {
         android: 'test-cli run:android',
@@ -119,7 +119,7 @@ describe(getPackageJsonScriptSourcesAsync, () => {
     });
   });
 
-  it('when sourceSkips=None, should not touch pacakge.json scripts if items contain "run"', async () => {
+  it('when sourceSkips=None, should not touch package.json scripts if items contain "run"', async () => {
     await jest.isolateModulesAsync(async () => {
       const scripts = {
         android: 'expo start --android',

@@ -43,7 +43,7 @@ export type NativeStackNavigationEventMap = {
   /**
    * Event which fires when screen is in sheet presentation & it's detent changes.
    *
-   * In payload it caries two fields:
+   * In payload it carries two fields:
    *
    * * `index` - current detent index in the `sheetAllowedDetents` array,
    * * `stable` - on Android `false` value means that the user is dragging the sheet or it is settling; on iOS it is always `true`.
@@ -384,7 +384,7 @@ export type NativeStackNavigationOptions = {
         tintColor?: ColorValue;
       }) => React.ReactNode);
   /**
-   * How to align the the header title.
+   * How to align the header title.
    * Defaults to `left` on platforms other than iOS.
    *
    * Not supported on iOS. It's always `center` on iOS and cannot be changed.
@@ -678,7 +678,7 @@ export type NativeStackNavigationOptions = {
    * There is also possibility to specify `fitToContents` literal, which intents to set the sheet height
    * to the height of its contents.
    *
-   * Note that the array **must** be sorted in ascending order. This invariant is verified only in developement mode,
+   * Note that the array **must** be sorted in ascending order. This invariant is verified only in development mode,
    * where violation results in error.
    *
    * **Android is limited to up 3 values in the array** -- any surplus values, beside first three are ignored.
@@ -717,10 +717,10 @@ export type NativeStackNavigationOptions = {
    * Index of the detent the sheet should expand to after being opened.
    * Works only when `stackPresentation` is set to `formSheet`.
    *
-   * If the specified index is out of bounds of `sheetAllowedDetents` array, in dev environment more error will be thrown,
+   * If the specified index is out of bounds of `sheetAllowedDetents` array, in dev environment an error will be thrown,
    * in production the value will be reset to default value.
    *
-   * Additionaly there is `last` value available, when set the sheet will expand initially to last (largest) detent.
+   * Additionally there is `last` value available, when set the sheet will expand initially to last (largest) detent.
    *
    * Defaults to `0` - which represents first detent in the detents array.
    */
@@ -737,16 +737,16 @@ export type NativeStackNavigationOptions = {
    * The largest sheet detent for which a view underneath won't be dimmed.
    * Works only when `presentation` is set to `formSheet`.
    *
-   * This prop can be set to an number, which indicates index of detent in `sheetAllowedDetents` array for which
+   * This prop can be set to a number, which indicates index of detent in `sheetAllowedDetents` array for which
    * there won't be a dimming view beneath the sheet.
    *
-   * Additionaly there are following options available:
+   * Additionally there are following options available:
    *
    * * `none` - there will be dimming view for all detents levels,
    * * `last` - there won't be a dimming view for any detent level.
    *
    * @remark
-   * On iOS, the native implementation might resize the the sheet w/o explicitly changing the detent level, e.g. in case of keyboard appearance.
+   * On iOS, the native implementation might resize the sheet w/o explicitly changing the detent level, e.g. in case of keyboard appearance.
    * In case after such resize the sheet exceeds height for which in regular scenario a dimming view would be applied - it will be applied,
    * even if the detent has not effectively been changed.
    *
@@ -950,7 +950,7 @@ type SharedHeaderItem = {
    */
   identifier?: string;
   /**
-   * A badge to display on a item.
+   * A badge to display on an item.
    * Only available from iOS 26.0 and later.
    *
    * Read more: https://developer.apple.com/documentation/uikit/uibarbuttonitembadge

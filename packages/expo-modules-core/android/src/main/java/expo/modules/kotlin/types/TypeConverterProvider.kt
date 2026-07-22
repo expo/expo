@@ -7,7 +7,6 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.core.arguments.ReadableArguments
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.ArrayBuffer
@@ -66,17 +65,17 @@ inline fun <reified T : Any> obtainTypeConverter(): TypeConverter<T> {
   return TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>()) as TypeConverter<T>
 }
 
-inline fun <reified T> convert(value: Dynamic, context: AppContext? = null): T {
+inline fun <reified T> convert(value: Dynamic, context: ConverterContext): T {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
   return converter.convert(value, context) as T
 }
 
-inline fun <reified T> convert(value: Any?, context: AppContext? = null): T {
+inline fun <reified T> convert(value: Any?, context: ConverterContext): T {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
   return converter.convert(value, context) as T
 }
 
-fun convert(value: Dynamic, type: KType, context: AppContext? = null): Any? {
+fun convert(value: Dynamic, type: KType, context: ConverterContext): Any? {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(type.toTypeDescriptor())
   return converter.convert(value, context)
 }
@@ -90,6 +89,7 @@ object TypeConverterProviderImpl : TypeConverterProvider {
   private fun getCachedConverter(inputType: TypeDescriptor): TypeConverter<*>? {
     return cachedConverters[inputType.jClass]
   }
+
   private fun getCachedPrimitiveArrayConverter(typeDescriptor: TypeDescriptor): TypeConverter<*>? {
     return cachedPrimitiveArrayConverters[typeDescriptor.jClass]
   }
@@ -112,7 +112,8 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
     if (jClass.isArray || Array::class.java.isAssignableFrom(jClass)) {
       return if (isPrimitiveArray(typeDescriptor)) {
-        getCachedPrimitiveArrayConverter(typeDescriptor) ?: throw MissingTypeConverter(typeDescriptor)
+        getCachedPrimitiveArrayConverter(typeDescriptor)
+          ?: throw MissingTypeConverter(typeDescriptor)
       } else {
         ArrayTypeConverter(this, typeDescriptor)
       }
