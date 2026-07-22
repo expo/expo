@@ -5,6 +5,7 @@ import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 import type { PackageManagerOptions } from '../PackageManager';
 import { BunPackageManager } from '../node/BunPackageManager';
 import { NpmPackageManager } from '../node/NpmPackageManager';
+import { NubPackageManager } from '../node/NubPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';
 import { YarnPackageManager } from '../node/YarnPackageManager';
 
@@ -14,7 +15,8 @@ export type NodePackageManager =
   | NpmPackageManager
   | PnpmPackageManager
   | YarnPackageManager
-  | BunPackageManager;
+  | BunPackageManager
+  | NubPackageManager;
 
 export type NodePackageManagerForProject = PackageManagerOptions &
   Partial<Record<NodePackageManager['name'], boolean>>;
@@ -24,9 +26,10 @@ export const YARN_LOCK_FILE = 'yarn.lock';
 export const PNPM_LOCK_FILE = 'pnpm-lock.yaml';
 export const BUN_LOCK_FILE = 'bun.lockb';
 export const BUN_TEXT_LOCK_FILE = 'bun.lock';
+export const NUB_LOCK_FILE = 'nub.lock';
 
 /** The order of the package managers to use when resolving automatically */
-export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['bun', 'yarn', 'npm', 'pnpm'];
+export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['bun', 'nub', 'yarn', 'npm', 'pnpm'];
 
 /**
  * Resolve the used node package manager for a project by checking the lockfile.
@@ -43,6 +46,7 @@ export function resolvePackageManager(
     pnpm: [PNPM_LOCK_FILE],
     yarn: [YARN_LOCK_FILE],
     bun: [BUN_TEXT_LOCK_FILE, BUN_LOCK_FILE],
+    nub: [NUB_LOCK_FILE],
   };
 
   if (preferredManager) {
@@ -77,6 +81,8 @@ export function createForProject(
     return new PnpmPackageManager({ cwd: projectRoot, ...options });
   } else if (options.bun) {
     return new BunPackageManager({ cwd: projectRoot, ...options });
+  } else if (options.nub) {
+    return new NubPackageManager({ cwd: projectRoot, ...options });
   }
 
   switch (resolvePackageManager(projectRoot)) {
@@ -86,6 +92,8 @@ export function createForProject(
       return new YarnPackageManager({ cwd: projectRoot, ...options });
     case 'bun':
       return new BunPackageManager({ cwd: projectRoot, ...options });
+    case 'nub':
+      return new NubPackageManager({ cwd: projectRoot, ...options });
     case 'npm':
     default:
       return new NpmPackageManager({ cwd: projectRoot, ...options });
