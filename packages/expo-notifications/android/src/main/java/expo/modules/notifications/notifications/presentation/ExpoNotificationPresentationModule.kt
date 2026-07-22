@@ -2,6 +2,7 @@ package expo.modules.notifications.notifications.presentation
 
 import android.content.Context
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
@@ -29,11 +30,11 @@ open class ExpoNotificationPresentationModule : Module() {
       getAllPresented(
         context,
         createResultReceiver { resultCode: Int, resultData: Bundle? ->
-          val notifications = resultData?.getParcelableArrayList<Notification>(NotificationsService.NOTIFICATIONS_KEY)
+          val notifications = resultData?.let { BundleCompat.getParcelableArrayList(it, NotificationsService.NOTIFICATIONS_KEY, Notification::class.java) }
           if (resultCode == NotificationsService.SUCCESS_CODE && notifications != null) {
             promise.resolve(serializeNotifications(notifications))
           } else {
-            val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
+            val e = resultData?.let { BundleCompat.getSerializable(it, NotificationsService.EXCEPTION_KEY, Exception::class.java) }
             promise.reject("ERR_NOTIFICATIONS_FETCH_FAILED", "A list of displayed notifications could not be fetched.", e)
           }
         }
@@ -53,7 +54,7 @@ open class ExpoNotificationPresentationModule : Module() {
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null)
         } else {
-          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
+          val e = resultData?.let { BundleCompat.getSerializable(it, NotificationsService.EXCEPTION_KEY, Exception::class.java) }
           promise.reject("ERR_NOTIFICATION_DISMISSAL_FAILED", "Notification could not be dismissed.", e)
         }
       }
@@ -67,7 +68,7 @@ open class ExpoNotificationPresentationModule : Module() {
         if (resultCode == NotificationsService.SUCCESS_CODE) {
           promise.resolve(null)
         } else {
-          val e = resultData?.getSerializable(NotificationsService.EXCEPTION_KEY) as? Exception
+          val e = resultData?.let { BundleCompat.getSerializable(it, NotificationsService.EXCEPTION_KEY, Exception::class.java) }
           promise.reject("ERR_NOTIFICATIONS_DISMISSAL_FAILED", "Notifications could not be dismissed.", e)
         }
       }

@@ -2,6 +2,7 @@ package expo.modules.notifications.notifications.categories
 
 import android.content.Context
 import android.os.Bundle
+import androidx.core.os.BundleCompat
 import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
@@ -66,7 +67,7 @@ open class ExpoNotificationCategoriesModule : Module() {
       getCategories(
         context,
         createResultReceiver { resultCode: Int, resultData: Bundle? ->
-          val categories = resultData?.getParcelableArrayList<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORIES_KEY)
+          val categories = resultData?.let { BundleCompat.getParcelableArrayList(it, NotificationsService.NOTIFICATION_CATEGORIES_KEY, NotificationCategory::class.java) }
           if (resultCode == NotificationsService.SUCCESS_CODE && categories != null) {
             promise.resolve(serializeCategories(categories))
           } else {
@@ -119,7 +120,7 @@ open class ExpoNotificationCategoriesModule : Module() {
       context,
       NotificationCategory(identifier, actions),
       createResultReceiver { resultCode: Int, resultData: Bundle? ->
-        val category = resultData?.getParcelable<NotificationCategory>(NotificationsService.NOTIFICATION_CATEGORY_KEY)
+        val category = resultData?.let { BundleCompat.getParcelable(it, NotificationsService.NOTIFICATION_CATEGORY_KEY, NotificationCategory::class.java) }
         if (resultCode == NotificationsService.SUCCESS_CODE && category != null) {
           promise.resolve(serializer.toBundle(category))
         } else {

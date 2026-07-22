@@ -99,6 +99,7 @@ _This version does not introduce any user-facing changes._
 ### 💡 Others
 
 - Skip redundant device push token registration when token and metadata are unchanged since last successful registration. ([#44836](https://github.com/expo/expo/pull/44836) by [@stephanepham](https://github.com/stephanepham))
+- [Android] Migrated deprecated `Bundle.getParcelable`/`getSerializable`/`getParcelableArrayList` and `Intent.getParcelableExtra` call sites to type-safe variants via `androidx.core.os.BundleCompat` and `androidx.core.content.IntentCompat`. ([#45025](https://github.com/expo/expo/pull/45025) by [@hbabathe](https://github.com/hbabathe))
 
 ## 55.0.20 - 2026-04-21
 

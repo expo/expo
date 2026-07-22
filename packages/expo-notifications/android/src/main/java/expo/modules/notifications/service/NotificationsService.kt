@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.*
 import android.util.Log
 import androidx.core.app.RemoteInput
+import androidx.core.content.IntentCompat
+import androidx.core.os.BundleCompat
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.notifications.BuildConfig
 import expo.modules.notifications.notifications.model.NotificationBehaviorRecord
@@ -496,8 +498,8 @@ open class NotificationsService : BroadcastReceiver() {
     fun createNotificationResponseBroadcastIntent(context: Context, intent: Intent?): Intent {
       val extras = intent?.extras
       // Fallback to byte arrays when Parcelable extras are null (see https://github.com/expo/expo/issues/38908)
-      val notification = extras?.getParcelable<Notification>(NOTIFICATION_KEY) ?: unmarshalObject(Notification.CREATOR, extras?.getByteArray(NOTIFICATION_BYTES_KEY))
-      val action = extras?.getParcelable<NotificationAction>(NOTIFICATION_ACTION_KEY) ?: unmarshalObject(NotificationAction.CREATOR, extras?.getByteArray(NOTIFICATION_ACTION_BYTES_KEY))
+      val notification = extras?.let { BundleCompat.getParcelable(it, NOTIFICATION_KEY, Notification::class.java) } ?: unmarshalObject(Notification.CREATOR, extras?.getByteArray(NOTIFICATION_BYTES_KEY))
+      val action = extras?.let { BundleCompat.getParcelable(it, NOTIFICATION_ACTION_KEY, NotificationAction::class.java) } ?: unmarshalObject(NotificationAction.CREATOR, extras?.getByteArray(NOTIFICATION_ACTION_BYTES_KEY))
       if (notification == null || action == null) {
         throw IllegalArgumentException("notification ($notification) and action ($action) should not be null")
       }
@@ -536,10 +538,10 @@ open class NotificationsService : BroadcastReceiver() {
     }
 
     fun getNotificationResponseFromBroadcastIntent(intent: Intent): NotificationResponse {
-      val notification = intent.getParcelableExtra<Notification>(NOTIFICATION_KEY)
+      val notification = IntentCompat.getParcelableExtra(intent, NOTIFICATION_KEY, Notification::class.java)
         ?: unmarshalObject(Notification.CREATOR, intent.getByteArrayExtra(NOTIFICATION_BYTES_KEY))
         ?: throw IllegalArgumentException("$NOTIFICATION_KEY not found in the intent extras.")
-      val action = intent.getParcelableExtra<NotificationAction>(NOTIFICATION_ACTION_KEY)
+      val action = IntentCompat.getParcelableExtra(intent, NOTIFICATION_ACTION_KEY, NotificationAction::class.java)
         ?: unmarshalObject(NotificationAction.CREATOR, intent.getByteArrayExtra(NOTIFICATION_ACTION_BYTES_KEY))
         ?: throw IllegalArgumentException("$NOTIFICATION_ACTION_KEY not found in the intent extras.")
       val response = if (action is TextInputNotificationAction) {
@@ -711,8 +713,8 @@ open class NotificationsService : BroadcastReceiver() {
 
   open fun onPresentNotification(context: Context, intent: Intent) =
     getPresentationDelegate(context).presentNotification(
-      intent.extras?.getParcelable(NOTIFICATION_KEY)!!,
-      intent.extras?.getParcelable(NOTIFICATION_BEHAVIOR_KEY)
+      intent.extras?.let { BundleCompat.getParcelable(it, NOTIFICATION_KEY, Notification::class.java) }!!,
+      intent.extras?.let { BundleCompat.getParcelable(it, NOTIFICATION_BEHAVIOR_KEY, NotificationBehaviorRecord::class.java) }
     )
 
   open fun onGetAllPresentedNotifications(context: Context, intent: Intent) =
@@ -739,7 +741,7 @@ open class NotificationsService : BroadcastReceiver() {
 
   open fun onReceiveNotification(context: Context, intent: Intent) =
     getHandlingDelegate(context).handleNotification(
-      intent.getParcelableExtra(NOTIFICATION_KEY)!!
+      IntentCompat.getParcelableExtra(intent, NOTIFICATION_KEY, Notification::class.java)!!
     )
 
   open fun onReceiveNotificationResponse(context: Context, intent: Intent) {
@@ -769,7 +771,7 @@ open class NotificationsService : BroadcastReceiver() {
       putParcelable(
         NOTIFICATION_CATEGORY_KEY,
         getCategoriesDelegate(context).setCategory(
-          intent.getParcelableExtra(NOTIFICATION_CATEGORY_KEY)!!
+          IntentCompat.getParcelableExtra(intent, NOTIFICATION_CATEGORY_KEY, NotificationCategory::class.java)!!
         )
       )
     }
@@ -809,7 +811,7 @@ open class NotificationsService : BroadcastReceiver() {
 
   open fun onScheduleNotification(context: Context, intent: Intent) =
     getSchedulingDelegate(context).scheduleNotification(
-      intent.extras?.getParcelable(NOTIFICATION_REQUEST_KEY)!!
+      intent.extras?.let { BundleCompat.getParcelable(it, NOTIFICATION_REQUEST_KEY, NotificationRequest::class.java) }!!
     )
 
   open fun onNotificationTriggered(context: Context, intent: Intent) =
