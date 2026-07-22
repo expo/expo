@@ -582,28 +582,22 @@ Files: `global-state/routingQueue.ts` (mostly deleted), `global-state/router.ts`
 `imperative-api.tsx`, `fork/NavigationContainer.tsx`.
 
 ### Step 2 — State moves into a root `useReducer`, shadowed for behavior-neutrality (D1)
-> **Corrections (found during execution, 2026-07-22 — Step 2).** With the routing-queue deletion
-> resequenced into Step 5 (the `[step 1]` note), four of Step 2's originally-bundled sub-changes are
-> entangled with the Step-5 render-flip and **move to Step 5**, each for a code-verified reason.
-> Step 2 as executed = **the substrate swap + shadow-compare only** (behavior-neutral). Deferred to
-> Step 5: **(a) resolution fusion** — `getNavigateAction`→reducer and the five raw-intent caller
-> conversions (same nested-navigator-during-mount regression that resequenced Step 1: reduce-time
-> resolution before the target navigator registers, and the queue's deferral is load-bearing until
-> the flip); **(b) state-carried `pendingActions`** — its premise "a pure reducer cannot requeue" is
-> false while the reducer is still invoked imperatively in `dispatchRoot`, which keeps
-> `pendingReplayRef`; converting ref→state buys no Step-2 behavior and costs nanoid/serialization/
-> idempotency hazards, so mount-window replay stays ref-based in Step 2; **(c) verdict elimination**
-> (`handled`/`noop` removal, `canGoBack`/`canDismiss` → referential identity) — `dispatchRoot`'s
-> boolean return has live consumers in `useNavigationBuilder` (`RECONCILE_ROUTE_NAMES` reads it
-> same-commit from a layout effect; the RECONCILE completion-signal redesign is D1-item-4 = Step 5),
-> and referential identity is unsound before the flip (`replacePathState` returns a fresh root on
-> nested handled-noops); **(d) install lifecycle** — neither the committed mirror nor the installed
-> `dispatch` has a Step-2 consumer (`store.state` works through `getRootState()`; the queue still
-> targets `navigationRef.dispatch`). The Step-2 Red-list items depending on (a)–(d)
-> (replay/mount-window via `pendingActions`, native-source-never-queued, same-tick
-> `push();canGoBack()` behavior *change*) are correspondingly **Step-5 pins or Step-2
-> characterizations** (behavior unchanged in Step 2). See `steps/Step-2.md` for the full analysis.
-> The design paragraphs below are the end state; the deferred parts land in Step 5.
+> **Corrections (found during execution, 2026-07-22 — Step 2).** Step 2 as executed = **the
+> substrate swap + shadow-compare only** (behavior-neutral). Four originally-bundled sub-changes are
+> entangled with the Step-5 render-flip and **moved to Step 5** (full analysis in `steps/Step-2.md`,
+> scope checklist under Step 5), each one line:
+> - **(a) Resolution fusion** (`getNavigateAction`→reducer + five caller conversions) — reduce-time
+>   resolution regresses nested-navigator-during-mount; the queue's deferral is load-bearing until the flip.
+> - **(b) State-carried `pendingActions`** — a pure reducer can't requeue only once render-authoritative;
+>   Step 2's reducer still runs imperatively, so mount-window replay stays ref-based (`pendingReplayRef`).
+> - **(c) Verdict elimination** — `dispatchRoot`'s boolean has same-commit `useNavigationBuilder`
+>   consumers tied to the Step-5 `RECONCILE_ROUTE_NAMES` redesign; the referential-identity `canGoBack`
+>   the plan named is a **bug** (see Step 5).
+> - **(d) Install lifecycle** — neither the mirror nor the installed `dispatch` has a Step-2 consumer.
+>
+> The Step-2 Red-list items depending on (a)–(d) (replay via `pendingActions`, native-source-never-queued,
+> the same-tick `push();canGoBack()` behavior *change*) are correspondingly Step-5 pins or Step-2
+> characterizations (behavior unchanged in Step 2). The design paragraphs below are the end state.
 
 `BaseNavigationContainer` replaces `useSyncState` with
 `useReducer(rootNavigationReducer, seed)` (R1/R2 already stripped the dispatch-time side
@@ -689,17 +683,53 @@ Files (round-3 corrected — `fork/native-stack/`'s view wrapper is dead code an
 rn-screens' `<Screen>` — no react-freeze anywhere in expo-router, prop injection suffices).
 
 ### Step 5 — The flip: navigators read React state; JS-initiated commits become transitions (atomic core)
-> **Pickup from Step 2 (2026-07-22).** Step 2 executed as the substrate-swap + shadow-compare only;
-> four sub-changes deferred here, each entangled with the flip: **(a)** resolution fusion
-> (`getNavigateAction`→reducer + the five raw-intent caller conversions — already listed below as the
-> absorbed D2 work); **(b)** the state-carried `pendingActions` mount-window replay redesign (Step 2
-> keeps `pendingReplayRef` — the render-authoritative pure reducer that genuinely can't requeue is
-> this step); **(c)** verdict elimination (`handled`/`noop` removal, `canGoBack`/`canDismiss` →
-> referential identity — coupled to the `RECONCILE_ROUTE_NAMES` completion-signal redesign already
-> scoped here, and only sound once the flip guarantees noop identity); **(d)** the install lifecycle
-> (`dispatch` + committed mirror into the global store — the queue deletion below needs the installed
-> `dispatch`, the flip needs the mirror). Step 2 also deleted the shadow scaffolding's counterpart
-> `handled`/`noop` test rewrites from its own scope — they belong to (c) here. See `steps/Step-2.md`.
+> **Pickup from Step 2 (2026-07-22).** Step 2 executed as the substrate-swap + shadow-compare only.
+> Four sub-changes deferred here (detail + code-verified rationale in `steps/Step-2.md`):
+> - **(a) Resolution fusion** — `getNavigateAction`→reducer + the five raw-intent caller conversions
+>   (queue deferral is load-bearing until this flip; already the absorbed D2 work below).
+> - **(b) State-carried `pendingActions`** replay redesign — a pure reducer can't requeue only once
+>   it's render-authoritative; Step 2 kept `pendingReplayRef` because its reducer still ran imperatively.
+> - **(c) Verdict elimination** (`handled`/`noop` removal, `canGoBack`/`canDismiss` off the verdict)
+>   — `dispatchRoot`'s boolean has same-commit consumers in `useNavigationBuilder` tied to the
+>   `RECONCILE_ROUTE_NAMES` redesign already scoped here; verdict-shape test rewrites belong here too.
+> - **(d) Install lifecycle** — `dispatch` + committed mirror into the global store (the queue
+>   deletion needs the installed `dispatch`; the flip needs the mirror).
+>
+> **⚠ Plan bug to fix, not implement as written (do NOT ship `canGoBack`/`canDismiss` as
+> `reducer(...) !== committed`).** The plan's referential-identity switch is **unsound**:
+> `rootReducer`'s handled-noop path returns `currentTree` from `replacePathState` (`rootReducer.ts`),
+> which rebuilds every ancestor via `{ ...parent, routes }` *even when the reduced slice is
+> unchanged*. So for a **nested** focused navigator (stack-under-tabs-under-root — the common case) a
+> genuine no-op returns a **fresh, deep-equal-but-non-identical** root: `currentTree !== tree`.
+> `reducer(GO_BACK) !== committed` would then report `canGoBack: true` for a stack that cannot pop.
+> Only root-targeted noops preserve identity. Step 5 must **either** make the reducer return the
+> identical `tree` reference on every no-op (add a `changed ? currentTree : tree` guard at each
+> handled-noop return — part of the flip's own "reducer guarantees noop identity" work) **or** keep
+> an explicit `changed` bit rather than relying on referential identity. Pin with a nested-noop
+> `canGoBack` test.
+>
+> **Accumulated Step-5 scope (checklist + suggested internal sub-order).** This step now carries a
+> large pile; sequence it rather than discovering it:
+> 1. **Reducer noop-identity guarantee** (the (c) prerequisite above) — make no-op reductions return
+>    the identical tree reference; land + test first, everything else leans on it.
+> 2. **`RECONCILE_ROUTE_NAMES` completion-signal redesign** (D1 item 4) — urgent dispatch + same-render
+>    committed-slice observation; widen the `useNavigationBuilder` dev identity-invariant tolerance.
+> 3. **Verdict elimination** (c) — remove `handled`/`noop`; switch `canGoBack`/`canDismiss` to the
+>    noop-identity check from (1); rewrite verdict-shape tests (`rootReducer.test`,
+>    `BaseNavigationContainer.test` reducer mocks) to the new observable.
+> 4. **The flip** — navigators read the `useReducer` tree via context; JS-initiated dispatch wrapped
+>    in `React.startTransition` (source tag, D5); native/replay stay urgent; slice-keyed memo layer
+>    (risk 3); delete the Step-2 shadow scaffolding (grep `shadow`/`createShadowReducer`/`reduceRoot`
+>    split/`__setShadowAssertEnabled`/`shadowCompare.ts`).
+> 5. **Queue deletion + resolution fusion** (a) — delete `useImperativeApiEmitter` uSES/effect drain;
+>    fuse `getNavigateAction` into the reducer (`(state, action, registry, config)`); convert the five
+>    raw-intent callers; keep the minimal pre-ready buffer. Pin with the two repro canaries
+>    (`issues.test` nested-first-render single-mount; `tabs.test` dynamic-href param).
+> 6. **State-carried `pendingActions`** (b) — replace `pendingReplayRef` with the hardened
+>    identity-keyed append; source-gated deferrability (needs the D5 tag from step 4).
+> 7. **Install lifecycle** (d) — install `dispatch` + committed mirror into `global-state/store.ts`.
+> (Steps 1–4 are the atomic core that must land together; 5–7 ride in the same commit but are listed
+> separately so they can be built and tested incrementally before squashing.)
 
 In plain English: today, every navigator independently subscribes to the store and re-reads its
 slice whenever anything changes — that subscription (`useSyncExternalStore`) is exactly what
