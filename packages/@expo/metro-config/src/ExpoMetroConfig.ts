@@ -386,9 +386,7 @@ export function getDefaultConfig(
           return [];
         }
 
-        return require(
-          path.join(getReactNativeHostPath(projectRoot, platform), 'rn-get-polyfills')
-        )();
+        return require('@react-native/js-polyfills')();
       },
     },
     server: {

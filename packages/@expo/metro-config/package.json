@@ -84,6 +84,7 @@
     "@jridgewell/gen-mapping": "^0.3.13",
     "@jridgewell/remapping": "^2.3.5",
     "@jridgewell/sourcemap-codec": "^1.5.5",
+    "@react-native/js-polyfills": "0.86.0",
     "browserslist": "^4.25.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
