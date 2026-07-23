@@ -48,6 +48,7 @@
 - Bump to `dnssd-advertise@^1.1.6` ([#47183](https://github.com/expo/expo/pull/47183) by [@kitten](https://github.com/kitten))
 - [Internal] Migrate structured event logging to the `2g` package ([#46667](https://github.com/expo/expo/pull/46667) by [@kitten](https://github.com/kitten))
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
+- [Internal] Remove the `router-e2e` `customizeFrame` override that was hiding stack frames in the dev console tests ([#48053](https://github.com/expo/expo/pull/48053) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ## 56.1.12 — 2026-05-26
 
