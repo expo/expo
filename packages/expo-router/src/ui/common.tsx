@@ -8,9 +8,8 @@ import type {
   PartialRoute,
   Route,
 } from '../react-navigation/native';
-import { sortRoutesWithInitial } from '../sortRoutes';
 import type { Href } from '../types';
-import { routeToScreen } from '../useScreens';
+import { type ScreenProps, useSortedScreens } from '../useScreens';
 import { Slot } from './Slot';
 import type { ExpoTabActionType } from './TabRouter';
 
@@ -35,17 +34,18 @@ type TriggerConfig =
       name: string;
       href: string;
       routeNode: RouteNode;
+      contextKey: string;
+      initialParams?: Record<string, any>;
       action: JumpToNavigationAction;
     }
   | { type: 'external'; name: string; href: string };
 
-export type TriggerMap = Record<string, TriggerConfig & { index: number }>;
+export type TriggerMap = Record<string, TriggerConfig>;
 
-export function triggersToScreens(
+export function useTriggersToScreens(
   triggers: ScreenTrigger[],
   layoutRouteNode: RouteNode,
   linking: LinkingOptions<ParamListBase>,
-  initialRouteName: undefined | string,
   parentTriggerMap: TriggerMap,
   routeInfo: UrlObject,
   contextKey: string
@@ -119,10 +119,17 @@ export function triggersToScreens(
       if (state.name === targetStateName) break;
       state = state.state.routes[state.state.index ?? state.state.routes.length - 1]!;
     }
+    const isWithinLayout = state?.name === targetStateName;
     routeState =
       state!.state?.routes[state!.state.index ?? state!.state.routes.length - 1] || state;
 
     const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
+
+    if (!isWithinLayout) {
+      throw new Error(
+        `Tab trigger '${trigger.name}' with href '${resolvedHref}' must point to a route within the tabs layout.`
+      );
+    }
 
     if (!routeNode) {
       console.warn(
@@ -144,51 +151,56 @@ export function triggersToScreens(
     if (duplicateTrigger) {
       const duplicateTriggerText = `${JSON.stringify({ name: duplicateTrigger.name, href: duplicateTrigger.href })} and ${JSON.stringify({ name: trigger.name, href: trigger.href })}`;
 
+      // TODO(@ubax): Support multiple triggers for one dynamic route with different params.
       throw new Error(
         `A navigator cannot contain multiple trigger components that map to the same sub-segment. Consider adding a shared group and assigning a group to each trigger. Conflicting triggers:\n\t${duplicateTriggerText}.\nBoth triggers map to route ${routeNode.route}.`
       );
     }
 
+    const params = { ...routeState.params };
+    let nestedState = routeState.state;
+    while (nestedState) {
+      const nestedRoute = nestedState.routes[nestedState.index ?? nestedState.routes.length - 1]!;
+      Object.assign(params, nestedRoute.params);
+      nestedState = nestedRoute.state;
+    }
+
+    // TODO(@ubax): Remove nested trigger href support to unify with other tab navigators.
+    const action = stateToAction(state, layoutRouteNode.route);
+    action.payload.params = { ...params, ...action.payload.params };
     configs.push({
       ...trigger,
       href: resolvedHref,
       routeNode,
-      action: stateToAction(state, layoutRouteNode.route),
+      contextKey,
+      initialParams: params,
+      action,
     });
   }
 
-  const sortFn = sortRoutesWithInitial(initialRouteName);
-
-  const sortedConfigs = configs.sort((a, b) => {
-    // External routes should be last. They will eventually be dropped
-    if (a.type === 'external' && b.type === 'external') {
-      return 0;
-    } else if (a.type === 'external') {
-      return 1;
-    } else if (b.type === 'external') {
-      return -1;
-    }
-
-    return sortFn(a.routeNode, b.routeNode);
-  });
-
-  const children: React.JSX.Element[] = [];
+  const screenProps: ScreenProps[] = [];
   const triggerMap: TriggerMap = { ...parentTriggerMap };
 
-  for (const [index, config] of sortedConfigs.entries()) {
-    triggerMap[config.name] = { ...config, index };
+  for (const config of configs) {
+    triggerMap[config.name] = config;
 
     if (config.type === 'internal') {
-      // Trigger-declared screens are layout-declared, same as `<Screen>` children.
-      children.push(routeToScreen(config.routeNode, undefined, undefined, 'layout'));
+      screenProps.push({
+        name: config.routeNode.route,
+        initialParams: config.initialParams,
+      });
     }
   }
+
+  const children = useSortedScreens(screenProps);
+
   return {
     children,
     triggerMap,
   };
 }
 
+// TODO(@ubax): Remove stateToAction together with nested trigger href support.
 export function stateToAction(
   state: PartialRoute<Route<string, object | undefined>> | undefined,
   startAtRoute?: string
