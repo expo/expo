@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 56.2.16 — 2026-07-23
+
+### 🐛 Bug fixes
+
 - Fix crash when a preloaded route is removed from the navigator. ([#47972](https://github.com/expo/expo/pull/47972) by [@Ubax](https://github.com/Ubax))
 
 ### 💡 Others

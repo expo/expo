@@ -4,13 +4,13 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '56.0.22'
+version = '56.0.23'
 
 android {
   namespace "expo.modules.imagemanipulator"
   defaultConfig {
     versionCode 23
-    versionName "56.0.22"
+    versionName "56.0.23"
   }
 }
 

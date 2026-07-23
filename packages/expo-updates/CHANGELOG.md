@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 56.0.23 — 2026-07-23
+
+### 🐛 Bug fixes
+
+- Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
 
 ## 56.0.22 — 2026-07-15
 

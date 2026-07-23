@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- [android] Add support for publishing a single fused AAR via AGP Fused Library ([#47921](https://github.com/expo/expo/pull/45878) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 56.0.25 — 2026-07-23
+
+### 🎉 New features
+
+- [android] Add support for publishing a single fused AAR via AGP Fused Library ([#47921](https://github.com/expo/expo/pull/45878) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.24 — 2026-07-15
 

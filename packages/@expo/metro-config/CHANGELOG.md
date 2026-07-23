@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix `composeSourceMaps` crashing on Hermes source-map segments with a negative original position ([#47752](https://github.com/expo/expo/pull/47752) by [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 56.0.18 — 2026-07-23
+
+### 🐛 Bug fixes
+
+- Fix `composeSourceMaps` crashing on Hermes source-map segments with a negative original position ([#47752](https://github.com/expo/expo/pull/47752) by [@kitten](https://github.com/kitten))
 
 ## 56.0.17 — 2026-07-15
 
