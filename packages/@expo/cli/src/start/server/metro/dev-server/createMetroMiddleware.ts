@@ -28,7 +28,10 @@ export function createMetroMiddleware(
   metroConfig: Pick<MetroConfig, 'projectRoot'>,
   options: MetroMiddlewareOptions
 ) {
-  const messages = createMessagesSocket({ logger: Log, serverBaseUrl: options.serverBaseUrl });
+  const messages = createMessagesSocket({
+    logger: Log,
+    serverBaseUrl: options.serverBaseUrl,
+  });
   const events = createEventsSocket(messages);
 
   const middleware = connect()
@@ -50,7 +53,11 @@ export function createMetroMiddleware(
   };
 }
 
-const noCacheMiddleware: connect.NextHandleFunction = (_req, res, next) => {
+const noCacheMiddleware: connect.NextHandleFunction = (req, res, next) => {
+  if (req.url?.startsWith('/_expo/loaders/')) {
+    return next();
+  }
+
   res.setHeader('Surrogate-Control', 'no-store');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');

@@ -20,7 +20,9 @@ describe(createMetroMiddleware, () => {
       res.write('console.log("Hello, world!");');
       res.end();
     });
-    const response = await server.fetch('/test.bundle', { headers: { 'Accept-Encoding': 'gzip' } });
+    const response = await server.fetch('/test.bundle', {
+      headers: { 'Accept-Encoding': 'gzip' },
+    });
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Encoding')).toBe('gzip');
   });
@@ -32,7 +34,9 @@ describe(createMetroMiddleware, () => {
       res.write('{}');
       res.end();
     });
-    const response = await server.fetch('/test.map', { headers: { 'Accept-Encoding': 'gzip' } });
+    const response = await server.fetch('/test.map', {
+      headers: { 'Accept-Encoding': 'gzip' },
+    });
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Encoding')).toBe('gzip');
   });
@@ -43,7 +47,9 @@ describe(createMetroMiddleware, () => {
       res.write('Hello, world!');
       res.end();
     });
-    const response = await server.fetch('/test', { headers: { 'Accept-Encoding': 'gzip' } });
+    const response = await server.fetch('/test', {
+      headers: { 'Accept-Encoding': 'gzip' },
+    });
     expect(response.status).toBe(200);
     expect(response.headers.get('Content-Encoding')).toBeFalsy();
   });
@@ -63,6 +69,21 @@ describe(createMetroMiddleware, () => {
     );
     expect(response.headers.get('Pragma')).toBe('no-cache');
     expect(response.headers.get('Expires')).toBe('0');
+  });
+
+  it('does not apply blanket no-cache headers to loader requests', async () => {
+    metro.middleware.use('/_expo/loaders/cacheable', (_req, res) => {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.end('{}');
+    });
+
+    const response = await server.fetch('/_expo/loaders/cacheable');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600');
+    expect(response.headers.get('Surrogate-Control')).toBeNull();
+    expect(response.headers.get('Pragma')).toBeNull();
+    expect(response.headers.get('Expires')).toBeNull();
   });
 
   it('responds to /status requests', async () => {
@@ -100,7 +121,10 @@ describe(createMetroMiddleware, () => {
 
       const response = await server.fetch('/open-stack-frame', {
         method: 'POST',
-        body: JSON.stringify({ file: '/project/test-file.ts', lineNumber: 1337 }),
+        body: JSON.stringify({
+          file: '/project/test-file.ts',
+          lineNumber: 1337,
+        }),
       });
 
       // Ensure the request is successful
