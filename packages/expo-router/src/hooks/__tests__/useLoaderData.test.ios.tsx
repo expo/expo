@@ -5,7 +5,7 @@ import { Text } from 'react-native';
 
 import { router, Slot } from '../../exports';
 import Tabs from '../../layouts/Tabs';
-import { LoaderCache, LoaderCacheContext } from '../../loaders/LoaderCache';
+import { defaultLoaderCache, LoaderCache, LoaderCacheContext } from '../../loaders/LoaderCache';
 import { ServerDataLoaderContext } from '../../loaders/ServerDataLoaderContext';
 import { fetchLoader } from '../../loaders/utils';
 import { renderRouter } from '../../testing-library';
@@ -29,19 +29,30 @@ describe(useLoaderData, () => {
   afterEach(() => {
     global.window = originalWindow;
     delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
+    defaultLoaderCache.clear();
   });
 
   it.each([
     { route: 'index', initialUrl: '/', expectedPath: '/index' },
-    { route: 'users/index', initialUrl: '/users', expectedPath: '/users/index' },
+    {
+      route: 'users/index',
+      initialUrl: '/users',
+      expectedPath: '/users/index',
+    },
     { route: '(group)/index', initialUrl: '/', expectedPath: '/(group)/index' },
-    { route: 'users/[id]', initialUrl: '/users/123', expectedPath: '/users/123' },
+    {
+      route: 'users/[id]',
+      initialUrl: '/users/123',
+      expectedPath: '/users/123',
+    },
   ])('resolves $route to $expectedPath', ({ route, initialUrl, expectedPath }) => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       [expectedPath]: { correct: true },
     };
 
-    const { result } = renderHook(() => useLoaderData(), [route], { initialUrl });
+    const { result } = renderHook(() => useLoaderData(), [route], {
+      initialUrl,
+    });
 
     expect(result.current).toEqual({ correct: true });
   });
@@ -109,6 +120,65 @@ describe(useLoaderData, () => {
     });
 
     expect(result.current).toEqual({ some: 'data' });
+    expect(globalThis.__EXPO_ROUTER_LOADER_DATA__).not.toHaveProperty('/index');
+  });
+
+  it('consumes hydration data once and fetches on a later remount', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { fromHydration: true },
+    };
+
+    const cache = new LoaderCache();
+    const CacheWrapper = ({ children }: { children: React.ReactNode }) => (
+      <LoaderCacheContext value={cache}>{children}</LoaderCacheContext>
+    );
+
+    const firstMount = renderHook(() => useLoaderData(), ['index'], {
+      initialUrl: '/',
+      wrapper: CacheWrapper,
+    });
+    expect(firstMount.result.current).toEqual({ fromHydration: true });
+    expect(fetchLoaderMock).not.toHaveBeenCalled();
+
+    firstMount.unmount();
+    // Reclamation is covered by LoaderSuspenseStore's lifecycle tests. Clear the retained route
+    // tree entry here to model a later navigation after the mount has been reclaimed.
+    cache.suspense.clear('/index');
+
+    renderHook(() => useLoaderData(), ['index'], {
+      initialUrl: '/',
+      wrapper: CacheWrapper,
+    });
+    expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
+    expect(fetchLoaderMock).toHaveBeenCalledWith('/index');
+  });
+
+  it('consumes hydration data once without fetching across a StrictMode double mount', () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { fromHydration: true },
+    };
+
+    const cache = new LoaderCache();
+    const seedSpy = jest.spyOn(cache.suspense, 'seed');
+    const StrictCacheWrapper = ({ children }: { children: React.ReactNode }) => (
+      <React.StrictMode>
+        <LoaderCacheContext value={cache}>{children}</LoaderCacheContext>
+      </React.StrictMode>
+    );
+
+    const { result } = renderHook(() => useLoaderData(), ['index'], {
+      initialUrl: '/',
+      wrapper: StrictCacheWrapper,
+    });
+
+    expect(result.current).toEqual({ fromHydration: true });
+    expect(seedSpy).toHaveBeenCalledTimes(1);
+    expect(fetchLoaderMock).not.toHaveBeenCalled();
+    expect(globalThis.__EXPO_ROUTER_LOADER_DATA__).not.toHaveProperty('/index');
   });
 
   it('retrieves fresh data from `fetchLoaderModule()`', async () => {
@@ -136,27 +206,30 @@ describe(useLoaderData, () => {
       await fetchLoaderMock.mock.results[0]!.value;
     });
 
-    expect(cache.getData('/users/123')).toEqual({ fromFetch: true });
+    expect(cache.suspense.get('/users/123')).toEqual({
+      data: { fromFetch: true },
+    });
   });
 
-  it('retrieves cached data from `LoaderCacheContext`', () => {
-    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/': { home: true },
-    };
-
+  it('forces HTTP revalidation for the first fetch after loader invalidation', () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
     const cache = new LoaderCache();
-    cache.setData('/users/123', { fromCache: true });
+    cache.suspense.set('/users/123', { data: { old: true } });
+    cache.invalidateAll({ revalidate: true });
 
     const CacheWrapper = ({ children }: { children: React.ReactNode }) => (
       <LoaderCacheContext value={cache}>{children}</LoaderCacheContext>
     );
 
-    const { result } = renderHook(() => useLoaderData(), ['users/[id]'], {
+    renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
       wrapper: CacheWrapper,
     });
 
-    expect(result.current).toEqual({ fromCache: true });
+    expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123', {
+      headers: { 'Cache-Control': 'no-cache' },
+    });
   });
 
   it(`uses the loader function's return types`, () => {
@@ -208,7 +281,9 @@ describe(useLoaderData, () => {
 
     act(() => router.push('/profile'));
 
-    expect(profileResults[profileResults.length - 1]).toEqual({ tab: 'profile' });
+    expect(profileResults[profileResults.length - 1]).toEqual({
+      tab: 'profile',
+    });
     // Home screen should still be showing its own results
     expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
   });

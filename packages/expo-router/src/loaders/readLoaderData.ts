@@ -3,8 +3,8 @@ import type { LoaderCache } from './LoaderCache';
 type LoaderFetcher<T> = (path: string) => Promise<T>;
 
 /**
- * Cache-first read for `useLoaderData`. Reads the per-mount Suspense store first, so a re-render
- * returns the settled value or the in-flight promise rather than starting another fetch.
+ * Read for `useLoaderData`. The per-mount Suspense store ensures a re-render returns the settled
+ * value or in-flight promise. A fresh mount fetches so the platform HTTP cache decides freshness.
  */
 export function readLoaderData<T>(
   cache: LoaderCache,
@@ -24,12 +24,6 @@ export function readLoaderData<T>(
     throw cachedError;
   }
 
-  if (cache.hasData(resolvedPath)) {
-    const data = cache.getData<T>(resolvedPath) as T;
-    cache.suspense.set(resolvedPath, { data });
-    return data;
-  }
-
   const promise = fetchIntoCache(cache, resolvedPath, fetcher).then(
     (data) => {
       cache.suspense.set(resolvedPath, { data });
@@ -45,7 +39,7 @@ export function readLoaderData<T>(
   return promise;
 }
 
-/** Fetch and write the result into the cache, deduped via its promise map. */
+/** Fetch the result, deduped via the cache's in-flight promise map. */
 function fetchIntoCache<T>(
   cache: LoaderCache,
   path: string,
@@ -58,7 +52,6 @@ function fetchIntoCache<T>(
 
   const promise = fetcher(path)
     .then((data) => {
-      cache.setData(path, data);
       cache.deleteError(path);
       cache.deletePromise(path);
       return data;
@@ -68,7 +61,6 @@ function fetchIntoCache<T>(
         cause: error,
       });
       cache.setError(path, wrappedError);
-      cache.deleteData(path);
       cache.deletePromise(path);
       throw wrappedError;
     });

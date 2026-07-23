@@ -10,6 +10,14 @@ describe(LoaderSuspenseStore, () => {
     expect(store.get('/p')).toEqual({ data: 'v1' });
   });
 
+  it('seeds a key idempotently without replacing an existing read', () => {
+    const store = new LoaderSuspenseStore();
+    store.seed('/p', 'seed');
+    store.seed('/p', 'replacement');
+
+    expect(store.get('/p')).toEqual({ data: 'seed' });
+  });
+
   it('stores and returns a pending promise', () => {
     const store = new LoaderSuspenseStore();
     const promise = Promise.resolve('v1');
@@ -70,6 +78,19 @@ describe(LoaderSuspenseStore, () => {
     await tick();
 
     expect(store.get('/p')).toEqual({ data: 'v1' });
+  });
+
+  it('does not double-consume a seed across a StrictMode remount', async () => {
+    const store = new LoaderSuspenseStore();
+    store.seed('/p', 'seed');
+    store.retain('/p');
+
+    store.release('/p');
+    store.retain('/p');
+    store.seed('/p', 'replacement');
+    await tick();
+
+    expect(store.get('/p')).toEqual({ data: 'seed' });
   });
 
   it('does not reclaim a key that was re-set after release', async () => {

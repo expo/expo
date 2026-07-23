@@ -11,13 +11,13 @@ import { createContext } from 'react';
 import { LoaderSuspenseStore } from './LoaderSuspenseStore';
 
 export class LoaderCache {
-  private data = new Map<string, unknown>();
   private errors = new Map<string, Error>();
   private promises = new Map<string, Promise<unknown>>();
+  private revalidations = new Set<string>();
   private version = 0;
   private listeners = new Set<() => void>();
 
-  /** Per-mount Suspense store layered on the document cache. */
+  /** Short-lived store that preserves promise identity and settled data for mounted readers. */
   readonly suspense = new LoaderSuspenseStore();
 
   // Arrow-bound so `loaderCache.subscribe` returns a stable reference across renders,
@@ -40,17 +40,17 @@ export class LoaderCache {
     }
   }
 
-  invalidateAll() {
+  invalidateAll({ revalidate = false }: { revalidate?: boolean } = {}) {
+    const mountedPaths = revalidate ? [...this.suspense.keys()] : [];
     this.clear();
+    for (const path of mountedPaths) {
+      this.revalidations.add(path);
+    }
     this.notify();
   }
 
-  getData<T = unknown>(path: string): T | undefined {
-    return this.data.get(path) as T | undefined;
-  }
-
-  hasData(path: string) {
-    return this.data.has(path);
+  takeRevalidation(path: string): boolean {
+    return this.revalidations.delete(path);
   }
 
   getError(path: string): Error | undefined {
@@ -59,14 +59,6 @@ export class LoaderCache {
 
   getPromise<T = unknown>(path: string): Promise<T> | undefined {
     return this.promises.get(path) as Promise<T> | undefined;
-  }
-
-  setData(path: string, value: unknown) {
-    this.data.set(path, value);
-  }
-
-  deleteData(path: string) {
-    this.data.delete(path);
   }
 
   setError(path: string, error: Error) {
@@ -85,10 +77,28 @@ export class LoaderCache {
     this.promises.delete(path);
   }
 
+  /**
+   * Lift a server-injected value into the keyed Suspense store and consume the global entry.
+   * The store write is idempotent so render replay and Strict Mode remounts keep the same value.
+   */
+  consumeHydrationData(path: string) {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
+    const hydrationData = globalThis.__EXPO_ROUTER_LOADER_DATA__;
+    if (!hydrationData || !Object.prototype.hasOwnProperty.call(hydrationData, path)) {
+      return;
+    }
+
+    this.suspense.seed(path, hydrationData[path]);
+    delete hydrationData[path];
+  }
+
   clear() {
-    this.data.clear();
     this.errors.clear();
     this.promises.clear();
+    this.revalidations.clear();
     this.suspense.reset();
   }
 }
@@ -105,7 +115,7 @@ if (__DEV__ && typeof window !== 'undefined') {
     globalThis.__EXPO_LOADER_INVALIDATE_LISTENER_REGISTERED__ = true;
     globalThis.__EXPO_LOADER_INVALIDATE_LISTENERS__.push(() => {
       delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
-      defaultLoaderCache.invalidateAll();
+      defaultLoaderCache.invalidateAll({ revalidate: true });
     });
   }
 }
