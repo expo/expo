@@ -26,6 +26,12 @@ export declare const libraryProduct: (name: string, targets: string[]) => string
 export declare const binaryTarget: (name: string) => string;
 export declare const makeArtifactsDirectory: (config: IosConfig) => void;
 export declare const printIosConfig: (config: IosConfig) => void;
+/**
+ * Fails fast when the brownfield scheme shares its name with a bundled framework — the bundled
+ * xcframework would silently overwrite the wrapper framework in the output, and Package.swift
+ * would declare the same target twice.
+ */
+export declare const validateSchemeCollision: (config: IosConfig) => void;
 export declare const validateHostProvided: (config: IosConfig) => void;
 export declare const shipFrameworks: (config: IosConfig) => Promise<void>;
 export declare const shipSwiftPackage: (config: IosConfig) => Promise<void>;

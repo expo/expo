@@ -24,6 +24,25 @@ export declare const isDirentDirectory: (entry: fs.Dirent, parentDir: string) =>
  */
 export declare const enumeratePrecompiledModules: (iosDir: string) => ModuleXCFramework[];
 /**
+ * Scans `ios/Pods/` for pods that build their vendored xcframework during the app build
+ * (`<Pod>/Products/<Pod>.xcframework`, e.g. ExpoModulesJSI). Prebuilt modules like
+ * ExpoModulesCore publicly depend on these, so without bundling them consumers fail with
+ * `unable to resolve module dependency: '<Name>'`.
+ */
+export declare const enumeratePodBuiltXcframeworks: (iosDir: string, existingNames: Set<string>) => ModuleXCFramework[];
+/**
+ * A shared SPM-dep xcframework staged as a symlink whose target only exists in a different
+ * build flavor than the requested one (e.g. only `.../SDWebImage/debug/` is on disk but a
+ * `--release` build was requested).
+ */
+export interface FlavorMismatch {
+    name: string;
+    /** The requested flavor that could not be found. */
+    flavor: string;
+    /** The wrong-flavor path the staged symlink resolves to. */
+    xcframeworkPath: string;
+}
+/**
  * Reads `<podDir>/artifacts/.last_build_configuration` and, if it doesn't match the requested
  * build configuration, shells out to autolinking's `replace-xcframework.js` to extract the
  * correct flavor tarball in place. This protects against the user having run
@@ -140,4 +159,5 @@ export declare const enumeratePrebuildModulesRaw: (cwd: string, buildConfigurati
     modules: ModuleXCFramework[];
     podModules: ModuleXCFramework[];
     podToNpm: Map<string, NpmPackageInfo>;
+    flavorMismatches: FlavorMismatch[];
 };

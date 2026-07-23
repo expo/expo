@@ -7,14 +7,15 @@ const buildIos = async (command) => {
     const config = (0, utils_1.resolveBuildConfigIos)(opts);
     (0, utils_1.printIosConfig)(config);
     (0, utils_1.validateHostProvided)(config);
+    (0, utils_1.validateSchemeCollision)(config);
     await (0, utils_1.buildFramework)(config);
     if (config.output !== 'frameworks') {
         // Ship frameworks as swift package
-        (0, utils_1.shipSwiftPackage)(config);
+        await (0, utils_1.shipSwiftPackage)(config);
     }
     else {
         // Ship frameworks as standalone XCFrameworks
-        (0, utils_1.shipFrameworks)(config);
+        await (0, utils_1.shipFrameworks)(config);
     }
 };
 exports.default = buildIos;
