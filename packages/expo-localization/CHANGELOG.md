@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- Prevent the `supportedLocales` config plugin from duplicating `resourceConfigurations` in `app/build.gradle` on repeated `expo prebuild` runs without `--clean`.
+- Prevent the `supportedLocales` config plugin from duplicating `resourceConfigurations` in `app/build.gradle` on repeated `expo prebuild --no-clean` runs.
 
 ### 💡 Others
 
