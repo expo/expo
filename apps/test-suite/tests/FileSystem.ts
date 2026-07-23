@@ -789,7 +789,7 @@ export async function test({ describe, expect, it, ...t }) {
         expect(src.exists).toBe(true);
       });
 
-      it('Can copy from cache to documents', () => {
+      it('Can copy from cache to documents', async () => {
         const src = new File(Paths.cache, 'file.txt');
         const dst = new File(Paths.document, 'file.txt');
         // cleanup
@@ -803,7 +803,7 @@ export async function test({ describe, expect, it, ...t }) {
         src.copySync(dst);
         expect(dst.uri).toBe(FS.documentDirectory + 'file.txt');
         expect(dst.exists).toBe(true);
-        expect(dst.md5).toBe(src.md5);
+        expect(await dst.digest('md5')).toBe(await src.digest('md5'));
       });
 
       it('throws when destination file exists and overwrite is not set', () => {
@@ -1004,14 +1004,14 @@ export async function test({ describe, expect, it, ...t }) {
         expect(() => file.rename('shouldNotWork.txt')).toThrow();
       });
 
-      it('renames a file and preserves file metadata', () => {
+      it('renames a file and preserves file metadata', async () => {
         const file = new File(testDirectory, 'metadata.txt');
         file.writeSync('Content');
         const originalSize = file.size;
-        const originalMd5 = file.md5;
+        const originalMd5 = await file.digest('md5');
         file.rename('metadataRenamed.txt');
         expect(file.size).toBe(originalSize);
-        expect(file.md5).toBe(originalMd5);
+        expect(await file.digest('md5')).toBe(originalMd5);
       });
 
       it('throws an error when renaming to an empty string', () => {
@@ -1597,7 +1597,7 @@ export async function test({ describe, expect, it, ...t }) {
         const response = await fetch(url);
         const src = new File(testDirectory, 'file.pdf');
         src.writeSync(await response.bytes());
-        expect(src.md5).toEqual(md5);
+        expect(await src.digest('md5')).toEqual(md5);
       });
 
       it('reports download progress via onProgress callback', async () => {

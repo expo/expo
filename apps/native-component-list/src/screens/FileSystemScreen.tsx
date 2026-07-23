@@ -292,7 +292,8 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           exists: file.exists,
           size: file.size,
           type: file.type,
-          md5: file.md5,
+          md5: await file.digest('md5'),
+          sha256: await file.digest('sha-256'),
           modificationTime: file.modificationTime,
           creationTime: file.creationTime,
         }))}
@@ -306,10 +307,7 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           }))}
         />
       )}
-      <SimpleActionDemo
-        title="Show info({ md5: true })"
-        action={withCurrentFile(async (file) => file.info({ md5: true }))}
-      />
+      <SimpleActionDemo title="Show info()" action={withCurrentFile(async (file) => file.info())} />
     </>
   );
 }
