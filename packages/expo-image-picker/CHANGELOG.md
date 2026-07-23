@@ -15,6 +15,7 @@
 - [Android] Grant the camera app explicit access to the output URI, so image capture keeps working as Android removes the implicit URI grant for `ACTION_IMAGE_CAPTURE`. ([#46954](https://github.com/expo/expo/pull/46954) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix `videoMaxDuration` option ([#47504](https://github.com/expo/expo/pull/47504) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fix `base64` returning original (non-JPEG) image data when `allowsEditing` is `false`. ([#48005](https://github.com/expo/expo/pull/48005) by [@barthap](https://github.com/barthap))
+- [Android] Fix crop failing for large images ([#48019](https://github.com/expo/expo/pull/48019) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
