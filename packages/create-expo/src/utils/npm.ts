@@ -161,17 +161,23 @@ async function npmPackAsync(
   }
 
   try {
-    const json = JSON.parse(results);
-    if (Array.isArray(json) && json.every(isNpmPackageInfo)) {
-      return json.map(sanitizeNpmPackageFilename);
-    } else {
-      throw new Error(`Invalid response from npm: ${results}`);
-    }
+    return parseNpmPackOutput(results);
   } catch (error: any) {
     throw new Error(
       `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
     );
   }
+}
+
+export function parseNpmPackOutput(results: string): NpmPackageInfo[] {
+  const json = JSON.parse(results);
+  const infos = Array.isArray(json) ? json : Object.values(json);
+
+  if (!infos.every(isNpmPackageInfo)) {
+    throw new Error(`Invalid response from npm: ${results}`);
+  }
+
+  return infos.map(sanitizeNpmPackageFilename);
 }
 
 export type NpmPackageInfo = {
