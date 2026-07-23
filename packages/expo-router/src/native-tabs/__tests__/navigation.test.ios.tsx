@@ -242,6 +242,27 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen).toHavePathname('/');
   });
 
+  it('removes a redirected route from tab history', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs backBehavior="history">
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+      notSpecified: () => <View testID="not-specified" />,
+    });
+
+    act(() => router.push('/second'));
+    act(() => router.push('/notSpecified'));
+    expect(screen).toHavePathname('/');
+
+    act(() => router.back());
+    expect(screen).toHavePathname('/second');
+  });
+
   it('respects initialRouteName when redirecting from a route without a visible tab', () => {
     renderRouter(
       {
