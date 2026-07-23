@@ -52,7 +52,7 @@ class ExpoUpdatesManifestSpec : ExpoSpec {
         expect(manifest.userInterfaceStyle()).to(beNil())
         expect(manifest.iosOrRootBackgroundColor()).to(beNil())
         expect(manifest.iosGoogleServicesFile()).to(beNil())
-        expect(manifest.supportsRTL()) == false
+        expect(manifest.supportsRTL()) == true
       }
     }
 
