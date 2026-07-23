@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-07-21T08:56:11.517Z",
-    "cliVersion": "21.0.2"
+    "fetchedAt": "2026-07-23T08:55:14.886Z",
+    "cliVersion": "21.1.0"
   },
-  "totalCommands": 125,
+  "totalCommands": 126,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -432,9 +432,9 @@
       "usage": "USAGE\n  $ eas observe:routes [--platform android|ios] [--metric nav_cold_ttr|nav_warm_ttr|nav_tti...] [--stat\n    median|med|p90|count|event_count|eventCount...] [--after <value>] [--limit <value>] [--start <value> | --days\n    <value>] [--end <value> | ] [--app-version <value>] [--update-id <value>] [--build-number <value>] [--route-name\n    <value>...] [--project-id <value>] [--json] [--non-interactive]\n\nFLAGS\n  --after=<value>          Cursor for pagination. Use the endCursor from a previous query to fetch the next page.\n  --app-version=<value>    Filter by app version\n  --build-number=<value>   Filter by app build number\n  --days=<value>           Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>            End of time range (ISO date)\n  --json                   Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --limit=<value>          The number of items to fetch each query. Defaults to 50 and is capped at 200.\n  --metric=<option>...     Navigation metric to display (can be specified multiple times). Defaults to all three.\n                           <options: nav_cold_ttr|nav_warm_ttr|nav_tti>\n  --non-interactive        Run the command in non-interactive mode.\n  --platform=<option>      Filter by platform\n                           <options: android|ios>\n  --project-id=<value>     EAS project ID (defaults to the project ID of the current directory)\n  --route-name=<value>...  Filter by route name (can be specified multiple times to include several routes)\n  --start=<value>          Start of time range (ISO date)\n  --stat=<option>...       Statistic to display per metric (can be specified multiple times)\n                           <options: median|med|p90|count|event_count|eventCount>\n  --update-id=<value>      Filter by EAS update ID\n\nDESCRIPTION\n  display app navigation route metrics (Cold TTR, Warm TTR, TTI) grouped by route name"
     },
     {
-      "command": "eas observe:session SESSIONID",
+      "command": "eas observe:session [SESSIONID]",
       "description": "display the timeline of metric and log events for a specific session",
-      "usage": "USAGE\n  $ eas observe:session SESSIONID [--project-id <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  SESSIONID  Session ID to inspect\n\nFLAGS\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n  --project-id=<value>  EAS project ID (defaults to the project ID of the current directory)\n\nDESCRIPTION\n  display the timeline of metric and log events for a specific session"
+      "usage": "USAGE\n  $ eas observe:session [SESSIONID] [--sort slowest|fastest|newest|oldest] [--event-name <value>] [--start <value> |\n    --days <value>] [--end <value> | ] [--project-id <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [SESSIONID]  Session ID to inspect (omit in interactive mode to pick one from a list)\n\nFLAGS\n  --days=<value>        Show results from the last N days (mutually exclusive with --start/--end)\n  --end=<value>         End of time range (ISO date)\n  --event-name=<value>  Metric or log event name to pick candidate sessions by (e.g. tti, cold_launch, login_pressed).\n                        If omitted in interactive mode, you will be prompted.\n  --json                Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive     Run the command in non-interactive mode.\n  --project-id=<value>  EAS project ID (defaults to the project ID of the current directory)\n  --sort=<option>       Sort order for candidate events when picking a session (if omitted in interactive mode, you will\n                        be prompted)\n                        <options: slowest|fastest|newest|oldest>\n  --start=<value>       Start of time range (ISO date)\n\nDESCRIPTION\n  display the timeline of metric and log events for a specific session"
     },
     {
       "command": "eas observe:versions",
@@ -460,6 +460,11 @@
       "command": "eas project:new [PATH]",
       "description": "Create a new project configured with Expo Application Services (EAS)",
       "usage": "USAGE\n  $ eas project:new [PATH] [-p bun|npm|pnpm|yarn]\n\nARGUMENTS\n  [PATH]  Path to create the project (defaults to current directory)\n\nFLAGS\n  -p, --package-manager=<option>  [default: npm] Package manager to use for installing dependencies\n                                  <options: bun|npm|pnpm|yarn>\n\nDESCRIPTION\n  Create a new project configured with Expo Application Services (EAS)\n\nALIASES\n  $ eas new"
+    },
+    {
+      "command": "eas simulator",
+      "description": "[EXPERIMENTAL] start a remote simulator session on EAS and get instructions to connect to it",
+      "usage": "USAGE\n  $ eas simulator [-p android|ios] [--type agent-device|argent|serve-sim] [--package-version <value>]\n    [--max-duration-minutes <value>] [--force] [--out-config-type env|dotenv] [--json] [--non-interactive]\n\nFLAGS\n  -p, --platform=<option>             Device platform\n                                      <options: android|ios>\n      --[no-]force                    [default: true] Create a new simulator session even when an existing simulator\n                                      session is present in the environment.\n      --json                          Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                      --non-interactive.\n      --max-duration-minutes=<value>  Maximum duration of the simulator session in minutes before it is automatically\n                                      stopped. Only customizable on paid plans. Defaults to a value derived from the job\n                                      run priority when omitted.\n      --non-interactive               Run the command in non-interactive mode.\n      --out-config-type=<option>      [default: dotenv] How to output simulator connection configuration. Use \"env\" to\n                                      print shell exports, or \"dotenv\" to write .env.eas-simulator.\n                                      <options: env|dotenv>\n      --package-version=<value>       Version of the package backing the simulator session (e.g. \"0.1.3-alpha.3\").\n                                      Defaults to \"latest\" when omitted.\n      --type=<option>                 [default: agent-device] Type of simulator session to create\n                                      <options: agent-device|argent|serve-sim>\n\nDESCRIPTION\n  [EXPERIMENTAL] start a remote simulator session on EAS and get instructions to connect to it\n\nALIASES\n  $ eas simulator"
     },
     {
       "command": "eas submit",
