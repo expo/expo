@@ -60,6 +60,8 @@ The above command will queue the build. Notice in the EAS dashboard that the **V
 
 ## Create an app on the Google Play Console
 
+> **info** Creating the first release manually is not required: `eas submit` can create your app's first release directly. In this tutorial, we walk through Play Console to get familiar with how releases work.
+
 To upload the app to the Google Play Store for the first time, we need to:
 
 - Go to the Google Play dashboard.
@@ -67,7 +69,7 @@ To upload the app to the Google Play Store for the first time, we need to:
 
 <ContentSpotlight
   alt="Create app on Google Play Console"
-  src="/static/images/tutorial/eas/play-store-01.png"
+  src="/static/images/tutorial/eas/play-store-01.webp"
   className="max-w-[800px]"
 />
 
@@ -166,7 +168,7 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 
 <ContentSpotlight
   alt="Downloading app on the device as an internal tester"
-  src="/static/images/tutorial/eas/play-store-15.png"
+  src="/static/images/tutorial/eas/play-store-15.webp"
   className="max-w-[240px]"
 />
 
@@ -174,13 +176,13 @@ Under **Releases**, we see that the app is available to internal testers. To sha
 
 <ContentSpotlight
   alt="On accepting the invite, the app can be installed on the device"
-  src="/static/images/tutorial/eas/play-store-16.png"
+  src="/static/images/tutorial/eas/play-store-16.webp"
   className="max-w-[240px]"
 />
 
 <ContentSpotlight
   alt="App installed on the device as an internal tester"
-  src="/static/images/tutorial/eas/play-store-17.png"
+  src="/static/images/tutorial/eas/play-store-17.webp"
   className="max-w-[260px]"
 />
 
@@ -205,7 +207,7 @@ To promote our internal test release version to **alpha**, in Google Play Store 
 
 > **info** **Tip**: Before following the steps in this section, see the instructions on [creating a Google Service Account key or downloading it from an existing account ](https://expo.fyi/creating-google-service-account) guide.
 
-From now on, we can use [EAS Submit](/submit/introduction/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's credentials.
+From now on, we can use [EAS Submit](/submit/android/) to automate releases and avoid the manual process. To do that, we need to add the service account key to our project's credentials.
 
 After following the Google Service Account guide steps, we can upload the downloaded JSON key to EAS dashboard:
 

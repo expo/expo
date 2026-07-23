@@ -11,7 +11,7 @@ object TaskServiceProviderHelper {
    Uses reflection to look through the current list of packages and attempts to find
    one that provides a TaskServiceInterface implementation.
    @param context Provide the application context (context.getApplicationContext())
-   @return A implementation of the TaskServiceInterface it a package offers it
+   @return An implementation of the TaskServiceInterface if a package offers it
    */
   @DoNotStrip
   fun getTaskServiceImpl(context: Context): TaskServiceInterface? {

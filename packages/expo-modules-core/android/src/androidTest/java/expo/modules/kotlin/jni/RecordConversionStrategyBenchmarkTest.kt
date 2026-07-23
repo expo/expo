@@ -8,6 +8,7 @@ import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.kotlin.types.TypeConverterProviderImpl
 import expo.modules.kotlin.types.descriptors.toTypeDescriptor
 import expo.modules.kotlin.types.descriptors.typeDescriptorOf
+import expo.modules.kotlin.types.testConverterContext
 import org.junit.Ignore
 import org.junit.Test
 import kotlin.reflect.typeOf
@@ -108,8 +109,8 @@ class RecordConversionStrategyBenchmarkTest {
     )
 
     // Warm up lazy propertyDescriptors
-    reflectionStrategy.convertFromMap(sampleMap, null, false)
-    introspectableStrategy.convertFromMap(sampleMap, null, false)
+    reflectionStrategy.convertFromMap(sampleMap, testConverterContext, false)
+    introspectableStrategy.convertFromMap(sampleMap, testConverterContext, false)
 
     var reflectionTotal = 0.nanoseconds
     var introspectableTotal = 0.nanoseconds
@@ -117,14 +118,14 @@ class RecordConversionStrategyBenchmarkTest {
     repeat(numberOfTries) {
       val reflectionTime = measureTime {
         repeat(numberOfCalls) {
-          reflectionStrategy.convertFromMap(sampleMap, null, false)
+          reflectionStrategy.convertFromMap(sampleMap, testConverterContext, false)
         }
       }
       reflectionTotal += reflectionTime / numberOfCalls
 
       val introspectableTime = measureTime {
         repeat(numberOfCalls) {
-          introspectableStrategy.convertFromMap(sampleMap, null, false)
+          introspectableStrategy.convertFromMap(sampleMap, testConverterContext, false)
         }
       }
       introspectableTotal += introspectableTime / numberOfCalls
@@ -150,7 +151,7 @@ class RecordConversionStrategyBenchmarkTest {
             TypeConverterProviderImpl,
             typeDescriptor
           )
-          strategy.convertFromMap(sampleMap, null, false)
+          strategy.convertFromMap(sampleMap, testConverterContext, false)
         }
       }
       reflectionTotal += reflectionTime / numberOfCalls
@@ -162,7 +163,7 @@ class RecordConversionStrategyBenchmarkTest {
             TypeConverterProviderImpl,
             typeDescriptor
           )
-          strategy.convertFromMap(sampleMap, null, false)
+          strategy.convertFromMap(sampleMap, testConverterContext, false)
         }
       }
       introspectableTotal += introspectableTime / numberOfCalls

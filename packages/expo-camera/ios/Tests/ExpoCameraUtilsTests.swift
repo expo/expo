@@ -74,6 +74,42 @@ struct ExpoCameraUtilsTests {
   }
 
   @Test(arguments: [
+    (UIDeviceOrientation.landscapeLeft, AVCaptureVideoOrientation.landscapeRight),
+    (.landscapeRight, .landscapeLeft),
+    (.portrait, .portrait),
+    (.portraitUpsideDown, .portraitUpsideDown),
+  ] as [(UIDeviceOrientation, AVCaptureVideoOrientation)])
+  func `capture follows the physical orientation when responsive orientation is enabled`(
+    physical: UIDeviceOrientation,
+    expected: AVCaptureVideoOrientation
+  ) {
+    #expect(ExpoCameraUtils.captureOrientation(
+      responsiveWhenOrientationLocked: true,
+      physicalOrientation: physical,
+      interfaceOrientation: .portrait
+    ) == expected)
+  }
+
+  @Test(arguments: [
+    (UIInterfaceOrientation.portrait, UIDeviceOrientation.landscapeLeft, AVCaptureVideoOrientation.portrait),
+    (.portrait, .landscapeRight, .portrait),
+    (.landscapeLeft, .portrait, .landscapeLeft),
+    (.landscapeRight, .faceUp, .landscapeRight),
+    (.portraitUpsideDown, .landscapeLeft, .portraitUpsideDown),
+  ] as [(UIInterfaceOrientation, UIDeviceOrientation, AVCaptureVideoOrientation)])
+  func `capture follows the interface orientation when responsive orientation is disabled`(
+    interface: UIInterfaceOrientation,
+    physical: UIDeviceOrientation,
+    expected: AVCaptureVideoOrientation
+  ) {
+    #expect(ExpoCameraUtils.captureOrientation(
+      responsiveWhenOrientationLocked: false,
+      physicalOrientation: physical,
+      interfaceOrientation: interface
+    ) == expected)
+  }
+
+  @Test(arguments: [
     (UIDeviceOrientation.portrait, "portrait"),
     (.landscapeLeft, "landscapeLeft"),
     (.landscapeRight, "landscapeRight"),

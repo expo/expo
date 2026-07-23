@@ -98,7 +98,12 @@ export function withMetroResolvers(
         const done = event.span();
         const resolution = firstResolver(universalContext, moduleName, platform);
         if (resolution) {
-          done('module', { module: moduleName, platform, type: resolution.type });
+          done('module', {
+            module: moduleName,
+            originModulePath: context.originModulePath,
+            platform,
+            type: resolution.type,
+          });
         }
         return resolution;
       },

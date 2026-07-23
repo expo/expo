@@ -113,6 +113,8 @@ export enum FileMode {
  * Obtain a `FileHandle` by calling [`File.open()`](#openmode) on a `File` instance.
  * The handle maintains an internal byte offset that advances automatically with each
  * read or write. Set the `offset` property to seek to an arbitrary position.
+ * Async operations on the same handle are not guaranteed to run in the order they are called.
+ * To ensure ordering, always `await` async operations on the same handle.
  *
  * Always call `close()` when finished to release the underlying file descriptor.
  * Failing to close a handle may prevent the file from being deleted, moved, or

@@ -34,6 +34,8 @@ const HomeIndex = () => {
       <CaseLink href="/js-tabs" text="JS Tabs" />
       <CaseLink href="/top-tabs" text="JS Top Tabs" />
       <CaseLink href="/experimental-stack" text="Experimental Stack" />
+      <CaseLink href="/drawer" text="Drawer" />
+      <CaseLink href="/drawer-open" text="Drawer (default open)" />
     </ScrollView>
   );
 };

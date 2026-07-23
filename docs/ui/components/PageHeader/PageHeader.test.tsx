@@ -1,7 +1,7 @@
 import { screen, fireEvent } from '@testing-library/react';
 import { createRequire } from 'node:module';
 
-import { renderWithHeadings, renderWithTestRouter } from '~/common/test-utilities';
+import { axe, renderWithHeadings, renderWithTestRouter } from '~/common/test-utilities';
 
 import { PageHeader } from './PageHeader';
 
@@ -171,5 +171,17 @@ describe(PageHeader, () => {
     });
 
     expect(screen.queryAllByText('Copy page').length).toBeGreaterThan(0);
+  });
+
+  test('has no axe violations', async () => {
+    const { container } = renderWithHeadings(
+      <PageHeader
+        title="test-title"
+        packageName="expo-audio"
+        sourceCodeUrl="https://github.com/expo/expo/tree/main/packages/expo-audio"
+        testRequire={require}
+      />
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

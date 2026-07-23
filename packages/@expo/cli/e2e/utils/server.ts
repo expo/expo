@@ -39,10 +39,10 @@ export type BackgroundServerOptions = ExpoSpawnOptions & {
    */
   port?: number | (() => Promise<number>);
   /**
-   * The host derrived from the child process output chunks (stdout or stderr).
+   * The host derived from the child process output chunks (stdout or stderr).
    * `server.startAsync` will not be resolved, until this method returns the host.
    * This method also functions as the ready-check to determine if the server fully started.
-   * When passing a URL, the port will be overriden using the configured port.
+   * When passing a URL, the port will be overridden using the configured port.
    */
   host(chunk: any): URL | string | null;
   /** Fully show the child process output, enabled when re-running GitHub Actions with debug mode */

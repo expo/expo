@@ -124,7 +124,7 @@ export function pauseInteractions(options: Omit<InteractionOptions, 'pause'> = {
   }
 }
 
-/** Notify all listeners that keypress observations can start.. */
+/** Notify all listeners that keypress observations can start. */
 export function resumeInteractions(options: Omit<InteractionOptions, 'pause'> = {}) {
   for (const listener of listeners) {
     listener({ pause: false, ...options });

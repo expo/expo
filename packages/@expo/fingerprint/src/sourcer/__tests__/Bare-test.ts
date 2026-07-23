@@ -90,7 +90,7 @@ describe(getPackageJsonScriptSourcesAsync, () => {
     });
   });
 
-  it('by default, should not touch pacakge.json scripts if items contain "run" with custom scripts', async () => {
+  it('by default, should not touch package.json scripts if items contain "run" with custom scripts', async () => {
     await jest.isolateModulesAsync(async () => {
       const scripts = {
         android: 'test-cli run:android',
@@ -119,7 +119,7 @@ describe(getPackageJsonScriptSourcesAsync, () => {
     });
   });
 
-  it('when sourceSkips=None, should not touch pacakge.json scripts if items contain "run"', async () => {
+  it('when sourceSkips=None, should not touch package.json scripts if items contain "run"', async () => {
     await jest.isolateModulesAsync(async () => {
       const scripts = {
         android: 'expo start --android',
@@ -244,7 +244,7 @@ describe('getCoreAutolinkingSources', () => {
       });
       const sources = await testFn('/root/apps/demo', await normalizeOptionsAsync('/app'));
       for (const source of sources) {
-        if (source.type === 'dir' || source.type === 'file') {
+        if (source.type === 'dir' || source.type === 'file' || source.type === 'package') {
           expect(source.filePath).not.toMatch(/^\/root/);
         } else {
           expect(source.contents).not.toMatch(/"\/root\//);

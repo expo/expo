@@ -116,7 +116,7 @@ export function renderRouter(
 }
 
 export const testRouter = {
-  /** Navigate to the provided pathname and the pathname */
+  /** Navigate to the provided pathname and assert the pathname */
   navigate(path: string) {
     rnTestingLibrary.act(() => router.navigate(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
@@ -131,7 +131,7 @@ export const testRouter = {
     rnTestingLibrary.act(() => router.replace(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
-  /** Go back in history and asset the new pathname */
+  /** Go back in history and assert the new pathname */
   back(path?: string) {
     expect(router.canGoBack()).toBe(true);
     rnTestingLibrary.act(() => router.back());

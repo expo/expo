@@ -59,7 +59,7 @@ export async function resolveCertificateSigningIdentityAsync(
 
   //  One ID available 🤝 Program is not interactive
   //
-  //     using the the first available option
+  //     using the first available option
   if (ids.length === 1 || !isInteractive()) {
     // This method is cheaper than `resolveIdentitiesAsync` and checking the
     // cached user preference so we should use this as early as possible.

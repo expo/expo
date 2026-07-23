@@ -27,7 +27,7 @@ export const withShareExtensionXcodeProject: ConfigPlugin<WithShareExtensionXcod
     const targetUuid = xcodeProject.generateUuid();
 
     // Technically we should be able to remove the existing target, but I don't have time to add it before the release.
-    // Most users will chose not to modify the identifier anyways.
+    // Most users will choose not to modify the identifier anyways.
     // TODO: Add smart existing target removal
     const conflict_status = conflictingExtensionExists(xcodeProject, targetName, bundleIdentifier);
     if (conflict_status === 'exists-conflicting') {

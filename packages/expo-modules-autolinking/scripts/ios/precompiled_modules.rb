@@ -950,7 +950,13 @@ module Expo
 
         installer.pods_project.targets.each do |target|
           target_root = target.name.split('-').first.split('/').first
-          next unless bundled.include?(target.name) || bundled.include?(target_root)
+          framework_name = [target.name, target_root].find { |name| bundled.include?(name) }
+          next unless framework_name
+
+          unless stub_bundled_pod_target?(installer, target_root, framework_name)
+            Pod::UI.puts "#{'[Expo-precompiled] '.blue}Keeping '#{target.name}' built from source: no consumer links a prebuilt xcframework bundling it"
+            next
+          end
 
           compile_phase = target.build_phases.find { |p| p.is_a?(Xcodeproj::Project::Object::PBXSourcesBuildPhase) }
           next unless compile_phase
@@ -1645,19 +1651,26 @@ module Expo
         }
       end
 
-      # Returns local Expo product dependencies whose prebuilt availability must
-      # match this product's availability. Runtime deps like React/Hermes are not
-      # encoded as package/product strings and are ignored here.
+      # Returns the product names of dependencies whose prebuilt availability must
+      # match this product's availability. Both slash-form package/product strings
+      # (e.g. "expo-modules-core/ExpoModulesCore") and bare product names (e.g.
+      # "RNWorklets") are surfaced. Which of them are actually precompiled-managed
+      # pods is decided later by @pod_lookup_map membership in the resolver, so
+      # runtime deps like React/Hermes are surfaced here but ignored there.
       def prebuilt_dependency_pods(external_dependencies)
         (external_dependencies || []).filter_map do |dep|
-          next unless dep.is_a?(String) && dep.include?('/')
+          next unless dep.is_a?(String)
 
           parts = dep.split('/')
-          is_scoped = parts[0].start_with?('@')
-          package_name = is_scoped ? "#{parts[0]}/#{parts[1]}" : parts[0]
-          product_name = is_scoped ? parts[2] : parts[1]
+          product_name =
+            if parts.length == 1
+              parts[0]                          # bare, e.g. "RNWorklets"
+            elsif parts[0].start_with?('@')
+              parts[2]                          # @scope/package/Product
+            else
+              parts[1]                          # package/Product
+            end
 
-          next unless package_name&.start_with?('expo-', '@expo/')
           next if CUSTOM_XCFRAMEWORK_DEPENDENCIES.include?(product_name)
 
           product_name
@@ -1763,13 +1776,46 @@ module Expo
       # @return [Set<String>] Framework names bundled across all prebuilt pods
       def all_bundled_frameworks
         @all_bundled_frameworks ||= begin
-          bundled = Set.new
-          pod_lookup_map.each do |pod_name, info|
-            next unless resolve_prebuilt_info(pod_name)
-            (info[:spm_dependency_frameworks] || []).each { |f| bundled.add(f) }
-          end
+          bundled = Set.new(bundled_framework_owners.keys)
           Pod::UI.puts "#{'[Expo-precompiled] '.blue}Bundled SPM frameworks: #{bundled.to_a.join(', ')}" if bundled.any?
           bundled
+        end
+      end
+
+      # Maps each bundled SPM framework name to the prebuilt pods whose xcframeworks
+      # bundle it (e.g. "SDWebImage" => Set{"ExpoImage"}).
+      #
+      # @return [Hash<String, Set<String>>] Framework name to owning prebuilt pod names
+      def bundled_framework_owners
+        @bundled_framework_owners ||= begin
+          owners = {}
+          pod_lookup_map.each do |pod_name, info|
+            next unless resolve_prebuilt_info(pod_name)
+            (info[:spm_dependency_frameworks] || []).each do |framework|
+              (owners[framework] ||= Set.new).add(pod_name)
+            end
+          end
+          owners
+        end
+      end
+
+      # Whether a bundled source pod target needs stubbing. Stubbing is only needed when
+      # a consumer of the source pod also links a prebuilt xcframework that bundles the
+      # same framework — otherwise the consumer would get duplicate classes. A pod whose
+      # consumers link no owning prebuilt pod must keep building from source: e.g. an app
+      # extension that depends on SDWebImage never links expo-image's bundled
+      # SDWebImage.xcframework, so stubbing would leave its symbols unresolved.
+      def stub_bundled_pod_target?(installer, pod_name, framework_name)
+        owners = bundled_framework_owners[framework_name]
+        return true if owners.nil? || owners.empty?
+
+        consumers = installer.aggregate_targets.select do |aggregate_target|
+          aggregate_target.pod_targets.any? { |pod_target| pod_target.pod_name == pod_name }
+        end
+        return true if consumers.empty?
+
+        consumers.any? do |aggregate_target|
+          aggregate_target.pod_targets.any? { |pod_target| owners.include?(pod_target.pod_name) }
         end
       end
 
@@ -1936,6 +1982,11 @@ module Expo
         next_visiting = visiting.dup.add(pod_name)
 
         (pod_info[:prebuilt_dependency_pods] || []).each do |dep_name|
+          # Only precompiled-managed pods participate in availability propagation.
+          # Runtime deps like React/Hermes are surfaced by prebuilt_dependency_pods
+          # but are not in the map, so they are ignored here.
+          next unless pod_lookup_map.key?(dep_name)
+
           dep_resolution = resolve_prebuilt_status(dep_name, next_visiting)
           next if dep_resolution[:available]
 

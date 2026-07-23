@@ -341,14 +341,18 @@ class FileSystemModule : Module() {
       Constructor { file: FileSystemFile, mode: FileMode? ->
         file.openHandle(mode)
       }
-      AsyncFunction("readBytes") { fileHandle: FileSystemFileHandle, bytes: Long ->
-        fileHandle.read(bytes)
+      AsyncFunction("readBytes") Coroutine { fileHandle: FileSystemFileHandle, bytes: Long ->
+        withContext(Dispatchers.IO) {
+          fileHandle.read(bytes)
+        }
       }
       Function("readBytesSync") { fileHandle: FileSystemFileHandle, bytes: Long ->
         fileHandle.read(bytes)
       }
-      AsyncFunction("writeBytes") { fileHandle: FileSystemFileHandle, data: ByteArray ->
-        fileHandle.write(data)
+      AsyncFunction("writeBytes") Coroutine { fileHandle: FileSystemFileHandle, data: ByteArray ->
+        withContext(Dispatchers.IO) {
+          fileHandle.write(data)
+        }
       }
       Function("writeBytesSync") { fileHandle: FileSystemFileHandle, data: ByteArray ->
         fileHandle.write(data)

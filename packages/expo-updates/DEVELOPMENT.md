@@ -26,7 +26,7 @@ Configuration for iOS should be done in Expo.plist. On Android, most options can
 
 If you are using expo-updates to test a server you're developing, you may want to tell expo-updates to ignore the embedded update. Otherwise, each time you make a new build, it will create a new bundle with a new creation time and will refuse to load any updates published previously.
 
-You can do tell expo-updates to ignore the embedded bundle and force a remote update by setting `EXUpdatesHasEmbeddedUpdate` and `expo.modules.updates.HAS_EMBEDDED_UPDATE` to false.
+You can tell expo-updates to ignore the embedded bundle and force a remote update by setting `EXUpdatesHasEmbeddedUpdate` and `expo.modules.updates.HAS_EMBEDDED_UPDATE` to false.
 
 ### Additional Headers
 

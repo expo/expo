@@ -1651,7 +1651,7 @@ export async function test(t) {
             }
             userInteractionTimeout = setTimeout(() => {
               console.warn(
-                "Scheduled notification test was skipped and marked as successful. It required user interaction which hasn't occured in time."
+                "Scheduled notification test was skipped and marked as successful. It required user interaction which hasn't occurred in time."
               );
               if (subscription != null) {
                 subscription.remove();
@@ -1701,7 +1701,7 @@ export async function test(t) {
           ]);
           if (!shouldRun) {
             console.warn(
-              "Notification response test was skipped and marked as successful. It required user interaction which hasn't occured in time."
+              "Notification response test was skipped and marked as successful. It required user interaction which hasn't occurred in time."
             );
             Alert.alert(
               'Notification response test was skipped',

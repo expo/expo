@@ -17,7 +17,7 @@ export interface MetroWatchTypeScriptFilesOptions {
   callback(filePath: string, eventType: EventType): void;
   /* Array of eventTypes to watch. Defaults to all events */
   eventTypes?: EventType[];
-  /* Throlle the callback. When true and  a group of events are recieved, callback it will only be called with the
+  /* Throttle the callback. When true and a group of events are received, callback it will only be called with the
    * first event */
   throttle?: boolean;
 }

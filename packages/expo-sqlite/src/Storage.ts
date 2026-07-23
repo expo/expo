@@ -451,7 +451,7 @@ export class SQLiteStorage {
 
     if (input.length > 1 && typeof value !== 'string' && typeof value !== 'function') {
       throw new Error(
-        `[SQLiteStorage] Using ${typeof value} type for value is not supported. Use string instead. Key passed: ${key}. Value passed : ${value}`
+        `[SQLiteStorage] Using ${typeof value} type for value is not supported. Use string instead. Key passed: ${key}. Value passed: ${value}`
       );
     }
   }

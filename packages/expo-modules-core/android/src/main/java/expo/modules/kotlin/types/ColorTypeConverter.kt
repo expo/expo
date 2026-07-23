@@ -8,10 +8,8 @@ import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.bridge.ReadableType
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.DynamicCastException
-import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
@@ -358,7 +356,7 @@ private fun parseCssColorFunction(value: String): Color? {
 // endregion
 
 class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Color {
+  override fun convertFromDynamic(value: Dynamic, context: ConverterContext, forceConversion: Boolean): Color {
     return when (value.type) {
       ReadableType.Number -> colorFromInt(value.asDouble().toInt())
       ReadableType.String -> colorFromString(
@@ -384,7 +382,7 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
     }
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Color {
+  override fun convertFromAny(value: Any, context: ConverterContext, forceConversion: Boolean): Color {
     return when (value) {
       is Int -> {
         colorFromInt(value)
@@ -441,13 +439,13 @@ class ColorTypeConverter : DynamicAwareTypeConverters<Color>() {
     return ColorCompat.valueOf(normalizedValue.toColorInt())
   }
 
-  private fun colorFromReadableMap(value: ReadableMap, context: AppContext?): Color {
-    val reactContext = context?.reactContext ?: throw Exceptions.ReactContextLost()
+  private fun colorFromReadableMap(value: ReadableMap, converterContext: ConverterContext): Color {
+    val context = converterContext.applicationContext
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-      return ColorPropConverter.getColorInstance(value, reactContext)
+      return ColorPropConverter.getColorInstance(value, context)
         ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
     }
-    val colorInt = ColorPropConverter.getColor(value, reactContext)
+    val colorInt = ColorPropConverter.getColor(value, context)
       ?: throw UnexpectedException("ColorPropConverter returned null for a non-null color value.")
     return ColorCompat.valueOf(colorInt)
   }

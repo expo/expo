@@ -25,7 +25,7 @@ class SharedPreferencesNotificationsStore(context: Context) {
    *
    * @param identifier Identifier of the notification.
    * @return Notification information: request and trigger.
-   * @throws JSONException Thrown if notification request could not have been interpreted as a JSON object.
+   * @throws JSONException Thrown if notification request could not be interpreted as a JSON object.
    * @throws IOException Thrown if there is an error when fetching trigger from the storage.
    * @throws ClassNotFoundException Thrown if there is an error when interpreting trigger fetched from the storage.
    */

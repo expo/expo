@@ -60,7 +60,7 @@ export function withMetroSupervisingTransformWorker(config: MetroConfig): MetroC
 
   // We modify the config if the user either has a custom transformerPath or
   // a custom transformer.babelTransformerPath
-  // NOTE: It's not a bad thing if we load the superivising transformer even if
+  // NOTE: It's not a bad thing if we load the supervising transformer even if
   // we don't need to. It will do nothing to our transformer
   if (!hasDefaultTransformerPath) {
     debugEvent('transform_worker_supervisor_custom_transformer', {});

@@ -352,7 +352,7 @@ Finally, the push notification services from Google and Apple follow their own p
 <Collapsible summary="Network connectivity issues">
 This section helps you diagnose and resolve common network issues. Your server must have connectivity to Google Cloud Platform services in the United States region, as this is where Expo's push notification service is hosted.
 
-#### DNS resolution
+### DNS resolution
 
 Test if your server can resolve Expo's push service domain name:
 
@@ -363,7 +363,7 @@ dig exp.host
 dig @8.8.8.8 exp.host
 ```
 
-#### Network routing and connectivity
+### Network routing and connectivity
 
 Verify your server can reach Expo's endpoints:
 
@@ -386,7 +386,7 @@ Common issues to check:
 - Network ACLs or security groups (in cloud environments) restricting outbound connections
 - Packet fragmentation due to MTU size issues
 
-#### TLS certificate validation
+### TLS certificate validation
 
 Ensure your server can validate the server's TLS certificate:
 

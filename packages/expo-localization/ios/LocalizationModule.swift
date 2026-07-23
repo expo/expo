@@ -60,7 +60,7 @@ public class LocalizationModule: Module {
   }
 
   func setRTLPreferences(_ supportsRTL: Bool, _ forceRTL: Bool) {
-    // We call thse methods before React loads to ensure it gets rendered correctly the first time the app is opened.
+    // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
     // On iOS we need to set both forceRTL and allowRTL so apps don't have to include localization strings.
     // Uses required reason API based on the following reason: CA92.1
 
