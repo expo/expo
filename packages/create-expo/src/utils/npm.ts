@@ -169,6 +169,14 @@ async function npmPackAsync(
   }
 }
 
+/**
+ * Parses the JSON emitted by `npm pack --json`.
+ *
+ * npm 12 changed this output from an array of package infos to an object
+ * keyed by package name, to match `npm publish --json`
+ * (see https://github.com/npm/cli/pull/9247). Supports both shapes so
+ * `create-expo` keeps working across npm versions.
+ */
 export function parseNpmPackOutput(results: string): NpmPackageInfo[] {
   const json = JSON.parse(results);
   const infos = Array.isArray(json) ? json : Object.values(json);

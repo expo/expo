@@ -13,6 +13,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Invalid response from npm` error when resolving templates with npm >= 12 ([#48083](https://github.com/expo/expo/pull/48083) by [@lllincoln](https://github.com/lllincoln))
+
 ### 💡 Others
 
 ## 4.0.2 — 2026-05-20
