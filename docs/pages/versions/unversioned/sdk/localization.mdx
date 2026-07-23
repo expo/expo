@@ -30,10 +30,9 @@ You can configure `expo-localization` using its built-in [config plugin](/config
       [
         "expo-localization",
         {
-          "supportedLocales": ["en", "ja"],
           "supportsRTL": true,
           "forcesRTL": false,
-          "allowDynamicLocaleChangesAndroid": true
+          "supportedLocales": ["en", "fr"]
         }
       ]
     ]
@@ -45,12 +44,6 @@ You can configure `expo-localization` using its built-in [config plugin](/config
 
 <ConfigPluginProperties
   properties={[
-    {
-      name: 'supportedLocales',
-      description:
-        'The locales your app supports, used to enable per-app language selection in the system settings. Provide a single array shared by both platforms, or platform-specific `ios` and `android` arrays.',
-      default: 'undefined',
-    },
     {
       name: 'supportsRTL',
       description:
@@ -64,11 +57,10 @@ You can configure `expo-localization` using its built-in [config plugin](/config
       default: 'false',
     },
     {
-      name: 'allowDynamicLocaleChangesAndroid',
+      name: 'supportedLocales',
       description:
-        "Whether the app applies per-app language changes without restarting, by adding `locale` and `layoutDirection` to the main activity's `android:configChanges`.",
-      default: 'true',
-      platform: 'android',
+        'The locales your app supports, used to enable per-app language selection in the system settings. Provide a single array shared by both platforms, or platform-specific `ios` and `android` arrays.',
+      default: 'undefined',
     },
   ]}
 />
