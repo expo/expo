@@ -46,7 +46,7 @@ abstract class DevLauncherAppLoader(
     return { activity ->
       onDelegateWillBeCreated(activity)
 
-      require(appHost.currentReactContext == null) { "App react context shouldn't be created before." }
+      val existingReactContext = appHost.currentReactContext
       appHost.addReactInstanceEventListener(object : ReactInstanceEventListener {
         override fun onReactContextInitialized(context: ReactContext) {
           if (reactContextWasInitialized) {
@@ -60,6 +60,10 @@ abstract class DevLauncherAppLoader(
           continuation!!.resume(true)
         }
       })
+
+      if (existingReactContext != null) {
+        appHost.reload("DevLauncher replacing existing React context")
+      }
 
       activity.lifecycle.addObserver(object : DefaultLifecycleObserver {
         override fun onCreate(owner: LifecycleOwner) {
