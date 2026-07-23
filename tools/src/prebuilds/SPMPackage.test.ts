@@ -227,7 +227,10 @@ describe('React header flags: modular module map vs legacy VFS overlay', () => {
         'Headers'
       );
       fs.mkdirSync(headersDir, { recursive: true });
-      fs.writeFileSync(path.join(headersDir, 'module.modulemap'), 'module ReactNativeHeaders_react {}');
+      fs.writeFileSync(
+        path.join(headersDir, 'module.modulemap'),
+        'module ReactNativeHeaders_react {}'
+      );
     });
 
     const settings = buildSwiftSettings(
@@ -248,7 +251,7 @@ describe('React header flags: modular module map vs legacy VFS overlay', () => {
       // Legacy artifact: a generated VFS overlay, no ReactNativeHeaders.xcframework.
       fs.writeFileSync(
         path.join(debugBase, 'React-VFS.yaml'),
-        "version: 0\ncase-sensitive: false\nroots: []\n"
+        'version: 0\ncase-sensitive: false\nroots: []\n'
       );
     });
 
