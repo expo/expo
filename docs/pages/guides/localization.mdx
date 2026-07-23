@@ -329,6 +329,10 @@ return <View dir={getLocales()[0].textDirection || 'ltr'}>...</View>;
 
 The React Native's `textAlign` property does not accept `start` or `end` values that you can use in flex properties. Instead, `left` effectively works as `start` (aligns to the left on LTR and the right on RTL), and `right` works as `end`.
 
+:::note
+The above behavior applies to the `<Text>` component. The `<TextInput>` component treats `textAlign: 'left'` and `'right'` as physical values that do **not** flip in RTL mode on either iOS or Android. For direction-aware alignment on `<TextInput>`, use `I18nManager.isRTL ? 'right' : 'left'`. See [react-native#45255](https://github.com/facebook/react-native/issues/45255) for background.
+:::
+
 However, the default unset value of `textAlign` property signifies the actual left (aligns to the left both on LTR and RTL). This means each `<Text>` tag should have the `textAlign: left` or `textAlign: right` style set if you want it to be aligned correctly.
 
 It's best to define this style in your custom reusable `<Text>` component that you can then import everywhere you need to render text strings.
