@@ -28,6 +28,21 @@ const defaultArgs: GetFileTypeInformationOptions = {
   runOnQueue: true,
 };
 
+// remove defintionOffsets from the Object as they don't matter in the snapshot
+function prepareObjectForSnapshot(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    return value.map(prepareObjectForSnapshot);
+  }
+  if (value && typeof value === 'object') {
+    return Object.fromEntries(
+      Object.entries(value)
+        .filter(([key]) => key !== 'definitionOffset')
+        .map(([key, entry]) => [key, prepareObjectForSnapshot(entry)])
+    );
+  }
+  return value;
+}
+
 let defaultArgsFileInfo: FileTypeInformation | null = null;
 beforeAll(async () => {
   defaultArgsFileInfo = await getFileTypeInformation(defaultArgs);
@@ -35,16 +50,18 @@ beforeAll(async () => {
 
 it('Same type information', async () => {
   expect(
-    serializeTypeInformation(
-      (await getFileTypeInformation(defaultArgs)) ?? {
-        usedTypeIdentifiers: new Set(),
-        declaredTypeIdentifiers: new Set(),
-        inferredTypeParametersCount: new Map(),
-        typeIdentifierDefinitionMap: new Map(),
-        moduleClasses: [],
-        records: [],
-        enums: [],
-      }
+    prepareObjectForSnapshot(
+      serializeTypeInformation(
+        (await getFileTypeInformation(defaultArgs)) ?? {
+          usedTypeIdentifiers: new Set(),
+          declaredTypeIdentifiers: new Set(),
+          inferredTypeParametersCount: new Map(),
+          typeIdentifierDefinitionMap: new Map(),
+          moduleClasses: [],
+          records: [],
+          enums: [],
+        }
+      )
     )
   ).toMatchSnapshot();
 });
