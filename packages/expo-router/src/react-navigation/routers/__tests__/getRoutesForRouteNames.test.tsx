@@ -54,23 +54,6 @@ test('clamps the index to the last remaining route', () => {
   });
 });
 
-test('excludes routes whose name changed key', () => {
-  const state = stackState(
-    [
-      { name: 'a', key: 'a-1' },
-      { name: 'b', key: 'b-1' },
-    ],
-    1
-  );
-
-  expect(
-    getRoutesForRouteNames(state, ['a', 'b'], { routeParamList: {}, routeKeyChanges: ['b'] })
-  ).toEqual({
-    routes: [{ name: 'a', key: 'a-1' }],
-    index: 0,
-  });
-});
-
 test('falls back to the initial route when nothing remains', () => {
   const state = stackState([{ name: 'secret', key: 'secret-1' }], 0);
 

@@ -86,24 +86,6 @@ export function MockRouter(options: DefaultRouterOptions) {
       };
     },
 
-    getStateForRouteNamesChange(state, { routeNames }) {
-      const routes = state.routes.filter((route) => routeNames.includes(route.name));
-
-      if (routes.length === 0) {
-        routes.push({
-          name: routeNames[0]!,
-          key: `${routeNames[0]}-${MockRouterKey.current++}`,
-        });
-      }
-
-      return {
-        ...state,
-        routeNames,
-        routes,
-        index: Math.min(state.index, routes.length - 1),
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 

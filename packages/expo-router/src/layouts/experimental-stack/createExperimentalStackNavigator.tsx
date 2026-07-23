@@ -38,7 +38,6 @@ function ExperimentalStackNavigator({
   screenListeners,
   screenOptions,
   screenLayout,
-  UNSTABLE_routeNamesAreStatic,
   UNSTABLE_router,
   ...rest
 }: ExperimentalStackNavigatorProps) {
@@ -56,7 +55,6 @@ function ExperimentalStackNavigator({
     screenListeners,
     screenOptions,
     screenLayout,
-    UNSTABLE_routeNamesAreStatic,
     UNSTABLE_router,
   });
 
