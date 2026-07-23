@@ -79,8 +79,5 @@
   "peerDependencies": {
     "expo": "*",
     "react": "*"
-  },
-  "jest": {
-    "preset": "expo-module-scripts"
   }
 }
