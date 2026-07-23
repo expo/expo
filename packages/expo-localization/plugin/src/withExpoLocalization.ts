@@ -70,12 +70,10 @@ function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   if (supportsRTL == null && forcesRTL == null && supportedLocales == null) {
     return config;
   }
-  if (!config.ios) {
-    config.ios = {};
-  }
-  if (!config.ios.infoPlist) {
-    config.ios.infoPlist = {};
-  }
+
+  config.ios ??= {};
+  config.ios.infoPlist ??= {};
+
   if (supportsRTL != null) {
     config.ios.infoPlist.ExpoLocalization_supportsRTL = supportsRTL;
   }
