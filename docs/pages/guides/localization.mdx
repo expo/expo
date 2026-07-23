@@ -212,7 +212,9 @@ In SDK 55 and later, there is an iOS-only option to specify a `Localizable.strin
 
 Several regions around the world write text from right to left (RTL). To make your app look as expected in RTL languages, you need to make sure it handles these layout and text direction changes accordingly.
 
-RTL support is enabled by default. Layout direction follows React Native's [`I18nManager`](https://reactnative.dev/docs/i18nmanager): the app renders in RTL when the device is set to an RTL language (such as Arabic or Hebrew), and in LTR otherwise. This applies in Expo Go, in the dev client, and in apps built with EAS Build or `npx expo prebuild`.
+> **info** This section describes the behavior in **SDK 58 and later**. In earlier SDK versions, RTL support is disabled by default. To enable it, set the `extra.supportsRTL` property in app config.
+
+RTL support is enabled by default. Layout direction follows React Native's [`I18nManager`](https://reactnative.dev/docs/i18nmanager). The app renders in RTL when the device is set to an RTL language (such as Arabic or Hebrew), and in left-to-right (LTR) otherwise. On iOS, the device language must also be one of your app's supported locales, declared with the [`supportedLocales`](#enabling-per-app-language-selection-via-system-settings) option. This applies in Expo Go, in development builds, and in apps built with EAS Build or `npx expo prebuild`.
 
 ### Disabling RTL support
 
