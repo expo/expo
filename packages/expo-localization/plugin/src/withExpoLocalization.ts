@@ -114,7 +114,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
       : supportedLocalesOption) ?? [];
 
   config = withAndroidManifest(config, (config) => {
-    config.modResults = setAndroidSupportsRtl(config.modResults, false);
+    config.modResults = setAndroidSupportsRtl(config.modResults, supportsRTL);
     return config;
   });
 
