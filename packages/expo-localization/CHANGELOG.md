@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Set `android:supportsRtl` in the `AndroidManifest.xml` from the `supportsRTL` config plugin prop.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
