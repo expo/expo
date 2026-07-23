@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Set `android:supportsRtl` in the `AndroidManifest.xml` from the `supportsRTL` config plugin prop. ([#48080](https://github.com/expo/expo/pull/48080) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
