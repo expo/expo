@@ -481,6 +481,15 @@ function createComponentType(propsTypeName: string) {
   ]);
 }
 
+function createExtendsClause(className: string, typeArg?: string) {
+  return ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
+    ts.factory.createExpressionWithTypeArguments(
+      ts.factory.createIdentifier(className),
+      typeArg ? [ts.factory.createTypeReferenceNode(typeArg)] : undefined
+    ),
+  ]);
+}
+
 function getMissingTypeIdentifiers(fileTypeInformation: FileTypeInformation): Set<string> {
   return fileTypeInformation.usedTypeIdentifiers
     .difference(fileTypeInformation.declaredTypeIdentifiers)
@@ -527,14 +536,7 @@ export function buildViewPropsInterface(
       constructModifiersArray(options),
       getViewPropsTypeName(view),
       undefined,
-      [
-        ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
-          ts.factory.createExpressionWithTypeArguments(
-            ts.factory.createIdentifier('ViewProps'),
-            undefined
-          ),
-        ]),
-      ],
+      [createExtendsClause('ViewProps')],
       buildPropsMembers(view)
     ),
   ];
@@ -548,8 +550,11 @@ function buildClassProperty(declaration: PropertyDeclaration): ts.PropertyDeclar
   });
 }
 
-function getModuleClassEventsTypeName(moduleClassDeclaration: ModuleClassDeclaration): string {
-  return `${moduleClassDeclaration.name}Events`;
+function getEventsTypeName(moduleClassDeclaration: DeclarationWithEvents): string | undefined {
+  if (moduleClassDeclaration.events.length > 0) {
+    return `${moduleClassDeclaration.name}Events`;
+  }
+  return undefined;
 }
 
 function buildNativeModuleClassDeclaration({
@@ -582,23 +587,13 @@ function buildNativeModuleClassDeclaration({
       declaration: true,
     }) as ts.MethodDeclaration;
 
+  const moduleEventsName = getEventsTypeName(moduleClassDeclaration);
   return [
     ts.factory.createClassDeclaration(
       [exportModifier(), declareModifier()],
       exportedModuleName ?? `${moduleClassDeclaration.name}NativeModuleType`,
       undefined,
-      [
-        ts.factory.createHeritageClause(ts.SyntaxKind.ExtendsKeyword, [
-          ts.factory.createExpressionWithTypeArguments(
-            ts.factory.createIdentifier('NativeModule'),
-            [
-              ts.factory.createTypeReferenceNode(
-                getModuleClassEventsTypeName(moduleClassDeclaration)
-              ),
-            ]
-          ),
-        ]),
-      ],
+      [createExtendsClause('NativeModule', moduleEventsName)],
       [
         ...moduleClassDeclaration.constants.map(buildClassProperty),
         ...moduleClassDeclaration.properties.map(buildClassProperty),
@@ -736,11 +731,14 @@ export function buildClass({
       : undefined,
   ].filter((x) => x !== undefined);
 
+  const extendClause = declaration
+    ? [createExtendsClause('SharedObject', getEventsTypeName(classDeclaration))]
+    : [];
   return ts.factory.createClassDeclaration(
     constructModifiersArray({ exported, declare: declaration }),
     ts.factory.createIdentifier(classDeclaration.name),
     undefined,
-    [],
+    extendClause,
     classMembers
   );
 }
@@ -892,17 +890,27 @@ function createAnyFunctionTypeNode({ returnType }: { returnType: ts.TypeNode }) 
   );
 }
 
-function buildModuleEventsTypeDeclaration(
-  moduleClassDeclaration: ModuleClassDeclaration,
+interface DeclarationWithEvents {
+  events: string[];
+  name: string;
+}
+
+function buildEventsTypeDeclaration(
+  moduleClassDeclaration: DeclarationWithEvents,
   { exported }: { exported?: boolean }
 ): ts.Node[] {
   const createEventType = () => createAnyFunctionTypeNode({ returnType: voidKeywordType() });
+
+  const eventsTypeName = getEventsTypeName(moduleClassDeclaration);
+  if (!eventsTypeName) {
+    return [];
+  }
 
   return [
     ts.addSyntheticLeadingComment(
       createTypeAlias({
         exported,
-        alias: getModuleClassEventsTypeName(moduleClassDeclaration),
+        alias: eventsTypeName,
         type: ts.factory.createTypeLiteralNode(
           moduleClassDeclaration.events.map((event) => {
             return createPropertySignature({
@@ -938,12 +946,23 @@ export function buildExposedModuleTypesDeclarations(
   ctx: GenerationContext,
   options: { exported?: boolean; declare?: boolean }
 ): ts.Node[] {
-  const classDeclarationMap = (classDeclaration: ClassDeclaration) =>
-    buildClass({ classDeclaration, exported: true, declaration: true });
+  const classDeclarationMap = (classDeclaration: ClassDeclaration) => {
+    const eventsTypeNodes =
+      classDeclaration.events.length > 0
+        ? buildEventsTypeDeclaration(classDeclaration, options)
+        : [];
+    const classDeclarationNode = buildClass({
+      classDeclaration,
+      exported: true,
+      declaration: true,
+    });
+
+    return [...eventsTypeNodes, classDeclarationNode];
+  };
 
   return joinTSNodesWithNewlines([
-    ctx.module.classes.map(classDeclarationMap),
-    buildModuleEventsTypeDeclaration(ctx.module, options),
+    ...ctx.module.classes.map(classDeclarationMap),
+    buildEventsTypeDeclaration(ctx.module, options),
   ]);
 }
 
@@ -952,7 +971,10 @@ export function buildExposedTypesDeclarations(
   options: { exported?: boolean; declare?: boolean }
 ): ts.Node[] {
   return [
-    ...createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
+    ...createImportDeclaration({
+      namedImportsNames: ['NativeModule', 'SharedObject'],
+      importFromName: 'expo',
+    }),
     ...buildExposedCommonTypesDeclarations(ctx, options),
     ...buildExposedModuleTypesDeclarations(ctx, options),
   ];
@@ -1111,10 +1133,10 @@ function buildStableNativeModuleInterface(ctx: GenerationContext): ts.Node[] {
       namedImportsNames: [
         ...ctx.fileInfo.usedTypeIdentifiers.difference(getBasicTypesIdentifiers()),
         ...[
-          getModuleClassEventsTypeName(ctx.module),
+          getEventsTypeName(ctx.module),
           generatedModuleTypeAlias,
           ctx.view ? getViewPropsTypeName(ctx.view) : null,
-        ].filter((v) => v !== null),
+        ].filter((v) => v !== undefined && v !== null),
       ],
       importFromName: generatedFilePath,
     }),
@@ -1306,7 +1328,10 @@ export async function generateFullTsInterface(
       moduleTypesFileNodes = joinTSNodesWithNewlines([
         createGeneratedPrefix(),
         createImportAllDeclaration('./Common.types'),
-        createImportDeclaration({ namedImportsNames: ['NativeModule'], importFromName: 'expo' }),
+        createImportDeclaration({
+          namedImportsNames: ['NativeModule', 'SharedObject'],
+          importFromName: 'expo',
+        }),
         buildExposedModuleTypesDeclarations(ctx, { exported: true }),
         ...ctx.module.views.map((view) => buildViewPropsInterface(view, { exported: true })),
       ]);
@@ -1344,8 +1369,8 @@ export async function generateFullTsInterface(
       createImportDeclaration({
         namedImportsNames: [
           ...getAllNonBasicTypes(ctx.fileInfo),
-          getModuleClassEventsTypeName(ctx.module),
-        ],
+          getEventsTypeName(ctx.module),
+        ].filter((v) => v !== undefined),
         importFromName: `./${moduleTypesFileImportName}`,
       }),
       buildNativeModuleClassDeclaration({
