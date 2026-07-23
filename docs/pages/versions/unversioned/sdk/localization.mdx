@@ -47,20 +47,20 @@ You can configure `expo-localization` using its built-in [config plugin](/config
     {
       name: 'supportsRTL',
       description:
-        "Whether the app allows right-to-left (RTL) layout. When enabled, the app renders in RTL for RTL device languages, following React Native's `I18nManager`.",
+        "Whether the app allows RTL layout. When enabled, the app renders in RTL for RTL device languages, following React Native's `I18nManager`.",
       default: 'true',
     },
     {
       name: 'forcesRTL',
       description:
-        'Whether to force right-to-left (RTL) layout regardless of the device language. Useful for testing or for apps localized only for RTL locales.',
+        'Whether to force RTL layout regardless of the device language. Useful for testing or for apps localized only for RTL locales.',
       default: 'false',
     },
     {
       name: 'supportedLocales',
       description:
         'The locales your app supports, used to enable per-app language selection in the system settings. Provide a single array shared by both platforms, or platform-specific `ios` and `android` arrays.',
-        'Whether to force RTL layout regardless of the device language. Useful for testing or for apps localized only for RTL locales.',
+      default: 'undefined',
     },
   ]}
 />
