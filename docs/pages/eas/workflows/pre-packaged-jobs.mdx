@@ -38,6 +38,9 @@ jobs:
       profile: string # optional - default: production
       message: string # optional
       refresh_ad_hoc_provisioning_profile: boolean # optional
+    hooks:
+      before_install_node_modules: step[] # optional - steps to run before the build installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the build installs dependencies.
 ```
 
 #### Parameters
@@ -74,6 +77,15 @@ You can reference the following outputs in subsequent jobs:
 | runtime_version   | string | The runtime version used.                                          |
 | sdk_version       | string | The SDK version used.                                              |
 | simulator         | string | Whether the build is for simulator.                                |
+
+#### Hooks
+
+The following hooks are supported for the Build job:
+
+- `before_install_node_modules`: steps to run before the build installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the build installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -228,6 +240,10 @@ jobs:
       alias: string # optional
       prod: boolean # optional
       source_maps: boolean # optional
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
 ```
 
 #### Parameters
@@ -252,6 +268,16 @@ You can reference the following outputs in subsequent jobs:
 | deploy_deployment_url | string | Unique URL to the deployment (for example, `https://account-project--uniqueid.expo.app`).                                                        |
 | deploy_identifier     | string | Identifier of the deployment.                                                                                                                    |
 | deploy_dashboard_url  | string | URL to the deployment dashboard (for example, `https://expo.dev/projects/[project]/hosting/deployments`).                                        |
+
+#### Hooks
+
+The following hooks are supported for the Deploy job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -330,6 +356,10 @@ jobs:
     environment: production | preview | development # optional, defaults to production
     env: # optional list of environment variables
       ENV_VAR_NAME: value
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
 ```
 
 #### Environment variables
@@ -352,6 +382,16 @@ You can reference the following outputs in subsequent jobs:
 | ------------------------ | ------ | --------------------------------- |
 | android_fingerprint_hash | string | The fingerprint hash for Android. |
 | ios_fingerprint_hash     | string | The fingerprint hash for iOS.     |
+
+#### Hooks
+
+The following hooks are supported for the Fingerprint job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -551,6 +591,9 @@ jobs:
       profile: string # optional - default: production
       groups: string[] # optional
     hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
       before_submit: step[] # optional - steps to run before the submission starts.
       after_submit: step[] # optional - steps to run after the submission completes.
 ```
@@ -579,6 +622,9 @@ You can reference the following outputs in subsequent jobs:
 
 The following hooks are supported for the Submit job:
 
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
 - `before_submit`: steps to run before the submission starts.
 - `after_submit`: steps to run after the submission completes.
 
@@ -693,6 +739,10 @@ jobs:
       changelog: string # optional
       submit_beta_review: boolean # optional
       wait_processing_timeout_seconds: number # optional - default: 1800 (30 minutes)
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
 ```
 
 #### Parameters
@@ -715,6 +765,16 @@ You can reference the following outputs in subsequent jobs:
 | --------------------- | ------ | ------------------------------------------------- |
 | apple_app_id          | string | The Apple App ID of the submitted build.          |
 | ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
+
+#### Hooks
+
+The following hooks are supported for the TestFlight job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax. Hooks are not supported when [submitting an already uploaded build](#submit-an-already-uploaded-build) because that job variant does not run on a worker.
 
 #### Examples
 
@@ -905,6 +965,12 @@ jobs:
       rollout_percentage: number # optional - 0 to 100, defaults to 100
       private_key_path: string # optional
       upload_sentry_sourcemaps: boolean # optional - defaults to "try uploading, but don't fail the job if it fails"
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
+      before_update: step[] # optional - steps to run before publishing the update.
+      after_update: step[] # optional - steps to run after publishing the update.
 ```
 
 #### Environment variables
@@ -933,6 +999,18 @@ You can reference the following outputs in subsequent jobs:
 | --------------------- | ------ | ------------------------------------------------------------- |
 | first_update_group_id | string | The ID of the first update group.                             |
 | updates_json          | string | A JSON string containing information about all update groups. |
+
+#### Hooks
+
+The following hooks are supported for the Update job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+- `before_update`: steps to run before publishing the update.
+- `after_update`: steps to run after publishing the update. Hook steps can access files produced during publishing (for example, sourcemaps in the **dist** directory).
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
@@ -1006,6 +1084,30 @@ jobs:
     params:
       branch: ${{ github.ref_name }}
       message: 'Update for branch: ${{ github.ref_name }}'
+```
+
+</Collapsible>
+
+<Collapsible summary="Upload sourcemaps after publishing an update">
+
+This workflow publishes an update and then uploads the generated sourcemaps to PostHog with the built-in [`eas/posthog_upload_sourcemaps`](/eas/workflows/syntax/#easposthog_upload_sourcemaps) function. Publishing an update creates sourcemaps in the **dist** directory, the function's default upload directory. These files only exist on the worker that runs the job, so the upload must happen in an `after_update` hook rather than in a separate job. Hook steps inherit the job's environment, so you can provide the `POSTHOG_CLI_API_KEY` and `POSTHOG_CLI_PROJECT_ID` credentials as [EAS environment variables](/eas/environment-variables/). To upload to a different service, run its upload command in a `run` step instead.
+
+```yaml .eas/workflows/update-with-sourcemaps.yml
+name: Update with sourcemaps
+
+on:
+  push:
+    branches: ['main']
+
+jobs:
+  update:
+    name: Publish update
+    type: update
+    params:
+      channel: production
+    hooks:
+      after_update:
+        - uses: eas/posthog_upload_sourcemaps
 ```
 
 </Collapsible>
@@ -1150,6 +1252,7 @@ jobs:
       output_format: string # optional - defaults to junit
       skip_build_check: boolean # optional - defaults to false
     hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
       before_maestro_tests: step[] # optional - steps to run before the tests start.
       after_maestro_tests: step[] # optional - steps to run after the tests complete.
 ```
@@ -1178,6 +1281,7 @@ You can pass the following parameters into the `params` list:
 
 The following hooks are supported for the Maestro job:
 
+- `after_checkout`: steps to run after the job checks out your project.
 - `before_maestro_tests`: steps to run before the tests start.
 - `after_maestro_tests`: steps to run after the tests complete.
 
@@ -1369,6 +1473,7 @@ jobs:
       branch: string # optional - override for the branch the Maestro Cloud upload originated from. By default, if the workflow run has been triggered from GitHub, the branch of the workflow run will be used. Corresponds to `--branch` param to `maestro cloud`.
       async: boolean # optional - run the Maestro Cloud tests asynchronously. If true, the status of the job will only denote whether the upload was successful, _not_ whether the tests succeeded. Corresponds to `--async` param to `maestro cloud`.
     hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
       before_maestro_cloud: step[] # optional - steps to run before the Maestro Cloud upload.
       after_maestro_cloud: step[] # optional - steps to run after the Maestro Cloud upload.
 ```
@@ -1401,6 +1506,7 @@ You can pass the following parameters into the `params` list:
 
 The following hooks are supported for the Maestro Cloud job:
 
+- `after_checkout`: steps to run after the job checks out your project.
 - `before_maestro_cloud`: steps to run before the Maestro Cloud upload.
 - `after_maestro_cloud`: steps to run after the Maestro Cloud upload.
 
@@ -2152,6 +2258,10 @@ jobs:
       message: string # optional
       repack_version: string # optional
       repack_package: string # optional
+    hooks:
+      after_checkout: step[] # optional - steps to run after the job checks out your project.
+      before_install_node_modules: step[] # optional - steps to run before the job installs dependencies.
+      after_install_node_modules: step[] # optional - steps to run after the job installs dependencies.
 ```
 
 > **Note:** If the build might still be in progress, use [`get-build`](#get-build) with `wait_for_in_progress: true`, then pass its `build_id` to `repack`.
@@ -2191,6 +2301,16 @@ You can pass the following parameters into the `params` list:
 | repack_package                          | string  | Optional. The repack npm package to use. Defaults to `@expo/repack-app`.                                                                                                                                        |
 | ios_signing_use_source_app_entitlements | boolean | Optional. Whether to use fastlane resign `use_app_entitlements` behavior: extract app bundle code signing entitlements and combine them with entitlements from the new provisioning profile. Defaults to false. |
 | ios_signing_app_entitlements_path       | string  | Optional. Path to the entitlements file to use, for example, `myApp/MyApp.entitlements`. This is exclusive with `ios_signing_use_source_app_entitlements`                                                       |
+
+#### Hooks
+
+The following hooks are supported for the Repack job:
+
+- `after_checkout`: steps to run after the job checks out your project.
+- `before_install_node_modules`: steps to run before the job installs your project's dependencies.
+- `after_install_node_modules`: steps to run after the job installs your project's dependencies.
+
+See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the general hooks syntax.
 
 ### Examples
 
