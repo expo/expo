@@ -181,6 +181,7 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
       return config;
     });
   }
+
   return withStringsXml(config, (config) => {
     if (supportsRTL != null) {
       config.modResults = AndroidConfig.Strings.setStringItem(
