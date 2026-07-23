@@ -117,13 +117,15 @@ public class TestModule: Module {
     }
 
 
-    Class(TestClassWithConstructor.self) { 
+    Class(TestClassWithConstructor.self) {
       Constructor { (a: Int) in
         TestClass(a)
       }
     }
 
     Class(TestBasicClass.self) { 
+      Events("EventName1", "EventName2")
+
       Constructor { (a: Int, b: String, c: Either<String, TestRecord>) in
         TestClass(a)
       }

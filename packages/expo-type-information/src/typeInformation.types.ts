@@ -201,6 +201,7 @@ export type ConstructorDeclaration = {
  */
 export type ClassDeclaration = {
   name: string;
+  events: string[];
   constructor: ConstructorDeclaration | null;
   methods: FunctionDeclaration[];
   asyncMethods: FunctionDeclaration[];
@@ -337,5 +338,5 @@ export type GetFileTypeInformationOptions = {
   /** An option to map unicode code points to ASCII strings to fix underlying SourceKit issue. */
   mapUnicodeCharacters: boolean;
   /** Preprocess the file to remove all `runOnQueue(.*)` from it. */
-  runOnQueue: boolean;
+  removeRunOnQueue: boolean;
 };
