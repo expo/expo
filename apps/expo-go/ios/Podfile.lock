@@ -242,7 +242,7 @@ PODS:
   - ExpoWebBrowser (57.0.2):
     - ExpoModulesCore
   - EXStructuredHeaders (57.0.0)
-  - EXUpdates (57.0.9):
+  - EXUpdates (57.0.10):
     - boost
     - DoubleConversion
     - EASClient
@@ -4618,7 +4618,7 @@ SPEC CHECKSUMS:
   ExpoVideoThumbnails: 0a7d37113fe51af5c302461ad0344dc529161316
   ExpoWebBrowser: 9b98d939d5f1c5dd8f523f0a0683056fb1204434
   EXStructuredHeaders: 1423c3602a30eb078e03b63b251ef912267dd4c0
-  EXUpdates: 2a88c181ef4a33ea317badf3f0b81559bd4ce4c8
+  EXUpdates: 5a9dfeadef4f4fa0b7ce4a5008fb6e2b595f1963
   EXUpdatesInterface: 92d2aa5194b6fb93ca8ab749db75665cb28b2e60
   fast_float: b32c788ed9c6a8c584d114d0047beda9664e7cc6
   FBLazyVector: 688bade2cc6ee3de2ba9a411c85c21fd908af3bc
@@ -4635,7 +4635,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 42f0ed2cf70592b35e2ca49a6b725d31c8ad4136
+  hermes-engine: e0efaf5c05d0bb8b3e03760d040e9480def9bff8
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
