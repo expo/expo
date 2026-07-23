@@ -113,12 +113,10 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
       ? supportedLocalesOption.android
       : supportedLocalesOption) ?? [];
 
-  if (!supportsRTL) {
-    config = withAndroidManifest(config, (config) => {
-      config.modResults = setAndroidSupportsRtl(config.modResults, false);
-      return config;
-    });
-  }
+  config = withAndroidManifest(config, (config) => {
+    config.modResults = setAndroidSupportsRtl(config.modResults, false);
+    return config;
+  });
 
   if (supportedLocales.length > 0) {
     supportedLocales.forEach(assertLocale);
