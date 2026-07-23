@@ -1,7 +1,7 @@
 'use strict';
 import { Asset } from 'expo-asset';
 import Constants from 'expo-constants';
-import { File, Directory, Paths, FileMode } from 'expo-file-system';
+import { File, Directory, Paths, FileMode, type FileDigestAlgorithm } from 'expo-file-system';
 import * as FS from 'expo-file-system/legacy';
 import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
@@ -1809,6 +1809,49 @@ export async function test({ describe, expect, it, ...t }) {
         const file = new File(testDirectory, 'file.txt');
         file.writeSync('Hello world');
         expect(file.md5).toBe('3e25960a79dbc69b674cd4ec67a72c62');
+      });
+
+      it('computes digest asynchronously', async () => {
+        const file = new File(testDirectory, 'digest.txt');
+        file.writeSync('Hello world');
+        const expectedDigests: [FileDigestAlgorithm, string][] = [
+          ['md5', '3e25960a79dbc69b674cd4ec67a72c62'],
+          ['sha-1', '7b502c3a1f48c8609ae212cdfb639dee39673f5e'],
+          ['sha-256', '64ec88ca00b268e5ba1a35678a1b5316d212f4f366b2477232534a8aeca37f3c'],
+          [
+            'sha-384',
+            '9203b0c4439fd1e6ae5878866337b7c532acd6d9260150c80318e8ab8c27ce330189f8df94fb890df1d298ff360627e1',
+          ],
+          [
+            'sha-512',
+            'b7f783baed8297f0db917462184ff4f08e69c2d5e5f79a942600f9725f58ce1f29c18139bf80b06c0fff2bdd34738452ecf40c488c22a7e3d80cdf6f9c1c0d47',
+          ],
+        ];
+        for (const [algorithm, expected] of expectedDigests) {
+          expect(await file.digest(algorithm)).toBe(expected);
+        }
+      });
+
+      it('computes digest across multiple chunks', async () => {
+        const bufferSize = 65536; // Update this if the bufferSize in FileSystemFile.swift/.kt are changed
+        const file = new File(testDirectory, 'chunked-digest.txt');
+        file.writeSync('a'.repeat(bufferSize + 10));
+
+        expect(await file.digest('md5')).toBe('dddb00524349012a468de4f34fd7bad3');
+        expect(await file.digest('sha-256')).toBe(
+          '60a6f1743f9405aa728afbe26ac3b294914341e6aa867f4542c5c116cb816a4f'
+        );
+      });
+
+      it('rejects digest for a nonexistent file', async () => {
+        const file = new File(testDirectory, 'missing-digest.txt');
+        let error: Error | null = null;
+        try {
+          await file.digest('md5');
+        } catch (caughtError) {
+          error = caughtError as Error;
+        }
+        expect(error).not.toBeNull();
       });
 
       it('returns null size and md5 for nonexistent files', async () => {

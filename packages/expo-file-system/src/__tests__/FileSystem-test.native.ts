@@ -67,6 +67,7 @@ describe('expo-file-system new API', () => {
     expect(typeof file.formData).toBe('function');
     expect(typeof file.canPreview).toBe('function');
     expect(typeof file.preview).toBe('function');
+    expect(typeof file.digest).toBe('function');
   });
 
   it('File.json parses file text', async () => {
@@ -326,6 +327,31 @@ describe('expo-file-system behavioral mock', () => {
     const resetFile = new File(Paths.cache, 'metadata.txt');
     resetFile.create();
     expect(resetFile.creationTime).toBe(creationTime);
+  });
+
+  it('File.digest supports the documented algorithms with lowercase hexadecimal output', async () => {
+    const file = new File(Paths.cache, 'digest.txt');
+    file.writeSync('hello');
+
+    await expect(file.digest('md5')).resolves.toBe(file.md5);
+    const algorithms = [
+      ['md5', 32],
+      ['sha-1', 40],
+      ['sha-256', 64],
+      ['sha-384', 96],
+      ['sha-512', 128],
+    ] as const;
+    for (const [algorithm, hexLength] of algorithms) {
+      await expect(file.digest(algorithm)).resolves.toMatch(
+        new RegExp(`^[0-9a-f]{${hexLength}}$`)
+      );
+    }
+  });
+
+  it('File.digest rejects when the file does not exist', async () => {
+    const file = new File(Paths.cache, 'missing-digest.txt');
+
+    await expect(file.digest('md5')).rejects.toThrow('File does not exist');
   });
 
   it('File.move updates this.uri and removes the source', async () => {
