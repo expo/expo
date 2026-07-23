@@ -2,6 +2,12 @@
 import * as Index from '../';
 
 describe('react-navigation/index re-exports', () => {
+  it('does not export static navigation APIs', () => {
+    expect(Index).not.toHaveProperty('createStaticNavigation');
+    expect(Index).not.toHaveProperty('createComponentForStaticNavigation');
+    expect(Index).not.toHaveProperty('createPathConfigForStaticNavigation');
+  });
+
   it.each([
     { name: 'core', code: require('../core') },
     { name: 'native', code: require('../native') },

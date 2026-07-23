@@ -13,16 +13,7 @@ import { Screen } from './Screen';
  * @deprecated This function may be replaced in the future version of expo-router.
  */
 export function createNavigatorFactory(Navigator: React.ComponentType<any>) {
-  function createNavigator(config?: any): any {
-    if (config != null) {
-      return {
-        Navigator,
-        Screen,
-        Group,
-        config,
-      };
-    }
-
+  function createNavigator(): any {
     return {
       Navigator,
       Screen,
