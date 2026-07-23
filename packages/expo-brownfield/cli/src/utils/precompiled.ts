@@ -20,6 +20,13 @@ const RESERVED_POD_DIRS = new Set([
 ]);
 
 /**
+ * Matches the compressed-tarball artifacts written next to a precompiled xcframework. Both xz
+ * (current, written by `ensure_artifacts`) and gzip (legacy) are accepted so enumeration keeps
+ * working across an in-place upgrade where a stale `.tar.gz` can linger beside a fresh `.tar.xz`.
+ */
+const PRECOMPILED_TARBALL_RE = /\.tar\.(gz|xz)$/;
+
+/**
  * Returns true when an `entry` refers to a directory either directly OR via a symlink whose
  * target is a directory.
  */
@@ -38,7 +45,7 @@ export const isDirentDirectory = (entry: fs.Dirent, parentDir: string): boolean 
 /**
  * Scans `ios/Pods/` for prebuilt xcframeworks installed by autolinking when
  * `EXPO_USE_PRECOMPILED_MODULES=1` is set. A pod is "precompiled" when its directory contains
- * a `<Product>.xcframework/` dir and an `artifacts/<Product>-{debug,release}.tar.gz` tarball —
+ * a `<Product>.xcframework/` dir and an `artifacts/<Product>-{debug,release}.tar.{xz,gz}` tarball —
  * the exact signature written by `Expo::PrecompiledModules.ensure_artifacts` in
  * expo-modules-autolinking.
  *
@@ -71,7 +78,7 @@ export const enumeratePrecompiledModules = (iosDir: string): ModuleXCFramework[]
       continue;
     }
 
-    const tarballs = fs.readdirSync(artifactsDir).filter((f) => f.endsWith('.tar.gz'));
+    const tarballs = fs.readdirSync(artifactsDir).filter((f) => PRECOMPILED_TARBALL_RE.test(f));
     if (tarballs.length === 0) {
       continue;
     }
@@ -81,10 +88,14 @@ export const enumeratePrecompiledModules = (iosDir: string): ModuleXCFramework[]
       .filter((f) => f.name.endsWith('.xcframework') && isDirentDirectory(f, podDir))
       .map((f) => f.name.replace(/\.xcframework$/, ''));
 
-    // Identify the "main" product for this pod — the xcframework whose name matches a tarball.
+    // Identify the "main" product for this pod — the xcframework whose name matches a tarball
+    // (regardless of the tarball's compression extension).
     // Used as the `-m` argument when reconciling debug/release flavors via replace-xcframework.js.
     const mainProduct = xcframeworks.find((name) =>
-      tarballs.some((f) => f === `${name}-debug.tar.gz` || f === `${name}-release.tar.gz`)
+      tarballs.some((f) => {
+        const base = f.replace(PRECOMPILED_TARBALL_RE, '');
+        return base === `${name}-debug` || base === `${name}-release`;
+      })
     );
     if (!mainProduct) {
       // No xcframework lines up with the tarball — defensive skip (treat as unrelated vendored fw).

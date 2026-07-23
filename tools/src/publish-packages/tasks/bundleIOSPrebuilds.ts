@@ -332,7 +332,7 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
 
               const files = await fs.promises.readdir(srcDir);
               for (const file of files) {
-                if (file.endsWith('.tar.gz')) {
+                if (file.endsWith('.tar.xz')) {
                   await fs.promises.copyFile(path.join(srcDir, file), path.join(destDir, file));
                 }
               }

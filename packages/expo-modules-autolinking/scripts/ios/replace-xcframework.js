@@ -2,7 +2,7 @@
 /**
  * Replace XCFramework for Debug/Release Configuration
  *
- * Per-pod product swap: extracts <xcframeworksDir>/artifacts/<module>-<config>.tar.gz
+ * Per-pod product swap: extracts <xcframeworksDir>/artifacts/<module>-<config>.tar.xz
  * over <Product>.xcframework, gated on <xcframeworksDir>/artifacts/.last_build_configuration.
  * Sibling shared-dep symlinks under <xcframeworksDir>/ are preserved (only the product
  * xcframework is wiped before re-extracting).
@@ -75,7 +75,7 @@ function processPerPodSwap(args, configLower) {
 
   const artifactsDir = path.join(xcframeworksDir, 'artifacts');
   fs.mkdirSync(artifactsDir, { recursive: true });
-  const tarballPath = path.join(artifactsDir, `${moduleName}-${configLower}.tar.gz`);
+  const tarballPath = path.join(artifactsDir, `${moduleName}-${configLower}.tar.xz`);
   const lastConfigFile = path.join(artifactsDir, '.last_build_configuration');
 
   if (!fs.existsSync(tarballPath)) {
@@ -100,7 +100,7 @@ function processPerPodSwap(args, configLower) {
     }
   }
 
-  const result = spawnSync('tar', ['-xzf', tarballPath, '-C', xcframeworksDir], { stdio: 'pipe' });
+  const result = spawnSync('tar', ['-xf', tarballPath, '-C', xcframeworksDir], { stdio: 'pipe' });
   if (result.status !== 0) {
     console.error(`${LOG_PREFIX} ${moduleName}: tar failed: ${result.stderr?.toString().trim()}`);
     process.exit(1);
