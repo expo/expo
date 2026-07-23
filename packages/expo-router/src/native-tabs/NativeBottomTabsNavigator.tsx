@@ -1,20 +1,17 @@
 'use client';
 
-import React, { use, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { use, useCallback, useMemo, useRef } from 'react';
 
 import { useRouteNode } from '../Route';
-import { router } from '../imperative-api';
 import type {
   ParamListBase,
   TabNavigationState,
   TabRouterOptions,
 } from '../react-navigation/native';
 import { unstable_createStandardRouterNavigator } from '../standard-navigation';
-import type {
-  StandardNavigatorContentProps,
-  StandardNavigatorDescriptor,
-} from '../standard-navigation/types';
+import type { StandardNavigatorContentProps } from '../standard-navigation/types';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
+import { useHiddenTabRedirect } from '../utils/useHiddenTabRedirect';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
 import { NativeTabsView } from './NativeTabsView';
@@ -66,57 +63,35 @@ function NativeTabsContent({
 
   const { routes } = state;
 
+  const { visibleRoutes, visibleFocusedIndex } = useHiddenTabRedirect({
+    routes,
+    focusedRouteKey: routes[state.index]!.key,
+    descriptors,
+    redirectToRouteName,
+  });
   const visibleTabs = useMemo(
     () =>
-      routes
-        // Every filesystem route is registered in state; only routes declared by a
-        // non-hidden <NativeTabs.Trigger> become tab items.
-        .filter((route) => {
-          const descriptor = descriptors[
-            route.key
-          ]! as StandardNavigatorDescriptor<NativeTabOptions>;
-          return descriptor.routeSource === 'layout' && descriptor.options?.hidden !== true;
+      visibleRoutes.map(
+        (route): NativeTabsViewTabItem => ({
+          options: descriptors[route.key]!.options,
+          routeKey: route.key,
+          name: route.name,
+          contentRenderer: () => descriptors[route.key]!.render(),
         })
-        .map(
-          (route): NativeTabsViewTabItem => ({
-            options: descriptors[route.key]!.options,
-            routeKey: route.key,
-            name: route.name,
-            contentRenderer: () => descriptors[route.key]!.render(),
-          })
-        ),
-    [routes, descriptors]
-  );
-  const visibleFocusedTabIndex = useMemo(
-    () => visibleTabs.findIndex((tab) => tab.routeKey === routes[state.index]!.key),
-    [visibleTabs, routes, state.index]
+      ),
+    [descriptors, visibleRoutes]
   );
   const visibleTabsKeys = useMemo(
     () => visibleTabs.map((tab) => tab.routeKey).join(';'),
     [visibleTabs]
   );
 
-  const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
+  const focusedIndex = visibleFocusedIndex >= 0 ? visibleFocusedIndex : 0;
 
   // The focused route can be hidden or have no trigger at all — for example a path pointing at a
   // route without a tab, or a trigger hidden while focused. Redirect to the router's initial tab,
   // falling back to the first visible tab. `replace` keeps the unreachable route out of history.
   // TODO(@ubax): Show a formsheet for hidden tabs which are focused (Tabs + Stack in one).
-  const redirectTabHref = useMemo(() => {
-    const redirectTab =
-      visibleTabs.find(
-        (tab) =>
-          tab.name === redirectToRouteName ||
-          tab.name.replace(/\/index$/, '') === redirectToRouteName
-      ) ?? visibleTabs[0];
-    return routes.find((route) => route.key === redirectTab?.routeKey)?.href;
-  }, [redirectToRouteName, routes, visibleTabs]);
-  useEffect(() => {
-    if (visibleFocusedTabIndex < 0 && redirectTabHref != null) {
-      router.replace(redirectTabHref);
-    }
-  }, [visibleFocusedTabIndex, redirectTabHref]);
-
   const provenanceRef = useRef(0);
 
   const onTabChange = useCallback(

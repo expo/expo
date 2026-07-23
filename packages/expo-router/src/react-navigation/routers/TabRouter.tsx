@@ -112,7 +112,7 @@ export const TabActions = {
   },
 };
 
-const getRouteHistory = (
+export const getRouteHistory = (
   routes: Route<string>[],
   index: number,
   backBehavior: BackBehavior,
