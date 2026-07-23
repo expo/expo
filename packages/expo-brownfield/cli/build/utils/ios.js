@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.shipSwiftPackage = exports.shipFrameworks = exports.validateHostProvided = exports.printIosConfig = exports.makeArtifactsDirectory = exports.binaryTarget = exports.libraryProduct = exports.getSupportedPlatforms = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXCframework = exports.createSwiftPackage = exports.copyXCFrameworks = exports.buildFramework = exports.cleanUpArtifacts = exports.enumerateSourceBuiltDeps = void 0;
+exports.shipSwiftPackage = exports.shipFrameworks = exports.validateHostProvided = exports.validateSchemeCollision = exports.printIosConfig = exports.makeArtifactsDirectory = exports.binaryTarget = exports.libraryProduct = exports.getSupportedPlatforms = exports.generatePackageMetadataFile = exports.findWorkspace = exports.findScheme = exports.createXCframework = exports.createSwiftPackage = exports.copyXCFrameworks = exports.buildFramework = exports.cleanUpArtifacts = exports.enumerateSourceBuiltDeps = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const node_fs_1 = __importDefault(require("node:fs"));
@@ -25,7 +25,11 @@ const spinner_1 = require("./spinner");
  * Returns names without the `.framework` suffix, deduped, in `otool -L` order.
  */
 const enumerateSourceBuiltDeps = async (config, alreadyCovered) => {
-    const frameworkBinary = node_path_1.default.join(config.simulator, `${config.scheme}.framework`, config.scheme);
+    const frameworkDir = findSourceBuiltFramework(config.simulator, config.scheme);
+    if (!frameworkDir) {
+        return [];
+    }
+    const frameworkBinary = node_path_1.default.join(frameworkDir, config.scheme);
     if (!node_fs_1.default.existsSync(frameworkBinary)) {
         return [];
     }
@@ -282,10 +286,24 @@ exports.createSwiftPackage = createSwiftPackage;
 const createXCframework = async (config, at) => {
     const frameworkName = `${config.scheme}.xcframework`;
     const outputPath = node_path_1.default.join(at, frameworkName);
+    // Precompiled-module builds can place the scheme's framework under
+    // `XCFrameworkIntermediates/<scheme>/` instead of the products-dir root. In dry-run mode
+    // nothing has been built, so fall back to the root path to print the command.
+    const resolveSlice = (slicePath) => {
+        const framework = findSourceBuiltFramework(slicePath, config.scheme);
+        if (framework) {
+            return framework;
+        }
+        const fallback = node_path_1.default.join(slicePath, `${config.scheme}.framework`);
+        if (!config.dryRun) {
+            error_1.default.handle('ios-framework-not-found', fallback);
+        }
+        return fallback;
+    };
     const args = [
         '-create-xcframework',
-        ...xcframeworkSliceArgs(`${config.device}/${config.scheme}.framework`),
-        ...xcframeworkSliceArgs(`${config.simulator}/${config.scheme}.framework`),
+        ...xcframeworkSliceArgs(resolveSlice(config.device)),
+        ...xcframeworkSliceArgs(resolveSlice(config.simulator)),
         '-output',
         outputPath,
     ];
@@ -395,7 +413,14 @@ const generatePackageMetadataFile = async (config, packagePath) => {
         ...precompiledModules.map(({ name }) => name),
     ]));
     const sourceBuiltDeps = sourceBuiltDepNames.map((name) => ({ name, targets: [name] }));
-    const xcframeworks = [...baseFrameworks, ...precompiledModules, ...sourceBuiltDeps];
+    const seenNames = new Set();
+    const xcframeworks = [...baseFrameworks, ...precompiledModules, ...sourceBuiltDeps].filter(({ name }) => {
+        if (seenNames.has(name)) {
+            return false;
+        }
+        seenNames.add(name);
+        return true;
+    });
     // With prebuilds the module graph is large; expose a single aggregate library so consumers
     // `import <PackageName>` once and Xcode links every underlying binary target automatically.
     // Without prebuilds keep one `.library` per framework for backwards compatibility.
@@ -486,6 +511,23 @@ const printIosConfig = (config) => {
     console.log();
 };
 exports.printIosConfig = printIosConfig;
+/**
+ * Fails fast when the brownfield scheme shares its name with a bundled framework — the bundled
+ * xcframework would silently overwrite the wrapper framework in the output, and Package.swift
+ * would declare the same target twice.
+ */
+const validateSchemeCollision = (config) => {
+    const bundled = new Set((0, precompiled_1.resolvedFixedXCFrameworks)());
+    if (config.usePrebuilds) {
+        for (const module of (0, precompiled_1.enumerateAllPrebuildModules)(process.cwd(), config.buildConfiguration, config.hostProvidedFrameworks)) {
+            bundled.add(module.name);
+        }
+    }
+    if (bundled.has(config.scheme)) {
+        error_1.default.handle('ios-scheme-name-collision', config.scheme);
+    }
+};
+exports.validateSchemeCollision = validateSchemeCollision;
 const validateHostProvided = (config) => {
     if (config.hostProvidedFrameworks.length === 0) {
         return;

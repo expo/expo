@@ -16,13 +16,21 @@ const validatePrebuild = async (platform, options = {}) => {
     (0, exports.validatePackageInstalled)();
     if (!checkPrebuild(platform)) {
         console.info(`${chalk_1.default.yellow(`⚠ Prebuild for platform: ${platform} is missing`)}`);
-        const response = await (0, prompts_1.default)({
-            type: 'confirm',
-            name: 'shouldRunPrebuild',
-            message: 'Do you want to run the prebuild now?',
-            initial: false,
-        });
-        if (response.shouldRunPrebuild) {
+        let shouldRunPrebuild;
+        if (isInteractive()) {
+            const response = await (0, prompts_1.default)({
+                type: 'confirm',
+                name: 'shouldRunPrebuild',
+                message: 'Do you want to run the prebuild now?',
+                initial: false,
+            });
+            shouldRunPrebuild = !!response.shouldRunPrebuild;
+        }
+        else {
+            console.info(`Non-interactive shell detected; running \`npx expo prebuild --platform ${platform}\` automatically`);
+            shouldRunPrebuild = true;
+        }
+        if (shouldRunPrebuild) {
             await (0, spinner_1.withSpinner)({
                 operation: () => (0, spawn_async_1.default)('npx', ['expo', 'prebuild', '--platform', platform]),
                 loaderMessage: `Running 'npx expo prebuild' for platform: ${platform}...`,
@@ -95,5 +103,8 @@ exports.validatePackageInstalled = validatePackageInstalled;
 const checkPrebuild = (platform) => {
     const nativeDirectory = node_path_1.default.join(process.cwd(), platform);
     return node_fs_1.default.existsSync(nativeDirectory);
+};
+const isInteractive = () => {
+    return !!process.stdin.isTTY && !!process.stdout.isTTY;
 };
 //# sourceMappingURL=prebuild.js.map

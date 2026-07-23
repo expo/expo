@@ -10,9 +10,16 @@ const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
 const error_1 = __importDefault(require("./error"));
 const spinner_1 = require("./spinner");
-const buildPublishingTask = (variant, repository) => {
-    const repositoryName = repository === 'MavenLocal' ? repository : `${repository}Repository`;
-    return `publishBrownfield${variant}PublicationTo${repositoryName}`;
+const buildPublishingTask = (variant, repository, fusedOpts = { fused: false, library: '' }) => {
+    const repositoryName = repository.toLowerCase() === 'mavenlocal' ? 'MavenLocal' : `${repository}Repository`;
+    const task = `publishBrownfield${variant}PublicationTo${repositoryName}`;
+    // In `--fused` mode, route the task to the matching sibling subproject:
+    // `:<lib>-fused-release` for Release, `:<lib>-fused-debug` for Debug.
+    if (fusedOpts.fused) {
+        const siblingSuffix = variant === 'Debug' ? 'debug' : 'release';
+        return `:${fusedOpts.library}-fused-${siblingSuffix}:${task}`;
+    }
+    return task;
 };
 exports.buildPublishingTask = buildPublishingTask;
 const findBrownfieldLibrary = () => {
@@ -59,6 +66,7 @@ const printAndroidConfig = (config) => {
     console.log(chalk_1.default.bold('Resolved build configuration'));
     console.log(` - Build variant: ${chalk_1.default.blue(config.variant)}`);
     console.log(` - Library: ${chalk_1.default.blue(config.library)}`);
+    console.log(` - Fused: ${chalk_1.default.blue(config.fused)}`);
     console.log(` - Verbose: ${chalk_1.default.blue(config.verbose)}`);
     console.log(` - Dry run: ${chalk_1.default.blue(config.dryRun)}`);
     console.log(` - Tasks:`);
@@ -87,13 +95,24 @@ const processTasks = (stdout) => {
         .filter((task) => !task.includes('MavenLocalRepository')));
 };
 exports.processTasks = processTasks;
-const runTask = async (task, verbose, dryRun) => {
+const runTask = async (task, verbose, dryRun, extraGradleArgs = []) => {
+    // Fused-shaped tasks (e.g. passed manually via -t without --fused) must still
+    // activate fused mode in Gradle: without `-Pbrownfield.fused=true` the fused
+    // sibling subprojects are inert (no publications) and the conditional AGP
+    // force-bump in the root build.gradle never applies, so the build would fail
+    // mid-execution under the version catalog's AGP.
+    const fusedProperty = '-Pbrownfield.fused=true';
+    const isFusedTask = /(?:^|:)[^:\s]+-fused-(?:release|debug):/.test(task);
+    const perTaskArgs = isFusedTask && !extraGradleArgs.includes(fusedProperty)
+        ? [...extraGradleArgs, fusedProperty]
+        : extraGradleArgs;
+    const args = [task, ...perTaskArgs];
     if (dryRun) {
-        console.log(`./gradlew ${task}`);
+        console.log(`./gradlew ${args.join(' ')}`);
         return;
     }
     return (0, spinner_1.withSpinner)({
-        operation: () => (0, spawn_async_1.default)('./gradlew', [task], {
+        operation: () => (0, spawn_async_1.default)('./gradlew', args, {
             cwd: node_path_1.default.join(process.cwd(), 'android'),
             stdio: verbose ? 'inherit' : 'pipe',
         }),

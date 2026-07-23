@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.enumeratePrebuildModulesRaw = exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePrecompiledModules = exports.isDirentDirectory = void 0;
+exports.enumeratePrebuildModulesRaw = exports.enumerateAllPrebuildModules = exports.enumerateBundledSpmDepsXcframeworks = exports.collectDeclaredSpmDeps = exports.buildPodToNpmPackageMap = exports.enumerateSpmDepsXcframeworks = exports.findSpmDepsRoot = exports.resolvedFixedXCFrameworks = exports.ensureCorrectFlavor = exports.enumeratePodBuiltXcframeworks = exports.enumeratePrecompiledModules = exports.isDirentDirectory = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const node_fs_1 = __importDefault(require("node:fs"));
 const node_path_1 = __importDefault(require("node:path"));
@@ -98,6 +98,79 @@ const enumeratePrecompiledModules = (iosDir) => {
     return results;
 };
 exports.enumeratePrecompiledModules = enumeratePrecompiledModules;
+/**
+ * Scans `ios/Pods/` for pods that build their vendored xcframework during the app build
+ * (`<Pod>/Products/<Pod>.xcframework`, e.g. ExpoModulesJSI). Prebuilt modules like
+ * ExpoModulesCore publicly depend on these, so without bundling them consumers fail with
+ * `unable to resolve module dependency: '<Name>'`.
+ */
+const enumeratePodBuiltXcframeworks = (iosDir, existingNames) => {
+    const podsDir = node_path_1.default.join(iosDir, 'Pods');
+    if (!node_fs_1.default.existsSync(podsDir)) {
+        return [];
+    }
+    const results = [];
+    for (const entry of node_fs_1.default.readdirSync(podsDir, { withFileTypes: true })) {
+        if (!entry.isDirectory() ||
+            RESERVED_POD_DIRS.has(entry.name) ||
+            existingNames.has(entry.name)) {
+            continue;
+        }
+        const podDir = node_path_1.default.join(podsDir, entry.name);
+        const xcframeworkPath = node_path_1.default.join(podDir, 'Products', `${entry.name}.xcframework`);
+        if (!node_fs_1.default.existsSync(xcframeworkPath)) {
+            continue;
+        }
+        results.push({
+            name: entry.name,
+            podDir,
+            xcframeworkPath,
+            mainProduct: entry.name,
+        });
+    }
+    return results;
+};
+exports.enumeratePodBuiltXcframeworks = enumeratePodBuiltXcframeworks;
+const FLAVOR_DIR_NAMES = new Set(['debug', 'release']);
+/**
+ * Autolinking stages shared SPM-dep xcframeworks as symlinks into a `<store>/<name>/<flavor>/`
+ * tree, using the flavor active at `pod install` time. Copying the symlink verbatim would make
+ * the package non-portable and could ship the wrong flavor, so resolve it to its real path and
+ * swap to the requested flavor's sibling directory — recording a `FlavorMismatch` when that
+ * sibling is missing.
+ */
+const resolveStagedXcframework = (module, flavor, flavorMismatches) => {
+    let isSymlink = false;
+    try {
+        isSymlink = node_fs_1.default.lstatSync(module.xcframeworkPath).isSymbolicLink();
+    }
+    catch {
+        return module;
+    }
+    if (!isSymlink) {
+        return module;
+    }
+    let real;
+    try {
+        real = node_fs_1.default.realpathSync(module.xcframeworkPath);
+    }
+    catch {
+        // Dangling symlink — leave it; the copy step will surface the failure with context.
+        return module;
+    }
+    const flavorDir = node_path_1.default.dirname(real);
+    const stagedFlavor = node_path_1.default.basename(flavorDir).toLowerCase();
+    if (FLAVOR_DIR_NAMES.has(stagedFlavor) && stagedFlavor !== flavor) {
+        const candidate = node_path_1.default.join(node_path_1.default.dirname(flavorDir), flavor, node_path_1.default.basename(real));
+        if (node_fs_1.default.existsSync(candidate)) {
+            real = node_fs_1.default.realpathSync(candidate);
+        }
+        else {
+            flavorMismatches.push({ name: module.name, flavor, xcframeworkPath: real });
+        }
+    }
+    return { ...module, xcframeworkPath: real };
+};
 /**
  * Reads `<podDir>/artifacts/.last_build_configuration` and, if it doesn't match the requested
  * build configuration, shells out to autolinking's `replace-xcframework.js` to extract the
@@ -528,8 +601,17 @@ exports.enumerateBundledSpmDepsXcframeworks = enumerateBundledSpmDepsXcframework
  */
 const enumerateAllPrebuildModules = (cwd, buildConfiguration, hostProvidedFrameworks = []) => {
     const hostProvided = new Set(hostProvidedFrameworks);
-    const { modules: allModules, podModules, podToNpm, } = (0, exports.enumeratePrebuildModulesRaw)(cwd, buildConfiguration);
+    const { modules: allModules, podModules, podToNpm, flavorMismatches, } = (0, exports.enumeratePrebuildModulesRaw)(cwd, buildConfiguration);
     const modules = allModules.filter((m) => !hostProvided.has(m.name));
+    // Shipping a wrong-flavor SPM dep would silently mix debug and release binaries in the
+    // package, so fail fast unless the host app provides the framework itself.
+    const blockingMismatches = flavorMismatches.filter(({ name }) => !hostProvided.has(name));
+    if (blockingMismatches.length > 0) {
+        const detail = blockingMismatches
+            .map(({ name, flavor, xcframeworkPath }) => `${name} (requested ${flavor}, only found ${xcframeworkPath})`)
+            .join(', ');
+        error_1.default.handle('ios-prebuilds-spm-dep-flavor-mismatch', detail);
+    }
     // Drop host-provided names from the completeness check
     const declaredDeps = (0, exports.collectDeclaredSpmDeps)(podModules, podToNpm).filter(({ name }) => !hostProvided.has(name));
     const coveredNames = new Set(modules.map((m) => m.name));
@@ -548,16 +630,21 @@ exports.enumerateAllPrebuildModules = enumerateAllPrebuildModules;
  * applying host-provided filtering or running the missing-SPM-dep completeness check.
  */
 const enumeratePrebuildModulesRaw = (cwd, buildConfiguration) => {
-    const podModules = (0, exports.enumeratePrecompiledModules)(node_path_1.default.join(cwd, 'ios'));
+    const flavor = buildConfiguration.toLowerCase();
+    const flavorMismatches = [];
+    const podModules = (0, exports.enumeratePrecompiledModules)(node_path_1.default.join(cwd, 'ios')).map((module) => resolveStagedXcframework(module, flavor, flavorMismatches));
     const podToNpm = (0, exports.buildPodToNpmPackageMap)(cwd);
     const seenNames = new Set(podModules.map((m) => m.name));
+    const podBuiltModules = (0, exports.enumeratePodBuiltXcframeworks)(node_path_1.default.join(cwd, 'ios'), seenNames);
+    podBuiltModules.forEach((m) => seenNames.add(m.name));
     const bundledModules = (0, exports.enumerateBundledSpmDepsXcframeworks)(podModules, podToNpm, buildConfiguration, seenNames);
     bundledModules.forEach((m) => seenNames.add(m.name));
     const spmDepModules = (0, exports.enumerateSpmDepsXcframeworks)(cwd, buildConfiguration, seenNames);
     return {
-        modules: [...podModules, ...bundledModules, ...spmDepModules],
+        modules: [...podModules, ...podBuiltModules, ...bundledModules, ...spmDepModules],
         podModules,
         podToNpm,
+        flavorMismatches,
     };
 };
 exports.enumeratePrebuildModulesRaw = enumeratePrebuildModulesRaw;
