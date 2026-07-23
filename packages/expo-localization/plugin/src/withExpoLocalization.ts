@@ -201,6 +201,16 @@ function withExpoLocalization(config: ExpoConfig, data: ConfigPluginProps = {}) 
     allowDynamicLocaleChangesAndroid: data.allowDynamicLocaleChangesAndroid ?? true,
   };
 
+  // Set extra values so Expo Go can read it.
+  config.extra ??= {};
+
+  if (typeof data.supportsRTL === 'boolean') {
+    config.extra.supportsRTL = data.supportsRTL;
+  }
+  if (typeof data.forcesRTL === 'boolean') {
+    config.extra.forcesRTL = data.forcesRTL;
+  }
+
   return withPlugins(config, [
     [withExpoLocalizationIos, normalizedData],
     [withExpoLocalizationAndroid, normalizedData],
