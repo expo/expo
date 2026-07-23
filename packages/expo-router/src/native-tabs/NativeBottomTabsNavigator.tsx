@@ -5,12 +5,12 @@ import type { NavigatorArgs, NavigatorDescriptor, NavigatorRoute } from 'standar
 
 import { useRouteNode } from '../Route';
 import { getNavigateAction } from '../global-state/getNavigationAction';
+import { store } from '../global-state/store';
 import {
   NavigatorTypeContext,
   useNavigatorTypeContextValue,
 } from '../react-navigation/core/NavigatorTypeContext';
 import { useStableTabOrder } from '../react-navigation/core/useStableTabOrder';
-import { useStoreSlice } from '../react-navigation/core/useStoreSlice';
 import type {
   NavigationAction,
   ParamListBase,
@@ -44,7 +44,7 @@ interface NativeTabsCreatedProps {
   lazyRoutes: NavigatorRoute[];
   lazyDescriptors: Record<string, NavigatorDescriptor<NativeTabOptions>>;
   preload: (name: string) => void;
-  dispatch: (action: NavigationAction) => void;
+  dispatch: (action: NavigationAction, options?: { urgent?: boolean }) => void;
   // React Navigation state key of this navigator (the standard-navigation `state` prop omits it).
   // Provided to `NavigatorTypeContext` so link-preview navigation can look through this tab.
   stateKey: string;
@@ -89,7 +89,11 @@ function NativeTabsContent({
   const { routes } = state;
   const routeNode = useRouteNode();
   const hrefMap = useMemo(() => getRouteNodeHrefMap(), [routeNode]);
-  const committedState = useStoreSlice(stateKey);
+  // First-visit detection must read the *committed* slice, not the rendered `state`: post the
+  // transitions flip the rendered tree can lead the committed one during a pending navigation.
+  const committedState = store.getCommittedSlice(stateKey) as
+    | TabNavigationState<ParamListBase>
+    | undefined;
 
   // TODO: Consider supporting lazy routes here (preload only non-lazy tabs, like the JS navigators)
   // instead of always mounting every tab - would defer offscreen tab cost on the native side.
@@ -200,14 +204,21 @@ function NativeTabsContent({
         const firstVisitAction =
           committedRoute?.state == null && href != null ? getNavigateAction(href, {}) : undefined;
 
+        // A native tab press already committed on the native side, so the JS echo must land
+        // synchronously (D5) rather than deferring behind a transition. `actions.navigate` is a
+        // shared JS-facing helper (also reached from `router.*`) that can't carry `urgent`, so
+        // dispatch the equivalent action directly instead of going through it here.
         if (firstVisitAction != null) {
-          dispatch(firstVisitAction);
+          dispatch(firstVisitAction, { urgent: true });
         } else {
-          actions.navigate(selectedRoute.name);
+          dispatch(
+            { type: 'NAVIGATE', payload: { name: selectedRoute.name }, target: stateKey },
+            { urgent: true }
+          );
         }
       }
     },
-    [orderedRoutes, actions, committedState, dispatch, emitter, hrefMap, routeNode]
+    [orderedRoutes, committedState, dispatch, emitter, hrefMap, routeNode, stateKey]
   );
 
   // Compile-time guard: everything spread onto `<NativeTabsView>` must be a prop it declares. The

@@ -1,4 +1,5 @@
 export * from './Link';
+export { useLinkStatus, type LinkStatus } from './useLinkStatus';
 export type {
   LinkMenuActionProps,
   LinkMenuProps,

@@ -9,10 +9,11 @@ import {
   emitDomLinkEvent,
   emitDomSetParams,
 } from '../domComponents/emitDomEvent';
-import { resolveHref } from '../link/href';
+import { resolveRedirects } from '../getRoutesRedirects';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
 import { shouldLinkExternally } from '../utils/url';
-import { routingQueue } from './routingQueue';
+import { dispatchAction } from './routingQueue';
 import { store } from './store';
 import type { LinkToOptions, NavigationOptions } from './types';
 
@@ -38,7 +39,7 @@ export function dismiss(count: number = 1) {
     return;
   }
 
-  routingQueue.add({ type: 'POP', payload: { count } });
+  dispatchAction({ type: 'POP', payload: { count } });
 }
 
 export function dismissTo(href: Href, options?: NavigationOptions) {
@@ -53,7 +54,7 @@ export function dismissAll() {
   if (emitDomDismissAll()) {
     return;
   }
-  routingQueue.add({ type: 'POP_TO_TOP' });
+  dispatchAction({ type: 'POP_TO_TOP' });
 }
 
 export function goBack() {
@@ -61,7 +62,7 @@ export function goBack() {
     return;
   }
   store.assertIsReady();
-  routingQueue.add({ type: 'GO_BACK' });
+  dispatchAction({ type: 'GO_BACK' });
 }
 
 export function canGoBack(): boolean {
@@ -142,6 +143,24 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
     return;
   }
 
+  // An external redirect is a side effect (`Linking.openURL`) that must not run inside the render-pure
+  // reducer, so consume it here in the dispatch funnel: resolve the href's segments against the
+  // committed route info and follow the redirect chain purely; if it lands external, open it and stop
+  // (never dispatch). Everything else dispatches a raw `ROUTER_LINK` the reducer resolves against its
+  // own chained tree (correct for same-tick relative chains).
+  if (store.navigationRef.isReady() && store.redirects.length > 0) {
+    const resolvedHref = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
+    const redirected = resolveRedirects(resolvedHref, store.redirects);
+    if (redirected.external && typeof redirected.href === 'string') {
+      let externalHref = redirected.href;
+      if (externalHref.startsWith('//') && Platform.OS !== 'web') {
+        externalHref = `https:${externalHref}`;
+      }
+      Linking.openURL(externalHref);
+      return;
+    }
+  }
+
   const linkAction = {
     type: 'ROUTER_LINK' as const,
     payload: {
@@ -150,7 +169,7 @@ export function linkTo(originalHref: Href | string, options: LinkToOptions = {})
     },
   };
 
-  routingQueue.add(linkAction);
+  dispatchAction(linkAction);
 }
 
 /**

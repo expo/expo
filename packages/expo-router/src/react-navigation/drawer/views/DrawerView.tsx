@@ -174,11 +174,14 @@ function DrawerViewBase({
         return false;
       }
 
-      if (defaultStatus === 'open') {
-        openDrawer();
-      } else {
-        closeDrawer();
-      }
+      // Hardware back is native-induced (D5): dispatch urgently instead of routing through
+      // `openDrawer`/`closeDrawer`, which are also reached from JS presses (toggle button, drawer
+      // items) and must stay interruptible transitions there.
+      const action =
+        defaultStatus === 'open'
+          ? DrawerRouterActions.openDrawer()
+          : DrawerRouterActions.closeDrawer();
+      navigation.dispatch(action, { urgent: true });
 
       return true;
     };
@@ -187,7 +190,7 @@ function DrawerViewBase({
     // This way we can make sure that the listener is added as late as possible
     // This will make sure that our handler will run first when back button is pressed
     return addCancelListener(handleHardwareBack);
-  }, [defaultStatus, drawerStatus, drawerType, closeDrawer, openDrawer, navigation]);
+  }, [defaultStatus, drawerStatus, drawerType, navigation]);
 
   const renderDrawerContent = () => {
     return (
@@ -215,7 +218,6 @@ function DrawerViewBase({
           // navigated to or preloaded), so the lazy gate never trips here.
 
           const {
-            freezeOnBlur,
             header = ({ layout, options }: DrawerHeaderProps) => (
               <Header
                 {...options}
@@ -245,7 +247,11 @@ function DrawerViewBase({
               style={[StyleSheet.absoluteFill, { zIndex: isFocused ? 0 : -1 }]}
               visible={isFocused}
               enabled={detachInactiveScreens}
-              freezeOnBlur={freezeOnBlur}
+              // Forced off so a Suspense-frozen subtree can't starve a pending React transition;
+              // overrides both the per-screen `freezeOnBlur` option and `enableFreeze()`.
+              freezeOnBlur={false}
+              // TODO(transitions-freeze): inert while `freezeOnBlur={false}` (rn-screens gates
+              // freeze behind `freezeOnBlur`); kept as the freeze re-enable breadcrumb.
               shouldFreeze={!isFocused && !isPreloaded}>
               <Screen
                 focused={isFocused}

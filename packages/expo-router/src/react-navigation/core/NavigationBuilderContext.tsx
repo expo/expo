@@ -27,25 +27,21 @@ export type DispatchRoot = (
   action: NavigationAction,
   options?: {
     originKey?: string;
+    // Urgent (native-induced) or a mount-window replay: dispatched plainly, never wrapped in a
+    // transition (D5). JS-initiated dispatches omit both and become transitions.
+    urgent?: boolean;
+    isReplay?: boolean;
   }
-) => boolean;
+) => void;
 
 /**
  * Context which holds the required helpers needed to build nested navigators.
  */
 export const NavigationBuilderContext = React.createContext<{
-  onAction?: (action: NavigationAction, visitedNavigators?: Set<string>) => boolean;
+  onAction?: (action: NavigationAction, visitedNavigators?: Set<string>) => void;
   addListener?: AddListener;
   dispatchRoot?: DispatchRoot;
   onOptionsChange: (options: object) => void;
-  scheduleUpdate: (callback: () => void) => void;
-  flushUpdates: () => void;
 }>({
   onOptionsChange: () => undefined,
-  scheduleUpdate: () => {
-    throw new Error("Couldn't find a context for scheduling updates.");
-  },
-  flushUpdates: () => {
-    throw new Error("Couldn't find a context for flushing updates.");
-  },
 });

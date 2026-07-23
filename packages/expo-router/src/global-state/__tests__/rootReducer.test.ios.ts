@@ -7,7 +7,7 @@ import {
   type NavigationState,
 } from '../../react-navigation/routers';
 import { createReducerRegistry } from '../storeContext';
-import { rootReducer } from '../rootReducer';
+import { type RootReducerEnvelope, reduceRootNavigation, rootReducer } from '../rootReducer';
 
 const rootState: NavigationState = {
   stale: false,
@@ -317,6 +317,21 @@ describe(rootReducer, () => {
     });
   });
 
+  it('returns the identical root reference on a nested no-op (does not rebuild ancestors)', () => {
+    const registry = createReducerRegistry();
+
+    // A nested (non-root) target whose reducer returns its slice unchanged: the reduction is a
+    // genuine no-op, so the whole tree — including every ancestor `replacePathState` walks through —
+    // must come back referentially identical. Referential identity (not `toMatchObject`) is what
+    // `canGoBack`/`canDismiss` rely on post-flip (`reduceRoot(...).state === committed`).
+    registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
+
+    const result = rootReducer(rootState, { type: 'UNKNOWN', target: 'home-state' }, registry);
+
+    expect(result.noop).toBe(true);
+    expect(result.state).toBe(rootState);
+  });
+
   it('does not revisit an ancestor after a focused child cannot handle the action', () => {
     const registry = createReducerRegistry();
     const action: NavigationAction = {
@@ -459,4 +474,262 @@ describe(rootReducer, () => {
     expect((tree.routes[0]!.state as NavigationState).routes[0]!.params).toEqual({ callback });
   });
 
+});
+
+// State-carried mount-window replay (the `pendingActions` field on the root `useReducer` state).
+// Source-gated deferrability (D5): a JS-initiated action whose origin navigator isn't registered yet
+// is queued for replay; an urgent (native-induced) action with the same shape is NEVER queued; a
+// replay that still can't reduce is dropped (drop-after-one-retry), not re-queued.
+describe('reduceRootNavigation pendingActions (source-gated mount-window replay)', () => {
+  // An untargeted action whose declared origin navigator has no registered reducer — the mount window.
+  const untargetedAction: NavigationAction = { type: 'GO_BACK' };
+  const seed = () => ({ tree: rootState, pendingActions: [] });
+
+  it('queues a JS-initiated untargeted action whose origin is not yet registered', () => {
+    const registry = createReducerRegistry(); // nothing registered → origin unregistered
+    const envelope: RootReducerEnvelope = {
+      action: untargetedAction,
+      originKey: 'unregistered-navigator',
+    };
+
+    const next = reduceRootNavigation(seed(), envelope, registry);
+
+    expect(next.pendingActions).toHaveLength(1);
+    expect(next.pendingActions[0]!.action).toBe(untargetedAction);
+    expect(next.tree).toBe(rootState);
+  });
+
+  it('never queues an urgent (native-induced) action, even untargeted with an unregistered origin', () => {
+    const registry = createReducerRegistry();
+    const envelope: RootReducerEnvelope = {
+      action: untargetedAction,
+      originKey: 'unregistered-navigator',
+      urgent: true,
+    };
+
+    const next = reduceRootNavigation(seed(), envelope, registry);
+
+    // Source-gated: the native fact is already committed on the native side; its JS echo is never
+    // deferred/replayed. It reduces to a no-op here (unhandled), leaving the queue empty.
+    expect(next.pendingActions).toHaveLength(0);
+  });
+
+  it('is idempotent under repeated reduction of the same action object (React double-invoke)', () => {
+    const registry = createReducerRegistry();
+    const envelope: RootReducerEnvelope = {
+      action: untargetedAction,
+      originKey: 'unregistered-navigator',
+    };
+
+    const once = reduceRootNavigation(seed(), envelope, registry);
+    // Reduce the SAME envelope again against the already-queued state (React invokes the reducer
+    // eagerly at dispatch and again at render): the identity-keyed append must not double-queue.
+    const twice = reduceRootNavigation(once, envelope, registry);
+
+    expect(twice.pendingActions).toHaveLength(1);
+  });
+
+  it('drops a replay-marked action that still cannot reduce (drop-after-one-retry)', () => {
+    const registry = createReducerRegistry();
+    const queued = reduceRootNavigation(
+      seed(),
+      { action: untargetedAction, originKey: 'unregistered-navigator' },
+      registry
+    );
+    expect(queued.pendingActions).toHaveLength(1);
+
+    // The container's replay effect re-dispatches the SAME action object urgently with `isReplay`;
+    // the origin is still unregistered, so it drops rather than re-queues — the entry (keyed by the
+    // action's identity, which the reducer recomputes) leaves the queue.
+    const replayed = reduceRootNavigation(
+      queued,
+      { action: untargetedAction, originKey: 'unregistered-navigator', isReplay: true, urgent: true },
+      registry
+    );
+
+    expect(replayed.pendingActions).toHaveLength(0);
+  });
+});
+
+// Monotonic navigation-id accounting (D3, Step 8). Every id-bearing envelope records its id into
+// committed `lastReduced` on EVERY reduce path (applied / noop / append / drop / supersede), so the
+// global pending indicator (`pending = lastIssued > lastReduced`, derived in the container) always
+// un-wedges. Id-less (urgent-native) envelopes never touch the field. Staleness (supersede-to-noop)
+// is the pure READ predicate `navId < lastReduced`; the mid-flight WRITE trigger is simulator-only
+// (Step 9). These are pure-reducer properties — no mid-flight window needed.
+describe('reduceRootNavigation navId accounting (D3 pending signal)', () => {
+  const seed = (lastReduced?: number) => ({ tree: rootState, pendingActions: [], lastReduced });
+
+  // A registered reducer that genuinely changes its slice, so the reduction is "applied".
+  function registerChangingHome(registry = createReducerRegistry()) {
+    const childState = rootState.routes[0]!.state as NavigationState;
+    registry.addEntry('home-state', { reduce: jest.fn(() => ({ ...childState, index: 1 })) });
+    return registry;
+  }
+
+  // A registered reducer that returns its slice unchanged, so the reduction is a handled no-op.
+  function registerNoopHome(registry = createReducerRegistry()) {
+    registry.addEntry('home-state', { reduce: jest.fn(() => rootState.routes[0]!.state!) });
+    return registry;
+  }
+
+  it('records the id when an action applies a real change', () => {
+    const registry = registerChangingHome();
+    const envelope: RootReducerEnvelope = {
+      action: { type: 'JUMP_TO', target: 'home-state' },
+      navId: 3,
+    };
+
+    const next = reduceRootNavigation(seed(), envelope, registry);
+
+    expect(next.tree).not.toBe(rootState);
+    expect(next.lastReduced).toBe(3);
+  });
+
+  it('does NOT record when an envelope carries no id (urgent-native path)', () => {
+    // Falsifiability partner to the above: an id-less envelope reduces normally but must leave
+    // `lastReduced` untouched — a native gesture must not advance the JS pending accounting (D3).
+    const registry = registerChangingHome();
+    const envelope: RootReducerEnvelope = {
+      action: { type: 'JUMP_TO', target: 'home-state' },
+      urgent: true,
+    };
+
+    const next = reduceRootNavigation(seed(7), envelope, registry);
+
+    expect(next.lastReduced).toBe(7);
+  });
+
+  it('records the id on a handled no-op and returns the identical tree reference', () => {
+    // The tree half stays referentially identical (Step-5 noop-identity guarantee — `canGoBack`
+    // depends on it); the `lastReduced` half forces a NEW state object so React's identical-state
+    // bailout does not swallow the commit that carries the id catch-up.
+    const registry = registerNoopHome();
+    const envelope: RootReducerEnvelope = {
+      action: { type: 'UNKNOWN', target: 'home-state' },
+      navId: 4,
+    };
+
+    const next = reduceRootNavigation(seed(), envelope, registry);
+
+    expect(next.tree).toBe(rootState);
+    expect(next.lastReduced).toBe(4);
+    expect(next).not.toBe(rootState);
+  });
+
+  it('records the id both when appending to pendingActions and when the replay drops it', () => {
+    const registry = createReducerRegistry(); // origin unregistered → mount-window queue
+    const action: NavigationAction = { type: 'GO_BACK' };
+
+    const queued = reduceRootNavigation(
+      seed(),
+      { action, originKey: 'unregistered-navigator', navId: 8 },
+      registry
+    );
+    expect(queued.pendingActions).toHaveLength(1);
+    expect(queued.lastReduced).toBe(8);
+
+    const dropped = reduceRootNavigation(
+      queued,
+      { action, originKey: 'unregistered-navigator', isReplay: true, urgent: true, navId: 8 },
+      registry
+    );
+    expect(dropped.pendingActions).toHaveLength(0);
+    expect(dropped.lastReduced).toBe(8);
+  });
+
+  it('takes the max — a lower id arriving after a higher one does not lower lastReduced', () => {
+    const registry = registerChangingHome();
+
+    const next = reduceRootNavigation(
+      seed(5),
+      { action: { type: 'JUMP_TO', target: 'home-state' }, navId: 2 },
+      registry
+    );
+
+    expect(next.lastReduced).toBe(5);
+  });
+
+  it('records the id on a ROUTER_LINK that cannot resolve yet (config absent) so a pre-ready push does not wedge', () => {
+    // The `config == null` early return (a `ROUTER_LINK` dispatched before the container's linking
+    // config is ready) reduces to a no-op — but must still record the id, or the indicator wedges at
+    // pending forever. The `resolved == null` early return (redirect-consumed / uncompilable path)
+    // shares the identical `withNavId(state)` return.
+    const registry = createReducerRegistry();
+    const envelope: RootReducerEnvelope = {
+      action: { type: 'ROUTER_LINK', payload: { href: '/x', options: {} } } as any,
+      navId: 9,
+      // config omitted → the reducer's `config == null` branch
+    };
+
+    const next = reduceRootNavigation(seed(), envelope, registry);
+
+    expect(next.tree).toBe(rootState);
+    expect(next.lastReduced).toBe(9);
+  });
+
+  it('supersede READ predicate: a stale (navId < lastReduced) transition reduces to a recorded no-op', () => {
+    // A higher-id navigation already reduced past this one (committed `lastReduced = 5`). React
+    // cannot dequeue the pending update, so this stale action re-reduces — the reducer recognizes
+    // `navId < lastReduced` and returns the identical tree while recording (max keeps 5). This is the
+    // jest-able READ half; the mid-flight WRITE (real abandonment) is simulator-only (Step 9).
+    const registry = registerChangingHome();
+    const envelope: RootReducerEnvelope = {
+      action: { type: 'JUMP_TO', target: 'home-state' },
+      navId: 4,
+    };
+
+    const next = reduceRootNavigation(seed(5), envelope, registry);
+
+    expect(next.tree).toBe(rootState);
+    expect(next.lastReduced).toBe(5);
+  });
+
+  it('supersede falsifiability sibling: a fresh (navId > lastReduced) transition applies normally', () => {
+    const registry = registerChangingHome();
+    const envelope: RootReducerEnvelope = {
+      action: { type: 'JUMP_TO', target: 'home-state' },
+      navId: 6,
+    };
+
+    const next = reduceRootNavigation(seed(5), envelope, registry);
+
+    expect(next.tree).not.toBe(rootState);
+    expect(next.lastReduced).toBe(6);
+  });
+
+  it('anti-wedge: after a stale action is superseded, the pending predicate resolves false', () => {
+    // The correctness property the whole mechanism exists for: a superseded/stale navigation must
+    // not wedge `pending` at true forever. Issue id 6 (applies), then a stale id 4 re-reduces
+    // (supersede no-op). `lastReduced` reaches 6, so with `lastIssued = 6` the derived
+    // `pending = lastIssued > lastReduced` is false.
+    const registry = registerChangingHome();
+
+    const applied = reduceRootNavigation(
+      seed(),
+      { action: { type: 'JUMP_TO', target: 'home-state' }, navId: 6 },
+      registry
+    );
+    const afterStale = reduceRootNavigation(
+      applied,
+      { action: { type: 'JUMP_TO', target: 'home-state' }, navId: 4 },
+      registry
+    );
+
+    const lastIssued = 6;
+    expect(lastIssued > (afterStale.lastReduced ?? 0)).toBe(false);
+  });
+
+  it('anti-wedge sibling: an in-flight id (lastIssued > lastReduced) reports pending true', () => {
+    const registry = registerChangingHome();
+
+    const reduced = reduceRootNavigation(
+      seed(),
+      { action: { type: 'JUMP_TO', target: 'home-state' }, navId: 3 },
+      registry
+    );
+
+    const lastIssued = 4; // a later navigation was issued but has not reduced yet
+    expect(lastIssued > (reduced.lastReduced ?? 0)).toBe(true);
+  });
 });

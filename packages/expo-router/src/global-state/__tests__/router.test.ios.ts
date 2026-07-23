@@ -16,7 +16,7 @@ import {
   replace,
   setParams,
 } from '../router';
-import { routingQueue } from '../routingQueue';
+import { dispatchAction } from '../routingQueue';
 import { store } from '../store';
 
 jest.mock('../store', () => ({
@@ -41,9 +41,7 @@ jest.mock('../store', () => ({
 }));
 
 jest.mock('../routingQueue', () => ({
-  routingQueue: {
-    add: jest.fn(),
-  },
+  dispatchAction: jest.fn(),
 }));
 
 jest.mock('expo/dom', () => ({
@@ -66,7 +64,7 @@ jest.mock('../../link/href', () => ({
   resolveHref: jest.fn((href: any) => (typeof href === 'string' ? href : href.pathname || '/')),
 }));
 
-const mockAdd = routingQueue.add as jest.Mock;
+const mockAdd = dispatchAction as jest.Mock;
 const mockEmitDomDismiss = emitDomDismiss as jest.Mock;
 const mockEmitDomDismissAll = emitDomDismissAll as jest.Mock;
 const mockEmitDomGoBack = emitDomGoBack as jest.Mock;

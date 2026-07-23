@@ -1,3 +1,5 @@
+import { nanoid } from 'nanoid/non-secure';
+
 import {
   BaseRouter,
   type CommonNavigationAction,
@@ -50,7 +52,10 @@ export function MockRouter(options: DefaultRouterOptions) {
     if (routes.length === 0) {
       routes.push({
         name: routeNames[0]!,
-        key: `${routeNames[0]}-${MockRouterKey.current++}`,
+        // Mint like the real routers (`${name}-${nanoid()}`) so a route key generated during a
+        // reconcile is normalized by the Step-2 shadow comparator, which tolerates freshly minted
+        // nanoid keys. A per-reduction counter would differ between the eager and shadow reductions.
+        key: `${routeNames[0]}-${nanoid()}`,
       });
     }
 
@@ -113,7 +118,7 @@ export function MockRouter(options: DefaultRouterOptions) {
               ...state.routes,
               {
                 name: action.payload.name,
-                key: `${action.payload.name}-${MockRouterKey.current++}`,
+                key: `${action.payload.name}-${nanoid()}`,
                 params:
                   action.payload.params !== undefined
                     ? {

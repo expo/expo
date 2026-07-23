@@ -467,13 +467,15 @@ describe('Stack nested in Tabs render counts', () => {
     expect(screen.getByTestId('index')).toBeVisible();
 
     expect(layoutRender).toHaveBeenCalledTimes(1);
-    expect(homeTabRender).toHaveBeenCalledTimes(2);
+    expect(homeTabRender).toHaveBeenCalledTimes(1);
     expect(indexMount).toHaveBeenCalledTimes(1);
     // Switching back to the index tab re-renders the active nested stack screen on the pathname
-    // change, while preserving mount stability. The nested navigation resolves in a single root
-    // commit, so the screen re-renders three times here.
-    expect(indexRender).toHaveBeenCalledTimes(3);
-    expect(twoRender).toHaveBeenCalledTimes(2);
+    // change, while preserving mount stability. Post-flip route info flows through context derived
+    // from the reducer tree (memoized on tree identity), so a pathname-reading screen re-renders
+    // once with the final value instead of twice (the old tree commit + a separate post-commit uSES
+    // route-info notify); the nested navigation resolves in a single root commit.
+    expect(indexRender).toHaveBeenCalledTimes(2);
+    expect(twoRender).toHaveBeenCalledTimes(1);
     expect(otherRender).toHaveBeenCalledTimes(1);
     expect(router.canGoBack()).toBe(true);
 

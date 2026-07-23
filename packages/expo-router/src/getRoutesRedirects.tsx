@@ -7,22 +7,25 @@ import type { StoreRedirects } from './global-state/types';
 import { matchDynamicName } from './matchers';
 import { shouldLinkExternally } from './utils/url';
 
-export function applyRedirects(
+// Pure redirect resolution: follows internal redirect hops and reports whether the chain lands on an
+// external destination, WITHOUT opening it. Callers that own the side effect (`applyRedirects`, and
+// the render-pure reducer's dispatch funnel) decide what to do with an external result — the reducer
+// path must stay pure, so it relies on the funnel having already consumed any external redirect.
+export function resolveRedirects(
   url: string | null | undefined,
   redirects: StoreRedirects[] | undefined
-): string | undefined | null {
+): { href: string | undefined | null; external: boolean } {
   if (typeof url !== 'string' || !redirects) {
-    return url;
+    return { href: url, external: false };
   }
 
   const nextUrl = cleanPath(url);
   const redirect = redirects.find(([regex]) => regex.test(nextUrl));
 
   if (!redirect) {
-    return url;
+    return { href: url, external: false };
   }
 
-  // If the redirect is external, open the URL
   if (redirect[2]) {
     let href = redirect[1].destination;
 
@@ -30,11 +33,24 @@ export function applyRedirects(
       href = `https:${href}`;
     }
 
-    Linking.openURL(href);
-    return href;
+    return { href, external: true };
   }
 
-  return applyRedirects(convertRedirect(url, redirect[1]), redirects);
+  return resolveRedirects(convertRedirect(url, redirect[1]), redirects);
+}
+
+export function applyRedirects(
+  url: string | null | undefined,
+  redirects: StoreRedirects[] | undefined
+): string | undefined | null {
+  const { href, external } = resolveRedirects(url, redirects);
+
+  // If the redirect is external, open the URL
+  if (external && typeof href === 'string') {
+    Linking.openURL(href);
+  }
+
+  return href;
 }
 
 export function getRedirectModule(redirectConfig: RedirectConfig) {

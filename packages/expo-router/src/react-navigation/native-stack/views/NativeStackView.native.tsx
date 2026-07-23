@@ -127,7 +127,6 @@ const SceneView = ({
     statusBarBackgroundColor,
     unstable_sheetFooter,
     scrollEdgeEffects,
-    freezeOnBlur,
     contentStyle,
     unstable_nativeProps,
   } = options;
@@ -336,7 +335,10 @@ const SceneView = ({
         customAnimationOnSwipe={animationMatchesGesture}
         fullScreenSwipeEnabled={fullScreenGestureEnabled}
         fullScreenSwipeShadowEnabled={fullScreenGestureShadowEnabled}
-        freezeOnBlur={freezeOnBlur}
+        // Forced off so a Suspense-frozen subtree can't starve a pending React transition.
+        // A literal `false` overrides both the per-screen `freezeOnBlur` option and
+        // `enableFreeze()`; `unstable_nativeProps` (spread below) can still opt back in.
+        freezeOnBlur={false}
         gestureEnabled={
           Platform.OS === 'android'
             ? // This prop enables handling of system back gestures on Android
@@ -481,6 +483,9 @@ export function NativeStackView({ state, navigation, descriptors }: Props) {
           const isModal = modalRouteKeys.includes(route.key);
           const isModalOnIos = isModal && Platform.OS === 'ios';
 
+          // TODO(transitions-freeze): `freezeOnBlur={false}` on `ScreenStackItem` makes this
+          // inert (rn-screens gates freeze behind `freezeOnBlur`). Retained as the reintroduction
+          // breadcrumb for the freeze re-enable follow-up.
           // On Fabric, when screen is frozen, animated and reanimated values are not updated
           // due to component being unmounted. To avoid this, we don't freeze the previous screen there
           const shouldFreeze = isFabric()
@@ -527,27 +532,38 @@ export function NativeStackView({ state, navigation, descriptors }: Props) {
                 });
               }}
               onDismissed={(event) => {
-                navigation.dispatch({
-                  ...StackActions.pop(event.nativeEvent.dismissCount),
-                  source: route.key,
-                  target: state.key,
-                });
+                // Native swipe-back / dismiss already removed the screen — commit the JS echo
+                // urgently (D5), never deferred behind a transition.
+                navigation.dispatch(
+                  {
+                    ...StackActions.pop(event.nativeEvent.dismissCount),
+                    source: route.key,
+                    target: state.key,
+                  },
+                  { urgent: true }
+                );
 
                 setNextDismissedKey(route.key);
               }}
               onHeaderBackButtonClicked={() => {
-                navigation.dispatch({
-                  ...StackActions.pop(),
-                  source: route.key,
-                  target: state.key,
-                });
+                navigation.dispatch(
+                  {
+                    ...StackActions.pop(),
+                    source: route.key,
+                    target: state.key,
+                  },
+                  { urgent: true }
+                );
               }}
               onNativeDismissCancelled={(event) => {
-                navigation.dispatch({
-                  ...StackActions.pop(event.nativeEvent.dismissCount),
-                  source: route.key,
-                  target: state.key,
-                });
+                navigation.dispatch(
+                  {
+                    ...StackActions.pop(event.nativeEvent.dismissCount),
+                    source: route.key,
+                    target: state.key,
+                  },
+                  { urgent: true }
+                );
               }}
               onGestureCancel={() => {
                 navigation.emit({

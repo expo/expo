@@ -1,0 +1,102 @@
+---
+title: Navigation transitions and pending UI
+description: Learn how Expo Router runs every JS-initiated navigation as a React transition, and how to show pending indicators while a slow destination prepares.
+---
+
+Every JS-initiated navigation in Expo Router is a [React transition](https://react.dev/reference/react/startTransition). When you call `router.push()` (or `navigate`/`replace`/`back`), press a `<Link>`, or open a deep link, the state update commits inside `startTransition`. If the destination suspends — a lazy bundle-split screen, a [data loader](/router/web/data-loaders/), or any component that reads a promise with `use()` — React prepares the destination in the background while the previous content stays mounted and interactive, instead of tearing it down and flashing a Suspense fallback.
+
+Native-induced navigation stays synchronous: a swipe-back gesture, a native tab press, and the hardware or header back button commit immediately, because the native side has already moved and the JS state is only catching up.
+
+> **important** Where the "keep the previous content up" behavior applies depends on the navigator. Read [How this behaves on the native stack](#how-this-behaves-on-the-native-stack) below before relying on it for a full-screen native transition.
+
+## How this behaves on the native stack
+
+The transition governs how React commits the navigation **state**; it does not defer the native screen container. On a **native stack** (`Stack` from `expo-router`), a `push` mounts the destination's native screen eagerly — the new screen's header and container appear right away, and its body renders empty (or the destination's own Suspense fallback) until the suspending content resolves. The previous screen is covered by the native push, not kept on top of it.
+
+The keep-the-previous-content-mounted, no-fallback-flash behavior applies **within a screen's JS subtree** — content that suspends inside an already-mounted screen (for example, a `use(promise)` region that swaps in place, or navigation that resolves within the same React subtree rather than pushing a new native screen). It is also the behavior proven in the `react-test-renderer` test harness, which has no native screen container. Driving the native stack's screen commit from the committed navigation state (so a native push can also wait for its destination) is tracked follow-up work — see the "Revisit later" note in the design decision on native-induced actions (D5) — and is out of scope for this release.
+
+The practical takeaway is the same either way: **a slow destination shows no useful content until it is ready, so you must wire a pending indicator.** On the native stack that indicator has to live somewhere that stays visible during the push — inside the destination screen (via `useLinkStatus`) or in a [`FullWindowOverlay`](#usenavigationtransitionpending--a-global-indicator).
+
+## The UX inversion: slow destinations show nothing until ready
+
+On native platforms the convention is: tap, push the new screen immediately, then show a spinner _inside_ it while its data loads. Because a JS navigation is now a transition, the framework instead prepares the destination before showing its content — so until it is ready, the user sees **nothing new**: within a JS subtree the previous content stays put, and on the native stack the pushed screen appears with an empty body (see [the section above](#how-this-behaves-on-the-native-stack)).
+
+For a fast destination this is invisible. For a slow one — most commonly a lazy bundle-split screen whose chunk has to download — the app looks inert between the tap and the commit: no spinner, no content, until the destination is ready.
+
+**So you must wire a pending indicator yourself.** Expo Router gives you two hooks for this, and you should reach for the per-`Link` one first.
+
+## `useLinkStatus` — a per-link pending indicator (recommended)
+
+[`useLinkStatus`](/versions/latest/sdk/router/#uselinkstatus) reports the pending status of the nearest parent `<Link>`. Render a component that calls it **inside the `Link`'s children**, and it turns `{ pending: true }` from the moment that link's navigation starts until its destination commits:
+
+```tsx app/index.tsx
+import { Link, useLinkStatus } from 'expo-router';
+import { ActivityIndicator, Text } from 'react-native';
+
+function LinkSpinner() {
+  const { pending } = useLinkStatus();
+  return pending ? <ActivityIndicator /> : null;
+}
+
+export default function Index() {
+  return (
+    <Link href="/slow">
+      <Text>Open slow screen</Text>
+      <LinkSpinner />
+    </Link>
+  );
+}
+```
+
+This is the recommended primary pattern because the indicator lives **inside your own JSX**, next to the link — you control exactly where it paints. Note that on the native stack a `push` covers the origin screen with the destination, so a spinner placed on the origin's link is hidden by the push along with the rest of that screen; place the indicator where it stays visible during the pending window (for in-place navigation within a screen this is automatic, and it composes naturally with a [`FullWindowOverlay`](#usenavigationtransitionpending--a-global-indicator) for a full-screen push).
+
+`useLinkStatus` stays `{ pending: false }` in two cases where the press does not dispatch an in-tree navigation:
+
+- **DOM components** — the press is forwarded to the host WebView, so no navigation is dispatched.
+- **`Link.Preview` (iOS peek-and-pop)** — the navigation is committed from a native callback rather than the tracked press, so the per-link status cannot observe it.
+
+## `useNavigationTransitionPending` — a global indicator
+
+[`useNavigationTransitionPending`](/versions/latest/sdk/router/#usenavigationtransitionpending) returns `true` while **any** JS-initiated navigation is in flight, regardless of where it started. Use it for an app-wide indicator such as a top loading bar:
+
+```tsx app/_layout.tsx
+import { Stack, useNavigationTransitionPending } from 'expo-router';
+import { FullWindowOverlay } from 'react-native-screens';
+import { ActivityIndicator } from 'react-native';
+
+function GlobalPending() {
+  const pending = useNavigationTransitionPending();
+  if (!pending) return null;
+  // A plain sibling View does NOT render above a native stack or modal — use FullWindowOverlay.
+  return (
+    <FullWindowOverlay>
+      <ActivityIndicator style={{ position: 'absolute', top: 60, alignSelf: 'center' }} />
+    </FullWindowOverlay>
+  );
+}
+
+export default function Layout() {
+  return (
+    <>
+      <Stack />
+      <GlobalPending />
+    </>
+  );
+}
+```
+
+> **warning** A plain sibling `<View>` inside your root layout will **not** overlay a native stack (`ScreenStack`) or a native modal presentation — the native screens render above it. To draw a global indicator over native screens on iOS, wrap it in [`FullWindowOverlay`](https://github.com/software-mansion/react-native-screens) from `react-native-screens`. If you don't need a true global overlay, prefer `useLinkStatus` rendered inside the screen (above).
+
+`useNavigationTransitionPending` tracks the navigation **state** commit, not the destination's content. On the native stack, where the push commits eagerly, the global pending window can close as the screen is pushed even though the destination body is still preparing — so for a native-stack push, `useLinkStatus` (scoped to its own link's navigation) is the more reliable signal to keep an indicator up while the content loads. The global hook is best for in-place, JS-subtree navigation and for web.
+
+Both hooks return their resting value (`false` / `{ pending: false }`) when there is no navigation container, such as during server rendering, so they are safe to call anywhere.
+
+## Lazy bundle-split screens
+
+A lazy screen (a route whose module is code-split and loaded on demand) is the most common slow destination: the first navigation to it must download and evaluate its chunk before it can render. That download window is exactly when the pending indicator matters most — on the native stack the destination's screen is already pushed but empty, so nothing signals progress on its own. Attach a `useLinkStatus` spinner to the link that navigates into a lazy route, or a global indicator, so the user sees that something is happening while the chunk loads.
+
+## Migration notes
+
+- **`router.canGoBack()` / `router.canDismiss()` in the same tick as a navigation.** These imperative queries now answer for the last **committed** navigation state. `router.push(); router.canGoBack()` in the same synchronous block reflects the state **before** the push (the push has been dispatched as a transition but not committed). Read them after the navigation has committed, or derive from the rendered route instead.
+- **`freezeOnBlur` is forced off on router-rendered screens.** To guarantee a Suspense-frozen background subtree can't starve an in-flight transition, Expo Router forces `freezeOnBlur: false` on the screens it renders. The per-screen `freezeOnBlur` option and `enableFreeze()` no longer re-enable freeze on those screens. On the native stack only, `unstable_nativeProps={{ freezeOnBlur: true }}` can re-enable it as an advanced, at-your-own-risk escape hatch (doing so reintroduces the starvation this prevents).
+- **State readers report the committed route.** Rendering hooks — `usePathname`, `useSegments`, `useLocalSearchParams`, `useGlobalSearchParams` — and the imperative store (`getRootState()`) report the route that is currently on screen. During a pending navigation they keep reporting the origin, then update together with the destination when it commits.

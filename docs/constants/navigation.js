@@ -294,6 +294,7 @@ export const general = [
       makePage('router/advanced/custom-navigators.mdx'),
       makePage('router/advanced/stack-toolbar.mdx'),
       makePage('router/advanced/zoom-transition.mdx'),
+      makePage('router/advanced/navigation-transitions.mdx'),
     ]),
     makeGroup('Web', [
       makePage('router/web/api-routes.mdx'),

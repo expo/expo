@@ -36,10 +36,6 @@ describe('Native Bottom Tabs Navigation', () => {
     expect(TabsScreen).toHaveBeenCalledTimes(2);
   }
 
-  function expectTwoRenders() {
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
-  }
-
   function lastHostSelectedKey() {
     const calls = TabsHost.mock.calls;
     return calls[calls.length - 1][0].navStateRequest.selectedScreenKey;
@@ -89,34 +85,34 @@ describe('Native Bottom Tabs Navigation', () => {
       hidden: () => <View testID="hidden" />,
       notSpecified: () => <View testID="not-specified" />,
     });
-    // The Step 11 committed-slice read path keeps the trigger-only repair before eager preload:
-    // 2 visible tabs x 2 passes.
-    expect(TabsScreen).toHaveBeenCalledTimes(4);
+    // 2 visible tabs, rendered across three commit passes: the initial seed pass, the deferred
+    // `RECONCILE_ROUTE_NAMES` pass (the trigger-only route-names subset reconciles through the root
+    // reducer as its own commit under the flip), and the eager-preload pass. 2 tabs x 3 passes.
+    expect(TabsScreen).toHaveBeenCalledTimes(6);
     expectIndexTabFocused();
     TabsScreen.mockClear();
   });
 
   it('can navigate using router.push', () => {
+    // Both tabs are eagerly preloaded (committed) after mount, so switching focus is a single
+    // commit — one render pass of the two visible tabs — not a two-pass mount.
     act(() => router.push('/second'));
-    expectTwoRenders();
-    expectSecondTabFocused(2);
+    expectOneRender();
+    expectSecondTabFocused();
     TabsScreen.mockClear();
     act(() => router.push('/'));
-    expectTwoRenders();
-    expectIndexTabFocused(2);
+    expectOneRender();
+    expectIndexTabFocused();
   });
 
   it('can navigate using Link', () => {
     act(() => fireEvent.press(screen.getByTestId('index-second-link')));
-
-    // First render is deferred index=0, index =1
-    // Second one is deferred index=1, index =1
-    expectTwoRenders();
-    expectSecondTabFocused(2);
+    expectOneRender();
+    expectSecondTabFocused();
     TabsScreen.mockClear();
     act(() => fireEvent.press(screen.getByTestId('second-index-link')));
-    expectTwoRenders();
-    expectIndexTabFocused(2);
+    expectOneRender();
+    expectIndexTabFocused();
   });
 
   it('does not re-render when router.push is called to the same tab', () => {
@@ -132,7 +128,8 @@ describe('Native Bottom Tabs Navigation', () => {
 
     TabsScreen.mockClear();
     act(() => router.push('/second'));
-    expectSecondTabFocused(2);
+    expectOneRender();
+    expectSecondTabFocused();
 
     TabsScreen.mockClear();
     act(() => fireEvent.press(screen.getByTestId('second-second-link'))); // link to same tab
@@ -146,7 +143,8 @@ describe('Native Bottom Tabs Navigation', () => {
 
     TabsScreen.mockClear();
     act(() => router.push('/second'));
-    expectSecondTabFocused(2);
+    expectOneRender();
+    expectSecondTabFocused();
 
     TabsScreen.mockClear();
     act(() => fireEvent.press(screen.getByTestId('second-hidden-link')));

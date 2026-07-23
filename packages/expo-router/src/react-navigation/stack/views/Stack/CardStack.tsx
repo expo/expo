@@ -636,7 +636,6 @@ export class CardStack extends React.Component<Props, State> {
             const {
               headerShown = true,
               headerTransparent,
-              freezeOnBlur,
               autoHideHomeIndicator,
             } = scene.descriptor.options;
 
@@ -665,7 +664,11 @@ export class CardStack extends React.Component<Props, State> {
                 style={[styles.boxNone, StyleSheet.absoluteFill]}
                 enabled={detachInactiveScreens}
                 active={activityState}
-                freezeOnBlur={freezeOnBlur}
+                // Forced off so a Suspense-frozen subtree can't starve a pending React transition;
+                // overrides both the per-screen `freezeOnBlur` option and `enableFreeze()`.
+                freezeOnBlur={false}
+                // TODO(transitions-freeze): inert while `freezeOnBlur={false}` (rn-screens gates
+                // freeze behind `freezeOnBlur`); kept as the freeze re-enable breadcrumb.
                 shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}
                 homeIndicatorHidden={autoHideHomeIndicator}>
                 <CardContainer

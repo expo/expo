@@ -120,6 +120,11 @@ describe(useGlobalSearchParams, () => {
 
     act(() => router.push('/banana/circle/carrot'));
 
+    // Both screens end with the correct values — global params propagate everywhere, local params stay
+    // per-screen. Post-transition-flip the navigation resolves in a single atomic root commit, so the
+    // retained first screen (kept in memory by the Stack) re-renders with the new global params before
+    // the newly-pushed screen renders; pre-flip the second commit from the post-commit route-info
+    // notify ordered these the other way. Order-only shift, values unchanged.
     expect(allHookValues).toEqual([
       // The initial render
       {
@@ -127,6 +132,20 @@ describe(useGlobalSearchParams, () => {
         globalParams: {
           fruit: 'apple',
           shape: 'square',
+        },
+        params: {
+          fruit: 'apple',
+          shape: 'square',
+        },
+      },
+      // The first page rerendering due to being kept in memory in a <Stack /> — new global params,
+      // its own (apple) local params.
+      {
+        url: '/banana/circle/carrot',
+        globalParams: {
+          fruit: 'banana',
+          shape: 'circle',
+          veg: ['carrot'],
         },
         params: {
           fruit: 'apple',
@@ -145,19 +164,6 @@ describe(useGlobalSearchParams, () => {
           fruit: 'banana',
           shape: 'circle',
           veg: ['carrot'],
-        },
-      },
-      // The is the first page rerendering due to being in a <Stack />
-      {
-        url: '/banana/circle/carrot',
-        globalParams: {
-          fruit: 'banana',
-          shape: 'circle',
-          veg: ['carrot'],
-        },
-        params: {
-          fruit: 'apple',
-          shape: 'square',
         },
       },
     ]);

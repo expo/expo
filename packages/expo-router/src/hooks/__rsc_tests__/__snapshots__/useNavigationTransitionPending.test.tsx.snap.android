@@ -1,0 +1,6 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders a useNavigationTransitionPending consumer 1`] = `
+"1:I["src/hooks/__rsc_tests__/TransitionPendingFixture.tsx",[],"TransitionPendingFixture",1]
+0:["$","$L1",null,{},null]"
+`;

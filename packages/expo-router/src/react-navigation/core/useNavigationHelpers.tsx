@@ -21,7 +21,7 @@ PrivateValueStore;
 
 type Options<State extends NavigationState, Action extends NavigationAction> = {
   id: string | undefined;
-  onAction: (action: NavigationAction) => boolean;
+  onAction: (action: NavigationAction) => void;
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
@@ -41,7 +41,11 @@ export function useNavigationHelpers<
   const parentNavigationHelpers = use(NavigationContext);
 
   return React.useMemo(() => {
-    const dispatch = (op: Action | ((state: State) => Action)) => {
+    // `options.urgent` (D5): native-induced dispatches (a native dismiss/back/tab press echoing a
+    // fact the native side already committed) pass `{ urgent: true }` so the commit is synchronous
+    // and un-interruptible, not a `React.startTransition`. JS-initiated dispatches omit it and are
+    // transitions.
+    const dispatch = (op: Action | ((state: State) => Action), options?: { urgent?: boolean }) => {
       const state = getState();
       const action = typeof op === 'function' ? op(state) : op;
 
@@ -49,7 +53,7 @@ export function useNavigationHelpers<
         // The committed store is the single dispatch path — forward to the root reducer, tagged
         // with this navigator's key. No local reducer fallback: it holds+replays actions dispatched
         // before the origin navigator's reducer has registered (the mount window).
-        dispatchRoot(action, { originKey: state.key });
+        dispatchRoot(action, { originKey: state.key, urgent: options?.urgent });
         return;
       }
 

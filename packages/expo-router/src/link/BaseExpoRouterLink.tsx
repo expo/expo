@@ -12,6 +12,7 @@ import { InternalLinkPreviewContext } from './InternalLinkPreviewContext';
 import { resolveHref } from './href';
 import type { LinkProps } from './useLinkHooks';
 import { useInteropClassName, useHrefAttrs } from './useLinkHooks';
+import { useLinkStatusProvider } from './useLinkStatus';
 import useLinkToPathProps from './useLinkToPathProps';
 
 export function BaseExpoRouterLink({
@@ -50,6 +51,8 @@ export function BaseExpoRouterLink({
 
   const previewContext = use(InternalLinkPreviewContext);
 
+  const { trackPress, value: linkStatus, Provider: LinkStatusProvider } = useLinkStatusProvider();
+
   const props = useLinkToPathProps({
     href: resolvedHref,
     event,
@@ -62,10 +65,14 @@ export function BaseExpoRouterLink({
     if (previewContext?.blockPressRef.current) {
       return;
     }
-    if ('onPress' in rest) {
-      rest.onPress?.(e);
-    }
-    props.onPress(e);
+    // Track the press so `useLinkStatus` inside this Link learns the id its own navigation minted
+    // (only if the press actually dispatched — see `trackPress`).
+    trackPress(() => {
+      if ('onPress' in rest) {
+        rest.onPress?.(e);
+      }
+      props.onPress(e);
+    });
   };
 
   const Component = asChild ? Slot : Text;
@@ -92,12 +99,16 @@ export function BaseExpoRouterLink({
     />
   );
 
-  return prefetch ? (
-    <>
-      <Prefetch href={href} />
-      {element}
-    </>
-  ) : (
-    element
+  return (
+    <LinkStatusProvider value={linkStatus}>
+      {prefetch ? (
+        <>
+          <Prefetch href={href} />
+          {element}
+        </>
+      ) : (
+        element
+      )}
+    </LinkStatusProvider>
   );
 }

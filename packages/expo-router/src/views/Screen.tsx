@@ -3,6 +3,7 @@ import type { ReactElement, ReactNode } from 'react';
 import { isValidElement, use } from 'react';
 
 import { NavigatorTypeContext } from '../react-navigation/core/NavigatorTypeContext';
+import { useIsFocused } from '../react-navigation/core/useIsFocused';
 import { useRoute } from '../react-navigation/native';
 import { useNavigation } from '../useNavigation';
 import { isRoutePreloadedInStack } from '../utils/stack';
@@ -30,7 +31,12 @@ export function Screen<TOptions extends object = object>({ name, options }: Scre
   }
   const route = useRoute();
   const navigation = useNavigation();
-  const isFocused = navigation.isFocused();
+  // Reactive focus (event-subscribed) rather than the one-shot `navigation.isFocused()`: post the
+  // transitions flip `navigation.isFocused()`/`getState()` read the committed mirror, which lags a
+  // pending navigation, so a screen preloaded then navigated-to would not re-run this effect when it
+  // actually gains focus. `useIsFocused` re-renders the screen on the focus event so the override
+  // applies once focused.
+  const isFocused = useIsFocused();
   const navigatorType = use(NavigatorTypeContext)?.type;
   const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route, navigatorType);
 

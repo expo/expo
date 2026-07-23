@@ -309,7 +309,7 @@ test("does not down-bubble NAVIGATE_DEPRECATED on the root reducer path", () => 
   expect(navigation.getCurrentRoute()?.name).toBe('foo');
 });
 
-test('does not use target parent bubbling before the root reducer is initialized', () => {
+test('applies a mount-effect dispatch that targets the (registered) root reducer', () => {
   function CurrentTestRouter(options: DefaultRouterOptions) {
     const CurrentMockRouter = MockRouter(options);
     const TestRouter: Router<NavigationState, MockActions | { type: 'REVERSE' }> = {
@@ -396,7 +396,18 @@ test('does not use target parent bubbling before the root reducer is initialized
 
   render(element).update(element);
 
-  expect(onStateChange).not.toHaveBeenCalled();
+  // `lex`'s mount effect dispatches `REVERSE` explicitly targeting the root (`target: '0'`). Post the
+  // transitions flip the root reducer is React state seeded at mount, so it is always registered —
+  // a targeted dispatch to it is handled and commits, rather than being dropped in a pre-init window
+  // (the pre-flip behavior, an artifact of the old dispatch-time null guard). The mount-window replay
+  // the flip added is for dispatches whose *origin* navigator hasn't registered yet; a dispatch that
+  // names a registered target simply reduces.
+  expect(onStateChange).toHaveBeenCalledTimes(1);
+  expect(onStateChange.mock.calls[0]![0].routes.map((r: { name: string }) => r.name)).toEqual([
+    'foo',
+    'bar',
+    'baz',
+  ]);
 });
 
 test('action goes to correct child navigator if target is specified', () => {
