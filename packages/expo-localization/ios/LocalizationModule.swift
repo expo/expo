@@ -53,8 +53,8 @@ public class LocalizationModule: Module {
     let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool ?? true
     let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool ?? false
 
-      // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
-      // Uses required reason API based on the following reason: CA92.1
+    // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
+    // Uses required reason API based on the following reason: CA92.1
     if let i18nUtil = RCTI18nUtil.sharedInstance() {
       i18nUtil.allowRTL(supportsRTL)
       i18nUtil.forceRTL(forcesRTL)
