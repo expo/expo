@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Prevent unhandled promise rejections when declarative navigation bar updates race with Android activity teardown.
+- Prevent unhandled promise rejections when declarative navigation bar updates race with Android activity teardown. ([#48084](https://github.com/expo/expo/pull/48084) by [@magnesae](https://github.com/magnesae))
 - Polyfill `enforceContrast` on Android 8 and 9. ([#47382](https://github.com/expo/expo/pull/47382) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
