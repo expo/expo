@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Prevent the `supportedLocales` config plugin from duplicating `resourceConfigurations` in `app/build.gradle` on repeated `expo prebuild` runs without `--clean`.
+
 ### 💡 Others
 
 ## 56.0.6 — 2026-05-21
