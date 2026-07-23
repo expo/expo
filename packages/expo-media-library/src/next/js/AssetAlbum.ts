@@ -2,7 +2,15 @@ import { UnavailabilityError } from 'expo';
 import { Platform } from 'react-native';
 
 import { NativeAsset, NativeAlbum } from '../native';
-import type { AlbumType, AssetInfo, Location, MediaSubtype, MediaType, Shape } from '../types';
+import type {
+  AlbumMetadata,
+  AlbumType,
+  AssetInfo,
+  Location,
+  MediaSubtype,
+  MediaType,
+  Shape,
+} from '../types';
 
 // Asset and Album construct each other, so their implementations live together to avoid Metro require-cycle warnings
 
@@ -301,6 +309,20 @@ export class Album {
   }
 
   /**
+   * Gets the number of assets contained in the album, without materializing the assets.
+   * @returns A promise resolving to the album's asset count.
+   *
+   * @example
+   * ```ts
+   * const count = await album.getAssetCount();
+   * console.log(count); // 243
+   * ```
+   */
+  getAssetCount(): Promise<number> {
+    return this.nativeAlbum.getAssetCount();
+  }
+
+  /**
    * Gets the album's type — whether it is a regular or a smart album.
    * @returns A promise resolving to an [`AlbumType`](#albumtype).
    * @platform ios
@@ -454,6 +476,25 @@ export class Album {
   static async getAll(): Promise<Album[]> {
     const natives = await NativeAlbum.getAll();
     return natives.map((a) => new Album(a.id));
+  }
+
+  /**
+   * A static function. Retrieves lightweight metadata for all albums in a single call.
+   *
+   * Returns fields that can be read cheaply from the media store, without instantiating an
+   * [`Album`](#album) per entry. Use an [`Album`](#album) instance when you need heavier data such as
+   * its assets or asset count.
+   *
+   * @returns A promise resolving to an array of [`AlbumMetadata`](#albummetadata) objects.
+   *
+   * @example
+   * ```ts
+   * const albums = await Album.getAlbumsMetadata();
+   * albums.forEach((album) => console.log(album.title));
+   * ```
+   */
+  static getAlbumsMetadata(): Promise<AlbumMetadata[]> {
+    return NativeAlbum.getAlbumsMetadata();
   }
 
   /**

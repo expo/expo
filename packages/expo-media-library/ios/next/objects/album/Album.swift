@@ -36,6 +36,11 @@ class Album: SharedObject {
     return try AlbumType.from(collection.assetCollectionType)
   }
 
+  func getAssetCount() async throws -> Int {
+    let collection = try await requirePHAssetCollection()
+    return PHAsset.fetchAssets(in: collection, options: nil).count
+  }
+
   func add(_ assets: [Asset]) async throws {
     let collection = try await requirePHAssetCollection()
     let phAssets = try resolvePHAssets(from: assets)
@@ -104,5 +109,15 @@ class Album: SharedObject {
   static func getSmartAlbums(assetMapper: AssetMapper) async throws -> [Album] {
     AssetCollectionRepository.shared.get(type: .smartAlbum)
       .map { Album(id: $0.localIdentifier, assetMapper: assetMapper) }
+  }
+
+  static func getAlbumsMetadata() async throws -> [AlbumMetadata] {
+    AssetCollectionRepository.shared.getUserAlbums().map { collection in
+      AlbumMetadata(
+        id: collection.localIdentifier,
+        title: collection.localizedTitle ?? "",
+        type: try? AlbumType.from(collection.assetCollectionType)
+      )
+    }
   }
 }

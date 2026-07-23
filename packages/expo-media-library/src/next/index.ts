@@ -12,6 +12,7 @@ export {
 
 export {
   AlbumType,
+  type AlbumMetadata,
   AssetField,
   MediaSubtype,
   MediaType,
