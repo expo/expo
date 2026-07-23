@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [iOS] Detect React Native versions that ship self-contained XCFrameworks (no VFS overlay) during precompile and pod install, falling back to the legacy VFS overlay integration on pre-0.87 versions. ([#47256](https://github.com/expo/expo/pull/47256) by [@chrfalch](https://github.com/chrfalch))
 - [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
 - [Android] Apply the `android.cmakeVersion` build property to the app and all library subprojects. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
 - Add option to specify targets to use with inline modules ([#46698](https://github.com/expo/expo/pull/46698) by [@HubertBer](https://github.com/HubertBer))
