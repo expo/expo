@@ -208,39 +208,32 @@ Now, the display name of your app is set to `こんにちは` whenever it's inst
 
 In SDK 55 and later, there is an iOS-only option to specify a `Localizable.strings` object whose entries are used to create native localization files. The entries can be used in [iOS localized notifications](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Localize-your-alert-messages).
 
-## Enabling RTL support
+## RTL support
 
-Several regions around the world write text from right to left. If you want to localize your app, so it looks as expected in RTL languages, you need to make sure your app handles these layout and text direction changes accordingly.
+Several regions around the world write text from right to left. To make your app look as expected in RTL languages, you need to make sure it handles these layout and text direction changes accordingly.
 
-To enable RTL support, use the [`expo-localization`](/versions/latest/sdk/localization/#installation) config plugin and enable `extra.supportsRTL` property in app config:
+RTL support is enabled by default. Layout direction follows React Native's [`I18nManager`](https://reactnative.dev/docs/i18nmanager): the app renders in RTL when the device is set to an RTL language (such as Arabic or Hebrew), and in LTR otherwise. This applies in Expo Go, in the dev client, and in apps built with EAS Build or `npx expo prebuild`.
+
+### Disabling RTL support
+
+To opt out of RTL layout, set the `supportsRTL` option to `false` on the `expo-localization` config plugin:
 
 ```json app.json
 {
   "expo": {
-    "extra": {
-      "supportsRTL": true
-    },
-    "plugins": ["expo-localization"]
+    "plugins": [["expo-localization", { "supportsRTL": false }]]
   }
 }
 ```
 
-This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in applications built using EAS Build or `npx expo prebuild`.
-
-When an application starts, Expo checks if the current device locale should render in RTL layout to look correctly. For example, an app marked to support RTL in the app config file will render in RTL mode in Hebrew or Arabic locale.
-
 ### Forcing RTL layout
 
-You can also force the RTL layout for testing or for applications that are only localized for RTL locales by enabling `extra.forcesRTL` property in the app config:
+You can force the RTL layout for testing, or for applications that are only localized for RTL locales, by setting the `forcesRTL` option to `true` on the `expo-localization` config plugin:
 
 ```json app.json
 {
   "expo": {
-    "extra": {
-      "supportsRTL": true,
-      "forcesRTL": true
-    },
-    "plugins": ["expo-localization"]
+    "plugins": [["expo-localization", { "forcesRTL": true }]]
   }
 }
 ```
