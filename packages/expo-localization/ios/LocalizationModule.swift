@@ -20,14 +20,9 @@ public class LocalizationModule: Module {
 
     Function("getLocales", Self.getLocales)
     Function("getCalendars", Self.getCalendars)
+
     OnCreate {
-      if let forceRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool {
-        self.setRTLPreferences(true, forceRTL)
-      } else {
-        if let enableRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool {
-          self.setRTLPreferences(enableRTL, false)
-        }
-      }
+      setRTLPreferences()
     }
 
     Events(LOCALE_SETTINGS_CHANGED, CALENDAR_SETTINGS_CHANGED)
@@ -54,26 +49,16 @@ public class LocalizationModule: Module {
     }
   }
 
-  func isRTLPreferredForCurrentLocale() -> Bool {
-    // swiftlint:disable:next legacy_objc_type
-    return NSLocale.characterDirection(forLanguage: NSLocale.preferredLanguages.first ?? "en-US") == NSLocale.LanguageDirection.rightToLeft
-  }
+  func setRTLPreferences() {
+    let supportsRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_supportsRTL") as? Bool ?? true
+    let forcesRTL = Bundle.main.object(forInfoDictionaryKey: "ExpoLocalization_forcesRTL") as? Bool ?? false
 
-  func setRTLPreferences(_ supportsRTL: Bool, _ forceRTL: Bool) {
-    // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
-    // On iOS we need to set both forceRTL and allowRTL so apps don't have to include localization strings.
-    // Uses required reason API based on the following reason: CA92.1
-
-    let i18nUtil = RCTI18nUtil.sharedInstance()
-    if forceRTL {
-      i18nUtil?.allowRTL(true)
-      i18nUtil?.forceRTL(true)
-    } else {
-      i18nUtil?.allowRTL(supportsRTL)
-      i18nUtil?.forceRTL(supportsRTL ? isRTLPreferredForCurrentLocale() : false)
+      // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
+      // Uses required reason API based on the following reason: CA92.1
+    if let i18nUtil = RCTI18nUtil.sharedInstance() {
+      i18nUtil.allowRTL(supportsRTL)
+      i18nUtil.forceRTL(forcesRTL)
     }
-
-    UserDefaults.standard.synchronize()
   }
 
   // If the application isn't manually localized for the device language then the

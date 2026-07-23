@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- `Manifest.supportsRTL()` now defaults to `true` when the value is absent from the manifest.
+
 ## 56.0.4 — 2026-05-19
 
 _This version does not introduce any user-facing changes._

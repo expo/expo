@@ -54,8 +54,8 @@ export function setAndroidSupportsRtl(
 
 function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   const {
-    supportsRTL,
-    forcesRTL,
+    supportsRTL = true,
+    forcesRTL = false,
     supportedLocales: supportedLocalesOption,
   } = {
     ...config.extra,
@@ -63,24 +63,20 @@ function withExpoLocalizationIos(config: ExpoConfig, data: ConfigPluginProps) {
   };
 
   const supportedLocales =
-    typeof supportedLocalesOption === 'object' && !Array.isArray(supportedLocalesOption)
+    (typeof supportedLocalesOption === 'object' && !Array.isArray(supportedLocalesOption)
       ? supportedLocalesOption.ios
-      : supportedLocalesOption;
-
-  if (supportsRTL == null && forcesRTL == null && supportedLocales == null) {
-    return config;
-  }
+      : supportedLocalesOption) ?? [];
 
   config.ios ??= {};
   config.ios.infoPlist ??= {};
 
-  if (supportsRTL != null) {
-    config.ios.infoPlist.ExpoLocalization_supportsRTL = supportsRTL;
+  if (!supportsRTL) {
+    config.ios.infoPlist.ExpoLocalization_supportsRTL = false;
   }
-  if (forcesRTL != null) {
-    config.ios.infoPlist.ExpoLocalization_forcesRTL = forcesRTL;
+  if (forcesRTL) {
+    config.ios.infoPlist.ExpoLocalization_forcesRTL = true;
   }
-  if (supportedLocales != null) {
+  if (supportedLocales.length > 0) {
     config.ios.infoPlist.CFBundleLocalizations = supportedLocales;
   }
 
@@ -104,8 +100,8 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
   }
 
   const {
-    supportsRTL,
-    forcesRTL,
+    supportsRTL = true,
+    forcesRTL = false,
     supportedLocales: supportedLocalesOption,
   } = {
     ...config.extra,
@@ -113,18 +109,18 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
   };
 
   const supportedLocales =
-    typeof supportedLocalesOption === 'object' && !Array.isArray(supportedLocalesOption)
+    (typeof supportedLocalesOption === 'object' && !Array.isArray(supportedLocalesOption)
       ? supportedLocalesOption.android
-      : supportedLocalesOption;
+      : supportedLocalesOption) ?? [];
 
-  if (supportsRTL != null) {
+  if (!supportsRTL) {
     config = withAndroidManifest(config, (config) => {
-      config.modResults = setAndroidSupportsRtl(config.modResults, supportsRTL);
+      config.modResults = setAndroidSupportsRtl(config.modResults, false);
       return config;
     });
   }
 
-  if (supportedLocales != null) {
+  if (supportedLocales.length > 0) {
     supportedLocales.forEach(assertLocale);
 
     config = withDangerousMod(config, [
@@ -183,25 +179,15 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
   }
 
   return withStringsXml(config, (config) => {
-    if (supportsRTL != null) {
+    if (!supportsRTL) {
       config.modResults = AndroidConfig.Strings.setStringItem(
-        [
-          {
-            $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' },
-            _: String(supportsRTL),
-          },
-        ],
+        [{ $: { name: 'ExpoLocalization_supportsRTL', translatable: 'false' }, _: String(false) }],
         config.modResults
       );
     }
-    if (forcesRTL != null) {
+    if (forcesRTL) {
       config.modResults = AndroidConfig.Strings.setStringItem(
-        [
-          {
-            $: { name: 'ExpoLocalization_forcesRTL', translatable: 'false' },
-            _: String(forcesRTL),
-          },
-        ],
+        [{ $: { name: 'ExpoLocalization_forcesRTL', translatable: 'false' }, _: String(true) }],
         config.modResults
       );
     }
