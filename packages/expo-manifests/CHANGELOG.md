@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- `Manifest.supportsRTL()` now defaults to `true` when the value is absent from the manifest.
+- `Manifest.supportsRTL()` now defaults to `true` when the value is absent from the manifest. ([#48086](https://github.com/expo/expo/pull/48086) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.4 — 2026-05-19
 
