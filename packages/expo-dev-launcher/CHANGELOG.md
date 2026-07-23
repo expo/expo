@@ -11,7 +11,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Reload an existing React context instead of crashing when launching a selected app.
+- [Android] Reload an existing React context instead of crashing when launching a selected app. ([#48085](https://github.com/expo/expo/pull/48085) by [@magnesae](https://github.com/magnesae))
 - [iOS] Use `RCTPlatformName` instead of hardcoding `ios` when requesting bundles from Metro. ([#46443](https://github.com/expo/expo/pull/46443) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Cleared the deep-link URL from cached `launchOptions` after it is consumed ([#46265](https://github.com/expo/expo/pull/46265) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Fixed a crash when cold-launching a development build from a deep link that carries intent categories (e.g. an App Link opened from a browser). ([#46314](https://github.com/expo/expo/pull/46314) by [@lilianchiassai-fc](https://github.com/lilianchiassai-fc) & [#46328](https://github.com/expo/expo/pull/46328) by [@lukmccall](https://github.com/lukmccall))
