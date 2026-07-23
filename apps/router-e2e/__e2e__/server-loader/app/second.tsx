@@ -5,10 +5,8 @@ import { Loading } from '../components/Loading';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
 import { Table, TableRow } from '../components/Table';
 
-export async function loader() {
-  return Promise.resolve({
-    data: 'second',
-  });
+export function loader() {
+  return Response.json({ data: 'second' }, { headers: { 'Cache-Control': 'no-store' } });
 }
 
 export default function SecondRoute() {

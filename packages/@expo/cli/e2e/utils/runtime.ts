@@ -240,6 +240,9 @@ export function setupServer(
 
   return {
     fetchAsync: (url: string, init?: RequestInit) => server.fetchAsync(url, init, { attempts: 7 }),
+    get url() {
+      return server.url;
+    },
     get outputDir() {
       if (!outputDir) {
         throw new Error('`outputDir` not available, `beforeAll()` has not run yet');
