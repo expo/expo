@@ -252,8 +252,8 @@ importers:
         specifier: ^62.0.0
         version: 62.0.0(eslint@9.39.4(jiti@2.6.1))
       fs-extra:
-        specifier: ^11.3.4
-        version: 11.3.4
+        specifier: ^11.3.6
+        version: 11.3.6
       http-server:
         specifier: ^14.1.1
         version: 14.1.1
@@ -4614,8 +4614,8 @@ packages:
   front-matter@4.0.2:
     resolution: {integrity: sha512-I8ZuJ/qG92NWX8i5x1Y8qyj3vizhXS31OxjKDu3LKP+7/qBgfIKValiZIEwoVoJKUHlhWtYrktkxV1XsX+pPlg==}
 
-  fs-extra@11.3.4:
-    resolution: {integrity: sha512-CTXd6rk/M3/ULNQj8FBqBWHYBVYybQ3VPBw0xGKFe3tuH7ytT6ACnvzpIQ3UZtB8yvUKC2cXn1a+x+5EVQLovA==}
+  fs-extra@11.3.6:
+    resolution: {integrity: sha512-w8ZNZr2mKIc7qeNaQ9AVPT1+iFaI+Avd4xudVOvdDJ8VytREi1Ft5Ih7hd9jjehod8vAM5GMsfQ/TpPf4EyoEA==}
     engines: {node: '>=14.14'}
 
   fs.realpath@1.0.0:
@@ -11939,7 +11939,7 @@ snapshots:
     dependencies:
       js-yaml: 3.14.2
 
-  fs-extra@11.3.4:
+  fs-extra@11.3.6:
     dependencies:
       graceful-fs: 4.2.11
       jsonfile: 6.2.1
