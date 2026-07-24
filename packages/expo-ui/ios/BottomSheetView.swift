@@ -69,10 +69,18 @@ struct BottomSheetView: ExpoSwiftUI.View {
   }
 
   @ViewBuilder
+  private func contentChildren() -> some View {
+    ForEach(props.children?.withoutSlot("anchor") ?? [], id: \.id) { child in
+      let view: any View = child.childView
+      AnyView(view)
+    }
+  }
+
+  @ViewBuilder
   private var sheetContent: some View {
     if props.fitToContents {
       let content = BottomSheetSizeReader(
-        content: Children(),
+        content: contentChildren(),
         onSizeChange: handleSizeChange
       )
       if #available(iOS 16.0, tvOS 16.0, *) {
@@ -81,12 +89,21 @@ struct BottomSheetView: ExpoSwiftUI.View {
         content
       }
     } else {
-      Children()
+      contentChildren()
+    }
+  }
+
+  @ViewBuilder
+  private var anchor: some View {
+    if let anchorView = props.children?.slot("anchor") {
+      anchorView
+    } else {
+      Color.clear.frame(width: 0, height: 0)
     }
   }
 
   var body: some View {
-    Rectangle().hidden()
+    anchor
       .sheet(isPresented: $isPresented, onDismiss: {
         props.onDismiss()
       }) {

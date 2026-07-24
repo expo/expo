@@ -9,6 +9,7 @@
 
 ### 🎉 New features
 
+- [iOS] Added an `anchor` prop to `BottomSheet` to anchor the sheet to a view so opening it doesn't shift surrounding layout. ([#48063](https://github.com/expo/expo/issues/48063) by [@loganwishartcraig](https://github.com/loganwishartcraig)) ([#PR](https://github.com/expo/expo/pull/PR) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Add a `colorScheme` prop to the community `MenuView`. ([#48017](https://github.com/expo/expo/pull/48017) by [@mkaradeniz](https://github.com/mkaradeniz))
 - [iOS] Added the SwiftUI `menuOrder` modifier (`automatic`/`fixed`/`priority`) to control menu item ordering. With the default `automatic` order, menus that open upward display their items reversed. ([#48049](https://github.com/expo/expo/pull/48049) by [@Gauvino](https://github.com/Gauvino))
 - [iOS] Added the `ignoreSafeArea="container"` option to `<Host>`, which ignores the device and container safe area insets (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Use it to keep a `matchContents` host pinned to a screen edge interactive. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))

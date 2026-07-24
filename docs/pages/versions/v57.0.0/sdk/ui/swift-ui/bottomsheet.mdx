@@ -30,6 +30,8 @@ Expo UI BottomSheet matches the official SwiftUI [sheet API](<https://developer.
 
 ### Basic bottom sheet
 
+Pass the control that opens the sheet as the `anchor` prop. The children are the sheet's content.
+
 ```tsx BasicBottomSheetExample.tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
@@ -40,9 +42,55 @@ export default function BasicBottomSheetExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <Text>Hello, world!</Text>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### React Native view as an anchor
+
+The anchor can be a React Native view. Wrap it in `RNHostView`.
+
+```tsx BottomSheetRNAnchorExample.tsx
+import { useState } from 'react';
+import { Pressable, Text as RNText } from 'react-native';
+import { Host, BottomSheet, Button, RNHostView, Text, VStack } from '@expo/ui/swift-ui';
+
+export default function BottomSheetRNAnchorExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          fitToContents
+          anchor={
+            <RNHostView matchContents>
+              <Pressable
+                onPress={() => setIsPresented(true)}
+                style={{
+                  backgroundColor: '#007AFF',
+                  padding: 12,
+                  borderRadius: 8,
+                  alignSelf: 'flex-start',
+                }}>
+                <RNText style={{ color: 'white', fontWeight: '600' }}>Open Sheet</RNText>
+              </Pressable>
+            </RNHostView>
+          }>
+          <VStack>
+            <Text>Opened from a React Native anchor.</Text>
+            <Button label="Close" onPress={() => setIsPresented(false)} />
+          </VStack>
         </BottomSheet>
       </VStack>
     </Host>
@@ -64,8 +112,11 @@ export default function BottomSheetFitsContentExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented} fitToContents>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          fitToContents
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <VStack>
             <Text>This sheet automatically sizes to fit its content.</Text>
             <Button label="Close" onPress={() => setIsPresented(false)} />
@@ -99,8 +150,10 @@ export default function BottomSheetBackgroundColorExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large']),
@@ -138,8 +191,10 @@ export default function BottomSheetWithDetentsExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large', { fraction: 0.3 }, { height: 200 }]),
@@ -181,8 +236,10 @@ export default function BottomSheetWithDetentSelectionExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Show Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={<Button label="Show Sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(detents, {
@@ -230,8 +287,10 @@ export default function BottomSheetWithBackgroundInteractionExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large']),
@@ -261,8 +320,10 @@ export default function NonDismissibleBottomSheetExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <Group modifiers={[interactiveDismissDisabled()]}>
             <VStack>
               <Text>This sheet cannot be dismissed by swiping.</Text>
@@ -293,8 +354,11 @@ export default function BottomSheetWithRNContentExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented} fitToContents>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          fitToContents
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <Group modifiers={[presentationDragIndicator('visible')]}>
             <RNHostView matchContents>
               <View style={{ padding: 24 }}>
@@ -349,8 +413,10 @@ export default function BottomSheetWithFlexRNContentExample() {
   return (
     <Host style={{ flex: 1 }}>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large']),
@@ -392,8 +458,10 @@ export default function BottomSheetWithScrollableContentExample() {
   return (
     <Host matchContents>
       <VStack>
-        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <BottomSheet
+          isPresented={isPresented}
+          onIsPresentedChange={setIsPresented}
+          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large']),
