@@ -1,0 +1,20 @@
+{
+    "libraryVersion": "56.0.13",
+    "reactNativeVersion": "0.86.0",
+    "variants": [
+        "debug",
+        "release"
+    ],
+    "abis": [
+        "arm64-v8a",
+        "armeabi-v7a",
+        "x86",
+        "x86_64"
+    ],
+    "soFiles": [
+        "libexpo-modules-core.so",
+        "libexpo-modules-jsi.so"
+    ],
+    "stripped": true,
+    "createdAt": "2026-06-23T21:27:33.947110Z"
+}
