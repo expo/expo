@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add a search input to the Updates tab to filter branches and updates by name. ([#47533](https://github.com/expo/expo/pull/47533) by [@alZyad](https://github.com/alZyad))
 - Add a Settings toggle to switch between auto-launching the most recent app and showing the launcher. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Add build's expiration date to Settings. ([#47190](https://github.com/expo/expo/pull/47190) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
