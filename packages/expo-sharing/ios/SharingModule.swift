@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import UniformTypeIdentifiers
 
 public final class SharingModule: Module {
   private var appGroupId: String {
@@ -18,10 +19,22 @@ public final class SharingModule: Module {
         throw FilePermissionException()
       }
 
-      let activityController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
+      // `UIActivityViewController` derives the shared item's type (and preview)
+      // from the file's extension. Cached files often have no extension, so when
+      // the caller declares a content type via `UTI`/`mimeType` we expose the
+      // file under a correctly-named hard link. A hard link is a second name for
+      // the same on-disk data, so this costs no copy and behaves as a real file
+      // for every consumer.
+      let itemURL = shareableURL(for: url, options: options)
+      let createdLink = itemURL != url
+
+      let activityController = UIActivityViewController(activityItems: [itemURL], applicationActivities: nil)
       activityController.title = options.dialogTitle
 
       activityController.completionWithItemsHandler = { _, _, _, _ in
+        if createdLink {
+          try? FileManager.default.removeItem(at: itemURL)
+        }
         // Resolve unconditionally. UIActivityViewController invokes this once
         // on dismissal for every (activityType, completed) permutation. The
         // previous implementation only resolved two of four cases, leaking
@@ -88,6 +101,46 @@ public final class SharingModule: Module {
 
     Function("clearSharedPayloads") {
       try UserDefaults(suiteName: appGroupId)?.removeObject(forKey: SHARE_INTO_DEFAULTS_KEY)
+    }
+  }
+
+  private func declaredContentType(_ options: SharingOptions) -> UTType? {
+    if let uti = options.UTI, let type = UTType(uti) {
+      return type
+    }
+    if let mimeType = options.mimeType, let type = UTType(mimeType: mimeType) {
+      return type
+    }
+    return nil
+  }
+
+  private func shareableURL(for url: URL, options: SharingOptions) -> URL {
+    var isDirectory: ObjCBool = false
+    FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
+    if isDirectory.boolValue {
+      return url
+    }
+
+    guard let ext = declaredContentType(options)?.preferredFilenameExtension else {
+      return url
+    }
+    if url.pathExtension.caseInsensitiveCompare(ext) == .orderedSame {
+      return url
+    }
+
+    let baseName = url.deletingPathExtension().lastPathComponent
+    let linkURL = FileManager.default.temporaryDirectory
+      .appendingPathComponent(baseName.isEmpty ? "expo-sharing-item" : baseName)
+      .appendingPathExtension(ext)
+
+    do {
+      if FileManager.default.fileExists(atPath: linkURL.path) {
+        try FileManager.default.removeItem(at: linkURL)
+      }
+      try FileManager.default.linkItem(at: url, to: linkURL)
+      return linkURL
+    } catch {
+      return url
     }
   }
 
