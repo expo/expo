@@ -167,24 +167,6 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   ): State;
 
   /**
-   * Take the current state and updated list of route names, and return a new state.
-   *
-   * @param state State object to update.
-   * @param options.routeNames New list of route names.
-   * @param options.routeParamsList Object containing params for each route.
-   */
-  getStateForRouteNamesChange(
-    state: State,
-    options: RouterConfigOptions & {
-      /**
-       * List of routes whose key has changed even if they still have the same name.
-       * This allows to remove screens declaratively.
-       */
-      routeKeyChanges: string[];
-    }
-  ): State;
-
-  /**
    * Take the current state and key of a route, and return a new state with the route focused
    *
    * @param state State object to apply the action on.

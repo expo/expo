@@ -27,7 +27,6 @@ import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
-import { isRecordEqual } from './isRecordEqual';
 import {
   type DefaultNavigatorOptions,
   type EventMapBase,
@@ -70,7 +69,6 @@ const isScreen = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
   name?: unknown;
-  navigationKey?: unknown;
 }> => {
   return child.type === Screen;
 };
@@ -78,16 +76,12 @@ const isScreen = (
 const isGroup = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
-  navigationKey?: unknown;
   screenOptions?: unknown;
   screenLayout?: unknown;
   children?: unknown;
 }> => {
   return child.type === React.Fragment || child.type === Group;
 };
-
-const isValidKey = (key: unknown): key is string | undefined =>
-  key === undefined || (typeof key === 'string' && key !== '');
 
 /**
  * Extract route config object from React children elements.
@@ -100,7 +94,6 @@ const getRouteConfigsFromChildren = <
   EventMap extends EventMapBase,
 >(
   children: React.ReactNode,
-  groupKey?: string,
   groupOptions?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['options'],
   groupLayout?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['layout']
 ) => {
@@ -124,19 +117,7 @@ const getRouteConfigsFromChildren = <
           );
         }
 
-        if (
-          child.props.navigationKey !== undefined &&
-          (typeof child.props.navigationKey !== 'string' || child.props.navigationKey === '')
-        ) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the screen '${child.props.name}'. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         acc.push({
-          keys: [groupKey, child.props.navigationKey],
           options: groupOptions,
           layout: groupLayout,
           props: child.props as RouteConfig<
@@ -153,20 +134,10 @@ const getRouteConfigsFromChildren = <
       }
 
       if (isGroup(child)) {
-        if (!isValidKey(child.props.navigationKey)) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the group. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
-        // When we encounter a fragment or group, we need to dive into its children to extract the configs
-        // This is handy to conditionally define a group of screens
+        // When we encounter a fragment or group, dive into its children to extract the configs.
         acc.push(
           ...getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(
             child.props.children as React.ReactNode,
-            child.props.navigationKey,
             // FIXME
             // @ts-expect-error: add validation
             child.type !== Group
@@ -368,10 +339,10 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeKeyList = routeNames.reduce<Record<string, React.Key | undefined>>((acc, curr) => {
-    acc[curr] = screens[curr]!.keys.map((key) => key ?? '').join(':');
-    return acc;
-  }, {});
+  const initialRouteNamesRef = React.useRef(routeNames);
+  if (!isArrayEqual(initialRouteNamesRef.current, routeNames)) {
+    throw new Error('Route names cannot be changed after the navigator has mounted.');
+  }
   const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
     const { initialParams } = screens[curr]!.props;
     acc[curr] = initialParams;
@@ -511,21 +482,10 @@ export function useNavigationBuilder<
 
         return [hydratedState, false, paramsForState];
       }
-      // We explicitly don't include routeNames, route.params etc. in the dep list
-      // below. We want to avoid forcing a new state to be calculated in those cases
-      // Instead, we handle changes to these in the nextState code below. Note
-      // that some changes to routeConfigs are explicitly ignored, such as changes
-      // to initialParams
+      // Route names are static, route params are handled below, and changes to route configs such
+      // as initial params are intentionally ignored.
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentState, router, isStateValid]);
-
-  const previousRouteKeyListRef = React.useRef(routeKeyList);
-
-  React.useEffect(() => {
-    previousRouteKeyListRef.current = routeKeyList;
-  });
-
-  const previousRouteKeyList = previousRouteKeyListRef.current;
 
   let state =
     // If the state isn't initialized, or stale, use the state we initialized instead
@@ -534,20 +494,6 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
-  if (
-    !isArrayEqual(state.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList)
-  ) {
-    // When the list of route names change, the router should handle it to remove invalid routes
-    nextState = router.getStateForRouteNamesChange(state, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-      routeKeyChanges: Object.keys(routeKeyList).filter(
-        (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
-      ),
-    });
-  }
 
   let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
 
@@ -618,9 +564,8 @@ export function useNavigationBuilder<
     }
   });
 
-  // The up-to-date state will come in next render, but we don't need to wait for it
-  // We can't use the outdated state since the screens have changed, which will cause error due to mismatched config
-  // So we override the state object we return to use the latest state as soon as possible
+  // Nested params can update state during render, so use that state immediately instead of waiting
+  // for the scheduled update.
   state = nextState;
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
@@ -657,7 +602,7 @@ export function useNavigationBuilder<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // In some cases (e.g. route names change), internal state might have changed
+  // Nested params can change internal state during render.
   // But it hasn't been committed yet, so hasn't propagated to the sync external store
   // During this time, we need to return the internal state in `getState`
   // Otherwise it can result in inconsistent state during render in children

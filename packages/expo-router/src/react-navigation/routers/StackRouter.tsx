@@ -162,17 +162,13 @@ export function getRoutesForRouteNames(
   routeNames: string[],
   {
     routeParamList,
-    routeKeyChanges = [],
     initialRouteName,
   }: {
     routeParamList: ParamListBase;
-    routeKeyChanges?: string[];
     initialRouteName?: string;
   }
 ): Pick<StackNavigationState<ParamListBase>, 'routes' | 'index'> {
-  const routes = state.routes.filter(
-    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
-  );
+  const routes = state.routes.filter((route) => routeNames.includes(route.name));
 
   if (routes.length === 0) {
     const fallbackName =
@@ -286,18 +282,6 @@ export function StackRouter(options: StackRouterOptions) {
         routeNames,
         routes,
         preloadedRoutes,
-      };
-    },
-
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      return {
-        ...state,
-        routeNames,
-        ...getRoutesForRouteNames(state, routeNames, {
-          routeParamList,
-          routeKeyChanges,
-          initialRouteName: options.initialRouteName,
-        }),
       };
     },
 

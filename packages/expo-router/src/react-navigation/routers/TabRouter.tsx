@@ -274,36 +274,6 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       );
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const routes = routeNames.map(
-        (name) =>
-          state.routes.find((r) => r.name === name && !routeKeyChanges.includes(r.name)) || {
-            name,
-            key: `${name}-${nanoid()}`,
-            params: routeParamList[name],
-          }
-      );
-
-      const index = Math.max(0, routeNames.indexOf(state.routes[state.index]!.name));
-
-      let history = state.history.filter(
-        // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
-        (it) => it.type !== 'route' || routes.find((r) => r.key === it.key)
-      );
-
-      if (!history.length) {
-        history = getRouteHistory(routes, index, backBehavior, initialRouteName);
-      }
-
-      return {
-        ...state,
-        history,
-        routeNames,
-        routes,
-        index,
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 

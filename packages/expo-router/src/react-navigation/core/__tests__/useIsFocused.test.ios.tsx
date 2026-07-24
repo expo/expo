@@ -1,13 +1,10 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import type { ParamListBase } from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
-import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useIsFocused } from '../useIsFocused';
 import { useNavigationBuilder } from '../useNavigationBuilder';
-import { useRoute } from '../useRoute';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
@@ -56,54 +53,4 @@ test('renders correct focus state', () => {
   act(() => navigation.current.navigate('second'));
 
   expect(root).toMatchInlineSnapshot(`"focused"`);
-});
-
-test('returns correct focus state after conditional rendering', () => {
-  const TestNavigator = (props: any): any => {
-    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
-
-    return (
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
-    );
-  };
-
-  const TestScreen = () => {
-    const route = useRoute();
-    const isFocused = useIsFocused();
-
-    // Ensure that there is no tearing
-    expect(isFocused).toBe(true);
-
-    return `${route.name}, ${isFocused ? 'focused' : 'not-focused'}`;
-  };
-
-  const navigation = createNavigationContainerRef<ParamListBase>();
-
-  let update: (condition: boolean) => void;
-
-  const Test = () => {
-    const [condition, setCondition] = React.useState(false);
-
-    update = setCondition;
-
-    return (
-      <BaseNavigationContainer ref={navigation}>
-        <TestNavigator>
-          {condition ? (
-            <Screen name="bar" component={TestScreen} />
-          ) : (
-            <Screen name="foo" component={TestScreen} />
-          )}
-        </TestNavigator>
-      </BaseNavigationContainer>
-    );
-  };
-
-  const element = render(<Test />);
-
-  expect(element).toMatchInlineSnapshot(`"foo, focused"`);
-
-  act(() => update(true));
-
-  expect(element).toMatchInlineSnapshot(`"bar, focused"`);
 });

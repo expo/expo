@@ -802,76 +802,31 @@ test('updates route params with setParams applied to parent', () => {
   });
 });
 
-test('handles change in route names', () => {
+test('throws when route names change', () => {
   const TestNavigator = (props: any): any => {
     useNavigationBuilder(MockRouter, props);
     return null;
   };
 
-  const onStateChange = jest.fn();
-
   const root = render(
     <BaseNavigationContainer>
-      <TestNavigator initialRouteName="bar">
+      <TestNavigator>
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>
     </BaseNavigationContainer>
   );
 
-  root.update(
-    <BaseNavigationContainer onStateChange={onStateChange}>
-      <TestNavigator>
-        <Screen name="foo" component={React.Fragment} />
-        <Screen name="baz" component={React.Fragment} />
-        <Screen name="qux" component={React.Fragment} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: '0',
-    routeNames: ['foo', 'baz', 'qux'],
-    routes: [{ key: 'foo', name: 'foo' }],
-  });
-});
-
-test('reconciles route names when no previous route survives', () => {
-  const TestNavigator = (props: any): any => {
-    useNavigationBuilder(MockRouter, props);
-    return null;
-  };
-
-  const onStateChange = jest.fn();
-  const root = render(
-    <BaseNavigationContainer>
-      <TestNavigator initialRouteName="bar">
-        <Screen name="foo" component={React.Fragment} />
-        <Screen name="bar" component={React.Fragment} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  root.update(
-    <BaseNavigationContainer onStateChange={onStateChange}>
-      <TestNavigator>
-        <Screen name="baz" component={React.Fragment} />
-        <Screen name="qux" component={React.Fragment} />
-      </TestNavigator>
-    </BaseNavigationContainer>
-  );
-
-  expect(onStateChange).toHaveBeenCalledWith({
-    stale: false,
-    type: 'test',
-    index: 0,
-    key: '0',
-    routeNames: ['baz', 'qux'],
-    routes: [expect.objectContaining({ name: 'baz' })],
-  });
+  expect(() =>
+    root.update(
+      <BaseNavigationContainer>
+        <TestNavigator>
+          <Screen name="bar" component={React.Fragment} />
+          <Screen name="foo" component={React.Fragment} />
+        </TestNavigator>
+      </BaseNavigationContainer>
+    )
+  ).toThrow('Route names cannot be changed after the navigator has mounted.');
 });
 
 test('navigates to nested child in a navigator', () => {
