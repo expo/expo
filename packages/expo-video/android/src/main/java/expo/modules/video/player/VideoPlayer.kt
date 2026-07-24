@@ -88,7 +88,7 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     }.build()
     .apply {
       playerBuilderOptions?.videoChangeFrameRateStrategy?.let {
-        setVideoChangeFrameRateStrategy(it.toMedia3Strategy())
+        videoChangeFrameRateStrategy = it.toMedia3Strategy()
       }
     }
 
