@@ -186,15 +186,23 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     }
   }
 
-  // A press released before the menu fully presents is still recognized as a tap
-  // by react-native, so cancel in-flight touches when the interaction starts.
+  // A press released before the menu fully presents is still recognized as a tap by
+  // react-native, so cancel in-flight touches on the nearest surface when the interaction
+  // starts. Unlike rnscreens_cancelTouches, `reset` is omitted deliberately: the press is
+  // still active and UIKit delivers touchesCancelled after this returns — resetting first
+  // desyncs the touch registry (NSAssert in -[RCTSurfaceTouchHandler _updateTouches:]).
   private func cancelReactNativeTouches() {
+    guard let touchHandlerClass = NSClassFromString("RCTSurfaceTouchHandler") else {
+      return
+    }
     var view: UIView? = self
     while let current = view {
-      for recognizer in current.gestureRecognizers ?? []
-      where String(describing: type(of: recognizer)).contains("TouchHandler") && recognizer.isEnabled {
-        recognizer.isEnabled = false
-        recognizer.isEnabled = true
+      if let recognizer = current.gestureRecognizers?.first(where: { $0.isKind(of: touchHandlerClass) }) {
+        if recognizer.isEnabled {
+          recognizer.isEnabled = false
+          recognizer.isEnabled = true
+        }
+        return
       }
       view = current.superview
     }
