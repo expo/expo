@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `NubPackageManager` for the nub package manager ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
 - Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
 
 ### 🐛 Bug fixes
