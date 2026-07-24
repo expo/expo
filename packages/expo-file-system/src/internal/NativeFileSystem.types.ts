@@ -7,6 +7,7 @@ import type {
   FileCreateOptions,
   FileCanPreviewOptions,
   FileHandle,
+  FileDigestAlgorithm,
   FileInfo,
   FileMode,
   FilePreviewOptions,
@@ -230,6 +231,14 @@ export declare class NativeFileSystemFile {
   info(options?: InfoOptions): FileInfo;
 
   /**
+   * Calculates the digest of the file's contents.
+   * @param algorithm The digest algorithm to use.
+   * @returns A promise that resolves to the lowercase hexadecimal digest.
+   * @throws Error if the file does not exist or cannot be read.
+   */
+  digest(algorithm: FileDigestAlgorithm): Promise<string>;
+
+  /**
    * A boolean representing if a file exists. `true` if the file exists, `false` otherwise.
    * Also, `false` if the application does not have read access to the file.
    */
@@ -314,6 +323,7 @@ export declare class NativeFileSystemFile {
   size: number;
   /**
    * A md5 hash of the file. Null if the file does not exist, or it cannot be read.
+   * @deprecated Use `await file.digest('md5')` instead.
    */
   md5: string | null;
   /**

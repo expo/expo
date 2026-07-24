@@ -13,7 +13,7 @@
  * `packages/expo-crypto/mocks/ExpoCryptoAES.ts`.
  */
 
-import { FileMode } from '../src/File.types';
+import { type FileDigestAlgorithm, FileMode } from '../src/File.types';
 
 export type URL = string;
 export type FileSystemPath = any;
@@ -112,14 +112,26 @@ function base64Decode(str: string): Uint8Array {
   return new Uint8Array(Buffer.from(str, 'base64'));
 }
 
-function fakeMd5(uri: string, size: number): string {
+const digestHexLengths: Record<FileDigestAlgorithm, number> = {
+  md5: 32,
+  'sha-1': 40,
+  'sha-256': 64,
+  'sha-384': 96,
+  'sha-512': 128,
+};
+
+function fakeDigest(uri: string, size: number, hexLength: number): string {
   let h = 0x811c9dc5;
   const src = `${uri}:${size}`;
   for (let i = 0; i < src.length; i++) {
     h = Math.imul(h ^ src.charCodeAt(i), 0x01000193);
   }
   const hex = (h >>> 0).toString(16).padStart(8, '0');
-  return hex.repeat(4).slice(0, 32);
+  return hex.repeat(Math.ceil(hexLength / hex.length)).slice(0, hexLength);
+}
+
+function fakeMd5(uri: string, size: number): string {
+  return fakeDigest(uri, size, digestHexLengths.md5);
 }
 
 const listeners = new Map<string, Set<(event: any) => void>>();
@@ -207,6 +219,17 @@ export class FileSystemFile {
 
   get md5(): string | null {
     return this.exists ? fakeMd5(this.uri, this.size) : null;
+  }
+
+  async digest(algorithm: FileDigestAlgorithm): Promise<string> {
+    const hexLength = digestHexLengths[algorithm];
+    if (!hexLength) {
+      throw new Error(`Unsupported digest algorithm: ${algorithm}`);
+    }
+    if (!this.exists) {
+      throw new Error('File does not exist');
+    }
+    return fakeDigest(this.uri, this.size, hexLength);
   }
 
   get modificationTime(): number | null {

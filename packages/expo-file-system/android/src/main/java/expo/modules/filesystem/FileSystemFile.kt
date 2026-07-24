@@ -174,12 +174,23 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
     return file.getContentUri(appContext ?: throw MissingAppContextException())
   }
 
-  @OptIn(ExperimentalStdlibApi::class)
   val md5: String get() {
+    return digest("md5")
+  }
+
+  @OptIn(ExperimentalStdlibApi::class)
+  fun digest(algorithm: String): String {
     val bufferSize = 65536
 
     validatePermission(FilePermissionService.Permission.READ)
-    val md = MessageDigest.getInstance("MD5")
+    val md = when (algorithm) {
+      "md5" -> MessageDigest.getInstance("MD5")
+      "sha-1" -> MessageDigest.getInstance("SHA-1")
+      "sha-256" -> MessageDigest.getInstance("SHA-256")
+      "sha-384" -> MessageDigest.getInstance("SHA-384")
+      "sha-512" -> MessageDigest.getInstance("SHA-512")
+      else -> throw IllegalArgumentException("Unsupported digest algorithm: $algorithm")
+    }
     file.inputStream().use { stream ->
       val buffer = ByteArray(bufferSize)
       var bytesRead: Int
