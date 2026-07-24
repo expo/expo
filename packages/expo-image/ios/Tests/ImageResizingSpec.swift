@@ -1,11 +1,42 @@
 import Foundation
 import ExpoModulesTestCore
+internal import SDWebImage
 
 @testable import ExpoModulesCore
 @testable import ExpoImage
 
 class ImageResizingSpec: ExpoSpec {
   override class func spec() {
+    describe("animated image transform pipeline") {
+      it("returns nil when no animated transforms are needed") {
+        expect(createAnimatedImageTransformPipeline(resizeSize: nil, blurRadius: 0)).to(beNil())
+      }
+
+      it("returns a blur transformer when only blur is needed") {
+        let transformer = createAnimatedImageTransformPipeline(resizeSize: nil, blurRadius: 4)
+
+        expect(transformer).to(beAKindOf(SDImageBlurTransformer.self))
+      }
+
+      it("returns a resize transformer when only resize is needed") {
+        let transformer = createAnimatedImageTransformPipeline(
+          resizeSize: CGSize(width: 100, height: 80),
+          blurRadius: 0
+        )
+
+        expect(transformer).to(beAKindOf(SDImageResizingTransformer.self))
+      }
+
+      it("returns a pipeline when resize and blur are both needed") {
+        let transformer = createAnimatedImageTransformPipeline(
+          resizeSize: CGSize(width: 100, height: 80),
+          blurRadius: 4
+        )
+
+        expect(transformer).to(beAKindOf(SDImagePipelineTransformer.self))
+      }
+    }
+
     describe("ideal size") {
       // For simplicity use the same container size for all tests
       let containerSize = CGSize(width: 150, height: 100)
