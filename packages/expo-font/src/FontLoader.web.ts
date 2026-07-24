@@ -19,12 +19,12 @@ function uriFromFontSource(asset: FontSource): string | number | null {
   return null;
 }
 
-function displayFromFontSource(asset: FontSource): FontDisplay {
+function displayFromFontSource(asset: FontSource): FontDisplay | undefined {
   if (typeof asset === 'object' && 'display' in asset) {
-    return asset.display || FontDisplay.AUTO;
+    return asset.display ?? undefined;
   }
 
-  return FontDisplay.AUTO;
+  return undefined;
 }
 
 function testStringFromFontSource(asset: FontSource): string | undefined {
@@ -35,10 +35,28 @@ function testStringFromFontSource(asset: FontSource): string | undefined {
   return undefined;
 }
 
+function weightFromFontSource(asset: FontSource): FontResource['weight'] {
+  if (typeof asset === 'object' && 'weight' in asset) {
+    return asset.weight ?? undefined;
+  }
+
+  return undefined;
+}
+
+function styleFromFontSource(asset: FontSource): FontResource['style'] {
+  if (typeof asset === 'object' && 'style' in asset) {
+    return asset.style ?? undefined;
+  }
+
+  return undefined;
+}
+
 export function getAssetForSource(source: FontSource): Asset | FontResource {
   const uri = uriFromFontSource(source);
   const display = displayFromFontSource(source);
   const testString = testStringFromFontSource(source);
+  const weight = weightFromFontSource(source);
+  const style = styleFromFontSource(source);
   if (!uri || typeof uri !== 'string') {
     throwInvalidSourceError(uri);
   }
@@ -47,6 +65,8 @@ export function getAssetForSource(source: FontSource): Asset | FontResource {
     uri,
     display,
     testString,
+    weight,
+    style,
   };
 }
 

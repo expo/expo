@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - [web] Added `Server.withServerContext(callback)` which scopes server-side font loads per render. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
+- Support loading multiple font weights and styles per `fontFamily` in `useFonts`/`loadAsync`, and generate correct `font-weight`/`font-style` `@font-face` rules on web. (by [@bryanmylee](https://github.com/bryanmylee))
 
 ### 🐛 Bug fixes
 
