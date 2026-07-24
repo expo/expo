@@ -2,6 +2,7 @@ import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import * as Log from '../log';
+import { printAgentFeedback } from '../utils/agentFeedback';
 import { env } from '../utils/env';
 import { isInteractive, shouldReduceLogs } from '../utils/interactive';
 import { profile } from '../utils/profile';
@@ -168,4 +169,5 @@ export async function startAsync(
       isInteractive() ? chalk.dim(` Press Ctrl+C to exit.`) : ''
     }`
   );
+  printAgentFeedback();
 }
