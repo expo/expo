@@ -282,6 +282,7 @@ export function useDescriptors<
         return element;
       },
       options: customOptions as ScreenOptions,
+      routeSource: screens[route.name]?.props.routeSource,
     };
 
     return acc;
@@ -314,6 +315,7 @@ export function useDescriptors<
         return element;
       },
       options: customOptions as ScreenOptions,
+      routeSource: screens[route.name]?.props.routeSource,
     };
   };
 

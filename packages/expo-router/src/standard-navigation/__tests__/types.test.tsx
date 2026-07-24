@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { type ComponentProps } from 'react';
-import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation';
+import {
+  createStandardNavigator,
+  type NavigatorArgs,
+  type NavigatorDescriptor,
+} from 'standard-navigation';
 
 import type { CommonNavigationAction, ParamListBase } from '../../react-navigation/core';
 import {
@@ -14,6 +18,7 @@ import type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
   StandardNavigationAction,
+  StandardNavigatorDescriptor,
 } from '../types';
 
 // Type-equality helpers
@@ -23,6 +28,10 @@ type Equal<A, B> =
 
 type Opts = { title?: string };
 type EventMap = { tabPress: { data: undefined; canPreventDefault: true } };
+
+export type _DescriptorExtendsStandardDescriptor = Expect<
+  StandardNavigatorDescriptor<Opts> extends NavigatorDescriptor<Opts> ? true : false
+>;
 
 function Content(_args: NavigatorArgs<Opts, EventMap>) {
   return null;

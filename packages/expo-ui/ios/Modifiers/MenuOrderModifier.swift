@@ -15,7 +15,12 @@ internal enum MenuOrderType: String, Enumerable {
     case .fixed:
       return .fixed
     case .priority:
+      // `.priority` is unavailable on tvOS; fall back to the platform default there.
+      #if os(tvOS)
+      return .automatic
+      #else
       return .priority
+      #endif
     }
   }
 }

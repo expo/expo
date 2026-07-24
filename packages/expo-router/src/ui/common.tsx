@@ -179,7 +179,8 @@ export function triggersToScreens(
     triggerMap[config.name] = { ...config, index };
 
     if (config.type === 'internal') {
-      children.push(routeToScreen(config.routeNode));
+      // Trigger-declared screens are layout-declared, same as `<Screen>` children.
+      children.push(routeToScreen(config.routeNode, undefined, undefined, 'layout'));
     }
   }
   return {

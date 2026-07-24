@@ -29,6 +29,7 @@ import {
   type NavigationState,
   type ParamListBase,
   type RouteProp,
+  type RouteSource,
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
@@ -83,11 +84,11 @@ function getSortedChildren(
   children: RouteNode[],
   order: ScreenProps[] = [],
   initialRouteName?: string
-): { route: RouteNode; props: Partial<ScreenProps> }[] {
+): { route: RouteNode; props: Partial<ScreenProps>; routeSource: RouteSource }[] {
   if (!order?.length) {
     return children
       .sort(sortRoutesWithInitial(initialRouteName))
-      .map((route) => ({ route, props: {} }));
+      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }));
   }
   const entries = [...children];
 
@@ -153,6 +154,7 @@ function getSortedChildren(
           return {
             route: match,
             props: { initialParams, listeners, options, getId },
+            routeSource: 'layout' as const,
           };
         }
       }
@@ -160,11 +162,14 @@ function getSortedChildren(
     .filter(Boolean) as {
     route: RouteNode;
     props: Partial<ScreenProps>;
+    routeSource: RouteSource;
   }[];
 
   // Add any remaining children
   ordered.push(
-    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({ route, props: {} }))
+    ...entries
+      .sort(sortRoutesWithInitial(initialRouteName))
+      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }))
   );
 
   return ordered;
@@ -175,22 +180,11 @@ function getSortedChildren(
  */
 export function useSortedScreens(
   order: ScreenProps[],
-  guardedRedirects: Map<string, Href | undefined> = new Map(),
-  useOnlyUserDefinedScreens: boolean = false
+  guardedRedirects: Map<string, Href | undefined> = new Map()
 ): React.ReactNode[] {
   const node = useRouteNode();
 
-  const nodeChildren = node?.children ?? [];
-  const children = useOnlyUserDefinedScreens
-    ? nodeChildren.filter((child) =>
-        order.some(
-          (userDefinedScreen) =>
-            userDefinedScreen.name === child.route ||
-            `${userDefinedScreen.name}/index` === child.route
-        )
-      )
-    : nodeChildren;
-
+  const children = node?.children ?? [];
   const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
   return React.useMemo(() => {
     const screensWithGuarded = sorted.map((value) => {
@@ -207,7 +201,7 @@ export function useSortedScreens(
     }
 
     return screensWithGuarded.map((value) => {
-      return routeToScreen(value.route, value.props, value.isGuarded);
+      return routeToScreen(value.route, value.props, value.isGuarded, value.routeSource);
     });
   }, [sorted, guardedRedirects]);
 }
@@ -536,10 +530,12 @@ export function screenOptionsFactory(
   };
 }
 
+// TODO: Refactor to take a single named-args object instead of positional params.
 export function routeToScreen(
   route: RouteNode,
   { options, getId, ...props }: Partial<ScreenProps> = {},
-  isGuarded?: boolean
+  isGuarded?: boolean,
+  routeSource?: RouteSource
 ) {
   return (
     <Screen
@@ -547,6 +543,7 @@ export function routeToScreen(
       name={route.route}
       key={route.route}
       getId={getId}
+      routeSource={routeSource}
       options={screenOptionsFactory(route, options, isGuarded)}
       getComponent={() => getQualifiedRouteComponent(route)}
     />

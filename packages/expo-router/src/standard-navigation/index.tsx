@@ -28,6 +28,7 @@ import { useStandardState } from './useStandardState';
 export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
+  StandardNavigatorDescriptor,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './types';
@@ -209,9 +210,7 @@ export function unstable_integrateWithRouter<
   }
 
   return withLayoutContext<NavigatorOptions, typeof StandardRouterNavigator, State, EventMap>(
-    StandardRouterNavigator,
-    undefined,
-    options?.useOnlyUserDefinedScreens
+    StandardRouterNavigator
   );
 }
 
