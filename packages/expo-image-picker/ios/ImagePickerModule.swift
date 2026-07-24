@@ -25,6 +25,9 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
     // TODO: (@bbarthec) change to "ExpoImagePicker" and propagate to other platforms
     Name("ExponentImagePicker")
 
+    // Emitted when user finishes media selection, but before processing media which can take time to download from iCloud.
+    Events("onSelectionFinished")
+
     OnCreate {
       self.appContext?.permissions?.register([
         CameraPermissionRequester(),
@@ -201,6 +204,11 @@ public class ImagePickerModule: Module, OnMediaPickingResultHandler {
   }
 
   func didPickMultipleMedia(selection: [PHPickerResult]) {
+    self.sendEvent("onSelectionFinished", [
+      "selectionCount": selection.count,
+      "assetIds": selection.compactMap { $0.assetIdentifier }
+    ])
+
     guard let options = self.currentPickingContext?.options,
           let promise = self.currentPickingContext?.promise else {
       log.error("Picking operation context has been lost.")
