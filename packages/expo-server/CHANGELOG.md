@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- Default server loader responses without `Cache-Control` to `no-store`.
 - Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 - Ensure external CSS imports are added to the server manifest so they reach the streaming renderer ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
 

@@ -91,6 +91,7 @@ function matchGroupName(name: string): string | undefined {
  * pre-rendering.
  */
 const LOADER_DECLARED_HEADERS = ['Cache-Control'];
+const SSG_LOADER_DEFAULT_CACHE_CONTROL = 'public, max-age=0, must-revalidate';
 
 export async function getFilesToExportFromServerAsync(
   projectRoot: string,
@@ -277,17 +278,17 @@ export async function exportFromServerAsync(
             loaderId: loaderKey,
           });
 
-          const declaredHeaders: Record<string, string> = {};
+          const declaredHeaders: Record<string, string> = {
+            'Cache-Control': SSG_LOADER_DEFAULT_CACHE_CONTROL,
+          };
           for (const name of LOADER_DECLARED_HEADERS) {
             const value = loaderResponse.headers.get(name);
             if (value) {
               declaredHeaders[name] = value;
             }
           }
-          if (Object.keys(declaredHeaders).length) {
-            loaderHeadersByPage.set(normalizedPathname, declaredHeaders);
-            loaderHeadersByFile.set(`/${fileSystemPath}`, declaredHeaders);
-          }
+          loaderHeadersByPage.set(normalizedPathname, declaredHeaders);
+          loaderHeadersByFile.set(`/${fileSystemPath}`, declaredHeaders);
 
           renderOpts.loader = { data, key: loaderKey };
         }
@@ -431,7 +432,10 @@ export async function exportFromServerAsync(
 
       const syncJsAssets = syncJs.map((asset) => toAssetUrl(asset.filename));
 
-      const htmlRoutes = getHtmlFiles({ manifest, includeGroupVariations: false });
+      const htmlRoutes = getHtmlFiles({
+        manifest,
+        includeGroupVariations: false,
+      });
 
       // Build per-route async chunk assignments
       const routeAssets = new Map<string, string[]>();

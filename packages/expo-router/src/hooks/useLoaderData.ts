@@ -65,14 +65,16 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
     return serverDataLoaderContext[resolvedPath];
   }
 
-  // The second invocation happens after the client has hydrated on initial load, so we look up the data injected
-  // by `<PreloadedDataScript />` using `globalThis.__EXPO_ROUTER_LOADER_DATA__`
-  if (typeof window !== 'undefined' && globalThis.__EXPO_ROUTER_LOADER_DATA__) {
-    if (globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath]) {
-      return globalThis.__EXPO_ROUTER_LOADER_DATA__[resolvedPath];
-    }
-  }
+  // The first client read consumes its server-injected value into the keyed Suspense store. The
+  // entry survives render replay and Strict Mode's same-tick remount, then follows retain/release.
+  loaderCache.consumeHydrationData(resolvedPath);
 
-  const result = readLoaderData<LoaderFunctionResult<T>>(loaderCache, resolvedPath, fetchLoader);
+  const fetcher = loaderCache.takeRevalidation(resolvedPath)
+    ? (path: string) =>
+        fetchLoader(path, {
+          headers: { 'Cache-Control': 'no-cache' },
+        })
+    : fetchLoader;
+  const result = readLoaderData<LoaderFunctionResult<T>>(loaderCache, resolvedPath, fetcher);
   return result instanceof Promise ? use(result) : result;
 }

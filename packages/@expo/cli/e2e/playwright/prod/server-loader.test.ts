@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -12,6 +12,8 @@ const projectRoot = getRouterE2ERoot();
 const outputDir = 'dist-server-loader-playwright';
 
 test.describe('server loaders in production', () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -58,10 +60,12 @@ test.describe('server loaders in production', () => {
     expect(loaderRequests).toContainEqual(expect.stringContaining('/_expo/loaders/posts'));
 
     const loaderDataContent = await page.locator('[data-testid="loader-result"]').textContent();
-    expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
+    expect(JSON.parse(loaderDataContent!)).toEqual({
+      params: { postId: 'static-post-1' },
+    });
   });
 
-  test('caches loader data for subsequent navigations', async ({ page }) => {
+  test('refetches headerless loader data on every fresh mount', async ({ page }) => {
     const loaderRequests: string[] = [];
     page.on('request', (request) => {
       if (request.url().includes('/_expo/loaders/')) {
@@ -84,8 +88,50 @@ test.describe('server loaders in production', () => {
     await page.click('a[href="/posts/static-post-1"]');
     await page.waitForSelector('[data-testid="loader-result"]');
 
-    // Should not make additional requests for cached static-post-1
-    expect(loaderRequests.length).toBe(2);
+    expect(loaderRequests).toHaveLength(5);
+    expect(
+      loaderRequests.filter((url) => url.includes('/_expo/loaders/posts/static-post-1'))
+    ).toHaveLength(2);
+    expect(loaderRequests.filter((url) => url.includes('/_expo/loaders/index'))).toHaveLength(2);
+  });
+
+  test('the initial max-age seed fetches once, then primes the HTTP cache', async ({ page }) => {
+    const statuses = await trackLoaderNetworkStatuses(page, '/_expo/loaders/response');
+    const responseUrl = new URL('/response', expoServe.url.href).toString();
+
+    await page.goto(responseUrl);
+    expect(statuses).toEqual([]);
+
+    await page.click('a[href="/"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await page.click('a[href="/response"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await expect.poll(() => statuses).toEqual([200]);
+
+    await page.click('a[href="/"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await page.click('a[href="/response"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await expect.poll(() => statuses).toEqual([200]);
+  });
+
+  test('a declared no-store loader reaches the network on every mount', async ({ page }) => {
+    const loaderRequests: string[] = [];
+    page.on('request', (request) => {
+      if (request.url().includes('/_expo/loaders/second')) {
+        loaderRequests.push(request.url());
+      }
+    });
+
+    await page.goto(expoServe.url.href);
+    await page.click('a[href="/second"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await page.click('a[href="/"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+    await page.click('a[href="/second"]');
+    await page.waitForSelector('[data-testid="loader-result"]');
+
+    expect(loaderRequests).toHaveLength(2);
   });
 
   test('handles loader module fetch errors gracefully', async ({ page }) => {
@@ -156,7 +202,9 @@ test.describe('server loaders in production', () => {
     const postsLoaderDataContent = await page
       .locator('[data-testid="loader-result"]')
       .textContent();
-    expect(JSON.parse(postsLoaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
+    expect(JSON.parse(postsLoaderDataContent!)).toEqual({
+      params: { postId: 'static-post-1' },
+    });
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -174,3 +222,21 @@ test.describe('server loaders in production', () => {
     await expect(page.locator('[data-testid="should-not-render"]')).not.toBeVisible();
   });
 });
+
+async function trackLoaderNetworkStatuses(page: Page, pathname: string): Promise<number[]> {
+  const session = await page.context().newCDPSession(page);
+  const requestUrls = new Map<string, string>();
+  const statuses: number[] = [];
+
+  await session.send('Network.enable');
+  session.on('Network.requestWillBeSent', ({ requestId, request }) => {
+    requestUrls.set(requestId, request.url);
+  });
+  session.on('Network.responseReceivedExtraInfo', ({ requestId, statusCode }) => {
+    if (requestUrls.get(requestId)?.includes(pathname)) {
+      statuses.push(statusCode);
+    }
+  });
+
+  return statuses;
+}

@@ -109,7 +109,14 @@ describe(createRequestHandler, () => {
   it('does not mutate the API route response when applying headers', async () => {
     const manifest: Manifest = {
       htmlRoutes: [],
-      apiRoutes: [{ file: 'api.js', page: '/api', namedRegex: /^\/api\/?$/, routeKeys: {} }],
+      apiRoutes: [
+        {
+          file: 'api.js',
+          page: '/api',
+          namedRegex: /^\/api\/?$/,
+          routeKeys: {},
+        },
+      ],
       notFoundRoutes: [],
       redirects: [],
       rewrites: [],
@@ -174,8 +181,40 @@ describe(createRequestHandler, () => {
       const [loaderRequest] = getLoaderData.mock.calls[0]!;
       expect(response.status).toBe(200);
       expect(response.headers.get('Content-Type')).toBe('application/json');
+      expect(response.headers.get('Cache-Control')).toBe('no-store');
       expect(await response.json()).toEqual(loaderData);
       expect(new URL(loaderRequest.url).pathname).toBe('/second');
+    });
+
+    it('passes a loader-declared Cache-Control through verbatim', async () => {
+      const manifest: Manifest = {
+        htmlRoutes: [
+          {
+            file: 'second.js',
+            page: '/second',
+            namedRegex: /^\/second\/?$/,
+            routeKeys: {},
+            loader: '_expo/loaders/second.js',
+          },
+        ],
+        apiRoutes: [],
+        notFoundRoutes: [],
+        redirects: [],
+        rewrites: [],
+      };
+      const handler = createRequestHandler({
+        getRoutesManifest: jest.fn(async () => manifest),
+        getHtml: jest.fn(),
+        getApiRoute: jest.fn(),
+        getMiddleware: jest.fn(),
+        getLoaderData: jest.fn(async () =>
+          Response.json({}, { headers: { 'Cache-Control': 'no-cache, private' } })
+        ),
+      });
+
+      const response = await handler(new Request('http://localhost/_expo/loaders/second'));
+
+      expect(response.headers.get('Cache-Control')).toBe('no-cache, private');
     });
 
     it('passes the correctly modified request to `getLoaderData()`', async () => {
@@ -447,7 +486,10 @@ describe(createRequestHandler, () => {
         rewrites: [],
         pageHeaders: [
           { namedRegex: /^\/$/, headers: { 'X-Frame-Options': 'DENY' } },
-          { namedRegex: /^\/other$/, headers: { 'X-Frame-Options': 'SAMEORIGIN' } },
+          {
+            namedRegex: /^\/other$/,
+            headers: { 'X-Frame-Options': 'SAMEORIGIN' },
+          },
         ],
       });
 
@@ -527,9 +569,7 @@ describe(createRequestHandler, () => {
         redirects: [],
         rewrites: [],
         headers: { 'Set-Cookie': ['session=1'] },
-        pageHeaders: [
-          { namedRegex: /^\/$/, headers: { 'Set-Cookie': ['a=1', 'b=2'] } },
-        ],
+        pageHeaders: [{ namedRegex: /^\/$/, headers: { 'Set-Cookie': ['a=1', 'b=2'] } }],
       });
 
       const response = await handler(new Request('http://localhost/'));
@@ -549,7 +589,14 @@ describe(createRequestHandler, () => {
               loader: '_expo/loaders/blog.js',
             },
           ],
-          apiRoutes: [{ file: 'api.js', page: '/api', namedRegex: /^\/api\/?$/, routeKeys: {} }],
+          apiRoutes: [
+            {
+              file: 'api.js',
+              page: '/api',
+              namedRegex: /^\/api\/?$/,
+              routeKeys: {},
+            },
+          ],
           notFoundRoutes: [],
           redirects: [{ file: '', page: '/new', namedRegex: /^\/red\/?$/, routeKeys: {} }],
           rewrites: [],
@@ -559,7 +606,10 @@ describe(createRequestHandler, () => {
             'Cache-Control': 'public, max-age=60',
           },
           pageHeaders: [
-            { namedRegex: /^\/api\/?$/, headers: { 'X-Rule': 'set', 'Set-Cookie': ['page=1'] } },
+            {
+              namedRegex: /^\/api\/?$/,
+              headers: { 'X-Rule': 'set', 'Set-Cookie': ['page=1'] },
+            },
             { namedRegex: /^\/blog\/?$/, headers: { 'X-Rule': 'set' } },
             { namedRegex: /^\/red\/?$/, headers: { 'X-Rule': 'set' } },
           ],
@@ -578,7 +628,10 @@ describe(createRequestHandler, () => {
           getLoaderData: jest.fn(
             async () =>
               new Response('{}', {
-                headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Cache-Control': 'no-store',
+                },
               })
           ),
         }
@@ -609,7 +662,14 @@ describe(createRequestHandler, () => {
 
     it('matches the requested path, not the rewritten target', async () => {
       const handler = createHandler({
-        htmlRoutes: [{ file: 'new', page: '/new', namedRegex: /^\/new\/?$/, routeKeys: {} }],
+        htmlRoutes: [
+          {
+            file: 'new',
+            page: '/new',
+            namedRegex: /^\/new\/?$/,
+            routeKeys: {},
+          },
+        ],
         apiRoutes: [],
         notFoundRoutes: [],
         redirects: [],

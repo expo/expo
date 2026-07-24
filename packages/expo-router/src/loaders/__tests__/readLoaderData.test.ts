@@ -18,18 +18,12 @@ describe(readLoaderData, () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
-  it('serves a document-cache hit without fetching', () => {
+  it('fetches again on a fresh mount after the Suspense entry is reclaimed', async () => {
     const cache = new LoaderCache();
-    const fetcher = jest.fn();
-    cache.setData('/p', 'cached');
-
-    expect(readLoaderData(cache, '/p', fetcher)).toBe('cached');
-    expect(fetcher).not.toHaveBeenCalled();
-  });
-
-  it('reuses the document cache on a revisit after the Suspense entry is reclaimed', async () => {
-    const cache = new LoaderCache();
-    const fetcher = jest.fn(async () => 'v1');
+    const fetcher = jest
+      .fn<Promise<string>, [string]>()
+      .mockResolvedValueOnce('v1')
+      .mockResolvedValueOnce('v2');
 
     await readLoaderData(cache, '/p', fetcher);
     expect(readLoaderData(cache, '/p', fetcher)).toBe('v1');
@@ -39,11 +33,13 @@ describe(readLoaderData, () => {
     await tick();
     expect(cache.suspense.get('/p')).toBeUndefined();
 
-    expect(readLoaderData(cache, '/p', fetcher)).toBe('v1');
-    expect(fetcher).toHaveBeenCalledTimes(1);
+    const revisit = readLoaderData(cache, '/p', fetcher);
+    expect(revisit).toBeInstanceOf(Promise);
+    await expect(revisit).resolves.toBe('v2');
+    expect(fetcher).toHaveBeenCalledTimes(2);
   });
 
-  it('returns the same in-flight promise to concurrent reads', () => {
+  it('fetches exactly once when Suspense replays a cache-miss mount', () => {
     const cache = new LoaderCache();
     const fetcher = jest.fn(async () => 'v1');
 
@@ -72,7 +68,7 @@ describe(readLoaderData, () => {
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
 
-  it('keeps the value across an unmount + remount within the same tick (Strict Mode safe)', async () => {
+  it('does not double-fetch across a StrictMode unmount + remount within the same tick', async () => {
     const cache = new LoaderCache();
     const fetcher = jest.fn(async () => 'v1');
 

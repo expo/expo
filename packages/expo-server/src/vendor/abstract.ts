@@ -170,7 +170,8 @@ export function createRequestHandler({
             'api',
             route,
             await getLoaderData(loaderRequest, route),
-            globalOverrides
+            globalOverrides,
+            { 'Cache-Control': 'no-store' }
           );
         }
 
@@ -272,7 +273,8 @@ export function createRequestHandler({
     routeType: CallbackRouteType | null = null,
     route: (Route & { type?: CallbackRouteType }) | null,
     response: Response,
-    overrides?: ResponseOverrides
+    overrides?: ResponseOverrides,
+    defaults?: Record<string, string | string[]>
   ): Response {
     const modifiedResponseInit: ResponseInitLike = {
       headers: new Headers(response.headers),
@@ -282,6 +284,9 @@ export function createRequestHandler({
       cf: (response as Response & { cf?: unknown }).cf,
       webSocket: (response as Response & { webSocket?: unknown }).webSocket,
     };
+    if (defaults) {
+      appendHeadersRecord(modifiedResponseInit.headers, defaults, false);
+    }
     return createResponse(routeType, route, response.body, modifiedResponseInit, overrides);
   }
 
@@ -328,7 +333,12 @@ export function createRequestHandler({
     throw new ExpoError(`HTML route file ${route.page}.html could not be loaded`);
   }
 
-  async function respondAPI(mod: any, request: Request, route: Route, overrides?: ResponseOverrides): Promise<Response> {
+  async function respondAPI(
+    mod: any,
+    request: Request,
+    route: Route,
+    overrides?: ResponseOverrides
+  ): Promise<Response> {
     if (!mod || typeof mod !== 'object') {
       throw new ExpoError(`API route module ${route.page} could not be loaded`);
     }

@@ -1,4 +1,4 @@
-import { getLoaderModulePath } from '../utils';
+import { fetchLoader, getLoaderModulePath } from '../utils';
 
 describe(getLoaderModulePath, () => {
   it('converts root path to /_expo/loaders/index', () => {
@@ -35,5 +35,32 @@ describe(getLoaderModulePath, () => {
 
   it('preserves query parameters with trailing slash', () => {
     expect(getLoaderModulePath('/about/?foo=bar')).toBe('/_expo/loaders/about?foo=bar');
+  });
+});
+
+describe(fetchLoader, () => {
+  const originalFetch = global.fetch;
+
+  afterEach(() => {
+    global.fetch = originalFetch;
+  });
+
+  it('sends no-cache as a request header when revalidating for HMR', async () => {
+    const response = {
+      ok: true,
+      json: async () => ({ ok: true }),
+    } as unknown as Response;
+    global.fetch = jest.fn(async () => response);
+
+    await fetchLoader('/about', {
+      headers: { 'Cache-Control': 'no-cache' },
+    });
+
+    expect(global.fetch).toHaveBeenCalledWith('/_expo/loaders/about', {
+      headers: expect.objectContaining({
+        Accept: 'application/json',
+        'Cache-Control': 'no-cache',
+      }),
+    });
   });
 });

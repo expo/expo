@@ -26,12 +26,14 @@ export function getLoaderModulePath(routePath: string): string {
  * @see import('packages/@expo/cli/src/start/server/metro/createServerRouteMiddleware.ts').createRouteHandlerMiddleware
  * @see import('packages/expo-server/src/vendor/environment/common.ts').createEnvironment
  */
-export async function fetchLoader(routePath: string): Promise<any> {
+export async function fetchLoader(routePath: string, init?: RequestInit): Promise<any> {
   const loaderPath = getLoaderModulePath(routePath);
 
   const response = await fetch(loaderPath, {
+    ...init,
     headers: {
       Accept: 'application/json',
+      ...init?.headers,
     },
   });
   if (!response.ok) {

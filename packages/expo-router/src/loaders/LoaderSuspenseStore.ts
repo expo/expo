@@ -15,9 +15,20 @@ export class LoaderSuspenseStore {
     return this.entries.get(key) as { data: T } | Promise<T> | undefined;
   }
 
+  keys(): IterableIterator<string> {
+    return this.entries.keys();
+  }
+
   set(key: string, entry: SuspenseEntry) {
     this.reclaimable.delete(key);
     this.entries.set(key, entry);
+  }
+
+  /** Set server-injected data only when no read has claimed this key yet. */
+  seed(key: string, data: unknown) {
+    if (!this.entries.has(key)) {
+      this.set(key, { data });
+    }
   }
 
   clear(key: string) {
