@@ -577,6 +577,373 @@ it('works with tabs', () => {
   expect(screen.queryByLabelText('protected, tab, 2 of 2')).toBeVisible();
 });
 
+describe('all routes guarded', () => {
+  let consoleWarnSpy: jest.SpyInstance<void, Parameters<typeof console.warn>>;
+
+  beforeEach(() => {
+    consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    consoleWarnSpy.mockRestore();
+  });
+
+  it('renders nothing without crashing when every route is guarded from the start', () => {
+    renderRouter({
+      _layout: function Layout() {
+        return (
+          <>
+            <Text testID="layout">layout</Text>
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="second" />
+              </Stack.Protected>
+            </Stack>
+          </>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      second: () => <Text testID="second">second</Text>,
+    });
+
+    expect(screen.getByTestId('layout')).toBeVisible();
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.queryByTestId('second')).toBeNull();
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'All routes in this navigator are protected. Ensure at least one route is accessible.'
+    );
+    // The navigator itself stays mounted (previously it rendered null when all
+    // its routes were guarded).
+    expect(JSON.stringify(screen.toJSON())).toContain('RNSScreenStack');
+  });
+
+  it('keeps navigation state when all guards flip false and back to true', () => {
+    let setGuard: Dispatch<SetStateAction<boolean>>;
+
+    renderRouter({
+      _layout: function Layout() {
+        const [guard, setState] = useState(true);
+        setGuard = setState;
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={guard}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="second" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      second: () => <Text testID="second">second</Text>,
+    });
+
+    act(() => router.push('/second'));
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(screen).toHavePathname('/second');
+
+    const stateBefore = store.state!.routes[0]!.state!;
+    const focusedKeyBefore = stateBefore.routes[stateBefore.index!]!.key;
+
+    // Guard everything: content hides but the navigator must stay mounted.
+    act(() => {
+      setGuard(false);
+    });
+
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.queryByTestId('second')).toBeNull();
+
+    // Restore access: the same navigation state is still there, not reinitialized.
+    act(() => {
+      setGuard(true);
+    });
+
+    expect(screen.getByTestId('second')).toBeVisible();
+    expect(screen).toHavePathname('/second');
+    const stateAfter = store.state!.routes[0]!.state!;
+    expect(stateAfter.routes[stateAfter.index!]!.key).toBe(focusedKeyBefore);
+    // Non-focused guarded history entries are pruned while the guard is down,
+    // so only the focused route survives the flip.
+    expect(stateAfter.routes).toHaveLength(1);
+  });
+
+  it('redirects to the parent anchor when all nested guards flip false', () => {
+    let setGuard: Dispatch<SetStateAction<boolean>>;
+
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'index' },
+          default: () => <Stack id={undefined} />,
+        },
+        index: () => <Text testID="index">index</Text>,
+        'nested/_layout': function NestedLayout() {
+          const [guard, setState] = useState(true);
+          setGuard = setState;
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={guard}>
+                <Stack.Screen name="index" />
+                <Stack.Screen name="second" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/index': () => <Text testID="nested-index">nested index</Text>,
+        'nested/second': () => <Text testID="second">second</Text>,
+      },
+      { initialUrl: '/nested/second' }
+    );
+
+    expect(screen.getByTestId('second')).toBeVisible();
+
+    act(() => setGuard(false));
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen).toHavePathname('/');
+  });
+
+  it('does not redirect when the parent anchor is the fully guarded navigator', () => {
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'nested' },
+          default: () => <Stack id={undefined} />,
+        },
+        index: () => <Text testID="index">index</Text>,
+        'nested/_layout': function NestedLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/index': () => <Text testID="nested-index">nested index</Text>,
+      },
+      { initialUrl: '/nested' }
+    );
+
+    expect(screen.queryByTestId('nested-index')).toBeNull();
+    expect(screen).toHavePathname('/nested');
+    expect(consoleWarnSpy).toHaveBeenCalledWith(
+      'All routes in this navigator are protected. Ensure at least one route is accessible.'
+    );
+  });
+
+  it('skips a self-targeting parent anchor and redirects to the grandparent anchor', () => {
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'home' },
+          default: () => <Stack id={undefined} />,
+        },
+        home: () => <Text testID="home">home</Text>,
+        'nested/_layout': {
+          unstable_settings: { anchor: 'deep' },
+          default: () => <Stack id={undefined} />,
+        },
+        'nested/deep/_layout': function DeepLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/deep/index': () => <Text testID="deep-index">deep index</Text>,
+      },
+      { initialUrl: '/nested/deep' }
+    );
+
+    expect(screen.getByTestId('home')).toBeVisible();
+    expect(screen).toHavePathname('/home');
+  });
+
+  it('uses updated params from an object redirectTo', () => {
+    let setId: Dispatch<SetStateAction<string>>;
+
+    renderRouter({
+      _layout: function Layout() {
+        const [id, setState] = useState('one');
+        setId = setState;
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected
+              guard={false}
+              redirectTo={{ pathname: '/login/[id]', params: { id } }}>
+              <Stack.Screen name="secret" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      secret: () => <Text testID="secret">secret</Text>,
+      'login/[id]': () => <Text testID="login">login</Text>,
+    });
+
+    act(() => setId('two'));
+    act(() => router.push('/secret'));
+
+    expect(screen.getByTestId('login')).toBeVisible();
+    expect(screen).toHavePathname('/login/two');
+  });
+
+  it('preserves a parent anchor whose name ends in index', () => {
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'reindex' },
+          default: () => <Stack id={undefined} />,
+        },
+        reindex: () => <Text testID="reindex">reindex</Text>,
+        'nested/_layout': function NestedLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/index': () => <Text testID="nested-index">nested index</Text>,
+      },
+      { initialUrl: '/nested' }
+    );
+
+    expect(screen.getByTestId('reindex')).toBeVisible();
+    expect(screen).toHavePathname('/reindex');
+  });
+
+  it('redirects out of a pathless group to the parent index', () => {
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: 'index' },
+          default: () => <Stack id={undefined} />,
+        },
+        index: () => <Text testID="index">index</Text>,
+        '(app)/_layout': function AppLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        '(app)/secret': () => <Text testID="secret">secret</Text>,
+      },
+      { initialUrl: '/secret' }
+    );
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen).toHavePathname('/');
+  });
+
+  it('redirects to the configured pathless group when groups share a URL', () => {
+    renderRouter(
+      {
+        _layout: {
+          unstable_settings: { anchor: '(two)' },
+          default: () => (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack>
+          ),
+        },
+        '(one)/_layout': () => <Stack id={undefined} />,
+        '(one)/index': () => <Text testID="one">one</Text>,
+        '(two)/_layout': () => <Stack id={undefined} />,
+        '(two)/index': () => <Text testID="two">two</Text>,
+        secret: () => <Text testID="secret">secret</Text>,
+      },
+      { initialUrl: '/secret' }
+    );
+
+    expect(screen.getByTestId('two')).toBeVisible();
+    expect(screen.queryByTestId('one')).toBeNull();
+    expect(screen).toHavePathname('/');
+  });
+
+  it('preserves params in a dynamic parent anchor', () => {
+    renderRouter(
+      {
+        _layout: () => <Stack id={undefined} />,
+        '[id]/_layout': {
+          unstable_settings: { anchor: 'index' },
+          default: () => <Stack id={undefined} />,
+        },
+        '[id]/index': () => <Text testID="profile">profile</Text>,
+        '[id]/nested/_layout': function NestedLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false}>
+                <Stack.Screen name="index" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        '[id]/nested/index': () => <Text testID="nested-index">nested index</Text>,
+      },
+      { initialUrl: '/alice/nested' }
+    );
+
+    expect(screen.getByTestId('profile')).toBeVisible();
+    expect(screen).toHavePathname('/alice');
+  });
+
+  it('does not render guarded content when pushing directly to a route guarded with no destination', () => {
+    renderRouter({
+      _layout: function Layout() {
+        return (
+          <Stack id={undefined}>
+            <Stack.Protected guard={false}>
+              <Stack.Screen name="index" />
+              <Stack.Screen name="second" />
+            </Stack.Protected>
+          </Stack>
+        );
+      },
+      index: () => <Text testID="index">index</Text>,
+      second: () => <Text testID="second">second</Text>,
+    });
+
+    act(() => router.push('/second'));
+
+    expect(screen.queryByTestId('index')).toBeNull();
+    expect(screen.queryByTestId('second')).toBeNull();
+  });
+
+  it('redirects out of a fully guarded nested navigator via redirectTo', () => {
+    renderRouter(
+      {
+        _layout: () => <Stack id={undefined} />,
+        index: () => <Text testID="index">index</Text>,
+        login: () => <Text testID="login">login</Text>,
+        'nested/_layout': function NestedLayout() {
+          return (
+            <Stack id={undefined}>
+              <Stack.Protected guard={false} redirectTo="/login">
+                <Stack.Screen name="secret" />
+              </Stack.Protected>
+            </Stack>
+          );
+        },
+        'nested/secret': () => <Text testID="secret">secret</Text>,
+      },
+      { initialUrl: '/nested/secret' }
+    );
+
+    expect(screen.getByTestId('login')).toBeVisible();
+    expect(screen).toHavePathname('/login');
+  });
+});
+
 describe('routes without /index suffix', () => {
   describe('Protected', () => {
     it('should protect dynamic routes without explicit /index suffix', () => {

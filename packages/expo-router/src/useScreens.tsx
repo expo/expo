@@ -9,7 +9,7 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
-import { useGuardRedirect } from './layouts/GuardContext';
+import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
@@ -33,7 +33,7 @@ import {
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
-import type { Href, UnknownOutputParams } from './types';
+import type { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
@@ -180,7 +180,7 @@ function getSortedChildren(
  */
 export function useSortedScreens(
   order: ScreenProps[],
-  guardedRedirects: Map<string, Href | undefined> = new Map()
+  guardedRedirects: GuardedRedirects = new Map()
 ): React.ReactNode[] {
   const node = useRouteNode();
 
@@ -189,17 +189,8 @@ export function useSortedScreens(
   return React.useMemo(() => {
     const screensWithGuarded = sorted.map((value) => {
       const route = value.route.route;
-      const isGuarded =
-        guardedRedirects.has(route) || guardedRedirects.has(route.replace(/\/index$/, ''));
-      return { ...value, isGuarded };
+      return { ...value, isGuarded: isRouteGuarded(route, guardedRedirects) };
     });
-    const allScreensGuarded =
-      screensWithGuarded.length > 0 && screensWithGuarded.every((item) => item.isGuarded);
-
-    if (allScreensGuarded) {
-      return [];
-    }
-
     return screensWithGuarded.map((value) => {
       return routeToScreen(value.route, value.props, value.isGuarded, value.routeSource);
     });
@@ -319,7 +310,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
-    const guardRedirect = useGuardRedirect(value.route);
+    const redirectHref = useGuardRedirect(value.route);
+    const isGuarded = redirectHref !== undefined;
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
@@ -330,7 +322,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
-    if (isFocused && !guardRedirect) {
+    if (isFocused && !isGuarded) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
@@ -345,9 +337,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
           // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath && !guardRedirect) store.setFocusedState(stateForPath);
+          if (isLeaf && stateForPath && !isGuarded) store.setFocusedState(stateForPath);
         }),
-      [navigation, guardRedirect]
+      [navigation, isGuarded]
     );
 
     useEffect(() => {
@@ -364,13 +356,24 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       });
     }, [navigation]);
 
+    useEffect(() => {
+      if (__DEV__ && isFocused && isGuarded && redirectHref == null) {
+        console.warn(
+          'All routes in this navigator are protected. Ensure at least one route is accessible.'
+        );
+      }
+    }, [isFocused, isGuarded, redirectHref]);
+
     const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
 
-    if (guardRedirect) {
+    if (isGuarded) {
+      // A `null` href means guarded with no destination to redirect to (every
+      // candidate is also guarded): render nothing but keep the screen registered
+      // so the navigator and its state stay mounted.
       return (
         <Route node={value} params={route?.params}>
-          <Redirect href={guardRedirect} />
+          {redirectHref != null ? <Redirect href={redirectHref} /> : null}
         </Route>
       );
     }
