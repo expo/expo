@@ -512,7 +512,7 @@ export function TabRouter(
       if ((action.type as string) === 'REPLACE') {
         const replaceAction = action as unknown as Extract<StackActionType, { type: 'REPLACE' }>;
         // Generate the state as if we were using JUMP_TO
-        let nextState = base.getStateForAction(
+        const nextState = base.getStateForAction(
           state,
           {
             ...replaceAction,
@@ -525,26 +525,34 @@ export function TabRouter(
           return null;
         }
 
-        // If the state is valid and we didn't JUMP_TO a single history state,
-        // then remove the previous state.
-        if (nextState.index !== 0) {
-          const previousIndex = nextState.index - 1;
-
-          nextState = {
-            ...nextState,
-            key: `${nextState.key}-replace`,
-            // Omit the previous history entry that we are replacing
-            history: [
-              ...nextState.history.slice(0, previousIndex),
-              ...nextState.history.splice(nextState.index),
-            ],
-          };
-        }
-
-        return nextState;
+        return removeReplacedRouteFromHistory(
+          state,
+          nextState as TabNavigationState<ParamListBase>
+        );
       }
 
       return base.getStateForAction(state, action, options);
     },
   };
+}
+
+export function removeReplacedRouteFromHistory(
+  previousState: TabNavigationState<ParamListBase>,
+  nextState: TabNavigationState<ParamListBase>
+) {
+  const replacedRouteKey = previousState.routes[previousState.index]?.key;
+  const focusedRouteKey = nextState.routes[nextState.index]?.key;
+  if (!replacedRouteKey || replacedRouteKey === focusedRouteKey) {
+    return nextState;
+  }
+
+  const history = [...nextState.history];
+  for (let index = history.length - 1; index >= 0; index--) {
+    if (history[index]!.key === replacedRouteKey) {
+      history.splice(index, 1);
+      break;
+    }
+  }
+
+  return { ...nextState, key: `${nextState.key}-replace`, history };
 }

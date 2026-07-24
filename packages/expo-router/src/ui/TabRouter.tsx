@@ -9,7 +9,10 @@ import {
   type NavigationAction,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
-import { getRouteHistory } from '../react-navigation/routers/TabRouter';
+import {
+  getRouteHistory,
+  removeReplacedRouteFromHistory,
+} from '../react-navigation/routers/TabRouter';
 import type { TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
@@ -72,6 +75,7 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       }
 
       if (isReplaceAction(action)) {
+        const previousState = state;
         action = {
           ...action,
           type: 'JUMP_TO',
@@ -85,23 +89,7 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
 
         // We can assert that nextState is TabNavigationState here, because we checked for index and history above
         state = nextState as TabNavigationState<ParamListBase>;
-
-        // If the state is valid and we didn't JUMP_TO a single history state,
-        // then remove the previous state.
-        if (state.index !== 0) {
-          const previousIndex = state.index - 1;
-
-          state = {
-            ...state,
-            key: `${state.key}-replace`,
-            // Omit the previous history entry that we are replacing
-            history: [
-              ...state.history.slice(0, previousIndex),
-              ...state.history.splice(state.index),
-            ],
-          };
-        }
-        return state;
+        return removeReplacedRouteFromHistory(previousState, state);
       } else if (action.type !== 'JUMP_TO') {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }

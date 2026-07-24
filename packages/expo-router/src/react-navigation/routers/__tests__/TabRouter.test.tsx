@@ -4,7 +4,9 @@ import {
   CommonActions,
   type ParamListBase,
   type RouterConfigOptions,
+  StackActions,
   TabActions,
+  type TabActionType,
   type TabNavigationState,
   TabRouter,
 } from '../index';
@@ -1053,6 +1055,127 @@ test('ensures unique ID for jump to', () => {
       { type: 'route', key: 'bar-test' },
     ],
   });
+});
+
+test('replaces the focused route when the destination is the first tab', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('qux'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(
+    state,
+    StackActions.replace('bar') as unknown as TabActionType,
+    options
+  );
+
+  expect(nextState?.history).toEqual([
+    { type: 'route', key: 'baz-test' },
+    { type: 'route', key: 'bar-test' },
+  ]);
+});
+
+test('replaces the focused route based on visit history instead of route order', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux', 'foo'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('foo'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(
+    state,
+    StackActions.replace('qux') as unknown as TabActionType,
+    options
+  );
+
+  expect(nextState?.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'foo-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
+});
+
+test('only removes the latest visit when replacing with backBehavior: fullHistory', () => {
+  const router = TabRouter({ backBehavior: 'fullHistory' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('bar'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(
+    state,
+    StackActions.replace('qux') as unknown as TabActionType,
+    options
+  );
+
+  expect(nextState?.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'baz-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
+});
+
+test('preserves history when replacing a tab with itself', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(
+    state,
+    StackActions.replace('baz') as unknown as TabActionType,
+    options
+  );
+
+  expect(nextState?.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'baz-test' },
+  ]);
 });
 
 test('handles back action with backBehavior: history', () => {
