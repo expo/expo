@@ -31,6 +31,7 @@ interface INotificationContent : Parcelable {
   val color: Number?
   val isAutoDismiss: Boolean
   val categoryId: String?
+  val group: String?
   val isSticky: Boolean
 
   fun containsImage(): Boolean

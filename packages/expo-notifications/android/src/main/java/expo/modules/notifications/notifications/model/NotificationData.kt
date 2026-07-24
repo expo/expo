@@ -58,6 +58,9 @@ value class NotificationData(private val data: Map<String, String>) {
   val categoryId: String?
     get() = data["categoryId"]
 
+  val group: String?
+    get() = data["threadIdentifier"]
+
   val subText: String?
     get() = data["subtitle"]
 

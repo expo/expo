@@ -70,6 +70,33 @@ class NotificationContentSerializationTest {
     assertNotificationContentEquals(originalContent, deserializedContent)
   }
 
+  @Test
+  fun testSerializationWithGroup() {
+    val originalContent = NotificationContent.Builder()
+      .setTitle("Grouped")
+      .setText("Body")
+      .setGroup("thread-1")
+      .build()
+
+    val deserializedContent = serializeAndDeserialize(originalContent)
+
+    assertNotificationContentEquals(originalContent, deserializedContent)
+    assertEquals("thread-1", deserializedContent.group)
+  }
+
+  @Test
+  fun testSerializationWithNullGroup() {
+    val originalContent = NotificationContent.Builder()
+      .setTitle("No group")
+      .setGroup(null)
+      .build()
+
+    val deserializedContent = serializeAndDeserialize(originalContent)
+
+    assertNull(deserializedContent.group)
+    assertNotificationContentEquals(originalContent, deserializedContent)
+  }
+
   private fun createSampleNotificationContent(): NotificationContent {
     return NotificationContent.Builder()
       .setTitle("Test Title")
@@ -110,5 +137,6 @@ class NotificationContentSerializationTest {
     assertEquals(expected.isAutoDismiss, actual.isAutoDismiss)
     assertEquals(expected.categoryId, actual.categoryId)
     assertEquals(expected.isSticky, actual.isSticky)
+    assertEquals(expected.group, actual.group)
   }
 }

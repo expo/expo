@@ -1,4 +1,5 @@
 import * as Notifications from 'expo-notifications';
+import { getPresentedNotificationsAsync } from 'expo-notifications';
 import { sendPushNotificationsAsync } from 'native-component-list/src/api/sendPushNotificationsAsync';
 import HeadingText from 'native-component-list/src/components/HeadingText';
 import ListButton from 'native-component-list/src/components/ListButton';
@@ -34,6 +35,57 @@ export default function ScenariosPage() {
             },
             trigger: null,
           });
+        }}
+      />
+
+      <HeadingText>Notification grouping (threadIdentifier)</HeadingText>
+      <ListButton
+        title='Schedule 3 notifications in "chat-alice" thread'
+        onPress={async () => {
+          for (let i = 1; i <= 3; i++) {
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: `Alice`,
+                body: `Message ${i} from Alice`,
+                threadIdentifier: 'chat-alice',
+              },
+              trigger: null,
+            });
+          }
+        }}
+      />
+      <ListButton
+        title='Schedule 3 notifications in "chat-bob" thread'
+        onPress={async () => {
+          for (let i = 1; i <= 3; i++) {
+            await Notifications.scheduleNotificationAsync({
+              content: {
+                title: `Bob`,
+                body: `Message ${i} from Bob`,
+                threadIdentifier: 'chat-bob',
+              },
+              trigger: null,
+            });
+          }
+        }}
+      />
+      <ListButton
+        title="Schedule 1 notification with no thread"
+        onPress={async () => {
+          await Notifications.scheduleNotificationAsync({
+            content: {
+              title: 'No thread',
+              body: 'This notification has no threadIdentifier',
+            },
+            trigger: null,
+          });
+        }}
+      />
+      <ListButton
+        title="getPresentedNotificationsAsync"
+        onPress={async () => {
+          const result = await Notifications.getPresentedNotificationsAsync();
+          alert(`Presented notifications: ${JSON.stringify(result, null, 2)}`);
         }}
       />
 
