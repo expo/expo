@@ -80,7 +80,7 @@ export function stripGroupSegmentsFromPath(path: string): string {
 }
 
 export function stripInvisibleSegmentsFromPath(path: string): string {
-  return stripGroupSegmentsFromPath(path).replace(/\/?index$/, '');
+  return stripGroupSegmentsFromPath(path).replace(/(^|\/)index$/, '');
 }
 
 /**
