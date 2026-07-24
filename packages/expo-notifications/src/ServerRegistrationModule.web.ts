@@ -16,6 +16,9 @@ export default {
     let installationId;
 
     try {
+      if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') {
+        return getFallbackInstallationId();
+      }
       installationId = localStorage.getItem(INSTALLATION_ID_KEY);
       if (!installationId || typeof installationId !== 'string') {
         installationId = uuid.v4();
@@ -28,7 +31,7 @@ export default {
     return installationId;
   },
   getRegistrationInfoAsync: async () => {
-    if (typeof localStorage === 'undefined') {
+    if (typeof localStorage === 'undefined' || typeof localStorage.getItem !== 'function') {
       return null;
     }
     return localStorage.getItem(REGISTRATION_INFO_KEY);
