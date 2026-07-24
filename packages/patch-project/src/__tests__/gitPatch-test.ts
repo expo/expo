@@ -1,6 +1,6 @@
 import spawnAsync from '@expo/spawn-async';
 
-import { applyPatchAsync, getPatchChangedLinesAsync } from '../gitPatch';
+import { applyPatchAsync, getPatchChangedLinesAsync, isPatchAppliedAsync } from '../gitPatch';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs');
@@ -20,6 +20,34 @@ describe(applyPatchAsync, () => {
   it('should throw from git apply errors', async () => {
     mockedSpawnAsync.mockRejectedValue(new Error('git apply failed'));
     await expect(() => applyPatchAsync('/app', '/app/cng-patches/ios+.patch')).rejects.toThrow();
+  });
+});
+
+describe(isPatchAppliedAsync, () => {
+  it('should return true when the patch reverse-applies cleanly', async () => {
+    // @ts-expect-error
+    mockedSpawnAsync.mockResolvedValueOnce({ stdout: '', stderr: '' });
+    await expect(isPatchAppliedAsync('/app', '/app/cng-patches/ios+.patch')).resolves.toBe(true);
+    expect(mockedSpawnAsync).toHaveBeenCalledWith(
+      'git',
+      ['apply', '--reverse', '--check', '--ignore-whitespace', '/app/cng-patches/ios+.patch'],
+      { cwd: '/app' }
+    );
+  });
+
+  it('should return false when the patch is not applied', async () => {
+    mockedSpawnAsync.mockRejectedValueOnce(new Error('error: patch does not apply'));
+    await expect(isPatchAppliedAsync('/app', '/app/cng-patches/ios+.patch')).resolves.toBe(false);
+  });
+
+  it('should throw if git is not installed', async () => {
+    const error = new Error('spawn git ENOENT');
+    // @ts-expect-error: Simulate spawn error
+    error.code = 'ENOENT';
+    mockedSpawnAsync.mockRejectedValueOnce(error);
+    await expect(() => isPatchAppliedAsync('/app', '/app/cng-patches/ios+.patch')).rejects.toThrow(
+      /Git is required to apply patches/
+    );
   });
 });
 
