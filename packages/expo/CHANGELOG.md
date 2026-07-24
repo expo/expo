@@ -2,6 +2,11 @@
 
 ## Unpublished
 
+### Unversioned
+
+- Bumped `react-native-reanimated` to `4.5.1` for SDK 57 to resolve incompatibility with `react-native-unistyles` (empty object style error).  
+  See: https://github.com/jpudysz/react-native-unistyles/issues/1213
+
 ### 🛠 Breaking changes
 
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
