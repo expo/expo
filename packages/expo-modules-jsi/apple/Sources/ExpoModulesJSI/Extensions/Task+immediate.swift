@@ -25,21 +25,21 @@ extension Task where Failure == any Error {
   internal static func immediate_polyfill(
     name: String? = nil,
     priority: TaskPriority? = nil,
-    executorPreference taskExecutor: JavaScriptRuntimeTaskExecutor,
+    executorPreference runtimeExecutor: JavaScriptRuntimeExecutor,
     @_inheritActorContext @_implicitSelfCapture operation: sending @escaping @isolated(any) () async throws -> Success
   ) -> Task<Success, any Error> {
     if #available(macOS 26.0, iOS 26.0, watchOS 26.0, tvOS 26.0, visionOS 26.0, *) {
       return Task.immediate(
         name: name,
         priority: priority,
-        executorPreference: taskExecutor,
+        executorPreference: runtimeExecutor,
         operation: operation
       )
     } else if #available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *) {
       // In the polyfill always use the highest priority and hope it executes earlier.
       return Task(
         name: name,
-        executorPreference: taskExecutor,
+        executorPreference: runtimeExecutor,
         priority: .high,
         operation: operation
       )

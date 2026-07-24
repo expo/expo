@@ -50,6 +50,7 @@
 - [iOS] Ignore already-settled promises. ([#46765](https://github.com/expo/expo/pull/46765) by [@jakex7](https://github.com/jakex7))
 - [iOS] `getExpoNativeState` now probes with the specialized `hasNativeState<jsi::NativeState>` and dynamic-casts the raw pointer once, avoiding a redundant `dynamic_pointer_cast` on the shared object argument unwrap hot path. ([#46712](https://github.com/expo/expo/pull/46712) by [@tsapeta](https://github.com/tsapeta))
 - Added a script to clear local build caches and artifacts.
+- [iOS] Unified the per-runtime task executor and serial executor into a single `JavaScriptRuntimeExecutor` type. ([#47916](https://github.com/expo/expo/pull/47916) by [@tsapeta](https://github.com/tsapeta))
 
 ## 56.0.7 — 2026-05-20
 
