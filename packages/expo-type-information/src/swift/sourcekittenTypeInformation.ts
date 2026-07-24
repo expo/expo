@@ -9,6 +9,7 @@ import {
   ClassDeclaration,
   ConstantDeclaration,
   ConstructorDeclaration,
+  ConvertibleType,
   DefinitionOffset,
   DictionaryType,
   EnumType,
@@ -27,7 +28,7 @@ import {
   TypeIdentifierDefinitionMap,
   TypeKind,
   ViewDeclaration,
-} from '../typeInformation';
+} from '../typeInformation.types';
 import { Attribute, FileType, Structure } from '../types';
 import { taskAll } from '../utils';
 
@@ -181,6 +182,44 @@ function findRootColonInDictionary(type: string) {
   return colonIndex;
 }
 
+const basicTypesConversions = new Map<string, BasicType>([
+  ['unknown', BasicType.ANY],
+  ['Any', BasicType.ANY],
+  ['JavaScriptValue', BasicType.ANY],
+
+  ['String', BasicType.STRING],
+  ['URL', BasicType.STRING],
+
+  ['Bool', BasicType.BOOLEAN],
+
+  ['Int', BasicType.NUMBER],
+  ['Float', BasicType.NUMBER],
+  ['Double', BasicType.NUMBER],
+  ['CGFloat', BasicType.NUMBER],
+
+  ['()', BasicType.VOID],
+  ['Void', BasicType.VOID],
+  ['Void', BasicType.VOID],
+
+  ['Never', BasicType.NEVER],
+
+  ['JavaScriptObject', BasicType.OBJECT],
+]);
+
+const convertibleTypesConversions = new Map<string, ConvertibleType>([
+  ['CGColor', ConvertibleType.COLOR],
+  ['UIColor', ConvertibleType.COLOR],
+
+  ['CGPoint', ConvertibleType.CG_POINT],
+  ['CGSize', ConvertibleType.CG_SIZE],
+  ['CGVector', ConvertibleType.CG_VECTOR],
+  ['CGRect', ConvertibleType.CG_RECT],
+
+  ['JavaScriptFunction', ConvertibleType.JS_FUNCTION],
+
+  ['Data', ConvertibleType.UINT8_ARRAY],
+]);
+
 function mapSwiftTypeToTsType(type?: string): Type {
   if (!type) {
     return { kind: TypeKind.BASIC, type: BasicType.UNRESOLVED };
@@ -226,36 +265,26 @@ function mapSwiftTypeToTsType(type?: string): Type {
     };
   }
 
-  const returnType: Type = {
-    kind: TypeKind.BASIC,
-    type: BasicType.ANY,
-  };
-
-  switch (type) {
-    case 'unknown':
-    case 'Any':
-      returnType.type = BasicType.ANY;
-      break;
-    case 'String':
-      returnType.type = BasicType.STRING;
-      break;
-    case 'Bool':
-      returnType.type = BasicType.BOOLEAN;
-      break;
-    case 'Int':
-    case 'Float':
-    case 'Double':
-      returnType.type = BasicType.NUMBER;
-      break;
-    case 'Void':
-    case '()': // `()` type is the same as `Void` in Swift. SourceKit will sometimes output `()` instead of `Void` when queried about the type.
-      returnType.type = BasicType.VOID;
-      break;
-    default:
-      returnType.kind = TypeKind.IDENTIFIER;
-      returnType.type = type;
+  const tsBasicType = basicTypesConversions.get(type);
+  if (tsBasicType !== undefined) {
+    return {
+      kind: TypeKind.BASIC,
+      type: tsBasicType,
+    };
   }
-  return returnType;
+
+  const tsConvertibleType = convertibleTypesConversions.get(type);
+  if (tsConvertibleType !== undefined) {
+    return {
+      kind: TypeKind.CONVERTIBLE,
+      type: tsConvertibleType,
+    };
+  }
+
+  return {
+    kind: TypeKind.IDENTIFIER,
+    type,
+  };
 }
 
 function getStructureFromFile(file: FileType) {
