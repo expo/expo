@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Generated iOS projects now include a `SceneDelegate` and `UIApplicationSceneManifest` for the scene-based life cycle. ([#46734](https://github.com/expo/expo/pull/46734) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Write the `RCTMetroPort` Info.plist key so bare dev builds resolve their own Metro port instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

@@ -26,6 +26,7 @@
 - Fix `import.meta.url` being `null` on web when read after the bundle's synchronous execution (from effects, async code, or dynamic imports). ([#47802](https://github.com/expo/expo/pull/47802) by [@zoontek](https://github.com/zoontek))
 - [iOS] Mark `ExpoAppSceneDelegate` as unavailable in `iOSApplicationExtension` for widgets. ([#47894](https://github.com/expo/expo/pull/47894) by [@jakex7](https://github.com/jakex7))
 - [iOS] Add ExpoBundleConfiguration to derive RCTBundleConfiguration from the normalized bundle URL instead of default shared settings singleton ([#48010](https://github.com/expo/expo/pull/48010) by [@kitten](https://github.com/kitten))
+- [iOS] Resolve the dev server port from the `RCTMetroPort` Info.plist key at runtime so bare projects without expo-dev-client connect to their own Metro instance instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
