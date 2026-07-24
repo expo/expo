@@ -1,6 +1,6 @@
 'use client';
 
-import { use, useEffect } from 'react';
+import { use, useEffect, useEffectEvent } from 'react';
 
 import { GuardContext } from './GuardContext';
 
@@ -9,6 +9,7 @@ import { GuardContext } from './GuardContext';
  */
 export function useClearGuardedRoutes(removeRoutesFromState: (routeNames: string[]) => void) {
   const guards = use(GuardContext);
+  const removeRoutes = useEffectEvent(removeRoutesFromState);
 
   useEffect(() => {
     if (!guards?.size) {
@@ -20,6 +21,6 @@ export function useClearGuardedRoutes(removeRoutesFromState: (routeNames: string
       return [normalizedName, `${normalizedName}/index`];
     });
 
-    removeRoutesFromState(routeNames);
-  }, [guards, removeRoutesFromState]);
+    removeRoutes(routeNames);
+  }, [guards]);
 }

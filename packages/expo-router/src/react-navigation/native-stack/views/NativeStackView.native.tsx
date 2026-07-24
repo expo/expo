@@ -23,7 +23,7 @@ import { NavigationProvider, usePreventRemoveContext, useTheme } from '../../nat
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
-  NativeStackEmit,
+  NativeStackViewEmit,
   NativeStackViewState,
 } from '../types';
 import { debounce } from '../utils/debounce';
@@ -448,7 +448,7 @@ const SceneView = ({
 type Props = {
   state: NativeStackViewState;
   descriptors: NativeStackDescriptorMap;
-  emit: NativeStackEmit;
+  emit: NativeStackViewEmit;
   pop: (count: number, sourceRouteKey: string) => void;
 };
 

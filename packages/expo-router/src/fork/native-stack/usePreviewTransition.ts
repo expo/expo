@@ -1,7 +1,10 @@
 import * as React from 'react';
 
 import { useLinkPreviewContext } from '../../link/preview/LinkPreviewContext';
-import type { NativeStackViewState } from '../../react-navigation/native-stack';
+import type {
+  NativeStackViewEmit,
+  NativeStackViewState,
+} from '../../react-navigation/native-stack';
 
 /**
  * Manages the preview transition state for link previews.
@@ -11,9 +14,9 @@ import type { NativeStackViewState } from '../../react-navigation/native-stack';
  * During this window, the hook synthesizes state to keep native and JS state
  * in sync.
  */
-export function usePreviewTransition<TNavigation extends { emit: (...args: any[]) => any }>(
+export function usePreviewTransition(
   state: NativeStackViewState,
-  navigation: TNavigation
+  originalEmit: NativeStackViewEmit
 ) {
   const { openPreviewKey, setOpenPreviewKey } = useLinkPreviewContext();
 
@@ -35,10 +38,10 @@ export function usePreviewTransition<TNavigation extends { emit: (...args: any[]
     }
   }, [state, previewTransitioningScreenId]);
 
-  const navigationWrapper = React.useMemo(() => {
+  const emit = React.useMemo(() => {
     if (openPreviewKey) {
-      const emit: (typeof navigation)['emit'] = (...args) => {
-        const { target, type, data } = args[0];
+      const emit: NativeStackViewEmit = (event) => {
+        const { target, type, data } = event;
         if (target === openPreviewKey && data && 'closing' in data && !data.closing) {
           // onWillAppear
           if (type === 'transitionStart') {
@@ -52,15 +55,12 @@ export function usePreviewTransition<TNavigation extends { emit: (...args: any[]
             setOpenPreviewKey(undefined);
           }
         }
-        return navigation.emit(...args);
+        return originalEmit(event);
       };
-      return {
-        ...navigation,
-        emit,
-      };
+      return emit;
     }
-    return navigation;
-  }, [navigation, openPreviewKey, setOpenPreviewKey]);
+    return originalEmit;
+  }, [openPreviewKey, originalEmit, setOpenPreviewKey]);
 
   const computedState: NativeStackViewState = React.useMemo(() => {
     // The preview screen was pushed on the native side, but react-navigation state was not updated yet
@@ -93,5 +93,5 @@ export function usePreviewTransition<TNavigation extends { emit: (...args: any[]
     return state;
   }, [state, previewTransitioningScreenId]);
 
-  return { computedState, navigationWrapper };
+  return { computedState, emit };
 }

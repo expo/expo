@@ -13,14 +13,14 @@ import {
   useHeaderHeight,
 } from '../../elements';
 import { useLinkBuilder } from '../../native';
-import type { NativeStackDescriptorMap, NativeStackEmit, NativeStackViewState } from '../types';
+import type { NativeStackDescriptorMap, NativeStackViewEmit, NativeStackViewState } from '../types';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 
 type Props = {
   state: NativeStackViewState;
   descriptors: NativeStackDescriptorMap;
   // These are used for the native implementation of the stack.
-  emit: NativeStackEmit;
+  emit: NativeStackViewEmit;
   pop: (count: number, sourceRouteKey: string) => void;
 };
 
@@ -42,7 +42,7 @@ export function NativeStackView({ state, descriptors }: Props) {
         const nextKey = activeRoutes[i + 1]?.key;
         const previousDescriptor = previousKey ? descriptors[previousKey] : undefined;
         const nextDescriptor = nextKey ? descriptors[nextKey] : undefined;
-        const { options, navigation, render } = descriptors[route.key]!;
+        const { options, navigation, render, route: descriptorRoute } = descriptors[route.key]!;
 
         const headerBack = previousDescriptor
           ? {
@@ -74,7 +74,7 @@ export function NativeStackView({ state, descriptors }: Props) {
           <Screen
             key={route.key}
             focused={isFocused}
-            route={route}
+            route={descriptorRoute}
             navigation={navigation}
             headerShown={headerShown}
             headerTransparent={headerTransparent}
@@ -83,7 +83,7 @@ export function NativeStackView({ state, descriptors }: Props) {
                 header({
                   back: headerBack,
                   options,
-                  route,
+                  route: descriptorRoute,
                   navigation,
                 })
               ) : (

@@ -554,10 +554,17 @@ describe('presentation validation', () => {
 
 describe('singular', () => {
   test('singular should only allow one instance of a screen', () => {
+    let userRouterCalls = 0;
     renderRouter(
       {
         _layout: () => (
-          <Stack>
+          <Stack
+            UNSTABLE_router={(original) => ({
+              getStateForAction: (state, action, options) => {
+                userRouterCalls++;
+                return original.getStateForAction(state, action, options);
+              },
+            })}>
             <Stack.Screen name="[slug]" dangerouslySingular />
           </Stack>
         ),
@@ -592,7 +599,9 @@ describe('singular', () => {
 
     // Normally pushing would add a new route, but since we have singular set to true
     // Nothing should happen, as the current route is already the same as the target route
+    userRouterCalls = 0;
     act(() => router.push('/apple'));
+    expect(userRouterCalls).toBeGreaterThan(0);
     expect(screen).toHaveRouterState({
       index: 0,
       key: expect.any(String),

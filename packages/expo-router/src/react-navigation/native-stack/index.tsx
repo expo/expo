@@ -34,6 +34,7 @@ export type {
   NativeStackHeaderNativeProps,
   NativeStackNativeProps,
   NativeStackNavigationEventMap,
+  NativeStackDescriptorMap,
   NativeStackNavigationOptions,
   NativeStackNavigationProp,
   NativeStackNavigatorProps,
@@ -41,4 +42,5 @@ export type {
   NativeStackScreenNativeProps,
   NativeStackScreenProps,
   NativeStackViewState,
+  NativeStackViewEmit,
 } from './types';
