@@ -6,6 +6,7 @@ import {
   Query,
   MediaType,
   AssetField,
+  AlbumType,
   addListener,
   removeAllListeners,
 } from 'expo-media-library';
@@ -269,6 +270,37 @@ export async function test(t: any) {
       t.expect(albums.find((a) => a.id === album.id)).toBeUndefined();
     });
   });
+
+  if (Platform.OS === 'ios') {
+    t.describe('Album getType', () => {
+      t.it('returns ALBUM for a user album', async () => {
+        // given
+        const albumName = createAlbumName('getType album');
+        const album = await Album.create(albumName, [jpgFileLocalUri], true);
+        albumsContainer.push(album);
+
+        // then
+        t.expect(await album.getType()).toBe(AlbumType.ALBUM);
+      });
+    });
+
+    t.describe('Album getSmartAlbums', () => {
+      t.it('returns system smart albums', async () => {
+        // given
+        const asset = await Asset.create(pngFileLocalUri);
+        assetsContainer.push(asset);
+
+        // when
+        const smartAlbums = await Album.getSmartAlbums();
+
+        // then
+        t.expect(smartAlbums.length).toBeGreaterThan(0);
+        for (const album of smartAlbums) {
+          t.expect(await album.getType()).toBe(AlbumType.SMART_ALBUM);
+        }
+      });
+    });
+  }
 
   t.describe('Album deletion', () => {
     t.it('deletes an album', async () => {
