@@ -7,7 +7,7 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-The new [React Compiler](https://react.dev/learn/react-compiler) automatically memoizes components and hooks to enable fine-grained reactivity. This can lead to significant performance improvements in your app. You can enable it in your app by following the instructions below.
+The new [React Compiler](https://react.dev/learn/react-compiler) automatically memoizes variables to enable fine-grained reactivity. (it does not `memo()` components. This can lead to significant performance improvements in your app. You can enable it in your app by following the instructions below.
 
 ## Enabling React Compiler
 
@@ -187,7 +187,7 @@ function MyComponent() {
 
 > To better understand how React Compiler works, check out the [React Playground](https://playground.react.dev/).
 
-Improvements are primarily automatic. You can remove instances of `useCallback`, `useMemo`, and `React.memo` in favor of the automatic memoization. Class components will not be optimized. Instead, migrate to function components.
+Improvements are primarily automatic. You can remove instances of `useCallback` and `useMemo` (not `React.memo`) in favor of the automatic memoization. Class components will not be optimized. Instead, migrate to function components.
 
 Expo's implementation of the React Compiler will only run on application code (no node modules), and only when bundling for the client (disabled in server rendering).
 
