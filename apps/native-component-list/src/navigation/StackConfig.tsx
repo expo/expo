@@ -1,5 +1,4 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { NativeStackNavigatorProps } from '@react-navigation/native-stack';
 import { ThemeType } from 'ThemeProvider';
@@ -21,7 +20,6 @@ export default function getStackConfig(
   };
 }
 
-const IS_NAV_PERSISTED = 'PERSIST_NAV_STATE';
 const HeaderRightComponent = ({
   navigation,
   theme,
@@ -29,11 +27,6 @@ const HeaderRightComponent = ({
   navigation: BottomTabNavigationProp<any>;
   theme: ThemeType;
 }) => {
-  const [isNavPersisted, setIsNavPersisted] = React.useState(false);
-  React.useEffect(() => {
-    AsyncStorage.getItem(IS_NAV_PERSISTED).then((value) => setIsNavPersisted(!!value));
-  }, []);
-
   return (
     <View
       style={{
@@ -44,19 +37,6 @@ const HeaderRightComponent = ({
         marginTop: 4,
         gap: 20,
       }}>
-      <TouchableOpacity
-        onPress={() => {
-          (isNavPersisted
-            ? AsyncStorage.removeItem(IS_NAV_PERSISTED)
-            : AsyncStorage.setItem(IS_NAV_PERSISTED, 'enabled')
-          ).then(() => setIsNavPersisted(!isNavPersisted));
-        }}>
-        <Ionicons
-          name={isNavPersisted ? 'lock-closed' : 'lock-open'}
-          size={Platform.OS === 'ios' ? 22 : 25}
-          color={isNavPersisted ? theme.icon.info : theme.icon.default}
-        />
-      </TouchableOpacity>
       <TouchableOpacity onPress={() => navigation.navigate('searchNavigator')}>
         <Ionicons name="search" size={Platform.OS === 'ios' ? 22 : 25} color={theme.icon.info} />
       </TouchableOpacity>

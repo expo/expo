@@ -1,27 +1,41 @@
-import {
-  createNativeStackNavigator,
-  NativeStackNavigationProp,
-} from '@react-navigation/native-stack';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useObserve } from 'expo-observe';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
-import Container from './container';
-import NativeStack from './nativeStack';
-import Navigation from './navigation';
+import { optionalRequire } from '../../navigation/routeBuilder';
+import { type ScreenConfig } from '../../types/ScreenConfig';
 
-const SCREENS: Record<string, { component: any; options: { title: string } }> = {
-  Container: { component: Container, options: { title: 'ScreenContainer example' } },
-  NativeStack: { component: NativeStack, options: { title: 'ScreenStack example' } },
-  Navigation: { component: Navigation, options: { title: 'React Navigation example' } },
-};
+export const ScreensExampleScreens: ScreenConfig[] = [
+  {
+    name: 'ScreensContainer',
+    route: 'screens/container',
+    options: { title: 'ScreenContainer example' },
+    getComponent() {
+      return optionalRequire(() => require('./container'));
+    },
+  },
+  {
+    name: 'ScreensNativeStack',
+    route: 'screens/native-stack',
+    options: { title: 'ScreenStack example' },
+    getComponent() {
+      return optionalRequire(() => require('./nativeStack'));
+    },
+  },
+  {
+    name: 'ScreensNavigation',
+    route: 'screens/navigation',
+    options: { title: 'React Navigation example' },
+    getComponent() {
+      return optionalRequire(() => require('./navigation'));
+    },
+  },
+];
 
-type Links = { Container: undefined; NativeStack: undefined; Navigation: undefined };
+type Props = { navigation: NativeStackNavigationProp<Record<string, undefined>> };
 
-type Props = { navigation: NativeStackNavigationProp<Links> };
-
-function MainScreen({ navigation }: Props) {
-  const data = Object.keys(SCREENS);
+function ScreensScreen({ navigation }: Props) {
   const { markInteractive } = useObserve();
   useEffect(() => {
     markInteractive();
@@ -29,14 +43,13 @@ function MainScreen({ navigation }: Props) {
   return (
     <FlatList
       style={styles.list}
-      data={data}
+      data={ScreensExampleScreens}
       ItemSeparatorComponent={ItemSeparator}
-      keyExtractor={(item) => item}
-      renderItem={(props) => (
+      keyExtractor={(item) => item.name}
+      renderItem={({ item }) => (
         <MainScreenItem
-          item={props.item}
-          // @ts-ignore
-          onPressItem={(key) => navigation.navigate(key)}
+          title={(item.options as { title: string }).title}
+          onPress={() => navigation.navigate(item.name)}
         />
       )}
     />
@@ -45,41 +58,15 @@ function MainScreen({ navigation }: Props) {
 
 const ItemSeparator = () => <View style={styles.separator} />;
 
-class MainScreenItem extends React.Component<{
-  item: string;
-  onPressItem: (item: string) => void;
-}> {
-  _onPress = () => this.props.onPressItem(this.props.item);
-  render() {
-    const { item } = this.props;
-    return (
-      <TouchableHighlight onPress={this._onPress}>
-        <View style={styles.button}>
-          <Text style={styles.buttonText}>{SCREENS[item].options.title ?? item}</Text>
-        </View>
-      </TouchableHighlight>
-    );
-  }
+function MainScreenItem({ title, onPress }: { title: string; onPress: () => void }) {
+  return (
+    <TouchableHighlight onPress={onPress}>
+      <View style={styles.button}>
+        <Text style={styles.buttonText}>{title}</Text>
+      </View>
+    </TouchableHighlight>
+  );
 }
-
-const Stack = createNativeStackNavigator();
-const SwitchStack = createNativeStackNavigator();
-
-const ExampleApp = () => (
-  <SwitchStack.Navigator initialRouteName="Main" screenOptions={{ headerShown: false }}>
-    <SwitchStack.Screen name="Main">
-      {() => (
-        <Stack.Navigator>
-          {/* @ts-ignore */}
-          <Stack.Screen name="MainScreen" component={MainScreen} />
-        </Stack.Navigator>
-      )}
-    </SwitchStack.Screen>
-    {Object.keys(SCREENS).map((key) => (
-      <SwitchStack.Screen key={key} name={key} {...SCREENS[key]} />
-    ))}
-  </SwitchStack.Navigator>
-);
 
 const styles = StyleSheet.create({
   list: {
@@ -102,4 +89,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ExampleApp;
+export default ScreensScreen;

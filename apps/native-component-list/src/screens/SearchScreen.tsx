@@ -1,16 +1,35 @@
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
+import {
+  NativeStackNavigationOptions,
+  NativeStackNavigationProp,
+} from '@react-navigation/native-stack';
 import Fuse from 'fuse.js';
 import React from 'react';
 
-import { useTheme } from '../../../common/ThemeProvider';
+import { ThemeType, useTheme } from '../../../common/ThemeProvider';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import { screenApiItems as ApiScreenApiItems } from '../navigation/ExpoApisStackNavigator';
-import { screenApiItems as ComponentScreenApiItems } from '../navigation/ExpoComponentsStackNavigator';
+import { screenApiItems as ApiScreenApiItems } from '../navigation/apiScreens';
+import { screenApiItems as ComponentScreenApiItems } from '../navigation/componentScreens';
 import ComponentListScreen from './ComponentListScreen';
 
 const fuse = new Fuse(ApiScreenApiItems.concat(ComponentScreenApiItems), { keys: ['name'] });
 
-function SearchScreen({ navigation }: NativeStackScreenProps<SearchStack, 'search'>) {
+// The header (with the native search bar) comes from the stack that renders this screen,
+// so hosts must apply `getSearchScreenOptions` to that stack screen.
+export function getSearchScreenOptions(theme: ThemeType): NativeStackNavigationOptions {
+  return {
+    title: 'Search',
+    headerShown: true,
+    headerStyle: { backgroundColor: theme.background.default },
+    headerTintColor: theme.icon.info,
+    headerTitleStyle: { color: theme.text.default },
+  };
+}
+
+export default function SearchScreen({
+  navigation,
+}: {
+  navigation: NativeStackNavigationProp<any>;
+}) {
   const { theme } = useTheme();
   const [query, setQuery] = React.useState('');
 
@@ -43,24 +62,4 @@ function SearchScreen({ navigation }: NativeStackScreenProps<SearchStack, 'searc
   );
 
   return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
-}
-
-type SearchStack = {
-  search: undefined;
-};
-
-const Stack = createNativeStackNavigator<SearchStack>();
-
-export default function SearchScreenStack() {
-  const { theme } = useTheme();
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerStyle: { backgroundColor: theme.background.default },
-        headerTintColor: theme.icon.info,
-        headerTitleStyle: { color: theme.text.default },
-      }}>
-      <Stack.Screen name="search" component={SearchScreen} options={{ title: 'Search' }} />
-    </Stack.Navigator>
-  );
 }

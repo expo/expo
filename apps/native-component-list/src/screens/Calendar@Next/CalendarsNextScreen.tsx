@@ -18,9 +18,10 @@ import HeadingText from '../../components/HeadingText';
 import ListButton from '../../components/ListButton';
 import MonoText from '../../components/MonoText';
 
+// Route params must stay serializable, so the target screens receive the id and refetch the calendar.
 type StackNavigation = StackNavigationProp<{
-  RemindersNext: { calendar: ExpoCalendar };
-  EventsNext: { calendar: ExpoCalendar };
+  RemindersNext: { calendarId: string };
+  EventsNext: { calendarId: string };
 }>;
 
 const CalendarRow = (props: {
@@ -37,7 +38,7 @@ const CalendarRow = (props: {
       <HeadingText>{calendar.title}</HeadingText>
       <MonoText>{JSON.stringify(calendar, null, 2)}</MonoText>
       <ListButton
-        onPress={() => props.navigation.navigate(calendarTypeName, { calendar })}
+        onPress={() => props.navigation.navigate(calendarTypeName, { calendarId: calendar.id })}
         title={`View ${calendarTypeName}`}
       />
       <ListButton

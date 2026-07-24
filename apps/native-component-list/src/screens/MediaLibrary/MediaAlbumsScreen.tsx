@@ -20,7 +20,7 @@ interface State {
 }
 
 type Props = {
-  navigation: StackNavigationProp<{ MediaLibrary: { album: MediaLibrary.Album } }>;
+  navigation: StackNavigationProp<{ MediaLibrary: { albumId: string; albumTitle: string } }>;
 };
 
 export default class MediaAlbumsScreen extends React.Component<Props, State> {
@@ -60,7 +60,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
   keyExtractor = (item: MediaLibrary.Album) => item.id;
 
   openAlbum = (album: MediaLibrary.Album) => {
-    this.props.navigation.navigate('MediaLibrary', { album });
+    this.props.navigation.navigate('MediaLibrary', { albumId: album.id, albumTitle: album.title });
   };
 
   renderItem: ListRenderItem<MediaLibrary.Album> = ({ item }) => {

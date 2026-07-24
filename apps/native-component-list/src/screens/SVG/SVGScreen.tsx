@@ -18,7 +18,7 @@ export const SVGScreens = [
 ];
 
 type StackParams = {
-  SVGExample: { title: string; key: string };
+  SVGExample: { exampleKey: string };
 };
 
 export default function SVGScreen({
@@ -34,7 +34,7 @@ export default function SVGScreen({
         <TouchableHighlight
           underlayColor="#dddddd"
           style={styles.rowTouchable}
-          onPress={() => navigation.navigate('SVGExample', { title: exampleKey, key: exampleKey })}>
+          onPress={() => navigation.navigate('SVGExample', { exampleKey })}>
           <View style={styles.row}>
             <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
             <BodyText style={styles.rowLabel}>{exampleKey}</BodyText>
