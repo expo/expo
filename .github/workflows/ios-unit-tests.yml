@@ -10,6 +10,7 @@ on:
       - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
+      - tools/src/AffectedPackages.ts
       - Gemfile
       - Gemfile.lock
       - '!packages/@expo/cli/**'
@@ -22,6 +23,7 @@ on:
       - apps/bare-expo/ios/**
       - tools/src/commands/IosNativeUnitTests.ts
       - tools/src/commands/NativeUnitTests.ts
+      - tools/src/AffectedPackages.ts
       - Gemfile
       - Gemfile.lock
       - '!packages/@expo/cli/**'
@@ -37,6 +39,13 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # Enough history for `--affected` to diff against the base branch (same approach
+          # as .github/workflows/sdk.yml).
+          fetch-depth: 100
+      - name: ⬇️ Fetch commits from base branch
+        run: git fetch origin ${{ github.base_ref }}:${{ github.base_ref }} --depth 100
+        if: github.event_name == 'pull_request'
       - name: 🔨 Switch to Xcode 26.4.1
         run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
       - name: ➕ Add `bin` to GITHUB_PATH
@@ -83,9 +92,12 @@ jobs:
       - name: 🥥 Install CocoaPods in `apps/bare-expo/ios`
         run: pod install
         working-directory: apps/bare-expo/ios
+      # On pull requests, only test packages affected by the PR (and their dependents);
+      # changes to the test infrastructure itself still trigger a full run. Pushes to main
+      # always run everything.
       - name: 🧪 Run native iOS unit tests
         timeout-minutes: 60
-        run: pnpm expotools native-unit-tests --platform ios
+        run: pnpm expotools native-unit-tests --platform ios ${{ github.event_name == 'pull_request' && format('--affected --since {0}', github.base_ref) || '' }}
       - name: Show ccache stats
         if: always()
         run: ccache -s -v
