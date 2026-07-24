@@ -179,6 +179,13 @@ public class AudioModule: Module {
         player.shouldCorrectPitch = shouldCorrectPitch
       }
 
+      // POC: independent pitch shift in semitones (0 = no shift).
+      Property("pitch") { player in
+        Double(player.pitch)
+      }.set { (player, pitch: Double) in
+        player.pitch = Float(pitch)
+      }
+
       Property("currentTime") { player in
         player.currentTime
       }

@@ -18,6 +18,15 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
       currentRate = max(0, currentRate)
     }
   }
+  // POC: independent pitch shift in semitones (0 = no shift). Applied via the
+  // audio processing tap's NewTimePitch unit; only engages the tap when non-zero.
+  // Clamped to the unit's supported range of +/-2400 cents (24 semitones).
+  var pitch: Float = 0 {
+    didSet {
+      pitch = min(max(pitch, -24), 24)
+      updatePitchTap()
+    }
+  }
   let interval: Double
   var wasPlaying = false
   var isPaused: Bool {
@@ -52,6 +61,9 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   private var audioProcessor: AudioTapProcessor?
   private var tapInstalled = false
   private var shouldInstallAudioTap = false
+  // Whether the currently installed tap was built with a pitch unit. A tap
+  // installed only for sampling has none, so engaging pitch later must rebuild it.
+  private var tapHasPitchUnit = false
   weak var owningRegistry: AudioComponentRegistry?
   var onPlaybackComplete: (() -> Void)?
 
@@ -129,10 +141,43 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
       } else {
         shouldInstallAudioTap = true
       }
-    } else {
+    } else if pitch == 0 {
+      // Keep the tap alive if pitch shifting still needs it.
       uninstallTap()
       shouldInstallAudioTap = false
     }
+  }
+
+  private func updatePitchTap() {
+    if pitch != 0 {
+      guard isLoaded else {
+        shouldInstallAudioTap = true
+        return
+      }
+      if audioProcessor?.isTapInstalled == true {
+        if tapHasPitchUnit {
+          // Pitch unit already present: just push the new value to it.
+          audioProcessor?.pitchCents = pitch * 100
+        } else {
+          // Tap exists only for sampling (no pitch unit) - rebuild it so the
+          // unit gets created for the current item.
+          reinstallTap()
+        }
+      } else {
+        installTap()
+      }
+    } else if !samplingEnabled {
+      uninstallTap()
+      shouldInstallAudioTap = false
+    } else {
+      // Keep the tap alive for sampling; just bypass the pitch unit.
+      audioProcessor?.pitchCents = 0
+    }
+  }
+
+  private func reinstallTap() {
+    uninstallTap()
+    installTap()
   }
 
   func currentStatus() -> [String: Any?] {
@@ -194,6 +239,8 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
       ref.seek(to: time, toleranceBefore: toleranceBefore, toleranceAfter: toleranceAfter) { [weak self] _ in
         if let self {
+          // Discard samples the pitch unit buffered from the old position.
+          self.audioProcessor?.reset()
           self.updateStatus(with: [
             "currentTime": self.currentTime
           ])
@@ -216,7 +263,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
           if self.isLooping {
             self.enqueueNextLoopItem()
           }
-          if shouldInstallAudioTap || samplingEnabled {
+          if shouldInstallAudioTap || samplingEnabled || pitch != 0 {
             installTap()
             shouldInstallAudioTap = false
           }
@@ -238,9 +285,11 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
           self.enqueueNextLoopItem()
           self.addPlaybackEndNotification()
         }
-        if self.samplingEnabled && self.isLoaded {
-          self.uninstallTap()
-          self.installTap()
+        // Reinstall on item change for sampling and/or pitch, since the tap
+        // (and its pitch unit) is bound to a specific AVPlayerItem. Without
+        // this, pitch would be lost after an AVQueuePlayer loop advance.
+        if (self.samplingEnabled || self.pitch != 0) && self.isLoaded {
+          self.reinstallTap()
         }
       }
       .store(in: &cancellables)
@@ -374,8 +423,11 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
 
     audioProcessor = AudioTapProcessor(player: ref)
+    audioProcessor?.pitchCents = pitch * 100
     let success = audioProcessor?.installTap() ?? false
     tapInstalled = success
+    // The native tap only builds a pitch unit when pitch is engaged at prepare time.
+    tapHasPitchUnit = success && pitch != 0
 
     if success {
       audioProcessor?.sampleBufferCallback = { [weak self] buffer, frameCount, timestamp in
@@ -406,6 +458,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
 
   private func uninstallTap() {
     tapInstalled = false
+    tapHasPitchUnit = false
     audioProcessor?.uninstallTap()
     audioProcessor?.sampleBufferCallback = nil
   }

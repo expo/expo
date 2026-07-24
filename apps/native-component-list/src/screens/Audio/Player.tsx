@@ -31,6 +31,7 @@ interface Props {
     | (() => React.ReactNode)
   )[];
   extraIndicator?: React.ReactElement;
+  pitchControl?: React.ReactElement;
   style?: StyleProp<ViewStyle>;
 
   // Functions
@@ -263,6 +264,8 @@ export default function Player(props: Props) {
           }}
         />
       </View>
+
+      {props.pitchControl}
 
       <View style={[styles.container, styles.buttonsContainer]}>
         {_renderAuxiliaryButton({
