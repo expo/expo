@@ -410,6 +410,10 @@ export type RecordingOptions = {
    * Path separators (`/`, `\`) and parent-directory references (`..`) are rejected
    * at runtime so callers cannot escape the recording directory.
    *
+   * > **Note:** When using the default `cache` [`directory`](#recordingdirectory), the system may delete
+   * > the file when it is not being used. Use `document` [`directory`](#recordingdirectory) or [`expo-file-system`](/versions/latest/sdk/filesystem/)
+   * > to retain it.
+   *
    * @platform android
    * @platform ios
    */
