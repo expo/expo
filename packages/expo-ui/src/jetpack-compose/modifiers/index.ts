@@ -306,10 +306,20 @@ export const matchParentSize = () => createModifier('matchParentSize');
 /**
  * Marks a composable as the anchor for an `ExposedDropdownMenuBox`.
  * Only works when used inside `ExposedDropdownMenuBox`.
- * @param type - Anchor type. Currently only `'primaryNotEditable'` is supported.
+ * @param type - Anchor type, matching Compose's `ExposedDropdownMenuAnchorType`. Defaults to `'primaryNotEditable'`.
+ * - `'primaryNotEditable'`: a read-only text field — taps toggle the menu, and the menu popup is a
+ *   focusable window.
+ * - `'primaryEditable'`: an editable text field (autocomplete) — taps focus the field for typing, and
+ *   the menu popup is created non-focusable so the field keeps window focus (cursor rendering and IME
+ *   key events keep working) while the menu is open.
+ * - `'secondaryEditable'`: a secondary element of an editable text field, such as its trailing icon —
+ *   taps toggle the menu without moving focus away from the field.
  * @param enabled - Whether the anchor is enabled. Defaults to `true`.
  */
-export const menuAnchor = (type?: 'primaryNotEditable', enabled?: boolean) =>
+export const menuAnchor = (
+  type?: 'primaryNotEditable' | 'primaryEditable' | 'secondaryEditable',
+  enabled?: boolean
+) =>
   createModifier('menuAnchor', {
     ...(type && { type }),
     ...(typeof enabled === 'boolean' && { enabled }),

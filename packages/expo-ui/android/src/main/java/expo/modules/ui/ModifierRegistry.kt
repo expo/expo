@@ -302,7 +302,9 @@ internal data class ToggleableParams(
 ) : Record
 
 internal enum class MenuAnchorType(val value: String) : Enumerable {
-  PRIMARY_NOT_EDITABLE("primaryNotEditable")
+  PRIMARY_NOT_EDITABLE("primaryNotEditable"),
+  PRIMARY_EDITABLE("primaryEditable"),
+  SECONDARY_EDITABLE("secondaryEditable")
 }
 
 internal data class MenuAnchorParams(
@@ -801,6 +803,8 @@ object ModifierRegistry {
         Modifier.menuAnchor(
           type = when (params.type) {
             MenuAnchorType.PRIMARY_NOT_EDITABLE -> ExposedDropdownMenuAnchorType.PrimaryNotEditable
+            MenuAnchorType.PRIMARY_EDITABLE -> ExposedDropdownMenuAnchorType.PrimaryEditable
+            MenuAnchorType.SECONDARY_EDITABLE -> ExposedDropdownMenuAnchorType.SecondaryEditable
           },
           enabled = params.enabled
         )
