@@ -6,6 +6,9 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   var directChild: UIView?
+  private var accessibilityTriggerView: UIView? {
+    return (directChild as? LinkPreviewIndirectTriggerProtocol)?.indirectTrigger ?? directChild
+  }
   var nextScreenId: String? {
     didSet {
       performUpdateOfPreloadedView()
@@ -28,6 +31,35 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
   let onDidPreviewOpen = EventDispatcher()
   let onPreviewWillClose = EventDispatcher()
   let onPreviewDidClose = EventDispatcher()
+
+  override var isAccessibilityElement: Bool {
+    get {
+      return false
+    }
+    set {}
+  }
+
+  override var accessibilityElements: [Any]? {
+    get {
+      guard let accessibilityTriggerView else {
+        return super.accessibilityElements
+      }
+      return [accessibilityTriggerView]
+    }
+    set {}
+  }
+
+  override var accessibilityFrame: CGRect {
+    get {
+      guard let accessibilityTriggerView else {
+        return super.accessibilityFrame
+      }
+      return accessibilityTriggerView.convert(accessibilityTriggerView.bounds, to: nil)
+    }
+    set {
+      super.accessibilityFrame = newValue
+    }
+  }
 
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
