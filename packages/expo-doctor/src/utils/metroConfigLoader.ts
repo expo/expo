@@ -1,4 +1,5 @@
 import type { InputConfigT } from '@expo/metro/metro-config';
+import * as Module from 'node:module';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -17,13 +18,13 @@ function importMetroConfigFromProject(
   if (!expoResolved) {
     throw notFoundError('expo');
   }
+  const projectRequire = Module.createRequire(path.join(projectDir, 'package.json'));
   try {
     // NOTE(@kitten): We need to use the version of metro-config that Expo uses
     // Luckily, we can import `@expo/metro` via `expo` to get to the same version
-    const expoMetro = require.resolve('@expo/metro/metro-config', {
-      paths: [path.dirname(expoResolved)],
-    });
-    return require(expoMetro);
+    const expoRequire = Module.createRequire(expoResolved);
+    const expoMetro = expoRequire.resolve('@expo/metro/metro-config');
+    return projectRequire(expoMetro);
   } catch {
     // NOTE(@kitten): Older versions of expo will not have `@expo/metro`. Let's try to
     // require `metro-config` directly
@@ -31,7 +32,7 @@ function importMetroConfigFromProject(
     if (!metroConfig) {
       throw notFoundError('react-native');
     }
-    return require(metroConfig);
+    return projectRequire(metroConfig);
   }
 }
 
@@ -45,7 +46,9 @@ function loadExpoMetroConfig(projectDir: string): typeof import('expo/metro-conf
   if (!expoMetroConfigResolved) {
     throw notFoundError('expo');
   }
-  _expoMetroConfig = require(expoMetroConfigResolved);
+  _expoMetroConfig = Module.createRequire(path.join(projectDir, 'package.json'))(
+    expoMetroConfigResolved
+  );
   return _expoMetroConfig!;
 }
 

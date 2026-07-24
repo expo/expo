@@ -30,7 +30,8 @@ For more information run `npx expo-doctor --help` (or `-h`)
 
 ## Testing and development
 
-Run `pnpm build` (or `pnpm watch`) inside of `expo-doctor`'s project folder.
+Run `pnpm build` inside of `expo-doctor`'s project folder. Re-run this after making
+source changes, since the CLI runs the generated `build/index.js` bundle.
 
 Then, in your test project, run `path-to-expo/packages/expo-doctor/bin/expo-doctor.js`
 
