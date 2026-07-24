@@ -41,6 +41,12 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
     }
   }
 
+  private func invalidateToolbarItems() {
+    for item in toolbarItemsMap.values {
+      item.invalidateBarButtonItem()
+    }
+  }
+
   func updateToolbarItems() {
     // If update already scheduled, skip - the pending async block will handle it
     if hasPendingToolbarUpdate {
@@ -167,6 +173,7 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
   override func didMoveToWindow() {
     super.didMoveToWindow()
     if window == nil {
+      invalidateToolbarItems()
       // View was removed from window - hide toolbar and clear items
       // Use cached controller since responder chain may be broken
       if let controller = cachedController {
@@ -174,6 +181,9 @@ class RouterToolbarHostView: RouterViewWithLogger, LinkPreviewMenuUpdatable {
       }
       cachedController = nil  // Clear cache when removed from window
     } else {
+      // Modal reopen can reuse the same mounted RouterToolbarItemViews. Force fresh
+      // UIBarButtonItem instances so UIKit doesn't reuse stale targets/images.
+      invalidateToolbarItems()
       // View was added to window - update toolbar items
       updateToolbarItems()
     }

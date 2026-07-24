@@ -1,6 +1,7 @@
-import { screen, within } from '@testing-library/react-native';
+import { act, screen, within } from '@testing-library/react-native';
 import { Text, View } from 'react-native';
 
+import { router } from '../../../imperative-api';
 import { renderRouter } from '../../../testing-library';
 import Stack from '../../StackClient';
 
@@ -408,6 +409,65 @@ describe('Stack.Toolbar integration tests', () => {
         type: 'button',
         icon: { type: 'sfSymbol', name: 'gear' },
       });
+    });
+  });
+
+  describe('modal reopen flow', () => {
+    it('mounts bottom toolbar items again after dismissing and reopening a modal screen', () => {
+      const onPress = jest.fn();
+
+      renderRouter({
+        _layout: () => (
+          <Stack>
+            <Stack.Screen name="index" />
+            <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
+          </Stack>
+        ),
+        index: () => <View testID="index" />,
+        modal: () => (
+          <>
+            <Stack.Toolbar>
+              <Stack.Toolbar.Button icon="xmark" onPress={onPress}>
+                Close
+              </Stack.Toolbar.Button>
+            </Stack.Toolbar>
+            <View testID="modal" />
+          </>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+
+      act(() => router.push('/modal'));
+
+      expect(screen.getByTestId('modal')).toBeVisible();
+      expect(MockedRouterToolbarHost).toHaveBeenCalledTimes(1);
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onSelected: onPress,
+          systemImageName: 'xmark',
+          title: 'Close',
+        }),
+        undefined
+      );
+
+      jest.clearAllMocks();
+
+      act(() => router.back());
+      expect(screen.getByTestId('index')).toBeVisible();
+
+      act(() => router.push('/modal'));
+
+      expect(screen.getByTestId('modal')).toBeVisible();
+      expect(MockedRouterToolbarHost).toHaveBeenCalledTimes(1);
+      expect(MockedRouterToolbarItem).toHaveBeenCalledWith(
+        expect.objectContaining({
+          onSelected: onPress,
+          systemImageName: 'xmark',
+          title: 'Close',
+        }),
+        undefined
+      );
     });
   });
 });
