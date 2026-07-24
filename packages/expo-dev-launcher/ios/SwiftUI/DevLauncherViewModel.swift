@@ -18,6 +18,7 @@ enum LocalNetworkPermissionStatus: Equatable, Sendable {
   case checking
   case granted
   case denied
+  case misconfigured
 }
 
 @MainActor
@@ -292,17 +293,38 @@ class DevLauncherViewModel: ObservableObject {
   func refreshPermissionStatus() {
     permissionStatus = .checking
     Task {
-      let hasAccess = await checkLocalNetworkAccess()
-      permissionStatus = hasAccess ? .granted : .denied
+      let verdict = await checkLocalNetworkAccess()
+      switch verdict {
+      case .granted:
+        markNetworkPermissionGranted()
+      case .denied:
+        permissionStatus = .denied
+      case .misconfigured:
+        permissionStatus = .misconfigured
+      case .undetermined:
+        permissionStatus = .unknown
+      }
     }
   }
 
-  func checkLocalNetworkAccess() async -> Bool {
+  func checkLocalNetworkAccess() async -> LocalNetworkVerdict {
+    if !LocalNetworkConfig.isConfigured(in: Bundle.main.infoDictionary) {
+      return .misconfigured
+    }
+
     let serviceType = BONJOUR_TYPE
     let queue = DispatchQueue(label: "expo.devlauncher.permissioncheck")
 
     return await withCheckedContinuation { continuation in
       var done = false
+
+      func finish(_ verdict: LocalNetworkVerdict, _ browser: NWBrowser, _ listener: NWListener?) {
+        guard !done else { return }
+        done = true
+        continuation.resume(returning: verdict)
+        browser.cancel()
+        listener?.cancel()
+      }
 
       let listener = try? NWListener(using: .tcp, on: .any)
       listener?.service = NWListener.Service(type: serviceType)
@@ -312,35 +334,51 @@ class DevLauncherViewModel: ObservableObject {
 
       let browser = NWBrowser(for: .bonjour(type: serviceType, domain: nil), using: .tcp)
       browser.browseResultsChangedHandler = { results, _ in
-        guard !done else { return }
         if !results.isEmpty {
-          done = true
-          continuation.resume(returning: true)
-          browser.cancel()
-          listener?.cancel()
+          finish(.granted, browser, listener)
         }
       }
 
       browser.stateUpdateHandler = { state in
-        guard !done else { return }
-        if case .waiting(let error) = state,
-           case .dns(let dnsError) = error,
-           dnsError == kDNSServiceErr_PolicyDenied {
-          done = true
-          continuation.resume(returning: false)
-          browser.cancel()
-          listener?.cancel()
+        switch state {
+        case .waiting(let error), .failed(let error):
+          if case .dns(let dnsError) = error {
+            let verdict = LocalNetworkClassifier.verdict(forDNSError: Int(dnsError))
+            // Leave `.undetermined` for the timeout: the system prompt may still be pending.
+            if verdict != .undetermined {
+              finish(verdict, browser, listener)
+            }
+          }
+        default:
+          break
         }
       }
 
       browser.start(queue: queue)
 
-      queue.asyncAfter(deadline: .now() + 2) {
-        guard !done else { return }
-        done = true
+      queue.asyncAfter(deadline: .now() + 4) {
+        finish(.undetermined, browser, listener)
+      }
+    }
+  }
+
+  func hasSatisfiedNetworkPath() async -> Bool {
+    return await withCheckedContinuation { continuation in
+      let monitor = NWPathMonitor()
+      let queue = DispatchQueue(label: "expo.devlauncher.pathcheck")
+      var resumed = false
+      monitor.pathUpdateHandler = { path in
+        guard !resumed else { return }
+        resumed = true
+        continuation.resume(returning: path.status == .satisfied)
+        monitor.cancel()
+      }
+      monitor.start(queue: queue)
+      queue.asyncAfter(deadline: .now() + 1) {
+        guard !resumed else { return }
+        resumed = true
         continuation.resume(returning: false)
-        browser.cancel()
-        listener?.cancel()
+        monitor.cancel()
       }
     }
   }
