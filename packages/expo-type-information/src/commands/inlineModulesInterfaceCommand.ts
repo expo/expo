@@ -53,6 +53,7 @@ async function generateInlineModuleTSFiles({
     typeInference,
     watcher: false,
     mapUnicodeCharacters,
+    runOnQueuePreprocessing: false,
   });
 }
 
