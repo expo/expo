@@ -44,7 +44,7 @@ The only truly accurate way to see what your final app size will be shipped to u
 
 <Collapsible summary="Why did my APK size increase after upgrading to React Native 0.73 and above?">
 
-React Native 0.73 bumped the Android `minSdkVersion` to `23`. This had the side effect of changing the default value of [`extractNativeLibs`](https://developer.android.com/guide/topics/manifest/application-element#extractNativeLibs`) to `false`.
+React Native 0.73 bumped the Android `minSdkVersion` to `23`. This had the side effect of changing the default value of [`extractNativeLibs`](https://developer.android.com/guide/topics/manifest/application-element#extractNativeLibs) to `false`.
 
 > If set to `false`, your native libraries are stored uncompressed in the APK. Although your APK might be larger, your application loads faster because the libraries load directly from the APK at runtime.
 
@@ -93,6 +93,30 @@ Start by examining a build artifact to determine what assets are included in it.
 
 - For Android, you can use [Android APK Analyzer](https://developer.android.com/studio/debug/apk-analyzer) or [apktool](https://apktool.org/) to inspect the contents of your app
 - For iOS, rename an IPA file from `app.ipa` to `app.zip` and extract it to examine the contents, using the macOS utility `assetutil` to inspect **Assets.car**.
+
+### React Native image format support (Android)
+
+The Android template enables GIF and WebP decoders for React Native's `<Image>` component by default. If your app uses [`expo-image`](/versions/latest/sdk/image/) (which uses Glide on Android) or doesn't render those formats with React Native's `<Image>`, you can disable them with [`expo-build-properties`](/versions/latest/sdk/build-properties/) to reduce app size:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "gifEnabled": false,
+            "webpEnabled": false
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+The above options correspond to the `expo.gif.enabled` and `expo.webp.enabled` Gradle properties in **android/gradle.properties**. The animated WebP decoder (`expo.webp.animated`) is disabled by default because React Native's `<Image>` on iOS doesn't support animated WebP.
 
 ### JavaScript bundle size
 
