@@ -157,7 +157,10 @@ Object.defineProperties(constants, {
       }
 
       if (isExpoUpdatesManifest(maybeManifest)) {
-        return maybeManifest.extra?.expoClient ?? null;
+        // Fall back to the embedded app config when the manifest doesn't include
+        // extra.expoClient (e.g. a cached embedded update from a previous install
+        // with the same fingerprint but a different updateId).
+        return maybeManifest.extra?.expoClient ?? rawAppConfig;
       } else if (isEmbeddedManifest(maybeManifest)) {
         return maybeManifest as any;
       }
