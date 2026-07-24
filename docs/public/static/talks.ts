@@ -37,7 +37,6 @@ export const TALKS = [
     description: 'Charlie Cheever, Jon Samp',
     videoId: 'lnxanzsP1rM',
     uploadDate: '2025-06-04',
-    home: true,
   },
   {
     title: 'Deploy Everywhere with Expo Router',
