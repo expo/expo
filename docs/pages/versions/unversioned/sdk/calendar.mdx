@@ -83,7 +83,11 @@ You can configure `expo-calendar` using its built-in [config plugin](/config-plu
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **ios** project manually), then you need to configure following permissions in your native project:
 
-- For iOS, add `NSCalendarsUsageDescription`, `NSCalendarsFullAccessUsageDescription`, and `NSRemindersUsageDescription` to your project's **ios/[app]/Info.plist**:
+- For iOS, add the following keys to your project's **ios/[app]/Info.plist**:
+
+  > **warning** On iOS 17+, the app will crash on startup if these keys are missing. The module checks for these permissions during initialization, not just when calendar methods are called.
+
+  **For full calendar and reminders access:**
 
   ```xml
   <key>NSCalendarsUsageDescription</key>
@@ -92,13 +96,23 @@ If you're not using Continuous Native Generation ([CNG](/workflow/continuous-nat
   <string>Allow $(PRODUCT_NAME) to access your calendar</string>
   <key>NSRemindersUsageDescription</key>
   <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+  <key>NSRemindersFullAccessUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your reminders</string>
   ```
 
-  When requesting write-only calendar access on iOS 17+, add `NSCalendarsWriteOnlyAccessUsageDescription` instead of `NSCalendarsFullAccessUsageDescription`:
+  **For write-only calendar access (iOS 17+):**
+
+  When requesting write-only calendar access on iOS 17+, add `NSCalendarsWriteOnlyAccessUsageDescription` instead of `NSCalendarsFullAccessUsageDescription`. Note that you still need `NSRemindersFullAccessUsageDescription` if your app accesses reminders:
 
   ```xml
+  <key>NSCalendarsUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your calendar</string>
   <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
   <string>Allow $(PRODUCT_NAME) to add events to your calendars</string>
+  <key>NSRemindersUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your reminders</string>
+  <key>NSRemindersFullAccessUsageDescription</key>
+  <string>Allow $(PRODUCT_NAME) to access your reminders</string>
   ```
 
 </ConfigReactNative>
@@ -195,5 +209,10 @@ The following usage description keys are used by this library:
         "A message that tells the user why the app is requesting write-only access to the user's calendar data.",
     },
     'NSRemindersUsageDescription',
+    {
+      name: 'NSRemindersFullAccessUsageDescription',
+      description:
+        "A message that tells the user why the app is requesting full access to the user's reminders data. Required on iOS 17+.",
+    },
   ]}
 />
