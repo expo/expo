@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `community/menu` `MenuView` not tinting a leaf action `Button`'s leading SF Symbol from `imageColor` — it applied `.foregroundColor` (which the iOS system menu ignores for a button's content) where checkable `Toggle` items applied `.tint`; leaf buttons now use `.tint` too. ([#47908](https://github.com/expo/expo/issues/47908) by [@cvburgess](https://github.com/cvburgess)) ([#47909](https://github.com/expo/expo/pull/47909) by [@cvburgess](https://github.com/cvburgess))
+
 ### 💡 Others
 
 ## 57.0.7 — 2026-07-17
