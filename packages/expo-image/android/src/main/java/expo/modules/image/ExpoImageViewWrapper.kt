@@ -486,7 +486,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       contentFit != ContentFit.Fill &&
       contentFit != ContentFit.None
     ) {
-      ContentFitDownsampleStrategy(target, contentFit)
+      ContentFitDownsampleStrategy(target, contentFit, decodeFormat)
     } else {
       // it won't downscale the image if the image is smaller than hardware bitmap size limit
       SafeDownsampleStrategy(decodeFormat)
