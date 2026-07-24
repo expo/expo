@@ -96,6 +96,26 @@ describe(formatStackLikeMetro, () => {
   });
 });
 
+describe('internal frame filtering', () => {
+  // These two fixtures are the same stack. One has `packages/expo-router`, the other has
+  // `node_modules/expo-router`, so the only difference is which one INTERNAL_CALLSITES_REGEX
+  // matches.
+  it('drops the expo-router initialisation path once it resolves under node_modules', () => {
+    const workspace = stripAnsi(
+      formatStackLikeMetro(PROJECT_ROOT, ERROR_IN_ROUTER_GLOBAL_SCOPE)
+    )!.split('\n');
+    const installed = stripAnsi(
+      formatStackLikeMetro(PROJECT_ROOT, ERROR_IN_ROUTER_GLOBAL_SCOPE_PRODUCTION)
+    )!.split('\n');
+
+    expect(installed[0]).toContain('app/index.tsx');
+    expect(workspace[0]).toBe(installed[0]);
+    // These numbers are what it does today, not what it should do.
+    expect(workspace).toHaveLength(8);
+    expect(installed).toHaveLength(1);
+  });
+});
+
 describe(logLikeMetro, () => {
   it(`logs a basic server log`, () => {
     const log = jest.fn();

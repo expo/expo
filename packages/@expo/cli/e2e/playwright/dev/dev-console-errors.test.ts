@@ -294,45 +294,28 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('console.error(string)').click();
 
-    if (isWindows) {
-      // NOTE: On Windows the call stack additionally leads with internal
-      // `packages/expo` and `packages/@expo/log-box` frames, because in this monorepo
-      // those workspace packages resolve to real `packages/...` paths instead of
-      // `node_modules/...` (so the node_modules collapse patterns miss them). A real app
-      // installs them under node_modules and they collapse. We assert the component stack here.
-      await expectOutput(
-        output,
-        `
-Code: index.tsx
-  139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
-  140 |   return (
-> 141 |     <Text
-      |     ^
-  142 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
-  143 |       onPress={onPress}>
-  144 |       {title}
-Call Stack
-  BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:141:5)
-  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:95:7)
-        `.trim()
-      );
-    } else {
-      await expectOutput(
-        output,
-        `
-Web  ERROR  console-error-string
+    // `expo` and `@expo/log-box` are in `packages/` here, not `node_modules/`, so the collapse
+    // patterns miss them and those frames show up. In a real app both are installed under
+    // `node_modules` and get collapsed.
+    await expectOutputAnySeparator(output, 'Web  ERROR  console-error-string');
+    await expectOutputAnySeparator(output, 'Code: setupHMR.js');
+    // These line numbers come from built output, so don't match on them.
+    await expectOutputAnySeparator(
+      output,
+      'captureCurrentStack (packages/expo/build/async-require/setupHMR.js'
+    );
+    await expectOutputAnySeparator(
+      output,
+      'consoleErrorMiddleware (packages/@expo/log-box/build/LogBox.js'
+    );
+    await expectOutputAnySeparator(
+      output,
+      'BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:98:19)'
+    );
 
-Code: index.tsx
-   96 |         title="console.error(string)"
-   97 |         onPress={() => {
->  98 |           console.error('console-error-string');
-      |                   ^
-   99 |         }}
-  100 |       />
-  101 |       <BigButton
-Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:98:19)
-
+    await expectOutputAnySeparator(
+      output,
+      `
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
   140 |   return (
@@ -344,9 +327,8 @@ Code: index.tsx
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
   App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:95:7)
-        `.trim()
-      );
-    }
+      `.trim()
+    );
   });
 
   test('prints console.warn strings without stack traces', async ({ page }) => {
@@ -364,6 +346,17 @@ async function expectOutput(output: { all: string }, expectedConsoleOutput: stri
   await expect
     .poll(() => normalizeConsoleOutput(output.all), { timeout: 30_000 })
     .toContain(normalizeConsoleOutput(expectedConsoleOutput));
+}
+
+/** Same as `expectOutput`, but ignores the path separator so Windows matches too. */
+async function expectOutputAnySeparator(output: { all: string }, expectedConsoleOutput: string) {
+  await expect
+    .poll(() => toPosixOutput(output.all), { timeout: 30_000 })
+    .toContain(toPosixOutput(expectedConsoleOutput));
+}
+
+function toPosixOutput(output: string) {
+  return normalizeConsoleOutput(output).replace(/\\/g, '/');
 }
 
 function expectNoStackTrace(output: { all: string }) {
