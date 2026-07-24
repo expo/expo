@@ -125,6 +125,24 @@ export type SaveOptions = {
   format?: SaveFormat;
 };
 
+export type ImageLoadOptions = {
+  /**
+   * If provided, the source image is decoded to not exceed this width in pixels, preserving its aspect ratio.
+   * Large images are downsampled while decoding, so the full-sized image is never loaded into memory.
+   * Use it when manipulating images whose full resolution is not needed, such as photos taken with modern cameras,
+   * to significantly reduce the peak memory usage and avoid out-of-memory crashes.
+   */
+  maxWidth?: number;
+
+  /**
+   * If provided, the source image is decoded to not exceed this height in pixels, preserving its aspect ratio.
+   * Large images are downsampled while decoding, so the full-sized image is never loaded into memory.
+   * Use it when manipulating images whose full resolution is not needed, such as photos taken with modern cameras,
+   * to significantly reduce the peak memory usage and avoid out-of-memory crashes.
+   */
+  maxHeight?: number;
+};
+
 export declare class ImageManipulator extends NativeModule {
   /**
    * @hidden
@@ -138,6 +156,11 @@ export declare class ImageManipulator extends NativeModule {
 
   /**
    * Loads an image from the given URI and creates a new image manipulation context.
+   * @param source URI of the image to manipulate or a reference to a previously loaded image.
+   * @param options An object defining how the source image is loaded.
    */
-  manipulate(source: string | SharedRef<'image'>): ImageManipulatorContext;
+  manipulate(
+    source: string | SharedRef<'image'>,
+    options?: ImageLoadOptions
+  ): ImageManipulatorContext;
 }

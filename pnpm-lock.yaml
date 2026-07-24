@@ -1208,6 +1208,9 @@ importers:
       expo-image:
         specifier: workspace:*
         version: link:../../packages/expo-image
+      expo-image-manipulator:
+        specifier: workspace:*
+        version: link:../../packages/expo-image-manipulator
       expo-media-library:
         specifier: workspace:*
         version: link:../../packages/expo-media-library
