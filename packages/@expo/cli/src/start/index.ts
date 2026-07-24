@@ -75,7 +75,7 @@ export const expoStart: Command = async (argv) => {
         `--scheme <scheme>               Custom URI protocol to use when launching an app`,
         chalk`-p, --port <number>             Port to start the dev server on (does not apply to web or tunnel). {dim Default: 8081}`,
         ``,
-        chalk`--private-key-path <path>       Path to private key for code signing. {dim Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.}`,
+        chalk`--private-key-path <path>       Path to private key for code signing. {dim Required to sign development manifests when the project is configured with an expo-updates code signing certificate.}`,
         `-h, --help                      Usage info`,
       ].join('\n')
     );
