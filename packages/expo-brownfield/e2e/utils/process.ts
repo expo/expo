@@ -1,4 +1,4 @@
-import spawnAsync from '@expo/spawn-async';
+import spawnAsync, { SpawnResult } from '@expo/spawn-async';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,58 +8,29 @@ export const CREATE_EXPO_BIN = require.resolve('create-expo/bin/create-expo.js')
 
 export interface ExecuteCLIOptions {
   ignoreErrors?: boolean;
+  env?: NodeJS.ProcessEnv;
 }
 
 /**
  * Execute the CLI
  */
-export const executeCLIASync = async (
+export const executeCLIASync = (
   cwd: string,
   args: string[],
   options: ExecuteCLIOptions = { ignoreErrors: false }
 ) => {
-  try {
-    const { stdout, stderr, status } = await spawnAsync(CLI_PATH, args, {
-      cwd,
-      stdio: 'pipe',
-    });
-
-    return processOutput({ stdout, stderr, status });
-  } catch (error) {
-    if (!options.ignoreErrors) {
-      console.error(error);
-      throw error;
-    }
-
-    const { stdout, stderr, status } = error;
-    return processOutput({ stdout, stderr, status });
-  }
+  return executeCommandAsync(cwd, CLI_PATH, args, options);
 };
 
 /**
  * Execute Expo CLI
  */
-export const executeExpoCLIAsync = async (
+export const executeExpoCLIAsync = (
   cwd: string,
   args: string[],
   options: ExecuteCLIOptions = { ignoreErrors: false }
 ) => {
-  try {
-    const { stdout, stderr, status } = await spawnAsync('pnpm', ['expo', ...args], {
-      cwd,
-      stdio: 'pipe',
-    });
-
-    return processOutput({ stdout, stderr, status });
-  } catch (error) {
-    if (!options.ignoreErrors) {
-      console.error(error);
-      throw error;
-    }
-
-    const { stdout, stderr, status } = error;
-    return processOutput({ stdout, stderr, status });
-  }
+  return executeCommandAsync(cwd, 'pnpm', ['expo', ...args], options);
 };
 
 /**
@@ -73,21 +44,10 @@ export const executeCreateExpoCLIAsync = async (
   // Isolate create-expo's tmpdir template cache because `create-expo --template` doesn't support parallel work
   const cacheDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'create-expo-cache-'));
   try {
-    const { stdout, stderr, status } = await spawnAsync(CREATE_EXPO_BIN, args, {
-      cwd,
-      stdio: 'pipe',
+    return await executeCommandAsync(cwd, CREATE_EXPO_BIN, args, {
+      ...options,
       env: { ...process.env, TMPDIR: cacheDir, TMP: cacheDir, TEMP: cacheDir },
     });
-
-    return processOutput({ stdout, stderr, status });
-  } catch (error) {
-    if (!options.ignoreErrors) {
-      console.error(error);
-      throw error;
-    }
-
-    const { stdout, stderr, status } = error;
-    return processOutput({ stdout, stderr, status });
   } finally {
     await fs.promises.rm(cacheDir, { recursive: true, force: true });
   }
@@ -106,16 +66,24 @@ export const executeCommandAsync = async (
     const { stdout, stderr, status } = await spawnAsync(command, args, {
       cwd,
       stdio: 'pipe',
+      env: options.env,
     });
 
     return processOutput({ stdout, stderr, status });
   } catch (error) {
+    const { stdout, stderr, status } = error as SpawnResult;
+
     if (!options.ignoreErrors) {
-      console.error(error);
+      console.error(`Command "${[command, ...args].join(' ')}" exited with code ${status ?? 1}`);
+      if (stdout) {
+        console.error(`stdout:\n${stripAnsi(stdout)}`);
+      }
+      if (stderr) {
+        console.error(`stderr:\n${stripAnsi(stderr)}`);
+      }
       throw error;
     }
 
-    const { stdout, stderr, status } = error;
     return processOutput({ stdout, stderr, status });
   }
 };

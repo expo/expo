@@ -48,9 +48,6 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/unversioned/sdk/brownfield/",
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "dependencies": {
     "@expo/env": "workspace:~2.4.2",
     "@expo/spawn-async": "^1.8.0",
