@@ -4,6 +4,7 @@ import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
 import type { PackageManagerOptions } from '../PackageManager';
 import { BunPackageManager } from '../node/BunPackageManager';
+import { DenoPackageManager } from '../node/DenoPackageManager';
 import { NpmPackageManager } from '../node/NpmPackageManager';
 import { PnpmPackageManager } from '../node/PnpmPackageManager';
 import { YarnPackageManager } from '../node/YarnPackageManager';
@@ -14,7 +15,8 @@ export type NodePackageManager =
   | NpmPackageManager
   | PnpmPackageManager
   | YarnPackageManager
-  | BunPackageManager;
+  | BunPackageManager
+  | DenoPackageManager;
 
 export type NodePackageManagerForProject = PackageManagerOptions &
   Partial<Record<NodePackageManager['name'], boolean>>;
@@ -24,9 +26,21 @@ export const YARN_LOCK_FILE = 'yarn.lock';
 export const PNPM_LOCK_FILE = 'pnpm-lock.yaml';
 export const BUN_LOCK_FILE = 'bun.lockb';
 export const BUN_TEXT_LOCK_FILE = 'bun.lock';
+export const DENO_LOCK_FILE = 'deno.lock';
 
-/** The order of the package managers to use when resolving automatically */
-export const RESOLUTION_ORDER: NodePackageManager['name'][] = ['bun', 'yarn', 'npm', 'pnpm'];
+/**
+ * The order of the package managers to use when resolving automatically.
+ * Deno is resolved first: `deno.lock` is only ever written by Deno itself, and
+ * projects migrated to Deno may still have the lockfile of their previous
+ * package manager (Deno can seed `deno.lock` from an existing `pnpm-lock.yaml`).
+ */
+export const RESOLUTION_ORDER: NodePackageManager['name'][] = [
+  'deno',
+  'bun',
+  'yarn',
+  'npm',
+  'pnpm',
+];
 
 /**
  * Resolve the used node package manager for a project by checking the lockfile.
@@ -43,6 +57,7 @@ export function resolvePackageManager(
     pnpm: [PNPM_LOCK_FILE],
     yarn: [YARN_LOCK_FILE],
     bun: [BUN_TEXT_LOCK_FILE, BUN_LOCK_FILE],
+    deno: [DENO_LOCK_FILE],
   };
 
   if (preferredManager) {
@@ -77,6 +92,8 @@ export function createForProject(
     return new PnpmPackageManager({ cwd: projectRoot, ...options });
   } else if (options.bun) {
     return new BunPackageManager({ cwd: projectRoot, ...options });
+  } else if (options.deno) {
+    return new DenoPackageManager({ cwd: projectRoot, ...options });
   }
 
   switch (resolvePackageManager(projectRoot)) {
@@ -86,6 +103,8 @@ export function createForProject(
       return new YarnPackageManager({ cwd: projectRoot, ...options });
     case 'bun':
       return new BunPackageManager({ cwd: projectRoot, ...options });
+    case 'deno':
+      return new DenoPackageManager({ cwd: projectRoot, ...options });
     case 'npm':
     default:
       return new NpmPackageManager({ cwd: projectRoot, ...options });
