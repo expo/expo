@@ -21,6 +21,10 @@
     "./eslint.config.base": {
       "require": "./eslint.config.base.cjs"
     },
+    "./createCompositeJestPreset": {
+      "import": "./createCompositeJestPreset.cjs",
+      "require": "./createCompositeJestPreset.cjs"
+    },
     "./jest-preset-*": {
       "import": "./jest-preset-*.cjs",
       "require": "./jest-preset-*.cjs"
