@@ -107,7 +107,7 @@ describe('useStandardActions (integration)', () => {
     Record<string, never>,
     object,
     TabRouterOptions
-  >(NavigatorContent, TabRouter, { useOnlyUserDefinedScreens: true });
+  >(NavigatorContent, TabRouter);
 
   it('navigate() switches the focused route in a real navigator', () => {
     renderRouter({
