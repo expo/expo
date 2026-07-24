@@ -8,6 +8,7 @@ import { getPlatformBundlers } from '../../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../../webTemplate';
 import type { ManifestRequestInfo } from '../ManifestMiddleware';
 import { ManifestMiddleware } from '../ManifestMiddleware';
+import { resolveManifestAssets } from '../resolveAssets';
 import type { ServerRequest, ServerResponse } from '../server.types';
 
 class MockServerResponse extends PassThrough {
@@ -218,6 +219,7 @@ describe('_resolveProjectSettingsAsync', () => {
     });
 
     jest.mocked(getConfig).mockClear();
+    jest.mocked(resolveManifestAssets).mockClear();
 
     middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
 
@@ -239,6 +241,33 @@ describe('_resolveProjectSettingsAsync', () => {
 
     // Limit this to a single call since it can get expensive.
     expect(getConfig).toHaveBeenCalledTimes(1);
+  });
+  it(`returns relative bundle and asset URLs when requested`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+      mode: 'development',
+    });
+
+    jest.mocked(getConfig).mockClear();
+    jest.mocked(resolveManifestAssets).mockClear();
+
+    middleware._getBundleUrl = jest.fn(
+      () =>
+        'http://fake.mock/index.bundle?platform=android&dev=true&hot=false&lazy=true#debug'
+    );
+
+    const settings = await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      shouldUseRelativeManifestUrls: true,
+    } as any);
+
+    expect(settings.bundleUrl).toBe(
+      'index.bundle?platform=android&dev=true&hot=false&lazy=true#debug'
+    );
+
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe('assets/./assets/icon.png');
   });
   it(`returns the project settings for Webpack dev servers`, async () => {
     const middleware = new MockManifestMiddleware('/', {
