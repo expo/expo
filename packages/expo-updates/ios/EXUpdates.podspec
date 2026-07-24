@@ -124,11 +124,17 @@ Pod::Spec.new do |s|
   if $expo_updates_create_updates_resources != false
     project_root_env_var = ENV['PROJECT_ROOT'] ? "export PROJECT_ROOT=#{ENV['PROJECT_ROOT']}\n" : ""
     force_bundling_flag = ex_updates_native_debug ? "export FORCE_BUNDLING=1\n" : ""
-    s.script_phase = {
+    script_phase = {
       :name => 'Generate updates resources for expo-updates',
       :script => project_root_env_var + force_bundling_flag + 'bash -l -c "$PODS_TARGET_SRCROOT/../scripts/create-updates-resources-ios.sh"',
       :execution_position => :before_compile
     }
+    # :always_out_of_date is only available in CocoaPods 1.13.0 and later
+    if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')
+      # always run the script without warning
+      script_phase[:always_out_of_date] = "1"
+    end
+    s.script_phase = script_phase
 
     # Generate EXUpdates.bundle without existing resources
     # `create-updates-resources-ios.sh` will generate updates resources in EXUpdates.bundle
