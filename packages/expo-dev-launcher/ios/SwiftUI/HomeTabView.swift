@@ -64,6 +64,9 @@ struct HomeTabView: View {
     #if os(tvOS)
     .background()
     #endif
+    .onAppear {
+      viewModel.loadRecentlyOpenedApps()
+    }
     .sheet(isPresented: $showingInfoDialog) {
       DevServerInfoModal()
     }
