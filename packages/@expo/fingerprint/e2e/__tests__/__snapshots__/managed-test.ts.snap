@@ -273,7 +273,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "version": "56.0.16",
   },
   {
-    "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
+    "contents": "{"expo":{"name":"expo","platforms":{"android":{"buildTypes":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","componentDescriptors":[],"cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false,"packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","sourceDir":"node_modules/expo/android"}},"root":"node_modules/expo"}}",
     "id": "rncoreAutolinkingConfig:android",
     "reasons": [
       "rncoreAutolinkingAndroid",
@@ -290,7 +290,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
     "version": "56.0.16",
   },
   {
-    "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",
+    "contents": "{"expo":{"name":"expo","platforms":{"ios":{"configurations":[],"podspecPath":"node_modules/expo/Expo.podspec","scriptPhases":[],"version":"*"}},"root":"node_modules/expo"}}",
     "id": "rncoreAutolinkingConfig:ios",
     "reasons": [
       "rncoreAutolinkingIos",
