@@ -23,16 +23,11 @@ import {
   NavigationProvider,
   type ParamListBase,
   type RouteProp,
-  StackActions,
   type StackNavigationState,
   usePreventRemoveContext,
   useTheme,
 } from '../../native';
-import type {
-  NativeStackDescriptor,
-  NativeStackDescriptorMap,
-  NativeStackNavigationHelpers,
-} from '../types';
+import type { NativeStackDescriptor, NativeStackDescriptorMap, NativeStackEmit } from '../types';
 import { debounce } from '../utils/debounce';
 import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
@@ -454,12 +449,13 @@ const SceneView = ({
 
 type Props = {
   state: StackNavigationState<ParamListBase>;
-  navigation: NativeStackNavigationHelpers;
   descriptors: NativeStackDescriptorMap;
   describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
+  emit: NativeStackEmit;
+  pop: (count: number, sourceRouteKey: string) => void;
 };
 
-export function NativeStackView({ state, navigation, descriptors, describe }: Props) {
+export function NativeStackView({ state, descriptors, describe, emit, pop }: Props) {
   const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
@@ -513,64 +509,52 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
               isPresentationModal={isModal}
               isPreloaded={isPreloaded}
               onWillDisappear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionStart',
                   data: { closing: true },
                   target: route.key,
                 });
               }}
               onWillAppear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionStart',
                   data: { closing: false },
                   target: route.key,
                 });
               }}
               onAppear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionEnd',
                   data: { closing: false },
                   target: route.key,
                 });
               }}
               onDisappear={() => {
-                navigation.emit({
+                emit({
                   type: 'transitionEnd',
                   data: { closing: true },
                   target: route.key,
                 });
               }}
               onDismissed={(event) => {
-                navigation.dispatch({
-                  ...StackActions.pop(event.nativeEvent.dismissCount),
-                  source: route.key,
-                  target: state.key,
-                });
+                pop(event.nativeEvent.dismissCount, route.key);
 
                 setNextDismissedKey(route.key);
               }}
               onHeaderBackButtonClicked={() => {
-                navigation.dispatch({
-                  ...StackActions.pop(),
-                  source: route.key,
-                  target: state.key,
-                });
+                pop(1, route.key);
               }}
               onNativeDismissCancelled={(event) => {
-                navigation.dispatch({
-                  ...StackActions.pop(event.nativeEvent.dismissCount),
-                  source: route.key,
-                  target: state.key,
-                });
+                pop(event.nativeEvent.dismissCount, route.key);
               }}
               onGestureCancel={() => {
-                navigation.emit({
+                emit({
                   type: 'gestureCancel',
                   target: route.key,
                 });
               }}
               onSheetDetentChanged={(event) => {
-                navigation.emit({
+                emit({
                   type: 'sheetDetentChange',
                   target: route.key,
                   data: {

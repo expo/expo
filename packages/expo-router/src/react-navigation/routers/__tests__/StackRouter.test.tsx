@@ -3129,3 +3129,72 @@ test('does not use preloaded route with different ID when popTo replaces current
     ],
   });
 });
+
+test('removes routes by name while preserving the focused route instance', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['index', 'secret', 'other'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        type: 'stack',
+        key: 'root',
+        index: 3,
+        preloadedRoutes: [],
+        routeNames: ['index', 'secret', 'other'],
+        routes: [
+          { key: 'index', name: 'index' },
+          { key: 'secret-old', name: 'secret' },
+          { key: 'other', name: 'other' },
+          { key: 'secret-current', name: 'secret' },
+        ],
+      },
+      { type: 'REMOVE_ROUTES', payload: { routeNames: ['secret', 'other'] } },
+      options
+    )
+  ).toEqual({
+    stale: false,
+    type: 'stack',
+    key: 'root',
+    index: 1,
+    preloadedRoutes: [],
+    routeNames: ['index', 'secret', 'other'],
+    routes: [
+      { key: 'index', name: 'index' },
+      { key: 'secret-current', name: 'secret' },
+    ],
+  });
+});
+
+test.each(['secret','nonExisting'])('handles route %p removal without changing state when no history entries match', (name:string) => {
+  const router = StackRouter({});
+  const state = {
+    stale: false as const,
+    type: 'stack' as const,
+    key: 'root',
+    index: 1,
+    preloadedRoutes: [],
+    routeNames: ['index', 'secret'],
+    routes: [
+      { key: 'index', name: 'index' },
+      { key: 'secret', name: 'secret' },
+    ],
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'REMOVE_ROUTES', payload: { routeNames: [name] } },
+      {
+        routeNames: state.routeNames,
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toBe(state);
+});
