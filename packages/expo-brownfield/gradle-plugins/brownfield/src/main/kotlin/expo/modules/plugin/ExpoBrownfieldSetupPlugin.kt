@@ -67,11 +67,7 @@ class ExpoBrownfieldSetupPlugin : Plugin<Project> {
         return@doLast
       }
       val original = outputFile.readText()
-      val stripped =
-        original
-          .lineSequence()
-          .filter { line -> stripPrefixes.none { prefix -> line.contains(prefix) } }
-          .joinToString("\n")
+      val stripped = stripFusedPackageListEntries(original, stripPrefixes)
       outputFile.writeText(stripped)
       expoProject.logger.lifecycle(
         "brownfield.fused: stripped ExpoModulesPackageList entries matching ${stripPrefixes.joinToString(", ")}"

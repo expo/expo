@@ -113,6 +113,24 @@ private fun resolveResourceReference(raw: String, strings: Map<String, String>):
   return raw
 }
 
+/**
+ * Remove entries from a generated `ExpoModulesPackageList.kt` whose fully-qualified class name
+ * starts with any of the given package prefixes. Used by `--fused` brownfield builds to keep the
+ * package list consistent with a fat AAR that excludes some modules.
+ *
+ * Matching the start of the class name (not `contains`) preserves structural lines like the
+ * `package` declaration, imports, and the `getServices()` signature, which themselves contain
+ * `expo.modules`. This lets a broad prefix like `expo.modules` strip every entry without corrupting
+ * the file.
+ */
+fun stripFusedPackageListEntries(content: String, prefixes: Set<String>): String {
+  if (prefixes.isEmpty()) return content
+  return content
+    .lineSequence()
+    .filter { line -> prefixes.none { prefix -> line.trimStart().startsWith(prefix) } }
+    .joinToString("\n")
+}
+
 private fun escapeXmlAttribute(value: String): String =
   value.replace("&", "&amp;")
     .replace("<", "&lt;")
