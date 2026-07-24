@@ -1854,6 +1854,20 @@ export async function test({ describe, expect, it, ...t }) {
         expect(error).not.toBeNull();
       });
 
+      it('rejects digest when the path points to a directory', async () => {
+        const directoryUri = `${testDirectory}digest-directory`;
+        const directory = new Directory(directoryUri);
+        directory.create();
+        const file = new File(directoryUri);
+        let error: Error | null = null;
+        try {
+          await file.digest('md5');
+        } catch (caughtError) {
+          error = caughtError as Error;
+        }
+        expect(error).not.toBeNull();
+      });
+
       it('returns null size and md5 for nonexistent files', async () => {
         const file = new File(testDirectory, 'file2.txt');
         expect(file.size).toBe(null);

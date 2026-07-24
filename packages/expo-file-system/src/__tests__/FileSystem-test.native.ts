@@ -354,6 +354,14 @@ describe('expo-file-system behavioral mock', () => {
     await expect(file.digest('md5')).rejects.toThrow('File does not exist');
   });
 
+  it('File.digest rejects when the path points to a directory', async () => {
+    const directory = new Directory(Paths.cache, 'digest-directory');
+    directory.create();
+    const file = new File(directory.uri);
+
+    await expect(file.digest('md5')).rejects.toThrow();
+  });
+
   it('File.move updates this.uri and removes the source', async () => {
     const source = new File(Paths.cache, 'source.txt');
     source.writeSync('payload');
