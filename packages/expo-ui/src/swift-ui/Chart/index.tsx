@@ -207,8 +207,8 @@ const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('Expo
 
 /**
  * Renders a native Chart component using Swift Charts.
- * @platform ios 16.0+
- * @platform tvos 16.0+
+ * @platform ios
+ * @platform tvos
  */
 export function Chart({
   style,

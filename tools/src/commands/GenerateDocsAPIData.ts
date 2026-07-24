@@ -39,6 +39,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   ],
   'expo-ui/swift-ui/bottomsheet': ['swift-ui/BottomSheet/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/button': ['swift-ui/Button/index.tsx', 'expo-ui'],
+  'expo-ui/swift-ui/chart': ['swift-ui/Chart/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/circularprogress': ['swift-ui/ProgressView/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/colorpicker': ['swift-ui/ColorPicker/index.tsx', 'expo-ui'],
   'expo-ui/swift-ui/confirmationdialog': ['swift-ui/ConfirmationDialog/index.tsx', 'expo-ui'],

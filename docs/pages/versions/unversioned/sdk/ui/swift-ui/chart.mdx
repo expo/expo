@@ -1,0 +1,207 @@
+---
+title: Chart
+description: A SwiftUI Chart component for displaying data visualizations using Swift Charts.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvos']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Chart wraps Apple's [Swift Charts](https://developer.apple.com/documentation/charts) framework, and supports rendering line, point, bar, area, pie, and rectangle charts with reference lines.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Line chart
+
+```tsx LineChartExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function LineChartExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="line"
+        data={[
+          { x: 'Jan', y: 15 },
+          { x: 'Feb', y: 25 },
+          { x: 'Mar', y: 18 },
+          { x: 'Apr', y: 32 },
+        ]}
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
+### Bar chart
+
+```tsx BarChartExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function BarChartExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="bar"
+        data={[
+          { x: 'Q1', y: 75 },
+          { x: 'Q2', y: 85 },
+          { x: 'Q3', y: 65 },
+          { x: 'Q4', y: 95 },
+        ]}
+        showLegend
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
+### Pie chart
+
+```tsx PieChartExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function PieChartExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="pie"
+        data={[
+          { x: 'Direct', y: 45, color: '#6366F1' },
+          { x: 'Social', y: 30, color: '#EC4899' },
+          { x: 'Email', y: 25, color: '#10B981' },
+        ]}
+        pieStyle={{ innerRadius: 0.5, angularInset: 2 }}
+        showLegend
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
+### Point and area charts
+
+```tsx PointAreaExample.tsx
+import { Host, Chart, VStack } from '@expo/ui/swift-ui';
+
+const data = [
+  { x: 0, y: 10 },
+  { x: 1.5, y: 25 },
+  { x: 3, y: 18 },
+  { x: 4.5, y: 32 },
+];
+
+export default function PointAreaExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack spacing={16}>
+        <Chart type="point" data={data} pointStyle={{ pointStyle: 'diamond', pointSize: 8 }} style={{ height: 150 }} />
+        <Chart type="area" data={data} areaStyle={{ color: '#10B981' }} style={{ height: 150 }} />
+      </VStack>
+    </Host>
+  );
+}
+```
+
+### Per-point colors
+
+Provide a `color` for individual data points to override the automatic category colors. This is useful when each data point represents a distinct category (for example, days of the week) rather than a series.
+
+```tsx PerPointColorExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function PerPointColorExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="bar"
+        data={[
+          { x: 'Mon', y: 20, color: '#4A90E2' },
+          { x: 'Tue', y: 22, color: '#50C8D8' },
+          { x: 'Wed', y: 18, color: '#5AD67D' },
+        ]}
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
+### Reference lines
+
+Use `referenceLines` together with `ruleStyle` to overlay horizontal rule marks, for example to highlight a target or average value.
+
+```tsx ReferenceLinesExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function ReferenceLinesExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="line"
+        data={[
+          { x: 'Jan', y: 15 },
+          { x: 'Feb', y: 25 },
+          { x: 'Mar', y: 18 },
+          { x: 'Apr', y: 32 },
+        ]}
+        referenceLines={[{ x: 'Average', y: 22.5 }]}
+        ruleStyle={{ color: '#FF6B6B', lineWidth: 2, dashArray: [5, 5] }}
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
+### Styling and animation
+
+Pass `showGrid`, `showLegend`, and `animate` to control the chart's appearance, and use the per-type style props (`lineStyle`, `barStyle`, `pieStyle`, and so on) to customize individual mark types.
+
+```tsx StyledChartExample.tsx
+import { Host, Chart } from '@expo/ui/swift-ui';
+
+export default function StyledChartExample() {
+  return (
+    <Host style={{ flex: 1 }}>
+      <Chart
+        type="line"
+        data={[
+          { x: 'Jan', y: 15 },
+          { x: 'Feb', y: 25 },
+          { x: 'Mar', y: 18 },
+          { x: 'Apr', y: 32 },
+        ]}
+        showGrid={false}
+        showLegend={false}
+        animate
+        lineStyle={{
+          color: '#6366F1',
+          width: 3,
+          dashArray: [5, 5],
+          pointStyle: 'square',
+          pointSize: 8,
+        }}
+        style={{ flex: 1 }}
+      />
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Chart } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/chart" apiName="Chart" />
