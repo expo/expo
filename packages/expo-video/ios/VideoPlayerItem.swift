@@ -28,6 +28,7 @@ class VideoPlayerItem: AVPlayerItem {
     self.createTracksLoadingTask()
   }
 
+  @VideoLoadingActor
   init?(videoSource: VideoSource, urlOverride: URL? = nil) async throws {
     try Task.checkCancellation()
 
@@ -43,7 +44,17 @@ class VideoPlayerItem: AVPlayerItem {
     // and cause it to go into .error state triggering the `onStatusChange` event.
     do {
       try await asset.prepareForLoadingIfNeeded()
-      _ = try await asset.load(.duration, .preferredTransform, .isPlayable)
+      let (_, _, _, _, _, characteristics) = try await asset.load(
+        .duration,
+        .preferredTransform,
+        .isPlayable,
+        .hasProtectedContent,
+        .tracks,
+        .availableMediaCharacteristicsWithMediaSelectionOptions
+      )
+      for characteristic in characteristics {
+        _ = try await asset.loadMediaSelectionGroup(for: characteristic)
+      }
     } catch {
       // Asset errors are surfaced through the player status, but cancellation must stop obsolete work.
       try Task.checkCancellation()
@@ -60,7 +71,7 @@ class VideoPlayerItem: AVPlayerItem {
   }
 
   func createTracksLoadingTask() {
-    tracksLoadingTask = Task { [weak self] in
+    tracksLoadingTask = Task { @VideoLoadingActor [weak self] in
       guard let self else {
         return []
       }
@@ -84,6 +95,7 @@ class VideoPlayerItem: AVPlayerItem {
 
   // MARK: - HLS Helpers
 
+  @VideoLoadingActor
   private func loadHlsTracks(mainUrl: URL) async -> [VideoTrack] {
     let tracks: [VideoTrack]
 
@@ -106,6 +118,7 @@ class VideoPlayerItem: AVPlayerItem {
   }
 
   @available(iOS 26.0, tvOS 26, *)
+  @VideoLoadingActor
   private func loadModernHlsTracks(mainUrl: URL) async -> [VideoTrack] {
     guard let variants = try? await urlAsset.load(.variants) else {
       return []
@@ -117,6 +130,7 @@ class VideoPlayerItem: AVPlayerItem {
     }
   }
 
+  @VideoLoadingActor
   private func loadLegacyHlsTracks() async -> [VideoTrack] {
     do {
       return try await self.fetchHlsVideoTracks()
@@ -128,6 +142,7 @@ class VideoPlayerItem: AVPlayerItem {
 
   // AVKit API doesn't provide us with a list of available tracks for a HLS source. We can download the playlist file and parse it ourselves
   // it's usually very small (1-2 kB), so we won't add too much overhead
+  @VideoLoadingActor
   private func fetchHlsVideoTracks() async throws -> [VideoTrack] {
     let uri = urlAsset.effectivePlaybackURL
     var request = URLRequest(url: uri)
