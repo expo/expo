@@ -77,7 +77,7 @@ export function setStyle(style: NavigationBarStyle) {
 
   if (resolvedStyle !== currentValues.style) {
     currentValues.style = resolvedStyle;
-    ExpoNavigationBar.setStyle(resolvedStyle);
+    ExpoNavigationBar.setStyle(resolvedStyle).catch(() => {});
   }
 }
 
@@ -86,7 +86,7 @@ function setHidden(hidden: boolean) {
 
   if (hidden !== currentValues.hidden) {
     currentValues.hidden = hidden;
-    ExpoNavigationBar.setHidden(hidden);
+    ExpoNavigationBar.setHidden(hidden).catch(() => {});
   }
 }
 
