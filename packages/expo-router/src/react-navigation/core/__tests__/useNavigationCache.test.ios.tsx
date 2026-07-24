@@ -42,7 +42,7 @@ test('preserves reference for navigation objects', () => {
     const previous = React.useRef<any>(undefined);
 
     const emitter = useEventEmitter();
-    const { navigations } = useNavigationCache({
+    const navigations = useNavigationCache({
       routes: state.routes,
       getState,
       navigation,
@@ -251,5 +251,4 @@ test('ignores dispatches from a preloaded stack screen until it is promoted', ()
   expect(navigation).toBe(preloadedNavigation);
   act(() => preloadedNavigation.goBack());
   expect(ref.current?.getRootState().routes.map((route) => route.name)).toEqual(['first']);
-
 });

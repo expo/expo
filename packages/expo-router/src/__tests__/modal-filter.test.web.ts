@@ -28,7 +28,7 @@ describe('modal route filtering on web', () => {
   it('excludes modal routes when EXPO_OS === "web"', () => {
     process.env.EXPO_OS = 'web';
 
-    const state = makeState(['index', 'second']);
+    const state = makeState(['index', 'second'], 1);
     const descriptors: any = {
       index: { options: {} },
       second: { options: { presentation: 'modal' } },

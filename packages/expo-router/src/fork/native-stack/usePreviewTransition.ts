@@ -1,7 +1,10 @@
 import * as React from 'react';
 
 import { useLinkPreviewContext } from '../../link/preview/LinkPreviewContext';
-import type { NativeStackViewEmit,NativeStackViewState } from '../../react-navigation/native-stack';
+import type {
+  NativeStackViewEmit,
+  NativeStackViewState,
+} from '../../react-navigation/native-stack';
 
 /**
  * Manages the preview transition state for link previews.
@@ -13,7 +16,7 @@ import type { NativeStackViewEmit,NativeStackViewState } from '../../react-navig
  */
 export function usePreviewTransition<TNavigation extends { emit: (...args: any[]) => any }>(
   state: NativeStackViewState,
-  originalEmit: NativeStackViewEmit,
+  originalEmit: NativeStackViewEmit
 ) {
   const { openPreviewKey, setOpenPreviewKey } = useLinkPreviewContext();
 
