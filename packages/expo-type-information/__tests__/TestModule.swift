@@ -220,6 +220,22 @@ enum IntBackedEnum1: Int {
 enum IntBackedEnum2: Something, Int, SomethingElse {
   case simpleCase
 }
+
+protocol SimpleProtocol: Record {
+  var id: String { get }
+}
+
+struct StructConformingToProtocol: SimpleProtocol {
+  @Field
+  var id: String { get }
+  @Field
+  var someInt: Int
+}
+
+struct EmptyStruct: Record {
+  init(){}
+}
+
 // Global variable names
 let globalEventName = "onGlobalEvent"
 

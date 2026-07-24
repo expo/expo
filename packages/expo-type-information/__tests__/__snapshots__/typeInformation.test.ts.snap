@@ -32,6 +32,11 @@ export type TestRecordClass = {
   field1: number;
   field2: string;
 };
+export type StructConformingToProtocol = {
+  id: string;
+  someInt: number;
+};
+export type EmptyStruct = {};
 
 export enum TestEnum {
   simpleCase = 'simpleCase',
@@ -259,6 +264,8 @@ import {
   TestRecord,
   TestRecord2,
   TestRecordClass,
+  StructConformingToProtocol,
+  EmptyStruct,
   TestClassWithConstructor,
   TestBasicClass,
   TestEmptyClass,
@@ -349,6 +356,11 @@ export type TestRecordClass = {
   field1: number;
   field2: string;
 };
+export type StructConformingToProtocol = {
+  id: string;
+  someInt: number;
+};
+export type EmptyStruct = {};
 
 export enum TestEnum {
   simpleCase = 'simpleCase',
@@ -464,6 +476,11 @@ export type TestRecordClass = {
     field1: number;
     field2: string;
 };
+export type StructConformingToProtocol = {
+    id: string;
+    someInt: number;
+};
+export type EmptyStruct = {};
 
 
 export enum TestEnum {
@@ -635,6 +652,11 @@ export type TestRecordClass = {
   field1: number;
   field2: string;
 };
+export type StructConformingToProtocol = {
+  id: string;
+  someInt: number;
+};
+export type EmptyStruct = {};
 
 export enum TestEnum {
   simpleCase = 'simpleCase',
@@ -762,10 +784,12 @@ export default _default;
 exports[`Same type information 1`] = `
 {
   "declaredTypeIdentifiersList": [
+    "EmptyStruct",
     "EventNames",
     "IntBackedEnum1",
     "IntBackedEnum2",
     "OuterNamespace",
+    "StructConformingToProtocol",
     "TestBasicClass",
     "TestClassWithConstructor",
     "TestEmptyClass",
@@ -1692,8 +1716,41 @@ exports[`Same type information 1`] = `
       ],
       "name": "TestRecordClass",
     },
+    {
+      "fields": [
+        {
+          "name": "id",
+          "type": {
+            "kind": 0,
+            "type": 1,
+          },
+        },
+        {
+          "name": "someInt",
+          "type": {
+            "kind": 0,
+            "type": 2,
+          },
+        },
+      ],
+      "name": "StructConformingToProtocol",
+    },
+    {
+      "fields": [],
+      "name": "EmptyStruct",
+    },
   ],
   "typeIdentifierDefinitionList": [
+    [
+      "EmptyStruct",
+      {
+        "definition": {
+          "fields": [],
+          "name": "EmptyStruct",
+        },
+        "kind": 2,
+      },
+    ],
     [
       "EventNames",
       {
@@ -1742,6 +1799,31 @@ exports[`Same type information 1`] = `
           "stringBacked": true,
         },
         "kind": 1,
+      },
+    ],
+    [
+      "StructConformingToProtocol",
+      {
+        "definition": {
+          "fields": [
+            {
+              "name": "id",
+              "type": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
+            {
+              "name": "someInt",
+              "type": {
+                "kind": 0,
+                "type": 2,
+              },
+            },
+          ],
+          "name": "StructConformingToProtocol",
+        },
+        "kind": 2,
       },
     ],
     [
