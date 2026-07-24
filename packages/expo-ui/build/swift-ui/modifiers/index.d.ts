@@ -1199,6 +1199,7 @@ export * from './background';
 export type * from './types';
 export * from './tag';
 export * from './pickerStyle';
+export * from './menuOrder';
 export * from './tabViewModifiers';
 export * from './datePickerStyle';
 export * from './progressViewStyle';
