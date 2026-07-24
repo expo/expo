@@ -1,5 +1,5 @@
 import type { ComponentProps, ReactElement, ReactNode, PropsWithChildren } from 'react';
-import { Children, Fragment, isValidElement, use, useMemo } from 'react';
+import { Children, Fragment, isValidElement, use, useEffect, useMemo, useRef } from 'react';
 import type { ViewProps } from 'react-native';
 import { StyleSheet, View } from 'react-native';
 
@@ -25,7 +25,7 @@ import { ExpoTabRouter } from './TabRouter';
 import { isTabSlot } from './TabSlot';
 import { isTabTrigger } from './TabTrigger';
 import type { ScreenTrigger } from './common';
-import { ViewSlot, triggersToScreens } from './common';
+import { ViewSlot, useTriggersToScreens } from './common';
 import { useComponent } from './useComponent';
 
 export * from './TabContext';
@@ -153,11 +153,10 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 
   const initialRouteName = routeNode.initialRouteName;
 
-  const { children, triggerMap } = triggersToScreens(
+  const { children, triggerMap } = useTriggersToScreens(
     triggers,
     routeNode,
     linking,
-    initialRouteName,
     parentTriggerMap,
     routeInfo,
     contextKey
@@ -175,6 +174,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     triggerMap,
     id: contextKey,
     initialRouteName,
+    backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
   });
 
   const {
@@ -184,6 +184,21 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     describe,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
+
+  const routeNamesKey = JSON.stringify(state.routeNames);
+  const previousRouteNamesKeyRef = useRef(routeNamesKey);
+  useEffect(() => {
+    if (previousRouteNamesKeyRef.current === routeNamesKey) {
+      return;
+    }
+    previousRouteNamesKeyRef.current = routeNamesKey;
+    navigation.dispatch((state) => ({
+      type: 'EXPO_ROUTER_TAB_ORDER_CHANGED',
+      target: state.key,
+    }));
+  }, [routeNamesKey, navigation]);
+
+  // TODO(@ubax): Show a formsheet for focused routes without a trigger (Tabs + Stack in one).
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () => ({
