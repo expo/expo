@@ -8,6 +8,7 @@ searchRank: 3
 import { DevelopmentEnvironmentInstructions } from '~/scenes/get-started/set-up-your-environment/DevelopmentEnvironmentInstructions';
 import { DevelopmentModeForm } from '~/scenes/get-started/set-up-your-environment/DevelopmentModeForm';
 import { PlatformAndDeviceForm } from '~/scenes/get-started/set-up-your-environment/PlatformAndDeviceForm';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 Let's set up a local development environment for running your project on Android and iOS.
 
@@ -27,7 +28,12 @@ Expo Go is a playground for students and learners to try Expo quickly. A develop
 
 <DevelopmentEnvironmentInstructions />
 
-If the latest version of Expo Go is not yet available on the Google Play Store, you can download the APK from the [Expo Go download page](https://expo.dev/go).
+<BoxLink
+  title="Download Expo Go"
+  description="You can also download any version of Expo Go, for from the Expo Go download page."
+  href="https://expo.dev/go"
+  Icon={Download03Icon}
+/>
 
 ## Next step
 
