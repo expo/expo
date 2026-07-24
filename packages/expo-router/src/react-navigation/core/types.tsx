@@ -913,10 +913,7 @@ export type NavigatorTypeBag<
   Navigator: Navigator;
 };
 
-export type TypedNavigator<
-  Bag extends NavigatorTypeBagBase,
-  Config = unknown,
-> = TypedNavigatorInternal<
+export type TypedNavigator<Bag extends NavigatorTypeBagBase> = TypedNavigatorInternal<
   Bag['ParamList'],
   Bag['NavigatorID'],
   Bag['State'],
@@ -924,9 +921,7 @@ export type TypedNavigator<
   Bag['EventMap'],
   Bag['NavigationList'],
   Bag['Navigator']
-> &
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  (undefined extends Config ? {} : { config: Config });
+>;
 
 type TypedNavigatorInternal<
   ParamList extends ParamListBase,
