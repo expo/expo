@@ -104,6 +104,10 @@
       tools:replace="android:value"
       android:name="org.unimodules.core.AppLoader#react-native-headless"
       android:value="host.exp.exponent.taskManager.ExpoHeadlessAppLoader" />
+    <meta-data
+      android:name="com.facebook.soloader.enabled"
+      android:value="true"
+      tools:replace="android:value" />
 
     <receiver
       android:name="host.exp.exponent.notifications.ExpoNotificationsService"
