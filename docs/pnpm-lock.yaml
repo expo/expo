@@ -106,9 +106,6 @@ importers:
       prismjs:
         specifier: ^1.30.0
         version: 1.30.0
-      prop-types:
-        specifier: ^15.8.1
-        version: 15.8.1
       react:
         specifier: ^19.2.8
         version: 19.2.8

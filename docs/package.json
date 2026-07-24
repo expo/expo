@@ -72,7 +72,6 @@
     "path-browserify": "^1.0.1",
     "prism-react-renderer": "^2.4.1",
     "prismjs": "^1.30.0",
-    "prop-types": "^15.8.1",
     "react": "^19.2.8",
     "react-diff-view": "^3.3.3",
     "react-dom": "^19.2.8",
