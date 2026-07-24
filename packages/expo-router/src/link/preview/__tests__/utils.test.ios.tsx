@@ -149,19 +149,17 @@ describe(getTabPathFromRootStateByHref, () => {
                   key: 'stack-7sR1tGrlUaLv2LXn74x0d',
                   index: 0,
                   routeNames: ['index', '[face]'],
-                  preloadedRoutes: [
+                  routes: [
+                    {
+                      key: 'index-pmXH7A8Wnk3QyMNq1Gsvw',
+                      name: 'index',
+                    },
                     {
                       key: '[face]-9rms2gdsibY9dVYUGCpZG',
                       name: '[face]',
                       params: {
                         face: '1e3a8a',
                       },
-                    },
-                  ],
-                  routes: [
-                    {
-                      key: 'index-pmXH7A8Wnk3QyMNq1Gsvw',
-                      name: 'index',
                     },
                   ],
                 },
@@ -176,7 +174,6 @@ describe(getTabPathFromRootStateByHref, () => {
           key: '__root-fIzYvzoMkBMsXahmRCQXB',
         },
       ],
-      preloadedRoutes: [],
     };
     const href = '/faces/1e3a8a';
     const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
@@ -225,19 +222,17 @@ describe(getTabPathFromRootStateByHref, () => {
                   key: 'stack-0o3mKk6OKgAREN0rnNN9T',
                   index: 0,
                   routeNames: ['index', '[face]'],
-                  preloadedRoutes: [
+                  routes: [
+                    {
+                      key: 'index-E5BQcVJKhurHWYfmd4miV',
+                      name: 'index',
+                    },
                     {
                       key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
                       name: '[face]',
                       params: {
                         face: '1e3a8a',
                       },
-                    },
-                  ],
-                  routes: [
-                    {
-                      key: 'index-E5BQcVJKhurHWYfmd4miV',
-                      name: 'index',
                     },
                   ],
                 },
@@ -252,12 +247,14 @@ describe(getTabPathFromRootStateByHref, () => {
           key: '__root-i4ih9bAW8jcq6MHWZNUhE',
         },
       ],
-      preloadedRoutes: [],
     };
     const href = '/faces/1e3a8a';
     const tabPath = getTabPathFromRootStateByHref(href, state as NavigationState);
     expect(tabPath).toEqual([
-      { oldTabKey: 'index-rYeU6j6cRmkJK1pXpEFHs', newTabKey: 'faces-CtzasUGRC7VBM70ECYYD9' },
+      {
+        oldTabKey: 'index-rYeU6j6cRmkJK1pXpEFHs',
+        newTabKey: 'faces-CtzasUGRC7VBM70ECYYD9',
+      },
     ]);
   });
 });
@@ -321,19 +318,17 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
                   key: 'stack-7sR1tGrlUaLv2LXn74x0d',
                   index: 0,
                   routeNames: ['index', '[face]'],
-                  preloadedRoutes: [
+                  routes: [
+                    {
+                      key: 'index-pmXH7A8Wnk3QyMNq1Gsvw',
+                      name: 'index',
+                    },
                     {
                       key: '[face]-9rms2gdsibY9dVYUGCpZG',
                       name: '[face]',
                       params: {
                         face: '1e3a8a',
                       },
-                    },
-                  ],
-                  routes: [
-                    {
-                      key: 'index-pmXH7A8Wnk3QyMNq1Gsvw',
-                      name: 'index',
                     },
                   ],
                 },
@@ -348,7 +343,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           key: '__root-fIzYvzoMkBMsXahmRCQXB',
         },
       ],
-      preloadedRoutes: [],
     };
     const href = '/faces/1e3a8a';
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);
@@ -398,19 +392,17 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
                   key: 'stack-0o3mKk6OKgAREN0rnNN9T',
                   index: 0,
                   routeNames: ['index', '[face]'],
-                  preloadedRoutes: [
+                  routes: [
+                    {
+                      key: 'index-E5BQcVJKhurHWYfmd4miV',
+                      name: 'index',
+                    },
                     {
                       key: '[face]-MZ5nYkDCFxwNv1BcD5exf',
                       name: '[face]',
                       params: {
                         face: '1e3a8a',
                       },
-                    },
-                  ],
-                  routes: [
-                    {
-                      key: 'index-E5BQcVJKhurHWYfmd4miV',
-                      name: 'index',
                     },
                   ],
                 },
@@ -425,7 +417,6 @@ describe(getPreloadedRouteFromRootStateByHref, () => {
           key: '__root-i4ih9bAW8jcq6MHWZNUhE',
         },
       ],
-      preloadedRoutes: [],
     };
     const href = '/faces/1e3a8a';
     const preloadedRoute = getPreloadedRouteFromRootStateByHref(href, state as NavigationState);

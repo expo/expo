@@ -27,7 +27,10 @@ export function getPayloadFromStateRoute(_actionStateRoute: PartialRoute<any>) {
     payload = payload.params;
     params = payload;
 
-    actionStateRoute = actionStateRoute.state?.routes[actionStateRoute.state?.routes.length - 1];
+    actionStateRoute =
+      actionStateRoute.state?.routes[
+        actionStateRoute.state.index ?? actionStateRoute.state.routes.length - 1
+      ];
   }
   return rootPayload;
 }
@@ -55,7 +58,7 @@ export function findDivergentState(
   const navigationRoutes = [];
   while (actionState && navigationState) {
     // TODO(@kitten): Review invalid indexed access into undefined
-    actionStateRoute = actionState.routes[actionState.routes.length - 1]!;
+    actionStateRoute = actionState.routes[actionState.index ?? actionState.routes.length - 1]!;
     const stateRoute = (() => {
       if (navigationState.type === 'tab' && lookThroughAllTabs) {
         return (

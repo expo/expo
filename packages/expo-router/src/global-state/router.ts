@@ -11,6 +11,7 @@ import {
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
+import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
 import { routingQueue } from './routingQueue';
 import { store } from './store';
@@ -91,7 +92,7 @@ export function canDismiss(): boolean {
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
-    if (state.type === 'stack' && state.routes.length > 1) {
+    if (state.type === 'stack' && getHistoryLength(state) > 1) {
       return true;
     }
     if (state.index === undefined) return false;

@@ -40,4 +40,5 @@ export type {
   NativeStackOptionsArgs,
   NativeStackScreenNativeProps,
   NativeStackScreenProps,
+  NativeStackViewState,
 } from './types';
