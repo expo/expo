@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the SwiftUI `menuOrder` modifier (`automatic`/`fixed`/`priority`) to control menu item ordering. With the default `automatic` order, menus that open upward display their items reversed. ([#48049](https://github.com/expo/expo/pull/48049) by [@Gauvino](https://github.com/Gauvino))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
