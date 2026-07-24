@@ -77,7 +77,7 @@
     "react": "^19.2.8",
     "react-diff-view": "^3.3.3",
     "react-dom": "^19.2.8",
-    "react-intl": "^10.1.4",
+    "react-intl": "^10.1.18",
     "react-markdown": "^10.1.0",
     "react-player": "^3.4.0",
     "react-qr-code": "^2.0.18",
