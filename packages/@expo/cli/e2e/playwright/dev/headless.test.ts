@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -10,6 +10,11 @@ test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
 const inputDir = 'headless';
+
+const visibleTestId = (page: Page, testId: string) =>
+  page.getByTestId(testId).filter({ visible: true });
+const movieDetailsFor = (page: Page, name: string) =>
+  visibleTestId(page, 'tab-movie-details').filter({ hasText: name });
 
 test.describe(inputDir, () => {
   const expoStart = createExpoStart({
@@ -45,19 +50,19 @@ test.describe(inputDir, () => {
 
     await page.goto(new URL('/', expoStart.url).href);
 
-    expect(page.getByTestId('tab-home-index')).toBeDefined();
+    await expect(visibleTestId(page, 'tab-home-index')).toBeVisible();
 
     await page.getByText('Go to Tab functions').click();
 
-    expect(page.getByTestId('tab-home-functions')).toBeDefined();
+    await expect(visibleTestId(page, 'tab-home-functions')).toBeVisible();
 
     await page.getByTestId('tab-movies').click();
 
-    expect(page.getByTestId('tab-movies-index')).toBeDefined();
+    await expect(visibleTestId(page, 'tab-movies-index')).toBeVisible();
 
     await page.getByTestId('tab-home').click();
 
-    expect(page.getByTestId('tab-home-index')).toBeDefined();
+    await expect(visibleTestId(page, 'tab-home-index')).toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -70,29 +75,30 @@ test.describe(inputDir, () => {
 
     await page.getByTestId('tab-movies').click();
 
-    expect(page.getByTestId('tab-movies-index')).toBeDefined();
+    await expect(visibleTestId(page, 'tab-movies-index')).toBeVisible();
 
     await page.getByRole('link', { name: 'Toy Story' }).click();
 
-    expect(page.getByTestId('tab-movies-details')).toBeDefined();
-    expect(page.getByText('Toy Story')).toBeDefined();
-    expect(page.getByText('Lorem ipsum dolor sit amet')).toBeDefined();
+    const movieDetails = movieDetailsFor(page, 'Toy Story');
+    await expect(movieDetails).toBeVisible();
+    await expect(movieDetails).toContainText('Toy Story');
+    await expect(movieDetails).toContainText('Lorem ipsum dolor sit amet');
 
     await page.getByTestId('tab-home').click();
 
-    expect(page.getByTestId('tab-home-index')).toBeDefined();
+    await expect(visibleTestId(page, 'tab-home-index')).toBeVisible();
 
     await page.getByTestId('tab-movies').click();
 
     // Still on the movie details page
-    expect(page.getByTestId('tab-movies-details')).toBeDefined();
-    expect(page.getByText('Toy Story')).toBeDefined();
-    expect(page.getByText('Lorem ipsum dolor sit amet')).toBeDefined();
+    await expect(movieDetails).toBeVisible();
+    await expect(movieDetails).toContainText('Toy Story');
+    await expect(movieDetails).toContainText('Lorem ipsum dolor sit amet');
 
     // Second click on focused tab resets it
     await page.getByTestId('tab-movies').click();
 
-    expect(page.getByTestId('tab-movies-index')).toBeDefined();
+    await expect(visibleTestId(page, 'tab-movies-index')).toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -105,32 +111,31 @@ test.describe(inputDir, () => {
 
     await page.goto(new URL('/', expoStart.url).href);
 
-    expect(page.getByTestId('tab-home-index')).toBeDefined();
+    await expect(visibleTestId(page, 'tab-home-index')).toBeVisible();
 
     await page.getByText('Toy Story').click();
 
-    expect(page.getByTestId('tab-movies-details')).toBeDefined();
-    // Title + link (link is interpreted as two elements)
-    expect(page.getByRole('heading', { name: 'Toy Story' })).toBeDefined();
-    expect(page).toHaveURL(/\/movies\/Toy%20Story$/);
+    const toyStoryDetails = movieDetailsFor(page, 'Toy Story');
+    await expect(toyStoryDetails).toBeVisible();
+    await expect(toyStoryDetails).toContainText('Toy Story');
+    await expect(page).toHaveURL(/\/movies\/Toy%20Story$/);
 
     await page.getByRole('link', { name: 'Monsters Inc.' }).click();
-    expect(page.getByTestId('tab-movies-details')).toBeDefined();
-    // Title + link (link is interpreted as two elements)
-    expect(page.getByRole('heading', { name: 'Monsters Inc.' })).toBeDefined();
-    expect(page).toHaveURL(/\/movies\/Monsters%20Inc$/);
+    const monstersDetails = movieDetailsFor(page, 'Monsters Inc.');
+    await expect(monstersDetails).toBeVisible();
+    await expect(monstersDetails).toContainText('Monsters Inc.');
+    await expect(page).toHaveURL(/\/movies\/Monsters%20Inc$/);
 
     // Go back to Toy Story
     await page.goBack();
-    expect(page.getByTestId('tab-movies-details')).toBeDefined();
-    // Title + link (link is interpreted as two elements)
-    expect(page.getByRole('heading', { name: 'Toy Story' })).toBeDefined();
-    expect(page).toHaveURL(/\/movies\/Toy%20Story$/);
+    await expect(toyStoryDetails).toBeVisible();
+    await expect(toyStoryDetails).toContainText('Toy Story');
+    await expect(page).toHaveURL(/\/movies\/Toy%20Story$/);
 
     // Go back to movies index
     await page.goBack();
-    expect(page.getByTestId('tab-home-index')).toBeDefined();
-    expect(page).toHaveURL(/\/$/);
+    await expect(visibleTestId(page, 'tab-home-index')).toBeVisible();
+    await expect(page).toHaveURL(/\/$/);
 
     expect(pageErrors.all).toEqual([]);
   });
