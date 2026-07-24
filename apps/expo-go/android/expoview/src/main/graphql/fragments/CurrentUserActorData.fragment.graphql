@@ -4,7 +4,7 @@ fragment CurrentUserActorData on UserActor {
   username
   firstName
   lastName
-  profilePhoto
+  primaryAccountProfileImageUrl
   bestContactEmail
   accounts {
     id
@@ -12,7 +12,7 @@ fragment CurrentUserActorData on UserActor {
     ownerUserActor {
       id
       username
-      profilePhoto
+      primaryAccountProfileImageUrl
       firstName
       fullName
       lastName
