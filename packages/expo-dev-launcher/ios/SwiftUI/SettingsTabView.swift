@@ -81,7 +81,7 @@ struct SettingsTabView: View {
     .task {
       viewModel.refreshPermissionStatus()
     }
-    .onReceive(NotificationCenter.default.publisher(for: UIApplication.willEnterForegroundNotification)) { _ in
+    .onReceive(NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)) { _ in
       viewModel.refreshPermissionStatus()
     }
     #endif
@@ -323,6 +323,8 @@ struct SettingsTabView: View {
       return ("Allowed", "checkmark.circle.fill", .green)
     case .denied:
       return ("Not allowed", "xmark.circle.fill", .red)
+    case .misconfigured:
+      return ("Not configured", "exclamationmark.triangle.fill", .orange)
     case .checking, .unknown:
       return nil
     }
