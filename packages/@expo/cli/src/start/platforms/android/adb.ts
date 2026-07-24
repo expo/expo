@@ -228,7 +228,14 @@ export async function getAttachedDevicesAsync(): Promise<Device[]> {
       // unauthorized: ['FA8251A00719', 'unauthorized', 'usb:338690048X', 'transport_id:5']
       // authorized: ['FA8251A00719', 'device', 'usb:336592896X', 'product:walleye', 'model:Pixel_2', 'device:walleye', 'transport_id:4']
       // emulator: ['emulator-5554', 'offline', 'transport_id:1']
-      const props = line.split(' ').filter(Boolean);
+      // ADB device serials may contain spaces, so split on the connection state.
+      // States: https://android.googlesource.com/platform/packages/modules/adb/+/refs/tags/android-17.0.0_r1/adb.cpp#144
+      const match = line.match(
+        /^(.+?) +(offline|bootloader|device|host|recovery|rescue|sideload|unauthorized|authorizing|connecting|detached|any)(?: +(.*))?$/
+      );
+      const props = match
+        ? [match[1]!, match[2]!, ...(match[3]?.split(' ').filter(Boolean) ?? [])]
+        : [];
       const type = line.includes('emulator') ? 'emulator' : 'device';
 
       let connectionType;
