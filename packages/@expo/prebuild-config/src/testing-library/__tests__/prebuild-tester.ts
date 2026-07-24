@@ -1,5 +1,4 @@
 import './expect';
-
 import {
   AndroidConfig,
   compileModsAsync as compileInternalModsAsync,

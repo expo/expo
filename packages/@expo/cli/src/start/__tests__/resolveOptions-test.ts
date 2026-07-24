@@ -238,11 +238,11 @@ describe(resolvePortsAsync, () => {
     });
   });
   it(`resolves default port for metro with dev client`, async () => {
-    await expect(
-      resolvePortsAsync('/noop', { devClient: true }, ['metro'])
-    ).resolves.toStrictEqual({
-      metroPort: 8081,
-    });
+    await expect(resolvePortsAsync('/noop', { devClient: true }, ['metro'])).resolves.toStrictEqual(
+      {
+        metroPort: 8081,
+      }
+    );
   });
   it(`does not abort when port resolves to 0`, async () => {
     jest.mocked(resolvePortAsync).mockResolvedValueOnce(0);

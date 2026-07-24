@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 
-import { withMetroServer } from './utils';
 import { openInEditorAsync } from '../../../../../utils/editor';
 import { createMetroMiddleware } from '../createMetroMiddleware';
+import { withMetroServer } from './utils';
 
 jest.mock('../../../../../utils/editor');
 

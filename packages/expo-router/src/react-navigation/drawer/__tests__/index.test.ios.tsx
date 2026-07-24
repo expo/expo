@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler/jestSetup';
-
 import { userEvent } from '@testing-library/react-native';
 import { useEffect } from 'react';
 import { Button, Text, View } from 'react-native';

@@ -27,7 +27,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingAndroid",
     ],
     "type": "package",
-    "version": "56.0.16",
+    "version": "56.0.17",
   },
   {
     "filePath": "node_modules/expo-asset/package.json",
@@ -36,7 +36,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingAndroid",
     ],
     "type": "package",
-    "version": "56.0.20",
+    "version": "56.0.21",
   },
   {
     "filePath": "node_modules/expo-constants/package.json",
@@ -45,7 +45,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingAndroid",
     ],
     "type": "package",
-    "version": "56.0.21",
+    "version": "56.0.22",
   },
   {
     "filePath": "node_modules/expo-file-system/package.json",
@@ -81,7 +81,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingAndroid",
     ],
     "type": "package",
-    "version": "56.0.21",
+    "version": "56.0.22",
   },
   {
     "filePath": "node_modules/expo-modules-core/package.json",
@@ -90,7 +90,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingAndroid",
     ],
     "type": "package",
-    "version": "56.0.21",
+    "version": "56.0.22",
   },
   {
     "filePath": "node_modules/expo-status-bar/package.json",
@@ -134,7 +134,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingIos",
     ],
     "type": "package",
-    "version": "56.0.16",
+    "version": "56.0.17",
   },
   {
     "filePath": "node_modules/expo-asset/package.json",
@@ -143,7 +143,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingIos",
     ],
     "type": "package",
-    "version": "56.0.20",
+    "version": "56.0.21",
   },
   {
     "filePath": "node_modules/expo-constants/package.json",
@@ -152,7 +152,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingIos",
     ],
     "type": "package",
-    "version": "56.0.21",
+    "version": "56.0.22",
   },
   {
     "filePath": "node_modules/expo-file-system/package.json",
@@ -188,7 +188,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingIos",
     ],
     "type": "package",
-    "version": "56.0.21",
+    "version": "56.0.22",
   },
   {
     "filePath": "node_modules/expo-modules-core/package.json",
@@ -197,7 +197,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "expoAutolinkingIos",
     ],
     "type": "package",
-    "version": "56.0.21",
+    "version": "56.0.22",
   },
   {
     "filePath": "node_modules/expo-modules-jsi/package.json",
@@ -270,7 +270,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "rncoreAutolinkingAndroid",
     ],
     "type": "package",
-    "version": "56.0.16",
+    "version": "56.0.17",
   },
   {
     "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"android":{"sourceDir":"node_modules/expo/android","packageImportPath":"import expo.modules.ExpoModulesPackage;","packageInstance":"new ExpoModulesPackage()","buildTypes":[],"componentDescriptors":[],"cmakeListsPath":"node_modules/expo/android/build/generated/source/codegen/jni/CMakeLists.txt","cxxModuleCMakeListsModuleName":null,"cxxModuleCMakeListsPath":null,"cxxModuleHeaderName":null,"isPureCxxDependency":false}}}}",
@@ -287,7 +287,7 @@ exports[`getHashSourcesAsync - managed project should match snapshot 1`] = `
       "rncoreAutolinkingIos",
     ],
     "type": "package",
-    "version": "56.0.16",
+    "version": "56.0.17",
   },
   {
     "contents": "{"expo":{"root":"node_modules/expo","name":"expo","platforms":{"ios":{"podspecPath":"node_modules/expo/Expo.podspec","version":"*","configurations":[],"scriptPhases":[]}}}}",

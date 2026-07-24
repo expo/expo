@@ -275,7 +275,6 @@ describe('inlineModules.ts', () => {
         '/example-project/intents/MyModule.swift',
       ]);
     });
-
   });
 
   describe('module filenames with dots', () => {

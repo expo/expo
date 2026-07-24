@@ -1,8 +1,7 @@
-/* eslint-env jest */
 import fs from 'fs/promises';
 
-import { getLoadedModulesAsync, projectRoot } from './utils';
 import { executeExpoAsync } from '../utils/expo';
+import { getLoadedModulesAsync, projectRoot } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;

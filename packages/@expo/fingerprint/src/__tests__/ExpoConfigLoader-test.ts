@@ -94,9 +94,7 @@ describe('resolveLoadedModuleSourcesAsync', () => {
     const ignoredFile = path.join(nodeModDir, 'index.js');
     fs.writeFileSync(ignoredFile, 'x');
 
-    const captured: CapturedModule[] = [
-      { id: ignoredFile, filename: ignoredFile, content: 'x' },
-    ];
+    const captured: CapturedModule[] = [{ id: ignoredFile, filename: ignoredFile, content: 'x' }];
     const sources = await resolveLoadedModuleSourcesAsync(captured, tmpDir, [
       '**/node_modules/chalk/**/*',
     ]);

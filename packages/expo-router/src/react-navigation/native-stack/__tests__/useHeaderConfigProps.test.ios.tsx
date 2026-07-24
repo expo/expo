@@ -2,13 +2,13 @@ import { render, renderHook, within } from '@testing-library/react-native';
 import { Platform, View } from 'react-native';
 
 import type { NativeStackHeaderItem } from '../types';
+import { useHeaderConfigProps } from '../views/useHeaderConfigProps';
 import {
   DEFAULT_COLORS,
   DEFAULT_FONTS,
   defaultProps,
   getMocks,
 } from './useHeaderConfigProps-setup';
-import { useHeaderConfigProps } from '../views/useHeaderConfigProps';
 
 jest.mock('react-native-screens', () => {
   const MockedReact = require('react');

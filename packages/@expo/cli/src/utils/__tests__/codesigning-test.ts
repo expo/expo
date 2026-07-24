@@ -1,11 +1,11 @@
 import { vol } from 'memfs';
 
-import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
 import { isInteractive } from '../interactive';
 import { selectAsync } from '../prompts';
+import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 
 jest.mock('../../utils/prompts');
 jest.mock('../../utils/interactive', () => ({

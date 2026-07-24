@@ -3,15 +3,15 @@ import { randomUUID } from 'crypto';
 import fs from 'fs/promises';
 import path from 'path';
 
-import type { FingerprintSource } from '../../src/Fingerprint.types';
-import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import {
   createFingerprintAsync,
   createProjectHashAsync,
   diffFingerprintChangesAsync,
 } from '../../src/Fingerprint';
+import type { FingerprintSource } from '../../src/Fingerprint.types';
 import { normalizeOptionsAsync } from '../../src/Options';
 import { getHashSourcesAsync } from '../../src/sourcer/Sourcer';
+import { getFingerprintHashFromCLIAsync } from './utils/CLIUtils';
 import { E2E_TEMPLATE_SDK_VERSION } from './utils/constants';
 
 type HashSources = Awaited<ReturnType<typeof getHashSourcesAsync>>;

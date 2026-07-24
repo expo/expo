@@ -1,5 +1,4 @@
 import 'react-native-gesture-handler/jestSetup';
-
 import { describe, expect, test } from '@jest/globals';
 
 import type { ParamListBase, Route, StackNavigationState } from '../../../../native';

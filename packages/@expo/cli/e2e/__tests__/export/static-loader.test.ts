@@ -1,5 +1,3 @@
-/* eslint-env jest */
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
@@ -7,6 +5,8 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles, getHtml, getPageAndLoaderData } from '../utils';
+/* eslint-env jest */
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
