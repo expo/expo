@@ -41,6 +41,7 @@
 
 ### 💡 Others
 
+- Remove `UNSTABLE_routeNamesChangeBehavior` and unhandled-state replay from `useNavigationBuilder`. ([#TODO](https://github.com/expo/expo/pull/TODO) by [@Ubax](https://github.com/Ubax))
 - Remove `useOnlyUserDefinedScreens` from `withLayoutContext` ([#47983](https://github.com/expo/expo/pull/47983) by [@Ubax](https://github.com/Ubax))
 - Move `@testing-library/jest-dom` and `@testing-library/user-event` from `dependencies` to `devDependencies` ([#47820](https://github.com/expo/expo/pull/47820) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Rewrite native tabs using standard-navigation ([#46457](https://github.com/expo/expo/pull/46457) by [@Ubax](https://github.com/Ubax))
