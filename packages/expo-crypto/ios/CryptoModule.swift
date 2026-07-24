@@ -13,7 +13,7 @@ public class CryptoModule: Module {
 
     Function("getRandomValues", getRandomValues)
 
-    Function("digest", digest)
+    AsyncFunction("digestAsync", digestAsync)
 
     Function("randomUUID", randomUUID())
   }
@@ -57,9 +57,15 @@ private func getRandomValues(array: TypedArray) throws -> TypedArray {
   return array
 }
 
-private func digest(algorithm: DigestAlgorithm, output: TypedArray, data: TypedArray) {
-  let outputPtr = output.rawPointer.assumingMemoryBound(to: UInt8.self)
-  _ = algorithm.digest(data.rawPointer, UInt32(data.byteLength), outputPtr)
+private func digestAsync(algorithm: DigestAlgorithm, data: Data) -> Data {
+  let length = Int(algorithm.digestLength)
+  var digest = [UInt8](repeating: 0, count: length)
+
+  data.withUnsafeBytes { bytes in
+    let _ = algorithm.digest(bytes.baseAddress, UInt32(data.count), &digest)
+  }
+
+  return Data(digest)
 }
 
 private final class LossyConversionException: Exception {

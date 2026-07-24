@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Move digest to the module queue. ([#45271](https://github.com/expo/expo/pull/45271) by [@rustle](https://github.com/rustle))
+
 ### 🐛 Bug fixes
 
 - Fix `AESSealedData.fromCombined()` throwing on Android when given a base64-encoded string. ([#47317](https://github.com/expo/expo/pull/47317) by [@gabrieldonadel](https://github.com/gabrieldonadel))
