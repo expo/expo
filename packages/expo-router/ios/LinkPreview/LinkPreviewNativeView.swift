@@ -116,6 +116,7 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     _ interaction: UIContextMenuInteraction,
     configurationForMenuAtLocation location: CGPoint
   ) -> UIContextMenuConfiguration? {
+    cancelReactNativeTouches()
     onWillPreviewOpen()
     return UIContextMenuConfiguration(
       identifier: nil,
@@ -182,6 +183,20 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
         self?.linkPreviewNativeNavigation.pushPreloadedView()
         self?.onPreviewTappedAnimationCompleted()
       }
+    }
+  }
+
+  // A press released before the menu fully presents is still recognized as a tap
+  // by react-native, so cancel in-flight touches when the interaction starts.
+  private func cancelReactNativeTouches() {
+    var view: UIView? = self
+    while let current = view {
+      for recognizer in current.gestureRecognizers ?? []
+      where String(describing: type(of: recognizer)).contains("TouchHandler") && recognizer.isEnabled {
+        recognizer.isEnabled = false
+        recognizer.isEnabled = true
+      }
+      view = current.superview
     }
   }
 

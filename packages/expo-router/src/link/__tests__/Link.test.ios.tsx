@@ -26,8 +26,14 @@ jest.mock('../preview/native', () => {
   const handlerMap: Record<string, Function | undefined> = {};
   return {
     NativeLinkPreview: jest.fn(
-      ({ children, onWillPreviewOpen, onPreviewTapped }: NativeLinkPreviewProps) => {
+      ({
+        children,
+        onWillPreviewOpen,
+        onPreviewDidClose,
+        onPreviewTapped,
+      }: NativeLinkPreviewProps) => {
         handlerMap['link-onWillPreviewOpen'] = () => onWillPreviewOpen?.();
+        handlerMap['link-onPreviewDidClose'] = () => onPreviewDidClose?.();
         handlerMap['link-onPreviewTapped'] = onPreviewTapped;
         return <View testID="link-preview-native-view">{children}</View>;
       }
@@ -821,6 +827,27 @@ describe('Preview', () => {
     });
   });
   describe('Link.Menu', () => {
+    it('does not navigate when the trigger press lands during a context menu interaction without preview', () => {
+      const emitters = require('../preview/native').__EVENTS__;
+      renderRouter({
+        index: () => (
+          <Link href="/test" testID="link">
+            <Link.Trigger>Trigger</Link.Trigger>
+            <Link.Menu>
+              <Link.MenuAction title="Test" onPress={() => {}} />
+            </Link.Menu>
+          </Link>
+        ),
+        test: () => <View testID="test-view" />,
+      });
+      act(() => emitters['link-onWillPreviewOpen']());
+      act(() => fireEvent.press(screen.getByTestId('link')));
+      expect(screen).toHavePathname('/');
+
+      act(() => emitters['link-onPreviewDidClose']());
+      act(() => fireEvent.press(screen.getByTestId('link')));
+      expect(screen).toHavePathname('/test');
+    });
     it('when Link.Menu items are passed, correct actions are passed to native', () => {
       const NativeLinkPreviewAction = require('../preview/native').NativeLinkPreviewAction;
       renderRouter({

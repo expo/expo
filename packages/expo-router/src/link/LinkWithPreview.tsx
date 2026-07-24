@@ -108,8 +108,8 @@ export function LinkWithPreview({ children, ...rest }: LinkWithPreviewProps) {
       nextScreenId={isPad ? undefined : nextScreenId}
       tabPath={isPad ? undefined : tabPathValue}
       onWillPreviewOpen={() => {
+        blockPressRef.current = true;
         if (hasPreview) {
-          blockPressRef.current = true;
           isPreviewTapped.current = false;
           prefetch(rest.href);
           setIsCurrenPreviewOpen(true);
