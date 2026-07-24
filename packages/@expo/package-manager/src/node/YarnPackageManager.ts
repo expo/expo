@@ -8,9 +8,29 @@ export class YarnPackageManager extends BasePackageManager {
   readonly bin = 'yarnpkg';
   readonly lockFile = YARN_LOCK_FILE;
 
+  private yarnVersionPromise?: Promise<string>;
+
   /** Check if Yarn is running in offline mode, and add the `--offline` flag */
   private async withOfflineFlagAsync(namesOrFlags: string[]): Promise<string[]> {
     return (await isYarnOfflineAsync()) ? [...namesOrFlags, '--offline'] : namesOrFlags;
+  }
+
+  /**
+   * Resolve through Yarn's `npmMinimalAgeGate` quarantine (on by default since Yarn 4.15) -
+   * Expo installs pin known versions (#44479). Yarn <4.10 exits with a usage error when this
+   * setting is present in the environment, so only set it when the version supports it.
+   */
+  private async withDisabledAgeGateEnvAsync(): Promise<NodeJS.ProcessEnv> {
+    try {
+      this.yarnVersionPromise ??= this.versionAsync();
+      const [major = 0, minor = 0] = (await this.yarnVersionPromise).split('.').map(Number);
+      if (major > 4 || (major === 4 && minor >= 10)) {
+        return { YARN_NPM_MINIMAL_AGE_GATE: '0', ...this.options.env };
+      }
+    } catch {
+      // Run without the override and let the install itself surface any real error
+    }
+    return this.options.env ?? {};
   }
 
   workspaceRoot() {
@@ -29,8 +49,11 @@ export class YarnPackageManager extends BasePackageManager {
 
   installAsync(flags: string[] = []) {
     return createPendingSpawnAsync(
-      () => this.withOfflineFlagAsync(['install']),
-      (args) => this.runAsync([...args, ...flags])
+      async () => ({
+        args: await this.withOfflineFlagAsync(['install']),
+        env: await this.withDisabledAgeGateEnvAsync(),
+      }),
+      ({ args, env }) => this.runAsync([...args, ...flags], { env })
     );
   }
 
@@ -40,8 +63,11 @@ export class YarnPackageManager extends BasePackageManager {
     }
 
     return createPendingSpawnAsync(
-      () => this.withOfflineFlagAsync(['add', ...namesOrFlags]),
-      (args) => this.runAsync(args)
+      async () => ({
+        args: await this.withOfflineFlagAsync(['add', ...namesOrFlags]),
+        env: await this.withDisabledAgeGateEnvAsync(),
+      }),
+      ({ args, env }) => this.runAsync(args, { env })
     );
   }
 
@@ -51,8 +77,11 @@ export class YarnPackageManager extends BasePackageManager {
     }
 
     return createPendingSpawnAsync(
-      () => this.withOfflineFlagAsync(['add', '--dev', ...namesOrFlags]),
-      (args) => this.runAsync(args)
+      async () => ({
+        args: await this.withOfflineFlagAsync(['add', '--dev', ...namesOrFlags]),
+        env: await this.withDisabledAgeGateEnvAsync(),
+      }),
+      ({ args, env }) => this.runAsync(args, { env })
     );
   }
 
@@ -62,8 +91,11 @@ export class YarnPackageManager extends BasePackageManager {
     }
 
     return createPendingSpawnAsync(
-      () => this.withOfflineFlagAsync(['global', 'add', ...namesOrFlags]),
-      (args) => this.runAsync(args)
+      async () => ({
+        args: await this.withOfflineFlagAsync(['global', 'add', ...namesOrFlags]),
+        env: await this.withDisabledAgeGateEnvAsync(),
+      }),
+      ({ args, env }) => this.runAsync(args, { env })
     );
   }
 
