@@ -10,6 +10,7 @@
 
 - Fixed a fatal JNI crash on Android when using `useLibSQL: true`, caused by the libSQL session bindings still declaring `byte[]` signatures after [#42638](https://github.com/expo/expo/pull/42638) switched Kotlin and the default native bindings to `ByteBuffer`. ([#46651](https://github.com/expo/expo/pull/46651) by [@zoontek](https://github.com/zoontek))
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
+- Fix crashes on comment-only or empty SQL statements. ([#44623](https://github.com/expo/expo/pull/44623) by [@barthap](https://github.com/barthap))
 
 ### 💡 Others
 
