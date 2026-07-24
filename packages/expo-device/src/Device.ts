@@ -45,7 +45,7 @@ export const manufacturer: string | null = ExpoDevice ? ExpoDevice.manufacturer 
  * ```
  * @platform ios
  */
-export const modelId = ExpoDevice ? ExpoDevice.modelId || null : null;
+export const modelId: string | null = ExpoDevice ? ExpoDevice.modelId || null : null;
 
 /**
  * The human-friendly name of the device model. This is the name that people would typically use to refer to the device rather than a programmatic model identifier.
