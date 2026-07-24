@@ -69,7 +69,7 @@ The **Organization settings** > **Overview** page will now display an **Update S
 
 <Step label="1">
 
-Navigate to [expo.dev/sso-login](https://expo.dev/sso-login) and enter the account name of your organization. You can create a link that pre-fills the organization name. For example, [expo.dev/sso-login/test-org](https://expo.dev/sso-login/test-org) pre-fills `test-org`.
+Navigate to [expo.dev/sso-login](https://expo.dev/sso-login) and enter the account name of your organization. You can create a link that pre-fills the organization name, which is useful when configuring a tile in your identity provider (such as Okta). Two forms are supported: the path form [expo.dev/sso-login/test-org](https://expo.dev/sso-login/test-org) and the query-param form [expo.dev/sso-login?prefilledOrganizationName=test-org](https://expo.dev/sso-login?prefilledOrganizationName=test-org), both of which pre-fill `test-org`. The query-param form is the most reliable for pre-filling, so prefer it when in doubt.
 
 </Step>
 
