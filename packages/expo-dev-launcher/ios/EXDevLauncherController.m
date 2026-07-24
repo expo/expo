@@ -180,13 +180,18 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
 #endif
 }
 
-- (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
++ (void)disablePackagerServerAccess
 {
 #if RCT_DEV_MENU | RCT_PACKAGER_LOADING_FUNCTIONALITY
-  // Matches the guard on the declaration in React/Base/RCTBundleURLProvider.h.
-  // The function isn't declared in builds without packager support.
+  // Guarded because the function isn't declared in builds without packager support
+  // (matches the guard in React/Base/RCTBundleURLProvider.h).
   RCTBundleURLProviderAllowPackagerServerAccess(NO);
 #endif
+}
+
+- (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions
+{
+  [EXDevLauncherController disablePackagerServerAccess];
 
   _delegate = delegate;
   _launchOptions = launchOptions;
