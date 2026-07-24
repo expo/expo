@@ -26,13 +26,6 @@ jestPreset = cloneDeep(jestPreset);
 const { withTypescriptMapping } = require('./src/preset/withTypescriptMapping');
 const { resolveBabelOptions } = require('./src/resolveBabelOptions');
 
-// Emulate the alias behavior of Expo's Metro resolver.
-jestPreset.moduleNameMapper = {
-  ...(jestPreset.moduleNameMapper || {}),
-  '^react-native-vector-icons$': '@expo/vector-icons',
-  '^react-native-vector-icons/(.*)': '@expo/vector-icons/$1',
-};
-
 const upstreamBabelJest = Object.keys(jestPreset.transform).find(
   (key) => jestPreset.transform[key] === 'babel-jest'
 );

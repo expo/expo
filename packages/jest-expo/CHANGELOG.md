@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Remove `react-native-vector-icons` → `@expo/vector-icons` aliasing from the Jest preset, since it broke module resolution in monorepos (e.g. Nx) for projects without `@expo/vector-icons` installed. ([#47567](https://github.com/expo/expo/pull/47567) by [@matinzd](https://github.com/matinzd))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-20
