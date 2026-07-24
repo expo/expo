@@ -22,6 +22,7 @@ import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
+import { prefetchBundleAsync } from '../prefetchBundle';
 import { startBundlerAsync } from '../startBundler';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
@@ -206,8 +207,7 @@ export async function runIosAsync(projectRoot: string, options: Options) {
     }
   }
 
-  // Start the dev server which creates all of the required info for
-  // launching the app on a simulator.
+  // Use the early-started manager if available, otherwise start Metro now.
   const manager = await startBundlerAsync(projectRoot, {
     port: props.port,
     headless: !props.shouldStartBundler,
@@ -219,6 +219,8 @@ export async function runIosAsync(projectRoot: string, options: Options) {
       : // If a scheme is specified then use that instead of the package name.
         (await getSchemesForIosAsync(projectRoot))?.[0],
   });
+  // prefetch the bundle so it's cached when the app requests it.
+  prefetchBundleAsync(projectRoot, manager, 'ios');
 
   // Install and launch the app binary on a device.
   await launchAppAsync(
