@@ -96,7 +96,23 @@ export default function BottomSheetScreen() {
     <Host style={{ flex: 1 }}>
       <Form>
         <Section title="Basic">
-          <Button label="Open Basic Sheet" onPress={() => setShowBasic(true)} />
+          <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+            The open button is passed as the `anchor` prop
+          </Text>
+          <BottomSheet
+            isPresented={showBasic}
+            onIsPresentedChange={setShowBasic}
+            anchor={<Button label="Open Basic Sheet" onPress={() => setShowBasic(true)} />}>
+            <Group modifiers={[presentationDetents(['medium', 'large'])]}>
+              <VStack modifiers={[padding({ all: 20 })]}>
+                <Text>Basic Bottom Sheet</Text>
+                <Text modifiers={[foregroundStyle('secondaryLabel')]}>
+                  Swipe down or tap outside to dismiss
+                </Text>
+                <Button label="Close" onPress={() => setShowBasic(false)} />
+              </VStack>
+            </Group>
+          </BottomSheet>
         </Section>
 
         <Section title="Fits Content">
@@ -171,19 +187,6 @@ export default function BottomSheetScreen() {
           <Button label="Open Scrollable List Sheet" onPress={() => setShowScrollableList(true)} />
         </Section>
       </Form>
-
-      {/* Basic Sheet */}
-      <BottomSheet isPresented={showBasic} onIsPresentedChange={setShowBasic}>
-        <Group modifiers={[presentationDetents(['medium', 'large'])]}>
-          <VStack modifiers={[padding({ all: 20 })]}>
-            <Text>Basic Bottom Sheet</Text>
-            <Text modifiers={[foregroundStyle('secondaryLabel')]}>
-              Swipe down or tap outside to dismiss
-            </Text>
-            <Button label="Close" onPress={() => setShowBasic(false)} />
-          </VStack>
-        </Group>
-      </BottomSheet>
 
       {/* Fits Content Sheet */}
       <BottomSheet
