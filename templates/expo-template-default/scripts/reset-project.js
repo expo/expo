@@ -3,7 +3,7 @@
 /**
  * This script is used to reset the project to a blank state.
  * It deletes or moves the /src and /scripts directories to /example based on user input and creates a new /src/app directory with an index.tsx and _layout.tsx file.
- * You can remove the `reset-project` script from package.json and safely delete this file after running it.
+ * The `reset-project` entry is automatically removed from package.json. You can safely delete this file after running it.
  */
 
 const fs = require("fs");
@@ -47,6 +47,27 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
+const removePackageJsonScript = async () => {
+  const packageJsonPath = path.join(root, "package.json");
+  try {
+    const raw = await fs.promises.readFile(packageJsonPath, "utf8");
+    const pkg = JSON.parse(raw);
+    if (pkg.scripts && "reset-project" in pkg.scripts) {
+      delete pkg.scripts["reset-project"];
+      const trailingNewline = raw.endsWith("\n") ? "\n" : "";
+      await fs.promises.writeFile(
+        packageJsonPath,
+        JSON.stringify(pkg, null, 2) + trailingNewline
+      );
+      console.log("🧹 Removed `reset-project` script from package.json.");
+    }
+  } catch (error) {
+    console.warn(
+      `⚠️  Could not update package.json automatically: ${error.message}\n   You can safely remove the "reset-project" entry from the "scripts" block manually.`
+    );
+  }
+};
+
 const moveDirectories = async (userInput) => {
   try {
     if (userInput === "y") {
@@ -86,6 +107,8 @@ const moveDirectories = async (userInput) => {
     const layoutPath = path.join(newAppDirPath, "_layout.tsx");
     await fs.promises.writeFile(layoutPath, layoutContent);
     console.log("📄 src/app/_layout.tsx created.");
+
+    await removePackageJsonScript();
 
     console.log("\n✅ Project reset complete. Next steps:");
     console.log(
