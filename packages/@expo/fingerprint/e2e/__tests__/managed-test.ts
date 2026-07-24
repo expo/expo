@@ -22,7 +22,14 @@ function normalizeAutolinkingSourceVersionsForSnapshot<T extends HashSource | Fi
   source: T
 ): T {
   // SDK templates can resolve different patch releases over time.
-  // Keep snapshots focused on the autolinking source shape.
+  // Keep snapshots focused on the source shape rather than resolved versions.
+  if (source.type === 'package') {
+    const normalizedSource = { ...source, version: '*' };
+    return (
+      'hash' in normalizedSource ? { ...normalizedSource, hash: '*' } : normalizedSource
+    ) as T;
+  }
+
   if (source.type !== 'contents' || !source.id.includes('AutolinkingConfig:')) {
     return source;
   }
@@ -252,14 +259,14 @@ describe('managed project test', () => {
         {
           "addedSource": {
             "filePath": "node_modules/@react-native-community/netinfo/package.json",
-            "hash": "82008ba806a67c1485ebda79b9ea3e45e2d06e92",
+            "hash": "*",
             "name": "@react-native-community/netinfo",
             "reasons": [
               "rncoreAutolinkingAndroid",
               "rncoreAutolinkingIos",
             ],
             "type": "package",
-            "version": "12.0.1",
+            "version": "*",
           },
           "op": "added",
         },
