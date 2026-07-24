@@ -3,10 +3,10 @@ package com.facebook.react.devsupport
 import android.content.Context
 import android.content.SharedPreferences
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener
-import android.preference.PreferenceManager
+import androidx.core.content.edit
+import androidx.preference.PreferenceManager
 import com.facebook.react.common.build.ReactBuildConfig
 import com.facebook.react.modules.debug.interfaces.DeveloperSettings
-import androidx.core.content.edit
 
 /**
  * Implementation has been copied from reacts internal [DevInternalSettings] class
@@ -47,20 +47,7 @@ abstract class DevMenuSettingsBase(
 
   override var isDeviceDebugEnabled: Boolean = ReactBuildConfig.DEBUG
 
-  // TODO(kudo,20250217) - Remove this when we drop react-native 0.78 support
-  @Suppress("NOTHING_TO_OVERRIDE")
-  override var isRemoteJSDebugEnabled: Boolean
-    get() = mPreferences.getBoolean("remote_js_debug", false)
-    set(remoteJSDebugEnabled) {
-      mPreferences.edit(commit = true) { putBoolean("remote_js_debug", remoteJSDebugEnabled) }
-    }
-
-  @Suppress("NOTHING_TO_OVERRIDE")
-  override var isStartSamplingProfilerOnInit: Boolean =
-    mPreferences.getBoolean("start_sampling_profiler_on_init", false)
-
-  override fun addMenuItem(title: String) {
-  }
+  override fun addMenuItem(title: String) = Unit
 
   override var isHotModuleReplacementEnabled: Boolean
     get() = mPreferences.getBoolean("hot_module_replacement", true)
