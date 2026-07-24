@@ -13,6 +13,7 @@
 - Treat dynamic imports with rejection handlers as optional dependencies, ported from [react/metro#1697](https://github.com/react/metro/pull/1697) ([#47334](https://github.com/expo/expo/pull/47334) by [@kitten](https://github.com/kitten))
 - Fix `resolver.useWatchman: true` not re-enabling watchman as intended ([#47662](https://github.com/expo/expo/issues/47662) by [@isaka1022](https://github.com/isaka1022))
 - Fix `composeSourceMaps` crashing on Hermes source-map segments with a negative original position ([#47752](https://github.com/expo/expo/pull/47752) by [@kitten](https://github.com/kitten))
+- Depend on `@react-native/js-polyfills` directly for `getPolyfills` instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.88. ([#48034](https://github.com/expo/expo/pull/48034) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

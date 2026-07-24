@@ -37,6 +37,7 @@ const event = events('devserver');
 
 export type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
+  getClientCount?: () => number;
 };
 
 export type ServerLike = {
@@ -349,7 +350,14 @@ export abstract class BundlerDevServer {
     method: 'reload' | 'devMenu' | 'sendDevCommand',
     params?: Record<string, any>
   ) {
-    this.getInstance()?.messageSocket.broadcast(method, params);
+    const instance = this.getInstance();
+    debugEvent('send_command', {
+      method,
+      commandName: getCommandName(params),
+      bundler: this.name,
+      receiverCount: instance?.messageSocket.getClientCount?.() ?? null,
+    });
+    instance?.messageSocket.broadcast(method, params);
   }
 
   /** Get the running dev server instance. */
@@ -589,4 +597,8 @@ export abstract class BundlerDevServer {
     }
     return this.platformManagers[platform] as PlatformManagers[Platform];
   }
+}
+
+function getCommandName(params?: Record<string, any>): string | undefined {
+  return typeof params?.name === 'string' ? params.name : undefined;
 }

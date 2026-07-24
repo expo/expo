@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `build:ios` with precompiled modules: locate frameworks under `XCFrameworkIntermediates/`, bundle `ExpoModulesJSI`, copy SPM deps as real flavor-matched directories instead of symlinks, and fail fast on duplicate or colliding target names. ([#48065](https://github.com/expo/expo/pull/48065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26

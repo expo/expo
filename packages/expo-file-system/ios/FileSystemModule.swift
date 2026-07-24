@@ -11,6 +11,8 @@ public final class FileSystemModule: Module {
   private lazy var filePickingHandler = FilePickingHandler(module: self)
   private var previewSession: FileSystemPreviewSession?
   private var isPresentingPreview = false
+  private weak var previewController: QLPreviewController?
+  private var deferredPreview: (file: FileSystemFile, options: FilePreviewOptions?, promise: Promise)?
   #endif
 
   private let downloadStore = DownloadTaskStore()
@@ -59,10 +61,99 @@ public final class FileSystemModule: Module {
     }
   }
 
+  #if os(iOS)
+  private func presentPreview(file: FileSystemFile, options: FilePreviewOptions?, promise: Promise) throws {
+    guard let currentViewController = appContext?.utilities?.currentViewController() else {
+      throw FilePreviewMissingViewControllerException()
+    }
+
+    let scopedAccess = try makeScopedAccess(for: file, permission: .read)
+    guard file.exists else {
+      throw FilePreviewFileNotFoundException(file.url)
+    }
+    let item = FileSystemPreviewItem(url: file.url, title: options?.title)
+    guard QLPreviewController.canPreview(item) else {
+      throw FilePreviewUnsupportedException(file.url)
+    }
+
+    let previewController = QLPreviewController()
+    let session = FileSystemPreviewSession(item: item, scopedAccess: scopedAccess) { [weak self] in
+      guard let self else {
+        return
+      }
+      self.previewSession = nil
+      self.isPresentingPreview = false
+      self.previewController = nil
+
+      guard let deferredPreview = self.deferredPreview else {
+        return
+      }
+      self.deferredPreview = nil
+      do {
+        try self.presentPreview(
+          file: deferredPreview.file,
+          options: deferredPreview.options,
+          promise: deferredPreview.promise
+        )
+      } catch {
+        deferredPreview.promise.reject(error)
+      }
+    }
+    previewSession = session
+    isPresentingPreview = true
+    self.previewController = previewController
+    previewController.dataSource = session
+    previewController.delegate = session
+
+    currentViewController.present(previewController, animated: true) {
+      promise.resolve()
+    }
+  }
+
+  private func deferPreviewUntilDismissal(
+    file: FileSystemFile,
+    options: FilePreviewOptions?,
+    promise: Promise
+  ) -> Bool {
+    guard deferredPreview == nil,
+      let previewController,
+      previewController.isBeingDismissed,
+      let transitionCoordinator = previewController.transitionCoordinator else {
+      return false
+    }
+
+    deferredPreview = (file, options, promise)
+
+    if transitionCoordinator.isInteractive {
+      transitionCoordinator.notifyWhenInteractionChanges { [weak self] context in
+        guard context.isCancelled else {
+          return
+        }
+        self?.rejectDeferredPreview()
+      }
+    }
+    return true
+  }
+
+  private func rejectDeferredPreview() {
+    guard let deferredPreview else {
+      return
+    }
+    self.deferredPreview = nil
+    deferredPreview.promise.reject(FilePreviewInProgressException())
+  }
+  #endif
+
   public func definition() -> ModuleDefinition {
     Name("FileSystem")
 
     Events("downloadProgress")
+
+    #if os(iOS)
+    OnDestroy {
+      rejectDeferredPreview()
+    }
+    #endif
 
     Constant("documentDirectory") {
       return documentDirectory?.absoluteString
@@ -212,34 +303,12 @@ public final class FileSystemModule: Module {
       AsyncFunction("preview") { (file: FileSystemFile, options: FilePreviewOptions?, promise: Promise) in
         #if os(iOS)
         do {
-          guard !isPresentingPreview else {
-            throw FilePreviewInProgressException()
-          }
-          guard let currentViewController = appContext?.utilities?.currentViewController() else {
-            throw FilePreviewMissingViewControllerException()
-          }
-
-          let scopedAccess = try makeScopedAccess(for: file, permission: .read)
-          guard file.exists else {
-            throw FilePreviewFileNotFoundException(file.url)
-          }
-          let item = FileSystemPreviewItem(url: file.url, title: options?.title)
-          guard QLPreviewController.canPreview(item) else {
-            throw FilePreviewUnsupportedException(file.url)
-          }
-
-          let previewController = QLPreviewController()
-          let session = FileSystemPreviewSession(item: item, scopedAccess: scopedAccess) { [weak self] in
-            self?.previewSession = nil
-            self?.isPresentingPreview = false
-          }
-          previewSession = session
-          isPresentingPreview = true
-          previewController.dataSource = session
-          previewController.delegate = session
-
-          currentViewController.present(previewController, animated: true) {
-            promise.resolve()
+          if isPresentingPreview {
+            guard deferPreviewUntilDismissal(file: file, options: options, promise: promise) else {
+              throw FilePreviewInProgressException()
+            }
+          } else {
+            try presentPreview(file: file, options: options, promise: promise)
           }
         } catch {
           promise.reject(error)

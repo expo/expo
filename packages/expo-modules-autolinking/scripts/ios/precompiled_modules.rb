@@ -1651,19 +1651,26 @@ module Expo
         }
       end
 
-      # Returns local Expo product dependencies whose prebuilt availability must
-      # match this product's availability. Runtime deps like React/Hermes are not
-      # encoded as package/product strings and are ignored here.
+      # Returns the product names of dependencies whose prebuilt availability must
+      # match this product's availability. Both slash-form package/product strings
+      # (e.g. "expo-modules-core/ExpoModulesCore") and bare product names (e.g.
+      # "RNWorklets") are surfaced. Which of them are actually precompiled-managed
+      # pods is decided later by @pod_lookup_map membership in the resolver, so
+      # runtime deps like React/Hermes are surfaced here but ignored there.
       def prebuilt_dependency_pods(external_dependencies)
         (external_dependencies || []).filter_map do |dep|
-          next unless dep.is_a?(String) && dep.include?('/')
+          next unless dep.is_a?(String)
 
           parts = dep.split('/')
-          is_scoped = parts[0].start_with?('@')
-          package_name = is_scoped ? "#{parts[0]}/#{parts[1]}" : parts[0]
-          product_name = is_scoped ? parts[2] : parts[1]
+          product_name =
+            if parts.length == 1
+              parts[0]                          # bare, e.g. "RNWorklets"
+            elsif parts[0].start_with?('@')
+              parts[2]                          # @scope/package/Product
+            else
+              parts[1]                          # package/Product
+            end
 
-          next unless package_name&.start_with?('expo-', '@expo/')
           next if CUSTOM_XCFRAMEWORK_DEPENDENCIES.include?(product_name)
 
           product_name
@@ -1975,6 +1982,11 @@ module Expo
         next_visiting = visiting.dup.add(pod_name)
 
         (pod_info[:prebuilt_dependency_pods] || []).each do |dep_name|
+          # Only precompiled-managed pods participate in availability propagation.
+          # Runtime deps like React/Hermes are surfaced by prebuilt_dependency_pods
+          # but are not in the map, so they are ignored here.
+          next unless pod_lookup_map.key?(dep_name)
+
           dep_resolution = resolve_prebuilt_status(dep_name, next_visiting)
           next if dep_resolution[:available]
 

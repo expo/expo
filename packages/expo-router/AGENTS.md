@@ -113,8 +113,8 @@ File-based routing library for React Native and web applications. It provides au
 │   └── ExpoRouterModule.kt            # Material 3 dynamic and static color resolution
 ├── entry.js                   # Module entry point
 ├── head.js                    # Head/meta tags entrypoint - import Head from "expo-router/head"
-├── server.js                  # Deprecated server entrypoint. Use @expo/server instead.
-├── server.d.ts                # Re-exports types from `@expo/router-server`
+├── server.js                  # Legacy root shim for expo-router/server - delegates to build/server (source: src/server/index.ts, re-exports loader utilities from expo-server)
+├── server.d.ts                # Legacy root shim types - delegates to build/server
 ├── drawer.js                  # Drawer navigator - import { Drawer } from "expo-router/drawer"
 ├── stack.js                   # Stack navigator - import { Stack } from "expo-router/stack"
 ├── js-stack.js                # JS stack navigator - import { Stack } from "expo-router/js-stack"

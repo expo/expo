@@ -34,6 +34,12 @@ function loadTypescript() {
   if (_ts === undefined) {
     try {
       _ts = require('typescript');
+      // NOTE(@kitten): typescript v7 ships without the necessary compiler/public APIs to use it
+      // for transpilation or other purposes
+      if (typeof _ts?.transpileModule !== 'function') {
+        _ts = null;
+        return null;
+      }
     } catch (error: any) {
       if (error.code !== 'MODULE_NOT_FOUND') {
         throw error;
@@ -329,6 +335,9 @@ function evalModule(
         mode: 'transform',
         sourceMap: true,
       });
+      if (format.mode === 'commonjs-typescript') {
+        inputCode = toCommonJS(filename, inputCode);
+      }
     }
 
     if (inputCode !== code) {
