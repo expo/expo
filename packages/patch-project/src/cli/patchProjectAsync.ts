@@ -5,7 +5,7 @@ import fs from 'fs/promises';
 import { glob as globAsync } from 'glob';
 import path from 'path';
 
-import { addAllToGitIndexAsync, commitAsync, diffAsync, initializeGitRepoAsync } from '../gitPatch';
+import { addAllToGitIndexAsync, commitAsync, diffAsync, getGitRootAsync, initializeGitRepoAsync } from '../gitPatch';
 import { moveAsync } from './dir';
 import { generateNativeProjectsAsync, platformSanityCheckAsync } from './generateNativeProjects';
 import * as logger from './logger';
@@ -121,7 +121,11 @@ async function patchProjectForPlatformAsync({
   });
 
   debug(`Initializing git repo for diff - diffDir[${diffDir}]`);
-  const platformDiffDir = path.join(diffDir, platform);
+  const gitRoot = await getGitRootAsync(projectRoot);
+  const relPath = path.relative(gitRoot, projectRoot);
+  const platformDiffDir = relPath
+    ? path.join(diffDir, relPath, platform)
+    : path.join(diffDir, platform);
   await initializeGitRepoAsync(diffDir);
   await moveAsync(path.join(projectRoot, platform), platformDiffDir);
   await addAllToGitIndexAsync(diffDir);

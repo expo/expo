@@ -52,8 +52,27 @@ export async function diffAsync(
   );
 }
 
+export async function getGitRootAsync(projectRoot: string): Promise<string> {
+  try {
+    const result = await runGitAsync(['rev-parse', '--show-toplevel'], { cwd: projectRoot });
+    return result;
+  } catch {
+    return projectRoot;
+  }
+}
+
 export async function applyPatchAsync(projectRoot: string, patchFilePath: string) {
-  return await runGitAsync(['apply', '--ignore-whitespace', patchFilePath], { cwd: projectRoot });
+  const gitRoot = await getGitRootAsync(projectRoot);
+  const relPath = path.relative(gitRoot, projectRoot);
+
+  const args = ['apply', '--ignore-whitespace'];
+  if (relPath) {
+    // Normalize to forward slashes; git expects / on all platforms
+    args.push('--directory', relPath.replace(/\\/g, '/'));
+  }
+  args.push(patchFilePath);
+
+  return await runGitAsync(args, { cwd: projectRoot });
 }
 
 export async function getPatchChangedLinesAsync(patchFilePath: string): Promise<number> {
