@@ -2,6 +2,7 @@ import { getMockConfig as getMockConfigUntyped } from 'expo-router/build/testing
 
 import type { ExpoRouterRuntimeManifest } from '../../start/server/metro/MetroBundlerDevServer';
 import {
+  getExactPathNamedRegex,
   getHtmlFiles,
   getPathVariations,
   getFilesToExportFromServerAsync,
@@ -405,5 +406,32 @@ describe(getFilesToExportFromServerAsync, () => {
     });
 
     expect([...files.keys()]).toEqual(['(a)/index.html', '(b)/index.html']);
+  });
+});
+
+describe(getExactPathNamedRegex, () => {
+  it(`compiles the root pathname`, () => {
+    expect(getExactPathNamedRegex('/')).toBe('^/(?:/)?$');
+  });
+
+  it(`compiles a literal pathname with an optional trailing slash`, () => {
+    const regex = getExactPathNamedRegex('/blog');
+    expect(regex).toBe('^/blog(?:/)?$');
+    expect(new RegExp(regex).test('/blog')).toBe(true);
+    expect(new RegExp(regex).test('/blog/')).toBe(true);
+    expect(new RegExp(regex).test('/blog/post')).toBe(false);
+    expect(new RegExp(regex).test('/blogs')).toBe(false);
+  });
+
+  it(`escapes group segments`, () => {
+    const regex = getExactPathNamedRegex('/(group)/about');
+    expect(new RegExp(regex).test('/(group)/about')).toBe(true);
+    expect(new RegExp(regex).test('/group/about')).toBe(false);
+  });
+
+  it(`escapes dynamic route syntax so fallback pathnames only match literally`, () => {
+    const regex = getExactPathNamedRegex('/posts/[postId]');
+    expect(new RegExp(regex).test('/posts/[postId]')).toBe(true);
+    expect(new RegExp(regex).test('/posts/some-post')).toBe(false);
   });
 });

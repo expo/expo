@@ -1906,19 +1906,21 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
+        let headers: Headers | undefined;
         if (maybeResponse instanceof Response) {
           // In SSR, preserve `Response` from the loader
           if (exp.web?.output === 'server' && unstable_useServerRendering) {
             return maybeResponse;
           }
 
-          // In SSG, extract body
+          // In SSG, extract the body and the headers
           data = await maybeResponse.json();
+          headers = maybeResponse.headers;
         } else {
           data = maybeResponse;
         }
 
-        return Response.json(data ?? null);
+        return Response.json(data ?? null, { headers });
       }
 
       return undefined;
