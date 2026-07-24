@@ -22,8 +22,12 @@ PROJECT_ROOT=${PROJECT_ROOT:-"$EXPO_CONSTANTS_PACKAGE_DIR/../.."}
 
 cd "$PROJECT_ROOT" || exit
 
+# Default to "shallow" when BUNDLE_FORMAT is unset (iOS simulator builds may not set this variable)
+BUNDLE_FORMAT=${BUNDLE_FORMAT:-"shallow"}
+
 if [ "$BUNDLE_FORMAT" == "shallow" ]; then
   RESOURCE_DEST="$DEST/$RESOURCE_BUNDLE_NAME"
+  mkdir -p "$RESOURCE_DEST"
 elif [ "$BUNDLE_FORMAT" == "deep" ]; then
   RESOURCE_DEST="$DEST/$RESOURCE_BUNDLE_NAME/Contents/Resources"
   mkdir -p "$RESOURCE_DEST"
