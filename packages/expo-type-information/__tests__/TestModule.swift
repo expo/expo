@@ -165,6 +165,14 @@ public class TestModule: Module {
   }
 }
 
+public class SecondTestModule: Module {
+  public func definition() -> ModuleDefinition {
+    Function("TestFunction") { () -> String in
+      return "string"
+    }
+  }
+}
+
 struct TestRecord: Record {
   @Field
   var basicString: String
