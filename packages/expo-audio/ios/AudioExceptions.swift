@@ -48,6 +48,12 @@ internal final class AudioRecordingException: GenericException<String> {
   }
 }
 
+internal final class InvalidRecordingFileNameException: GenericException<String> {
+  override var reason: String {
+    "Invalid recording file name '\(param)': must not contain '/', '\\', or '..'"
+  }
+}
+
 internal final class AudioStreamFileException: GenericException<String> {
   override var reason: String {
     param
