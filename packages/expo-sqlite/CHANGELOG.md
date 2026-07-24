@@ -43,6 +43,8 @@ _This version does not introduce any user-facing changes._
 
 - Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
 
+- [Web] Fixed sync worker result length encoding for `SharedArrayBuffer` results in `WorkerChannel`, preventing truncated JSON deserialization errors. ([#44148](https://github.com/expo/expo/pull/44148) by [@silto](https://github.com/silto))
+
 ### 💡 Others
 
 - [iOS] Updated sync function signatures (`runSync`, `applyChangesetSync`, `invertChangesetSync`) to accept `any AnyArrayBuffer` in place of the removed `JavaScriptArrayBuffer`. ([#44337](https://github.com/expo/expo/pull/44337) by [@tsapeta](https://github.com/tsapeta))
