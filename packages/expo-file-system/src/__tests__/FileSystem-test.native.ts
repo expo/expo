@@ -359,7 +359,9 @@ describe('expo-file-system behavioral mock', () => {
     directory.create();
     const file = new File(directory.uri);
 
-    await expect(file.digest('MD5')).rejects.toThrow();
+    await expect(file.digest('MD5')).rejects.toThrow(
+      'A folder with the same name already exists in the file location'
+    );
   });
 
   it('File.move updates this.uri and removes the source', async () => {

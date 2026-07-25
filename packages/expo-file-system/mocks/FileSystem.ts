@@ -222,6 +222,10 @@ export class FileSystemFile {
   }
 
   async digest(algorithm: FileDigestAlgorithm): Promise<string> {
+    const entry = store.get(normalizeKey(this.uri));
+    if (entry?.exists && entry.kind === 'dir') {
+      throw new Error('A folder with the same name already exists in the file location');
+    }
     const hexLength = digestHexLengths[algorithm];
     if (!hexLength) {
       throw new Error(`Unsupported digest algorithm: ${algorithm}`);
