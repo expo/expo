@@ -23,6 +23,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -351,6 +352,9 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     },
     colors = colors
   ) {
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val displayMode = state.displayMode
+
     // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
     // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
     CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
