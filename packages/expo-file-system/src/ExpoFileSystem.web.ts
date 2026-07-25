@@ -10,10 +10,6 @@ class FileSystemFile {
     console.warn('expo-file-system is not supported on web');
     return Promise.reject(new Error('File preview is not supported on web'));
   }
-  digest(_algorithm: unknown): Promise<string> {
-    console.warn('expo-file-system is not supported on web');
-    return Promise.reject(new Error('File digest is not supported on web'));
-  }
 }
 
 class FileSystemDirectory {
