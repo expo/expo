@@ -656,18 +656,23 @@ describe('re-exports', () => {
 });
 
 describe('jest module calls', () => {
-  test('rewrites jest.mock with a factory', () => {
+  test('reports jest.mock but leaves it untouched while migrating the import', () => {
     const input = [
       `import { useNavigation } from '@react-navigation/native';`,
       `jest.mock('@react-navigation/native', () => ({ useNavigation: jest.fn() }));`,
     ].join('\n');
     const output = run(input);
+    // The import is migrated...
     expect(output).toContain(`import { useNavigation } from "expo-router/react-navigation"`);
-    expect(output).toContain(`jest.mock("expo-router/react-navigation"`);
-    expect(output).not.toContain('@react-navigation');
+    // ...but the mock is left alone: rewriting it is not equivalent, because
+    // `expo-router/react-navigation` re-exports `@react-navigation/native`, so
+    // mocking the former leaves the latter unmocked.
+    expect(output).toContain(`jest.mock('@react-navigation/native'`);
+    expect(errorSpy).toHaveBeenCalled();
+    expect(errorSpy.mock.calls[0][0]).toContain('jest.mock("@react-navigation/native")');
   });
 
-  test('rewrites jest.requireActual inside a mock factory', () => {
+  test('reports jest.requireActual inside a mock factory and leaves it untouched', () => {
     const input = [
       `jest.mock('@react-navigation/native', () => ({`,
       `  ...jest.requireActual('@react-navigation/native'),`,
@@ -675,8 +680,12 @@ describe('jest module calls', () => {
       `}));`,
     ].join('\n');
     const output = run(input);
-    expect(output).toContain(`jest.mock("expo-router/react-navigation"`);
-    expect(output).toContain(`jest.requireActual("expo-router/react-navigation")`);
+    // Nothing is rewritten, so the transform reports no change at all.
+    expect(output).toBe('');
+    expect(errorSpy).toHaveBeenCalled();
+    const message = errorSpy.mock.calls[0][0] as string;
+    expect(message).toContain('jest.mock("@react-navigation/native")');
+    expect(message).toContain('jest.requireActual("@react-navigation/native")');
   });
 
   test('reports jest.mock of an unsupported package and leaves it untouched', () => {

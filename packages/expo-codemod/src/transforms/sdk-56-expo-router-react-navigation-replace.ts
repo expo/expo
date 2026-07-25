@@ -7,9 +7,11 @@
  *   @react-navigation/bottom-tabs   → expo-router/js-tabs
  *   @react-navigation/material-top-tabs → expo-router/js-top-tabs
  *
- * Rewritten site types: named imports, named re-exports
- * (`export { A } from '...'`), and `jest.mock(...)`/`jest.requireActual(...)`
- * calls with a literal module name.
+ * Rewritten site types: named imports and named re-exports
+ * (`export { A } from '...'`).
+ *
+ * `jest.mock(...)`/`jest.requireActual(...)` calls are reported but never
+ * rewritten — see the note on JEST_MODULE_METHODS below.
  *
  * Unsupported (no direct equivalent — throws to surface the migration step):
  *   @react-navigation/native-stack  → use the `Stack` layout from expo-router
@@ -83,8 +85,9 @@ const markAsInlineType = <T extends ImportSpecifierWithKind>(spec: T): T => {
   return clone;
 };
 
-// Any rewritable site that carries a module specifier: an import declaration,
-// a re-export declaration, or a `jest.mock`-style call.
+// Any site that carries a module specifier: an import declaration, a re-export
+// declaration, or a `jest.mock`-style call. Not all of them are rewritable —
+// jest calls are only reported.
 type ModuleSite = {
   sourceModule: string;
   line: number | '?';
@@ -192,9 +195,16 @@ const mergeGroup = (j: JSCodeshift, groupPaths: ASTPath<ImportDeclaration>[]): v
 };
 
 // Module names referenced by `jest.mock('...')` / `jest.requireActual('...')`
-// must follow the rewritten imports, otherwise tests keep mocking the old
-// `@react-navigation/*` module while the code under test imports the
-// `expo-router/*` one.
+// are reported for manual review, never rewritten.
+//
+// `jest.mock` keys the module registry on the *resolved* module, so the mapping
+// is not equivalent to the one used for imports. `expo-router/react-navigation`
+// re-exports from `@react-navigation/*`, so moving the mock to the expo-router
+// entry point leaves the underlying module unmocked for any code that reaches
+// it directly — the test would silently exercise the real implementation.
+// Mocking the underlying package can also be exactly what the test intends.
+// Which one is correct depends on the test, so we surface the call and let the
+// author decide.
 const JEST_MODULE_METHODS = new Set(['mock', 'doMock', 'requireActual', 'unmock']);
 
 const findJestModuleCalls = (j: JSCodeshift, root: ReturnType<JSCodeshift>) =>
@@ -286,6 +296,30 @@ const transform: Transform = (fileInfo, api) => {
     printErrorBlock('Unsupported import style — manual change needed', errors);
   }
 
+  // Jest module calls are reported, never rewritten. See JEST_MODULE_METHODS.
+  const jestWarnings = jestCallPaths
+    .filter((path) => ((path.node.arguments[0] as { value: string }).value as string) in IMPORT_MAP)
+    .map((path) => {
+      const sourceModule = (path.node.arguments[0] as { value: string }).value;
+      const method = (
+        (path.node.callee as { property: { name: string } }).property as {
+          name: string;
+        }
+      ).name;
+      return [
+        `${fileInfo.path}:${
+          path.node.loc?.start.line ?? '?'
+        } - jest.${method}("${sourceModule}") was left unchanged.`,
+        `Mocking "${IMPORT_MAP[sourceModule]}" instead is not equivalent: it re-exports`,
+        `"${sourceModule}", so the underlying module would stay unmocked for code that`,
+        'imports it directly. Update the mock by hand if your test needs it.',
+      ].join('\n');
+    });
+
+  if (jestWarnings.length) {
+    printErrorBlock('Jest module mocks — manual review needed', jestWarnings);
+  }
+
   // We intentionally do not bail out of the entire file when there are
   // unsupported packages (e.g. native-stack/drawer) or unsupported import
   // styles. Those are reported above for the user to migrate manually, but any
@@ -311,14 +345,6 @@ const transform: Transform = (fileInfo, api) => {
     const sourceModule = source.value as string;
     if (!(sourceModule in IMPORT_MAP) || !isNamedReExport(path)) continue;
     source.value = IMPORT_MAP[sourceModule];
-    didRewrite = true;
-  }
-
-  for (const path of jestCallPaths) {
-    const firstArg = path.node.arguments[0] as { value: string };
-    const replacement = IMPORT_MAP[firstArg.value];
-    if (replacement == null) continue;
-    firstArg.value = replacement;
     didRewrite = true;
   }
 
