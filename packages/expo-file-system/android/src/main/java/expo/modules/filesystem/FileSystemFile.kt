@@ -182,6 +182,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   fun digest(algorithm: String): String {
     val bufferSize = 65536
 
+    validateType()
     validatePermission(FilePermissionService.Permission.READ)
     val md = when (algorithm) {
       "MD5" -> MessageDigest.getInstance("MD5")
@@ -189,7 +190,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
       "SHA-256" -> MessageDigest.getInstance("SHA-256")
       "SHA-384" -> MessageDigest.getInstance("SHA-384")
       "SHA-512" -> MessageDigest.getInstance("SHA-512")
-      else -> throw IllegalArgumentException("Unsupported digest algorithm: $algorithm")
+      else -> throw UnsupportedDigestAlgorithmException(algorithm)
     }
     file.inputStream().use { stream ->
       val buffer = ByteArray(bufferSize)
