@@ -98,3 +98,112 @@ After these steps, the app versions will be synced to EAS Build remotely. You ca
 ## Summary
 
 <ProgressTracker name="EAS_TUTORIAL" currentChapterSlug="/tutorial/eas/manage-app-versions" />
+
+const seedArticles = [
+  {id:1,title:"دليل استقبال الموظف الجديد",category:"الموارد البشرية",type:"دليل",summary:"خطوات موحدة لاستقبال الموظفين الجدد وتجهيز حساباتهم وتعريفهم بالسياسات.",tags:["تهيئة","موظفون"],author:"نورة العتيبي",date:"منذ ساعتين",favorite:true},
+  {id:2,title:"إجراء اعتماد طلبات الشراء",category:"العمليات",type:"إجراء",summary:"المسار المعتمد لرفع طلبات الشراء ومراجعتها والموافقة عليها حسب الصلاحيات.",tags:["مشتريات","اعتمادات"],author:"خالد الحربي",date:"أمس",favorite:false},
+  {id:3,title:"سياسة أمن كلمات المرور",category:"التقنية",type:"سياسة",summary:"متطلبات إنشاء كلمات المرور وإدارتها وحماية حسابات الموظفين.",tags:["أمن معلومات","حسابات"],author:"محمد الغامدي",date:"منذ 3 أيام",favorite:true},
+  {id:4,title:"منهجية توثيق اجتماعات العملاء",category:"المبيعات",type:"مقال",summary:"أفضل الممارسات لتسجيل احتياجات العميل والقرارات والخطوات التالية.",tags:["عملاء","اجتماعات"],author:"سارة الزهراني",date:"منذ 5 أيام",favorite:false},
+  {id:5,title:"خطة استمرارية الأعمال",category:"العمليات",type:"سياسة",summary:"إطار العمل المعتمد لاستمرارية العمليات الحرجة والتعامل مع حالات التعطل.",tags:["مخاطر","استمرارية"],author:"إدارة المخاطر",date:"منذ أسبوع",favorite:false},
+  {id:6,title:"دليل استخدام نظام التذاكر",category:"التقنية",type:"دليل",summary:"شرح مبسط لفتح التذاكر ومتابعتها وتصعيدها إلى فرق الدعم المختصة.",tags:["دعم فني","أنظمة"],author:"فريق التقنية",date:"منذ أسبوع",favorite:false}
+];
+
+let articles = JSON.parse(localStorage.getItem("manara_articles") || "null") || seedArticles;
+const views = document.querySelectorAll(".view");
+const navItems = document.querySelectorAll(".nav-item");
+
+function save(){ localStorage.setItem("manara_articles", JSON.stringify(articles)); }
+
+function goTo(view){
+  views.forEach(v=>v.classList.remove("active"));
+  navItems.forEach(n=>n.classList.remove("active"));
+  document.getElementById(view+"View").classList.add("active");
+  document.querySelector(`[data-view="${view}"]`)?.classList.add("active");
+  if(view==="library") renderLibrary();
+  if(view==="favorites") renderFavorites();
+}
+
+navItems.forEach(item=>item.addEventListener("click",()=>goTo(item.dataset.view)));
+document.querySelectorAll("[data-goto]").forEach(b=>b.addEventListener("click",()=>goTo(b.dataset.goto)));
+
+function articleCard(a){
+  return `<article class="knowledge-card">
+    <div class="card-top"><span class="card-type">${a.type} · ${a.category}</span><button class="favorite-btn ${a.favorite?'active':''}" onclick="toggleFavorite(${a.id})">${a.favorite?'★':'☆'}</button></div>
+    <h3>${escapeHtml(a.title)}</h3>
+    <p>${escapeHtml(a.summary)}</p>
+    <div class="tag-list">${a.tags.map(t=>`<span class="tag">#${escapeHtml(t)}</span>`).join("")}</div>
+    <div class="card-footer"><span>${escapeHtml(a.author)}</span><span>${a.date}</span></div>
+  </article>`;
+}
+
+function renderRecent(){
+  const el = document.getElementById("recentList");
+  el.innerHTML = articles.slice(0,4).map(a=>`
+    <div class="article-item">
+      <div class="doc-icon">▤</div>
+      <div class="article-info"><strong>${escapeHtml(a.title)}</strong><div class="meta"><span class="pill">${a.category}</span><span>${a.author}</span><span>${a.date}</span></div></div>
+      <button class="favorite-btn ${a.favorite?'active':''}" onclick="toggleFavorite(${a.id})">${a.favorite?'★':'☆'}</button>
+    </div>`).join("");
+  document.getElementById("totalArticles").textContent = 122 + articles.length;
+}
+
+function filterArticles(){
+  const query = document.getElementById("globalSearch").value.trim().toLowerCase();
+  const category = document.getElementById("categoryFilter")?.value || "الكل";
+  return articles.filter(a=>{
+    const text = [a.title,a.summary,a.category,a.type,...a.tags].join(" ").toLowerCase();
+    return text.includes(query) && (category==="الكل" || a.category===category);
+  });
+}
+
+function renderLibrary(){
+  const data = filterArticles();
+  document.getElementById("libraryGrid").innerHTML = data.length ? data.map(articleCard).join("") : `<div class="empty">لا توجد نتائج مطابقة للبحث.</div>`;
+}
+function renderFavorites(){
+  const data = articles.filter(a=>a.favorite);
+  document.getElementById("favoritesGrid").innerHTML = data.length ? data.map(articleCard).join("") : `<div class="empty">لم تضف أي معرفة إلى المفضلة بعد.</div>`;
+}
+window.toggleFavorite = id => {
+  articles = articles.map(a=>a.id===id?{...a,favorite:!a.favorite}:a);
+  save(); renderRecent(); renderLibrary(); renderFavorites();
+};
+
+const modal = document.getElementById("modal");
+const openModal = ()=>modal.classList.add("open");
+const closeModal = ()=>modal.classList.remove("open");
+document.getElementById("openModalBtn").onclick=openModal;
+document.getElementById("closeModalBtn").onclick=closeModal;
+document.getElementById("cancelBtn").onclick=closeModal;
+modal.addEventListener("click",e=>{if(e.target===modal)closeModal()});
+
+document.getElementById("articleForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const article = {
+    id:Date.now(),
+    title:document.getElementById("titleInput").value.trim(),
+    category:document.getElementById("categoryInput").value,
+    type:document.getElementById("typeInput").value,
+    summary:document.getElementById("summaryInput").value.trim(),
+    tags:document.getElementById("tagsInput").value.split(",").map(x=>x.trim()).filter(Boolean),
+    author:"عبدالله المالكي",
+    date:"الآن",
+    favorite:false
+  };
+  articles.unshift(article); save(); e.target.reset(); closeModal(); renderRecent(); renderLibrary();
+  const toast=document.getElementById("toast"); toast.classList.add("show"); setTimeout(()=>toast.classList.remove("show"),2200);
+});
+
+document.getElementById("globalSearch").addEventListener("input",()=>{
+  if(document.getElementById("globalSearch").value.trim()) goTo("library");
+  renderLibrary();
+});
+document.getElementById("categoryFilter").addEventListener("change",renderLibrary);
+document.addEventListener("keydown",e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();document.getElementById("globalSearch").focus()}
+  if(e.key==="Escape")closeModal();
+});
+
+function escapeHtml(v){return String(v).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+renderRecent(); renderLibrary(); renderFavorites();
+
