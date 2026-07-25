@@ -107,6 +107,19 @@ class FileSystemFileTest {
   }
 
   @Test
+  fun digestRejectsUnsupportedAlgorithmWithCodedException() {
+    val source = temporaryFolder.newFile("digest.txt")
+    val file = FileSystemFile(Uri.fromFile(source))
+      .withAppContext(permissionServiceReturning(EnumSet.of(FilePermissionService.Permission.READ)))
+
+    val exception = assertThrows(UnsupportedDigestAlgorithmException::class.java) {
+      file.digest("unsupported")
+    }
+
+    assertTrue(exception.message?.contains("Unsupported digest algorithm: 'unsupported'") == true)
+  }
+
+  @Test
   fun createFileRejectsChildNameThatEscapesParentDirectory() {
     val parent = temporaryFolder.newFolder("parent")
     val escaped = File(parent.parentFile, "escaped.txt")

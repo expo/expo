@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - Add `File.preview()` and `File.canPreview()` methods for opening files with platform-native preview flows. (by [@eliotgevers](https://github.com/eliotgevers))
+- Added `File.digest()` for asynchronously calculating MD5, SHA-1, SHA-256, SHA-384 and SHA-512 file digests. ([#48089](https://github.com/expo/expo/pull/48089) by [@wh201906](https://github.com/wh201906))
 
 ### 🐛 Bug fixes
 
@@ -20,6 +21,7 @@
 
 ### 💡 Others
 
+- Marked `File.md5` and the MD5-related `File.info()` types (`InfoOptions`, `InfoOptions.md5` and `FileInfo.md5`) as deprecated. ([#48089](https://github.com/expo/expo/pull/48089) by [@wh201906](https://github.com/wh201906))
 - Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376), [#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
 - Improved `FileHandle` docs. ([#46849](https://github.com/expo/expo/pull/46849) by [@barthap](https://github.com/barthap))
 
