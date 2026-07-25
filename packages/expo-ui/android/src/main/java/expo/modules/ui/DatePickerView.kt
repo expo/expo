@@ -25,6 +25,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -353,8 +355,12 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     },
     colors = colors
   ) {
+    val view = LocalView.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val displayMode = state.displayMode
+    val originalSoftInputMode = remember(view) {
+      (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
+    }
     SideEffect {
       if (displayMode == DisplayMode.Picker) {
         keyboardController?.hide()
