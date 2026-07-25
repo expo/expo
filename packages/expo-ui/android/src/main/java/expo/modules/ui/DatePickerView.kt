@@ -17,6 +17,7 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
+import android.view.WindowManager
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
@@ -362,7 +363,9 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
       (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
     }
     SideEffect {
+      val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
       if (displayMode == DisplayMode.Picker) {
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
         keyboardController?.hide()
       }
     }
