@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-07-24T08:53:41.325Z",
+    "fetchedAt": "2026-07-25T10:34:54.005Z",
     "cliVersion": "21.2.0"
   },
-  "totalCommands": 126,
+  "totalCommands": 127,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -314,7 +314,7 @@
     {
       "command": "eas init",
       "description": "create or link an EAS project",
-      "usage": "USAGE\n  $ eas init [--id <value>] [--force] [--non-interactive]\n\nFLAGS\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init"
+      "usage": "USAGE\n  $ eas init [--account <value> | --id <value>] [--force] [--json] [--non-interactive]\n\nFLAGS\n  --account=<value>  Name of the account that will own the project\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init\n\nEXAMPLES\n  $ eas init  \t # Create or link a project interactively\n\n  $ eas init --id <project-id>  \t # Link to the project with the given ID\n\n  $ eas init --account my-account --non-interactive  \t # Create or link @my-account/<slug> without prompts\n\n  $ eas init --account my-account --json --non-interactive  \t # Same, and print the result as JSON to stdout"
     },
     {
       "command": "eas integrations:asc:connect",
@@ -447,6 +447,11 @@
       "usage": "USAGE\n  $ eas project:delete [NAME] [--dangerously-confirm-deletion <value>] [--json] [--non-interactive]\n\nARGUMENTS\n  [NAME]  Full name (@account/slug) or ID of the project to delete. Defaults to the project in the current directory.\n\nFLAGS\n  --dangerously-confirm-deletion=<value>  The project's full name (@account/slug), to confirm deletion. Required in\n                                          non-interactive mode.\n  --json                                  Enable JSON output, non-JSON messages will be printed to stderr. Implies\n                                          --non-interactive.\n  --non-interactive                       Run the command in non-interactive mode.\n\nDESCRIPTION\n  delete a project"
     },
     {
+      "command": "eas project:icon:set PATH",
+      "description": "set the project icon displayed on the EAS dashboard",
+      "usage": "USAGE\n  $ eas project:icon:set PATH [--non-interactive]\n\nARGUMENTS\n  PATH  Path to the icon image (PNG or JPEG, at most 10 MB). Non-square images are center-cropped to a square.\n\nFLAGS\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  set the project icon displayed on the EAS dashboard"
+    },
+    {
       "command": "eas project:info",
       "description": "information about the current project",
       "usage": "USAGE\n  $ eas project:info\n\nDESCRIPTION\n  information about the current project"
@@ -454,7 +459,7 @@
     {
       "command": "eas project:init",
       "description": "create or link an EAS project",
-      "usage": "USAGE\n  $ eas project:init [--id <value>] [--force] [--non-interactive]\n\nFLAGS\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init"
+      "usage": "USAGE\n  $ eas project:init [--account <value> | --id <value>] [--force] [--json] [--non-interactive]\n\nFLAGS\n  --account=<value>  Name of the account that will own the project\n  --force            Whether to create a new project/link an existing project without additional prompts or overwrite\n                     any existing project ID when running with --id flag\n  --id=<value>       ID of the EAS project to link\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  create or link an EAS project\n\nALIASES\n  $ eas init\n\nEXAMPLES\n  $ eas init  \t # Create or link a project interactively\n\n  $ eas init --id <project-id>  \t # Link to the project with the given ID\n\n  $ eas init --account my-account --non-interactive  \t # Create or link @my-account/<slug> without prompts\n\n  $ eas init --account my-account --json --non-interactive  \t # Same, and print the result as JSON to stdout"
     },
     {
       "command": "eas project:new [PATH]",
