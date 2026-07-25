@@ -358,6 +358,8 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     },
     colors = colors
   ) {
+    // Keep the calendar from rendering squeezed when the display mode is toggled while the soft
+    // keyboard from input mode is still visible. https://github.com/expo/expo/issues/47273
     val view = LocalView.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val displayMode = state.displayMode
