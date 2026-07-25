@@ -175,7 +175,7 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
   }
 
   val md5: String get() {
-    return digest("md5")
+    return digest("MD5")
   }
 
   @OptIn(ExperimentalStdlibApi::class)
@@ -184,11 +184,11 @@ class FileSystemFile(uri: Uri) : FileSystemPath(uri) {
 
     validatePermission(FilePermissionService.Permission.READ)
     val md = when (algorithm) {
-      "md5" -> MessageDigest.getInstance("MD5")
-      "sha-1" -> MessageDigest.getInstance("SHA-1")
-      "sha-256" -> MessageDigest.getInstance("SHA-256")
-      "sha-384" -> MessageDigest.getInstance("SHA-384")
-      "sha-512" -> MessageDigest.getInstance("SHA-512")
+      "MD5" -> MessageDigest.getInstance("MD5")
+      "SHA-1" -> MessageDigest.getInstance("SHA-1")
+      "SHA-256" -> MessageDigest.getInstance("SHA-256")
+      "SHA-384" -> MessageDigest.getInstance("SHA-384")
+      "SHA-512" -> MessageDigest.getInstance("SHA-512")
       else -> throw IllegalArgumentException("Unsupported digest algorithm: $algorithm")
     }
     file.inputStream().use { stream ->

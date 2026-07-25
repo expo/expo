@@ -52,21 +52,21 @@ internal final class FileSystemFile: FileSystemPath {
 
   var md5: String {
     get throws {
-      return try digest(algorithm: "md5")
+      return try digest(algorithm: "MD5")
     }
   }
 
   func digest(algorithm: String) throws -> String {
     switch algorithm {
-    case "md5":
+    case "MD5":
       return try calculateDigest(using: Insecure.MD5())
-    case "sha-1":
+    case "SHA-1":
       return try calculateDigest(using: Insecure.SHA1())
-    case "sha-256":
+    case "SHA-256":
       return try calculateDigest(using: SHA256())
-    case "sha-384":
+    case "SHA-384":
       return try calculateDigest(using: SHA384())
-    case "sha-512":
+    case "SHA-512":
       return try calculateDigest(using: SHA512())
     default:
       throw Exception(

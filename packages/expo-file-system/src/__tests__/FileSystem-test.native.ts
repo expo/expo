@@ -333,13 +333,13 @@ describe('expo-file-system behavioral mock', () => {
     const file = new File(Paths.cache, 'digest.txt');
     file.writeSync('hello');
 
-    await expect(file.digest('md5')).resolves.toBe(file.md5);
+    await expect(file.digest('MD5')).resolves.toBe(file.md5);
     const algorithms = [
-      ['md5', 32],
-      ['sha-1', 40],
-      ['sha-256', 64],
-      ['sha-384', 96],
-      ['sha-512', 128],
+      ['MD5', 32],
+      ['SHA-1', 40],
+      ['SHA-256', 64],
+      ['SHA-384', 96],
+      ['SHA-512', 128],
     ] as const;
     for (const [algorithm, hexLength] of algorithms) {
       await expect(file.digest(algorithm)).resolves.toMatch(
@@ -351,7 +351,7 @@ describe('expo-file-system behavioral mock', () => {
   it('File.digest rejects when the file does not exist', async () => {
     const file = new File(Paths.cache, 'missing-digest.txt');
 
-    await expect(file.digest('md5')).rejects.toThrow('File does not exist');
+    await expect(file.digest('MD5')).rejects.toThrow('File does not exist');
   });
 
   it('File.digest rejects when the path points to a directory', async () => {
@@ -359,7 +359,7 @@ describe('expo-file-system behavioral mock', () => {
     directory.create();
     const file = new File(directory.uri);
 
-    await expect(file.digest('md5')).rejects.toThrow();
+    await expect(file.digest('MD5')).rejects.toThrow();
   });
 
   it('File.move updates this.uri and removes the source', async () => {

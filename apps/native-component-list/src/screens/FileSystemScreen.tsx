@@ -292,8 +292,8 @@ function FileInfoSection({ withCurrentFile }: { withCurrentFile: WithCurrentFile
           exists: file.exists,
           size: file.size,
           type: file.type,
-          md5: await file.digest('md5'),
-          sha256: await file.digest('sha-256'),
+          md5: await file.digest('MD5'),
+          sha256: await file.digest('SHA-256'),
           modificationTime: file.modificationTime,
           creationTime: file.creationTime,
         }))}

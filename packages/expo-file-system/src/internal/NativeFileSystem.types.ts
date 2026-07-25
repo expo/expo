@@ -323,7 +323,7 @@ export declare class NativeFileSystemFile {
   size: number;
   /**
    * A md5 hash of the file. Null if the file does not exist, or it cannot be read.
-   * @deprecated Use `await file.digest('md5')` instead.
+   * @deprecated Use `await file.digest('MD5')` instead.
    */
   md5: string | null;
   /**

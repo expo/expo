@@ -113,11 +113,11 @@ function base64Decode(str: string): Uint8Array {
 }
 
 const digestHexLengths: Record<FileDigestAlgorithm, number> = {
-  md5: 32,
-  'sha-1': 40,
-  'sha-256': 64,
-  'sha-384': 96,
-  'sha-512': 128,
+  MD5: 32,
+  'SHA-1': 40,
+  'SHA-256': 64,
+  'SHA-384': 96,
+  'SHA-512': 128,
 };
 
 function fakeDigest(uri: string, size: number, hexLength: number): string {
@@ -131,7 +131,7 @@ function fakeDigest(uri: string, size: number, hexLength: number): string {
 }
 
 function fakeMd5(uri: string, size: number): string {
-  return fakeDigest(uri, size, digestHexLengths.md5);
+  return fakeDigest(uri, size, digestHexLengths.MD5);
 }
 
 const listeners = new Map<string, Set<(event: any) => void>>();
