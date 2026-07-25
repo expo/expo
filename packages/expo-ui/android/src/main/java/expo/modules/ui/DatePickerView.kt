@@ -367,6 +367,8 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
       if (displayMode == DisplayMode.Picker) {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
         keyboardController?.hide()
+      } else if (originalSoftInputMode != null) {
+        window.setSoftInputMode(originalSoftInputMode)
       }
     }
 
