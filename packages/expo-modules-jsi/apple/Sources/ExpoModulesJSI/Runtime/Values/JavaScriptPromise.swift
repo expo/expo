@@ -121,6 +121,12 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
     } ?? .undefined
   }
 
+  /// Resolves the promise with a value that has a direct JavaScript representation.
+  ///
+  /// Preferred over the encodable overload for a type that is both ``JavaScriptRepresentable`` and
+  /// ``JavaScriptEncodable``, so existing values (primitives, containers, JSI value wrappers) keep
+  /// their established representation. For example a 64-bit integer stays a JS `number` here rather
+  /// than encoding to a `bigint` or rejecting for exceeding the safe-integer range.
   public func resolve<V: JavaScriptRepresentable>(_ value: V) {
     guard let runtime else {
       return
@@ -139,6 +145,42 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       // The rejecter can't be called anymore. The state stays registered so it keeps owning the
       // object until the wrapper is dropped (or the teardown sweep runs).
       longLivedState.rejectFunction.release()
+    }
+  }
+
+  /// Resolves the promise with a ``JavaScriptEncodable`` value, encoding it on the JavaScript thread.
+  ///
+  /// Encoding runs where `encode` is isolated to `@JavaScriptActor` and may touch the runtime, so a
+  /// caller need not hop there itself. If encoding or the resolver call throws, the promise is
+  /// rejected instead.
+  ///
+  /// Disfavored so a type that is both ``JavaScriptRepresentable`` and ``JavaScriptEncodable`` keeps
+  /// resolving through the representable overload above; this serves the encodable-only types.
+  @_disfavoredOverload
+  public func resolve<V: JavaScriptEncodable>(_ value: sending V) {
+    guard let runtime else {
+      return
+    }
+    // `resolve` is not isolated, so make sure to jump to JS thread; the encode happens there too.
+    runtime.schedule(priority: .immediate) { [longLivedState] in
+      // If the promise is already settled, do nothing.
+      guard let resolver = longLivedState.resolveFunction.take() else {
+        return
+      }
+      do {
+        let encoded = try V.encode(value, in: runtime)
+        // Call the actual resolver, which also calls `deferredPromise.resolve` in the `then` handler.
+        _ = try resolver.getFunction().call(arguments: encoded)
+        // The state stays registered so it keeps owning the object until the wrapper is dropped.
+        longLivedState.rejectFunction.release()
+      } catch {
+        // Encoding or the resolver call failed; reject with the error instead. If even the rejecter
+        // call throws, there is no graceful option left (swallowing would leave the promise pending
+        // forever), so trap loudly like the other settle paths do.
+        let errorValue = JavaScriptError.from(error, in: runtime).toValue()
+        _ = try! longLivedState.rejectFunction.take()?.getFunction().call(arguments: errorValue)
+        longLivedState.resolveFunction.release()
+      }
     }
   }
 
