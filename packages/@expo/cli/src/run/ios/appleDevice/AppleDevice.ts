@@ -125,7 +125,10 @@ async function getConnectedDevicesUsingCustomToolingAsync(): Promise<ConnectedDe
         deviceType: 'device',
         connectionType: device.Properties.ConnectionType,
         udid: device.Properties.SerialNumber,
-        osType: coerceUsbmuxdPlatformToOsType(deviceValues.DeviceClass),
+        // Lockdownd returns a reduced property set (without `DeviceClass`) for devices
+        // connected over the network ("Connect via network" on iOS <= 16), so fall back
+        // to `ProductName` ("iPhone OS") to avoid dropping wireless devices from the list.
+        osType: coerceUsbmuxdPlatformToOsType(deviceValues.DeviceClass ?? deviceValues.ProductName),
       };
     })
   );
