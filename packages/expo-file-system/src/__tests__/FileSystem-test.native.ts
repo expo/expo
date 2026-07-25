@@ -342,9 +342,7 @@ describe('expo-file-system behavioral mock', () => {
       ['SHA-512', 128],
     ] as const;
     for (const [algorithm, hexLength] of algorithms) {
-      await expect(file.digest(algorithm)).resolves.toMatch(
-        new RegExp(`^[0-9a-f]{${hexLength}}$`)
-      );
+      await expect(file.digest(algorithm)).resolves.toMatch(new RegExp(`^[0-9a-f]{${hexLength}}$`));
     }
   });
 
