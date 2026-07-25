@@ -18,11 +18,13 @@ import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
 import android.view.WindowManager
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -376,6 +378,11 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
     // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
     CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
       DatePicker(
+        modifier = if (displayMode == DisplayMode.Picker) {
+          Modifier.wrapContentHeight(align = Alignment.Top, unbounded = true)
+        } else {
+          Modifier
+        },
         state = state,
         showModeToggle = props.showVariantToggle,
         colors = colors
