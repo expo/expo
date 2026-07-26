@@ -127,6 +127,7 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
   /// ``JavaScriptEncodable``, so existing values (primitives, containers, JSI value wrappers) keep
   /// their established representation. For example a 64-bit integer stays a JS `number` here rather
   /// than encoding to a `bigint` or rejecting for exceeding the safe-integer range.
+  /// If the resolver call throws, the promise is rejected instead.
   public func resolve<V: JavaScriptRepresentable>(_ value: V) {
     guard let runtime else {
       return
@@ -138,13 +139,22 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
       guard let resolver = longLivedState.resolveFunction.take() else {
         return
       }
-      // Call the actual resolver given in the Promise setup.
-      // This will also call `deferredPromise.resolve` in the `then` handler.
-      _ = try! resolver.getFunction().call(arguments: value)
+      do {
+        // Call the actual resolver given in the Promise setup.
+        // This will also call `deferredPromise.resolve` in the `then` handler.
+        _ = try resolver.getFunction().call(arguments: value)
 
-      // The rejecter can't be called anymore. The state stays registered so it keeps owning the
-      // object until the wrapper is dropped (or the teardown sweep runs).
-      longLivedState.rejectFunction.release()
+        // The rejecter can't be called anymore. The state stays registered so it keeps owning the
+        // object until the wrapper is dropped (or the teardown sweep runs).
+        longLivedState.rejectFunction.release()
+      } catch {
+        // The resolver call failed; reject with the error instead. The rejecter call itself can
+        // realistically only throw when the runtime is being torn down, where dropping the settle
+        // is harmless because the JS world is going away.
+        let errorValue = JavaScriptError.from(error, in: runtime).toValue()
+        _ = try? longLivedState.rejectFunction.take()?.getFunction().call(arguments: errorValue)
+        longLivedState.resolveFunction.release()
+      }
     }
   }
 
@@ -174,11 +184,11 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
         // The state stays registered so it keeps owning the object until the wrapper is dropped.
         longLivedState.rejectFunction.release()
       } catch {
-        // Encoding or the resolver call failed; reject with the error instead. If even the rejecter
-        // call throws, there is no graceful option left (swallowing would leave the promise pending
-        // forever), so trap loudly like the other settle paths do.
+        // Encoding or the resolver call failed; reject with the error instead. The rejecter call
+        // itself can realistically only throw when the runtime is being torn down, where dropping
+        // the settle is harmless because the JS world is going away.
         let errorValue = JavaScriptError.from(error, in: runtime).toValue()
-        _ = try! longLivedState.rejectFunction.take()?.getFunction().call(arguments: errorValue)
+        _ = try? longLivedState.rejectFunction.take()?.getFunction().call(arguments: errorValue)
         longLivedState.resolveFunction.release()
       }
     }
@@ -203,7 +213,9 @@ public struct JavaScriptPromise: JavaScriptType, ~Copyable {
 
       // Call the actual rejecter given in the Promise setup.
       // This will also call `deferredPromise.reject` in the `then` handler.
-      _ = try! rejecter.getFunction().call(arguments: errorValue)
+      // The call can realistically only throw when the runtime is being torn down, where dropping
+      // the settle is harmless because the JS world is going away.
+      _ = try? rejecter.getFunction().call(arguments: errorValue)
 
       // The resolver can't be called anymore. The state stays registered so it keeps owning the
       // object until the wrapper is dropped (or the teardown sweep runs).
