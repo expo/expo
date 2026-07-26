@@ -62,7 +62,7 @@
       "origin": "native-stack-navigator"
     },
     {
-      "name": "headerBackImageSource",
+      "name": "headerBackIcon",
       "description": "Image to display in the header as the icon in the back button. Defaults to back icon image for the platform\n\n- A chevron on iOS\n- An arrow on Android",
       "platform": "Both",
       "category": "header",
