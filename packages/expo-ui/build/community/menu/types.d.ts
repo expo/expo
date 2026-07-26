@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import type { ColorValue, ImageSourcePropType, StyleProp, ViewStyle } from 'react-native';
+import type { ColorSchemeName, ColorValue, ImageSourcePropType, StyleProp, ViewStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 /**
  * Visual and behavioral attributes of a menu action.
@@ -113,6 +113,11 @@ export type NativeActionEvent = {
  * Drop-in compatible with `@react-native-menu/menu`.
  */
 export interface MenuComponentProps {
+    /**
+     * The color scheme of the menu on Android. Omit to follow the device setting.
+     * @platform android
+     */
+    colorScheme?: ColorSchemeName;
     /**
      * Menu title shown at the top of the menu.
      * @platform ios
