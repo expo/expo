@@ -1,12 +1,16 @@
+import { type ReactNode } from 'react';
 import { type CommonViewModifierProps } from '../types';
 export interface BottomSheetProps extends CommonViewModifierProps {
     /**
-     * The children of the `BottomSheet` component.
-     * Use `Group` to wrap your content and apply presentation modifiers
-     * like `presentationDetents`, `presentationDragIndicator`,
-     * `presentationBackgroundInteraction`, and `interactiveDismissDisabled`.
+     * The sheet's content, mounted while presented and unmounted after dismiss. Wrap it in `Group`
+     * to apply presentation modifiers.
      */
-    children: React.ReactNode;
+    children: ReactNode;
+    /**
+     * A view the sheet is anchored to, for example the `Button` that opens it. Rendered in place and
+     * kept mounted, so presenting the sheet doesn't shift surrounding layout. Optional.
+     */
+    anchor?: ReactNode;
     /**
      * Whether the `BottomSheet` is presented.
      */
@@ -29,6 +33,6 @@ export interface BottomSheetProps extends CommonViewModifierProps {
 /**
  * `BottomSheet` presents content from the bottom of the screen.
  */
-declare function BottomSheet(props: BottomSheetProps): import("react/jsx-runtime").JSX.Element | null;
+declare function BottomSheet(props: BottomSheetProps): import("react/jsx-runtime").JSX.Element;
 export { BottomSheet };
 //# sourceMappingURL=index.d.ts.map
