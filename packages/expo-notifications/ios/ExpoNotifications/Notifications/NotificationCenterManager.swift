@@ -42,8 +42,28 @@ public class NotificationCenterManager: NSObject,
   @objc
   public static let shared = NotificationCenterManager()
 
-  var delegates: [NotificationDelegate] = []
-  var pendingResponses: [UNNotificationResponse] = []
+  // Delegates are added and removed on whichever thread registers a module or adds a JS
+  // listener, while the UNUserNotificationCenter callbacks read them on another thread.
+  // Arrays are value types with copy-on-write storage, so unsynchronized access here tears
+  // the buffer apart. Every read and write goes through `stateLock`, and the getters hand
+  // back a copy: callers iterate a snapshot instead of holding the lock across a delegate
+  // call, which is free to call back into `addDelegate` or `removeDelegate`.
+  private let stateLock = NSLock()
+  private var _delegates: [NotificationDelegate] = []
+  private var _pendingResponses: [UNNotificationResponse] = []
+
+  var delegates: [NotificationDelegate] {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    return _delegates
+  }
+
+  var pendingResponses: [UNNotificationResponse] {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    return _pendingResponses
+  }
+
   let userNotificationCenter: UNUserNotificationCenter = UNUserNotificationCenter.current()
 
   private override init() {
@@ -62,19 +82,26 @@ public class NotificationCenterManager: NSObject,
   }
 
   public func addDelegate(_ delegate: NotificationDelegate) {
-    delegates.append(delegate)
+    stateLock.lock()
+    _delegates.append(delegate)
+    stateLock.unlock()
+
     var handled = false
     for pendingResponse in pendingResponses {
       handled = delegate.didReceive(pendingResponse, completionHandler: {}) || handled
     }
     if handled {
-      pendingResponses.removeAll()
+      stateLock.lock()
+      _pendingResponses.removeAll()
+      stateLock.unlock()
     }
   }
 
   public func removeDelegate(_ delegate: AnyObject) {
-    if let index = delegates.firstIndex(where: { $0 === delegate }) {
-      delegates.remove(at: index)
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    if let index = _delegates.firstIndex(where: { $0 === delegate }) {
+      _delegates.remove(at: index)
     }
   }
 
@@ -118,7 +145,9 @@ public class NotificationCenterManager: NSObject,
       handled = delegate.didReceive(response, completionHandler: completionHandler) || handled
     }
     if !handled {
-      pendingResponses.append(response)
+      stateLock.lock()
+      _pendingResponses.append(response)
+      stateLock.unlock()
     }
     completionHandler()
   }
