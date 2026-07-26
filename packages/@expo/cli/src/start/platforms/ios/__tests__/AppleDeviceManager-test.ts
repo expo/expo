@@ -7,6 +7,15 @@ jest.mock('../simctl', () => ({
   openAppIdAsync: jest.fn(),
   openUrlAsync: jest.fn(),
   getInfoPlistValueAsync: jest.fn(),
+  bootAsync: jest.fn(async ({ udid }: { udid: string }) => ({ udid, name: 'iPhone' }) as any),
+}));
+jest.mock('../getBestSimulator', () => ({
+  getBestBootedSimulatorAsync: jest.fn(async () => null),
+  getBestUnbootedSimulatorAsync: jest.fn(async () => null),
+  getSelectableSimulatorsAsync: jest.fn(async () => []),
+}));
+jest.mock('../promptAppleDevice', () => ({
+  promptAppleDeviceAsync: jest.fn(async () => ({ udid: 'prompted-udid' })),
 }));
 
 const asDevice = (device: Partial<Device>): Device => device as Device;
@@ -80,6 +89,41 @@ describe('ensureExpoGoAsync', () => {
     await expect(device.ensureExpoGoAsync('51.0.0')).rejects.toThrow(
       /Expo Go is not supported on Apple Watch/
     );
+  });
+});
+
+describe('resolveAsync', () => {
+  const originalUdid = process.env.EXPO_IOS_SIMULATOR_UDID;
+  afterEach(() => {
+    if (originalUdid === undefined) {
+      delete process.env.EXPO_IOS_SIMULATOR_UDID;
+    } else {
+      process.env.EXPO_IOS_SIMULATOR_UDID = originalUdid;
+    }
+  });
+
+  it('boots the simulator from EXPO_IOS_SIMULATOR_UDID when set', async () => {
+    process.env.EXPO_IOS_SIMULATOR_UDID = 'env-udid';
+    const { bootAsync } = require('../simctl');
+    const manager = await AppleDeviceManager.resolveAsync();
+    expect(bootAsync).toHaveBeenCalledWith({ udid: 'env-udid' });
+    expect(manager.identifier).toBe('env-udid');
+  });
+
+  it('ignores EXPO_IOS_SIMULATOR_UDID when shouldPrompt is true', async () => {
+    process.env.EXPO_IOS_SIMULATOR_UDID = 'env-udid';
+    const { promptAppleDeviceAsync } = require('../promptAppleDevice');
+    const { bootAsync } = require('../simctl');
+    await AppleDeviceManager.resolveAsync({ shouldPrompt: true });
+    expect(promptAppleDeviceAsync).toHaveBeenCalled();
+    expect(bootAsync).toHaveBeenCalledWith({ udid: 'prompted-udid' });
+  });
+
+  it('prefers an explicit device argument over EXPO_IOS_SIMULATOR_UDID', async () => {
+    process.env.EXPO_IOS_SIMULATOR_UDID = 'env-udid';
+    const { bootAsync } = require('../simctl');
+    await AppleDeviceManager.resolveAsync({ device: { udid: 'explicit-udid' } });
+    expect(bootAsync).toHaveBeenCalledWith({ udid: 'explicit-udid' });
   });
 });
 
