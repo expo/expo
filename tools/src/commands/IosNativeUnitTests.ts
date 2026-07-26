@@ -191,6 +191,8 @@ const INFRA_PATH_PATTERNS = [
   /^packages\/expo-module-scripts\//,
   /^packages\/expo-modules-test-core\//,
   /^pnpm-lock\.yaml$/,
+  // CocoaPods and xcodeproj come from the bundle, so gem bumps change how pods install.
+  /^Gemfile(\.lock)?$/,
 ];
 
 async function runTestsAsync(scheme: string, destination: string, useXcbeautify: boolean) {
