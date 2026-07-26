@@ -4,6 +4,17 @@ import CoreGraphics
 import ExpoModulesCore
 
 /**
+ Options for loading the source image.
+ */
+internal struct ImageLoadOptions: Record {
+  @Field
+  var maxWidth: Int?
+
+  @Field
+  var maxHeight: Int?
+}
+
+/**
  Options provided for resize action.
  */
 internal struct ResizeOptions: Record {
