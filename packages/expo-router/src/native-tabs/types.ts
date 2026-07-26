@@ -476,6 +476,23 @@ export interface NativeTabsProps extends PropsWithChildren {
    * @platform ios
    */
   unstable_nativeProps?: NativeTabsHostNativeProps;
+
+  /**
+   * When set to `true`, keeps the `title` option of the tabs group route in the
+   * parent stack in sync with the title of the currently focused tab.
+   *
+   * This is required for a correct back button title (and its long-press menu)
+   * on iOS: the native stack derives the back title from the `title` of the
+   * previous screen, which is the tabs layout route itself rather than the
+   * selected tab.
+   *
+   * > **Note**: This also affects the header title of the group route, if its
+   * > header is visible.
+   *
+   * @default false
+   * @platform iOS
+   */
+  titleFromFocusedTab?: boolean;
 }
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
@@ -520,6 +537,7 @@ export interface NativeTabsViewProps extends Omit<
   | 'disableIndicator'
   | 'redirectToRouteName'
   | 'labelVisibilityMode'
+  | 'titleFromFocusedTab'
 > {
   focusedIndex: number;
   /**

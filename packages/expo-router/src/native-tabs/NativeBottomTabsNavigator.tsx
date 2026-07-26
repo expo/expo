@@ -1,13 +1,15 @@
 'use client';
 
-import React, { use, useCallback, useEffect, useMemo, useRef } from 'react';
+import React, { use, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { Platform } from 'react-native';
 
 import { useRouteNode } from '../Route';
 import { router } from '../imperative-api';
-import type {
-  ParamListBase,
-  TabNavigationState,
-  TabRouterOptions,
+import {
+  type ParamListBase,
+  type TabNavigationState,
+  type TabRouterOptions,
+  useNavigation,
 } from '../react-navigation/native';
 import { unstable_createStandardRouterNavigator } from '../standard-navigation';
 import type {
@@ -33,6 +35,16 @@ import { convertIconColorPropToObject, convertLabelStylePropToObject } from './u
 const defaultBackBehavior = 'initialRoute';
 export const NativeTabsContext = React.createContext<boolean>(false);
 
+function useTabsGroupRouteTitle(title?: string, enabled?: boolean) {
+  const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    if (enabled && title !== undefined) {
+      navigation.setOptions({ title });
+    }
+  }, [enabled, navigation, title]);
+}
+
 function NativeTabsContent({
   state,
   descriptors,
@@ -52,6 +64,7 @@ function NativeTabsContent({
   disableIndicator,
   labelVisibilityMode,
   redirectToRouteName,
+  titleFromFocusedTab,
   ...rest
 }: StandardNavigatorContentProps<
   NativeTabOptions,
@@ -97,6 +110,11 @@ function NativeTabsContent({
   );
 
   const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
+
+  const focusedTab = visibleTabs[focusedIndex];
+  const groupRouteTitle = focusedTab ? focusedTab.options.title || focusedTab.name : undefined;
+
+  useTabsGroupRouteTitle(groupRouteTitle, titleFromFocusedTab && Platform.OS === 'ios');
 
   // The focused route can be hidden or have no trigger at all — for example a path pointing at a
   // route without a tab, or a trigger hidden while focused. Redirect to the router's initial tab,
