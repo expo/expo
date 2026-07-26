@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Apply `fontWeight` and `fontStyle` to fonts loaded with `useFonts`, instancing a variable font's `wght` axis at each weight. Bold and italic text previously fell back to a system font. ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
+
 ### 💡 Others
 
 - Resolve package-style font paths. ([#46784](https://github.com/expo/expo/pull/46784) by [@maxlapides](https://github.com/maxlapides))
