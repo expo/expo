@@ -38,12 +38,22 @@ export function groupByFamily(array: FontObject[]): GroupedFontObject {
   }, {});
 }
 
+/**
+ * The font files to copy, once each. A variable font backs one definition per weight, so the same
+ * path shows up several times, and copying it once per definition races two writes onto the same
+ * destination file.
+ */
+export function getFontPaths(fontsByFamily: GroupedFontObject): string[] {
+  return [
+    ...new Set(
+      Object.values(fontsByFamily).flatMap((definitions) => definitions.map((it) => it.path))
+    ),
+  ];
+}
+
 function addXmlFonts(config: ExpoConfig, xmlFontObjects: FontObject[]) {
   const fontsByFamily = groupByFamily(xmlFontObjects);
-
-  const fontPaths = Object.values(fontsByFamily)
-    .map((font) => font.map((it) => it.path))
-    .flat();
+  const fontPaths = getFontPaths(fontsByFamily);
 
   config = copyFontsToDir(config, fontPaths, resourcesFontsDir, (filenameWithExt) => {
     const filename = toValidAndroidResourceName(filenameWithExt);
@@ -93,6 +103,9 @@ export function getXmlSpecs(fontsDir: string, xmlFontObjects: GroupedFontObject)
                 'app:font': `@font/${toValidAndroidResourceName(definition.path)}`,
                 'app:fontStyle': definition.style || 'normal',
                 'app:fontWeight': String(definition.weight),
+                // Instances a variable font at the declared weight, so that one file can back
+                // several definitions. Static fonts have no `wght` axis and ignore it.
+                'app:fontVariationSettings': `'wght' ${definition.weight}`,
               },
             };
           }),

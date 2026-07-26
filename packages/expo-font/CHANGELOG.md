@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [android] Apply `fontWeight` and `fontStyle` to fonts loaded with `useFonts`, instancing a variable font's `wght` axis at each weight. Bold and italic text previously fell back to a system font. ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
+- [android] Embed each font declared through the config plugin at the weight it declares, so that a single variable font file can back several weights. ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
 
 ### 💡 Others
 
