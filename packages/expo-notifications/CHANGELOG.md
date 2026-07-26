@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a data race on `NotificationCenterManager` delegate state that could corrupt the heap. ([#48147](https://github.com/expo/expo/pull/48147) by [@zcharef](https://github.com/zcharef))
+
 ### 💡 Others
 
 ## 56.0.14 — 2026-05-26
