@@ -6,14 +6,13 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
@@ -55,8 +54,19 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   private val childViewState = mutableStateOf<View?>(null)
   private val wrapperState = mutableStateOf<TouchDispatchingRootViewGroup?>(null)
 
+  private val childSizeState = mutableStateOf(IntSize.Zero)
+  private val childLayoutListener = View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
+    childSizeState.value = IntSize(r - l, b - t)
+  }
+
   override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
     childViewState.value = child
+    childSizeState.value = if (child.width > 0 && child.height > 0) {
+      IntSize(child.width, child.height)
+    } else {
+      IntSize.Zero
+    }
+    child.addOnLayoutChangeListener(childLayoutListener)
     val wrapper = TouchDispatchingRootViewGroup(child.context).apply {
       val reactContext = child.context as? ReactContext
       if (reactContext != null) {
@@ -71,6 +81,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
   override fun removeView(view: View) {
     if (view == childViewState.value) {
+      view.removeOnLayoutChangeListener(childLayoutListener)
       wrapperState.value?.removeView(view)
       childViewState.value = null
       wrapperState.value = null
@@ -81,6 +92,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
   override fun removeViewAt(index: Int) {
     childViewState.value?.let { child ->
+      child.removeOnLayoutChangeListener(childLayoutListener)
       wrapperState.value?.removeView(child)
     }
     childViewState.value = null
@@ -93,9 +105,9 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     val scope: ComposableScope = this
 
     wrapperState.value?.let { wrapper ->
-      val childView = childViewState.value ?: return@let
+      childViewState.value ?: return@let
       val sizingModifier = if (matchContents) {
-        applySizeFromYogaNodeModifier(childView)
+        applySizeFromYogaNodeModifier()
       } else {
         Modifier
           .fillMaxSize()
@@ -114,35 +126,17 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     }
   }
 
-  // Sets Compose view size from Yoga node size
-  // Listens to yoga node size changes and updates the Compose view size
+  // Sets Compose view size from Yoga node size, tracked by the view-owned layout listener above.
   @Composable
-  private fun applySizeFromYogaNodeModifier(childView: View): Modifier {
+  private fun applySizeFromYogaNodeModifier(): Modifier {
     val density = LocalDensity.current
-
-    val childSize = remember {
-      mutableStateOf(
-        if (childView.width > 0 && childView.height > 0) {
-          IntSize(childView.width, childView.height)
-        } else {
-          IntSize.Zero
-        }
-      )
-    }
-
-    DisposableEffect(childView) {
-      val listener = View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
-        childSize.value = IntSize(r - l, b - t)
-      }
-      childView.addOnLayoutChangeListener(listener)
-      onDispose { childView.removeOnLayoutChangeListener(listener) }
-    }
+    val childSize = childSizeState.value
 
     return with(density) {
-      if (childSize.value.width > 0 && childSize.value.height > 0) {
+      if (childSize.width > 0 && childSize.height > 0) {
         Modifier.requiredSize(
-          childSize.value.width.toDp(),
-          childSize.value.height.toDp()
+          childSize.width.toDp(),
+          childSize.height.toDp()
         )
       } else {
         Modifier
@@ -222,6 +216,11 @@ private class TouchDispatchingRootViewGroup(
 
   override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
     if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      // Ancestor React roots (the surface root, outer hosts) also see this gesture and dispatch a
+      // duplicate JS touch stream in their own coordinate space. Their moves land outside the
+      // host-relative responder region and break `Pressable`. Tell them a native child owns the
+      // gesture, before dispatching our own start, so their stream ends ahead of it.
+      notifyAncestorRootViews { it.onChildStartedNativeGesture(this, ev) }
       // dispatchTouchEvent is the true start of every gesture, so reset all per-gesture state here.
       getLocationInWindow(gestureStartLocation)
       trackingGestureOffset = true
@@ -248,8 +247,17 @@ private class TouchDispatchingRootViewGroup(
 
     if (ev.actionMasked == MotionEvent.ACTION_UP || ev.actionMasked == MotionEvent.ACTION_CANCEL) {
       trackingGestureOffset = false
+      notifyAncestorRootViews { it.onChildEndedNativeGesture(this, ev) }
     }
     return handled
+  }
+
+  private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {
+    var current: ViewParent? = parent
+    while (current != null) {
+      (current as? RootView)?.let(block)
+      current = current.parent
+    }
   }
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
