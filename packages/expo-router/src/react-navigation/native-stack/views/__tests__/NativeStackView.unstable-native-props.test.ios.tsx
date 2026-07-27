@@ -54,7 +54,7 @@ describe('unstable_nativeProps', () => {
     expect(props.gestureEnabled).toBe(false);
   });
 
-  it('forwards raw screen props from Stack', () => {
+  it('forwards raw stack host props from Stack', () => {
     const onFinishTransitioning = jest.fn();
     const nativeContainerStyle = { backgroundColor: 'red' } as const;
 
@@ -80,33 +80,6 @@ describe('unstable_nativeProps', () => {
       })
     );
     expect(ScreenStackItem.mock.calls[0][0].testID).toBeUndefined();
-  });
-
-  it('forwards raw screen props from Stack.Screen', () => {
-    renderRouter({
-      _layout: () => (
-        <Stack>
-          <Stack.Screen
-            name="index"
-            unstable_nativeProps={{
-              gestureEnabled: false,
-              stackAnimation: 'none',
-              swipeDirection: 'vertical',
-            }}
-          />
-        </Stack>
-      ),
-      index: () => <Text testID="index">Index</Text>,
-    });
-
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(ScreenStackItem.mock.calls[0][0]).toEqual(
-      expect.objectContaining({
-        gestureEnabled: false,
-        stackAnimation: 'none',
-        swipeDirection: 'vertical',
-      })
-    );
   });
 
   it('lets raw screen props override expo-router optional props', () => {

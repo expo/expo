@@ -29,7 +29,6 @@ export type {
   NativeStackHeaderLeftProps,
   NativeStackHeaderProps,
   NativeStackHeaderRightProps,
-  NativeStackHostNativeProps,
   NativeStackHeaderNativeProps,
   NativeStackNativeProps,
   NativeStackNavigationEventMap,

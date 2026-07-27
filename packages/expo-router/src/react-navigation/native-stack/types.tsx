@@ -88,7 +88,7 @@ export type NativeStackNavigationHelpers = NavigationHelpers<
   NativeStackNavigationEventMap
 >;
 
-export type NativeStackHostNativeProps = Partial<Omit<ScreenStackProps, 'children'>>;
+type NativeStackHostNativeProps = Partial<Omit<ScreenStackProps, 'children'>>;
 
 export type NativeStackNavigationConfig = {
   /**

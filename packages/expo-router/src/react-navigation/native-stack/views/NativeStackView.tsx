@@ -36,12 +36,7 @@ type Props = {
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 
-export function NativeStackView({
-  state,
-  descriptors,
-  describe,
-  unstable_nativeProps: _unstableNativeProps,
-}: Props) {
+export function NativeStackView({ state, descriptors, describe }: Props) {
   const parentHeaderBack = use(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
 
