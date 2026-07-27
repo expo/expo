@@ -89,22 +89,6 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
     }
   }
 
-  private func safeAreaSize() -> CGSize {
-    let safeSize = UIApplication
-      .shared
-      .connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }?
-      .safeAreaLayoutGuide
-      .layoutFrame
-      .size
-      ?? UIScreen.main.bounds.size
-
-    let width = safeSize.width > 0 ? safeSize.width : UIScreen.main.bounds.width
-    let height = safeSize.height > 0 ? safeSize.height : UIScreen.main.bounds.height
-    return CGSize(width: width, height: height)
-  }
 }
 
 /**
@@ -150,21 +134,7 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   private func safeAreaSize() -> CGSize {
-    let screenSize = UIScreen.main.bounds.size
-    let safeSize = UIApplication
-      .shared
-      .connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }?
-      .safeAreaLayoutGuide
-      .layoutFrame
-      .size
-      ?? screenSize
-
-    let width = safeSize.width > 0 ? safeSize.width : screenSize.width
-    let height = safeSize.height > 0 ? safeSize.height : screenSize.height
-    return CGSize(width: width, height: height)
+    return SceneGeometry.safeAreaSize()
   }
 }
 
