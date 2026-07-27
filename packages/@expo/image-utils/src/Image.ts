@@ -116,7 +116,7 @@ async function maybeWarnAboutInstallingSharpAsync() {
     hasWarned = true;
     console.warn(
       chalk.yellow(
-        `Using node to generate images. This is much slower than using native packages.\n\u203A Optionally you can stop the process and try again after successfully running \`npm install -g sharp-cli\`.\n`
+        `Using node to generate images. This is much slower than using native packages.\n\u203A Optionally you can stop the process and try again after successfully running \`npm install -g sharp\`.\n`
       )
     );
   }

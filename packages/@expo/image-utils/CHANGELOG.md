@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Resolve `sharp` directly instead of through a global `sharp-cli` installation. Install `sharp` globally (`npm install -g sharp`) instead of `sharp-cli` for faster image processing. Requires `sharp@^0.35.0`. ([#48162](https://github.com/expo/expo/pull/48162) by [@zoontek](https://github.com/zoontek))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
