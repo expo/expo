@@ -1,6 +1,7 @@
 import { createContext } from 'react';
 
 import { LoaderSuspenseStore } from './LoaderSuspenseStore';
+import { bumpDevLoaderRevision } from './utils';
 
 type LoaderFetcher = (path: string) => Promise<unknown>;
 type LoaderResult = { data: unknown } | { error: unknown };
@@ -142,8 +143,8 @@ export class LoaderClient {
 export const defaultLoaderClient = new LoaderClient();
 export const LoaderClientContext = createContext<LoaderClient>(defaultLoaderClient);
 
-// On `loader-invalidate`, drop the server-injected initial data so `useLoaderData()` falls through
-// to a fresh fetch, then refresh live readers in place and clear unwatched entries.
+// On `loader-invalidate`, drop any unconsumed server-injected data, bump the dev revision so
+// refetches bypass the platform cache, and refresh live readers in place.
 if (__DEV__ && typeof window !== 'undefined') {
   globalThis.__EXPO_LOADER_INVALIDATE_LISTENERS__ ??= [];
 
@@ -151,6 +152,7 @@ if (__DEV__ && typeof window !== 'undefined') {
     globalThis.__EXPO_LOADER_INVALIDATE_LISTENER_REGISTERED__ = true;
     globalThis.__EXPO_LOADER_INVALIDATE_LISTENERS__.push(() => {
       delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
+      bumpDevLoaderRevision();
       defaultLoaderClient.invalidateAll();
     });
   }
