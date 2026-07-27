@@ -17,6 +17,7 @@
 ### 💡 Others
 
 - [Internal] Unify favicon injection between SPA, SSG and SSR pipelines ([#46586](https://github.com/expo/expo/pull/46586) by [@hassankhan](https://github.com/hassankhan))
+- Bump to `react-server-dom-webpack@~19.0.8`
 
 ## 56.0.12 — 2026-05-26
 
