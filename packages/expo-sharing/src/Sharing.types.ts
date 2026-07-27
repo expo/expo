@@ -14,7 +14,10 @@ export type SharingOptions = {
   mimeType?: string;
   /**
    * [Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)
-   *  - the type of the target file. Takes precedence over [`mimeType`](#mimetype) when both are provided.
+   *  - the type of the target file. When iOS can resolve the identifier, it takes
+   * precedence over [`mimeType`](#mimetype).
+   * > **Note:** iOS can only resolve types registered by the system or an installed app.
+   * > Otherwise, `UTI` is ignored and [`mimeType`](#mimetype) is used instead.
    * @platform ios
    */
   UTI?: string;

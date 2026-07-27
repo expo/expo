@@ -12,6 +12,12 @@ internal final class MissingCurrentViewControllerException: Exception, @unchecke
   }
 }
 
+internal final class FailedToPresentShareSheetException: Exception, @unchecked Sendable {
+  override var reason: String {
+    "The share sheet could not be presented"
+  }
+}
+
 internal final class UnsupportedTypeException: Exception, @unchecked Sendable {
   override var reason: String {
     "Could not share file since there were no apps registered for its type"

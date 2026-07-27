@@ -29,11 +29,10 @@ public final class SharingModule: Module {
       let linkDirectory = itemURL == url ? nil : itemURL.deletingLastPathComponent()
 
       DispatchQueue.main.async {
+        let session = ShareSheetSession(promise: promise, stagedDirectory: linkDirectory)
+
         guard let currentViewController = self.appContext?.utilities?.currentViewController() else {
-          if let linkDirectory {
-            try? FileManager.default.removeItem(at: linkDirectory)
-          }
-          promise.reject(MissingCurrentViewControllerException())
+          session.reject(MissingCurrentViewControllerException())
           return
         }
 
@@ -41,12 +40,9 @@ public final class SharingModule: Module {
         activityController.title = options.dialogTitle
 
         activityController.completionWithItemsHandler = { _, _, _, _ in
-          if let linkDirectory {
-            try? FileManager.default.removeItem(at: linkDirectory)
-          }
           // Resolve unconditionally. UIActivityViewController invokes this once
           // on dismissal for every (activityType, completed) permutation.
-          promise.resolve(nil)
+          session.resolve()
         }
 
         // Apple docs state that `UIActivityViewController` must be presented in a
@@ -164,5 +160,51 @@ public final class SharingModule: Module {
     }
 
     return rawPayloads
+  }
+}
+
+private final class ShareSheetSession {
+  private let promise: Promise
+  private let stagedDirectory: URL?
+  private var isSettled = false
+
+  init(promise: Promise, stagedDirectory: URL?) {
+    self.promise = promise
+    self.stagedDirectory = stagedDirectory
+  }
+
+  func resolve() {
+    settle {
+      promise.resolve(nil)
+    }
+  }
+
+  func reject(_ exception: Exception) {
+    settle {
+      promise.reject(exception)
+    }
+  }
+
+  deinit {
+    guard !isSettled else {
+      return
+    }
+    cleanup()
+    promise.reject(FailedToPresentShareSheetException())
+  }
+
+  private func settle(_ action: () -> Void) {
+    guard !isSettled else {
+      return
+    }
+    isSettled = true
+    cleanup()
+    action()
+  }
+
+  private func cleanup() {
+    if let stagedDirectory {
+      try? FileManager.default.removeItem(at: stagedDirectory)
+    }
   }
 }
