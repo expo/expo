@@ -204,6 +204,8 @@ const basicTypesConversions = new Map<string, BasicType>([
   ['Never', BasicType.NEVER],
 
   ['JavaScriptObject', BasicType.OBJECT],
+
+  ['_', BasicType.UNRESOLVED],
 ]);
 
 const convertibleTypesConversions = new Map<string, ConvertibleType>([
@@ -369,23 +371,19 @@ function hasSubstructure(structure: Structure) {
   return structure?.['key.substructure'] && structure['key.substructure'].length > 0;
 }
 
-async function findReturnType(
-  structure: Structure,
-  file: FileType,
-  ctx: ParseContext
-): Promise<string | null> {
+async function findReturnType(structure: Structure, ctx: ParseContext): Promise<string | null> {
   if (
     structure['key.kind'] === swiftDeclarationKind.varLocal &&
     structure['key.name'].startsWith('returnValueDeclaration_') &&
     ctx.typeInference
   ) {
     // TODO(@HubertBer): this return type inference is really costly
-    return getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
+    return getTypeOfByteOffsetVariable(structure['key.nameoffset'], ctx.file);
   }
 
   if (hasSubstructure(structure)) {
     for (const substructure of structure['key.substructure']) {
-      const returnType = findReturnType(substructure, file, ctx);
+      const returnType = await findReturnType(substructure, ctx);
       if (returnType) {
         return returnType;
       }
@@ -413,18 +411,14 @@ function getUnresolvedType(): Type {
   return { kind: TypeKind.BASIC, type: BasicType.UNRESOLVED };
 }
 
-async function extractDeclarationType(
-  structure: Structure,
-  file: FileType,
-  ctx: ParseContext
-): Promise<Type> {
+async function extractDeclarationType(structure: Structure, ctx: ParseContext): Promise<Type> {
   if (structure['key.typename']) {
     return mapSwiftTypeToTsType(structure['key.typename'] as string);
   }
 
   // TODO(@HubertBer): this type inference is really costly
   if (ctx.typeInference) {
-    const inferReturn = await getTypeOfByteOffsetVariable(structure['key.nameoffset'], file);
+    const inferReturn = await getTypeOfByteOffsetVariable(structure['key.nameoffset'], ctx.file);
     return inferReturn ? mapSwiftTypeToTsType(inferReturn) : getUnresolvedType();
   }
 
@@ -503,7 +497,6 @@ const parseModulePropertyStructure = parseModuleConstantStructure;
 
 async function parseClosureTypes(
   structure: Structure,
-  file: FileType,
   ctx: ParseContext
 ): Promise<SourcekittenClosure> {
   const closure = structure['key.substructure']?.find(
@@ -511,7 +504,7 @@ async function parseClosureTypes(
   );
   if (!closure) {
     // Try finding the preprocessed return value, if not found we don't know the return type
-    const returnType = await findReturnType(structure, file, ctx);
+    const returnType = await findReturnType(structure, ctx);
     return { parameters: [], returnType };
   }
 
@@ -522,13 +515,12 @@ async function parseClosureTypes(
       typename: p['key.typename'],
     }));
 
-  const returnType = closure?.['key.typename'] ?? (await findReturnType(structure, file, ctx));
+  const returnType = closure?.['key.typename'] ?? (await findReturnType(structure, ctx));
   return { parameters, returnType };
 }
 
 async function parseModuleConstructorDeclaration(
   substructure: Structure,
-  file: FileType,
   ctx: ParseContext
 ): Promise<ConstructorDeclaration> {
   const definitionParams = substructure['key.substructure'];
@@ -537,9 +529,9 @@ async function parseModuleConstructorDeclaration(
   // TODO(@HubertBer): rethink this maybe split based on what closure is expected
   // Maybe this should be the last substructure
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
-    types = await parseClosureTypes(definitionParams[1], file, ctx);
+    types = await parseClosureTypes(definitionParams[1], ctx);
   } else if (definitionParams[0] && hasSubstructure(definitionParams[0])) {
-    types = await parseClosureTypes(definitionParams[0], file, ctx);
+    types = await parseClosureTypes(definitionParams[0], ctx);
   } else {
     // TODO(@HubertBer): There sometimes might be another case which needs to be handled.
     console.warn(`The type couldn't be resolved, this case is not yet implemented`);
@@ -554,7 +546,6 @@ async function parseModuleConstructorDeclaration(
 
 async function parseModuleConstantStructure(
   substructure: Structure,
-  file: FileType,
   ctx: ParseContext
 ): Promise<ConstantDeclaration | null> {
   const definitionParams = substructure['key.substructure'];
@@ -562,10 +553,10 @@ async function parseModuleConstantStructure(
     return null;
   }
 
-  const name = getIdentifierFromOffsetObject(definitionParams[0], file);
+  const name = getIdentifierFromOffsetObject(definitionParams[0], ctx.file);
   let types = null;
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
-    types = await parseClosureTypes(definitionParams[1], file, ctx);
+    types = await parseClosureTypes(definitionParams[1], ctx);
   } else {
     // TODO(@HubertBer): There sometimes might be another case which needs to be handled.
     console.warn(`The type couldn't be resolved, this case is not yet implemented`);
@@ -660,6 +651,7 @@ async function parseModuleClassStructure(
   const removeImplicitThis = (functionDeclaration: FunctionDeclaration) => {
     const firstArg = functionDeclaration.arguments[0];
     if (
+      functionDeclaration.isStatic ||
       firstArg === undefined ||
       firstArg.type.kind !== TypeKind.IDENTIFIER ||
       firstArg.type.type !== name
@@ -684,18 +676,17 @@ async function parseModuleClassStructure(
 
 async function parseModuleFunctionSubstructure(
   substructure: Structure,
-  file: FileType,
   isStatic: boolean,
   ctx: ParseContext
 ): Promise<FunctionDeclaration> {
   const definitionParams = substructure['key.substructure'];
   const nameSubstrucutre = definitionParams[0];
   const name = nameSubstrucutre
-    ? getIdentifierFromOffsetObject(nameSubstrucutre, file)
+    ? getIdentifierFromOffsetObject(nameSubstrucutre, ctx.file)
     : 'UnnamedFunction';
   let types = null;
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
-    types = await parseClosureTypes(definitionParams[1], file, ctx);
+    types = await parseClosureTypes(definitionParams[1], ctx);
   } else {
     // TODO(@HubertBer): There sometimes might be another case which needs to be handled.
     console.warn(`The type couldn't be resolved, this case is not yet implemented`);
@@ -714,16 +705,10 @@ async function parseModuleFunctionSubstructure(
 
 async function parseModuleAsyncFunctionSubstructure(
   substructure: Structure,
-  file: FileType,
   isStatic: boolean,
   ctx: ParseContext
 ): Promise<FunctionDeclaration> {
-  const functionDeclaration = await parseModuleFunctionSubstructure(
-    substructure,
-    file,
-    isStatic,
-    ctx
-  );
+  const functionDeclaration = await parseModuleFunctionSubstructure(substructure, isStatic, ctx);
   const lastArgument = functionDeclaration.arguments[functionDeclaration.arguments.length - 1];
   if (!lastArgument) {
     return functionDeclaration;
@@ -740,17 +725,16 @@ async function parseModuleAsyncFunctionSubstructure(
 
 async function parseModulePropDeclaration(
   substructure: Structure,
-  file: FileType,
   ctx: ParseContext
 ): Promise<PropDeclaration> {
   const definitionParams = substructure['key.substructure'];
   const nameSubstrucutre = definitionParams[0];
   const name = nameSubstrucutre
-    ? getIdentifierFromOffsetObject(nameSubstrucutre, file)
+    ? getIdentifierFromOffsetObject(nameSubstrucutre, ctx.file)
     : 'UnkownProp';
   let types = null;
   if (definitionParams[1] && hasSubstructure(definitionParams[1])) {
-    types = await parseClosureTypes(definitionParams[1], file, ctx);
+    types = await parseClosureTypes(definitionParams[1], ctx);
   } else {
     // TODO(@HubertBer): There sometimes might be another case which needs to be handled.
     console.warn(`The type couldn't be resolved, this case is not yet implemented`);
@@ -814,17 +798,16 @@ async function parseRecordStructure(
   recordStructure: Structure,
   usedTypeIdentifiers: Set<string>,
   inferredTypeParametersCount: Map<string, number>,
-  file: FileType,
   ctx: ParseContext
 ): Promise<RecordType> {
   const recordSubstrucutres = recordStructure['key.substructure'].filter(
     (substructure) =>
       substructure['key.kind'] === swiftDeclarationKind.varInstance &&
-      hasFieldAttribute(substructure['key.attributes'], file)
+      hasFieldAttribute(substructure['key.attributes'], ctx.file)
   );
 
   const fields = await taskAll(recordSubstrucutres, async (substructure) => {
-    const type = await extractDeclarationType(substructure, file, ctx);
+    const type = await extractDeclarationType(substructure, ctx);
     return { type, name: substructure['key.name'] };
   });
 
@@ -942,12 +925,12 @@ async function parseModuleStructure(
       }
       case 'Function': {
         moduleClassDeclaration.functions.push(
-          await parseModuleFunctionSubstructure(structure, file, false, ctx)
+          await parseModuleFunctionSubstructure(structure, false, ctx)
         );
         break;
       }
       case 'Constant': {
-        const constantDeclaration = await parseModuleConstantStructure(structure, file, ctx);
+        const constantDeclaration = await parseModuleConstantStructure(structure, ctx);
         if (constantDeclaration) {
           moduleClassDeclaration.constants.push(constantDeclaration);
         }
@@ -957,7 +940,7 @@ async function parseModuleStructure(
         moduleClassDeclaration.classes.push(await parseModuleClassStructure(structure, ctx));
         break;
       case 'Property': {
-        const propertyDeclaration = await parseModulePropertyStructure(structure, file, ctx);
+        const propertyDeclaration = await parseModulePropertyStructure(structure, ctx);
         if (propertyDeclaration) {
           moduleClassDeclaration.properties.push(propertyDeclaration);
         }
@@ -965,28 +948,27 @@ async function parseModuleStructure(
       }
       case 'AsyncFunction':
         moduleClassDeclaration.asyncFunctions.push(
-          await parseModuleAsyncFunctionSubstructure(structure, file, false, ctx)
+          await parseModuleAsyncFunctionSubstructure(structure, false, ctx)
         );
         break;
       case 'StaticAsyncFunction':
         moduleClassDeclaration.asyncFunctions.push(
-          await parseModuleAsyncFunctionSubstructure(structure, file, true, ctx)
+          await parseModuleAsyncFunctionSubstructure(structure, true, ctx)
         );
         break;
       case 'StaticFunction':
         moduleClassDeclaration.functions.push(
-          await parseModuleFunctionSubstructure(structure, file, true, ctx)
+          await parseModuleFunctionSubstructure(structure, true, ctx)
         );
         break;
       case 'Constructor':
         moduleClassDeclaration.constructor = await parseModuleConstructorDeclaration(
           structure,
-          file,
           ctx
         );
         break;
       case 'Prop':
-        moduleClassDeclaration.props.push(await parseModulePropDeclaration(structure, file, ctx));
+        moduleClassDeclaration.props.push(await parseModulePropDeclaration(structure, ctx));
         break;
       case 'View': {
         const viewDeclaration = await parseModuleViewDeclaration(structure, ctx);
@@ -1175,7 +1157,7 @@ function parseNamespaces(
     namespaces[moduleName] = namespaces[moduleName] || {};
     const ns: namespace = namespaces[moduleName];
     currentNamespace[moduleName] = ns;
-    structure['key.substructure'].forEach((substructure) => {
+    structure['key.substructure']?.forEach((substructure) => {
       parseNamespaces(substructure, namespaces, file, ns);
     });
     return;
@@ -1232,7 +1214,7 @@ export async function getSwiftFileTypeInformation(
   const enums: EnumType[] = enumsStructures.map(parseEnumStructure);
   const ctx = { namespaces, file, typeInference: options.typeInference };
   const recordMap = (rd: Structure) => {
-    return parseRecordStructure(rd, recordTypeIdentifiers, inferredTypeParametersCount, file, ctx);
+    return parseRecordStructure(rd, recordTypeIdentifiers, inferredTypeParametersCount, ctx);
   };
 
   const recordsPromise = taskAll(recordsStructures, recordMap);
