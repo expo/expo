@@ -307,7 +307,9 @@ async function testDeletedPageRedirectsAsync(): Promise<void> {
 
   if (
     easRedirect.status !== 301 ||
-    !easLocation.includes('?buildenv=build-with-eas#create-a-development-build-with-eas')
+    !easLocation.includes(
+      '?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build'
+    )
   ) {
     throw new Error(
       `Expected 301 to the introduction EAS path, got: HTTP ${easRedirect.status} -> ${easLocation}`
