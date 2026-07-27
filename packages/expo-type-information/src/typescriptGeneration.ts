@@ -103,22 +103,6 @@ export function getBasicTypesIdentifiers(): Set<string> {
   return new Set<string>(['any', 'number', 'string', 'undefined', 'null', 'Map', 'Set', 'Promise']);
 }
 
-function getAllNonBasicTypes(fileInfo: FileTypeInformation): Set<string> {
-  return fileInfo.declaredTypeIdentifiers
-    .union(fileInfo.usedTypeIdentifiers)
-    .difference(getBasicTypesIdentifiers());
-}
-
-function createGeneratedPrefix(): ts.Node[] {
-  return [
-    ts.addSyntheticLeadingComment(
-      ts.factory.createIdentifier(''),
-      ts.SyntaxKind.MultiLineCommentTrivia,
-      prefix
-    ),
-  ];
-}
-
 function constructModifiersArray(modifiers: {
   exported?: boolean;
   declare?: boolean;
@@ -1225,13 +1209,16 @@ export function buildExposedModuleTypesDeclarations(
 
 export function buildExposedTypesDeclarations(
   ctx: GenerationContext,
-  options: { exported?: boolean; declare?: boolean }
+  options: { exported?: boolean; declare?: boolean; imports?: boolean }
 ): ts.Node[] {
+  const returnNodes = options.imports
+    ? createImportDeclaration({
+        namedImportsNames: ['NativeModule', 'SharedObject'],
+        importFromName: 'expo',
+      })
+    : [];
   return [
-    ...createImportDeclaration({
-      namedImportsNames: ['NativeModule', 'SharedObject'],
-      importFromName: 'expo',
-    }),
+    ...returnNodes,
     ...buildExposedCommonTypesDeclarations(ctx, options),
     ...buildExposedModuleTypesDeclarations(ctx, options),
   ];
@@ -1239,8 +1226,7 @@ export function buildExposedTypesDeclarations(
 
 function buildModuleDeclarationNodes(ctx: GenerationContext): ts.Node[] {
   return joinTSNodesWithNewlines([
-    createGeneratedPrefix(),
-    buildExposedTypesDeclarations(ctx, { exported: true }),
+    buildExposedTypesDeclarations(ctx, { exported: true, imports: true }),
     buildNativeModuleClassDeclaration({ moduleClassDeclaration: ctx.module }),
     buildModuleDefaultExport({
       moduleName: ctx.module.name,
@@ -1261,7 +1247,6 @@ function buildViewDeclarationNodes(ctx: GenerationContext): ts.Node[] {
   const viewComponentType = createComponentType(getViewPropsTypeName(ctx.view));
   const modifiers = [declareModifier(), constModifier()];
   return joinTSNodesWithNewlines([
-    createGeneratedPrefix(),
     createImportDeclaration({ namedImportsNames: ['ViewProps'], importFromName: 'react-native' }),
     buildMissingTypesDeclarations(ctx),
     buildViewPropsInterface(ctx.view, {}),
@@ -1314,9 +1299,8 @@ function buildJSXIntrinsicsViewNodes(ctx: GenerationContext): ts.Node[] {
 
 function buildNativeModuleGeneratedNodes(ctx: GenerationContext): ts.Node[] {
   return joinTSNodesWithNewlines([
-    createGeneratedPrefix(),
     createImportDeclaration({ namedImportsNames: ['ViewProps'], importFromName: 'react-native' }),
-    buildExposedTypesDeclarations(ctx, { exported: true }),
+    buildExposedTypesDeclarations(ctx, { exported: true, imports: true }),
     buildViewPropsInterface(ctx.view, { exported: true }),
     buildNativeModuleClassDeclaration({ moduleClassDeclaration: ctx.module }),
   ]);
@@ -1563,6 +1547,17 @@ type FullTSInterface = {
 export async function generateFullTsInterface(
   fileTypeInformation: FileTypeInformation
 ): Promise<FullTSInterface> {
+  const commonTypesNodes = buildExposedCommonTypesDeclarations(
+    {
+      fileInfo: fileTypeInformation,
+      missingTypes: getMissingTypeIdentifiers(fileTypeInformation),
+    },
+    { exported: true }
+  );
+  const commonTypesIdentifiers = {
+    identifiersInfo: collectIdentifiersFromTSNodes(commonTypesNodes),
+    importPath: './Common.types',
+  };
   const moduleInterfaces = [];
   for (const moduleClassDeclaration of fileTypeInformation.moduleClasses) {
     const ctx = createGenerationContext(fileTypeInformation, moduleClassDeclaration);
@@ -1570,44 +1565,28 @@ export async function generateFullTsInterface(
     const moduleTypesFileImportName = `${ctx?.module.name}.types`;
     const moduleViewsFilesImportNames: string[] = [];
 
-    let moduleTypesFileNodes;
+    let moduleTypesFileNodes: ts.Node[];
     if (fileTypeInformation.moduleClasses.length <= 1) {
       moduleTypesFileNodes = joinTSNodesWithNewlines([
-        createGeneratedPrefix(),
-        createImportDeclaration({
-          namedImportsNames: ['ViewProps'],
-          importFromName: 'react-native',
-        }),
         buildExposedTypesDeclarations(ctx, { exported: true }),
         ...ctx.module.views.map((view) => buildViewPropsInterface(view, { exported: true })),
       ]);
     } else {
       moduleTypesFileNodes = joinTSNodesWithNewlines([
-        createGeneratedPrefix(),
-        createImportAllDeclaration('./Common.types'),
-        createImportDeclaration({
-          namedImportsNames: ['NativeModule', 'SharedObject'],
-          importFromName: 'expo',
-        }),
         buildExposedModuleTypesDeclarations(ctx, { exported: true }),
         ...ctx.module.views.map((view) => buildViewPropsInterface(view, { exported: true })),
       ]);
     }
+    let typesFileIdentifiers = {
+      identifiersInfo: collectIdentifiersFromTSNodes(moduleTypesFileNodes),
+      importPath: `./${moduleTypesFileImportName}`,
+    };
 
-    const moduleViewFilesNodes = [];
+    let moduleViewFilesNodes: ts.Node[][] = [];
+    let viewFilesIdentifiers = [];
     for (const view of ctx.module.views) {
       const moduleViewFileNodes = joinTSNodesWithNewlines([
-        createGeneratedPrefix(),
-        createImportDeclaration({
-          namedImportsNames: ['requireNativeView'],
-          importFromName: 'expo',
-        }),
-        createImportDeclaration({
-          namedImportsNames: [getViewPropsTypeName(view)],
-          importFromName: `./${moduleTypesFileImportName}`,
-        }),
         createRequireNativeViewDeclaration(ctx.module, view),
-
         buildDefaultViewComponent({
           componentName: view.name,
           propsTypeAlias: getViewPropsTypeName(view),
@@ -1615,46 +1594,69 @@ export async function generateFullTsInterface(
       ]);
       moduleViewFilesNodes.push(moduleViewFileNodes);
       moduleViewsFilesImportNames.push(`${view.name}View`);
+      viewFilesIdentifiers.push({
+        identifiersInfo: collectIdentifiersFromTSNodes(moduleViewFileNodes),
+        importPath: `./${view.name}View`,
+      });
     }
 
-    const moduleNativeModuleNodes = joinTSNodesWithNewlines([
-      createGeneratedPrefix(),
-      createImportDeclaration({
-        namedImportsNames: ['requireNativeModule', 'NativeModule'],
-        importFromName: 'expo',
-      }),
-      createImportDeclaration({
-        namedImportsNames: [
-          ...getAllNonBasicTypes(ctx.fileInfo),
-          getEventsTypeName(ctx.module),
-        ].filter((v) => v !== undefined),
-        importFromName: `./${moduleTypesFileImportName}`,
-      }),
+    let moduleNativeModuleNodes: ts.Node[] = joinTSNodesWithNewlines([
       buildNativeModuleClassDeclaration({
         moduleClassDeclaration: ctx.module,
         exportedModuleName: ctx.module.name,
       }),
       buildModuleDefaultExport({ moduleName: ctx.module.name, moduleType: ctx.module.name }),
     ]);
+    const moduleFileIdentifiers = {
+      identifiersInfo: collectIdentifiersFromTSNodes(moduleNativeModuleNodes),
+      importPath: `./${moduleNativeFileImportName}`,
+    };
 
-    const indexFileNodes = joinTSNodesWithNewlines([
-      createGeneratedPrefix(),
-      createExportAllDeclaration({
-        importFromName: `./${moduleTypesFileImportName}`,
-        justTypes: true,
-      }),
-      createExportDefaultAsDeclaration({
-        exportAsName: ctx.module.name,
-        importFromName: `./${moduleNativeFileImportName}`,
-      }),
-
-      ...ctx.module.views.map((view, idx) =>
+    const indexFileNodes = joinTSNodesWithNewlines(
+      [
+        moduleTypesFileNodes.length > 0
+          ? createExportAllDeclaration({
+              importFromName: `./${moduleTypesFileImportName}`,
+              justTypes: true,
+            })
+          : null,
         createExportDefaultAsDeclaration({
-          exportAsName: view.name,
-          importFromName: `./${moduleViewsFilesImportNames[idx]}`,
-        })
-      ),
+          exportAsName: ctx.module.name,
+          importFromName: `./${moduleNativeFileImportName}`,
+        }),
+
+        ...ctx.module.views.map((view, idx) =>
+          createExportDefaultAsDeclaration({
+            exportAsName: view.name,
+            importFromName: `./${moduleViewsFilesImportNames[idx]}`,
+          })
+        ),
+      ].filter((v) => v !== null)
+    );
+
+    const identifierFileMap = createIdentifierFileMapping([
+      commonTypesIdentifiers,
+      typesFileIdentifiers,
+      moduleFileIdentifiers,
+      ...viewFilesIdentifiers,
     ]);
+
+    moduleTypesFileNodes = [
+      ...createImportNodes(typesFileIdentifiers.identifiersInfo, identifierFileMap),
+      ...moduleTypesFileNodes,
+    ];
+
+    moduleNativeModuleNodes = [
+      ...createImportNodes(moduleFileIdentifiers.identifiersInfo, identifierFileMap),
+      ...moduleNativeModuleNodes,
+    ];
+
+    for (let i = 0; i < moduleViewFilesNodes.length; i += 1) {
+      moduleViewFilesNodes[i] = [
+        ...createImportNodes(viewFilesIdentifiers[i]!.identifiersInfo, identifierFileMap),
+        ...moduleViewFilesNodes[i]!,
+      ];
+    }
 
     const [
       moduleTypesFileContent,
@@ -1695,15 +1697,7 @@ export async function generateFullTsInterface(
   if (fileTypeInformation.moduleClasses.length <= 1) {
     return { moduleInterfaces, commonTypesInterface: undefined };
   }
-  const commonTypesContent = await tsNodesToString(
-    buildExposedCommonTypesDeclarations(
-      {
-        fileInfo: fileTypeInformation,
-        missingTypes: getMissingTypeIdentifiers(fileTypeInformation),
-      },
-      { exported: true }
-    )
-  );
+  const commonTypesContent = await tsNodesToString(commonTypesNodes);
   const commonTypesInterface: OutputFile = {
     name: 'Common.types.ts',
     content: commonTypesContent,
