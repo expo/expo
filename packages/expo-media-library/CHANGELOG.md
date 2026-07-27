@@ -37,6 +37,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
+- [Android] Fix transposed `width`/`height` for rotated assets (portrait photos and videos): `Asset.getInfo()`, `getWidth()`/`getHeight()`/`getShape()` and `Query.exeForMetadata()` now honor MediaStore `ORIENTATION`, matching the legacy API. ([#48150](https://github.com/expo/expo/pull/48150) by [@oeddyo](https://github.com/oeddyo))
 - [iOS] Fix resolving iCloud-offloaded assets ("Optimize iPhone Storage"): allow network access when extracting asset URIs so `Asset.getUri()`, `getInfo()`, `getExif()` and `getOrientation()` can download originals from iCloud, matching the legacy API's `shouldDownloadFromNetwork` default. ([#47790](https://github.com/expo/expo/pull/47790) by [@oeddyo](https://github.com/oeddyo))
 - Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fix permission guards for limited and write-only photo library access. ([#47216](https://github.com/expo/expo/pull/47216) by [@Wenszel](https://github.com/Wenszel))
