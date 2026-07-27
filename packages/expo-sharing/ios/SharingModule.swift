@@ -19,10 +19,6 @@ public final class SharingModule: Module {
         throw FilePermissionException()
       }
 
-      guard let currentViewController = appContext?.utilities?.currentViewController() else {
-        throw MissingCurrentViewControllerException()
-      }
-
       // `UIActivityViewController` derives the shared item's type (and preview)
       // from the file's extension. Cached files often have no extension, so when
       // the caller declares a content type via `UTI`/`mimeType` we expose the
@@ -32,41 +28,46 @@ public final class SharingModule: Module {
       let itemURL = shareableURL(for: url, options: options)
       let linkDirectory = itemURL == url ? nil : itemURL.deletingLastPathComponent()
 
-      let activityController = UIActivityViewController(activityItems: [itemURL], applicationActivities: nil)
-      activityController.title = options.dialogTitle
-
-      activityController.completionWithItemsHandler = { _, _, _, _ in
-        if let linkDirectory {
-          try? FileManager.default.removeItem(at: linkDirectory)
+      DispatchQueue.main.async {
+        guard let currentViewController = self.appContext?.utilities?.currentViewController() else {
+          if let linkDirectory {
+            try? FileManager.default.removeItem(at: linkDirectory)
+          }
+          promise.reject(MissingCurrentViewControllerException())
+          return
         }
-        // Resolve unconditionally. UIActivityViewController invokes this once
-        // on dismissal for every (activityType, completed) permutation. The
-        // previous implementation only resolved two of four cases, leaking
-        // the promise when the user picked an activity and then cancelled
-        // its follow-up dialog (e.g. tapped Print, then cancelled the print
-        // dialog: activityType != nil, completed == false).
-        promise.resolve(nil)
+
+        let activityController = UIActivityViewController(activityItems: [itemURL], applicationActivities: nil)
+        activityController.title = options.dialogTitle
+
+        activityController.completionWithItemsHandler = { _, _, _, _ in
+          if let linkDirectory {
+            try? FileManager.default.removeItem(at: linkDirectory)
+          }
+          // Resolve unconditionally. UIActivityViewController invokes this once
+          // on dismissal for every (activityType, completed) permutation.
+          promise.resolve(nil)
+        }
+
+        // Apple docs state that `UIActivityViewController` must be presented in a
+        // popover on iPad https://developer.apple.com/documentation/uikit/uiactivityviewcontroller
+        if UIDevice.current.userInterfaceIdiom == .pad {
+          let rect = options.anchor
+          let viewFrame = currentViewController.view.frame
+
+          activityController.popoverPresentationController?.sourceRect = CGRect(
+            x: rect?.x ?? viewFrame.midX,
+            y: rect?.y ?? viewFrame.maxY,
+            width: rect?.width ?? 0,
+            height: rect?.height ?? 0
+          )
+          activityController.popoverPresentationController?.sourceView = currentViewController.view
+          activityController.modalPresentationStyle = .pageSheet
+        }
+
+        currentViewController.present(activityController, animated: true)
       }
-
-      // Apple docs state that `UIActivityViewController` must be presented in a
-      // popover on iPad https://developer.apple.com/documentation/uikit/uiactivityviewcontroller
-      if UIDevice.current.userInterfaceIdiom == .pad {
-        let rect = options.anchor
-        let viewFrame = currentViewController.view.frame
-
-        activityController.popoverPresentationController?.sourceRect = CGRect(
-          x: rect?.x ?? viewFrame.midX,
-          y: rect?.y ?? viewFrame.maxY,
-          width: rect?.width ?? 0,
-          height: rect?.height ?? 0
-        )
-        activityController.popoverPresentationController?.sourceView = currentViewController.view
-        activityController.modalPresentationStyle = .pageSheet
-      }
-
-      currentViewController.present(activityController, animated: true)
     }
-    .runOnQueue(.main)
 
     // MARK: - Share into
 
