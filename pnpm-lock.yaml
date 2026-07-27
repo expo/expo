@@ -6547,9 +6547,6 @@ importers:
       typedoc:
         specifier: ^0.28.19
         version: 0.28.19(typescript@6.0.3)
-      uuid:
-        specifier: ^9.0.0
-        version: 9.0.1
     devDependencies:
       '@babel/core':
         specifier: ^7.26.0
@@ -6578,9 +6575,6 @@ importers:
       '@types/semver':
         specifier: ^7.5.8
         version: 7.7.1
-      '@types/uuid':
-        specifier: ^9.0.2
-        version: 9.0.8
       eslint:
         specifier: ^9.39.4
         version: 9.39.4(jiti@1.21.7)
@@ -9730,9 +9724,6 @@ packages:
 
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
-
-  '@types/uuid@9.0.8':
-    resolution: {integrity: sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==}
 
   '@types/validate-npm-package-name@4.0.2':
     resolution: {integrity: sha512-lrpDziQipxCEeK5kWxvljWYhUvOiB2A9izZd9B2AFarYAkqZshb4lPbRs7zKEic6eGtH8V/2qJW+dPp9OtF6bw==}
@@ -15117,11 +15108,6 @@ packages:
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
-  uuid@9.0.1:
-    resolution: {integrity: sha512-b+1eJOlsR9K8HJpow9Ok3fiWOWSIcIzXodvv0rQjVoOVNpWMpxf1wZNpt4y9h10odCNrqnYp1OBzRktckBe3sA==}
-    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
-    hasBin: true
-
   v8-compile-cache-lib@3.0.1:
     resolution: {integrity: sha512-wa7YjyUGfNZngI/vtK0UHAN+lgDCxBPCylVXGp0zu59Fz5aiGtNXaq3DhIov063MorB+VfufLh3JlF2KdTK3xg==}
 
@@ -18138,9 +18124,7 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -18846,8 +18830,6 @@ snapshots:
       source-map: 0.6.1
 
   '@types/unist@3.0.3': {}
-
-  '@types/uuid@9.0.8': {}
 
   '@types/validate-npm-package-name@4.0.2': {}
 
@@ -25084,8 +25066,6 @@ snapshots:
   uuid@7.0.3: {}
 
   uuid@8.3.2: {}
-
-  uuid@9.0.1: {}
 
   v8-compile-cache-lib@3.0.1: {}
 
