@@ -21,6 +21,7 @@ import kotlinx.coroutines.withContext
 import java.io.File
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
+import expo.modules.medialibrary.assets.maybeRotateAssetSize
 
 class AssetMapper(private val contentResolver: ContentResolver) {
   suspend fun toDto(mediaStoreItem: AssetMediaStoreItem): AssetInfo =
@@ -36,14 +37,20 @@ class AssetMapper(private val contentResolver: ContentResolver) {
       MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
     )
 
+    val (rawWidth, rawHeight) = maybeRotateAssetSize(
+      imageAsset.width ?: 0,
+      imageAsset.height ?: 0,
+      imageAsset.orientation ?: 0
+    )
+
     return AssetInfo(
       id = contentUri,
       uri = mapUri(imageAsset.data)
         ?: throw AssetPropertyNotFoundException("Uri"),
       mediaType = MediaType.IMAGE,
-      width = mapWidth(imageAsset.width, contentUri)
+      width = mapWidth(rawWidth.takeIf { it > 0 }, contentUri)
         ?: throw AssetPropertyNotFoundException("Width"),
-      height = mapHeight(imageAsset.height, contentUri)
+      height = mapHeight(rawHeight.takeIf { it > 0 }, contentUri)
         ?: throw AssetPropertyNotFoundException("Height"),
       creationTime = mapCreationTime(imageAsset.dateTaken),
       modificationTime = mapModificationTime(imageAsset.dateModified),
@@ -60,14 +67,20 @@ class AssetMapper(private val contentResolver: ContentResolver) {
       MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
     )
 
+    val (rawWidth, rawHeight) = maybeRotateAssetSize(
+      videoAsset.width ?: 0,
+      videoAsset.height ?: 0,
+      videoAsset.orientation ?: 0
+    )
+
     return AssetInfo(
       id = contentUri,
       uri = mapUri(videoAsset.data)
         ?: throw AssetPropertyNotFoundException("Uri"),
       mediaType = MediaType.VIDEO,
-      width = mapWidth(videoAsset.width, contentUri)
+      width = mapWidth(rawWidth.takeIf { it > 0 }, contentUri)
         ?: throw AssetPropertyNotFoundException("Width"),
-      height = mapHeight(videoAsset.height, contentUri)
+      height = mapHeight(rawHeight.takeIf { it > 0 }, contentUri)
         ?: throw AssetPropertyNotFoundException("Height"),
       creationTime = mapCreationTime(videoAsset.dateTaken),
       modificationTime = mapModificationTime(videoAsset.dateModified),
@@ -101,12 +114,17 @@ class AssetMapper(private val contentResolver: ContentResolver) {
   }
 
   fun toMetadata(fileAsset: MediaStoreFile): AssetMetadata {
+    val (rotatedWidth, rotatedHeight) = maybeRotateAssetSize(
+      fileAsset.width ?: 0,
+      fileAsset.height ?: 0,
+      fileAsset.orientation ?: 0
+    )
     return AssetMetadata(
       id = extractAssetContentUri(fileAsset.id, fileAsset.mediaType),
       mediaType = fileAsset.mediaType?.let { MediaType.fromMediaStoreValue(it) }
         ?: MediaType.UNKNOWN,
-      width = fileAsset.width,
-      height = fileAsset.height,
+      width = rotatedWidth.takeIf { it > 0 } ?: fileAsset.width,
+      height = rotatedHeight.takeIf { it > 0 } ?: fileAsset.height,
       creationTime = mapCreationTime(fileAsset.dateTaken),
       modificationTime = mapModificationTime(fileAsset.dateModified),
       duration = mapDuration(fileAsset.duration),

@@ -16,8 +16,7 @@ import expo.modules.medialibrary.next.extensions.resolver.insertPendingAsset
 import expo.modules.medialibrary.next.extensions.resolver.publishPendingAsset
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDisplayName
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDuration
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetHeight
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetWidth
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetOrientedDimensions
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateModified
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateTaken
@@ -86,15 +85,21 @@ class AssetModernDelegate(
       ?: throw AssetPropertyNotFoundException("Filename")
 
   override suspend fun getHeight(): Int {
-    val mediaStoreHeight = contentResolver.queryAssetHeight(contentUri)
-    return assetMapper.mapHeight(mediaStoreHeight, contentUri)
+    val (_, orientedHeight) = contentResolver.queryAssetOrientedDimensions(contentUri)
+    val height = orientedHeight
+      ?: assetMapper.mapHeight(null, contentUri)
       ?: throw AssetPropertyNotFoundException("Height")
+    return if (height > 0) height else
+      assetMapper.mapHeight(null, contentUri) ?: throw AssetPropertyNotFoundException("Height")
   }
 
   override suspend fun getWidth(): Int {
-    val mediaStoreWidth = contentResolver.queryAssetWidth(contentUri)
-    return assetMapper.mapWidth(mediaStoreWidth, contentUri)
+    val (orientedWidth, _) = contentResolver.queryAssetOrientedDimensions(contentUri)
+    val width = orientedWidth
+      ?: assetMapper.mapWidth(null, contentUri)
       ?: throw AssetPropertyNotFoundException("Width")
+    return if (width > 0) width else
+      assetMapper.mapWidth(null, contentUri) ?: throw AssetPropertyNotFoundException("Width")
   }
 
   override suspend fun getShape(): Shape? {

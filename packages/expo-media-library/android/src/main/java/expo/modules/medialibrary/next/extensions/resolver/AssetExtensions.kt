@@ -8,6 +8,7 @@ import android.os.Build
 import android.provider.MediaStore
 import androidx.annotation.RequiresApi
 import expo.modules.medialibrary.EXTERNAL_CONTENT_URI
+import expo.modules.medialibrary.assets.maybeRotateAssetSize
 import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
 import expo.modules.medialibrary.next.extensions.getNullableInt
 import expo.modules.medialibrary.next.extensions.getNullableLong
@@ -39,6 +40,34 @@ suspend fun ContentResolver.queryAssetWidth(contentUri: Uri): Int? =
 
 suspend fun ContentResolver.queryAssetHeight(contentUri: Uri): Int? =
   queryOne(contentUri, MediaStore.MediaColumns.HEIGHT, Cursor::getNullableInt)
+
+/**
+ * Queries WIDTH, HEIGHT, and ORIENTATION in a single cursor pass and applies
+ * [maybeRotateAssetSize] so that portrait photos stored as rotated landscape buffers
+ * report correct display dimensions (matching the legacy API behaviour).
+ */
+suspend fun ContentResolver.queryAssetOrientedDimensions(contentUri: Uri): Pair<Int?, Int?> =
+  withContext(Dispatchers.IO) {
+    val projection = arrayOf(
+      MediaStore.MediaColumns.WIDTH,
+      MediaStore.MediaColumns.HEIGHT,
+      MediaStore.MediaColumns.ORIENTATION
+    )
+    val cursor = safeQuery(contentUri, projection, null, null)
+      ?: return@withContext Pair(null, null)
+    cursor.use {
+      if (!it.moveToFirst()) return@withContext Pair(null, null)
+      val rawWidth = it.getNullableInt(it.getColumnIndexOrThrow(MediaStore.MediaColumns.WIDTH))
+      val rawHeight = it.getNullableInt(it.getColumnIndexOrThrow(MediaStore.MediaColumns.HEIGHT))
+      val orientation = it.getNullableInt(it.getColumnIndexOrThrow(MediaStore.MediaColumns.ORIENTATION)) ?: 0
+      if (rawWidth != null && rawHeight != null) {
+        val (w, h) = maybeRotateAssetSize(rawWidth, rawHeight, orientation)
+        Pair(w, h)
+      } else {
+        Pair(rawWidth, rawHeight)
+      }
+    }
+  }
 
 suspend fun ContentResolver.queryAssetData(contentUri: Uri): String? =
   queryOne(contentUri, MediaStore.MediaColumns.DATA, Cursor::getNullableString)
