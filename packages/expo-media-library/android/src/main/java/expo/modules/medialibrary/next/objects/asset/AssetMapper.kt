@@ -37,12 +37,11 @@ class AssetMapper(private val contentResolver: ContentResolver) {
       MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
     )
 
-    val (width, height) = maybeRotateAssetSize(
-      mapWidth(imageAsset.width, contentUri)
-        ?: throw AssetPropertyNotFoundException("Width"),
-      mapHeight(imageAsset.height, contentUri)
-        ?: throw AssetPropertyNotFoundException("Height"),
-      imageAsset.orientation ?: 0
+    val (width, height) = mapDisplaySize(
+      imageAsset.width,
+      imageAsset.height,
+      imageAsset.orientation,
+      contentUri
     )
 
     return AssetInfo(
@@ -67,12 +66,11 @@ class AssetMapper(private val contentResolver: ContentResolver) {
       MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
     )
 
-    val (width, height) = maybeRotateAssetSize(
-      mapWidth(videoAsset.width, contentUri)
-        ?: throw AssetPropertyNotFoundException("Width"),
-      mapHeight(videoAsset.height, contentUri)
-        ?: throw AssetPropertyNotFoundException("Height"),
-      videoAsset.orientation ?: 0
+    val (width, height) = mapDisplaySize(
+      videoAsset.width,
+      videoAsset.height,
+      videoAsset.orientation,
+      contentUri
     )
 
     return AssetInfo(
@@ -114,13 +112,7 @@ class AssetMapper(private val contentResolver: ContentResolver) {
   }
 
   fun toMetadata(fileAsset: MediaStoreFile): AssetMetadata {
-    val mediaStoreWidth = fileAsset.width
-    val mediaStoreHeight = fileAsset.height
-    val (width, height) = if (mediaStoreWidth != null && mediaStoreHeight != null) {
-      maybeRotateAssetSize(mediaStoreWidth, mediaStoreHeight, fileAsset.orientation ?: 0)
-    } else {
-      mediaStoreWidth to mediaStoreHeight
-    }
+    val (width, height) = mapSize(fileAsset.width, fileAsset.height, fileAsset.orientation)
     return AssetMetadata(
       id = extractAssetContentUri(fileAsset.id, fileAsset.mediaType),
       mediaType = fileAsset.mediaType?.let { MediaType.fromMediaStoreValue(it) }
@@ -145,6 +137,28 @@ class AssetMapper(private val contentResolver: ContentResolver) {
     return transformDimension(mediaStoreWidth, contentUri) {
       downloadBitmapAndGet(contentUri) { it.outWidth }
     }
+  }
+
+  // MediaStore's WIDTH/HEIGHT columns hold the raw pixel-buffer size; assets
+  // with ORIENTATION 90 or 270 are displayed with the two swapped.
+  fun mapSize(mediaStoreWidth: Int?, mediaStoreHeight: Int?, mediaStoreOrientation: Int?): Pair<Int?, Int?> =
+    if (mediaStoreWidth != null && mediaStoreHeight != null) {
+      maybeRotateAssetSize(mediaStoreWidth, mediaStoreHeight, mediaStoreOrientation ?: 0)
+    } else {
+      mediaStoreWidth to mediaStoreHeight
+    }
+
+  private suspend fun mapDisplaySize(
+    mediaStoreWidth: Int?,
+    mediaStoreHeight: Int?,
+    mediaStoreOrientation: Int?,
+    contentUri: Uri
+  ): Pair<Int, Int> {
+    val width = mapWidth(mediaStoreWidth, contentUri)
+      ?: throw AssetPropertyNotFoundException("Width")
+    val height = mapHeight(mediaStoreHeight, contentUri)
+      ?: throw AssetPropertyNotFoundException("Height")
+    return maybeRotateAssetSize(width, height, mediaStoreOrientation ?: 0)
   }
 
   private suspend fun transformDimension(
