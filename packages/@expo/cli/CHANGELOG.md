@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Preserve `watchFolders` external to `serverRoot` explicitly, when they've been manually added ([#48177](https://github.com/expo/expo/pull/48177) by [@kitten](https://github.com/kitten))
+
 ## 56.1.21 — 2026-07-23
 
 ### 🐛 Bug fixes
