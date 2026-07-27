@@ -21,6 +21,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { Log } from '../../../log';
+import { isPathInside } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { isServerEnvironment } from '../middleware/metroOptions';
 import type { PlatformBundlers } from '../platformBundlers';
@@ -983,6 +984,7 @@ export async function withMetroMultiPlatformAsync(
     config,
     exp,
     platformBundlers,
+    serverRoot,
 
     isTsconfigPathsEnabled,
     isAutolinkingResolverEnabled,
@@ -1011,8 +1013,12 @@ export async function withMetroMultiPlatformAsync(
   // NOTE(@kitten): If the on-demand filesystem is enabled, we can aggressively cut down the `watchFolders`
   // to a minimum, since the files will be read lazily. This almost always speeds up exports
   if (isExporting && !!config.resolver.unstable_onDemandFilesystem) {
+    // Preserve additional watchFolders the user added outside of serverRoot explicitly
+    // TODO(@kitten): In the future we can instead use the `onDemandFilesystem: 'UNSTABLE_ALLOW_ALL'` mode while issuing a warning
+    const internalRoot = serverRoot ?? projectRoot;
+    const externalWatchFolders = watchFolders.filter((dir) => !isPathInside(dir, internalRoot));
     watchFolders.length = 0;
-    watchFolders.push(projectRoot);
+    watchFolders.push(projectRoot, ...externalWatchFolders);
   }
 
   // Change the default metro-runtime to a custom one that supports bundle splitting.
