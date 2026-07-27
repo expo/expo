@@ -72,14 +72,14 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(ScreenStack.mock.calls[0][0]).toEqual(
+    expect(ScreenStack.mock.calls[0]![0]).toEqual(
       expect.objectContaining({
         testID: 'native-stack',
         nativeContainerStyle,
         onFinishTransitioning,
       })
     );
-    expect(ScreenStackItem.mock.calls[0][0].testID).toBeUndefined();
+    expect(ScreenStackItem.mock.calls[0]![0].testID).toBeUndefined();
   });
 
   it('lets raw screen props override expo-router optional props', () => {
