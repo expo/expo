@@ -257,14 +257,20 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
 function createImportDeclaration({
   defaultImportName,
   namedImportsNames,
+  namedTypeImportsNames,
   importFromName,
+  typeImport,
 }: {
   defaultImportName?: string;
   namedImportsNames?: string[];
+  namedTypeImportsNames?: string[];
   importFromName: string;
+  typeImport?: boolean;
 }): ts.Node[] {
   const hasDefault = !!defaultImportName;
-  const hasNamed = namedImportsNames && namedImportsNames.length > 0;
+  const hasNamed =
+    (namedImportsNames && namedImportsNames.length > 0) ||
+    (namedTypeImportsNames && namedTypeImportsNames.length > 0);
 
   if (!hasDefault && !hasNamed) {
     return [];
@@ -273,17 +279,24 @@ function createImportDeclaration({
   const defaultImport = hasDefault ? ts.factory.createIdentifier(defaultImportName) : undefined;
 
   const namedImports = hasNamed
-    ? ts.factory.createNamedImports(
-        namedImportsNames.map((name) =>
+    ? ts.factory.createNamedImports([
+        ...(namedTypeImportsNames ?? []).map((name) =>
+          ts.factory.createImportSpecifier(true, undefined, ts.factory.createIdentifier(name))
+        ),
+        ...(namedImportsNames ?? []).map((name) =>
           ts.factory.createImportSpecifier(false, undefined, ts.factory.createIdentifier(name))
-        )
-      )
+        ),
+      ])
     : undefined;
 
   return [
     ts.factory.createImportDeclaration(
       undefined,
-      ts.factory.createImportClause(undefined, defaultImport, namedImports),
+      ts.factory.createImportClause(
+        typeImport ? ts.SyntaxKind.TypeKeyword : undefined,
+        defaultImport,
+        namedImports
+      ),
       ts.factory.createStringLiteral(importFromName)
     ),
   ];
@@ -960,6 +973,214 @@ function buildEventsTypeDeclaration(
       ` These events may have payloads that weren't resolved!`
     ),
   ];
+}
+
+type IdentifiersInfo = {
+  usedTypeIdentifiers: Set<string>;
+  usedValueIdentifiers: Set<string>;
+  declaredTypeIdentifiers: Set<string>;
+  declaredValueIdentifiers: Set<string>;
+};
+
+// Leftmost identifier of `A.B.C`
+function entityNameToString(entityName: ts.EntityName): string {
+  return ts.isIdentifier(entityName) ? entityName.text : entityNameToString(entityName.left);
+}
+
+function rootOfIdentifier(identifier: ts.Identifier): string | undefined {
+  return identifier.text.split('.')[0];
+}
+
+function collectIdentifiersFromTSNodes(rootNodes: ts.Node[]): IdentifiersInfo {
+  const usedTypeIdentifiers = new Set<string>();
+  const usedValueIdentifiers = new Set<string>();
+  const declaredTypeIdentifiers = new Set<string>();
+  const declaredValueIdentifiers = new Set<string>();
+
+  const addHeritageIdentifiers = (
+    node: ts.InterfaceDeclaration | ts.ClassDeclaration,
+    identifiers: Set<string>
+  ) => {
+    for (const clause of node.heritageClauses ?? []) {
+      for (const typeExpression of clause.types) {
+        if (ts.isIdentifier(typeExpression.expression)) {
+          identifiers.add(typeExpression.expression.text);
+        }
+      }
+    }
+  };
+
+  const visit = (node: ts.Node) => {
+    // Only handle the used identifiers in here, as the declarations are always in the root nodes.
+    if (ts.isTypeReferenceNode(node)) {
+      // handle any type reference e.g. `a: TestEnum`, `Promise<T>`, `Some.Qualified.Type`.
+      usedTypeIdentifiers.add(entityNameToString(node.typeName));
+    } else if (ts.isTypeQueryNode(node)) {
+      // handle `typeof some.value`.
+      usedValueIdentifiers.add(entityNameToString(node.exprName));
+    } else if (ts.isInterfaceDeclaration(node)) {
+      // `interface Props extends ViewProps` uses the heritage name only as a type.
+      addHeritageIdentifiers(node, usedTypeIdentifiers);
+    } else if (ts.isClassDeclaration(node)) {
+      // `class X extends SharedObject` needs the heritage name as a value, even on `declare class`.
+      addHeritageIdentifiers(node, usedValueIdentifiers);
+    } else if (ts.isCallExpression(node) && ts.isIdentifier(node.expression)) {
+      // handle the call expressions `someFunction(arg1, arg2)`.
+      const identifierRoot = rootOfIdentifier(node.expression);
+      if (identifierRoot) {
+        usedValueIdentifiers.add(identifierRoot);
+      }
+    } else if (ts.isJsxSelfClosingElement(node) && ts.isIdentifier(node.tagName)) {
+      // handle `<SomeView />`.
+      usedValueIdentifiers.add(node.tagName.text);
+    } else if (
+      (ts.isPropertyDeclaration(node) || ts.isParameter(node)) &&
+      node.initializer &&
+      ts.isIdentifier(node.initializer)
+    ) {
+      // handle declaration initializers that are a bare identifier,
+      // e.g. the top-level const hack `export const StringConstant = TestModule.StringConstant`.
+      const identifierRoot = rootOfIdentifier(node.initializer);
+      if (identifierRoot) {
+        usedValueIdentifiers.add(identifierRoot);
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  };
+
+  for (const node of rootNodes) {
+    if (ts.isIdentifier(node)) {
+      continue;
+    }
+
+    const isTypeDeclaration =
+      (ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node)) && node.name;
+    const isTypicalValueDeclaration =
+      (ts.isClassDeclaration(node) ||
+        ts.isEnumDeclaration(node) ||
+        ts.isFunctionDeclaration(node)) &&
+      node.name;
+    const isConstDeclaration = ts.isParameter(node) && ts.isIdentifier(node.name);
+
+    if (isTypeDeclaration) {
+      declaredTypeIdentifiers.add(node.name.text);
+    } else if (isTypicalValueDeclaration) {
+      declaredValueIdentifiers.add(node.name.text);
+    } else if (isConstDeclaration) {
+      // TypeScript moment. This can't be merged with the previous branch.
+      declaredValueIdentifiers.add(node.name.text);
+    }
+    visit(node);
+  }
+
+  for (const v of usedValueIdentifiers) {
+    usedTypeIdentifiers.delete(v);
+  }
+
+  return {
+    usedTypeIdentifiers,
+    usedValueIdentifiers,
+    declaredTypeIdentifiers,
+    declaredValueIdentifiers,
+  };
+}
+
+type IdentifierDeclarationImportMap = Map<string, string>;
+
+function baseIdentifierFileMap(): IdentifierDeclarationImportMap {
+  return new Map([
+    ['ColorValue', 'react-native'],
+    ['ViewProps', 'react-native'],
+    ['SharedObject', 'expo'],
+    ['requireNativeView', 'expo'],
+    ['requireNativeModule', 'expo'],
+    ['NativeModule', 'expo'],
+  ]);
+}
+
+// Ambient in any TS program, never imported.
+const GLOBAL_IDENTIFIERS = new Set<string>(['Uint8Array', 'Map', 'Set', 'Promise']);
+
+function createIdentifierFileMapping(
+  fileIdentifiersInfo: { identifiersInfo: IdentifiersInfo; importPath: string }[]
+): IdentifierDeclarationImportMap {
+  const declarationMap: IdentifierDeclarationImportMap = baseIdentifierFileMap();
+
+  for (const { identifiersInfo, importPath } of fileIdentifiersInfo) {
+    for (const typeIdentifier of identifiersInfo.declaredTypeIdentifiers) {
+      declarationMap.set(typeIdentifier, importPath);
+    }
+    for (const valueIdentifier of identifiersInfo.declaredValueIdentifiers) {
+      declarationMap.set(valueIdentifier, importPath);
+    }
+  }
+  return declarationMap;
+}
+
+function createImportNodes(
+  {
+    usedTypeIdentifiers,
+    usedValueIdentifiers,
+    declaredTypeIdentifiers,
+    declaredValueIdentifiers,
+  }: IdentifiersInfo,
+  identifierDeclarationImportMap: IdentifierDeclarationImportMap
+): ts.Node[] {
+  const valueIdentifiersToImport = usedValueIdentifiers
+    .difference(declaredValueIdentifiers)
+    .difference(declaredTypeIdentifiers)
+    .difference(GLOBAL_IDENTIFIERS);
+  const typeIdentifiersToImport = usedTypeIdentifiers
+    .difference(declaredTypeIdentifiers)
+    .difference(declaredValueIdentifiers)
+    .difference(GLOBAL_IDENTIFIERS)
+    .difference(valueIdentifiersToImport);
+  const typeImports = new Map<string, string[]>();
+  const valueImports = new Map<string, string[]>();
+  for (const typeIdent of typeIdentifiersToImport) {
+    const importPath = identifierDeclarationImportMap.get(typeIdent);
+    if (!importPath) {
+      console.warn(`No known declaration of ${typeIdent}.`);
+      continue;
+    }
+    if (!typeImports.has(importPath)) {
+      typeImports.set(importPath, []);
+    }
+    typeImports.get(importPath)?.push(typeIdent);
+  }
+  for (const valueIdent of valueIdentifiersToImport) {
+    const importPath = identifierDeclarationImportMap.get(valueIdent);
+    if (!importPath) {
+      console.warn(`No known declaration of ${valueIdent}.`);
+      continue;
+    }
+    if (!valueImports.has(importPath)) {
+      valueImports.set(importPath, []);
+    }
+    valueImports.get(importPath)?.push(valueIdent);
+  }
+
+  const importNodes: ts.Node[][] = [];
+  for (const [importFromName, typeIdentifiers] of typeImports) {
+    importNodes.push(
+      createImportDeclaration({
+        namedImportsNames: typeIdentifiers,
+        importFromName,
+        typeImport: true,
+      })
+    );
+  }
+  for (const [importFromName, identifiers] of valueImports) {
+    importNodes.push(
+      createImportDeclaration({
+        namedImportsNames: identifiers,
+        importFromName,
+      })
+    );
+  }
+
+  return importNodes.flat(1);
 }
 
 export function buildExposedCommonTypesDeclarations(
