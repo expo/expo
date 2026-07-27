@@ -533,7 +533,7 @@ struct ArrayBufferTests {
     }
 
     @Test
-    func `withUnsafeMutableBytes allows reentrant access to the same buffer`() async throws {
+    func `withUnsafeMutableBytes invokes its body without holding the storage lock`() async throws {
       let buffer = ArrayBuffer(size: 4)
 
       try await runOffThreadWithTimeout {
@@ -616,6 +616,50 @@ struct ArrayBufferTests {
       }
       #expect(throws: ArrayBufferJSBytesAccessException.self) {
         _ = try view.makeOwnedNativeStorageCopy()
+      }
+    }
+
+    @Test
+    func `JS-backed zero-length ranges pass empty buffers to scoped bodies`() throws {
+      let runtime = try runtime
+      let backingValue = try runtime.eval("new ArrayBuffer(0)")
+
+      // A zero-length range passes `validateBounds()` even when the backing buffer is detached
+      // (a detached buffer reports size 0), so the access paths must not call `data()` for it.
+      // This runtime cannot detach a buffer, so this only exercises the empty scoped read/write
+      // contract, not detachment itself.
+      let view = JavaScriptBackedArrayBufferView(
+        runtime: runtime,
+        backingValue: backingValue,
+        byteOffset: 0,
+        byteLength: 0
+      )
+
+      let readCount = try view.withUnsafeBytes { bytes in
+        bytes.count
+      }
+      let writeCount = try view.withUnsafeMutableBytes { bytes in
+        bytes.count
+      }
+
+      #expect(readCount == 0)
+      #expect(writeCount == 0)
+    }
+
+    @Test
+    func `withUnsafeBytes rethrows body errors for JS-backed storage`() throws {
+      struct SentinelError: Error {}
+      let runtime = try runtime
+      let value = try runtime.eval("new Uint8Array([1, 2, 3]).buffer")
+      let buffer = try ArrayBuffer.decode(value, in: runtime)
+
+      // Only materialization failures may fail loud — an error thrown by the caller's body
+      // must propagate exactly as it does for native-backed storage.
+      #expect(buffer.isNativeBacked == false)
+      #expect(throws: SentinelError.self) {
+        try buffer.withUnsafeBytes { _ in
+          throw SentinelError()
+        }
       }
     }
 

@@ -7,6 +7,14 @@ import Foundation
 /// Does not require a JavaScript runtime at creation time — the JSI backing buffer
 /// is created on demand when the buffer needs to be returned to JavaScript.
 ///
+/// A buffer decoded from a JavaScript-allocated `ArrayBuffer` starts JavaScript-backed and
+/// transitions to native-backed at most once. `withUnsafeBytes` uses a temporary native copy,
+/// while `copy()` returns an independent native snapshot; neither materializes the source.
+/// The first `data` or `withUnsafeMutableBytes` access materializes the source permanently.
+/// While it remains JavaScript-backed, use `withJSBytes(_:)` / `withMutableJSBytes(_:)`
+/// for access to the live JavaScript storage. After materialization, all accessors use native
+/// storage and the buffer no longer observes or mutates its original JavaScript backing.
+///
 public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   private let storageBox: SynchronizedArrayBufferStorage
 
@@ -110,16 +118,17 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
     case .ownedNative(let nativeStorage), .nativeBacked(let nativeStorage):
       return try body(UnsafeRawBufferPointer(start: nativeStorage.pointer, count: nativeStorage.byteLength))
     case .javaScriptBacked(let view):
+      let storage: ArrayBufferStorage
       do {
-        let storage = try view.makeOwnedNativeStorageCopy()
-        defer { storage.cleanup() }
-        guard let nativePointer = storage.nativePointer else {
-          preconditionFailure("ArrayBuffer storage copy should be native-backed")
-        }
-        return try body(UnsafeRawBufferPointer(start: nativePointer, count: storage.byteLength))
+        storage = try view.makeOwnedNativeStorageCopy()
       } catch {
         materializationFailure(error)
       }
+      defer { storage.cleanup() }
+      guard let nativePointer = storage.nativePointer else {
+        preconditionFailure("ArrayBuffer storage copy should be native-backed")
+      }
+      return try body(UnsafeRawBufferPointer(start: nativePointer, count: storage.byteLength))
     }
   }
 
@@ -432,7 +441,12 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   }
 
   private func materializationFailure(_ error: any Error) -> Never {
-    preconditionFailure("ArrayBuffer materialization failed: \(error)")
+    preconditionFailure(
+      "Cannot copy the bytes of a JavaScript-backed ArrayBuffer into native memory: \(error). "
+        + "This usually means the JavaScript runtime was torn down, or JavaScript code detached or "
+        + "resized the backing ArrayBuffer while native code was holding this buffer. This API "
+        + "cannot throw, so it terminates instead of returning corrupted data. Use "
+        + "`withJSBytes(_:)` / `withMutableJSBytes(_:)` to handle this case recoverably.")
   }
 
   private func materializedNativeStorageOrFail() -> ArrayBufferStorage {

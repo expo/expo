@@ -19,7 +19,7 @@
 - [Android] Support `PlatformColor` as Color. ([#47632](https://github.com/expo/expo/pull/47632) by [@jakex7](https://github.com/jakex7))
 - [Android] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread. ([#47261](https://github.com/expo/expo/pull/47261) by [@barthap](https://github.com/barthap))
 - Added `getNativeRef()` to views created with `requireNativeViewManager`, which returns the underlying host component. ([#48788](https://github.com/expo/expo/pull/48788) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread. ([#47262](https://github.com/expo/expo/pull/47262) by [@barthap](https://github.com/barthap))
+- [iOS] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread. JavaScript-allocated buffers are no longer eagerly copied: reads see the current JS bytes, and the first `data` or `withUnsafeMutableBytes` access makes a permanent native copy. ([#47262](https://github.com/expo/expo/pull/47262) by [@barthap](https://github.com/barthap))
 
 ### 🐛 Bug fixes
 
