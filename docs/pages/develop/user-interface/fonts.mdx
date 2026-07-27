@@ -46,7 +46,7 @@ Copy the file into your project's **assets/fonts** directory.
 Two ways to use the local font file in your project:
 
 - Embed the font file with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-app-config) (Android and iOS only).
-- Load the font file with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime (Android, iOS, and web).
+- Load the font file with [`useFonts`](/versions/latest/sdk/font/#usefonts) hook at runtime (Android, iOS, and web).
 
 ### With `expo-font` config plugin
 
@@ -258,8 +258,8 @@ Expo has first-class support for all fonts listed in [Google Fonts](https://font
 
 Two ways to use a Google Font in your project:
 
-- Embed the installed font with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-appjsonappconfigjs).
-- Load the installed font with [`useFonts`](/versions/latest/sdk/font/#usefontsmap) hook at runtime asynchronously.
+- Embed the installed font with [`expo-font` config plugin](/versions/latest/sdk/font/#configuration-in-app-config).
+- Load the installed font with [`useFonts`](/versions/latest/sdk/font/#usefonts) hook at runtime asynchronously.
 
 ### With `expo-font` config plugin
 
@@ -448,7 +448,7 @@ A platform's default font is usually easy-to-read. However, don't be surprised w
 
 ### Handle `@expo/vector-icons` initial load
 
-When the icons from `@expo/vector-icons` library load for the first time, they appear as invisible icons in your app. Once they load, they're cached for all the app's subsequent usage. To avoid showing invisible icons on your app's first load, preload during the initial loading screen with [`useFonts`](/versions/latest/sdk/font/#usefontsmap). For example:
+When the icons from `@expo/vector-icons` library load for the first time, they appear as invisible icons in your app. Once they load, they're cached for all the app's subsequent usage. To avoid showing invisible icons on your app's first load, preload during the initial loading screen with [`useFonts`](/versions/latest/sdk/font/#usefonts). For example:
 
 ```tsx src/app/_layout.tsx
 import { useFonts } from 'expo-font';
