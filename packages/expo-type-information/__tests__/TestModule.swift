@@ -39,7 +39,7 @@ public class TestModule: Module {
     Function("TestUnicodeCharacters") { () in
       let 🎉 = "Cheers"
 
-      return "\🎉! 🎉"
+      return "\(🎉)! 🎉"
     }
 
     Function("TestUntypedFunction2") { /* Comment 3 */ () in
