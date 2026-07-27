@@ -19,6 +19,10 @@ public final class SharingModule: Module {
         throw FilePermissionException()
       }
 
+      guard let currentViewController = appContext?.utilities?.currentViewController() else {
+        throw MissingCurrentViewControllerException()
+      }
+
       // `UIActivityViewController` derives the shared item's type (and preview)
       // from the file's extension. Cached files often have no extension, so when
       // the caller declares a content type via `UTI`/`mimeType` we expose the
@@ -26,14 +30,14 @@ public final class SharingModule: Module {
       // the same on-disk data, so this costs no copy and behaves as a real file
       // for every consumer.
       let itemURL = shareableURL(for: url, options: options)
-      let createdLink = itemURL != url
+      let linkDirectory = itemURL == url ? nil : itemURL.deletingLastPathComponent()
 
       let activityController = UIActivityViewController(activityItems: [itemURL], applicationActivities: nil)
       activityController.title = options.dialogTitle
 
       activityController.completionWithItemsHandler = { _, _, _, _ in
-        if createdLink {
-          try? FileManager.default.removeItem(at: itemURL)
+        if let linkDirectory {
+          try? FileManager.default.removeItem(at: linkDirectory)
         }
         // Resolve unconditionally. UIActivityViewController invokes this once
         // on dismissal for every (activityType, completed) permutation. The
@@ -44,15 +48,11 @@ public final class SharingModule: Module {
         promise.resolve(nil)
       }
 
-      guard let currentViewcontroller = appContext?.utilities?.currentViewController() else {
-        throw MissingCurrentViewControllerException()
-      }
-
       // Apple docs state that `UIActivityViewController` must be presented in a
       // popover on iPad https://developer.apple.com/documentation/uikit/uiactivityviewcontroller
       if UIDevice.current.userInterfaceIdiom == .pad {
         let rect = options.anchor
-        let viewFrame = currentViewcontroller.view.frame
+        let viewFrame = currentViewController.view.frame
 
         activityController.popoverPresentationController?.sourceRect = CGRect(
           x: rect?.x ?? viewFrame.midX,
@@ -60,11 +60,11 @@ public final class SharingModule: Module {
           width: rect?.width ?? 0,
           height: rect?.height ?? 0
         )
-        activityController.popoverPresentationController?.sourceView = currentViewcontroller.view
+        activityController.popoverPresentationController?.sourceView = currentViewController.view
         activityController.modalPresentationStyle = .pageSheet
       }
 
-      currentViewcontroller.present(activityController, animated: true)
+      currentViewController.present(activityController, animated: true)
     }
     .runOnQueue(.main)
 
@@ -116,30 +116,39 @@ public final class SharingModule: Module {
 
   private func shareableURL(for url: URL, options: SharingOptions) -> URL {
     var isDirectory: ObjCBool = false
-    FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory)
-    if isDirectory.boolValue {
+    guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), !isDirectory.boolValue else {
       return url
     }
 
-    guard let ext = declaredContentType(options)?.preferredFilenameExtension else {
+    guard let type = declaredContentType(options), let ext = type.preferredFilenameExtension else {
       return url
     }
-    if url.pathExtension.caseInsensitiveCompare(ext) == .orderedSame {
+
+    if let currentType = UTType(filenameExtension: url.pathExtension), currentType.conforms(to: type) {
       return url
     }
 
     let baseName = url.deletingPathExtension().lastPathComponent
-    let linkURL = FileManager.default.temporaryDirectory
+    let linkDirectory = FileManager.default.temporaryDirectory
+      .appendingPathComponent("expo-sharing", isDirectory: true)
+      .appendingPathComponent(UUID().uuidString, isDirectory: true)
+    let linkURL = linkDirectory
       .appendingPathComponent(baseName.isEmpty ? "expo-sharing-item" : baseName)
       .appendingPathExtension(ext)
 
     do {
-      if FileManager.default.fileExists(atPath: linkURL.path) {
-        try FileManager.default.removeItem(at: linkURL)
+      try FileManager.default.createDirectory(at: linkDirectory, withIntermediateDirectories: true)
+      do {
+        try FileManager.default.linkItem(at: url, to: linkURL)
+      } catch {
+        // Hard links cannot span volumes (`EXDEV`), which is reachable for URLs
+        // vended by a file provider. Copying costs an actual duplicate of the
+        // file, but it is the only way to honor the declared type in that case.
+        try FileManager.default.copyItem(at: url, to: linkURL)
       }
-      try FileManager.default.linkItem(at: url, to: linkURL)
       return linkURL
     } catch {
+      try? FileManager.default.removeItem(at: linkDirectory)
       return url
     }
   }

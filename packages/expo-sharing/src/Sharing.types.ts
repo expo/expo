@@ -2,8 +2,12 @@
 export type SharingOptions = {
   /**
    * The MIME type of the target file, for example `image/jpeg`.
-   * On Android it sets the `mimeType` of the sharing `Intent`. On iOS it determines
+   * On Android, it sets the `mimeType` of the sharing `Intent`. On iOS, it determines
    * the shared file's type when [`UTI`](#uti) is not provided.
+   * > **Note:** On iOS the MIME type is not attached to the shared item as metadata.
+   * > It is only used to give the file the matching extension, which is how the share
+   * > sheet infers the type. Types with no canonical extension, such as
+   * > `application/octet-stream`, therefore have no effect.
    * @platform android
    * @platform ios
    */

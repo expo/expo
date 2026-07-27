@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Respect the declared `UTI`/`mimeType` when sharing.
+- [iOS] Respect the declared `UTI`/`mimeType` when sharing. ([#48052](https://github.com/expo/expo/pull/48052) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
