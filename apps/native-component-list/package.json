@@ -127,7 +127,6 @@
     "moment": "^2.29.4",
     "path": "^0.12.7",
     "pixi.js": "^4.6.1",
-    "processing-js": "^1.6.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
