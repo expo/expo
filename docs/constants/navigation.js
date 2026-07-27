@@ -636,9 +636,9 @@ export const eas = [
     makePage('eas/observe/events.mdx'),
     makePage('eas/observe/configuration.mdx'),
     makeGroup('Integrations', [
-      makePage('eas/observe/integrations/third-party.mdx'),
       makePage('eas/observe/integrations/expo-router.mdx'),
       makePage('eas/observe/integrations/react-navigation.mdx'),
+      makePage('eas/observe/integrations/third-party.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),

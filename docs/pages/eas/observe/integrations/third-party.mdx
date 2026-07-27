@@ -4,6 +4,7 @@ sidebar_title: Third-party
 description: Learn how to add an optional EAS Observe integration to a third-party package.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 
 Third-party packages can integrate with EAS Observe to send events that help developers identify performance and usage issues. These are often problems that are difficult to detect from application code alone.
@@ -14,11 +15,24 @@ Events should describe actionable issues that developers can fix. For example, a
 - A background task that takes too long to complete
 - A native resource that loads slowly
 
+## Prerequisites
+
+<Prerequisites>
+  <Requirement title="Expo SDK 57 or later">
+    Third-party integrations require SDK 57 or later to access `getIntegrations()` and listen for
+    the `configure` event.
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+</Prerequisites>
+
 <Step label="1">
 
 ## Add `expo-observe` as an optional dependency
 
-Add `expo-observe` as an optional peer dependency so your package continues to work when it is not installed. Also add it as a development dependency for TypeScript types and tests. Do not add it as a required runtime dependency.
+Add `expo-observe` as an optional peer dependency so your package continues to work when it is not installed. Also, add it as a development dependency for TypeScript types and tests. Do not add it as a required runtime dependency.
 
 ```json package.json
 {
@@ -36,7 +50,7 @@ Add `expo-observe` as an optional peer dependency so your package continues to w
 }
 ```
 
-Load the package with `require()` inside a `try...catch` block. Use `typeof import()` to preserve its TypeScript types:
+Load the package with `require()` inside a `try/catch` block. Use `typeof import()` to preserve its TypeScript types:
 
 ```ts observe.ts
 let observeModule: typeof import('expo-observe') | undefined;
@@ -70,7 +84,7 @@ declare module 'expo-observe' {
 
 Export this declaration from your package entry point so TypeScript loads it when users import your package.
 
-Users can then enable the integration with `Observe.configure()`:
+Developers using your package can then enable the integration with `Observe.configure()`:
 
 ```tsx app/_layout.tsx
 import { Observe } from 'expo-observe';
@@ -82,7 +96,7 @@ Observe.configure({
 });
 ```
 
-If the integration accepts options, users can pass a configuration object instead of `true`:
+If the integration accepts options, developers can pass a configuration object instead of `true`:
 
 ```tsx app/_layout.tsx
 Observe.configure({
@@ -100,25 +114,12 @@ Observe.configure({
 
 ## Initialize the integration
 
-Read the current configuration with `getIntegrations()`. Then listen for the `configure` event so the app can enable, disable, or update the integration later:
+Call `initIntegration()` with your integration key. The callback receives the configuration for your integration:
 
 ```ts observe.ts
-import type { ObserveIntegrationsConfig } from 'expo-observe';
-
-import { disableObserveIntegration, enableObserveIntegration } from './monitoring';
+import { enableObserveIntegration } from './monitoring';
 
 let initialized = false;
-
-function applyConfiguration(integrations: ObserveIntegrationsConfig) {
-  const config = integrations['your-package'];
-
-  if (!config) {
-    disableObserveIntegration();
-    return;
-  }
-
-  enableObserveIntegration(config === true ? {} : config);
-}
 
 export function initObserveIntegrationIfNeeded() {
   if (initialized || typeof window === 'undefined' || !observeModule) {
@@ -128,12 +129,16 @@ export function initObserveIntegrationIfNeeded() {
 
   const { Observe } = observeModule;
 
-  applyConfiguration(Observe.getIntegrations());
-  Observe.addListener('configure', ({ integrations }) => applyConfiguration(integrations));
+  Observe.initIntegration('your-package', config => {
+    if (!config) {
+      return;
+    }
+    enableObserveIntegration(config === true ? {} : config);
+  });
 }
 ```
 
-Implement `enableObserveIntegration()` and `disableObserveIntegration()` in your package. Make sure enabling the integration more than once does not add duplicate listeners. Remove any listeners or native subscriptions when the integration is disabled.
+Implement `enableObserveIntegration()` in your package. The callback does not run when the integration is omitted or set to `false`.
 
 Call the initialization function from your package entry point:
 
