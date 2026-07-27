@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 
 import ExpoLocation from './ExpoLocation';
 import type {
@@ -54,7 +54,7 @@ class Subscriber<
   }
 
   /**
-   * Registers given callback under and existing id. This can be used to
+   * Registers given callback under an existing id. This can be used to
    * create a subscriber for the error event on the same id as the location
    * event is subscribed to.
    */

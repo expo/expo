@@ -27,7 +27,7 @@ const workingDir = path.resolve(repoRoot, '..');
     throw new Error('Missing one or more environment variables; see instructions in e2e/README.md');
   }
   const projectRoot = process.env.TEST_PROJECT_ROOT || path.join(workingDir, 'updates-e2e');
-  const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
+  const localCliBin = path.join(repoRoot, 'packages/@expo/cli/bin/cli.js');
 
   await initAsync(projectRoot, {
     repoRoot,

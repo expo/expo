@@ -67,22 +67,57 @@ function asyncRequireImpl<T>(
   paths: DependencyMapPaths,
   moduleName?: string
 ): Promise<T> | T {
-  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
   const importAll = () => (require as unknown as MetroRequire).importAll<T>(moduleID, moduleName);
 
+  // NOTE(@hassankhan): We need to come back and improve this, ideally we shouldn't need to have a
+  // separate conditional specifically for web
+  // On web, split chunks may already be preloaded via `<script>` tags, so importing
+  // synchronously first prevents double-loading the script
+  if (process.env.EXPO_OS === 'web') {
+    try {
+      return importAll();
+    } catch (error) {
+      const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+      if (maybeLoadBundlePromise != null) {
+        return maybeLoadBundlePromise.then(importAll);
+      }
+      throw error;
+    }
+  }
+
+  // On native, requiring a missing module reports a fatal error via `global.ErrorUtils`
+  // instead of throwing, so the split bundle must be loaded before importing
+  const maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
   if (maybeLoadBundlePromise != null) {
     return maybeLoadBundlePromise.then(importAll);
   }
-
   return importAll();
 }
 
-async function asyncRequire<T>(
+function asyncRequire<T>(
   moduleID: number,
   paths: DependencyMapPaths,
   moduleName?: string
-): Promise<T> {
-  return asyncRequireImpl<T>(moduleID, paths, moduleName);
+): PromiseLike<T> & { _result?: T | Promise<T> } {
+  const ret = asyncRequireImpl<T>(moduleID, paths, moduleName);
+  if (!(ret instanceof Promise)) {
+    // We return a thenable with an added `unstable_importMaybeSync`-like
+    // `_result` property to bypass this being force-converted to a promise
+    // for rehydration
+    return {
+      _result: ret,
+      then(resolve, reject) {
+        return Promise.resolve(ret).then(resolve, reject);
+      },
+    };
+  } else {
+    return {
+      _result: ret,
+      then(resolve, reject) {
+        return ret.then(resolve, reject);
+      },
+    };
+  }
 }
 
 // Synchronous version of asyncRequire, which can still return a promise

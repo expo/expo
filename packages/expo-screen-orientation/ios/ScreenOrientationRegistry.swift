@@ -150,7 +150,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
     var newScreenOrientation = UIInterfaceOrientation.unknown
 
-    // We need to deduce what is the new screen orientaiton based on currentOrientationMask and new dimensions of the view
+    // We need to deduce what is the new screen orientation based on currentOrientationMask and new dimensions of the view
     if orientation.isPortrait {
       // From trait collection, we know that screen is in portrait or upside down orientation.
       let portraitMask = currentOrientationMask.intersection([.portrait, .portraitUpsideDown])

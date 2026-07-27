@@ -1,5 +1,6 @@
 import { WarningAggregator } from '@expo/config-plugins';
-import type { ExpoConfig } from '@expo/config-types';
+import type { ExportedConfigWithProps, XcodeProject } from '@expo/config-plugins';
+import type { ExpoConfig, IOSIcons } from '@expo/config-types';
 import type * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
@@ -18,6 +19,8 @@ jest.mock('@expo/config-plugins', () => ({
   WarningAggregator: {
     addWarningIOS: jest.fn(),
   },
+  // Stubbed out for the whole file: the dangerous mod is skipped entirely (so `setIconsAsync` only
+  // runs where a test calls it directly), and the Xcode mod runs its action synchronously.
   withDangerousMod: jest.fn((config: any) => config),
   withXcodeProject: jest.fn((config: any, action: any) => action(config)),
 }));
@@ -68,9 +71,10 @@ describe('iOS Icons', () => {
       getIcons({
         icon: '',
         ios: {
+          // `any` is not a valid IOSIcons key; this asserts unknown/empty keys are ignored.
           icon: {
             any: '',
-          },
+          } as IOSIcons,
         },
       })
     ).toBe(null);
@@ -79,9 +83,10 @@ describe('iOS Icons', () => {
       getIcons({
         icon: 'icon',
         ios: {
+          // `any` is not a valid IOSIcons key; this asserts unknown/empty keys are ignored.
           icon: {
             any: '',
-          },
+          } as IOSIcons,
         },
       })
     ).toMatch('icon');
@@ -127,109 +132,136 @@ describe('iOS Icons', () => {
 
 describe(withIosIcons, () => {
   const projectRoot = '/app';
-  const pbxprojPath = 'ios/HelloWorld.xcodeproj/project.pbxproj';
-  const generatedAppIconName = path.basename('Images.xcassets/AppIcon.appiconset', '.appiconset');
+  const projectName = 'HelloWorld';
+  const pbxprojPath = `ios/${projectName}.xcodeproj/project.pbxproj`;
+  const generatedAppIconName = 'AppIcon';
+  // Seeded into the fixture, which already ships `generatedAppIconName`, so that "left alone" is
+  // distinguishable from "reset to the generated appiconset".
+  const staleAppIconName = 'oldIcon';
+  const liquidGlassAppIconName = 'MyApp';
+
+  // Expected results of `getAppIconNames`. The fixture's app target has a Debug and a Release
+  // configuration, and the plugin writes to both.
+  const generatedAppIconNames = {
+    Debug: generatedAppIconName,
+    Release: generatedAppIconName,
+  };
+  const staleAppIconNames = { Debug: staleAppIconName, Release: staleAppIconName };
+  const liquidGlassAppIconNames = {
+    Debug: liquidGlassAppIconName,
+    Release: liquidGlassAppIconName,
+  };
 
   afterEach(() => {
     vol.reset();
   });
 
-  it('resets the Xcode app icon name to the generated appiconset when using a PNG icon', () => {
-    const projectWithLiquidGlassIconName = rnFixture[pbxprojPath].replace(
+  function parseProjectWithStaleAppIconName(): XcodeProject {
+    const pbxproj = rnFixture[pbxprojPath].replace(
       new RegExp(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`, 'g'),
-      'ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;'
+      `ASSETCATALOG_COMPILER_APPICON_NAME = ${staleAppIconName};`
     );
 
-    vol.fromJSON({ [pbxprojPath]: projectWithLiquidGlassIconName }, projectRoot);
+    vol.fromJSON({ [pbxprojPath]: pbxproj }, projectRoot);
 
     const project = xcode.project(path.join(projectRoot, pbxprojPath));
     project.parseSync();
+    return project;
+  }
 
+  function runPlugin(
+    project: XcodeProject,
+    config: Pick<ExpoConfig, 'icon' | 'ios'>,
+    modRequest: { projectName?: string } = { projectName }
+  ) {
     withIosIcons({
-      slug: 'HelloWorld',
+      slug: projectName,
       version: '1',
-      name: 'HelloWorld',
+      name: projectName,
       platforms: ['ios'],
-      ios: {
-        icon: '/app/assets/icon.png',
-      },
+      ...config,
       modResults: project,
-      modRequest: {
-        projectName: 'HelloWorld',
-      },
-    } as any);
+      modRequest,
+    } as ExportedConfigWithProps<XcodeProject>);
+  }
 
-    const output = project.writeSync();
-    expect(output).toContain(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`);
-    expect(output).not.toContain('ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;');
-  });
-
-  it('removes stale .icon resource references when switching back to a PNG icon', () => {
-    vol.fromJSON({ [pbxprojPath]: rnFixture[pbxprojPath] }, projectRoot);
-
-    const project = xcode.project(path.join(projectRoot, pbxprojPath));
-    project.parseSync();
-
-    withIosIcons({
-      slug: 'HelloWorld',
-      version: '1',
-      name: 'HelloWorld',
-      platforms: ['ios'],
-      ios: {
-        icon: 'assets/AppIcon.icon',
-      },
-      modResults: project,
-      modRequest: {
-        projectName: 'HelloWorld',
-      },
-    } as any);
-
-    expect(project.writeSync()).toContain('AppIcon.icon');
-
-    withIosIcons({
-      slug: 'HelloWorld',
-      version: '1',
-      name: 'HelloWorld',
-      platforms: ['ios'],
-      ios: {
-        icon: '/app/assets/icon.png',
-      },
-      modResults: project,
-      modRequest: {
-        projectName: 'HelloWorld',
-      },
-    } as any);
-
-    const output = project.writeSync();
-    expect(output).toContain(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`);
-    expect(output).not.toContain('AppIcon.icon');
-  });
-
-  it('does not reset the Xcode app icon name when no icon is configured', () => {
-    const projectWithCustomIconName = rnFixture[pbxprojPath].replace(
-      new RegExp(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`, 'g'),
-      'ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;'
+  // Keyed by build configuration name, so asserting on the whole map catches a partial update.
+  function getAppIconNames(project: XcodeProject): Record<string, string> {
+    const configurations = Object.entries(project.pbxXCBuildConfigurationSection()).filter(
+      ([key]) => !key.endsWith('_comment')
     );
 
-    vol.fromJSON({ [pbxprojPath]: projectWithCustomIconName }, projectRoot);
+    return Object.fromEntries(
+      configurations
+        .map(([, configuration]) => [
+          (configuration as any).name,
+          (configuration as any).buildSettings?.ASSETCATALOG_COMPILER_APPICON_NAME,
+        ])
+        .filter(([, appIconName]) => appIconName !== undefined)
+    );
+  }
 
-    const project = xcode.project(path.join(projectRoot, pbxprojPath));
-    project.parseSync();
+  it.each<[string, Pick<ExpoConfig, 'icon' | 'ios'>]>([
+    ['a PNG icon in `ios.icon`', { ios: { icon: './assets/icon.png' } }],
+    [
+      'appearance-aware icons in `ios.icon`',
+      { ios: { icon: { light: './assets/light.png', dark: './assets/dark.png' } } },
+    ],
+    ['a PNG icon in the root `icon`', { icon: './assets/icon.png' }],
+  ])('resets the app icon name to the generated appiconset for %s', (_, config) => {
+    const project = parseProjectWithStaleAppIconName();
 
-    withIosIcons({
-      slug: 'HelloWorld',
-      version: '1',
-      name: 'HelloWorld',
-      platforms: ['ios'],
-      modResults: project,
-      modRequest: {
-        projectName: 'HelloWorld',
-      },
-    } as any);
+    runPlugin(project, config);
+
+    expect(getAppIconNames(project)).toEqual(generatedAppIconNames);
+  });
+
+  it('points the app icon name at a `.icon` package and adds it to the project', () => {
+    const project = parseProjectWithStaleAppIconName();
+
+    runPlugin(project, { ios: { icon: `assets/${liquidGlassAppIconName}.icon` } });
 
     const output = project.writeSync();
-    expect(output).toContain('ASSETCATALOG_COMPILER_APPICON_NAME = oldIcon;');
-    expect(output).not.toContain(`ASSETCATALOG_COMPILER_APPICON_NAME = ${generatedAppIconName};`);
+    expect(getAppIconNames(project)).toEqual(liquidGlassAppIconNames);
+    expect(output).toContain(`/* ${liquidGlassAppIconName}.icon in Resources */`);
+    expect(output).toContain(`path = "${projectName}/${liquidGlassAppIconName}.icon"`);
+  });
+
+  it('removes stale `.icon` resource references when switching back to a PNG icon', () => {
+    const project = parseProjectWithStaleAppIconName();
+
+    // A prebuild that configured a liquid glass icon...
+    runPlugin(project, { ios: { icon: `assets/${liquidGlassAppIconName}.icon` } });
+    expect(getAppIconNames(project)).toEqual(liquidGlassAppIconNames);
+    expect(project.writeSync()).toContain(`${liquidGlassAppIconName}.icon`);
+
+    // ...followed by one where the user switched back to a PNG icon.
+    runPlugin(project, { ios: { icon: './assets/icon.png' } });
+
+    expect(getAppIconNames(project)).toEqual(generatedAppIconNames);
+    // `setIconsAsync` no longer copies the `.icon` package into the project, so leaving its build
+    // file and file references behind would point the build at a file that isn't there.
+    expect(project.writeSync()).not.toContain(`${liquidGlassAppIconName}.icon`);
+  });
+
+  it('leaves the app icon name alone when no icon is configured', () => {
+    const project = parseProjectWithStaleAppIconName();
+
+    runPlugin(project, {});
+
+    expect(getAppIconNames(project)).toEqual(staleAppIconNames);
+  });
+
+  it('leaves the app icon name alone when the project name is unknown', () => {
+    const project = parseProjectWithStaleAppIconName();
+
+    runPlugin(
+      project,
+      { ios: { icon: `assets/${liquidGlassAppIconName}.icon` } },
+      { projectName: undefined }
+    );
+
+    expect(getAppIconNames(project)).toEqual(staleAppIconNames);
   });
 });
 
@@ -274,7 +306,7 @@ describe('e2e: iOS icons', () => {
 
     // Test the Contents.json file
     const contents = JSON.parse(
-      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']
+      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']!
     );
     expect(contents.images).toMatchSnapshot();
 
@@ -283,7 +315,7 @@ describe('e2e: iOS icons', () => {
   });
 });
 
-describe('e2e: iOS liquid glass icon cleanup', () => {
+describe('e2e: iOS liquid glass icons', () => {
   const iconPath = path.resolve(__dirname, '../../__tests__/fixtures/icon.png');
   const projectRoot = '/app';
   const generatedIconPath =
@@ -297,11 +329,11 @@ describe('e2e: iOS liquid glass icon cleanup', () => {
     vol.fromJSON(
       {
         ...rnFixture,
-        '/app/assets/AppIcon.icon/icon.json': JSON.stringify({
+        '/app/assets/MyApp.icon/icon.json': JSON.stringify({
           version: 1,
           format: 'liquid-glass-icon',
         }),
-        '/app/assets/AppIcon.icon/Assets/App-Icon-512x512@1x.png': 'icon-data',
+        '/app/assets/MyApp.icon/Assets/App-Icon-512x512@1x.png': 'icon-data',
       },
       projectRoot
     );
@@ -314,7 +346,7 @@ describe('e2e: iOS liquid glass icon cleanup', () => {
     vol.reset();
   });
 
-  it('removes generated PNG app icon files when switching to a .icon directory', async () => {
+  async function generatePngAppIconAsync() {
     await setIconsAsync(
       {
         slug: 'HelloWorld',
@@ -326,61 +358,49 @@ describe('e2e: iOS liquid glass icon cleanup', () => {
       projectRoot
     );
 
-    let after = getDirFromFS(vol.toJSON(), projectRoot);
+    const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(after[generatedIconPath]).toBeDefined();
     expect(after[generatedIconContentsPath]).toBeDefined();
+  }
 
-    await setIconsAsync(
+  function setLiquidGlassIconAsync(icon: string) {
+    return setIconsAsync(
       {
         slug: 'HelloWorld',
         version: '1',
         name: 'HelloWorld',
         platforms: ['ios', 'android'],
-        ios: {
-          icon: 'assets/AppIcon.icon',
-        },
+        ios: { icon },
       },
       projectRoot
     );
+  }
 
-    after = getDirFromFS(vol.toJSON(), projectRoot);
+  it('replaces the generated PNG app icon with the .icon package', async () => {
+    await generatePngAppIconAsync();
+
+    await setLiquidGlassIconAsync('assets/MyApp.icon');
+
+    // The appiconset is what the PNG path generates, so it has to go once a `.icon` package owns
+    // the app icon — otherwise the project carries two competing icon sources.
+    const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(after[generatedIconPath]).toBeUndefined();
     expect(after[generatedIconContentsPath]).toBeUndefined();
-    expect(after['ios/HelloWorld/AppIcon.icon/icon.json']).toBe(
+    expect(after['ios/HelloWorld/MyApp.icon/icon.json']).toBe(
       JSON.stringify({
         version: 1,
         format: 'liquid-glass-icon',
       })
     );
+    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(0);
   });
 
-  it('keeps generated PNG app icon files when the .icon directory is missing', async () => {
-    (WarningAggregator.addWarningIOS as jest.Mock).mockClear();
+  it('keeps the generated PNG app icon when the .icon package is missing', async () => {
+    await generatePngAppIconAsync();
 
-    await setIconsAsync(
-      {
-        slug: 'HelloWorld',
-        version: '1',
-        name: 'HelloWorld',
-        platforms: ['ios', 'android'],
-        icon: '/app/assets/icon.png',
-      },
-      projectRoot
-    );
+    await setLiquidGlassIconAsync('assets/DoesNotExist.icon');
 
-    await setIconsAsync(
-      {
-        slug: 'HelloWorld',
-        version: '1',
-        name: 'HelloWorld',
-        platforms: ['ios', 'android'],
-        ios: {
-          icon: 'assets/DoesNotExist.icon',
-        },
-      },
-      projectRoot
-    );
-
+    // Nothing was copied in, so removing the generated icons would leave no app icon at all.
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     expect(after[generatedIconPath]).toBeDefined();
     expect(after[generatedIconContentsPath]).toBeDefined();
@@ -422,92 +442,11 @@ describe('e2e: iOS icons with fallback image', () => {
 
     // Test the Contents.json file
     const contents = JSON.parse(
-      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']
+      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']!
     );
     expect(contents.images).toMatchSnapshot();
 
     // Ensure all icons are assigned as expected.
     expect(contents.images.length).toBe(1);
-  });
-});
-
-describe('e2e: iOS liquid glass icons', () => {
-  const projectRoot = '/app';
-
-  beforeAll(async () => {
-    vol.fromJSON(
-      {
-        ...rnFixture,
-        '/app/assets/MyApp.icon/icon.json': JSON.stringify({
-          version: 1,
-          format: 'liquid-glass-icon',
-        }),
-        '/app/assets/MyApp.icon/Assets/App-Icon-512x512@1x.png': 'icon-data',
-      },
-      projectRoot
-    );
-  });
-
-  afterAll(() => {
-    vol.reset();
-  });
-
-  it('detects .icon directories correctly', () => {
-    const config = {
-      ios: { icon: 'assets/MyApp.icon' },
-    };
-
-    const icon = getIcons(config);
-    expect(icon).toBe('assets/MyApp.icon');
-
-    if (typeof icon === 'string') {
-      expect(path.extname(icon)).toBe('.icon');
-    }
-  });
-
-  it('processes .icon directories without warnings', async () => {
-    const config: ExpoConfig = {
-      slug: 'HelloWorld',
-      version: '1',
-      name: 'HelloWorld',
-      platforms: ['ios', 'android'],
-      ios: {
-        icon: 'assets/MyApp.icon',
-      },
-    };
-
-    const icon = getIcons(config);
-    expect(icon).toBe('assets/MyApp.icon');
-    if (typeof icon === 'string') {
-      expect(path.extname(icon)).toBe('.icon');
-    }
-
-    (WarningAggregator.addWarningIOS as jest.Mock).mockClear();
-
-    await setIconsAsync(config, projectRoot);
-
-    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledTimes(0);
-  });
-
-  it('warns when .icon file does not exist', async () => {
-    (WarningAggregator.addWarningIOS as jest.Mock).mockClear();
-
-    await setIconsAsync(
-      {
-        slug: 'HelloWorld',
-        version: '1',
-        name: 'HelloWorld',
-        platforms: ['ios', 'android'],
-        ios: {
-          icon: 'assets/DoesNotExist.icon',
-        },
-      },
-      projectRoot
-    );
-
-    expect(WarningAggregator.addWarningIOS).toHaveBeenCalledWith(
-      'icon',
-      'Liquid glass icon file not found at path: assets/DoesNotExist.icon'
-    );
   });
 });

@@ -19,8 +19,8 @@ async function pressMenuElementByString(buttonString: string, timeout: number = 
   await waitFor(button).toBeVisible().withTimeout(timeout);
 
   // When we open the dev-menu, we will see an animation.
-  // Unfortunately, if we try to click to button before the
-  // animation finishes, it may not work. We might click different a button.
+  // Unfortunately, if we try to click the button before the
+  // animation finishes, it may not work. We might click a different button.
   // So try to wait for the animation to finish.
   await sleep(1000);
 
@@ -83,7 +83,7 @@ async function ensureThatLauncherMainScreenIsVisible() {
 }
 
 async function tapButton(button: Detox.IndexableNativeElement) {
-  // We have to make 2 tap - it is a bug in React Native.
+  // We have to make 2 taps - it is a bug in React Native.
   await button.multiTap(2);
 }
 

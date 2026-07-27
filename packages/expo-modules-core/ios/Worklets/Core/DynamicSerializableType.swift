@@ -28,6 +28,10 @@ internal struct DynamicSerializableType: AnyDynamicType {
       }
     }
     guard let jsSerializable else {
+      // Adapter not linked → the extractor returns nil for every value; give an actionable error.
+      if WorkletsProviderRegistry.shared == nil {
+        throw WorkletsNotInstalledException()
+      }
       throw NotSerializableException(innerType)
     }
     return Serializable(jsSerializable)

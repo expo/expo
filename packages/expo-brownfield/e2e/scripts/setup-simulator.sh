@@ -33,7 +33,7 @@ function start_simulator() {
 
   echo " 🔍 Looking for device: $DEVICE with iOS version: $IOS_VERSION..."
 
-  DEVICE_ID=$(xcrun simctl list devices iPhone available --json | jq -r --arg device "$DEVICE" --arg ios_version "$IOS_VERSION" '.devices | to_entries[] | select(.key | contains("com.apple.CoreSimulator.SimRuntime.iOS-" + $ios_version + "-2")) | .value[] | select(.name == $device) | .udid' | head -n1)
+  DEVICE_ID=$(xcrun simctl list devices iPhone available --json | jq -r --arg device "$DEVICE" --arg ios_version "$IOS_VERSION" '.devices | to_entries[] | select(.key | contains("com.apple.CoreSimulator.SimRuntime.iOS-" + $ios_version + "-")) | .value[] | select(.name == $device) | .udid' | head -n1)
   if [[ -z "$DEVICE_ID" ]]; then
       echo " ⚠️  No device found for $DEVICE with iOS $IOS_VERSION"
       return 1

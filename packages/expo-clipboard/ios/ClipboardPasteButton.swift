@@ -1,3 +1,4 @@
+#if !os(macOS)
 import ExpoModulesCore
 import UniformTypeIdentifiers
 
@@ -171,3 +172,4 @@ class ClipboardPasteButton: ExpoView {
     }
   }
 }
+#endif

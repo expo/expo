@@ -1,11 +1,7 @@
 import { freePortAsync, testPortAsync } from '../freeport';
 import { getRunningProcess } from '../getRunningProcess';
-import {
-  choosePortAsync,
-  ensurePortAvailabilityAsync,
-  getFreePortAsync,
-  resolvePortAsync,
-} from '../port';
+import { isInteractive } from '../interactive';
+import { choosePortAsync, ensurePortAvailabilityAsync, resolvePortAsync } from '../port';
 import { confirmAsync } from '../prompts';
 
 jest.mock('../freeport', () => ({
@@ -15,6 +11,9 @@ jest.mock('../freeport', () => ({
 
 jest.mock('../../log');
 jest.mock('../prompts');
+jest.mock('../interactive', () => ({
+  isInteractive: jest.fn(() => true),
+}));
 jest.mock('../getRunningProcess', () => ({
   getRunningProcess: jest.fn(() => null),
 }));
@@ -25,7 +24,7 @@ describe(ensurePortAvailabilityAsync, () => {
     expect(await ensurePortAvailabilityAsync('/', { port: 8081 })).toBe(true);
   });
   it(`returns false if the port is unavailable due to running the same process`, async () => {
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/me',
       command: 'npx expo',
@@ -34,7 +33,7 @@ describe(ensurePortAvailabilityAsync, () => {
     expect(await ensurePortAvailabilityAsync('/me', { port: 8081 })).toBe(false);
   });
   it(`asserts if the port is busy because it's running a different process`, async () => {
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/other',
       command: 'npx expo',
@@ -59,7 +58,7 @@ describe(choosePortAsync, () => {
   });
   it(`chooses a new port if the default port is taken and isn't running the same process`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/other/project',
       command: 'npx expo',
@@ -71,7 +70,7 @@ describe(choosePortAsync, () => {
   });
   it(`returns null if the new suggested port is rejected`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/other/project',
       command: 'npx expo',
@@ -83,7 +82,7 @@ describe(choosePortAsync, () => {
   });
   it(`returns null if the taken port is running the same process`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
-    jest.mocked(getRunningProcess).mockReturnValueOnce({
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
       pid: 1,
       directory: '/me',
       command: 'npx expo',
@@ -93,9 +92,57 @@ describe(choosePortAsync, () => {
     expect(port).toBe(null);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
+  it(`chooses the next free port without prompting for a default port in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
+      pid: 1,
+      directory: '/other/project',
+      command: 'npx expo',
+    });
+    const port = await choosePortAsync('/', { defaultPort: 8081, reuseExistingPort: false });
+    expect(port).toBe(8082);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`hard-fails for an explicitly requested busy port in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
+      pid: 1,
+      directory: '/other/project',
+      command: 'npx expo',
+    });
+    await expect(
+      choosePortAsync('/', { defaultPort: 8081, explicitPort: true, reuseExistingPort: false })
+    ).rejects.toThrow(/Port 8081 is unavailable/);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`still reuses the same-process port in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    jest.mocked(getRunningProcess).mockResolvedValueOnce({
+      pid: 1,
+      directory: '/me',
+      command: 'npx expo',
+    });
+    const port = await choosePortAsync('/me', { defaultPort: 8081, reuseExistingPort: true });
+    expect(port).toBe(null);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
 });
 
 describe(resolvePortAsync, () => {
+  const originalRctMetroPort = process.env.RCT_METRO_PORT;
+  beforeEach(() => {
+    delete process.env.RCT_METRO_PORT;
+  });
+  afterEach(() => {
+    if (originalRctMetroPort == null) {
+      delete process.env.RCT_METRO_PORT;
+    } else {
+      process.env.RCT_METRO_PORT = originalRctMetroPort;
+    }
+  });
   it(`finds the first available port from the fallback when port is 0`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8081);
     const port = await resolvePortAsync('/', { defaultPort: 0, fallbackPort: 8081 });
@@ -108,6 +155,28 @@ describe(resolvePortAsync, () => {
     const port = await resolvePortAsync('/', { defaultPort: 0, fallbackPort: 8081 });
     expect(port).toBe(8082);
     expect(freePortAsync).toHaveBeenCalledWith(8081, [null, 'localhost']);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`rolls over to the next free port when the default port is busy in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    const port = await resolvePortAsync('/', { fallbackPort: 8081 });
+    expect(port).toBe(8082);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`hard-fails when an explicit --port is busy in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    await expect(resolvePortAsync('/', { defaultPort: 8081 })).rejects.toThrow(
+      /Port 8081 is unavailable/
+    );
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`hard-fails when a configured RCT_METRO_PORT is busy in non-interactive mode`, async () => {
+    process.env.RCT_METRO_PORT = '8081';
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    await expect(resolvePortAsync('/', {})).rejects.toThrow(/Port 8081 is unavailable/);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
 });

@@ -137,6 +137,14 @@ class ImageResizingSpec: ExpoSpec {
         expect(localAssetName(from: URL(string: "/app_icon"))) == "app_icon"
       }
 
+      it("handles file URLs produced by ExpoModulesCore for scheme-less JS strings") {
+        // `ExpoModulesCore`'s `convertToUrl` wraps scheme-less JS strings via
+        // `URL(fileURLWithPath:)`, which is how asset names actually reach the native side.
+        expect(localAssetName(from: URL(fileURLWithPath: "app_icon"))) == "app_icon"
+        expect(localAssetName(from: URL(fileURLWithPath: "/app_icon"))) == "app_icon"
+        expect(localAssetName(from: URL(fileURLWithPath: "Images/MyIcon"))) == "Images/MyIcon"
+      }
+
       it("ignores urls with a scheme") {
         expect(localAssetName(from: URL(string: "https://example.com/app_icon.png"))).to(beNil())
         expect(localAssetName(from: URL(string: "sf:/star"))).to(beNil())

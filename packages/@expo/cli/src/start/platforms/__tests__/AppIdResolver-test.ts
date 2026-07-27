@@ -42,7 +42,7 @@ describe('getAppIdAsync', () => {
   it('throws when the app id is missing in native files', async () => {
     const resolver = createAppIdResolver();
     resolver.hasNativeProjectAsync = jest.fn(async () => true);
-    resolver.resolveAppIdFromNativeAsync = jest.fn(() => null);
+    resolver.resolveAppIdFromNativeAsync = jest.fn(async () => null);
     await expect(resolver.getAppIdAsync()).rejects.toThrow(
       /Failed to locate the ios application identifier/
     );

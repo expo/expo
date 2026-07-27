@@ -13,8 +13,10 @@ class NativeModulesProxyModule : Module() {
   override fun definition() = ModuleDefinition {
     Name(NativeModulesProxyModuleName)
 
-    Constants {
-      appContext.legacyModulesProxyHolder?.get()?.constants ?: emptyMap()
+    appContext.legacyModulesProxyHolder?.get()?.constants?.forEach {
+      Constant(it.key) {
+        it.value
+      }
     }
 
     AsyncFunction("callMethod") { moduleName: String, methodName: String, arguments: ReadableArray, promise: Promise ->

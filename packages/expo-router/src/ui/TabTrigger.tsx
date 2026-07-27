@@ -4,8 +4,6 @@ import { use, useCallback } from 'react';
 import type { View, PressableProps } from 'react-native';
 import { StyleSheet, Pressable } from 'react-native';
 
-import { TabTriggerMapContext } from './TabContext';
-import type { TriggerMap } from './common';
 import { appendBaseUrl } from '../fork/getPathFromState';
 import { router } from '../imperative-api';
 import { shouldHandleMouseEvent } from '../link/useLinkToPathProps';
@@ -13,6 +11,8 @@ import { stripGroupSegmentsFromPath } from '../matchers';
 import type { TabNavigationState } from '../react-navigation/native';
 import type { Href } from '../types';
 import { useNavigatorContext } from '../views/Navigator';
+import { TabTriggerMapContext } from './TabContext';
+import type { TriggerMap } from './common';
 
 type PressablePropsWithoutFunctionChildren = Omit<PressableProps, 'children'> & {
   children?: ReactNode | undefined;

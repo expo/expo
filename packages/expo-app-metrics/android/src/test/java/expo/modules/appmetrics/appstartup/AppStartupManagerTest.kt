@@ -20,6 +20,7 @@ class AppStartupManagerTest {
     val field = AppStartupManager::class.java.getDeclaredField("_metrics").apply {
       isAccessible = true
     }
+
     @Suppress("UNCHECKED_CAST")
     val backing = field.get(AppStartupManager) as MutableList<Metric>
     backing.clear()

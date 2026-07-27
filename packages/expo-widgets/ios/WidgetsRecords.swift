@@ -6,6 +6,23 @@ struct WidgetsJSTimelineEntry: Record {
   @Field var props: [String: Any] = [:]
 }
 
+struct WidgetConfigurationOptionRecord: Record {
+  @Field var name: String
+  @Field var value: String
+  @Field var subtitle: String?
+
+  func toDictionary() -> [String: Any] {
+    var result: [String: Any] = [
+      "name": name,
+      "value": value
+    ]
+    if let subtitle {
+      result["subtitle"] = subtitle
+    }
+    return result
+  }
+}
+
 internal enum LiveActivityDismissalPolicy: String, Enumerable {
   case `default`
   case immediate

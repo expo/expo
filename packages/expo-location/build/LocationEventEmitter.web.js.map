@@ -1,1 +1,0 @@
-{"version":3,"file":"LocationEventEmitter.web.js","sourceRoot":"","sources":["../src/LocationEventEmitter.web.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,YAAY,EAAE,MAAM,mBAAmB,CAAC;AAEjD,MAAM,CAAC,MAAM,oBAAoB,GAAG,IAAI,YAAY,EAAE,CAAC","sourcesContent":["import { EventEmitter } from 'expo-modules-core';\n\nexport const LocationEventEmitter = new EventEmitter();\n"]}

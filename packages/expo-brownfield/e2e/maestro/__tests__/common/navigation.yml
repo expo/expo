@@ -3,7 +3,7 @@ appId: ${APP_ID}
 # Launch the app
 - runFlow: ../common/_nested-flows/launch-brownfield.yml
 
-# Validate that brownfield app 
+# Validate that brownfield app
 # can be opened multiple times
 - runFlow:
     when:
@@ -17,7 +17,10 @@ appId: ${APP_ID}
                 id: openReactNativeButton
             - tapOn:
                 id: openReactNativeButton
-            - assertVisible: Expo + Brownfield = 🖤
+            - runFlow: ../common/_nested-flows/skip-dev-menu.yml
+            - extendedWaitUntil:
+                visible: Expo + Brownfield = 🖤
+                timeout: 60000
 - runFlow:
     when:
       platform: iOS
@@ -31,7 +34,10 @@ appId: ${APP_ID}
                 id: openReactNativeButton
             - tapOn:
                 id: openReactNativeButton
-            - assertVisible: Expo + Brownfield = 🖤
+            - runFlow: ../common/_nested-flows/skip-dev-menu.yml
+            - extendedWaitUntil:
+                visible: Expo + Brownfield = 🖤
+                timeout: 60000
 
 # Verify popToNative() method
 - tapOn:
@@ -75,7 +81,7 @@ appId: ${APP_ID}
 - tapOn:
     id: navigation-enable-native-back
 
-# Verify that back action now works within 
+# Verify that back action now works within
 # the host app
 - runFlow:
     when:

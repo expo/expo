@@ -35,7 +35,7 @@ export function Content({ imgSrc, darkImgSrc, alt, href, content }: Props) {
         <div>
           {content}
           {href && (
-            <Button href={href} rightSlot={<ArrowRightIcon />} theme="secondary">
+            <Button href={href} rightSlot={<ArrowRightIcon aria-hidden="true" />} theme="secondary">
               Learn more
             </Button>
           )}

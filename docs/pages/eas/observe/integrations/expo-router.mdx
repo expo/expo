@@ -32,12 +32,12 @@ EAS Observe ships an opt-in integration for [Expo Router](/router/introduction/)
 
 > **warning** The integration must be enabled before mount and cannot be toggled at runtime. Calling `configure()` after the app has mounted, or toggling the flag mid-session, throws an error.
 
-Call `ExpoObserve.configure()` with the `expo-router` integration flag at module scope, before any screen mounts:
+Call `Observe.configure()` with the `expo-router` integration flag at module scope, before any screen mounts:
 
 ```tsx src/app/_layout.tsx
-import ExpoObserve from 'expo-observe';
+import { Observe } from 'expo-observe';
 
-ExpoObserve.configure({
+Observe.configure({
   integrations: { 'expo-router': true },
 });
 ```
@@ -65,9 +65,29 @@ export default function Home() {
 }
 ```
 
-> **info** If the integration is disabled or `expo-router` is not installed, `useObserve()` falls back to the global `AppMetrics.markInteractive`. You can leave the hook in place regardless of integration state.
+> **info** If the integration is disabled or `expo-router` is not installed, `useObserve()` falls back to the global `Observe.markInteractive`. You can leave the hook in place regardless of integration state.
 
 </Step>
+
+## Filter sensitive URL parameters
+
+> **info** Available in **SDK 57 and later**.
+
+By default, the integration includes the resolved `url` and all serializable route and query parameters in `routeParams`. If your app includes sensitive values in URL parameters, pass their keys to `filteredParams`:
+
+```tsx src/app/_layout.tsx
+import { Observe } from 'expo-observe';
+
+Observe.configure({
+  integrations: {
+    'expo-router': {
+      filteredParams: ['userId', 'token'],
+    },
+  },
+});
+```
+
+The integration removes filtered keys from `routeParams`, and the event omits `url` and includes `urlHidden: true` instead. `routeName` is not affected because it is a pattern and never contains parameter values.
 
 ## Metrics
 
@@ -83,6 +103,7 @@ Emitted at most once per screen instance within a session.
 | ------------- | --------- | ------------------------------------------------------------------------------ |
 | `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                     |
 | `url`         | `string`  | Resolved pathname for the navigation.                                          |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered.      |
 | `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).                   |
 | `isAppLaunch` | `boolean` | `true` when measured against process start, `false` for subsequent navigation. |
 
@@ -92,11 +113,12 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type     | Description                                                  |
-| ------------- | -------- | ------------------------------------------------------------ |
-| `routeName`   | `string` | Route pattern, for example `/(tabs)/sessions/[sessionId]`.   |
-| `url`         | `string` | Resolved pathname for the navigation.                        |
-| `routeParams` | `object` | Resolved route params (for example, `{ sessionId: 'abc' }`). |
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname for the navigation.                                     |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params (for example, `{ sessionId: 'abc' }`).              |
 
 ### Per-route time to interactive (`tti`)
 
@@ -104,18 +126,19 @@ Emitted at most once per screen instance within a session.
 
 **Event params:**
 
-| Param         | Type     | Description                                                          |
-| ------------- | -------- | -------------------------------------------------------------------- |
-| `routeName`   | `string` | Route pattern, for example `/(tabs)/sessions/[sessionId]`.           |
-| `url`         | `string` | Resolved pathname.                                                   |
-| `routeParams` | `object` | Resolved route params.                                               |
-| `...`         | `any`    | Any custom params passed via `markInteractive({ params: { ... } })`. |
+| Param         | Type      | Description                                                               |
+| ------------- | --------- | ------------------------------------------------------------------------- |
+| `routeName`   | `string`  | Route pattern, for example `/(tabs)/sessions/[sessionId]`.                |
+| `url`         | `string`  | Resolved pathname.                                                        |
+| `urlHidden`   | `boolean` | Present as `true` when `url` is omitted because a parameter was filtered. |
+| `routeParams` | `object`  | Resolved route params.                                                    |
+| `...`         | `any`     | Any custom params passed via `markInteractive({ params: { ... } })`.      |
 
 ## Notes and troubleshooting
 
 - `routeName` is a pattern (`/(tabs)/sessions/[sessionId]`), not a resolved URL (`/sessions/abc`). This keeps metrics stable across distinct param values so the dashboard buckets them together. Resolved values are still available on the event via `url` and `routeParams`.
 - Calls to `router.prefetch()` do not count as a user navigation and never seed a `cold_ttr` or `warm_ttr` measurement. The next user-driven navigation to that route emits `warm_ttr` because the screen has already rendered.
 - The integration only activates if `expo-router` is installed at runtime. If it is not installed, `useObserve()` and `ObserveRoot` continue to work but no per-route navigation metrics are emitted.
-- The integration must be enabled before mount via `ExpoObserve.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
+- The integration must be enabled before mount via `Observe.configure({ integrations: { 'expo-router': true } })`. Toggling it after the app has mounted throws.
 - If `markInteractive()` logs `Calling markInteractive on unmounted screen` or `No metadata available for the current screen`, the call ran outside a screen component or after unmount. Move the call into a `useEffect` inside the screen component.
 - For general issues with EAS Observe, see [Troubleshooting](/eas/observe/reference/troubleshooting/).

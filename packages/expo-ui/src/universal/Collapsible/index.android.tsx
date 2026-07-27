@@ -35,7 +35,13 @@ const EXIT = ExitTransition.shrinkVertically().plus(ExitTransition.fadeOut());
  * Android implementation of `Collapsible`.
  * A rounded M3 card whose container tint fades between `transparent` (collapsed) and `surfaceContainer` (expanded).
  */
-export function Collapsible({ isOpen, onOpenChange, label = '', children }: CollapsibleProps) {
+export function Collapsible({
+  isOpen,
+  onOpenChange,
+  label = '',
+  labelStyle,
+  children,
+}: CollapsibleProps) {
   const colors = useMaterialColors();
   const containerColor = isOpen ? colors.surfaceContainer : 'transparent';
 
@@ -51,7 +57,9 @@ export function Collapsible({ isOpen, onOpenChange, label = '', children }: Coll
         colors={{ containerColor: 'transparent' }}
         modifiers={[clickable(() => onOpenChange(!isOpen))]}>
         <ListItem.HeadlineContent>
-          <Text>{label}</Text>
+          <Text color={labelStyle?.color} style={labelStyle}>
+            {label}
+          </Text>
         </ListItem.HeadlineContent>
         <ListItem.TrailingContent>
           <Icon

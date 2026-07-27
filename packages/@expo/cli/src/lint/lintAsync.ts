@@ -3,13 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import semver from 'semver';
 
-import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
-import type { Options } from './resolveOptions';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
-
-const debug = require('debug')('expo:lint');
+import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
+import { event } from './events';
+import type { Options } from './resolveOptions';
 
 const DEFAULT_INPUTS = ['src', 'app', 'components'];
 
@@ -104,7 +103,7 @@ export const lintAsync = async (
     eslintArgs.push(arg);
   });
 
-  debug('Running ESLint with args: %O', eslintArgs);
+  event('eslint_args', { args: eslintArgs });
 
   const manager = createForProject(projectRoot, { silent: true });
 

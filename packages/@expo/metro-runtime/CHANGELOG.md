@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+- [Internal] Update logbox imports ([#46640](https://github.com/expo/expo/pull/46640) by [@kitten](https://github.com/kitten))
+
+## 56.0.13 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.11 — 2026-05-21
 
 _This version does not introduce any user-facing changes._

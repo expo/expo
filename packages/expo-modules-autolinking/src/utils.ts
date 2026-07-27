@@ -26,7 +26,9 @@ export async function listFilesInDirectories(
 ): Promise<string[]> {
   return (
     await Promise.all(
-      (await fs.promises.readdir(targetPath, { withFileTypes: true }))
+      (
+        await fs.promises.readdir(targetPath, { withFileTypes: true })
+      )
         .filter((entry) => entry.isDirectory() && entry.name !== 'node_modules')
         .sort((a, b) => a.name.localeCompare(b.name))
         .map(async (directory) => {

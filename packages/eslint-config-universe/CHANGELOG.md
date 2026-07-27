@@ -223,7 +223,7 @@ Make `@babel/core` an optional peer dependency since pure TypeScript projects do
 
 ### 🐛 Bug fixes
 
-- Override `no-unused-expressions` and `semi` with `@babel/no-unused-expressions` and `@babel/semi` to fix a bug with optional chaining. Upgraded the minor version of various dependecies.
+- Override `no-unused-expressions` and `semi` with `@babel/no-unused-expressions` and `@babel/semi` to fix a bug with optional chaining. Upgraded the minor version of various dependencies.
 
 ## 4.0.0 — 2020-07-08
 

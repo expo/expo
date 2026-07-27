@@ -12,7 +12,14 @@ In **SDK 56 and later**, Expo Router no longer supports importing from external 
 
 Run the codemod from the root of your project. It rewrites `@react-navigation/*` imports in your application code to the matching `expo-router` entry points.
 
-<Terminal cmd={['$ npx expo-codemod sdk-56-expo-router-react-navigation-replace src']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo-codemod sdk-56-expo-router-react-navigation-replace src'],
+    yarn: ['$ yarn dlx expo-codemod sdk-56-expo-router-react-navigation-replace src'],
+    pnpm: ['$ pnpm dlx expo-codemod sdk-56-expo-router-react-navigation-replace src'],
+    bun: ['$ bunx expo-codemod sdk-56-expo-router-react-navigation-replace src'],
+  }}
+/>
 
 Replace `src` with the directory or glob that contains your application code.
 
@@ -52,4 +59,11 @@ This is a temporary compatibility shim. A dedicated library migration guide will
 
 To opt out, set `EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1` in your environment before starting the bundler. This also disables the bundler error for application code that imports from `@react-navigation/*`.
 
-<Terminal cmd={['$ EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 npx expo start'],
+    yarn: ['$ EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 yarn expo start'],
+    pnpm: ['$ EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 pnpm expo start'],
+    bun: ['$ EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK=1 bun expo start'],
+  }}
+/>

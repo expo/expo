@@ -1,4 +1,3 @@
-import { mockConnection } from './mockConnection';
 import { createHandlersFactory } from '../createHandlersFactory';
 import type {
   NetworkGetResponseBody,
@@ -6,14 +5,14 @@ import type {
 } from '../messageHandlers/NetworkResponse';
 import { pageIsSupported } from '../pageIsSupported';
 import type { DebuggerRequest, DeviceRequest } from '../types';
+import { mockConnection } from './mockConnection';
 
 jest.mock('../pageIsSupported');
 
 it('returns `null` for unsupported page', () => {
   jest.mocked(pageIsSupported).mockReturnValue(false);
 
-  const metroBundler = { broadcastMessage: jest.fn() };
-  const factory = createHandlersFactory(metroBundler);
+  const factory = createHandlersFactory();
   const connection = mockConnection();
 
   expect(factory(connection)).toBeNull();
@@ -22,8 +21,7 @@ it('returns `null` for unsupported page', () => {
 it('returns custom handlers for supported page', () => {
   jest.mocked(pageIsSupported).mockReturnValue(true);
 
-  const metroBundler = { broadcastMessage: jest.fn() };
-  const factory = createHandlersFactory(metroBundler);
+  const factory = createHandlersFactory();
   const connection = mockConnection();
 
   expect(factory(connection)).toMatchObject({
@@ -35,8 +33,7 @@ it('returns custom handlers for supported page', () => {
 it('can intercept device and debugger messages', () => {
   jest.mocked(pageIsSupported).mockReturnValue(true);
 
-  const metroBundler = { broadcastMessage: jest.fn() };
-  const factory = createHandlersFactory(metroBundler);
+  const factory = createHandlersFactory();
   const connection = mockConnection();
   const handlers = factory(connection);
 

@@ -4,11 +4,13 @@ import { Star01DuotoneIcon } from '@expo/styleguide-icons/duotone/Star01DuotoneI
 import { Menu01Icon } from '@expo/styleguide-icons/outline/Menu01Icon';
 import { Star01Icon } from '@expo/styleguide-icons/outline/Star01Icon';
 import { type ReactNode } from 'react';
+import { useIntl } from 'react-intl';
 
 import { SidebarFooter } from '~/ui/components/Sidebar/SidebarFooter';
 import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
 import { DEMI } from '~/ui/components/Text';
 
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
 
@@ -25,12 +27,14 @@ export const Header = ({
   isMobileMenuVisible,
   setMobileMenuVisible,
 }: HeaderProps) => {
+  const intl = useIntl();
   const isArchive = sidebarActiveGroup === 'archive';
   return (
     <>
       <header className="relative z-10 mx-auto flex h-[60px] items-center justify-between gap-2 border-b border-default bg-default p-0 px-4">
         <div className="flex items-center gap-8">
           <Logo subgroup={isArchive ? 'Archive' : undefined} />
+          <LanguageSwitcher />
         </div>
         <div className="flex items-center gap-3">
           <Button
@@ -38,14 +42,14 @@ export const Header = ({
             theme="quaternary"
             className={mergeClasses('px-2 text-secondary', 'max-sm:hidden')}
             href="https://expo.dev/blog">
-            Blog
+            {intl.formatMessage({ id: 'headerBlog' })}
           </Button>
           <Button
             openInNewTab
             theme="quaternary"
             className={mergeClasses('px-2 text-secondary', 'max-sm:hidden')}
             href="https://expo.dev/changelog">
-            Changelog
+            {intl.formatMessage({ id: 'headerChangelog' })}
           </Button>
           <Button
             openInNewTab
@@ -53,12 +57,18 @@ export const Header = ({
             className={mergeClasses('group px-2 text-secondary', 'max-lg:hidden')}
             leftSlot={
               <>
-                <Star01Icon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                <Star01DuotoneIcon className="hidden icon-sm text-icon-warning group-hover:flex group-focus-visible:flex" />
+                <Star01Icon
+                  aria-hidden="true"
+                  className="icon-sm group-hover:hidden group-focus-visible:hidden"
+                />
+                <Star01DuotoneIcon
+                  aria-hidden="true"
+                  className="hidden icon-sm text-icon-warning group-hover:flex group-focus-visible:flex"
+                />
               </>
             }
             href="https://github.com/expo/expo">
-            Star Us on GitHub
+            {intl.formatMessage({ id: 'headerStarOnGitHub' })}
           </Button>
           <Button
             openInNewTab
@@ -66,7 +76,7 @@ export const Header = ({
             href="https://github.com/expo/expo"
             aria-label="GitHub"
             className={mergeClasses('hidden px-2', 'max-lg:flex')}>
-            <GithubIcon className="icon-lg" />
+            <GithubIcon aria-hidden="true" className="icon-lg" />
           </Button>
           <div className="max-lg:hidden">
             <ThemeSelector />
@@ -83,7 +93,7 @@ export const Header = ({
               onClick={() => {
                 setMobileMenuVisible(!isMobileMenuVisible);
               }}>
-              <Menu01Icon className="icon-sm" />
+              <Menu01Icon aria-hidden="true" className="icon-sm" />
             </Button>
           </div>
         </div>

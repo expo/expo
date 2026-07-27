@@ -22,8 +22,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.TextField
 import com.composeunstyled.TextInput
+import com.composeunstyled.UnstyledTextField
 import expo.modules.devlauncher.compose.models.SettingsAction
 import expo.modules.devlauncher.compose.models.SettingsState
 import expo.modules.devlauncher.compose.ui.DefaultScreenContainer
@@ -72,25 +72,7 @@ fun SettingsScreen(
       )
     }
 
-    NewMenuButton(
-      icon = {
-        LauncherIcons.ShowAtLaunch(
-          size = 20.dp,
-          tint = NewAppTheme.colors.icon.tertiary
-        )
-      },
-      content = {
-        NewText(
-          text = "Show menu at launch"
-        )
-      },
-      rightComponent = {
-        ToggleSwitch(
-          isToggled = state.showMenuAtLaunch
-        )
-      },
-      onClick = { onAction(SettingsAction.ToggleShowMenuAtLaunch(!state.showMenuAtLaunch)) }
-    )
+    LaunchBehaviourSection(state, onAction)
 
     Spacer(NewAppTheme.spacing.`6`)
 
@@ -128,6 +110,66 @@ fun SettingsScreen(
       runtimeVersion = (info as? ApplicationInfo.Updates)?.runtimeVersion,
       fullDataProvider = { info?.toJson() ?: "No application info available" }
     )
+  }
+}
+
+@Composable
+private fun LaunchBehaviourSection(state: SettingsState, onAction: (SettingsAction) -> Unit) {
+  Column(
+    verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`3`)
+  ) {
+    Section.Header("LAUNCH BEHAVIOUR")
+
+    RoundedSurface {
+      Column {
+        NewMenuButton(
+          withSurface = false,
+          icon = {
+            LauncherIcons.ShowAtLaunch(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          content = {
+            NewText(
+              text = "Show menu at launch"
+            )
+          },
+          rightComponent = {
+            ToggleSwitch(
+              isToggled = state.showMenuAtLaunch
+            )
+          },
+          onClick = { onAction(SettingsAction.ToggleShowMenuAtLaunch(!state.showMenuAtLaunch)) }
+        )
+
+        Divider(
+          thickness = 0.5.dp,
+          color = NewAppTheme.colors.border.default
+        )
+
+        NewMenuButton(
+          withSurface = false,
+          icon = {
+            LauncherIcons.ShowAtLaunch(
+              size = 20.dp,
+              tint = NewAppTheme.colors.icon.tertiary
+            )
+          },
+          content = {
+            NewText(
+              text = "Auto-launch most recent app"
+            )
+          },
+          rightComponent = {
+            ToggleSwitch(
+              isToggled = state.autoLaunchMostRecent
+            )
+          },
+          onClick = { onAction(SettingsAction.ToggleAutoLaunchMostRecent(!state.autoLaunchMostRecent)) }
+        )
+      }
+    }
   }
 }
 
@@ -300,7 +342,7 @@ private fun NSDSection(state: SettingsState, onAction: (SettingsAction) -> Unit)
             )
           }
 
-          TextField(
+          UnstyledTextField(
             value = state.filterBySlug,
             onValueChange = { newSlug ->
               onAction(SettingsAction.UpdateFilterBySlug(newSlug))

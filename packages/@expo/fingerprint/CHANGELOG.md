@@ -4,11 +4,39 @@
 
 ### 🛠 Breaking changes
 
+- Extended `SourceSkips.ExpoConfigVersions` to also strip the platform-specific version overrides `ios.version` and `android.version` (which take precedence over the top-level `version`). Projects already setting this flag will see their fingerprint hash change after upgrading.
+- Hashed the built-in `react-native` source by its `package.json` name+version instead of the whole `package.json`, so fingerprints change once on upgrade. ([#47667](https://github.com/expo/expo/pull/47667) by [@kudo](https://github.com/kudo))
+- Changed the default preset to `balanced`, which changes the default fingerprint once on upgrade. Use `preset: 'strict'` to keep the previous behavior. ([#47668](https://github.com/expo/expo/pull/47668) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
+
+- Added a `package` source type that hashes a dependency by its `package.json` name and version. ([#47667](https://github.com/expo/expo/pull/47667) by [@kudo](https://github.com/kudo))
+- Added fingerprint presets (`strict`, `balanced`, `relaxed`), selectable via `preset` in **fingerprint.config.js** or the `--preset` CLI flag. ([#47668](https://github.com/expo/expo/pull/47668) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
+- Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Added more default `getConfig` exclusion packages. ([#47503](https://github.com/expo/expo/pull/47503) by [@kudo](https://github.com/kudo))
+- Reworked config-plugin module capture with a `Module.prototype._compile` hook. ([#47666](https://github.com/expo/expo/pull/47666) by [@kudo](https://github.com/kudo))
+- Derived config-plugin modules by diffing a plugins-skipped config load, which drops most config-loading framework modules automatically and shrinks the hand-maintained allowlist. ([#47678](https://github.com/expo/expo/pull/47678) by [@kudo](https://github.com/kudo))
+
+## 0.19.3 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- Fixed unstable fingerprint on Windows. ([#46196](https://github.com/expo/expo/pull/46196) by [@kudo](https://github.com/kudo))
+- Fixed unstable fingerprint from `expo-modules-jsi`. ([#46187](https://github.com/expo/expo/pull/46187), [#46201](https://github.com/expo/expo/pull/46201) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Updated E2E test to use SDK 56 templates. ([#46194](https://github.com/expo/expo/pull/46194) by [@kudo](https://github.com/kudo))
+
+## 0.19.2 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
 
 ## 0.19.1 — 2026-05-21
 

@@ -42,6 +42,22 @@ export default function BasicImageExample() {
 }
 ```
 
+### Custom SF Symbol
+
+Use the `assetName` prop to display a custom SF Symbol imported into the app asset catalog as a symbol set.
+
+```tsx CustomImageExample.tsx
+import { Host, Image } from '@expo/ui/swift-ui';
+
+export default function CustomImageExample() {
+  return (
+    <Host matchContents>
+      <Image assetName="acme.mark" />
+    </Host>
+  );
+}
+```
+
 ### With size and color
 
 ```tsx ImageSizeColorExample.tsx

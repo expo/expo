@@ -22,9 +22,6 @@
 - (void)showDevMenuForHost:(id)host;
 - (void)togglePerformanceMonitorForHost:(id)host;
 - (void)toggleElementInspectorForHost:(id)host;
-- (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
-                         queue:(dispatch_queue_t)queue
-                     forMethod:(NSString *)method;
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItemsForHost:(id)host;
 - (void)selectDevMenuItemWithKey:(NSString *)key host:(id)host bundleURL:(NSURL *)bundleURL;

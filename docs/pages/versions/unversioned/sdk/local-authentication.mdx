@@ -58,7 +58,7 @@ You can configure `expo-local-authentication` using its built-in [config plugin]
       name: 'faceIDPermission',
       platform: 'ios',
       description:
-        'A string to set the [`NSFaceIDUsageDescription`](#permission-nsfaceidusagedescription) permission message.',
+        'A string to set the [`NSFaceIDUsageDescription`](#permission-nsfaceidusagedescription) permission message. Set it to `false` to omit `NSFaceIDUsageDescription` from your **Info.plist** if your app does not use Face ID.',
       default: '"Allow $(PRODUCT_NAME) to use Face ID"',
     },
   ]}

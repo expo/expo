@@ -1,7 +1,6 @@
 package expo.modules.appmetrics.logevents
 
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -147,5 +146,28 @@ class AttributeValidationTest {
     val attributes = result.attributes!!
     assertEquals(1, attributes.size)
     assertEquals("ok", attributes["valid"])
+  }
+
+  @Test
+  fun `withDisplayNameAttribute leaves attributes unchanged when display name is null`() {
+    val attributes = mapOf("userId" to "u_42")
+    assertEquals(attributes, withDisplayNameAttribute(attributes, null))
+    assertNull(withDisplayNameAttribute(null, null))
+  }
+
+  @Test
+  fun `withDisplayNameAttribute adds the reserved key even onto a null map`() {
+    val result = withDisplayNameAttribute(null, "Login failed")!!
+    assertEquals("Login failed", result["expo.log.display_name"])
+  }
+
+  @Test
+  fun `withDisplayNameAttribute injects the reserved key past sanitization`() {
+    // The key matches the `expo.*` reserved pattern, so it only survives because it is
+    // added after `sanitizeLogEventAttributes` rather than passing through it.
+    val sanitized = sanitizeLogEventAttributes(mapOf("userId" to "u_42")).attributes
+    val result = withDisplayNameAttribute(sanitized, "Login failed")!!
+    assertEquals("u_42", result["userId"])
+    assertEquals("Login failed", result["expo.log.display_name"])
   }
 }

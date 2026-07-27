@@ -1,1 +1,0 @@
-{"version":3,"file":"WebSocketBackingStore.d.ts","sourceRoot":"","sources":["../src/WebSocketBackingStore.ts"],"names":[],"mappings":"AAAA;;;GAGG;AACH,qBAAa,qBAAqB;IAEvB,EAAE,EAAE,SAAS,GAAG,IAAI;IACpB,QAAQ,EAAE,MAAM;gBADhB,EAAE,GAAE,SAAS,GAAG,IAAW,EAC3B,QAAQ,GAAE,MAAU;CAE9B"}

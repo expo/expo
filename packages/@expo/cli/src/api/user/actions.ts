@@ -1,9 +1,6 @@
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
-import type { Actor } from './user';
-import { getUserAsync, loginAsync, browserLoginAsync } from './user';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
@@ -12,6 +9,9 @@ import { learnMore } from '../../utils/link';
 import type { Question } from '../../utils/prompts';
 import promptAsync, { selectAsync } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
+import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
+import type { Actor } from './user';
+import { getUserAsync, loginAsync, browserLoginAsync } from './user';
 
 /** Show login prompt while prompting for missing credentials. */
 export async function showLoginPromptAsync({
@@ -31,7 +31,9 @@ export async function showLoginPromptAsync({
   }
   const hasCredentials = options.username && options.password;
   const sso = options.sso;
-  const browser = options.browser;
+
+  // Browser-based login is the default.
+  const browser = options.browser ?? (!hasCredentials && isInteractive());
 
   if (printNewLine) {
     Log.log();
@@ -39,6 +41,7 @@ export async function showLoginPromptAsync({
 
   if (sso || browser) {
     await browserLoginAsync({ sso: !!sso });
+    Log.log('Logged in');
     return;
   }
 
@@ -85,15 +88,13 @@ export async function showLoginPromptAsync({
     });
   } catch (e) {
     if (e instanceof ApiV2Error && e.expoApiV2ErrorCode === 'ONE_TIME_PASSWORD_REQUIRED') {
-      await retryUsernamePasswordAuthWithOTPAsync(
-        username,
-        password,
-        e.expoApiV2ErrorMetadata as any
-      );
+      await retryUsernamePasswordAuthWithOTPAsync(username, password);
     } else {
       throw e;
     }
   }
+
+  Log.log('Logged in');
 }
 
 export async function tryGetUserAsync(): Promise<Actor | null> {

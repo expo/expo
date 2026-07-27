@@ -1,7 +1,7 @@
 import Testing
 
-@testable import ExpoObserve
 @testable import ExpoAppMetrics
+@testable import ExpoObserve
 
 @Suite("OpenTelemetry conversion")
 struct OpenTelemetryTests {
@@ -144,8 +144,33 @@ struct OpenTelemetryTests {
     let metric = makeMetric(name: "loadTime", value: 1.0, timestamp: "2026-01-09T12:08:09Z")
     let otMetric = metric.toOTMetric()
 
-    let expectedNanos: UInt64 = 1767960489 * 1_000_000_000
+    let expectedNanos: UInt64 = 1_767_960_489 * 1_000_000_000
     #expect(otMetric.gauge.dataPoints[0].timeUnixNano == expectedNanos)
+  }
+
+  @Test
+  func `toOTMetric converts ISO8601 timestamp with fractional seconds to nanoseconds`() {
+    let metric = makeMetric(name: "loadTime", value: 1.0, timestamp: "2026-01-09T12:08:09.123Z")
+    let otMetric = metric.toOTMetric()
+
+    #expect(otMetric.gauge.dataPoints[0].timeUnixNano == 1_767_960_489_123_000_000)
+  }
+
+  @Test
+  func `toOTLogRecord converts ISO8601 timestamp with fractional seconds to nanoseconds`() {
+    let log = Event.Log(
+      name: "auth.login_failed",
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .info,
+      attributes: nil,
+      droppedAttributesCount: 0,
+      sessionId: testSessionId
+    )
+    let otLog = log.toOTLogRecord()
+
+    #expect(otLog.timeUnixNano == 1_767_960_489_123_000_000)
+    #expect(otLog.observedTimeUnixNano == 1_767_960_489_123_000_000)
   }
 
   // MARK: - Event metadata
@@ -308,7 +333,8 @@ struct OpenTelemetryTests {
       customParams: nil
     )
     let otMetric = metric.toOTMetric()
-    let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+    let attrs = Dictionary(
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
 
     #expect(attrs["expo.route_name"] == "/home")
   }
@@ -327,7 +353,8 @@ struct OpenTelemetryTests {
       customParams: nil
     )
     let otMetric = metric.toOTMetric()
-    let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+    let attrs = Dictionary(
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
 
     #expect(otMetric.name == "expo.updates.download_time")
     #expect(attrs["expo.update_id"] == "abc123-def456")
@@ -366,7 +393,8 @@ struct OpenTelemetryTests {
       customParams: AnyCodable(["screen": "dashboard", "variant": "A"] as [String: Any])
     )
     let otMetric = metric.toOTMetric()
-    let attrs = Dictionary(uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
+    let attrs = Dictionary(
+      uniqueKeysWithValues: otMetric.gauge.dataPoints[0].attributes.map { ($0.key, $0.value.stringValue) })
 
     let jsonString = try #require(attrs["expo.custom_params"] ?? nil)
     let parsed = try! JSONSerialization.jsonObject(with: jsonString.data(using: .utf8)!) as! [String: String]
@@ -400,7 +428,7 @@ struct OpenTelemetryTests {
 
     let requestBody = OTRequestBody(resourceMetrics: [
       event1.toOTEvent(testEasClientId),
-      event2.toOTEvent(testEasClientId)
+      event2.toOTEvent(testEasClientId),
     ])
 
     #expect(requestBody.resourceMetrics.count == 2)
@@ -409,13 +437,11 @@ struct OpenTelemetryTests {
   }
 }
 
-/**
- Test-only convenience for pulling the inner string out of an `OTAnyValue`.
- Returns `nil` for non-string variants — the metric tests in this file only
- produce string-valued attributes, so a nil result is a real assertion failure.
- */
-private extension OTAnyValue {
-  var stringValue: String? {
+/// Test-only convenience for pulling the inner string out of an `OTAnyValue`.
+/// Returns `nil` for non-string variants — the metric tests in this file only
+/// produce string-valued attributes, so a nil result is a real assertion failure.
+extension OTAnyValue {
+  fileprivate var stringValue: String? {
     if case .string(let value) = self {
       return value
     }

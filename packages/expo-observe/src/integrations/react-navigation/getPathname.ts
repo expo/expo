@@ -1,27 +1,23 @@
-import {
-  getPathFromState,
-  type LinkingOptions,
-  type NavigationState,
-  type ParamListBase,
-} from '@react-navigation/native';
+import type { NavigationStateLike } from './types';
 
-import type { GetPathname } from './types';
-
-export function createGetPathname<ParamList extends ParamListBase>(
-  linking: LinkingOptions<ParamList> | undefined
-): GetPathname {
-  if (!linking?.config) {
-    return (_state) => undefined;
+/**
+ * Builds a pathname from the focused route-name chain, e.g. `/Group/Details`.
+ * This mirrors how the expo-router integration derives its route pattern from
+ * `useSegments()` ('/' + segments joined with '/'), so both integrations tag
+ * metrics with the same stable, params-free shape. Route params are
+ * intentionally not serialized into the path — they are reported separately
+ * as `routeParams`.
+ */
+export function getPathname(state: NavigationStateLike | undefined): string | undefined {
+  if (!state) return undefined;
+  const segments: string[] = [];
+  let current: NavigationStateLike | undefined = state;
+  while (current) {
+    const route = current.routes[current.index ?? 0];
+    if (!route) break;
+    segments.push(route.name);
+    current = route.state as NavigationStateLike | undefined;
   }
-  return (state) => {
-    if (!state) return undefined;
-    // `LinkingOptions['config'].initialRouteName` is typed `keyof ParamList`,
-    // while `getPathFromState`'s `Options['initialRouteName']` is `string`.
-    // The shapes are structurally compatible — the cast bridges this gap in
-    // react-navigation's own typings.
-    return getPathFromState(
-      state as unknown as NavigationState,
-      linking.config as Parameters<typeof getPathFromState>[1]
-    );
-  };
+  if (segments.length === 0) return undefined;
+  return '/' + segments.join('/');
 }

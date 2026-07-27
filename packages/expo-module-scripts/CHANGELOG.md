@@ -9,8 +9,11 @@
 ### 🐛 Bug fixes
 
 - Add missing `publishConfig.executableFiles` ([#46074](https://github.com/expo/expo/pull/46074) by [@kitten](https://github.com/kitten))
+- Fix `prepublishOnly` wiping `build/` for packages that compile with `expo-build`, by rebuilding via the package's own `build` script instead of `tsc`. ([#47344](https://github.com/expo/expo/pull/47344) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
+
+- Added `CLAUDE.md` and `CONTRIBUTING.md` to `.npmignore` template. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
 
 ## 56.0.2 — 2026-05-06
 

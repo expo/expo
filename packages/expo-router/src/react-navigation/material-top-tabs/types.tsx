@@ -85,7 +85,7 @@ export type MaterialTopTabNavigationOptions = {
 
   /**
    * Title string of a tab displayed in the tab bar
-   * or a function that given { focused: boolean, color: ColorValue } returns a React.Node, to display in tab bar.
+   * or a function that given { focused: boolean, color: ColorValue } returns a React.Node to display in tab bar.
    *
    * When undefined, scene title is used. Use `tabBarShowLabel` to hide the label.
    */
@@ -197,7 +197,7 @@ export type MaterialTopTabNavigationOptions = {
   tabBarContentContainerStyle?: StyleProp<ViewStyle>;
 
   /**
-   * Style object for the the tab bar.
+   * Style object for the tab bar.
    */
   tabBarStyle?: StyleProp<ViewStyle>;
 

@@ -1,3 +1,5 @@
+// swift-format-ignore-file: AlwaysUseLowerCamelCase
+
 // `Task.immediate` is a pretty useful API that lets us immediately switch from synchronous to asynchronous context.
 // Read the proposal for more: https://github.com/swiftlang/swift-evolution/blob/main/proposals/0472-task-start-synchronously-on-caller-context.md
 // Unfortunately, it is available only as of Apple OS 26.0 and there are no plans to backport it yet.

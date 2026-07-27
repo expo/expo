@@ -297,6 +297,15 @@ export type RecorderState = {
   isRecording: boolean;
   /** Duration of the current recording in milliseconds. */
   durationMillis: number;
+  /**
+   * Current size of the recording file in bytes, or `0` if no recording file exists yet.
+   *
+   * The value reflects the bytes already flushed to disk, so during an active recording it can lag
+   * slightly behind real time. On web, it updates when the browser delivers recorded data
+   * (typically when the recording stops), and the value is an approximation that may differ
+   * slightly from the final file size.
+   */
+  fileSize: number;
   /** Whether the media services have been reset (typically indicates a system interruption). */
   mediaServicesDidReset: boolean;
   /** Current audio level/volume being recorded (if metering is enabled). */
@@ -372,7 +381,43 @@ export type RecordingStartOptions = {
   atTime?: number;
 };
 
+/**
+ * Directory where the recording file is stored.
+ *
+ * - `cache`: Stores recordings in the app cache directory, a place to store files that can be deleted by the system when the device runs low on storage.
+ * - `document`: Stores recordings in the app document directory, a place to store files that are safe from being deleted by the system.
+ *
+ * @platform android
+ * @platform ios
+ */
+export type RecordingDirectory = 'cache' | 'document';
+
 export type RecordingOptions = {
+  /**
+   * The directory where the recording file should be stored.
+   *
+   * @default 'cache'
+   * @platform android
+   * @platform ios
+   */
+  directory?: RecordingDirectory;
+  /**
+   * The basename of the recording file (without extension). The SDK appends `extension`
+   * and writes into `<directory>/Audio/<fileName><extension>` on Android and `<directory>/ExpoAudio/<fileName><extension>` on iOS.
+   *
+   * If omitted, defaults to a random UUID.
+   *
+   * Path separators (`/`, `\`) and parent-directory references (`..`) are rejected
+   * at runtime so callers cannot escape the recording directory.
+   *
+   * > **Note:** When using the default `cache` [`directory`](#recordingdirectory), the system may delete
+   * > the file when it is not being used. Use `document` [`directory`](#recordingdirectory) or [`expo-file-system`](/versions/latest/sdk/filesystem/)
+   * > to retain it.
+   *
+   * @platform android
+   * @platform ios
+   */
+  fileName?: string;
   /**
    * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
    */

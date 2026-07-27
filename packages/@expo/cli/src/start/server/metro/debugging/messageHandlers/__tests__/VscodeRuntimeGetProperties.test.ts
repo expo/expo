@@ -56,8 +56,8 @@ it('mutates `Runtime.getProperties` device response with `description` propertie
   // This message should still be propagated, it should return `false`
   expect(handler.handleDeviceMessage({ id: 420, result: descriptors })).toBe(false);
   // Expect the descriptor values to be mutated
-  expect(descriptors.result[0].value).toHaveProperty('description', '');
-  expect(descriptors.result[1].value).toHaveProperty('description', 'Dont overwrite');
+  expect(descriptors.result[0]!.value).toHaveProperty('description', '');
+  expect(descriptors.result[1]!.value).toHaveProperty('description', 'Dont overwrite');
 });
 
 it('mutates `Runtime.getProperties` device responses and removes `objectId` from symbol types', () => {
@@ -87,5 +87,5 @@ it('mutates `Runtime.getProperties` device responses and removes `objectId` from
   // This message should still be propagated, it should return `false`
   expect(handler.handleDeviceMessage({ id: 420, result: descriptors })).toBe(false);
   // Expect the descriptor value to be mutated
-  expect(descriptors.result[0].value).not.toHaveProperty('objectId');
+  expect(descriptors.result[0]!.value).not.toHaveProperty('objectId');
 });

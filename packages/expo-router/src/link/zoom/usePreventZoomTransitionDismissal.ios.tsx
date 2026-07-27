@@ -2,8 +2,6 @@
 
 import { use } from 'react';
 
-import type { UsePreventZoomTransitionDismissalOptions } from './usePreventZoomTransitionDismissal.types';
-import { ZoomTransitionTargetContext } from './zoom-transition-context';
 import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import { INTERNAL_EXPO_ROUTER_GESTURE_ENABLED_OPTION_NAME } from '../../navigationParams';
 import { useRoute } from '../../react-navigation/native';
@@ -12,6 +10,8 @@ import { isRoutePreloadedInStack } from '../../utils/stack';
 import { isModalPresentation } from '../../utils/stackPresentation';
 import { useSafeLayoutEffect } from '../../views/useSafeLayoutEffect';
 import { useIsPreview } from '../preview/PreviewRouteContext';
+import type { UsePreventZoomTransitionDismissalOptions } from './usePreventZoomTransitionDismissal.types';
+import { ZoomTransitionTargetContext } from './zoom-transition-context';
 
 export function usePreventZoomTransitionDismissal(
   options?: UsePreventZoomTransitionDismissalOptions

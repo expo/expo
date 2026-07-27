@@ -168,7 +168,8 @@ describe('reading X.509 certificates from PKCS#12 files', () => {
     // The modulus BigInt is the product of two large prime numbers that were generated during the key creation process.
     // its internal structure can change between implementations of the BigInt so we remove it from the snapshot.
     if ('n' in certificate.publicKey) {
-      delete certificate.publicKey.n;
+      const { n: _n, ...publicKeyWithoutModulus } = certificate.publicKey;
+      certificate.publicKey = publicKeyWithoutModulus as forge.pki.PublicKey;
     }
     return certificate;
   };
@@ -204,7 +205,7 @@ describe('reading X.509 certificates from PKCS#12 files', () => {
     const { base64EncodedP12, password, alias } = keystoreP12;
     const p12 = parsePKCS12(base64EncodedP12, password);
     const certificate = getX509CertificateByFriendlyName(p12, alias);
-    expect(removeModulus(certificate)).toMatchSnapshot();
+    expect(removeModulus(certificate!)).toMatchSnapshot();
   });
   it('returns null if there are no X.509 certificates under friendly name for p12 keystores using #getX509CertificateByFriendlyName', async () => {
     const { base64EncodedP12, password } = conventionalP12;
@@ -216,6 +217,6 @@ describe('reading X.509 certificates from PKCS#12 files', () => {
     const { base64EncodedP12, password, alias } = uppercaseAliasKeystoreP12;
     const p12 = parsePKCS12(base64EncodedP12, password);
     const certificate = getX509CertificateByFriendlyName(p12, alias);
-    expect(removeModulus(certificate)).toMatchSnapshot();
+    expect(removeModulus(certificate!)).toMatchSnapshot();
   });
 });

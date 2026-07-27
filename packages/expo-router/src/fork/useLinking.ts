@@ -1,8 +1,6 @@
 import isEqual from 'fast-deep-equal';
 import { type RefObject, useEffect, useState, useCallback, useRef, use } from 'react';
 
-import { createMemoryHistory } from './createMemoryHistory';
-import { appendBaseUrl } from './getPathFromState';
 import { ServerContext } from '../global-state/serverLocationContext';
 import { useExpoRouterStore } from '../global-state/storeContext';
 import { getRootStackRouteNames } from '../global-state/utils';
@@ -17,6 +15,8 @@ import {
   type ParamListBase,
   useNavigationIndependentTree,
 } from '../react-navigation/native';
+import { createMemoryHistory } from './createMemoryHistory';
+import { appendBaseUrl } from './getPathFromState';
 
 type ResultState = ReturnType<typeof getStateFromPathDefault>;
 

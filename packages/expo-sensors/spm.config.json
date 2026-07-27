@@ -4,9 +4,7 @@
     {
       "name": "ExpoSensors",
       "podName": "ExpoSensors",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -21,21 +19,9 @@
           "path": "ios",
           "pattern": "**/*.m",
           "headerPattern": "**/*.h",
-          "dependencies": [
-            "ReactNativeDependencies",
-            "React",
-            "Hermes"
-          ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ],
-          "includeDirectories": [
-            "."
-          ],
-          "compilerFlags": [
-            "-DEXPO_DISABLE_MOTION_PERMISSION=1"
-          ]
+          "dependencies": ["ReactNativeDependencies", "React", "Hermes"],
+          "linkedFrameworks": ["Foundation", "UIKit"],
+          "includeDirectories": ["."]
         },
         {
           "type": "swift",
@@ -49,10 +35,7 @@
             "expo-modules-core/ExpoModulesCore",
             "ExpoSensors_ios_objc"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

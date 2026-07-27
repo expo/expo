@@ -1,0 +1,262 @@
+---
+title: 最初のアプリを作成する
+description: この章では、新しい Expo プロジェクトを作成する方法を学びます。
+hasVideoLink: true
+---
+
+import { Download03Icon } from '@expo/styleguide-icons/outline/Download03Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+この章では、新しい Expo プロジェクトを作成し、実行する方法を学びましょう。
+
+<VideoBoxLink
+  videoId="m1-bc53EGh8"
+  title="視聴：はじめてのユニバーサル Expo アプリを作成する"
+  description="新しい Expo プロジェクトをゼロから作成し、Android、iOS、web で動作させます。"
+/>
+
+---
+
+<Prerequisites>
+  <Requirement title="実機での Expo Go">
+    Android または iOS の実機に [Expo Go](https://expo.dev/go) をインストールします。
+  </Requirement>
+  <Requirement title="Node.js (LTS)">
+    お使いのマシンに [Node.js (LTS バージョン)](https://nodejs.org/en) をインストールします。
+  </Requirement>
+  <Requirement title="コードエディタ">
+    [VS Code](https://code.visualstudio.com/) または好みのコードエディタや IDE
+    をインストールします。
+  </Requirement>
+  <Requirement title="ターミナルが使える開発マシン">
+    macOS、Linux、または Windows (PowerShell および WSL2) でターミナルウィンドウを開けるマシン。
+  </Requirement>
+</Prerequisites>
+
+このチュートリアルは、TypeScript と React に慣れていることを前提としています。慣れていない場合は、[TypeScript ハンドブック](https://www.typescriptlang.org/docs/handbook/2/everyday-types.html) と [React 公式チュートリアル](https://react.dev/learn) を確認してみてください。
+
+<Step label="1">
+
+## 新しい Expo アプリを初期化する
+
+新しい Expo アプリを初期化するために [`create-expo-app`](/more/create-expo/) を使います。これは新しい React Native プロジェクトを作成するためのコマンドラインツールです。それでは、ターミナルで次のコマンドを実行してみましょう。
+
+<Terminal
+  cmd={{
+    npm: [
+      '# Create a project named StickerSmash',
+      '$ npx create-expo-app@latest StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    yarn: [
+      '# Create a project named StickerSmash',
+      '$ yarn create expo-app StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    pnpm: [
+      '# Create a project named StickerSmash',
+      '$ pnpm create expo-app StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+    bun: [
+      '# Create a project named StickerSmash',
+      '$ bun create expo StickerSmash',
+      '',
+      '# CLI will prompt you to choose a template. Select SDK 54.',
+      '$ Select an Expo SDK version > SDK 54',
+      '',
+      '# Navigate to the project directory',
+      '$ cd StickerSmash',
+    ],
+  }}
+/>
+
+このコマンドは [デフォルト](/more/create-expo/#--template) テンプレートを使用して、StickerSmash という名前の新しいプロジェクトディレクトリを作成します。このテンプレートには、Expo Router を含む、アプリ構築に必要な基本的なボイラープレートコードとライブラリが含まれています。チュートリアルの中で必要に応じてライブラリを追加していきます。
+
+> **info** 現在、`create-expo-app@latest` は Expo SDK テンプレートの選択を求めます。このチュートリアルは SDK 54 向けに設計されているため、必ず SDK 54 のテンプレートを選択してください。
+
+<Collapsible summary="デフォルトテンプレートを使用するメリット">
+
+- `expo` パッケージがインストールされた新しい React Native プロジェクトを作成します
+- Expo CLI などの推奨ツールが含まれます
+- 基本的なナビゲーションシステムを提供するために Expo Router のタブナビゲーターが含まれます
+- Android、iOS、web の複数のプラットフォームでプロジェクトを実行できるよう自動的に設定されます
+- TypeScript がデフォルトで設定されます
+
+</Collapsible>
+
+</Step>
+
+<Step label="2">
+
+## アセットをダウンロードする
+
+<BoxLink
+  title="アセットアーカイブをダウンロード"
+  Icon={Download03Icon}
+  description="これらのアセットはチュートリアル全体を通して使用します。"
+  href="/static/images/tutorial/sticker-smash-assets.zip"
+/>
+
+アーカイブをダウンロードしたら:
+
+1. アーカイブを展開し、**your-project-name/assets/images** ディレクトリ内のデフォルトアセットを置き換えます。
+2. コードエディタまたは IDE でプロジェクトディレクトリを開きます。
+
+</Step>
+
+<Step label="3">
+
+{/* vale off */}
+
+## reset-project スクリプトを実行する
+
+{/* vale on */}
+
+このチュートリアルでは、アプリをゼロから構築し、ファイルベースのナビゲーションを追加する基本を理解します。ボイラープレートコードを取り除くために、`reset-project` スクリプトを実行しましょう。
+
+<Terminal
+  cmd={{
+    npm: ['$ npm run reset-project'],
+    yarn: ['$ yarn run reset-project'],
+    pnpm: ['$ pnpm run reset-project'],
+    bun: ['$ bun run reset-project'],
+  }}
+/>
+
+上記のコマンドを実行すると、**app** ディレクトリには 2 つのファイル (**index.tsx** と **\_layout.tsx**) が残ります。**app** ディレクトリと他のディレクトリ (**components**、**constants**、**hooks** &mdash; ボイラープレートコードを含む) からの以前のファイルは、スクリプトによって **app-example** ディレクトリに移動されます。進めながら独自のディレクトリやコンポーネントファイルを作成していきます。
+
+<Collapsible summary={<><CODE>reset-project</CODE> スクリプトは何をしますか？</>}>
+
+`reset-project` スクリプトは、プロジェクト内の **app** ディレクトリ構造をリセットし、プロジェクトのルートディレクトリにあった以前のボイラープレートファイルを、**app-example** という別のサブディレクトリにコピーします。これはメインアプリの構造の一部ではないため、削除して構いません。
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+## モバイルと web でアプリを実行する
+
+プロジェクトディレクトリで、ターミナルから [開発サーバー](/more/glossary-of-terms/#development-server) を起動するために次のコマンドを実行します。
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+上記のコマンドを実行すると:
+
+1. 開発サーバーが起動し、ターミナルウィンドウ内に QR コードが表示されます。
+2. その QR コードをスキャンしてデバイスでアプリを開きます。Android では Expo Go > **Scan QR code** オプションを使い、iOS ではデフォルトのカメラアプリを使います。
+3. web アプリを実行するには、ターミナルで <kbd>W</kbd> を押します。デフォルトの web ブラウザで web アプリが開きます。
+
+すべてのプラットフォームで動作すると、アプリは次のようになります。
+
+<ContentSpotlight
+  alt="すべてのプラットフォームで動作するアプリ"
+  src="/static/images/tutorial/01-app-running-on-all-platforms.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="5">
+
+{/* vale off */}
+
+## index 画面を編集する
+
+{/* vale on */}
+
+**app/index.tsx** ファイルは、アプリの画面に表示されるテキストを定義します。これはアプリのエントリーポイントであり、開発サーバーが起動したときに実行されます。背景とテキストを表示するために、React Native の `<View>` や `<Text>` などのコアコンポーネントを使用します。
+
+これらのコンポーネントに適用されるスタイルは、web で使われる CSS ではなく JavaScript オブジェクトを使います。ただし、これまでに web で CSS を使ったことがあれば、見覚えのあるプロパティが多いはずです。ほとんどの React Native コンポーネントは、JavaScript オブジェクトを値として受け取る `style` プロパティを受け付けます。詳細については [Styling in React Native](https://reactnative.dev/docs/style) を参照してください。
+
+**app/index.tsx** 画面を変更しましょう。
+
+1. `react-native` から `StyleSheet` をインポートし、カスタムスタイルを定義する `styles` オブジェクトを作成します。
+2. `<View>` に `styles.container.backgroundColor` プロパティを追加し、値を `#25292e` にします。これにより背景色が変わります。
+3. `<Text>` のデフォルト値を「Home screen」に置き換えます。
+4. `<Text>` に `styles.text.color` プロパティを追加し、テキストの色を変えるために値を `#fff` (白) にします。
+
+{/* prettier-ignore */}
+```tsx app/index.tsx|collapseHeight=340
+import { Text, View, /* @tutinfo スタイルを定義するため `StyleSheet` をインポートします。 */ StyleSheet/* @end */ } from 'react-native';
+
+export default function Index() {
+  return (
+    <View style={styles.container}>
+      /* @tutinfo 以前は "Edit app/index.tsx to edit this screen" と表示されていましたが、現在は "Home screen" と表示されます。 */
+      <Text style={styles.text}>Home screen</Text>
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    /* @tutinfo `backgroundColor` プロパティに `'#25292e'` の値を設定します。*/
+    backgroundColor: '#25292e',
+    /* @end */
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  text: {
+    color: '#fff',
+  },
+});
+```
+
+> React Native は web と同じ色フォーマットを使用します。16 進数トリプレット (これが `#fff` の形式)、`rgba`、`hsl`、および `red`、`green`、`blue`、`peru`、`papayawhip` などの名前付きカラーをサポートします。詳細については [Colors in React Native](https://reactnative.dev/docs/colors) を参照してください。
+
+変更を保存すると、開発サーバーに接続している実行中のアプリに変更が送信され、適用されます。
+
+<ContentSpotlight
+  alt="テキストと背景色が更新されたアプリ"
+  src="/static/images/tutorial/02-index-screen-changes.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/create-your-first-app"
+  name="GET_STARTED"
+  chapterTitle="第 1 章：最初のアプリを作成する"
+  summary="新しい Expo プロジェクトを作成し、React Native のコアコンポーネントを使用しました。これで StickerSmash アプリの開発を始める準備が整いました。"
+  nextChapterDescription="次の章では、アプリにスタックとタブナビゲーターを追加する方法を学びます。"
+  nextChapterTitle="ナビゲーションを追加する"
+  nextChapterLink="/ja/tutorial/add-navigation/"
+/>

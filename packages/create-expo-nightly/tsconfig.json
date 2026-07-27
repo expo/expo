@@ -1,19 +1,11 @@
 {
-  "extends": "@tsconfig/node22/tsconfig.json",
+  "extends": "expo-module-scripts/tsconfig.node",
+  "include": ["./src"],
   "compilerOptions": {
+    "noEmit": true,
+    "customConditions": [],
     "module": "preserve",
     "moduleResolution": "bundler",
-    "esModuleInterop": true,
-    "strictNullChecks": true,
-    "strictPropertyInitialization": true,
-    "strictFunctionTypes": true,
-    "noImplicitAny": true,
-    "noImplicitThis": true,
-    "noImplicitReturns": true,
-    "allowSyntheticDefaultImports": true,
-
-    "noEmit": true,
-    "rootDir": "src"
-  },
-  "include": ["./src"]
+    "rootDir": "./src"
+  }
 }

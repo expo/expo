@@ -6,9 +6,9 @@ import androidx.lifecycle.viewModelScope
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.compose.Update
 import expo.modules.devlauncher.compose.utils.formatUpdateUrl
-import expo.modules.devlauncher.services.ApolloClientService
 import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.ApplicationInfo
+import expo.modules.devlauncher.services.GraphQLService
 import expo.modules.devlauncher.services.inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted.Companion.WhileSubscribed
@@ -28,7 +28,7 @@ data class BranchState(
 
 class BranchViewModel(private val branchName: String) : ViewModel() {
   private val appService = inject<AppService>()
-  private val apolloClientService = inject<ApolloClientService>()
+  private val graphQLService = inject<GraphQLService>()
   private val launcher = inject<DevLauncherController>()
 
   private val hasMore = mutableStateOf(true)
@@ -54,10 +54,7 @@ class BranchViewModel(private val branchName: String) : ViewModel() {
       return
     }
 
-    val updateConfiguration = appService.applicationInfo as? ApplicationInfo.Updates
-    if (updateConfiguration == null) {
-      return
-    }
+    val updateConfiguration = appService.applicationInfo as? ApplicationInfo.Updates ?: return
 
     _state.value = _state.value.copy(isLoading = true)
 
@@ -65,18 +62,18 @@ class BranchViewModel(private val branchName: String) : ViewModel() {
     val runtimeVersion = updateConfiguration.runtimeVersion
     val limit = 50
 
-    val updates = apolloClientService.fetchUpdates(
+    val updates = graphQLService.fetchUpdates(
       appId = appId,
       branchName = branchName,
       limit = limit,
       offset = _state.value.updates.size
     )
 
-    val uiUpdates = updates.data?.app?.byId?.updateBranchByName?.updates?.map { update ->
+    val uiUpdates = updates.data?.updates?.map { update ->
       Update(
         id = update.id,
         name = update.message ?: "No message",
-        createdAt = update.createdAt as? String,
+        createdAt = update.createdAt,
         isCompatible = update.runtimeVersion == runtimeVersion,
         permalink = update.manifestPermalink
       )

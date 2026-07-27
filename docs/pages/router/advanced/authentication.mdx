@@ -58,12 +58,7 @@ const AuthContext = createContext<{
   signOut: () => void;
   session?: string | null;
   isLoading: boolean;
-}>({
-  signIn: () => null,
-  signOut: () => null,
-  session: null,
-  isLoading: false,
-});
+} | null>(null);
 
 // Use this hook to access the user info.
 export function useSession() {

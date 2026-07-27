@@ -1,6 +1,6 @@
-import { type SliderProps } from './types';
 import { Host } from '../../jetpack-compose/Host';
 import { Slider as ComposeSlider } from '../../jetpack-compose/Slider';
+import { type SliderProps } from './types';
 
 /**
  * A drop-in replacement for `@react-native-community/slider` on Android.

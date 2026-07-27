@@ -3,7 +3,10 @@
 import { useCallback, type ReactElement, type ReactNode } from 'react';
 import { StyleSheet } from 'react-native';
 
+import { useIsPreview } from '../link/preview/PreviewRouteContext';
 import { useNavigation, useRoute } from '../react-navigation/native';
+import { useFocusEffect } from '../useFocusEffect';
+import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
 import {
   NativeTabsTriggerIcon,
   NativeTabsTriggerBadge,
@@ -14,9 +17,6 @@ import {
 } from './common/elements';
 import type { NativeTabOptions, NativeTabTriggerProps } from './types';
 import { appendIconOptions } from './utils/optionsIconConverter';
-import { useIsPreview } from '../link/preview/PreviewRouteContext';
-import { useFocusEffect } from '../useFocusEffect';
-import { filterAllowedChildrenElements, isChildOfType } from '../utils/children';
 
 /**
  * The component used to customize the native tab options both in the _layout file and from the tab screen.
@@ -98,6 +98,12 @@ export function convertTabPropsToOptions(
     contentStyle,
     disableTransparentOnScrollEdge,
     disabled,
+    rippleColor,
+    indicatorColor,
+    disableIndicator,
+    labelVisibilityMode,
+    testID,
+    accessibilityLabel,
   }: NativeTabTriggerProps,
   isDynamic: boolean = false
 ) {
@@ -106,6 +112,14 @@ export function convertTabPropsToOptions(
         ...(unstable_nativeProps ? { nativeProps: unstable_nativeProps } : {}),
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
         ...(disabled !== undefined ? { disabled } : {}),
+        ...(rippleColor !== undefined ? { rippleColor } : {}),
+        ...(indicatorColor !== undefined ? { indicatorColor } : {}),
+        ...(disableIndicator !== undefined ? { disableIndicator } : {}),
+        ...(labelVisibilityMode !== undefined ? { labelVisibilityMode } : {}),
+        ...(testID !== undefined ? { tabBarItemTestID: testID } : {}),
+        ...(accessibilityLabel !== undefined
+          ? { tabBarItemAccessibilityLabel: accessibilityLabel }
+          : {}),
       }
     : {
         hidden: !!hidden,
@@ -121,6 +135,14 @@ export function convertTabPropsToOptions(
         disableAutomaticContentInsets,
         ...(disableTransparentOnScrollEdge !== undefined ? { disableTransparentOnScrollEdge } : {}),
         ...(disabled !== undefined ? { disabled } : {}),
+        ...(rippleColor !== undefined ? { rippleColor } : {}),
+        ...(indicatorColor !== undefined ? { indicatorColor } : {}),
+        ...(disableIndicator !== undefined ? { disableIndicator } : {}),
+        ...(labelVisibilityMode !== undefined ? { labelVisibilityMode } : {}),
+        ...(testID !== undefined ? { tabBarItemTestID: testID } : {}),
+        ...(accessibilityLabel !== undefined
+          ? { tabBarItemAccessibilityLabel: accessibilityLabel }
+          : {}),
       };
   const allowedChildren = filterAllowedChildrenElements(children, [
     NativeTabsTriggerBadge,

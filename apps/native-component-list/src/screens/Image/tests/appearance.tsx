@@ -1,5 +1,5 @@
-import { anyAnimationDriver, tintColor, tintColor2 } from './constants';
 import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
+import { anyAnimationDriver, tintColor, tintColor2 } from './constants';
 
 const imageTests: ImageTestGroup = {
   name: 'Appearance',

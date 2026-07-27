@@ -1,5 +1,7 @@
+import { useMemo } from 'react';
 import { StyleSheet, View, type LayoutChangeEvent } from 'react-native';
 
+import { generatePrimaryColorScale, globalCss } from '../webUtils';
 import type { UniversalHostProps } from './types';
 
 const styles = StyleSheet.create({
@@ -27,10 +29,11 @@ const styles = StyleSheet.create({
 /**
  * A bridging container that hosts SwiftUI views on iOS and Jetpack Compose views on Android.
  * On platforms without a native UI-toolkit binding (web, RN fallback), renders a plain `View`.
- * The `colorScheme`, `layoutDirection`, and `matchContents` props are accepted for API parity but have no effect.
  */
 export function Host({
   children,
+  colorScheme = 'unspecified',
+  seedColor,
   ignoreSafeArea,
   layoutDirection,
   matchContents = false,
@@ -38,44 +41,55 @@ export function Host({
   onLayoutContent,
   style,
   useViewportSizeMeasurement = false,
-  colorScheme: _colorScheme,
   ...rest
 }: UniversalHostProps) {
+  const dataSet = colorScheme !== 'unspecified' ? { theme: colorScheme } : undefined;
+  const primaryColorScale = useMemo(() => generatePrimaryColorScale(seedColor), [seedColor]);
+
+  const dir =
+    layoutDirection === 'leftToRight'
+      ? 'ltr'
+      : layoutDirection === 'rightToLeft'
+        ? 'rtl'
+        : undefined;
+
   const shouldMatchContents =
     typeof matchContents === 'object'
       ? matchContents.horizontal || matchContents.vertical
       : matchContents;
 
   return (
-    <View
-      dir={
-        layoutDirection === 'leftToRight'
-          ? 'ltr'
-          : layoutDirection === 'rightToLeft'
-            ? 'rtl'
-            : undefined
-      }
-      onLayout={(event: LayoutChangeEvent) => {
-        onLayout?.(event);
+    <>
+      <style href="expo-ui-host" precedence="expo-ui">
+        {globalCss}
+      </style>
 
-        onLayoutContent?.({
-          nativeEvent: {
-            width: event.nativeEvent.layout.width,
-            height: event.nativeEvent.layout.height,
-          },
-        });
-      }}
-      style={[
-        ignoreSafeArea !== 'all' &&
-          (ignoreSafeArea === 'keyboard' ? styles.safeAreaWithoutKeyboard : styles.safeArea),
-        shouldMatchContents
-          ? styles.matchContents
-          : useViewportSizeMeasurement && styles.matchViewport,
-        style,
-      ]}
-      {...rest}>
-      {children}
-    </View>
+      <View
+        dataSet={dataSet}
+        dir={dir}
+        onLayout={(event: LayoutChangeEvent) => {
+          onLayout?.(event);
+
+          onLayoutContent?.({
+            nativeEvent: {
+              width: event.nativeEvent.layout.width,
+              height: event.nativeEvent.layout.height,
+            },
+          });
+        }}
+        style={[
+          primaryColorScale,
+          ignoreSafeArea !== 'all' &&
+            (ignoreSafeArea === 'keyboard' ? styles.safeAreaWithoutKeyboard : styles.safeArea),
+          shouldMatchContents
+            ? styles.matchContents
+            : useViewportSizeMeasurement && styles.matchViewport,
+          style,
+        ]}
+        {...rest}>
+        {children}
+      </View>
+    </>
   );
 }
 

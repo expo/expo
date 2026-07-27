@@ -1,8 +1,8 @@
-import { type SliderProps } from './types';
 import { Host } from '../../swift-ui/Host';
 import { Slider as SwiftUISlider } from '../../swift-ui/Slider';
 import { disabled as disabledModifier, tint as tintModifier } from '../../swift-ui/modifiers';
 import type { ModifierConfig } from '../../types';
+import { type SliderProps } from './types';
 
 /**
  * A drop-in replacement for `@react-native-community/slider` on iOS.
@@ -32,7 +32,7 @@ export function Slider(props: SliderProps) {
     modifiers.push(tintModifier(minimumTrackTintColor as string));
   }
   return (
-    <Host matchContents={{ vertical: true }} style={hostStyle}>
+    <Host matchContents={{ vertical: true }} style={hostStyle} ignoreSafeArea="all">
       <SwiftUISlider
         value={value}
         min={minimumValue}

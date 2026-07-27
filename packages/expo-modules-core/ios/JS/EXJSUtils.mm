@@ -29,7 +29,7 @@
     argumentCount:(NSUInteger)argumentCount
 {
   auto &runtime = *static_cast<jsi::Runtime *>(runtimePointer);
-  auto object = static_cast<const jsi::Value *>(objectPointer)->asObject(runtime);
+  auto &object = *static_cast<const jsi::Object *>(objectPointer);
 
   if (argumentCount == 0 || argumentsPointer == nullptr) {
     expo::EventEmitter::emitEvent(runtime, object, [eventName UTF8String], nullptr, 0);

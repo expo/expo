@@ -2,8 +2,6 @@
 
 #include "../ExpoHeader.pch"
 
-#if WORKLETS_ENABLED
-
 #include <ReactCommon/CallInvoker.h>
 
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
@@ -25,5 +23,3 @@ private:
 };
 
 } // namespace expo
-
-#endif

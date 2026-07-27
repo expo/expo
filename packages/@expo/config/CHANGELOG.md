@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+- Add experimental `tvos` and `macos` platforms gated by `expriments.outOfTreePlatforms` in config ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+- Update for `experiments.outOfTreePlatforms` typing ([#46497](https://github.com/expo/expo/pull/46497) by [@kitten](https://github.com/kitten))
+
+## 56.0.9 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.8 — 2026-05-20
 
 ### 💡 Others
@@ -302,7 +309,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Bump `sucrase@3.34.0` to `sucrase@3.35.0` to to remove transitive dependency on `glob@7` ([#32274](https://github.com/expo/expo/pull/32274) by [@kitten](https://github.com/kitten))
+- Bump `sucrase@3.34.0` to `sucrase@3.35.0` to remove transitive dependency on `glob@7` ([#32274](https://github.com/expo/expo/pull/32274) by [@kitten](https://github.com/kitten))
 
 ## 10.0.0 — 2024-10-22
 

@@ -4,11 +4,17 @@
 
 ### 🛠 Breaking changes
 
+- [web] Removed `Server.resetServerContext()`. Server-side font state is now scoped per-render via `AsyncLocalStorage`. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
+
 ### 🎉 New features
+
+- [web] Added `Server.withServerContext(callback)` which scopes server-side font loads per render. ([#46669](https://github.com/expo/expo/pull/46669) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Resolve package-style font paths. ([#46784](https://github.com/expo/expo/pull/46784) by [@maxlapides](https://github.com/maxlapides))
 
 ## 56.0.5 — 2026-05-19
 

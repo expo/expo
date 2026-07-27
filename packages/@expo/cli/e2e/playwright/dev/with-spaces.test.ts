@@ -8,8 +8,8 @@
 
 import { test, expect } from '@playwright/test';
 
-import { setupTestProjectWithOptionsAsync } from '../../__tests__/utils';
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
+import { setupTestProjectWithOptionsAsync } from '../../__tests__/utils';
 import { createExpoStart } from '../../utils/expo';
 import { pageCollectErrors } from '../page';
 
@@ -25,7 +25,7 @@ test.describe('router-e2e with spaces', () => {
       'with spaces',
       'with-router',
       {
-        linkExpoPackages: ['expo-router' ],
+        linkExpoPackages: ['expo-router'],
       }
     );
 

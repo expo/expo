@@ -62,6 +62,8 @@ object PhoneLabelMapper {
       is PhoneLabel.Assistant -> "assistant"
       is PhoneLabel.Mms -> "mms"
       is PhoneLabel.Custom -> label.label
+      is PhoneLabel.MalformedType -> label.label
+      is PhoneLabel.MalformedCustom -> null
     }
   }
 }

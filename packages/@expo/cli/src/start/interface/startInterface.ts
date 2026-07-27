@@ -1,9 +1,5 @@
 import chalk from 'chalk';
 
-import { KeyPressHandler } from './KeyPressHandler';
-import type { StartOptions } from './commandsTable';
-import { BLT, printHelp, printUsage } from './commandsTable';
-import { DevServerManagerActions } from './interactiveActions';
 import * as Log from '../../log';
 import { openInEditorAsync } from '../../utils/editor';
 import { AbortCommandError } from '../../utils/errors';
@@ -12,8 +8,11 @@ import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
 import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
 import type { DevServerManager } from '../server/DevServerManager';
-
-const debug = require('debug')('expo:start:interface:startInterface') as typeof console.log;
+import { KeyPressHandler } from './KeyPressHandler';
+import type { StartOptions } from './commandsTable';
+import { BLT, printHelp, printUsage } from './commandsTable';
+import { event } from './events';
+import { DevServerManagerActions } from './interactiveActions';
 
 const CTRL_C = '\u0003';
 const CTRL_D = '\u0004';
@@ -52,10 +51,10 @@ export async function startInterfaceAsync(
     ...options,
   };
 
-  actions.printDevServerInfo(usageOptions);
+  await actions.printDevServerInfoAsync(usageOptions);
 
   const onPressAsync = async (key: string) => {
-    // Auxillary commands all escape.
+    // Auxiliary commands all escape.
     switch (key) {
       case CTRL_C:
       case CTRL_D: {
@@ -103,8 +102,10 @@ export async function startInterfaceAsync(
     if (isWebSocketsEnabled) {
       switch (key) {
         case 'm':
+          event('toggle-dev-menu', {});
           return actions.toggleDevMenu();
         case 'M':
+          event('open-more-tools', {});
           return actions.openMoreToolsAsync();
       }
     }
@@ -115,6 +116,10 @@ export async function startInterfaceAsync(
       const platform = key.toLowerCase() === 'i' ? 'ios' : 'android';
 
       const shouldPrompt = ['I', 'A'].includes(key);
+      event('open-platform', {
+        platform,
+        target: shouldPrompt ? 'prompt' : PLATFORM_SETTINGS[platform]!.launchTarget,
+      });
       if (shouldPrompt) {
         Log.clear();
       }
@@ -144,15 +149,17 @@ export async function startInterfaceAsync(
 
     switch (key) {
       case 's': {
+        event('toggle-runtime-mode', {});
         Log.clear();
         if (await devServerManager.toggleRuntimeMode()) {
           usageOptions.devClient = devServerManager.options.devClient;
-          actions.printDevServerInfo(usageOptions);
+          await actions.printDevServerInfoAsync(usageOptions);
           return;
         }
         break;
       }
       case 'w': {
+        event('open-platform', { platform: 'web', target: 'desktop' });
         try {
           await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
           if (!platforms.includes('web')) {
@@ -166,17 +173,15 @@ export async function startInterfaceAsync(
 
         const isDisabled = !platforms.includes('web');
         if (isDisabled) {
-          debug('Web is disabled');
           // Use warnings from the web support setup.
           break;
         }
 
         // Ensure the Webpack dev server is running first
         if (!devServerManager.getWebDevServer()) {
-          debug('Starting up webpack dev server');
           await devServerManager.ensureWebDevServerRunningAsync();
           // When this is the first time webpack is started, reprint the connection info.
-          actions.printDevServerInfo(usageOptions);
+          await actions.printDevServerInfoAsync(usageOptions);
         }
 
         Log.log(`${BLT} Open in the web browser...`);
@@ -191,14 +196,18 @@ export async function startInterfaceAsync(
         break;
       }
       case 'c':
+        event('clear-terminal', {});
         Log.clear();
-        actions.printDevServerInfo(usageOptions);
+        await actions.printDevServerInfoAsync(usageOptions);
         return;
       case 'j':
+        event('open-debugger', {});
         return actions.openJsInspectorAsync();
       case 'r':
+        event('reload', {});
         return actions.reloadApp();
       case 'o':
+        event('open-editor', {});
         Log.log(`${BLT} Opening the editor...`);
         return openInEditorAsync(devServerManager.projectRoot);
     }

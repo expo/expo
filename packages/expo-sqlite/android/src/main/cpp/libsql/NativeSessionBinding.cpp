@@ -56,13 +56,13 @@ void NativeSessionBinding::sqlite3session_delete() {
   jni::throwNewJavaException(UnsupportedOperationException::create().get());
 }
 
-jni::local_ref<jni::JArrayByte>
+jni::local_ref<jni::JByteBuffer>
 NativeSessionBinding::sqlite3session_changeset() {
   jni::throwNewJavaException(UnsupportedOperationException::create().get());
   return nullptr;
 }
 
-jni::local_ref<jni::JArrayByte>
+jni::local_ref<jni::JByteBuffer>
 NativeSessionBinding::sqlite3session_changeset_inverted() {
   jni::throwNewJavaException(UnsupportedOperationException::create().get());
   return nullptr;
@@ -70,13 +70,13 @@ NativeSessionBinding::sqlite3session_changeset_inverted() {
 
 int NativeSessionBinding::sqlite3changeset_apply(
     jni::alias_ref<NativeDatabaseBinding::javaobject> db,
-    jni::alias_ref<jni::JArrayByte> changeset) {
+    jni::alias_ref<jni::JByteBuffer> changeset) {
   jni::throwNewJavaException(UnsupportedOperationException::create().get());
   return -1;
 }
 
-jni::local_ref<jni::JArrayByte> NativeSessionBinding::sqlite3changeset_invert(
-    jni::alias_ref<jni::JArrayByte> changeset) {
+jni::local_ref<jni::JByteBuffer> NativeSessionBinding::sqlite3changeset_invert(
+    jni::alias_ref<jni::JByteBuffer> changeset) {
   jni::throwNewJavaException(UnsupportedOperationException::create().get());
   return nullptr;
 }

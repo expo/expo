@@ -3,6 +3,7 @@ import GithubSlugger from 'github-slugger';
 import { PropsWithChildren } from 'react';
 
 import { createHeadingManager } from '~/common/headingManager';
+import { axe } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
 
 import { Collapsible } from '.';
@@ -48,5 +49,19 @@ describe('Collapsible', () => {
     );
     expect(screen.getByText('Summary')).toBeVisible();
     expect(screen.getByText('Content')).toBeVisible();
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <WrapWithContext>
+        <Collapsible summary="Closed">Content</Collapsible>
+        <Collapsible summary="Opened" open>
+          Content
+        </Collapsible>
+      </WrapWithContext>
+    );
+    expect(
+      await axe(container, { rules: { 'nested-interactive': { enabled: false } } })
+    ).toHaveNoViolations();
   });
 });

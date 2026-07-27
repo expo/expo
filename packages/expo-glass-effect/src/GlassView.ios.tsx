@@ -2,11 +2,11 @@
 
 'use client';
 
-import { requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeView } from 'expo';
 
 import type { GlassViewProps } from './GlassView.types';
 
-const NativeGlassView = requireNativeViewManager<GlassViewProps>('ExpoGlassEffect', 'GlassView');
+const NativeGlassView = requireNativeView<GlassViewProps>('ExpoGlassEffect', 'GlassView');
 
 const GlassView = (props: GlassViewProps) => {
   return <NativeGlassView {...props} />;

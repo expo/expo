@@ -466,7 +466,7 @@ npx patch-package <package-name>
 The patch will be created at `patches/<package-name>+<version>.patch`.
 
 Don't make that patch manually - always make it by changing the original files and then
-run npx patch package.
+run npx patch-package.
 
 ## Podspec Patch Pattern for External Packages
 

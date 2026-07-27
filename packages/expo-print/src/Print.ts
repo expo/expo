@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 import { Platform } from 'react-native';
 
 import ExponentPrint from './ExponentPrint';

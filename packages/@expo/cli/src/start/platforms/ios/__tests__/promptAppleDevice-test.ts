@@ -13,7 +13,7 @@ describe(sortDefaultDeviceToBeginningAsync, () => {
       { udid: 'should-be-first' },
       { udid: 'ghi' },
     ] as any);
-    expect(devices[0].udid).toBe('should-be-first');
+    expect(devices[0]!.udid).toBe('should-be-first');
   });
 
   it(`does not change order when there is no default`, async () => {
@@ -22,6 +22,6 @@ describe(sortDefaultDeviceToBeginningAsync, () => {
       { udid: 'abc' },
       { udid: 'def' },
     ] as any);
-    expect(devices[0].udid).toBe('abc');
+    expect(devices[0]!.udid).toBe('abc');
   });
 });

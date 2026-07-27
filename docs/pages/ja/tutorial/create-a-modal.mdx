@@ -1,0 +1,872 @@
+---
+title: モーダルを作成する
+description: このチュートリアルでは、画像を選択するための React Native モーダルを作成する方法を学びます。
+hasVideoLink: true
+---
+
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
+
+React Native は、アプリの他のコンテンツの上にコンテンツを表示する [`<Modal>` コンポーネント](https://reactnative.dev/docs/modal) を提供します。一般的に、モーダルはユーザーの注意を重要な情報に向けたり、アクションを促したりするために使用されます。たとえば [第 3 章](/ja/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component) では、ボタンを押した後に `alert()` を使ってプレースホルダーのテキストを表示しました。これがモーダルコンポーネントがオーバーレイを表示する仕組みです。
+
+この章では、絵文字ピッカーのリストを表示するモーダルを作成します。
+
+<VideoBoxLink
+  videoId="HRAMzrBwVeo"
+  title="視聴：ユニバーサル Expo アプリでモーダルを作成する"
+  description="React Native の Modal API を使ってモーダルコンポーネントを構築し、絵文字ピッカーを表示してユーザー操作を処理します。"
+/>
+
+---
+
+<Step label="1">
+
+## ボタンを表示するための状態変数を宣言する
+
+モーダルを実装する前に、新しいボタンを 3 つ追加します。これらのボタンは、ユーザーがメディアライブラリから画像を選択したり、プレースホルダー画像を使ったりした後に表示されます。ボタンのうちの 1 つが絵文字ピッカーのモーダルを開きます。
+
+**app/(tabs)/index.tsx** で:
+
+1. モーダルを開くボタンや他のオプションの表示・非表示を切り替えるために、ブール値の状態変数 `showAppOptions` を宣言します。アプリ画面の読み込み時には `false` にして、画像を選択する前にはオプションを表示しないようにします。ユーザーが画像を選択したり、プレースホルダー画像を使ったりすると、`true` に設定します。
+2. `pickImageAsync()` 関数を更新して、ユーザーが画像を選択した後に `showAppOptions` の値を `true` に設定します。
+3. テーマが設定されていないボタンに、次の値を持つ `onPress` プロパティを追加して更新します。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  /* @tutinfo `Index` コンポーネント内に state 変数を作成します。 */
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  /* @end */
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      /* @tutinfo 画像を選択した後、app options を true に設定します。 */
+      setShowAppOptions(true);
+      /* @end */
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+      </View>
+      /* @tutinfo `showAppOptions` の値に基づいてボタンが表示されます。また、既存のボタンを三項演算子のブロック内に移動します。 */
+      {showAppOptions ? (
+        <View />
+      /* @end */
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          /* @tutinfo `alert()` を `onPress` に置き換えます。*/
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+          /* @end */
+        </View>
+      /* @tutinfo */)}/* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+});
+```
+
+上記のスニペットでは、`showAppOptions` の値に応じて `Button` コンポーネントをレンダリングし、ボタンを三項演算子ブロックの中に移動しています。`showAppOptions` の値が `true` の場合は、空の `<View>` コンポーネントをレンダリングします。この状態については次のステップで対応します。
+
+次に、**components/Button.tsx** で 2 つ目のボタンをレンダリングする際の `Button` コンポーネントから `alert` を削除し、`onPress` プロパティを更新します。
+
+{/* prettier-ignore */}
+```tsx components/Button.tsx
+<Pressable style={styles.button} /* @tutinfo `alert()` を `onPress` に置き換えます。*/ onPress={onPress}/* @end */>
+```
+
+</Step>
+
+<Step label="2">
+
+## ボタンを追加する
+
+この章で実装するオプションボタンのレイアウトを分解してみましょう。デザインは次のようになっています。
+
+<ContentSpotlight
+  alt="ボタン行のレイアウトの分解。"
+  src="/static/images/tutorial/buttons-layout.jpg"
+  className="max-w-[480px]"
+/>
+
+親の `<View>` の中に、横一列に並んだ 3 つのボタンが含まれています。中央のプラスアイコン (+) のボタンはモーダルを開くもので、他の 2 つとは異なるスタイルになっています。
+
+**components** ディレクトリ内に、次のコードで新しい **CircleButton.tsx** ファイルを作成します。
+
+```tsx components/CircleButton.tsx
+import { View, Pressable, StyleSheet } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
+type Props = {
+  onPress: () => void;
+};
+
+export default function CircleButton({ onPress }: Props) {
+  return (
+    <View style={styles.circleButtonContainer}>
+      <Pressable style={styles.circleButton} onPress={onPress}>
+        <MaterialIcons name="add" size={38} color="#25292e" />
+      </Pressable>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  circleButtonContainer: {
+    width: 84,
+    height: 84,
+    marginHorizontal: 60,
+    borderWidth: 4,
+    borderColor: '#ffd33d',
+    borderRadius: 42,
+    padding: 3,
+  },
+  circleButton: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 42,
+    backgroundColor: '#fff',
+  },
+});
+```
+
+プラスアイコンを描画するために、このボタンは `@expo/vector-icons` ライブラリの `<MaterialIcons>` アイコンセットを使用します。
+
+他の 2 つのボタンも `<MaterialIcons>` を使い、縦に並んだテキストラベルとアイコンを表示します。**components** ディレクトリ内に **IconButton.tsx** という名前のファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
+
+- `icon`: `MaterialIcons` ライブラリのアイコン名に対応します。
+- `label`: ボタンに表示されるテキストラベルです。
+- `onPress`: ユーザーがボタンを押したときに実行される関数です。
+
+```tsx components/IconButton.tsx
+import { Pressable, StyleSheet, Text } from 'react-native';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
+type Props = {
+  icon: keyof typeof MaterialIcons.glyphMap;
+  label: string;
+  onPress: () => void;
+};
+
+export default function IconButton({ icon, label, onPress }: Props) {
+  return (
+    <Pressable style={styles.iconButton} onPress={onPress}>
+      <MaterialIcons name={icon} size={24} color="#fff" />
+      <Text style={styles.iconButtonLabel}>{label}</Text>
+    </Pressable>
+  );
+}
+
+const styles = StyleSheet.create({
+  iconButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconButtonLabel: {
+    color: '#fff',
+    marginTop: 12,
+  },
+});
+```
+
+**app/(tabs)/index.tsx** 内で:
+
+1. `CircleButton` と `IconButton` コンポーネントをインポートして表示できるようにします。
+2. これらのボタン用に 3 つのプレースホルダー関数を追加します。`onReset()` 関数はユーザーがリセットボタンを押したときに実行され、画像ピッカーのボタンが再度表示されるようにします。残りの 2 つの関数の機能は後で実装します。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+/* @tutinfo `IconButton` と `CircleButton` コンポーネントをインポートします。*/
+import IconButton from '@/components/IconButton';
+import CircleButton from '@/components/CircleButton';
+/* @end */
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  /* @tutinfo 次のセクションでロジックを追加するためのプレースホルダー関数を追加します。 */
+  const onReset = () => {
+    setShowAppOptions(false);
+  };
+
+  const onAddSticker = () => {
+    // we will implement this later
+  };
+
+  const onSaveImageAsync = async () => {
+    // we will implement this later
+  };
+  /* @end */
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+      </View>
+      {showAppOptions ? (
+        /* @tutinfo App オプションボタンを表示するため、空の `View` コンポーネントをこのスニペットに置き換えます。 */
+        <View style={styles.optionsContainer}>
+          <View style={styles.optionsRow}>
+            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+          </View>
+        </View>
+        /* @end */
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  /* @tutinfo 新しい `View` コンポーネントのスタイルを追加します。 */
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+  },
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  /* @end */
+});
+```
+
+Android、iOS、web でアプリを確認してみましょう。
+
+<ContentSpotlight
+  alt="画像を選択した後に表示されるボタンオプション。"
+  src="/static/images/tutorial/button-options.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+## 絵文字ピッカーのモーダルを作成する
+
+モーダルでは、利用可能な絵文字のリストからユーザーが絵文字を選択できます。**components** ディレクトリ内に **EmojiPicker.tsx** ファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
+
+- `isVisible`: モーダルの表示状態を決定するブール値です。
+- `onClose`: モーダルを閉じる関数です。
+- `children`: 後で絵文字のリストを表示するために使用します。
+
+{/* prettier-ignore */}
+```tsx components/EmojiPicker.tsx|collapseHeight=430
+import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
+import { PropsWithChildren } from 'react';
+import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+
+type Props = PropsWithChildren<{
+  isVisible: boolean;
+  onClose: () => void;
+}>;
+
+export default function EmojiPicker({ isVisible, children, onClose }: Props) {
+  return (
+    <View>
+      <Modal animationType="slide" transparent={true} visible={isVisible}>
+        <View style={styles.modalContent}>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>Choose a sticker</Text>
+            <Pressable onPress={onClose}>
+              <MaterialIcons name="close" color="#fff" size={22} />
+            </Pressable>
+          </View>
+          {children}
+        </View>
+      </Modal>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  modalContent: {
+    height: '25%',
+    width: '100%',
+    backgroundColor: '#25292e',
+    borderTopRightRadius: 18,
+    borderTopLeftRadius: 18,
+    position: 'absolute',
+    bottom: 0,
+  },
+  titleContainer: {
+    height: '16%',
+    backgroundColor: '#464C55',
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  title: {
+    color: '#fff',
+    fontSize: 16,
+  },
+});
+```
+
+上記のコードが何をしているのか確認しましょう。
+
+- `<Modal>` コンポーネントはタイトルと閉じるボタンを表示します。
+- `visible` プロパティは `isVisible` の値を受け取り、モーダルが開いているか閉じているかを制御します。
+- `transparent` プロパティはブール値で、モーダルがビュー全体を埋めるかどうかを決定します。
+- `animationType` プロパティは、モーダルが画面に表示されるときと消えるときの挙動を決定します。今回は、画面下からスライドして表示されます。
+- 最後に、`<EmojiPicker>` はユーザーが閉じる `<Pressable>` を押したときに `onClose` プロパティを実行します。
+
+それでは、**app/(tabs)/index.tsx** を変更しましょう。
+
+1. `<EmojiPicker>` コンポーネントをインポートします。
+2. `useState` フックで `isModalVisible` 状態変数を作成します。デフォルト値は `false` で、ユーザーがボタンを押すまでモーダルは非表示のままです。
+3. `onAddSticker()` 関数内のコメントを置き換えて、ユーザーがボタンを押したときに `isModalVisible` 変数を `true` に更新します。これで絵文字ピッカーが開きます。
+4. `isModalVisible` 状態変数を更新する `onModalClose()` 関数を作成します。
+5. `Index` コンポーネントの末尾に `<EmojiPicker>` コンポーネントを配置します。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx
+import { View, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+import IconButton from '@/components/IconButton';
+import CircleButton from '@/components/CircleButton';
+/* @tutinfo `EmojiPicker` コンポーネントをインポートします。 */
+import EmojiPicker from '@/components/EmojiPicker';
+/* @end */
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  /* @tutinfo state 変数を作成します。 */
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  /* @end */
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  const onReset = () => {
+    setShowAppOptions(false);
+  };
+
+  /* @tutinfo モーダルの表示を制御するため、関数を更新します。*/
+  const onAddSticker = () => {
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+  /* @end */
+
+  const onSaveImageAsync = async () => {
+    // we will implement this later
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+      </View>
+      {showAppOptions ? (
+        <View style={styles.optionsContainer}>
+          <View style={styles.optionsRow}>
+            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+      /* @tutinfo `Index` コンポーネントの末尾に `EmojiPicker` コンポーネントをレンダリングします。 */
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        {/* Emoji list component will go here */}
+      </EmojiPicker>
+      /* @end */
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+  },
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
+```
+
+このステップ完了後の結果は次のとおりです。
+
+<ContentSpotlight
+  alt="すべてのプラットフォームで動作するモーダル。"
+  src="/static/images/tutorial/modal-creation.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="4">
+
+## 絵文字のリストを表示する
+
+モーダルのコンテンツ内に絵文字の横リストを追加しましょう。これには React Native の [`<FlatList>`](https://reactnative.dev/docs/flatlist) コンポーネントを使用します。
+
+**components** ディレクトリ内に **EmojiList.tsx** ファイルを作成し、次のコードを追加します。
+
+{/* prettier-ignore */}
+```tsx components/EmojiList.tsx
+import { useState } from 'react';
+import { ImageSourcePropType, StyleSheet, FlatList, Platform, Pressable } from 'react-native';
+import { Image } from 'expo-image';
+
+type Props = {
+  onSelect: (image: ImageSourcePropType) => void;
+  onCloseModal: () => void;
+};
+
+export default function EmojiList({ onSelect, onCloseModal }: Props) {
+  const [emoji] = useState<ImageSourcePropType[]>([
+    require("../assets/images/emoji1.png"),
+    require("../assets/images/emoji2.png"),
+    require("../assets/images/emoji3.png"),
+    require("../assets/images/emoji4.png"),
+    require("../assets/images/emoji5.png"),
+    require("../assets/images/emoji6.png"),
+  ]);
+
+  return (
+    <FlatList
+      horizontal
+      showsHorizontalScrollIndicator={Platform.OS === 'web'}
+      data={emoji}
+      contentContainerStyle={styles.listContainer}
+      renderItem={({ item, index }) => (
+        <Pressable
+          onPress={() => {
+            onSelect(item);
+            onCloseModal();
+          }}>
+          <Image source={item} key={index} style={styles.image} />
+        </Pressable>
+      )}
+    />
+  );
+}
+
+const styles = StyleSheet.create({
+  listContainer: {
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginRight: 20,
+  },
+});
+```
+
+上記のコードが何をしているのか確認しましょう。
+
+- 上記の `<FlatList>` コンポーネントは、`<Pressable>` でラップした `Image` コンポーネントを使ってすべての絵文字画像をレンダリングします。後ほど、画面上の絵文字をタップすると画像にステッカーとして表示されるよう改良します。
+- また、`data` プロパティの値として `emoji` 配列変数のアイテムの配列を受け取ります。`renderItem` プロパティは `data` から各アイテムを受け取り、リスト内のアイテムとして返します。最後に、このアイテムを表示するために `Image` と `<Pressable>` コンポーネントを追加しました。
+- `horizontal` プロパティは、リストを縦ではなく横方向にレンダリングします。`showsHorizontalScrollIndicator` は React Native の `Platform` モジュールで値を判定し、web では横スクロールバーを表示します。
+
+次に、**app/(tabs)/index.tsx** を更新して `<EmojiList>` コンポーネントをインポートし、`<EmojiPicker>` コンポーネント内のコメントを次のコードスニペットに置き換えます。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx|collapseHeight=440
+import { ImageSourcePropType, View, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+import IconButton from '@/components/IconButton';
+import CircleButton from '@/components/CircleButton';
+import EmojiPicker from '@/components/EmojiPicker';
+/* @tutinfo `EmojiList` コンポーネントをインポートします。 */
+import EmojiList from '@/components/EmojiList';
+/* @end */
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  /* @tutinfo state 変数を定義します。 */
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
+  /* @end */
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  const onReset = () => {
+    setShowAppOptions(false);
+  };
+
+  const onAddSticker = () => {
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const onSaveImageAsync = async () => {
+    // we will implement this later
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+      </View>
+      {showAppOptions ? (
+        <View style={styles.optionsContainer}>
+          <View style={styles.optionsRow}>
+            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        /* @tutinfo `EmojiPicker` コンポーネント内に `EmojiList` コンポーネントをレンダリングします。 */
+        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+        /* @end */
+      </EmojiPicker>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+  },
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
+```
+
+`EmojiList` コンポーネントでは、`onSelect` プロパティで絵文字を選択し、選択後に `onCloseModal` でモーダルを閉じます。
+
+Android、iOS、web でアプリを確認してみましょう。
+
+<ContentSpotlight
+  alt="すべてのプラットフォームで表示された絵文字リスト。"
+  src="/static/images/tutorial/emoji-picker.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="5">
+
+## 選択した絵文字を表示する
+
+次に、画像の上に絵文字ステッカーを配置します。**components** ディレクトリに新しいファイルを作成し、**EmojiSticker.tsx** という名前にします。そして次のコードを追加します。
+
+```tsx components/EmojiSticker.tsx|collapseHeight=300
+import { ImageSourcePropType, View } from 'react-native';
+import { Image } from 'expo-image';
+
+type Props = {
+  imageSize: number;
+  stickerSource: ImageSourcePropType;
+};
+
+export default function EmojiSticker({ imageSize, stickerSource }: Props) {
+  return (
+    <View style={{ top: -350 }}>
+      <Image source={stickerSource} style={{ width: imageSize, height: imageSize }} />
+    </View>
+  );
+}
+```
+
+このコンポーネントは 2 つのプロパティを受け取ります。
+
+- `imageSize`: `Index` コンポーネント内で定義された値です。次の章で、タップ時に画像サイズを変更するために使用します。
+- `stickerSource`: 選択された絵文字画像のソースです。
+
+このコンポーネントを **app/(tabs)/index.tsx** ファイルでインポートし、`Index` コンポーネントを更新して画像上に絵文字ステッカーを表示します。`pickedEmoji` 状態が `undefined` でないかをチェックします。
+
+{/* prettier-ignore */}
+```tsx app/(tabs)/index.tsx
+import { ImageSourcePropType, View, StyleSheet } from 'react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { useState } from 'react';
+
+import Button from '@/components/Button';
+import ImageViewer from '@/components/ImageViewer';
+import IconButton from '@/components/IconButton';
+import CircleButton from '@/components/CircleButton';
+import EmojiPicker from '@/components/EmojiPicker';
+import EmojiList from '@/components/EmojiList';
+/* @tutinfo `EmojiSticker` コンポーネントをインポートします。 */import EmojiSticker from '@/components/EmojiSticker';/* @end */
+
+const PlaceholderImage = require('@/assets/images/background-image.png');
+
+export default function Index() {
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [showAppOptions, setShowAppOptions] = useState<boolean>(false);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [pickedEmoji, setPickedEmoji] = useState<ImageSourcePropType | undefined>(undefined);
+
+
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setSelectedImage(result.assets[0].uri);
+      setShowAppOptions(true);
+    } else {
+      alert('You did not select any image.');
+    }
+  };
+
+  const onReset = () => {
+    setShowAppOptions(false);
+  };
+
+  const onAddSticker = () => {
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
+
+  const onSaveImageAsync = async () => {
+    // we will implement this later
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+        /* @tutinfo 画像に絵文字ステッカーを表示するため、この行を追加します。 */
+        {pickedEmoji && <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />}
+        /* @end */
+      </View>
+      {showAppOptions ? (
+        <View style={styles.optionsContainer}>
+          <View style={styles.optionsRow}>
+            <IconButton icon="refresh" label="Reset" onPress={onReset} />
+            <CircleButton onPress={onAddSticker} />
+            <IconButton icon="save-alt" label="Save" onPress={onSaveImageAsync} />
+          </View>
+        </View>
+      ) : (
+        <View style={styles.footerContainer}>
+          <Button theme="primary" label="Choose a photo" onPress={pickImageAsync} />
+          <Button label="Use this photo" onPress={() => setShowAppOptions(true)} />
+        </View>
+      )}
+      <EmojiPicker isVisible={isModalVisible} onClose={onModalClose}>
+        <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+      </EmojiPicker>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    alignItems: 'center',
+  },
+  imageContainer: {
+    flex: 1,
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+  },
+  optionsContainer: {
+    position: 'absolute',
+    bottom: 80,
+  },
+  optionsRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+});
+```
+
+Android、iOS、web でアプリを確認してみましょう。
+
+<ContentSpotlight file="tutorial/select-emoji.mp4" />
+
+</Step>
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/create-a-modal"
+  name="GET_STARTED"
+  chapterTitle="第 5 章：モーダルを作成する"
+  summary="絵文字ピッカーのモーダルを作成し、絵文字を選択して画像の上に表示するロジックの実装が完了しました。"
+  nextChapterDescription="次の章では、絵文字をドラッグしたり、タップでサイズを拡大縮小したりする、ジェスチャーを使ったユーザー操作を追加します。"
+  nextChapterTitle="ジェスチャーを追加する"
+  nextChapterLink="/ja/tutorial/gestures"
+/>

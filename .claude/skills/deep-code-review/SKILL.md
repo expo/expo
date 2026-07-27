@@ -65,6 +65,7 @@ Evaluate the diff against the context gathered. Single checklist:
 - **Performance** - Unbounded growth? Blocking operations?
 - **Testing** - Coverage adequate? Happy path + edge cases + error cases?
 - **Breaking changes** - API contracts preserved? Migration needed?
+- **Native ABI** (prebuilt Swift/Kotlin packages: `expo-modules-core`, `expo-modules-jsi`) - A change can be source-compatible but binary-incompatible: consumers prebuilt against the old artifact fail at link/load. Removing/renaming a `public`/`open` symbol? Moving a method into a protocol extension (remangles it)? Changing a signature/generics/`@available`, or a conformance that alters the `.swiftinterface`? Only real if the symbol is already released on the PR's target branch (exempt if it's new there); a PR targeting an `sdk-*` release branch is the riskiest case. A forwarding shim preserves the old symbol. If practically-exposed, flag it as a `critical` inline comment on the symbol and recommend the `breaking: ABI` label (suggest only — don't apply it).
 - **Stack coherence** (stacked PRs only) - Does the aggregate diff across the stack make sense as a whole?
 - **Adversarial examples** - Study the public API and any example code in the PR(s). Devise alternative examples that exercise edge cases, misuse the API, or pass unexpected inputs. Report any that produce bugs, crashes, or incorrect behavior.
 

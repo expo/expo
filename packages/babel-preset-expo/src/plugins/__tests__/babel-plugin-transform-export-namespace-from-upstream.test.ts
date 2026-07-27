@@ -42,5 +42,5 @@ function transform(code: string) {
     babelrc: false,
   });
 
-  return result.code || '';
+  return result!.code || '';
 }

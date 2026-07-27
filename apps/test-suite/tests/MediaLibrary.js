@@ -2,9 +2,9 @@ import { Asset } from 'expo-asset';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { Platform } from 'react-native';
 
-import { waitFor } from './helpers';
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
+import { waitFor } from './helpers';
 
 export const name = 'MediaLibrary';
 
@@ -109,7 +109,7 @@ export async function test(t) {
       ? 30 * 1000
       : t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
-  describeWithPermissions('MediaLibrary', async () => {
+  describeWithPermissions('MediaLibrary', () => {
     let files;
     let permissions;
 
@@ -232,6 +232,16 @@ export async function test(t) {
           const asset = await MediaLibrary.getAssetInfoAsync(WRONG_ID);
           t.expect(asset).toBeNull();
         });
+
+        if (Platform.OS === 'android') {
+          t.it('getAssetContentUriAsync returns content uri', async () => {
+            const asset = testAssets[0];
+            const volume = Platform.Version === 29 ? 'external_primary' : 'external';
+            const contentUri = await MediaLibrary.getAssetContentUriAsync(asset);
+
+            t.expect(contentUri).toBe(`content://media/${volume}/images/media/${asset.id}`);
+          });
+        }
 
         t.it(
           'saveToLibraryAsync should throw when the provided path does not contain an extension',

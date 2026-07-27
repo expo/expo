@@ -4,9 +4,7 @@
     {
       "name": "ExpoClipboard",
       "podName": "ExpoClipboard",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -19,20 +17,14 @@
           "name": "ExpoClipboard",
           "path": "ios",
           "pattern": "**/*.swift",
-          "exclude": [
-            "Tests/**"
-          ],
+          "exclude": ["Tests/**"],
           "dependencies": [
             "Hermes",
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "UniformTypeIdentifiers"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "UniformTypeIdentifiers"]
         }
       ]
     }

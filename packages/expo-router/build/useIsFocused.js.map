@@ -1,1 +1,0 @@
-{"version":3,"file":"useIsFocused.js","sourceRoot":"","sources":["../src/useIsFocused.ts"],"names":[],"mappings":";AAAA,YAAY,CAAC;;;AACb,oDAAyD;AAAhD,sGAAA,YAAY,OAAA","sourcesContent":["'use client';\nexport { useIsFocused } from './react-navigation/native';\n"]}

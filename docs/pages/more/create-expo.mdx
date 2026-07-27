@@ -4,6 +4,7 @@ maxHeadingDepth: 4
 description: A command-line tool to create a new Expo and React Native project.
 ---
 
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 
 `create-expo-app` is a command-line tool to create and set up a new Expo and React Native project. This tool simplifies the initialization process by providing various templates to get started quickly without the need for manual configuration.
@@ -14,14 +15,14 @@ To create a new project, run the following command:
 
 <Terminal
   cmd={{
-    npm: ['$ npx create-expo-app@latest --template default@sdk-56'],
-    yarn: ['$ yarn create expo-app --template default@sdk-56'],
-    pnpm: ['$ pnpm create expo-app --template default@sdk-56'],
-    bun: ['$ bun create expo --template default@sdk-56'],
+    npm: ['$ npx create-expo-app@latest --template default@sdk-57'],
+    yarn: ['$ yarn create expo-app --template default@sdk-57'],
+    pnpm: ['$ pnpm create expo-app --template default@sdk-57'],
+    bun: ['$ bun create expo --template default@sdk-57'],
   }}
 />
 
-> **Note:** During the SDK 56 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-56` to create an SDK 56 project.
+> **Note:** During the SDK 57 transition period, `create-expo-app@latest` without the `--template` flag creates an SDK 54 project. If you plan to use Expo Go on a physical device, use an SDK 54 project. Otherwise, use `--template default@sdk-57` to create an SDK 57 project.
 
 Running the above command will prompt you to enter the app name of your project. This app name is also used in the app config's [`name`](/versions/latest/config/app/#name) property.
 
@@ -65,8 +66,15 @@ Use this option to initialize a project using an example from [expo/examples](ht
 
 For example:
 
+- Running `npx create-expo-app --example` shows an interactive list of available examples to choose from
 - Running `npx create-expo-app --example with-router` sets up a project with the Expo Router library
 - Running `npx create-expo-app --example with-react-navigation` sets up a project similar to the default template, but configured with plain React Navigation library
+
+#### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it the canonical patterns from the examples repository:
+
+<RelatedSkills names={['expo-examples']} />
 
 ### `--version`
 

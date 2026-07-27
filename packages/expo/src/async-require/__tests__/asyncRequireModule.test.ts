@@ -15,6 +15,7 @@ describe('asyncRequireModule', () => {
   let mockImportAll: jest.Mock;
   let mockRequire: any;
   let asyncRequire: any;
+  const originalExpoOs = process.env.EXPO_OS;
 
   beforeEach(() => {
     mockImportAll = jest.fn((id: number, _moduleName?: string) => ({
@@ -63,18 +64,46 @@ describe('asyncRequireModule', () => {
       }
 
       function asyncRequireImpl(moduleID, paths, moduleName) {
-        var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
         var importAll = function() { return require.importAll(moduleID, moduleName); };
 
+        // On web, importing synchronously first prevents double-loading preloaded scripts
+        if (process.env.EXPO_OS === 'web') {
+          try {
+            return importAll();
+          } catch (error) {
+            var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
+            if (maybeLoadBundlePromise != null) {
+              return maybeLoadBundlePromise.then(importAll);
+            }
+            throw error;
+          }
+        }
+
+        // On native, requiring a missing module reports a fatal error instead of
+        // throwing, so the split bundle must be loaded before importing
+        var maybeLoadBundlePromise = maybeLoadBundle(moduleID, paths);
         if (maybeLoadBundlePromise != null) {
           return maybeLoadBundlePromise.then(importAll);
         }
-
         return importAll();
       }
 
-      async function asyncRequire(moduleID, paths, moduleName) {
-        return asyncRequireImpl(moduleID, paths, moduleName);
+      function asyncRequire(moduleID, paths, moduleName) {
+        var ret = asyncRequireImpl(moduleID, paths, moduleName);
+        if (!(ret instanceof Promise)) {
+          return {
+            _result: ret,
+            then: function(resolve, reject) {
+              return Promise.resolve(ret).then(resolve, reject);
+            },
+          };
+        }
+        return {
+          _result: ret,
+          then: function(resolve, reject) {
+            return ret.then(resolve, reject);
+          },
+        };
       }
 
       asyncRequire.unstable_importMaybeSync = function(moduleID, paths) {
@@ -96,6 +125,7 @@ describe('asyncRequireModule', () => {
   afterEach(() => {
     delete (globalThis as any).__loadBundleAsync;
     delete (globalThis as any).__METRO_GLOBAL_PREFIX__;
+    process.env.EXPO_OS = originalExpoOs;
   });
 
   it('calls importAll with moduleID and moduleName when no bundle loading needed', async () => {
@@ -112,7 +142,14 @@ describe('asyncRequireModule', () => {
     expect(result).toEqual({ default: 'module-42' });
   });
 
-  it('passes moduleName through when bundle loading is required', async () => {
+  it('falls back to bundle load on web when importAll throws, then retries with moduleName', async () => {
+    process.env.EXPO_OS = 'web';
+    mockImportAll
+      .mockImplementationOnce(() => {
+        throw new Error('Module not loaded');
+      })
+      .mockImplementationOnce(() => ({ default: 'module-42' }));
+
     let resolveBundle!: () => void;
     const bundlePromise = new Promise<void>((resolve) => {
       resolveBundle = resolve;
@@ -123,15 +160,94 @@ describe('asyncRequireModule', () => {
     const paths = { '42': '/bundles/my-module.bundle' };
     const resultPromise = asyncRequire(42, paths, 'my-module');
 
-    // importAll should not have been called yet (waiting for bundle)
-    expect(mockImportAll).not.toHaveBeenCalled();
+    // Initial importAll attempt happened; second is gated on the bundle promise.
+    expect(mockImportAll).toHaveBeenCalledTimes(1);
+    expect((globalThis as any).__loadBundleAsync).toHaveBeenCalledWith('/bundles/my-module.bundle');
 
-    // Resolve the bundle loading
     resolveBundle();
     const result = await resultPromise;
 
+    expect(mockImportAll).toHaveBeenCalledTimes(2);
+    expect(mockImportAll).toHaveBeenLastCalledWith(42, 'my-module');
+    expect(result).toEqual({ default: 'module-42' });
+  });
+
+  it('does not load the bundle on web when importAll succeeds (preloaded bundle case)', async () => {
+    process.env.EXPO_OS = 'web';
+    (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+
+    const paths = { '42': '/bundles/my-module.bundle' };
+    const result = await asyncRequire(42, paths, 'my-module');
+
+    expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
+    expect((globalThis as any).__loadBundleAsync).not.toHaveBeenCalled();
+    expect(result).toEqual({ default: 'module-42' });
+  });
+
+  it('re-throws the import error on web when no bundle path is configured', () => {
+    process.env.EXPO_OS = 'web';
+    mockImportAll.mockImplementationOnce(() => {
+      throw new Error('Module not loaded');
+    });
+
+    expect(() => asyncRequire(42, null, 'my-module')).toThrow('Module not loaded');
+  });
+
+  it('loads the bundle on native before requiring split modules', async () => {
+    process.env.EXPO_OS = 'ios';
+    let bundleLoaded = false;
+    mockImportAll.mockImplementation((id: number) =>
+      bundleLoaded ? { default: `module-${id}` } : undefined
+    );
+    (globalThis as any).__loadBundleAsync = jest.fn(() => {
+      bundleLoaded = true;
+      return Promise.resolve();
+    });
+
+    const paths = { '42': '/bundles/my-module.bundle' };
+    const result = await asyncRequire(42, paths, 'my-module');
+
+    expect((globalThis as any).__loadBundleAsync).toHaveBeenCalledWith('/bundles/my-module.bundle');
+    expect(mockImportAll).toHaveBeenCalledTimes(1);
     expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
     expect(result).toEqual({ default: 'module-42' });
+  });
+
+  it('imports synchronously on native when the module is inlined (no split bundle path)', () => {
+    process.env.EXPO_OS = 'ios';
+    (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+
+    const ret = asyncRequire(42, null, 'my-module');
+
+    expect((globalThis as any).__loadBundleAsync).not.toHaveBeenCalled();
+    expect(mockImportAll).toHaveBeenCalledWith(42, 'my-module');
+    expect(ret._result).toEqual({ default: 'module-42' });
+  });
+
+  describe('thenable return value', () => {
+    it('exposes a synchronous _result when no bundle load was needed', () => {
+      const ret = asyncRequire(42, null, 'my-module');
+
+      expect(typeof ret.then).toBe('function');
+      expect(ret._result).toEqual({ default: 'module-42' });
+    });
+
+    it('exposes a Promise _result when a bundle load was needed', async () => {
+      process.env.EXPO_OS = 'web';
+      mockImportAll
+        .mockImplementationOnce(() => {
+          throw new Error('Module not loaded');
+        })
+        .mockImplementationOnce(() => ({ default: 'module-42' }));
+
+      (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.resolve());
+
+      const ret = asyncRequire(42, { '42': '/bundles/my-module.bundle' }, 'my-module');
+
+      expect(typeof ret.then).toBe('function');
+      expect(ret._result).toBeInstanceOf(Promise);
+      await expect(ret._result).resolves.toEqual({ default: 'module-42' });
+    });
   });
 
   describe('unstable_importMaybeSync', () => {

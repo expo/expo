@@ -9,7 +9,8 @@ enum class AssetField(val key: String) : Enumerable {
   MEDIA_TYPE("mediaType"),
   WIDTH("width"),
   HEIGHT("height"),
-  DURATION("duration");
+  DURATION("duration"),
+  IS_FAVORITE("isFavorite");
 
   fun toMediaStoreColumn(): String =
     when (this) {
@@ -19,5 +20,6 @@ enum class AssetField(val key: String) : Enumerable {
       WIDTH -> MediaStore.MediaColumns.WIDTH
       HEIGHT -> MediaStore.MediaColumns.HEIGHT
       DURATION -> MediaStore.Video.VideoColumns.DURATION
+      IS_FAVORITE -> MediaStore.MediaColumns.IS_FAVORITE
     }
 }

@@ -50,7 +50,7 @@ export function AskPageAIChatHeader({
               'inline-flex size-8 items-center justify-center rounded-full bg-palette-white shadow-xs'
             )}
             style={headerAccentBackground}>
-            <Star06Icon className="icon-sm text-palette-white" />
+            <Star06Icon aria-hidden="true" className="icon-sm text-palette-white" />
           </span>
           <span className="text-sm leading-tight font-medium text-palette-white">
             Expo AI Assistant
@@ -68,9 +68,9 @@ export function AskPageAIChatHeader({
               aria-pressed={isExpanded}
               onClick={onToggleExpand}>
               {isExpanded ? (
-                <Minimize02Icon className="icon-xs text-palette-white" />
+                <Minimize02Icon aria-hidden="true" className="icon-xs text-palette-white" />
               ) : (
-                <Maximize02Icon className="icon-xs text-palette-white" />
+                <Maximize02Icon aria-hidden="true" className="icon-xs text-palette-white" />
               )}
             </Button>
           ) : null}
@@ -82,7 +82,7 @@ export function AskPageAIChatHeader({
             className="px-2 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onReset}>
-            <RefreshCcw02Icon className="icon-xs text-palette-white" />
+            <RefreshCcw02Icon aria-hidden="true" className="icon-xs text-palette-white" />
           </Button>
           <Button
             aria-label="Close Ask AI assistant"
@@ -91,7 +91,7 @@ export function AskPageAIChatHeader({
             className="px-2 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onClose}>
-            <XIcon className="icon-xs text-palette-white" />
+            <XIcon aria-hidden="true" className="icon-xs text-palette-white" />
           </Button>
         </div>
       </div>
@@ -111,7 +111,10 @@ export function AskPageAIChatHeader({
             className="inline-flex items-center self-start px-2 py-1.5 text-palette-white! hover:text-palette-white! focus:text-palette-white!"
             style={closeButtonThemeOverrides}
             onClick={onSwitchToPageContext}>
-            <SwitchHorizontal01Icon className="mr-2 icon-xs self-center text-palette-white" />
+            <SwitchHorizontal01Icon
+              aria-hidden="true"
+              className="mr-2 icon-xs self-center text-palette-white"
+            />
             <span className="leading-snug">Switch back to {displayContextLabel} docs</span>
           </Button>
         ) : null}

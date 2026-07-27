@@ -82,7 +82,7 @@ struct JSValueEncoderTests {
     let result = try encode(Outer(id: 1, inner: Inner(label: "hello"))).getObject()
 
     #expect(result.getProperty("id").getInt() == 1)
-    #expect(result.getPropertyAsObject("inner").getProperty("label").getString() == "hello")
+    #expect(try result.getPropertyAsObject("inner").getProperty("label").getString() == "hello")
   }
 
   // MARK: - Arrays
@@ -121,7 +121,7 @@ struct JSValueEncoderTests {
       let counts: [String: Int]
     }
     let result = try encode(Wrapper(counts: ["a": 1, "b": 2])).getObject()
-    let counts = result.getPropertyAsObject("counts")
+    let counts = try result.getPropertyAsObject("counts")
 
     #expect(counts.getProperty("a").getInt() == 1)
     #expect(counts.getProperty("b").getInt() == 2)
@@ -328,7 +328,7 @@ struct JSValueEncoderTests {
     }
 
     let result = try encode(Wrapper(point: CGPoint(x: 10, y: 20))).getObject()
-    let point = result.getPropertyAsObject("point")
+    let point = try result.getPropertyAsObject("point")
 
     #expect(point.getProperty("x").getDouble() == 10)
     #expect(point.getProperty("y").getDouble() == 20)
@@ -341,7 +341,7 @@ struct JSValueEncoderTests {
     }
 
     let result = try encode(Wrapper(size: CGSize(width: 100, height: 200))).getObject()
-    let size = result.getPropertyAsObject("size")
+    let size = try result.getPropertyAsObject("size")
 
     #expect(size.getProperty("width").getDouble() == 100)
     #expect(size.getProperty("height").getDouble() == 200)
@@ -354,7 +354,7 @@ struct JSValueEncoderTests {
     }
 
     let result = try encode(Wrapper(rect: CGRect(x: 1, y: 2, width: 3, height: 4))).getObject()
-    let rect = result.getPropertyAsObject("rect")
+    let rect = try result.getPropertyAsObject("rect")
 
     #expect(rect.getProperty("x").getDouble() == 1)
     #expect(rect.getProperty("y").getDouble() == 2)

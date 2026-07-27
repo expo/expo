@@ -42,12 +42,12 @@ describe('FileHookTransform', () => {
     const options = await normalizeOptionsAsync('/app', { fileHookTransform: mockHook });
     const result = await createFileHashResultsAsync(filePath, limiter, '/app', options);
     expect(mockHook).toHaveBeenCalledTimes(2);
-    expect(mockHook.mock.calls[0][0]).toEqual({ type: 'file', filePath });
-    expect(mockHook.mock.calls[0][1]?.toString()).toEqual(contents);
-    expect(mockHook.mock.calls[0][2]).toBe(false);
-    expect(mockHook.mock.calls[1][0]).toEqual({ type: 'file', filePath });
-    expect(mockHook.mock.calls[1][1]).toBe(null);
-    expect(mockHook.mock.calls[1][2]).toBe(true);
+    expect(mockHook.mock.calls[0]![0]).toEqual({ type: 'file', filePath });
+    expect(mockHook.mock.calls[0]![1]?.toString()).toEqual(contents);
+    expect(mockHook.mock.calls[0]![2]).toBe(false);
+    expect(mockHook.mock.calls[1]![0]).toEqual({ type: 'file', filePath });
+    expect(mockHook.mock.calls[1]![1]).toBe(null);
+    expect(mockHook.mock.calls[1]![2]).toBe(true);
     const expectHex = createHash(options.hashAlgorithm).update(contents).digest('hex');
     expect(result?.hex).toBe(expectHex);
   });

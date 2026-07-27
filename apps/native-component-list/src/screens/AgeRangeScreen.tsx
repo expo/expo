@@ -1,6 +1,6 @@
 import * as AgeRange from 'expo-age-range';
 import { useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { BodyText } from '../components/BodyText';
 import Button from '../components/Button';
@@ -53,6 +53,37 @@ export default function AgeRangeScreen() {
     }
   };
 
+  const showSignificantUpdate = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      await AgeRange.showSignificantUpdateAcknowledgmentAsync(
+        'This is a developer-specified message.'
+      );
+    } catch (err: any) {
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
+  const getRequiredRegulatoryFeatures = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      const features = await AgeRange.getRequiredRegulatoryFeaturesAsync();
+      setResult(
+        features === null
+          ? 'null (unsupported on this OS / platform)'
+          : `Required regulatory features: ${JSON.stringify(features, null, 2)}`
+      );
+    } catch (err: any) {
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
   const faultyRequestAgeRange = async () => {
     setError(null);
     setResult(null);
@@ -80,16 +111,22 @@ export default function AgeRangeScreen() {
         thresholds at 13, 16, and 18 years old.
       </BodyText>
 
-      {Platform.OS === 'ios' && (
-        <Text style={styles.warning}>Note: This API requires iOS 26.0 or later.</Text>
-      )}
-
       <Button
         onPress={checkEligibility}
         title="Check Age Features Eligibility (iOS 26.2+)"
         style={styles.button}
       />
       <Button onPress={requestAgeRange} title="Request Age Range" style={styles.button} />
+      <Button
+        onPress={showSignificantUpdate}
+        title="Show Significant Update Acknowledgment (iOS 26.4+)"
+        style={styles.button}
+      />
+      <Button
+        onPress={getRequiredRegulatoryFeatures}
+        title="Get Required Regulatory Features (iOS 26.4+)"
+        style={styles.button}
+      />
       <Button
         onPress={faultyRequestAgeRange}
         title="Request Faulty Age Range"

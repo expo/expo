@@ -1,5 +1,5 @@
+import { ReactNode } from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
-import { ReactNode } from "react";
 
 interface ContainerProps {
   children: ReactNode;

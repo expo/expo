@@ -4,7 +4,7 @@
  * On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed.
  * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html).
  */
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 
 export type PushNotificationTrigger = {
   type: 'push';
@@ -612,7 +612,7 @@ export type NotificationContentInput = {
   categoryIdentifier?: string;
   /**
    * If set to `true`, the notification cannot be dismissed by swipe. This setting defaults
-   * to `false` if not provided or is invalid. Corresponds directly do Android's `isOngoing` behavior.
+   * to `false` if not provided or is invalid. Corresponds directly to Android's `isOngoing` behavior.
    * In Firebase terms this property of a notification is called `sticky`.
    *
    * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setOngoing(boolean))
@@ -806,9 +806,12 @@ export type MaybeNotificationResponse = NotificationResponse | null | undefined;
  * */
 export type Subscription = EventSubscription;
 
-// TODO(@kitten): Remove re-exports from EMC
-export { type PermissionExpiration, type PermissionResponse, PermissionStatus } from 'expo';
-export { type EventSubscription } from 'expo-modules-core';
+export {
+  type PermissionExpiration,
+  type PermissionResponse,
+  PermissionStatus,
+  type EventSubscription,
+} from 'expo';
 
 /**
  * Payload for the background notification handler task.
@@ -829,7 +832,7 @@ export type NotificationTaskPayload =
         [key: string]: unknown;
       };
       /**
-       * Detailed, raw object describing the remote notification. [See more](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Payload-key-reference).
+       * Detailed, raw object describing the remote notification. See [Apple's payload key reference](https://developer.apple.com/documentation/usernotifications/generating-a-remote-notification#Payload-key-reference).
        * @platform ios
        */
       aps?: Record<string, unknown>;

@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoMediaLibrary.web.d.ts","sourceRoot":"","sources":["../src/ExpoMediaLibrary.web.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,kBAAkB,EAAoB,MAAM,MAAM,CAAC;AAEjE,OAAO,KAAK,EAAE,eAAe,EAAE,YAAY,EAAE,MAAM,uBAAuB,CAAC;;mCAU7C,MAAM;wBAGjB,eAAe;qBAQlB,YAAY;oCAYY,OAAO,GAAG,OAAO,CAAC,kBAAkB,CAAC;wCAGjC,OAAO,GAAG,OAAO,CAAC,kBAAkB,CAAC;;AA3BjF,wBA8BE"}

@@ -19,3 +19,10 @@ internal final class FetchRedirectException: Exception {
     "Redirect is not allowed when redirect mode is 'error'"
   }
 }
+
+internal final class FetchBlobModuleUnavailableException: Exception {
+  override var reason: String {
+    "Unable to store the response body as a blob because React Native's BlobModule is not available. " +
+    "Make sure your app includes the React Native blob support (React-RCTBlob) or read the body with arrayBuffer() instead"
+  }
+}

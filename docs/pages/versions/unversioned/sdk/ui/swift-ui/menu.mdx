@@ -76,11 +76,12 @@ You can pass a React node as the label for custom styling.
 
 ```tsx CustomLabelMenuExample.tsx
 import { Host, Menu, Button, Text } from '@expo/ui/swift-ui';
+import { foregroundStyle } from '@expo/ui/swift-ui/modifiers';
 
 export default function CustomLabelMenuExample() {
   return (
     <Host matchContents>
-      <Menu label={<Text color="accentColor">Custom Label</Text>}>
+      <Menu label={<Text modifiers={[foregroundStyle('accentColor')]}>Custom Label</Text>}>
         <Button label="Action 1" onPress={() => console.log('Action 1')} />
         <Button label="Action 2" onPress={() => console.log('Action 2')} />
       </Menu>

@@ -66,7 +66,14 @@ If you are using [development builds](/develop/development-builds/introduction/)
 - Improved debugging tools
 - Support for loading updates from [EAS Update](/eas-update/introduction/)
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 
 For more information, check the [`expo-dev-client` reference](/versions/latest/sdk/dev-client/).
 

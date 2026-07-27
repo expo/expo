@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import ExpoModulesCore
 import ExpoAppMetrics
+import ExpoModulesCore
 
 public class ObserveAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func applicationWillResignActive(_ application: UIApplication) {

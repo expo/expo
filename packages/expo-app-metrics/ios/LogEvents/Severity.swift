@@ -2,17 +2,13 @@
 
 import ExpoModulesCore
 
-/**
- Severity of a log event. Each case carries its OpenTelemetry severity number
- via `severityNumber` and is sent as `severityText` (uppercased) on the wire.
- */
+/// Severity of a log event. Each case carries its OpenTelemetry severity number
+/// via `severityNumber` and is sent as `severityText` (uppercased) on the wire.
 public enum Severity: String, Codable, Sendable, Enumerable {
   case trace, debug, info, warn, error, fatal
 
-  /**
-   OpenTelemetry severity number that matches this case.
-   See https://opentelemetry.io/docs/specs/otel/logs/data-model/#field-severitynumber.
-   */
+  /// OpenTelemetry severity number that matches this case.
+  /// See https://opentelemetry.io/docs/specs/otel/logs/data-model/#field-severitynumber.
   public var severityNumber: Int {
     switch self {
     case .trace:
@@ -30,9 +26,7 @@ public enum Severity: String, Codable, Sendable, Enumerable {
     }
   }
 
-  /**
-   Severity text suitable for the OpenTelemetry `severityText` field.
-   */
+  /// Severity text suitable for the OpenTelemetry `severityText` field.
   public var severityText: String {
     return rawValue.uppercased()
   }

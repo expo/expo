@@ -4,7 +4,7 @@ export function addToPbxProjectSection(xcodeProject: XcodeProject, target: { uui
   xcodeProject.addToPbxProjectSection(target);
 
   const projectUuid = xcodeProject.getFirstProject().uuid;
-  const projectSection = xcodeProject.pbxProjectSection()[projectUuid];
+  const projectSection = xcodeProject.pbxProjectSection()[projectUuid]!;
   if (!projectSection.attributes.TargetAttributes) {
     projectSection.attributes.TargetAttributes = {};
   }

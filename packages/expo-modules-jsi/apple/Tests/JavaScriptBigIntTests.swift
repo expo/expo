@@ -1,5 +1,5 @@
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -10,16 +10,16 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `create from Int64`() {
-    let bigInt = JavaScriptBigInt(runtime, fromInt64: 9007199254740991)
+    let bigInt = JavaScriptBigInt(runtime, fromInt64: 9_007_199_254_740_991)
     #expect(bigInt.isInt64() == true)
-    #expect(bigInt.getInt64() == 9007199254740991)
+    #expect(bigInt.getInt64() == 9_007_199_254_740_991)
   }
 
   @Test
   func `create from negative Int64`() {
-    let bigInt = JavaScriptBigInt(runtime, fromInt64: -9007199254740991)
+    let bigInt = JavaScriptBigInt(runtime, fromInt64: -9_007_199_254_740_991)
     #expect(bigInt.isInt64() == true)
-    #expect(bigInt.getInt64() == -9007199254740991)
+    #expect(bigInt.getInt64() == -9_007_199_254_740_991)
   }
 
   @Test
@@ -137,7 +137,7 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `create from string beyond Int64 range`() throws {
-    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808") // Int64.max + 1
+    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808")  // Int64.max + 1
     #expect(bigInt.isInt64() == false)
     let str = try bigInt.toString()
     #expect(str == "9223372036854775808")
@@ -169,7 +169,7 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `asInt64 throws when beyond Int64 range`() throws {
-    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808") // Int64.max + 1
+    let bigInt = try JavaScriptBigInt(runtime, string: "9223372036854775808")  // Int64.max + 1
     #expect(throws: BigIntConversionError.self) {
       try bigInt.asInt64()
     }
@@ -235,7 +235,7 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `toString with base 36`() throws {
-    let bigInt = JavaScriptBigInt(runtime, fromInt64: 1234567890)
+    let bigInt = JavaScriptBigInt(runtime, fromInt64: 1_234_567_890)
     let str = try bigInt.toString(radix: 36)
     #expect(str == "kf12oi")
   }
@@ -282,7 +282,7 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `equality of large values`() {
-    let value = Int64(9007199254740991)
+    let value = Int64(9_007_199_254_740_991)
     let bigInt1 = JavaScriptBigInt(runtime, fromInt64: value)
     let bigInt2 = JavaScriptBigInt(runtime, fromInt64: value)
     #expect((bigInt1 == bigInt2) == true)
@@ -439,11 +439,11 @@ struct JavaScriptBigIntTests {
 
   @Test
   func `round-trip through JavaScript property`() throws {
-    let original = JavaScriptBigInt(runtime, fromInt64: 9007199254740991)
-    
+    let original = JavaScriptBigInt(runtime, fromInt64: 9_007_199_254_740_991)
+
     let global = runtime.global()
     global.setProperty("testBigInt", value: original.asValue())
-    
+
     let retrieved = try runtime.eval("testBigInt").getBigInt()
     #expect((original == retrieved) == true)
   }
@@ -451,26 +451,26 @@ struct JavaScriptBigIntTests {
   @Test
   func `round-trip through JavaScript function`() throws {
     try runtime.eval("globalThis.identity = (x) => x")
-    
+
     let bigInt = JavaScriptBigInt(runtime, fromInt64: 42)
     let result = try runtime.global()
       .getPropertyAsFunction("identity")
       .call(arguments: bigInt.asValue())
       .getBigInt()
-    
+
     #expect((result == bigInt) == true)
   }
 
   @Test
   func `pass BigInt to JavaScript function and operate`() throws {
     try runtime.eval("globalThis.double = (x) => x * 2n")
-    
+
     let bigInt = JavaScriptBigInt(runtime, fromInt64: 21)
     let result = try runtime.global()
       .getPropertyAsFunction("double")
       .call(arguments: bigInt.asValue())
       .getBigInt()
-    
+
     #expect(result.getInt64() == 42)
   }
 
@@ -479,7 +479,7 @@ struct JavaScriptBigIntTests {
     let obj = runtime.createObject()
     let bigInt = JavaScriptBigInt(runtime, fromInt64: 42)
     obj.setProperty("value", value: bigInt.asValue())
-    
+
     let retrieved = obj.getProperty("value").getBigInt()
     #expect((retrieved == bigInt) == true)
   }
@@ -489,7 +489,7 @@ struct JavaScriptBigIntTests {
     let array = JavaScriptArray(runtime, length: 1)
     let bigInt = JavaScriptBigInt(runtime, fromInt64: 42)
     array[0] = bigInt.asValue()
-    
+
     let retrieved = try array.getValue(at: 0).getBigInt()
     #expect((retrieved == bigInt) == true)
   }
@@ -554,10 +554,10 @@ struct JavaScriptBigIntTests {
   func `BigIntConversionError has descriptive messages`() {
     let error1 = BigIntConversionError.outOfInt64Range
     #expect(error1.description.contains("Int64"))
-    
+
     let error2 = BigIntConversionError.outOfUint64Range
     #expect(error2.description.contains("UInt64"))
-    
+
     let error3 = BigIntConversionError.invalidRadix(50)
     #expect(error3.description.contains("50"))
     #expect(error3.description.contains("2"))

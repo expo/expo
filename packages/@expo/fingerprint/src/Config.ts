@@ -41,6 +41,7 @@ export async function loadConfigAsync(
   unregisterMuteLogs?.();
 
   const supportedConfigKeys: (keyof Config)[] = [
+    'preset',
     'concurrentIoLimit',
     'hashAlgorithm',
     'ignorePaths',
@@ -48,6 +49,8 @@ export async function loadConfigAsync(
     'sourceSkips',
     'enableReactImportsPatcher',
     'useRNCoreAutolinkingFromExpo',
+    'nativeModuleSourceType',
+    'configPluginSourceType',
     'debug',
     'fileHookTransform',
   ];

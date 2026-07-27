@@ -219,15 +219,19 @@ describe('cleanHtml', () => {
     expect($('main').text()).toContain('content');
   });
 
-  it('keeps only first tab panel in @reach/tabs groups', () => {
+  it('keeps every tab panel, labeled by its tab button', () => {
     const html = [
       '<main>',
-      '<div data-reach-tabs="">',
-      '<div data-reach-tab-panels="">',
-      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<div data-md="tabs">',
+      '<div role="tablist">',
+      '<div class="relative"><button role="tab"><div><p>Alpha</p></div></button></div>',
+      '<div class="relative"><button role="tab"><div><p>Beta</p></div></button></div>',
+      '</div>',
+      '<div>',
+      '<div role="tabpanel">',
       '<pre><code class="language-sh">npm install expo</code></pre>',
       '</div>',
-      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<div role="tabpanel">',
       '<pre><code class="language-sh">yarn add expo</code></pre>',
       '</div>',
       '</div>',
@@ -236,8 +240,46 @@ describe('cleanHtml', () => {
     ].join('');
     const $ = cheerio.load(html);
     cleanHtml($, $('main'));
-    expect($('main').text()).toContain('npm install expo');
-    expect($('main').text()).not.toContain('yarn add expo');
+    const text = $('main').text();
+    expect(text).toContain('npm install expo');
+    expect(text).toContain('yarn add expo');
+    expect(
+      $('main')
+        .find('h4')
+        .map((_, el) => $(el).text())
+        .get()
+    ).toEqual(['Alpha', 'Beta']);
+  });
+
+  it('labels panels from the group\'s own tab list, ignoring nested role="tab" widgets', () => {
+    const html = [
+      '<main>',
+      '<div data-md="tabs">',
+      '<div role="tablist">',
+      '<div class="relative"><button role="tab"><div><p>macOS/Linux</p></div></button></div>',
+      '<div class="relative"><button role="tab"><div><p>Windows</p></div></button></div>',
+      '</div>',
+      '<div>',
+      '<div role="tabpanel">',
+      '<div data-md="terminal"><div role="tablist">',
+      '<button role="tab"><p>npm</p></button><button role="tab"><p>yarn</p></button>',
+      '</div><pre><code class="language-sh">brew install foo</code></pre></div>',
+      '</div>',
+      '<div role="tabpanel">',
+      '<pre><code class="language-sh">choco install foo</code></pre>',
+      '</div>',
+      '</div>',
+      '</div>',
+      '</main>',
+    ].join('');
+    const $ = cheerio.load(html);
+    cleanHtml($, $('main'));
+    expect(
+      $('main')
+        .find('h4')
+        .map((_, el) => $(el).text())
+        .get()
+    ).toEqual(['macOS/Linux', 'Windows']);
   });
 
   it('unwraps non-empty div/span inside headings', () => {
@@ -362,7 +404,7 @@ describe('convertHtmlToMarkdown', () => {
       '<html><head><meta http-equiv="refresh" content="0; url=/get-started/create-a-project/"></head><body><div id="__next"></div></body></html>';
     const result = convertHtmlToMarkdown(html);
     expect(result).toContain('/get-started/create-a-project/');
-    expect(result).toContain('https://docs.expo.dev/get-started/create-a-project/');
+    expect(result).toContain('https://docs.expo.dev/get-started/create-a-project.md');
     expect(result).toContain('redirects to');
   });
 
@@ -388,6 +430,28 @@ describe('convertHtmlToMarkdown', () => {
     const html = '<main><pre><code class="language-js">const x = 1;</code></pre></main>';
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('```js\nconst x = 1;\n```');
+  });
+
+  it('rewrites internal links to markdown URLs', () => {
+    const html = `<main>
+      <h1>Links</h1>
+      <p>
+        <a href="/more/expo-cli#install">CLI</a>
+        <a href="https://docs.expo.dev/versions/v56.0.0/sdk/contacts#contactgetalloptions">Contacts</a>
+        <a href="/llms.txt">llms</a>
+        <a href="https://expo.dev">External</a>
+      </p>
+      <pre><code class="language-md">[Inside](/more/expo-cli#install)</code></pre>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+
+    expect(md).toContain('[CLI](/more/expo-cli.md#install)');
+    expect(md).toContain(
+      '[Contacts](https://docs.expo.dev/versions/v56.0.0/sdk/contacts.md#contactgetalloptions)'
+    );
+    expect(md).toContain('[llms](/llms.txt)');
+    expect(md).toContain('[External](https://expo.dev)');
+    expect(md).toContain('[Inside](/more/expo-cli#install)');
   });
 });
 
@@ -440,7 +504,7 @@ describe('card links', () => {
       </a>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('[My Guide](/guide)');
+    expect(md).toContain('[My Guide](/guide.md)');
     expect(md).toContain('Guide description.');
   });
 });
@@ -600,20 +664,25 @@ describe('platform indicators in table cells', () => {
   });
 });
 
-describe('tab panel deduplication', () => {
-  it('only includes first tab panel content in output', () => {
+describe('tab panels', () => {
+  it('preserves content from every tab panel in output', () => {
     const html = [
       '<main>',
       '<h1>Installation</h1>',
-      '<div data-reach-tabs="">',
-      '<div data-reach-tab-panels="">',
-      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<div data-md="tabs">',
+      '<div role="tablist">',
+      '<div class="relative"><button role="tab"><div><p>npm</p></div></button></div>',
+      '<div class="relative"><button role="tab"><div><p>yarn</p></div></button></div>',
+      '<div class="relative"><button role="tab"><div><p>bun</p></div></button></div>',
+      '</div>',
+      '<div>',
+      '<div role="tabpanel">',
       '<pre><code class="language-sh">npx expo install expo-camera</code></pre>',
       '</div>',
-      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<div role="tabpanel">',
       '<pre><code class="language-sh">yarn add expo-camera</code></pre>',
       '</div>',
-      '<div data-reach-tab-panel="" role="tabpanel">',
+      '<div role="tabpanel">',
       '<pre><code class="language-sh">bun add expo-camera</code></pre>',
       '</div>',
       '</div>',
@@ -622,8 +691,11 @@ describe('tab panel deduplication', () => {
     ].join('');
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('npx expo install expo-camera');
-    expect(md).not.toContain('yarn add expo-camera');
-    expect(md).not.toContain('bun add expo-camera');
+    expect(md).toContain('yarn add expo-camera');
+    expect(md).toContain('bun add expo-camera');
+    expect(md).toContain('#### npm');
+    expect(md).toContain('#### yarn');
+    expect(md).toContain('#### bun');
   });
 });
 
@@ -809,7 +881,7 @@ describe('convertHtmlToMarkdown with real page structure', () => {
     expect(md).toContain('[Node.js (LTS)](https://nodejs.org)');
     expect(md).toContain('```sh\nnpx create-expo-app@latest\n```');
     expect(md).toContain('## Next step');
-    expect(md).toContain('[development environment](/get-started/set-up-your-environment)');
+    expect(md).toContain('[development environment](/get-started/set-up-your-environment.md)');
 
     // Non-content is removed
     expect(md).not.toContain('Home');
@@ -898,12 +970,15 @@ describe('checkPage (check-markdown-pages)', () => {
 });
 
 describe('collapsible/details', () => {
-  it('converts collapsible with data-md="collapsible"', () => {
+  it('promotes the collapsible summary to an h4 heading and keeps the body', () => {
     const html = `<main>
       <h1>Guide</h1>
       <details data-md="collapsible">
         <summary>
+          <div><svg class="icon-sm"></svg></div>
           <span class="font-medium" data-text="true">How to configure</span>
+          <a href="#how-to-configure" aria-label="Permalink"><svg></svg></a>
+          <div></div>
         </summary>
         <div class="overflow-hidden">
           <div class="px-5 py-4">
@@ -913,8 +988,51 @@ describe('collapsible/details', () => {
       </details>
     </main>`;
     const md = convertHtmlToMarkdown(html);
-    expect(md).toContain('How to configure');
+    expect(md).toContain('#### How to configure');
     expect(md).toContain('Configuration details here.');
+  });
+});
+
+describe('prerequisites', () => {
+  it('emits a heading and a per-requirement h5, dropping the requirement counter', () => {
+    const html = `<main>
+      <h1>Install</h1>
+      <details data-md="prerequisites" id="prerequisites">
+        <summary>
+          <div class="flex items-center">
+            <div><svg></svg></div>
+            <div class="flex items-center gap-2"><svg></svg><p>Prerequisites</p></div>
+            <a aria-label="Permalink"><svg></svg></a>
+          </div>
+          <div><p class="text-sm text-secondary" data-md="skip">2 requirements</p></div>
+        </summary>
+        <div class="overflow-hidden">
+          <div>
+            <div class="flex p-5">
+              <p class="font-medium" data-md="skip">1.</p>
+              <div class="flex-1">
+                <div class="font-medium" data-md="requirement-title">Install dependencies</div>
+                <div><p>Run the install command.</p></div>
+              </div>
+            </div>
+            <div class="flex p-5">
+              <p class="font-medium" data-md="skip">2.</p>
+              <div class="flex-1">
+                <div class="font-medium" data-md="requirement-title">Set up environment</div>
+                <div><p>Configure your machine.</p></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </details>
+    </main>`;
+    const md = convertHtmlToMarkdown(html);
+    expect(md).toContain('#### Prerequisites');
+    expect(md).toContain('##### Install dependencies');
+    expect(md).toContain('##### Set up environment');
+    expect(md).toContain('Run the install command.');
+    expect(md).toContain('Configure your machine.');
+    expect(md).not.toContain('2 requirements');
   });
 });
 
@@ -922,21 +1040,21 @@ describe('tabs', () => {
   it('converts tab panels to markdown content', () => {
     const html = `<main>
       <h1>Installation</h1>
-      <div class="my-4 rounded-md border border-default" data-reach-tabs="">
-        <div class="flex flex-wrap gap-1 border-b" data-reach-tab-list="" role="tablist">
-          <button role="tab" data-reach-tab="" aria-selected="true">
+      <div class="my-4 rounded-md border border-default" data-md="tabs">
+        <div class="flex flex-wrap gap-1 border-b" role="tablist">
+          <button role="tab" aria-selected="true">
             <div class="flex items-center gap-2 px-4 py-1.5">
               <p class="font-medium" data-text="true">npm</p>
             </div>
           </button>
-          <button role="tab" data-reach-tab="" aria-selected="false">
+          <button role="tab" aria-selected="false">
             <div class="flex items-center gap-2 px-4 py-1.5">
               <p class="font-medium" data-text="true">yarn</p>
             </div>
           </button>
         </div>
-        <div data-reach-tab-panels="">
-          <div role="tabpanel" data-reach-tab-panel="" class="px-5 py-4">
+        <div>
+          <div role="tabpanel" class="px-5 py-4">
             <pre><code class="language-sh">npm install expo</code></pre>
           </div>
         </div>
@@ -944,6 +1062,7 @@ describe('tabs', () => {
     </main>`;
     const md = convertHtmlToMarkdown(html);
     expect(md).toContain('# Installation');
+    expect(md).toContain('#### npm');
     expect(md).toContain('npm install expo');
   });
 });

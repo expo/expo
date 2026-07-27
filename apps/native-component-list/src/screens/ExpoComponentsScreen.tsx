@@ -1,7 +1,7 @@
 import { memo } from 'react';
 
-import ComponentListScreen, { type ListElement } from './ComponentListScreen';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
+import ComponentListScreen, { type ListElement } from './ComponentListScreen';
 
 export default memo(function ExpoComponentsScreen({ apis }: { apis: ListElement[] }) {
   return (

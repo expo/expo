@@ -106,7 +106,7 @@ class Env {
     return string('EXPO_PUBLIC_FOLDER', 'public');
   }
 
-  /** Higher priority `$EDIOTR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
+  /** Higher priority `$EDITOR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
   get EXPO_EDITOR(): string {
     return string('EXPO_EDITOR', '');
   }
@@ -118,6 +118,10 @@ class Env {
   get EXPO_PACKAGER_PROXY_URL(): string {
     // Read from the pre-dotenv env — overrides dev server URL served to clients.
     return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL') || '';
+  }
+
+  get EXPO_UNSTABLE_TUNNEL_V2(): boolean {
+    return boolish('EXPO_UNSTABLE_TUNNEL_V2', false);
   }
 
   /**

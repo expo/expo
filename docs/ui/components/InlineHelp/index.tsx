@@ -56,6 +56,8 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
         size === 'sm' && 'gap-2 px-3 py-2.5',
         '[table_&]:last:mb-0',
         '[&_code]:bg-element',
+        '[&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4]',
+        'dark:[&_a]:text-link dark:[&_a:visited]:text-link',
         getCalloutColor(finalType),
         // TODO(simek): remove after migration to new components is completed
         '[&_p]:mb-0!',
@@ -64,6 +66,7 @@ export const InlineHelp = ({ type = 'default', size = 'md', icon, children, clas
       data-testid="callout-container"
       data-md="callout">
       <Icon
+        aria-hidden="true"
         className={mergeClasses(
           'mt-1 select-none',
           size === 'sm' ? 'mt-0.75 icon-xs' : 'icon-sm',

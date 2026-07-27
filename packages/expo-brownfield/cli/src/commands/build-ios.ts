@@ -4,24 +4,29 @@ import {
   buildFramework,
   printIosConfig,
   resolveBuildConfigIos,
+  validateHostProvided,
   validatePrebuild,
+  validateSchemeCollision,
   shipSwiftPackage,
   shipFrameworks,
 } from '../utils';
 
 const buildIos = async (command: Command) => {
-  await validatePrebuild('ios');
-  const config = resolveBuildConfigIos(command.opts());
+  const opts = command.opts();
+  await validatePrebuild('ios', { dryRun: !!opts.dryRun });
+  const config = resolveBuildConfigIos(opts);
   printIosConfig(config);
+  validateHostProvided(config);
+  validateSchemeCollision(config);
 
   await buildFramework(config);
 
   if (config.output !== 'frameworks') {
     // Ship frameworks as swift package
-    shipSwiftPackage(config);
+    await shipSwiftPackage(config);
   } else {
     // Ship frameworks as standalone XCFrameworks
-    shipFrameworks(config);
+    await shipFrameworks(config);
   }
 };
 

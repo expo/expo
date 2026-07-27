@@ -15,7 +15,7 @@ const dirname = path.dirname(fileURLToPath(import.meta.url));
 // and its content contains the string `@generated`.
 const OPTIONAL_TEMPLATE_FILES = [
   // add a relative file path from `templates/` for each new optional file
-  'eslint.config.js',
+  'oxlint.config.mjs',
   path.join('scripts', 'with-node.sh'),
 ];
 
@@ -25,6 +25,7 @@ async function runAsync() {
   const templatesDir = path.join(dirname, '..', 'templates');
   const templateDirents = await glob('**/*', {
     cwd: templatesDir,
+    dot: true,
     withFileTypes: true,
   });
   const templateFiles = templateDirents

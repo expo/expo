@@ -11,7 +11,7 @@ import { argv } from 'node:process';
 import { fileURLToPath } from 'node:url';
 
 // NOTE: Modified from expo-constants/expo-updates entrypoint. We cd into the right folder anyway
-const possibleProjectRoot = process.argv[2] ?? process.cwd();
+const [, , possibleProjectRoot = process.cwd(), platform = 'ios', bundleOutput] = argv;
 
 // TODO: Verify we can remove projectRoot validation, now that we no longer
 // support React Native <= 62
@@ -33,9 +33,11 @@ const require = createRequire(__dirname);
 // NODE_BINARY is set for Xcode builds via the `with-node.sh` script.
 const nodePath = process.env.NODE_BINARY || 'node';
 const outputDir = path.join(__dirname, '../bundle/build');
-const appBundlePath = path.join(outputDir, 'ExpoWidgets.bundle');
+const defaultBundleOutput = path.join(outputDir, 'ExpoWidgets.bundle');
+const appBundlePath = path.resolve(projectRoot, bundleOutput ?? defaultBundleOutput);
 
-await fs.promises.rm(outputDir, { recursive: true, force: true });
+await fs.promises.rm(appBundlePath, { recursive: true, force: true });
+await fs.promises.mkdir(path.dirname(appBundlePath), { recursive: true });
 
 const result = await spawn(
   nodePath,
@@ -43,7 +45,7 @@ const result = await spawn(
     require.resolve('expo/bin/cli'),
     'export:embed',
     '--platform',
-    'ios',
+    platform,
     '--bundle-output',
     appBundlePath,
     '--entry-file',
@@ -51,7 +53,6 @@ const result = await spawn(
     '--dev',
     'false',
     '--skip-server',
-    ...argv.slice(2),
   ],
   {
     stdio: 'inherit',

@@ -4,6 +4,7 @@ import { useState } from 'react';
 export default function CollapsibleScreen() {
   const [aboutOpen, setAboutOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(true);
+  const [labelTextOpen, setLabelTextOpen] = useState(true);
   const [exclusiveOpen, setExclusiveOpen] = useState<'a' | 'b' | 'c' | null>('a');
   const [listFaqOpen, setListFaqOpen] = useState(false);
   const [listShippingOpen, setListShippingOpen] = useState(false);
@@ -27,6 +28,15 @@ export default function CollapsibleScreen() {
                 <Text>Backed by Compose Row + clickable + AnimatedVisibility on Android.</Text>
                 <Text>Backed by native &lt;details&gt; / &lt;summary&gt; on web.</Text>
               </Column>
+            </Collapsible>
+            <Collapsible
+              isOpen={labelTextOpen}
+              onOpenChange={setLabelTextOpen}
+              label="Styled label"
+              labelStyle={{ color: '#0a7ea4', fontWeight: '800' }}>
+              <Text>
+                The header label uses labelStyle while the content keeps the default style.
+              </Text>
             </Collapsible>
           </Column>
 

@@ -2,8 +2,8 @@ import * as Calendar from 'expo-calendar/legacy';
 import { UnavailabilityError } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-import { alertAndWaitForResponse } from './helpers';
 import * as TestUtils from '../TestUtils';
+import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'Calendar';
 

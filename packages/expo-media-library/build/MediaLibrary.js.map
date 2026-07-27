@@ -1,1 +1,0 @@
-{"version":3,"file":"MediaLibrary.js","sourceRoot":"","sources":["../src/MediaLibrary.ts"],"names":[],"mappings":"AAAA,cAAc,SAAS,CAAC","sourcesContent":["export * from './index';\n"]}

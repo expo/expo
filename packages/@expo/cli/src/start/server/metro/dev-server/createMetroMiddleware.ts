@@ -6,13 +6,13 @@ import { Body } from 'fetch-nodeshim';
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { compression } from './compression';
-import { createEventsSocket } from './createEventSocket';
-import { createMessagesSocket } from './createMessageSocket';
 import { Log } from '../../../../log';
 import { isPathInside } from '../../../../utils/dir';
 import { openInEditorAsync } from '../../../../utils/editor';
 import { shouldThrottleRemoteDevCall } from '../../../../utils/net';
+import { compression } from './compression';
+import { createEventsSocket } from './createEventSocket';
+import { createMessagesSocket } from './createMessageSocket';
 
 interface MetroMiddlewareOptions {
   getMetroBundler(): MetroBundler;

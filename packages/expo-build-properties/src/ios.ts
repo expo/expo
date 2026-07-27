@@ -47,7 +47,7 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
     },
     {
       propName: 'EXPO_USE_PRECOMPILED_MODULES',
-      propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? false).toString(),
+      propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? true).toString(),
     },
   ],
   'withIosBuildProperties'
@@ -63,7 +63,7 @@ export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, 
   // Updates deployment target in app xcodeproj
   config = withIosDeploymentTargetXcodeProject(config, { deploymentTarget });
 
-  // Updates deployement target in Podfile (Pods project)
+  // Updates deployment target in Podfile (Pods project)
   config = withIosDeploymentTargetPodfile(config, props);
 
   return config;

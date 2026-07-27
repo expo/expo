@@ -162,6 +162,17 @@ export interface VideoViewProps extends ViewProps {
   useExoShutter?: boolean;
 
   /**
+   * Determines whether the native controls are shown automatically when playback starts, pauses, or ends.
+   * When `false`, the controls won't appear automatically, but can still be shown by tapping the view. This is
+   * useful when playback is driven programmatically (for example an auto-advancing playlist), where the controls
+   * appearing on every play reads as a flash.
+   *
+   * @platform android
+   * @default true
+   */
+  controllerAutoShow?: boolean;
+
+  /**
    * Determines the [cross origin policy](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Attributes/crossorigin) used by the underlying native view on web.
    * If `undefined` (default), does not use CORS at all. If set to `'anonymous'`, the video will be loaded with CORS enabled.
    * Note that some videos may not play if CORS is enabled, depending on the CDN settings.

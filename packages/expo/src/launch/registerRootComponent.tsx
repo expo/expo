@@ -1,5 +1,4 @@
 import '../Expo.fx';
-
 import type { ComponentType } from 'react';
 import { AppRegistry, Platform } from 'react-native';
 

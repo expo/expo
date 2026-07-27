@@ -2,6 +2,8 @@ import commander from 'commander';
 import fs from 'fs';
 import path from 'path';
 
+import { TypeInferenceOption } from '../typeInformation';
+import { scanFilesRecursively, taskAll } from '../utils';
 import {
   debounce,
   generateConciseTsFiles,
@@ -9,8 +11,6 @@ import {
   parseCommandArguments,
   TypeInformationCommandCommonAllArguments,
 } from './commandUtils';
-import { TypeInferenceOption } from '../typeInformation';
-import { scanFilesRecursively, taskAll } from '../utils';
 
 async function getResolvedWatchedDirectoriesFromAppJson(
   appJsonPath: string
@@ -35,28 +35,55 @@ async function getResolvedWatchedDirectoriesFromAppJson(
 type GenerateInlineModulesTSFilesOptions = {
   filePath: string;
   dirPath: string;
+  compileOnlyModules: Set<string>;
   typeInference: TypeInferenceOption;
+  mapUnicodeCharacters: boolean;
 };
 
 async function generateInlineModuleTSFiles({
   filePath,
   dirPath,
   typeInference,
+  mapUnicodeCharacters,
+  compileOnlyModules,
 }: GenerateInlineModulesTSFilesOptions) {
   return await generateConciseTsFiles({
-    realInputPaths: [filePath],
+    realInputPaths: [filePath, ...compileOnlyModules],
     realOutputPath: dirPath,
     typeInference,
     watcher: false,
+    mapUnicodeCharacters,
   });
 }
 
 type InlineModulesWatcherOptions = {
   appJsonPath: string;
   typeInference: TypeInferenceOption;
+  mapUnicodeCharacters: boolean;
+  compileOnlyModules: Set<string>;
 };
 
-async function inlineModulesWatcher({ appJsonPath, typeInference }: InlineModulesWatcherOptions) {
+const swiftModuleDefinitionRegex = /\bfunc\s+definition\s*\(\s*\)\s*->\s*[\w.]*ModuleDefinition\b/;
+async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boolean> {
+  try {
+    const contents = await fs.promises.readFile(absoluteFilePath, 'utf8');
+    return swiftModuleDefinitionRegex.test(contents);
+  } catch {
+    console.warn(`Swift inline module '${absoluteFilePath}' could not be opened.`);
+    return false;
+  }
+}
+
+async function fileHasModuleDeclaration(filePath: string): Promise<boolean> {
+  return hasSwiftModuleDefinition(filePath);
+}
+
+async function inlineModulesWatcher({
+  appJsonPath,
+  typeInference,
+  mapUnicodeCharacters,
+  compileOnlyModules,
+}: InlineModulesWatcherOptions) {
   const debouncedInlineModulesTsGeneration = debounce(generateInlineModuleTSFiles);
   const watchedDirectoriesWatchers: Map<string, fs.FSWatcher> = new Map<string, fs.FSWatcher>();
 
@@ -82,17 +109,25 @@ async function inlineModulesWatcher({ appJsonPath, typeInference }: InlineModule
     // Now let's create and add new watchers
     const createWatcherForDir = (dir: string) => {
       return fs.watch(dir, { recursive: true, encoding: 'utf-8' }, async (event, fileName) => {
-        if (!fileName) {
+        if (!fileName || !fileName.endsWith('.swift')) {
           return;
         }
-
         const resolvedFilePath = path.resolve(dir, fileName);
         if (fs.existsSync(resolvedFilePath)) {
+          if (!(await fileHasModuleDeclaration(resolvedFilePath))) {
+            compileOnlyModules.add(resolvedFilePath);
+            return;
+          }
+
           debouncedInlineModulesTsGeneration({
             filePath: resolvedFilePath,
             dirPath: path.dirname(resolvedFilePath),
             typeInference,
+            mapUnicodeCharacters,
+            compileOnlyModules,
           });
+        } else {
+          compileOnlyModules.delete(resolvedFilePath);
         }
       });
     };
@@ -123,7 +158,7 @@ async function inlineModulesWatcher({ appJsonPath, typeInference }: InlineModule
 export async function inlineModulesInterfaceCommand(cli: commander.Command) {
   return cli
     .command('inline-modules-interface')
-    .summary('Creates ts interface for every Swift inline module in the project.')
+    .summary('create TypeScript interface for every Swift inline module in the project')
     .description(
       `Creates a TypeScript interface for every Swift inline module in the project. The interface consists of two files:
 - **Module.generated.ts**: This is regenerated with each run of the command 
@@ -146,7 +181,7 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
       }
       maybePrepareOutputDirectory(parsedArgs?.realOutputPath);
 
-      const { appJsonPath, watcher } = parsedArgs;
+      const { appJsonPath, watcher, mapUnicodeCharacters } = parsedArgs;
       if (!appJsonPath) {
         return;
       }
@@ -156,29 +191,44 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
         return;
       }
 
-      const dirents = [];
+      const inlineModulesDirents = [];
+      const compileOnlyModules = new Set<string>([]);
       for (const dir of watchedDirectories) {
         for await (const dirent of scanFilesRecursively(dir)) {
           if (!dirent.name.endsWith('.swift')) {
             continue;
           }
-
-          dirents.push(dirent);
+          const resolvedFilePath = dirent.path;
+          if (
+            fs.existsSync(resolvedFilePath) &&
+            !(await fileHasModuleDeclaration(resolvedFilePath))
+          ) {
+            compileOnlyModules.add(resolvedFilePath);
+          } else {
+            inlineModulesDirents.push(dirent);
+          }
         }
       }
 
       await taskAll(
-        dirents,
+        inlineModulesDirents,
         async (dirent) =>
           await generateInlineModuleTSFiles({
             filePath: dirent.path,
             dirPath: dirent.parentPath,
             typeInference: parsedArgs.typeInference,
+            mapUnicodeCharacters,
+            compileOnlyModules,
           })
       );
 
       if (watcher) {
-        await inlineModulesWatcher({ appJsonPath, typeInference: parsedArgs.typeInference });
+        await inlineModulesWatcher({
+          appJsonPath,
+          typeInference: parsedArgs.typeInference,
+          mapUnicodeCharacters,
+          compileOnlyModules,
+        });
       }
     });
 }

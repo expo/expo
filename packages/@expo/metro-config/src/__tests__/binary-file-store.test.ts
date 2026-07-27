@@ -46,6 +46,39 @@ describe(FileStore, () => {
     expect(result.meta).toEqual(value.meta);
   });
 
+  it('round-trips typed arrays', async () => {
+    const store = new FileStore<unknown>({ root: ROOT });
+    const key = makeKey(0x02);
+
+    await store.set(key, { bytes: new Uint8Array([1, 2, 3, 4]) });
+
+    const result = (await store.get(key)) as { bytes: Uint8Array };
+    expect(result.bytes).toBeInstanceOf(Uint8Array);
+    expect([...result.bytes]).toEqual([1, 2, 3, 4]);
+  });
+
+  it('round-trips undefined values', async () => {
+    const store = new FileStore<unknown>({ root: ROOT });
+    const key = makeKey(0x03);
+    const value = {
+      output: [{ data: undefined }],
+      optional: undefined,
+    };
+
+    await store.set(key, value);
+
+    await expect(store.get(key)).resolves.toEqual(value);
+  });
+
+  it('stores function values as undefined', async () => {
+    const store = new FileStore<unknown>({ root: ROOT });
+    const key = makeKey(0x04);
+
+    await store.set(key, { getSource: () => Buffer.from('source') });
+
+    await expect(store.get(key)).resolves.toEqual({ getSource: undefined });
+  });
+
   it('creates intermediate directories on first write', async () => {
     const store = new FileStore<unknown>({ root: ROOT });
     const key = makeKey(0x42);
@@ -60,6 +93,20 @@ describe(FileStore, () => {
   it('returns null for a missing key', async () => {
     const store = new FileStore<unknown>({ root: ROOT });
     await expect(store.get(makeKey(0x99))).resolves.toBeNull();
+  });
+
+  it('returns null and deletes a corrupt cache file', async () => {
+    const store = new FileStore<unknown>({ root: ROOT });
+    const key = makeKey(0x24);
+    const shard = key.subarray(0, 1).toString('hex');
+    const file = key.subarray(1).toString('hex') + '.mp';
+
+    await store.prepare();
+    vol.writeFileSync(`${ROOT}/${shard}/${file}`, Buffer.from([0xc4, 0xff]));
+
+    await expect(store.get(key)).resolves.toBeNull();
+    await new Promise((resolve) => setImmediate(resolve));
+    expect(vol.existsSync(`${ROOT}/${shard}/${file}`)).toBe(false);
   });
 
   it('skips writes flagged with css.skipCache', async () => {

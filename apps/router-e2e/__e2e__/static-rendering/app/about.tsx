@@ -1,7 +1,7 @@
-// Test the nested <Head> component is rendered during SSR.
-import Head from 'expo-router/head';
 import EvilIcons from '@expo/vector-icons/EvilIcons';
 import { loadAsync } from 'expo-font';
+// Test the nested <Head> component is rendered during SSR.
+import Head from 'expo-router/head';
 import React from 'react';
 import { Text } from 'react-native';
 

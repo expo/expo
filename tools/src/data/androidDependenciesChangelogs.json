@@ -43,8 +43,6 @@
   "com.github.Raizlabs.DBFlow:dbflow": "https://github.com/agrosner/DBFlow/releases",
   "com.github.tipsi:CreditCardEntry": "https://github.com/tipsi/CreditCardEntry/releases",
   "com.github.troZee:ViewPager2": "https://github.com/troZee/ViewPager2/releases",
-  "com.google.android.exoplayer:exoplayer": "https://github.com/google/ExoPlayer/blob/release-v2/RELEASENOTES.md",
-  "com.google.android.exoplayer:extension-okhttp": "https://github.com/google/ExoPlayer/blob/release-v2/RELEASENOTES.md",
   "com.google.android.gms:play-services-ads": "https://developers.google.com/android/guides/releases",
   "com.google.android.gms:play-services-analytics": "https://developers.google.com/android/guides/releases",
   "com.google.android.gms:play-services-auth": "https://developers.google.com/android/guides/releases",

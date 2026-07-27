@@ -7,6 +7,25 @@ include(\${REACT_ANDROID_DIR}/cmake-utils/ReactNative-application.cmake)
 
 set(PCH_HEADER "\${CMAKE_CURRENT_SOURCE_DIR}/pch.h")
 
+add_library(appmodules_pch STATIC EXCLUDE_FROM_ALL "\${CMAKE_CURRENT_SOURCE_DIR}/appmodules_pch_owner.cpp")
+
+# Apply the exact same compile options codegen targets get from RN's
+target_compile_reactnative_options(appmodules_pch PRIVATE)
+
+# Link dependencies needed by our PCH header
+target_link_libraries(appmodules_pch PRIVATE common_flags reactnative jsi folly_runtime fbjni)
+
+# Stop Clang from embedding a build timestamp in the .pch. Without this the PCH
+# is non-reproducible across builds, so ccache can't reuse it and dependent
+# translation units reject a restored PCH as "modified since built".
+target_compile_options(appmodules_pch PRIVATE
+  "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
+)
+
+target_precompile_headers(appmodules_pch PRIVATE
+  "$<$<COMPILE_LANGUAGE:CXX>:\${PCH_HEADER}>"
+)
+
 function(add_pch_if_eligible target)
   if (NOT TARGET \${target})
     return()
@@ -22,9 +41,17 @@ function(add_pch_if_eligible target)
     return()
   endif ()
 
-  target_precompile_headers(\${target} PRIVATE
-    "$<$<COMPILE_LANGUAGE:CXX>:\${PCH_HEADER}>"
+  # Keep the flag consistent with the PCH owner - see the note above.
+  target_compile_options(\${target} PRIVATE
+    "$<$<COMPILE_LANGUAGE:CXX>:-Xclang;-fno-pch-timestamp>"
   )
+
+  # clang rejects a PCH built with a different C++ dialect, so pin consumers
+  # to the owner's -std=c++20 (libraries that set CMAKE_CXX_STANDARD themselves
+  # would otherwise get -std=gnu++20).
+  set_target_properties(\${target} PROPERTIES CXX_STANDARD 20 CXX_EXTENSIONS OFF)
+
+  target_precompile_headers(\${target} REUSE_FROM appmodules_pch)
 endfunction()
 
 if (DEFINED AUTOLINKED_LIBRARIES)
@@ -32,6 +59,11 @@ if (DEFINED AUTOLINKED_LIBRARIES)
     add_pch_if_eligible(\${lib})
   endforeach ()
 endif ()
+`;
+
+export const PCH_OWNER_SOURCE_CONTENTS = `\
+// Translation unit exists solely so the owning target can produce a .pch
+// binary that codegen targets reuse.
 `;
 
 export const PCH_ONLOAD_CONTENTS = `\

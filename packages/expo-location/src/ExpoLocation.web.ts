@@ -1,5 +1,4 @@
-import { type PermissionResponse, PermissionStatus } from 'expo';
-import { UnavailabilityError } from 'expo-modules-core';
+import { PermissionStatus, UnavailabilityError, type PermissionResponse } from 'expo';
 
 import type { LocationLastKnownOptions, LocationObject, LocationOptions } from './Location.types';
 import { LocationAccuracy } from './Location.types';

@@ -285,10 +285,15 @@ private struct EventObserver: ~Copyable {
   let removeListener: JavaScriptFunction
   let removeAllListeners: JavaScriptFunction
 
-  init(emitter: consuming JavaScriptObject) {
-    self.addListener = emitter.getPropertyAsFunction("addListener")
-    self.removeListener = emitter.getPropertyAsFunction("removeListener")
-    self.removeAllListeners = emitter.getPropertyAsFunction("removeAllListeners")
+  init(emitter: consuming JavaScriptObject) throws {
+    // Resolve everything that can throw into locals first, then assign the stored properties in one
+    // uninterrupted block — a `~Copyable` type can't be left partially initialized on a throwing path.
+    let addListener = try emitter.getPropertyAsFunction("addListener")
+    let removeListener = try emitter.getPropertyAsFunction("removeListener")
+    let removeAllListeners = try emitter.getPropertyAsFunction("removeAllListeners")
+    self.addListener = addListener
+    self.removeListener = removeListener
+    self.removeAllListeners = removeAllListeners
     self.emitter = emitter
   }
 }
@@ -307,5 +312,5 @@ private func setupEventObserver(
 
   emitter.setProperty(functionName, value: observingFunction)
 
-  return EventObserver(emitter: emitter)
+  return try EventObserver(emitter: emitter)
 }

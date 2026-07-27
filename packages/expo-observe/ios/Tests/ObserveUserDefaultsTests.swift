@@ -1,7 +1,7 @@
+import ExpoAppMetrics
 import Testing
 
 @testable import ExpoObserve
-import ExpoAppMetrics
 
 @AppMetricsActor
 @Suite("ObserveUserDefaults", .serialized)

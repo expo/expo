@@ -107,6 +107,57 @@ function getReactNativeMinorVersion(pkgPath: string): number {
 
 const _packageVersionCache: Record<string, string> = {};
 
+let _macroPluginFlagsCache: string[] | null = null;
+
+/**
+ * Returns the Swift compiler `-Xfrontend -load-plugin-executable` flags that load the
+ * ExpoModules macros plugin (e.g. `@OptimizedFunction`). The plugin executable ships
+ * inside `expo-modules-core`'s hoisted `node_modules`. Mirrors the Cocoapods path used
+ * by `project_integrator.rb#integrate_core_macro_plugins` so SPM and Pods agree on
+ * which binary implements the macros.
+ */
+function getExpoModulesMacroPluginFlags(): string[] {
+  if (_macroPluginFlagsCache !== null) {
+    return _macroPluginFlagsCache;
+  }
+  const corePkg = getPackageByName('expo-modules-core');
+  if (!corePkg) {
+    throw new Error(
+      `Could not locate the "expo-modules-core" package while generating Package.swift. ` +
+        `The ExpoModules macros plugin executable (used to expand @OptimizedFunction etc.) ships ` +
+        `under "expo-modules-core/node_modules/@expo/expo-modules-macros-plugin/apple". ` +
+        `Ensure expo-modules-core is installed in the workspace before running the prebuild.`
+    );
+  }
+  const macrosToolPath = path.join(
+    corePkg.path,
+    'node_modules',
+    '@expo',
+    'expo-modules-macros-plugin',
+    'apple',
+    'ExpoModulesMacros-tool'
+  );
+  _macroPluginFlagsCache = [
+    '-Xfrontend',
+    '-load-plugin-executable',
+    '-Xfrontend',
+    `${macrosToolPath}#ExpoModulesMacros`,
+  ];
+  return _macroPluginFlagsCache;
+}
+
+/**
+ * Returns true when a Swift target should load the ExpoModules macros plugin —
+ * either it is ExpoModulesCore itself, or it depends on ExpoModulesCore directly
+ * (`"ExpoModulesCore"`) or via the cross-package form (`"expo-modules-core/ExpoModulesCore"`).
+ */
+function targetUsesExpoModulesMacros(targetName: string, dependencies: string[]): boolean {
+  if (targetName === 'ExpoModulesCore') {
+    return true;
+  }
+  return dependencies.some((dep) => dep === 'ExpoModulesCore' || dep.endsWith('/ExpoModulesCore'));
+}
+
 /**
  * Resolves the package version from the package.json in the given path.
  * @param pkgPath Path to the package (e.g., /workspace/external-configs/ios/react-native-worklets)
@@ -827,7 +878,7 @@ async function resolveSourceTarget(
  * @param artifactPaths - Paths to downloaded artifacts from centralized cache
  * @param packageSwiftDir - Directory where Package.swift will be located
  */
-function buildSwiftSettings(
+export function buildSwiftSettings(
   externalDeps: string[],
   artifactPaths: ArtifactPaths | null,
   packageSwiftDir: string,
@@ -857,6 +908,13 @@ function buildSwiftSettings(
 
   // Always emit common flags (modules)
   pushUnsafeFlags([settings], commonCxxFlags);
+
+  // Load the ExpoModules macros plugin so Swift can expand macros like @OptimizedFunction.
+  // Required for ExpoModulesCore itself and any Swift target that depends on it; without
+  // this the compiler errors with "external macro implementation type ... could not be found".
+  if (target && targetUsesExpoModulesMacros(target.name, externalDeps)) {
+    pushUnsafeFlags([settings], getExpoModulesMacroPluginFlags());
+  }
 
   // Debug/release-specific include paths (wrapped with -Xcc for Swift→Clang)
   pushUnsafeFlags(

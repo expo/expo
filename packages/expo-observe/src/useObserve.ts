@@ -14,7 +14,7 @@ export function useObserve() {
   useAssertValueDoesNotChange(
     expoRouterInitialized,
     "[expo-observe] Router integration was toggled during a screen's lifecycle. " +
-      "Call `ExpoObserve.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
+      "Call `Observe.configure({ integrations: { 'expo-router': true } })` once at startup before any screen mounts."
   );
   // useAssertValueDoesNotChange asserts that the useObserveForRouter is either rendered
   // or not for the whole lifecycle of this hook
@@ -24,7 +24,7 @@ export function useObserve() {
   useAssertValueDoesNotChange(
     reactNavigationInitialized,
     "[expo-observe] React Navigation integration was toggled during a screen's lifecycle. " +
-      "Call `ExpoObserve.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
+      "Call `Observe.configure({ integrations: { 'react-navigation': true } })` once at startup before any screen mounts."
   );
   // useAssertValueDoesNotChange asserts that the useObserveForReactNavigation is either rendered
   // or not for the whole lifecycle of this hook

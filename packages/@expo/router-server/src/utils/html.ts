@@ -62,6 +62,17 @@ export function createInjectedScriptsAsString(srcs: string[]): string {
 }
 
 /**
+ * Returns a `<link rel="icon" />` HTML string for the given favicon href.
+ *
+ * Used by the SPA export path, which splices into a pre-rendered template instead of a React
+ * tree. Output must stay byte-equivalent to `createFaviconAsNode` (rendered to static markup)
+ * so both rendering paths agree on the tag shape.
+ */
+export function createFaviconAsString(href: string): string {
+  return `<link rel="icon" href="${escapeHtmlAttribute(href)}"/>`;
+}
+
+/**
  * Returns the string content of the hydration flag script, which sets the
  * `__EXPO_ROUTER_HYDRATE__` global flag to `true`.
  *

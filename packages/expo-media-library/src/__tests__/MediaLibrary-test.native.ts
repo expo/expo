@@ -1,6 +1,6 @@
 import * as MediaLibrary from '../legacy';
 
-jest.mock('../ExpoMediaLibraryNext', () => ({
+jest.mock('../next/native', () => ({
   __esModule: true,
   default: {
     Query: class {},

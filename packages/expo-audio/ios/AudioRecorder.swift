@@ -53,6 +53,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ref.url.absoluteString
   }
 
+  var fileSize: Int64 {
+    let attributes = try? FileManager.default.attributesOfItem(atPath: ref.url.path(percentEncoded: false))
+    return (attributes?[.size] as? Int64) ?? 0
+  }
+
   private var currentSessionDuration: Int {
     guard startTimestamp > 0, currentState == .recording else {
       return 0
@@ -87,11 +92,20 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
     }
 
-    if let options {
+    if let options = options ?? currentOptions {
+      let newRecorder: AVAudioRecorder
+      do {
+        newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
+      } catch {
+        currentState = .error
+        try? session.setActive(false)
+        throw error
+      }
+
       currentOptions = options
       currentSessionOptions = sessionOptions
       ref.delegate = nil
-      ref = AudioUtils.createRecorder(directory: recordingDirectory, with: options)
+      ref = newRecorder
       ref.delegate = recordingDelegate
     }
 
@@ -164,6 +178,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "canRecord": isPrepared,
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
+      "fileSize": fileSize,
       "mediaServicesDidReset": mediaServicesDidReset,
       "url": ref.url.absoluteString
     ]
@@ -234,11 +249,12 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ])
   }
 
-  private var recordingDirectory: URL? {
-    guard let cachesDir = appContext?.fileSystem?.cachesDirectory else {
-      return nil
+  private func recordingDirectory(for options: RecordingOptions) throws -> URL {
+    guard let fileSystem = appContext?.fileSystem else {
+      throw Exceptions.AppContextLost()
     }
-    return URL(fileURLWithPath: cachesDir)
+    let path = (options.directory ?? .cache) == .document ? fileSystem.documentDirectory : fileSystem.cachesDirectory
+    return URL(fileURLWithPath: path)
   }
 
   override func sharedObjectWillRelease() {

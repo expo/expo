@@ -35,19 +35,29 @@ Pod::Spec.new do |s|
     :execution_position => :before_compile,
     # NOTE(@krystofwoldrich): Ideally we would specify `__dir__/**/*`, but Xcode doesn't support patterns
     :input_files  => ["#{__dir__}/../package.json"],
-    :output_files  => ["#{__dir__}/../bundle/build/ExpoWidgets.bundle"],
+    :output_files  => [
+      "#{__dir__}/../bundle/build/ExpoWidgets.bundle",
+      "#{__dir__}/../bundle/build/ExpoWidgetsLayoutRegistry.json",
+    ],
   }
   copy_bundle_script = {
     :name => 'Prepare ExpoWidgets Resources',
     :script => %Q{
       echo "Preparing ExpoWidgets.bundle..."
       source="#{__dir__}/../bundle/build/ExpoWidgets.bundle"
+      registry_source="#{__dir__}/../bundle/build/ExpoWidgetsLayoutRegistry.json"
       dest="${BUILT_PRODUCTS_DIR}/ExpoWidgets.bundle"
+      mkdir -p "${dest}"
       echo "Copying ${source} to ${dest}"
       cp "${source}" "${dest}"
+      echo "Copying ${registry_source} to ${dest}/ExpoWidgetsLayoutRegistry.json"
+      cp "${registry_source}" "${dest}/ExpoWidgetsLayoutRegistry.json"
     },
     :execution_position => :before_compile,
-    :input_files  => ["#{__dir__}/../bundle/build/ExpoWidgets.bundle"]
+    :input_files  => [
+      "#{__dir__}/../bundle/build/ExpoWidgets.bundle",
+      "#{__dir__}/../bundle/build/ExpoWidgetsLayoutRegistry.json",
+    ]
   }
   # :always_out_of_date is only available in CocoaPods 1.13.0 and later
   if Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.13.0')

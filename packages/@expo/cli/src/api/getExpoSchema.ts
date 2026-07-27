@@ -3,9 +3,9 @@ import { derefSchema } from '@expo/schema-utils';
 import fs from 'fs';
 import path from 'path';
 
-import { createCachedFetch, getResponseDataOrThrow } from './rest/client';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import { createCachedFetch, getResponseDataOrThrow } from './rest/client';
 
 export type Schema = any;
 

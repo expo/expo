@@ -13,8 +13,8 @@ import {
   Platform,
 } from 'react-native';
 
-import { searchIcon, closeIcon, micIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
 import { ToggleRow } from '../components/ToggleRow';
+import { searchIcon, micIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
 
 export default function ToolbarScreen() {
   const params = useLocalSearchParams();
@@ -278,7 +278,11 @@ export default function ToolbarScreen() {
           hidesSharedBackground={hidesSharedBackgroundSearchButton}
         />
 
-        <Stack.Toolbar.Button image={image} icon={closeIcon} />
+        <Stack.Toolbar.Button
+          image={image}
+          icon={process.env.EXPO_OS === 'android' ? require('@/assets/expo-logo.png') : null}
+          iconRenderingMode="original"
+        />
 
         {/* Fixed width spacer */}
         <Stack.Toolbar.Spacer

@@ -5,6 +5,7 @@
 #include "ExpoHeader.pch"
 #include "JNIDeallocator.h"
 #include "JSharedObject.h"
+#include "ArrayBuffer.h"
 #include "JavaScriptArrayBuffer.h"
 #include "NativeArrayBuffer.h"
 
@@ -78,6 +79,8 @@ private:
   void invokeMap(jni::alias_ref<jni::JMap<jstring, jobject>> result);
 
   void invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result);
+
+  void invokeArrayBuffer(jni::alias_ref<ArrayBuffer::javaobject> result);
 
   void invokeJavaScriptArrayBuffer(jni::alias_ref<JavaScriptArrayBuffer::javaobject> result);
 

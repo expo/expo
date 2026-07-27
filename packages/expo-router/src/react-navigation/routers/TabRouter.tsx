@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 
+import type { StackActionType } from '../core';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import type {
@@ -11,7 +12,6 @@ import type {
   Route,
   Router,
 } from './types';
-import type { StackActionType } from '../core';
 
 export type TabActionType = {
   type: 'JUMP_TO';

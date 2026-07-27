@@ -1,21 +1,28 @@
 import type { ExpoConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { generateFaviconAsync, generateImageAsync } from '@expo/image-utils';
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
+import { Log } from '../log';
+import { debugEvent } from './events';
 import { getUserDefinedFile } from './publicFolder';
 import type { ExportAssetMap } from './saveAssets';
-import { Log } from '../log';
-
-const debug = require('debug')('expo:favicon') as typeof console.log;
 
 /** @returns the file system path for a user-defined favicon.ico file in the public folder. */
 export function getUserDefinedFaviconFile(projectRoot: string): string | null {
   return getUserDefinedFile(projectRoot, ['./favicon.ico']);
 }
 
-export async function getVirtualFaviconAssetsAsync(
+/**
+ * Generate a favicon.ico from `web.favicon` in the Expo config and write it into the asset map
+ * (or to disk if no asset map is provided).
+ *
+ * @returns the public href for the generated favicon, or `null` when a user-supplied
+ *   `favicon.ico` already exists in the public folder (browsers resolve it at `/favicon.ico`
+ *   automatically) or when no `web.favicon` is configured.
+ */
+export async function generateFaviconAssetAsync(
   projectRoot: string,
   {
     baseUrl,
@@ -23,10 +30,9 @@ export async function getVirtualFaviconAssetsAsync(
     files,
     exp,
   }: { outputDir: string; baseUrl: string; files?: ExportAssetMap; exp?: ExpoConfig }
-): Promise<((html: string) => string) | null> {
+): Promise<{ href: string } | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
   if (existing) {
-    debug('Using user-defined favicon.ico file.');
     return null;
   }
 
@@ -38,30 +44,19 @@ export async function getVirtualFaviconAssetsAsync(
     return null;
   }
 
-  await Promise.all(
-    [data].map(async (asset) => {
-      const assetPath = path.join(outputDir, asset.path);
-      if (files) {
-        debug('Storing asset for persisting: ' + assetPath);
-        files?.set(asset.path, {
-          contents: asset.source,
-          targetDomain: 'client',
-        });
-      } else {
-        debug('Writing asset to disk: ' + assetPath);
-        await fs.promises.writeFile(assetPath, asset.source);
-      }
-    })
-  );
-
-  function injectFaviconTag(html: string): string {
-    if (!html.includes('</head>')) {
-      return html;
-    }
-    return html.replace('</head>', `<link rel="icon" href="${baseUrl}/favicon.ico" /></head>`);
+  const assetPath = path.join(outputDir, data.path);
+  if (files) {
+    debugEvent('favicon:storing_asset', { assetPath });
+    files.set(data.path, {
+      contents: data.source,
+      targetDomain: 'client',
+    });
+  } else {
+    debugEvent('favicon:writing_asset', { assetPath });
+    await fs.promises.writeFile(assetPath, data.source);
   }
 
-  return injectFaviconTag;
+  return { href: `${baseUrl}/${data.path}` };
 }
 
 export async function getFaviconFromExpoConfigAsync(

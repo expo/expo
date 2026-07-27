@@ -2,7 +2,6 @@
 
 import { registerWebModule, NativeModule } from 'expo';
 
-import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
 import { type SQLiteOpenOptions } from '../src/NativeDatabase';
 import { type Changeset, type NativeChangeset } from '../src/NativeSession';
 import {
@@ -12,6 +11,7 @@ import {
   type SQLiteColumnValues,
   type SQLiteRunResult,
 } from '../src/NativeStatement';
+import { invokeWorkerAsync, invokeWorkerSync, workerMessageHandler } from './WorkerChannel';
 
 let worker: Worker | null = null;
 let nextNativeDatabaseId = 0;
@@ -366,7 +366,10 @@ export class NativeSession {
     return result.buffer as ArrayBuffer;
   }
 
-  async applyChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<void> {
+  async applyChangesetAsync(
+    database: NativeDatabase,
+    changeset: Changeset | NativeChangeset
+  ): Promise<void> {
     await invokeWorkerAsync(getWorker(), 'sessionApplyChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
@@ -381,7 +384,10 @@ export class NativeSession {
     });
   }
 
-  async invertChangesetAsync(database: NativeDatabase, changeset: Changeset | NativeChangeset): Promise<NativeChangeset> {
+  async invertChangesetAsync(
+    database: NativeDatabase,
+    changeset: Changeset | NativeChangeset
+  ): Promise<NativeChangeset> {
     const result = await invokeWorkerAsync(getWorker(), 'sessionInvertChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,
@@ -389,7 +395,10 @@ export class NativeSession {
     });
     return result.buffer as ArrayBuffer;
   }
-  invertChangesetSync(database: NativeDatabase, changeset: Changeset | NativeChangeset): NativeChangeset {
+  invertChangesetSync(
+    database: NativeDatabase,
+    changeset: Changeset | NativeChangeset
+  ): NativeChangeset {
     const result = invokeWorkerSync(getWorker(), 'sessionInvertChangeset', {
       nativeDatabaseId: database.id,
       nativeSessionId: this.id,

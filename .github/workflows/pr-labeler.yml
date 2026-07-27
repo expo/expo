@@ -37,23 +37,28 @@ jobs:
       actions: write
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 100
       - name: ⬇️ Fetch commits from base branch
         run: git fetch origin main:main --depth 100
         if: github.event_name == 'pull_request'
       - name: 🔨 Install pnpm
-        uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
           version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
-          node-version: 22
+          node-version: 24
           cache: 'pnpm'
       - name: 📦 Install dependencies
         run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build app dependencies
+        run: pnpm turbo build --filter bare-expo...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: Get the base commit
         id: base-commit
         run: |
@@ -61,7 +66,7 @@ jobs:
           echo base-commit=$(git log -n 1 main --pretty=format:'%H' -- .github/workflows/pr-labeler.yml apps/bare-expo apps/test-suite packages pnpm-lock.yaml) >> "$GITHUB_OUTPUT"
       - name: 📷 Check fingerprint
         id: fingerprint
-        uses: expo/actions/fingerprint@d56a519244cfad3b09a73b4b485a1de7f44590cd # main
+        uses: expo/actions/fingerprint@150c682164cec02a2d43347b70906d234d33f575 # main
         with:
           working-directory: apps/bare-expo
           previous-git-commit: ${{ steps.base-commit.outputs.base-commit }}
@@ -74,7 +79,7 @@ jobs:
           echo "isPreviousFingerprintEmpty=${{ steps.fingerprint.outputs.previous-fingerprint == '' }}"
 
       - name: 🏷️ Labeling PR
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff == '[]' }}
         with:
           script: |
@@ -97,7 +102,7 @@ jobs:
               labels: ['bot: fingerprint compatible']
             })
       - name: 🏷️ Labeling PR
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' }}
         with:
           script: |
@@ -121,16 +126,16 @@ jobs:
             })
 
       - name: 🔍 Find old comment if it exists
-        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
+        uses: peter-evans/find-comment@b30e6a3c0ed37e7c023ccd3f1db5c6c0b0c23aad # v4.0.0
         if: ${{ github.event_name == 'pull_request' }}
         id: old_comment
         with:
           issue-number: ${{ github.event.pull_request.number }}
-          comment-author: "expo-bot"
+          comment-author: 'expo-bot'
           body-includes: <!-- pr-labeler comment -->
       - name: 💬 Add comment with fingerprint
         if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id == '' }}
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -159,7 +164,7 @@ jobs:
             });
       - name: 💬 Update comment with fingerprint
         if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff != '[]' && steps.old_comment.outputs.comment-id != '' }}
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -189,7 +194,7 @@ jobs:
             });
       - name: 💬 Delete comment with fingerprint
         if: ${{ github.event_name == 'pull_request' && steps.fingerprint.outputs.previous-fingerprint != '' && steps.fingerprint.outputs.fingerprint-diff == '[]' && steps.old_comment.outputs.comment-id != '' }}
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |

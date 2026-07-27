@@ -20,8 +20,12 @@ export function Tab({ title, onClick, isSelected, type }: Props) {
         'items-center gap-1.5 rounded-md border border-transparent px-3 py-1.5 text-left hocus:bg-hover',
         isSelected && 'border border-default bg-default shadow-xs'
       )}>
-      {type === 'directory' ? <FolderIcon className="icon-sm text-icon-tertiary" /> : null}
-      {type === 'file' ? <FileCode01Icon className="icon-sm text-icon-tertiary" /> : null}
+      {type === 'directory' ? (
+        <FolderIcon aria-hidden="true" className="icon-sm text-icon-tertiary" />
+      ) : null}
+      {type === 'file' ? (
+        <FileCode01Icon aria-hidden="true" className="icon-sm text-icon-tertiary" />
+      ) : null}
       <CALLOUT theme={isSelected ? 'default' : 'secondary'}>{title}</CALLOUT>
     </ButtonBase>
   );

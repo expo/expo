@@ -1,9 +1,11 @@
-@available(iOS 17.0, tvOS 17.0, *)
+import ExpoModulesCore
+
+@available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
 internal protocol EffectAdding {
   func add(to view: UIImageView, with options: SymbolEffectOptions)
 }
 
-@available(iOS 17.0, tvOS 17.0, *)
+@available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
 internal struct BounceEffect: EffectAdding {
   private let effect: BounceSymbolEffect = .bounce
   let wholeSymbol: Bool?
@@ -23,7 +25,7 @@ internal struct BounceEffect: EffectAdding {
   }
 }
 
-@available(iOS 17.0, tvOS 17.0, *)
+@available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
 internal struct PulseEffect: EffectAdding {
   private let effect: PulseSymbolEffect = .pulse
   let wholeSymbol: Bool?
@@ -37,7 +39,7 @@ internal struct PulseEffect: EffectAdding {
   }
 }
 
-@available(iOS 17.0, tvOS 17.0, *)
+@available(iOS 17.0, tvOS 17.0, macOS 14.0, *)
 internal struct ScaleEffect: EffectAdding {
   private let effect: ScaleSymbolEffect = .scale
   let wholeSymbol: Bool?

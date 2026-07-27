@@ -1,1 +1,0 @@
-export { resolveBabelrcName } from './loadBabelConfig';

@@ -96,6 +96,7 @@ export function Code({ className, children, title }: CodeProps) {
     tippyFunc('.code-annotation.with-tooltip', {
       allowHTML: false,
       ignoreAttributes: true,
+      aria: { content: 'auto', expanded: false },
       content: (reference: Element) =>
         buildTooltipContent(reference.getAttribute('data-tippy-content') ?? ''),
       theme: 'expo',
@@ -109,6 +110,7 @@ export function Code({ className, children, title }: CodeProps) {
     tippyFunc('.tutorial-code-annotation.with-tooltip', {
       allowHTML: false,
       ignoreAttributes: true,
+      aria: { content: 'auto', expanded: false },
       content: (reference: Element) =>
         buildTooltipContent(reference.getAttribute('data-tippy-content') ?? ''),
       theme: 'expo',
@@ -125,8 +127,9 @@ export function Code({ className, children, title }: CodeProps) {
     setCollapseBound(undefined);
   }
 
+  const forceWordWrap = params?.wrap === 'true';
   const commonClasses = mergeClasses(
-    wordWrap && 'wrap-break-word! whitespace-pre-wrap!',
+    (wordWrap || forceWordWrap) && 'wrap-break-word! whitespace-pre-wrap!',
     showExpand && !isExpanded && `overflow-y-hidden! [&::-webkit-scrollbar-track]:bg-default!`
   );
 

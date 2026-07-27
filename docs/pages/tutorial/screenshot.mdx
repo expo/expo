@@ -8,10 +8,9 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { ProgressTracker } from '~/ui/components/ProgressTracker';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
-import { CODE } from '~/ui/components/Text';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-In this chapter, we'll learn how to take a screenshot using a third-party library and save it on the device's media library. We'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) to take a screenshot and [`expo-media-library`](/versions/latest/sdk/media-library/) to save an image on device's media library.
+In this chapter, we'll learn how to take a screenshot using a third-party library and save it on the device's media library. We'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) to take a screenshot and [`expo-media-library`](/versions/v54.0.0/sdk/media-library/) to save an image on device's media library.
 
 > **info** So far, we have used third-party libraries, such as `react-native-gesture-handler`, `react-native-reanimated`. We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/) depending on a use case.
 
@@ -29,7 +28,14 @@ In this chapter, we'll learn how to take a screenshot using a third-party librar
 
 To install `react-native-view-shot` and `expo-media-library`, run the following commands:
 
-<Terminal cmd={['$ npx expo install react-native-view-shot expo-media-library']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-native-view-shot expo-media-library'],
+    yarn: ['$ yarn expo install react-native-view-shot expo-media-library'],
+    pnpm: ['$ pnpm expo install react-native-view-shot expo-media-library'],
+    bun: ['$ bun expo install react-native-view-shot expo-media-library'],
+  }}
+/>
 
 </Step>
 
@@ -112,14 +118,14 @@ In the above snippet, the `collapsable` prop is set to `false`. This allows the 
 
 We can capture a screenshot of the view by calling the `captureRef()` method from `react-native-view-shot` inside the `onSaveImageAsync()` function. It accepts an optional argument where we can pass the `width` and `height` of the screenshot capturing area. We can read more about available options in [the library's documentation](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api).
 
-The `captureRef()` method also returns a promise that fulfills with the screenshot's URI. We will pass this URI as a parameter to [`MediaLibrary.saveToLibraryAsync()`](/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) and save the screenshot to the device's media library.
+The `captureRef()` method also returns a promise that fulfills with the screenshot's URI. We will pass this URI as a parameter to [`MediaLibrary.saveToLibraryAsync()`](/versions/v54.0.0/sdk/media-library/#medialibrarysavetolibraryasynclocaluri) and save the screenshot to the device's media library.
 
 Inside **app/(tabs)/index.tsx**, update the `onSaveImageAsync()` function with the following code:
 
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx|collapseHeight=440
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library/legacy';
+/* @tutinfo Import `MediaLibrary` from `expo-media-library`. */import * as MediaLibrary from 'expo-media-library';/* @end */
 import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, StyleSheet, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -260,16 +266,4 @@ Now, choose a photo and add a sticker in the app. Then tap the "Save" button. We
 
 ## Summary
 
-<ProgressTracker
-  currentChapterIndex={6}
-  name="GET_STARTED"
-  summary={
-    <>
-      We've successfully used <CODE>react-native-view-shot</CODE> and{' '}
-      <CODE>expo-media-library</CODE> to capture a screenshot and save it on the device's library.
-    </>
-  }
-  nextChapterDescription="In the next chapter, let's learn how to handle the differences between mobile and web platforms to implement the same functionality on web."
-  nextChapterTitle="Handle platform differences"
-  nextChapterLink="/tutorial/platform-differences"
-/>
+<ProgressTracker name="GET_STARTED" currentChapterSlug="/tutorial/screenshot" />

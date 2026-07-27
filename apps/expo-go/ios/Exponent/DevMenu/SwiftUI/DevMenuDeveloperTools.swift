@@ -93,8 +93,4 @@ struct DevMenuDeveloperTools: View {
   }
 }
 
-#Preview {
-  DevMenuDeveloperTools()
-}
-
 // swiftlint:enable closure_body_length

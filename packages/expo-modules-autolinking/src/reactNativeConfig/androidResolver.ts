@@ -1,13 +1,13 @@
 import fs from 'fs/promises';
 import path from 'path';
 
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { taskAll } from '../concurrency';
+import { scanFilesRecursively, fileExistsAsync, fastJoin, loadPackageJson } from '../utils';
 import type {
   RNConfigDependencyAndroid,
   RNConfigReactNativePlatformsConfigAndroid,
 } from './reactNativeConfig.types';
-import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import { taskAll } from '../concurrency';
-import { scanFilesRecursively, fileExistsAsync, fastJoin, loadPackageJson } from '../utils';
 
 export async function resolveDependencyConfigImplAndroidAsync(
   packageRoot: string,

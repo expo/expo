@@ -1,7 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 
-import { extractPickerItems } from './PickerItem';
-import type { PickerItemValue, PickerProps } from './types';
 import { DropdownMenuItem } from '../../jetpack-compose/DropdownMenu/DropdownMenuItem';
 import {
   ExposedDropdownMenuBox,
@@ -10,6 +8,8 @@ import {
 import { Text } from '../../jetpack-compose/Text';
 import { TextField, type TextFieldRef } from '../../jetpack-compose/TextField';
 import { menuAnchor, onVisibilityChanged } from '../../jetpack-compose/modifiers';
+import { extractPickerItems } from './PickerItem';
+import type { PickerItemValue, PickerProps } from './types';
 
 /**
  * Android implementation of `Picker`.

@@ -225,6 +225,178 @@ The `expo-brownfield` package provides a [config plugin](/config-plugins/introdu
   ]}
 />
 
+## Publishing artifacts
+
+The `expo-brownfield` CLI pushes Android artifacts to one or more Maven repositories, declared via `android.publishing` in your app config. The supported repository types are:
+
+| `type`           | Description                                                                                                                  |
+| ---------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `localMaven`     | Publishes to **~/.m2/repository**. Default. Useful for local host-app integration during development.                        |
+| `localDirectory` | Publishes to a local filesystem path (`path` field). Useful for checking artifacts into a sibling git repository.            |
+| `remotePublic`   | Publishes to a public Maven repository with no authentication.                                                               |
+| `remotePrivate`  | Publishes to an authenticated remote Maven repository. Credentials can be inline strings or environment-variable references. |
+
+`url`, `username`, and `password` on `remotePrivate` accept either a plain string or an `EnvValue` object (`{ "variable": "SOME_ENV_VAR" }`) that resolves the value at build time via Gradle's `providers.environmentVariable(...)`. Pin secrets to env vars so they don't end up in your committed app config.
+
+### Publishing to GitHub Packages
+
+GitHub Packages hosts a private Maven repository scoped to a GitHub repo. Authentication uses `GITHUB_ACTOR` (the user or bot name) and a [personal access token (PAT)](https://docs.github.com/en/packages/learn-github-packages/introduction-to-github-packages#authenticating-to-github-packages) with the `write:packages` and `read:packages` scopes. In GitHub Actions, the workflow's `GITHUB_TOKEN` already has the right scopes for the workflow's own repo.
+
+Add a `remotePrivate` entry to `android.publishing` pointing at the GitHub Packages URL for your test repository:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-brownfield",
+        {
+          "android": {
+            "group": "com.example",
+            "libraryName": "brownfield",
+            "publishing": [
+              { "type": "localMaven" },
+              {
+                "type": "remotePrivate",
+                "name": "GitHubPackages",
+                "url": "https://maven.pkg.github.com/<owner>/<repo>",
+                "username": { "variable": "GITHUB_ACTOR" },
+                "password": { "variable": "GITHUB_TOKEN" }
+              }
+            ]
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+The `name` field controls both the Gradle Maven repo name and the `--repo` CLI flag value. With `"name": "GitHubPackages"`, the release publish task becomes `publishBrownfieldReleasePublicationToGitHubPackagesRepository` (and `publishBrownfieldDebugPublicationToGitHubPackagesRepository` for the debug sibling). The default invocation runs both:
+
+<Terminal cmd={['$ npx expo-brownfield build:android --fused --repo GitHubPackages']} />
+
+### Publishing only the fused artifacts
+
+The non-fused publish flow emits one Maven coordinate per autolinked Expo Android module (typically 20 to 40 artifacts per release). To publish a small, curated set instead, use `--fused`. The fused mode short-circuits the publish plugin's per-module re-publish loop and only emits the fat AAR sibling(s). A repository (`--repo`) or an explicit task (`-t`) is always required, as there is no default:
+
+| Invocation                                             | Coordinates published                                                      |
+| ------------------------------------------------------ | -------------------------------------------------------------------------- |
+| `--fused --release --repo <name>`                      | `<group>:<libraryName>-fused-release:<version>`                            |
+| `--fused --debug --repo <name>`                        | `<group>:<libraryName>-fused-debug:<version>`                              |
+| `--fused --all --repo <name>` (default with `--fused`) | Both of the above (two Gradle invocations under the hood, one per variant) |
+
+That's at most two Maven coordinates published per release, independent of how many Expo modules your project autolinks. Everything else (per-module AARs, transitive Maven deps) stays out of your remote repo. Foundational libraries (AndroidX, RN runtime, Kotlin stdlib, Glide alternatives the host already has) stay external in the POM rather than fusing into the AAR.
+
+### Fused mode
+
+`--fused` publishes through two extra Gradle subprojects that prebuild always generates — `:<libraryName>-fused-release` and `:<libraryName>-fused-debug` — each producing one fat AAR via [AGP's Fused Library plugin](https://developer.android.com/build/publish-library/fused-library) (a Preview feature; the CLI temporarily forces AGP 8.13 for these builds). The subprojects are inert during normal builds: their build scripts only activate when the CLI passes `-Pbrownfield.fused=true`, so `npx expo run:android` and IDE sync pay no extra configuration cost. If you invoke a fused Gradle task directly instead of through the CLI, pass `-Pbrownfield.fused=true` yourself.
+
+Not everything is fused into the AAR. The build keeps three kinds of dependencies external and declares them as ordinary Maven dependencies in the published POM and Gradle Module Metadata, where the host app resolves them itself:
+
+- **The brownfield host baseline** — the React Native runtime (`react-android`, `hermes-android`, `fbjni`, `soloader`, `yoga`), the Kotlin stdlib, and host-provided commons (Material Components, Guava, Fresco, OkHttp, Okio). Fusing these would duplicate classes the host already ships.
+- **`androidx.*` libraries** — AGP Fused Library's class rewriter can't resolve `android:` framework attributes in their styleables, so all of AndroidX stays external except chains that must be fused for validation reasons (`androidx.camera`, `androidx.media3` by default).
+- **Auto-detected KMP umbrella modules** — pom-only coordinates whose variants all redirect to a platform module.
+
+The published metadata also annotates the `react-android` and `hermes-android` dependency edges with the sibling's build type, so a host app always resolves the same React Native variant the fused AAR's native libraries were linked against, even when a debug host consumes the release AAR.
+
+Five Gradle properties tune this behavior when a project's dependency graph needs it:
+
+| Property                              | Effect                                                                                                                                                                                             |
+| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `brownfield.fused.skip`               | Comma-separated Gradle project names to leave out of the fat AAR entirely.                                                                                                                         |
+| `brownfield.fused.strip-packages`     | Comma-separated package prefixes to remove from the generated `ExpoModulesPackageList`. Pair with `skip` to avoid `NoClassDefFoundError` for skipped modules at startup.                           |
+| `brownfield.fused.androidx-fuse`      | Extra `androidx.*` group prefixes to fuse into the AAR instead of keeping external.                                                                                                                |
+| `brownfield.fused.exclude-transitive` | Extra dependency groups to keep external (declared in the POM instead of fused).                                                                                                                   |
+| `brownfield.fused.host-provided`      | Dependency groups the host app already ships (Glide, Compose, and so on). Kept out of the AAR like `exclude-transitive`, but also not declared in the POM, so the host's own version is untouched. |
+
+Pass them as `-P` Gradle properties when invoking a fused publish task directly from the **android** directory:
+
+<Terminal
+  cmd={[
+    '$ ./gradlew :brownfield-fused-release:publishBrownfieldReleasePublicationToMavenLocal \\',
+    '    -Pbrownfield.fused=true \\',
+    '    -Pbrownfield.fused.skip=expo-camera \\',
+    '    -Pbrownfield.fused.strip-packages=expo.modules.camera.',
+  ]}
+/>
+
+> **Note**: Before fusing, check which libraries your host app already uses. If the host ships its own Glide (`expo-image` fuses Glide), Jetpack Compose (`@expo/ui`), or similar, the fused AAR's copy will collide with the host's at build time (duplicate classes) or force-upgrade it through the POM. Prefer leaving those Expo modules out of the project, or mark the shared groups as `brownfield.fused.host-provided` and align versions manually.
+
+### Sample GitHub Actions workflow
+
+```yaml .github/workflows/publish-brownfield.yml
+name: Publish brownfield fused AAR
+
+on:
+  push:
+    tags:
+      - 'brownfield-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - run: npm ci
+      - run: npx expo prebuild --platform android
+      - run: npx expo-brownfield build:android --fused --release --repo GitHubPackages
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+Trigger via `git tag brownfield-v1.0.0 && git push --tags` (or manually via the Actions tab). The workflow's built-in `GITHUB_TOKEN` is scoped to the workflow's own repo, so publishing to a third-party repo requires a PAT in a repo secret instead.
+
+### Consumer setup (host Android app)
+
+The host app's **settings.gradle.kts** (or per-module **build.gradle.kts**) declares the same GitHub Packages URL and credentials. The host app's CI/local builds must have the `GITHUB_ACTOR` and `GITHUB_TOKEN` env vars set or pulled from **~/.gradle/gradle.properties**.
+
+```kotlin android/settings.gradle.kts
+dependencyResolutionManagement {
+  repositories {
+    google()
+    mavenCentral()
+    maven {
+      url = uri("https://maven.pkg.github.com/<owner>/<repo>")
+      credentials {
+        username = providers.environmentVariable("GITHUB_ACTOR").orNull
+          ?: providers.gradleProperty("gpr.user").orNull
+        password = providers.environmentVariable("GITHUB_TOKEN").orNull
+          ?: providers.gradleProperty("gpr.token").orNull
+      }
+    }
+  }
+}
+```
+
+```kotlin android/app/build.gradle.kts
+dependencies {
+  releaseImplementation("com.example:brownfield-fused-release:1.0.0")
+  debugImplementation("com.example:brownfield-fused-debug:1.0.0")
+}
+```
+
+`releaseImplementation`/`debugImplementation` pair the variants automatically. Gradle picks the matching sibling per host build type. If your host only ships release builds, you can drop the `debugImplementation` line and publish only the release sibling with `--fused --release`.
+
+A few host app requirements and tips:
+
+- **`minSdk` must be at least 24** (React Native's floor). Hosts targeting a lower API level fail at manifest merge when they consume the AAR.
+- **Permissions merge in from the fused modules.** For example, media-related Expo modules declare storage permissions. If your host enforces a permission allowlist, strip unwanted entries in the host manifest with `tools:node="remove"` (or reconcile attribute conflicts with `tools:replace`).
+- **The AAR ships native libraries for every ABI enabled at publish time.** Without filtering, a host APK grows by all four ABIs' worth of React Native libraries. Constrain ABIs when publishing (`reactNativeArchitectures=arm64-v8a` in the Expo project's **gradle.properties**) or filter in the host with `ndk.abiFilters`/APK splits.
+
 ## CLI
 
 The `expo-brownfield` library includes a CLI for building and publishing to Maven repositories (Android) and XCFrameworks (iOS).
@@ -239,15 +411,16 @@ Builds and publishes the brownfield library and its dependencies to Maven reposi
 
 <Terminal cmd={['$ npx expo-brownfield build:android [options]']} />
 
-| Option                 | Description                                    |
-| ---------------------- | ---------------------------------------------- |
-| `-d, --debug`          | Build in debug mode                            |
-| `-r, --release`        | Build in release mode                          |
-| `-a, --all`            | Build in both debug and release mode (default) |
-| `-l, --library`        | Specify brownfield library name                |
-| `--repo, --repository` | Specify Maven repositories to publish to       |
-| `-t, --task`           | Specify Gradle publish tasks to run            |
-| `--verbose`            | Include all logs from subprocesses             |
+| Option                 | Description                                                                               |
+| ---------------------- | ----------------------------------------------------------------------------------------- |
+| `-d, --debug`          | Build in debug mode                                                                       |
+| `-r, --release`        | Build in release mode                                                                     |
+| `-a, --all`            | Build in both debug and release mode (default)                                            |
+| `--fused`              | Publish a single fat AAR per variant via AGP Fused Library. See [Fused mode](#fused-mode) |
+| `-l, --library`        | Specify brownfield library name                                                           |
+| `--repo, --repository` | Specify Maven repositories to publish to                                                  |
+| `-t, --task`           | Specify Gradle publish tasks to run                                                       |
+| `--verbose`            | Include all logs from subprocesses                                                        |
 
 #### `build:ios`
 

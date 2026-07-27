@@ -29,6 +29,8 @@ object EventLabelMapper {
       is EventLabel.Birthday -> "birthday"
       is EventLabel.Other -> "other"
       is EventLabel.Custom -> label.label
+      is EventLabel.MalformedType -> label.label
+      is EventLabel.MalformedCustom -> null
     }
   }
 }

@@ -6,8 +6,7 @@ import {
 import { getAutoPlugins } from '@expo/prebuild-config';
 
 import { attemptAddingPluginsAsync } from '../../utils/modifyConfigPlugins';
-
-const debug = require('debug')('expo:install:config-plugins') as typeof console.log;
+import { debugEvent } from '../events';
 
 const AUTO_PLUGINS = getAutoPlugins();
 
@@ -68,12 +67,10 @@ export async function autoAddConfigPluginsAsync(
   exp: Pick<ExpoConfig, 'plugins'>,
   packages: string[]
 ) {
-  debug('Checking config plugins...');
-
   const currentPlugins = exp.plugins || [];
   const normalized = getNamedPlugins(currentPlugins);
 
-  debug(`Existing plugins: ${normalized.join(', ')}`);
+  debugEvent('existing_plugins', { plugins: normalized });
 
   const plugins = packages.filter((pkg) => {
     if (normalized.includes(pkg)) {
@@ -83,10 +80,14 @@ export async function autoAddConfigPluginsAsync(
     // Check if the package has a valid plugin. Must be a well-made plugin for it to work with this.
     const plugin = packageHasConfigPlugin(projectRoot, pkg);
 
-    debug(`Package "${pkg}" has plugin: ${!!plugin}` + (plugin ? ` (args: ${plugin.length})` : ''));
+    debugEvent('package_has_plugin', {
+      package: pkg,
+      hasPlugin: !!plugin,
+      argCount: plugin ? plugin.length : null,
+    });
 
     if (AUTO_PLUGINS.includes(pkg)) {
-      debug(`Package "${pkg}" is an auto plugin, skipping...`);
+      debugEvent('auto_plugin_skipped', { package: pkg });
       return false;
     }
 

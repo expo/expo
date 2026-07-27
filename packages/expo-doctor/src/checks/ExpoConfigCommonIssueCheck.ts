@@ -2,8 +2,8 @@ import JsonFile from '@expo/json-file';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class ExpoConfigCommonIssueCheck implements DoctorCheck {
   description = 'Check Expo config for common issues';

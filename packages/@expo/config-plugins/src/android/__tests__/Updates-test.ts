@@ -84,31 +84,31 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.ENABLED'
     );
     expect(enabled).toHaveLength(1);
-    expect(enabled[0].$['android:value']).toMatch('false');
+    expect(enabled[0]!.$['android:value']).toMatch('false');
 
     const hasEmbeddedUpdate = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.HAS_EMBEDDED_UPDATE'
     );
     expect(hasEmbeddedUpdate).toHaveLength(1);
-    expect(hasEmbeddedUpdate[0].$['android:value']).toMatch('false');
+    expect(hasEmbeddedUpdate[0]!.$['android:value']).toMatch('false');
 
     const checkOnLaunch = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH'
     );
     expect(checkOnLaunch).toHaveLength(1);
-    expect(checkOnLaunch[0].$['android:value']).toMatch('ERROR_RECOVERY_ONLY');
+    expect(checkOnLaunch[0]!.$['android:value']).toMatch('ERROR_RECOVERY_ONLY');
 
     const timeout = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS'
     );
     expect(timeout).toHaveLength(1);
-    expect(timeout[0].$['android:value']).toMatch('2000');
+    expect(timeout[0]!.$['android:value']).toMatch('2000');
 
     const codeSigningCertificate = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.CODE_SIGNING_CERTIFICATE'
     );
     expect(codeSigningCertificate).toHaveLength(1);
-    expect(codeSigningCertificate[0].$['android:value']).toMatch(
+    expect(codeSigningCertificate[0]!.$['android:value']).toMatch(
       fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8')
     );
 
@@ -116,7 +116,7 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.CODE_SIGNING_METADATA'
     );
     expect(codeSigningMetadata).toHaveLength(1);
-    expect(codeSigningMetadata[0].$['android:value']).toMatch(
+    expect(codeSigningMetadata[0]!.$['android:value']).toMatch(
       '{"alg":"rsa-v1_5-sha256","keyid":"test"}'
     );
 
@@ -125,7 +125,7 @@ describe('Android Updates config', () => {
         e.$['android:name'] === 'expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY'
     );
     expect(requestHeaders).toHaveLength(1);
-    expect(requestHeaders[0].$['android:value']).toMatch(
+    expect(requestHeaders[0]!.$['android:value']).toMatch(
       '{"expo-channel-name":"test","testheader":"test"}'
     );
 
@@ -133,13 +133,13 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.ENABLE_BSDIFF_PATCH_SUPPORT'
     );
     expect(bsdiffPatchSupport).toHaveLength(1);
-    expect(bsdiffPatchSupport[0].$['android:value']).toMatch('true');
+    expect(bsdiffPatchSupport[0]!.$['android:value']).toMatch('true');
 
     const runtimeVersion = mainApplication['meta-data']?.filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
     );
     expect(runtimeVersion).toHaveLength(1);
-    expect(runtimeVersion[0].$['android:value']).toMatch('@string/expo_runtime_version');
+    expect(runtimeVersion![0]!.$['android:value']).toMatch('@string/expo_runtime_version');
   });
 
   describe('Runtime version tests', () => {
@@ -181,7 +181,7 @@ describe('Android Updates config', () => {
         (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
       );
       expect(runtimeVersion).toHaveLength(1);
-      expect(runtimeVersion && runtimeVersion[0].$['android:value']).toMatch(
+      expect(runtimeVersion && runtimeVersion[0]!.$['android:value']).toMatch(
         '@string/expo_runtime_version'
       );
     });

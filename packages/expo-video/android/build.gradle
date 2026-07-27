@@ -18,7 +18,7 @@ dependencies {
   implementation 'com.facebook.react:react-android'
 
   // Remember to keep this in sync with the version in `expo-audio`
-  def androidxMedia3Version = "1.9.0"
+  def androidxMedia3Version = "1.9.1"
   implementation "androidx.media3:media3-session:${androidxMedia3Version}"
   implementation "androidx.media3:media3-exoplayer:${androidxMedia3Version}"
   implementation "androidx.media3:media3-exoplayer-dash:${androidxMedia3Version}"
@@ -29,4 +29,6 @@ dependencies {
   def fragment_version = "1.8.9"
   implementation "androidx.fragment:fragment:$fragment_version"
   implementation "androidx.fragment:fragment-ktx:$fragment_version"
+
+  testImplementation 'junit:junit:4.13.2'
 }

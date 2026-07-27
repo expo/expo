@@ -15,7 +15,7 @@ describe(getSchemesForAndroidAsync, () => {
   it('resolves longest scheme without known expo schemes', async () => {
     jest
       .mocked(AndroidConfig.Scheme.getSchemesFromManifest)
-      .mockResolvedValue(['com.expo.test', 'com.expo.longertest', 'com.expo.longesttest']);
+      .mockReturnValue(['com.expo.test', 'com.expo.longertest', 'com.expo.longesttest']);
 
     await expect(getSchemesForAndroidAsync('/fake-project')).resolves.toEqual([
       'com.expo.longesttest',
@@ -27,7 +27,7 @@ describe(getSchemesForAndroidAsync, () => {
   it('resolves known expo schemes before longest schemes', async () => {
     jest
       .mocked(AndroidConfig.Scheme.getSchemesFromManifest)
-      .mockResolvedValue(['com.expo.longesttest', 'exp+com.expo.test']);
+      .mockReturnValue(['com.expo.longesttest', 'exp+com.expo.test']);
 
     await expect(getSchemesForAndroidAsync('/fake-project')).resolves.toEqual([
       'exp+com.expo.test',

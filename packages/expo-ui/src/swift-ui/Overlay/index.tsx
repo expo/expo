@@ -4,14 +4,14 @@ import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type Alignment, type CommonViewModifierProps } from '../types';
 
-export type OverlayProps = {
+export interface OverlayProps extends CommonViewModifierProps {
   children: React.ReactNode;
   /**
    * The alignment of the overlay content relative to the base content.
    * @default 'center'
    */
   alignment?: Alignment;
-} & CommonViewModifierProps;
+}
 
 const OverlayNativeView: React.ComponentType<OverlayProps> = requireNativeView(
   'ExpoUI',

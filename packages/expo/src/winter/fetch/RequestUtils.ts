@@ -1,6 +1,6 @@
+import { blobToArrayBufferAsync } from '../../utils/blobUtils';
 import type { NativeHeadersType } from './NativeRequest';
 import { convertFormDataAsync } from './convertFormData';
-import { blobToArrayBufferAsync } from '../../utils/blobUtils';
 
 /**
  * convert a ReadableStream to a Uint8Array

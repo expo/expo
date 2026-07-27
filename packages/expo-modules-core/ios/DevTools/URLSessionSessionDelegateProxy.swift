@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 /**
- Shared URLSessionDelegate instance and delete calls back to ExpoRequestInterceptorProtocol instances.
+ Shared URLSessionDelegate instance and delegates calls back to ExpoRequestInterceptorProtocol instances.
  */
 public final class URLSessionSessionDelegateProxy: NSObject, URLSessionDataDelegate {
   private let dispatchQueue: DispatchQueue

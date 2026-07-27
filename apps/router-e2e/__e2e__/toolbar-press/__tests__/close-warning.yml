@@ -1,0 +1,10 @@
+appId: dev.expo.routere2e
+---
+# Dismiss the React Native dev warning toast if it is showing.
+- runFlow:
+    when:
+      visible: "!, Open debugger to view warnings."
+    commands:
+      - tapOn:
+          point: 96%,93%
+      - assertNotVisible: "!, Open debugger to view warnings."

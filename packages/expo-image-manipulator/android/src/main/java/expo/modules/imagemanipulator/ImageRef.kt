@@ -1,10 +1,10 @@
 package expo.modules.imagemanipulator
 
 import android.graphics.Bitmap
-import expo.modules.kotlin.RuntimeContext
+import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.sharedobjects.SharedRef
 
-class ImageRef(bitmap: Bitmap, runtimeContext: RuntimeContext) : SharedRef<Bitmap>(bitmap, runtimeContext) {
+class ImageRef(bitmap: Bitmap, runtime: Runtime) : SharedRef<Bitmap>(bitmap, runtime) {
   override val nativeRefType: String = "image"
 
   override fun getAdditionalMemoryPressure(): Int {

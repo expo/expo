@@ -1,8 +1,10 @@
 import assert from 'node:assert/strict';
+import path from 'node:path';
 import { describe, it } from 'node:test';
 
-import type { SPMProduct } from './SPMConfig.types';
+import type { SPMProduct, SwiftTarget } from './SPMConfig.types';
 import {
+  buildSwiftSettings,
   expandTransitiveExternalDeps,
   findSiblingProductDependencies,
   type ExternalDepResolver,
@@ -110,5 +112,83 @@ describe('expandTransitiveExternalDeps', () => {
   it('terminates on cycles', () => {
     const resolver = makeResolver({ 'pkg-a/A': ['pkg-b/B'], 'pkg-b/B': ['pkg-a/A'] });
     assert.deepEqual(expandTransitiveExternalDeps(['pkg-a/A'], resolver), ['pkg-a/A', 'pkg-b/B']);
+  });
+});
+
+describe('buildSwiftSettings ExpoModulesMacros plugin flags', () => {
+  const makeSwiftTarget = (name: string): SwiftTarget => ({
+    type: 'swift',
+    name,
+    path: 'ios',
+    pattern: '**/*.swift',
+  });
+
+  const hasMacroPluginFlags = (settings: string[]): boolean =>
+    settings.some(
+      (line) => line.includes('-load-plugin-executable') && line.includes('#ExpoModulesMacros')
+    );
+
+  const macroToolPathSegment = path.join(
+    'node_modules',
+    '@expo',
+    'expo-modules-macros-plugin',
+    'apple',
+    'ExpoModulesMacros-tool'
+  );
+
+  it('should emit load-plugin-executable flags for the ExpoModulesCore swift target', () => {
+    const settings = buildSwiftSettings(
+      ['ReactNativeDependencies', 'React', 'Hermes', 'expo-modules-jsi/ExpoModulesJSI'],
+      null,
+      '/tmp/pkg',
+      'Debug',
+      makeSwiftTarget('ExpoModulesCore')
+    );
+    assert.ok(
+      hasMacroPluginFlags(settings),
+      `expected macro plugin flags in swiftSettings, got:\n${settings.join('\n')}`
+    );
+    assert.ok(
+      settings.some((line) => line.includes(macroToolPathSegment)),
+      `expected macro plugin executable path in swiftSettings, got:\n${settings.join('\n')}`
+    );
+  });
+
+  it('should emit load-plugin-executable flags for a target that depends directly on ExpoModulesCore', () => {
+    const settings = buildSwiftSettings(
+      ['Hermes', 'React', 'ExpoModulesCore'],
+      null,
+      '/tmp/pkg',
+      'Debug',
+      makeSwiftTarget('ExpoModulesWorklets')
+    );
+    assert.ok(hasMacroPluginFlags(settings));
+  });
+
+  it('should emit load-plugin-executable flags for a target that depends on ExpoModulesCore via the cross-package form', () => {
+    const settings = buildSwiftSettings(
+      ['Hermes', 'expo-modules-core/ExpoModulesCore'],
+      null,
+      '/tmp/pkg',
+      'Debug',
+      makeSwiftTarget('ExpoCrypto')
+    );
+    assert.ok(hasMacroPluginFlags(settings));
+  });
+
+  it('should not emit load-plugin-executable flags for a target unrelated to ExpoModulesCore', () => {
+    const settings = buildSwiftSettings(
+      ['Hermes', 'React', 'ReactNativeDependencies'],
+      null,
+      '/tmp/pkg',
+      'Debug',
+      makeSwiftTarget('ExpoModulesJSI')
+    );
+    assert.equal(hasMacroPluginFlags(settings), false);
+  });
+
+  it('should not emit load-plugin-executable flags when no swift target is provided', () => {
+    const settings = buildSwiftSettings(['ExpoModulesCore'], null, '/tmp/pkg', 'Debug');
+    assert.equal(hasMacroPluginFlags(settings), false);
   });
 });

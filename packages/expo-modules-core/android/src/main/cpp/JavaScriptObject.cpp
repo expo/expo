@@ -58,6 +58,12 @@ std::shared_ptr<jsi::Object> JavaScriptObject::get() {
   return jsObject;
 }
 
+jsi::Runtime &JavaScriptObject::getRuntime() {
+  auto runtime = runtimeHolder.lock();
+  assert((runtime != nullptr) && "JS Runtime was used after deallocation");
+  return runtime->get();
+}
+
 bool JavaScriptObject::hasProperty(const std::string &name) {
   auto runtime = runtimeHolder.lock();
   assert((runtime != nullptr) && "JS Runtime was used after deallocation");

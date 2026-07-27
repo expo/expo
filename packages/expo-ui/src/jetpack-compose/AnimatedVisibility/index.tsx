@@ -163,7 +163,7 @@ export const ExitTransition = {
     createExitTransition([{ type: 'scaleOut', ...params }]),
 };
 
-export type AnimatedVisibilityProps = {
+export interface AnimatedVisibilityProps extends PrimitiveBaseProps {
   children?: React.ReactNode;
   /**
    * Whether the content is visible. When changed, the content will animate in or out.
@@ -181,7 +181,7 @@ export type AnimatedVisibilityProps = {
    * Defaults to Compose's `fadeOut + shrinkOut` when not specified.
    */
   exitTransition?: ExitTransitionType;
-} & PrimitiveBaseProps;
+}
 
 type AnimatedVisibilityNativeProps = Omit<
   AnimatedVisibilityProps,

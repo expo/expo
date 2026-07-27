@@ -134,7 +134,7 @@ If the method returns `ERR_APP_INTEGRITY_SERVER_UNAVAILABLE` error, try attestat
 
 > **info** If your app already has millions of daily active users and you want to start calling the `attestKey` method to initiate attestation from your app, review the [Preparing to use the app attest service](https://developer.apple.com/documentation/DeviceCheck/preparing-to-use-the-app-attest-service) for guidance on safely ramping your users.
 
-Your server deems the app instance to be valid if it can successfully verify the attestation object. In this case, be sure to persistently store the key identifier &mdash; not the attestation object &mdash; in your app to sign server requests in the future.
+Your server deems the app instance to be valid if it can successfully verify the attestation object. In this case, be sure to persistently store the key identifier — not the attestation object — in your app to sign server requests in the future.
 
 ### Generate assertions on sensitive requests
 

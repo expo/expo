@@ -34,12 +34,11 @@ Standalone apps need some extra configuration: on iOS, each background feature r
 
 Read more about how to configure this in the reference for each of the [libraries](#libraries-using-expo-taskmanager) that use `TaskManager`.
 
-## Example
+## Usage
 
 <SnackInline dependencies={["expo-task-manager", "expo-location"]} platforms={['android', 'ios']}>
 
 ```jsx
-import React from 'react';
 import { Button, View, StyleSheet } from 'react-native';
 import * as TaskManager from 'expo-task-manager';
 import * as Location from 'expo-location';
@@ -64,6 +63,8 @@ const PermissionsButton = () => (
   </View>
 );
 
+// Define the task at module scope so the background runtime can find it.
+// This needs to be called in the global scope, not in a React component.
 TaskManager.defineTask(LOCATION_TASK_NAME, ({ data, error }) => {
   if (error) {
     // Error occurred - check `error.message` for more details.
@@ -87,6 +88,8 @@ export default PermissionsButton;
 ```
 
 </SnackInline>
+
+> **info** **Note:** [`TaskManager.defineTask`](#taskmanagerdefinetasktaskname-taskexecutor) must be called at module scope, not inside a React component. The example above places it at module scope inside the screen file, which works for non-router apps. In Expo Router projects, move it to a separate file (for example **tasks.ts**) and import that file at the top of your root layout (**app/\_layout.tsx**) so the task is registered before any navigation runs.
 
 ## API
 

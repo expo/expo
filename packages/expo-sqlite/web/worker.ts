@@ -2,11 +2,11 @@
 
 /// <reference types="./wa-sqlite/types" />
 
+import { type Changeset } from '../src/NativeSession';
+import { type SQLiteColumnNames, type SQLiteColumnValues } from '../src/NativeStatement';
 import { createSQLAction } from './SQLAction';
 import { SQLiteOptions } from './SQLiteOptions';
 import { sendWorkerResult } from './WorkerChannel';
-import { type Changeset } from '../src/NativeSession';
-import { type SQLiteColumnNames, type SQLiteColumnValues } from '../src/NativeStatement';
 import { AccessHandlePoolVFS } from './wa-sqlite/AccessHandlePoolVFS';
 import { MemoryVFS } from './wa-sqlite/MemoryVFS';
 import * as SQLite from './wa-sqlite/sqlite-api';

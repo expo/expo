@@ -1,5 +1,9 @@
 name: Smoke Test Precompiled iOS XCFrameworks
 
+defaults:
+  tools:
+    pnpm: '10.34.5'
+
 on:
   workflow_dispatch:
     inputs:

@@ -1,0 +1,7 @@
+extends: existence
+message: 'Use triple backticks for code fences.'
+level: error
+scope: raw
+nonword: true
+tokens:
+  - '(?m)^[ \t]{0,3}`{4,}[^\n]*$'

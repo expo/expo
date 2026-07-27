@@ -1,7 +1,5 @@
 #include "Worklet.h"
 
-#if WORKLETS_ENABLED
-
 #include "../types/JNIToJSIConverter.h"
 
 namespace expo {
@@ -90,5 +88,3 @@ void Worklet::executeWithArgs(
 }
 
 } // namespace expo
-
-#endif

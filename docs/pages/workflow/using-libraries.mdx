@@ -93,7 +93,14 @@ To determine if a new dependency changes native project directories, you can che
 
 **Not listed on the directory?** You can find the project on GitHub. A simple way to do this is with `npx npm-home --github <package-name>`. For example, to open the GitHub page for `react-native-localize`, run:
 
-<Terminal cmd={['$ npx npm-home --github react-native-localize']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx npm-home --github react-native-localize'],
+    yarn: ['$ yarn dlx npm-home --github react-native-localize'],
+    pnpm: ['$ pnpm dlx npm-home --github react-native-localize'],
+    bun: ['$ bunx npm-home --github react-native-localize'],
+  }}
+/>
 
 > If you want some help determining library compatibility, [create an issue on the React Native Directory repository](https://github.com/react-native-community/directory/issues/new/choose) and let us know. This will not just help you, it will also help other developers have an easy answer in the future!
 
@@ -103,11 +110,25 @@ To determine if a new dependency changes native project directories, you can che
 
 Once you have determined if the library is compatible with React Native, use [Expo CLI](/more/expo-cli/) to install the package:
 
-<Terminal cmd={['$ npx expo install @react-navigation/native']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @react-navigation/native'],
+    yarn: ['$ yarn expo install @react-navigation/native'],
+    pnpm: ['$ pnpm expo install @react-navigation/native'],
+    bun: ['$ bun expo install @react-navigation/native'],
+  }}
+/>
 
 Be sure to follow the project website or README for any additional configuration and usage instructions. You can get to the README quickly using this command:
 
-<Terminal cmd={['$ npx npm-home @react-navigation/native']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx npm-home @react-navigation/native'],
+    yarn: ['$ yarn dlx npm-home @react-navigation/native'],
+    pnpm: ['$ pnpm dlx npm-home @react-navigation/native'],
+    bun: ['$ bunx npm-home @react-navigation/native'],
+  }}
+/>
 
 If the module needs additional native configuration, you can do so using [config plugins](/config-plugins/introduction/). Some packages require a config plugin but they don't have one yet, you can refer to the list of [out-of-tree config plugins](https://github.com/expo/config-plugins/).
 

@@ -1,4 +1,4 @@
-import React from 'react';
+import { createElement } from 'react';
 
 import { renderInShadowRoot } from './utils/renderInShadowRoot';
 
@@ -19,7 +19,7 @@ export function setupLogBox(): void {
     const ErrorToast = require('./toast/ErrorToast')
       .default as typeof import('./toast/ErrorToast').default;
 
-    renderInShadowRoot('error-toast', React.createElement(ErrorToast));
+    renderInShadowRoot('error-toast', createElement(ErrorToast));
     isInstalled = true;
   }
 }

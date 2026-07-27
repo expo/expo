@@ -1,10 +1,17 @@
 #import "EXTaskServiceHelper.h"
-#import <ExpoTaskManager/EXTaskService.h>
 
 @implementation EXTaskServiceHelper
 
 + (nullable id<EXTaskServiceInterface>)sharedTaskService {
-  return (id<EXTaskServiceInterface>)EXTaskService.shared;
+  Class taskServiceClass = NSClassFromString(@"EXTaskService");
+  if (![taskServiceClass respondsToSelector:@selector(shared)]) {
+    return nil;
+  }
+  id instance = [taskServiceClass performSelector:@selector(shared)];
+  if (![instance conformsToProtocol:@protocol(EXTaskServiceInterface)]) {
+    return nil;
+  }
+  return (id<EXTaskServiceInterface>)instance;
 }
 
 @end

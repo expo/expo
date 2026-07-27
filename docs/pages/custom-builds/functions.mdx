@@ -18,7 +18,14 @@ EAS Build functions are a great way to extend the functionality of custom builds
 
 The easiest way to create an EAS Build function is to use the `create-eas-build-function` CLI tool. By running the following command from the same directory as your **eas.json** file, you can create a new custom TypeScript function:
 
-<Terminal cmd={['$ npx create-eas-build-function@latest ./.eas/build/myFunction']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx create-eas-build-function@latest ./.eas/build/myFunction'],
+    yarn: ['$ yarn create eas-build-function ./.eas/build/myFunction'],
+    pnpm: ['$ pnpm create eas-build-function ./.eas/build/myFunction'],
+    bun: ['$ bun create eas-build-function ./.eas/build/myFunction'],
+  }}
+/>
 
 This creates a new module called `myFunction` in the **.eas/build** directory. The module will contain a pre-generated module configuration and the **src** directory with the **index.ts** file containing the default TypeScript function template.
 
@@ -64,7 +71,14 @@ export default myFunction;
 
 Functions must be compiled to a single JavaScript file that can be run without installing any dependencies. The default `build` script for generated functions uses [ncc](https://github.com/vercel/ncc) to compile your function into a single file with all its dependencies. If you don't have the `ncc` installed globally on your machine, run `npm install -g @vercel/ncc` to install it. Next, run the build script in the **.eas/build/myFunction** directory:
 
-<Terminal cmd={['$ npm run build']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run build'],
+    yarn: ['$ yarn run build'],
+    pnpm: ['$ pnpm run build'],
+    bun: ['$ bun run build'],
+  }}
+/>
 
 This command triggers the `build` script placed in the **package.json** file of your custom function module.
 

@@ -114,6 +114,12 @@ If you are using the [default](/more/create-expo/#--template) template to create
       default: 'undefined',
     },
     {
+      name: 'pageHeaders',
+      description:
+        "An array of header rules that are set on a specific page's response from the server. Each rule should have `source` and `headers`. Rules only apply to page responses, not API routes or data loaders.",
+      default: 'undefined',
+    },
+    {
       name: 'disableSynchronousScreensUpdates',
       description:
         'Disable synchronous layout updates for native screens. This can help with performance in some cases.',

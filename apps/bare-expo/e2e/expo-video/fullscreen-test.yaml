@@ -4,29 +4,45 @@ jsEngine: graaljs
 ---
 - openLink: bareexpo://components/video/fullscreen
 
-- tapOn: "Enter Fullscreen"
+- tapOn: 'Enter Fullscreen'
 - runFlow:
-      when:
-          platform: Android
-      commands:
-          # Dismiss the android system fullscreen instruction popup
-          - tapOn:
-                text: "Got it"
-                optional: true
-          - assertVisible:
-                id: "dev.expo.payments:id/exo_content_frame"
+    when:
+      platform: Android
+    commands:
+      # Dismiss the android system fullscreen instruction popup
+      - tapOn:
+          text: 'Got it'
+          optional: true
+      - assertVisible:
+          id: 'dev.expo.payments:id/exo_content_frame'
+
+# Once the fullscreen player is shown it covers the in-app button, so this confirms
+# we actually entered fullscreen on both platforms. (On iOS the native player title
+# is not asserted because its controls auto-hide and would flake on slow simulators.)
+- assertNotVisible: 'Enter Fullscreen'
+
+# Exit fullscreen. Android has a dedicated exit button in the bottom-right of the
+# custom fullscreen activity.
 - runFlow:
-      when:
-          platform: iOS
-      commands:
-          - assertVisible: "Video"
+    when:
+      platform: Android
+    commands:
+      - tapOn:
+          point: 94%,97%
+          delay: 400
+          repeat: 2
+# iOS uses the native AVPlayerViewController chrome, whose controls auto-hide. Tap the
+# center to reveal them, then tap the close button in the top-left exactly once: a
+# second tap would land on the screen's back button and navigate away from the test.
+- runFlow:
+    when:
+      platform: iOS
+    commands:
+      - tapOn:
+          point: 50%,50%
+      - tapOn:
+          point: 11%,10%
 
-- assertNotVisible: "Enter Fullscreen"
-- tapOn:
-    point: '${maestro.platform == "android" ? "94%,97%" : "11%,10%"}'
-    delay: 400
-    repeat: 2
-
-- assertVisible: "Enter Fullscreen"
-- assertVisible: "0 = onFullscreenEnter"
-- assertVisible: "1 = onFullscreenExit"
+- assertVisible: 'Enter Fullscreen'
+- assertVisible: '0 = onFullscreenEnter'
+- assertVisible: '1 = onFullscreenExit'

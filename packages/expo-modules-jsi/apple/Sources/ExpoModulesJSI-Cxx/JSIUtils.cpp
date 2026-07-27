@@ -1,5 +1,7 @@
 #include "JSIUtils.h"
 
+#include <hermes/hermes.h>
+
 namespace expo {
 
 jsi::Runtime* createHermesRuntime() {

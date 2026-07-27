@@ -2,10 +2,10 @@
 
 import { useSyncExternalStore } from 'react';
 
+import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
 import type { UrlObject } from './getRouteInfoFromState';
 import { routeInfoSubscribe } from './routeInfoCache';
 import { store } from './store';
-import { usePreviewInfo } from '../link/preview/PreviewRouteContext';
 
 export function useRouteInfo(): UrlObject {
   const routeInfo = useSyncExternalStore(

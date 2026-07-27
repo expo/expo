@@ -7,6 +7,11 @@
 @protocol RCTHostRuntimeDelegate;
 
 NS_SWIFT_NAME(ExpoReactNativeFactoryObjC)
+#if !TARGET_OS_OSX
 @interface EXReactNativeFactory : RCTReactNativeFactory <RCTHostDelegate>
+#else
+// TODO: remove when bumping to react-native-macos 0.85
+@interface EXReactNativeFactory : RCTReactNativeFactory <RCTHostDelegate, RCTHostRuntimeDelegate>
+#endif
 
 @end

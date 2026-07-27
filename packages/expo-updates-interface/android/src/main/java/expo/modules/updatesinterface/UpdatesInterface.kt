@@ -63,6 +63,7 @@ interface UpdatesDevLauncherInterface : UpdatesInterface {
   var updatesInterfaceCallbacks: WeakReference<UpdatesInterfaceCallbacks>?
 
   fun reset()
+  fun setIsUsingEmbeddedAssets(isUsingEmbeddedAssets: Boolean) {}
   fun fetchUpdateWithConfiguration(configuration: HashMap<String, Any>, callback: UpdateCallback)
   fun isValidUpdatesConfiguration(configuration: HashMap<String, Any>): Boolean
 }

@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { Log } from '../utils/log';
 import type { VersionedNativeModuleNamesCache } from '../utils/versionedNativeModules';
 import { getVersionedNativeModuleNamesAsync } from '../utils/versionedNativeModules';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 interface PackageJson {
   name: string;

@@ -1,6 +1,12 @@
-import { type ExpoConfig, getConfig } from '@expo/config';
+import { events } from '2g';
+import { type ExpoConfig, getConfig, getPlatformsFromConfig } from '@expo/config';
 import { getMetroServerRoot } from '@expo/config/paths';
+import type { createStableModuleIdFactory } from '@expo/metro-config';
+import { loadUserConfig } from '@expo/metro-config';
+import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
+import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
 import type { Reporter } from '@expo/metro/metro';
+import { Terminal } from '@expo/metro/metro-core';
 import type Bundler from '@expo/metro/metro/Bundler';
 import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import type { TransformOptions } from '@expo/metro/metro/DeltaBundler/Worker';
@@ -9,17 +15,20 @@ import type MetroHmrServer from '@expo/metro/metro/HmrServer';
 import RevisionNotFoundError from '@expo/metro/metro/IncrementalBundler/RevisionNotFoundError';
 import type MetroServer from '@expo/metro/metro/Server';
 import formatBundlingError from '@expo/metro/metro/lib/formatBundlingError';
-import { mergeConfig, resolveConfig, type ConfigT } from '@expo/metro/metro-config';
-import { Terminal } from '@expo/metro/metro-core';
-import type { createStableModuleIdFactory } from '@expo/metro-config';
-import { getDefaultConfig } from '@expo/metro-config';
-import { patchTransformFileForPackedMaps } from '@expo/metro-config/build/serializer/packedMap';
-import { patchMetroSourceMapStringForPackedMaps } from '@expo/metro-config/build/serializer/sourceMap';
-import { resolveBabelrcName } from '@expo/metro-config/exports';
 import chalk from 'chalk';
 import type http from 'http';
 import path from 'path';
 
+import { Log } from '../../../log';
+import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
+import { shouldReduceLogs } from '../../../utils/interactive';
+import type DevToolsPluginManager from '../DevToolsPluginManager';
+import { DevToolsPluginEndpoint } from '../DevToolsPluginManager';
+import { createCorsMiddleware } from '../middleware/CorsMiddleware';
+import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
+import { prependMiddleware } from '../middleware/mutations';
+import { getPlatformBundlers } from '../platformBundlers';
 import { createDevToolsPluginWebsocketEndpoint } from './DevToolsPluginWebsocketEndpoint';
 import type { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
@@ -29,38 +38,33 @@ import { createDebugMiddleware } from './debugging/createDebugMiddleware';
 import { createMetroMiddleware } from './dev-server/createMetroMiddleware';
 import { runServer, type ServerAddressInfo, type SecureServerOptions } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
-import { events, shouldReduceLogs } from '../../../events';
-import { Log } from '../../../log';
-import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
-import { createCorsMiddleware } from '../middleware/CorsMiddleware';
-import { createJsInspectorMiddleware } from '../middleware/inspector/createJsInspectorMiddleware';
-import { prependMiddleware } from '../middleware/mutations';
-import { getPlatformBundlers } from '../platformBundlers';
 
-// prettier-ignore
-export const event = events('metro', (t) => [
-  t.event<'config', {
-    serverRoot: string;
-    projectRoot: string;
-    exporting: boolean;
-    flags: {
-      autolinkingModuleResolution: boolean;
-      serverActions: boolean;
-      serverComponents: boolean;
-      reactCompiler: boolean;
-      optimizeGraph?: boolean;
-      treeshaking?: boolean;
-      logbox?: boolean;
+declare module '2g' {
+  interface EventRegistry {
+    'metro:config': {
+      serverRoot: string;
+      projectRoot: string;
+      exporting: boolean;
+      flags: {
+        autolinkingModuleResolution: boolean;
+        serverActions: boolean;
+        serverComponents: boolean;
+        reactCompiler: boolean;
+        optimizeGraph?: boolean;
+        treeshaking?: boolean;
+        logbox?: boolean;
+      };
     };
-  }>(),
-  t.event<'instantiate', {
-    atlas: boolean;
-    workers: number | null;
-    host: string | null;
-    port: number | null;
-  }>(),
-]);
+    'metro:instantiate': {
+      atlas: boolean;
+      workers: number | null;
+      host: string | null;
+      port: number | null;
+    };
+  }
+}
+
+export const event = events('metro');
 
 // NOTE(@kitten): We pass a custom createStableModuleIdFactory function into the Metro module ID factory sometimes
 interface MetroServerWithModuleIdMod extends MetroServer {
@@ -196,9 +200,15 @@ export async function loadMetroConfigAsync(
   const serverRoot = getMetroServerRoot(projectRoot);
   const isWorkspace = serverRoot !== projectRoot;
 
-  // Autolinking Module Resolution will be enabled by default when we're in a monorepo
+  // Out-of-tree platforms (tvos/macos) rely on the autolinking module resolver to remap the
+  // react-native package to their support package, and require autolinking module resolution
+  const targetsOutOfTreePlatform = getPlatformsFromConfig(projectRoot, exp).some(
+    (platform) => platform === 'tvos' || platform === 'macos'
+  );
+
+  // Autolinking Module Resolution is enabled by default in a monorepo or for out-of-tree platforms.
   const autolinkingModuleResolutionEnabled =
-    exp.experiments?.autolinkingModuleResolution ?? isWorkspace;
+    exp.experiments?.autolinkingModuleResolution ?? (isWorkspace || targetsOutOfTreePlatform);
 
   const serverActionsEnabled =
     exp.experiments?.reactServerFunctions ?? env.EXPO_UNSTABLE_SERVER_FUNCTIONS;
@@ -218,20 +228,15 @@ export async function loadMetroConfigAsync(
 
   const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
-  // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
-  const configPath = env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined;
-  const resolvedConfig = await resolveConfig(configPath, projectRoot);
-  const defaultConfig = getDefaultConfig(projectRoot);
+  let config = await loadUserConfig({
+    projectRoot,
+    serverRoot,
+    // NOTE: Allow external tools to override the metro config. This is considered internal and unstable
+    overrideConfigPath: env.EXPO_OVERRIDE_METRO_CONFIG ?? undefined,
+  });
 
-  let config: ConfigT = resolvedConfig.isEmpty
-    ? defaultConfig
-    : await mergeConfig(defaultConfig, resolvedConfig.config);
-
-  // Set the watchfolders to include the projectRoot, as Metro assumes this
-  // Force-override the reporter
   config = {
     ...config,
-
     // See: `overrideConfigWithArguments` https://github.com/facebook/metro/blob/5059e26/packages/metro-config/src/loadConfig.js#L274-L339
     // Compare to `LoadOptions` type (disregard `reporter` as we don't expose this)
     resetCache: !!options.resetCache,
@@ -240,10 +245,7 @@ export async function loadMetroConfigAsync(
       ...config.server,
       port: options.port ?? config.server.port,
     },
-
-    watchFolders: !config.watchFolders.includes(config.projectRoot)
-      ? [config.projectRoot, ...config.watchFolders]
-      : config.watchFolders,
+    // Force-override the reporter
     reporter: {
       update(event) {
         terminalReporter.update(event);
@@ -254,23 +256,10 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  // NOTE(@kitten): Pass a hint to the transformer on where to find the Babel config
-  asWritable(config.transformer).extendsBabelConfigPath =
-    config.transformer.enableBabelRCLookup !== false ? resolveBabelrcName(projectRoot) : undefined;
-
   // On-Demand Filesystem is enabled by default
   // TODO(@kitten): Add to config-types JSON schema
   const onDemandFilesystem = exp.experiments?.onDemandFilesystem ?? true;
   asWritable(config.resolver).unstable_onDemandFilesystem = onDemandFilesystem;
-
-  // NOTE(@kitten): `useWatchman` is currently enabled by default, but it also disables `forceNodeFilesystemAPI`.
-  // If we instead set it to the special value `null`, it gets enables but also bypasses the "native find" codepath,
-  // which is slower than just using the Node filesystem API
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
-  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
-  if (config.resolver.useWatchman === true) {
-    asWritable(config.resolver).useWatchman = null as any;
-  }
 
   globalThis.__requireCycleIgnorePatterns = config.resolver?.requireCycleIgnorePatterns;
 
@@ -365,7 +354,12 @@ export async function instantiateMetroAsync(
     exp = getConfig(metroBundler.projectRoot, {
       skipSDKVersionRequirement: true,
     }).exp,
-  }: { isExporting: boolean; exp?: ExpoConfig }
+    devToolsPluginManager,
+  }: {
+    isExporting: boolean;
+    exp?: ExpoConfig;
+    devToolsPluginManager: DevToolsPluginManager;
+  }
 ): Promise<{
   metro: MetroServer;
   hmrServer: MetroHmrServer<MetroHmrClient> | null;
@@ -376,6 +370,8 @@ export async function instantiateMetroAsync(
 }> {
   const projectRoot = metroBundler.projectRoot;
   const getMetroBundler = () => metro.getBundler().getBundler();
+
+  const doneInstantiate = event.span();
 
   const {
     config: metroConfig,
@@ -427,6 +423,25 @@ export async function instantiateMetroAsync(
 
     const devtoolsWebsocketEndpoints = createDevToolsPluginWebsocketEndpoint();
     Object.assign(websocketEndpoints, devtoolsWebsocketEndpoints);
+
+    // Register WebSocket endpoints contributed by DevTools plugins. A plugin's `serverEntryPoint`
+    // exports a `webSocketHandlers` map (route -> connection handler); each becomes a `ws` server
+    // mounted at `/_expo/plugins/<name>/<route>`, reusing Metro's exact-path upgrade dispatch (and
+    // its shutdown cleanup). Endpoints must be known before the server starts, so unlike the
+    // fetch-based request handler, plugin server modules are loaded eagerly here.
+    for (const plugin of await devToolsPluginManager.queryPluginsAsync()) {
+      try {
+        for (const [route, server] of Object.entries(await plugin.getWebSocketServersAsync())) {
+          Object.assign(websocketEndpoints, {
+            [`${DevToolsPluginEndpoint}/${plugin.packageName}${route}`]: server,
+          });
+        }
+      } catch (error: any) {
+        Log.warn(
+          `Skipping WebSocket endpoints for DevTools plugin "${plugin.packageName}": ${error.message ?? error}`
+        );
+      }
+    }
   }
 
   // Attach Expo Atlas if enabled
@@ -471,7 +486,7 @@ export async function instantiateMetroAsync(
     );
   });
 
-  event('instantiate', {
+  doneInstantiate('instantiate', {
     atlas: env.EXPO_ATLAS,
     workers: metroConfig.maxWorkers ?? null,
     host: address?.address ?? null,
@@ -651,7 +666,7 @@ function pruneCustomTransformOptions(
   if (typeof routerRoot === 'string') {
     const isRouterEntry = /\/expo-router\/_ctx/.test(filePath);
     // The router root is used all over expo-router (`process.env.EXPO_ROUTER_ABS_APP_ROOT`, `process.env.EXPO_ROUTER_APP_ROOT`) so we'll just ignore the entire package.
-    const isRouterModule = /\/expo-router\/build\//.test(filePath);
+    const isRouterModule = /\/expo-router\/(?:build|src)\//.test(filePath);
     // Any page/router inside the expo-router app folder may access the `routerRoot` option to determine whether it's in the app folder
     const resolvedRouterRoot = path.resolve(projectRoot, routerRoot).split(path.sep).join('/');
     const isRouterRoute = path.isAbsolute(filePath) && filePath.startsWith(resolvedRouterRoot);
@@ -666,7 +681,7 @@ function pruneCustomTransformOptions(
   if (
     transformOptions.customTransformOptions?.asyncRoutes &&
     // The async routes settings are also used in `expo-router/_ctx.ios.js` (and other platform variants) via `process.env.EXPO_ROUTER_IMPORT_MODE`
-    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/build\//))
+    !(filePath.match(/\/expo-router\/_ctx/) || filePath.match(/\/expo-router\/(?:build|src)\//))
   ) {
     delete transformOptions.customTransformOptions.asyncRoutes;
   }
@@ -683,7 +698,7 @@ function pruneCustomTransformOptions(
 }
 
 /**
- * Simplify and communicate if Metro is running without watching file updates,.
+ * Simplify and communicate if Metro is running without watching file updates.
  * Exposed for testing.
  */
 export function isWatchEnabled() {

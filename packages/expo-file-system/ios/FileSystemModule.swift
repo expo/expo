@@ -1,11 +1,18 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+#if os(iOS)
+import QuickLook
+#endif
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
   #if os(iOS)
   private lazy var filePickingHandler = FilePickingHandler(module: self)
+  private var previewSession: FileSystemPreviewSession?
+  private var isPresentingPreview = false
+  private weak var previewController: QLPreviewController?
+  private var deferredPreview: (file: FileSystemFile, options: FilePreviewOptions?, promise: Promise)?
   #endif
 
   private let downloadStore = DownloadTaskStore()
@@ -34,10 +41,119 @@ public final class FileSystemModule: Module {
     return attributes[.systemFreeSize] as? Int64
   }
 
+  private func writeToFile(
+    _ file: FileSystemFile,
+    content: Either<String, NativeArrayBuffer>,
+    options: WriteOptions?
+  ) throws {
+    let append = options?.append ?? false
+    if let content: String = content.get() {
+      if options?.encoding == WriteEncoding.base64 {
+        guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
+          throw UnableToWriteBase64DataException(file.url.absoluteString)
+        }
+        try file.write(data, append: append)
+      } else {
+        try file.write(content, append: append)
+      }
+    } else if let content: NativeArrayBuffer = content.get() {
+      try file.write(content, append: append)
+    }
+  }
+
+  #if os(iOS)
+  private func presentPreview(file: FileSystemFile, options: FilePreviewOptions?, promise: Promise) throws {
+    guard let currentViewController = appContext?.utilities?.currentViewController() else {
+      throw FilePreviewMissingViewControllerException()
+    }
+
+    let scopedAccess = try makeScopedAccess(for: file, permission: .read)
+    guard file.exists else {
+      throw FilePreviewFileNotFoundException(file.url)
+    }
+    let item = FileSystemPreviewItem(url: file.url, title: options?.title)
+    guard QLPreviewController.canPreview(item) else {
+      throw FilePreviewUnsupportedException(file.url)
+    }
+
+    let previewController = QLPreviewController()
+    let session = FileSystemPreviewSession(item: item, scopedAccess: scopedAccess) { [weak self] in
+      guard let self else {
+        return
+      }
+      self.previewSession = nil
+      self.isPresentingPreview = false
+      self.previewController = nil
+
+      guard let deferredPreview = self.deferredPreview else {
+        return
+      }
+      self.deferredPreview = nil
+      do {
+        try self.presentPreview(
+          file: deferredPreview.file,
+          options: deferredPreview.options,
+          promise: deferredPreview.promise
+        )
+      } catch {
+        deferredPreview.promise.reject(error)
+      }
+    }
+    previewSession = session
+    isPresentingPreview = true
+    self.previewController = previewController
+    previewController.dataSource = session
+    previewController.delegate = session
+
+    currentViewController.present(previewController, animated: true) {
+      promise.resolve()
+    }
+  }
+
+  private func deferPreviewUntilDismissal(
+    file: FileSystemFile,
+    options: FilePreviewOptions?,
+    promise: Promise
+  ) -> Bool {
+    guard deferredPreview == nil,
+      let previewController,
+      previewController.isBeingDismissed,
+      let transitionCoordinator = previewController.transitionCoordinator else {
+      return false
+    }
+
+    deferredPreview = (file, options, promise)
+
+    if transitionCoordinator.isInteractive {
+      transitionCoordinator.notifyWhenInteractionChanges { [weak self] context in
+        guard context.isCancelled else {
+          return
+        }
+        self?.rejectDeferredPreview()
+      }
+    }
+    return true
+  }
+
+  private func rejectDeferredPreview() {
+    guard let deferredPreview else {
+      return
+    }
+    self.deferredPreview = nil
+    deferredPreview.promise.reject(FilePreviewInProgressException())
+  }
+  #endif
+
   public func definition() -> ModuleDefinition {
     Name("FileSystem")
 
     Events("downloadProgress")
+
+    #if os(iOS)
+    OnDestroy {
+      rejectDeferredPreview()
+    }
+    #endif
 
     Constant("documentDirectory") {
       return documentDirectory?.absoluteString
@@ -170,25 +286,53 @@ public final class FileSystemModule: Module {
         return try FileSystemFileHandle(file: file, mode: mode)
       }
 
+      AsyncFunction("canPreview") { (file: FileSystemFile, _: FilePreviewOptions?) -> Bool in
+        #if os(iOS)
+        return try file.withCorrectTypeAndScopedAccess(permission: .read) {
+          guard file.exists else {
+            return false
+          }
+          return QLPreviewController.canPreview(FileSystemPreviewItem(url: file.url, title: nil))
+        }
+        #else
+        throw FeatureNotAvailableOnPlatformException()
+        #endif
+      }
+      .runOnQueue(.main)
+
+      AsyncFunction("preview") { (file: FileSystemFile, options: FilePreviewOptions?, promise: Promise) in
+        #if os(iOS)
+        do {
+          if isPresentingPreview {
+            guard deferPreviewUntilDismissal(file: file, options: options, promise: promise) else {
+              throw FilePreviewInProgressException()
+            }
+          } else {
+            try presentPreview(file: file, options: options, promise: promise)
+          }
+        } catch {
+          promise.reject(error)
+        }
+        #else
+        promise.reject(FeatureNotAvailableOnPlatformException())
+        #endif
+      }
+      .runOnQueue(.main)
+
       Function("info") { (file: FileSystemFile, options: InfoOptions?) in
         return try file.info(options: options ?? InfoOptions())
       }
 
-      Function("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
-        let append = options?.append ?? false
-        if let content: String = content.get() {
-          if options?.encoding == WriteEncoding.base64 {
-            guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
-              throw UnableToWriteBase64DataException(file.url.absoluteString)
-            }
-            try file.write(data, append: append)
-          } else {
-            try file.write(content, append: append)
-          }
-        }
-        if let content: TypedArray = content.get() {
-          try file.write(content, append: append)
-        }
+      AsyncFunction("digest") { (file: FileSystemFile, algorithm: String) in
+        return try file.digest(algorithm: algorithm)
+      }
+
+      AsyncFunction("write") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
+        try writeToFile(file, content: content, options: options)
+      }
+
+      Function("writeSync") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
+        try writeToFile(file, content: content, options: options)
       }
 
       Property("size") { file in
@@ -253,11 +397,19 @@ public final class FileSystemModule: Module {
     }
 
     Class(FileSystemFileHandle.self) {
-      Function("readBytes") { (fileHandle, bytes: Int) in
+      AsyncFunction("readBytes") { (fileHandle, bytes: Int) in
         try fileHandle.read(bytes)
       }
 
-      Function("writeBytes") { (fileHandle, bytes: Data) in
+      Function("readBytesSync") { (fileHandle, bytes: Int) in
+        try fileHandle.read(bytes)
+      }
+
+      AsyncFunction("writeBytes") { (fileHandle, bytes: Data) in
+        try fileHandle.write(bytes)
+      }
+
+      Function("writeBytesSync") { (fileHandle, bytes: Data) in
         try fileHandle.write(bytes)
       }
 

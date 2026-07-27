@@ -23,6 +23,10 @@ class ExpoLinkingModule : Module() {
       initialURL?.toString()
     }
 
+    Function("clearInitialURL") {
+      initialURL = null
+    }
+
     OnStartObserving("onURLReceived") {
       val weakModule = WeakReference(this@ExpoLinkingModule)
       val observer: (Uri?) -> Unit = { uri: Uri? ->

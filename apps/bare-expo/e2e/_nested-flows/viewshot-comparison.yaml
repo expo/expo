@@ -11,6 +11,10 @@
 #            With 'normalize', only one original view shot is kept, and the view shots taken at test time are normalized (if needed) and then compared with the base shot.
 #   - similarityThreshold: The percentage of similarity required to pass the comparison. Defaults to 5 and 15% for the platformDependent and crossPlatform modes, respectively
 #   - resizingFactor: this factor resizes the taken images to occupy less space
+#   - captureMode: 'screen' (default) takes a full-screen screenshot and crops it to the view bounds.
+#                  'in-process' renders the view inside the app via the inspector dylib (iOS only, much
+#                  faster; other platforms fall back to 'screen'). Don't use it for views with video
+#                  playback: video layers render blank in-process.
 
 appId: dev.expo.Payments
 ---
@@ -31,6 +35,7 @@ appId: dev.expo.Payments
       similarityThreshold: ${similarityThreshold}
       mode: ${mode}
       resizingFactor: ${resizingFactor}
+      captureMode: ${captureMode}
 
 - assertTrue:
     condition: ${output.comparisonResult.success}

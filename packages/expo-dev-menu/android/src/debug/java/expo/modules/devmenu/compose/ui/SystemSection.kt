@@ -9,7 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.Divider
 import expo.modules.devmenu.compose.primitives.NewText
@@ -49,7 +49,7 @@ fun SystemSection(
 @Composable
 private fun CopyButton(fullDataProvider: () -> String) {
   val context = LocalContext.current
-  Button(
+  UnstyledButton(
     onClick = {
       copyToClipboard(
         context,

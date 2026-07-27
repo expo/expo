@@ -27,14 +27,8 @@ jest.mock('../../color', (): typeof import('../../color') => ({
 }));
 
 describe(createAndroidScreenAppearance, () => {
-  it('uses dynamic color defaults when options and extras are empty', () => {
-    const result = createAndroidScreenAppearance({
-      options: {},
-      tintColor: undefined,
-      rippleColor: undefined,
-      disableIndicator: undefined,
-      labelVisibilityMode: undefined,
-    });
+  it('uses dynamic color defaults when options are empty', () => {
+    const result = createAndroidScreenAppearance({});
 
     const expected: TabsScreenAppearanceAndroid = {
       tabBarBackgroundColor: 'mock-surfaceContainer',
@@ -85,15 +79,13 @@ describe(createAndroidScreenAppearance, () => {
       indicatorColor: '#indicator',
       labelStyle,
       selectedLabelStyle,
-    };
-
-    const result = createAndroidScreenAppearance({
-      options,
-      tintColor: '#tint',
       rippleColor: '#ripple',
       disableIndicator: false,
       labelVisibilityMode: 'labeled',
-    });
+      tintColor: '#tint',
+    };
+
+    const result = createAndroidScreenAppearance(options);
 
     const expected: TabsScreenAppearanceAndroid = {
       tabBarBackgroundColor: '#bg',
@@ -154,13 +146,7 @@ describe(createAndroidScreenAppearance, () => {
     ];
 
     it.each(cases)('$name', ({ labelStyle, selectedLabelStyle, tintColor, expected }) => {
-      const result = createAndroidScreenAppearance({
-        options: { labelStyle, selectedLabelStyle },
-        tintColor,
-        rippleColor: undefined,
-        disableIndicator: undefined,
-        labelVisibilityMode: undefined,
-      });
+      const result = createAndroidScreenAppearance({ labelStyle, selectedLabelStyle, tintColor });
       expect(result.selected?.tabBarItemTitleFontColor).toBe(expected);
     });
   });
@@ -199,13 +185,7 @@ describe(createAndroidScreenAppearance, () => {
     ];
 
     it.each(cases)('$name', ({ iconColor, selectedIconColor, tintColor, expected }) => {
-      const result = createAndroidScreenAppearance({
-        options: { iconColor, selectedIconColor },
-        tintColor,
-        rippleColor: undefined,
-        disableIndicator: undefined,
-        labelVisibilityMode: undefined,
-      });
+      const result = createAndroidScreenAppearance({ iconColor, selectedIconColor, tintColor });
       expect(result.selected?.tabBarItemIconColor).toBe(expected);
     });
   });
@@ -213,14 +193,8 @@ describe(createAndroidScreenAppearance, () => {
   describe('tabBarItemTitleLargeLabelFontSize', () => {
     it('uses selectedLabelStyle.fontSize when provided', () => {
       const result = createAndroidScreenAppearance({
-        options: {
-          labelStyle: { fontSize: 12 },
-          selectedLabelStyle: { fontSize: 18 },
-        },
-        tintColor: undefined,
-        rippleColor: undefined,
-        disableIndicator: undefined,
-        labelVisibilityMode: undefined,
+        labelStyle: { fontSize: 12 },
+        selectedLabelStyle: { fontSize: 18 },
       });
       expect(result.tabBarItemTitleLargeLabelFontSize).toBe(18);
       expect(result.tabBarItemTitleSmallLabelFontSize).toBe(12);
@@ -228,26 +202,14 @@ describe(createAndroidScreenAppearance, () => {
 
     it('falls back to labelStyle.fontSize when selectedLabelStyle.fontSize is missing', () => {
       const result = createAndroidScreenAppearance({
-        options: {
-          labelStyle: { fontSize: 12 },
-        },
-        tintColor: undefined,
-        rippleColor: undefined,
-        disableIndicator: undefined,
-        labelVisibilityMode: undefined,
+        labelStyle: { fontSize: 12 },
       });
       expect(result.tabBarItemTitleLargeLabelFontSize).toBe(12);
       expect(result.tabBarItemTitleSmallLabelFontSize).toBe(12);
     });
 
     it('is undefined when neither label style provides fontSize', () => {
-      const result = createAndroidScreenAppearance({
-        options: {},
-        tintColor: undefined,
-        rippleColor: undefined,
-        disableIndicator: undefined,
-        labelVisibilityMode: undefined,
-      });
+      const result = createAndroidScreenAppearance({});
       expect(result.tabBarItemTitleLargeLabelFontSize).toBeUndefined();
       expect(result.tabBarItemTitleSmallLabelFontSize).toBeUndefined();
     });
@@ -258,15 +220,9 @@ describe(createAndroidScreenAppearance, () => {
     [false, true],
     [undefined, true],
   ])(
-    'disableIndicator=%p sets tabBarItemActiveIndicatorEnabled=%p',
+    'options.disableIndicator=%p sets tabBarItemActiveIndicatorEnabled=%p',
     (disableIndicator, enabled) => {
-      const result = createAndroidScreenAppearance({
-        options: {},
-        tintColor: undefined,
-        rippleColor: undefined,
-        disableIndicator,
-        labelVisibilityMode: undefined,
-      });
+      const result = createAndroidScreenAppearance({ disableIndicator });
       expect(result.tabBarItemActiveIndicatorEnabled).toBe(enabled);
     }
   );
@@ -279,13 +235,7 @@ describe(createAndroidScreenAppearance, () => {
   ] as const)(
     'forwards labelStyle.fontWeight=%p verbatim (Android does not stringify numeric weights)',
     (fontWeight, expected) => {
-      const result = createAndroidScreenAppearance({
-        options: { labelStyle: { fontWeight } },
-        tintColor: undefined,
-        rippleColor: undefined,
-        disableIndicator: undefined,
-        labelVisibilityMode: undefined,
-      });
+      const result = createAndroidScreenAppearance({ labelStyle: { fontWeight } });
       expect(result.tabBarItemTitleFontWeight).toBe(expected);
     }
   );
@@ -293,14 +243,13 @@ describe(createAndroidScreenAppearance, () => {
   it.each(['auto', 'selected', 'labeled', 'unlabeled', undefined] as (
     | NativeTabsTabBarItemLabelVisibilityMode
     | undefined
-  )[])('forwards labelVisibilityMode=%p verbatim', (labelVisibilityMode) => {
-    const result = createAndroidScreenAppearance({
-      options: {},
-      tintColor: undefined,
-      rippleColor: undefined,
-      disableIndicator: undefined,
-      labelVisibilityMode,
-    });
+  )[])('forwards options.labelVisibilityMode=%p verbatim', (labelVisibilityMode) => {
+    const result = createAndroidScreenAppearance({ labelVisibilityMode });
     expect(result.tabBarItemLabelVisibilityMode).toBe(labelVisibilityMode);
+  });
+
+  it('reads rippleColor from options', () => {
+    const result = createAndroidScreenAppearance({ rippleColor: '#perTabRipple' });
+    expect(result.tabBarItemRippleColor).toBe('#perTabRipple');
   });
 });

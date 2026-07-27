@@ -20,6 +20,7 @@ const homeDirectories = [
   'deploy',
   'review',
   'monitoring',
+  'agents',
 ];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'additional-resources'];
@@ -73,7 +74,26 @@ export const home = [
     makePage('get-started/start-developing.mdx'),
     makePage('get-started/next-steps.mdx'),
   ]),
-  makeSection('AI', [makePage('skills.mdx'), makePage('llms.mdx')]),
+  makeSection('AI', [
+    makePage('agents/index.mdx'),
+    makePage('skills.mdx'),
+    makePage('mcp.mdx'),
+    makeGroup(
+      'AI agents',
+      [makePage('agents/claude.mdx'), makePage('agents/codex.mdx'), makePage('agents/cursor.mdx')],
+      {
+        expanded: false,
+      }
+    ),
+    makeGroup(
+      'Agent toolkits',
+      [makePage('agents/agent-device.mdx'), makePage('agents/argent.mdx')],
+      {
+        expanded: false,
+      }
+    ),
+    makePage('llms.mdx'),
+  ]),
   makeSection('Develop', [
     makePage('develop/tools.mdx'),
     makePage('develop/app-navigation.mdx'),
@@ -96,12 +116,10 @@ export const home = [
       'Development builds',
       [
         makePage('develop/development-builds/introduction.mdx'),
-        makePage('develop/development-builds/expo-go-to-dev-build.mdx'),
-        makePage('develop/development-builds/create-a-build.mdx'),
         makePage('develop/development-builds/use-development-builds.mdx'),
         makePage('develop/development-builds/share-with-your-team.mdx'),
         makePage('develop/development-builds/development-workflows.mdx'),
-        makePage('develop/development-builds/next-steps.mdx'),
+        makePage('develop/development-builds/faq.mdx'),
       ],
       { expanded: false }
     ),
@@ -196,6 +214,8 @@ export const general = [
         makePage('workflow/web.mdx'),
         makePage('guides/publishing-websites.mdx'),
         makePage('guides/dom-components.mdx'),
+        makePage('guides/server-components.mdx'),
+        makePage('guides/testing-rsc.mdx'),
         makePage('guides/progressive-web-apps.mdx'),
         makePage('guides/tailwind.mdx'),
         makePage('guides/local-https-development.mdx'),
@@ -271,6 +291,7 @@ export const general = [
       makePage('router/advanced/router-settings.mdx'),
       makePage('router/advanced/apple-handoff.mdx'),
       makePage('router/advanced/custom-tabs.mdx'),
+      makePage('router/advanced/custom-navigators.mdx'),
       makePage('router/advanced/stack-toolbar.mdx'),
       makePage('router/advanced/zoom-transition.mdx'),
     ]),
@@ -357,6 +378,11 @@ export const general = [
       makePage('guides/using-bugsnag.mdx'),
       makePage('guides/using-logrocket.mdx'),
       makePage('guides/using-vexo.mdx'),
+      makeGroup(
+        'Using PostHog',
+        [makePage('guides/using-posthog/index.mdx'), makePage('guides/using-posthog/recipes.mdx')],
+        { expanded: false }
+      ),
     ]),
     makeGroup('Authentication', [
       makePage('guides/using-authentication.mdx'),
@@ -393,12 +419,12 @@ export const general = [
         makePage('guides/ios-developer-mode.mdx'),
         makePage('guides/icons.mdx'),
         makePage('guides/localization.mdx'),
-        makePage('guides/configuring-js-engines.mdx'),
         makePage('guides/using-bun.mdx'),
         makePage('guides/editing-richtext.mdx'),
         makePage('guides/store-assets.mdx'),
         makePage('guides/local-first.mdx'),
         makePage('guides/keyboard-handling.mdx'),
+        makePage('guides/controlled-components.mdx'),
       ]),
       makeSection('Expo UI', [
         makePage('guides/expo-ui-swift-ui/index.mdx'),
@@ -446,18 +472,21 @@ export const eas = [
       expanded: true,
     }
   ),
-  makeSection('AI', [makePage('eas/ai/mcp.mdx')]),
   makeSection('EAS Workflows', [
     makePage('eas/workflows/introduction.mdx'),
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/environment.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
+    makePage('eas/workflows/rest-api.mdx'),
+    makePage('eas/workflows/troubleshooting.mdx'),
     makePage('eas/workflows/limitations.mdx'),
     makeGroup('Examples', [
       makePage('eas/workflows/examples/introduction.mdx'),
       makePage('eas/workflows/examples/create-development-builds.mdx'),
       makePage('eas/workflows/examples/publish-preview-update.mdx'),
+      makePage('eas/workflows/examples/branch-cleanup.mdx'),
       makePage('eas/workflows/examples/deploy-to-production.mdx'),
       makePage('eas/workflows/examples/e2e-tests.mdx'),
     ]),
@@ -524,9 +553,11 @@ export const eas = [
     ),
   ]),
   makeSection('EAS Submit', [
-    makePage('submit/introduction.mdx'),
     makePage('submit/android.mdx'),
     makePage('submit/ios.mdx'),
+    makePage('submit/testflight.mdx'),
+    makePage('submit/android-manual.mdx'),
+    makePage('submit/ios-manual.mdx'),
     makePage('submit/eas-json.mdx'),
   ]),
   makeSection('EAS Hosting', [
@@ -547,6 +578,7 @@ export const eas = [
     makePage('eas-update/getting-started.mdx'),
     makeGroup('Preview', [
       makePage('eas-update/preview.mdx'),
+      makePage('eas-update/channel-surfing.mdx'),
       makePage('eas-update/override.mdx'),
       makePage('eas-update/expo-dev-client.mdx'),
       makePage('eas-update/github-actions.mdx'),
@@ -590,13 +622,23 @@ export const eas = [
       { expanded: false }
     ),
   ]),
-  makeSection('EAS Insights', [makePage('eas-insights/introduction.mdx')]),
+  makeSection('EAS Insights', [
+    makePage('eas-insights/introduction.mdx'),
+    makePage('eas-insights/app-usage.mdx'),
+    makePage('eas-insights/workflows.mdx'),
+    makePage('eas-insights/maestro.mdx'),
+  ]),
   makeSection('EAS Observe', [
     makePage('eas/observe/introduction.mdx'),
     makePage('eas/observe/get-started.mdx'),
     makePage('eas/observe/dashboard.mdx'),
+    makePage('eas/observe/eas-update.mdx'),
+    makePage('eas/observe/events.mdx'),
     makePage('eas/observe/configuration.mdx'),
-    makePage('eas/observe/integrations/expo-router.mdx'),
+    makeGroup('Integrations', [
+      makePage('eas/observe/integrations/expo-router.mdx'),
+      makePage('eas/observe/integrations/react-navigation.mdx'),
+    ]),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
       makePage('eas/observe/reference/troubleshooting.mdx'),
@@ -648,6 +690,19 @@ export const learn = [
     { expanded: true }
   ),
   makeSection(
+    'Build with AI tutorial',
+    [
+      makePage('tutorial/build-with-ai/introduction.mdx'),
+      makePage('tutorial/build-with-ai/set-up-your-tools.mdx'),
+      makePage('tutorial/build-with-ai/create-your-first-app.mdx'),
+      makePage('tutorial/build-with-ai/build-the-home-screen.mdx'),
+      makePage('tutorial/build-with-ai/add-stickers.mdx'),
+      makePage('tutorial/build-with-ai/save-your-creation.mdx'),
+      makePage('tutorial/build-with-ai/finishing-touches.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
     'EAS tutorial',
     [
       makePage('tutorial/eas/introduction.mdx'),
@@ -663,6 +718,21 @@ export const learn = [
       makePage('tutorial/eas/team-development.mdx'),
       makePage('tutorial/eas/using-github.mdx'),
       makePage('tutorial/eas/next-steps.mdx'),
+    ],
+    { expanded: true }
+  ),
+  makeSection(
+    'CI/CD tutorial',
+    [
+      makePage('tutorial/cicd/introduction.mdx'),
+      makePage('tutorial/cicd/first-workflow.mdx'),
+      makePage('tutorial/cicd/development-builds.mdx'),
+      makePage('tutorial/cicd/preview-builds.mdx'),
+      makePage('tutorial/cicd/e2e-tests.mdx'),
+      makePage('tutorial/cicd/production.mdx'),
+      makePage('tutorial/cicd/tag-based-releases.mdx'),
+      makePage('tutorial/cicd/web-deployments.mdx'),
+      makePage('tutorial/cicd/next-steps.mdx'),
     ],
     { expanded: true }
   ),
@@ -702,6 +772,7 @@ const archive = [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
     makePage('archive/e2e-tests.mdx'),
+    makePage('archive/configuring-js-engines.mdx'),
   ]),
 ];
 

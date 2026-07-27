@@ -24,7 +24,7 @@ import java.util.Date
 import java.util.concurrent.TimeUnit
 import kotlin.math.abs
 
-@Ignore("Those test were ignore, because there using current time to calculate next trigger date which is flaky.")
+@Ignore("Those tests were ignored, because they're using current time to calculate next trigger date which is flaky.")
 @SmallTest
 @RunWith(RobolectricTestRunner::class)
 class NotificationTriggerTest {

@@ -53,8 +53,12 @@ internal class VideoAsset: AVURLAsset, @unchecked Sendable {
     try await preAssetLoadCallback?(self)
   }
 
-  static func pathForUrl(url: URL, fileExtension: String) -> String? {
-    let hashedData = SHA256.hash(data: Data(url.absoluteString.utf8))
+  static func pathForUrl(url: URL, fileExtension: String, variantKey: String = "") -> String? {
+    // Variant key folds caller-supplied request headers (per RFC 9111 Vary
+    // semantics) into the cache filename so two identities cannot collide on
+    // the same stored response.
+    let composite = variantKey.isEmpty ? url.absoluteString : url.absoluteString + "#" + variantKey
+    let hashedData = SHA256.hash(data: Data(composite.utf8))
     let hashString = hashedData.compactMap { String(format: "%02x", $0) }.joined()
     let parsedExtension = fileExtension.starts(with: ".") || fileExtension.isEmpty ? fileExtension : ("." + fileExtension)
     let hashFilename = hashString + parsedExtension

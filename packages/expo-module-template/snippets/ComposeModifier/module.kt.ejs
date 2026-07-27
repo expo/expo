@@ -1,0 +1,5 @@
+    OnCreate {
+      ModifierRegistry.register("<%= project.composeModifierName.charAt(0).toLowerCase() + project.composeModifierName.slice(1) %>") { params, _, _, _ ->
+        recordFromMap<<%- project.composeModifierName %>Params>(params).toModifier()
+      }
+    }

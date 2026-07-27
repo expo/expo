@@ -1,6 +1,6 @@
-import { BasePackageManager } from './BasePackageManager';
 import env from '../utils/env';
 import { resolveWorkspaceRoot, PNPM_LOCK_FILE } from '../utils/nodeManagers';
+import { BasePackageManager } from './BasePackageManager';
 
 export class PnpmPackageManager extends BasePackageManager {
   readonly name = 'pnpm';

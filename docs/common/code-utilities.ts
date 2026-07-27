@@ -212,16 +212,19 @@ export function parseValue(value: string) {
   if (value.startsWith('@@@')) {
     const valueChunks = value.split('@@@');
     const titleChunks = valueChunks[1].split('|');
+    // Boolean params are bare flags (no `=`) because an `=` in the code fence meta
+    // breaks Vale's code block detection via the TokenIgnores patterns in .vale.ini.
+    const BOOLEAN_PARAMS = ['wrap'];
     const [params, title] = partition(
       titleChunks,
-      chunk => chunk.includes('=') && !chunk.includes(' ')
+      chunk => (chunk.includes('=') && !chunk.includes(' ')) || BOOLEAN_PARAMS.includes(chunk)
     );
     return {
       title: title[0],
       params: Object.assign(
         {},
         ...params.map(param => {
-          const [key, value] = param.split('=');
+          const [key, value = 'true'] = param.split('=');
           return { [key]: value };
         })
       ) as Record<string, string>,
@@ -306,7 +309,7 @@ export function getCodeData(value: string, className?: string, version?: string)
 
   const processedValue = replaceCodeBlockVariables(value, version);
   const rawHtml = Prism.highlight(processedValue, grammar, lang);
-  if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
+  if (['properties', 'ruby', 'bash', 'yaml', 'yml'].includes(lang)) {
     return replaceHashCommentsWithAnnotations(rawHtml);
   } else if (['xml', 'html'].includes(lang)) {
     return replaceXmlCommentsWithAnnotations(rawHtml);

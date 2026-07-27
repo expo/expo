@@ -3,9 +3,9 @@ import fs from 'fs';
 import path from 'path';
 import semver from 'semver';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { getXcodeVersionAsync } from '../utils/getXcodeVersionAsync';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 async function checkCocoapodsVersionAsync(): Promise<string | null> {
   if (process.platform !== 'darwin') {

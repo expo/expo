@@ -2,42 +2,41 @@
   "name": "@expo/schemer",
   "version": "2.2.1",
   "description": "Centralized scheme validation library for Expo",
-  "license": "MIT",
-  "main": "./build/index.js",
-  "types": "./build/index.d.ts",
-  "files": [
-    "build"
-  ],
-  "scripts": {
-    "build": "expo-module tsc",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "test:e2e": "expo-module test --config e2e/jest.config.js",
-    "typecheck": "expo-module typecheck",
-    "watch": "pnpm run --watch --preserveWatchOutput",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
-  },
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schemer#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/@expo/schemer"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "files": [
+    "build"
+  ],
+  "main": "./build/index.js",
+  "types": "./build/index.d.ts",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
-    "ajv": "^8.1.0",
-    "ajv-formats": "^2.0.2",
-    "json-schema-traverse": "^1.0.0",
+    "@expo/schema-utils": "workspace:*",
     "probe-image-size": "^7.1.0"
   },
   "devDependencies": {
     "@types/probe-image-size": "^7.2.4",
     "expo-module-scripts": "workspace:*"
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }

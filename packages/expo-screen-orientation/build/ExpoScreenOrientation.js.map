@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoScreenOrientation.js","sourceRoot":"","sources":["../src/ExpoScreenOrientation.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AAExD,eAAe,mBAAmB,CAAC,uBAAuB,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\n\nexport default requireNativeModule('ExpoScreenOrientation');\n"]}

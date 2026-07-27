@@ -11,7 +11,6 @@ export type ExpoFontLoaderModule = {
   isLoaded?: (fontFamilyName: string, options?: UnloadFontOptions) => boolean;
   getServerResources?: () => string[];
   getServerResourceDescriptors?: () => ServerFontResourceDescriptor[];
-  resetServerContext?: () => void;
 };
 
 const m: ExpoFontLoaderModule =

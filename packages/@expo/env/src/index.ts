@@ -213,7 +213,7 @@ function formatLocalOnlyViolation(byFile: Record<string, string[]>): string {
 /**
  * Parse all environment variables using the list of `.env*` files, and mutate the system environment with these variables.
  * This won't override existing environment variables defined in the system environment.
- * Once the mutations are done, this will also set a propert `__EXPO_ENV=true` on the system env to avoid multiple mutations.
+ * Once the mutations are done, this will also set a property `__EXPO_ENV=true` on the system env to avoid multiple mutations.
  * This check can be disabled through `{ force: true }`.
  */
 export function loadEnvFiles(
@@ -270,7 +270,7 @@ export function parseProjectEnv(
 /**
  * Parse all environment variables using the detected list of `.env*` files from a project.
  * This won't override existing environment variables defined in the system environment.
- * Once the mutations are done, this will also set a propert `__EXPO_ENV=true` on the system env to avoid multiple mutations.
+ * Once the mutations are done, this will also set a property `__EXPO_ENV=true` on the system env to avoid multiple mutations.
  * This check can be disabled through `{ force: true }`.
  */
 export function loadProjectEnv(

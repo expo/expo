@@ -72,6 +72,7 @@ jsi::Value convert(
   CAST_AND_RETURN(JSharedObject::javaobject, cache.jSharedObject)
   CAST_AND_RETURN(JavaScriptTypedArray::javaobject, cache.jJavaScriptTypedArray)
   CAST_AND_RETURN(JavaScriptArrayBuffer::javaobject, cache.jJavaScriptArrayBuffer)
+  CAST_AND_RETURN(ArrayBuffer::javaobject, cache.jArrayBuffer)
   CAST_AND_RETURN(NativeArrayBuffer::javaobject, cache.jNativeArrayBuffer)
 
   CAST_AND_RETURN(jni::JMap<jstring COMMA jobject>, cache.jMap)
@@ -127,6 +128,8 @@ jsi::Value convert(
       CAST_AND_RETURN(JavaScriptTypedArray::javaobject)
     case ReturnType::JS_ARRAY_BUFFER:
       CAST_AND_RETURN(JavaScriptArrayBuffer::javaobject)
+    case ReturnType::ARRAY_BUFFER:
+      CAST_AND_RETURN(ArrayBuffer::javaobject)
     case ReturnType::NATIVE_ARRAY_BUFFER:
       CAST_AND_RETURN(NativeArrayBuffer::javaobject)
     case ReturnType::MAP:

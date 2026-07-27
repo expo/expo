@@ -1,4 +1,5 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
+import { Platform } from 'react-native';
 
 import ExpoWidgetsModule from './ExpoWidgets';
 import type {
@@ -9,6 +10,7 @@ import type {
   NativeLiveActivityFactory,
   NativeWidgetObject,
   PushTokenEvent,
+  WidgetConfigurationEnum,
   WidgetEnvironment,
   WidgetTimelineEntry,
 } from './Widgets.types';
@@ -27,9 +29,14 @@ export class Widget<
     layout: (
       props: PropsType,
       environment: WidgetEnvironment<ConfigurationType>
-    ) => React.JSX.Element
+    ) => React.JSX.Element,
+    initialProps?: PropsType
   ) {
-    this.nativeWidgetObject = new ExpoWidgetsModule.Widget(name, layout as unknown as string);
+    this.nativeWidgetObject = new ExpoWidgetsModule.Widget(
+      name,
+      layout as unknown as string,
+      initialProps
+    );
   }
 
   /**
@@ -44,6 +51,9 @@ export class Widget<
    * @param entries Timeline entries, each specifying a date and the props to display at that time.
    */
   updateTimeline(entries: WidgetTimelineEntry<PropsType>[]) {
+    if (Platform.OS === 'android') {
+      return;
+    }
     this.nativeWidgetObject.updateTimeline(
       entries.map((entry) => ({ timestamp: entry.date.getTime(), props: entry.props }))
     );
@@ -54,7 +64,11 @@ export class Widget<
    * @param props The properties to display in the widget.
    */
   updateSnapshot(props: PropsType) {
-    this.nativeWidgetObject.updateTimeline([{ timestamp: Date.now(), props }]);
+    if (Platform.OS === 'android') {
+      this.nativeWidgetObject.updateSnapshot(props as Record<string, any>);
+    } else {
+      this.nativeWidgetObject.updateTimeline([{ timestamp: Date.now(), props }]);
+    }
   }
 
   /**
@@ -65,6 +79,17 @@ export class Widget<
       date: new Date(entry.timestamp),
       props: entry.props as PropsType,
     }));
+  }
+
+  /**
+   * Replaces the runtime options for a dynamic enum configuration parameter.
+   * The app config values remain the fallback when no runtime options are set.
+   */
+  setConfigurationParameterEnum(
+    parameterName: keyof ConfigurationType & string,
+    options?: WidgetConfigurationEnum[]
+  ) {
+    this.nativeWidgetObject.setConfigurationParameterEnum(parameterName, options);
   }
 }
 
@@ -81,9 +106,10 @@ export class LiveActivity<T extends object = object> {
   /**
    * Updates the Live Activity's content. The UI reflects the new properties immediately.
    * @param props The updated content properties.
+   * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
    */
-  update(props: T): Promise<void> {
-    return this.nativeLiveActivity.update(JSON.stringify(props));
+  update(props: T, staleDate?: Date): Promise<void> {
+    return this.nativeLiveActivity.update(JSON.stringify(props), staleDate?.getTime());
   }
 
   /**
@@ -151,10 +177,13 @@ export class LiveActivityFactory<T extends object = object> {
    * Starts a new Live Activity with the given properties.
    * @param props The initial content properties for the Live Activity.
    * @param url An optional URL to associate with the Live Activity, used for deep linking.
+   * @param staleDate When set, the system may de-emphasize the activity after this date if content has not been refreshed.
    * @returns The new Live Activity instance.
    */
-  start(props: T, url?: string) {
-    return new LiveActivity<T>(this.nativeLiveActivityFactory.start(JSON.stringify(props), url));
+  start(props: T, url?: string, staleDate?: Date) {
+    return new LiveActivity<T>(
+      this.nativeLiveActivityFactory.start(JSON.stringify(props), url, staleDate?.getTime())
+    );
   }
 
   /**
@@ -180,15 +209,17 @@ export function after(date: Date): { after: Date } {
  * Creates a Widget instance.
  * @param name The widget name. Must match the `'name'` field in your widget configuration in the app config.
  * @param widget The widget component, marked with the `'widget'` directive.
+ * @param initialProps The initial properties to display before the widget timeline is updated.
  */
 export function createWidget<
   PropsType extends object = object,
   ConfigurationType extends object | undefined = undefined,
 >(
   name: string,
-  widget: (props: PropsType, context: WidgetEnvironment<ConfigurationType>) => React.JSX.Element
+  widget: (props: PropsType, context: WidgetEnvironment<ConfigurationType>) => React.JSX.Element,
+  initialProps?: PropsType
 ): Widget<PropsType, ConfigurationType> {
-  return new Widget<PropsType, ConfigurationType>(name, widget);
+  return new Widget<PropsType, ConfigurationType>(name, widget, initialProps);
 }
 
 /**
@@ -225,3 +256,9 @@ export function addPushToStartTokenListener(
 ): EventSubscription {
   return ExpoWidgetsModule.addListener('onExpoWidgetsPushToStartTokenReceived', listener);
 }
+
+/**
+ * A directory that can be used to store shared images for widgets.
+ * The contents of this directory are accessible by both the main app and widgets.
+ */
+export const widgetsDirectory = ExpoWidgetsModule.widgetsDirectory;

@@ -11,7 +11,10 @@ export default function SessionsLayout() {
         headerTintColor: theme.text.default,
       }}>
       <Stack.Screen name="sessions/index" options={{ title: 'Sessions' }} />
+      <Stack.Screen name="sessions/main" options={{ title: 'Main session' }} />
+      <Stack.Screen name="sessions/foreground" options={{ title: 'Foreground session' }} />
       <Stack.Screen name="sessions/[id]" options={{ title: 'Session' }} />
+      <Stack.Screen name="sessions/orphaned/[index]" options={{ title: 'Startup crash' }} />
     </Stack>
   );
 }

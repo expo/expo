@@ -7,9 +7,9 @@ export type LanguageOptions = {
 };
 
 export function getExtensions(
-  platforms: string[],
-  extensions: string[],
-  workflows: string[]
+  platforms: readonly string[],
+  extensions: readonly string[],
+  workflows: readonly string[]
 ): string[] {
   // In the past we used spread operators to collect the values so now we enforce type safety on them.
   assert(Array.isArray(platforms), 'Expected: `platforms: string[]`');
@@ -63,6 +63,21 @@ export function getBareExtensions(
   // Always add these last
   _addMiscellaneousExtensions(platforms, fileExtensions);
   return fileExtensions;
+}
+
+const PLATFORM_EXTENSIONS: Record<string, readonly string[]> = {
+  tvos: ['tvos', 'ios', 'native'],
+  macos: ['macos', 'ios', 'native'],
+};
+
+/** Expand `extensions` with OOT platform extensions for platform */
+export function getPlatformExtensions(
+  platform: string,
+  extensions: readonly string[],
+  customPlatformExtensions?: readonly string[] | undefined
+): string[] | null {
+  const platformExtensions = customPlatformExtensions || PLATFORM_EXTENSIONS[platform];
+  return platformExtensions ? getExtensions(platformExtensions, extensions, []) : null;
 }
 
 function _addMiscellaneousExtensions(platforms: string[], fileExtensions: string[]): string[] {

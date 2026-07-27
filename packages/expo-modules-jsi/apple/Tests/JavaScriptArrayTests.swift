@@ -1,7 +1,7 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-import Testing
 import ExpoModulesJSI
+import Testing
 
 @Suite
 @JavaScriptActor
@@ -139,7 +139,7 @@ struct JavaScriptArrayTests {
     #expect(try array.getValue(at: 1).getBool() == true)
     #expect(try array.getValue(at: 2).isNull() == true)
     #expect(try array.getValue(at: 3).isUndefined() == true)
-    #expect(try array.getValue(at: 4).getInt() == 5) // Unchanged
+    #expect(try array.getValue(at: 4).getInt() == 5)  // Unchanged
   }
 
   @Test
@@ -370,7 +370,7 @@ struct JavaScriptArrayTests {
   @Test
   func `array as value can be passed to functions`() throws {
     let array = try runtime.eval("[1, 2, 3]").getArray()
-    let stringify = runtime.global()
+    let stringify = try runtime.global()
       .getPropertyAsObject("JSON")
       .getPropertyAsFunction("stringify")
 
@@ -462,6 +462,7 @@ struct JavaScriptArrayTests {
     let array = try runtime.eval("[10, 20, 30]").getArray()
     var values: [Int] = []
 
+    // swift-format-ignore: ReplaceForEachWithForLoop
     array.forEach { values.append($0.getInt()) }
     #expect(values == [10, 20, 30])
   }
@@ -471,6 +472,7 @@ struct JavaScriptArrayTests {
     let array = try runtime.eval("[]").getArray()
     var count = 0
 
+    // swift-format-ignore: ReplaceForEachWithForLoop
     array.forEach { _ in count += 1 }
     #expect(count == 0)
   }
@@ -563,7 +565,7 @@ struct JavaScriptArrayTests {
   @Test
   func `array instanceof Array`() throws {
     let array = try runtime.eval("[1, 2, 3]").getArray()
-    let arrayConstructor = runtime.global().getPropertyAsFunction("Array")
+    let arrayConstructor = try runtime.global().getPropertyAsFunction("Array")
     #expect(array.asValue().getObject().instanceOf(arrayConstructor) == true)
   }
 }

@@ -23,6 +23,9 @@ fun DevMenuScreen(
   appInfo: DevMenuState.AppInfo,
   devToolsSettings: DevToolsSettings,
   customItems: List<DevMenuState.CustomItem> = emptyList(),
+  availableAppKeys: List<String> = emptyList(),
+  currentAppKey: String? = null,
+  openSubScreen: DevMenuState.SubScreen? = null,
   shouldShowOnboarding: Boolean = false,
   showFab: Boolean = false,
   hasGoHomeAction: Boolean = false,
@@ -33,6 +36,15 @@ fun DevMenuScreen(
       onOnboardingFinished = {
         onAction(DevMenuAction.FinishOnboarding)
       }
+    )
+    return
+  }
+
+  if (openSubScreen == DevMenuState.SubScreen.Components) {
+    ComponentsScreen(
+      appKeys = availableAppKeys,
+      currentAppKey = currentAppKey,
+      onAction = onAction
     )
     return
   }
@@ -72,7 +84,12 @@ fun DevMenuScreen(
       Spacer(NewAppTheme.spacing.`5`)
     }
 
-    ToolsSection(onAction, devToolsSettings, showFab)
+    ToolsSection(
+      onAction = onAction,
+      devToolsSettings = devToolsSettings,
+      showFab = showFab,
+      hasComponentSwitcher = availableAppKeys.size > 1
+    )
 
     Box(modifier = Modifier.padding(vertical = NewAppTheme.spacing.`6`)) {
       if (appInfo.engine == "Hermes") {

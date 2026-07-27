@@ -146,7 +146,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
    * Checks if the `AsyncFunction` is a method of a `View`, if it is and the `View` has not yet been registered in the view registry it
    * re-dispatches the block until the view registers. The block can be re-dispatched up to three times before the cast is considered failed.
    * This is a sub-optimal solution, but the only one until we get access to the runtime scheduler. In the vast majority of cases the block
-   * will be dispatched without any retries,
+   * will be dispatched without any retries.
    */
   private func dispatchOnQueueUntilViewRegisters(
     appContext: AppContext,
@@ -186,7 +186,7 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      let promise = JavaScriptPromise(try appContext.runtime)
+      let promise = try JavaScriptPromise(appContext.runtime)
       let promiseValue = promise.asValue()
 
       self.call(appContext, this: this, arguments: arguments) { [promise] result in
@@ -209,5 +209,3 @@ public class AsyncFunctionDefinition<Args, FirstArgType, ReturnType>: AnyAsyncFu
     return self
   }
 }
-
-

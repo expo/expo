@@ -8,6 +8,13 @@ const functionPattern = /(?:^|\s)Function\s*\(/;
 const eventsPattern = /(?:^|\s)Events\s*\(/;
 const classPattern = /(?:^|\s)Class\s*\(/;
 const classNamePattern = /Class\s*\((\w+)(?:\.self|::class)/;
+// Swift form: `ExpoUIView(<Name>.self)`. Excludes Kotlin's generic form `ExpoUIView<...>(`.
+const swiftUIViewPattern = /(?:^|\s)ExpoUIView\s*\(/;
+// Kotlin form: `ExpoUIView<Props>("Name") { ... }`.
+const composeViewPattern = /(?:^|\s)ExpoUIView\s*</;
+const swiftUIModifierPattern = /ViewModifierRegistry\s*\.\s*register\s*\(/;
+// Word boundary excludes `ViewModifierRegistry.register` from matching here.
+const composeModifierPattern = /\bModifierRegistry\s*\.\s*register\s*\(/;
 const IGNORED_SEARCH_DIRS = new Set(['build', 'Pods', '.gradle', 'node_modules', 'DerivedData']);
 
 export type DetectedFeatures = {
@@ -79,6 +86,22 @@ export function detectFeaturesFromContent(content: string): DetectedFeatures {
       if (match?.[1]) {
         sharedObjectName = match[1];
       }
+    }
+
+    // Compose check before SwiftUI: `ExpoUIView<` should not also fall through
+    // to the SwiftUI pattern (which matches `ExpoUIView(`).
+    if (composeViewPattern.test(stripped)) {
+      features.add('ComposeView');
+    } else if (swiftUIViewPattern.test(stripped)) {
+      features.add('SwiftUIView');
+    }
+
+    // SwiftUI check before Compose: avoid `ViewModifierRegistry.register`
+    // matching the more general `ModifierRegistry.register` pattern.
+    if (swiftUIModifierPattern.test(stripped)) {
+      features.add('SwiftUIModifier');
+    } else if (composeModifierPattern.test(stripped)) {
+      features.add('ComposeModifier');
     }
 
     // ── Update brace depth ───────────────────────────────────────────────

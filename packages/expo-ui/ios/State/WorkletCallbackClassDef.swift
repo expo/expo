@@ -17,5 +17,9 @@ internal func makeWorkletCallbackClass() -> ClassDefinition {
       callback.worklet = worklet
       return callback
     }
+
+    Property("__expo_ui_shared_object__") { (_: WorkletCallback) -> Bool in
+      true
+    }
   }
 }

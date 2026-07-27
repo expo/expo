@@ -251,6 +251,14 @@ export const UIScreens = [
     },
   },
   {
+    name: 'BasicTextField component',
+    route: 'ui/basicTextField',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./BasicTextFieldScreen'));
+    },
+  },
+  {
     name: 'Progress component',
     route: 'ui/progress',
     options: {},
@@ -264,6 +272,14 @@ export const UIScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ListScreen'));
+    },
+  },
+  {
+    name: 'NavigationBar component',
+    route: 'ui/navigation-bar',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./NavigationBarScreen'));
     },
   },
   {

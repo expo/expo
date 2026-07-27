@@ -1,4 +1,4 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 import { Appearance } from 'react-native';
 
 export type AndroidMaterialColorName =

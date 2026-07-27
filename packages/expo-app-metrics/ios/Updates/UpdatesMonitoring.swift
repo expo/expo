@@ -1,11 +1,10 @@
-import ExpoModulesCore
 import EXUpdatesInterface
+import ExpoModulesCore
 
+// swift-format-ignore: AlwaysUseLowerCamelCase
 let MAX_CACHED_EVENTS = 50
 
-/**
- Encapsulate updates monitoring in this class
- */
+/// Encapsulate updates monitoring in this class
 @AppMetricsActor
 internal class UpdatesMonitoring: MetricReporter {
   private var launchedUpdateId: String?
@@ -33,7 +32,8 @@ internal class UpdatesMonitoring: MetricReporter {
               requestHeadersJSON: encodeAsJSONString(updatesInfo.requestHeaders)
             )
           } catch {
-            logger.warn("[AppMetrics] Failed to patch app updates info on active sessions: \(error.localizedDescription)")
+            logger.warn(
+              "[AppMetrics] Failed to patch app updates info on active sessions: \(error.localizedDescription)")
           }
         }
       }
@@ -52,7 +52,8 @@ internal class UpdatesMonitoring: MetricReporter {
     let embeddedUpdateId = updatesController.embeddedUpdateId
 
     // Ignore embedded launches – they are not available on the website anyway.
-    let updateId = launchedUpdateId == embeddedUpdateId
+    let updateId =
+      launchedUpdateId == embeddedUpdateId
       ? nil
       : launchedUpdateId?.uuidString.lowercased()
     let runtimeVersion = updatesController.runtimeVersion
@@ -66,10 +67,11 @@ internal class UpdatesMonitoring: MetricReporter {
 
   nonisolated func downloadTimeMetric(_ subscription: UpdatesStateChangeSubscription?) -> Metric? {
     guard let subscription,
-       let context = subscription.getContext() as? UpdatesNativeInterfaceStateContext,
-       let updateId = context.downloadedManifest?["id"] as? String,
-       let startTime = context.downloadStartTime,
-       let finishTime = context.downloadFinishTime else {
+      let context = subscription.getContext() as? UpdatesNativeInterfaceStateContext,
+      let updateId = context.downloadedManifest?["id"] as? String,
+      let startTime = context.downloadStartTime,
+      let finishTime = context.downloadFinishTime
+    else {
       return nil
     }
     let lastDownloadTime = finishTime.timeIntervalSince(startTime)

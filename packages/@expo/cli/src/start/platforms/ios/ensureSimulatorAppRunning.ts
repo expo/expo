@@ -1,4 +1,4 @@
-import * as osascript from '@expo/osascript';
+import { spawnAsync as spawnAppleScriptAsync } from '@expo/osascript';
 import spawnAsync from '@expo/spawn-async';
 
 import type { Device } from './simctl';
@@ -46,12 +46,10 @@ async function waitForSimulatorAppToStart({
 // I think the app can be open while no simulators are booted.
 async function isSimulatorAppRunningAsync(): Promise<boolean> {
   try {
-    const zeroMeansNo = (
-      await osascript.execAsync(
-        'tell app "System Events" to count processes whose name is "Simulator"'
-      )
-    ).trim();
-    if (zeroMeansNo === '0') {
+    const result = await spawnAppleScriptAsync(
+      'tell app "System Events" to count processes whose name is "Simulator" or name is "DeviceHub"'
+    );
+    if (result.stdout.trim() === '0') {
       return false;
     }
   } catch (error: any) {
@@ -65,10 +63,22 @@ async function isSimulatorAppRunningAsync(): Promise<boolean> {
 }
 
 async function openSimulatorAppAsync(device: { udid?: string }) {
-  const args = ['-a', 'Simulator'];
-  if (device.udid) {
-    // This has no effect if the app is already running.
-    args.push('--args', '-CurrentDeviceUDID', device.udid);
+  try {
+    const args = ['-a', 'Simulator'];
+    if (device.udid) {
+      // This has no effect if the app is already running.
+      args.push('--args', '-CurrentDeviceUDID', device.udid);
+    }
+    await spawnAsync('open', args);
+  } catch {
+    // Xcode 27+ replaces Simulator.app with DeviceHub, so `open -a Simulator` fails.
+    // DeviceHub registers the `devices://` URL scheme, which lets us focus the right
+    // device by its UDID — `open -a DeviceHub` can only bring the app forward.
+    const deviceHubArgs = device.udid
+      ? [`devices://device/open?id=${device.udid}`]
+      : ['-a', 'DeviceHub'];
+    await spawnAsync('open', deviceHubArgs).catch(() => {
+      // Noop - we can't do much more here
+    });
   }
-  await spawnAsync('open', args);
 }

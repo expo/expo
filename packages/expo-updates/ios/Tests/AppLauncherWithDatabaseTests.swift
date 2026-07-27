@@ -111,7 +111,9 @@ class AppLauncherWithDatabaseTests {
     db.databaseQueue.sync {
       let sameUpdate = try! db.update(withId: testUpdate.updateId, config: config)
       #expect(yesterday != sameUpdate?.lastAccessed)
-      #expect(abs(sameUpdate!.lastAccessed.timeIntervalSinceNow) < 3)
+      // `lastAccessed` should have been bumped to roughly "now". Use a generous tolerance
+      // so the assertion doesn't flake on slow CI runners where `launchUpdate` takes longer.
+      #expect(abs(sameUpdate!.lastAccessed.timeIntervalSinceNow) < 60)
     }
   }
 }

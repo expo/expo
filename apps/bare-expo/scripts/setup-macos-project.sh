@@ -18,7 +18,7 @@ remove_dependencies() {
 echo " ☛  Ensuring macOS project is setup..."
 
 echo " Removing macOS incompatible dependencies..."
-remove_dependencies "@shopify/react-native-skia" "react-native-svg"
+remove_dependencies "react-native-svg"
 
 echo " Copying macOS patches..."
 cp -r ./scripts/fixtures/macos/patches/* ../../patches/
@@ -80,13 +80,28 @@ if [[ "$RN_MACOS_VERSION" != "null" ]]; then
 else
     RN_MINOR_VERSION=$(jq -r '.dependencies["react-native"] | capture("^(?<major>\\d+)\\.(?<minor>\\d+)") | "\( .major ).\( .minor )"' package.json)
     echo " ⚠️  Attempting to install react-native-macos@$RN_MINOR_VERSION..."
-    if ! pnpm add "react-native-macos@$RN_MINOR_VERSION" --silent; then
+    # These versions are explicitly chosen, so opt out of the workspace minimumReleaseAge
+    # policy — it would reject any react-native-macos release younger than 24 hours.
+    if ! pnpm add "react-native-macos@$RN_MINOR_VERSION" --silent --config.minimum-release-age=0; then
         echo "⚠️  Failed to install react-native-macos@$RN_MINOR_VERSION, falling back to latest version"
         # Manually extract the last react-native-macos version (highest) from npm because we can't rely on the @latest tag
         latest_version=$(npm view react-native-macos versions --json | jq -r '.[-1]')
-        pnpm add "react-native-macos@$latest_version"
-
+        if ! pnpm add "react-native-macos@$latest_version" --config.minimum-release-age=0; then
+            echo " ❌ Could not install react-native-macos@$latest_version; the macOS project cannot be set up without it. See the pnpm error above."
+            exit 1
+        fi
     fi
+fi
+
+EXPECTED_REACT_VERSION=$(jq -r '.peerDependencies.react' node_modules/react-native-macos/package.json)
+CURRENT_REACT_VERSION=$(jq -r '.dependencies.react' package.json)
+if [[ "$EXPECTED_REACT_VERSION" == "null" || -z "$EXPECTED_REACT_VERSION" ]]; then
+    echo " ⚠️  Could not determine react peer dependency from react-native-macos, skipping react install"
+elif [[ "$CURRENT_REACT_VERSION" == "$EXPECTED_REACT_VERSION" ]]; then
+    echo " ✅ react@$CURRENT_REACT_VERSION already matches react-native-macos peer dependency"
+else
+    echo " ⚠️  Installing react@$EXPECTED_REACT_VERSION to match react-native-macos peer dependency (was $CURRENT_REACT_VERSION)..."
+    pnpm add "react@$EXPECTED_REACT_VERSION" --silent
 fi
 
 echo " Running pnpm from root..."

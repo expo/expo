@@ -1,11 +1,11 @@
 import path from 'path';
 
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { listFilesSorted } from '../utils';
 import type {
   RNConfigDependencyIos,
   RNConfigReactNativePlatformsConfigIos,
 } from './reactNativeConfig.types';
-import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import { listFilesSorted } from '../utils';
 
 /** Find first *.podspec file in target directory */
 const findPodspecFile = async (targetPath: string): Promise<string | null> => {

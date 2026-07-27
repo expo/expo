@@ -1,3 +1,4 @@
+import { events } from '2g';
 import type { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
@@ -7,21 +8,32 @@ import { iterableToStream, streamMultipart, multipartContentType, MultipartPart 
 import type { Dictionary } from 'structured-headers';
 import { serializeDictionary } from 'structured-headers';
 
-import type { ManifestRequestInfo } from './ManifestMiddleware';
-import { ManifestMiddleware } from './ManifestMiddleware';
-import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
-import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
-import type { ServerRequest } from './server.types';
 import { getAnonymousIdAsync } from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME } from '../../../api/user/user';
 import type { CodeSigningInfo } from '../../../utils/codesigning';
 import { getCodeSigningInfoAsync, signManifestString } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
 import { stripPort } from '../../../utils/url';
+import type { ManifestRequestInfo } from './ManifestMiddleware';
+import { ManifestMiddleware } from './ManifestMiddleware';
+import { manifestDebugEvent } from './events';
+import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
+import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
+import type { ServerRequest } from './server.types';
 
 const MULTIPART_TYPE = 'multipart/form-data';
 
-const debug = require('debug')('expo:start:server:middleware:ExpoGoManifestHandlerMiddleware');
+declare module '2g' {
+  interface EventRegistry {
+    'manifest:served': {
+      type: 'expo-go' | 'dev-client';
+      runtimeVersion: string;
+      sdkVersion: string | null;
+    };
+  }
+}
+
+const event = events('manifest');
 
 let multipartMixedContentType = multipartContentType;
 if (multipartMixedContentType.startsWith(MULTIPART_TYPE)) {
@@ -46,9 +58,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     let platform = parsePlatformHeader(req);
 
     if (!platform) {
-      debug(
-        `No "expo-platform" header or "platform" query parameter specified. Falling back to "ios".`
-      );
+      manifestDebugEvent('no_platform_header', {});
       platform = 'ios';
     }
 
@@ -120,7 +130,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       (await Updates.getRuntimeVersionAsync(
         this.projectRoot,
         { ...exp, runtimeVersion: exp.runtimeVersion ?? { policy: 'sdkVersion' } },
-        requestOptions.platform
+        // TODO(@kitten): Runtime-version resolution only reads ios/android config
+        // tvos/macos fall back to the shared `runtimeVersion` until they get explicit support
+        requestOptions.platform as 'android' | 'ios'
       ));
     if (!runtimeVersion) {
       throw new CommandError(
@@ -166,6 +178,12 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     };
 
     const stringifiedManifest = JSON.stringify(expoUpdatesManifest);
+
+    event('served', {
+      type: 'expo-go',
+      runtimeVersion,
+      sdkVersion: exp.sdkVersion ?? null,
+    });
 
     let manifestPartHeaders: { 'expo-signature': string } | undefined;
     let certificateChainBody: string | null = null;

@@ -1,3 +1,5 @@
+import type { ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler/types';
+
 import { serializeShakingAsync } from '../fork/__tests__/serializer-test-utils';
 
 jest.mock('../exportHermes', () => {
@@ -9,13 +11,13 @@ jest.mock('../exportHermes', () => {
   };
 });
 
-jest.mock('../findUpPackageJsonPath', () => ({
+jest.mock('../../utils/findUpPackageJsonPath', () => ({
   findUpPackageJsonPath: jest.fn(() => null),
 }));
 
-function expectImports(graph, name: string) {
+function expectImports(graph: ReadOnlyGraph, name: string) {
   if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
-  return expect([...graph.dependencies.get(name).dependencies.values()]);
+  return expect([...graph.dependencies.get(name)!.dependencies.values()]);
 }
 
 it(`supports worker bundle`, async () => {

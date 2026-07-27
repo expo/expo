@@ -146,6 +146,10 @@ it('when no options are passed, default ones are used', () => {
     nativeProps: undefined,
     disableAutomaticContentInsets: undefined,
     contentStyle: undefined,
+    rippleColor: undefined,
+    disableIndicator: undefined,
+    labelVisibilityMode: undefined,
+    tintColor: undefined,
   } as NativeTabOptions);
 });
 
@@ -989,6 +993,69 @@ describe('Tab options', () => {
       expect(screen.getByTestId('index')).toBeVisible();
       const lastCall = NativeTabsView.mock.calls.at(-1)![0];
       expect(lastCall.tabs[0]!.options.disabled).toBe(false);
+    });
+  });
+
+  describe('testID and accessibilityLabel', () => {
+    it('When set on a layout trigger, they are converted to tab bar item options', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).toMatchObject({
+        tabBarItemTestID: 'home-tab',
+        tabBarItemAccessibilityLabel: 'Home tab',
+      } as NativeTabOptions);
+    });
+
+    it('When not set, the options do not contain the keys', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => <View testID="index" />,
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(1);
+      const call = NativeTabsView.mock.calls[0]![0];
+      expect(call.tabs[0]!.options).not.toHaveProperty('tabBarItemTestID');
+      expect(call.tabs[0]!.options).not.toHaveProperty('tabBarItemAccessibilityLabel');
+    });
+
+    it('Screen-mode trigger can set testID and accessibilityLabel dynamically', () => {
+      renderRouter({
+        _layout: () => (
+          <NativeTabs>
+            <NativeTabs.Trigger name="index" />
+          </NativeTabs>
+        ),
+        index: () => (
+          <View testID="index">
+            <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
+          </View>
+        ),
+      });
+
+      expect(screen.getByTestId('index')).toBeVisible();
+      expect(NativeTabsView).toHaveBeenCalledTimes(2);
+      const initial = NativeTabsView.mock.calls[0]![0];
+      const afterFocus = NativeTabsView.mock.calls[1]![0];
+      expect(initial.tabs[0]!.options).not.toHaveProperty('tabBarItemTestID');
+      expect(afterFocus.tabs[0]!.options).toMatchObject({
+        tabBarItemTestID: 'home-tab',
+        tabBarItemAccessibilityLabel: 'Home tab',
+      } as NativeTabOptions);
     });
   });
 });

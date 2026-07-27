@@ -39,7 +39,7 @@ it(`should transform import.meta by default for web platforms`, () => {
   };
 
   const sourceCode = `var url = import.meta.url;`;
-  expect(babel.transform(sourceCode, options).code).toEqual(
+  expect(babel.transform(sourceCode, options)!.code).toEqual(
     `var url = globalThis.__ExpoImportMetaRegistry.url;`
   );
 });

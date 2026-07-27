@@ -1,1 +1,0 @@
-{"version":3,"file":"browser.web.d.ts","sourceRoot":"","sources":["../../src/environment/browser.web.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,MAAM,CAAC;IAEb,UAAU,MAAM;QACd,WAAW,CAAC,KAAK,EAAE,MAAM,EAAE,QAAQ,EAAE,aAAa,GAAG,OAAO,CAAC;KAC9D;CACF;AAID,eAAO,MAAM,cAAc,SAAoE,CAAC;AAChG,eAAO,MAAM,oBAAoB,SACoC,CAAC;AACtE,eAAO,MAAM,cAAc,SAAoC,CAAC;AAChE,eAAO,MAAM,gBAAgB,QAAQ,CAAC"}

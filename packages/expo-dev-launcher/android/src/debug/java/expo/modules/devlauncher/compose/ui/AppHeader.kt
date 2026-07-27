@@ -14,11 +14,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.composeunstyled.Button
-import expo.modules.devlauncher.MeQuery
+import com.composeunstyled.UnstyledButton
 import expo.modules.devlauncher.compose.primitives.AsyncImage
 import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.SessionService
+import expo.modules.devlauncher.services.UserAccount
 import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -64,7 +64,7 @@ fun AppHeader(
 fun AppHeader(
   appName: String,
   modifier: Modifier = Modifier,
-  currentAccount: MeQuery.Account? = null,
+  currentAccount: UserAccount? = null,
   onProfileClick: () -> Unit = {}
 ) {
   Row(
@@ -95,7 +95,7 @@ fun AppHeader(
       borderRadius = NewAppTheme.borderRadius.full,
       color = NewAppTheme.colors.background.element
     ) {
-      Button(onClick = onProfileClick) {
+      UnstyledButton(onClick = onProfileClick) {
         Box(
           modifier = Modifier.size(44.dp),
           contentAlignment = Alignment.Center

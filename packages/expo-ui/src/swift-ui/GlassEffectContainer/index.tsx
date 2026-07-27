@@ -3,7 +3,7 @@ import { requireNativeView } from 'expo';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type GlassEffectContainerProps = {
+export interface GlassEffectContainerProps extends CommonViewModifierProps {
   /**
    * The children of the `GlassEffectContainer` component.
    * These should be views with `.glassEffect()` modifiers applied.
@@ -14,7 +14,7 @@ export type GlassEffectContainerProps = {
    * This controls how close elements need to be to start blending together.
    */
   spacing?: number;
-} & CommonViewModifierProps;
+}
 
 type NativeGlassEffectContainerProps = GlassEffectContainerProps;
 

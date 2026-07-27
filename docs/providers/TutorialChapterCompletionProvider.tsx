@@ -1,43 +1,132 @@
-import { createContext, useContext, PropsWithChildren } from 'react';
+import { createContext, useContext, useEffect, useMemo, PropsWithChildren } from 'react';
 
 import { useLocalStorage } from '~/common/useLocalStorage';
 import {
-  EAS_TUTORIAL_INITIAL_CHAPTERS,
-  GET_STARTED_TUTORIAL_CHAPTERS,
-  Chapter,
+  type Chapter,
+  TUTORIAL_CHAPTERS,
+  type TutorialName,
 } from '~/ui/components/ProgressTracker/TutorialData';
 
+type CompletionMap = Record<string, boolean>;
+
 type ChapterContextType = {
-  chapters: Chapter[];
-  setChapters: (chapters: Chapter[]) => void;
-  getStartedChapters: Chapter[];
-  setGetStartedChapters: (chapters: Chapter[]) => void;
+  getChapters: (name: TutorialName) => Chapter[];
+  isCompleted: (name: TutorialName, slug: string) => boolean;
+  setCompleted: (name: TutorialName, slug: string, completed: boolean) => void;
+  resetTutorial: (name: TutorialName) => void;
 };
 
-// Provide initial values matching the type
+function migrateLegacyShape(raw: unknown): CompletionMap | null {
+  if (!Array.isArray(raw)) {
+    return null;
+  }
+  const out: CompletionMap = {};
+  for (const entry of raw) {
+    if (entry && typeof entry === 'object' && typeof entry.slug === 'string') {
+      out[entry.slug] = !!entry.completed;
+    }
+  }
+  return out;
+}
+
+function safeMap(map: CompletionMap | undefined | null): CompletionMap {
+  if (!map) {
+    return {};
+  }
+  return migrateLegacyShape(map) ?? map;
+}
+
 const defaultValues: ChapterContextType = {
-  chapters: [],
-  setChapters: () => {},
-  getStartedChapters: [],
-  setGetStartedChapters: () => {},
+  getChapters: name => TUTORIAL_CHAPTERS[name],
+  isCompleted: () => false,
+  setCompleted: () => {},
+  resetTutorial: () => {},
 };
 
 const TutorialChapterCompletionContext = createContext<ChapterContextType>(defaultValues);
 
 export const TutorialChapterCompletionProvider = ({ children }: PropsWithChildren) => {
-  const [chapters, setChapters] = useLocalStorage<Chapter[]>({
+  const [easMap, setEasMap] = useLocalStorage<CompletionMap>({
     name: 'EAS_TUTORIAL',
-    defaultValue: EAS_TUTORIAL_INITIAL_CHAPTERS,
+    defaultValue: {},
+  });
+  const [getStartedMap, setGetStartedMap] = useLocalStorage<CompletionMap>({
+    name: 'GET_STARTED',
+    defaultValue: {},
+  });
+  const [buildWithAiMap, setBuildWithAiMap] = useLocalStorage<CompletionMap>({
+    name: 'BUILD_WITH_AI',
+    defaultValue: {},
+  });
+  const [cicdMap, setCicdMap] = useLocalStorage<CompletionMap>({
+    name: 'CICD_TUTORIAL',
+    defaultValue: {},
   });
 
-  const [getStartedChapters, setGetStartedChapters] = useLocalStorage<Chapter[]>({
-    name: 'GET_STARTED',
-    defaultValue: GET_STARTED_TUTORIAL_CHAPTERS,
-  });
+  useEffect(() => {
+    const migrated = migrateLegacyShape(easMap);
+    if (migrated) {
+      setEasMap(migrated);
+    }
+  }, [easMap, setEasMap]);
+
+  useEffect(() => {
+    const migrated = migrateLegacyShape(getStartedMap);
+    if (migrated) {
+      setGetStartedMap(migrated);
+    }
+  }, [getStartedMap, setGetStartedMap]);
+
+  useEffect(() => {
+    const migrated = migrateLegacyShape(buildWithAiMap);
+    if (migrated) {
+      setBuildWithAiMap(migrated);
+    }
+  }, [buildWithAiMap, setBuildWithAiMap]);
+
+  useEffect(() => {
+    const migrated = migrateLegacyShape(cicdMap);
+    if (migrated) {
+      setCicdMap(migrated);
+    }
+  }, [cicdMap, setCicdMap]);
+
+  const value = useMemo<ChapterContextType>(() => {
+    const maps: Record<TutorialName, CompletionMap> = {
+      EAS_TUTORIAL: safeMap(easMap),
+      GET_STARTED: safeMap(getStartedMap),
+      BUILD_WITH_AI: safeMap(buildWithAiMap),
+      CICD_TUTORIAL: safeMap(cicdMap),
+    };
+    const setters: Record<TutorialName, (next: CompletionMap) => void> = {
+      EAS_TUTORIAL: setEasMap,
+      GET_STARTED: setGetStartedMap,
+      BUILD_WITH_AI: setBuildWithAiMap,
+      CICD_TUTORIAL: setCicdMap,
+    };
+    return {
+      getChapters: name => TUTORIAL_CHAPTERS[name],
+      isCompleted: (name, slug) => !!maps[name][slug],
+      setCompleted: (name, slug, completed) => {
+        setters[name]({ ...maps[name], [slug]: completed });
+      },
+      resetTutorial: name => {
+        setters[name]({});
+      },
+    };
+  }, [
+    easMap,
+    getStartedMap,
+    buildWithAiMap,
+    cicdMap,
+    setEasMap,
+    setGetStartedMap,
+    setBuildWithAiMap,
+    setCicdMap,
+  ]);
 
   return (
-    <TutorialChapterCompletionContext.Provider
-      value={{ chapters, setChapters, getStartedChapters, setGetStartedChapters }}>
+    <TutorialChapterCompletionContext.Provider value={value}>
       {children}
     </TutorialChapterCompletionContext.Provider>
   );

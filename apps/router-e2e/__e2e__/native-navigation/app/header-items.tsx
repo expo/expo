@@ -10,9 +10,10 @@ import {
   Pressable,
   Alert,
   Platform,
+  TextInput,
 } from 'react-native';
 
-import { searchIcon, closeIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
+import { searchIcon, sendIcon, deleteIcon } from './icons';
 
 export default function HeaderItemsScreen() {
   const params = useLocalSearchParams();
@@ -24,6 +25,7 @@ export default function HeaderItemsScreen() {
   const [leftButton2SeparateBackground, setLeftButton2SeparateBackground] = useState(false);
   const [showLeftCustomItem, setShowLeftCustomItem] = useState(!!params.leftCustomItem);
   const [showLeftMenu, setShowLeftMenu] = useState(!!params.leftMenu);
+  const [menuBadgeContent, setMenuBadgeContent] = useState('99');
 
   const [showRightButton, setShowRightButton] = useState(!!params.rightButton);
   const [showRightMenu1, setShowRightMenu1] = useState(!!params.rightMenu1);
@@ -135,6 +137,8 @@ export default function HeaderItemsScreen() {
             hidden={!showLeftButton2}
             separateBackground={leftButton2SeparateBackground}
             selected={leftButton2Selected}
+            icon={process.env.EXPO_OS === 'ios' ? 'star' : require('../../../assets/expo-logo.png')}
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}
             onPress={handleLeftButton2Press}
             style={{
               fontWeight: 500,
@@ -142,7 +146,6 @@ export default function HeaderItemsScreen() {
               color: '#f0f',
             }}>
             <Stack.Toolbar.Label>Button 2</Stack.Toolbar.Label>
-            <Stack.Toolbar.Icon sf="star" />
             <Stack.Toolbar.Badge>33</Stack.Toolbar.Badge>
           </Stack.Toolbar.Button>
 
@@ -155,16 +158,21 @@ export default function HeaderItemsScreen() {
             style={{
               color: '#00f',
               fontFamily: 'Arial',
-            }}>
+            }}
+            icon={
+              process.env.EXPO_OS === 'ios'
+                ? 'list.bullet'
+                : require('../../../assets/expo-logo.png')
+            }
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}>
             <Stack.Toolbar.Label>Left Menu</Stack.Toolbar.Label>
-            <Stack.Toolbar.Icon sf="list.bullet" />
             <Stack.Toolbar.Badge
               style={{
                 backgroundColor: '#eee',
                 fontFamily: 'Courier New',
                 fontWeight: 100,
               }}>
-              99
+              {menuBadgeContent}
             </Stack.Toolbar.Badge>
             <Stack.Toolbar.MenuAction onPress={() => Alert.alert('Option 1')}>
               <Stack.Toolbar.Label>Option 1</Stack.Toolbar.Label>
@@ -208,7 +216,12 @@ export default function HeaderItemsScreen() {
         <Stack.Toolbar placement="right">
           <Stack.Toolbar.Menu
             hidden={!showRightMenu1}
-            icon={process.env.EXPO_OS === 'ios' ? 'ellipsis.circle' : moreVertIcon}
+            icon={
+              process.env.EXPO_OS === 'ios'
+                ? 'ellipsis.circle'
+                : require('../../../assets/expo-logo.png')
+            }
+            iconRenderingMode={process.env.EXPO_OS === 'ios' ? 'template' : 'original'}
             title="Actions"
             tintColor={Platform.select({
               ios: Color.ios.systemBrown,
@@ -225,7 +238,7 @@ export default function HeaderItemsScreen() {
                 fontFamily: 'Courier New',
                 fontWeight: 100,
               }}>
-              99
+              {menuBadgeContent}
             </Stack.Toolbar.Badge>
 
             {/* Simple actions */}
@@ -475,6 +488,19 @@ export default function HeaderItemsScreen() {
               onValueChange={setShowLeftMenu}
             />
           </View>
+
+          <View style={styles.switchRow}>
+            <Text style={styles.label}>Menu Badge Content</Text>
+            <TextInput
+              testID="input-menu-badge-content"
+              style={styles.textInput}
+              value={menuBadgeContent}
+              onChangeText={setMenuBadgeContent}
+              placeholder="Badge text"
+              autoCapitalize="none"
+              autoCorrect={false}
+            />
+          </View>
         </View>
 
         <View style={styles.section}>
@@ -654,6 +680,15 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 16,
     flex: 1,
+  },
+  textInput: {
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 6,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    minWidth: 100,
+    fontSize: 16,
   },
   stateText: {
     fontSize: 14,

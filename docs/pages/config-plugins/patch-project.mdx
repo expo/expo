@@ -21,7 +21,14 @@ This guide explains how to use `patch-project`, when to use it, and its limitati
 
 To get started, you need to install the tool in your project:
 
-<Terminal cmd={['$ npx expo install patch-project']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install patch-project'],
+    yarn: ['$ yarn expo install patch-project'],
+    pnpm: ['$ pnpm expo install patch-project'],
+    bun: ['$ bun expo install patch-project'],
+  }}
+/>
 
 This command will automatically add the `patch-project` config plugin to your [app config](/workflow/configuration/):
 
@@ -40,7 +47,14 @@ This command will automatically add the `patch-project` config plugin to your [a
 
 Let's assume you manually modified native directories (**android** and **ios**) in your project. To generate patches for these native directories, you can run the following command:
 
-<Terminal cmd={['$ npx patch-project']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx patch-project'],
+    yarn: ['$ yarn dlx patch-project'],
+    pnpm: ['$ pnpm dlx patch-project'],
+    bun: ['$ bunx patch-project'],
+  }}
+/>
 
 > **info** **Note**: In scenarios where you want to generate patches for a specific platform, you can use the `--platform` option and run `npx patch-project --platform android` or `npx patch-project --platform ios`.
 

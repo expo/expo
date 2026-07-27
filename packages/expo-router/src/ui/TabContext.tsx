@@ -1,6 +1,5 @@
 import { createContext } from 'react';
 
-import type { TriggerMap } from './common';
 import type { BottomTabNavigationOptions } from '../react-navigation/bottom-tabs';
 import type {
   DefaultNavigatorOptions,
@@ -12,6 +11,7 @@ import type {
   TabRouterOptions,
   useNavigationBuilder,
 } from '../react-navigation/native';
+import type { TriggerMap } from './common';
 
 export type ExpoTabsProps = ExpoTabsNavigatorOptions;
 

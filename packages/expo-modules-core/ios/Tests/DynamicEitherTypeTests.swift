@@ -122,6 +122,29 @@ struct DynamicEitherTypeTests {
   }
 
   @Test
+  func `supports shared objects passed as a JS value`() throws {
+    class TestSharedObject: SharedObject {}
+
+    let nativeObject = TestSharedObject()
+    let jsObject = appContext.sharedObjectRegistry.createSharedJavaScriptObject(runtime: try runtime, nativeObject: nativeObject)
+
+    let either = try (~Either<URL, TestSharedObject>.self)
+      .cast(jsValue: jsObject.asValue(), appContext: appContext) as! Either<URL, TestSharedObject>
+
+    #expect(either.is(TestSharedObject.self) == true)
+    #expect(either.is(URL.self) == false)
+    #expect(try either.as(TestSharedObject.self).sharedObjectId == nativeObject.sharedObjectId)
+  }
+
+  @Test
+  func `does not crash resolving an Either when a JS object holds a function`() throws {
+    let objectWithFunction = try runtime.eval("({ cb: () => {} })")
+    #expect(throws: NeitherTypeException.self) {
+      try (~Either<URL, Int>.self).cast(jsValue: objectWithFunction, appContext: appContext)
+    }
+  }
+
+  @Test
   func `supports array of either`() throws {
     let eitherArray2 = try (~[Either<String, Int>].self).cast(["bg", 37], appContext: appContext) as! [Either<String, Int>]
     #expect(eitherArray2[0].is(String.self) == true)

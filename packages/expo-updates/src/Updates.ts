@@ -352,7 +352,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
 }
 
 /**
- * Overrides updates URL and reuqest headers in runtime from build time.
+ * Overrides updates URL and request headers in runtime from build time.
  * This method allows you to load specific updates from a URL that you provide.
  * Use this method at your own risk, as it may cause unexpected behavior.
  * Because of the risk, this method requires `disableAntiBrickingMeasures` to be set to `true` in the **app.json** file.

@@ -13,10 +13,10 @@ export class FileSystemReadableStreamSource implements UnderlyingByteSource {
     this.handle.close();
   }
 
-  pull(controller: ReadableByteStreamController) {
+  async pull(controller: ReadableByteStreamController) {
     const theView = controller.byobRequest?.view;
     if (!theView) {
-      const bytes = this.handle.readBytes(this.size);
+      const bytes = await this.handle.readBytes(this.size);
       if (bytes.length === 0) {
         controller.close();
         return;
@@ -26,7 +26,7 @@ export class FileSystemReadableStreamSource implements UnderlyingByteSource {
     }
 
     // TODO: Optimize by adding a native method that can write into a TypedArray at a given offset.
-    const bytes = this.handle.readBytes(theView.byteLength - theView.byteOffset);
+    const bytes = await this.handle.readBytes(theView.byteLength - theView.byteOffset);
     if (bytes.length === 0) {
       controller.close();
       controller.byobRequest.respond(0);
@@ -59,7 +59,7 @@ export class FileSystemWritableSink implements UnderlyingSink {
     this.handle.close();
   }
 
-  write(chunk: Uint8Array) {
-    this.handle.writeBytes(chunk);
+  async write(chunk: Uint8Array) {
+    await this.handle.writeBytes(chunk);
   }
 }

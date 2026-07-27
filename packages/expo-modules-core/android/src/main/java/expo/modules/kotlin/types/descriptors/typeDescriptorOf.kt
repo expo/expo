@@ -1,8 +1,8 @@
 package expo.modules.kotlin.types.descriptors
 
-import io.github.lukmccall.pika.PTypeDescriptor
+import io.github.expo.pika.PTypeDescriptor
 import kotlin.reflect.typeOf
-import io.github.lukmccall.pika.typeDescriptorOf as pikaTypeDescriptorOf
+import io.github.expo.pika.typeDescriptorOf as pikaTypeDescriptorOf
 
 @PublishedApi
 internal fun PTypeDescriptor.toRawTypeDescriptor(): RawTypeDescriptor {

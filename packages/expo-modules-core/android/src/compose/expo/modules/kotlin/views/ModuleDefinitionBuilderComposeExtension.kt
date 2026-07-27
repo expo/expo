@@ -143,7 +143,7 @@ class ComposeViewFunctionDefinitionBuilder<Props : ComposeProps> @PublishedApi i
         } catch (e: Exception) {
           throw IllegalStateException("Could not instantiate props instance of $name compose component.", e)
         }
-        ComposeFunctionHolder(context, appContext, name, viewFunction, instance)
+        ComposeFunctionHolder(context, appContext, name, viewFunction, instance, eventBuilder.callbacksDefinition)
       },
       callbacksDefinition = eventBuilder.callbacksDefinition,
       viewType = ComposeFunctionHolder::class.java,

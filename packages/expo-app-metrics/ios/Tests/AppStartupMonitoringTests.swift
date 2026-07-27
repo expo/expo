@@ -28,14 +28,15 @@ struct AppStartupMonitoringTests {
     monitoring.addReceiver(receiver)
     // Seed `NetworkPathMonitor.shared` so `markInteractive` doesn't suspend
     // forever waiting for the OS to deliver a real path in the test process.
-    NetworkPathMonitor.shared.onNetworkPathUpdate(NetworkPath(
-      status: .satisfied,
-      interfaceType: .wifi,
-      isExpensive: false,
-      isConstrained: false,
-      unsatisfiedReason: nil,
-      timestamp: 0
-    ))
+    NetworkPathMonitor.shared.onNetworkPathUpdate(
+      NetworkPath(
+        status: .satisfied,
+        interfaceType: .wifi,
+        isExpensive: false,
+        isConstrained: false,
+        unsatisfiedReason: nil,
+        timestamp: 0
+      ))
     return monitoring
   }
 
@@ -110,7 +111,7 @@ struct AppStartupMonitoringTests {
 
     monitoring.markInteractive(params: [
       "expo.frameRate.slowFrames": 999,
-      "expo.device.lowPowerMode": "user-supplied"
+      "expo.device.lowPowerMode": "user-supplied",
     ])
 
     let metric = try await ttiMetric(from: receiver)

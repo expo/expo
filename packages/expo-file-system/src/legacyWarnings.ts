@@ -46,7 +46,7 @@ export async function getContentUriAsync(fileUri: string): Promise<string> {
 }
 
 /**
- * @deprecated Use `new File().write()` or import this method from `expo-file-system/legacy`. This method will throw in runtime.
+ * @deprecated Use `await new File().write()` or `new File().writeSync()` or import this method from `expo-file-system/legacy`. This method will throw in runtime.
  */
 export async function writeAsStringAsync(
   fileUri: string,

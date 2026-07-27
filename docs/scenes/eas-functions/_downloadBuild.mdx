@@ -1,0 +1,22 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+| Property     | Type     | Required    | Default                        | Description                                                                |
+| ------------ | -------- | ----------- | ------------------------------ | -------------------------------------------------------------------------- |
+| `build_id`   | string   | <YesIcon /> | –                              | The ID of the build to download. Must be a valid UUID.                     |
+| `extensions` | string[] | <NoIcon />  | `["apk", "aab", "ipa", "app"]` | List of file extensions to look for in the downloaded artifact or archive. |
+
+##### Outputs
+
+| Property        | Type   | Description                                                                                                                                                       |
+| --------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `artifact_path` | string | The absolute path to the matching application archive. This output can be used as input into other steps. For example, to upload or process the artifact further. |
+
+<BoxLink
+  title="eas/download_build source code"
+  description="View the source code for the eas/download_build function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadBuild.ts"
+/>

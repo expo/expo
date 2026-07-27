@@ -2,8 +2,8 @@ import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/
 import * as Linking from 'expo-linking';
 import * as React from 'react';
 
-import { TestStackNavigator } from './TestStackNavigator';
 import { ThemeProvider, useTheme } from '../common/ThemeProvider';
+import { TestStackNavigator } from './TestStackNavigator';
 import { routeNames } from './constants/routeNames';
 
 const linking = {

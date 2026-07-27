@@ -11,7 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.RoundedSurface
 import expo.modules.devmenu.compose.primitives.Spacer
@@ -30,7 +30,7 @@ fun NewMenuButton(
   onClick: () -> Unit = {}
 ) {
   val contentComponent = @Composable {
-    Button(onClick = onClick, enabled = enabled) {
+    UnstyledButton(onClick = onClick, enabled = enabled) {
       Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(spacedBy),

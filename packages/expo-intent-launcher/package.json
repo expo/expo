@@ -2,35 +2,36 @@
   "name": "expo-intent-launcher",
   "version": "56.0.4",
   "description": "Provides a way to launch Android intents, e.g. opening a specific activity.",
-  "main": "build/IntentLauncher.js",
-  "types": "build/IntentLauncher.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
-    "react-native",
     "expo",
     "expo-intent-launcher",
     "intent",
-    "launcher"
+    "launcher",
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/intent-launcher/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-intent-launcher"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "sideEffects": false,
+  "main": "build/IntentLauncher.js",
+  "types": "build/IntentLauncher.d.ts",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/intent-launcher/",
   "dependencies": {},
   "devDependencies": {
     "expo": "workspace:*",

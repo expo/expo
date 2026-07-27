@@ -6,9 +6,28 @@
 
 ### 🎉 New features
 
+- [Android] Add `android.cmakeVersion` to override the CMake version used to build native code. ([#47377](https://github.com/expo/expo/pull/47377) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
 
+- [Android] Make the precompiled header reusable by passing `-Xclang -fno-pch-timestamp`, so ccache can reuse it across builds. ([#46915](https://github.com/expo/expo/pull/46915) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Pin the C++ dialect of PCH consumer targets to `-std=c++20`. ([#47788](https://github.com/expo/expo/pull/47788) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
+
+- [Android] Compile the precompiled header once in a shared owner target and reuse it across all codegen targets, instead of building a separate PCH per target. ([#46915](https://github.com/expo/expo/pull/46915) by [@lukmccall](https://github.com/lukmccall))
+
+## 56.0.15 — 2026-05-26
+
+### 🐛 Bug fixes
+
+- Fix `useHermesV1` reference to document its current default of `true` (Hermes V1 is the default engine since SDK 56) and that disabling it requires `buildReactNativeFromSource`. ([#46211](https://github.com/expo/expo/pull/46211) by [@yaminyassin](https://github.com/yaminyassin))
+
+## 56.0.14 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [iOS] Default `ios.usePrecompiledModules` to `true` so the plugin matches the Podfile default (precompiled modules enabled) instead of silently disabling them. ([#46159](https://github.com/expo/expo/pull/46159) by [@vonovak](https://github.com/vonovak))
 
 ## 56.0.13 — 2026-05-21
 

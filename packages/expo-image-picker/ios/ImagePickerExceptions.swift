@@ -14,12 +14,6 @@ internal final class FileSystemModuleNotFoundException: Exception {
   }
 }
 
-internal final class LoggerModuleNotFoundException: Exception {
-  override var reason: String {
-    "Logger module not found. Are you sure that Expo modules are properly linked?"
-  }
-}
-
 internal final class MissingCameraPermissionException: Exception {
   override var reason: String {
     "Missing camera or camera roll permission"
@@ -29,24 +23,6 @@ internal final class MissingCameraPermissionException: Exception {
 internal final class MissingMicrophonePermissionException: Exception {
   override var reason: String {
     "Missing microphone permission. Please enable it with the `expo-image-picker` config plugin"
-  }
-}
-
-internal final class MissingPhotoLibraryPermissionException: Exception {
-  override var reason: String {
-    "Missing photo library permission"
-  }
-}
-
-internal final class CameraUnavailableOnSimulatorException: Exception {
-  override var reason: String {
-    "Camera not available on simulator"
-  }
-}
-
-internal final class MultiselectUnavailableException: Exception {
-  override var reason: String {
-    "Multiple selection is only available on iOS 14+"
   }
 }
 

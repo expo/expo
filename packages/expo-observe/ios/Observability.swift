@@ -8,18 +8,63 @@ internal struct ObservabilityManager {
   private static var metricsEndpointUrl: URL? = nil
   private static var logsEndpointUrl: URL? = nil
   private static var projectId: String? = nil
-  private static var useOpenTelemetry = false
+
+  /// In-memory retry-gate state, kept independently per OTLP endpoint. The `/v1/metrics` and
+  /// `/v1/logs` endpoints fail independently in practice (e.g., one schema validation
+  /// disagreement on the metrics side shouldn't suppress a healthy logs stream), so each
+  /// signal carries its own consecutive-failure counter and dispatch-after deadline. A single
+  /// shared field would conflate the two: a recovering signal would reset the other's
+  /// counter on success, and a server's `Retry-After` on one endpoint would silently
+  /// overwrite a longer backoff computed for the other.
+  ///
+  /// State is reset implicitly when the process restarts — a relaunch usually means enough
+  /// time passed that the transient cause has cleared anyway, and persisting the gates would
+  /// mean a UserDefaults write per retryable response.
+  private static var metricsRetryGate: DispatchUtils.RetryGateState = .initial
+  private static var logsRetryGate: DispatchUtils.RetryGateState = .initial
 
   internal static func dispatch() async {
-    // Compute once and reuse for both signals — `shouldDispatch()` reads the persisted config, the
-    // bundle defaults, and computes a sample-rate hash. Both halves of dispatch want the same answer.
+    // Per-signal gates are checked inside `dispatchMetrics` / `dispatchLogs` rather than
+    // here, so a backoff on one endpoint doesn't suppress the other's traffic.
     let shouldDispatch = Self.shouldDispatch()
 
     await dispatchMetrics(shouldDispatch: shouldDispatch)
     await dispatchLogs(shouldDispatch: shouldDispatch)
   }
 
+  /// Whether a per-signal retry gate currently blocks dispatch on that signal. Logs a debug
+  /// line at the dispatch entry point if so, mirroring the previous top-of-dispatch check.
+  private static func retryGateBlocks(_ state: DispatchUtils.RetryGateState, signal: String) -> Bool {
+    guard let until = state.dispatchAfterDate, until > Date() else {
+      return false
+    }
+    observeLogger.debug(
+      "[EAS Observe] \(signal) dispatch suppressed by retry gate until \(until)"
+    )
+    return true
+  }
+
+  /// Applies a per-signal dispatch outcome to one of the retry-gate fields. The `inout`
+  /// parameter binding keeps the metrics and logs paths from accidentally sharing state.
+  /// Mirrors the pure `DispatchUtils.nextRetryGateState(...)` and is called from both
+  /// `dispatchMetrics` and `dispatchLogs` after each `DispatchUtils.sendRequest(...)` call.
+  private static func applyRetryOutcome(
+    _ result: DispatchResult,
+    to state: inout DispatchUtils.RetryGateState
+  ) {
+    state = DispatchUtils.nextRetryGateState(
+      result: result,
+      currentState: state,
+      now: Date(),
+      backoff: { DispatchUtils.computeBackoffDelay(attempt: $0) }
+    )
+  }
+
   private static func dispatchMetrics(shouldDispatch: Bool) async {
+    if retryGateBlocks(metricsRetryGate, signal: "metrics") {
+      return
+    }
+
     repairMetricCursorIfStale()
 
     let cursor = ObserveUserDefaults.lastDispatchedMetricId
@@ -50,28 +95,39 @@ internal struct ObservabilityManager {
       ObserveUserDefaults.lastDispatchedMetricId = highestId
       return
     }
-    do {
-      let body: any Encodable
-      if useOpenTelemetry {
-        body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
-      } else {
-        body = RequestBody(easClientId: easClientId, events: events)
-      }
-      let success = try await sendRequest(to: endpointUrl, body: body)
-      if success {
-        ObserveUserDefaults.lastDispatchDate = Date.now
-        ObserveUserDefaults.lastDispatchedMetricId = highestId
-      }
-    } catch {
-      observeLogger.warn("[EAS Observe] Dispatching the metrics has thrown an error: \(error)")
+    let body = OTRequestBody(resourceMetrics: events.map { $0.toOTEvent(easClientId) })
+    let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+    applyRetryOutcome(result, to: &metricsRetryGate)
+    ObserveUserDefaults.lastDispatchedMetricId = DispatchUtils.nextCursor(
+      for: result,
+      currentCursor: cursor,
+      highestId: highestId
+    )
+    switch result {
+    case .success:
+      ObserveUserDefaults.lastDispatchDate = Date.now
+    case .partialSuccess(let partial):
+      ObserveUserDefaults.lastDispatchDate = Date.now
+      observeLogger.warn(
+        "[EAS Observe] Partial success on batch of \(events.count) metric event(s) past "
+          + "id \(highestId): server rejected \(partial.rejectedCount) "
+          + "(\(partial.errorMessage ?? "no error message"))"
+      )
+    case .retryableFailure:
+      break
+    case .nonRetryableFailure(let reason):
+      observeLogger.warn(
+        "[EAS Observe] Dropping batch of \(events.count) metric event(s) past id "
+          + "\(highestId): \(reason)"
+      )
     }
   }
 
   private static func dispatchLogs(shouldDispatch: Bool) async {
-    // Logs are only sent in OpenTelemetry mode — there is no legacy logs endpoint.
-    guard useOpenTelemetry else {
+    if retryGateBlocks(logsRetryGate, signal: "logs") {
       return
     }
+
     repairLogCursorIfStale()
 
     let cursor = ObserveUserDefaults.lastDispatchedLogId
@@ -108,22 +164,35 @@ internal struct ObservabilityManager {
       ObserveUserDefaults.lastDispatchedLogId = highestId
       return
     }
-    do {
-      let body = OTLogsRequestBody(resourceLogs: resourceLogs)
-      let success = try await sendRequest(to: endpointUrl, body: body)
-      if success {
-        ObserveUserDefaults.lastDispatchedLogId = highestId
-      }
-    } catch {
-      observeLogger.warn("[EAS Observe] Dispatching the logs has thrown an error: \(error)")
+    let body = OTLogsRequestBody(resourceLogs: resourceLogs)
+    let result = await DispatchUtils.sendRequest(to: endpointUrl, body: body)
+    applyRetryOutcome(result, to: &logsRetryGate)
+    ObserveUserDefaults.lastDispatchedLogId = DispatchUtils.nextCursor(
+      for: result,
+      currentCursor: cursor,
+      highestId: highestId
+    )
+    switch result {
+    case .success, .retryableFailure:
+      ObserveUserDefaults.lastDispatchDate = Date.now
+    case .partialSuccess(let partial):
+      ObserveUserDefaults.lastDispatchDate = Date.now
+      observeLogger.warn(
+        "[EAS Observe] Partial success on batch of \(resourceLogs.count) log event(s) past "
+          + "id \(highestId): server rejected \(partial.rejectedCount) "
+          + "(\(partial.errorMessage ?? "no error message"))"
+      )
+    case .nonRetryableFailure(let reason):
+      observeLogger.warn(
+        "[EAS Observe] Dropping batch of \(resourceLogs.count) log event(s) past id "
+          + "\(highestId): \(reason)"
+      )
     }
   }
 
-  /**
-   Groups `metrics` by `sessionId`, hydrates the matching session rows, and emits one `Event` per
-   session in the same shape Android dispatches: each event carries the session's metadata and only
-   the metrics that belong to it.
-   */
+  /// Groups `metrics` by `sessionId`, hydrates the matching session rows, and emits one `Event` per
+  /// session in the same shape Android dispatches: each event carries the session's metadata and only
+  /// the metrics that belong to it.
   private static func buildEvents(forMetrics metrics: [MetricRow]) throws -> [Event] {
     let metricsBySession = Dictionary(grouping: metrics, by: \.sessionId)
     let sessionIds = Array(metricsBySession.keys)
@@ -148,32 +217,6 @@ internal struct ObservabilityManager {
     }
   }
 
-  private static func sendRequest(to endpointUrl: URL, body: any Encodable) async throws -> Bool {
-    var request = URLRequest(url: endpointUrl)
-    request.httpMethod = "POST"
-    request.allHTTPHeaderFields = ["Content-Type": "application/json"]
-    request.httpBody = try body.toJSONData([])
-
-    #if DEBUG
-    observeLogger.debug("[EAS Observe] Sending the request to \(endpointUrl) with body:")
-    // Use `print` so the JSON can be copied without including the log level emojis. Wrapped in
-    // `#if DEBUG` so release builds don't pay for a second pretty-printed encode of the payload.
-    print(try body.toJSONString(.prettyPrinted))
-    #endif
-
-    let (responseData, urlResponse) = try await URLSession.shared.data(for: request)
-
-    guard let urlResponse = urlResponse as? HTTPURLResponse else {
-      return false
-    }
-    guard (200...299).contains(urlResponse.statusCode) else {
-      observeLogger.warn("[EAS Observe] Server responded with \(urlResponse.statusCode) status code and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")")
-      return false
-    }
-    observeLogger.debug("[EAS Observe] Server responded successfully with \(urlResponse.statusCode) status code and data: \(String(data: responseData, encoding: .utf8) ?? "<unreadable>")")
-    return true
-  }
-
   internal nonisolated static func setEndpointUrl(_ urlString: String?, projectId: String) {
     let defaultUrl = "https://o.expo.dev"
     let urlString = urlString ?? defaultUrl
@@ -183,20 +226,8 @@ internal struct ObservabilityManager {
       return
     }
     AppMetricsActor.isolated {
-      if useOpenTelemetry {
-        self.metricsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/metrics")
-        self.logsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/logs")
-      } else {
-        self.metricsEndpointUrl = url.appendingPathComponent(projectId)
-        self.logsEndpointUrl = nil
-      }
-    }
-  }
-
-  internal nonisolated static func setUseOpenTelemetry(_ enabled: Bool?) {
-    let enabled = enabled ?? true
-    AppMetricsActor.isolated {
-      self.useOpenTelemetry = enabled
+      self.metricsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/metrics")
+      self.logsEndpointUrl = url.appendingPathComponent("\(projectId)/v1/logs")
     }
   }
 
@@ -225,4 +256,3 @@ internal struct ObservabilityManager {
     return EASClientID.deterministicUniformValue(EASClientID.uuid()) < clamped
   }
 }
-

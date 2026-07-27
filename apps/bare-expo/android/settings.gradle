@@ -35,4 +35,8 @@ include(":expo-modules-test-core")
 project(":expo-modules-test-core").projectDir = new File("../../../packages/expo-modules-test-core/android")
 
 include ':app'
+
+include ':macrobenchmark'
+project(':macrobenchmark').projectDir = new File('../macrobenchmark')
+
 includeBuild(expoAutolinking.reactNativeGradlePlugin)

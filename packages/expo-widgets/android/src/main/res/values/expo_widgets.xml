@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="expo_widgets_initial_layout">Loading widget</string>
+  <string-array name="expo_widgets_names" />
+</resources>

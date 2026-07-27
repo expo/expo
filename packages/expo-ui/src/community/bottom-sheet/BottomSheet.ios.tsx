@@ -1,9 +1,7 @@
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
-import { useWindowDimensions, View } from 'react-native';
+import { useWindowDimensions, View, StyleSheet } from 'react-native';
+import type { StyleProp, ViewStyle } from 'react-native';
 
-import { BottomSheetContext, BottomSheetInternalContext } from './context';
-import type { BottomSheetMethods, BottomSheetProps } from './types';
-import { parseSnapPoint } from './types';
 import { BottomSheet as NativeBottomSheet } from '../../swift-ui/BottomSheet';
 import { Group } from '../../swift-ui/Group';
 import { Host } from '../../swift-ui/Host';
@@ -11,13 +9,26 @@ import { RNHostView } from '../../swift-ui/RNHostView';
 import {
   type PresentationDetent,
   interactiveDismissDisabled,
+  presentationBackground,
   presentationDetents,
   presentationDragIndicator,
+  presentationSizing,
 } from '../../swift-ui/modifiers/presentationModifiers';
+import { BottomSheetContext, BottomSheetInternalContext } from './context';
+import { SheetScrollContextReset } from './scrollContextReset';
+import type { BottomSheetMethods, BottomSheetProps } from './types';
+import { parseSnapPoint } from './types';
 
 export { useBottomSheet } from './context';
 
 // #region Helpers
+
+function extractBackgroundColor(style: StyleProp<ViewStyle>): string | undefined {
+  if (!style) return undefined;
+  const flat = StyleSheet.flatten(style) as ViewStyle | undefined;
+  const color = flat?.backgroundColor;
+  return typeof color === 'string' ? color : undefined;
+}
 
 function snapPointToDetent(point: string | number): PresentationDetent {
   const parsed = parseSnapPoint(point);
@@ -80,6 +91,7 @@ export function BottomSheet(props: BottomSheetProps) {
     enablePanDownToClose = false,
     enableDynamicSizing = true,
     handleComponent,
+    backgroundStyle,
     children,
   } = props;
   const { width } = useWindowDimensions();
@@ -192,10 +204,12 @@ export function BottomSheet(props: BottomSheetProps) {
 
   useImperativeHandle(ref, () => methods, [methods]);
 
-  const modifiers = useMemo(
-    () => [
+  const modifiers = useMemo(() => {
+    const bg = extractBackgroundColor(backgroundStyle);
+    return [
       ...(fitToContents
-        ? []
+        ? // Makes the iPad sheet size to that content instead of opening near full height.
+          [presentationSizing('fitted')]
         : [
             presentationDetents(detents, {
               selection: selectedDetent,
@@ -204,21 +218,22 @@ export function BottomSheet(props: BottomSheetProps) {
           ]),
       presentationDragIndicator(handleComponent === null ? 'hidden' : 'visible'),
       interactiveDismissDisabled(!enablePanDownToClose),
-    ],
-    [
-      fitToContents,
-      detents,
-      selectedDetent,
-      handleDetentChange,
-      handleComponent,
-      enablePanDownToClose,
-    ]
-  );
+      ...(bg ? [presentationBackground(bg)] : []),
+    ];
+  }, [
+    fitToContents,
+    detents,
+    selectedDetent,
+    handleDetentChange,
+    handleComponent,
+    enablePanDownToClose,
+    backgroundStyle,
+  ]);
 
   return (
     <BottomSheetInternalContext.Provider value={internalContextValue}>
       <BottomSheetContext.Provider value={methods}>
-        <Host style={{ position: 'absolute', width }}>
+        <Host style={{ position: 'absolute', width }} pointerEvents="none">
           <NativeBottomSheet
             isPresented={isPresented}
             onIsPresentedChange={handlePresentedChange}
@@ -226,15 +241,16 @@ export function BottomSheet(props: BottomSheetProps) {
             <Group modifiers={modifiers}>
               <RNHostView matchContents={fitToContents}>
                 {/* paddingTop compensates for tighter spacing between native drag indicator and content
-                    compared to gorhom's handle. flex:1 fills snap point height; omitted for fitToContents
+                    compared to gorhom's handle. flexGrow:1 + height:0 (flex-basis 0) fills the snap-point
+                    height without inheriting the scrollable child's intrinsic content height. Omitted for fitToContents
                     so RNHostView can measure natural content height. */}
                 <View
                   style={
                     fitToContents
                       ? { paddingTop: handleComponent !== null ? 16 : 0 }
-                      : { flex: 1, paddingTop: handleComponent !== null ? 16 : 0 }
+                      : { flexGrow: 1, height: 0, paddingTop: handleComponent !== null ? 16 : 0 }
                   }>
-                  {children}
+                  <SheetScrollContextReset>{children}</SheetScrollContextReset>
                 </View>
               </RNHostView>
             </Group>

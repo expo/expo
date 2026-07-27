@@ -44,6 +44,10 @@ export type SubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    swiftUIViewName: string;
+    swiftUIModifierName: string;
+    composeViewName: string;
+    composeModifierName: string;
     sharedObjectName: string;
     platforms: Platform[];
     features: Feature[];
@@ -61,6 +65,10 @@ export type LocalSubstitutionData = {
     package: string;
     moduleName: string;
     viewName: string;
+    swiftUIViewName: string;
+    swiftUIModifierName: string;
+    composeViewName: string;
+    composeModifierName: string;
     sharedObjectName: string;
     platforms: Platform[];
     features: Feature[];

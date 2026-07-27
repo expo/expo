@@ -2,7 +2,6 @@ import type { ExpoConfig } from '@expo/config';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { updateTSConfigAsync } from './updateTSConfig';
 import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
@@ -10,8 +9,7 @@ import { memoize } from '../../../utils/fn';
 import { everyMatchAsync } from '../../../utils/glob';
 import { ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
-
-const debug = require('debug')('expo:doctor:typescriptSupport') as typeof console.log;
+import { updateTSConfigAsync } from './updateTSConfig';
 
 const warnDisabled = memoize(() => {
   Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
@@ -29,8 +27,6 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> 
       warnDisabled();
       return true;
     }
-    debug('Ensuring TypeScript support is setup');
-
     const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
 
     // Ensure the project is TypeScript before continuing.

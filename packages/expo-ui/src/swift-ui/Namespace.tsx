@@ -1,13 +1,13 @@
 import { requireNativeView } from 'expo';
 
-export type NamespaceProps = {
+export interface NamespaceProps {
   /**
    * The ID of the namespace. You can generate one with the `useId` react hook.
    */
   id: string;
 
   children: React.ReactNode;
-};
+}
 
 type NativeNamespaceProps = NamespaceProps;
 

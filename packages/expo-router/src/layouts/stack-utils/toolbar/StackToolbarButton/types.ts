@@ -1,8 +1,9 @@
-import type { SharedRef } from 'expo';
+import { SharedRef } from 'expo';
 import type { ReactNode } from 'react';
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'react-native';
 import type { SFSymbol } from 'sf-symbols-typescript';
 
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import type { BasicTextStyle } from '../../../../utils/font';
 import type { StackHeaderItemSharedProps } from '../shared';
 
@@ -103,7 +104,7 @@ export interface StackToolbarButtonProps {
    *
    * @platform ios
    */
-  image?: SharedRef<'image'>;
+  image?: InstanceType<SharedRef<'image'>> | null;
   /**
    * Controls how image-based icons are rendered.
    *
@@ -172,7 +173,7 @@ export interface NativeToolbarButtonProps {
   hidesSharedBackground?: boolean;
   icon?: SFSymbol;
   xcassetName?: string;
-  image?: SharedRef<'image'>;
+  image?: InstanceType<SharedRef<'image'>> | null;
   imageRenderingMode?: 'template' | 'original';
   onPress?: () => void;
   possibleTitles?: string[];
@@ -184,4 +185,7 @@ export interface NativeToolbarButtonProps {
   label?: string;
   /* @platform android */
   source?: ImageSourcePropType;
+  /** Badge overlay on the icon. Only rendered in left/right placements.
+   * @platform android */
+  badge?: NativeStackHeaderItemButton['badge'];
 }

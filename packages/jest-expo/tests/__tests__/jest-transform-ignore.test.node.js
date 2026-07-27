@@ -69,6 +69,12 @@ describe.each([
     );
   });
 
+  it('transforms standard-navigation package', () => {
+    expect(shouldTransform(rootDir, 'node_modules/standard-navigation/lib/src/index.js')).toBe(
+      true
+    );
+  });
+
   it('does not transform reanimated/plugin', () => {
     expect(shouldTransform(rootDir, 'node_modules/react-native-reanimated/plugin/index.js')).toBe(
       false

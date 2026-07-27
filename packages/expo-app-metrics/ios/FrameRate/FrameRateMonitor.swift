@@ -1,10 +1,8 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-/**
- A singleton monitor that owns the display link and fans out frame updates
- to all registered `FrameMetricsRecorder` instances. The display link is
- automatically started when the first recorder is added and stopped when the last is removed.
- */
+/// A singleton monitor that owns the display link and fans out frame updates
+/// to all registered `FrameMetricsRecorder` instances. The display link is
+/// automatically started when the first recorder is added and stopped when the last is removed.
 @AppMetricsActor
 final class FrameRateMonitor: FrameRateObserverDelegate, Sendable {
   static let shared = FrameRateMonitor()

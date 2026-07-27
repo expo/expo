@@ -195,7 +195,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       return
     }
 
-    // Service is not running and the user don't want to start foreground service.
+    // Service is not running and the user doesn't want to start foreground service.
     if (!useForegroundService) {
       return
     }
@@ -254,7 +254,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       // Some devices may broadcast the same location multiple times (mostly twice)
       // so we're filtering out these locations.
       if (timestamp > sLastTimestamp) {
-        val bundle = LocationResponse(location).toBundle(PersistableBundle::class.java)
+        val bundle = LocationResponse(location).toPersistableBundle()
         data.add(bundle)
         sLastTimestamp = timestamp
         lastReported = location
@@ -290,7 +290,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       // Some devices may broadcast the same location multiple times (mostly twice) so we're filtering out these locations,
       // so only one location at the specific timestamp can schedule a job.
       if (timestamp > sLastTimestamp) {
-        val bundle = LocationResponse(location).toBundle(PersistableBundle::class.java)
+        val bundle = LocationResponse(location).toPersistableBundle()
         data.add(bundle)
         sLastTimestamp = timestamp
       }

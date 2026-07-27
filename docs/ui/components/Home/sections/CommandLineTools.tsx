@@ -19,10 +19,14 @@ export function CommandLineTools() {
             'min-h-48 bg-subtle bg-linear-to-br from-subtle from-15% to-palette-purple3',
             'selection:bg-palette-purple5'
           )}>
-          <AppleAppStoreIcon className="absolute -right-10 -bottom-16 size-72! text-palette-purple10 opacity-10" />
+          <AppleAppStoreIcon
+            aria-hidden="true"
+            className="absolute -right-10 -bottom-16 size-72! text-palette-purple10 opacity-10"
+          />
           <div className="relative z-10 flex flex-col gap-4">
             <h2 className="flex items-center gap-2 heading-lg font-bold! text-palette-purple10!">
-              <AppleAppStoreIcon className="icon-lg text-palette-purple10" /> Deploy to TestFlight
+              <AppleAppStoreIcon aria-hidden="true" className="icon-lg text-palette-purple10" />{' '}
+              Deploy to TestFlight
             </h2>
             <div>
               <Terminal cmd={['$ npx testflight']} className="rounded-md asset-shadow" />
@@ -37,11 +41,17 @@ export function CommandLineTools() {
             'min-h-48 bg-subtle bg-linear-to-br from-subtle from-15% to-palette-green3',
             'selection:bg-palette-green4'
           )}>
-          <Cloud01DuotoneIcon className="absolute -right-8 -bottom-20 size-80! text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]" />
+          <Cloud01DuotoneIcon
+            aria-hidden="true"
+            className="absolute -right-8 -bottom-20 size-80! text-[#1e8a5f] opacity-10 dark:text-[#4eca8c]"
+          />
           <div className="relative z-10 flex flex-col gap-4">
             <h2 className="flex items-center gap-2 heading-lg text-[#1e8a5f]! font-bold! dark:text-[#4eca8c]!">
-              <Cloud01DuotoneIcon className="icon-lg text-[#1e8a5f] dark:text-[#4eca8c]" /> Deploy
-              your web app
+              <Cloud01DuotoneIcon
+                aria-hidden="true"
+                className="icon-lg text-[#1e8a5f] dark:text-[#4eca8c]"
+              />{' '}
+              Deploy your web app
             </h2>
             <div>
               <Terminal cmd={['$ npx eas-cli deploy']} className="rounded-md asset-shadow" />

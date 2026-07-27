@@ -1,11 +1,10 @@
 // Entry file for a DOM Component.
 import '@expo/metro-runtime';
-
 import React from 'react';
 
+import registerRootComponent from '../launch/registerRootComponent';
 import type { JSONValue } from './dom.types';
 import { addEventListener, getActionsObject } from './marshal';
-import registerRootComponent from '../launch/registerRootComponent';
 
 export interface MarshalledProps {
   names: string[];

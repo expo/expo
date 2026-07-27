@@ -2,10 +2,10 @@ import { setIsAudioActiveAsync } from 'expo-audio';
 import React from 'react';
 import { PixelRatio, ScrollView, StyleSheet } from 'react-native';
 
-import AudioModeSelector from './AudioModeSelector';
-import AudioPlayer from './AudioPlayer';
 import HeadingText from '../../components/HeadingText';
 import ListButton from '../../components/ListButton';
+import AudioModeSelector from './AudioModeSelector';
+import AudioPlayer from './AudioPlayer';
 
 export default function AudioScreen(props: any) {
   React.useLayoutEffect(() => {

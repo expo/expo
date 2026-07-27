@@ -23,6 +23,13 @@ export function JSONView({
   const [copied, setCopied] = useState(false);
   const json = JSON.stringify(value, deterministicJSONReplacer, 2);
 
+  // Render one `Code` per line rather than a single node for the whole document. A lone giant Text
+  // node (e.g. a serialized stack trace, which is one ~40KB line since its newlines are escaped)
+  // blanks out in React Native's text layout; splitting keeps each node small. Lines wrap instead of
+  // scrolling horizontally so even a long single-value line stays visible, and the block is capped
+  // and vertically scrollable so one big value can't fill the screen.
+  const lines = json.split('\n');
+
   return (
     <View
       style={[
@@ -33,12 +40,15 @@ export function JSONView({
           borderWidth: 1,
         },
       ]}>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-        <View>
-          <Code style={[styles.code, { color: textColor ?? theme.text.default }]} selectable>
-            {json}
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator nestedScrollEnabled>
+        {lines.map((line, index) => (
+          <Code
+            key={index}
+            style={[styles.code, { color: textColor ?? theme.text.default }]}
+            selectable>
+            {line}
           </Code>
-        </View>
+        ))}
       </ScrollView>
       {showCopyButton ? (
         <Pressable
@@ -93,6 +103,9 @@ const styles = StyleSheet.create({
   copyButtonText: {
     fontSize: 12,
     fontWeight: '600',
+  },
+  scroll: {
+    maxHeight: 240,
   },
   code: {
     fontSize: 12,

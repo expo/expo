@@ -16,6 +16,8 @@ import expo.modules.contacts.next.records.fields.PhoneRecord
 import expo.modules.contacts.next.records.fields.AddressRecord
 import expo.modules.contacts.next.records.fields.RelationRecord
 import expo.modules.contacts.next.records.fields.UrlAddressRecord
+import expo.modules.contacts.next.records.form.CreateFormOptions
+import expo.modules.contacts.next.records.form.EditFormOptions
 import expo.modules.contacts.next.services.ImageByteArrayConverter
 import expo.modules.contacts.next.mappers.domain.data.PhotoPropertyMapper
 import expo.modules.kotlin.Promise
@@ -338,7 +340,7 @@ class ContactsNextModule : Module() {
         self.urlAddresses.delete(urlAddressRecord)
       }
 
-      AsyncFunction("editWithForm") Coroutine { self: Contact ->
+      AsyncFunction("editWithForm") Coroutine { self: Contact, _: EditFormOptions? ->
         self.editWithForm()
       }
 
@@ -347,7 +349,7 @@ class ContactsNextModule : Module() {
         Contact.create(createContactRecord, contactRepository, contactMapper, contactFactory)
       }
 
-      StaticAsyncFunction("presentCreateForm") Coroutine { createContactRecord: CreateContactRecord? ->
+      StaticAsyncFunction("presentCreateForm") Coroutine { createContactRecord: CreateContactRecord?, _: CreateFormOptions? ->
         Contact.presentCreateForm(createContactRecord, contactMapper, contactIntentDelegate)
       }
 

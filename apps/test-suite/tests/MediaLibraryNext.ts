@@ -19,33 +19,37 @@ const exifJpgPath = require('../assets/exif_data_image.jpg');
 const pngPath = require('../assets/icons/app.png');
 const jpgPath = require('../assets/qrcode_expo.jpg');
 
-export async function test(t) {
-  let permissions;
-  let files;
-  let jpgFile, pngFile, mp4File, mp3File, exifJpgFile;
-
-  const checkIfAllPermissionsWereGranted = () => {
-    if (Platform.OS === 'ios') {
-      return permissions.accessPrivileges === 'all';
-    }
-    return permissions.granted;
-  };
+export async function test(t: any) {
+  let localUris: string[];
+  let mp3FileLocalUri: string;
+  let pngFileLocalUri: string;
+  let jpgFileLocalUri: string;
+  let mp4FileLocalUri: string;
+  let exifJpgFileLocalUri: string;
 
   t.beforeAll(async () => {
-    [mp3File] = await ExpoAsset.loadAsync(mp3Path);
-    [pngFile] = await ExpoAsset.loadAsync(pngPath);
-    [jpgFile] = await ExpoAsset.loadAsync(jpgPath);
-    [mp4File] = await ExpoAsset.loadAsync(mp4Path);
-    [exifJpgFile] = await ExpoAsset.loadAsync(exifJpgPath);
-    files = [pngFile, jpgFile, mp4File];
-    permissions = await requestPermissionsAsync();
-    if (!checkIfAllPermissionsWereGranted()) {
-      console.warn('Tests will fail - not enough permissions to run them.');
+    const permissionResponse = await requestPermissionsAsync();
+    if (!permissionResponse.granted) {
+      throw new Error('Permission to access media library is required for testing');
     }
+
+    const loadAssetLocalUri = async (assetModule: any, assetName: string): Promise<string> => {
+      const [asset] = await ExpoAsset.loadAsync(assetModule);
+      if (asset.localUri === null) {
+        throw new Error(`Failed to load ${assetName} file for testing`);
+      }
+      return asset.localUri;
+    };
+    mp3FileLocalUri = await loadAssetLocalUri(mp3Path, 'MP3');
+    pngFileLocalUri = await loadAssetLocalUri(pngPath, 'PNG');
+    jpgFileLocalUri = await loadAssetLocalUri(jpgPath, 'JPG');
+    mp4FileLocalUri = await loadAssetLocalUri(mp4Path, 'MP4');
+    exifJpgFileLocalUri = await loadAssetLocalUri(exifJpgPath, 'EXIF JPG');
+    localUris = [pngFileLocalUri, jpgFileLocalUri, mp4FileLocalUri];
   });
 
-  let albumsContainer = [];
-  let assetsContainer = [];
+  let albumsContainer: (Album | Album[])[] = [];
+  let assetsContainer: (Asset | Asset[])[] = [];
 
   t.afterAll(async () => {
     try {
@@ -60,16 +64,17 @@ export async function test(t) {
 
   t.describe('Stress tests', () => {
     t.it('creating files with the same filename', async () => {
-      for (let i = 0; i < 40; i++) {
-        const asset = await Asset.create(pngFile.localUri);
+      const assetCount = 40;
+      for (let i = 0; i < assetCount; i++) {
+        const asset = await Asset.create(pngFileLocalUri);
         assetsContainer.push(asset);
       }
     });
 
     t.it('moving files with the same filename to album', async () => {
-      const createdAssets = [];
+      const createdAssets: Asset[] = [];
       for (let i = 0; i < 40; i++) {
-        const album = await Album.create(createAlbumName(`temp album ${i}`), [pngFile.localUri]);
+        const album = await Album.create(createAlbumName(`temp album ${i}`), [pngFileLocalUri]);
         albumsContainer.push(album);
         createdAssets.push(...(await album.getAssets()));
       }
@@ -82,19 +87,16 @@ export async function test(t) {
   t.describe('Album creation', () => {
     t.it('creates an album from a list of paths', async () => {
       const albumName = createAlbumName('album from paths');
-      const album = await Album.create(
-        albumName,
-        files.map((f) => f.localUri)
-      );
+      const album = await Album.create(albumName, localUris);
       albumsContainer.push(album);
 
       const assets = await album.getAssets();
-      t.expect(assets.length).toBe(files.length);
+      t.expect(assets.length).toBe(localUris.length);
       t.expect(await album.getTitle()).toBe(albumName);
     });
     t.it('creates an album from a list of assets', async () => {
       // given
-      const assets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+      const assets = await Promise.all(localUris.map((uri) => Asset.create(uri)));
       assetsContainer.push(...assets);
       const albumName = createAlbumName('album from assets');
 
@@ -103,7 +105,7 @@ export async function test(t) {
       albumsContainer.push(album);
 
       // then
-      t.expect(assets.length).toBe(files.length);
+      t.expect(assets.length).toBe(localUris.length);
       t.expect(await album.getTitle()).toBe(albumName);
       const fetchedAssets = await album.getAssets();
       if (Platform.OS === 'android' && Platform.Version >= 30) {
@@ -118,7 +120,7 @@ export async function test(t) {
     if (Platform.OS === 'android') {
       t.it('when creating an album from a list of assets should correctly move files', async () => {
         // given
-        const assets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+        const assets = await Promise.all(localUris.map((uri) => Asset.create(uri)));
         assetsContainer.push(...assets);
         const oldAssetUris = await Promise.all(assets.map((asset) => asset.getUri()));
         const albumName = createAlbumName('album from assets move');
@@ -135,7 +137,7 @@ export async function test(t) {
       });
       t.it('when creating an album from a list of assets should correctly copy files', async () => {
         // given
-        const assets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+        const assets = await Promise.all(localUris.map((uri) => Asset.create(uri)));
         assetsContainer.push(...assets);
         const oldAssetUris = await Promise.all(assets.map((asset) => asset.getUri()));
         const albumName = createAlbumName('album from assets copy');
@@ -159,7 +161,7 @@ export async function test(t) {
 
   t.describe('Asset creation', () => {
     t.it('creates a PNG asset', async () => {
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
       assetsContainer.push(asset);
       t.expect(asset.id).toBeDefined();
     });
@@ -167,7 +169,7 @@ export async function test(t) {
     if (Platform.OS === 'ios') {
       t.it('fails when creating an MP3 asset', async () => {
         try {
-          const asset = await Asset.create(mp3File.localUri);
+          const asset = await Asset.create(mp3FileLocalUri);
           assetsContainer.push(asset);
           t.fail();
         } catch (e) {
@@ -176,32 +178,32 @@ export async function test(t) {
       });
     } else {
       t.it('creates an MP3 asset', async () => {
-        const asset = await Asset.create(mp3File.localUri);
+        const asset = await Asset.create(mp3FileLocalUri);
         assetsContainer.push(asset);
         t.expect(asset.id).toBeDefined();
       });
     }
 
     t.it('creates an MP4 asset', async () => {
-      const asset = await Asset.create(mp4File.localUri);
+      const asset = await Asset.create(mp4FileLocalUri);
       assetsContainer.push(asset);
       t.expect(asset.id).toBeDefined();
     });
 
     t.it('creates a JPG asset', async () => {
-      const asset = await Asset.create(jpgFile.localUri);
+      const asset = await Asset.create(jpgFileLocalUri);
       assetsContainer.push(asset);
       t.expect(asset.id).toBeDefined();
     });
 
     t.it('creates an asset inside an album', async () => {
       const albumName = createAlbumName('asset inside album');
-      const firstAsset = await Asset.create(jpgFile.localUri);
+      const firstAsset = await Asset.create(jpgFileLocalUri);
       assetsContainer.push(firstAsset);
       const album = await Album.create(albumName, [firstAsset]);
       albumsContainer.push(album);
 
-      const newAsset = await Asset.create(jpgFile.localUri, album);
+      const newAsset = await Asset.create(jpgFileLocalUri, album);
       assetsContainer.push(newAsset);
 
       t.expect(newAsset.id).toBeDefined();
@@ -212,8 +214,8 @@ export async function test(t) {
 
     if (Platform.OS === 'android') {
       t.it('creates two different assets with different uri from the same source', async () => {
-        const firstAsset = await Asset.create(jpgFile.localUri);
-        const secondAsset = await Asset.create(jpgFile.localUri);
+        const firstAsset = await Asset.create(jpgFileLocalUri);
+        const secondAsset = await Asset.create(jpgFileLocalUri);
         assetsContainer.push([firstAsset, secondAsset]);
         const firstUri = await firstAsset.getUri();
         const secondUri = await secondAsset.getUri();
@@ -227,10 +229,13 @@ export async function test(t) {
   t.describe('Album get', () => {
     t.it('gets an album by title', async () => {
       const albumName = createAlbumName('gets an album by title');
-      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
       albumsContainer.push(album);
 
       const fetchedAlbum = await Album.get(albumName);
+      if (fetchedAlbum === null) {
+        return t.fail('Album should be found by title');
+      }
       t.expect(fetchedAlbum).toBeDefined();
       t.expect(fetchedAlbum.id).toBe(album.id);
     });
@@ -240,7 +245,7 @@ export async function test(t) {
     t.it('includes a newly created album', async () => {
       // given
       const albumName = createAlbumName('getAll includes new album');
-      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
       albumsContainer.push(album);
 
       // when
@@ -253,7 +258,7 @@ export async function test(t) {
     t.it('does not include a deleted album', async () => {
       // given
       const albumName = createAlbumName('getAll excludes deleted album');
-      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
       assetsContainer.push(await album.getAssets());
       await album.delete();
 
@@ -268,7 +273,7 @@ export async function test(t) {
   t.describe('Album deletion', () => {
     t.it('deletes an album', async () => {
       const albumName = createAlbumName('album deletion');
-      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
       albumsContainer.push(album);
       assetsContainer.push(await album.getAssets());
 
@@ -287,10 +292,10 @@ export async function test(t) {
   t.describe('Add asset to album', () => {
     t.it('adds an asset to an existing album', async () => {
       const albumName = createAlbumName('add asset');
-      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
       albumsContainer.push(album);
 
-      const newAsset = await Asset.create(pngFile.localUri);
+      const newAsset = await Asset.create(pngFileLocalUri);
       const oldUri = await newAsset.getUri();
       assetsContainer.push(newAsset);
       await album.add(newAsset);
@@ -307,12 +312,12 @@ export async function test(t) {
     t.it('adds an array of assets to an existing album', async () => {
       // given
       const albumName = createAlbumName('add asset array');
-      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
       albumsContainer.push(album);
 
       const newAssets = await Promise.all([
-        Asset.create(pngFile.localUri),
-        Asset.create(mp4File.localUri),
+        Asset.create(pngFileLocalUri),
+        Asset.create(mp4FileLocalUri),
       ]);
       const oldUris = await Promise.all(newAssets.map((asset) => asset.getUri()));
       assetsContainer.push(...newAssets);
@@ -337,7 +342,7 @@ export async function test(t) {
     t.it('does nothing when adding an empty array to an album', async () => {
       // given
       const albumName = createAlbumName('add empty array');
-      const album = await Album.create(albumName, [jpgFile.localUri], true);
+      const album = await Album.create(albumName, [jpgFileLocalUri], true);
       albumsContainer.push(album);
       assetsContainer.push(...(await album.getAssets()));
 
@@ -354,7 +359,7 @@ export async function test(t) {
     t.describe('Remove assets from album', () => {
       t.it('removes an asset from an album without deleting it from the library', async () => {
         const albumName = createAlbumName('remove asset');
-        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        const album = await Album.create(albumName, [jpgFileLocalUri], true);
         albumsContainer.push(album);
 
         const assetToRemove = (await album.getAssets())[0];
@@ -371,10 +376,10 @@ export async function test(t) {
 
       t.it('removes only specified assets, leaving others in the album', async () => {
         const albumName = createAlbumName('remove partial');
-        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        const album = await Album.create(albumName, [jpgFileLocalUri], true);
         albumsContainer.push(album);
 
-        const newAsset = await Asset.create(pngFile.localUri);
+        const newAsset = await Asset.create(pngFileLocalUri);
         assetsContainer.push(newAsset);
         await album.add(newAsset);
 
@@ -390,7 +395,7 @@ export async function test(t) {
 
       t.it('does nothing when called with an empty array', async () => {
         const albumName = createAlbumName('does nothing when called with an empty array');
-        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        const album = await Album.create(albumName, [jpgFileLocalUri], true);
         albumsContainer.push(album);
 
         const assetsBefore = await album.getAssets();
@@ -404,10 +409,10 @@ export async function test(t) {
 
       t.it('does nothing when asset does not belong to the album', async () => {
         const albumName = createAlbumName('does nothing when asset does not belong to the album');
-        const album = await Album.create(albumName, [jpgFile.localUri], true);
+        const album = await Album.create(albumName, [jpgFileLocalUri], true);
         albumsContainer.push(album);
 
-        const outsideAsset = await Asset.create(pngFile.localUri);
+        const outsideAsset = await Asset.create(pngFileLocalUri);
         assetsContainer.push(outsideAsset);
 
         const assetsBefore = await album.getAssets();
@@ -429,7 +434,7 @@ export async function test(t) {
     let asset: Asset;
 
     t.beforeEach(async () => {
-      asset = await Asset.create(pngFile.localUri);
+      asset = await Asset.create(pngFileLocalUri);
       assetsContainer.push(asset);
     });
 
@@ -467,6 +472,9 @@ export async function test(t) {
 
     t.it('returns correct modification time', async () => {
       const modificationTime = await asset.getModificationTime();
+      if (modificationTime === null) {
+        return t.fail('Modification time should not be null for an asset');
+      }
       t.expect(new Date(modificationTime).getFullYear()).toBeGreaterThan(1970);
       t.expect(modificationTime).toBeGreaterThan(0);
     });
@@ -515,7 +523,7 @@ export async function test(t) {
     let videoAsset: Asset;
 
     t.beforeEach(async () => {
-      videoAsset = await Asset.create(mp4File.localUri);
+      videoAsset = await Asset.create(mp4FileLocalUri);
       assetsContainer.push(videoAsset);
     });
 
@@ -546,6 +554,9 @@ export async function test(t) {
 
     t.it('returns correct modification time', async () => {
       const modificationTime = await videoAsset.getModificationTime();
+      if (modificationTime === null) {
+        return t.fail('Modification time should not be null for a video asset');
+      }
       t.expect(new Date(modificationTime).getFullYear()).toBeGreaterThan(1970);
       t.expect(modificationTime).toBeGreaterThan(0);
     });
@@ -564,7 +575,7 @@ export async function test(t) {
   t.describe('Asset query', () => {
     t.it('limit works correctly', async () => {
       // given
-      const createdAssets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+      const createdAssets = await Promise.all(localUris.map((uri) => Asset.create(uri)));
       assetsContainer.push(...createdAssets);
       // when
       const assets = await new Query().limit(3).exe();
@@ -575,7 +586,7 @@ export async function test(t) {
 
     t.it('offset works correctly', async () => {
       // given
-      const createdAssets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+      const createdAssets = await Promise.all(localUris.map((uri) => Asset.create(uri)));
       assetsContainer.push(...createdAssets);
       // when
       const query = new Query();
@@ -589,7 +600,7 @@ export async function test(t) {
 
     t.it('limit 0 returns no assets', async () => {
       // given
-      const createdAssets = await Promise.all(files.map((f) => Asset.create(f.localUri)));
+      const createdAssets = await Promise.all(localUris.map((uri) => Asset.create(uri)));
       assetsContainer.push(...createdAssets);
       const albumName = createAlbumName('limit 0 returns no assets');
       const album = await Album.create(albumName, createdAssets);
@@ -602,7 +613,7 @@ export async function test(t) {
 
     t.it('offset outside of bounds works correctly', async () => {
       // given
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
       assetsContainer.push(asset);
       const albumName = createAlbumName('offset outside of bounds works correctly');
       const album = await Album.create(albumName, [asset]);
@@ -615,7 +626,7 @@ export async function test(t) {
 
     t.it('mediatype image works correctly', async () => {
       // given
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
       assetsContainer.push(asset);
       // when
       const [imageAsset] = await new Query()
@@ -629,7 +640,7 @@ export async function test(t) {
 
     t.it('mediatype video works correctly', async () => {
       // given
-      const asset = await Asset.create(mp4File.localUri);
+      const asset = await Asset.create(mp4FileLocalUri);
       assetsContainer.push(asset);
       // when
       const [videoAsset] = await new Query()
@@ -640,10 +651,40 @@ export async function test(t) {
       t.expect(await videoAsset.getMediaType()).toBe(MediaType.VIDEO);
     });
 
+    t.it('isFavorite filter works correctly', async () => {
+      // given
+      const albumName = createAlbumName('isFavorite filter');
+      const favoriteAsset = await Asset.create(pngFileLocalUri);
+      const nonFavoriteAsset = await Asset.create(jpgFileLocalUri);
+      assetsContainer.push(favoriteAsset, nonFavoriteAsset);
+      const album = await Album.create(albumName, [favoriteAsset, nonFavoriteAsset]);
+      albumsContainer.push(album);
+      await favoriteAsset.setFavorite(true);
+
+      // when
+      const favoriteAssets = await new Query().album(album).eq(AssetField.IS_FAVORITE, true).exe();
+      const nonFavoriteAssets = await new Query()
+        .album(album)
+        .eq(AssetField.IS_FAVORITE, false)
+        .exe();
+
+      // then
+      if (Platform.OS === 'android' && Platform.Version < 29) {
+        // IS_FAVORITE filtering is a no-op pre-Q — both queries return all assets
+        t.expect(favoriteAssets.length).toBe(2);
+        t.expect(nonFavoriteAssets.length).toBe(2);
+      } else {
+        t.expect(favoriteAssets.map((a) => a.id)).toContain(favoriteAsset.id);
+        t.expect(favoriteAssets.map((a) => a.id)).not.toContain(nonFavoriteAsset.id);
+        t.expect(nonFavoriteAssets.map((a) => a.id)).toContain(nonFavoriteAsset.id);
+        t.expect(nonFavoriteAssets.map((a) => a.id)).not.toContain(favoriteAsset.id);
+      }
+    });
+
     if (Platform.OS !== 'ios') {
       t.it('mediatype audio works correctly', async () => {
         // given
-        const asset = await Asset.create(mp3File.localUri);
+        const asset = await Asset.create(mp3FileLocalUri);
         assetsContainer.push(asset);
         // when
         const query = new Query().limit(1).within(AssetField.MEDIA_TYPE, [MediaType.AUDIO]);
@@ -656,7 +697,7 @@ export async function test(t) {
     t.it('album works correctly', async () => {
       // given
       const albumName = createAlbumName('album works correctly');
-      const asset = await Asset.create(mp4File.localUri);
+      const asset = await Asset.create(mp4FileLocalUri);
       assetsContainer.push(asset);
       const album = await Album.create(albumName, [asset]);
       albumsContainer.push(album);
@@ -671,16 +712,20 @@ export async function test(t) {
     t.it('modification time and gte/lte work correctly', async () => {
       // given
       const albumName = createAlbumName('modification time and gt/lt work correctly');
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
       assetsContainer.push(asset);
       const album = await Album.create(albumName, [asset]);
       albumsContainer.push(album);
       // when
+      const modificationTime = await asset.getModificationTime();
+      if (modificationTime === null) {
+        return t.fail('Modification time should not be null for an asset');
+      }
       const [queriedAsset] = await new Query()
         .limit(1)
         .album(album)
-        .gte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) - 1000)
-        .lte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) + 1000)
+        .gte(AssetField.MODIFICATION_TIME, modificationTime - 1000)
+        .lte(AssetField.MODIFICATION_TIME, modificationTime + 1000)
         .exe();
       // then
       t.expect(queriedAsset.id).toBe(asset.id);
@@ -689,7 +734,7 @@ export async function test(t) {
     t.it('height and gte work correctly', async () => {
       // given
       const albumName = createAlbumName('height and gte work correctly');
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
       assetsContainer.push(asset);
       const album = await Album.create(albumName, [asset]);
       albumsContainer.push(album);
@@ -708,16 +753,20 @@ export async function test(t) {
       const albumName = createAlbumName(
         'modification time and incorrect gte/lte returns empty array'
       );
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
       assetsContainer.push(asset);
       const album = await Album.create(albumName, [asset]);
       albumsContainer.push(album);
       // when
+      const modificationTime = await asset.getModificationTime();
+      if (modificationTime === null) {
+        return t.fail('Modification time should not be null for an asset');
+      }
       const [queriedAsset] = await new Query()
         .limit(1)
         .album(album)
-        .gte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) + 1000)
-        .lte(AssetField.MODIFICATION_TIME, (await asset.getModificationTime()) - 1000)
+        .gte(AssetField.MODIFICATION_TIME, modificationTime + 1000)
+        .lte(AssetField.MODIFICATION_TIME, modificationTime - 1000)
         .exe();
       // then
       t.expect(queriedAsset).toBeUndefined();
@@ -726,7 +775,7 @@ export async function test(t) {
     t.it('creation time works correctly', async () => {
       // given
       const albumName = createAlbumName('album works correctly');
-      const asset = await Asset.create(mp4File.localUri);
+      const asset = await Asset.create(mp4FileLocalUri);
       assetsContainer.push(asset);
       const album = await Album.create(albumName, [asset]);
       albumsContainer.push(album);
@@ -740,8 +789,8 @@ export async function test(t) {
 
     t.it('orderBy height works correctly', async () => {
       // given
-      const shorterAsset = await Asset.create(pngFile.localUri);
-      const tallerAsset = await Asset.create(jpgFile.localUri);
+      const shorterAsset = await Asset.create(pngFileLocalUri);
+      const tallerAsset = await Asset.create(jpgFileLocalUri);
       assetsContainer.push(tallerAsset);
       assetsContainer.push(shorterAsset);
       const albumName = createAlbumName('orderBy height works correctly');
@@ -759,8 +808,8 @@ export async function test(t) {
 
     t.it('orderBy mediaType works correctly', async () => {
       // given
-      const videoAsset = await Asset.create(mp4File.localUri);
-      const photoAsset = await Asset.create(jpgFile.localUri);
+      const videoAsset = await Asset.create(mp4FileLocalUri);
+      const photoAsset = await Asset.create(jpgFileLocalUri);
       assetsContainer.push(videoAsset);
       assetsContainer.push(photoAsset);
       const albumName = createAlbumName('orderBy mediaType works correctly');
@@ -776,9 +825,9 @@ export async function test(t) {
 
     t.it('orderBy combined works correctly', async () => {
       // given
-      const videoAsset = await Asset.create(mp4File.localUri);
-      const shorterAsset = await Asset.create(pngFile.localUri);
-      const tallerAsset = await Asset.create(jpgFile.localUri);
+      const videoAsset = await Asset.create(mp4FileLocalUri);
+      const shorterAsset = await Asset.create(pngFileLocalUri);
+      const tallerAsset = await Asset.create(jpgFileLocalUri);
       assetsContainer.push(videoAsset);
       assetsContainer.push(shorterAsset);
       assetsContainer.push(tallerAsset);
@@ -800,9 +849,9 @@ export async function test(t) {
 
     t.it('orderBy ascending works correctly', async () => {
       // given
-      const videoAsset = await Asset.create(mp4File.localUri);
-      const shorterAsset = await Asset.create(pngFile.localUri);
-      const tallerAsset = await Asset.create(jpgFile.localUri);
+      const videoAsset = await Asset.create(mp4FileLocalUri);
+      const shorterAsset = await Asset.create(pngFileLocalUri);
+      const tallerAsset = await Asset.create(jpgFileLocalUri);
       assetsContainer.push(videoAsset);
       assetsContainer.push(shorterAsset);
       assetsContainer.push(tallerAsset);
@@ -821,13 +870,67 @@ export async function test(t) {
       t.expect(secondAsset.id).toBe(shorterAsset.id);
       t.expect(thirdAsset.id).toBe(tallerAsset.id);
     });
+
+    t.it('exeForMetadata works correctly for images', async () => {
+      // given
+      const asset = await Asset.create(pngFileLocalUri);
+      assetsContainer.push(asset);
+      const albumName = createAlbumName('exeForMetadata works correctly for images');
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const results = await new Query().album(album).exeForMetadata();
+      // then
+      t.expect(results.length).toBe(1);
+      const result = results[0];
+      if (result.modificationTime === null) {
+        return t.fail('Modification time should not be null for an asset');
+      }
+      t.expect(result.id).toBeDefined();
+      t.expect(result.creationTime).toBeDefined();
+      t.expect(result.duration).toBe(null);
+      t.expect(result.filename?.toLowerCase()).toMatch(/\.png/);
+      t.expect(result.height).toBeGreaterThan(0);
+      t.expect(result.mediaType).toBeDefined();
+      t.expect(new Date(result.modificationTime).getFullYear()).toBeGreaterThan(1970);
+      t.expect(result.modificationTime).toBeGreaterThan(0);
+      t.expect(result.width).toBeGreaterThan(0);
+      t.expect(result.isFavorite).toBe(false);
+    });
+
+    t.it('exeForMetadata works correctly for videos', async () => {
+      // given
+      const asset = await Asset.create(mp4FileLocalUri);
+      assetsContainer.push(asset);
+      const albumName = createAlbumName('exeForMetadata works correctly for videos');
+      const album = await Album.create(albumName, [asset]);
+      albumsContainer.push(album);
+      // when
+      const results = await new Query().album(album).exeForMetadata();
+      // then
+      t.expect(results.length).toBe(1);
+      const result = results[0];
+      if (result.modificationTime === null) {
+        return t.fail('Modification time should not be null for a video asset');
+      }
+      t.expect(result.id).toBeDefined();
+      t.expect(result.creationTime).toBeDefined();
+      t.expect(result.duration).toBeGreaterThan(0);
+      t.expect(result.filename?.toLowerCase()).toMatch(/\.mp4/);
+      t.expect(result.height).toBeGreaterThan(0);
+      t.expect(result.mediaType).toBeDefined();
+      t.expect(new Date(result.modificationTime).getFullYear()).toBeGreaterThan(1970);
+      t.expect(result.modificationTime).toBeGreaterThan(0);
+      t.expect(result.width).toBeGreaterThan(0);
+      t.expect(result.isFavorite).toBe(false);
+    });
   });
 
   t.describe('asset.getAlbums()', () => {
     if (Platform.OS === 'ios') {
       t.it('returns all albums the asset belongs to', async () => {
         // given
-        const asset = await Asset.create(pngFile.localUri);
+        const asset = await Asset.create(pngFileLocalUri);
         assetsContainer.push(asset);
         const album1 = await Album.create(createAlbumName('getAlbums_ios_1'), [asset], false);
         const album2 = await Album.create(createAlbumName('getAlbums_ios_2'), [asset], false);
@@ -844,7 +947,7 @@ export async function test(t) {
     if (Platform.OS === 'android') {
       t.it('returns only the album the asset currently resides in', async () => {
         // given
-        const asset = await Asset.create(jpgFile.localUri);
+        const asset = await Asset.create(jpgFileLocalUri);
         assetsContainer.push(asset);
         const album1 = await Album.create(
           createAlbumName('returns only the album the asset currently resides in 1'),
@@ -852,7 +955,7 @@ export async function test(t) {
           true
         );
         albumsContainer.push(album1);
-        const otherAsset = await Asset.create(pngFile.localUri);
+        const otherAsset = await Asset.create(pngFileLocalUri);
         assetsContainer.push(otherAsset);
         const album2 = await Album.create(
           createAlbumName('returns only the album the asset currently resides in 2'),
@@ -873,7 +976,7 @@ export async function test(t) {
   t.describe('Exif interface', () => {
     t.it('returns location for jpg image', async () => {
       // given
-      const asset = await Asset.create(exifJpgFile.localUri);
+      const asset = await Asset.create(exifJpgFileLocalUri);
       assetsContainer.push(asset);
       // when
       const location = await asset.getLocation();
@@ -887,7 +990,7 @@ export async function test(t) {
 
     t.it('returns exif data for jpg image', async () => {
       // given
-      const asset = await Asset.create(exifJpgFile.localUri);
+      const asset = await Asset.create(exifJpgFileLocalUri);
       assetsContainer.push(asset);
       // when
       const exif = await asset.getExif();
@@ -920,7 +1023,7 @@ export async function test(t) {
     t.it('addListener is called when asset is created', async () => {
       const spy = t.jasmine.createSpy('addAsset spy', () => {});
       const subscription = addListener(spy);
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
 
       t.expect(asset).not.toBeNull();
       await timeoutWrapper(() => t.expect(spy).toHaveBeenCalled(), WAIT_TIME);
@@ -933,7 +1036,7 @@ export async function test(t) {
       const spy = t.jasmine.createSpy('remove spy', () => {});
       const subscription = addListener(spy);
       subscription.remove();
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
 
       t.expect(asset).not.toBeNull();
       await timeoutWrapper(() => t.expect(spy).not.toHaveBeenCalled(), WAIT_TIME);
@@ -943,7 +1046,7 @@ export async function test(t) {
 
     t.it('addListener is called when asset is deleted', async () => {
       const spy = t.jasmine.createSpy('deleteAsset spy', () => {});
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
       const subscription = addListener(spy);
 
       t.expect(asset).not.toBeNull();
@@ -957,7 +1060,7 @@ export async function test(t) {
       addListener(spy);
       removeAllListeners();
 
-      const asset = await Asset.create(pngFile.localUri);
+      const asset = await Asset.create(pngFileLocalUri);
       t.expect(asset).not.toBeNull();
       await timeoutWrapper(() => t.expect(spy).not.toHaveBeenCalled(), WAIT_TIME);
 

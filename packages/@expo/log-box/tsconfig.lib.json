@@ -1,9 +1,0 @@
-{
-  "extends": "./tsconfig",
-  "compilerOptions": {
-    "noEmit": false,
-    "rootDir": "./src",
-    "outDir": "./build"
-  },
-  "include": ["src/utils.ts"],
-}

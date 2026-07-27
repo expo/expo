@@ -16,7 +16,7 @@ import { executeAsync } from '../utils/process';
 
 export { getTemporaryPath } from '../utils/path';
 
-export const bin = require.resolve('../../build/bin/cli');
+export const bin = require.resolve('../../bin/cli');
 
 // Set this to true to enable caching and prevent rerunning pnpm installs
 const testingLocally = !process.env.CI;

@@ -2,8 +2,8 @@
 import { useId } from 'react';
 import { Platform } from 'react-native';
 
-import type { NativeToolbarSearchBarSlotProps } from './types';
 import { RouterToolbarItem } from '../../../../toolbar/native';
+import type { NativeToolbarSearchBarSlotProps } from './types';
 
 /**
  * Native toolbar search bar slot for bottom toolbar (iOS 26+).

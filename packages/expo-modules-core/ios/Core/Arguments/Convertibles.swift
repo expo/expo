@@ -153,7 +153,14 @@ extension Date: Convertible {
       }
       return date
     }
-    // For converting the value from `Date.now()`
+    // JS numbers arrive across the JSI bridge as Swift Double (all JS numbers
+    // are doubles). `as? Int` does NOT downcast a Double, so without this
+    // branch any JS caller passing `someDate.getTime()` to a `Date` / `Date?`
+    // argument throws ConvertingException<Date>.
+    if let value = value as? Double {
+      return Date(timeIntervalSince1970: value / 1000.0)
+    }
+    // Kept for parity with explicit Int values (rare but possible from native callers).
     if let value = value as? Int {
       return Date(timeIntervalSince1970: Double(value) / 1000.0)
     }

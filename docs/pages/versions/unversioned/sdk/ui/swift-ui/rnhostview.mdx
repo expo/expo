@@ -37,7 +37,7 @@ function Example() {
   return (
     <Host style={{ flex: 1 }}>
       <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-      <BottomSheet isOpened={isPresented} onIsOpenedChange={setIsPresented}>
+      <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
         <RNHostView matchContents>
           <View style={{ padding: 24 }}>
             <Text style={{ fontSize: 18, fontWeight: 'bold' }}>React Native Content</Text>
@@ -61,7 +61,8 @@ When using `flex: 1` in your React Native content, omit the `matchContents` prop
 ```tsx RNHostView with flex content
 import { useState } from 'react';
 import { Text, View } from 'react-native';
-import { Host, BottomSheet, Button, RNHostView } from '@expo/ui/swift-ui';
+import { Host, BottomSheet, Button, Group, RNHostView } from '@expo/ui/swift-ui';
+import { presentationDetents } from '@expo/ui/swift-ui/modifiers';
 
 function Example() {
   const [isPresented, setIsPresented] = useState(false);
@@ -69,17 +70,16 @@ function Example() {
   return (
     <Host style={{ flex: 1 }}>
       <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
-      <BottomSheet
-        isOpened={isPresented}
-        onIsOpenedChange={setIsPresented}
-        presentationDetents={['medium', 'large']}>
-        <RNHostView>
-          <View style={{ flex: 1, backgroundColor: '#007AFF', padding: 24 }}>
-            <Text style={{ color: 'white', fontSize: 18 }}>
-              This content fills the available space
-            </Text>
-          </View>
-        </RNHostView>
+      <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+        <Group modifiers={[presentationDetents(['medium', 'large'])]}>
+          <RNHostView>
+            <View style={{ flex: 1, backgroundColor: '#007AFF', padding: 24 }}>
+              <Text style={{ color: 'white', fontSize: 18 }}>
+                This content fills the available space
+              </Text>
+            </View>
+          </RNHostView>
+        </Group>
       </BottomSheet>
     </Host>
   );

@@ -23,7 +23,7 @@ You can read more about notification channels on the [Android developer website]
 
 ## Creating and using channels
 
-Creating a channel is easy -- before you create a local notification (or receive a push notification), simply call the following method:
+Creating a channel is easy — before you create a local notification (or receive a push notification), simply call the following method:
 
 ```js
 if (Platform.OS === 'android') {
@@ -34,7 +34,7 @@ if (Platform.OS === 'android') {
 }
 ```
 
-Creating a channel that already exists is essentially a no-op, so it's safe to call this each time your app starts up. For example, the `componentDidMount` of your app's root component might be a good place for this. However, note that you cannot change any settings of a notification channel after it's been created -- only the user can do this. So be sure to plan your channels carefully.
+Creating a channel that already exists is essentially a no-op, so it's safe to call this each time your app starts up. For example, the `componentDidMount` of your app's root component might be a good place for this. However, note that you cannot change any settings of a notification channel after it's been created — only the user can do this. So be sure to plan your channels carefully.
 
 Then, when you want to send a notification for a chat message, either add the `channelId: 'chat-messages'` field to your [push notification message](/push-notifications/sending-notifications/#message-request-format), or create a local notification like this:
 

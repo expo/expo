@@ -71,7 +71,7 @@ function createCarouselComponent<P extends { modifiers?: ModifierConfig[] }>(
 
 // region HorizontalCenteredHeroCarousel
 
-export type HorizontalCenteredHeroCarouselProps = CarouselCommonConfig & {
+export interface HorizontalCenteredHeroCarouselProps extends CarouselCommonConfig {
   /**
    * Maximum width of the hero item in dp.
    * When unspecified, the hero item will be as wide as possible.
@@ -87,7 +87,7 @@ export type HorizontalCenteredHeroCarouselProps = CarouselCommonConfig & {
    * @default CarouselDefaults.MaxSmallItemSize
    */
   maxSmallItemWidth?: number;
-};
+}
 
 /**
  * A hero carousel that centers one large item between two small peek items,
@@ -102,7 +102,7 @@ export const HorizontalCenteredHeroCarousel =
 
 // region HorizontalMultiBrowseCarousel
 
-export type HorizontalMultiBrowseCarouselProps = CarouselCommonConfig & {
+export interface HorizontalMultiBrowseCarouselProps extends CarouselCommonConfig {
   /**
    * The preferred width of the large item in dp.
    */
@@ -117,7 +117,7 @@ export type HorizontalMultiBrowseCarouselProps = CarouselCommonConfig & {
    * @default CarouselDefaults.MaxSmallItemSize
    */
   maxSmallItemWidth?: number;
-};
+}
 
 /**
  * A carousel that shows a large item alongside smaller peek items,
@@ -130,12 +130,12 @@ export const HorizontalMultiBrowseCarousel =
 
 // region HorizontalUncontainedCarousel
 
-export type HorizontalUncontainedCarouselProps = CarouselCommonConfig & {
+export interface HorizontalUncontainedCarouselProps extends CarouselCommonConfig {
   /**
    * The width of each item in dp.
    */
   itemWidth: number;
-};
+}
 
 /**
  * A carousel where each item has a fixed width with free-form scrolling,

@@ -11,9 +11,9 @@ Configure EAS Observe at runtime to fit your app's build setup, environment, and
 Use the `configure()` method to control how EAS Observe behaves at runtime:
 
 ```tsx
-import ExpoObserve from 'expo-observe';
+import { Observe } from 'expo-observe';
 
-ExpoObserve.configure({
+Observe.configure({
   environment: 'production',
   dispatchingEnabled: true,
 });
@@ -33,9 +33,9 @@ Events are automatically dispatched when the app moves to the background. On And
 To flush events manually (for example, during testing or to ensure events are sent before a specific point), call `dispatchEvents()`:
 
 ```tsx
-import ExpoObserve from 'expo-observe';
+import { Observe } from 'expo-observe';
 
-await ExpoObserve.dispatchEvents();
+await Observe.dispatchEvents();
 ```
 
 ## Sampling
@@ -43,10 +43,10 @@ await ExpoObserve.dispatchEvents();
 By default, every installation dispatches its metrics. For high-volume apps, you can sample a fraction of installations by setting `sampleRate` to a value between `0` and `1`:
 
 ```tsx
-import ExpoObserve from 'expo-observe';
+import { Observe } from 'expo-observe';
 
 // Dispatch metrics from ~25% of installations.
-ExpoObserve.configure({
+Observe.configure({
   sampleRate: 0.25,
 });
 ```
@@ -64,9 +64,9 @@ A few details worth knowing:
 By default, metrics collected from debug builds are not dispatched. To dispatch them anyway (for example, while testing your EAS Observe integration), set `dispatchInDebug` to `true` when calling `configure()`:
 
 ```tsx
-import ExpoObserve from 'expo-observe';
+import { Observe } from 'expo-observe';
 
-ExpoObserve.configure({
+Observe.configure({
   dispatchInDebug: true,
 });
 ```
@@ -79,7 +79,9 @@ A build is treated as a debug build if either the native app is a debug build or
 
 ## Custom endpoint
 
-If you need to change the endpoint for the observability API, set the `endpointUrl` value in your **app config**:
+EAS Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your EAS project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
+
+To change the endpoint, set the `endpointUrl` value in your **app config**:
 
 ```json app.json
 {
@@ -96,6 +98,8 @@ If you need to change the endpoint for the observability API, set the `endpointU
 ```
 
 The endpoint URL is baked into the native layer of the app at build time, so changing it requires regenerating native code. After updating your app config, run `npx expo prebuild` and create a new build to apply the change.
+
+The path includes your project ID before the standard `/v1/metrics` and `/v1/logs` OTLP paths. If your backend expects the standard OTLP path without that prefix, send the data to an OpenTelemetry Collector that receives it and re-exports it to your backend.
 
 ## Environments
 

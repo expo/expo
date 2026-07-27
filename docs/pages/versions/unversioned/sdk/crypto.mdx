@@ -125,7 +125,7 @@ async function encryptAndSaveData(plaintextData: Uint8Array) {
   // Save encrypted file
   const file = new File(Paths.cache, 'encrypted.dat');
   file.create({ overwrite: true });
-  file.write(encryptedBytes);
+  await file.write(encryptedBytes);
 }
 ```
 

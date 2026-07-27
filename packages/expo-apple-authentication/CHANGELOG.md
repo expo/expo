@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Run Sign in with Apple requests on the main queue to prevent a dispatch assertion. ([#47733](https://github.com/expo/expo/pull/47733) by [@eliotgevers](https://github.com/eliotgevers))
+- [iOS] Resolve the presentation window scene-aware and fail gracefully instead of crashing when no window is available for the Sign in with Apple sheet. ([#46955](https://github.com/expo/expo/pull/46955) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 56.0.4 — 2026-05-21

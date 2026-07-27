@@ -11,6 +11,7 @@ import type {
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type ExpoImage from './ExpoImage';
+import type { ExpoImageIntegrationConfig } from './observe';
 
 export type ImageSource = {
   /**
@@ -64,6 +65,7 @@ export type ImageSource = {
    * Has no effect if `source` prop is not an array or has only 1 element.
    * Has no effect if `responsivePolicy` is not set to `static`.
    * Ignored if `blurhash` or `thumbhash` is provided (image hashes are never selected if passed in an array).
+   *
    * @platform web
    */
   webMaxViewportWidth?: number;
@@ -227,7 +229,10 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * - `'lazy'` - Defers loading until the image is near the viewport.
    * - `'eager'` - Loads the image immediately.
    *
-   * @default 'eager'
+   * Defaults to `'lazy'` when `responsivePolicy` is `'static'` (the default policy), because the
+   * `sizes="auto"` source selection used by `static` only takes effect on lazily-loaded images.
+   *
+   * @default `'lazy'` (when `responsivePolicy` is `'static'`, otherwise `'eager'`)
    * @platform web
    */
   loading?: 'lazy' | 'eager';
@@ -251,10 +256,11 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   /**
    * Controls the selection of the image source based on the container or viewport size on the web.
    *
-   * If set to `'static'`, the browser selects the correct source based on user's viewport width. Works with static rendering.
-   * Make sure to set the `'webMaxViewportWidth'` property on each source for best results.
-   * For example, if an image occupies 1/3 of the screen width, set the `'webMaxViewportWidth'` to 3x the image width.
-   * The source with the largest `'webMaxViewportWidth'` is used even for larger viewports.
+   * If set to `'static'`, the source is selected by the browser from a generated `srcset`/`sizes` pair. Works with static rendering.
+   * The generated `sizes` leads with the `auto` keyword, so supporting browsers select the source from the image's rendered layout size.
+   * This requires the image to be lazily loaded, which is why `static` defaults `loading` to `'lazy'` (pass `loading="eager"` to opt out,
+   * in which case `sizes="auto"` is ignored). For browsers that don't yet support `sizes="auto"`, `sizes` falls back to any per-source
+   * breakpoints (only emitted for sources that set the deprecated `webMaxViewportWidth`) and finally to `100vw`.
    *
    * If set to `'initial'`, the component will select the correct source during mount based on container size. Does not work with static rendering.
    *
@@ -787,9 +793,21 @@ export declare class ImageRef extends SharedRef<'image'> {
 }
 
 /**
+ * Module-level events emitted by the native `ExpoImage` module.
  * @hidden
  */
-export declare class ImageNativeModule extends NativeModule {
+export type ImageModuleEvents = {
+  /**
+   * Fires from every relevant load path (`loadAsync`, `useImage`, and the rendered `<Image>` view)
+   * with the decoded pixel size.
+   */
+  imageLoaded: (event: { url: string; width: number; height: number }) => void;
+};
+
+/**
+ * @hidden
+ */
+export declare class ImageNativeModule extends NativeModule<ImageModuleEvents> {
   // TODO: Add missing function declarations
   Image: typeof ImageRef;
 
@@ -806,6 +824,8 @@ export declare class ImageNativeModule extends NativeModule {
 
   configureCache(config: ImageCacheConfig): void;
   getCachePathAsync(cacheKey: string): Promise<string | null>;
+  writeToCacheAsync(source: string | ImageRef, cacheKey: string): Promise<void>;
+  readFromCacheAsync(cacheKey: string): Promise<ImageRef | null>;
 
   generateBlurhashAsync(
     source: string | ImageRef,
@@ -866,3 +886,16 @@ export type ImageCacheConfig = {
    */
   maxMemoryCount?: number;
 };
+
+// Register the `'expo-image'` key on expo-observe's open `ObserveIntegrationsConfig` interface via
+// declaration merging, so `Observe.configure({ integrations: { 'expo-image': ... } })` is suggested
+// and type-checked. The config type itself lives in `observe.ts` (imported at the top of this file).
+// This augmentation lives here, not in `observe.ts`, because `index.ts` reaches `observe.ts` only
+// through a runtime value import that is elided from the emitted `index.d.ts` — so an augmentation
+// there would not ship to consumers. `Image.types.ts` is re-exported via `export *`, which survives
+// declaration emit, so the augmentation is always in the package's public type graph.
+declare module 'expo-observe' {
+  interface ObserveIntegrationsConfig {
+    'expo-image'?: boolean | ExpoImageIntegrationConfig;
+  }
+}

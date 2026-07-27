@@ -19,7 +19,7 @@ import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
 `expo-background-fetch` provides an API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks, allowing you to run specific code periodically in the background to update your app. This module uses [TaskManager](task-manager.mdx) Native API under the hood.
 
-#### Known issues&ensp;<PlatformTags platforms={['ios']} />
+## Known issues&ensp;<PlatformTags platforms={['ios']} />
 
 `BackgroundFetch` only works when the app is backgrounded, not if the app was terminated or upon device reboot. You can check out [the relevant GitHub issue](https://github.com/expo/expo/issues/3582) for more details.
 
@@ -164,7 +164,7 @@ Background fetches can be difficult to test because they can happen inconsistent
 
 For iOS, you can use the `Instruments` app on macOS to manually trigger background fetches:
 
-1. Open the Instruments app. The Instruments app can be searched through Spotlight (⌘ + Space) or opened from `/Applications/Xcode.app/Contents/Applications/Instruments.app`
+1. Open the Instruments app. The Instruments app can be searched through Spotlight (<kbd>Cmd ⌘</kbd> + <kbd>Space</kbd>) or opened from `/Applications/Xcode.app/Contents/Applications/Instruments.app`
 2. Select `Time Profiler`
 3. Select your device / simulator and pick the `Expo Go` app
 4. Press the `Record` button in the top left corner
@@ -172,7 +172,7 @@ For iOS, you can use the `Instruments` app on macOS to manually trigger backgrou
 
 <ContentSpotlight
   alt="Xcode Menu with Simulate Background Fetch option"
-  src="/static/images/simulate-background-fetch-instruments.png"
+  src="/static/images/simulate-background-fetch-instruments.webp"
 />
 
 For Android, you can set the `minimumInterval` option of your task to a small number and background your application like so:

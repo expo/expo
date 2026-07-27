@@ -73,7 +73,7 @@ If you are writing a local module and your app is already set up, you can skip t
 
 ## Review the code for using APIs not supported on these platforms
 
-Platform APIs may differ between Apple platforms. The most noticeable difference comes from relying on different UI frameworks &mdash;`UIKit` on iOS/tvOS and `AppKit` on macOS.
+Platform APIs may differ between Apple platforms. The most noticeable difference comes from relying on different UI frameworks —`UIKit` on iOS/tvOS and `AppKit` on macOS.
 
 Both `react-native-macos` and `expo-modules-core` provide aliases and polyfills to reference`UIKit` classes on macOS target (for example, `UIView` is an alias to `NSView`, `UIApplication` is an alias to `NSApplication`), but it's usually not enough for iOS-first libraries to support other platforms out of the box. You may need to write conditionally compiled code that uses different implementations depending on the platform.
 

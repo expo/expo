@@ -84,6 +84,7 @@ export function SidebarCollapsible({ info, children }: Props) {
         {...customDataAttributes}>
         <div className="flex size-4 items-center justify-center rounded-sm border border-default bg-default shadow-xs">
           <ChevronDownIcon
+            aria-hidden="true"
             className={mergeClasses(
               'icon-xs text-icon-secondary transition-transform duration-150',
               !isOpen && 'translate-x-[0.5px] -rotate-90'

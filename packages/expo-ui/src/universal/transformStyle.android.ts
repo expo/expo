@@ -14,6 +14,7 @@ import {
   type ModifierConfig,
 } from '@expo/ui/jetpack-compose/modifiers';
 
+import { omitUserOverridden } from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
 
 /**
@@ -24,13 +25,16 @@ import type { UniversalBaseProps, UniversalStyle } from './types';
  * box model where background includes the padding area and border is outermost:
  *   sizing → border → clip → background → padding → opacity
  *   → events → behavior → user escape-hatch
+ *
+ * Style-derived modifiers yield to user-supplied modifiers of the same
+ * `$type`, so the escape hatch can override anything derived from props.
  */
 export function transformToModifiers(
   style: UniversalStyle | undefined,
   props: Pick<UniversalBaseProps, 'onPress' | 'disabled' | 'hidden' | 'testID'>,
   extraModifiers?: ModifierConfig[]
 ): ModifierConfig[] {
-  const mods: ModifierConfig[] = [];
+  let mods: ModifierConfig[] = [];
 
   if (style) {
     // Sizing (outermost)
@@ -94,6 +98,10 @@ export function transformToModifiers(
       mods.push(alpha(style.opacity as number));
     }
   }
+
+  // A user-supplied modifier replaces any style-derived modifier of the same
+  // type. The event and behavior modifiers below are never dropped.
+  mods = omitUserOverridden(mods, extraModifiers);
 
   // Events — Compose uses clickable modifier
   if (props.onPress) mods.push(clickable(props.onPress));

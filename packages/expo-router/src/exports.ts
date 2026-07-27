@@ -46,6 +46,7 @@ export { DarkTheme } from './react-navigation/native/theming/DarkTheme';
 export { DefaultTheme } from './react-navigation/native/theming/DefaultTheme';
 export { ThemeProvider } from './react-navigation/core/theming/ThemeProvider';
 export { useTheme } from './react-navigation/core/theming/useTheme';
+export type { Theme } from './react-navigation/native/types';
 export { useRoutePath } from './react-navigation/native/useRoutePath';
 export { useScrollToTop } from './react-navigation/native/useScrollToTop';
 export { useRoute } from './react-navigation/core/useRoute';
@@ -65,6 +66,29 @@ export {
   VectorIcon,
   type VectorIconProps,
 } from './primitives';
+
+export {
+  unstable_createStandardRouterNavigator,
+  unstable_integrateWithRouter,
+} from './standard-navigation';
+export type {
+  IntegrateWithRouterOptions,
+  NavigatorContentProps,
+  StandardNavigatorDescriptor,
+  StandardNavigatorEventMapBase,
+  StandardUseNavigationBuilderOptions,
+} from './standard-navigation';
+
+export type { RouteSource } from './react-navigation/native';
+
+// Router factories for use with `unstable_createStandardRouterNavigator` / `unstable_integrateWithRouter`.
+export { StackRouter, TabRouter } from './react-navigation/routers';
+export type {
+  StackNavigationState,
+  StackRouterOptions,
+  TabNavigationState,
+  TabRouterOptions,
+} from './react-navigation/routers';
 
 export { unstable_navigationEvents } from './navigationEvents';
 export type {
@@ -88,3 +112,29 @@ export type {
   ExperimentalStackNavigationProp,
   ExperimentalStackScreenProps,
 } from './layouts/experimental-stack';
+
+// Copied from packages/expo-router/src/react-navigation/native-stack/index.tsx
+// Keep in sync
+export type {
+  NativeStackHeaderBackProps,
+  NativeStackHeaderItem,
+  NativeStackHeaderItemButton,
+  NativeStackHeaderItemCustom,
+  NativeStackHeaderItemMenu,
+  NativeStackHeaderItemMenuAction,
+  NativeStackHeaderItemMenuSubmenu,
+  NativeStackHeaderItemProps,
+  NativeStackHeaderItemSpacing,
+  NativeStackHeaderLeftProps,
+  NativeStackHeaderProps,
+  NativeStackHeaderRightProps,
+  NativeStackHeaderNativeProps,
+  NativeStackNativeProps,
+  NativeStackNavigationEventMap,
+  NativeStackNavigationOptions,
+  NativeStackNavigationProp,
+  NativeStackNavigatorProps,
+  NativeStackOptionsArgs,
+  NativeStackScreenNativeProps,
+  NativeStackScreenProps,
+} from './react-navigation/native-stack';

@@ -65,10 +65,19 @@ export function loadSingleFontAsync(name: string, input: Asset | FontResource): 
     throwInvalidSourceError(input);
   }
 
+  // On the server, scope-misuse throws must propagate; a silent missing font is worse.
+  if (typeof window === 'undefined') {
+    return ExpoFontLoader.loadAsync(name, input);
+  }
+
+  // NOTE(@hassankhan): This seems broken for async calls; we should investigate removing
+  // `fontfaceobserver` altogether
   try {
     return ExpoFontLoader.loadAsync(name, input);
   } catch {
-    // No-op.
+    // `FontObserver` rejects on unsupported browsers/network timeouts (see #22954). The font
+    // still renders via the injected stylesheet; swallow the verification failure rather than
+    // surface it as an unhandled promise rejection.
   }
 
   return Promise.resolve();

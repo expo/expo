@@ -13,7 +13,7 @@
  * `packages/expo-crypto/mocks/ExpoCryptoAES.ts`.
  */
 
-import { FileMode } from '../src/File.types';
+import { type FileDigestAlgorithm, FileMode } from '../src/File.types';
 
 export type URL = string;
 export type FileSystemPath = any;
@@ -112,14 +112,26 @@ function base64Decode(str: string): Uint8Array {
   return new Uint8Array(Buffer.from(str, 'base64'));
 }
 
-function fakeMd5(uri: string, size: number): string {
+const digestHexLengths: Record<FileDigestAlgorithm, number> = {
+  MD5: 32,
+  'SHA-1': 40,
+  'SHA-256': 64,
+  'SHA-384': 96,
+  'SHA-512': 128,
+};
+
+function fakeDigest(uri: string, size: number, hexLength: number): string {
   let h = 0x811c9dc5;
   const src = `${uri}:${size}`;
   for (let i = 0; i < src.length; i++) {
     h = Math.imul(h ^ src.charCodeAt(i), 0x01000193);
   }
   const hex = (h >>> 0).toString(16).padStart(8, '0');
-  return hex.repeat(4).slice(0, 32);
+  return hex.repeat(Math.ceil(hexLength / hex.length)).slice(0, hexLength);
+}
+
+function fakeMd5(uri: string, size: number): string {
+  return fakeDigest(uri, size, digestHexLengths.MD5);
 }
 
 const listeners = new Map<string, Set<(event: any) => void>>();
@@ -209,6 +221,21 @@ export class FileSystemFile {
     return this.exists ? fakeMd5(this.uri, this.size) : null;
   }
 
+  async digest(algorithm: FileDigestAlgorithm): Promise<string> {
+    const entry = store.get(normalizeKey(this.uri));
+    if (entry?.exists && entry.kind === 'dir') {
+      throw new Error('A folder with the same name already exists in the file location');
+    }
+    const hexLength = digestHexLengths[algorithm];
+    if (!hexLength) {
+      throw new Error(`Unsupported digest algorithm: ${algorithm}`);
+    }
+    if (!this.exists) {
+      throw new Error('File does not exist');
+    }
+    return fakeDigest(this.uri, this.size, hexLength);
+  }
+
   get modificationTime(): number | null {
     const entry = store.get(normalizeKey(this.uri));
     return entry?.exists ? (entry.modifiedAt ?? null) : null;
@@ -225,6 +252,14 @@ export class FileSystemFile {
 
   get contentUri(): string {
     return '';
+  }
+
+  canPreview(): Promise<boolean> {
+    return Promise.resolve(this.exists);
+  }
+
+  preview(): Promise<void> {
+    return this.exists ? Promise.resolve() : Promise.reject(new Error('File does not exist'));
   }
 
   create(options: { intermediates?: boolean; overwrite?: boolean } = {}): void {
@@ -246,8 +281,8 @@ export class FileSystemFile {
     });
   }
 
-  write(
-    content: string | Uint8Array,
+  writeSync(
+    content: string | Uint8Array | ArrayBuffer,
     options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
   ): void {
     assertParent(this.uri, false);
@@ -278,6 +313,13 @@ export class FileSystemFile {
     } else {
       store.set(key, { kind: 'file', bytes, type, exists: true, createdAt, modifiedAt: now });
     }
+  }
+
+  async write(
+    content: string | Uint8Array | ArrayBuffer,
+    options: { append?: boolean; encoding?: 'utf8' | 'base64' } = {}
+  ): Promise<void> {
+    this.writeSync(content, options);
   }
 
   private readBytesOrThrow(): Uint8Array {
@@ -495,7 +537,7 @@ export class FileSystemFileHandle {
     return entry?.bytes?.length ?? 0;
   }
 
-  readBytes(count: number): Uint8Array {
+  readBytesSync(count: number): Uint8Array {
     this.ensureOpen();
     if (this.writeOnly) throw new Error('File handle is write-only');
     const entry = store.get(this.key);
@@ -505,7 +547,11 @@ export class FileSystemFileHandle {
     return slice;
   }
 
-  writeBytes(buffer: Uint8Array): void {
+  async readBytes(count: number): Promise<Uint8Array> {
+    return this.readBytesSync(count);
+  }
+
+  writeBytesSync(buffer: Uint8Array): void {
     this.ensureOpen();
     if (this.readOnly) throw new Error('File handle is read-only');
     const entry = store.get(this.key) ?? {
@@ -527,6 +573,10 @@ export class FileSystemFileHandle {
       modifiedAt: nextMockTimestamp(),
     });
     this.cursor = writeOffset + buffer.length;
+  }
+
+  async writeBytes(buffer: Uint8Array): Promise<void> {
+    this.writeBytesSync(buffer);
   }
 
   close(): void {
@@ -744,7 +794,10 @@ export class FileSystemWatcher {
 // so the handles provide SharedObject APIs while the public tasks expose only
 // their explicit facade methods.
 
-const { SharedObject } = globalThis.expo;
+// Annotate explicitly: the inferred type of the destructured constructor
+// otherwise references expo-modules-core's internal declaration path, which is
+// not portable in the emitted (composite) declarations.
+const SharedObject: (typeof globalThis.expo)['SharedObject'] = globalThis.expo.SharedObject;
 
 export class FileSystemUploadTask extends SharedObject {
   start(_url: string, _file: any, _options: any): Promise<any> {
@@ -763,12 +816,7 @@ export class FileSystemDownloadTask extends SharedObject {
   pause(): { resumeData: string } {
     return { resumeData: 'mock-resume-data' };
   }
-  resume(
-    _url: string,
-    _to: any,
-    _resumeData: string,
-    _options?: any
-  ): Promise<string | null> {
+  resume(_url: string, _to: any, _resumeData: string, _options?: any): Promise<string | null> {
     return Promise.resolve('file:///mock/downloaded-file');
   }
   release(): void {

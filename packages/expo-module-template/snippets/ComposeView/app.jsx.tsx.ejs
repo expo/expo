@@ -1,0 +1,11 @@
+        {process.env.EXPO_OS === 'android' && (
+          <Group name="Compose View">
+            <ComposeHost style={styles.view}>
+              <<%- project.composeViewName %>
+                title="Hello from <%- project.name %>"
+                modifiers={[paddingAll(16), composeBackground('#f0f0f0')]}>
+                <ComposeText>Child content</ComposeText>
+              </<%- project.composeViewName %>>
+            </ComposeHost>
+          </Group>
+        )}

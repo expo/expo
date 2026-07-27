@@ -70,6 +70,30 @@ class FileSystemFileTest {
   }
 
   @Test
+  fun openHandleRejectsReadWriteForSAFContentUriBeforeOpeningProvider() {
+    val file = FileSystemFile(Uri.parse("content://com.android.externalstorage.documents/tree/primary%3ADownload"))
+      .withAppContext(permissionServiceReturning(EnumSet.allOf(FilePermissionService.Permission::class.java)))
+
+    val exception = assertThrows(UnsupportedContentUriReadWriteException::class.java) {
+      file.openHandle(FileMode.READ_WRITE)
+    }
+
+    assertTrue(exception.message?.contains("READ_WRITE mode is not supported for content:// URIs") == true)
+  }
+
+  @Test
+  fun openHandleRejectsReadWriteForGenericContentUriBeforeOpeningProvider() {
+    val file = FileSystemFile(Uri.parse("content://expo-file-system-test-provider/file.txt"))
+      .withAppContext(permissionServiceReturning(EnumSet.allOf(FilePermissionService.Permission::class.java)))
+
+    val exception = assertThrows(UnsupportedContentUriReadWriteException::class.java) {
+      file.openHandle(FileMode.READ_WRITE)
+    }
+
+    assertTrue(exception.message?.contains("READ_WRITE mode is not supported for content:// URIs") == true)
+  }
+
+  @Test
   fun deleteRequiresWritePermissionBeforeDeletingFile() {
     val source = temporaryFolder.newFile("delete-target.txt")
     val file = FileSystemFile(Uri.fromFile(source))
@@ -80,6 +104,19 @@ class FileSystemFileTest {
     }
 
     assertTrue(source.exists())
+  }
+
+  @Test
+  fun digestRejectsUnsupportedAlgorithmWithCodedException() {
+    val source = temporaryFolder.newFile("digest.txt")
+    val file = FileSystemFile(Uri.fromFile(source))
+      .withAppContext(permissionServiceReturning(EnumSet.of(FilePermissionService.Permission.READ)))
+
+    val exception = assertThrows(UnsupportedDigestAlgorithmException::class.java) {
+      file.digest("unsupported")
+    }
+
+    assertTrue(exception.message?.contains("Unsupported digest algorithm: 'unsupported'") == true)
   }
 
   @Test
@@ -192,8 +229,16 @@ class FileSystemFileTest {
       ): EnumSet<Permission> = permissions
     }
 
+  // FileSystemPath/SharedObject holds its runtime, MainRuntime holds its AppContext, and
+  // AppContext holds its ReactContext all through WeakReferences. Without a strong reference
+  // kept here for the lifetime of the test, this context graph can be garbage-collected
+  // mid-test, making permission checks fail spuriously with ReactContextLost or
+  // InvalidPermissionException instead of the behavior under test.
+  private val retainedContexts = mutableListOf<Any>()
+
   private fun createAppContext(permissionService: FilePermissionService): AppContext {
     val reactContext = BridgeReactContext(RuntimeEnvironment.getApplication())
+    retainedContexts.add(reactContext)
     return AppContext(
       object : ModulesProvider {
         override fun getModulesMap(): Map<Class<out Module>, String?> = emptyMap()
@@ -203,6 +248,7 @@ class FileSystemFileTest {
       WeakReference(reactContext)
     ).also {
       it.services.register(FilePermissionService::class.java, permissionService)
+      retainedContexts.add(it)
     }
   }
 

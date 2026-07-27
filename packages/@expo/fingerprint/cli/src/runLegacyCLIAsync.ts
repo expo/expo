@@ -1,9 +1,9 @@
-import readFingerprintFileAsync from './utils/readFingerprintFileAsync.js';
 import {
   createFingerprintAsync,
   diffFingerprintChangesAsync,
   diffFingerprints,
 } from '../../build/index.js';
+import readFingerprintFileAsync from './utils/readFingerprintFileAsync.js';
 
 export async function runLegacyCLIAsync(args: string[]) {
   const projectRoot = args[0];

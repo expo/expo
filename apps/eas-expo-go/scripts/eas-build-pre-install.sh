@@ -47,6 +47,7 @@ pushd $ROOT_DIR/tools
 # Install just the `tools` workspace and its deps so `et` can run here. The
 # root `pnpm install` runs in a later EAS phase.
 pnpm install --filter expotools... --ignore-scripts --dir "$ROOT_DIR"
+TURBO_TEAM=expo pnpm --dir "$ROOT_DIR" exec turbo build --filter expotools...
 
 if [ "$EAS_BUILD_PROFILE" = "release-client" ] && [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
   et eas remove-background-permissions-from-info-plist

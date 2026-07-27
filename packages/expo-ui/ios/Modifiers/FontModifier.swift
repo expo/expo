@@ -86,7 +86,10 @@ internal struct FontModifier: ViewModifier, Record {
     content.font(resolveFont())
   }
 
-  private func resolveFont() -> Font {
+  // Shared so the Text-concatenation path (`applyTextModifier`) resolves the
+  // same `Font` as the view path, instead of a fixed-size `Font.custom` that
+  // drops `relativeTo` (Dynamic Type) and `weight`.
+  func resolveFont() -> Font {
     if let family = family {
       let baseSize = size ?? 17
       var font: Font = if let textStyle = textStyle {

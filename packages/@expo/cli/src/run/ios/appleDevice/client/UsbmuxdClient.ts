@@ -6,7 +6,6 @@
  * LICENSE file in the root directory of this source tree.
  */
 import plist from '@expo/plist';
-import Debug from 'debug';
 import type { Socket } from 'net';
 import { connect } from 'net';
 
@@ -14,8 +13,6 @@ import { ResponseError, ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
 import { parsePlistBuffer } from '../../../../utils/plist';
 import { UsbmuxProtocolClient } from '../protocol/UsbmuxProtocol';
-
-const debug = Debug('expo:apple-device:client:usbmuxd');
 
 export interface UsbmuxdDeviceProperties {
   /** @example 'USB' */
@@ -112,7 +109,6 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
   }
 
   static connectUsbmuxdSocket(): Socket {
-    debug('connectUsbmuxdSocket');
     if (process.platform === 'win32') {
       return connect({ port: 27015, host: 'localhost' });
     } else {
@@ -121,9 +117,6 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
   }
 
   async connect(device: Pick<UsbmuxdDevice, 'DeviceID'>, port: number): Promise<Socket> {
-    debug(`connect: ${device.DeviceID} on port ${port}`);
-    debug(`connect:device: %O`, device);
-
     const response = await this.protocolClient.sendMessage({
       messageType: 'Connect',
       extraFields: {
@@ -131,8 +124,6 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
         PortNumber: htons(port),
       },
     });
-    debug(`connect:device:response: %O`, response);
-
     if (isUsbmuxdConnectResponse(response) && response.Number === 0) {
       return this.protocolClient.socket;
     } else {
@@ -144,8 +135,6 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
   }
 
   async getDevices(): Promise<UsbmuxdDevice[]> {
-    debug('getDevices');
-
     const resp = await this.protocolClient.sendMessage({
       messageType: 'ListDevices',
     });
@@ -158,7 +147,6 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
   }
 
   async getDevice(udid?: string): Promise<UsbmuxdDevice> {
-    debug(`getDevice ${udid ? 'udid: ' + udid : ''}`);
     const devices = await this.getDevices();
 
     if (!devices.length) {
@@ -179,8 +167,6 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
   }
 
   async readPairRecord(udid: string): Promise<UsbmuxdPairRecord> {
-    debug(`readPairRecord: ${udid}`);
-
     const resp = await this.protocolClient.sendMessage({
       messageType: 'ReadPairRecord',
       extraFields: { PairRecordID: udid },
@@ -190,7 +176,6 @@ export class UsbmuxdClient extends ServiceClient<UsbmuxProtocolClient> {
       // the pair record can be created as a binary plist
       const BPLIST_MAGIC = Buffer.from('bplist00');
       if (BPLIST_MAGIC.compare(resp.PairRecordData, 0, 8) === 0) {
-        debug('Binary plist pair record detected.');
         const pairRecords = parsePlistBuffer(resp.PairRecordData);
         return Array.isArray(pairRecords) ? pairRecords[0] : pairRecords;
       } else {

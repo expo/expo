@@ -5,7 +5,7 @@ import path from 'node:path';
 import prompts from 'prompts';
 
 import { detectFeaturesFromFile, findModuleDefinitionFile } from './featureDetection';
-import { resolveFeatures, type Feature } from './features';
+import { filterFeaturesByPlatforms, resolveFeatures, type Feature } from './features';
 import { formatRunCommand, resolvePackageManager } from './packageManager';
 import { ALL_PLATFORMS, type Platform } from './prompts';
 import { copyNativeFileSnippets, copyWebFileSnippets } from './snippets';
@@ -230,6 +230,10 @@ function buildSubstitutionData(
     package: info.packageName,
     moduleName: info.moduleName,
     viewName: handleSuffix(info.name, 'View'),
+    swiftUIViewName: handleSuffix(info.name, 'SwiftUIView'),
+    swiftUIModifierName: handleSuffix(info.name, 'SwiftUIModifier'),
+    composeViewName: handleSuffix(info.name, 'ComposeView'),
+    composeModifierName: handleSuffix(info.name, 'ComposeModifier'),
     sharedObjectName: resolvedSharedObjectName,
     platforms: allPlatforms,
     features,
@@ -557,10 +561,12 @@ export async function addPlatformSupport(
 
   ensureNativePlatformTargetsAvailable(moduleRoot, platformsToAdd);
 
-  const { detectedFeatures, sharedObjectName } = await resolveDetectedFeatures(
+  const allPlatforms: Platform[] = [...moduleInfo.platforms, ...platformsToAdd];
+  const { detectedFeatures: rawFeatures, sharedObjectName } = await resolveDetectedFeatures(
     moduleDefinitionFile,
     options
   );
+  const detectedFeatures = filterFeaturesByPlatforms(rawFeatures, allPlatforms);
 
   await updatePublicModuleNameFromSources(moduleInfo, moduleRoot, moduleDefinitionFile);
 

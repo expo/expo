@@ -308,6 +308,10 @@ export default function Layout() {
 }
 ```
 
+### Android limitations
+
+On Android, form sheets use the platform's bottom sheet behavior. Native stack headers and nested stack navigators are not supported inside form sheet screens, so options such as `headerShown`, `title`, and header buttons will not render inside the sheet. If your form sheet needs a title or actions, render them as part of the sheet content instead.
+
 ### Sheet footer (Android)
 
 > **important** `unstable_sheetFooter` is an Android-only [experimental](/more/release-statuses/#experimental) feature that may change in future releases.

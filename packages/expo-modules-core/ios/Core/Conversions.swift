@@ -218,7 +218,7 @@ public struct Conversions {
         memcpy(arrayBuffer.data(), baseAddress, data.count)
       }
     }
-    let uint8ArrayCtor = runtime.global().getPropertyAsFunction("Uint8Array")
+    let uint8ArrayCtor = try runtime.global().getPropertyAsFunction("Uint8Array")
     return try uint8ArrayCtor.callAsConstructor(arrayBuffer.asValue())
   }
 

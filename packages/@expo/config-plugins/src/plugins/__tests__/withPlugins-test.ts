@@ -4,11 +4,11 @@ import { withPlugins } from '../withPlugins';
 describe(withPlugins, () => {
   it('compiles plugins in the correct order', () => {
     const pluginA: ConfigPlugin = (config) => {
-      config.extra.push('alpha');
+      config.extra!.push('alpha');
       return config;
     };
     const pluginB: ConfigPlugin<string> = (config, props = 'charlie') => {
-      config.extra.push('beta', props);
+      config.extra!.push('beta', props);
       return config;
     };
 

@@ -2,6 +2,8 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import { type PropsWithChildren, type ReactNode } from 'react';
 
+import { axe } from '~/common/test-utilities';
+
 jest.unstable_mockModule('~/ui/components/StructuredData', () => ({
   StructuredData: ({ data, id }: { data: Record<string, unknown>; id: string }) => (
     <div data-testid={id}>{JSON.stringify(data)}</div>
@@ -78,5 +80,15 @@ describe('FAQ', () => {
 
     expect(screen.queryByTestId('faq')).not.toBeInTheDocument();
     expect(screen.getByText('Just a paragraph.')).toBeInTheDocument();
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <FAQ>
+        <FakeCollapsible summary="Question one?">Answer one.</FakeCollapsible>
+        <FakeCollapsible summary="Question two?">Answer two.</FakeCollapsible>
+      </FAQ>
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

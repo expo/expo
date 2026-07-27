@@ -9,9 +9,9 @@ platforms: ['android', 'ios', 'tvos', 'web', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ConfigPluginExample } from '~/ui/components/ConfigSection';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/ui/components/ConfigSection';
 
-`expo-localization` allows you to Localize your app, customizing the experience for specific regions, languages, or cultures. It also provides access to the locale data on the native device. Using a localization library such as [`lingui-js`](https://lingui.dev/introduction), [`react-i18next`](https://react.i18next.com/), [`react-intl`](https://formatjs.io/docs/getting-started/installation/), [`i18n-js`](https://github.com/fnando/i18n-js) or [`react-native-intlayer`](https://intlayer.org/doc/environment/react-native-and-expo) with `expo-localization` will enable you to create a very accessible experience for users.
+`expo-localization` allows you to localize your app, customizing the experience for specific regions, languages, or cultures. It also provides access to the locale data on the native device. Using a localization library such as [`lingui-js`](https://lingui.dev/introduction), [`react-i18next`](https://react.i18next.com/), [`react-intl`](https://formatjs.io/docs/getting-started/installation/), [`i18n-js`](https://github.com/fnando/i18n-js), or [`react-native-intlayer`](https://intlayer.org/doc/environment/react-native-and-expo) with `expo-localization` will enable you to create a very accessible experience for users.
 
 ## Installation
 
@@ -26,12 +26,44 @@ You can configure `expo-localization` using its built-in [config plugin](/config
 ```json app.json
 {
   "expo": {
-    "plugins": ["expo-localization"]
+    "plugins": [
+      [
+        "expo-localization",
+        {
+          "supportsRTL": true,
+          "forcesRTL": false,
+          "supportedLocales": ["en", "ja"]
+        }
+      ]
+    ]
   }
 }
 ```
 
 </ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'supportsRTL',
+      description:
+        "Whether the app allows RTL layout. When enabled, the app renders in RTL for RTL device languages, following React Native's `I18nManager`.",
+      default: 'true',
+    },
+    {
+      name: 'forcesRTL',
+      description:
+        'Whether to force RTL layout regardless of the device language. Useful for testing or for apps localized only for RTL locales.',
+      default: 'false',
+    },
+    {
+      name: 'supportedLocales',
+      description:
+        'The locales your app supports, used to enable per-app language selection in the system settings. Provide a single array shared by both platforms, or platform-specific `ios` and `android` arrays.',
+      default: 'undefined',
+    },
+  ]}
+/>
 
 ## Usage
 

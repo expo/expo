@@ -9,6 +9,10 @@ final class BackgroundTaskSchedulerTests: XCTestCase {
     try await super.tearDown()
   }
 
+  func testTaskServiceHelperResolvesSharedTaskService() {
+    XCTAssertNotNil(EXTaskServiceHelper.sharedTaskService())
+  }
+
   func testConcurrentScheduleWorkerCallsDoNotOverlapCancel() async throws {
     let scheduler = OverlapDetectingScheduler()
 

@@ -316,7 +316,7 @@ const db = await SQLite.openDatabaseAsync('databaseName');
 
 await db.withTransactionAsync(async () => {
   const result = await db.getFirstAsync('SELECT COUNT(*) FROM USERS');
-  console.log('Count:', result.rows[0]['COUNT(*)']);
+  console.log('Count:', result['COUNT(*)']);
 });
 ```
 

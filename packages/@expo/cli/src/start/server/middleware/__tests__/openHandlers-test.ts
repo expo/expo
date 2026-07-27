@@ -16,7 +16,7 @@ function lanCreator(scheme: string | null = 'myapp') {
   return new UrlCreator(
     { scheme: scheme ?? undefined },
     { port: 8081, getTunnelUrl: () => null },
-    { address: LAN_ADDR }
+    { address: LAN_ADDR, iname: null, gateway: null, internal: false }
   );
 }
 
@@ -24,7 +24,7 @@ function tunnelCreator(scheme: string | null = 'myapp') {
   return new UrlCreator(
     { scheme: scheme ?? undefined, hostType: 'tunnel' },
     { port: 8081, getTunnelUrl: () => TUNNEL_URL },
-    { address: LAN_ADDR }
+    { address: LAN_ADDR, iname: null, gateway: null, internal: false }
   );
 }
 

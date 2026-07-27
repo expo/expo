@@ -3,7 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-const debug = require('debug')('expo:metro:cache') as typeof console.log;
+import { event } from './events';
 
 // On macOS `os.tmpdir()` returns `/var/folders/...` while its realpath is
 // `/private/var/folders/...`; accept either form so callers that resolved
@@ -38,11 +38,11 @@ export function tryRenameAndDeleteAsync(root: string): boolean {
     if (err?.code === 'ENOENT') {
       return true;
     }
-    debug('Cache rename failed, falling back to recursive remove:', err);
+    event('cache:rename_failed', { error: event.error(err as Error) });
     return false;
   }
   fs.promises.rm(tombstone, { recursive: true, force: true, maxRetries: 3 }).catch((err) => {
-    debug('Failed to remove cache tombstone:', tombstone, err);
+    event('cache:tombstone_remove_failed', { tombstone, error: event.error(err as Error) });
   });
   return true;
 }
@@ -58,7 +58,7 @@ export class FileStore<T> extends UpstreamFileStore<T> {
   async set(key: Buffer, value: any): Promise<void> {
     // Prevent caching of CSS files that have the skipCache flag set.
     if (value?.output?.[0]?.data?.css?.skipCache) {
-      debug('Skipping caching for CSS file:', value.path);
+      event('cache:skipped_css', { path: value.path });
       return;
     }
     return await super.set(key, value);

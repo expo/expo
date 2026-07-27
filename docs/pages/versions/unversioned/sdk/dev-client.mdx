@@ -23,6 +23,23 @@ Expo documentation refers to debug builds that include `expo-dev-client` as [dev
 
 <APIInstallSection hideBareInstructions />
 
+When you create a build with EAS Build, set `developmentClient` to `true` on a build profile in your **eas.json**. Without it, EAS Build produces a standalone build with no development tools. For example:
+
+```json eas.json
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+      /* @hide ... */ /* @end */
+    }
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+For more information, see the [`developmentClient` property in the eas.json reference](/eas/json/#developmentclient).
+
 If you are installing this in an [existing React Native app](/bare/overview/), start by installing [`expo`](/bare/installing-expo-modules/) in your project. Then, follow the instructions from [Install `expo-dev-client` in an existing React Native project](/bare/install-dev-builds-in-bare/).
 
 ## Configuration in app config
@@ -41,8 +58,11 @@ You can configure development client launcher using its built-in [config plugin]
           "launchMode": "most-recent",
           "defaultLaunchURL": "http://localhost:8081",
           "android": {
-            "defaultLaunchURL": "http://10.0.0.2:8081"
-          }
+            "defaultLaunchURL": "http://10.0.2.2:8081"
+          },
+          "toolsButton": true,
+          "skipOnboarding": false,
+          "showMenuAtLaunch": true
         }
       ]
     ]
@@ -78,49 +98,28 @@ You can configure development client launcher using its built-in [config plugin]
       ].join('\n'),
     },
     {
-      name: 'android.launchMode',
-      description: [
-        'Determines whether to launch the most recently opened project or navigate to the launcher screen on Android. Overrides the top-level `launchMode` setting for Android only.',
-        '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
-        '* `launcher` - Opens the launcher screen.',
-      ].join('\n'),
-      default: '"most-recent"',
-      platform: 'android',
+      name: 'toolsButton',
+      description: 'Whether to show the floating tools button.',
+      default: 'true',
     },
     {
-      name: 'ios.launchMode',
-      description: [
-        'Determines whether to launch the most recently opened project or navigate to the launcher screen on iOS. Overrides the top-level `launchMode` setting for iOS only.',
-        '* `most-recent` - Attempt to launch directly into a previously opened project and if unable to connect, fall back to the launcher screen.',
-        '* `launcher` - Opens the launcher screen.',
-      ].join('\n'),
-      default: '"most-recent"',
-      platform: 'ios',
+      name: 'skipOnboarding',
+      description:
+        'Skip the onboarding screen that shows in the dev menu on the first launch of the app.',
+      default: 'false',
     },
     {
-      name: 'android.defaultLaunchURL',
-      description: [
-        'Instead of navigating to launcher screen launch directly into this URL.',
-        'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
-      ].join('\n'),
-      platform: 'android',
-    },
-    {
-      name: 'ios.defaultLaunchURL',
-      description: [
-        'Instead of navigating to launcher screen launch directly into this URL.',
-        'If `launchMode` is set to `most-recent`, then launcher will use the `defaultLaunchURL` as a fallback.',
-      ].join('\n'),
-      platform: 'ios',
+      name: 'showMenuAtLaunch',
+      description: 'Show the developer menu immediately after launching the app.',
+      default: 'true',
     },
   ]}
 />
 
 ## TV support
 
-- This library is only supported for TV in SDK 54 and later.
-  - **Android TV**: All operations are supported, similar to an Android phone.
-  - **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to EAS and listing of EAS builds and updates is not yet supported.
+- **Android TV**: All operations are supported, similar to an Android phone.
+- **Apple TV**: Basic operations with a local or tunneled packager are supported. Authentication to EAS and listing of EAS builds and updates is not yet supported.
 
 ## API
 

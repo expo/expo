@@ -79,7 +79,11 @@ it('can pass options via elements', () => {
   expect(screen.getByTestId('index')).toBeVisible();
   expect(TabsScreen).toHaveBeenCalledTimes(1);
   expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-    ios: { icon: { type: 'sfSymbol', name: 'homepod.2.fill' }, selectedIcon: undefined },
+    ios: {
+      icon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+      // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+      selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+    },
   } as TabsScreenProps);
 });
 
@@ -156,6 +160,26 @@ describe('disabled', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalled();
     expect(TabsScreen.mock.calls.at(-1)![0].preventNativeSelection).toBe(false);
+  });
+});
+
+describe('testID and accessibilityLabel', () => {
+  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0]).toMatchObject({
+      tabBarItemTestID: 'home-tab',
+      tabBarItemAccessibilityLabel: 'Home tab',
+    } as TabsScreenProps);
   });
 });
 
@@ -254,7 +278,11 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-      ios: { icon: { type: 'sfSymbol', name: 'homepod.2.fill' }, selectedIcon: undefined },
+      ios: {
+        icon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: { type: 'sfSymbol', name: 'homepod.2.fill' },
+      },
     } as TabsScreenProps);
   });
 
@@ -297,7 +325,11 @@ describe('Icons', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsScreen).toHaveBeenCalledTimes(1);
     expect(TabsScreen.mock.calls[0][0]).toMatchObject({
-      ios: { icon: { type: 'sfSymbol', name: '0.circle.ar' }, selectedIcon: undefined },
+      ios: {
+        icon: { type: 'sfSymbol', name: '0.circle.ar' },
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: { type: 'sfSymbol', name: '0.circle.ar' },
+      },
     } as TabsScreenProps);
   });
 
@@ -944,7 +976,11 @@ describe('Dynamic options', () => {
           type: 'sfSymbol',
           name: 'homepod.2.fill',
         },
-        selectedIcon: undefined,
+        // selectedIcon mirrors icon — temporary fallback for the react-native-screens upstream bug.
+        selectedIcon: {
+          type: 'sfSymbol',
+          name: 'homepod.2.fill',
+        },
       },
     } as TabsScreenProps);
   });

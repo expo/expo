@@ -8,8 +8,6 @@
 
 'use client';
 
-import React from 'react';
-
 import styles from './LogBoxInspectorSourceMapStatus.module.css';
 
 function AlertTriangleIcon({ color, className }: { color: string; className?: string }) {

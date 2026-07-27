@@ -1,7 +1,3 @@
-/* eslint-env browser */
-import * as CapabilityUtils from './WebCapabilityUtils';
-import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
-import { requestUserMediaAsync } from './WebUserMediaManager';
 import type {
   CameraType,
   CameraCapturedPicture,
@@ -10,6 +6,10 @@ import type {
   WebCameraSettings,
   CameraPictureOptions,
 } from '../Camera.types';
+/* eslint-env browser */
+import * as CapabilityUtils from './WebCapabilityUtils';
+import { CameraTypeToFacingMode, ImageTypeFormat, MinimumConstraints } from './WebConstants';
+import { requestUserMediaAsync } from './WebUserMediaManager';
 
 interface ConstrainLongRange {
   max?: number;

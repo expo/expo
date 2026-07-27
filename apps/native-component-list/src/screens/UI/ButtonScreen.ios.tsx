@@ -11,6 +11,7 @@ import {
 } from '@expo/ui/swift-ui';
 import {
   background,
+  buttonBorderShape,
   buttonStyle,
   controlSize,
   disabled,
@@ -88,6 +89,26 @@ export default function ButtonScreen() {
             label="Extra Large (iOS 17+)"
             systemImage="square.and.arrow.up"
             modifiers={[controlSize('extraLarge'), buttonStyle('glassProminent'), tint('orange')]}
+          />
+        </Section>
+        <Section title="Button Border Shape">
+          <Button
+            label="Favorite"
+            systemImage="heart.fill"
+            modifiers={[
+              buttonStyle('glass'),
+              controlSize('extraLarge'),
+              labelStyle('iconOnly'),
+              buttonBorderShape('circle'),
+            ]}
+          />
+          <Button
+            label="Capsule"
+            modifiers={[buttonStyle('glass'), buttonBorderShape('capsule')]}
+          />
+          <Button
+            label="Rounded Rectangle"
+            modifiers={[buttonStyle('glass'), buttonBorderShape('roundedRectangle', 16)]}
           />
         </Section>
         <Section title="Disabled">

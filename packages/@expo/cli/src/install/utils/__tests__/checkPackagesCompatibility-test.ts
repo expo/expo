@@ -49,16 +49,17 @@ describe(checkPackagesCompatibility, () => {
   });
 
   it(`does not warn about supported or unknown package`, async () => {
-    nock('https://reactnative.directory')
+    const request = nock('https://reactnative.directory')
       .get('/api/libraries/check')
-      .query({ packages: 'expo-image,@expo-google-fonts/inter' })
+      .query({ packages: 'expo-image,react-native-unknown-package' })
       .reply(200, {
         'expo-image': { newArchitecture: 'supported' },
-        '@expo-google-fonts/inter': { newArchitecture: undefined },
+        'react-native-unknown-package': { newArchitecture: undefined },
       });
 
-    await checkPackagesCompatibility(['expo-image', '@expo-google-fonts/inter']);
+    await checkPackagesCompatibility(['expo-image', 'react-native-unknown-package']);
 
+    expect(request.isDone()).toBe(true);
     expect(Log.warn).toHaveBeenCalledTimes(0);
   });
 

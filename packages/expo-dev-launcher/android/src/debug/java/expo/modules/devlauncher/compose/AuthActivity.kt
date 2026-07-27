@@ -8,6 +8,8 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.appcompat.app.AppCompatActivity
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.core.net.toUri
+import expo.modules.devlauncher.launcher.DevLauncherActivity
+import expo.modules.devlauncher.services.DependencyInjection
 import java.net.URLEncoder
 
 enum class AuthRequestType(val type: String) {
@@ -57,10 +59,42 @@ class AuthActivity : AppCompatActivity() {
     }
   }
 
+  private fun consumeAuthRedirect(intent: Intent?): Boolean {
+    val data = intent?.data
+    if (intent?.action != ACTION_VIEW || data?.scheme != "expo-dev-launcher" || data.host != "auth") {
+      return false
+    }
+    val sessionSecret = data.getQueryParameter("session_secret")
+    val userNameOrEmail = data.getQueryParameter("username_or_email")
+    if (sessionSecret.isNullOrEmpty() || userNameOrEmail.isNullOrEmpty()) {
+      setResult(RESULT_CANCELED)
+    } else {
+      DependencyInjection.sessionService?.setSession(Session(sessionSecret))
+      setResult(
+        RESULT_OK,
+        Intent().apply {
+          putExtra(SESSION_KEY, sessionSecret)
+          putExtra(USERNAME_KEY, userNameOrEmail)
+        }
+      )
+    }
+    return true
+  }
+
   var wasStarted = false
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
+
+    if (consumeAuthRedirect(intent)) {
+      wasStarted = true // guard onResume's RESULT_CANCELED path on this instance
+      startActivity(
+        Intent(this, DevLauncherActivity::class.java)
+          .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+      )
+      finishAndRemoveTask()
+      return
+    }
 
     val extraType = intent.getStringExtra(AUTH_REQUEST_TYPE_KEY)
     if (extraType != null) {
@@ -90,21 +124,7 @@ class AuthActivity : AppCompatActivity() {
   override fun onNewIntent(intent: Intent) {
     super.onNewIntent(intent)
 
-    if (intent.action == ACTION_VIEW && intent.data?.scheme == "expo-dev-launcher" && intent.data?.host == "auth") {
-      val sessionSecret = intent.data?.getQueryParameter("session_secret")
-      val userNameOrEmail = intent.data?.getQueryParameter("username_or_email")
-
-      if (sessionSecret.isNullOrEmpty() || userNameOrEmail.isNullOrEmpty()) {
-        setResult(RESULT_CANCELED)
-        finish()
-        return
-      }
-
-      val resultIntent = Intent().apply {
-        putExtra(SESSION_KEY, sessionSecret)
-        putExtra(USERNAME_KEY, userNameOrEmail)
-      }
-      setResult(RESULT_OK, resultIntent)
+    if (consumeAuthRedirect(intent)) {
       finish()
     }
   }

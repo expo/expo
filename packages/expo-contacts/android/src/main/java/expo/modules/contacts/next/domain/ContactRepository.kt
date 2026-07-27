@@ -21,6 +21,8 @@ import expo.modules.contacts.next.domain.wrappers.RawContactId
 import expo.modules.contacts.next.extensions.asSequence
 import expo.modules.contacts.next.extensions.extractId
 import expo.modules.contacts.next.extensions.getContactIdFromRawContactId
+import expo.modules.contacts.next.extensions.getNullableString
+import expo.modules.contacts.next.extensions.getRequiredString
 import expo.modules.contacts.next.extensions.queryOne
 import expo.modules.contacts.next.extensions.safeApplyBatch
 import expo.modules.contacts.next.extensions.safeDelete
@@ -75,7 +77,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
     ).use { cursor ->
       ensureActive()
       cursor.asSequence()
-        .map { it.getString(0) }
+        .map { it.getRequiredString(it.getColumnIndexOrThrow(ContactsContract.Data._ID)) }
         .map { DataId(it) }
         .toList()
     }
@@ -146,7 +148,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
       cursor
         .asSequence()
         .take(limit ?: Int.MAX_VALUE)
-        .map { it.getString(it.getColumnIndexOrThrow(ContactId.COLUMN_IN_CONTACTS_TABLE)) }
+        .map { it.getRequiredString(it.getColumnIndexOrThrow(ContactId.COLUMN_IN_CONTACTS_TABLE)) }
         .map { ContactId(it) }
         .toList()
     }
@@ -272,7 +274,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
     contentResolver.queryOne(
       uri = ContactsContract.Contacts.CONTENT_URI,
       column = ContactsContract.Contacts.LOOKUP_KEY,
-      extractor = Cursor::getString,
+      extractor = Cursor::getNullableString,
       selection = "${ContactId.COLUMN_IN_CONTACTS_TABLE} = ?",
       selectionArgs = arrayOf(contactId.value)
     )
@@ -286,7 +288,7 @@ class ContactRepository(val contentResolver: ContentResolver) {
     contentResolver.queryOne(
       uri = ContactsContract.RawContacts.CONTENT_URI,
       column = RawContactId.COLUMN_IN_RAW_CONTACTS_TABLE,
-      extractor = Cursor::getString,
+      extractor = Cursor::getRequiredString,
       selection = selectionBuilder.toString(),
       selectionArgs = arrayOf(contactId.value)
     )?.let {

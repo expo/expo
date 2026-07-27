@@ -7,14 +7,14 @@ import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'rea
 
 import { useTheme } from '../../common/ThemeProvider';
 import { getTestModules, Module } from '../TestModules';
+import FooterBar from '../components/FooterBar';
+import PlatformTouchable from '../components/PlatformTouchable';
+import { routeNames } from '../constants/routeNames';
 import {
   createQueryString,
   getScreenIdForLinking,
   getSelectedTestNames,
 } from './getScreenIdForLinking';
-import FooterBar from '../components/FooterBar';
-import PlatformTouchable from '../components/PlatformTouchable';
-import { routeNames } from '../constants/routeNames';
 
 const supportsGlass = isLiquidGlassAvailable();
 const SELECTION_STORAGE_KEY = 'test-suite:selected-modules';
@@ -87,6 +87,20 @@ export default function SelectScreen({ navigation }) {
     ({ url }: { url: string }) => {
       url = url || '';
       // TODO: Use Expo Linking library once parseURL is implemented for web
+
+      // Run a specific set of tests, e.g. bareexpo://test-suite/run?tests=basic,blur
+      // React Navigation linking also maps this URL to the run screen, but on a cold
+      // start the two race and this handler used to win by falling through to the
+      // selection list below. Handle the query explicitly so the deep link always runs.
+      const testsQueryMatch = url.match(/[?&]tests=([^&]+)/);
+
+      if (testsQueryMatch) {
+        const tests = getSelectedTestNames(decodeURIComponent(testsQueryMatch[1]));
+        const query = createQueryString(tests);
+        navigation.navigate(routeNames.run, { tests: query });
+        return;
+      }
+
       if (url.includes(`/${routeNames.select}/`)) {
         const selectedTests = url.split('/').pop();
         if (selectedTests) {

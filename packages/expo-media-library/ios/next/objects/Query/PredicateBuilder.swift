@@ -28,21 +28,32 @@ class AssetFieldPredicateBuilder {
     return NSPredicate(format: "\(assetField.photosKey()) \(symbol) %@", argumentArray: [nsValues])
   }
 
-  static func buildPredicate(assetField: AssetField, value: Either<MediaTypeNext, Int>, symbol: String) throws -> NSPredicate {
-    if let intVal = try? value.as(Int.self) {
+  static func buildPredicate(assetField: AssetField, value: Bool, symbol: String) -> NSPredicate {
+    return NSPredicate(format: "\(assetField.photosKey()) \(symbol) %@", argumentArray: [NSNumber(value: value)])
+  }
+
+  static func buildPredicate(assetField: AssetField, value: EitherOfThree<MediaTypeNext, Int, Bool>, symbol: String) throws -> NSPredicate {
+    if let boolVal: Bool = value.get() {
+      return buildPredicate(assetField: assetField, value: boolVal, symbol: symbol)
+    }
+    if let intVal: Int = value.get() {
       return buildPredicate(assetField: assetField, value: intVal, symbol: symbol)
     }
-    if let mediaVal = try? value.as(MediaTypeNext.self) {
+    if let mediaVal: MediaTypeNext = value.get() {
       return buildPredicate(assetField: assetField, value: mediaVal, symbol: symbol)
     }
     throw PredicateBuilderException("Unsupported Either type for \(assetField)")
   }
 
-  static func buildPredicate(assetField: AssetField, values: Either<[MediaTypeNext], [Int]>, symbol: String) throws -> NSPredicate {
-    if let intValues = try? values.as([Int].self) {
+  static func buildPredicate(assetField: AssetField, values: EitherOfThree<[MediaTypeNext], [Int], [Bool]>, symbol: String) throws -> NSPredicate {
+    if let boolValues: [Bool] = values.get() {
+      let nsValues = boolValues.map { NSNumber(value: $0) }
+      return NSPredicate(format: "\(assetField.photosKey()) \(symbol) %@", argumentArray: [nsValues])
+    }
+    if let intValues: [Int] = values.get() {
       return buildPredicate(assetField: assetField, values: intValues, symbol: symbol)
     }
-    if let mediaValues = try? values.as([MediaTypeNext].self) {
+    if let mediaValues: [MediaTypeNext] = values.get() {
       return buildPredicate(assetField: assetField, values: mediaValues, symbol: symbol)
     }
     throw PredicateBuilderException("Unsupported Either type for \(assetField)")

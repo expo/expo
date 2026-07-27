@@ -126,7 +126,7 @@ describe(withDeploymentTargetPodfileProps, () => {
       {
         plugin: withDeploymentTargetPodfileProps,
         mod: withPodfileProperties,
-        modResults: {},
+        modResults: {} as Record<string, string>,
       }
     );
     expect(modResults[DEPLOYMENT_TARGET_PROP_KEY]).toBeUndefined();

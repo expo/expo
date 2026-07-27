@@ -1,8 +1,7 @@
+import { env } from '../../utils/env';
+import { debugEvent } from '../events';
 import { exportEmbedInternalAsync } from './exportEmbedAsync';
 import { getExportEmbedOptionsKey, resolveEagerOptionsAsync } from './resolveOptions';
-import { env } from '../../utils/env';
-
-const debug = require('debug')('expo:eager');
 
 export async function exportEagerAsync(
   projectRoot: string,
@@ -28,11 +27,9 @@ export async function exportEagerAsync(
     assetsDest,
     bundleOutput,
   });
-  debug('Starting eager export: ' + options.bundleOutput);
+  debugEvent('eager:starting', { bundleOutput: options.bundleOutput });
 
   await exportEmbedInternalAsync(projectRoot, options);
-
-  debug('Eager export complete');
 
   return { options, key: getExportEmbedOptionsKey(options) };
 }

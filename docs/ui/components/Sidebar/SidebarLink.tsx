@@ -133,7 +133,10 @@ export const SidebarLink = ({ info, className, children }: SidebarLinkProps) => 
         </div>
       )}
       {isExternal && (
-        <ArrowUpRightIcon className="ml-auto icon-sm text-icon-secondary group-hover:text-icon-info" />
+        <ArrowUpRightIcon
+          aria-hidden="true"
+          className="ml-auto icon-sm text-icon-secondary group-hover:text-icon-info"
+        />
       )}
     </LinkBase>
   );

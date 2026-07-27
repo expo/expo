@@ -76,6 +76,39 @@ export default function InitiallyExpandedExample() {
 }
 ```
 
+### Custom label
+
+Use `DisclosureGroup.Label` when the label needs custom SwiftUI content or modifiers instead of the `label` string prop.
+
+```tsx CustomLabelDisclosureGroupExample.tsx
+import { useState } from 'react';
+import { DisclosureGroup, Form, Host, Section, Text } from '@expo/ui/swift-ui';
+import { font, foregroundStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function CustomLabelDisclosureGroupExample() {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Form>
+        <Section>
+          <DisclosureGroup isExpanded={isExpanded} onIsExpandedChange={setIsExpanded}>
+            <DisclosureGroup.Label>
+              <Text modifiers={[font({ weight: 'semibold' }), foregroundStyle('#0a7ea4')]}>
+                Network options
+              </Text>
+            </DisclosureGroup.Label>
+            <Text>Wi-Fi</Text>
+            <Text>Bluetooth</Text>
+            <Text>Cellular data</Text>
+          </DisclosureGroup>
+        </Section>
+      </Form>
+    </Host>
+  );
+}
+```
+
 ## API
 
 ```tsx

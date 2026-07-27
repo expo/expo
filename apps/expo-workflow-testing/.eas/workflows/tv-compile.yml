@@ -1,5 +1,9 @@
 name: TV compile test
 
+defaults:
+  tools:
+    pnpm: '10.34.5'
+
 on:
   push:
     branches: [main, 'sdk-*']

@@ -16,7 +16,8 @@ NS_SWIFT_NAME(JSUtils)
     withArguments:(nonnull NSArray<id> *)arguments;
 
 /**
- Same as above but takes a raw `facebook::jsi::Value` pointer and count.
+ Same as above, but the objectPointer is a raw pointer to `facebook::jsi::Object` (the target JS object)
+ and the arguments are passed as a raw `facebook::jsi::Value` pointer and count.
  */
 + (void)emitEvent:(nonnull NSString *)eventName
    runtimePointer:(nonnull void *)runtimePointer

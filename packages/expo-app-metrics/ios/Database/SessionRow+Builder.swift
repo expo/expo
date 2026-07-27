@@ -3,11 +3,9 @@
 import Foundation
 
 extension SessionRow {
-  /**
-   Builds a `SessionRow` from a `Session`, snapshotting the current `AppInfo`, `DeviceInfo` and
-   environment. Called when a new session is inserted; subsequent updates (end timestamp, environment
-   patch, OTA app-info patch) are applied with the more focused DAO methods.
-   */
+  /// Builds a `SessionRow` from a `Session`, snapshotting the current `AppInfo`, `DeviceInfo` and
+  /// environment. Called when a new session is inserted; subsequent updates (end timestamp, environment
+  /// patch, OTA app-info patch) are applied with the more focused DAO methods.
   static func snapshot(of session: Session, environment: String?) -> SessionRow {
     let app = AppInfo.current
     let device = DeviceInfo.current

@@ -12,6 +12,7 @@ import path from 'path';
 
 import type { Options } from './Options';
 import { CommandError } from './Options';
+import { escapeUriParams } from './URIScheme';
 
 const CANT_START_ACTIVITY_ERROR = 'Activity not started, unable to resolve Intent';
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
@@ -193,7 +194,7 @@ async function writeConfigAsync(path: string, result: any) {
  *
  * @example
  *   - `myapp://(tabs)/explore` -> `myapp://\(tabs\)/explore`
- *   - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://\(tabs\)/explore?test=a%257Cb%257Cc`
+ *   - `myapp://(tabs)/explore?test=a|b|c` -> `myapp://\(tabs\)/explore?test=a%7Cb%7Cc`
  */
 export function escapeUri(uri: string) {
   const [protocol, uriWithoutProtocol] = uri.split('://', 2);
@@ -204,12 +205,7 @@ export function escapeUri(uri: string) {
   const escapedUriPath = uriPath.replace(/(^|[^\\])([$\-_.+!*'(),])/g, '$1\\$2');
 
   if (uriParams?.length) {
-    const escapedUriParams = new URLSearchParams(uriParams);
-    for (const [key, value] of escapedUriParams.entries()) {
-      escapedUriParams.set(key, encodeURIComponent(decodeURIComponent(value)));
-    }
-
-    return `${protocol}://${escapedUriPath}?${escapedUriParams.toString()}`;
+    return `${protocol}://${escapedUriPath}?${escapeUriParams(uriParams)}`;
   }
 
   return `${protocol}://${escapedUriPath}`;

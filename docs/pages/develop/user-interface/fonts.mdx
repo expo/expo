@@ -62,7 +62,7 @@ This is the recommended method for adding fonts to your app due to its benefits:
 
 However, this method also has some limitations:
 
-- Doesn't work with Expo Go since this method requires [creating a development build](/develop/development-builds/create-a-build/).
+- Doesn't work with Expo Go since this method requires [creating a development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
 
 To embed a font in a project, follow the steps below:
 
@@ -70,7 +70,14 @@ To embed a font in a project, follow the steps below:
 
 After adding a custom font file in your project, install the `expo-font` library.
 
-<Terminal cmd={['$ npx expo install expo-font']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font'],
+    yarn: ['$ yarn expo install expo-font'],
+    pnpm: ['$ pnpm expo install expo-font'],
+    bun: ['$ bun expo install expo-font'],
+  }}
+/>
 
 </Step>
 
@@ -132,7 +139,7 @@ If you want to refer to fonts using a combination of `fontFamily`, `weight`, and
 
 <Step label="3">
 
-After embedding the font with the config plugin, create a [new development build](/develop/development-builds/create-a-build/) and install it on your device or Android Emulator or iOS Simulator.
+After embedding the font with the config plugin, create a [new development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build) and install it on your device or Android Emulator or iOS Simulator.
 
 You can use the font with `<Text>` by specifying the `fontFamily` style prop. The examples below correspond to the fonts defined in the configuration above.
 
@@ -165,7 +172,10 @@ For example, Inter Black font file's PostScript name is `Inter-Black`.
 
 _Screenshot from Font Book app on macOS._
 
-<ContentSpotlight src="/static/images/postscript-name.png" />
+<ContentSpotlight
+  alt="The Font Book app on macOS showing the Inter font's identifiers, with the PostScript name 'Inter-Black' highlighted."
+  src="/static/images/postscript-name.png"
+/>
 
 </Collapsible>
 
@@ -179,7 +189,14 @@ It works with all Expo SDK versions and with Expo Go. To load a font in a projec
 
 After adding a custom font file in your project, install the `expo-font` and `expo-splash-screen` libraries.
 
-<Terminal cmd={['$ npx expo install expo-font expo-splash-screen']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font expo-splash-screen'],
+    yarn: ['$ yarn expo install expo-font expo-splash-screen'],
+    pnpm: ['$ pnpm expo install expo-font expo-splash-screen'],
+    bun: ['$ bun expo install expo-font expo-splash-screen'],
+  }}
+/>
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides `SplashScreen` component that you can use to prevent rendering the app until the font is loaded and ready.
 
@@ -252,7 +269,14 @@ Two ways to use a Google Font in your project:
 
 Install the font package. For example, to use Inter Black font, install the [`@expo-google-fonts/inter`](https://www.npmjs.com/package/@expo-google-fonts/inter) package with the command below.
 
-<Terminal cmd={['$ npx expo install expo-font @expo-google-fonts/inter']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-font @expo-google-fonts/inter'],
+    yarn: ['$ yarn expo install expo-font @expo-google-fonts/inter'],
+    pnpm: ['$ pnpm expo install expo-font @expo-google-fonts/inter'],
+    bun: ['$ bun expo install expo-font @expo-google-fonts/inter'],
+  }}
+/>
 
 </Step>
 
@@ -279,7 +303,7 @@ Add the config plugin to your [app config](/versions/latest/config/app/#plugins)
 
 <Step label="3">
 
-After embedding the font with the config plugin, create a [new development build](/develop/development-builds/create-a-build/) and install it on your device or Android Emulator or iOS Simulator.
+After embedding the font with the config plugin, create a [new development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build) and install it on your device or Android Emulator or iOS Simulator.
 
 On Android, you can use the font file name. For example, `Inter_900Black`. On iOS, use the font and its weight name ([PostScript name](#what-is-postscript-name-of-a-font)). The example below demonstrates how to use [`Platform`](https://reactnative.dev/docs/platform-specific-code#platform-module) to select the correct font family name for each platform:
 
@@ -313,7 +337,14 @@ Each Google Fonts package provides the `useFonts` hook to load the fonts asynchr
 
 Install the Google Fonts package, `expo-font` and `expo-splash-screen` libraries.
 
-<Terminal cmd={['$ npx expo install @expo-google-fonts/inter expo-font expo-splash-screen']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    yarn: ['$ yarn expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    pnpm: ['$ pnpm expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+    bun: ['$ bun expo install @expo-google-fonts/inter expo-font expo-splash-screen'],
+  }}
+/>
 
 The [`expo-splash-screen`](/versions/latest/sdk/splash-screen/) library provides `SplashScreen` component that you can use to prevent rendering the app until the font is loaded and ready.
 

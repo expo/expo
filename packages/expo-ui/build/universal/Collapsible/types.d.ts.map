@@ -1,1 +1,0 @@
-{"version":3,"file":"types.d.ts","sourceRoot":"","sources":["../../../src/universal/Collapsible/types.ts"],"names":[],"mappings":"AAAA;;;GAGG;AACH,MAAM,WAAW,gBAAgB;IAC/B;;OAEG;IACH,MAAM,EAAE,OAAO,CAAC;IAEhB;;OAEG;IACH,YAAY,EAAE,CAAC,MAAM,EAAE,OAAO,KAAK,IAAI,CAAC;IAExC;;OAEG;IACH,KAAK,CAAC,EAAE,MAAM,CAAC;IAEf;;OAEG;IACH,QAAQ,CAAC,EAAE,KAAK,CAAC,SAAS,CAAC;CAC5B"}

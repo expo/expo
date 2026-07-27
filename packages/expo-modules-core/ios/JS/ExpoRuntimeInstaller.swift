@@ -2,6 +2,9 @@
 
 import ExpoModulesJSI
 
+/// Property name of the core object in the global scope of the Expo JS runtime, i.e. `global.expo`.
+internal let globalCoreObjectPropertyName = "expo"
+
 @JavaScriptActor
 internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
   private let appContext: AppContext
@@ -21,8 +24,24 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
   @discardableResult
   internal func installCoreObject() -> JavaScriptObject {
     let coreObject = runtime.createObject()
-    runtime.global().defineProperty(EXGlobalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
+    runtime.global().defineProperty(globalCoreObjectPropertyName, value: coreObject, options: [.enumerable])
     return coreObject
+  }
+
+  /// Attaches the `AppContext.NativeState` to the `global.expo` object. This ties the app
+  /// context's lifetime to the runtime (its release defers to runtime finalization) and lets
+  /// code recover the app context from the runtime via `AppContext.from(runtime:)`.
+  ///
+  /// Pass `ownsLifecycle: true` for the runtime that owns the app context's lifecycle (the main
+  /// runtime), so only its teardown runs `destroy()`. Subordinate runtimes (e.g. the UI runtime)
+  /// pass `false` to pin the app context and enable recovery without destroying it.
+  @JavaScriptActor
+  internal func installAppContextNativeState(on coreObject: borrowing JavaScriptObject, ownsLifecycle: Bool) {
+    if coreObject.hasNativeState() {
+      // Already attached.
+      return
+    }
+    coreObject.setNativeState(AppContext.NativeState(appContext: appContext, ownsLifecycle: ownsLifecycle))
   }
 
   /**
@@ -30,7 +49,7 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
    */
   @JavaScriptActor
   internal func installExpoModulesHostObject() throws {
-    let coreObject = runtime.global().getPropertyAsObject(EXGlobalCoreObjectPropertyName)
+    let coreObject = try runtime.global().getPropertyAsObject(globalCoreObjectPropertyName)
 
     if coreObject.hasProperty("modules") {
       // Host object already installed
@@ -45,9 +64,6 @@ internal class ExpoRuntimeInstaller: EXJavaScriptRuntimeManager {
       },
       getPropertyNames: { [weak appContext] in
         return appContext?.getModuleNames() ?? []
-      },
-      dealloc: { [weak appContext] in
-        appContext?.destroy()
       }
     )
 
