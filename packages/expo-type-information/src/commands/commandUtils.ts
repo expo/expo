@@ -299,7 +299,12 @@ export function writeStringToFileOrPrintToConsole(
   realOutputPath: string | undefined
 ) {
   if (realOutputPath) {
-    fs.writeFileSync(realOutputPath, text, { flag: 'w', encoding: 'utf-8' });
+    fs.writeFileSync(
+      realOutputPath,
+      `${generatedFileComment}
+${text}`,
+      { flag: 'w', encoding: 'utf-8' }
+    );
     return;
   }
   console.log(text);
@@ -323,9 +328,11 @@ export function contentHasChanged(fileContent: string): boolean {
   return storedHash !== calculatedHash;
 }
 
-export function insertFileHashComment(fileContent: string): string {
+const generatedFileComment = '// Automatically generated with expo-type-information.';
+export function insertFileHashCommentGeneratedPrefix(fileContent: string): string {
   const hashString = getContentHash(fileContent);
   return `// File hash: ${hashString}
+${generatedFileComment}
 ${fileContent}`;
 }
 
@@ -345,7 +352,7 @@ export async function writeToStableFile({
     flag = 'w';
   }
   try {
-    await fs.promises.writeFile(filePath, insertFileHashComment(content), {
+    await fs.promises.writeFile(filePath, insertFileHashCommentGeneratedPrefix(content), {
       flag,
       encoding: 'utf-8',
     });
@@ -377,7 +384,8 @@ export async function generateConciseTsFiles(parsedArgs: ParsedArguments) {
     await Promise.all([
       fs.promises.writeFile(
         path.resolve(dirName, `${moduleName}.generated.ts`),
-        volatileGeneratedFileContent,
+        `${generatedFileComment}
+${volatileGeneratedFileContent}`,
         {
           flag: 'w',
           encoding: 'utf-8',
