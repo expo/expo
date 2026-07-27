@@ -3019,8 +3019,8 @@ importers:
         specifier: workspace:*
         version: link:../../expo-router
       react-server-dom-webpack:
-        specifier: ~19.0.6
-        version: 19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
+        specifier: ~19.0.8
+        version: 19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
 
   packages/@expo/schema-utils:
     devDependencies:
@@ -5432,8 +5432,8 @@ importers:
         specifier: ~0.21.0
         version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       react-server-dom-webpack:
-        specifier: ~19.0.6
-        version: 19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
+        specifier: ~19.0.8
+        version: 19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
 
   packages/expo-screen-capture:
     dependencies:
@@ -6271,8 +6271,8 @@ importers:
         specifier: ~19.2.0
         version: 19.2.14
       react-server-dom-webpack:
-        specifier: ~19.0.6
-        version: 19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
+        specifier: ~19.0.8
+        version: 19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18))
 
   packages/patch-project:
     dependencies:
@@ -14036,12 +14036,12 @@ packages:
       '@types/react':
         optional: true
 
-  react-server-dom-webpack@19.0.6:
-    resolution: {integrity: sha512-WfyiWmlEQZhm+18sx2vVzVT/gchJV/3MmkF7OssBuwJ1Ik8TgzDjP0mzEl+h7sVzKcUfshGGpXxugJa7RKJ0mQ==}
+  react-server-dom-webpack@19.0.8:
+    resolution: {integrity: sha512-7YrPNcLdX2+3JWMjohgbAy99qGnzTfLeVp75XIK3yIyad0Wp7wYq7acGqhz1xbpbNHor+jWInkYDAnMYhZtK4Q==}
     engines: {node: '>=0.10.0'}
     peerDependencies:
-      react: ^19.0.6
-      react-dom: ^19.0.6
+      react: ^19.0.8
+      react-dom: ^19.0.8
       webpack: ^5.59.0
 
   react-style-singleton@2.2.3:
@@ -23897,7 +23897,7 @@ snapshots:
     optionalDependencies:
       '@types/react': 19.2.14
 
-  react-server-dom-webpack@19.0.6(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18)):
+  react-server-dom-webpack@19.0.8(patch_hash=ba3362195bbec23b932749a969f0231184584999e30a5859dae27748b974c24a)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(webpack@5.105.4(@swc/core@1.15.18)):
     dependencies:
       acorn-loose: 8.5.2
       neo-async: 2.6.2
