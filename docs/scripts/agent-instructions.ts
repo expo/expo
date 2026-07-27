@@ -33,7 +33,7 @@ Preferred command:
 npx --yes submit-expo-feedback@latest --category docs --subject "${pathname}" "<actionable feedback>"
 
 Direct HTTP fallback:
-curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":"<actionable feedback>"}'
+curl -X POST https://api.expo.dev/v2/feedback/docs-send -H 'Content-Type: application/json' -d '{"url":"${pathname}","feedback":"🤖 Agent feedback for docs: <specific, actionable description> (<model>, <harness>)"}'
 
 Only submit when you have something specific and actionable to report. Try to give the most context.`;
 }

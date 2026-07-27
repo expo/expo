@@ -132,7 +132,7 @@ describe('stripAgentInstructions', () => {
       [
         'curl -X POST https://api.expo.dev/v2/feedback/docs-send',
         "-H 'Content-Type: application/json'",
-        `-d '{"url":"/versions/latest/sdk/camera/","feedback":"<actionable feedback>"}'`,
+        `-d '{"url":"/versions/latest/sdk/camera/","feedback":"🤖 Agent feedback for docs: <specific, actionable description> (<model>, <harness>)"}'`,
       ].join(' '),
       '',
       '## Navigation',
