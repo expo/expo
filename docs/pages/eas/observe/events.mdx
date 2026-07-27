@@ -25,19 +25,6 @@ function handleOnboardingComplete() {
 
 The first argument is the event name. Use a stable, dot-separated identifier. The dashboard groups events by exact name.
 
-## Display name
-
-Use `displayName` to provide a human-friendly label for the event in the dashboard:
-
-```tsx
-Observe.logEvent('onboarding.completed', {
-  displayName: 'Onboarding completed',
-});
-```
-
-The event name remains the stable identifier used for grouping. The SDK trims the display name and
-truncates it to 128 characters.
-
 ## Attach attributes
 
 Pass an `attributes` map to record context with the event:
@@ -85,6 +72,18 @@ Observe.logEvent('cache.evicted', {
 - Use lowercase, dot-separated names: `task.completed`, `onboarding.skipped`, `report.exported`.
 - Pick a vocabulary and stick to it. The dashboard groups by exact event name, so `report_exported` and `report.exported` will appear as separate rows.
 - Avoid Personally Identifiable Information (PII) in event names, attribute keys, and attribute values. Everything you pass is visible in the dashboard and is dispatched off-device.
+
+## Display name
+
+Use `displayName` to provide a human-friendly label for the event in the dashboard:
+
+```tsx
+Observe.logEvent('onboarding.completed', {
+  displayName: 'Onboarding completed',
+});
+```
+
+> Note: The display name that you set will only be used in the session timeline view
 
 ## View events
 
