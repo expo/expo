@@ -136,7 +136,7 @@ class DevLauncherViewModel: ObservableObject {
     loadMenuPreferences()
   }
 
-  private func loadRecentlyOpenedApps() {
+  func loadRecentlyOpenedApps() {
     let apps = EXDevLauncherController.sharedInstance().recentlyOpenedAppsRegistry.recentlyOpenedApps()
 
     let allApps = apps.compactMap { app -> RecentlyOpenedApp? in
@@ -485,7 +485,9 @@ class DevLauncherViewModel: ObservableObject {
           source: "local"
         )
       }
-    } catch {}
+    } catch {
+      NSLog("DevLauncher discovered a dev server but couldn't resolve its endpoint: %@", error.localizedDescription)
+    }
 
     return nil
   }

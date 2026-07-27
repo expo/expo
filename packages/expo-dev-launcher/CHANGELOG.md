@@ -29,6 +29,8 @@
 - [iOS] Keep the dev-launcher local network Info.plist keys in custom debug build configurations instead of only a configuration literally named "Debug".
 - [iOS] Report a distinct "discovery isn't configured" message and stop mislabeling a missing Info.plist entry, no network, or a pending system prompt as a denied Local Network permission.
 - [iOS] Stop triggering the Local Network permission prompt at launch by suppressing the React Native packager check until a development server is selected.
+- [iOS] Point at the Local Network setting when a local dev server URL can't be reached, and log instead of silently dropping discovered servers that fail to resolve. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Reload the recently opened apps list when the launcher appears so it no longer shows up empty or stale. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
