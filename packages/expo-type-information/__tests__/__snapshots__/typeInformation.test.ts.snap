@@ -62,8 +62,9 @@ export type TestBasicClassEvents = {
   EventName1: (payload?: any) => void;
 };
 export declare class TestBasicClass extends SharedObject<TestBasicClassEvents> {
+  TestSyncMethod(a: number): string;
   static TestStaticFunction(): string;
-  TestAsyncFunction(a: number): Promise<string>;
+  TestAsyncMethod(a: number): Promise<string>;
   static TestStaticAsyncFunction(a: string): Promise<void>;
   readonly TestIntProperty: number;
   readonly TestEitherProperty: number | string;
@@ -409,8 +410,9 @@ export type TestBasicClassEvents = {
   EventName1: (payload?: any) => void;
 };
 export declare class TestBasicClass extends SharedObject<TestBasicClassEvents> {
+  TestSyncMethod(a: number): string;
   static TestStaticFunction(): string;
-  TestAsyncFunction(a: number): Promise<string>;
+  TestAsyncMethod(a: number): Promise<string>;
   static TestStaticAsyncFunction(a: string): Promise<void>;
   readonly TestIntProperty: number;
   readonly TestEitherProperty: number | string;
@@ -589,8 +591,9 @@ export class TestClassWithConstructor {
     constructor(a: number) { }
 }
 export class TestBasicClass {
+    TestSyncMethod(a: number): string { return ""; }
     static TestStaticFunction(): string { return ""; }
-    async TestAsyncFunction(a: number): Promise<string> { return ""; }
+    async TestAsyncMethod(a: number): Promise<string> { return ""; }
     async static TestStaticAsyncFunction(a: string): Promise<void> { }
     constructor(a: number, b: string, c: string | TestRecord) { }
 }
@@ -670,8 +673,9 @@ export class TestClassWithConstructor {
     constructor(a) { }
 }
 export class TestBasicClass {
+    TestSyncMethod(a) { return ""; }
     static TestStaticFunction() { return ""; }
-    async TestAsyncFunction(a) { return ""; }
+    async TestAsyncMethod(a) { return ""; }
     async static TestStaticAsyncFunction(a) { }
     constructor(a, b, c) { }
 }
@@ -741,8 +745,9 @@ export type TestBasicClassEvents = {
   EventName1: (payload?: any) => void;
 };
 export declare class TestBasicClass extends SharedObject<TestBasicClassEvents> {
+  TestSyncMethod(a: number): string;
   static TestStaticFunction(): string;
-  TestAsyncFunction(a: number): Promise<string>;
+  TestAsyncMethod(a: number): Promise<string>;
   static TestStaticAsyncFunction(a: string): Promise<void>;
   readonly TestIntProperty: number;
   readonly TestEitherProperty: number | string;
@@ -1035,7 +1040,7 @@ exports[`Same type information 1`] = `
                 },
               ],
               "isStatic": false,
-              "name": "TestAsyncFunction",
+              "name": "TestAsyncMethod",
               "parameters": [],
               "returnType": {
                 "kind": 0,
@@ -1103,6 +1108,24 @@ exports[`Same type information 1`] = `
             "EventName1",
           ],
           "methods": [
+            {
+              "arguments": [
+                {
+                  "name": "a",
+                  "type": {
+                    "kind": 0,
+                    "type": 2,
+                  },
+                },
+              ],
+              "isStatic": false,
+              "name": "TestSyncMethod",
+              "parameters": [],
+              "returnType": {
+                "kind": 0,
+                "type": 1,
+              },
+            },
             {
               "arguments": [],
               "isStatic": true,
