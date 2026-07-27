@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.net.toUri
+import expo.modules.medialibrary.assets.maybeRotateAssetSize
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.extensions.resolver.extractAssetContentUri
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
@@ -36,15 +37,21 @@ class AssetMapper(private val contentResolver: ContentResolver) {
       MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
     )
 
+    val (width, height) = maybeRotateAssetSize(
+      mapWidth(imageAsset.width, contentUri)
+        ?: throw AssetPropertyNotFoundException("Width"),
+      mapHeight(imageAsset.height, contentUri)
+        ?: throw AssetPropertyNotFoundException("Height"),
+      imageAsset.orientation ?: 0
+    )
+
     return AssetInfo(
       id = contentUri,
       uri = mapUri(imageAsset.data)
         ?: throw AssetPropertyNotFoundException("Uri"),
       mediaType = MediaType.IMAGE,
-      width = mapWidth(imageAsset.width, contentUri)
-        ?: throw AssetPropertyNotFoundException("Width"),
-      height = mapHeight(imageAsset.height, contentUri)
-        ?: throw AssetPropertyNotFoundException("Height"),
+      width = width,
+      height = height,
       creationTime = mapCreationTime(imageAsset.dateTaken),
       modificationTime = mapModificationTime(imageAsset.dateModified),
       duration = null,
@@ -60,15 +67,21 @@ class AssetMapper(private val contentResolver: ContentResolver) {
       MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
     )
 
+    val (width, height) = maybeRotateAssetSize(
+      mapWidth(videoAsset.width, contentUri)
+        ?: throw AssetPropertyNotFoundException("Width"),
+      mapHeight(videoAsset.height, contentUri)
+        ?: throw AssetPropertyNotFoundException("Height"),
+      videoAsset.orientation ?: 0
+    )
+
     return AssetInfo(
       id = contentUri,
       uri = mapUri(videoAsset.data)
         ?: throw AssetPropertyNotFoundException("Uri"),
       mediaType = MediaType.VIDEO,
-      width = mapWidth(videoAsset.width, contentUri)
-        ?: throw AssetPropertyNotFoundException("Width"),
-      height = mapHeight(videoAsset.height, contentUri)
-        ?: throw AssetPropertyNotFoundException("Height"),
+      width = width,
+      height = height,
       creationTime = mapCreationTime(videoAsset.dateTaken),
       modificationTime = mapModificationTime(videoAsset.dateModified),
       duration = mapDuration(videoAsset.duration),
@@ -101,12 +114,19 @@ class AssetMapper(private val contentResolver: ContentResolver) {
   }
 
   fun toMetadata(fileAsset: MediaStoreFile): AssetMetadata {
+    val mediaStoreWidth = fileAsset.width
+    val mediaStoreHeight = fileAsset.height
+    val (width, height) = if (mediaStoreWidth != null && mediaStoreHeight != null) {
+      maybeRotateAssetSize(mediaStoreWidth, mediaStoreHeight, fileAsset.orientation ?: 0)
+    } else {
+      mediaStoreWidth to mediaStoreHeight
+    }
     return AssetMetadata(
       id = extractAssetContentUri(fileAsset.id, fileAsset.mediaType),
       mediaType = fileAsset.mediaType?.let { MediaType.fromMediaStoreValue(it) }
         ?: MediaType.UNKNOWN,
-      width = fileAsset.width,
-      height = fileAsset.height,
+      width = width,
+      height = height,
       creationTime = mapCreationTime(fileAsset.dateTaken),
       modificationTime = mapModificationTime(fileAsset.dateModified),
       duration = mapDuration(fileAsset.duration),

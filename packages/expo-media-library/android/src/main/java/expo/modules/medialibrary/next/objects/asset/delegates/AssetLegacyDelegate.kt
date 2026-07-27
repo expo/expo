@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.annotation.DeprecatedSinceApi
 import androidx.exifinterface.media.ExifInterface
+import expo.modules.medialibrary.assets.maybeRotateAssetSize
 import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.exceptions.ContentResolverNotObtainedException
@@ -14,6 +15,7 @@ import expo.modules.medialibrary.next.extensions.resolver.deleteBy
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDisplayName
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDuration
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetHeight
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetOrientation
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetWidth
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
 import expo.modules.medialibrary.next.extensions.resolver.queryAssetDateModified
@@ -88,21 +90,33 @@ class AssetLegacyDelegate(
     contentResolver.queryAssetDisplayName(contentUri)
       ?: throw AssetPropertyNotFoundException("Filename")
 
-  override suspend fun getHeight(): Int {
-    val mediaStoreHeight = contentResolver.queryAssetHeight(contentUri)
-    return assetMapper.mapHeight(mediaStoreHeight, contentUri)
-      ?: throw AssetPropertyNotFoundException("Height")
+  // MediaStore's WIDTH/HEIGHT columns hold the raw pixel-buffer size. Assets
+  // with ORIENTATION 90 or 270 are displayed with the two swapped, so both
+  // columns are needed to resolve either display dimension.
+  private suspend fun queryDisplaySize(): Pair<Int?, Int?> {
+    val width = assetMapper.mapWidth(contentResolver.queryAssetWidth(contentUri), contentUri)
+    val height = assetMapper.mapHeight(contentResolver.queryAssetHeight(contentUri), contentUri)
+    if (width == null || height == null) {
+      return width to height
+    }
+    val orientation = contentResolver.queryAssetOrientation(contentUri) ?: 0
+    return maybeRotateAssetSize(width, height, orientation)
   }
 
-  override suspend fun getWidth(): Int {
-    val mediaStoreWidth = contentResolver.queryAssetWidth(contentUri)
-    return assetMapper.mapWidth(mediaStoreWidth, contentUri)
-      ?: throw AssetPropertyNotFoundException("Width")
-  }
+  override suspend fun getHeight(): Int =
+    queryDisplaySize().second ?: throw AssetPropertyNotFoundException("Height")
+
+  override suspend fun getWidth(): Int =
+    queryDisplaySize().first ?: throw AssetPropertyNotFoundException("Width")
 
   override suspend fun getShape(): Shape? {
-    val width = getWidth()
-    val height = getHeight()
+    val (width, height) = queryDisplaySize()
+    if (width == null) {
+      throw AssetPropertyNotFoundException("Width")
+    }
+    if (height == null) {
+      throw AssetPropertyNotFoundException("Height")
+    }
     return Shape(width, height).takeIf { width > 0 && height > 0 }
   }
 

@@ -40,6 +40,16 @@ suspend fun ContentResolver.queryAssetWidth(contentUri: Uri): Int? =
 suspend fun ContentResolver.queryAssetHeight(contentUri: Uri): Int? =
   queryOne(contentUri, MediaStore.MediaColumns.HEIGHT, Cursor::getNullableInt)
 
+suspend fun ContentResolver.queryAssetOrientation(contentUri: Uri): Int? =
+  when {
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
+      queryOne(contentUri, MediaStore.MediaColumns.ORIENTATION, Cursor::getNullableInt)
+    // Pre-Q only the images table has an ORIENTATION column.
+    MediaType.fromContentUri(contentUri) == MediaType.IMAGE ->
+      queryOne(contentUri, MediaStore.Images.ImageColumns.ORIENTATION, Cursor::getNullableInt)
+    else -> null
+  }
+
 suspend fun ContentResolver.queryAssetData(contentUri: Uri): String? =
   queryOne(contentUri, MediaStore.MediaColumns.DATA, Cursor::getNullableString)
 
