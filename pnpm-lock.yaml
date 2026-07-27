@@ -1144,9 +1144,6 @@ importers:
       regl:
         specifier: ^1.3.0
         version: 1.7.0
-      start:
-        specifier: ^5.1.0
-        version: 5.1.0
       test-suite:
         specifier: workspace:*
         version: link:../test-suite
@@ -14374,11 +14371,6 @@ packages:
   standard-navigation@0.0.5:
     resolution: {integrity: sha512-YAmzwAiiQVocZxO/VGPFiQHcu5pKiz09QIGC0MK6aRMoa3E0QkoTQgcqJr7ZZ3OMiNhu4DkaGElFI5htjOIDbw==}
 
-  start@5.1.0:
-    resolution: {integrity: sha512-lirwWQmvBC65bnxU3HzKx5m7vfZJZTx/FrKyPWbtobcvujGbinQQRrNodtcgkp4mTZ00umzDeg7lraN351l0aA==}
-    engines: {node: '>=4'}
-    deprecated: Deprecated in favor of https://github.com/deepsweet/start
-
   statuses@1.5.0:
     resolution: {integrity: sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==}
     engines: {node: '>= 0.6'}
@@ -24186,8 +24178,6 @@ snapshots:
       type-fest: 0.7.1
 
   standard-navigation@0.0.5: {}
-
-  start@5.1.0: {}
 
   statuses@1.5.0: {}
 
