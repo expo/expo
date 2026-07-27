@@ -43,7 +43,7 @@
     "glob": "^13.0.0",
     "inquirer": "^8.2.2",
     "jsondiffpatch": "^0.4.1",
-    "junit-report-builder": "^1.3.0",
+    "junit-report-builder": "^5.1.2",
     "lan-network": "^0.1.7",
     "lodash": "^4.17.23",
     "marked": "^1.1.0",

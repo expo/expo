@@ -43,7 +43,7 @@
     "@shopify/flash-list": "2.0.2",
     "@shopify/react-native-skia": "2.6.2",
     "canvaskit-wasm": "^0.40.0",
-    "date-format": "^2.0.0",
+    "date-fns": "^4.4.0",
     "deep-object-diff": "^1.1.9",
     "expo": "workspace:*",
     "expo-2d-context": "^0.0.4",

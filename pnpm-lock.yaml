@@ -835,9 +835,9 @@ importers:
       canvaskit-wasm:
         specifier: ^0.40.0
         version: 0.40.0
-      date-format:
-        specifier: ^2.0.0
-        version: 2.1.0
+      date-fns:
+        specifier: ^4.4.0
+        version: 4.4.0
       deep-object-diff:
         specifier: ^1.1.9
         version: 1.1.9
@@ -1770,7 +1770,7 @@ importers:
         version: 5.13.0
       lodash:
         specifier: ^4.17.19
-        version: 4.17.23
+        version: 4.18.1
       path:
         specifier: ^0.12.7
         version: 0.12.7
@@ -6247,7 +6247,7 @@ importers:
         version: 2.2.3
       lodash:
         specifier: ^4.17.19
-        version: 4.17.23
+        version: 4.18.1
       react-native:
         specifier: 0.86.0
         version: 0.86.0(@babel/core@7.29.0)(@react-native/jest-preset@0.86.0(@babel/core@7.29.0)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.0))(@types/react@19.2.14)(react@19.2.3)
@@ -6488,14 +6488,14 @@ importers:
         specifier: ^0.4.1
         version: 0.4.1
       junit-report-builder:
-        specifier: ^1.3.0
-        version: 1.3.3
+        specifier: ^5.1.2
+        version: 5.1.2
       lan-network:
         specifier: ^0.1.7
         version: 0.1.7
       lodash:
         specifier: ^4.17.23
-        version: 4.17.23
+        version: 4.18.1
       marked:
         specifier: ^1.1.0
         version: 1.2.9
@@ -10677,14 +10677,8 @@ packages:
     resolution: {integrity: sha512-BS8PfmtDGnrgYdOonGZQdLZslWIeCGFP9tpan0hi1Co2Zr2NKADsvGYA8XxuG/4UWgJ6Cjtv+YJnB6MM69QGlQ==}
     engines: {node: '>= 0.4'}
 
-  date-format@0.0.2:
-    resolution: {integrity: sha512-M4obuJx8jU5T91lcbwi0+QPNVaWOY1DQYz5xUuKYWO93osVzB2ZPqyDUc5T+mDjbA1X8VOb4JDZ+8r2MrSOp7Q==}
-    deprecated: 0.x is no longer supported. Please upgrade to 4.x or higher.
-
-  date-format@2.1.0:
-    resolution: {integrity: sha512-bYQuGLeFxhkxNOF3rcMtiZxvCBAquGzZm6oWA1oZ0g2THUzivaRhv8uOhdr19LmoobSOLoIAxeUK2RdbM8IFTA==}
-    engines: {node: '>=4.0'}
-    deprecated: 2.x is no longer supported. Please upgrade to 4.x or higher.
+  date-fns@4.4.0:
+    resolution: {integrity: sha512-+1UMbeh68lH1SegH83CGWwpb6OHHbpSgr3+s5Eww5M4CAgswBpoWS0AjTOfEJ33HiYKz1hdj/KTFprzXHmq/6w==}
 
   debug@2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -12459,8 +12453,9 @@ packages:
     resolution: {integrity: sha512-ZZow9HBI5O6EPgSJLUb8n2NKgmVWTwCvHGwFuJlMjvLFqlGG6pjirPhtdsseaLZjSibD8eegzmYpUZwoIlj2cQ==}
     engines: {node: '>=4.0'}
 
-  junit-report-builder@1.3.3:
-    resolution: {integrity: sha512-75bwaXjP/3ogyzOSkkcshXGG7z74edkJjgTZlJGAyzxlOHaguexM3VLG6JyD9ZBF8mlpgsUPB1sIWU4LISgeJw==}
+  junit-report-builder@5.1.2:
+    resolution: {integrity: sha512-HzvLbEQcoqN2LmGnloShxu2hLadi/rkOTU3zt61UeMICLS0wGDvbf8neIi6+bGkxMnAePIcFMFnbqV+r6YvwxA==}
+    engines: {node: '>=16'}
 
   keyv@4.5.4:
     resolution: {integrity: sha512-oxVHkHR/EJf2CNXnWxRLW6mg7JyCCUcG0DtEGmL2ctUo1PNTin1PUil+r/+4r5MpVgC/fn1kjsx7mjSujKqIpw==}
@@ -12652,8 +12647,8 @@ packages:
   lodash.throttle@4.1.1:
     resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
 
-  lodash@4.17.23:
-    resolution: {integrity: sha512-LgVTMpQtIopCi79SJeDiP0TfWi5CNEc/L/aRdTh3yIvmZXTnheWpKjSZhnvMl8iXbC1tFg9gdHHDMLoV7CnG+w==}
+  lodash@4.18.1:
+    resolution: {integrity: sha512-dMInicTPVE8d1e5otfwmmjlxkZoUpiVLwyeTdUsi/Caj/gfzzblBcCE5sRHV/AsjuCmxWrte2TNGSYuCeCq+0Q==}
 
   log-symbols@2.2.0:
     resolution: {integrity: sha512-VeIAFslyIerEJLXHziedo2basKbMKtTw3vfn5IzG0XTjhAVEJyNHnL2p7vc+wBDSdQuUpNw3M2u6xb9QsAY5Eg==}
@@ -12726,6 +12721,10 @@ packages:
   make-dir@2.1.0:
     resolution: {integrity: sha512-LS9X+dc8KLxXCb8dni79fLIIUA5VyZoyjSMCwTluaXA0o27cCK0bhXkpgw+sTXVpPy/lSO57ilRixqk0vDmtRA==}
     engines: {node: '>=6'}
+
+  make-dir@3.1.0:
+    resolution: {integrity: sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw==}
+    engines: {node: '>=8'}
 
   make-dir@4.0.0:
     resolution: {integrity: sha512-hXdUTZYIVOt1Ex//jAQi+wTZZpUpwBj/0QsOzqegb3rGMMeJiSEu5xLHnYfBrRV4RH2+OCSOO95Is/7x1WJ4bw==}
@@ -13004,10 +13003,6 @@ packages:
   mkdirp@0.3.0:
     resolution: {integrity: sha512-OHsdUcVAQ6pOtg5JYWpCBo9W/GySVuwvP9hueRMW7UqshC0tbfzLv8wjySTPm3tfUZ/21CE9E1pJagOA91Pxew==}
     deprecated: Legacy versions of mkdirp are no longer supported. Please update to mkdirp 1.x. (Note that the API surface has changed to use Promises in 1.x.)
-
-  mkdirp@0.5.6:
-    resolution: {integrity: sha512-FP+p8RB8OWpF3YZBCrP5gtADmtXApB5AMLn+vdyA+PyxCjrCs00mjyUozssO33cwDeT3wNGdLxJ5M//YqtHAJw==}
-    hasBin: true
 
   mkdirp@1.0.4:
     resolution: {integrity: sha512-vVqVZQyf3WLx2Shd0qJ9xuvqgAyKPLAiqITEtqW0oIUjzo3PePDd6fW9iFz30ef7Ysp/oiWqbhszeGWW2T6Gzw==}
@@ -15326,10 +15321,6 @@ packages:
   xml2js@0.6.0:
     resolution: {integrity: sha512-eLTh0kA8uHceqesPqSE+VvO1CDDJWMwlQfB6LuN6T8w6MaDJ8Txm8P7s5cHD0miF0V+GGTZrDQfxPZQVsur33w==}
     engines: {node: '>=4.0.0'}
-
-  xmlbuilder@10.1.1:
-    resolution: {integrity: sha512-OyzrcFLL/nb6fMGHbiRDuPup9ljBycsdCypwuyg5AAHvyWzGfChJpCXMG88AGTIMFhGZ9RccFN1e6lhg3hkwKg==}
-    engines: {node: '>=4.0'}
 
   xmlbuilder@11.0.1:
     resolution: {integrity: sha512-fDlsI/kFEx7gLvbecc0/ohLG50fugQp8ryHzMTuW9vSa1GJ0XYWKnhsUx7oie3G98+r56aTQIUB4kht42R3JvA==}
@@ -19827,9 +19818,7 @@ snapshots:
       es-errors: 1.3.0
       is-data-view: 1.0.2
 
-  date-format@0.0.2: {}
-
-  date-format@2.1.0: {}
+  date-fns@4.4.0: {}
 
   debug@2.6.9:
     dependencies:
@@ -20283,7 +20272,7 @@ snapshots:
   eslint-plugin-lodash@7.4.0(eslint@9.39.4(jiti@1.21.7)):
     dependencies:
       eslint: 9.39.4(jiti@1.21.7)
-      lodash: 4.17.23
+      lodash: 4.18.1
 
   eslint-plugin-n@17.24.0(eslint@9.39.4(jiti@1.21.7))(typescript@6.0.3):
     dependencies:
@@ -21288,7 +21277,7 @@ snapshots:
       cli-cursor: 3.1.0
       cli-width: 3.0.0
       figures: 3.2.0
-      lodash: 4.17.23
+      lodash: 4.18.1
       mute-stream: 0.0.8
       ora: 5.4.1
       run-async: 2.4.1
@@ -22033,7 +22022,7 @@ snapshots:
       '@types/lodash': 4.17.24
       is-glob: 4.0.3
       js-yaml: 4.1.1
-      lodash: 4.17.23
+      lodash: 4.18.1
       minimist: 1.2.8
       prettier: 3.8.3
       tinyglobby: 0.2.15
@@ -22076,12 +22065,11 @@ snapshots:
       object.assign: 4.1.7
       object.values: 1.2.1
 
-  junit-report-builder@1.3.3:
+  junit-report-builder@5.1.2:
     dependencies:
-      date-format: 0.0.2
-      lodash: 4.17.23
-      mkdirp: 0.5.6
-      xmlbuilder: 10.1.1
+      lodash: 4.18.1
+      make-dir: 3.1.0
+      xmlbuilder: 15.1.1
 
   keyv@4.5.4:
     dependencies:
@@ -22249,7 +22237,7 @@ snapshots:
 
   lodash.throttle@4.1.1: {}
 
-  lodash@4.17.23: {}
+  lodash@4.18.1: {}
 
   log-symbols@2.2.0:
     dependencies:
@@ -22309,6 +22297,10 @@ snapshots:
     dependencies:
       pify: 4.0.1
       semver: 5.7.2
+
+  make-dir@3.1.0:
+    dependencies:
+      semver: 6.3.1
 
   make-dir@4.0.0:
     dependencies:
@@ -22679,10 +22671,6 @@ snapshots:
   mk-dirs@1.0.0: {}
 
   mkdirp@0.3.0: {}
-
-  mkdirp@0.5.6:
-    dependencies:
-      minimist: 1.2.8
 
   mkdirp@1.0.4: {}
 
@@ -24815,61 +24803,61 @@ snapshots:
 
   victory-area@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
 
   victory-axis@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-bar@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
 
   victory-box-plot@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
 
   victory-brush-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
 
   victory-brush-line@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
 
   victory-candlestick@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-canvas@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-bar: 37.3.6(react@19.2.3)
       victory-core: 37.3.6(react@19.2.3)
 
   victory-chart@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-axis: 37.3.6(react@19.2.3)
@@ -24879,14 +24867,14 @@ snapshots:
 
   victory-core@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-vendor: 37.3.6
 
   victory-create-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-brush-container: 37.3.6(react@19.2.3)
       victory-core: 37.3.6(react@19.2.3)
@@ -24897,19 +24885,19 @@ snapshots:
 
   victory-cursor-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-errorbar@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-group@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
@@ -24917,7 +24905,7 @@ snapshots:
 
   victory-histogram@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-bar: 37.3.6(react@19.2.3)
@@ -24926,13 +24914,13 @@ snapshots:
 
   victory-legend@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-line@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
@@ -24940,7 +24928,7 @@ snapshots:
   victory-native@37.3.6(react@19.2.3):
     dependencies:
       hoist-non-react-statics: 3.3.2
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory: 37.3.6(react@19.2.3)
@@ -24973,40 +24961,40 @@ snapshots:
 
   victory-pie@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
       victory-vendor: 37.3.6
 
   victory-polar-axis@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-scatter@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-selection-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-shared-events@37.3.6(react@19.2.3):
     dependencies:
       json-stringify-safe: 5.0.1
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
 
   victory-stack@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
@@ -25014,7 +25002,7 @@ snapshots:
 
   victory-tooltip@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
@@ -25038,7 +25026,7 @@ snapshots:
   victory-voronoi-container@37.3.6(react@19.2.3):
     dependencies:
       delaunay-find: 0.0.6
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       react-fast-compare: 3.2.2
       victory-core: 37.3.6(react@19.2.3)
@@ -25047,13 +25035,13 @@ snapshots:
   victory-voronoi@37.3.6(react@19.2.3):
     dependencies:
       d3-voronoi: 1.1.4
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
   victory-zoom-container@37.3.6(react@19.2.3):
     dependencies:
-      lodash: 4.17.23
+      lodash: 4.18.1
       react: 19.2.3
       victory-core: 37.3.6(react@19.2.3)
 
@@ -25297,8 +25285,6 @@ snapshots:
     dependencies:
       sax: 1.6.0
       xmlbuilder: 11.0.1
-
-  xmlbuilder@10.1.1: {}
 
   xmlbuilder@11.0.1: {}
 
