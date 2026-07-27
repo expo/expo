@@ -6,7 +6,7 @@ description: Learn how to add an optional EAS Observe integration to a third-par
 
 import { Step } from '~/ui/components/Step';
 
-Third-party packages can integrate with EAS Observe to send events that help developers identify performance and usage issues, especially problems that are difficult to detect from application code alone.
+Third-party packages can integrate with EAS Observe to send events that help developers identify performance and usage issues. These are often problems that are difficult to detect from application code alone.
 
 Events should describe actionable issues that developers can fix. For example, a package might report:
 
@@ -23,7 +23,7 @@ Add `expo-observe` as an optional peer dependency so your package continues to w
 ```json package.json
 {
   "peerDependencies": {
-    "expo-observe": ">=56.0.0"
+    "expo-observe": ">={{expoSdkVersion}}"
   },
   "peerDependenciesMeta": {
     "expo-observe": {
@@ -31,7 +31,7 @@ Add `expo-observe` as an optional peer dependency so your package continues to w
     }
   },
   "devDependencies": {
-    "expo-observe": "^56.0.0"
+    "expo-observe": "^{{expoSdkVersion}}"
   }
 }
 ```
