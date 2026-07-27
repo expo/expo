@@ -1,20 +1,20 @@
 ---
-title: Integrate a library with EAS Observe
-sidebar_title: Libraries
-description: Learn how to add an optional EAS Observe integration to a library.
+title: Integrate a third-party package with EAS Observe
+sidebar_title: Third-party
+description: Learn how to add an optional EAS Observe integration to a third-party package.
 ---
 
 import { Step } from '~/ui/components/Step';
 
-Library integrations let Expo and third-party packages emit observability signals when an app opts in through `expo-observe`. Use this pattern when your library can detect performance or usage issues that are hard for app code to measure directly.
+Third-party integrations let packages emit observability signals when an app opts in through `expo-observe`. Use this pattern when your package can detect performance or usage issues that are hard for app code to measure directly.
 
-Good library signals point to an actionable fix. For example, your library can log an image decoded much larger than the screen, a long-running background operation, or a slow native resource load.
+Good signals point to an actionable fix. For example, your package can log an image decoded much larger than the screen, a long-running background operation, or a slow native resource load.
 
 <Step label="1">
 
 ## Choose an actionable signal
 
-Start with a runtime condition that your library understands better than app code. Prefer warnings that help developers fix a problem. Avoid logging normal successful work unless users need that signal in the EAS Observe dashboard.
+Start with a runtime condition that your package understands better than app code. Prefer warnings that help developers fix a problem. Avoid logging normal successful work unless users need that signal in the EAS Observe dashboard.
 
 The `expo-image` integration logs an event when an image decodes to far more pixels than the device screen can display. The event points to a concrete fix: constrain the image decode size with `maxWidth` and `maxHeight`.
 
@@ -24,14 +24,14 @@ The `expo-image` integration logs an event when an image decodes to far more pix
 
 ## Define an opt-in integration key
 
-Disable the integration by default. Use the package name as the integration key and keep any options under that key. Document the app-side opt-in as part of your library integration:
+Disable the integration by default. Use the package name as the integration key and keep any options under that key. Document the app-side opt-in as part of your integration:
 
 ```tsx app/_layout.tsx
 import { Observe } from 'expo-observe';
 
 Observe.configure({
   integrations: {
-    'your-library': true,
+    'your-package': true,
   },
 });
 ```
@@ -41,21 +41,21 @@ Use object configuration when the integration needs tuning:
 ```tsx app/_layout.tsx
 Observe.configure({
   integrations: {
-    'your-library': {
+    'your-package': {
       threshold: 1.5,
     },
   },
 });
 ```
 
-If your library ships TypeScript types, register the integration key with `expo-observe` through declaration merging:
+If your package ships TypeScript types, register the integration key with `expo-observe` through declaration merging:
 
 ```ts
-import type { YourLibraryIntegrationConfig } from './observe';
+import type { YourPackageIntegrationConfig } from './observe';
 
 declare module 'expo-observe' {
   interface ObserveIntegrationsConfig {
-    'your-library'?: boolean | YourLibraryIntegrationConfig;
+    'your-package'?: boolean | YourPackageIntegrationConfig;
   }
 }
 ```
@@ -68,7 +68,7 @@ Place the augmentation in a file that is part of your package's public type grap
 
 ## Keep the dependency optional
 
-Keep the library working when the host app does not install `expo-observe` or `expo-app-metrics`. Resolve Observe and App Metrics with optional native-module lookups and return early when either module is missing:
+Keep the package working when the host app does not install `expo-observe` or `expo-app-metrics`. Resolve Observe and App Metrics with optional native-module lookups and return early when either module is missing:
 
 ```ts
 import { requireOptionalNativeModule } from 'expo';
@@ -91,7 +91,7 @@ Add `expo-observe` and `expo-app-metrics` as development dependencies for tests 
 
 ## Initialize once and react to configuration
 
-Initialize the integration from the library's entry point after guarding environments that cannot run client-side code. Keep initialization idempotent.
+Initialize the integration from the package's entry point after guarding environments that cannot run client-side code. Keep initialization idempotent.
 
 Read the current integrations with `getIntegrations()`. Then subscribe to Observe's `configure` event so later calls to `Observe.configure()` can enable, disable, or retune the integration:
 
@@ -122,10 +122,10 @@ If enabling the integration creates listeners or native subscriptions, remove th
 
 ## Emit stable events
 
-Log library events with `Observe.logEvent()` or the underlying App Metrics module. Use lowercase, dot-separated names prefixed by the package name:
+Log events with `Observe.logEvent()` or the underlying App Metrics module. Use lowercase, dot-separated names prefixed by the package name:
 
 ```ts
-appMetrics.logEvent('your-library.expensive-operation', {
+appMetrics.logEvent('your-package.expensive-operation', {
   displayName: 'Expensive operation detected',
   severity: 'warn',
   body: 'The operation exceeded the configured threshold.',
@@ -142,7 +142,7 @@ Follow the same event conventions as app code:
 - Use `displayName` and `body` to explain what happened and how to fix it.
 - Use attributes for values users will filter or inspect.
 - Do not include Personally Identifiable Information (PII) in event names, bodies, or attributes.
-- Treat reporting as best-effort. Catch logging errors so observability never breaks the library's main behavior.
+- Treat reporting as best-effort. Catch logging errors so observability never breaks the package's main behavior.
 
 </Step>
 
