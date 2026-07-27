@@ -1,8 +1,8 @@
 import spawnAsync from '@expo/spawn-async';
 
-import mockNpmExplain from './fixtures/npm-explain.json';
 import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import { getDeepDependenciesWarningAsync } from '../explainDependencies';
+import mockNpmExplain from './fixtures/npm-explain.json';
 
 const mockNpmExplainJsonString = JSON.stringify(mockNpmExplain);
 

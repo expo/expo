@@ -200,7 +200,7 @@ export type ImperativeRouter = {
    * */
   replace: (href: Href, options?: NavigationOptions) => void;
   /**
-   * Navigates to the a stack lower than the current screen using the provided count if possible, otherwise 1.
+   * Navigates to a stack lower than the current screen using the provided count if possible, otherwise 1.
    *
    * If the current screen is the only route, it will dismiss the entire stack.
    */

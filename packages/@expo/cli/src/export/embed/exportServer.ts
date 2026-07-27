@@ -19,6 +19,7 @@ import type { MetroBundlerDevServer } from '../../start/server/metro/MetroBundle
 import { removeAsync } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
+import { debugEvent } from '../events';
 import { exportApiRoutesStandaloneAsync } from '../exportStaticAsync';
 import { copyPublicFolderAsync, getPublicFolderPath } from '../publicFolder';
 import type { ExportAssetMap } from '../saveAssets';
@@ -30,8 +31,6 @@ import {
   logMetroErrorInXcode,
   warnInXcode,
 } from './xcodeCompilerLogger';
-
-const debug = require('debug')('expo:export:server');
 
 type ServerDeploymentResults = {
   url: string;
@@ -139,7 +138,7 @@ export async function exportStandaloneServerAsync(
   }
   Log.log('Writing generated server URL to app.json');
 
-  // NOTE: Is is it possible to assert that the config needs to be modifiable before building the app?
+  // NOTE: Is it possible to assert that the config needs to be modifiable before building the app?
   const modification = await modifyConfigAsync(
     projectRoot,
     {
@@ -166,7 +165,7 @@ export async function exportStandaloneServerAsync(
 async function dumpDeploymentLogs(projectRoot: string, logs: string, name = 'deploy') {
   const outputPath = path.join(projectRoot, `.expo/logs/${name}.log`);
   await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
-  debug('Dumping server deployment logs to: ' + outputPath);
+  debugEvent('server:dump_logs', { outputPath });
   await fs.promises.writeFile(outputPath, logs);
   return outputPath;
 }
@@ -219,7 +218,7 @@ async function runServerDeployCommandAsync(
       );
       return false;
     }
-    debug('Found eas-cli:', globalBin);
+    debugEvent('server:found_eas_cli', { globalBin });
   }
 
   let json: any;
@@ -252,7 +251,7 @@ async function runServerDeployCommandAsync(
         spawnOptions
       );
 
-      debug('Server deployment stdout:', results.stdout);
+      debugEvent('server:deploy_stdout', { stdout: results.stdout });
 
       // Send stderr to stderr. stdout is parsed as JSON.
       if (results.stderr) {
@@ -389,11 +388,10 @@ async function tryRemovingGeneratedOriginAsync(projectRoot: string, exp: ExpoCon
     return;
   }
   if (exp.extra?.router?.generatedOrigin == null) {
-    debug('No generated origin needs removing');
     return;
   }
 
-  const modification = await modifyConfigAsync(
+  await modifyConfigAsync(
     projectRoot,
     {
       extra: {
@@ -408,10 +406,4 @@ async function tryRemovingGeneratedOriginAsync(projectRoot: string, exp: ExpoCon
       skipSDKVersionRequirement: true,
     }
   );
-
-  if (modification.type !== 'success') {
-    debug('Could not remove generated origin from manifest');
-  } else {
-    debug('Generated origin has been removed from manifest');
-  }
 }

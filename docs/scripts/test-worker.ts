@@ -297,6 +297,37 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   console.log('✓ Direct pair index.md request serves content correctly');
 }
 
+async function testDeletedPageRedirectsAsync(): Promise<void> {
+  console.log('\n--- Testing deleted development build page redirects ---');
+
+  const easRedirect = await fetch(`${BASE_URL}/develop/development-builds/create-a-build`, {
+    redirect: 'manual',
+  });
+  const easLocation = easRedirect.headers.get('location') ?? '';
+
+  if (
+    easRedirect.status !== 301 ||
+    !easLocation.includes('?buildenv=build-with-eas#create-a-development-build-with-eas')
+  ) {
+    throw new Error(
+      `Expected 301 to the introduction EAS path, got: HTTP ${easRedirect.status} -> ${easLocation}`
+    );
+  }
+  console.log('✓ create-a-build redirects to the introduction EAS path');
+
+  const goRedirect = await fetch(`${BASE_URL}/develop/development-builds/expo-go-to-dev-build`, {
+    redirect: 'manual',
+  });
+  const goLocation = goRedirect.headers.get('location') ?? '';
+
+  if (goRedirect.status !== 301 || !goLocation.includes('#build-locally')) {
+    throw new Error(
+      `Expected 301 to the introduction build locally section, got: HTTP ${goRedirect.status} -> ${goLocation}`
+    );
+  }
+  console.log('✓ expo-go-to-dev-build redirects to the introduction build locally section');
+}
+
 async function testHtmlNotFoundAsync(): Promise<void> {
   console.log('\n--- Testing HTML 404 responses ---');
 
@@ -320,6 +351,7 @@ async function mainAsync(): Promise<void> {
     await testMarkdownContentNegotiationAsync();
     await testMarkdownNotFoundAsync();
     await testUpgradePairNegotiationAsync();
+    await testDeletedPageRedirectsAsync();
     await testHtmlNotFoundAsync();
 
     console.log('\n=== All tests passed! ===');

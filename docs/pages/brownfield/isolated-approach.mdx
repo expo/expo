@@ -215,7 +215,7 @@ With the artifacts built, you can now integrate them into your existing native a
 <Tab label="Android">
 
 <Step label="1">
-#### Add the Maven dependency
+### Add the Maven dependency
 
 Start by adding the dependency to your app's **build.gradle.kts**. The group, artifact name, and version should match your config plugin settings:
 
@@ -240,7 +240,7 @@ dependencyResolutionManagement {
 </Step>
 
 <Step label="2">
-#### Show a React Native screen
+### Show a React Native screen
 
 Create an activity that extends `BrownfieldActivity` and use the `showReactNativeFragment()` extension:
 
@@ -281,7 +281,7 @@ startActivity(Intent(this, ExpoActivity::class.java))
 <Tab label="iOS">
 
 <Step label="1">
-#### Add the artifacts to your project
+### Add the artifacts to your project
 
 The integration steps depend on whether you built XCFrameworks or a Swift Package.
 
@@ -312,7 +312,7 @@ To support both `--debug` and `--release`, point your host app at the matching p
 </Step>
 
 <Step label="2">
-#### Initialize React Native
+### Initialize React Native
 
 Call `ReactNativeHostManager.shared.initialize()` early in your app's lifecycle. A good place is your `AppDelegate`:
 
@@ -335,7 +335,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 </Step>
 
 <Step label="3">
-#### Present a React Native view
+### Present a React Native view
 
 <Tabs>
 <Tab label="UIKit">

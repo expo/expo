@@ -1,16 +1,12 @@
-import { Text, View, StyleSheet, Platform } from "react-native";
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
+import { Text, View, StyleSheet, Platform } from 'react-native';
 
 interface TableProps {
   children: ReactNode;
 }
 
 export function Table({ children }: TableProps) {
-  return (
-    <View style={styles.tableContainer}>
-      {children}
-    </View>
-  );
+  return <View style={styles.tableContainer}>{children}</View>;
 }
 
 interface TableRowProps {

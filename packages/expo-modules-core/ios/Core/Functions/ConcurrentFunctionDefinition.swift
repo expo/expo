@@ -56,16 +56,8 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
   var requiresMainActor: Bool = false
 
   @JavaScriptActor
-  func call(_ appContext: AppContext, this: JavaScriptValue, arguments: consuming JavaScriptValuesBuffer) async throws -> JavaScriptValue {
+  private func call(_ appContext: AppContext, argumentsTuple: sending Args) async throws -> JavaScriptValue {
     do {
-      try validateArgumentsNumber(function: self, received: arguments.count)
-
-      // Arguments must be converted on the JS thread, before we jump to another thread.
-      let nativeArguments = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
-
-      guard let argumentsTuple: Args = try Conversions.toTuple(nativeArguments) else {
-        throw ArgumentConversionException()
-      }
       // Safe to mark as nonisolated(unsafe) — the tuple contains fully converted native values
       // with no references back to JS objects, so it can safely cross the actor boundary.
       nonisolated(unsafe) let nonisolatedArgumentsTuple = argumentsTuple
@@ -90,15 +82,53 @@ public class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>: AnyCo
 
   @JavaScriptActor
   func build(appContext: AppContext) throws -> JavaScriptObject {
+    // The closure is the synchronous decode phase of the async host function: it runs within the
+    // host call, while the borrowed `this` and the consumed arguments buffer are still valid,
+    // and returns the async body. Only the converted native tuple crosses the asynchronous
+    // boundary, so a call abandoned on reload leaves no JSI-owned values in its task frame.
+    // Errors thrown here (including `AppContextLost`) reject the returned promise.
     return try appContext.runtime.createAsyncFunction(name) { [weak appContext, self] this, arguments in
       guard let appContext else {
         throw Exceptions.AppContextLost()
       }
-      return try await self.call(appContext, this: this, arguments: arguments)
+
+      let argumentsTuple: Args
+
+      do {
+        // Promote the borrowed `this` only when the function converts it to its owner; the owning
+        // value stays within the decode phase.
+        let owner: JavaScriptValue = self.takesOwner ? this.copied(in: try appContext.runtime) : .undefined
+        argumentsTuple = try self.decodeArguments(appContext: appContext, this: owner, arguments: arguments)
+      } catch let error as Exception {
+        throw FunctionCallException(self.name).causedBy(error)
+      } catch {
+        throw UnexpectedException(error)
+      }
+
+      return {
+        return try await self.call(appContext, argumentsTuple: argumentsTuple)
+      }
     }.asObject()
   }
 
   // MARK: - Privates
+
+  @JavaScriptActor
+  private func decodeArguments(
+    appContext: AppContext,
+    this: JavaScriptValue,
+    arguments: borrowing JavaScriptValuesBuffer
+  ) throws -> Args {
+    try validateArgumentsNumber(function: self, received: arguments.count)
+
+    let nativeArguments = try toNativeClosureArguments(converter: appContext.converter, fn: self, this: this, arguments: arguments)
+
+    guard let argumentsTuple: Args = try Conversions.toTuple(nativeArguments) else {
+      throw ArgumentConversionException()
+    }
+
+    return argumentsTuple
+  }
 
   @MainActor
   private func callBodyOnMainActor(_ args: sending Args) async throws -> sending ReturnType {

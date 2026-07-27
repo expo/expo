@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
+
 ## 56.0.3 — 2026-05-15
 
 ### 💡 Others

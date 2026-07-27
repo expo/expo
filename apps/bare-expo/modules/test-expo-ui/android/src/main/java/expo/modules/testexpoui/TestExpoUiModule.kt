@@ -11,8 +11,8 @@ class TestExpoUiModule : Module() {
     Name("TestExpoUi")
 
     OnCreate {
-      ModifierRegistry.register("customBorder") { map, _, _, _ ->
-        customBorderModifier(recordFromMap<CustomBorderParams>(map))
+      ModifierRegistry.register("customBorder") { map, _, converterContext, _ ->
+        customBorderModifier(recordFromMap<CustomBorderParams>(map, converterContext))
       }
     }
 

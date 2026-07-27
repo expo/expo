@@ -103,3 +103,15 @@ test('does not rewrite /eas/** paths that are canonical (workflows, hosting, met
   expect(getRedirectPath('/eas/hosting/introduction/')).toEqual('/eas/hosting/introduction/');
   expect(getRedirectPath('/eas/metadata/')).toEqual('/eas/metadata/');
 });
+
+test('redirects deleted create-a-build page to the introduction EAS path', () => {
+  expect(getRedirectPath('/develop/development-builds/create-a-build/')).toEqual(
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas'
+  );
+});
+
+test('redirects deleted expo-go-to-dev-build page to the introduction build locally section', () => {
+  expect(getRedirectPath('/develop/development-builds/expo-go-to-dev-build/')).toEqual(
+    '/develop/development-builds/introduction/#build-locally'
+  );
+});

@@ -149,7 +149,7 @@ internal class OrientationAVPlayerViewController: AVPlayerViewController, AVPlay
     guard let deviceOrientationMask = UIDevice.current.orientation.toInterfaceOrientationMask(), isFullscreen else {
       return
     }
-    //  IPhones generally don't support portraitUpsideDown, in that case we never want to exit, becasuse we would exit into an invalid app UI orientation
+    //  IPhones generally don't support portraitUpsideDown, in that case we never want to exit, because we would exit into an invalid app UI orientation
     let isPortraitUpsideDownAndUnsupported = UIDevice.current.orientation == .portraitUpsideDown && UIDevice.current.userInterfaceIdiom == .phone
     if isPortraitUpsideDownAndUnsupported {
       return

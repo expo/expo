@@ -32,9 +32,13 @@ module.exports = {
     borderColor: {
       'palette-orange3.5': 'hsl(from var(--orange-4) h calc(s - 5) calc(l + 5));',
     },
+    textColor: {
+      'link-on-blue': 'var(--expo-theme-text-link-on-blue)',
+    },
     backgroundImage: {
       'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
       'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
+      'cell-workflows-pattern': "url('/static/images/home/WorkflowsPattern.svg')",
     },
     keyframes: {
       wave: {

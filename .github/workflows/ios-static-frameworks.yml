@@ -48,6 +48,8 @@ jobs:
           TURBO_TEAM: expo
       - name: 🍏 Build iOS Project
         working-directory: ./apps/bare-expo
+        env:
+          EXPO_ROUTER_DISABLE_RN_NAVIGATION_CHECK: 1
         run: |
           set -o pipefail
           jq '.["ios.useFrameworks"] = "static" | .["ios.buildReactNativeFromSource"] = "true"' ios/Podfile.properties.json > temp.json && mv temp.json ios/Podfile.properties.json

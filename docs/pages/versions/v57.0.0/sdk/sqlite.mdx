@@ -95,7 +95,7 @@ You can configure `expo-sqlite` for advanced configurations using its built-in [
 
 To use `expo-sqlite` on web, you need to configure Metro bundler to support **wasm** files and add HTTP headers to allow [`SharedArrayBuffer`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/SharedArrayBuffer) usage.
 
-Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more](/guides/customizing-metro/).
+Add the following configuration to your **metro.config.js**. If you don't have the **metro.config.js** yet, you can run `npx expo customize metro.config.js`. [Learn more about customizing Metro](/guides/customizing-metro/).
 
 <DiffBlock source="/static/diffs/sqlite-web-metro-config.diff" />
 
@@ -526,7 +526,7 @@ The `expo-sqlite` library includes a built-in DevTools inspector plugin that is 
 
 <ContentSpotlight
   alt="SQLite inspector showing a data browser with table rows, edit/delete actions, and a sidebar listing tables"
-  src="/static/images/sdk/sqlite/inspector.png"
+  src="/static/images/sdk/sqlite/inspector.webp"
 />
 
 Alternatively, you can also use the [`drizzle-studio-expo` dev tools plugin](https://github.com/drizzle-team/drizzle-studio-expo) to launch [Drizzle Studio](https://orm.drizzle.team/drizzle-studio/overview), connected to a database in your app, directly from Expo CLI. This plugin can be used with any `expo-sqlite` configuration and does not require [Drizzle ORM](#drizzle-orm). [Learn how to install and use the plugin](https://github.com/drizzle-team/drizzle-studio-expo).

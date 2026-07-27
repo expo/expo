@@ -545,7 +545,7 @@ export type ContainerQuery = {
    */
   groupId?: string;
   /**
-   * Query all the containers that matches ID or an array od IDs.
+   * Query all the containers that matches ID or an array of IDs.
    */
   containerId?: string | string[];
 };

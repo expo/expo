@@ -219,8 +219,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (_appRecord.appLoader.manifest != nil) {
     BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
-    BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
-    [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
+    BOOL forcesRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
+    [EXTextDirectionController setRTLPreferences:supportsRTL :forcesRTL];
   }
   dispatch_async(dispatch_get_main_queue(), ^{
     [self _setBackgroundColor];
@@ -416,8 +416,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
   [self _showOrReconfigureManagedAppSplashScreen:manifest];
   BOOL supportsRTL = [self _readSupportsRTLFromManifest:_appRecord.appLoader.manifest];
-  BOOL forceRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
-  [EXTextDirectionController setRTLPreferences:supportsRTL :forceRTL];
+  BOOL forcesRTL = [self _readForcesRTLFromManifest:_appRecord.appLoader.manifest];
+  [EXTextDirectionController setRTLPreferences:supportsRTL :forcesRTL];
   [self _rebuildHost];
   if (self->_appRecord.appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [self->_appRecord.appManager appLoaderFinished];

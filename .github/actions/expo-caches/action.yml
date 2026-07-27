@@ -171,7 +171,8 @@ runs:
         # ccache tracks these files without any sloppiness issues.
         # - C/C++ source files
         # - Gradle files: see https://github.com/expo/expo/pull/44884
-        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h') }}
+        # - Gradle plugin files: see https://github.com/expo/expo/pull/47455
+        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h', 'packages/expo-modules-autolinking/android/expo-gradle-plugin/**/*.kt', 'packages/expo-modules-autolinking/android/expo-gradle-plugin/**/*.kts', 'packages/expo-modules-core/expo-module-gradle-plugin/**/*.kt', 'packages/expo-modules-core/expo-module-gradle-plugin/**/*.kts', 'packages/expo-updates/expo-updates-gradle-plugin/**/*.kt', 'packages/expo-updates/expo-updates-gradle-plugin/**/*.kts', 'packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/**/*.kt', 'packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/**/*.kts', 'packages/expo-network-addons/expo-network-addons-gradle-plugin/**/*.kt', 'packages/expo-network-addons/expo-network-addons-gradle-plugin/**/*.kts') }}
         restore-keys: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}
 
     - name: 🛠 Setup "REACT_NATIVE_DOWNLOADS_DIR" environment variable

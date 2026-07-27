@@ -173,7 +173,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/color-schemes/': '/develop/user-interface/color-themes/',
   '/development/introduction/': '/develop/development-builds/introduction/',
-  '/development/create-development-builds/': '/develop/development-builds/create-a-build/',
+  '/develop/development-builds/create-a-build/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
+  '/develop/development-builds/expo-go-to-dev-build/':
+    '/develop/development-builds/introduction/#build-locally',
+  '/develop/development-builds/next-steps/': '/develop/development-builds/faq/',
+  '/development/create-development-builds/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/development/use-development-builds/': '/develop/development-builds/use-development-builds/',
   '/development/development-workflows/': '/develop/development-builds/development-workflows/',
   '/workflow/expo-cli/': '/more/expo-cli/',
@@ -181,7 +187,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/debugging/': '/debugging/runtime-issues/',
   '/debugging/runtime-issue/': '/debugging/runtime-issues/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
-  '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
+  '/develop/development-builds/installation/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
 
   // MCP server moved out of the EAS section to the top-level /mcp route
@@ -213,8 +220,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
-  '/development/build/': '/develop/development-builds/create-a-build/',
-  '/development/getting-started/': '/develop/development-builds/create-a-build/',
+  '/development/build/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
+  '/development/getting-started/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/development/troubleshooting/': '/develop/development-builds/introduction/',
   '/development/upgrading/': '/develop/development-builds/introduction/',
   '/development/extensions/': '/develop/development-builds/development-workflows/',
@@ -278,7 +287,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/get-started/': '/get-started/create-a-project/',
   '/guides/detach/': '/archive/glossary/#detach',
   '/workflow/snack/': '/more/glossary-of-terms/#snack',
-  '/eas/submit/': '/submit/introduction/',
+  '/eas/submit/': '/deploy/submit-to-app-stores/',
+  '/submit/introduction/': '/deploy/submit-to-app-stores/',
   '/development/tools/expo-dev-client/':
     '/develop/development-builds/introduction/#what-is-expo-dev-client',
   '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#add-a-custom-font',
@@ -320,14 +330,15 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/expokit/': '/archive/glossary/#expokit',
-  '/submit/classic-builds/': '/submit/introduction/',
+  '/submit/classic-builds/': '/deploy/submit-to-app-stores/',
   '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
   '/technical-specs/latest/': '/technical-specs/expo-updates-1/',
   '/archive/expokit/overview/': '/archive/glossary/',
   '/expokit/overview/': '/archive/glossary/',
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
   '/workflow/already-used-react-native/': '/workflow/overview/',
-  '/development/installation/': '/develop/development-builds/create-a-build/',
+  '/development/installation/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas',
   '/guides/routing-and-navigation/': '/routing/introduction/',
   '/build-reference/custom-build-config/': '/custom-builds/get-started/',
   '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',

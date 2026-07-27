@@ -286,11 +286,10 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     setProperty(name, value: runtime.createFunction(name, function))
   }
 
-  /// Sets a property to an asynchronous host function created from the given closure. The function
-  /// is named after the property and runs the closure when called from JavaScript, returning a
-  /// promise that resolves with its result. Equivalent to
-  /// `setProperty(name, runtime.createAsyncFunction(name) { … })`. The `async` closure body
-  /// selects this overload over the synchronous `setProperty(_:_:)`.
+  /// Sets a property named after it to an asynchronous host function created from the given closure.
+  /// Equivalent to `setProperty(name, runtime.createAsyncFunction(name) { … })`. Returning an
+  /// ``JavaScriptRuntime/AsyncFunctionBody`` from the closure selects this overload over the
+  /// synchronous `setProperty(_:_:)`.
   @JavaScriptActor
   public func setProperty(_ name: String, function: sending @escaping JavaScriptRuntime.AsyncFunctionClosure) {
     guard let runtime else {

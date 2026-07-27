@@ -1110,7 +1110,7 @@ describe('import() prefetching', () => {
     );
   });
 
-  it('distinguishes between import and prefetch dependncies on the same module', () => {
+  it('distinguishes between import and prefetch dependencies on the same module', () => {
     const ast = astFromCode(`
       __prefetchImport("some/async/module");
       import("some/async/module").then(() => {});
@@ -1215,7 +1215,7 @@ describe('Evaluating static arguments', () => {
     );
   });
 
-  it('throws template literals with dyncamic interpolations', () => {
+  it('throws template literals with dynamic interpolations', () => {
     const ast = astFromCode('let foo;require(`left${foo}pad`)');
     try {
       collectDependencies(ast, opts);
@@ -1252,7 +1252,7 @@ describe('Evaluating static arguments', () => {
     );
   });
 
-  it('supports concatenating strings and template literasl', () => {
+  it('supports concatenating strings and template literals', () => {
     const ast = astFromCode('require("foo_" + "bar" + `_baz`)');
     const { dependencies, dependencyMapName } = collectDependencies(ast, opts);
     expect(dependencies).toEqual([
@@ -2011,8 +2011,8 @@ function astFromCode(code: string) {
 
 // Mock transformer for dependencies. Uses a "readable" format
 // require() -> require(id, module name)
-// import() -> require(async moudle name).async(id, module name)
-// prefetch -> require(async moudle name).prefetch(id, module name)
+// import() -> require(async module name).async(id, module name)
+// prefetch -> require(async module name).prefetch(id, module name)
 const MockDependencyTransformer: DependencyTransformer = {
   transformSyncRequire(path: NodePath, dependency: InternalDependency, state: State): void {
     path.replaceWith(

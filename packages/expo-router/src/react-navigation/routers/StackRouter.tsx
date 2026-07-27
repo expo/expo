@@ -157,6 +157,42 @@ export const StackActions = {
   },
 };
 
+export function getRoutesForRouteNames(
+  state: StackNavigationState<ParamListBase>,
+  routeNames: string[],
+  {
+    routeParamList,
+    routeKeyChanges = [],
+    initialRouteName,
+  }: {
+    routeParamList: ParamListBase;
+    routeKeyChanges?: string[];
+    initialRouteName?: string;
+  }
+): Pick<StackNavigationState<ParamListBase>, 'routes' | 'index'> {
+  const routes = state.routes.filter(
+    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
+  );
+
+  if (routes.length === 0) {
+    const fallbackName =
+      initialRouteName !== undefined && routeNames.includes(initialRouteName)
+        ? initialRouteName
+        : routeNames[0]!;
+
+    routes.push({
+      key: `${fallbackName}-${nanoid()}`,
+      name: fallbackName,
+      params: routeParamList[fallbackName],
+    });
+  }
+
+  return {
+    routes,
+    index: Math.min(state.index, routes.length - 1),
+  };
+}
+
 /**
  * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
@@ -254,28 +290,14 @@ export function StackRouter(options: StackRouterOptions) {
     },
 
     getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const routes = state.routes.filter(
-        (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
-      );
-
-      if (routes.length === 0) {
-        const initialRouteName =
-          options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
-            ? options.initialRouteName
-            : routeNames[0]!;
-
-        routes.push({
-          key: `${initialRouteName}-${nanoid()}`,
-          name: initialRouteName,
-          params: routeParamList[initialRouteName],
-        });
-      }
-
       return {
         ...state,
         routeNames,
-        routes,
-        index: Math.min(state.index, routes.length - 1),
+        ...getRoutesForRouteNames(state, routeNames, {
+          routeParamList,
+          routeKeyChanges,
+          initialRouteName: options.initialRouteName,
+        }),
       };
     },
 

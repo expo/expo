@@ -16,7 +16,7 @@ export interface RouterIntegrationStorage {
   pendingActions: PendingAction[];
   renderedScreensIds: Set<string>;
   /**
-   * Wether the app had already recorded the first render of the screen
+   * Whether the app had already recorded the first render of the screen
    */
   hasRecordedInitialTtr: boolean;
   /**

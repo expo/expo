@@ -19,7 +19,7 @@ export function AskPageAITrigger({ onClick, isActive = false }: AskPageAITrigger
           className="justify-center px-2.5"
           onClick={onClick}
           aria-pressed={isActive}
-          aria-label="Ask about this page with AI">
+          aria-label="Ask AI about this page">
           <div className="flex items-center gap-1.5">
             <Star06Icon aria-hidden="true" className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} className="text-palette-purple11">
@@ -45,7 +45,7 @@ export function AskPageAIConfigTrigger({ onClick, isActive = false }: AskPageAIT
           className={mergeClasses('min-h-9 justify-center px-2.5')}
           onClick={onClick}
           aria-pressed={isActive}
-          aria-label="Ask about this configuration page with AI">
+          aria-label="Ask AI about this configuration page">
           <div className="flex items-center gap-2">
             <Star06Icon aria-hidden="true" className="icon-sm text-palette-purple11" />
             <FOOTNOTE crawlable={false} className="text-palette-purple11">

@@ -4,7 +4,7 @@ import GithubSlugger from 'github-slugger';
 import { createRef, type RefObject } from 'react';
 
 import { BASE_HEADING_LEVEL, HeadingType, createHeadingManager } from '~/common/headingManager';
-import { renderWithHeadings } from '~/common/test-utilities';
+import { axe, renderWithHeadings } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
 import { type ScrollContainerHandle } from '~/components/ScrollContainer';
 
@@ -85,6 +85,17 @@ describe('TableOfContents', () => {
       </HeadingsContext.Provider>
     );
     expect(container).toMatchSnapshot();
+  });
+
+  test('has no axe violations', async () => {
+    const headingManager = prepareHeadingManager();
+
+    const { container } = renderWithHeadings(
+      <HeadingsContext.Provider value={headingManager}>
+        <TableOfContents headingManager={headingManager} />
+      </HeadingsContext.Provider>
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   test('activates headings near top, middle, and bottom positions', () => {

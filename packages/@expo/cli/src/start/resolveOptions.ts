@@ -2,9 +2,9 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import { Log } from '../log';
-import { envIsWebcontainer } from '../utils/env';
+import { env, envIsWebcontainer } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
-import { resolvePortAsync } from '../utils/port';
+import { choosePortAsync, resolvePortAsync } from '../utils/port';
 import { canResolveDevClient, hasDirectDevClientDependency } from './detectDevClient';
 
 export type Options = {
@@ -160,33 +160,28 @@ export function resolveHostType(options: {
 export async function resolvePortsAsync(
   projectRoot: string,
   options: Partial<Pick<Options, 'port' | 'devClient'>>,
-  settings: { webOnly?: boolean }
-) {
-  const multiBundlerSettings: { webpackPort?: number; metroPort?: number } = {};
+  bundlers: ('metro' | 'webpack')[]
+): Promise<{ metroPort: number; webpackPort?: number }> {
+  const metroPort = await resolvePortAsync(projectRoot, {
+    defaultPort: options.port,
+    // resolvePortAsync already honors RCT_METRO_PORT, so we only pass the default
+    fallbackPort: 8081,
+  });
+  if (metroPort == null) {
+    throw new AbortCommandError();
+  }
 
-  if (settings.webOnly) {
-    const webpackPort = await resolvePortAsync(projectRoot, {
-      defaultPort: options.port,
-      // Default web port
-      fallbackPort: 19006,
+  if (bundlers.includes('webpack')) {
+    const webpackPort = await choosePortAsync(projectRoot, {
+      // Webpack runs on its own default port and ignores `--port`
+      defaultPort: 19006,
+      host: env.WEB_HOST,
     });
     if (webpackPort == null) {
       throw new AbortCommandError();
     }
-    multiBundlerSettings.webpackPort = webpackPort;
-  } else {
-    const fallbackPort = process.env.RCT_METRO_PORT
-      ? parseInt(process.env.RCT_METRO_PORT, 10)
-      : 8081;
-    const metroPort = await resolvePortAsync(projectRoot, {
-      defaultPort: options.port,
-      fallbackPort,
-    });
-    if (metroPort == null) {
-      throw new AbortCommandError();
-    }
-    multiBundlerSettings.metroPort = metroPort;
+    return { metroPort, webpackPort };
   }
 
-  return multiBundlerSettings;
+  return { metroPort };
 }

@@ -420,7 +420,7 @@ Standard paragraph element.
 
 ### `<B/>`
 
-Bold text text.
+Bold text.
 
 | Platform  | Output                                    |
 | --------- | ----------------------------------------- |
@@ -734,7 +734,7 @@ Create a cell in a Table.
 
 ### `<Caption/>`
 
-Used to caption your table. Excepts text as a child.
+Used to caption your table. Accepts text as a child.
 
 | Platform | Output                      |
 | -------- | --------------------------- |

@@ -7,9 +7,8 @@ import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
 import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
+import { event } from './events';
 import type { Options } from './resolveOptions';
-
-const debug = require('debug')('expo:lint');
 
 const DEFAULT_INPUTS = ['src', 'app', 'components'];
 
@@ -104,7 +103,7 @@ export const lintAsync = async (
     eslintArgs.push(arg);
   });
 
-  debug('Running ESLint with args: %O', eslintArgs);
+  event('eslint_args', { args: eslintArgs });
 
   const manager = createForProject(projectRoot, { silent: true });
 

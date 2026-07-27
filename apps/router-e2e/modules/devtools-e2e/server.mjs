@@ -1,4 +1,3 @@
-
 // Top-level async to ensure esm modules are loaded correctly
 // require of esm in modern Node works(*)
 await undefined;
@@ -18,7 +17,7 @@ export default async function handler(request) {
 
   // Fallback to static plugin page
   return null;
-};
+}
 
 export const webSocketHandlers = {
   '/ws': (socket, request) => {

@@ -5,15 +5,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import Debug from 'debug';
 import type { Socket } from 'net';
 import * as tls from 'tls';
 
 import { ResponseError, ServiceClient } from './ServiceClient';
 import type { UsbmuxdPairRecord } from './UsbmuxdClient';
 import { LockdownProtocolClient } from '../protocol/LockdownProtocol';
-
-const debug = Debug('expo:apple-device:client:lockdownd');
 
 export interface DeviceValues {
   BasebandCertId: number;
@@ -101,8 +98,6 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
   }
 
   async startService(name: string) {
-    debug(`startService: ${name}`);
-
     const resp = await this.protocolClient.sendMessage({
       Request: 'StartService',
       Service: name,
@@ -116,8 +111,6 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
   }
 
   async startSession(pairRecord: UsbmuxdPairRecord) {
-    debug('startSession');
-
     const resp = await this.protocolClient.sendMessage({
       Request: 'StartSession',
       HostID: pairRecord.HostID,
@@ -137,7 +130,6 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
             key: pairRecord.RootPrivateKey,
           }),
         });
-        debug(`Socket upgraded to TLS connection`);
       }
       // TODO: save sessionID for StopSession?
     } else {
@@ -146,8 +138,6 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
   }
 
   async getAllValues() {
-    debug(`getAllValues`);
-
     const resp = await this.protocolClient.sendMessage({ Request: 'GetValue' });
 
     if (isLockdowndAllValuesResponse(resp)) {
@@ -158,8 +148,6 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
   }
 
   async getValue(val: string) {
-    debug(`getValue: ${val}`);
-
     const resp = await this.protocolClient.sendMessage({
       Request: 'GetValue',
       Key: val,
@@ -173,8 +161,6 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
   }
 
   async queryType() {
-    debug('queryType');
-
     const resp = await this.protocolClient.sendMessage({
       Request: 'QueryType',
     });
@@ -187,8 +173,6 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
   }
 
   async doHandshake(pairRecord: UsbmuxdPairRecord) {
-    debug('doHandshake');
-
     // if (await this.lockdownQueryType() !== 'com.apple.mobile.lockdown') {
     //   throw new CommandError('Invalid type received from lockdown handshake');
     // }

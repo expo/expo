@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `openAuthSessionAsync` hanging forever when the authentication session fails to start. ([#47653](https://github.com/expo/expo/issues/47653)) ([#47896](https://github.com/expo/expo/pull/47896) by [@HubertBer](https://github.com/HubertBer))
+
 ### 💡 Others
 
 ## 56.0.5 — 2026-05-21
@@ -136,7 +138,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [Android] Fix multiple runs of prebuild repeateadly adding generated code. ([#39702](https://github.com/expo/expo/pull/39702) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Fix multiple runs of prebuild repeatedly adding generated code. ([#39702](https://github.com/expo/expo/pull/39702) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.0.7 — 2025-09-11
 
@@ -472,7 +474,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Removed unncecessary Android dependencies. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
+- Removed unnecessary Android dependencies. ([#9538](https://github.com/expo/expo/pull/9538) by [@barthap](https://github.com/barthap))
 - Fixed `openAuthSessionAsync` crashing when cancelled on iOS. ([#9722](https://github.com/expo/expo/pull/9722) by [@barthap](https://github.com/barthap))
 
 ## 8.4.0 — 2020-07-29

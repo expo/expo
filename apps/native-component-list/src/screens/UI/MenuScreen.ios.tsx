@@ -15,6 +15,7 @@ import {
   buttonStyle,
   foregroundStyle,
   labelStyle,
+  menuOrder,
   pickerStyle,
   tag,
 } from '@expo/ui/swift-ui/modifiers';
@@ -113,6 +114,16 @@ export default function MenuScreen() {
           <Menu label="Styled Menu" modifiers={[buttonStyle('borderedProminent')]}>
             <Button onPress={() => console.log('Styled 1')} label="Styled Action 1" />
             <Button onPress={() => console.log('Styled 2')} label="Styled Action 2" />
+          </Menu>
+        </Section>
+
+        <Section title="Menu with fixed item order">
+          {/* Menus opening upward reverse their items with the default automatic
+              order. menuOrder('fixed') keeps First/Second/Third top to bottom. */}
+          <Menu label="Fixed Order" modifiers={[menuOrder('fixed')]}>
+            <Button onPress={() => console.log('First')} label="First" />
+            <Button onPress={() => console.log('Second')} label="Second" />
+            <Button onPress={() => console.log('Third')} label="Third" />
           </Menu>
         </Section>
 

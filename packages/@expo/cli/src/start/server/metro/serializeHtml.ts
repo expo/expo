@@ -6,7 +6,7 @@ import {
 } from '@expo/router-server/build/utils/html';
 import type { RouteNode } from 'expo-router/build/Route';
 
-const debug = require('debug')('expo:metro:html') as typeof console.log;
+import { event } from './ssrEvents';
 
 export function serializeHtmlWithAssets({
   resources,
@@ -123,7 +123,7 @@ function htmlFromSerialAssets(
               if (!doesAsyncChunkContainRouteEntryPoint) {
                 return '';
               }
-              debug('Linking async chunk %s to HTML for route %s', filename, route.contextKey);
+              event('html_async_chunk_linked', { filename, contextKey: route.contextKey });
               // Pass through to the next condition.
             } else {
               return '';

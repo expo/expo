@@ -8,7 +8,7 @@ import {
  * Presentation detent type for controlling sheet heights.
  * - `'medium'`: System medium height (approximately half screen)
  * - `'large'`: System large height (full screen)
- * - `{ fraction: number }`: Fraction of screen height (0-1, for example, 0.4 equals to 40% of screen)
+ * - `{ fraction: number }`: Fraction of screen height (0-1, for example, 0.4 equals 40% of screen)
  * - `{ height: number }`: Fixed height in points
  */
 export type PresentationDetent = 'medium' | 'large' | { fraction: number } | { height: number };

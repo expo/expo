@@ -61,8 +61,6 @@ static SEL whenInUseAuthorizationSelector;
               @"scope": scope,
               @"accuracy": accuracy
             },
-            @"scope": scope, // Incorrect according to https://docs.expo.dev/versions/latest/sdk/location/#locationpermissionresponse but long-present. TODO remove for SDK 56 or later
-            @"accuracy": accuracy
          };
 }
 

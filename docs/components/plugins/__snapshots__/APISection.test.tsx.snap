@@ -266,7 +266,7 @@ button.
 not appear on the screen.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -1374,7 +1374,7 @@ This should come from the user field of an
       
 
       <blockquote
-        class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:mb-0! shadow-none mb-2.5 [table_&]:last:mb-0"
+        class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link [&_p]:mb-0! shadow-none mb-2.5 [table_&]:last:mb-0"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -3106,7 +3106,7 @@ After calling this function, the listener will no longer receive any events from
 which contains all of the pertinent user and credential information.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -3655,7 +3655,7 @@ developers.
         class="text-inherit font-normal text-[14px] leading-[1.5715] tracking-[-0.006rem] mb-2.5 [table_&]:last:mb-0"
         data-text="true"
       >
-        An object representing the tokenized portions of the user's full name. Any of all of the fields
+        An object representing the tokenized portions of the user's full name. Any or all of the fields
 may be 
         <code
           class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 inline! py-0 wrap-break-word"
@@ -4039,7 +4039,7 @@ may be
         A value to specify the style for formatting a name.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -4231,7 +4231,7 @@ for more details.
 You must include the ID string of the user whose credentials you'd like to refresh.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -4564,7 +4564,7 @@ OAuth 2.0 protocol
 None of these options are required.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -4917,7 +4917,7 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -5816,7 +5816,7 @@ OAuth 2.0 protocol
         .
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -6511,7 +6511,7 @@ for more details.
       
 
       <blockquote
-        class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:mb-0! shadow-none mb-2.5 [table_&]:last:mb-0"
+        class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link [&_p]:mb-0! shadow-none mb-2.5 [table_&]:last:mb-0"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -6558,7 +6558,7 @@ You will still need to handle null values for any fields you request.
         </div>
       </blockquote>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -6804,7 +6804,7 @@ for more details.
         An enum whose values specify the system's best guess for how likely the current user is a real person.
       </p>
       <blockquote
-        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
+        class="mb-4 flex rounded-md border border-default gap-2 px-3 py-2.5 [table_&]:last:mb-0 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link bg-default [&_p]:mb-0! shadow-none mb-2.5! [table_&]:last:mb-0! [table_&]:mt-2"
         data-md="callout"
         data-testid="callout-container"
       >
@@ -7572,7 +7572,7 @@ exports[`APISection expo-pedometer 1`] = `
           
 
           <blockquote
-            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:mb-0! shadow-none mb-2.5 [table_&]:last:mb-0"
+            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link [&_p]:mb-0! shadow-none mb-2.5 [table_&]:last:mb-0"
             data-md="callout"
             data-testid="callout-container"
           >
@@ -8117,7 +8117,7 @@ provided with a single argument that is
           
 
           <blockquote
-            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_p]:mb-0! shadow-none mb-2.5 [table_&]:last:mb-0"
+            class="flex rounded-md border border-default bg-subtle gap-2 px-3 py-2.5 [&_code]:bg-element [&_a]:text-[#0c6ec4] [&_a:visited]:text-[#0c6ec4] dark:[&_a]:text-link dark:[&_a:visited]:text-link [&_p]:mb-0! shadow-none mb-2.5 [table_&]:last:mb-0"
             data-md="callout"
             data-testid="callout-container"
           >

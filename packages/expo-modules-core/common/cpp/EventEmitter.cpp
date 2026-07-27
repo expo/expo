@@ -64,7 +64,7 @@ void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const 
     }
     return;
   }
-  // When there are more than one listener, we copy the list to a vector as the list may be modified during the loop.
+  // When there is more than one listener, we copy the list to a vector as the list may be modified during the loop.
   std::vector<jsi::Function> listenersVector;
   listenersVector.reserve(listSize);
 

@@ -526,15 +526,24 @@ describe('non-interactive defaults warning', () => {
     const result = await executePassing([
       projectName,
       '--no-example',
-      '--name', 'PartialDefaults',
-      '--description', 'Provided description',
-      '--package', 'com.test.partial',
-      '--author-name', 'Test Author',
-      '--author-email', 'test@example.com',
-      '--author-url', 'https://github.com/test',
-      '--repo', 'https://github.com/test/partial',
-      '--license', 'Apache-2.0',
-      '--module-version', '1.0.0',
+      '--name',
+      'PartialDefaults',
+      '--description',
+      'Provided description',
+      '--package',
+      'com.test.partial',
+      '--author-name',
+      'Test Author',
+      '--author-email',
+      'test@example.com',
+      '--author-url',
+      'https://github.com/test',
+      '--repo',
+      'https://github.com/test/partial',
+      '--license',
+      'Apache-2.0',
+      '--module-version',
+      '1.0.0',
       '--source',
       localTemplatePath,
     ]);
@@ -549,10 +558,14 @@ describe('non-interactive defaults warning', () => {
     await executePassing([
       projectName,
       '--no-example',
-      '--name', 'CustomLicenseVersion',
-      '--package', 'com.test.custom',
-      '--license', 'Apache-2.0',
-      '--module-version', '2.0.0',
+      '--name',
+      'CustomLicenseVersion',
+      '--package',
+      'com.test.custom',
+      '--license',
+      'Apache-2.0',
+      '--module-version',
+      '2.0.0',
       '--source',
       localTemplatePath,
     ]);
@@ -600,10 +613,12 @@ describe('add-platform-support', () => {
 
   it('adds android support to an apple-only module with Function and AsyncFunction', async () => {
     const project = createFakeProject('aps-fn-project');
-    const modulePath = await createLocalModule(project, 'aps-fn', ['apple'], [
-      'Function',
-      'AsyncFunction',
-    ]);
+    const modulePath = await createLocalModule(
+      project,
+      'aps-fn',
+      ['apple'],
+      ['Function', 'AsyncFunction']
+    );
 
     await executePassing([
       'add-platform-support',
@@ -642,10 +657,12 @@ describe('add-platform-support', () => {
 
   it('adds apple support to an android-only module with View and ViewEvent', async () => {
     const project = createFakeProject('aps-view-project');
-    const modulePath = await createLocalModule(project, 'aps-view', ['android'], [
-      'View',
-      'ViewEvent',
-    ]);
+    const modulePath = await createLocalModule(
+      project,
+      'aps-view',
+      ['android'],
+      ['View', 'ViewEvent']
+    );
 
     await executePassing([
       'add-platform-support',
@@ -844,12 +861,7 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
     let thrownError: any;
     try {
       // execute() already sets CI=1, so non-interactive mode is active
-      await execute([
-        'add-platform-support',
-        modulePath,
-        '--source',
-        localTemplatePath,
-      ]);
+      await execute(['add-platform-support', modulePath, '--source', localTemplatePath]);
     } catch (e) {
       thrownError = e;
     }
@@ -859,10 +871,12 @@ export default requireNativeModule<NativeModuleShape>('ExpoImage');
   it('uses --features flag to override auto-detected features', async () => {
     const project = createFakeProject('aps-features-flag-project');
     // Module has Function + AsyncFunction in native source
-    const modulePath = await createLocalModule(project, 'aps-ff', ['apple'], [
-      'Function',
-      'AsyncFunction',
-    ]);
+    const modulePath = await createLocalModule(
+      project,
+      'aps-ff',
+      ['apple'],
+      ['Function', 'AsyncFunction']
+    );
 
     // But we override with just View when adding android
     await executePassing([

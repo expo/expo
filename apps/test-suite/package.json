@@ -78,7 +78,7 @@
     "path": "^0.12.7",
     "react": "19.2.3",
     "react-native": "0.86.0",
-    "react-native-gesture-handler": "~2.32.0",
+    "react-native-gesture-handler": "~3.1.0",
     "react-native-safe-area-context": "^5.7.0",
     "semver": "^7.7.4"
   },

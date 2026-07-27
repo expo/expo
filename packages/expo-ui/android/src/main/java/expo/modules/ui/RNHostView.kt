@@ -115,7 +115,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   }
 
   // Sets Compose view size from Yoga node size
-  // Listens yoga node size changes and updates the Compose view size
+  // Listens to yoga node size changes and updates the Compose view size
   @Composable
   private fun applySizeFromYogaNodeModifier(childView: View): Modifier {
     val density = LocalDensity.current
@@ -151,7 +151,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   }
 
   // Sets Yoga node size from Compose view size
-  // Listens Compose view size changes and updates the Yoga node size
+  // Listens to Compose view size changes and updates the Yoga node size
   @Composable
   private fun reportSizeToYogaNodeModifier(): Modifier {
     val density = LocalDensity.current

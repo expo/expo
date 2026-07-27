@@ -4,9 +4,8 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import * as Log from '../log';
+import { event } from './events';
 import { memoize } from './fn';
-
-const debug = require('debug')('expo:utils:fileNotifier') as typeof console.log;
 
 /** Observes and reports file changes. */
 export class FileNotifier {
@@ -47,7 +46,7 @@ export class FileNotifier {
   public startObserving(callback?: (cur: any, prev: any) => void) {
     const configPath = this.resolveFilePath();
     if (configPath) {
-      debug(`Observing ${configPath}`);
+      event('file_observing', { path: event.path(configPath) });
       return this.watchFile(configPath, callback);
     }
     return configPath;

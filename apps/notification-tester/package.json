@@ -1,8 +1,8 @@
 {
   "name": "notification-tester",
-  "main": "index.ts",
   "version": "1.0.0",
   "private": true,
+  "main": "index.ts",
   "scripts": {
     "start": "expo start --dev-client",
     "android": "expo run:android",
@@ -15,40 +15,40 @@
     "set-debug-app": "adb shell am set-debug-app -w --persistent \"com.brents.microfoam\"",
     "clear-debug-app": "adb shell am clear-debug-app \"com.brents.microfoam\""
   },
-  "jest": {
-    "preset": "jest-expo"
-  },
   "dependencies": {
-    "@react-navigation/bottom-tabs": "^7.15.5",
-    "@react-navigation/native": "^7.1.33",
     "@expo/ui": "workspace:*",
     "@expo/vector-icons": "^15.0.2",
+    "@react-navigation/bottom-tabs": "^7.15.5",
+    "@react-navigation/native": "^7.1.33",
     "expo": "workspace:*",
+    "expo-constants": "workspace:*",
+    "expo-dev-client": "workspace:*",
+    "expo-device": "workspace:*",
     "expo-font": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-localization": "workspace:*",
+    "expo-notifications": "workspace:*",
     "expo-router": "workspace:*",
-    "expo-device": "workspace:*",
-    "expo-constants": "workspace:*",
-    "expo-dev-client": "workspace:*",
     "expo-sqlite": "workspace:*",
     "expo-status-bar": "workspace:*",
-    "expo-notifications": "workspace:*",
+    "expo-task-manager": "workspace:*",
     "expo-updates": "workspace:*",
     "native-component-list": "workspace:*",
-    "test-suite": "workspace:*",
-    "expo-task-manager": "workspace:*",
-    "react-native-gesture-handler": "~2.32.0",
     "react": "19.2.3",
     "react-native": "0.86.0",
+    "react-native-gesture-handler": "~3.1.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.26.0-nightly-20260625-9b9b39fa5",
-    "react-native-worklets": "0.10.1"
+    "react-native-screens": "4.26.0",
+    "react-native-worklets": "0.10.1",
+    "test-suite": "workspace:*"
   },
   "devDependencies": {
     "@types/jest": "^29.5.12",
     "@types/react": "~19.2.0"
+  },
+  "jest": {
+    "preset": "jest-expo"
   },
   "expo": {
     "autolinking": {

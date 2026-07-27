@@ -240,7 +240,7 @@ open class ObjectDefinitionBuilder(
     name: String,
     crossinline body: (p0: P0) -> R
   ): AsyncFunctionComponent {
-    // We can't split that function, because that introduces a ambiguity when creating DSL component without parameters.
+    // We can't split that function, because that introduces an ambiguity when creating DSL component without parameters.
     return if (P0::class.java == Promise::class.java) {
       AsyncFunctionWithPromiseComponent(name, arrayOf()) { _, promise -> body(promise as P0) }
     } else {

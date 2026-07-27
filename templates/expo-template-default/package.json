@@ -1,8 +1,8 @@
 {
   "name": "expo-template-default",
+  "version": "56.0.19",
   "license": "0BSD",
   "main": "expo-router/entry",
-  "version": "56.0.19",
   "scripts": {
     "start": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
@@ -29,10 +29,10 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
-    "react-native-gesture-handler": "~2.32.0",
+    "react-native-gesture-handler": "~3.1.0",
     "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "~5.7.0",
-    "react-native-screens": "4.25.2",
+    "react-native-screens": "4.26.0",
     "react-native-web": "~0.21.0",
     "react-native-worklets": "0.10.1"
   },

@@ -1,3 +1,4 @@
+import { events } from '2g';
 /**
  * Copyright © 2022 650 Industries.
  *
@@ -34,7 +35,6 @@ import {
 } from 'expo-server/private';
 import path from 'path';
 
-import { events } from '../../../events';
 import type {
   BundleAssetWithFileHashes,
   ExportAssetDescriptor,
@@ -45,7 +45,6 @@ import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
-import { getFreePortAsync } from '../../../utils/port';
 import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
 import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -81,6 +80,7 @@ import {
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest, inflateManifest } from './fetchRouterManifest';
 import { instantiateMetroAsync } from './instantiateMetro';
+import { debugEvent } from './metroDebugEvents';
 import {
   attachImportStackToRootMessage,
   dropStackIfContainsCodeFrame,
@@ -150,29 +150,24 @@ declare namespace globalThis {
   let __expo_rsc_inject_module: (params: { code: string; id: string }) => void | undefined;
 }
 
-const debug = require('debug')('expo:start:server:metro') as typeof console.log;
+declare module '2g' {
+  interface EventRegistry {
+    'devserver:start': {
+      mode: 'production' | 'development';
+      web: boolean;
+      baseUrl: string;
+      asyncRoutes: boolean;
+      routerRoot: string;
+      serverComponents: boolean;
+      serverActions: boolean;
+      serverRendering: boolean;
+      apiRoutes: boolean;
+      exporting: boolean;
+    };
+  }
+}
 
-/** Default port to use for apps running in Expo Go. */
-const EXPO_GO_METRO_PORT = 8081;
-
-/** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
-const DEV_CLIENT_METRO_PORT = 8081;
-
-// prettier-ignore
-export const event = events('devserver', (t) => [
-  t.event<'start', {
-    mode: 'production' | 'development';
-    web: boolean;
-    baseUrl: string;
-    asyncRoutes: boolean;
-    routerRoot: string;
-    serverComponents: boolean;
-    serverActions: boolean;
-    serverRendering: boolean;
-    apiRoutes: boolean;
-    exporting: boolean;
-  }>(),
-]);
+export const event = events('devserver');
 
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: MetroServer | null = null;
@@ -185,20 +180,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   get name(): string {
     return 'metro';
-  }
-
-  async resolvePortAsync(options: Partial<BundlerStartOptions> = {}): Promise<number> {
-    const port =
-      // If the manually defined port is busy then an error should be thrown...
-      options.port ??
-      // Otherwise use the default port based on the runtime target.
-      (options.devClient
-        ? // Don't check if the port is busy if we're using the dev client since most clients are hardcoded to 8081.
-          Number(process.env.RCT_METRO_PORT) || DEV_CLIENT_METRO_PORT
-        : // Otherwise (running in Expo Go) use a free port that falls back on the classic 8081 port.
-          await getFreePortAsync(EXPO_GO_METRO_PORT));
-
-    return port;
   }
 
   private async exportServerRouteAsync({
@@ -223,7 +204,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
       // Alternatively, check whether `sourcesRoot` helps here
       const artifactBasename = encodeURIComponent(path.basename(artifactFilename) + '.map');
-      src = src.replace(/\/\/# sourceMappingURL=.*/g, `//# sourceMappingURL=${artifactBasename}`);
+      // Match only the trailing sourcemap directive
+      src = src.replace(
+        /(?<=^|\n)\/\/# sourceMappingURL=[^\n]*(?=\s*$)/,
+        `//# sourceMappingURL=${artifactBasename}`
+      );
       const parsedMap = typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
       const mapData: any = {
         ...descriptor,
@@ -322,7 +307,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // If the RSC route is not already in the manifest, add it.
       !manifest.apiRoutes.find((route) => route.page.startsWith('/_flight/'))
     ) {
-      debug('Adding RSC route to the manifest:', rscPath);
+      debugEvent('rsc_route_added', { path: rscPath });
       // NOTE: This might need to be sorted to the correct spot in the future.
       manifest.apiRoutes.push({
         // TODO(@kitten): This isn't great, we shouldn't be needing to rely on files like this
@@ -1064,7 +1049,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       artifacts: SerialAsset[];
       assets: readonly BundleAssetWithFileHashes[];
     }> => {
-      debug('Evaluated client boundaries:', clientBoundaries);
+      debugEvent('client_boundaries_evaluated', { count: clientBoundaries.length });
 
       // Run metro bundler and create the JS bundles/source maps.
       const bundle = await this.legacySinglePageExportBundleAsync(
@@ -1084,7 +1069,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           'Static server action references were not returned from the Metro client bundle'
         );
       }
-      debug('React server action boundaries from client:', newReactServerReferences);
+      debugEvent('client_boundaries_evaluated', { count: newReactServerReferences.length });
 
       const allKnownReactServerReferences = unique([
         ...reactServerReferences,
@@ -1111,7 +1096,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return bundle;
       }
 
-      debug('Re-bundling client with nested client boundaries:', nestedClientBoundaries);
+      debugEvent('client_boundaries_rebundle', { count: nestedClientBoundaries.length });
 
       clientBoundaries = unique(clientBoundaries.concat(nestedClientBoundaries));
 
@@ -1139,7 +1124,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         .flat() as Record<string, string>[]
     ).reduce((acc, paths) => ({ ...acc, ...paths }), {});
 
-    debug('SSR Manifest:', moduleIdToSplitBundle, clientBoundariesAsOpaqueIds);
+    debugEvent('ssr_manifest', { boundaryCount: clientBoundariesAsOpaqueIds.length });
 
     const ssrManifest = new Map<string, string | null>();
 
@@ -1155,7 +1140,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
     } else {
       // Native apps with bundle splitting disabled.
-      debug('No split bundles');
+      debugEvent('ssr_manifest', { boundaryCount: 0 });
       clientBoundariesAsOpaqueIds.forEach((boundary) => {
         ssrManifest.set(boundary, null);
       });
@@ -1242,7 +1227,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (!this.metro) {
       // This can happen when the run command is used and the server is already running in another
       // process.
-      debug('Skipping Environment Variable observation because Metro is not running (headless).');
       return;
     }
 
@@ -1253,7 +1237,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       },
       getEnvFiles(this.projectRoot),
       () => {
-        debug('Reloading environment variables...');
+        debugEvent('env_reload', {});
         // Force reload the environment variables.
         reloadEnvFiles(this.projectRoot);
       }
@@ -1265,7 +1249,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
-    options.port = await this.resolvePortAsync(options);
+    assert(options.port, 'Expected a port to be defined before starting the Metro dev server');
+
     await this.initUrlCreator(options);
 
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
@@ -1636,7 +1621,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return;
     }
 
-    debug('[SSR] Register HMR:', url);
+    debugEvent('ssr_hmr_registered', { url });
 
     const sendFn = (message: string) => {
       const data = JSON.parse(String(message)) as { type: string; body: any };
@@ -1708,7 +1693,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           }
           break;
         default:
-          debug('Unknown HMR message:', data);
+          debugEvent('ssr_hmr_unknown_message', { type: data.type });
           break;
       }
     };
@@ -1730,7 +1715,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // This can happen when the run command is used and the server is already running in another
         // process. In this case we can't wait for the TypeScript check to complete because we don't
         // have access to the Metro server.
-        debug('Skipping TypeScript check because Metro is not running (headless).');
         return resolve(false);
       }
 
@@ -1794,7 +1778,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
     const bundleAsync = async (): Promise<SSRModuleContentsResult> => {
       try {
-        debug('Bundle API route:', this.instanceMetroOptions.routerRoot, filePath);
+        debugEvent('bundle_api_route', {
+          routerRoot: this.instanceMetroOptions.routerRoot ?? '',
+          path: filePath,
+        });
         return await this.ssrLoadModuleContents(filePath, {
           isExporting: this.instanceMetroOptions.isExporting,
           platform,
@@ -1856,7 +1843,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             },
           });
         } catch (internalError) {
-          debug('Failed to generate Metro server error UI for API Route error:', internalError);
+          debugEvent('api_route_overlay_failed', {
+            error: debugEvent.error(internalError as Error),
+          });
           throw error;
         }
       } else {
@@ -1901,14 +1890,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     );
 
     try {
-      debug(`Matched ${location.pathname} to file: ${route.file}`);
+      debugEvent('loader_route_matched', { pathname: location.pathname, file: route.file });
 
       const appDir = path.join(this.projectRoot, routerRoot);
       let modulePath = route.file;
       modulePath = path.isAbsolute(modulePath) ? modulePath : path.join(appDir, modulePath);
       modulePath = modulePath.replace(/\.(js|ts)x?$/, '');
-
-      debug('Using loader module path: ', modulePath);
 
       const routeModule = await this.ssrLoadModule<any>(modulePath, {
         environment: 'node',
@@ -1920,8 +1907,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
         let data: unknown;
         if (maybeResponse instanceof Response) {
-          debug('Loader returned Response for location:', location.pathname);
-
           // In SSR, preserve `Response` from the loader
           if (exp.web?.output === 'server' && unstable_useServerRendering) {
             return maybeResponse;
@@ -1933,11 +1918,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           data = maybeResponse;
         }
 
-        debug('Loader data:', data ?? null, ' for location:', location.pathname);
         return Response.json(data ?? null);
       }
 
-      debug('No loader found for location:', location.pathname);
       return undefined;
     } catch (error: any) {
       throw new CommandError(
@@ -1955,7 +1938,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     { platform }: { platform: string }
   ): Promise<SSRModuleContentsResult> {
     try {
-      debug('Bundle loader:', filePath);
       return await this.ssrLoadModuleContents(filePath, {
         isExporting: this.instanceMetroOptions.isExporting,
         platform,
@@ -1963,7 +1945,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         isLoaderBundle: true,
       });
     } catch (error: any) {
-      debug('Failed to bundle loader:', filePath, ':', error.message);
+      debugEvent('loader_bundle_failed', {
+        path: filePath,
+        error: debugEvent.error(error as Error),
+      });
       throw new CommandError(
         'LOADER_BUNDLE',
         chalk`Failed to bundle loader: {bold ${filePath}}\n\n` + error.message
@@ -2032,7 +2017,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // we can dedupe shared file-change events across multiple loader graphs.
     type DeltaChangeEvent = { changeId?: string };
     const onChange = async (changeEvent?: DeltaChangeEvent) => {
-      debug('[Loader HMR] Graph change detected for:', resolvedEntryFilePath);
+      debugEvent('loader_graph_changed', { path: resolvedEntryFilePath });
 
       if (!this.shouldBroadcastLoaderInvalidation(changeEvent?.changeId)) {
         return;

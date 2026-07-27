@@ -3,13 +3,13 @@ import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
 
+import { executePnpmAsync, executeExpoAsync } from '../utils/expo';
 import {
   projectRoot,
   getLoadedModulesAsync,
   setupTestProjectWithOptionsAsync,
   findProjectFiles,
 } from './utils';
-import { executePnpmAsync, executeExpoAsync } from '../utils/expo';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;

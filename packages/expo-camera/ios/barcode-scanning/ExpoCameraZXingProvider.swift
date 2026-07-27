@@ -26,7 +26,7 @@ class ExpoCameraZXingProvider: NSObject, ExpoBarcodeScannerProvider {
 
     for (type, reader) in readers {
       if let result = try? reader.decode(bitmap, hints: nil) {
-        return [["type": expoType(for: type), "data": result.text.filter { $0 != "\0" }]]
+        return [Self.barcodeResult(type: type, data: result.text.filter { $0 != "\0" })]
       }
     }
 
@@ -34,7 +34,7 @@ class ExpoCameraZXingProvider: NSObject, ExpoBarcodeScannerProvider {
     if bitmap?.rotateSupported == true, let rotated = bitmap?.rotateCounterClockwise() {
       for (type, reader) in readers {
         if let result = try? reader.decode(rotated, hints: nil) {
-          return [["type": expoType(for: type), "data": result.text.filter { $0 != "\0" }]]
+          return [Self.barcodeResult(type: type, data: result.text.filter { $0 != "\0" })]
         }
       }
     }
@@ -42,16 +42,15 @@ class ExpoCameraZXingProvider: NSObject, ExpoBarcodeScannerProvider {
     return []
   }
 
-  /// Converts a decoded reader's raw `AVMetadataObject.ObjectType` key to the short expo
-  /// `BarcodeType` string the JS event expects (e.g. "org.iso.PDF417" -> "pdf417"), matching
-  /// the native AVFoundation scan path. These are exactly the types registered in `readers`;
-  /// anything else is passed through unchanged.
-  private func expoType(for rawType: String) -> String {
-    if rawType == AVMetadataObject.ObjectType.pdf417.rawValue { return "pdf417" }
-    if rawType == AVMetadataObject.ObjectType.code39.rawValue { return "code39" }
-    if #available(iOS 15.4, *), rawType == AVMetadataObject.ObjectType.codabar.rawValue {
-      return "codabar"
-    }
-    return rawType
+  // ZXing gives no geometry, so match the AVFoundation result shape with zeroed bounds and corners
+  // rather than omitting them, which crashes consumers that read `bounds`.
+  private static func barcodeResult(type: String, data: Any) -> [String: Any] {
+    var result: [String: Any] = ["type": expoType(for: type), "data": data]
+    BarcodeUtils.addEmptyCornerPoints(to: &result)
+    return result
+  }
+
+  private static func expoType(for rawType: String) -> String {
+    BarcodeType.toBarcodeType(type: AVMetadataObject.ObjectType(rawValue: rawType)).rawValue
   }
 }

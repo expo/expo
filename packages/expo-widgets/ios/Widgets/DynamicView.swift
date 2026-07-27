@@ -151,11 +151,23 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
   where P: UIBaseViewProps {
     if let props = node["props"] as? [String: Any] {
       if let children = props["children"] as? [Any] {
-        let validChildren = children.compactMap { $0 as? [String: Any] }
+        let validChildren = flattenChildNodes(children)
         initialProps.children = validChildren.map { WidgetsDynamicView(name: name, kind: kind, node: $0, entryIndex: entryIndex, environmentString: environmentString) }
       } else if let child = props["children"] as? [String: Any] {
         initialProps.children = [WidgetsDynamicView(name: name, kind: kind, node: child, entryIndex: entryIndex, environmentString: environmentString)]
       }
+    }
+  }
+
+  private func flattenChildNodes(_ children: [Any]) -> [[String: Any]] {
+    return children.flatMap { child -> [[String: Any]] in
+      if let node = child as? [String: Any] {
+        return [node]
+      }
+      if let nested = child as? [Any] {
+        return flattenChildNodes(nested)
+      }
+      return []
     }
   }
 }

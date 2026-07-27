@@ -134,7 +134,7 @@ describe('useStandardEmitter (integration)', () => {
     IntegrationEventMap,
     object,
     TabRouterOptions
-  >(NavigatorContent, TabRouter, { useOnlyUserDefinedScreens: true });
+  >(NavigatorContent, TabRouter);
 
   it('delivers an emitted event to the targeted screen listener', () => {
     const ping = jest.fn();

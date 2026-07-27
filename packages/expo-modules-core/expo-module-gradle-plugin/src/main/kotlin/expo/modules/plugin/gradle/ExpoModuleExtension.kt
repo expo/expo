@@ -15,7 +15,7 @@ import java.util.Properties
 typealias POMConfigurator = Action<MavenPom>
 
 /**
- * An user-facing interface to interact with the `ExpoGradleHelperExtension`.
+ * A user-facing interface to interact with the `ExpoGradleHelperExtension`.
  */
 open class ExpoModuleExtension(val project: Project) {
   private val gradleHelper by lazy {

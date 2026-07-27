@@ -7,11 +7,7 @@ import { Menu } from '../../swift-ui/Menu';
 import { RNHostView } from '../../swift-ui/RNHostView';
 import { Section } from '../../swift-ui/Section';
 import { Toggle } from '../../swift-ui/Toggle';
-import {
-  disabled as disabledModifier,
-  foregroundColor as foregroundColorModifier,
-  tint as tintModifier,
-} from '../../swift-ui/modifiers';
+import { disabled as disabledModifier, tint as tintModifier } from '../../swift-ui/modifiers';
 import type { ModifierConfig } from '../../types';
 import type { MenuAction, MenuComponentProps, MenuComponentRef, NativeActionEvent } from './types';
 
@@ -34,8 +30,8 @@ function renderAction(
   const { subactions, displayInline, state, attributes, image, imageColor, title } = action;
   const key = actionId(action);
   const systemImage = typeof image === 'string' ? image : undefined;
-  // `tint` is what SwiftUI's `Menu`/`Button` honor for the leading SF Symbol —
-  // `foregroundColor` would also affect the label text.
+  // `tint` is what SwiftUI's system `Menu` honors for an item's leading SF
+  // Symbol, for both `Toggle` and `Button` items.
   const tintMod = imageColor ? tintModifier(imageColor) : null;
 
   if (subactions && subactions.length > 0) {
@@ -49,7 +45,7 @@ function renderAction(
     }
     // SwiftUI's system menu UI ignores per-item color modifiers on submenu
     // headers, so we don't forward `imageColor` here. Leaf `Button`s below
-    // tint via `foregroundColor`, which does take effect.
+    // tint via `.tint`, which does take effect.
     return (
       <Menu key={key} label={title} systemImage={systemImage}>
         {children}
@@ -76,11 +72,13 @@ function renderAction(
     );
   }
 
-  // For a leaf `Button`, `foregroundColor` also tints the system image —
-  // upstream uses this to color both the label and the icon. Skip when the
-  // role is destructive so SwiftUI's red tint remains in effect.
-  if (imageColor && !attributes?.destructive) {
-    modifiers.push(foregroundColorModifier(imageColor));
+  // Tint the leaf `Button`'s leading SF Symbol via `.tint`, the same modifier
+  // the `Toggle` branch above uses. `.foregroundColor` is not applied by the
+  // iOS system menu to a menu button's content, so it left action-item icons
+  // untinted. Skip when the role is destructive so SwiftUI's red tint remains
+  // in effect.
+  if (tintMod && !attributes?.destructive) {
+    modifiers.push(tintMod);
   }
 
   return (

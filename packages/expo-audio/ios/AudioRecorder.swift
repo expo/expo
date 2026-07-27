@@ -92,7 +92,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
     }
 
-    if let options {
+    if let options = options ?? currentOptions {
       let newRecorder: AVAudioRecorder
       do {
         newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)

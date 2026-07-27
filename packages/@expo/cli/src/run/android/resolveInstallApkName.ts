@@ -4,8 +4,7 @@ import path from 'path';
 import type { GradleProps } from './resolveGradlePropsAsync';
 import type { Device } from '../../start/platforms/android/adb';
 import { DeviceABI, getDeviceABIsAsync } from '../../start/platforms/android/adb';
-
-const debug = require('debug')('expo:run:android:resolveInstallApkName') as typeof console.log;
+import { debugEvent } from '../events';
 
 type OutputMetadataElement = {
   filters?: { filterType: string; value: string }[];
@@ -25,7 +24,7 @@ function resolveApkFromOutputMetadata(
   try {
     metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
   } catch (error) {
-    debug('Failed to parse output-metadata.json', error);
+    debugEvent('android:apk_metadata_parse_failed', { error: debugEvent.error(error as Error) });
     return null;
   }
 
@@ -46,7 +45,7 @@ function resolveApkFromOutputMetadata(
       );
       const outputFile = match?.outputFile;
       if (typeof outputFile === 'string' && fs.existsSync(path.join(apkVariantDirectory, outputFile))) {
-        debug('Resolved ABI-split APK from output-metadata.json:', outputFile);
+        debugEvent('android:apk_resolved_abi_split', { outputFile });
         return outputFile;
       }
     }
@@ -56,7 +55,7 @@ function resolveApkFromOutputMetadata(
   if (elements.length === 1) {
     const outputFile = elements[0]?.outputFile;
     if (typeof outputFile === 'string' && fs.existsSync(path.join(apkVariantDirectory, outputFile))) {
-      debug('Resolved APK from output-metadata.json:', outputFile);
+      debugEvent('android:apk_resolved', { outputFile });
       return outputFile;
     }
   }
@@ -72,14 +71,13 @@ export async function resolveInstallApkNameAsync(
   const availableCPUs = await getDeviceABIsAsync(device);
   availableCPUs.push(DeviceABI.universal);
 
-  debug('Supported ABIs: ' + availableCPUs.join(', '));
-  debug('Searching for APK: ' + apkVariantDirectory);
+  debugEvent('android:apk_search', { directory: apkVariantDirectory });
 
   // Check for cpu specific builds first
   for (const availableCPU of availableCPUs) {
     const apkName = getApkFileName(appName, buildType, flavors, availableCPU);
     const apkPath = path.join(apkVariantDirectory, apkName);
-    debug('Checking for APK at:', apkPath);
+    debugEvent('android:apk_check', { path: apkPath });
     if (fs.existsSync(apkPath)) {
       return apkName;
     }
@@ -88,7 +86,7 @@ export async function resolveInstallApkNameAsync(
   // Otherwise use the default apk named after the variant: app-debug.apk
   const apkName = getApkFileName(appName, buildType, flavors);
   const apkPath = path.join(apkVariantDirectory, apkName);
-  debug('Checking for fallback APK at:', apkPath);
+  debugEvent('android:apk_check', { path: apkPath });
   if (fs.existsSync(apkPath)) {
     return apkName;
   }

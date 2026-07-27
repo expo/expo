@@ -52,6 +52,7 @@ exceptions:
   - '.*AWS.*'
   - '.*Babel.*'
   - '.*babel\.config\.js.*'
+  - '.*Beta App Review.*'
   - '.*Bundler.*'
   - '.*Cache-Control.*'
   - '.*Can I pay.*'

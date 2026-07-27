@@ -1,4 +1,5 @@
 import AppMetrics, { type LogAttributeValue, type LogSeverity } from 'expo-app-metrics';
+import { Observe } from 'expo-observe';
 import { useState } from 'react';
 import { StyleSheet, Text, TextInput } from 'react-native';
 
@@ -133,7 +134,7 @@ export function LogEventsSection() {
             title={title}
             description={description}
             onPress={() =>
-              AppMetrics.logEvent(`debug.${severity}_button_pressed`, {
+              Observe.logEvent(`debug.${severity}_button_pressed`, {
                 severity,
                 body,
                 attributes,

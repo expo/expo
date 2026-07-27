@@ -22,7 +22,7 @@ class BatteryLevelReceiver(private val sendEvent: (name: String, body: Bundle) -
   override fun onReceive(context: Context, intent: Intent) {
     val batteryIntent = context.applicationContext.registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED))
     if (batteryIntent == null) {
-      Log.e("Battery", "ACTION_BATTERY_CHANGED unavailable. Events wont be received")
+      Log.e("Battery", "ACTION_BATTERY_CHANGED unavailable. Events won't be received")
       return
     }
     val level = batteryIntent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1)

@@ -50,6 +50,10 @@ public final class BenchmarkingExpoModule: Module {
 
     Function("addStringsOptimized", addStringsOptimized())
 
+    AsyncFunction("addStringsAsync") { (a: String, b: String) in
+      return a + b
+    }
+
     // MARK: - Arrays
 
     Function("foldArray") { (array: [Double]) in
@@ -192,6 +196,11 @@ public final class BenchmarkingExpoModule: Module {
 
   @JS
   private func addStringsSynthesized(a: String, b: String) throws -> String {
+    return a + b
+  }
+
+  @JS
+  private func addStringsAsyncSynthesized(a: String, b: String) async throws -> String {
     return a + b
   }
 

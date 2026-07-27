@@ -1,8 +1,6 @@
 import ExpoModulesJSI
 
-/**
- A protocol for any type-erased module that provides functions used by the core.
- */
+/// A protocol for any type-erased module that provides functions used by the core.
 public protocol AnyModule: AnyObject, AnyArgument {
   /**
    The default initializer. Must be public, but the module class does *not* need to
@@ -35,10 +33,26 @@ public protocol AnyModule: AnyObject, AnyArgument {
   /// (leading underscore). Modules that don't use the macro fall back to the default no-op.
   @JavaScriptActor
   func _decorateModule(object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws
+
+  /// A lifecycle hook that is called once the module is initialized and registered in the app context.
+  /// An equivalent of the `OnCreate` DSL component.
+  func didCreate()
+
+  /// A lifecycle hook that is called when the module is about to be deallocated.
+  /// An equivalent of the `OnDestroy` DSL component.
+  func willDestroy()
+
+  /// A lifecycle hook that is called when the first JavaScript listener for the given event is added.
+  /// An equivalent of the `OnStartObserving` DSL component.
+  func didStartListening(event: String)
+
+  /// A lifecycle hook that is called when the last JavaScript listener for the given event is removed.
+  /// An equivalent of the `OnStopObserving` DSL component.
+  func didStopListening(event: String)
 }
 
-public extension AnyModule {
-  static var _jsName: String {
+extension AnyModule {
+  public static var _jsName: String {
     return String(describing: self)
   }
 
@@ -46,14 +60,28 @@ public extension AnyModule {
   /// through `@JS` members don't have to write an empty `definition()` of their own. Modules that use
   /// the DSL provide their own.
   @ModuleDefinitionBuilder
-  func definition() -> ModuleDefinition {}
+  public func definition() -> ModuleDefinition {}
 
-  func _synthesizedDefinition() -> [AnyDefinition] {
+  public func _synthesizedDefinition() -> [AnyDefinition] {
     return []
   }
 
   @JavaScriptActor
-  func _decorateModule(object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
+  public func _decorateModule(object: borrowing JavaScriptObject, in runtime: JavaScriptRuntime) throws {
     // No-op by default — only `@ExpoModule`-macro modules synthesize a real implementation.
   }
+
+  // No-op defaults of the lifecycle hooks for modules that conform without inheriting
+  // `BaseModule`, e.g. plain `@ExpoModule` classes whose conformance comes from the macro's
+  // extension. These defaults are statically bound into the conformance witness, so
+  // `BaseModule` descendants are backed by its dynamically-dispatched open methods instead,
+  // which take precedence during witness resolution.
+
+  public func didCreate() {}
+
+  public func willDestroy() {}
+
+  public func didStartListening(event: String) {}
+
+  public func didStopListening(event: String) {}
 }

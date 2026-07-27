@@ -2,6 +2,8 @@ import { CheckCircleSolidIcon } from '@expo/styleguide-icons/solid/CheckCircleSo
 import { render, screen } from '@testing-library/react';
 import ReactMarkdown from 'react-markdown';
 
+import { axe } from '~/common/test-utilities';
+
 import { InlineHelp } from '.';
 
 describe(InlineHelp, () => {
@@ -72,5 +74,20 @@ describe(InlineHelp, () => {
     expect(screen.getByTestId('callout-container')).toBeInTheDocument();
     expect(screen.getByText('Note')).toBeInTheDocument();
     expect(screen.getByText(': Hello')).toBeInTheDocument();
+  });
+
+  it('has no axe violations across callout types', async () => {
+    const { container } = render(
+      <>
+        <InlineHelp>
+          Default with a <a href="https://expo.dev/privacy">link</a>
+        </InlineHelp>
+        <InlineHelp type="warning">Warning</InlineHelp>
+        <InlineHelp type="error">Error</InlineHelp>
+        <InlineHelp type="info">Info</InlineHelp>
+        <InlineHelp type="important">Important</InlineHelp>
+      </>
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

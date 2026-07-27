@@ -5,6 +5,7 @@ import ExpoModulesCore
 protocol CameraVideoRecordingDelegate: AnyObject {
   var responsiveWhenOrientationLocked: Bool { get }
   var physicalOrientation: UIDeviceOrientation { get }
+  var deviceOrientation: UIInterfaceOrientation { get }
   var mirror: Bool { get }
   var appContext: AppContext? { get }
   var videoBitrate: Int? { get }
@@ -29,9 +30,11 @@ class CameraVideoRecording: NSObject, AVCaptureFileOutputRecordingDelegate {
     }
 
     if let connection = videoFileOutput.connection(with: .video) {
-      let orientation = await delegate?.responsiveWhenOrientationLocked == true ?
-        delegate?.physicalOrientation ?? .unknown : UIDevice.current.orientation
-      connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
+      connection.videoOrientation = await ExpoCameraUtils.captureOrientation(
+        responsiveWhenOrientationLocked: delegate?.responsiveWhenOrientationLocked == true,
+        physicalOrientation: delegate?.physicalOrientation ?? .unknown,
+        interfaceOrientation: delegate?.deviceOrientation ?? .unknown
+      )
       await setVideoOptions(options: options, for: connection, videoFileOutput: videoFileOutput, promise: promise)
 
       if connection.isVideoOrientationSupported && delegate?.mirror == true {

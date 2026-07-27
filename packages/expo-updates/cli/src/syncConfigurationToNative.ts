@@ -25,7 +25,7 @@ export const syncConfigurationToNative: Command = async (argv) => {
       chalk`
 {bold Description}
 Sync configuration from Expo config to native project files if applicable. Note that this really
-only needs to be used by the EAS CLI for generic projects that do't use continuous native generation.
+only needs to be used by the EAS CLI for generic projects that don't use continuous native generation.
 
 {bold Usage}
   {dim $} npx expo-updates configuration:syncnative --platform <platform>

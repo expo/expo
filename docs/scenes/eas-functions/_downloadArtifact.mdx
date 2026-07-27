@@ -1,0 +1,22 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { NoIcon } from '~/ui/components/DocIcons';
+
+| Property      | Type   | Required   | Description                                                                      |
+| ------------- | ------ | ---------- | -------------------------------------------------------------------------------- |
+| `name`        | string | <NoIcon /> | The name of the artifact to download. Required if `artifact_id` is not provided. |
+| `artifact_id` | string | <NoIcon /> | The ID of the artifact to download. Required if `name` is not provided.          |
+
+##### Outputs
+
+| Property        | Type   | Description                                                                                                                                            |
+| --------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `artifact_path` | string | The path to the downloaded artifact. This output can be used as input into other steps in your workflow. For example, to send or process the artifact. |
+
+<BoxLink
+  title="eas/download_artifact source code"
+  description="View the source code for the eas/download_artifact function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/downloadArtifact.ts"
+/>

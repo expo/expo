@@ -230,7 +230,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       )
       // TODO: handle rollbacks properly, but this works for now
       if self.procedureContext.getCurrentState() == .downloading {
-        self.procedureContext.processStateEvent(.downloadComplete)
+        self.procedureContext.processStateEvent(.downloadCompleteUnavailable)
       }
       // Otherwise, we don't need to call the state machine here, it already transitioned to .checkCompleteUnavailable
     }

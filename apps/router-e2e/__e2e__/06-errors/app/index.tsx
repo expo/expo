@@ -1,10 +1,9 @@
+import HMRClient from 'expo/src/async-require/hmr';
 import { useState } from 'react';
 import { DimensionValue, Platform, ScrollView, Text, View } from 'react-native';
 
-import * as hmr_fixtures from './fixtures/hmr-fixtures';
-import HMRClient from 'expo/src/async-require/hmr';
-
 import DomButtonWithConsoleError from './DomButton';
+import * as hmr_fixtures from './fixtures/hmr-fixtures';
 
 // import 'foobar';
 // eval('clasfs Foo {}');
@@ -14,7 +13,7 @@ export default function App() {
     <ScrollView
       style={[
         { flex: 1, backgroundColor: 'white', height: 'auto' },
-        Platform.select({web: { maxHeight: ('100vh' as DimensionValue) }})
+        Platform.select({ web: { maxHeight: '100vh' as DimensionValue } }),
       ]}
       contentContainerStyle={{ gap: 8, padding: 48 }}
       contentInsetAdjustmentBehavior="automatic">
@@ -50,7 +49,7 @@ export default function App() {
           async function throwAsyncError() {
             throw new Error('unhandled-async-throw');
           }
-          void throwAsyncError();
+          throwAsyncError();
         }}
       />
       <BigButton
@@ -62,7 +61,9 @@ export default function App() {
       <BigButton
         title="Promise.reject(string)"
         onPress={() => {
-          void Promise.reject('unhandled-rejection-string');
+          // Intentionally rejecting with a string, not an Error, to test that case.
+          // eslint-disable-next-line prefer-promise-reject-errors
+          Promise.reject('unhandled-rejection-string');
         }}
       />
       <Headline>From fixtures:</Headline>
@@ -107,7 +108,7 @@ export default function App() {
         // NOTE: Both original and the new implementation shows RedBox in the DOM Component.
         // This should be redirected to the host app in the future.
         title="console.error: Error (DOM)"
-        dom={{matchContents: true}}
+        dom={{ matchContents: true }}
       />
 
       <Headline>From render:</Headline>
@@ -129,8 +130,7 @@ export default function App() {
 
 function Headline({ children }: { children: React.ReactNode }) {
   return (
-    <Text
-      style={{ fontSize: 24, color: 'black', paddingTop: 16, paddingBottom: 8 }}>
+    <Text style={{ fontSize: 24, color: 'black', paddingTop: 16, paddingBottom: 8 }}>
       {children}
     </Text>
   );
@@ -181,9 +181,12 @@ function RErrThrowInRender() {
 function RWarningMissingKeys() {
   return (
     <>
-      {Array.from({ length: 3 }, (_, i) => (
-        <View style={{ padding: 8, backgroundColor: 'white' }}></View>
-      )).reverse()}
+      {
+        // eslint-disable-next-line react/jsx-key -- intentionally missing key, to test the React warning
+        Array.from({ length: 3 }, (_, i) => (
+          <View style={{ padding: 8, backgroundColor: 'white' }} />
+        )).reverse()
+      }
     </>
   );
 }

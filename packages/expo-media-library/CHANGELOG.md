@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix resolving iCloud-offloaded assets ("Optimize iPhone Storage"): allow network access when extracting asset URIs so `Asset.getUri()`, `getInfo()`, `getExif()` and `getOrientation()` can download originals from iCloud, matching the legacy API's `shouldDownloadFromNetwork` default. ([#47790](https://github.com/expo/expo/pull/47790) by [@oeddyo](https://github.com/oeddyo))
+- [Android] Fix saving files larger than ~2 GB (e.g. `createAssetAsync` with large videos) failing with "Unable to copy file into external storage" by looping `FileChannel.transferTo` until the whole file is copied. ([#47811](https://github.com/expo/expo/pull/47811) by [@jiunshinn](https://github.com/jiunshinn))
 - Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fix permission guards for limited and write-only photo library access. ([#47216](https://github.com/expo/expo/pull/47216) by [@Wenszel](https://github.com/Wenszel))
 

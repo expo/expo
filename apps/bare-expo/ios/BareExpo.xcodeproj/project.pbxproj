@@ -59,6 +59,17 @@
 			path = "../../native-component-list/src/screens/inlineModules/inlineModulesExamples";
 			sourceTree = SOURCE_ROOT;
 		};
+		A33828129C2D4325846AC205 /* ../../native-component-list/src/screens/ModulesCore */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "../../native-component-list/src/screens/ModulesCore";
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +144,7 @@
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
 				AC3B6E5EB4FE4A6AACD31066 /* Resources */,
 				A33828129C2D4325846AC204 /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
+				A33828129C2D4325846AC205 /* ../../native-component-list/src/screens/ModulesCore */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -238,6 +250,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				A33828129C2D4325846AC204 /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
+				A33828129C2D4325846AC205 /* ../../native-component-list/src/screens/ModulesCore */,
 			);
 			name = BareExpo;
 			productName = BareExpo;

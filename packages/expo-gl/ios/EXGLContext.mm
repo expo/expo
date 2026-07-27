@@ -177,7 +177,7 @@
 // - `framebuffer`: WebGLFramebuffer that we will be reading from. If not specified, the default framebuffer for this context will be used.
 // - `rect`: { x, y, width, height } object used to crop the snapshot.
 // - `format`: "jpeg" or "png" - specifies what type of compression and file extension should be used.
-// - `compress`: A value in 0 - 1 range specyfing compression level. JPEG format only.
+// - `compress`: A value in 0 - 1 range specifying compression level. JPEG format only.
 - (void)takeSnapshotWithOptions:(nonnull NSDictionary *)options
                         resolve:(EXPromiseResolveBlock)resolve
                          reject:(EXPromiseRejectBlock)reject

@@ -10,7 +10,11 @@ import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
 import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync, maybeGetRealPathAsync } from './Utils';
+import {
+  createAutolinkingHashSourceAsync,
+  getFileBasedHashSourceAsync,
+  maybeGetRealPathAsync,
+} from './Utils';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 
@@ -100,6 +104,7 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
       config,
       contentsId: 'rncoreAutolinkingConfig',
       reasons: ['rncoreAutolinking'],
+      nativeModuleSourceType: options.nativeModuleSourceType,
     });
     return results;
   } catch (e) {
@@ -133,6 +138,7 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
       config,
       contentsId: 'rncoreAutolinkingConfig:android',
       reasons: ['rncoreAutolinkingAndroid'],
+      nativeModuleSourceType: options.nativeModuleSourceType,
       platform: 'android',
     });
     return results;
@@ -167,6 +173,7 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
       config,
       contentsId: 'rncoreAutolinkingConfig:ios',
       reasons: ['rncoreAutolinkingIos'],
+      nativeModuleSourceType: options.nativeModuleSourceType,
       platform: 'ios',
     });
     return results;
@@ -181,11 +188,13 @@ async function parseCoreAutolinkingSourcesAsync({
   reasons,
   contentsId,
   platform,
+  nativeModuleSourceType,
 }: {
   config: any;
   reasons: string[];
   contentsId: string;
   platform?: string;
+  nativeModuleSourceType: 'files' | 'package';
 }): Promise<HashSource[]> {
   const logTag = platform
     ? `react-native core autolinking dir for ${platform}`
@@ -198,7 +207,9 @@ async function parseCoreAutolinkingSourcesAsync({
       stripRncoreAutolinkingAbsolutePaths(depData, root);
       const filePath = toPosixPath(depData.root);
       debug(`Adding ${logTag} - ${chalk.dim(filePath)}`);
-      results.push({ type: 'dir', filePath, reasons });
+      results.push(
+        await createAutolinkingHashSourceAsync(root, filePath, reasons, nativeModuleSourceType)
+      );
 
       autolinkingConfig[depName] = depData;
     } catch (e) {

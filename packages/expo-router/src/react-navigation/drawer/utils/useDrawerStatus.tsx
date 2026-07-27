@@ -5,7 +5,7 @@ import type { DrawerStatus } from '../../native';
 import { DrawerStatusContext } from './DrawerStatusContext';
 
 /**
- * Hook to detect if the drawer's status in a parent navigator.
+ * Hook to detect the drawer's status in a parent navigator.
  * Returns 'open' if the drawer is open, 'closed' if the drawer is closed.
  */
 export function useDrawerStatus(): DrawerStatus {

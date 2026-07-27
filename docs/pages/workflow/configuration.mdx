@@ -69,11 +69,13 @@ Library authors can extend the app config by using [Expo Config plugins](/config
 For more customization, you can use the JavaScript (**app.config.js**) or [TypeScript](#using-typescript-for-configuration-appconfigts-instead-of-appconfigjs) (**app.config.ts**). These configs have the following properties:
 
 - Comments, variables, and single quotes.
-- ESM import syntax (the `import` keyword) is not supported, except when using [TypeScript with `tsx`](/guides/typescript/#appconfigjs). JS files that are compatible with your current version of Node.js can be imported with `require()`.
-- TypeScript support with nullish coalescing and optional chaining.
+- ESM `import` syntax in both **app.config.js** and **app.config.ts**, including importing other JavaScript files.
+- TypeScript support (**app.config.ts**) with nullish coalescing and optional chaining. Importing other TypeScript files or customizing language features requires [`tsx`](/guides/typescript/#appconfigjs).
 - Updated whenever Metro bundler reloads.
 - Provide environment information to your app.
 - Does not support Promises.
+
+> **info** **Note**: **app.config.mts**, **app.config.cts**, **app.config.mjs**, and **app.config.cjs** files are also discovered. By default, the config is transpiled to CommonJS and both `.js` and `.ts` files can mix ESM and CommonJS syntax. When that mix causes import or require issues, use one of the explicit extensions to lock the config to a single module format.
 
 For example, you can export an object to define your custom config:
 

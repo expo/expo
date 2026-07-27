@@ -1,0 +1,27 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+
+| Property           | Type   | Required    | Description                                                                                                             |
+| ------------------ | ------ | ----------- | ----------------------------------------------------------------------------------------------------------------------- |
+| `query`            | string | <YesIcon /> | A HogQL query. The first column of the first row must be a single number.                                               |
+| `operator`         | string | <YesIcon /> | Comparison operator. One of `lt`, `lte`, `gt`, `gte`, or `eq`. The step clears when `value <operator> threshold` holds. |
+| `threshold`        | number | <YesIcon /> | The value to compare the query result against.                                                                          |
+| `timeout_seconds`  | number | <NoIcon />  | Maximum time to wait, in seconds. Defaults to `600`.                                                                    |
+| `interval_seconds` | number | <NoIcon />  | Time between checks, in seconds. Defaults to `30`.                                                                      |
+| `api_key`          | string | <NoIcon />  | PostHog personal API key. Defaults to the `POSTHOG_CLI_API_KEY` environment variable. Requires the `query:read` scope.  |
+| `project_id`       | string | <NoIcon />  | PostHog project ID. Defaults to the `POSTHOG_CLI_PROJECT_ID` environment variable.                                      |
+
+##### Outputs
+
+| Property | Type   | Description                                     |
+| -------- | ------ | ----------------------------------------------- |
+| `value`  | string | The metric value that satisfied the comparison. |
+
+<BoxLink
+  title="eas/posthog_wait_for_metric source code"
+  description="View the source code for the eas/posthog_wait_for_metric function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/waitForPosthogMetric.ts"
+/>

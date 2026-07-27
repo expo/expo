@@ -22,7 +22,7 @@ export function ApiVersionSelect() {
         'flex flex-col gap-1 border-b border-b-default bg-default px-4 pt-3 pb-4',
         'max-lg:sticky max-lg:top-0 max-lg:z-10'
       )}>
-      <FOOTNOTE theme="tertiary">Reference version</FOOTNOTE>
+      <FOOTNOTE theme="secondary">Reference version</FOOTNOTE>
       <Select
         id="api-version-select"
         className="min-w-full"

@@ -41,11 +41,11 @@ type Props = {
    */
   inactiveTintColor?: ColorValue;
   /**
-   * Background color for item when its active.
+   * Background color for item when it's active.
    */
   activeBackgroundColor?: ColorValue;
   /**
-   * Background color for item when its inactive.
+   * Background color for item when it's inactive.
    */
   inactiveBackgroundColor?: ColorValue;
   /**

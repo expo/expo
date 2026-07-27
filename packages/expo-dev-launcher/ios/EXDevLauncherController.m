@@ -315,7 +315,7 @@ static const NSTimeInterval EXDevLauncherDefaultRequestTimeout = 10.0;
   }
 
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
-    // edgecase: this is a dev launcher url but it doesnt specify what url to open
+    // edgecase: this is a dev launcher url but it doesn't specify what url to open
     // fallback to navigating to the launcher home screen
     [self launchDefaultUrlFallbackOrNavigateToLauncher];
     return true;

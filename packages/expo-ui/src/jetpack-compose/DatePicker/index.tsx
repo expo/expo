@@ -113,7 +113,7 @@ export interface DateTimePickerProps {
    */
   variant?: AndroidVariant;
   /**
-   * Show to button to toggle between variants on Android.
+   * Show a button to toggle between variants on Android.
    * @default true
    */
   showVariantToggle?: boolean;

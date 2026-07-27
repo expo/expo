@@ -6,8 +6,8 @@ import path from 'path';
 import { loadConfigAsync } from './Config';
 import { satisfyExpoVersion } from './ExpoResolver';
 import type { Config, NormalizedOptions, Options, Platform } from './Fingerprint.types';
+import { DEFAULT_PRESET, resolvePreset } from './Presets';
 import { resolveProjectWorkflowAsync } from './ProjectWorkflow';
-import { SourceSkips } from './sourcer/SourceSkips';
 import { appendIgnorePath, buildDirMatchObjects, buildPathMatchObjects } from './utils/Path';
 
 export const FINGERPRINT_IGNORE_FILENAME = '.fingerprintignore';
@@ -77,13 +77,14 @@ export const DEFAULT_IGNORE_PATHS = [
   '**/node_modules/@shopify/react-native-skia/libs/**/*',
 ];
 
-export const DEFAULT_SOURCE_SKIPS = SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun;
+export const DEFAULT_SOURCE_SKIPS = resolvePreset(DEFAULT_PRESET).sourceSkips;
 
 export async function normalizeOptionsAsync(
   projectRoot: string,
   options?: Options
 ): Promise<NormalizedOptions> {
   const config = await loadConfigAsync(projectRoot, options?.silent ?? false);
+  const preset = resolvePreset(options?.preset ?? config?.preset ?? DEFAULT_PRESET);
   const ignorePathMatchObjects = await collectIgnorePathsAsync(
     projectRoot,
     config?.ignorePaths,
@@ -97,14 +98,16 @@ export async function normalizeOptionsAsync(
     appendIgnorePath(ignorePathMatchObjects, 'ios/**/*');
   }
   return {
-    // Defaults
+    // Defaults, derived from the resolved preset
     platforms: ['android', 'ios'],
     concurrentIoLimit: os.cpus().length,
     hashAlgorithm: 'sha1',
-    sourceSkips: DEFAULT_SOURCE_SKIPS,
+    sourceSkips: preset.sourceSkips,
+    nativeModuleSourceType: preset.nativeModuleSourceType,
+    configPluginSourceType: preset.configPluginSourceType,
     // Options from config
     ...config,
-    // Explicit options
+    // Explicit options (any explicitly provided value replaces the preset default)
     ...Object.fromEntries(Object.entries(options ?? {}).filter(([_, v]) => v != null)),
     // These options are computed by both default and explicit options, so we put them last.
     enableReactImportsPatcher:

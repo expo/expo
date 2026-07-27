@@ -4,9 +4,10 @@ import * as Log from '../log';
 import { env } from './env';
 import { CommandError } from './errors';
 import { testPortAsync, freePortAsync } from './freeport';
+import { isInteractive } from './interactive';
 
 /** Get a free port or assert a CLI command error. */
-export async function getFreePortAsync(rangeStart: number): Promise<number> {
+async function getFreePortAsync(rangeStart: number): Promise<number> {
   const port = await freePortAsync(rangeStart, [null, 'localhost']);
   if (!port) {
     throw new CommandError('NO_PORT_FOUND', 'No available port found');
@@ -70,10 +71,13 @@ export async function choosePortAsync(
     defaultPort,
     host,
     reuseExistingPort,
+    explicitPort,
   }: {
     defaultPort: number;
     host?: string;
     reuseExistingPort?: boolean;
+    /** Whether the port was explicitly requested (e.g. via `--port`) rather than a default. */
+    explicitPort?: boolean;
   }
 ): Promise<number | null> {
   try {
@@ -108,6 +112,20 @@ export async function choosePortAsync(
     }
 
     Log.log(`\u203A ${message}`);
+
+    if (!isInteractive()) {
+      // An explicitly requested port is a hard requirement
+      if (explicitPort) {
+        throw new CommandError(
+          'PORT_IN_USE',
+          `Port ${defaultPort} is unavailable and 'npx expo' is running in non-interactive mode, so it can't prompt to use another port. Free port ${defaultPort} by stopping the process using it, or re-run with an available '--port'.`
+        );
+      } else {
+        Log.log(`\u203A Using port ${port} instead`);
+        return port;
+      }
+    }
+
     const { confirmAsync } = require('./prompts') as typeof import('./prompts');
     const change = await confirmAsync({
       message: `Use port ${port} instead?`,
@@ -141,19 +159,22 @@ export async function resolvePortAsync(
     fallbackPort?: number;
   } = {}
 ): Promise<number | null> {
+  // NOTE(@kitten): We treat `--port` and `RCT_METRO_PORT` as the fixed preferred ports
+  const requestedMetroPort = env.RCT_METRO_PORT;
+  const preferredPort = requestedMetroPort || fallbackPort || 8081;
+
   let port: number;
   if (typeof defaultPort === 'string') {
     port = parseInt(defaultPort, 10);
   } else if (typeof defaultPort === 'number') {
     port = defaultPort;
   } else {
-    port = env.RCT_METRO_PORT || fallbackPort || 8081;
+    port = preferredPort;
   }
 
-  // Port 0 means "pick any available port" — scan from the fallback port without prompting.
+  // Port 0 means "pick any available port"
   if (port === 0) {
-    const scanFrom = env.RCT_METRO_PORT || fallbackPort || 8081;
-    const resolvedPort = await getFreePortAsync(scanFrom);
+    const resolvedPort = await getFreePortAsync(preferredPort);
     process.env.RCT_METRO_PORT = String(resolvedPort);
     return resolvedPort;
   }
@@ -162,6 +183,7 @@ export async function resolvePortAsync(
   const resolvedPort = await choosePortAsync(projectRoot, {
     defaultPort: port,
     reuseExistingPort,
+    explicitPort: defaultPort != null || !!requestedMetroPort,
   });
   if (resolvedPort == null) {
     Log.log('\u203A Skipping dev server');

@@ -218,7 +218,7 @@ jobject ArrayBufferFrontendConverter::convert(
   return ArrayBuffer::newInstance(
     jsiContext,
     rt,
-    arrayBuffer
+    std::move(arrayBuffer)
   ).release();
 }
 

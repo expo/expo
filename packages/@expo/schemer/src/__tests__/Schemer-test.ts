@@ -93,7 +93,9 @@ describe('Manual Validation Individual Unit Tests', () => {
       { properties: { icon: { meta: { asset: true, square: true } } } },
       { rootDir: __dirname }
     );
-    expect(await customValidator.validateAssetsAsync({ icon: './fixtures/check.png' })).toBeUndefined();
+    expect(
+      await customValidator.validateAssetsAsync({ icon: './fixtures/check.png' })
+    ).toBeUndefined();
   });
 
   it('Local icon dimensions wrong', async () => {
@@ -134,7 +136,9 @@ describe('Manual Validation Individual Unit Tests', () => {
       },
       { rootDir: __dirname }
     );
-    expect(await customValidator.validateAssetsAsync({ icon: './fixtures/test.icon' })).toBeUndefined();
+    expect(
+      await customValidator.validateAssetsAsync({ icon: './fixtures/test.icon' })
+    ).toBeUndefined();
   });
 
   it('iOS .icon directory fails validation - does not exist', async () => {

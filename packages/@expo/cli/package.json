@@ -53,6 +53,7 @@
     "test:playwright": "playwright test --config e2e/playwright.config.ts"
   },
   "dependencies": {
+    "2g": "^0.4.3",
     "@expo/code-signing-certificates": "^0.0.6",
     "@expo/config": "workspace:~56.0.9",
     "@expo/config-plugins": "workspace:~56.0.8",
@@ -86,7 +87,6 @@
     "ci-info": "^3.3.0",
     "compression": "^1.7.4",
     "connect": "^3.7.0",
-    "debug": "^4.3.4",
     "dnssd-advertise": "^1.1.6",
     "expo-server": "workspace:^56.0.4",
     "fetch-nodeshim": "^0.4.10",
@@ -124,7 +124,6 @@
     "@types/babel__core": "^7.20.5",
     "@types/connect": "^3.4.33",
     "@types/cross-spawn": "^6.0.6",
-    "@types/debug": "^4.1.7",
     "@types/eslint": "^8.56.12",
     "@types/execa": "^0.9.0",
     "@types/express": "^5.0.3",

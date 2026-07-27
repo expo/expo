@@ -71,7 +71,7 @@ open class HomeActivity : AppCompatActivity() {
 
     updateStatusBarForTheme(viewModel.selectedTheme.value)
 
-    ExperienceRTLManager.setRTLPreferences(this, allowRTL = false, forceRTL = false)
+    ExperienceRTLManager.setRTLPreferences(this, supportsRTL = false, forcesRTL = false)
 
     val contentView = ComposeView(this).apply {
       setContent {

@@ -24,7 +24,7 @@ import { LogBoxLog } from './log-box/LogBoxLog';
 import type { CodeFrame, StackFrame as MetroStackFrame } from './log-box/LogBoxSymbolication';
 import { getStackFormattedLocation } from './log-box/formatProjectFilePath';
 
-const isDebug = require('debug').enabled('expo:start:server:metro');
+const isDebug = env.EXPO_DEBUG;
 
 function fill(width: number): string {
   return Array(width).join(' ');
