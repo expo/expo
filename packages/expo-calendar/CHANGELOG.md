@@ -12,6 +12,7 @@
 - Throw `UnavailabilityError` when iOS-only Reminders and Sources APIs (`listReminders()`, `createReminder()`, `ExpoCalendarReminder.get/update/delete`, `requestRemindersPermissions()`, `getRemindersPermissions()`, and `getSourcesSync()`) are called on non-iOS platforms. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
 - Return a denied permission response from `useRemindersPermissions()` on non-iOS platforms instead of throwing. ([#46416](https://github.com/expo/expo/pull/46416) by [@kota113](https://github.com/kota113))
 - [ios] Fix typo in the internal permissions exception name (`MissionPermissionsException` -> `MissingPermissionsException`), which corrects the error code surfaced to JS from `ERR_MISSION_PERMISSIONS` to `ERR_MISSING_PERMISSIONS`. ([#47804](https://github.com/expo/expo/pull/47804) by [@conanm](https://github.com/conanm))
+- [iOS] Allow `getDefaultCalendarSync`, `getCalendars` and `ExpoCalendar.get` to work with write-only calendar access. ([#48186](https://github.com/expo/expo/pull/48186) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
