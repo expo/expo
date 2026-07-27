@@ -110,11 +110,9 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     }
 
     func getArrayBuffer() throws -> JavaScriptArrayBuffer {
-      guard
-        let arrayBuffer = try backingValue.withValue({
-          value in try value?.getArrayBuffer()
-        })
-      else {
+      // The backing value is initialized only from a verified ArrayBuffer, so it can later
+      // become empty but cannot change type — `getArrayBuffer()` is safe here.
+      guard let arrayBuffer = backingValue.withValue({ $0?.getArrayBuffer() }) else {
         throw ArrayBufferJSBytesAccessException("JavaScript-backed ArrayBuffer was released")
       }
       return arrayBuffer
@@ -123,12 +121,17 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
 
   private weak var runtime: JavaScriptRuntime?
   private let longLivedState = LongLivedState()
+  // Captured at init so deinit can deregister through the collection, not the runtime: holding
+  // the collection can't prolong the runtime's lifetime, and the queued cleanup no longer
+  // depends on the runtime wrapper still existing when it drains.
+  private let longLivedObjects: LongLivedObjectCollection
   let byteOffset: Int
   let byteLength: Int
 
   @JavaScriptActor
   init(runtime: JavaScriptRuntime, backingValue: JavaScriptValue, byteOffset: Int, byteLength: Int) {
     self.runtime = runtime
+    self.longLivedObjects = runtime.longLivedObjects
     longLivedState.backingValue.reset(backingValue)
     runtime.longLivedObjects.add(longLivedState)
     self.byteOffset = byteOffset
@@ -141,20 +144,18 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     }
     if runtime.isOnJavaScriptThread() {
       JavaScriptActor.assumeIsolated {
-        runtime.longLivedObjects.remove(longLivedState)
+        longLivedObjects.remove(longLivedState)
         longLivedState.allowRelease()
       }
       return
     }
     guard runtime.supportsAsyncScheduling else {
-      // Schedulerless runtimes defer release to the JavaScript-thread teardown sweep.
+      // Schedulerless runtimes deliberately keep the retained value alive until the
+      // JavaScript-thread teardown sweep releases it.
       return
     }
-    runtime.schedule(priority: .immediate) { [weak runtime, longLivedState] in
-      guard let runtime else {
-        return
-      }
-      runtime.longLivedObjects.remove(longLivedState)
+    runtime.schedule(priority: .immediate) { [longLivedState, longLivedObjects] in
+      longLivedObjects.remove(longLivedState)
       longLivedState.allowRelease()
     }
   }
@@ -221,6 +222,11 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
   ) throws -> R {
     let arrayBuffer = try longLivedState.getArrayBuffer()
     try validateBounds(arrayBuffer)
+    guard byteLength > 0 else {
+      // A zero-length range passes bounds validation even for a detached buffer (size 0),
+      // and there is nothing to read anyway, so never touch `data()` for it.
+      return try body(UnsafeRawBufferPointer(start: nil, count: 0))
+    }
     return try body(UnsafeRawBufferPointer(start: arrayBuffer.data().advanced(by: byteOffset), count: byteLength))
   }
 
@@ -230,6 +236,11 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
   ) throws -> R {
     let arrayBuffer = try longLivedState.getArrayBuffer()
     try validateBounds(arrayBuffer)
+    guard byteLength > 0 else {
+      // A zero-length range passes bounds validation even for a detached buffer (size 0),
+      // and there is nothing to mutate anyway, so never touch `data()` for it.
+      return try body(UnsafeMutableRawBufferPointer(start: nil, count: 0))
+    }
     return try body(
       UnsafeMutableRawBufferPointer(start: arrayBuffer.data().advanced(by: byteOffset), count: byteLength))
   }
