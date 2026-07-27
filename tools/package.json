@@ -2,17 +2,19 @@
   "name": "expotools",
   "version": "1.0.0",
   "description": "A set of commands and libraries for working within the Expo repository",
-  "main": "build/expotools.js",
+  "license": "MIT",
+  "author": "support@expo.dev",
+  "bin": {
+    "et": "bin/expotools.js",
+    "expotools": "bin/expotools.js"
+  },
   "files": [
     "bin",
     "build",
     "scripts",
     "templates"
   ],
-  "bin": {
-    "et": "bin/expotools.js",
-    "expotools": "bin/expotools.js"
-  },
+  "main": "build/expotools.js",
   "scripts": {
     "build": "expo-build cjs:src=build",
     "clean": "rm -rf build cache",
@@ -20,17 +22,15 @@
     "lint": "eslint .",
     "test": "pnpm build && node --test 'build/**/*.test.js'"
   },
-  "author": "support@expo.dev",
-  "license": "MIT",
   "dependencies": {
     "@expo/commander": "2.21.1",
     "@expo/json-file": "workspace:*",
     "@expo/multipart-body-parser": "^1.1.0",
     "@expo/osascript": "workspace:*",
     "@expo/plist": "workspace:*",
-    "@expo/xcpretty": "^4.4.4",
     "@expo/spawn-async": "^1.8.0",
     "@expo/swiftlint": "^0.57.1",
+    "@expo/xcpretty": "^4.4.4",
     "@linear/sdk": "^2.6.0",
     "@octokit/rest": "^19.0.7",
     "chalk": "^4.1.2",
@@ -59,7 +59,7 @@
     "recursive-omit-by": "^2.0.0",
     "semver": "^7.6.3",
     "strip-ansi": "^6.0.0",
-    "tar": "^7.5.12",
+    "tar": "^7.5.22",
     "terminal-link": "^2.1.1",
     "typedoc": "^0.28.19",
     "uuid": "^9.0.0"
