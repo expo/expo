@@ -113,12 +113,6 @@
 /bare/updating-your-app/ /eas-update/getting-started 301
 /technical-specs/expo-updates-0 /technical-specs/expo-updates-1 301
 /technical-specs/expo-updates-0/ /technical-specs/expo-updates-1 301
-/archive/expokit/eject /archive/glossary 301
-/archive/expokit/eject/ /archive/glossary 301
-/archive/expokit/overview /archive/glossary 301
-/archive/expokit/overview/ /archive/glossary 301
-/expokit/overview /archive/glossary 301
-/expokit/overview/ /archive/glossary 301
 /bare/existing-apps /bare/installing-expo-modules 301
 /bare/existing-apps/ /bare/installing-expo-modules 301
 /bare/exploring-bare-workflow /bare/overview 301
@@ -185,8 +179,8 @@
 /distribution/custom-updates-server/ /versions/latest/sdk/updates 301
 /bare/error-recovery /eas-update/error-recovery 301
 /bare/error-recovery/ /eas-update/error-recovery 301
-/deploy/instant-updates /eas-update/send-over-the-air-updates 301
-/deploy/instant-updates/ /eas-update/send-over-the-air-updates 301
+/deploy/instant-updates /deploy/send-over-the-air-updates 301
+/deploy/instant-updates/ /deploy/send-over-the-air-updates 301
 /eas-update/publish /eas-update/getting-started 301
 /eas-update/publish/ /eas-update/getting-started 301
 /eas-update/debug-advanced /eas-update/debug 301
@@ -245,8 +239,6 @@
 /versions/latest/sdk/taskmanager/ /versions/latest/sdk/task-manager 301
 /versions/latest/sdk/videothumbnails /versions/latest/sdk/video-thumbnails 301
 /versions/latest/sdk/videothumbnails/ /versions/latest/sdk/video-thumbnails 301
-/versions/latest/sdk/appearance /versions/latest/react-native/appearance 301
-/versions/latest/sdk/appearance/ /versions/latest/react-native/appearance 301
 /versions/latest/sdk/app-loading /versions/latest/sdk/splash-screen 301
 /versions/latest/sdk/app-loading/ /versions/latest/sdk/splash-screen 301
 /versions/latest/sdk/app-auth /guides/authentication 301

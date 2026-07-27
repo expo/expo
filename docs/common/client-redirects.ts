@@ -217,7 +217,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/building-standalone-apps/': '/build/setup/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
-  '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
   '/development/build/':
@@ -234,7 +233,6 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
-  '/guides/expokit/': '/archive/glossary/#expokit/',
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/up-and-running/': '/get-started/create-a-project/',
@@ -276,7 +274,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/api/': '/versions/latest/',
 
   // Redirect to expand Expo Accounts and permissions
-  '/guides/account-permissions/': '/accounts/personal/',
+  '/guides/account-permissions/': '/accounts/account-types/',
 
   // Redirects based on Sentry reports
   '/next-steps/installation/': '/get-started/create-a-project/',
@@ -285,7 +283,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/push-notifications/': '/push-notifications/overview/',
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
   '/get-started/': '/get-started/create-a-project/',
-  '/guides/detach/': '/archive/glossary/#detach',
   '/workflow/snack/': '/more/glossary-of-terms/#snack',
   '/eas/submit/': '/deploy/submit-to-app-stores/',
   '/submit/introduction/': '/deploy/submit-to-app-stores/',
@@ -305,7 +302,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
   // Archive unused pages
-  '/guides/notification-channels/': '/archive/notification-channels/',
+  '/guides/notification-channels/': '/archive/push-notifications/notification-channels/',
 
   // Permissions API is moved to guide
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
@@ -327,14 +324,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/security/': '/app-signing/security/',
 
   // Redirects for removed/archived pages or guides
-  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
-  '/expokit/eject/': '/archive/glossary/#eject',
-  '/expokit/expokit/': '/archive/glossary/#expokit',
   '/submit/classic-builds/': '/deploy/submit-to-app-stores/',
   '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
   '/technical-specs/latest/': '/technical-specs/expo-updates-1/',
-  '/archive/expokit/overview/': '/archive/glossary/',
-  '/expokit/overview/': '/archive/glossary/',
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
   '/workflow/already-used-react-native/': '/workflow/overview/',
   '/development/installation/':
@@ -394,7 +386,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/hermes/': '/guides/using-hermes/',
   '/config/app/': '/workflow/configuration/',
   '/versions/latest/sdk/settings/': '/versions/latest/',
-  '/archive/expokit/eject/': '/archive/glossary/#eject',
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
   '/distribution/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
