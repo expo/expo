@@ -79,11 +79,11 @@ function ModifiersExample() {
 
 > **info** You can also create custom modifiers that work with any Expo UI component. See the [Extending with SwiftUI](/guides/expo-ui-swift-ui/extending/) guide for details.
 
-## Searchable
+### Searchable
 
-Use the `searchable` modifier to attach a native SwiftUI search field to a view. The search text is backed by `useNativeState`, matching SwiftUI's `Binding<String>`. Provide `onChange` to update your data as the search text changes.
+Use the `searchable` modifier to attach a native SwiftUI search field to a view. Pass a [`useNativeState`](/versions/latest/sdk/ui/swift-ui/usenativestate/) observable to hold the search text, which maps to SwiftUI's `Binding<String>`. Provide `onChange` to update your data as the search text changes.
 
-```tsx
+```tsx SearchableExample.tsx
 import { Host, List, Text, useNativeState } from '@expo/ui/swift-ui';
 import { searchable } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';

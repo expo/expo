@@ -52,6 +52,7 @@ function normalizePlacement(placement?: SearchablePlacement) {
  * @param options.placement - The preferred search field placement.
  * @param options.prompt - Text shown as the search field prompt.
  * @platform ios 16.4+
+ * @platform tvos 16.4+
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/searchable(text:placement:prompt:)).
  */
 export const searchable = (text: ObservableState<string>, options?: SearchableOptions) => {
