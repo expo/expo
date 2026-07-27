@@ -319,7 +319,11 @@ struct SharedObjectRegistryTests {
       let nativeObject = TestSharedObject()
       let id = sharedObjectRegistry.add(native: nativeObject, javaScript: runtime.createObject())
       sharedObjectRegistry.delete(id)
-      await eventually { nativeObject.sharedObjectId == 0 }
+      // The id is reset asynchronously after delete; poll on the actor until it settles.
+      let deadline = Date().addingTimeInterval(1.0)
+      while nativeObject.sharedObjectId != 0 && Date() < deadline {
+        try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
+      }
       #expect(nativeObject.sharedObjectId == 0)
     }
   }
@@ -378,13 +382,6 @@ struct SharedObjectRegistryTests {
       let nativeObject = TestSharedObject()
 //        #expect(sharedObjectRegistry.toJavaScriptObject(nativeObject) == nil)
     }
-  }
-}
-
-fileprivate func eventually(timeout: TimeInterval = 1.0, _ condition: () -> Bool) async {
-  let deadline = Date().addingTimeInterval(timeout)
-  while !condition() && Date() < deadline {
-    try? await Task.sleep(nanoseconds: 10_000_000) // 10ms
   }
 }
 

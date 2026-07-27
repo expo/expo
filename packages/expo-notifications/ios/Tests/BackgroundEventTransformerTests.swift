@@ -57,7 +57,7 @@ struct BackgroundEventTransformerTests {
     @Test
     func `which is a headless background notification, transforms the payload into the expected format`() {
       // Given
-      let inputPayload = [
+      let inputPayload: [AnyHashable: Any] = [
         "aps": [
           "category": "submit_reply_placeholder",
           "content-available": 1,
@@ -98,7 +98,7 @@ struct BackgroundEventTransformerTests {
     @Test
     func `which contains an alert field in aps, populates the notification entry`() {
       // Given
-      let inputPayload = [
+      let inputPayload: [AnyHashable: Any] = [
         "aps": [
           "alert": [
             "title": "Hello",

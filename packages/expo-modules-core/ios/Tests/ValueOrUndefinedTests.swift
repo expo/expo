@@ -8,8 +8,8 @@ import Testing
 struct ValueOrUndefinedTests {
   @Suite("operators")
   struct OperatorTests {
-    @Test
-    func `==`() {
+    @Test("==")
+    func equalsOperator() {
       #expect(
         ValueOrUndefined<Int>.undefined == ValueOrUndefined<Int>.undefined
       )
@@ -24,8 +24,8 @@ struct ValueOrUndefinedTests {
       )
     }
 
-    @Test
-    func `<`() {
+    @Test("<")
+    func lessThanOperator() {
       #expect(
         !(ValueOrUndefined<Int>.undefined < ValueOrUndefined<Int>.undefined)
       )

@@ -73,7 +73,7 @@ struct RecordTests {
         @Field var a: StringEnum = .created
         @Field var b: IntEnum?
       }
-      let dict = ["a": "deleted", "b": 1]
+      let dict: [String: Any] = ["a": "deleted", "b": 1]
       let record = try TestRecord(from: dict, appContext: appContext)
 
       #expect(record.a == StringEnum.deleted)
