@@ -12,7 +12,7 @@
 
 ### 💡 Others
 
-- Bump to `react-server-dom-webpack@~19.0.8`
+- Bump to `react-server-dom-webpack@~19.0.8` ([#48178](https://github.com/expo/expo/pull/48178) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.4 — 2026-05-20
 
