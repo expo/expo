@@ -61,20 +61,33 @@ function extractJson(output: string): any {
 
 // Changed repo-relative paths since the merge base with `scmBase`, including uncommitted
 // and untracked files so local runs see work in progress the same way turbo does.
+//
+// Both git commands use `-z` (NUL-separated records). This disables `core.quotePath`, which
+// otherwise wraps paths with spaces or non-ASCII bytes in literal double quotes — those quotes
+// would defeat the `^`-anchored `INFRA_PATH_PATTERNS`, silently skipping tests for such a change.
+// It also makes rename entries unambiguous instead of relying on a ` -> ` separator that a path
+// could itself contain.
 async function getChangedFilesAsync(scmBase: string): Promise<string[]> {
   const cwd = Directories.getExpoRepositoryRootDir();
   const mergeBase = (
     await spawnAsync('git', ['merge-base', scmBase, 'HEAD'], { cwd })
   ).stdout.trim();
-  const committed = (
-    await spawnAsync('git', ['diff', '--name-only', `${mergeBase}...HEAD`], { cwd })
-  ).stdout
-    .split('\n')
-    .filter(Boolean);
-  const workingTree = (await spawnAsync('git', ['status', '--porcelain'], { cwd })).stdout
-    .split('\n')
-    .filter(Boolean)
-    // Lines look like `XY path` or `XY old -> new` for renames — take the current path.
-    .map((line) => line.slice(3).split(' -> ').pop()!);
+  const committed = splitNulRecords(
+    (await spawnAsync('git', ['diff', '-z', '--name-only', `${mergeBase}...HEAD`], { cwd })).stdout
+  );
+  // `git status --porcelain=v1 -z` emits `XY <path>` records; for a rename it's two records:
+  // `XY <new>` then `<orig>`, so the current path is always the record that starts with a status
+  // code. Take those, stripping the `XY ` prefix.
+  const workingTree = splitNulRecords(
+    (await spawnAsync('git', ['status', '--porcelain=v1', '-z'], { cwd })).stdout
+  )
+    .filter((record) => /^[ MADRCU?!]{2} /.test(record))
+    .map((record) => record.slice(3));
   return [...new Set([...committed, ...workingTree])];
+}
+
+// Splits git's `-z` output into records. The final record is NUL-terminated too, so the trailing
+// empty segment is dropped.
+function splitNulRecords(output: string): string[] {
+  return output.split('\0').filter(Boolean);
 }
