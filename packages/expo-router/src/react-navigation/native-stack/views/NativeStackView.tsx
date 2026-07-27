@@ -21,6 +21,7 @@ import {
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
+  NativeStackNavigationConfig,
   NativeStackNavigationHelpers,
 } from '../types';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
@@ -31,11 +32,16 @@ type Props = {
   navigation: NativeStackNavigationHelpers;
   descriptors: NativeStackDescriptorMap;
   describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
-};
+} & NativeStackNavigationConfig;
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 
-export function NativeStackView({ state, descriptors, describe }: Props) {
+export function NativeStackView({
+  state,
+  descriptors,
+  describe,
+  unstable_nativeProps: _unstableNativeProps,
+}: Props) {
   const parentHeaderBack = use(HeaderBackContext);
   const { buildHref } = useLinkBuilder();
 

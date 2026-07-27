@@ -3,6 +3,8 @@
 import Stack from './_web-modal';
 import { StackScreen, StackHeader, StackTitle, StackToolbar } from './stack-utils';
 
+export type { StackProps } from './StackClient';
+
 Stack.Screen = StackScreen;
 Stack.Header = StackHeader;
 Stack.Title = StackTitle;

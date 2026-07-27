@@ -34,6 +34,17 @@ export interface StackScreenProps extends PropsWithChildren {
   options?: StackBaseScreenProps['options'];
 
   /**
+   * Props passed to the underlying native screen implementation in `react-native-screens`.
+   * These props override values set through `options`.
+   *
+   * > **Note:** This is an unstable API and may change or be removed in minor versions.
+   *
+   * @platform android
+   * @platform ios
+   */
+  unstable_nativeProps?: NativeStackNavigationOptions['unstable_nativeProps'];
+
+  /**
    * Redirect to the nearest sibling route.
    * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
    *
@@ -95,7 +106,7 @@ export interface StackScreenProps extends PropsWithChildren {
  * ```
  */
 export const StackScreen = Object.assign(
-  function StackScreen({ children, options, ...rest }: StackScreenProps) {
+  function StackScreen({ children, options, unstable_nativeProps, ...rest }: StackScreenProps) {
     // This component will only render when used inside a page.
     if (process.env.NODE_ENV !== 'production' && typeof options === 'function') {
       console.warn(
@@ -103,10 +114,13 @@ export const StackScreen = Object.assign(
       );
     }
 
-    const ownOptions = useMemo(
-      () => validateStackPresentation(typeof options === 'function' ? {} : (options ?? {})),
-      [options]
-    );
+    const ownOptions = useMemo(() => {
+      const resolvedOptions = typeof options === 'function' ? {} : (options ?? {});
+      return validateStackPresentation({
+        ...resolvedOptions,
+        ...(unstable_nativeProps ? { unstable_nativeProps } : {}),
+      });
+    }, [options, unstable_nativeProps]);
 
     return (
       <>
@@ -168,7 +182,11 @@ export function appendScreenStackPropsToOptions(
   options: NativeStackNavigationOptions,
   props: StackScreenProps
 ): NativeStackNavigationOptions {
-  let updatedOptions = { ...options, ...props.options };
+  let updatedOptions = {
+    ...options,
+    ...props.options,
+    ...(props.unstable_nativeProps ? { unstable_nativeProps: props.unstable_nativeProps } : {}),
+  };
 
   validateStackPresentation(updatedOptions);
 

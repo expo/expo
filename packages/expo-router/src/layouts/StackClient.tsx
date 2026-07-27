@@ -51,6 +51,8 @@ type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
 const NativeStackNavigator = createNativeStackNavigator().Navigator;
 
+export type StackProps = ComponentProps<typeof RNStack>;
+
 /**
  * We extend NativeStackNavigationOptions with our custom props
  * to allow for several extra props to be used on web, like modalWidth
@@ -569,7 +571,7 @@ function filterSingular<
  * @hideType
  */
 const Stack = Object.assign(
-  (props: ComponentProps<typeof RNStack>) => {
+  (props: StackProps) => {
     const { isStackAnimationDisabled } = useLinkPreviewContext();
 
     const screenOptionsWithCompositionAPIOptions = useMemo<NativeStackScreenOptions>(() => {

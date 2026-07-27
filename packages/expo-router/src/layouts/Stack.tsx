@@ -3,6 +3,8 @@ import { StackScreen, StackHeader, StackTitle } from './stack-utils';
 // Note(@ubax): Importing StackToolbar from separate file for rsc to work correctly
 import { StackToolbar } from './stack-utils/toolbar/StackToolbar';
 
+export type { StackProps } from './StackClient';
+
 Stack.Screen = StackScreen;
 Stack.Header = StackHeader;
 Stack.Title = StackTitle;
