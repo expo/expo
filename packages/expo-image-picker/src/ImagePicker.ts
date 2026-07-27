@@ -74,7 +74,7 @@ export async function getMediaLibraryPermissionsAsync(
 /**
  * Asks the user to grant permissions for accessing camera. This does nothing on web because the
  * browser camera is not used.
- * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerarollpermissionresponse).
+ * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerapermissionresponse).
  */
 export async function requestCameraPermissionsAsync(): Promise<CameraPermissionResponse> {
   return ExponentImagePicker.requestCameraPermissionsAsync();
@@ -136,7 +136,7 @@ export const useCameraPermissions = createPermissionHook({
  * @return
  * - **On Android:** a promise that resolves to an object of exactly same type as in
  * `ImagePicker.launchImageLibraryAsync` or `ImagePicker.launchCameraAsync` if the `ImagePicker`
- * finished successfully. Otherwise, an object of type [`ImagePickerErrorResult`](#imagepickerimagepickererrorresult).
+ * finished successfully. Otherwise, an object of type [`ImagePickerErrorResult`](#imagepickererrorresult).
  * - **On other platforms:** `null`
  */
 export async function getPendingResultAsync(): Promise<
