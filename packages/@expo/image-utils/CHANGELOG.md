@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Resolve `sharp` directly instead of through a global `sharp-cli` installation. Install `sharp` globally (`npm install -g sharp`) instead of `sharp-cli` for faster image processing. Requires `sharp@^0.35.0`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

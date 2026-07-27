@@ -1,7 +1,7 @@
 import type { ImageFormat, ResizeMode } from './Image.types';
 
 export type SharpGlobalOptions = {
-  compressionLevel?: '';
+  compressionLevel?: number;
   format?: ImageFormat;
   input: string;
   limitInputPixels?: number;
