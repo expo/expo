@@ -49,6 +49,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)sharedInstance;
 
++ (void)disablePackagerServerAccess;
+
 - (void)start:(id<EXDevLauncherControllerDelegate>)delegate launchOptions:(NSDictionary * _Nullable)launchOptions;
 
 - (nullable NSURL *)sourceUrl;
