@@ -930,7 +930,7 @@ build:
     # @end #
 ```
 
-The `ref` input requires Git-based project sources and must be set before [`eas/build`](#easbuild), which checks out the project internally.
+The `ref` input only works when your project sources come from a Git repository. Place the step before [`eas/build`](#easbuild), which checks out the project internally.
 
 <EASFunctionDescription name="checkout" />
 

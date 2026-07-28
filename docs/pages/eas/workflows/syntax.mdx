@@ -1853,9 +1853,9 @@ jobs:
         # @end #
 ```
 
-Branches accept a bare name or a qualified ref such as `refs/heads/feature/add-icon`, tags require a qualified ref such as `refs/tags/v1.2.3`, and a full commit SHA leaves a detached `HEAD`. The ref is fetched from the source repository's `origin` with a depth-one fetch, so it must be reachable there.
+Branches accept a bare name or a qualified ref such as `refs/heads/feature/add-icon`. Tags need the qualified form, such as `refs/tags/v1.2.3`. A full commit SHA also works and leaves the repository on a detached `HEAD`. The step performs a shallow, depth-one fetch from the source repository's `origin`, so the ref must be reachable there.
 
-`ref` requires Git-based project sources, such as a job triggered through the GitHub integration, and is not supported for local builds or uploaded project tarballs. The step must also run before any other step that checks out the project, otherwise it fails.
+`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Place the step before any other step that checks out the project. Setting `ref` after checkout fails the step.
 
 <EASFunctionDescription name="checkout" />
 
