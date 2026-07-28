@@ -20,7 +20,13 @@ target 'BareExpo-macOS' do
     '--source-dir',
     File.expand_path('.', __dir__)
   ]
-  config = use_native_modules!(config_command)
+  # `--platform ios` above misidentifies `react-native-macos` itself as an autolinkable
+  # module, since `list_native_modules!` only ever reads the `ios` key. Strip it out here.
+  native_modules_config = list_native_modules!(config_command)
+  native_modules_config[:ios_packages] = native_modules_config[:ios_packages].reject do |package|
+    package[:name] == 'react-native-macos'
+  end
+  config = link_native_modules!(native_modules_config)
 
   use_expo_modules!
 
