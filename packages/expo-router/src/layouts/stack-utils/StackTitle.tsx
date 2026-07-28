@@ -1,10 +1,10 @@
 import { useMemo, type ReactNode } from 'react';
 import { type ColorValue, StyleSheet, type StyleProp, type TextStyle } from 'react-native';
 
-import { areAllChildrenPrimitiveValues, convertChildrenToString } from './toolbar/shared';
 import { useCompositionOption } from '../../fork/native-stack/composition-options';
 import type { NativeStackNavigationOptions } from '../../react-navigation/native-stack';
 import { convertFontWeightToStringFontWeight } from '../../utils/style';
+import { areAllChildrenPrimitiveValues, convertChildrenToString } from './toolbar/shared';
 
 export type StackTitleProps = {
   /**

@@ -1,5 +1,4 @@
-import { createPermissionHook, type PermissionResponse } from 'expo';
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError, createPermissionHook, type PermissionResponse } from 'expo';
 import { Platform } from 'react-native';
 
 import { NativeMediaLibraryModule } from '../native';

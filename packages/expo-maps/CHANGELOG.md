@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Return the `Promise` from `GoogleMaps.View`'s imperative `setCameraPosition` so callers can `await` it and catch the `Animation cancelled` rejection (matches iOS). ([#46421](https://github.com/expo/expo/pull/46421) by [@chownation](https://github.com/chownation))
+- [Android] Fixed Google Maps marker info windows reserving blank snippet space when `snippet` is omitted. ([#47271](https://github.com/expo/expo/pull/47271) by [@eliotgevers](https://github.com/eliotgevers))
 
 ### 💡 Others
 

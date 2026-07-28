@@ -1,4 +1,5 @@
-import { LegacyEventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
+import { Platform, UnavailabilityError } from 'expo';
+import { LegacyEventEmitter } from 'expo-modules-core';
 import { AppRegistry } from 'react-native';
 
 import ExpoTaskManager from './ExpoTaskManager';

@@ -1,5 +1,5 @@
-import type { RouterStore } from './store';
 import { sortRoutes } from '../Route';
+import type { RouterStore } from './store';
 
 export function getSortedRoutes(this: RouterStore) {
   if (!this.routeNode) {

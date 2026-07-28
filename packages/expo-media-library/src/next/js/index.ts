@@ -1,5 +1,4 @@
-export { Asset } from './Asset';
-export { Album } from './Album';
+export { Asset, Album } from './AssetAlbum';
 export { Query } from './Query';
 export {
   requestPermissionsAsync,

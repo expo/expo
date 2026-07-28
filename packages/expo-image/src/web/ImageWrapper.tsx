@@ -1,13 +1,13 @@
 import type { Ref } from 'react';
 import React, { useEffect, useId } from 'react';
 
+import type { ImageNativeProps, ImageSource } from '../Image.types';
 import ColorTintFilter, { getTintColorStyle } from './ColorTintFilter';
 import type { ImageWrapperProps } from './ImageWrapper.types';
 import { getImageWrapperEventHandler } from './getImageWrapperEventHandler';
 import { useHeaders, useImageHashes } from './hooks';
 import { absoluteFilledPosition, getObjectPositionFromContentPositionObject } from './positioning';
 import type { SrcSetSource } from './useSourceSelection';
-import type { ImageNativeProps, ImageSource } from '../Image.types';
 
 function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'] = 'normal') {
   return priority && ['low', 'high'].includes(priority) ? priority : 'auto';

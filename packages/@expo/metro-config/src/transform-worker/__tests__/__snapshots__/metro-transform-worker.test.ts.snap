@@ -6,7 +6,7 @@ exports[`allows the constantFoldingPlugin to not remove used helpers when \`dev:
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.test = undefined;
+  exports.test = void 0;
   var test = _interopRequireWildcard(_$$_REQUIRE(_dependencyMap[1]));
   exports.test = test;
 });"

@@ -28,7 +28,7 @@ class FormDelegate: OnContactPickingResultHandler {
   private var contactPickingPromise: Promise?
   private var contactManipulationPromise: Promise?
 
-  func editWithForm(for contact: ContactNext, options: FormOptions?, promise: Promise) throws {
+  func editWithForm(for contact: ContactNext, options: EditFormOptions?, promise: Promise) throws {
     if contactManipulationPromise != nil {
       throw ContactManipulationInProgressException()
     }
@@ -40,7 +40,7 @@ class FormDelegate: OnContactPickingResultHandler {
     }
 
     var controller = ContactsViewController(for: foundContact)
-    try setControllerOptions(controller: &controller, options: options)
+    try setEditControllerOptions(controller: &controller, options: options)
 
     if let parent = appContext?.utilities?.currentViewController() {
       let navController = UINavigationController(rootViewController: controller)
@@ -52,19 +52,19 @@ class FormDelegate: OnContactPickingResultHandler {
       }
 
       contactManipulationPromise = promise
-      parent.present(navController, animated: options?.preventAnimation ?? false != true)
+      parent.present(navController, animated: options?.preventAnimation != true)
     } else {
       contactManipulationPromise = nil
       throw MissingViewControllerException()
     }
   }
 
-  func presentAddForm(contact: CNContact, options: FormOptions?, promise: Promise) throws {
+  func presentAddForm(contact: CNContact, options: CreateFormOptions?, promise: Promise) throws {
     if contactManipulationPromise != nil {
       throw ContactManipulationInProgressException()
     }
     var controller = ContactsViewController(for: contact)
-    try setControllerOptions(controller: &controller, options: options)
+    setCreateControllerOptions(controller: &controller, options: options)
 
     if let parent = appContext?.utilities?.currentViewController() {
       let navController = UINavigationController(rootViewController: controller)
@@ -76,7 +76,7 @@ class FormDelegate: OnContactPickingResultHandler {
       }
 
       contactManipulationPromise = promise
-      parent.present(navController, animated: options?.preventAnimation ?? false != true)
+      parent.present(navController, animated: options?.preventAnimation != true)
     } else {
       contactManipulationPromise = nil
       throw MissingViewControllerException()
@@ -101,9 +101,16 @@ class FormDelegate: OnContactPickingResultHandler {
     contactPickingPromise = promise
   }
 
-  private func setControllerOptions(controller: inout ContactsViewController, options: FormOptions?) throws {
+  private func applyCancelButton(to controller: inout ContactsViewController, showsCancelButton: Bool?, cancelButtonTitle: String?) {
+    if showsCancelButton != false {
+      controller.setCloseButton(title: cancelButtonTitle ?? "Cancel")
+    }
+  }
+
+  private func setEditControllerOptions(controller: inout ContactsViewController, options: EditFormOptions?) throws {
     controller.contactStore = store
     controller.delegate = delegate
+    applyCancelButton(to: &controller, showsCancelButton: options?.showsCancelButton, cancelButtonTitle: options?.cancelButtonTitle)
     guard let options = options else {
       return
     }
@@ -129,6 +136,12 @@ class FormDelegate: OnContactPickingResultHandler {
     if let groupId = options.groupId {
       controller.parentGroup = try groupRepository.getById(groupId: groupId)
     }
+  }
+
+  private func setCreateControllerOptions(controller: inout ContactsViewController, options: CreateFormOptions?) {
+    controller.contactStore = store
+    controller.delegate = delegate
+    applyCancelButton(to: &controller, showsCancelButton: options?.showsCancelButton, cancelButtonTitle: options?.cancelButtonTitle)
   }
 
   func presentAccessPicker(promise: Promise) throws {

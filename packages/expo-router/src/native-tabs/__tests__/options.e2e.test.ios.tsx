@@ -163,6 +163,26 @@ describe('disabled', () => {
   });
 });
 
+describe('testID and accessibilityLabel', () => {
+  it('forwards testID and accessibilityLabel to Tabs.Screen tab bar item props', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" testID="home-tab" accessibilityLabel="Home tab" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalled();
+    expect(TabsScreen.mock.calls.at(-1)![0]).toMatchObject({
+      tabBarItemTestID: 'home-tab',
+      tabBarItemAccessibilityLabel: 'Home tab',
+    } as TabsScreenProps);
+  });
+});
+
 describe('Icons', () => {
   it('when using Icon with sf prop, it is passed as sfSymbolName', () => {
     renderRouter({

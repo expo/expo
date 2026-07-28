@@ -10,5 +10,5 @@ export async function resizeImage(imagePath: string, resizingFactor: number): Pr
   const newHeight = Math.round(image.bitmap.height * resizingFactor);
 
   const resizedImage = image.resize(newWidth, newHeight);
-  await resizedImage.write(imagePath);
+  await resizedImage.writeAsync(imagePath);
 }

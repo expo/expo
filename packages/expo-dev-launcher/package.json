@@ -9,8 +9,11 @@
     "directory": "packages/expo-dev-launcher"
   },
   "scripts": {
-    "build:plugin": "expo-module build plugin",
-    "expo-module": "expo-module"
+    "build": "pnpm build:plugin",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p plugin/tsconfig.json"
   },
   "keywords": [
     "react-native"
@@ -28,7 +31,7 @@
     "react-native": "*"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "expo": "workspace:*"
+    "@types/jest": "^29.2.1",
+    "@types/node": "^22.14.0"
   }
 }

@@ -39,7 +39,7 @@ The following describes how a conformant Expo Updates client library MUST retrie
 
 1. The client library MUST make a [request](#request) for the most recent update and directive, with constraints specified in the headers.
 2. If a [response](#response) is received, the client library MUST process its contents:
-   - For a response containing an _update_, the client library SHALL proceed to make additional requests to download and store any new assets specified in the manifest. The manifest and assets together are considered a new _update_. The client library will edit its local state to reflect that a new update has been added to the local storage. It will also update the local state with the new `expo-manifest-filters` and `expo-server-defined-headers` found in the response [headers](#manifest-response-headers).
+   - For a response containing an _update_, the client library SHALL proceed to make additional requests to download and store any new assets specified in the manifest. The manifest and assets together are considered a new _update_. The client library will edit its local state to reflect that a new update has been added to the local storage. It will also update the local state with the new `expo-manifest-filters` and `expo-server-defined-headers` found in the response [headers](#common-response-headers).
    - For a response containing a _directive_, the client library will consume the directive depending on the directive type and edit its local state accordingly.
 
 ## Request
@@ -233,7 +233,7 @@ accept: image/jpeg, */*
 accept-encoding: br, gzip
 ```
 
-A conformant client library MUST also include any header (key, value) pairs included in [`assetRequestHeaders`](#manifest-extensions) for this asset key.
+A conformant client library MUST also include any header (key, value) pairs included in [`assetRequestHeaders`](#extensions-body) for this asset key.
 
 ## Asset response
 

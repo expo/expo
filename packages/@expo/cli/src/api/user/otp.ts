@@ -1,10 +1,10 @@
 import chalk from 'chalk';
 
-import { loginAsync } from './user';
 import * as Log from '../../log';
 import { AbortCommandError } from '../../utils/errors';
 import { learnMore } from '../../utils/link';
 import { promptAsync } from '../../utils/prompts';
+import { loginAsync } from './user';
 
 const nonInteractiveHelp = `Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(
   'https://docs.expo.dev/accounts/programmatic-access/'

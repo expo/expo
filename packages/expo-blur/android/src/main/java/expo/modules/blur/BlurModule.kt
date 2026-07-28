@@ -28,6 +28,10 @@ class BlurModule : Module() {
         view.applyBlurReduction(blurReductionFactor)
       }
 
+      Prop("borderRadii") { view: ExpoBlurView, borderRadii: FloatArray? ->
+        view.setBorderRadii(borderRadii ?: FloatArray(8))
+      }
+
       Prop("blurMethod") { view: ExpoBlurView, blurMethod: BlurMethod ->
         view.setBlurMethod(blurMethod)
       }

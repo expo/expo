@@ -39,7 +39,7 @@ export const SnippetHeader = ({
         'flex min-h-10 w-full items-center gap-2 overflow-x-auto py-1 pr-4 leading-tight! font-medium',
         alwaysDark && 'text-palette-white'
       )}>
-      {Icon && <Icon className="icon-sm shrink-0" />}
+      {Icon && <Icon aria-hidden="true" className="icon-sm shrink-0" />}
       <span className="w-max max-w-[60dvw] truncate wrap-break-word">{title}</span>
       {showOperation && operationType ? <FileStatus type={operationType} /> : null}
       {titleSlot}

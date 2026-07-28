@@ -1,0 +1,27 @@
+name: Setup Maestro
+description: Install a pinned Maestro CLI version, verifying the install and retrying on transient download failures.
+inputs:
+  version:
+    description: The Maestro CLI version to install
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: 🍺 Install Maestro
+      shell: bash
+      run: |
+        # The installer doesn't propagate download failures (a CDN 504 once left this step
+        # green with no binary installed), so verify the install and retry on failure.
+        for attempt in 1 2 3; do
+          if curl -Ls "https://get.maestro.mobile.dev" | MAESTRO_VERSION="${{ inputs.version }}" bash && "$HOME/.maestro/bin/maestro" --version; then
+            break
+          fi
+          if [ "$attempt" = 3 ]; then
+            echo "Maestro install failed after 3 attempts"
+            exit 1
+          fi
+          echo "Maestro install failed (attempt $attempt of 3); retrying..."
+          rm -rf "$HOME/.maestro"
+          sleep 10
+        done
+        echo "${HOME}/.maestro/bin" >> $GITHUB_PATH

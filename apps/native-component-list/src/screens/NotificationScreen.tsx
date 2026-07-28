@@ -1,5 +1,5 @@
+import { EventSubscription } from 'expo';
 import * as Device from 'expo-device';
-import { EventSubscription } from 'expo-modules-core';
 import * as Notifications from 'expo-notifications';
 import { getAllScheduledNotificationsAsync } from 'expo-notifications';
 import React from 'react';

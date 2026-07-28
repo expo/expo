@@ -1,5 +1,5 @@
-import { anyAnimationDriver, jsOnlyAnimationDriver, tintColor } from './constants';
 import { ImageTestGroup, ImageTestPropsFnInput } from '../types';
+import { anyAnimationDriver, jsOnlyAnimationDriver, tintColor } from './constants';
 
 const backgroundColor = '#fff';
 

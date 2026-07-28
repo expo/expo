@@ -1,7 +1,7 @@
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getDeepDependenciesWarningAsync } from '../utils/explainDependencies';
 import { getRemoteVersionsForSdkAsync } from '../utils/getRemoteVersionsForSdkAsync';
 import { joinWithCommasAnd } from '../utils/strings';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 async function getDeepDependenciesWarningWithPackageNameAsync(
   packageName: string,

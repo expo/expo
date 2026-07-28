@@ -43,6 +43,11 @@ jobs:
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
+      - name: 🛠 Build expotools
+        run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
 
       ### This job is run on Ubuntu which doesn't have SwiftLint installed, so we need to build it from sources.
       ### Building it on each run may take too much time, so we bundle the binary in `@expo/swiftlint` package.

@@ -1,9 +1,6 @@
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
-import type { Actor } from './user';
-import { getUserAsync, loginAsync, browserLoginAsync } from './user';
 import * as Log from '../../log';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
@@ -12,6 +9,9 @@ import { learnMore } from '../../utils/link';
 import type { Question } from '../../utils/prompts';
 import promptAsync, { selectAsync } from '../../utils/prompts';
 import { ApiV2Error } from '../rest/client';
+import { retryUsernamePasswordAuthWithOTPAsync } from './otp';
+import type { Actor } from './user';
+import { getUserAsync, loginAsync, browserLoginAsync } from './user';
 
 /** Show login prompt while prompting for missing credentials. */
 export async function showLoginPromptAsync({

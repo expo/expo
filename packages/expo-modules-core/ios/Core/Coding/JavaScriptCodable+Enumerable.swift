@@ -9,14 +9,15 @@ import ExpoModulesJSI
 extension Enumerable where Self: RawRepresentable, RawValue: JavaScriptCodable {
   @JavaScriptActor
   @inlinable
-  public static func decode(_ value: JavaScriptValue, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> Self {
-    let rawValue = try RawValue.decode(value, appContext: appContext, runtime: runtime)
+  public static func decode(_ value: borrowing JavaScriptValue, in runtime: borrowing JavaScriptRuntime) throws -> Self
+  {
+    let rawValue = try RawValue.decode(value, in: runtime)
     return try create(fromRawValue: rawValue)
   }
 
   @JavaScriptActor
   @inlinable
-  public static func encode(_ value: Self, appContext: borrowing AppContext, runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
-    return try RawValue.encode(value.rawValue, appContext: appContext, runtime: runtime)
+  public static func encode(_ value: Self, in runtime: borrowing JavaScriptRuntime) throws -> JavaScriptValue {
+    return try RawValue.encode(value.rawValue, in: runtime)
   }
 }

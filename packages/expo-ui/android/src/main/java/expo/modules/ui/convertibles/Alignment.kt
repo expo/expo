@@ -4,7 +4,7 @@ import androidx.compose.ui.Alignment
 import expo.modules.kotlin.types.Enumerable
 
 /**
- * Generic alignment type that for modifier.clip()
+ * Generic alignment type for modifier.clip()
  */
 enum class AlignmentType(val value: String) : Enumerable {
   TOP_START("topStart"),

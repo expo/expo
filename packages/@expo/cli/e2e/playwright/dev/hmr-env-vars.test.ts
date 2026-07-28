@@ -32,7 +32,7 @@ test.describe('router-e2e with spaces', () => {
       'hmr-env-vars',
       'with-hmr-env-vars',
       {
-        linkExpoPackages: ['expo']
+        linkExpoPackages: ['expo'],
       }
     );
 

@@ -67,7 +67,7 @@ abstract class BaseNotificationBuilder protected constructor(protected val conte
         Log.e(
           "notifications",
           String.format(
-            "Channel '%s' doesn't exists. Fallback to '%s' channel",
+            "Channel '%s' doesn't exist. Fallback to '%s' channel",
             requestedChannelId,
             FALLBACK_CHANNEL_ID
           )

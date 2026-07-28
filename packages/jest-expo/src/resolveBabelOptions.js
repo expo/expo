@@ -26,9 +26,10 @@ function resolveBabelrcName(projectRoot) {
 
 // NOTE(@kitten): Keep in sync with `@expo/metro-config/src/loadBabelConfig.ts`
 const loadBabelConfig = (function () {
-  let result;
+  const cache = new Map();
 
   return function _getBabelRC({ projectRoot, enableBabelRCLookup = true, extendsBabelConfigPath }) {
+    let result = cache.get(projectRoot);
     if (result == null) {
       result = {};
       if (enableBabelRCLookup && extendsBabelConfigPath) {
@@ -58,6 +59,7 @@ const loadBabelConfig = (function () {
           }
         }
       }
+      cache.set(projectRoot, result);
     }
     return result;
   };

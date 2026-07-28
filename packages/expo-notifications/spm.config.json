@@ -4,9 +4,7 @@
     {
       "name": "ExpoNotifications",
       "podName": "ExpoNotifications",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -19,23 +17,15 @@
           "name": "ExpoNotifications",
           "path": "ios/ExpoNotifications",
           "pattern": "**/*.swift",
-          "exclude": [
-            "Tests/**"
-          ],
+          "exclude": ["Tests/**"],
           "dependencies": [
             "Hermes",
             "React",
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "UserNotifications"
-          ],
-          "resources": [
-            { "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "UserNotifications"],
+          "resources": [{ "path": "ios/PrivacyInfo.xcprivacy", "rule": "copy" }]
         }
       ]
     }

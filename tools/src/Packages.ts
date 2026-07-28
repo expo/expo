@@ -148,10 +148,6 @@ export class Package {
     return fs.pathExistsSync(path.join(this.path, 'utils'));
   }
 
-  get hasReactServerComponents(): boolean {
-    return 'test:rsc' in this.packageJson.scripts;
-  }
-
   get packageName(): string {
     return this.packageJson.name;
   }

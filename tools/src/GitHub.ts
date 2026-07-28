@@ -349,7 +349,7 @@ export async function getOrCreateReleaseAsync(
   releaseTag: string,
   appVersion: string,
   sdkVersion: string
-) {
+): Promise<any> {
   try {
     const existingRelease = await octokit.rest.repos.getReleaseByTag({
       owner: repoOwner,
@@ -383,7 +383,7 @@ export async function uploadReleaseAssetAsync(
   releaseId: number,
   assetName: string,
   assetContent: Buffer
-) {
+): Promise<any> {
   const res = await octokit.rest.repos.uploadReleaseAsset({
     owner: repoOwner,
     repo: repoName,

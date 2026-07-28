@@ -15,7 +15,7 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   private let skipTimeInterval = 10.0
   private var timeObserver: Any?
   private weak var mostRecentInteractionPlayer: AVPlayer?
-  private var players = NSHashTable<VideoPlayer>.weakObjects()
+  private let players = SynchronizedHashTable<VideoPlayer>(weakObjects: true)
   private var artworkDataTask: URLSessionDataTask?
 
   private var playTarget: Any?

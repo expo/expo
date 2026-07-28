@@ -94,6 +94,11 @@ export default (program: Command) => {
     )
     .option('--skip-ios-prebuilds', 'Skips bundling iOS xcframeworks.', false)
     .option(
+      '--skip-turbo-checks',
+      'Skips the Turbo check batch (build/typecheck/depscheck/test/lint) on the selected packages.',
+      false
+    )
+    .option(
       '--auto-select-unpublished',
       'When retrying after a failed publish, auto-select all packages whose current version is not published yet and allow deselecting in a multi-select prompt.',
       false

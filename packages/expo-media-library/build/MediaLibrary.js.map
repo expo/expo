@@ -1,1 +1,0 @@
-{"version":3,"file":"MediaLibrary.js","sourceRoot":"","sources":["../src/MediaLibrary.ts"],"names":[],"mappings":"AAAA;;;;GAIG;AACH,cAAc,SAAS,CAAC","sourcesContent":["/**\n * @hidden\n * Temporary compatibility barrel for older internal imports.\n * Prefer importing public APIs from the package root.\n */\nexport * from './index';\n"]}

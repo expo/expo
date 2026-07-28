@@ -9,7 +9,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { GestureDetector, usePanGesture } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedProps,
   useAnimatedStyle,
@@ -37,12 +37,12 @@ const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
   const startingPointX = useSharedValue(0);
   const startingPointY = useSharedValue(0);
 
-  const panGestureHandler = Gesture.Pan()
-    .onStart(() => {
+  const panGestureHandler = usePanGesture({
+    onActivate: () => {
       startingPointX.value = width.value;
       startingPointY.value = height.value;
-    })
-    .onUpdate((event) => {
+    },
+    onUpdate: (event) => {
       width.value = Math.max(
         HANDLE_SIZE,
         Math.min(event.translationX + startingPointX.value, MAX_WIDTH)
@@ -51,7 +51,8 @@ const ResizableView: React.FC<CustomViewProps> = ({ children }) => {
         HANDLE_SIZE,
         Math.min(event.translationY + startingPointY.value, MAX_HEIGHT)
       );
-    });
+    },
+  });
 
   const canvasStyle = useAnimatedStyle(() => {
     return {

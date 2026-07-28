@@ -10,11 +10,11 @@ import * as React from 'react';
 import { Text } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-import MainNavigators from './MainNavigators';
-import MainTabNavigator from './MainTabNavigator';
 import { useTheme } from '../../../common/ThemeProvider';
 import RedirectScreen from '../screens/RedirectScreen';
 import SearchScreen from '../screens/SearchScreen';
+import MainNavigators from './MainNavigators';
+import MainTabNavigator from './MainTabNavigator';
 
 const Switch = createNativeStackNavigator();
 

@@ -1,4 +1,5 @@
 import { ImmutableRequest } from '../../ImmutableRequest';
+import type { ImmutableRequest as ImmutableRequestType } from '../../types';
 import { createStaticLoader, createServerLoader } from '../helpers';
 
 describe(createStaticLoader, () => {
@@ -39,10 +40,7 @@ describe(createStaticLoader, () => {
 describe(createServerLoader, () => {
   it('passes request and params to the callback', () => {
     const fn = jest.fn(
-      (
-        request: InstanceType<typeof ImmutableRequest>,
-        params: Record<string, string | string[]>
-      ) => ({
+      (request: ImmutableRequestType, params: Record<string, string | string[]>) => ({
         url: request.url,
         id: params.id,
       })

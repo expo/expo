@@ -1,8 +1,8 @@
 import { requireNativeView } from 'expo';
 import type { ComponentType } from 'react';
 
-import type { MenuProps } from './types';
 import { Slot } from '../SlotView';
+import type { MenuProps } from './types';
 
 export type { MenuProps } from './types';
 

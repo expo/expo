@@ -1,5 +1,6 @@
-/* eslint-env jest */
-import { runExportSideEffects } from './export-side-effects';
+import fs from 'node:fs';
+import path from 'node:path';
+
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
@@ -7,6 +8,7 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles, getHtml, getPageAndLoaderData } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -214,12 +216,42 @@ describe.each(
     // NOTE(@hassankhan): expo-server returns `application/octet-stream` for extensionless files,
     // but the content is still valid JSON.
     // expect(response.headers.get('content-type')).toContain('application/json');
-    expect(response.headers.get('cache-control')).not.toBe('public, max-age=3600');
-    expect(response.headers.get('x-custom-header')).not.toBe('test-value');
+
+    expect(response.headers.get('cache-control')).toBe('public, max-age=604800');
+    // Non-allowlisted headers are stripped in dev and static exports
+    expect(response.headers.get('x-loader-header')).toBeNull();
 
     const data = await response.json();
     expect(data).toEqual({ foo: null });
   });
+
+  (server.isExpoStart ? it.skip : it)(
+    'applies loader-declared `Cache-Control` to the pre-rendered page',
+    async () => {
+      const response = await server.fetchAsync('/response');
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('public, max-age=604800');
+    }
+  );
+
+  (server.isExpoStart ? it.skip : it)(
+    'writes loader-declared `Cache-Control` rules to the manifest subset',
+    () => {
+      const routesJson = JSON.parse(
+        fs.readFileSync(path.join(server.outputDir, '_expo/.routes.json'), 'utf8')
+      );
+      expect(routesJson.pageHeaders).toEqual([
+        {
+          namedRegex: '^/response(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/response(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+      ]);
+    }
+  );
 
   it('renders meta tags from loader data in HTML', async () => {
     const response = await server.fetchAsync('/meta');

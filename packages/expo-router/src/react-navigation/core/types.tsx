@@ -562,6 +562,12 @@ export type ScreenLayoutArgs<
   children: React.ReactElement;
 };
 
+/**
+ * Whether a screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+ * or inferred from the filesystem.
+ */
+export type RouteSource = 'layout' | 'filesystem';
+
 export type Descriptor<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
@@ -587,6 +593,13 @@ export type Descriptor<
    * Navigation object for the screen
    */
   navigation: Navigation;
+
+  /**
+   * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+   * or inferred from the filesystem. Set by Expo Router; `undefined` for screens
+   * created outside Expo Router's screen pipeline.
+   */
+  routeSource?: RouteSource;
 };
 
 export type ScreenListeners<
@@ -702,6 +715,12 @@ export type RouteConfigProps<
    * Initial params object for the route.
    */
   initialParams?: Partial<ParamList[RouteName]>;
+
+  /**
+   * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+   * or inferred from the filesystem.
+   */
+  routeSource?: RouteSource;
 };
 
 export type RouteConfig<
@@ -792,7 +811,7 @@ export type NavigationContainerEventMap = {
        */
       action: NavigationAction;
       /**
-       * Whether the action was a no-op, i.e. resulted any state changes.
+       * Whether the action was a no-op, i.e. resulted in any state changes.
        */
       noop: boolean;
       /**
@@ -1011,8 +1030,8 @@ type PathConfigAlias = {
    */
   path: string;
   /**
-   * Whether the path should be consider parent paths or use the exact path.
-   * By default, paths are relating to the path config on the parent screen.
+   * Whether the path should consider parent paths or use the exact path.
+   * By default, paths are relative to the path config on the parent screen.
    * If `exact` is set to `true`, the parent path configuration is not used.
    */
   exact?: boolean;

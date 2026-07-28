@@ -4,6 +4,7 @@ import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle } from 'reac
 import type { SFSymbol } from 'sf-symbols-typescript';
 
 import type { LinkMenuActionProps } from '../../../../link/elements';
+import type { NativeStackHeaderItemButton } from '../../../../react-navigation/native-stack';
 import type { StackHeaderItemSharedProps } from '../shared';
 
 export interface StackToolbarMenuProps {
@@ -211,6 +212,9 @@ export interface NativeToolbarMenuProps {
   elementSize?: 'auto' | 'small' | 'medium' | 'large';
   /** @platform android */
   source?: ImageSourcePropType;
+  /** Badge overlay on the menu icon. Only rendered at the root (left/right placements).
+   * @platform android */
+  badge?: NativeStackHeaderItemButton['badge'];
 }
 
 export interface StackToolbarMenuActionProps {

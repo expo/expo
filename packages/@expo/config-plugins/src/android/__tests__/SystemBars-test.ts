@@ -1,3 +1,5 @@
+import type { ExpoConfig } from '@expo/config-types';
+
 import * as WarningAggregator from '../../utils/warnings';
 import { getAppThemeGroup, getStylesGroupAsObject } from '../Styles';
 import { setSystemBarsStyles, withSystemBars } from '../SystemBars';
@@ -21,7 +23,9 @@ describe('e2e: Android system bars', () => {
   });
 
   it('warns when androidNavigationBar is set', () => {
-    withSystemBars({ name: 'test', slug: 'test', androidNavigationBar: {} });
+    // `androidNavigationBar` is a deprecated key no longer present in the ExpoConfig type,
+    // but the plugin still detects it to warn users.
+    withSystemBars({ name: 'test', slug: 'test', androidNavigationBar: {} } as ExpoConfig);
 
     expect(WarningAggregator.addWarningAndroid).toHaveBeenCalledWith(
       'SYSTEM_BARS_PLUGIN',

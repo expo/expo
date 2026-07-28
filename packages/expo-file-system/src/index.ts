@@ -6,10 +6,13 @@ export { UploadTask, DownloadTask } from './NetworkTasks';
 export {
   DEFAULT_DEBOUNCE_MS,
   type FileCreateOptions,
+  type FileDigestAlgorithm,
   type DirectoryCreateOptions,
   type RelocationOptions,
   type FileHandle,
   type FileInfo,
+  type FileCanPreviewOptions,
+  type FilePreviewOptions,
   type FileWriteOptions,
   type InfoOptions,
   type PathInfo,

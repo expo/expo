@@ -29,7 +29,7 @@ Alternatively, it is also possible to configure the `expo-updates` library manua
 
 <APIInstallSection hideBareInstructions />
 
-If you're installing this library in a [bare React Native app](/bare/overview/) or a generic app with manually configured native code, follow these [installation instructions](/bare/installing-updates/).
+If you're installing this library in an [existing React Native project](/bare/overview/) or a generic app with manually configured native code, follow these [installation instructions](/bare/installing-updates/).
 
 If using [app config](/workflow/configuration/) for configuration, this library can be configured by setting at least the following app config properties:
 
@@ -73,7 +73,7 @@ The two core required configuration options are:
 
 These are configured automatically when following the EAS Update [Get started](/eas-update/getting-started/) guide.
 
-#### Runtime version
+### Runtime version
 
 Each time you build a binary for your app it includes the native code and configuration present at the time of the build as well as native configuration, and this unique combination is represented by a string called a runtime version. A remote update targets one runtime version, indicating that only binaries with a matching runtime version can load the remote update.
 
@@ -191,7 +191,7 @@ This policy works for both projects with and without custom native code. It work
 
 </Collapsible>
 
-#### Native configuration and overriding
+### Native configuration and overriding
 
 If your project does not use Continuous Native Generation, these configuration values may also be set in your app's native configuration files or overridden during initialization in native code.
 
@@ -277,11 +277,11 @@ import * as Updates from 'expo-updates';
 
 ## Error codes
 
-| Code                              | Description                                                                                                                                                                                                                                                        |
-| --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `ERR_UPDATES_DISABLED`            | A method call was attempted when the Updates library was disabled, or the application was running in development mode                                                                                                                                              |
-| `ERR_UPDATES_RELOAD`              | An error occurred when trying to reload the application and it could not be reloaded. For bare React Native apps, double-check the setup steps for this library to ensure it has been installed correctly and the proper native initialization methods are called. |
-| `ERR_UPDATES_CHECK`               | An unexpected error occurred when trying to check for new updates. Check the error message for more information.                                                                                                                                                   |
-| `ERR_UPDATES_FETCH`               | An unexpected error occurred when trying to fetch a new update. Check the error message for more information.                                                                                                                                                      |
-| `ERR_UPDATES_READ_LOGS`           | An unexpected error occurred when trying to read log entries. Check the error message for more information.                                                                                                                                                        |
-| `ERR_NOT_AVAILABLE_IN_DEV_CLIENT` | A method is not available when running in a development build. A release build should be used to test this method.                                                                                                                                                 |
+| Code                              | Description                                                                                                                                                                                                                                                                |
+| --------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `ERR_UPDATES_DISABLED`            | A method call was attempted when the Updates library was disabled, or the application was running in development mode                                                                                                                                                      |
+| `ERR_UPDATES_RELOAD`              | An error occurred when trying to reload the application and it could not be reloaded. For existing React Native projects, double-check the setup steps for this library to ensure it has been installed correctly and the proper native initialization methods are called. |
+| `ERR_UPDATES_CHECK`               | An unexpected error occurred when trying to check for new updates. Check the error message for more information.                                                                                                                                                           |
+| `ERR_UPDATES_FETCH`               | An unexpected error occurred when trying to fetch a new update. Check the error message for more information.                                                                                                                                                              |
+| `ERR_UPDATES_READ_LOGS`           | An unexpected error occurred when trying to read log entries. Check the error message for more information.                                                                                                                                                                |
+| `ERR_NOT_AVAILABLE_IN_DEV_CLIENT` | A method is not available when running in a development build. A release build should be used to test this method.                                                                                                                                                         |

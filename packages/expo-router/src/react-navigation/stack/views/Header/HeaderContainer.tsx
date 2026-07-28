@@ -2,7 +2,6 @@
 import { use } from 'react';
 import { type StyleProp, StyleSheet, View, type ViewStyle } from 'react-native';
 
-import { Header } from './Header';
 import { getHeaderTitle, HeaderBackContext } from '../../../elements';
 import {
   NavigationProvider,
@@ -23,6 +22,7 @@ import type {
   StackHeaderProps,
   StackNavigationProp,
 } from '../../types';
+import { Header } from './Header';
 
 export type Props = {
   mode: StackHeaderMode;

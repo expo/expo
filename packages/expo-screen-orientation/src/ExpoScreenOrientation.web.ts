@@ -1,4 +1,4 @@
-import { NativeModule, Platform, registerWebModule } from 'expo-modules-core';
+import { NativeModule, Platform, registerWebModule } from 'expo';
 
 import { getOrientationLockAsync, getOrientationAsync } from './ScreenOrientation';
 import type { ExpoOrientationEvents } from './ScreenOrientation.types';

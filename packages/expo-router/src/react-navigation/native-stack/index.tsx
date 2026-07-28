@@ -29,10 +29,13 @@ export type {
   NativeStackHeaderLeftProps,
   NativeStackHeaderProps,
   NativeStackHeaderRightProps,
+  NativeStackHeaderNativeProps,
+  NativeStackNativeProps,
   NativeStackNavigationEventMap,
   NativeStackNavigationOptions,
   NativeStackNavigationProp,
   NativeStackNavigatorProps,
   NativeStackOptionsArgs,
+  NativeStackScreenNativeProps,
   NativeStackScreenProps,
 } from './types';

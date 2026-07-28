@@ -4,11 +4,11 @@ import os from 'os';
 import path from 'path';
 import { Readable } from 'stream';
 
-import { env } from './env';
-import { extractStream } from './tar';
 import { createEntryRenamer } from '../createFileTransform';
 import { ALIASES } from '../legacyTemplates';
 import { Log } from '../log';
+import { env } from './env';
+import { extractStream } from './tar';
 
 const debug = require('debug')('expo:init:npm') as typeof console.log;
 

@@ -1,6 +1,9 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions, getMetroServerRoot } from '@expo/config/paths';
+import { stableHash } from '@expo/metro/metro-cache';
+import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
+import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
 import type { Graph, Result as GraphResult } from '@expo/metro/metro/DeltaBundler/Graph';
 import type {
   MixedOutput,
@@ -8,9 +11,6 @@ import type {
   ReadOnlyGraph,
   Options as GraphOptions,
 } from '@expo/metro/metro/DeltaBundler/types';
-import { stableHash } from '@expo/metro/metro-cache';
-import type { InputConfigT, ConfigT as MetroConfig } from '@expo/metro/metro-config';
-import exclusionList from '@expo/metro/metro-config/defaults/exclusionList';
 import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
@@ -19,6 +19,7 @@ import resolveFrom from 'resolve-from';
 import { FileStore } from './binary-file-store';
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
+import { event } from './events';
 import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
@@ -29,8 +30,6 @@ import { getPostcssConfigHash } from './transform-worker/postcss';
 import { toPosixPath } from './utils/filePath';
 import { getPkgVersion } from './utils/getPkgVersion';
 import { setOnReadonly } from './utils/setOnReadonly';
-
-const debug = require('debug')('expo:metro:config') as typeof console.log;
 
 export interface DefaultConfigOptions {
   /** @deprecated */
@@ -312,6 +311,8 @@ export function getDefaultConfig(
       platforms: ['ios', 'android', 'tvos', 'macos'],
       assetExts: metroDefaultValues.resolver.assetExts
         .concat(
+          // Additional font files missing from default values
+          ['woff', 'woff2'],
           // Add default support for `expo-image` file types.
           ['heic', 'avif'],
           // Add default support for `expo-sqlite` file types.
@@ -365,7 +366,7 @@ export function getDefaultConfig(
         if (stdRuntime) {
           preModules.push(stdRuntime);
         } else {
-          debug('"expo/src/winter" not found, this may cause issues');
+          event('missing_winter_runtime', {});
         }
 
         // We need to shift this to be the first module so web Fast Refresh works as expected.
@@ -374,7 +375,7 @@ export function getDefaultConfig(
         if (metroRuntime) {
           preModules.push(metroRuntime);
         } else {
-          debug('"@expo/metro-runtime" not found, this may cause issues');
+          event('missing_metro_runtime', {});
         }
 
         return preModules;
@@ -385,9 +386,7 @@ export function getDefaultConfig(
           return [];
         }
 
-        return require(
-          path.join(getReactNativeHostPath(projectRoot, platform), 'rn-get-polyfills')
-        )();
+        return require('@react-native/js-polyfills')();
       },
     },
     server: {
@@ -451,6 +450,12 @@ export function getDefaultConfig(
     metroDefaultValues as MetroConfig & typeof expoMetroConfig,
     expoMetroConfig
   );
+
+  // NOTE(@kitten): `useWatchman` is currently defaulting to `false`
+  // However, in standard Metro, it defaults to `true`, and we must override this to `null` to disable the slow "native find" codepath
+  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro-file-map/src/index.js#L326
+  // See: https://github.com/facebook/metro/blob/b9c243f/packages/metro/src/node-haste/DependencyGraph/createFileMap.js#L109
+  (metroConfig.resolver as { useWatchman?: boolean | null }).useWatchman = null;
 
   return withExpoSerializers(metroConfig, { unstable_beforeAssetSerializationPlugins });
 }

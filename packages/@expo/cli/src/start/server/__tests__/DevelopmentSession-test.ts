@@ -47,13 +47,29 @@ describe(`startAsync`, () => {
       .post('/v2/development-sessions/notify-close?deviceId=123&deviceId=456')
       .reply(200, '');
 
+    // `startAsync` intentionally doesn't await its ping. Resolve deterministically the moment that
+    // fire-and-forget chain completes — it sets `_hasActiveSession` last (after the request
+    // resolves and `abortController` is cleared) — so `closeAsync` sends its close request instead
+    // of aborting an in-flight one.
+    const sessionReady = new Promise<void>((resolve) => {
+      let active = session._hasActiveSession;
+      Object.defineProperty(session, '_hasActiveSession', {
+        configurable: true,
+        get: () => active,
+        set: (value) => {
+          active = value;
+          if (value) {
+            resolve();
+          }
+        },
+      });
+    });
+
     await session.startAsync({
       exp,
       runtime,
     });
-
-    // Flush the fire-and-forget promise chain from startAsync
-    await new Promise((resolve) => setTimeout(resolve, 50));
+    await sessionReady;
 
     await session.closeAsync();
 
@@ -140,7 +156,7 @@ describe(`closeAsync`, () => {
       .reply(500, '');
 
     // Fake the session state
-    Object.assign(session, { hasActiveSession: true });
+    Object.assign(session, { _hasActiveSession: true });
 
     // Does not throw directly
     await expect(session.closeAsync()).resolves.toBe(false);
@@ -163,7 +179,7 @@ describe(`closeAsync`, () => {
       .reply(500, server);
 
     // Fake the session state
-    Object.assign(session, { hasActiveSession: true });
+    Object.assign(session, { _hasActiveSession: true });
 
     // Does not throw directly
     await expect(session.closeAsync()).resolves.toBe(false);

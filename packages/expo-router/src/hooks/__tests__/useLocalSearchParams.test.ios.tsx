@@ -1,5 +1,5 @@
 import { act } from '@testing-library/react-native';
-import { expectType } from 'tsd';
+import { expectTypeOf } from 'expect-type';
 
 import { router, Slot } from '../../exports';
 import { renderRouter } from '../../testing-library';
@@ -61,13 +61,13 @@ describe(useLocalSearchParams, () => {
 
   it(`defaults abstract types`, () => {
     const params = renderHookOnce(() => useLocalSearchParams());
-    expectType<Record<string, string | string[] | undefined>>(params);
-    expectType<string | string[] | undefined>(params.a);
+    expectTypeOf(params).toExtend<Record<string, string | string[] | undefined>>();
+    expectTypeOf(params.a).toEqualTypeOf<string | string[] | undefined>();
   });
   it(`allows abstract types`, () => {
     const params = renderHookOnce(() => useLocalSearchParams<{ a: string }>());
-    expectType<{ a?: string }>(params);
-    expectType<string | undefined>(params.a);
+    expectTypeOf(params).toExtend<{ a?: string }>();
+    expectTypeOf(params.a).toExtend<string | undefined>();
   });
 
   it('does not return undefined search params', () => {

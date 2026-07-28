@@ -60,7 +60,7 @@ Using `Platform` module from React Native, we can implement platform-specific be
 {/* prettier-ignore */}
 ```tsx app/(tabs)/index.tsx
 import * as ImagePicker from 'expo-image-picker';
-import * as MediaLibrary from 'expo-media-library/legacy';
+import * as MediaLibrary from 'expo-media-library';
 import { useEffect, useRef, useState } from 'react';
 import { ImageSourcePropType, View, StyleSheet, /* @tutinfo */Platform/* @end */ } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -226,11 +226,4 @@ On running the app in a web browser, we can now save a screenshot:
 
 ## Summary
 
-<ProgressTracker
-  currentChapterIndex={7}
-  name="GET_STARTED"
-  summary="The app does everything we set out for it to do, so it's time to shift our focus toward the purely aesthetic.."
-  nextChapterDescription="In the next chapter, we will customize the app's status bar, splash screen, and app icon."
-  nextChapterTitle="Configure status bar, splash screen and app icon"
-  nextChapterLink="/tutorial/configuration"
-/>
+<ProgressTracker name="GET_STARTED" currentChapterSlug="/tutorial/platform-differences" />

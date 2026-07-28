@@ -165,9 +165,6 @@ async function copyCommonFixturesToProject(
   // remove project files archive
   await fs.rm(projectFilesTarballPath);
 
-  // copy .prettierrc
-  await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
-
   if (!isTV) {
     // Copy react-native patch
     await fs.mkdir(path.join(projectRoot, 'patches'));
@@ -358,7 +355,6 @@ async function preparePackageJson(
         'resolve-from': '^5.0.0',
         'structured-headers': '^2.0.2',
         nullthrows: '^1.1.1',
-        prettier: '^2.8.1',
         'patch-package': '^8.0.0',
         'ts-node': '~10.9.2',
       }
@@ -403,7 +399,7 @@ async function preparePackageJson(
       dependencies: {
         ...packageJson.dependencies,
         glob: '^11.0.0',
-        'react-native-tvos': '0.86.0-0rc3',
+        'react-native-tvos': '0.86.0-1',
         '@react-native-tvos/config-tv': '^0.1.6',
       },
     };
@@ -925,6 +921,10 @@ export async function initAsync(
       {
         sourcePath: path.join(customInitSourcesDirectory, 'AppDelegate.swift'),
         destPath: path.join(projectRoot, 'ios', 'updatese2e', 'AppDelegate.swift'),
+      },
+      {
+        sourcePath: path.join(customInitSourcesDirectory, 'SceneDelegate.swift'),
+        destPath: path.join(projectRoot, 'ios', 'updatese2e', 'SceneDelegate.swift'),
       },
       {
         sourcePath: path.join(customInitSourcesDirectory, 'MainApplication.kt'),

@@ -1,1 +1,0 @@
-{"version":3,"file":"context.d.ts","sourceRoot":"","sources":["../../../src/integrations/react-navigation/context.ts"],"names":[],"mappings":"AAEA,OAAO,KAAK,EAAE,iCAAiC,EAAE,MAAM,WAAW,CAAC;AAEnE,MAAM,WAAW,sCAAsC;IACrD,OAAO,EAAE,iCAAiC,CAAC;CAC5C;AAED,eAAO,MAAM,wCAAwC,wEACe,CAAC"}

@@ -1,10 +1,10 @@
 import { Fragment } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-import { extractFieldSectionSlots } from './FieldSectionSlots';
-import type { FieldSectionProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
 import { colors } from '../webUtils';
+import { extractFieldSectionSlots } from './FieldSectionSlots';
+import type { FieldSectionProps } from './types';
 
 const styles = StyleSheet.create({
   hidden: {

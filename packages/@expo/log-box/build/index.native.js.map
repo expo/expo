@@ -1,1 +1,0 @@
-{"version":3,"file":"index.native.js","sourceRoot":"","sources":["../src/index.native.tsx"],"names":[],"mappings":"AAAA,MAAM,UAAU,WAAW,CAAC,IAAS;IACnC,OAAO,IAAI,CAAC;AACd,CAAC","sourcesContent":["export function setupLogBox(Comp: any) {\n  return Comp;\n}\n"]}

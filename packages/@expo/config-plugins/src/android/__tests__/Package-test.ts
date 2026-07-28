@@ -106,7 +106,7 @@ describe(renamePackageOnDiskForType, () => {
     const projectRoot = '/';
     vol.fromJSON(rnFixture, projectRoot);
 
-    // Execute the intial rename from cloning the template.
+    // Execute the initial rename from cloning the template.
     // This step is executed when extracting the template tarball, through a stream transform.
     // It's necessary to generate the proper project when creating a bare project (without prebuild).
     await renamePackageOnDiskForType({

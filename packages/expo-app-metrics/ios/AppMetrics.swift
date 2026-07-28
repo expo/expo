@@ -21,6 +21,28 @@ public struct AppMetrics {
   }
   #endif
 
+  /// Ingests fatal JavaScript errors that were written to disk before the process was terminated on a
+  /// previous launch (see `PendingErrorStore`). Reads the files synchronously, then inserts each as an
+  /// `exception` log attributed to the session it was captured in. Called once at launch.
+  static func ingestPendingErrors() {
+    let pendingErrors = PendingErrorStore.drain()
+    guard !pendingErrors.isEmpty else {
+      return
+    }
+    AppMetricsActor.isolated {
+      for pendingError in pendingErrors {
+        // Each error attaches to the prior-launch session it was captured in (`pendingError.sessionId`),
+        // not the just-started `mainSession`, so this doesn't depend on the current session's row INSERT.
+        do {
+          _ = try database?.insert(
+            log: LogRow.from(log: pendingError.toLogRecord(), sessionId: pendingError.sessionId))
+        } catch {
+          logger.warn("[AppMetrics] Failed to ingest pending error: \(error.localizedDescription)")
+        }
+      }
+    }
+  }
+
   /// The shared metrics database, or `nil` in release builds if the database could not be opened even
   /// after a wipe-and-retry. In DEBUG we trap with `assertionFailure` so developers see the failure
   /// immediately; in release we keep the host app running because telemetry should never be

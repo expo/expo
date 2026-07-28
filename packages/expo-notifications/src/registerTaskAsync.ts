@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModule';
 
@@ -18,7 +18,7 @@ import BackgroundNotificationTasksModule from './BackgroundNotificationTasksModu
  * - `executionInfo`: JSON object of additional info related to the task, including the `taskName`.
  * - `error`: This field should always be undefined with a push-notification task.
  *
- * From the callback function, you may return a [`BackgroundNotificationResult`](#backgroundnotificationresult) value to indicate the result of a background fetch operation on iOS.
+ * From the callback function, you may return a [`BackgroundNotificationResult`](#backgroundnotificationtaskresult) value to indicate the result of a background fetch operation on iOS.
  *
  * Be advised that console.log statements may not be appropriate for debugging background tasks, as the output may not be visible depending on the platform and app state.
  *

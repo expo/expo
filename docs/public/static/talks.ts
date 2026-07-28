@@ -8,12 +8,35 @@ export const TALKS = [
     home: true,
   },
   {
+    title: 'What is your app actually doing in production?',
+    event: 'App.js Conf 2026',
+    description: 'Kadi Kraman',
+    videoId: '7DzSnY33t-Y',
+    uploadDate: '2026-07-06',
+    home: true,
+  },
+  {
+    title: 'React Native without Cocoapods',
+    event: 'App.js Conf 2026',
+    description: 'Riccardo Cipolleschi, Christian Falch',
+    videoId: '5nHDA39K4NE',
+    uploadDate: '2026-07-01',
+    home: true,
+  },
+  {
+    title: 'Screens & Routers: The Foundation of Navigation in React Native Apps',
+    event: 'App.js Conf 2026',
+    description: 'Kacper Kafara, Kuba Tkacz',
+    videoId: 'WJ3B2aIah6Q',
+    uploadDate: '2026-06-25',
+    home: true,
+  },
+  {
     title: 'Keynote: streamline React Native development',
     event: 'App.js Conf 2025',
     description: 'Charlie Cheever, Jon Samp',
     videoId: 'lnxanzsP1rM',
     uploadDate: '2025-06-04',
-    home: true,
   },
   {
     title: 'Deploy Everywhere with Expo Router',
@@ -21,7 +44,6 @@ export const TALKS = [
     description: 'Evan Bacon',
     videoId: 'GKQ_0VfYweg',
     uploadDate: '2025-06-05',
-    home: true,
   },
   {
     title: 'Embracing Native Code and Capabilities',
@@ -29,7 +51,6 @@ export const TALKS = [
     description: 'Keith Kurak',
     videoId: 'TLoHua8bzPg',
     uploadDate: '2025-06-19',
-    home: true,
   },
   {
     title: 'Keynote: flexibility & iteration speed',
@@ -286,6 +307,18 @@ export const PODCASTS = [
 
 export const LIVE_STREAMS = [
   {
+    title: 'Closing the loop: How to turn your website into a mobile app with AI',
+    event: 'Expo Live Stream',
+    videoId: '9Sl6VXrj224',
+    uploadDate: '2026-07-02',
+  },
+  {
+    title: "What's new in Expo SDK 56? Widgets, Expo UI, Router decoupling from React Navigation",
+    event: 'Expo Live Stream',
+    videoId: 'FOFPOEIyeag',
+    uploadDate: '2026-06-26',
+  },
+  {
     title: 'Announcing the 2025 Expo App Award winners!',
     event: 'Expo Live Stream',
     videoId: 'KnZ3LWkXzSk',
@@ -444,6 +477,18 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'How to build an iOS widget',
+    event: 'Expo Tutorials',
+    videoId: '3r_OHePTCcI',
+    uploadDate: '2026-07-27',
+  },
+  {
+    title: 'The 3 tools you need to build mobile apps with AI',
+    event: 'Expo Tutorials',
+    videoId: 'WLGAuwagI8o',
+    uploadDate: '2026-07-13',
+  },
   {
     title: 'Introducing "Observe": Performance monitoring for React Native apps',
     event: 'Expo Tutorials',

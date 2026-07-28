@@ -44,6 +44,20 @@ export const CameraScreens = [
       return optionalRequire(() => require('./CameraScreenImageRef'));
     },
   },
+  {
+    name: 'Camera (document scanner)',
+    route: 'camera/expo-camera-document-scanner',
+    getComponent() {
+      return optionalRequire(() => require('./CameraScreenDocumentScanner'));
+    },
+  },
+  {
+    name: 'Capture Dimensions',
+    route: 'camera/expo-camera-capture-dimensions',
+    getComponent() {
+      return optionalRequire(() => require('./CameraScreenCaptureDimensions'));
+    },
+  },
 ];
 
 export default function CameraScreen() {

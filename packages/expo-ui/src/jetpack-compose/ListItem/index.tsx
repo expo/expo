@@ -16,7 +16,7 @@ export type ListItemColors = {
   overlineContentColor?: ColorValue;
 };
 
-export type ListItemProps = {
+export interface ListItemProps {
   /**
    * Colors for list item elements.
    */
@@ -39,7 +39,7 @@ export type ListItemProps = {
    * Children containing slot sub-components.
    */
   children?: React.ReactNode;
-};
+}
 
 type SlotProps = {
   slotName: string;

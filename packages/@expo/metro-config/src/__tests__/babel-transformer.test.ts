@@ -1,8 +1,6 @@
 import generate from '@babel/generator';
 import type { BabelTransformer } from '@expo/metro/metro-babel-transformer';
 import { vol } from 'memfs';
-import { getPkgVersionFromPath } from 'packages/@expo/metro-config/src/utils/getPkgVersion';
-import { transitiveResolveFrom } from 'packages/@expo/metro-config/src/utils/transitiveResolveFrom';
 
 import * as babel from '../babel-core';
 // eslint-disable-next-line import/namespace

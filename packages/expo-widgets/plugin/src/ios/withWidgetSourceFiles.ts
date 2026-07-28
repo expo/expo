@@ -203,6 +203,146 @@ struct ExportWidgets${index}: WidgetBundle {
   }
 }`;
 
+type WidgetParameter = NonNullable<
+  NonNullable<WidgetConfig['ios']>['configuration']
+>['parameters'][string];
+
+const capitalize = (value: string): string => value[0]?.toUpperCase() + value.slice(1);
+
+const enumTypeName = (widgetName: string, parameterName: string): string =>
+  `${widgetName}${capitalize(parameterName)}Enum`;
+
+const optionsProviderName = (widgetName: string, parameterName: string): string =>
+  `${widgetName}${capitalize(parameterName)}OptionsProvider`;
+
+const isDynamicEnumParameter = (
+  parameter: WidgetParameter
+): parameter is Extract<WidgetParameter, { type: 'enum' }> & { dynamic: true } =>
+  parameter.type === 'enum' && parameter.dynamic === true;
+
+const parameterSwiftType = (
+  widgetName: string,
+  parameterName: string,
+  parameter: WidgetParameter
+): string => {
+  switch (parameter.type) {
+    case 'string':
+      return 'String';
+    case 'number':
+      return 'Double';
+    case 'boolean':
+      return 'Bool';
+    case 'enum':
+      return enumTypeName(widgetName, parameterName);
+    default:
+      return 'String';
+  }
+};
+
+const parameterDefaultValue = (
+  widgetName: string,
+  parameterName: string,
+  parameter: WidgetParameter
+): string => {
+  switch (parameter.type) {
+    case 'string':
+    case 'enum':
+      return isDynamicEnumParameter(parameter)
+        ? JSON.stringify(parameter.default)
+        : parameter.type === 'enum'
+          ? `${enumTypeName(widgetName, parameterName)}.${parameter.default}`
+          : JSON.stringify(parameter.default);
+    case 'number':
+    case 'boolean':
+      return String(parameter.default);
+    default:
+      return '""';
+  }
+};
+
+const parameterDeclaration = (
+  widgetName: string,
+  parameterName: string,
+  parameter: WidgetParameter
+): string => {
+  if (isDynamicEnumParameter(parameter)) {
+    return `  @Parameter(title: ${JSON.stringify(parameter.title)}, optionsProvider: ${optionsProviderName(widgetName, parameterName)}())\n  var ${parameterName}: String?`;
+  }
+  return `  @Parameter(title: ${JSON.stringify(parameter.title)}, default: ${parameterDefaultValue(widgetName, parameterName, parameter)})\n  var ${parameterName}: ${parameterSwiftType(widgetName, parameterName, parameter)}`;
+};
+
+const configurationValueExpression = (
+  parameterName: string,
+  parameter: WidgetParameter
+): string => {
+  const rawValueAccess = parameter.type === 'enum' && !isDynamicEnumParameter(parameter) ? '.rawValue' : '';
+  return `      "${parameterName}": entry.configuration.${parameterName}${rawValueAccess}`;
+};
+
+const staticEnumSwift = (
+  widgetName: string,
+  parameterName: string,
+  parameter: Extract<WidgetParameter, { type: 'enum' }>
+): string => {
+  if (isDynamicEnumParameter(parameter)) {
+    return '';
+  }
+  const typeName = enumTypeName(widgetName, parameterName);
+  return `
+enum ${typeName}: String, CaseIterable, AppEnum {
+  ${parameter.values
+    .map((value) => {
+      return `case ${value.value}`;
+    })
+    .join('\n  ')}
+
+  static var typeDisplayRepresentation = TypeDisplayRepresentation(name: ${JSON.stringify(parameter.title)})
+
+  static var caseDisplayRepresentations: [${typeName}: DisplayRepresentation] = [
+    ${parameter.values
+      .map((value) => {
+        return `.${value.value}: DisplayRepresentation(title: ${JSON.stringify(value.name)})`;
+      })
+      .join(',\n    ')}
+  ]
+}`;
+};
+
+const dynamicEnumOptionsProviderSwift = (
+  widgetName: string,
+  parameterName: string,
+  parameter: Extract<WidgetParameter, { type: 'enum' }> & { dynamic: true }
+): string => `
+struct ${optionsProviderName(widgetName, parameterName)}: DynamicOptionsProvider {
+  func results() async throws -> IntentItemCollection<String> {
+    let options = widgetConfigurationOptions(
+      name: ${JSON.stringify(widgetName)},
+      parameter: ${JSON.stringify(parameterName)},
+      fallback: [
+${parameter.values
+  .map((value) => {
+    return `        WidgetConfigurationOption(name: ${JSON.stringify(value.name)}, value: ${JSON.stringify(value.value)})`;
+  })
+  .join(',\n')}
+      ]
+    )
+
+    return IntentItemCollection(sections: [
+      IntentItemSection(items: options.map { option in
+        IntentItem(
+          option.value,
+          title: LocalizedStringResource(stringLiteral: option.name),
+          subtitle: option.subtitle.map { LocalizedStringResource(stringLiteral: $0) }
+        )
+      })
+    ])
+  }
+
+  func defaultResult() async -> String? {
+    return ${JSON.stringify(parameter.default)}
+  }
+}`;
+
 const widgetSwift = (widget: WidgetConfig): string => {
   const configuration = widget.ios?.configuration ?? widget.configuration;
   const supportedFamilies = widget.ios?.supportedFamilies ?? widget.supportedFamilies ?? [];
@@ -236,24 +376,7 @@ struct ${widget.name}ConfigurationAppIntent: WidgetConfigurationIntent {
 ${configuration?.description ? `  static var description: LocalizedStringResource = ${JSON.stringify(configuration.description)}\n` : ''}
 ${Object.entries(configuration?.parameters ?? {})
   .map(([name, param]) => {
-    let paramType: string;
-    switch (param.type) {
-      case 'string':
-        paramType = 'String';
-        break;
-      case 'number':
-        paramType = 'Double';
-        break;
-      case 'boolean':
-        paramType = 'Bool';
-        break;
-      case 'enum':
-        paramType = `${widget.name}${name[0]?.toUpperCase() + name.slice(1)}Enum`;
-        break;
-      default:
-        paramType = 'String';
-    }
-    return `  @Parameter(title: ${JSON.stringify(param.title)}, default: ${param.type === 'string' ? JSON.stringify(param.default) : param.type === 'number' ? param.default : param.type === 'boolean' ? param.default : `${widget.name}${name[0]?.toUpperCase() + name.slice(1)}Enum.${param.default}`})\n  var ${name}: ${paramType}`;
+    return parameterDeclaration(widget.name, name, param);
   })
   .join('\n')}
 
@@ -264,25 +387,9 @@ ${Object.entries(configuration?.parameters ?? {})
 ${Object.entries(configuration?.parameters ?? {})
   .map(([name, param]) => {
     if (param.type !== 'enum') return '';
-    const paramTypeName = `${widget.name}${name[0]?.toUpperCase() + name.slice(1)}Enum`;
-    return `
-enum ${paramTypeName}: String, CaseIterable, AppEnum {
-  ${param.values
-    .map((value) => {
-      return `case ${value.value}`;
-    })
-    .join('\n  ')}
-
-  static var typeDisplayRepresentation = TypeDisplayRepresentation(name: ${JSON.stringify(param.title)})
-
-  static var caseDisplayRepresentations: [${paramTypeName}: DisplayRepresentation] = [
-    ${param.values
-      .map((value) => {
-        return `.${value.value}: DisplayRepresentation(title: ${JSON.stringify(value.name)})`;
-      })
-      .join(',\n    ')}
-  ]
-}`;
+    return isDynamicEnumParameter(param)
+      ? dynamicEnumOptionsProviderSwift(widget.name, name, param)
+      : staticEnumSwift(widget.name, name, param);
   })
   .join('\n')}
 
@@ -343,11 +450,11 @@ struct ${widget.name}EntryView: View {
     var env: [String: Any] = getWidgetEnvironment(environment: environment)
     env["timestamp"] = Int(entry.date.timeIntervalSince1970 * 1000)
     env["configuration"] = [
-${Object.entries(configuration?.parameters ?? {})
-  .map(([name, param]) => {
-    return `      "${name}": entry.configuration.${name}${param.type === 'enum' ? '.rawValue' : ''}`;
-  })
-  .join(',\n')}
+  ${Object.entries(configuration?.parameters ?? {})
+    .map(([name, param]) => {
+      return configurationValueExpression(name, param);
+    })
+    .join(',\n')}
     ]
     return env
   }

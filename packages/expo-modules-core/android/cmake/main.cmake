@@ -14,7 +14,6 @@ file(
   "${main_dir}/javaclasses/*.cpp"
   "${main_dir}/decorators/*.cpp"
   "${main_dir}/installers/*.cpp"
-  "${main_dir}/worklets/*.cpp"
   "${main_dir}/fabric/*.cpp"
 )
 
@@ -28,6 +27,8 @@ add_library(
 
 use_expo_common(expo-modules-core)
 
+target_precompile_headers(expo-modules-core REUSE_FROM expo-modules-pch)
+
 target_include_directories(
   expo-modules-core
   PRIVATE
@@ -40,23 +41,6 @@ target_include_directories(
   "${COMMON_DIR}/fabric"
 )
 
-target_compile_options(
-  expo-modules-core
-  PRIVATE
-  ${WORKLETS_INTEGRATION_COMPILE_OPTIONS}
-)
-
-if (REACT_NATIVE_WORKLETS_DIR)
-  target_include_directories(
-    expo-modules-core
-    PRIVATE
-    "${REACT_NATIVE_DIR}/ReactCommon"
-    "${REACT_NATIVE_DIR}/ReactCommon/jsiexecutor"
-    "${REACT_NATIVE_WORKLETS_DIR}/Common/cpp"
-    "${REACT_NATIVE_WORKLETS_DIR}/android/src/main/cpp"
-  )
-endif ()
-
 target_link_libraries(
   expo-modules-core
   PRIVATE
@@ -66,35 +50,3 @@ target_link_libraries(
   ${NEW_ARCHITECTURE_DEPENDENCIES}
   expo-modules-jsi
 )
-
-if (REACT_NATIVE_WORKLETS_DIR)
-  find_package(react-native-worklets CONFIG QUIET)
-  if (react-native-worklets_FOUND)
-    target_link_libraries(
-      expo-modules-core
-      PRIVATE
-      react-native-worklets::worklets
-    )
-  else ()
-    add_library(worklets SHARED IMPORTED)
-
-    if (${CMAKE_BUILD_TYPE} MATCHES "Debug")
-      set(BUILD_TYPE "debug")
-    else ()
-      set(BUILD_TYPE "release")
-    endif ()
-
-    set_target_properties(
-      worklets
-      PROPERTIES
-      IMPORTED_LOCATION
-      "${REACT_NATIVE_WORKLETS_DIR}/android/build/intermediates/cmake/${BUILD_TYPE}/obj/${ANDROID_ABI}/libworklets.so"
-    )
-
-    target_link_libraries(
-      expo-modules-core
-      PRIVATE
-      worklets
-    )
-  endif ()
-endif ()

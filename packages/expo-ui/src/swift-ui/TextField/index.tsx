@@ -28,7 +28,7 @@ export type TextFieldRef = {
  */
 export type TextFieldSelection = { start: number; end: number };
 
-export type TextFieldProps = {
+export interface TextFieldProps extends CommonViewModifierProps {
   ref?: Ref<TextFieldRef>;
   /**
    * An observable state that holds the current text.
@@ -80,7 +80,7 @@ export type TextFieldProps = {
    * placeholder's styling).
    */
   children?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 export type NativeTextFieldProps = Omit<
   TextFieldProps,

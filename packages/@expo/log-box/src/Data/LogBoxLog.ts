@@ -7,6 +7,7 @@
  */
 import React from 'react';
 
+import { symbolicateStackAndCacheAsync, invalidateCachedStack } from '../utils/devServerEndpoints';
 import type {
   LogLevel,
   Message,
@@ -17,7 +18,6 @@ import type {
   LogBoxLogData,
   MetroStackFrame,
 } from './Types';
-import { symbolicateStackAndCacheAsync, invalidateCachedStack } from '../utils/devServerEndpoints';
 
 type SymbolicationCallback = (status: SymbolicationStatus) => void;
 

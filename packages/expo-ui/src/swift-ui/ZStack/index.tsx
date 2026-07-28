@@ -3,13 +3,13 @@ import { requireNativeView } from 'expo';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type Alignment, type CommonViewModifierProps } from '../types';
 
-export type ZStackProps = {
+export interface ZStackProps extends CommonViewModifierProps {
   children: React.ReactNode;
   /**
    * The alignment of children within the stack.
    */
   alignment?: Alignment;
-} & CommonViewModifierProps;
+}
 
 const ZStackNativeView: React.ComponentType<ZStackProps> = requireNativeView(
   'ExpoUI',

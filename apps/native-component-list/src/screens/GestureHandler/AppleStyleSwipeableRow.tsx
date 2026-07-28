@@ -1,75 +1,96 @@
-// @ts-nocheck
-import React, { Component } from 'react';
-import { Animated, StyleSheet, Text, View } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
-import Swipeable from 'react-native-gesture-handler/Swipeable';
+import Swipeable, { SwipeableMethods } from 'react-native-gesture-handler/ReanimatedSwipeable';
+import Animated, { interpolate, SharedValue, useAnimatedStyle } from 'react-native-reanimated';
 
-export default class AppleStyleSwipeableRow extends Component {
-  _swipeableRow?: Swipeable;
+function LeftAction({ dragX, onPress }: { dragX: SharedValue<number>; onPress: () => void }) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(dragX.value, [0, 50, 100, 101], [-20, 0, 0, 1]) }],
+  }));
+  return (
+    <RectButton style={styles.leftAction} onPress={onPress}>
+      <Animated.Text style={[styles.actionText, animatedStyle]}>Archive</Animated.Text>
+    </RectButton>
+  );
+}
 
-  renderLeftActions = (progress: Animated.Value, dragX: Animated.Value) => {
-    const trans = dragX.interpolate({
-      inputRange: [0, 50, 100, 101],
-      outputRange: [-20, 0, 0, 1],
-    });
-    return (
-      <RectButton style={styles.leftAction} onPress={this.close}>
-        <Animated.Text
-          style={[
-            styles.actionText,
-            {
-              transform: [{ translateX: trans }],
-            },
-          ]}>
-          Archive
-        </Animated.Text>
+function RightAction({
+  text,
+  color,
+  x,
+  progress,
+  onPress,
+}: {
+  text: string;
+  color: string;
+  x: number;
+  progress: SharedValue<number>;
+  onPress: () => void;
+}) {
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: interpolate(progress.value, [0, 1], [x, 0]) }],
+  }));
+  return (
+    <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+      <RectButton style={[styles.rightAction, { backgroundColor: color }]} onPress={onPress}>
+        <Text style={styles.actionText}>{text}</Text>
       </RectButton>
-    );
+    </Animated.View>
+  );
+}
+
+export default function AppleStyleSwipeableRow({ children }: { children?: React.ReactNode }) {
+  const swipeableRow = useRef<SwipeableMethods>(null);
+
+  const close = () => {
+    swipeableRow.current?.close();
   };
-  renderRightAction = (text: string, color: string, x: number, progress: Animated.Value) => {
-    const trans = progress.interpolate({
-      inputRange: [0, 1],
-      outputRange: [x, 0],
-    });
-    const pressHandler = () => {
-      this.close();
-      alert(text);
-    };
-    return (
-      <Animated.View style={{ flex: 1, transform: [{ translateX: trans }] }}>
-        <RectButton style={[styles.rightAction, { backgroundColor: color }]} onPress={pressHandler}>
-          <Text style={styles.actionText}>{text}</Text>
-        </RectButton>
-      </Animated.View>
-    );
+  const pressHandler = (text: string) => {
+    close();
+    alert(text);
   };
-  renderRightActions = (progress: Animated.Value) => (
+
+  const renderLeftActions = (_progress: SharedValue<number>, dragX: SharedValue<number>) => (
+    <LeftAction dragX={dragX} onPress={close} />
+  );
+  const renderRightActions = (progress: SharedValue<number>) => (
     <View style={{ width: 192, flexDirection: 'row' }}>
-      {this.renderRightAction('More', '#C8C7CD', 192, progress)}
-      {this.renderRightAction('Flag', '#ffab00', 128, progress)}
-      {this.renderRightAction('More', '#dd2c00', 64, progress)}
+      <RightAction
+        text="More"
+        color="#C8C7CD"
+        x={192}
+        progress={progress}
+        onPress={() => pressHandler('More')}
+      />
+      <RightAction
+        text="Flag"
+        color="#ffab00"
+        x={128}
+        progress={progress}
+        onPress={() => pressHandler('Flag')}
+      />
+      <RightAction
+        text="More"
+        color="#dd2c00"
+        x={64}
+        progress={progress}
+        onPress={() => pressHandler('More')}
+      />
     </View>
   );
-  updateRef = (ref: Swipeable) => {
-    this._swipeableRow = ref;
-  };
-  close = () => {
-    this._swipeableRow!.close();
-  };
-  render() {
-    const { children } = this.props;
-    return (
-      <Swipeable
-        ref={this.updateRef}
-        friction={2}
-        leftThreshold={30}
-        rightThreshold={40}
-        renderLeftActions={this.renderLeftActions}
-        renderRightActions={this.renderRightActions}>
-        {children}
-      </Swipeable>
-    );
-  }
+
+  return (
+    <Swipeable
+      ref={swipeableRow}
+      friction={2}
+      leftThreshold={30}
+      rightThreshold={40}
+      renderLeftActions={renderLeftActions}
+      renderRightActions={renderRightActions}>
+      {children}
+    </Swipeable>
+  );
 }
 
 const styles = StyleSheet.create({

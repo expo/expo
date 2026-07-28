@@ -2,6 +2,18 @@ import SwiftUI
 import WidgetKit
 import Foundation
 
+public struct WidgetConfigurationOption {
+  public let name: String
+  public let value: String
+  public let subtitle: String?
+
+  public init(name: String, value: String, subtitle: String? = nil) {
+    self.name = name
+    self.value = value
+    self.subtitle = subtitle
+  }
+}
+
 func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [WidgetsTimelineEntry] {
   guard let timeline = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_timeline") else {
     return [WidgetsTimelineEntry(date: Date(), name: name, props: WidgetsLayoutRegistry.initialProps(for: name), entryIndex: nil)]
@@ -20,6 +32,26 @@ func parseTimeline(identifier: String, name: String, family: WidgetFamily) -> [W
   }
 
   return entries.compactMap(\.self)
+}
+
+public func widgetConfigurationOptions(
+  name: String,
+  parameter: String,
+  fallback: [WidgetConfigurationOption]
+) -> [WidgetConfigurationOption] {
+  guard let options = WidgetsStorage.getArray(forKey: "__expo_widgets_\(name)_configuration_options_\(parameter)") else {
+    return fallback
+  }
+
+  let parsedOptions: [WidgetConfigurationOption] = options.compactMap { option in
+    guard let option = option as? [String: Any],
+          let name = option["name"] as? String,
+          let value = option["value"] as? String else {
+      return nil
+    }
+    return WidgetConfigurationOption(name: name, value: value, subtitle: option["subtitle"] as? String)
+  }
+  return parsedOptions.isEmpty ? fallback : parsedOptions
 }
 
 public func createRedBox(message: String, stack: String? = nil) -> [String: Any] {

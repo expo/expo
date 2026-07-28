@@ -84,6 +84,8 @@ export interface ModuleDescriptorDevTools {
   packageName: string;
   packageRoot: string;
   webpageRoot?: string;
+  bannerTitle?: boolean | string;
+  serverEntryPoint?: string;
   cliExtensions?: {
     description: string;
     commands: {
@@ -313,6 +315,17 @@ export interface RawExpoModuleConfig {
      * The webpage root directory for Expo CLI DevTools to serve the web resources. Only set if the module has a web interface.
      */
     webpageRoot?: string;
+    /**
+     * The title to show in the Expo CLI startup banner. Defaults to the package name if passing `true`,
+     * otherwise the banner is not shown.
+     */
+    bannerTitle?: string | boolean;
+    /**
+     * A package-local JavaScript file default-exporting a `handler(request)` function that
+     * handles requests to the plugin endpoint and optional `webSocketHandlers` for WebSocket connections.
+     * Runs in the Expo CLI Node.js process.
+     */
+    serverEntryPoint?: string;
     /**
      * Cli extension config for the module.
      */

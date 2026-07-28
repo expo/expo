@@ -18,6 +18,11 @@ nonisolated(unsafe) private let reservedAttributePatterns: [Regex<Substring>] = 
   /^event\.name$/,
 ]
 
+/// Attribute key under which the SDK stores a log event's display name. Reserved (it matches the
+/// `expo.*` pattern above), so callers can't set it themselves; the SDK injects it after
+/// sanitization via `withDisplayNameAttribute`.
+let displayNameAttributeKey = "expo.log.display_name"
+
 /// Maximum number of attributes accepted per log record. Mirrors the OTel SDK
 /// default — collectors and backends start to push back well before this limit,
 /// so we cap eagerly and surface the overflow via `droppedAttributesCount`.
@@ -99,4 +104,16 @@ func sanitizeLogEventAttributes(_ attributes: [String: Any]?) -> SanitizedLogAtt
     attributes: sanitized.isEmpty ? nil : sanitized,
     droppedCount: emptyKeyDrops + reservedKeyDrops.count + overflowDrops
   )
+}
+
+/// Returns `attributes` with the validated display name added under `displayNameAttributeKey`,
+/// or `attributes` unchanged when `displayName` is `nil`. Call this after
+/// `sanitizeLogEventAttributes` so the reserved key bypasses the `expo.*` drop.
+func withDisplayNameAttribute(_ attributes: [String: Any]?, displayName: String?) -> [String: Any]? {
+  guard let displayName else {
+    return attributes
+  }
+  var merged = attributes ?? [:]
+  merged[displayNameAttributeKey] = displayName
+  return merged
 }

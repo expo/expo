@@ -12,7 +12,7 @@ final class LiveActivity: SharedObject {
     super.init()
   }
 
-  func update(props: String?) async throws {
+  func update(props: String?, staleDate: Date?) async throws {
     guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
 
     guard let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == id }) else {
@@ -20,7 +20,7 @@ final class LiveActivity: SharedObject {
     }
 
     let newState = LiveActivityAttributes.ContentState(name: name, props: props)
-    await activity.update(ActivityContent(state: newState, staleDate: nil))
+    await activity.update(ActivityContent(state: newState, staleDate: staleDate))
   }
 
   func end(dismissalPolicy: LiveActivityDismissalPolicy?, afterDate: Date?, props: String?, contentDate: Date?) async throws {

@@ -33,7 +33,7 @@ export interface MockMapOptions {
 }
 
 export default class MockPlugin implements FileMapPlugin<RawMockMap, undefined>, IMockMap {
-  readonly name: 'mocks' = 'mocks';
+  readonly name = 'mocks' as const;
 
   readonly #mocksPattern: RegExp;
   #raw: RawMockMap;

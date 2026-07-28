@@ -73,7 +73,6 @@ export function getTestModules() {
     require('./tests/KeepAwake'),
     require('./tests/Blur'),
     require('./tests/HTML'),
-    require('./tests/FirebaseJSSDK'),
     require('./tests/ImageManipulator'),
     require('./tests/Clipboard'),
     require('./tests/Fetch'),

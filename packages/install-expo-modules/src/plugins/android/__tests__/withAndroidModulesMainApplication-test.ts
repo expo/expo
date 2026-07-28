@@ -1,6 +1,5 @@
 import fs from 'fs';
 import path from 'path';
-import semver from 'semver';
 
 import { getSdkVersion } from '../../../utils/expoVersionMappings';
 import { setModulesMainApplication } from '../withAndroidModulesMainApplication';

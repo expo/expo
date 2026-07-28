@@ -3,7 +3,7 @@ import { requireNativeView } from 'expo';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type HStackProps = {
+export interface HStackProps extends CommonViewModifierProps {
   children: React.ReactNode;
   /**
    * The spacing between children.
@@ -13,7 +13,7 @@ export type HStackProps = {
    * The vertical alignment of children within the stack.
    */
   alignment?: 'top' | 'center' | 'bottom' | 'firstTextBaseline' | 'lastTextBaseline';
-} & CommonViewModifierProps;
+}
 
 const HStackNativeView: React.ComponentType<HStackProps> = requireNativeView(
   'ExpoUI',

@@ -12,7 +12,7 @@ import kotlin.time.toDuration
  */
 class Logger(
   /**
-   * LogHandler instances to which logs should be send
+   * LogHandler instances to which logs should be sent
    */
   private val logHandlers: List<LogHandler>
 ) {

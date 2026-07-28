@@ -2,59 +2,70 @@
   "name": "expo-modules-autolinking",
   "version": "56.0.13",
   "description": "Scripts that autolink Expo modules.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/index.d.ts",
-      "require": "./build/index.js",
-      "default": "./build/index.js"
-    },
-    "./exports": {
-      "types": "./build/exports.d.ts",
-      "require": "./build/exports.js",
-      "default": "./build/exports.js"
-    },
-    "./*": "./*.js",
-    "./*.js": "./*.js"
-  },
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
-  "bin": {
-    "expo-modules-autolinking": "bin/expo-modules-autolinking.js"
-  },
   "keywords": [
+    "autolinking",
     "expo",
     "expo-module",
-    "autolinking",
     "unimodules"
   ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-modules-autolinking"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "bin": {
+    "expo-modules-autolinking": "bin/expo-modules-autolinking.js"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-modules-autolinking#readme",
-  "devDependencies": {
-    "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "require": "./build/index.js",
+      "default": "./build/index.js"
+    },
+    "./exports": {
+      "types": {
+        "expo-source": "./src/exports.ts",
+        "default": "./build/exports.d.ts"
+      },
+      "expo-source": "./src/exports.ts",
+      "require": "./build/exports.js",
+      "default": "./build/exports.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@expo/require-utils": "workspace:^56.1.3",
     "@expo/spawn-async": "^1.8.0",
     "chalk": "^4.1.0",
     "commander": "^7.2.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
   }
 }

@@ -144,7 +144,7 @@ export type RuleChartStyle = {
   dashArray?: number[];
 };
 
-export type ChartProps = {
+export interface ChartProps extends CommonViewModifierProps {
   /**
    * Array of data points to display.
    */
@@ -201,7 +201,7 @@ export type ChartProps = {
    * Rule mark specific styling options.
    */
   ruleStyle?: RuleChartStyle;
-} & CommonViewModifierProps;
+}
 
 const ChartNativeView: React.ComponentType<ChartProps> = requireNativeView('ExpoUI', 'ChartView');
 

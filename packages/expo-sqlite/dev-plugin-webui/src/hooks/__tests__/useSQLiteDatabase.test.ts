@@ -8,9 +8,11 @@ import { useSQLiteDatabase } from '../useSQLiteDatabase';
 import * as sqliteDump from '@/lib/sqliteDump';
 
 // Mock expo-sqlite
-jest.mock('../../../node_modules/expo-sqlite/build/ExpoSQLite.js', () =>
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('../../../../src/__mocks__/ExpoSQLite')
+jest.mock(
+  '../../../../src/ExpoSQLite',
+  () =>
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('../../../../src/__mocks__/ExpoSQLite')
 );
 
 // Mock sqliteDump

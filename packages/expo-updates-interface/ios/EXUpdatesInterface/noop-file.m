@@ -1,1 +1,1 @@
-// noop file for cocoapods to generated modulemap file
+// noop file for cocoapods to generate modulemap file

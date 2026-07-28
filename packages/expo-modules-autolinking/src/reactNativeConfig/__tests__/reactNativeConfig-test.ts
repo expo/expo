@@ -31,6 +31,7 @@ const BASE_AUTOLINKING_OPTIONS: AutolinkingOptions = {
   searchPaths: [],
   nativeModulesDir: null,
   exclude: [],
+  include: [],
 };
 
 const itWithMemoize = (name: string, fn: () => Promise<void>) => {
@@ -177,7 +178,7 @@ describe(createReactNativeConfigAsync, () => {
       },
     });
     expect(result.dependencies['react-native-test']).toBeDefined();
-    expect(result.dependencies['react-native-test'].root).toBe('/app/modules/react-native-test');
+    expect(result.dependencies['react-native-test']!.root).toBe('/app/modules/react-native-test');
   });
 
   itWithMemoize('should return config if local dependencies are not specified', async () => {

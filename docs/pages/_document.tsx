@@ -11,11 +11,9 @@ const BLOCKING_THEME_SCRIPT = `
     return val === 'dark' || val === 'light' ? val : null;
   }
   var theme = getCookieTheme();
-  if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-    document.documentElement.classList.add('dark-theme');
-  } else {
-    document.documentElement.classList.remove('dark-theme');
-  }
+  var isDark = theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  document.documentElement.classList.toggle('dark-theme', isDark);
+  document.documentElement.classList.toggle('light-theme', !isDark);
 })();
 `;
 

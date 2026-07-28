@@ -4,7 +4,7 @@ import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 're
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type HostProps = {
+export interface HostProps extends CommonViewModifierProps {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
    * Can be only set once on mount.
@@ -44,16 +44,17 @@ export type HostProps = {
   layoutDirection?: 'leftToRight' | 'rightToLeft';
 
   /**
-   * Controls which safe area regions the SwiftUI hosting view should ignore. Can only be set once on mount.
-   * - `'all'`- ignores all safe area insets.
+   * Controls which safe area regions the SwiftUI hosting view should ignore.
+   * - `'all'` - ignores all safe area insets, including the keyboard.
+   * - `'container'` - ignores only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
    * - `'keyboard'` - ignores only the keyboard safe area.
    */
-  ignoreSafeArea?: 'all' | 'keyboard';
+  ignoreSafeArea?: 'all' | 'container' | 'keyboard';
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
-} & CommonViewModifierProps;
+}
 
 const HostNativeView: React.ComponentType<
   HostProps & { matchContentsVertical?: boolean; matchContentsHorizontal?: boolean }

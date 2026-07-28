@@ -10,3 +10,20 @@ internal final class HostFunctionContext: Sendable {
     self.call = function
   }
 }
+
+/// Counterpart to ``HostFunctionContext`` for host functions whose closure receives `this` as a
+/// borrowed ``JavaScriptUnownedValue`` (see ``JavaScriptRuntime/UnownedThisSyncFunctionClosure``).
+internal final class UnownedThisHostFunctionContext: Sendable {
+  weak let runtime: JavaScriptRuntime?
+  let name: String?
+  let call: JavaScriptRuntime.UnownedThisSyncFunctionClosure
+
+  init(
+    runtime: JavaScriptRuntime, name: String? = nil,
+    _ function: @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
+  ) {
+    self.runtime = runtime
+    self.name = name
+    self.call = function
+  }
+}

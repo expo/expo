@@ -26,3 +26,22 @@ export function parseUrlUsingCustomBase(href: string): URL {
   // dummy URL in the output bytecode
   return new URL(href, 'file:');
 }
+
+// Malformed percent-encoding (e.g. `%GG`) would otherwise throw and drop the value.
+export function safeDecodeURI(value: any) {
+  try {
+    return typeof value === 'string' ? decodeURI(value) : value;
+  } catch {
+    // If the value is not a valid URI, return it as is
+    return value;
+  }
+}
+
+export function safeDecodeURIComponent(value: any) {
+  try {
+    return typeof value === 'string' ? decodeURIComponent(value) : value;
+  } catch {
+    // If the value is not a valid URI component, return it as is
+    return value;
+  }
+}

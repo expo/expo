@@ -71,7 +71,7 @@ export const APICommentTextBlock = ({
               'my-1.5 flex flex-row items-center gap-1.5 font-medium text-tertiary',
               !isMultiline && 'my-0'
             )}>
-            <CodeSquare01Icon className="-mt-px icon-sm text-icon-tertiary" />
+            <CodeSquare01Icon aria-hidden="true" className="-mt-px icon-sm text-icon-tertiary" />
             Example
           </CALLOUT>
         ) : (

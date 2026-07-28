@@ -48,6 +48,9 @@ jobs:
           java-version: '17'
       - name: 📦 Install dependencies
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 📦 Publish canaries
         run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }} ${{ inputs.skip-ios-prebuilds && '--skip-ios-prebuilds' || '' }}
         env:

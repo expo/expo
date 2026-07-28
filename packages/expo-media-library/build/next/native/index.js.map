@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/next/native/index.ts"],"names":[],"mappings":"AAAA,OAAO,EACL,wBAAwB,EACxB,WAAW,EACX,WAAW,EACX,WAAW,GACZ,MAAM,4BAA4B,CAAC","sourcesContent":["export {\n  NativeMediaLibraryModule,\n  NativeAsset,\n  NativeAlbum,\n  NativeQuery,\n} from './NativeMediaLibraryModule';\n"]}

@@ -11,8 +11,6 @@ import expo.modules.kotlin.Promise
 import expo.modules.kotlin.component6
 import expo.modules.kotlin.component7
 import expo.modules.kotlin.component8
-import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
@@ -82,7 +80,7 @@ class ViewDefinitionBuilder<T : View>(
   }
 
   /**
-   * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
+   * Creates view's lifecycle listener that is called right after the view is no longer used by React Native.
    */
   @Suppress("UNCHECKED_CAST")
   inline fun OnViewDestroys(crossinline body: (view: T) -> Unit) {
@@ -92,7 +90,7 @@ class ViewDefinitionBuilder<T : View>(
   }
 
   /**
-   * Creates view's lifecycle listener that is called right after the view isn't longer used by React Native.
+   * Creates view's lifecycle listener that is called right after the view is no longer used by React Native.
    */
   @JvmName("OnViewDestroysGeneric")
   inline fun <reified ViewType : T> OnViewDestroys(noinline body: (view: ViewType) -> Unit) {
@@ -467,8 +465,9 @@ class ViewDefinitionBuilder<T : View>(
   private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, error: Throwable): View {
     Log.e("ExpoModulesCore", "Couldn't create view of type $viewClass", error)
 
-    appContext.errorManager?.reportExceptionToLogBox(
-      error as? CodedException ?: UnexpectedException(error)
+    appContext.jsLogger?.error(
+      message = error.message.toString(),
+      cause = error
     )
 
     return if (ViewGroup::class.java.isAssignableFrom(viewClass.java)) {

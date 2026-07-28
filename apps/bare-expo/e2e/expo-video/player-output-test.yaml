@@ -1,16 +1,21 @@
+# The viewshot-ready marker's testID carries the total number of player moves performed so far
+# (viewshot-ready-<N>), so each checkpoint waits for the exact state after its taps were
+# processed and all video views repainted. Keep the expected counts in sync when adding or
+# removing move taps.
 appId: dev.expo.Payments
 jsEngine: graaljs
 ---
-- openLink: bareexpo://components/video/player_prop
+- openLink: bareexpo://components/video/player-output-e2e
 
-- tapOn: 'Prepare for e2e'
+# The screen seeks both players to a fixed frame once they load and then shows this marker.
 - extendedWaitUntil:
     visible: 'Players ready'
     timeout: 30000
 - tapOn: 'Move player 1 to the next video view'
+# 1 move performed
 - extendedWaitUntil:
     visible:
-      id: 'viewshot-ready'
+      id: 'viewshot-ready-1'
     timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
@@ -22,9 +27,10 @@ jsEngine: graaljs
     text: 'Move player 2 to the next video view'
     repeat: 2
 - tapOn: 'Move player 1 to the next video view'
+# 4 moves performed
 - extendedWaitUntil:
     visible:
-      id: 'viewshot-ready'
+      id: 'viewshot-ready-4'
     timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
@@ -34,9 +40,10 @@ jsEngine: graaljs
       mode: 'keep-originals'
 - tapOn: 'Move player 1 to first video view'
 - tapOn: 'Move player 2 to first video view'
+# 6 moves performed
 - extendedWaitUntil:
     visible:
-      id: 'viewshot-ready'
+      id: 'viewshot-ready-6'
     timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml
@@ -52,9 +59,10 @@ jsEngine: graaljs
 - tapOn:
     text: 'Move player 1 to the next video view'
     repeat: 2
+# 11 moves performed
 - extendedWaitUntil:
     visible:
-      id: 'viewshot-ready'
+      id: 'viewshot-ready-11'
     timeout: 10000
 - runFlow:
     file: ../_nested-flows/viewshot-comparison.yaml

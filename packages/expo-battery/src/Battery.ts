@@ -1,4 +1,4 @@
-import type { EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 import { useEffect, useState } from 'react';
 
 import {
@@ -293,5 +293,4 @@ export {
   type PowerState,
 } from './Battery.types';
 
-// TODO(@kitten): Remove re-exports from EMC
-export type { EventSubscription as Subscription } from 'expo-modules-core';
+export type { EventSubscription as Subscription } from 'expo';

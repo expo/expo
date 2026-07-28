@@ -12,17 +12,17 @@
 ├── StackSearchBar.tsx # Stack.SearchBar
 ├── StackTitle.tsx # Stack.Title
 └── toolbar # Stack.Toolbar._ components
-    ├── context.tsx # ToolbarPlacementContext
-    ├── shared.ts # Shared header item conversion utilities
-    ├── toolbar-primitives.tsx # Label, Icon, Badge primitives
-    ├── index.tsx # Barrel exports
-    ├── StackToolbar.tsx # StackToolbar component (assigns sub-components)
-    ├── StackToolbarClient.tsx # Client-side toolbar logic (appendStackToolbarPropsToOptions)
-    ├── StackToolbarButton/ # Stack.Toolbar.Button
-    ├── StackToolbarMenu/ # Stack.Toolbar.Menu + Stack.Toolbar.MenuAction
-    ├── StackToolbarSpacer/ # Stack.Toolbar.Spacer
-    ├── StackToolbarView/ # Stack.Toolbar.View
-    └── StackToolbarSearchBarSlot/ # Stack.Toolbar.SearchBarSlot
+├── context.tsx # ToolbarPlacementContext
+├── shared.ts # Shared header item conversion utilities
+├── toolbar-primitives.tsx # Label, Icon, Badge primitives
+├── index.tsx # Barrel exports
+├── StackToolbar.tsx # StackToolbar component (assigns sub-components)
+├── StackToolbarClient.tsx # Client-side toolbar logic (appendStackToolbarPropsToOptions)
+├── StackToolbarButton/ # Stack.Toolbar.Button
+├── StackToolbarMenu/ # Stack.Toolbar.Menu + Stack.Toolbar.MenuAction
+├── StackToolbarSpacer/ # Stack.Toolbar.Spacer
+├── StackToolbarView/ # Stack.Toolbar.View
+└── StackToolbarSearchBarSlot/ # Stack.Toolbar.SearchBarSlot
 
 Each `StackToolbar*/` folder follows the same structure:
 

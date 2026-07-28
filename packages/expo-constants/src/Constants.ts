@@ -1,6 +1,5 @@
 // TODO(@kitten): Add missing optional peers
 
-import type { ExpoConfig } from 'expo/config';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type {
   EmbeddedManifest,
@@ -12,6 +11,7 @@ import type {
 import { CodedError, requireOptionalNativeModule } from 'expo-modules-core';
 // @ts-ignore -- optional interface, will gracefully degrade to `any` if not installed
 import type { Manifest as UpdatesManifest, ExpoUpdatesModule } from 'expo-updates';
+import type { ExpoConfig } from 'expo/config';
 import { Platform, NativeModules } from 'react-native';
 
 import { type Constants, ExecutionEnvironment } from './Constants.types';

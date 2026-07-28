@@ -764,6 +764,7 @@ describe(logLoadedEnv, () => {
     files: ['/.env.production.local', '/.env.production', '.env.local'],
     env: { FOO: 'test1', BAR: 'test2' },
     loaded: ['FOO', 'BAR'],
+    sensitiveLoadedKeys: [],
   };
 
   it('logs environment vaiables and files', () => {
@@ -773,11 +774,11 @@ describe(logLoadedEnv, () => {
     // Ensure `logLoadedEnv` returns the env info as-is
     expect(logLoadedEnv(envInfo)).toBe(envInfo);
     // Ensure `console.log` with environment files was called first
-    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0][0])).toBe(
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0]![0])).toBe(
       'env: load .env.production.local .env.production .env.local'
     );
     // Ensure `console.log` with environment variables was called second
-    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[1][0])).toBe(
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[1]![0])).toBe(
       'env: export FOO BAR'
     );
   });
@@ -791,7 +792,7 @@ describe(logLoadedEnv, () => {
     // Ensure `logLoadedEnv` returns the env info as-is
     expect(logLoadedEnv(skippedEnvInfo)).toBe(skippedEnvInfo);
     // Ensure no `console.log` was called
-    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0][0])).toBe(
+    expect(stripVTControlCharacters(jest.mocked(console.log).mock.calls[0]![0])).toBe(
       'env: export FOO BAR'
     );
   });

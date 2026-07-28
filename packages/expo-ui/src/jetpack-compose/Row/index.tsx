@@ -9,7 +9,7 @@ import {
   transformProps,
 } from '../layout-types';
 
-export type RowProps = {
+export interface RowProps extends PrimitiveBaseProps {
   children?: React.ReactNode;
   /**
    * Horizontal arrangement of children.
@@ -27,7 +27,7 @@ export type RowProps = {
    * Vertical alignment of children.
    */
   verticalAlignment?: VerticalAlignment;
-} & PrimitiveBaseProps;
+}
 
 const RowNativeView: React.ComponentType<RowProps> = requireNativeView('ExpoUI', 'RowView');
 

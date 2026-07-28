@@ -193,13 +193,11 @@ let metricNameMap = [
   "navigation/tti": "expo.navigation.tti",
 ]
 
-nonisolated(unsafe) let formatter = ISO8601DateFormatter()
-
 private func nsFromISOString(_ dateString: String?) -> UInt64 {
   if let dateString,
-    let date = formatter.date(from: dateString)
+    let date = try? Date.ISO8601FormatStyle().parse(dateString)
   {
-    return UInt64(date.timeIntervalSince1970 * 1_000_000_000)
+    return UInt64((date.timeIntervalSince1970 * 1_000).rounded()) * 1_000_000
   }
   return UInt64(Date().timeIntervalSince1970 * 1_000_000_000)
 }
@@ -428,4 +426,32 @@ internal struct OTRequestBody: Codable, Sendable {
 
 internal struct OTLogsRequestBody: Codable, Sendable {
   let resourceLogs: [OTResourceLogs]
+}
+
+// MARK: -- Response shapes for Open Telemetry endpoints
+
+/// Per OTLP/HTTP, both `/v1/metrics` and `/v1/logs` return an `ExportXServiceResponse` with an
+/// optional `partial_success` object. Our server emits it (with camelCase JSON keys — no
+/// snake_case translation) only when there were actual rejections, e.g.
+/// `{ "partialSuccess": { "rejectedDataPoints": 3, "errorMessage": "..." } }`. We model the
+/// union — `rejectedDataPoints` for metrics responses, `rejectedLogRecords` for logs responses
+/// — so a single decoder works for either endpoint.
+///
+/// Spec: https://github.com/open-telemetry/opentelemetry-proto/blob/main/docs/specification.md
+internal struct OTPartialSuccess: Codable, Equatable, Sendable {
+  let rejectedDataPoints: Int64?
+  let rejectedLogRecords: Int64?
+  let errorMessage: String?
+
+  /// Count of records the server says it rejected from this batch. The OTLP spec also allows
+  /// `partial_success` to carry a warning-only payload (`rejectedCount == 0` with a non-empty
+  /// `errorMessage`); the dispatch classifier treats that as a successful send with a logged
+  /// warning rather than a batch drop.
+  var rejectedCount: Int64 {
+    (rejectedDataPoints ?? 0) + (rejectedLogRecords ?? 0)
+  }
+}
+
+internal struct OTServiceResponse: Codable, Sendable {
+  let partialSuccess: OTPartialSuccess?
 }

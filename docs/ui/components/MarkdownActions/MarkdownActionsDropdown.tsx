@@ -16,6 +16,8 @@ import { MarkdownIcon } from '~/ui/components/CustomIcons/MarkdownIcon';
 import * as Dropdown from '~/ui/components/Dropdown';
 import { FOOTNOTE } from '~/ui/components/Text';
 
+import { getVersionedMarkdownPath } from './paths';
+
 const getPrompt = (url: string) =>
   encodeURIComponent(`Read this documentation page, so I can ask questions about it:\n\n${url}`);
 
@@ -30,6 +32,11 @@ export function MarkdownActionsDropdown() {
   const markdownViewUrl = useMemo(() => {
     if (!pagePath) {
       return null;
+    }
+
+    const versionedPath = getVersionedMarkdownPath(pagePath);
+    if (versionedPath) {
+      return versionedPath;
     }
 
     const path = pagePath.split(/[#?]/)[0].replace(/\/$/, '');
@@ -207,11 +214,11 @@ export function MarkdownActionsDropdown() {
       aria-haspopup="menu"
       aria-label={intl.formatMessage({ id: 'copyPageActions' })}>
       <div className="flex flex-row items-center gap-1.5">
-        <Copy04Icon className="icon-xs text-icon-secondary" />
+        <Copy04Icon aria-hidden="true" className="icon-xs text-icon-secondary" />
         <FOOTNOTE crawlable={false} theme="secondary" className="whitespace-nowrap">
           {intl.formatMessage({ id: 'copyPage' })}
         </FOOTNOTE>
-        <ChevronDownIcon className="icon-xs text-icon-secondary" />
+        <ChevronDownIcon aria-hidden="true" className="icon-xs text-icon-secondary" />
       </div>
     </Button>
   );

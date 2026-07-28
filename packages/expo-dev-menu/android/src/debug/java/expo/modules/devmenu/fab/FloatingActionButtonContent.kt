@@ -27,8 +27,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.composeunstyled.Icon
-import com.composeunstyled.Text
+import com.composeunstyled.UnstyledIcon
+import com.composeunstyled.UnstyledText
 import expo.modules.devmenu.R
 
 private val FabBlue = Color(0xFF007AFF)
@@ -88,7 +88,7 @@ fun FloatingActionButtonContent(
         .padding(4.dp)
         .background(FabBlue, CircleShape)
     ) {
-      Icon(
+      UnstyledIcon(
         painter = painterResource(R.drawable.gear_fill),
         contentDescription = "Tools",
         tint = Color.White,
@@ -107,7 +107,7 @@ fun FloatingActionButtonContent(
           .background(Color.White, RoundedCornerShape(percent = 50))
           .padding(horizontal = 10.dp, vertical = 4.dp)
       ) {
-        Text(
+        UnstyledText(
           text = "Tools",
           color = Color.Black,
           fontSize = 11.sp,

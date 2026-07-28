@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
-import { getPreloadedRoutes } from './getPreloadedRoutes';
 import type { NavigationState, ParamListBase, RouteProp } from '../react-navigation/core';
+import { getPreloadedRoutes } from './getPreloadedRoutes';
 
 /**
  * Extends the descriptors map with descriptors for the preloaded routes.

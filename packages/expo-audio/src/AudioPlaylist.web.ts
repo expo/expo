@@ -1,12 +1,15 @@
 import type {
+  AudioMetadata,
   AudioPlaylistLoopMode,
   AudioPlaylistStatus,
   AudioSource,
   AudioSourceInfo,
 } from './Audio.types';
+import type { AudioLockScreenOptions } from './AudioConstants';
 import { PLAYLIST_STATUS_UPDATE, TRACK_CHANGED } from './AudioEventKeys';
 import type { AudioPlaylist, AudioPlaylistEvents } from './AudioModule.types';
 import { getSourceUri, nextId } from './AudioUtils.web';
+import { mediaSessionController } from './MediaSessionController.web';
 import { resolveSource } from './utils/resolveSource';
 
 function getSourceInfo(source: AudioSource): AudioSourceInfo {
@@ -304,7 +307,28 @@ export class AudioPlaylistWeb
   }
 
   destroy(): void {
+    mediaSessionController.clear(this);
     this.clear();
+  }
+
+  setActiveForLockScreen(
+    active: boolean,
+    metadata?: AudioMetadata,
+    options?: AudioLockScreenOptions
+  ): void {
+    if (active) {
+      mediaSessionController.setActivePlayer(this, metadata, options);
+    } else {
+      mediaSessionController.clear(this);
+    }
+  }
+
+  updateLockScreenMetadata(metadata: AudioMetadata): void {
+    mediaSessionController.updateMetadata(this, metadata);
+  }
+
+  clearLockScreenControls(): void {
+    mediaSessionController.clear(this);
   }
 
   private _transitionToTrack(newIndex: number, previousIndex: number): void {
@@ -509,6 +533,7 @@ export class AudioPlaylistWeb
         this._transitionToTrack(0, this._currentIndex);
       } else {
         this._isPlaying = false;
+        this._updateMediaSession();
         this.emit(PLAYLIST_STATUS_UPDATE, {
           ...this._getStatus(),
           didJustFinish: true,
@@ -539,5 +564,11 @@ export class AudioPlaylistWeb
 
   private _emitStatus(): void {
     this.emit(PLAYLIST_STATUS_UPDATE, this._getStatus());
+    this._updateMediaSession();
+  }
+
+  private _updateMediaSession(): void {
+    mediaSessionController.updatePlaybackState(this);
+    mediaSessionController.updatePositionState(this);
   }
 }

@@ -4,7 +4,7 @@
 
 ## Before opening a PR
 
-- [ ] Rebuilt JS output: `yarn build` (from `packages/expo-ui/`) and committed the `build/` output.
+- [ ] Verified the package builds and passes checks: `et check-packages @expo/ui` (or `pnpm build && pnpm typecheck && pnpm test` from `packages/expo-ui/`)
 
 ### When adding or updating a component
 

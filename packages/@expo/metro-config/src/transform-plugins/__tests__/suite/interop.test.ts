@@ -38,7 +38,7 @@ it('export default global variable', () => {
       export default foo;
     `);
   }).toThrow(/foo is not defined/);
-  globalThis.foo = 'foo';
+  (globalThis as Record<string, unknown>).foo = 'foo';
   const mod = exec(`
     export default foo;
   `);

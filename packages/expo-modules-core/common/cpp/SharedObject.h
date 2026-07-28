@@ -25,7 +25,7 @@ typedef long ObjectId;
 typedef std::function<void(const ObjectId)> ObjectReleaser;
 
 /**
- Installs a base JavaScript class for all shared object with a shared release block.
+ Installs a base JavaScript class for all shared objects with a shared release block.
  */
 void installBaseClass(jsi::Runtime &runtime, const ObjectReleaser& releaser);
 

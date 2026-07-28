@@ -25,7 +25,6 @@ import java.io.File
 import java.io.IOException
 import java.lang.ref.WeakReference
 import java.util.UUID
-import kotlin.coroutines.Continuation
 import kotlin.math.log10
 
 private const val RECORDING_STATUS_UPDATE = "recordingStatusUpdate"
@@ -49,7 +48,6 @@ class AudioRecorder(
   var isPaused = false
   private var recordingTimerJob: Job? = null
   var useForegroundService = false
-  private var bindingContinuation: Continuation<Boolean>? = null
 
   val serviceConnection = AudioRecordingServiceConnection(WeakReference(this), appContext)
 
@@ -61,6 +59,9 @@ class AudioRecorder(
   private fun currentFileUrl(): String? =
     filePath?.let(::File)?.toUri()?.toString()
 
+  val fileSize: Long
+    get() = filePath?.let { File(it).length() } ?: 0L
+
   private fun getAudioRecorderLevels(): Double? {
     if (!meteringEnabled || recorder == null || !isRecording) {
       return null
@@ -68,7 +69,7 @@ class AudioRecorder(
 
     val amplitude: Int = try {
       recorder?.maxAmplitude ?: 0
-    } catch (e: Exception) {
+    } catch (_: Exception) {
       // MediaRecorder maxAmplitude can throw various exceptions:
       // - IllegalStateException: invalid recorder state/race condition
       // - RuntimeException: getMaxAmplitude failed (hardware/driver issues)
@@ -223,13 +224,10 @@ class AudioRecorder(
     isPrepared = false
   }
 
+  @Suppress("DEPRECATION")
   private fun createRecorder(options: RecordingOptions): MediaRecorder {
     val outputFilePath = createRecordingFilePath(options)
-    val mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-      MediaRecorder(context)
-    } else {
-      MediaRecorder()
-    }
+    val mediaRecorder = MediaRecorder()
 
     try {
       setRecordingOptions(mediaRecorder, options, outputFilePath)
@@ -242,7 +240,12 @@ class AudioRecorder(
   }
 
   private fun createRecordingFilePath(options: RecordingOptions): String {
-    val filename = "recording-${UUID.randomUUID()}${options.extension}"
+    val provided = options.fileName?.takeIf { it.isNotEmpty() }
+    if (provided != null && (provided.contains('/') || provided.contains('\\') || provided.contains(".."))) {
+      throw InvalidRecordingFileNameException(provided)
+    }
+    val baseName = provided ?: "recording-${UUID.randomUUID()}"
+    val filename = "$baseName${options.extension}"
     val parentDirectory = when (options.directory ?: RecordingDirectory.CACHE) {
       RecordingDirectory.CACHE -> _appContext.cacheDirectory
       RecordingDirectory.DOCUMENT -> _appContext.persistentFilesDirectory
@@ -250,7 +253,7 @@ class AudioRecorder(
     val directory = File(parentDirectory, "Audio")
     try {
       ensureDirExists(directory)
-    } catch (e: IOException) {
+    } catch (_: IOException) {
       // This only occurs in the case that the scoped path is not in this experience's scope,
       // which is never true.
     }
@@ -315,6 +318,7 @@ class AudioRecorder(
       putBoolean("canRecord", isPrepared)
       putBoolean("isRecording", isRecording)
       putLong("durationMillis", getAudioRecorderDurationMillis())
+      putLong("fileSize", fileSize)
       getAudioRecorderLevels()?.let {
         putDouble("metering", it)
       }
@@ -325,6 +329,7 @@ class AudioRecorder(
       putBoolean("canRecord", false)
       putBoolean("isRecording", false)
       putLong("durationMillis", 0)
+      putLong("fileSize", 0)
       putString("url", null)
     }
   }
@@ -402,7 +407,7 @@ class AudioRecorder(
         // only returns a valid device when actively recording, and may throw otherwise.
         // https://developer.android.com/reference/android/media/MediaRecorder#getRoutedDevice()
         deviceInfo = recorder?.routedDevice
-      } catch (e: java.lang.Exception) {
+      } catch (_: java.lang.Exception) {
         // no-op
       }
     }
@@ -453,6 +458,7 @@ class AudioRecorder(
       }
     }
 
+  @Suppress("DEPRECATION")
   fun setInput(uid: String, audioManager: AudioManager) {
     val deviceInfo: AudioDeviceInfo? = getDeviceInfoFromUid(uid, audioManager)
 

@@ -1,5 +1,4 @@
 import './BeforePIXI';
-
 import * as PIXI from 'pixi.js';
 import { Dimensions } from 'react-native';
 

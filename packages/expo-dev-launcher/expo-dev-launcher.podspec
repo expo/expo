@@ -35,7 +35,7 @@ Pod::Spec.new do |s|
   s.static_framework = true
   s.source_files   = 'ios/**/*.{h,m,mm,swift,cpp}'
   s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
-  s.exclude_files  = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}', 'ios/Tests/**/*.{h,m,swift}'
+  s.exclude_files  = 'ios/Tests/**/*.{h,m,swift}'
   s.requires_arc   = true
   s.header_dir     = 'EXDevLauncher'
 
@@ -44,8 +44,6 @@ Pod::Spec.new do |s|
       'ios/Assets.xcassets',
     ]
   }
-
-  new_arch_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 
   other_c_flags = "$(inherited) -DREACT_NATIVE_TARGET_VERSION=#{reactNativeTargetVersion}"
   if ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
@@ -56,10 +54,6 @@ Pod::Spec.new do |s|
     other_swift_flags += ' -DEX_DEV_CLIENT_NETWORK_INSPECTOR'
   end
 
-  if new_arch_enabled
-    other_c_flags += ' -DRN_FABRIC_ENABLED -DRCT_NEW_ARCH_ENABLED'
-  end
-
   s.xcconfig = {
     'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_VERSION=#{s.version}",
     'OTHER_CFLAGS' => other_c_flags,
@@ -67,7 +61,6 @@ Pod::Spec.new do |s|
 
   header_search_paths = [
     '"$(PODS_ROOT)/Headers/Private/React-Core"',
-    '"${PODS_ROOT}/Headers/Public/RNReanimated"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/EXManifests/Swift Compatibility Header"',
     '"$(PODS_CONFIGURATION_BUILD_DIR)/EXUpdatesInterface/Swift Compatibility Header"',
   ]
@@ -94,7 +87,6 @@ Pod::Spec.new do |s|
     'OTHER_CFLAGS[config=*Debug*]' => other_c_flags,
     'OTHER_SWIFT_FLAGS[config=*Debug*]' => other_swift_flags,
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
-    'FRAMEWORK_SEARCH_PATHS' => '"${PODS_CONFIGURATION_BUILD_DIR}/RNReanimated"',
     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
   }
 
@@ -119,15 +111,6 @@ Pod::Spec.new do |s|
   end
   install_modules_dependencies(s)
 
-  s.subspec 'Unsafe' do |unsafe|
-    unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
-    unsafe.compiler_flags = '-x objective-c++ -std=c++20 -fno-objc-arc' # Disable Automatic Reference Counting
-  end
-
-  s.subspec 'Main' do |main|
-    main.dependency "expo-dev-launcher/Unsafe"
-  end
-
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'ios/Tests/**/*.{h,m,mm,swift}'
     test_spec.dependency 'Quick'
@@ -142,7 +125,5 @@ Pod::Spec.new do |s|
       'OTHER_LDFLAGS' => '$(inherited) -lc++'
     }
   end
-
-  s.default_subspec = 'Main'
 
 end

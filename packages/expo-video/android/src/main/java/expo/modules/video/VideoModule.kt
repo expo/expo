@@ -23,6 +23,7 @@ import expo.modules.video.records.SubtitleTrack
 import expo.modules.video.records.AudioTrack
 import expo.modules.video.records.ScrubbingModeOptions
 import expo.modules.video.records.SeekTolerance
+import expo.modules.video.records.VideoSize
 import expo.modules.video.records.VideoSource
 import expo.modules.video.records.VideoThumbnailOptions
 import expo.modules.video.utils.runWithPiPMisconfigurationSoftHandling
@@ -131,6 +132,14 @@ class VideoModule : Module() {
       Property("videoTrack")
         .get { ref: VideoPlayer ->
           ref.currentVideoTrack
+        }
+
+      Property("maxResolution")
+        .get { ref: VideoPlayer ->
+          ref.maxResolution
+        }
+        .set { ref: VideoPlayer, maxResolution: VideoSize? ->
+          ref.maxResolution = maxResolution
         }
 
       Property("availableSubtitleTracks")

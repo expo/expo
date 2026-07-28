@@ -1,4 +1,3 @@
-// TODO(@kitten): Remove re-exports from EMC
 export { type PermissionResponse, type PermissionExpiration, PermissionStatus } from 'expo';
 
 export * from './ExpoAudio';

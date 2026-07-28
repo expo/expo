@@ -1,8 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@radix-ui/react-tabs';
 import { useMemo } from 'react';
 
-import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import nativeTabsStyles from '../../assets/native-tabs.module.css';
+import type { NativeTabOptions, NativeTabsViewProps } from './types';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { tabs, focusedIndex } = props;

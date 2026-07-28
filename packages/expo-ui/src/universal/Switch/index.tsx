@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-import type { SwitchProps } from './types';
 import { useFocusVisible } from '../hooks';
 import { colors, createWebComponent, durations, easings, shadows } from '../webUtils';
+import type { SwitchProps } from './types';
 
 const Input = createWebComponent('input');
 

@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.compose.models.HomeAction
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -128,7 +128,7 @@ fun EmbeddedBundleButton(
     color = NewAppTheme.colors.background.element,
     borderRadius = NewAppTheme.borderRadius.xl
   ) {
-    Button(
+    UnstyledButton(
       onClick = {
         onAction(HomeAction.LoadEmbeddedBundle)
       }

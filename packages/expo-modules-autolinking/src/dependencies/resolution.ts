@@ -1,13 +1,13 @@
 import Module from 'node:module';
 
+import { taskAll } from '../concurrency';
+import { type PackageJson, loadPackageJson, maybeRealpath, fastJoin } from '../utils';
 import {
   type ResolutionResult,
   type DependencyResolution,
   DependencyResolutionSource,
 } from './types';
 import { defaultShouldIncludeDependency, mergeResolutionResults } from './utils';
-import { taskAll } from '../concurrency';
-import { type PackageJson, loadPackageJson, maybeRealpath, fastJoin } from '../utils';
 
 declare module 'node:module' {
   export function _nodeModulePaths(base: string): readonly string[];

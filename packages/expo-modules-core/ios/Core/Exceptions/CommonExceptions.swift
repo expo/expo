@@ -31,6 +31,15 @@ public struct Exceptions {
     }
   }
 
+  /// No app context is associated with a JavaScript runtime because that runtime was never prepared
+  /// by Expo modules (its `global.expo` object carries no native state). Thrown by code that only
+  /// has a runtime and recovers the context via `AppContext.from(runtime:)`.
+  public final class AppContextNotFound: Exception {
+    override public var reason: String {
+      "Cannot find an app context associated with the JavaScript runtime"
+    }
+  }
+
   /**
    An exception to throw when the operation is not supported on the simulator.
    */

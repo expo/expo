@@ -52,7 +52,10 @@ export async function applyPatchesGlobAsync({
   reverse?: boolean;
   stripPrefixNum?: number;
 }) {
-  const patchFiles = await Array.fromAsync(fs.promises.glob(patchGlobPattern, { cwd: patchRoot }));
+  const patchFiles: string[] = [];
+  for await (const patchFile of fs.promises.glob(patchGlobPattern, { cwd: patchRoot })) {
+    patchFiles.push(patchFile);
+  }
   await Promise.all(
     patchFiles.map(async (patchFile) => {
       const patchFilePath = path.join(patchRoot, patchFile);

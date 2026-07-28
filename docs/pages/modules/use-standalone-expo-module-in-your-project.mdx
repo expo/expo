@@ -3,7 +3,7 @@ title: How to use a standalone Expo module
 description: Learn how to use a standalone module created with create-expo-module in your project by using a monorepo or publishing the package to npm.
 ---
 
-import { Grid01Icon } from '@expo/styleguide-icons/outline/Grid01Icon';
+import { CpuChip01Icon } from '@expo/styleguide-icons/outline/CpuChip01Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Terminal } from '~/ui/components/Snippet';
@@ -254,22 +254,22 @@ To test the published module in a new project, create a new app and install the 
 <Terminal
   cmd={{
     npm: [
-      '$ npx create-expo-app@latest my-app --template default@sdk-56',
+      '$ npx create-expo-app@latest my-app --template default@sdk-57',
       '$ cd my-app',
       '$ npx expo install expo-settings',
     ],
     yarn: [
-      '$ yarn create expo-app my-app --template default@sdk-56',
+      '$ yarn create expo-app my-app --template default@sdk-57',
       '$ cd my-app',
       '$ yarn expo install expo-settings',
     ],
     pnpm: [
-      '$ pnpm create expo-app my-app --template default@sdk-56',
+      '$ pnpm create expo-app my-app --template default@sdk-57',
       '$ cd my-app',
       '$ pnpm expo install expo-settings',
     ],
     bun: [
-      '$ bun create expo my-app --template default@sdk-56',
+      '$ bun create expo my-app --template default@sdk-57',
       '$ cd my-app',
       '$ bun expo install expo-settings',
     ],
@@ -341,12 +341,12 @@ After this configuration, you see the text "Hello world! 👋" displayed in the 
   title="Wrap third-party native libraries"
   description="Learn how to wrap third-party native libraries in an Expo module."
   href="/modules/third-party-library/"
-  Icon={Grid01Icon}
+  Icon={CpuChip01Icon}
 />
 
 <BoxLink
   title="Tutorial: Creating a native module"
   description="A tutorial on creating a native module that persists settings with Expo Modules API."
   href="/modules/native-module-tutorial/"
-  Icon={Grid01Icon}
+  Icon={CpuChip01Icon}
 />

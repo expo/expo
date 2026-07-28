@@ -1,0 +1,20 @@
+env:
+  APP_ID: com.expo.routere2e
+appId: ${APP_ID}
+name: Drawer defaultStatus open
+---
+- stopApp: ${APP_ID}
+- openLink: router-e2e://drawer-open
+- runFlow: ../close-warning.yml
+- waitForAnimationToEnd
+
+# Drawer starts open: the drawer item label is only visible while open
+# (the header title is 'Open Home', distinct on purpose).
+- assertVisible: "Open Drawer Item"
+
+# Close by tapping the scrim right of the drawer
+- tapOn:
+    point: "95%,50%"
+- waitForAnimationToEnd
+- assertVisible: "closed"
+- assertNotVisible: "Open Drawer Item"

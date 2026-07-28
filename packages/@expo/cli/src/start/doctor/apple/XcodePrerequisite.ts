@@ -8,8 +8,7 @@ import { AbortCommandError } from '../../../utils/errors';
 import { profile } from '../../../utils/profile';
 import { confirmAsync } from '../../../utils/prompts';
 import { Prerequisite } from '../Prerequisite';
-
-const debug = require('debug')('expo:doctor:apple:xcode') as typeof console.log;
+import { debugEvent } from '../events';
 
 // Based on the Apple announcement (last updated: Aug 2023).
 // https://developer.apple.com/news/upcoming-requirements/?id=04252023a
@@ -19,7 +18,7 @@ const APP_STORE_ID = '497799835';
 const SUGGESTED_XCODE_VERSION = `${MIN_XCODE_VERSION}.0`;
 
 const promptToOpenAppStoreAsync = async (message: string) => {
-  // This prompt serves no purpose accept informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
+  // This prompt serves no purpose except informing the user what to do next, we could just open the App Store but it could be confusing if they don't know what's going on.
   const confirm = await confirmAsync({ initial: true, message });
   if (confirm) {
     Log.log(`Going to the App Store, re-run Expo CLI when Xcode has finished installing.`);
@@ -33,7 +32,7 @@ export const getXcodeVersionAsync = async ({
   silent,
   force,
 }: { silent?: boolean; force?: boolean } = {}): Promise<string | null | false> => {
-  const logError = silent ? debug : Log.warn;
+  const logError = silent ? (_msg: string) => {} : Log.warn;
   const getVersion = async (): Promise<{ value: string | null | false; error?: string }> => {
     try {
       const { stdout } = await spawnAsync('xcodebuild', ['-version']);
@@ -117,7 +116,7 @@ export class XcodePrerequisite extends Prerequisite {
    */
   async assertImplementation(): Promise<void> {
     const version = await profile(getXcodeVersionAsync)({ force: process.env.NODE_ENV === 'test' });
-    debug(`Xcode version: ${version}`);
+    debugEvent('xcode_version', { version });
     if (!version) {
       // A couple different issues could have occurred, let's check them after we're past the point of no return
       // since we no longer need to be fast about validation.
@@ -125,7 +124,7 @@ export class XcodePrerequisite extends Prerequisite {
       // Ensure Xcode.app can be found before we prompt to sudo select it.
       if (getXcodeInstalled()) {
         const selectPath = profile(getXcodeSelectPathAsync)();
-        debug(`Xcode select path: ${selectPath}`);
+        debugEvent('xcode_select_path', { path: selectPath });
         if (!selectPath) {
           Log.error(
             [
@@ -144,7 +143,7 @@ export class XcodePrerequisite extends Prerequisite {
           );
           throw new AbortCommandError();
         } else {
-          debug(`Unexpected Xcode setup (version: ${version}, select: ${selectPath})`);
+          debugEvent('xcode_setup_unexpected', { version, path: selectPath });
         }
       }
 

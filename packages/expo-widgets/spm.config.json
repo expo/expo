@@ -4,9 +4,7 @@
     {
       "name": "ExpoWidgets",
       "podName": "ExpoWidgets",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -29,10 +27,7 @@
             "expo-modules-core/ExpoModulesWorklets",
             "@expo/ui/ExpoUI"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

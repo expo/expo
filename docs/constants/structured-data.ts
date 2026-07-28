@@ -77,6 +77,7 @@ export const websiteSchema = {
     },
     sameAs: [
       'https://github.com/expo',
+      'https://www.npmjs.com/org/expo',
       'https://x.com/expo',
       'https://bsky.app/profile/expo.dev',
       'https://www.linkedin.com/company/expo-dev/',

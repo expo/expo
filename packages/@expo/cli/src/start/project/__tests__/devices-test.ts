@@ -65,7 +65,7 @@ describe('devices info', () => {
     await ProjectDevices.saveDevicesAsync(projectRoot, 'newest-device');
     const { devices } = await ProjectDevices.getDevicesInfoAsync(projectRoot);
     expect(devices.length).toBe(10);
-    expect(devices[0].installationId).toBe('newest-device');
+    expect(devices[0]!.installationId).toBe('newest-device');
     expect(devices.some((device) => device.installationId === 'oldest-device')).toBe(false);
   });
 
@@ -78,7 +78,7 @@ describe('devices info', () => {
     await ProjectDevices.saveDevicesAsync(projectRoot, 'new-device-id');
     const { devices } = await ProjectDevices.getDevicesInfoAsync(projectRoot);
     expect(devices.length).toBe(1);
-    expect(devices[0].installationId).toBe('new-device-id');
+    expect(devices[0]!.installationId).toBe('new-device-id');
   });
 
   it('should remove old devices when reading for the first time from disk', async () => {
@@ -93,6 +93,6 @@ describe('devices info', () => {
     // use readDeviceInfoAsync to bypass memoized devices and read from disk
     const { devices } = await ProjectDevices.readDevicesInfoAsync(projectRoot);
     expect(devices.length).toBe(1);
-    expect(devices[0].installationId).toBe('new-device-id');
+    expect(devices[0]!.installationId).toBe('new-device-id');
   });
 });

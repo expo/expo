@@ -7,14 +7,12 @@
  */
 
 import plist from '@expo/plist';
-import Debug from 'debug';
 import type { Socket } from 'net';
 
 import type { ProtocolWriter } from './AbstractProtocol';
 import { PlistProtocolReader, ProtocolClient, ProtocolReaderFactory } from './AbstractProtocol';
 import { CommandError } from '../../../../utils/errors';
 
-const debug = Debug('expo:apple-device:protocol:lockdown');
 export const LOCKDOWN_HEADER_SIZE = 4;
 
 export interface LockdownCommand {
@@ -69,7 +67,6 @@ export class LockdownProtocolReader extends PlistProtocolReader {
 
   parseBody(data: Buffer) {
     const resp = super.parseBody(data);
-    debug(`Response: ${JSON.stringify(resp)}`);
     if (isLockdownErrorResponse(resp)) {
       if (resp.Error === 'DeviceLocked') {
         throw new CommandError('APPLE_DEVICE_LOCKED', 'Device is currently locked.');
@@ -92,7 +89,6 @@ export class LockdownProtocolReader extends PlistProtocolReader {
 
 export class LockdownProtocolWriter implements ProtocolWriter {
   write(socket: Socket, plistData: any) {
-    debug(`socket write: ${JSON.stringify(plistData)}`);
     const plistMessage = plist.build(plistData);
     const header = Buffer.alloc(LOCKDOWN_HEADER_SIZE);
     header.writeUInt32BE(plistMessage.length, 0);

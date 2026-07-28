@@ -31,7 +31,7 @@ const apis: ScreenConfig = {
       ...APIScreens.reduce(
         (prev, curr) => ({
           ...prev,
-          [curr.name]: getScreenIdForLinking(curr),
+          [curr.name]: curr.linking ?? getScreenIdForLinking(curr),
         }),
         {}
       ),

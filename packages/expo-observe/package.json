@@ -1,49 +1,58 @@
 {
   "name": "expo-observe",
-  "title": "Expo Observe",
   "version": "56.0.16",
   "description": "Expo module that dispatches collected app metrics to EAS Observe",
-  "main": "src/index.ts",
-  "types": "build/index.d.ts",
-  "exports": {
-    "./package.json": "./package.json",
-    ".": {
-      "types": "./build/index.d.ts",
-      "default": "./src/index.ts"
-    },
-    "./integrations/react-navigation": {
-      "types": "./build/integrations/react-navigation/index.d.ts",
-      "default": "./src/integrations/react-navigation/index.ts"
-    }
-  },
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "swift:format": "../../scripts/swift-format.sh",
-    "swift:lint": "../../scripts/swift-format.sh --lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
+  "keywords": [
+    "EAS",
+    "ExpoObserve",
+    "expo",
+    "expo-observe",
+    "observability",
+    "observe",
+    "react-native"
+  ],
   "homepage": "https://docs.expo.dev/",
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-observe"
   },
-  "keywords": [
-    "react-native",
-    "expo",
-    "expo-observe",
-    "ExpoObserve",
-    "EAS",
-    "observe",
-    "observability"
-  ],
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./integrations/react-navigation": {
+      "types": {
+        "expo-source": "./src/integrations/react-navigation/index.ts",
+        "default": "./build/integrations/react-navigation/index.d.ts"
+      },
+      "expo-source": "./src/integrations/react-navigation/index.ts",
+      "default": "./build/integrations/react-navigation/index.js"
+    }
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
   "dependencies": {
     "expo-app-metrics": "workspace:~56.0.14",
     "expo-eas-client": "workspace:~56.0.0"
@@ -56,11 +65,11 @@
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
+    "@react-navigation/native": "^7.0.0",
     "expo": "*",
-    "react": "*",
-    "react-native": "*",
     "expo-router": "*",
-    "@react-navigation/native": "^7.0.0"
+    "react": "*",
+    "react-native": "*"
   },
   "peerDependenciesMeta": {
     "expo-router": {
@@ -69,5 +78,6 @@
     "@react-navigation/native": {
       "optional": true
     }
-  }
+  },
+  "title": "Expo Observe"
 }

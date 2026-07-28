@@ -43,9 +43,9 @@ describe('runAsync', () => {
     );
     const check = new InstalledDependencyVersionCheck();
     await check.runAsync({ projectRoot: '/path/to/project', ...additionalProjectProps });
-    expect(mockSpawnAsync.mock.calls[0][0]).toBe('npx');
-    expect(mockSpawnAsync.mock.calls[0][1]).toEqual(['expo', 'install', '--check']);
-    expect(mockSpawnAsync.mock.calls[0][2]).toMatchObject({ env: { CI: '1' } });
+    expect(mockSpawnAsync.mock.calls[0]![0]).toBe('npx');
+    expect(mockSpawnAsync.mock.calls[0]![1]).toEqual(['expo', 'install', '--check']);
+    expect(mockSpawnAsync.mock.calls[0]![2]).toMatchObject({ env: { CI: '1' } });
   });
 
   it('returns result with isSuccessful = false if check fails', async () => {
@@ -138,7 +138,7 @@ describe('runAsync', () => {
       exp: { ...additionalProjectProps.exp, sdkVersion: '54.0.0' },
     });
 
-    expect(mockSpawnAsync.mock.calls[0][1]).toEqual(['expo', 'install', '--check', '--json']);
+    expect(mockSpawnAsync.mock.calls[0]![1]).toEqual(['expo', 'install', '--check', '--json']);
   });
 
   it('does not use --json flag for SDK < 54 projects', async () => {
@@ -159,6 +159,6 @@ describe('runAsync', () => {
       exp: { ...additionalProjectProps.exp, sdkVersion: '53.0.0' },
     });
 
-    expect(mockSpawnAsync.mock.calls[0][1]).toEqual(['expo', 'install', '--check']);
+    expect(mockSpawnAsync.mock.calls[0]![1]).toEqual(['expo', 'install', '--check']);
   });
 });

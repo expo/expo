@@ -26,5 +26,6 @@ enum class ReturnType(val value: Int = nextValue()) {
   INT_ARRAY,
   LONG_ARRAY,
   FLOAT_ARRAY,
-  BOOLEAN_ARRAY
+  BOOLEAN_ARRAY,
+  ARRAY_BUFFER
 }

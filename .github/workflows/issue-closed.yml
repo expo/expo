@@ -27,6 +27,11 @@ jobs:
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
+      - name: 🛠 Build expotools
+        run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🔎 Close Linear issue
         # accepted issues should have a corresponding Linear issue (from issue-triage.yml)
         # if not, we don't want to fail the workflow

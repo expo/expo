@@ -5,6 +5,9 @@ import npmPackageArg from 'npm-package-arg';
 import semver from 'semver';
 import semverRangeSubset from 'semver/ranges/subset';
 
+import * as Log from '../../../log';
+import { env } from '../../../utils/env';
+import { debugEvent } from '../events';
 import type { BundledNativeModules } from './bundledNativeModules';
 import { getCombinedKnownVersionsAsync } from './getVersionedPackages';
 import {
@@ -13,10 +16,6 @@ import {
   reactNativeTvVersionMatchesBundled,
 } from './reactNativeTv';
 import { resolveAllPackageVersionsAsync } from './resolvePackages';
-import * as Log from '../../../log';
-import { env } from '../../../utils/env';
-
-const debug = require('debug')('expo:doctor:dependencies:validate') as typeof console.log;
 
 export type IncorrectDependency = {
   packageName: string;
@@ -47,7 +46,6 @@ export async function validateDependenciesVersionsAsync(
     Log.warn('Skipping dependency validation in offline mode');
     return null;
   } else if (env.EXPO_NO_DEPENDENCY_VALIDATION) {
-    debug('Dependency validation is disabled through EXPO_NO_DEPENDENCY_VALIDATION=1');
     return null;
   }
 
@@ -113,25 +111,25 @@ export async function getVersionedDependenciesAsync(
       getFilteredObject(packagesToCheck, { ...pkg.dependencies, ...pkg.devDependencies })
     : // If no packages are provided, check against the `package.json` `dependencies` + `devDependencies` object.
       { ...pkg.dependencies, ...pkg.devDependencies };
-  debug(`Checking dependencies for ${exp.sdkVersion}: %O`, resolvedDependencies);
+  debugEvent('validate_checking_deps', {
+    sdkVersion: exp.sdkVersion,
+    deps: resolvedDependencies as Record<string, string>,
+  });
 
   // intersection of packages from package.json and bundled native modules
-  const { known: resolvedPackagesToCheck, unknown } = getPackagesToCheck(
+  const { known: resolvedPackagesToCheck } = getPackagesToCheck(
     combinedKnownPackages,
     resolvedDependencies
   );
-  debug(`Comparing known versions: %O`, resolvedPackagesToCheck);
-  debug(`Skipping packages that cannot be versioned automatically: %O`, unknown);
+  debugEvent('validate_known_versions', { packages: resolvedPackagesToCheck });
   // read package versions from the file system (node_modules)
   const packageVersions = await resolveAllPackageVersionsAsync(
     projectRoot,
     resolvedPackagesToCheck
   );
-  debug(`Package versions: %O`, packageVersions);
   // Detect TV projects via the installed `react-native` package's `name`, since
   // `pkg.dependencies['react-native']` can vary across package managers.
   const isReactNativeTvProject = await isReactNativeTvProjectAsync(projectRoot);
-  debug(`react-native-tvos project: %O`, isReactNativeTvProject);
   // find incorrect dependencies by comparing the actual package versions with the bundled native module version ranges
   let incorrectDeps = await findIncorrectDependencies(
     pkg,
@@ -139,7 +137,6 @@ export async function getVersionedDependenciesAsync(
     combinedKnownPackages,
     isReactNativeTvProject
   );
-  debug(`Incorrect dependencies: %O`, incorrectDeps);
 
   if (pkg?.expo?.install?.exclude) {
     const packagesToExclude = pkg.expo.install.exclude;
@@ -172,19 +169,13 @@ export async function getVersionedDependenciesAsync(
           } else if (type === 'range') {
             // Fall through exclusions if the suggested range is invalid
             if (!semver.validRange(suggestedRange)) {
-              debug(
-                `Invalid semver range in combined known packages for package ${name} in expo.install.exclude: %O`,
-                suggestedRange
-              );
+              debugEvent('validate_exclude_invalid_range', { name, range: suggestedRange });
               return false;
             }
 
             return semverRangeSubset(suggestedRange, rawSpec);
           } else {
-            debug(
-              `Unsupported npm package argument type for package ${name} in expo.install.exclude: %O`,
-              type
-            );
+            debugEvent('validate_exclude_unsupported_type', { name, type });
           }
         }
 
@@ -192,10 +183,7 @@ export async function getVersionedDependenciesAsync(
       })
       .map((dep) => dep.packageName);
 
-    debug(
-      `Incorrect dependency warnings filtered out by expo.install.exclude: %O`,
-      incorrectAndExcludedDeps
-    );
+    debugEvent('validate_excluded_deps', { packages: incorrectAndExcludedDeps });
     incorrectDeps = incorrectDeps.filter(
       (dep) => !incorrectAndExcludedDeps.includes(dep.packageName)
     );

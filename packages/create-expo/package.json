@@ -1,40 +1,39 @@
 {
   "name": "create-expo",
   "version": "4.0.2",
-  "bin": "./bin/create-expo.js",
-  "main": "build",
   "description": "Create universal Expo apps",
-  "license": "BSD-3-Clause",
   "keywords": [
     "expo",
-    "react-native",
-    "react"
+    "react",
+    "react-native"
   ],
   "homepage": "https://docs.expo.dev",
+  "license": "BSD-3-Clause",
+  "author": "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/create-expo"
   },
-  "author": "Evan Bacon <bacon@expo.io> (https://github.com/evanbacon)",
+  "bin": "./bin/create-expo.js",
   "files": [
     "bin",
     "build",
     "template"
   ],
-  "engines": {
-    "node": ">=18.13.0"
-  },
+  "main": "build",
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/",
     "build:prod": "ncc build ./src/index.ts -o build/ --minify --no-cache --no-source-map-register",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "typecheck": "expo-module typecheck",
-    "test": "expo-module test",
-    "test:e2e": "expo-module test --config e2e/jest.config.js --runInBand",
-    "watch": "pnpm run build --watch",
-    "prepublishOnly": "pnpm run clean && pnpm run build:prod"
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "jest",
+    "test:e2e": "jest --config e2e/jest.config.js --runInBand",
+    "sync-agent-templates": "node scripts/sync-agent-templates.js",
+    "prepublishOnly": "pnpm run sync-agent-templates && pnpm run clean && pnpm run build:prod"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
@@ -54,11 +53,16 @@
     "expo-module-scripts": "workspace:*",
     "getenv": "^2.0.0",
     "glob": "^13.0.0",
+    "memfs": "^3.2.0",
+    "multitars": "^1.0.0",
     "nock": "^14.0.10",
     "ora": "3.4.0",
     "picomatch": "^2.3.2",
     "prompts": "^2.4.2",
-    "multitars": "^1.0.0",
+    "resolve-workspace-root": "^2.0.0",
     "update-check": "^1.5.4"
+  },
+  "engines": {
+    "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"
   }
 }

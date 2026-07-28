@@ -2,11 +2,7 @@
 
 #include "../ExpoHeader.pch"
 
-#if WORKLETS_ENABLED
-
 #include <worklets/WorkletRuntime/WorkletRuntime.h>
-
-#endif
 
 namespace jni = facebook::jni;
 
@@ -23,9 +19,7 @@ public:
 
   explicit WorkletNativeRuntime(jlong runtimePointer);
 
-#if WORKLETS_ENABLED
   std::weak_ptr<worklets::WorkletRuntime> workletRuntime;
-#endif
 
 private:
   friend HybridBase;

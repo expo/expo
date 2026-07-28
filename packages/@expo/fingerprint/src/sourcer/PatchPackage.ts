@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
-import { getFileBasedHashSourceAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { isIgnoredPathWithMatchObjects } from '../utils/Path';
+import { getFileBasedHashSourceAsync } from './Utils';
 
 const debug = require('debug')('expo:fingerprint:sourcer:PatchPackage');
 

@@ -336,6 +336,7 @@ const getItemsFromScreens = (
     );
 
     return () => {
+      /* oxlint-disable-next-line react-hooks/rules-of-hooks */
       const shouldRender = useIf == null || useIf();
 
       if (!shouldRender) {
@@ -390,6 +391,7 @@ export function createComponentForStaticNavigation(
             // Call unconditionally since screen configs may contain `useIf` hooks
             const children = groupItems.map((item) => item());
 
+            /* oxlint-disable-next-line react-hooks/rules-of-hooks */
             const shouldRender = useIf == null || useIf();
 
             if (!shouldRender) {

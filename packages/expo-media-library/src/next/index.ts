@@ -26,6 +26,7 @@ export {
   type PermissionExpiration,
   type PermissionHookOptions,
   type PermissionResponse,
+  type EXPermissionResponse,
   type SortDescriptor,
   type Subscription,
 } from './types';

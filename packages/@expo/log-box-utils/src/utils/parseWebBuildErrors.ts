@@ -1,5 +1,5 @@
-import { parseBabelCodeFrameError } from './metroBuildErrorsFormat';
 import type { LogBoxLogDataLegacy, MetroStackFrame } from '../Types';
+import { parseBabelCodeFrameError } from './metroBuildErrorsFormat';
 
 /**
  * Called in expo/cli, the return value is injected into the static error page which is bundled

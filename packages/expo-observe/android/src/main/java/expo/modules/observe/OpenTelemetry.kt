@@ -160,6 +160,34 @@ data class OTLogsRequestBody(
   }
 }
 
+// MARK: -- Response shapes
+
+/**
+ * `partial_success` body emitted by the collector when records were accepted but some were
+ * rejected. Mirrors the wire shape the server actually sends (camelCase keys; the metrics
+ * endpoint populates `rejectedDataPoints`, the logs endpoint populates `rejectedLogRecords`).
+ * The server only emits this block when at least one record was rejected — a fully successful
+ * dispatch returns no body.
+ *
+ * The OTLP spec also allows a warning-only variant where `rejectedCount == 0` and
+ * `errorMessage` carries an advisory note (e.g. deprecation warnings). The classifier handles
+ * that case as a success since the records did land.
+ */
+@Serializable
+data class OTPartialSuccess(
+  val rejectedDataPoints: Int? = null,
+  val rejectedLogRecords: Int? = null,
+  val errorMessage: String? = null
+) {
+  val rejectedCount: Int
+    get() = (rejectedDataPoints ?: 0) + (rejectedLogRecords ?: 0)
+}
+
+@Serializable
+data class OTServiceResponse(
+  val partialSuccess: OTPartialSuccess? = null
+)
+
 /**
  * OpenTelemetry Semantic Conventions schema URL referenced by the resource on
  * every dispatched payload. Bumping this constant signals that our attribute

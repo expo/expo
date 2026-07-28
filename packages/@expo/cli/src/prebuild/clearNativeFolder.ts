@@ -68,13 +68,12 @@ export async function hasRequiredIOSFilesAsync(projectRoot: string) {
 }
 
 /**
- * Filter out platforms that do not have an existing platform folder.
- * If the user wants to validate that neither of ['ios', 'android'] are malformed then we should
- * first check that both `ios` and `android` folders exist.
+ * Returns the subset of `platforms` that have an existing native folder on disk.
  *
- * This optimization prevents us from prompting to clear a "malformed" project that doesn't exist yet.
+ * Used to avoid prompting to clear a "malformed" project that doesn't exist yet, and to gate the
+ * clean-by-default guards so a first-ever prebuild doesn't run the git status check.
  */
-async function filterPlatformsThatDoNotExistAsync(
+export async function getExistingNativePlatformsAsync(
   projectRoot: string,
   platforms: ArbitraryPlatform[]
 ): Promise<ArbitraryPlatform[]> {
@@ -100,7 +99,7 @@ export async function getMalformedNativeProjectsAsync(
   };
 
   const checkablePlatforms = platforms.filter((platform) => platform in VERIFIERS);
-  const checkPlatforms = await filterPlatformsThatDoNotExistAsync(projectRoot, checkablePlatforms);
+  const checkPlatforms = await getExistingNativePlatformsAsync(projectRoot, checkablePlatforms);
   return (
     await Promise.all(
       checkPlatforms.map(async (platform) => {

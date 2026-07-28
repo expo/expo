@@ -22,7 +22,7 @@ describe(createLegacyPlugin, () => {
 
     config = withPlugin(config);
     expect(fallback).toHaveBeenCalledTimes(1);
-    expect(config._internal.pluginHistory).toStrictEqual({
+    expect(config._internal?.pluginHistory).toStrictEqual({
       'expo-foobar': {
         name: 'expo-foobar',
         version: 'UNVERSIONED',

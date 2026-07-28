@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
 
 import { Faces, StaticFaces } from '../../components/faces';
+import { TabBarHiddenToggle } from '../../components/tab-bar-hidden-context';
 
 export default function Index() {
   const { colors } = useTheme();
@@ -24,11 +25,19 @@ export default function Index() {
         padding: 32,
         gap: 16,
       }}>
-      <Text style={{ color: colors.text, fontSize: 32, fontWeight: 'bold', textAlign: 'center' }}>
+      <TabBarHiddenToggle />
+      <Text
+        style={{
+          color: colors.text,
+          fontSize: 32,
+          fontWeight: 'bold',
+          textAlign: 'center',
+        }}>
         Index screen
       </Text>
       <Text style={{ color: colors.text, fontSize: 18, textAlign: 'center' }}>
-        Tab pressed {numberOfTabPresses} time{numberOfTabPresses === 1 ? '' : 's'}
+        Tab pressed {numberOfTabPresses} time
+        {numberOfTabPresses === 1 ? '' : 's'}
       </Text>
       <Text style={{ color: colors.text, fontSize: 24, fontWeight: 'bold' }}>
         Link previews with zoom transition

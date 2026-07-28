@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Changed native implementation to use the unified `ArrayBuffer` type. ([#47168](https://github.com/expo/expo/pull/47168) by [@barthap](https://github.com/barthap))
+
 ## 56.0.4 — 2026-05-21
 
 ### 🐛 Bug fixes

@@ -53,6 +53,11 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
     ref.url.absoluteString
   }
 
+  var fileSize: Int64 {
+    let attributes = try? FileManager.default.attributesOfItem(atPath: ref.url.path(percentEncoded: false))
+    return (attributes?[.size] as? Int64) ?? 0
+  }
+
   private var currentSessionDuration: Int {
     guard startTimestamp > 0, currentState == .recording else {
       return 0
@@ -87,7 +92,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       throw AudioRecordingException("Failed to configure audio session: \(error.localizedDescription)")
     }
 
-    if let options {
+    if let options = options ?? currentOptions {
       let newRecorder: AVAudioRecorder
       do {
         newRecorder = try AudioUtils.createRecorder(directory: recordingDirectory(for: options), with: options)
@@ -173,6 +178,7 @@ class AudioRecorder: SharedRef<AVAudioRecorder>, RecordingResultHandler {
       "canRecord": isPrepared,
       "isRecording": currentState == .recording,
       "durationMillis": totalDuration,
+      "fileSize": fileSize,
       "mediaServicesDidReset": mediaServicesDidReset,
       "url": ref.url.absoluteString
     ]

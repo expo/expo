@@ -1,10 +1,10 @@
-import { buildChangeEvent, type SegmentedControlProps } from './types';
 import { Host } from '../../jetpack-compose/Host';
 import {
   SingleChoiceSegmentedButtonRow,
   SegmentedButton,
 } from '../../jetpack-compose/SegmentedButton';
 import { Text } from '../../jetpack-compose/Text';
+import { buildChangeEvent, type SegmentedControlProps } from './types';
 
 export function SegmentedControl(props: SegmentedControlProps) {
   const {

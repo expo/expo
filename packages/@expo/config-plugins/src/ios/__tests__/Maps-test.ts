@@ -67,7 +67,7 @@ describe(addMapsCocoaPods, () => {
 
 describe(addGoogleMapsAppDelegateImport, () => {
   it(`adds maps import to AppDelegate`, () => {
-    const results = addGoogleMapsAppDelegateImport(rnFixture['ios/HelloWorld/AppDelegate.swift']);
+    const results = addGoogleMapsAppDelegateImport(rnFixture['ios/HelloWorld/AppDelegate.swift']!);
     // matches a static snapshot
     expect(results.contents).toMatchSnapshot();
     expect(results.contents).toMatch(/bee50fec513f89284e0fa3f5d935afdde33af98f/);
@@ -96,7 +96,7 @@ describe(addGoogleMapsAppDelegateImport, () => {
 describe(addGoogleMapsAppDelegateInit, () => {
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateInit(
-      rnFixture['ios/HelloWorld/AppDelegate.swift'],
+      rnFixture['ios/HelloWorld/AppDelegate.swift']!,
       'mykey'
     );
     // matches a static snapshot
@@ -129,7 +129,7 @@ describe(addGoogleMapsAppDelegateInit, () => {
   });
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateInit(
-      rnFixture['ios/HelloWorld/AppDelegate.swift'],
+      rnFixture['ios/HelloWorld/AppDelegate.swift']!,
       'mykey'
     );
     // matches a static snapshot

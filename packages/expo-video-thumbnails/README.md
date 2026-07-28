@@ -1,6 +1,6 @@
 # expo-video-thumbnails
 
-Provides function that let you generate an image from video. This can be used for example to create a video gallery.
+Provides function that lets you generate an image from video. This can be used for example to create a video gallery.
 
 # API documentation
 

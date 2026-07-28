@@ -1,9 +1,11 @@
 import chalk from 'chalk';
+import fs from 'fs/promises';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { getFileBasedHashSourceAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { toPosixPath } from '../utils/Path';
+import { getFileBasedHashSourceAsync } from './Utils';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Packages');
 
@@ -17,16 +19,17 @@ interface PackageSourcerParams {
   packageName: string;
 
   /**
-   * Hashing **package.json** file for the package rather than the entire directory.
-   * This is useful when the package contains a lot of files.
+   * How the package is hashed.
+   * - `package`: by its `package.json` name+version, ignoring unrelated churn inside the package.
+   * - `files`: by its entire directory.
    */
-  packageJsonOnly: boolean;
+  sourceType: 'files' | 'package';
 }
 
 const DEFAULT_PACKAGES: PackageSourcerParams[] = [
   {
     packageName: 'react-native',
-    packageJsonOnly: true,
+    sourceType: 'package',
   },
 ];
 
@@ -52,11 +55,22 @@ export async function getPackageSourceAsync(
 
   debug(`Adding package - ${chalk.dim(params.packageName)}`);
 
-  if (params.packageJsonOnly) {
+  if (params.sourceType === 'package') {
+    let packageJson: { name?: string; version?: string };
+    try {
+      packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+    } catch (error: any) {
+      // A resolved package.json that can't be read shouldn't crash fingerprinting; skip the source.
+      if (error.code === 'ENOENT') {
+        return null;
+      }
+      throw error;
+    }
     return {
-      type: 'contents',
-      id: reason,
-      contents: JSON.stringify(require(packageJsonPath)), // keep the json collapsed by serializing/deserializing
+      type: 'package',
+      name: packageJson.name ?? '',
+      version: packageJson.version ?? '',
+      filePath: toPosixPath(path.relative(projectRoot, packageJsonPath)),
       reasons: [reason],
     };
   }

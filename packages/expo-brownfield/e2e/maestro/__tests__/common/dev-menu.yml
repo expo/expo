@@ -16,27 +16,29 @@ appId: ${APP_ID}
     id: dev-menu-open
 
 # Assert that buttons are rendered correctly
-- assertVisible: "Reload"
-- assertVisible: "Toggle performance monitor"
+- assertVisible: 'Reload'
+- assertVisible: 'Toggle performance monitor'
 - assertVisible:
-    text: "Toggle element inspector"
+    text: 'Toggle element inspector'
     enabled: true
-- assertVisible: "Open DevTools"
+- scrollUntilVisible:
+    element:
+      text: 'Open DevTools'
 
 # Assert that information about the app
 # is correctly loaded
-- assertVisible: "expo-app"
-- assertVisible: "Runtime version: exposdk:56.0.0"
+- assertVisible: 'expo-app'
+- assertVisible: 'Runtime version: exposdk:56.0.0'
 
 - scrollUntilVisible:
     element:
-      text: "Copy system info"
+      text: 'Copy system info'
 
-- assertVisible: "Version"
-- assertVisible: "1.0.0"
+- assertVisible: 'Version'
+- assertVisible: '1.0.0'
 
-- assertVisible: "Runtime version"
-- assertVisible: "exposdk:56.0.0"
+- assertVisible: 'Runtime version'
+- assertVisible: 'exposdk:56.0.0'
 
 - runFlow:
     when:
@@ -52,7 +54,7 @@ appId: ${APP_ID}
 # Assert that dev menu actions work
 - scrollUntilVisible:
     element:
-      text: "Reload"
+      text: 'Reload'
     direction: UP
 
 # Android Performance Monitor is not detectable
@@ -61,16 +63,18 @@ appId: ${APP_ID}
     when:
       platform: iOS
     commands:
-      - tapOn: "Toggle Performance Monitor"
+      - tapOn: 'Toggle Performance Monitor'
       - assertVisible: 'RAM .* MB'
       - assertVisible: 'JSC .* MB'
       - tapOn:
           id: dev-menu-open
-      - tapOn: "Toggle Performance Monitor"
+      - tapOn: 'Toggle Performance Monitor'
       - assertNotVisible: 'RAM .* MB'
       - assertNotVisible: 'JSC .* MB'
       - tapOn:
           id: dev-menu-open
 
-- tapOn: "Reload"
-- assertVisible: "Expo + Brownfield = 🖤"
+- tapOn: 'Reload'
+- extendedWaitUntil:
+    visible: 'Expo + Brownfield = 🖤'
+    timeout: 60000

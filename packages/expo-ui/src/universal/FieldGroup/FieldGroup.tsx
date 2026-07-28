@@ -1,9 +1,9 @@
 import { ScrollView, StyleSheet } from 'react-native';
 
-import { groupFieldGroupChildren } from './groupChildren';
-import type { FieldGroupProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
 import { colors } from '../webUtils';
+import { groupFieldGroupChildren } from './groupChildren';
+import type { FieldGroupProps } from './types';
 
 const styles = StyleSheet.create({
   container: {

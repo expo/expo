@@ -2,9 +2,9 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { FlatList, PixelRatio, StyleSheet, TouchableHighlight, View } from 'react-native';
 
-import examples from './examples';
 import { BodyText } from '../../components/BodyText';
 import { optionalRequire } from '../../navigation/routeBuilder';
+import examples from './examples';
 
 export const SVGScreens = [
   {

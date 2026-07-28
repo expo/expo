@@ -6,10 +6,10 @@
 import type { ColorValue } from 'react-native';
 import type { PlatformIconAndroid, PlatformIconIOS } from 'react-native-screens';
 
-import type { AwaitedIcon } from './icon';
-import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
 import type { NativeTabsTriggerIconProps } from '../common/elements';
 import type { NativeTabOptions } from '../types';
+import type { AwaitedIcon } from './icon';
+import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
 
 export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
   if ('src' in props && props.src) {

@@ -13,7 +13,6 @@ public class EXDevLauncherErrorManager: NSObject {
   @objc
   public init(controller: EXDevLauncherController) {
     self.controller = controller
-    EXDevLauncherRedBoxInterceptor.isInstalled = true
   }
 
   @objc

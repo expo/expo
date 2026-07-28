@@ -12,9 +12,9 @@ You may need finer-grained control over your notifications, in which case commun
 
 ## Obtaining a device token for FCM or APNs
 
-When using Expo notification service, you use the `ExpoPushToken` obtained with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions-expotokenoptions-expopushtoken).
+When using Expo notification service, you use the `ExpoPushToken` obtained with [`getExpoPushTokenAsync`](/versions/latest/sdk/notifications/#getexpopushtokenasyncoptions).
 
-If you instead want to send notifications via FCM or APNs, you need to obtain the native device token with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken).
+If you instead want to send notifications via FCM or APNs, you need to obtain the native device token with [`getDevicePushTokenAsync`](/versions/latest/sdk/notifications/#getdevicepushtokenasync).
 
 <DiffBlock
   raw={`diff --git a/App.js b/App.js
@@ -121,7 +121,7 @@ FCM also provides some [server-side libraries in a few different languages](http
 
 ### How to find FCM server key
 
-Your FCM server key can be found by making sure you've followed the [configuration steps](/push-notifications/push-notifications-setup/#android), and instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the previous example).
+Your FCM server key can be found by making sure you've followed the [configuration steps](/push-notifications/push-notifications-setup/#get-credentials-for-development-builds), and instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the previous example).
 
 ## APNs server
 

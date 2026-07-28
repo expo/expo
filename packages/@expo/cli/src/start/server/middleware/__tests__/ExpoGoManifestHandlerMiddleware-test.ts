@@ -559,7 +559,10 @@ describe('_getManifestResponseAsync', () => {
     }
 
     expect([...partsSeen]).toEqual(['manifest', 'certificate_chain']);
-  });
+    // Increased timeout: RSA development certificate generation can exceed the default
+    // 5s under load; a timed-out test leaks its pending `toMatchSnapshot()` into the
+    // following test and corrupts the snapshot file.
+  }, 20_000);
 
   it('returns a code signed manifest with developers own key when requested when offline', async () => {
     vol.fromJSON({
@@ -690,7 +693,8 @@ describe('_getManifestResponseAsync', () => {
     }
 
     expect([...partsSeen]).toEqual(['manifest', 'certificate_chain']);
-  });
+    // Increased timeout: see the sibling expo-root chain test above.
+  }, 20_000);
 
   it('returns application/json when requested', async () => {
     const middleware = createMiddleware();

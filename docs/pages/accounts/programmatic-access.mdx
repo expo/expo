@@ -27,6 +27,8 @@ For example, once you obtain a token, you can run the following EAS CLI command 
 
 <Terminal cmd={['$ EXPO_TOKEN=my_token eas build']} />
 
+> **info** Commands that run with an access token require the project to already be linked to an EAS project. If `extra.eas.projectId` is not set in your [app config](/workflow/configuration), commands such as `eas build` fail with an `EAS project not configured` error. To configure it, run `EXPO_TOKEN=my_token eas init --force --non-interactive` first.
+
 If you are using GitHub Actions, [you can configure the `token` property](https://github.com/expo/expo-github-action#configuration-options) to include this environment variable in all the job steps.
 
 Common situations where access tokens are useful:

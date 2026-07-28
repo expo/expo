@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { Tabs, type TabsHostProps, type TabsScreenAppearanceIOS } from 'react-native-screens';
 
+import { getFirstChildOfType } from '../utils/children';
 import {
   type InternalTabScreenProps as SharedInternalTabScreenProps,
   ScreenContent,
@@ -18,7 +19,6 @@ import { NativeTabsBottomAccessory } from './common/elements';
 import { SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS, type NativeTabsViewProps } from './types';
 import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
 import { convertOptionsIconToScreensPropsIcon } from './utils/optionsIconConverter';
-import { getFirstChildOfType } from '../utils/children';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren, unstable_nativeProps } =

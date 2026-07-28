@@ -3,8 +3,8 @@ import { Suspense, useState } from 'react';
 import { Button } from 'react-native';
 
 import { Loading } from '../components/Loading';
-import { Table, TableRow } from '../components/Table';
 import { SiteLinks, SiteLink } from '../components/SiteLink';
+import { Table, TableRow } from '../components/Table';
 
 export async function loader() {
   return Promise.resolve({

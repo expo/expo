@@ -2,9 +2,9 @@
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { createExpoServe, executeExpoAsync } from '../../utils/expo';
 import { findProjectFiles, getHtml, getPageHtml, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

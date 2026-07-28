@@ -8,12 +8,17 @@
 
 import { createContext } from 'react';
 
+import { LoaderSuspenseStore } from './LoaderSuspenseStore';
+
 export class LoaderCache {
   private data = new Map<string, unknown>();
   private errors = new Map<string, Error>();
   private promises = new Map<string, Promise<unknown>>();
   private version = 0;
   private listeners = new Set<() => void>();
+
+  /** Per-mount Suspense store layered on the document cache. */
+  readonly suspense = new LoaderSuspenseStore();
 
   // Arrow-bound so `loaderCache.subscribe` returns a stable reference across renders,
   // which keeps `useSyncExternalStore()` from tearing down and re-attaching every render.
@@ -28,12 +33,16 @@ export class LoaderCache {
     return this.version;
   };
 
-  invalidateAll() {
-    this.clear();
+  notify() {
     this.version++;
     for (const listener of this.listeners) {
       listener();
     }
+  }
+
+  invalidateAll() {
+    this.clear();
+    this.notify();
   }
 
   getData<T = unknown>(path: string): T | undefined {
@@ -80,6 +89,7 @@ export class LoaderCache {
     this.data.clear();
     this.errors.clear();
     this.promises.clear();
+    this.suspense.reset();
   }
 }
 

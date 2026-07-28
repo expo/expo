@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "https://developer.android.com/reference/android/Manifest.permission",
-    "scrapedAt": "2026-05-18T08:22:18.705Z"
+    "scrapedAt": "2026-07-02T09:06:47.354Z"
   },
   "data": {
     "ACCEPT_HANDOVER": {
@@ -81,6 +81,17 @@
       "protection": "dangerous",
       "warning": null
     },
+    "ACCESS_HID": {
+      "apiAdded": 37.1,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "ACCESS_HID",
+      "description": "Required by apps wanting to query for and/or access Human Interface Device (HID) nodes using HidManager.",
+      "explanation": "Required by apps wanting to query for and/or access Human Interface Device (HID) nodes using <code translate=\"no\" dir=\"ltr\"><a href=\"https://developer.android.com/reference/android/hardware/hid/HidManager\">HidManager</a></code>.",
+      "constant": "android.permission.ACCESS_HID",
+      "protection": "internal|appop",
+      "warning": null
+    },
     "ACCESS_HIDDEN_PROFILES": {
       "apiAdded": 35,
       "apiDeprecated": null,
@@ -111,7 +122,7 @@
       "description": "Required to be able to advertise and connect to local network devices.",
       "explanation": null,
       "constant": "android.permission.ACCESS_LOCAL_NETWORK",
-      "protection": "dangerous/Local Network Definition",
+      "protection": "dangerous",
       "warning": null
     },
     "ACCESS_LOCATION_EXTRA_COMMANDS": {
@@ -1079,7 +1090,7 @@
       "description": "Allows an application to perform actions on behalf of users inside of applications.",
       "explanation": null,
       "constant": "android.permission.EXECUTE_APP_FUNCTIONS",
-      "protection": "internal|privileged",
+      "protection": "internal|privileged|knownSigner",
       "warning": null
     },
     "EXPAND_STATUS_BAR": {
@@ -2435,6 +2446,17 @@
       "protection": "normal",
       "warning": null
     },
+    "MANAGE_PERIPHERAL_CUSTOMIZATION": {
+      "apiAdded": 37.1,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "MANAGE_PERIPHERAL_CUSTOMIZATION",
+      "description": "Allows an application to manage peripheral customization.",
+      "explanation": null,
+      "constant": "android.permission.MANAGE_PERIPHERAL_CUSTOMIZATION",
+      "protection": "internal|appop",
+      "warning": null
+    },
     "MANAGE_WIFI_INTERFACES": {
       "apiAdded": 33,
       "apiDeprecated": null,
@@ -3697,17 +3719,6 @@
       "description": "Allows an app use location button, which grants temporary location permission when a user clicks the button.",
       "explanation": null,
       "constant": "android.permission.USE_LOCATION_BUTTON",
-      "protection": "normal",
-      "warning": null
-    },
-    "USE_LOOPBACK_INTERFACE": {
-      "apiAdded": 37,
-      "apiDeprecated": null,
-      "apiReplaced": null,
-      "name": "USE_LOOPBACK_INTERFACE",
-      "description": "Required to be able to interact with other applications via IP packets on the loopback interface.",
-      "explanation": null,
-      "constant": "android.permission.USE_LOOPBACK_INTERFACE",
       "protection": "normal",
       "warning": null
     },

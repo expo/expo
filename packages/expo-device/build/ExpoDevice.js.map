@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoDevice.js","sourceRoot":"","sources":["../src/ExpoDevice.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,mBAAmB,EAAE,MAAM,mBAAmB,CAAC;AACxD,eAAe,mBAAmB,CAAC,YAAY,CAAC,CAAC","sourcesContent":["import { requireNativeModule } from 'expo-modules-core';\nexport default requireNativeModule('ExpoDevice');\n"]}

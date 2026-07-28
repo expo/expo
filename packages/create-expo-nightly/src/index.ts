@@ -4,19 +4,20 @@ import { Command } from 'commander';
 import path from 'node:path';
 import { chalk } from 'zx';
 
+import packageJSON from '../package.json';
 import { packExpoBareTemplateTarballAsync } from './ExpoRepo.js';
 import { getNpmVersionAsync } from './Npm.js';
 import { reinstallPackagesAsync } from './Packages.js';
+import { applyPatchesGlobAsync } from './Patch.js';
 import { setDefaultVerbose } from './Processes.js';
 import {
   type ProjectProperties,
   createExpoApp,
   installCocoaPodsAsync,
   prebuildAppAsync,
+  setupGradleForNightlyAsync,
 } from './Project.js';
 import { checkRequiredToolsAsync } from './SanityChecks.js';
-import packageJSON from '../package.json';
-import { applyPatchesGlobAsync } from './Patch.js';
 
 const PACKAGE_ROOT = path.dirname(import.meta.dirname);
 
@@ -88,6 +89,9 @@ async function runAsync(programName: string) {
   );
   console.log(chalk.cyan(`Running prebuild`));
   await prebuildAppAsync(projectRoot, tarballPath);
+
+  console.log(chalk.cyan(`Setting up Gradle for nightly`));
+  await setupGradleForNightlyAsync(projectRoot, expoRepoPath);
 
   if (programOpts.install) {
     if (process.platform === 'darwin') {

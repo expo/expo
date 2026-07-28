@@ -68,7 +68,7 @@ describe('launchApplicationIdAsync', () => {
     jest.mocked(openAppIdAsync).mockImplementationOnce(() => {
       throw new Error('...');
     });
-    await expect(device.launchApplicationIdAsync).rejects.toThrow(/\.\.\./);
+    await expect(device.launchApplicationIdAsync('host.exp.Exponent')).rejects.toThrow(/\.\.\./);
   });
 });
 

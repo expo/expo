@@ -111,6 +111,23 @@ public struct JavaScriptUnownedValue: ~Copyable {
     return String(pointer.pointee.getString(runtime).utf8(runtime))
   }
 
+  /// Returns the value as a ``JavaScriptObject`` *without* materializing an owning ``JavaScriptValue``
+  /// first, or asserts if not an object. Mirrors ``JavaScriptValue/getObject()``: `jsi::Value::getObject`
+  /// borrows the value and hands back a `jsi::Object` (a ref-count bump on the object pointer), so this
+  /// skips the per-call owning-value allocation and `PointerValue` clone that ``copied(in:)`` pays.
+  ///
+  /// The returned object owns its `jsi::Object` and so may outlive this borrowed value; only the
+  /// borrowed `jsi::Value` must not. Takes the ``JavaScriptRuntime`` wrapper because the object needs
+  /// it (the unowned value stores only the raw `IRuntime` to avoid per-call ARC); `runtime` must be
+  /// the runtime that owns the borrowed value, same contract as ``copied(in:)``.
+  public func getObject(in runtime: JavaScriptRuntime) -> JavaScriptObject {
+    assert(isObject(), "Value is not an object")
+    assert(
+      Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
+      "`getObject(in:)` must be passed the runtime that owns the borrowed value")
+    return JavaScriptObject(runtime, pointer.pointee.getObject(self.runtime))
+  }
+
   // MARK: - Throwing conversions ("as functions")
 
   /// Returns the value as a boolean, or throws `TypeError` if it is not a boolean.
@@ -143,5 +160,14 @@ public struct JavaScriptUnownedValue: ~Copyable {
       throw JavaScriptValue.TypeError(type: String.self)
     }
     return getString()
+  }
+
+  /// Returns the value as a ``JavaScriptObject``, or throws `TypeError` if it is not an object. The
+  /// zero-copy counterpart of ``JavaScriptValue/asObject()``; see ``getObject(in:)``.
+  public func asObject(in runtime: JavaScriptRuntime) throws(JavaScriptValue.TypeError) -> JavaScriptObject {
+    guard isObject() else {
+      throw JavaScriptValue.TypeError(type: JavaScriptObject.self)
+    }
+    return getObject(in: runtime)
   }
 }

@@ -36,6 +36,12 @@
   return apsEnvironment;
 }
 
+- (nullable NSDate *)expirationDate
+{
+  id expiration = _plist[@"ExpirationDate"];
+  return [expiration isKindOfClass:[NSDate class]] ? expiration : nil;
+}
+
 - (EXAppReleaseType)appReleaseType {
   NSString *provisioningPath = [[NSBundle mainBundle] pathForResource:@"embedded" ofType:@"mobileprovision"];
   if (!provisioningPath) {

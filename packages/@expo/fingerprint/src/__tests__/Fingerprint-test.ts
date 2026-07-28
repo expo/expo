@@ -5,7 +5,12 @@ import {
   diffFingerprints,
   diffFingerprintChangesAsync,
 } from '../Fingerprint';
-import type { Fingerprint, FingerprintDiffItem } from '../Fingerprint.types';
+import type {
+  Fingerprint,
+  FingerprintDiffItem,
+  FingerprintSource,
+  Options,
+} from '../Fingerprint.types';
 import { normalizeOptionsAsync } from '../Options';
 
 jest.mock('fs');
@@ -50,20 +55,16 @@ describe(diffFingerprintChangesAsync, () => {
     // As long as we bumping package versions like react-native, we will break the snapshot.
     // Removing packages from the diff will make the test stable.
 
+    const hasPackageReason = (source: FingerprintSource): boolean =>
+      source.reasons.some((reason) => reason.startsWith('package:'));
     function isPackage(item: FingerprintDiffItem): boolean {
       switch (item.op) {
         case 'added':
-          return item.addedSource.type === 'contents' && item.addedSource.id.startsWith('package:');
+          return hasPackageReason(item.addedSource);
         case 'removed':
-          return (
-            item.removedSource.type === 'contents' && item.removedSource.id.startsWith('package:')
-          );
+          return hasPackageReason(item.removedSource);
         case 'changed':
-          return (
-            (item.beforeSource.type === 'contents' &&
-              item.beforeSource.id.startsWith('package:')) ||
-            (item.afterSource.type === 'contents' && item.afterSource.id.startsWith('package:'))
-          );
+          return hasPackageReason(item.beforeSource) || hasPackageReason(item.afterSource);
       }
     }
 
@@ -73,11 +74,11 @@ describe(diffFingerprintChangesAsync, () => {
       [
         {
           "addedSource": {
-            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","web":{"favicon":"./assets/favicon.png"}}",
             "debugInfo": {
-              "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+              "hash": "a0b6eaa090eb173abdc954197d7d9a70e87300c2",
             },
-            "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+            "hash": "a0b6eaa090eb173abdc954197d7d9a70e87300c2",
             "id": "expoConfig",
             "reasons": [
               "expoConfig",
@@ -170,11 +171,11 @@ describe(diffFingerprintChangesAsync, () => {
       [
         {
           "afterSource": {
-            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"jsEngine":"jsc","name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"jsEngine":"jsc","name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","web":{"favicon":"./assets/favicon.png"}}",
             "debugInfo": {
-              "hash": "7068a4234e7312c6ac54b776ea4dfad0ac789b2a",
+              "hash": "cc27a213ab986a73f89f13c92a7870bb9aee5769",
             },
-            "hash": "7068a4234e7312c6ac54b776ea4dfad0ac789b2a",
+            "hash": "cc27a213ab986a73f89f13c92a7870bb9aee5769",
             "id": "expoConfig",
             "reasons": [
               "expoConfig",
@@ -182,11 +183,11 @@ describe(diffFingerprintChangesAsync, () => {
             "type": "contents",
           },
           "beforeSource": {
-            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","version":"1.0.0","web":{"favicon":"./assets/favicon.png"}}",
+            "contents": "{"android":{"adaptiveIcon":{"backgroundColor":"#FFFFFF","foregroundImage":"./assets/adaptive-icon.png"}},"assetBundlePatterns":["**/*"],"icon":"./assets/icon.png","ios":{"supportsTablet":true},"name":"sdk47","orientation":"portrait","platforms":["android","ios","web"],"slug":"sdk47","splash":{"backgroundColor":"#ffffff","image":"./assets/splash.png","resizeMode":"contain"},"updates":{"fallbackToCacheTimeout":0},"userInterfaceStyle":"light","web":{"favicon":"./assets/favicon.png"}}",
             "debugInfo": {
-              "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+              "hash": "a0b6eaa090eb173abdc954197d7d9a70e87300c2",
             },
-            "hash": "33b2b95de3b0b474810630e51527a2c0a6e5de9c",
+            "hash": "a0b6eaa090eb173abdc954197d7d9a70e87300c2",
             "id": "expoConfig",
             "reasons": [
               "expoConfig",
@@ -516,14 +517,14 @@ describe(diffFingerprints, () => {
 });
 
 describe('function api stability', () => {
-  const Fingerprint = require('../index');
+  const Fingerprint: typeof import('../index') = require('../index');
   afterEach(() => {
     vol.reset();
   });
 
-  function getCreateFingerprintFixedArgs(): [string, Record<string, any>] {
+  function getCreateFingerprintFixedArgs(): [string, Options] {
     // The fixed options and arguments as called by eas-cli
-    const FIXED_OPTIONS = {
+    const FIXED_OPTIONS: Options = {
       platforms: ['android', 'ios'],
       ignorePaths: ['android/**/*', 'ios/**/*'],
       debug: true,
@@ -566,7 +567,7 @@ describe('function api stability', () => {
     const fingerprint = await Fingerprint.createFingerprintAsync(...createFingerprintFixedArgs);
 
     // The fixed arguments as called by eas-cli
-    const FIXED_ARGS = [fingerprint, fingerprint];
+    const FIXED_ARGS: [Fingerprint, Fingerprint] = [fingerprint, fingerprint];
     expect(Fingerprint.diffFingerprints(...FIXED_ARGS)).toBeDefined();
   });
 });

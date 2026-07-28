@@ -43,5 +43,7 @@
   "progressTrackerNext": "Next: {title}",
   "prerequisitesHeading": "Prerequisites",
   "prerequisitesRequirementSingular": "requirement",
-  "prerequisitesRequirementPlural": "requirements"
+  "prerequisitesRequirementPlural": "requirements",
+  "sidebarResetTutorial": "Reset tutorial",
+  "sidebarTutorialProgress": "{completed} of {total}"
 }

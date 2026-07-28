@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `renderToImageAsync` reporting the main screen's scale rather than the scale the image was rendered at. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - Resolve package-style font paths. ([#46784](https://github.com/expo/expo/pull/46784) by [@maxlapides](https://github.com/maxlapides))

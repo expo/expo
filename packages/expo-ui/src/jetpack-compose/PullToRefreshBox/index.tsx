@@ -8,7 +8,7 @@ import { createViewModifierEventListener } from '../modifiers/utils';
 /**
  * Configuration for the loading indicator shown during pull-to-refresh.
  */
-export type PullToRefreshIndicatorProps = {
+export interface PullToRefreshIndicatorProps {
   /**
    * Color of the loading indicator spinner.
    * @default MaterialTheme.colorScheme.primary
@@ -23,9 +23,9 @@ export type PullToRefreshIndicatorProps = {
    * Modifiers for the loading indicator.
    */
   modifiers?: ModifierConfig[];
-};
+}
 
-export type PullToRefreshBoxProps = {
+export interface PullToRefreshBoxProps {
   /**
    * Whether the content is refreshing.
    * @default false
@@ -52,7 +52,7 @@ export type PullToRefreshBoxProps = {
    * The content to refresh.
    */
   children: React.ReactNode;
-};
+}
 
 type NativePullToRefreshBoxProps = Omit<PullToRefreshBoxProps, 'onRefresh'> &
   ViewEvent<'onRefresh', void>;

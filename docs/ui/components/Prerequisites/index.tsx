@@ -89,6 +89,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
           <div className="flex items-center">
             <div className="mt-1.25 mr-2 ml-1.5 self-baseline">
               <TriangleDownIcon
+                aria-hidden="true"
                 className={mergeClasses(
                   'icon-sm text-icon-default',
                   '-rotate-90 transition-transform duration-200',
@@ -97,7 +98,7 @@ const Prerequisites: ComponentType<PrerequisitesProps> = withHeadingManager(
               />
             </div>
             <div className="flex items-center gap-2">
-              <ListIcon className={mergeClasses('icon-sm text-icon-default')} />
+              <ListIcon aria-hidden="true" className={mergeClasses('icon-sm text-icon-default')} />
               <p
                 className={mergeClasses(
                   'relative inline scroll-m-5',

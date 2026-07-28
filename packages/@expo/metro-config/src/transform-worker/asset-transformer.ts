@@ -9,13 +9,13 @@
  * https://github.com/facebook/metro/blob/412771475c540b6f85d75d9dcd5a39a6e0753582/packages/metro-transform-worker/src/utils/assetTransformer.js#L1
  */
 import { type ParseResult, template, types as t } from '@babel/core';
-import { generateAssetCodeFileAst } from '@expo/metro/metro/Bundler/util';
 import type { BabelTransformerArgs } from '@expo/metro/metro-babel-transformer';
+import { generateAssetCodeFileAst } from '@expo/metro/metro/Bundler/util';
 import path from 'node:path';
 import url from 'node:url';
 
-import { getUniversalAssetData } from './getAssets';
 import { toPosixPath } from '../utils/filePath';
+import { getUniversalAssetData } from './getAssets';
 
 // Register client components for assets in server component environments.
 const buildClientReferenceRequire = template.statement(
@@ -74,7 +74,7 @@ export async function transform(
 
   if (
     (options.platform !== 'web' ||
-      // React Server DOM components should use the client reference in order to local embedded assets.
+      // React Server DOM components should use the client reference in order to locate embedded assets.
       isDomComponent) &&
     // NOTE(EvanBacon): There may be value in simply evaluating assets on the server.
     // Here, we're passing the info back to the client so the multi-resolution asset can be evaluated and downloaded.

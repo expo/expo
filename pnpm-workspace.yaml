@@ -8,6 +8,8 @@ packages:
 
 ignoreWorkspaceCycles: true
 
+shellEmulator: true
+
 ignoredBuiltDependencies:
   - '@parcel/watcher'
   - '@swc/core'
@@ -43,11 +45,13 @@ minimumReleaseAge: 1440
 minimumReleaseAgeExclude:
   - '@expo/*'
   - '@react-native/*'
+  - '@turbo/*'
   - 'react-native'
   - multitars
   - 'react-native-gesture-handler'
   - 'react-native-reanimated'
   - 'react-native-screens'
+  - turbo
   - 'whatwg-url-minimum'
   - 'expo'
   - 'expo-asset'
@@ -57,3 +61,5 @@ minimumReleaseAgeExclude:
   - 'expo-modules-jsi'
   - 'babel-preset-expo'
   - 'jest-expo'
+  - '2g'
+  - 'sandbox-cli-detector'

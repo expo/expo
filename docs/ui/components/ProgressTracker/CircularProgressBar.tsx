@@ -13,7 +13,7 @@ export function CircularProgressBar({ progress }: CircularProgressBarProps) {
 
   return (
     <div className="mr-1 flex items-center justify-center">
-      <svg width={size} height={size}>
+      <svg aria-hidden="true" width={size} height={size}>
         {/* The background circle */}
         <circle
           cx={size / 2}

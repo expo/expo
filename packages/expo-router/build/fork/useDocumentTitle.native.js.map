@@ -1,1 +1,0 @@
-{"version":3,"file":"useDocumentTitle.native.js","sourceRoot":"","sources":["../../src/fork/useDocumentTitle.native.ts"],"names":[],"mappings":";;AAGA,4CAEC;AALD;;GAEG;AACH,SAAgB,gBAAgB;IAC9B,4BAA4B;AAC9B,CAAC","sourcesContent":["/*\n * This file is unchanged, except for removing eslint comments\n */\nexport function useDocumentTitle() {\n  // Noop for native platforms\n}\n"]}

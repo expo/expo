@@ -2,12 +2,46 @@ import MediaPlayer
 import AVFoundation
 import ExpoModulesCore
 
+protocol LockScreenPlayable: AnyObject {
+  var id: String { get }
+  var isActiveForLockScreen: Bool { get set }
+  var metadata: Metadata? { get set }
+  var lockScreenPlayer: AVPlayer { get }
+  var duration: Double { get }
+  var currentTime: Double { get }
+  var isPlaying: Bool { get }
+  var currentRate: Float { get }
+  var isLive: Bool { get }
+  var supportsNextTrack: Bool { get }
+  var supportsPreviousTrack: Bool { get }
+
+  func play(at rate: Float)
+  func pause()
+  func nextTrack()
+  func previousTrack()
+}
+
+extension LockScreenPlayable {
+  var supportsNextTrack: Bool {
+    false
+  }
+
+  var supportsPreviousTrack: Bool {
+    false
+  }
+
+  func nextTrack() {}
+
+  func previousTrack() {}
+}
+
 class MediaController {
   static let shared = MediaController()
 
-  private var activePlayer: AudioPlayer?
+  private var activePlayable: (any LockScreenPlayable)?
   private var remoteCommandCenter = MPRemoteCommandCenter.shared()
   private var nowPlayingInfoCenter = MPNowPlayingInfoCenter.default()
+  private var remoteCommandTargets: [(command: MPRemoteCommand, target: Any)] = []
 
   private var currentArtworkUrl: URL?
   private var cachedArtwork: MPMediaItemArtwork?
@@ -15,44 +49,56 @@ class MediaController {
   private var currentArtworkItemIdentifier: ObjectIdentifier?
   private var isLiveStream = false
 
-  func setActivePlayer(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
+  func setActivePlayable(_ playable: (any LockScreenPlayable)?, options: LockScreenOptions? = nil) {
     performOnMain {
-      self.setActivePlayerOnMain(player, options: options)
+      self.setActivePlayableOnMain(playable, options: options)
     }
   }
 
-  func updateNowPlayingInfo(for player: AudioPlayer) {
+  func updateNowPlayingInfo(for playable: any LockScreenPlayable) {
     performOnMain {
-      self.updateNowPlayingInfoOnMain(for: player)
+      self.updateNowPlayingInfoOnMain(for: playable)
     }
   }
 
-  private func setActivePlayerOnMain(_ player: AudioPlayer?, options: LockScreenOptions? = nil) {
-    if let previous = activePlayer, previous.id != player?.id {
+  func refreshActivePlayable(_ playable: any LockScreenPlayable, options: LockScreenOptions?) {
+    performOnMain {
+      guard playable.id == self.activePlayable?.id else {
+        return
+      }
+
+      self.disableRemoteCommands()
+      self.clearNowPlayingInfoOnMain()
+      self.setActivePlayableOnMain(playable, options: options)
+    }
+  }
+
+  private func setActivePlayableOnMain(_ playable: (any LockScreenPlayable)?, options: LockScreenOptions? = nil) {
+    if let previous = activePlayable, previous.id != playable?.id {
       previous.isActiveForLockScreen = false
       resetArtworkState()
       currentArtworkItemIdentifier = nil
     }
 
-    activePlayer = player
-    player?.isActiveForLockScreen = true
-    isLiveStream = options?.isLiveStream ?? player?.isLive ?? false
+    activePlayable = playable
+    playable?.isActiveForLockScreen = true
+    isLiveStream = options?.isLiveStream ?? playable?.isLive ?? false
 
-    if let player {
+    if let playable {
       enableRemoteCommands(options: options)
-      updateNowPlayingInfoOnMain(for: player)
+      updateNowPlayingInfoOnMain(for: playable)
     } else {
       disableRemoteCommands()
       clearNowPlayingInfoOnMain()
     }
   }
 
-  private func updateNowPlayingInfoOnMain(for player: AudioPlayer) {
-    guard player.id == activePlayer?.id else {
+  private func updateNowPlayingInfoOnMain(for playable: any LockScreenPlayable) {
+    guard playable.id == activePlayable?.id else {
       return
     }
 
-    let nextArtworkItemIdentifier = player.ref.currentItem.map { ObjectIdentifier($0) }
+    let nextArtworkItemIdentifier = playable.lockScreenPlayer.currentItem.map { ObjectIdentifier($0) }
     if currentArtworkItemIdentifier != nextArtworkItemIdentifier {
       resetArtworkState()
       currentArtworkItemIdentifier = nextArtworkItemIdentifier
@@ -60,47 +106,49 @@ class MediaController {
 
     var nowPlayingInfo = nowPlayingInfoCenter.nowPlayingInfo ?? [String: Any]()
 
-    applyPlaybackInfo(&nowPlayingInfo, for: player)
+    applyPlaybackInfo(&nowPlayingInfo, for: playable)
 
-    if let userMetadata = player.metadata {
+    if let userMetadata = playable.metadata {
       applyUserMetadata(&nowPlayingInfo, from: userMetadata)
-      applyArtwork(&nowPlayingInfo, from: userMetadata, for: player, currentItemIdentifier: nextArtworkItemIdentifier)
+      applyArtwork(&nowPlayingInfo, from: userMetadata, for: playable, currentItemIdentifier: nextArtworkItemIdentifier)
     } else {
       resetArtworkState()
       nowPlayingInfo.removeValue(forKey: MPMediaItemPropertyArtwork)
-      applyAssetMetadata(&nowPlayingInfo, for: player)
+      applyAssetMetadata(&nowPlayingInfo, for: playable)
     }
 
     nowPlayingInfoCenter.nowPlayingInfo = nowPlayingInfo
   }
 
-  private func applyPlaybackInfo(_ info: inout [String: Any], for player: AudioPlayer) {
+  private func applyPlaybackInfo(_ info: inout [String: Any], for playable: any LockScreenPlayable) {
     if isLiveStream {
       info[MPNowPlayingInfoPropertyIsLiveStream] = true
       info.removeValue(forKey: MPMediaItemPropertyPlaybackDuration)
       info.removeValue(forKey: MPNowPlayingInfoPropertyElapsedPlaybackTime)
     } else {
-      info[MPMediaItemPropertyPlaybackDuration] = player.duration
-      info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
+      info[MPMediaItemPropertyPlaybackDuration] = playable.duration
+      info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = playable.currentTime
     }
-    info[MPNowPlayingInfoPropertyPlaybackRate] = player.isPlaying ? player.ref.rate : 0.0
+    info[MPNowPlayingInfoPropertyPlaybackRate] = playable.isPlaying ? playable.lockScreenPlayer.rate : 0.0
     info[MPNowPlayingInfoPropertyMediaType] = MPNowPlayingInfoMediaType.audio.rawValue
   }
 
   private func applyUserMetadata(_ info: inout [String: Any], from metadata: Metadata) {
-    if let title = metadata.title {
-      info[MPMediaItemPropertyTitle] = title
-    }
-    if let artist = metadata.artist {
-      info[MPMediaItemPropertyArtist] = artist
-    }
-    if let album = metadata.albumTitle {
-      info[MPMediaItemPropertyAlbumTitle] = album
+    updateInfo(&info, key: MPMediaItemPropertyTitle, value: metadata.title)
+    updateInfo(&info, key: MPMediaItemPropertyArtist, value: metadata.artist)
+    updateInfo(&info, key: MPMediaItemPropertyAlbumTitle, value: metadata.albumTitle)
+  }
+
+  private func updateInfo(_ info: inout [String: Any], key: String, value: Any?) {
+    if let value {
+      info[key] = value
+    } else {
+      info.removeValue(forKey: key)
     }
   }
 
-  private func applyAssetMetadata(_ info: inout [String: Any], for player: AudioPlayer) {
-    guard let currentItem = player.ref.currentItem,
+  private func applyAssetMetadata(_ info: inout [String: Any], for playable: any LockScreenPlayable) {
+    guard let currentItem = playable.lockScreenPlayer.currentItem,
       let asset = currentItem.asset as? AVURLAsset else {
       return
     }
@@ -133,7 +181,7 @@ class MediaController {
   private func applyArtwork(
     _ info: inout [String: Any],
     from metadata: Metadata,
-    for player: AudioPlayer,
+    for playable: any LockScreenPlayable,
     currentItemIdentifier: ObjectIdentifier?
   ) {
     guard let artworkUrl = metadata.artworkUrl else {
@@ -167,7 +215,7 @@ class MediaController {
 
       self.artworkLoadToken = nil
 
-      guard self.activePlayer?.id == player.id,
+      guard self.activePlayable?.id == playable.id,
             self.currentArtworkUrl == artworkUrl,
             self.currentArtworkItemIdentifier == currentItemIdentifier else {
         return
@@ -187,7 +235,7 @@ class MediaController {
 
   private func clearNowPlayingInfoOnMain() {
     nowPlayingInfoCenter.nowPlayingInfo = nil
-    activePlayer = nil
+    activePlayable = nil
     isLiveStream = false
     resetArtworkState()
     currentArtworkItemIdentifier = nil
@@ -232,83 +280,127 @@ class MediaController {
   }
 
   private func enableRemoteCommands(options: LockScreenOptions?) {
-    remoteCommandCenter.playCommand.addTarget { [weak self] _ in
-      guard let player = self?.activePlayer else {
+    removeRemoteCommandTargets()
+
+    let playTarget = remoteCommandCenter.playCommand.addTarget { [weak self] _ in
+      guard let playable = self?.activePlayable else {
         return .commandFailed
       }
 
-      player.play(at: Float(player.currentRate > 0 ? player.currentRate : 1.0))
+      playable.play(at: Float(playable.currentRate > 0 ? playable.currentRate : 1.0))
       return .success
     }
+    remoteCommandTargets.append((remoteCommandCenter.playCommand, playTarget))
 
-    remoteCommandCenter.pauseCommand.addTarget { [weak self] _ in
-      guard let player = self?.activePlayer else {
+    let pauseTarget = remoteCommandCenter.pauseCommand.addTarget { [weak self] _ in
+      guard let playable = self?.activePlayable else {
         return .commandFailed
       }
 
-      player.ref.pause()
+      playable.pause()
       return .success
     }
+    remoteCommandTargets.append((remoteCommandCenter.pauseCommand, pauseTarget))
 
-    remoteCommandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
-      guard let player = self?.activePlayer else {
+    let togglePlayPauseTarget = remoteCommandCenter.togglePlayPauseCommand.addTarget { [weak self] _ in
+      guard let playable = self?.activePlayable else {
         return .commandFailed
       }
 
-      if player.isPlaying {
-        player.ref.pause()
+      if playable.isPlaying {
+        playable.pause()
       } else {
-        player.play(at: Float(player.currentRate > 0 ? player.currentRate : 1.0))
+        playable.play(at: Float(playable.currentRate > 0 ? playable.currentRate : 1.0))
       }
       return .success
     }
+    remoteCommandTargets.append((remoteCommandCenter.togglePlayPauseCommand, togglePlayPauseTarget))
 
-    remoteCommandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
-      guard let player = self?.activePlayer,
+    let changePlaybackPositionTarget = remoteCommandCenter.changePlaybackPositionCommand.addTarget { [weak self] event in
+      guard let playable = self?.activePlayable,
       let event = event as? MPChangePlaybackPositionCommandEvent else {
         return .commandFailed
       }
 
       let seekTime = CMTime(seconds: event.positionTime, preferredTimescale: 1)
-      player.ref.seek(to: seekTime)
+      playable.lockScreenPlayer.seek(to: seekTime)
 
       return .success
     }
+    remoteCommandTargets.append((remoteCommandCenter.changePlaybackPositionCommand, changePlaybackPositionTarget))
 
     remoteCommandCenter.skipForwardCommand.preferredIntervals = [10.0]
-    remoteCommandCenter.skipForwardCommand.addTarget { [weak self] event in
-      guard let player = self?.activePlayer,
+    let skipForwardTarget = remoteCommandCenter.skipForwardCommand.addTarget { [weak self] event in
+      guard let playable = self?.activePlayable,
       let event = event as? MPSkipIntervalCommandEvent else {
         return .commandFailed
       }
 
-      let currentTime = player.ref.currentTime()
+      let currentTime = playable.lockScreenPlayer.currentTime()
       let seekTime = currentTime + CMTime(seconds: event.interval, preferredTimescale: 1)
-      player.ref.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
+      playable.lockScreenPlayer.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
 
       return .success
     }
+    remoteCommandTargets.append((remoteCommandCenter.skipForwardCommand, skipForwardTarget))
 
     remoteCommandCenter.skipBackwardCommand.preferredIntervals = [10.0]
-    remoteCommandCenter.skipBackwardCommand.addTarget { [weak self] event in
-      guard let player = self?.activePlayer,
+    let skipBackwardTarget = remoteCommandCenter.skipBackwardCommand.addTarget { [weak self] event in
+      guard let playable = self?.activePlayable,
       let event = event as? MPSkipIntervalCommandEvent else {
         return .commandFailed
       }
 
-      let currentTime = player.ref.currentTime()
+      let currentTime = playable.lockScreenPlayer.currentTime()
       let seekTime = currentTime - CMTime(seconds: event.interval, preferredTimescale: 1)
-      player.ref.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
+      playable.lockScreenPlayer.seek(to: seekTime, toleranceBefore: .zero, toleranceAfter: .zero)
 
       return .success
     }
+    remoteCommandTargets.append((remoteCommandCenter.skipBackwardCommand, skipBackwardTarget))
+
+    let nextTrackTarget = remoteCommandCenter.nextTrackCommand.addTarget { [weak self] _ in
+      guard let playable = self?.activePlayable,
+            playable.supportsNextTrack else {
+        return .commandFailed
+      }
+
+      playable.nextTrack()
+      return .success
+    }
+    remoteCommandTargets.append((remoteCommandCenter.nextTrackCommand, nextTrackTarget))
+
+    let previousTrackTarget = remoteCommandCenter.previousTrackCommand.addTarget { [weak self] _ in
+      guard let playable = self?.activePlayable,
+            playable.supportsPreviousTrack else {
+        return .commandFailed
+      }
+
+      playable.previousTrack()
+      return .success
+    }
+    remoteCommandTargets.append((remoteCommandCenter.previousTrackCommand, previousTrackTarget))
 
     remoteCommandCenter.playCommand.isEnabled = true
     remoteCommandCenter.pauseCommand.isEnabled = true
     remoteCommandCenter.togglePlayPauseCommand.isEnabled = true
     remoteCommandCenter.changePlaybackPositionCommand.isEnabled = !isLiveStream
-    remoteCommandCenter.skipForwardCommand.isEnabled = options?.showSeekForward ?? false
-    remoteCommandCenter.skipBackwardCommand.isEnabled = options?.showSeekBackward ?? false
+    let supportsNextTrack = activePlayable?.supportsNextTrack ?? false
+    let supportsPreviousTrack = activePlayable?.supportsPreviousTrack ?? false
+    let showNextTrack = (options?.showNextTrack ?? false) && supportsNextTrack
+    let showPreviousTrack = (options?.showPreviousTrack ?? false) && supportsPreviousTrack
+
+    remoteCommandCenter.skipForwardCommand.isEnabled = (options?.showSeekForward ?? false) && !showNextTrack
+    remoteCommandCenter.skipBackwardCommand.isEnabled = (options?.showSeekBackward ?? false) && !showPreviousTrack
+    remoteCommandCenter.nextTrackCommand.isEnabled = showNextTrack
+    remoteCommandCenter.previousTrackCommand.isEnabled = showPreviousTrack
+  }
+
+  private func removeRemoteCommandTargets() {
+    remoteCommandTargets.forEach { command, target in
+      command.removeTarget(target)
+    }
+    remoteCommandTargets.removeAll()
   }
 
   private func disableRemoteCommands() {
@@ -318,13 +410,9 @@ class MediaController {
     remoteCommandCenter.changePlaybackPositionCommand.isEnabled = false
     remoteCommandCenter.skipForwardCommand.isEnabled = false
     remoteCommandCenter.skipBackwardCommand.isEnabled = false
+    remoteCommandCenter.nextTrackCommand.isEnabled = false
+    remoteCommandCenter.previousTrackCommand.isEnabled = false
 
-    // Remove event targets
-    remoteCommandCenter.playCommand.removeTarget(self)
-    remoteCommandCenter.pauseCommand.removeTarget(self)
-    remoteCommandCenter.togglePlayPauseCommand.removeTarget(self)
-    remoteCommandCenter.changePlaybackPositionCommand.removeTarget(self)
-    remoteCommandCenter.skipForwardCommand.removeTarget(self)
-    remoteCommandCenter.skipBackwardCommand.removeTarget(self)
+    removeRemoteCommandTargets()
   }
 }

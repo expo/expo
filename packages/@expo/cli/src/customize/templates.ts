@@ -5,8 +5,7 @@ import resolveFrom from 'resolve-from';
 
 import type { ExpoChoice } from '../utils/prompts';
 import prompt from '../utils/prompts';
-
-const debug = require('debug')('expo:customize:templates');
+import { event } from './events';
 
 export type DestinationResolutionProps = {
   /** Web 'public' folder path (defaults to `/web`). This technically can be changed but shouldn't be. */
@@ -18,10 +17,10 @@ export type DestinationResolutionProps = {
 function importFromExpoWebpackConfig(projectRoot: string, folder: string, moduleId: string) {
   try {
     const filePath = resolveFrom(projectRoot, `@expo/webpack-config/${folder}/${moduleId}`);
-    debug(`Using @expo/webpack-config template for "${moduleId}": ${filePath}`);
+    event('webpack_template_resolved', { moduleId, path: filePath });
     return filePath;
   } catch {
-    debug(`@expo/webpack-config template for "${moduleId}" not found, falling back on @expo/cli`);
+    event('webpack_template_fallback', { moduleId });
   }
   return importFromVendor(projectRoot, moduleId);
 }
@@ -29,14 +28,12 @@ function importFromExpoWebpackConfig(projectRoot: string, folder: string, module
 function importFromVendor(projectRoot: string, moduleId: string) {
   try {
     const filePath = resolveFrom(projectRoot, '@expo/cli/static/template/' + moduleId);
-    debug(`Using @expo/cli template for "${moduleId}": ${filePath}`);
+    event('cli_template_resolved', { moduleId, path: filePath });
     return filePath;
   } catch {
     // For dev mode, testing and other cases where @expo/cli is not installed
     const filePath = require.resolve(`@expo/cli/static/template/${moduleId}`);
-    debug(
-      `Local @expo/cli template for "${moduleId}" not found, falling back on template relative to @expo/cli: ${filePath}`
-    );
+    event('cli_template_fallback', { moduleId, path: filePath });
 
     return filePath;
   }

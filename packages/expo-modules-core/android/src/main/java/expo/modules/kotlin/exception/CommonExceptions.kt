@@ -21,6 +21,16 @@ class Exceptions {
   class AppContextLost : CodedException(message = "The app context has been lost")
 
   /**
+   * The converter context is no longer available.
+   */
+  class ConverterContextLost : CodedException(message = "The converter context has been lost")
+
+  /**
+   * The runtime is no longer available.
+   */
+  class RuntimeLost : CodedException(message = "The runtime has been lost")
+
+  /**
    * The react app context is no longer available.
    */
   class ReactContextLost : CodedException(message = "The react context has been lost")

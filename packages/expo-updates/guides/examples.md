@@ -16,8 +16,10 @@ Some more in-depth commentary on what happens in expo-updates during certain flo
 6. Before anything else happens, `LoaderTask` then starts an instance of `DatabaseLauncher`, which selects and prepares an update to launch (double checks all assets are available and gets their paths on disk). We now have an update that is certainly safe to launch; if the timer runs out at any point later on, we'll go ahead with launching this update by delegating back to `UpdatesController`.
 7. If the app is configured to check for an update, `LoaderTask` will start an instance of `RemoteLoader` on a background thread. `RemoteLoader` will make a request to the update URL for a manifest, use the `SelectionPolicy` to determine whether or not to load the manifest/update into SQLite, and if so, start downloading any assets that SQLite doesn't already have.
 8. Once that finishes, `RemoteLoader` fires a callback in `LoaderTask`, which will then decide what to do.
-  - If the timer has not yet run out, `LoaderTask` will create a new "candidate" `DatabaseLauncher` which will presumably select and prepare the just-downloaded update for launch, and then delegate back to `UpdatesController` to launch the update.
-  - Otherwise, the timer has already run out and so the update selected in step (6) has already been launched. Rather than launching the newly downloaded update, `LoaderTask` will send an event to the running JS instance, notifying it that a new update is available. If the app is listening for Updates events, it can respond by calling `reloadAsync` at this point, which will immediately load the new update.
+
+- If the timer has not yet run out, `LoaderTask` will create a new "candidate" `DatabaseLauncher` which will presumably select and prepare the just-downloaded update for launch, and then delegate back to `UpdatesController` to launch the update.
+- Otherwise, the timer has already run out and so the update selected in step (6) has already been launched. Rather than launching the newly downloaded update, `LoaderTask` will send an event to the running JS instance, notifying it that a new update is available. If the app is listening for Updates events, it can respond by calling `reloadAsync` at this point, which will immediately load the new update.
+
 9. Finally, once all this has completed, `LoaderTask` will run the `Reaper` process in the background. This will clear old updates and assets out of the database, keeping the currently running update, any newer ones, and one older one (the next most recent) as a safeguard in case there is a rollback.
 
 ## The app binary is updated (e.g. through the App Store) and then launched
@@ -60,7 +62,9 @@ A more detailed walkthrough of what happens in the `Loader` classes when an upda
 2. `RemoteLoader` checks to see if the database already has this update. If it does and its status is marked as `READY`, `RemoteLoader` immediately fires its success callback and doesn't do anything else.
 3. Otherwise, `RemoteLoader` starts iterating through the assets in the manifest. For each one, it checks to see if (a) it is already in the database and (b) if it already exists on disk (assuming any asset with the same filename is the same asset). If the asset doesn't exist on disk, `RemoteLoader` initiates a download (regardless of whether there is a row for it in the database).
 4. Once all the asset downloads are finished, for any assets that were not in the database and are now on disk, `RemoteLoader` adds a row to SQLite.
-  - For any asset that was on disk but not in SQLite (which shouldn't happen normally but can happen, for instance, after a destructive database migration), `RemoteLoader` populates the row as if it had just downloaded the asset.
+
+- For any asset that was on disk but not in SQLite (which shouldn't happen normally but can happen, for instance, after a destructive database migration), `RemoteLoader` populates the row as if it had just downloaded the asset.
+
 5. If there were no errors and all the assets that comprise the update are now on disk and in SQLite, `RemoteLoader` marks the update as `READY` in SQLite and fires its success callback. Otherwise, it fires the error callback.
 
 ## Assets are unexpectedly missing

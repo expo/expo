@@ -421,7 +421,7 @@ Standardize on the term URL. URI and IRI are just confusing. In practice, a sing
 
 ### Kilobytes (kB), kibibytes (KiB), and kilobits (kbit, kb)
 
-- A kilobyte, and other SI units for bytes, sometimes refers to 1,000 bytes (kB) and othertimes refers to 1,024 bytes (KB).
+- A kilobyte, and other SI units for bytes, sometimes refers to 1,000 bytes (kB) and other times refers to 1,024 bytes (KB).
 - A kibibyte ("kilo binary byte") always refers to 1,024 bytes and is abbreviated as "KiB".
 - Most Expo APIs work with powers of two like kibibytes. Write "KiB", "MiB", and "GiB" to communicate clearly to developers. We do not need to explain that a KiB refers to 1,024 bytes.
 - Some APIs, especially those related to disk storage and transmission rates like baud rates, use powers of 10. Write "kB", "MB", and "GB" **and** be clear we're referring to 1,000 bytes, 1,000,000 bytes, and so on.

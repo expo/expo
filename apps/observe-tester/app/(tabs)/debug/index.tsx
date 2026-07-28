@@ -8,8 +8,11 @@ import { CrashReportsSection } from '@/components/CrashReportsSection';
 import { Divider } from '@/components/Divider';
 import { GlobalAttributesSection } from '@/components/GlobalAttributesSection';
 import { JSAnimation } from '@/components/JSAnimation';
+import { JSErrorsSection } from '@/components/JSErrorsSection';
 import { LogEventsSection } from '@/components/LogEventsSection';
 import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
+import { RenderErrorSection } from '@/components/RenderErrorSection';
+import { ReportErrorSection } from '@/components/ReportErrorSection';
 import CrashTester from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
@@ -35,6 +38,12 @@ export default function Debug() {
       <Divider />
       <CrashReportsSection />
       {CrashTester != null ? <Divider /> : null}
+      <JSErrorsSection />
+      <Divider />
+      <ReportErrorSection />
+      <Divider />
+      <RenderErrorSection />
+      <Divider />
       <GlobalAttributesSection />
       <Divider />
       <Button

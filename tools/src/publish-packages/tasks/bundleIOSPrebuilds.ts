@@ -1,8 +1,10 @@
+import chalk from 'chalk';
 import fs from 'fs';
+import inquirer from 'inquirer';
 import path from 'path';
 
 import { loadRequestedParcels } from './loadRequestedParcels';
-import { PACKAGES_DIR } from '../../Constants';
+import { EXPO_DIR, PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner, spawnAsync } from '../../Utils';
@@ -104,6 +106,126 @@ const SHARED_SPM_DEPS_SOURCE_DIR = '.spm-deps';
 const SHARED_SPM_DEPS_BUNDLE_SUBPATH = path.join('prebuilds', 'spm-deps');
 
 /**
+ * Prompts before removing module prebuild caches. Mirrors `cleanupStaleBuildDirectories` on
+ * the Android side: a list prompt (Yes / No / List all) that defaults to Yes, recursing to
+ * print the full list on demand. Returns whether the caller should proceed with deletion.
+ */
+async function promptForPrebuildCleanup(moduleDirs: string[]): Promise<boolean> {
+  const { action } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'action',
+      prefix: '🧹',
+      message: chalk.cyan(
+        `Found ${moduleDirs.length} module prebuild cache${
+          moduleDirs.length === 1 ? '' : 's'
+        } (packages/precompile/.build). Remove before rebuilding?`
+      ),
+      choices: [
+        { name: 'Yes', value: 'yes' },
+        { name: 'No', value: 'no' },
+        { name: 'List all', value: 'list' },
+      ],
+      default: 'yes',
+    },
+  ]);
+
+  if (action === 'list') {
+    logger.log();
+    for (const dir of moduleDirs) {
+      logger.log('  ', chalk.gray(path.relative(EXPO_DIR, dir)));
+    }
+    logger.log();
+    return promptForPrebuildCleanup(moduleDirs);
+  }
+
+  return action === 'yes';
+}
+
+/**
+ * Removes every module's cached prebuild output under `packages/precompile/.build/<module>/`
+ * so each publish regenerates its xcframeworks from current source.
+ *
+ * Why this matters: the prebuild pipeline is incremental and has NO reverse-dependency
+ * invalidation. When a dependency's Swift interface changes (e.g. ExpoModulesCore's
+ * `Promise`), a dependent whose own sources didn't change (e.g. ExpoSensors) is not rebuilt —
+ * its cached xcframework is reused and bundled. The stale binary then references symbols the
+ * rebuilt dependency no longer exports, so consumer apps abort at launch with a dyld "Symbol
+ * not found" error. Wiping the per-module build dirs forces a clean rebuild.
+ *
+ * This mirrors `cleanupStaleBuildDirectories` on the Android side (which clears `*.cxx` and
+ * `android/build`), including the confirmation prompt — it defaults to Yes, so a
+ * non-interactive publish that accepts defaults still gets the clean rebuild.
+ *
+ * Preserves caches that don't depend on Expo module ABI, so publishes stay reasonably fast:
+ * the shared SPM deps cache (`.build/.spm-deps/`, a dot-dir) and each package's downloaded
+ * RN/Hermes artifact cache (`packages/<pkg>/.dependencies/`, which lives outside `.build/`).
+ *
+ * `buildDir` and `confirm` are injection seams for tests; production uses the real defaults.
+ */
+export async function cleanStaleModuleBuildDirsAsync(
+  buildDir: string = PRECOMPILE_BUILD_DIR,
+  confirm: (moduleDirs: string[]) => Promise<boolean> = promptForPrebuildCleanup
+): Promise<void> {
+  if (!fs.existsSync(buildDir)) {
+    return; // Nothing built yet.
+  }
+
+  const entries = await fs.promises.readdir(buildDir, { withFileTypes: true });
+  // Every non-dot child dir is a module build dir (including scoped dirs like `@expo`).
+  // Dot-prefixed dirs (e.g. `.spm-deps`) are shared caches we intentionally keep.
+  const moduleDirs = entries
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+    .map((entry) => path.join(buildDir, entry.name));
+
+  if (moduleDirs.length === 0) {
+    return;
+  }
+
+  if (!(await confirm(moduleDirs))) {
+    logger.log('  ', 'Skipping cleanup of module prebuild caches.');
+    return;
+  }
+
+  await runWithSpinner(
+    `Clearing ${moduleDirs.length} module prebuild cache(s)`,
+    () =>
+      Promise.all(moduleDirs.map((dir) => fs.promises.rm(dir, { recursive: true, force: true }))),
+    `Cleared ${moduleDirs.length} module prebuild cache(s)`
+  );
+}
+
+/**
+ * Removes the bundled `prebuilds/` directory from EVERY package being published — not just
+ * those in `IOS_PREBUILD_PACKAGES` — before the copy step below repopulates it for the
+ * currently-listed packages.
+ *
+ * Scanning every package, rather than only the listed ones, makes de-listing self-correcting:
+ * when a package is dropped from `IOS_PREBUILD_PACKAGES`, a `prebuilds/` dir left over from a
+ * prior build (when it was still listed) would otherwise be picked up by `npm pack` and ship a
+ * stale binary. That is exactly how `expo-sensors@57.0.0` shipped a stale `ExpoSensors.xcframework`
+ * after it was de-listed. Wiping all of them first means only packages the copy step actually
+ * repopulates can ship a `prebuilds/` dir.
+ *
+ * `prebuilds/` is generated build output (never committed), so removing it is always safe.
+ */
+export async function clearBundledPrebuildsAsync(parcels: Parcel[]): Promise<void> {
+  const dirs = parcels
+    .map((parcel) => path.join(parcel.pkg.path, 'prebuilds'))
+    .filter((dir) => fs.existsSync(dir));
+
+  if (dirs.length === 0) {
+    return;
+  }
+
+  await runWithSpinner(
+    `Clearing bundled prebuilds/ from ${dirs.length} package(s)`,
+    () => Promise.all(dirs.map((dir) => fs.promises.rm(dir, { recursive: true, force: true }))),
+    `Cleared bundled prebuilds/ from ${dirs.length} package(s)`
+  );
+}
+
+/**
  * Builds iOS xcframeworks for selected packages and bundles them into each package's
  * `prebuilds/` directory: per-product tarballs under `prebuilds/output/` and shared SPM
  * dep xcframeworks under `prebuilds/spm-deps/`. Both are picked up by `npm pack`.
@@ -132,6 +254,13 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
     const restoreToolchain = await ensureSupportedToolchainAsync();
 
     try {
+      // Prompt (defaulting to Yes) to clear module prebuild caches before rebuilding, so no
+      // module ships a stale prebuilt binary. The pipeline is incremental with no
+      // reverse-dependency invalidation, so a dependent's cached xcframework can otherwise lag
+      // an ABI change in a dependency and crash consumer apps at launch. See
+      // cleanStaleModuleBuildDirsAsync.
+      await cleanStaleModuleBuildDirsAsync();
+
       const result = await runPrebuildPackagesAsync(relevantParcels, {
         clean: false,
         cleanCache: false,
@@ -159,6 +288,11 @@ export const bundleIOSPrebuilds = new Task<TaskArgs>(
           : 'iOS prebuild pipeline failed';
         throw new Error(errorMessage);
       }
+
+      // Wipe every package's bundled prebuilds/ dir before repopulating, so a de-listed
+      // package can't keep shipping a stale one (see clearBundledPrebuildsAsync). The loop
+      // below only repopulates packages still in IOS_PREBUILD_PACKAGES.
+      await clearBundledPrebuildsAsync(parcels);
 
       // Copy built tarballs into each package's prebuilds/ directory
       for (const pkgName of IOS_PREBUILD_PACKAGES) {

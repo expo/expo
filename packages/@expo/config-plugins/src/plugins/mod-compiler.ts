@@ -1,14 +1,14 @@
 import Debug from 'debug';
 import path from 'path';
 
-import type { ForwardedBaseModOptions } from './createBaseMod';
-import { assertModResults } from './createBaseMod';
-import { withAndroidBaseMods } from './withAndroidBaseMods';
-import { withIosBaseMods } from './withIosBaseMods';
 import type { ExportedConfig, Mod, ModConfig, ModPlatform } from '../Plugin.types';
 import { getHackyProjectName } from '../ios/utils/Xcodeproj';
 import { PluginError } from '../utils/errors';
 import * as Warnings from '../utils/warnings';
+import type { ForwardedBaseModOptions } from './createBaseMod';
+import { assertModResults } from './createBaseMod';
+import { withAndroidBaseMods } from './withAndroidBaseMods';
+import { withIosBaseMods } from './withIosBaseMods';
 
 const debug = Debug('expo:config-plugins:mod-compiler');
 

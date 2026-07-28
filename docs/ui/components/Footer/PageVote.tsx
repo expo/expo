@@ -35,8 +35,14 @@ export const PageVote = () => {
               className="group mx-1 min-w-10 text-center"
               leftSlot={
                 <>
-                  <ThumbsUpIcon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                  <ThumbsUpDuotoneIcon className="hidden icon-sm text-icon-success group-hover:flex group-focus-visible:flex" />
+                  <ThumbsUpIcon
+                    aria-hidden="true"
+                    className="icon-sm group-hover:hidden group-focus-visible:hidden"
+                  />
+                  <ThumbsUpDuotoneIcon
+                    aria-hidden="true"
+                    className="hidden icon-sm text-icon-success group-hover:flex group-focus-visible:flex"
+                  />
                 </>
               }
               onClick={() => {
@@ -51,8 +57,14 @@ export const PageVote = () => {
               className="group mx-1 min-w-10 text-center"
               leftSlot={
                 <>
-                  <ThumbsDownIcon className="icon-sm group-hover:hidden group-focus-visible:hidden" />
-                  <ThumbsDownDuotoneIcon className="hidden icon-sm text-icon-danger group-hover:flex group-focus-visible:flex" />
+                  <ThumbsDownIcon
+                    aria-hidden="true"
+                    className="icon-sm group-hover:hidden group-focus-visible:hidden"
+                  />
+                  <ThumbsDownDuotoneIcon
+                    aria-hidden="true"
+                    className="hidden icon-sm text-icon-danger group-hover:flex group-focus-visible:flex"
+                  />
                 </>
               }
               onClick={() => {

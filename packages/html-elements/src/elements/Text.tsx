@@ -1,11 +1,11 @@
 import { StyleSheet, Platform } from 'react-native';
 
-import type { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 import { em } from '../css/units';
 import type { TextProps } from '../primitives/Text';
 import Text from '../primitives/Text';
 import type { ViewProps } from '../primitives/View';
 import View from '../primitives/View';
+import type { BlockQuoteProps, QuoteProps, TimeProps } from './Text.types';
 
 export function P({ style, ...props }: TextProps) {
   return <Text {...props} style={[styles.p, style]} />;

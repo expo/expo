@@ -22,8 +22,5 @@
   "dependencies": {},
   "peerDependencies": {
     "expo": "*"
-  },
-  "devDependencies": {
-    "expo": "workspace:*"
   }
 }

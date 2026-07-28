@@ -1,5 +1,11 @@
 import type { ComponentType } from 'react';
 
+import type { RouteNode } from '../Route';
+import type { ExpoLinkingOptions } from '../getLinkingConfig';
+import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
+import type { Href } from '../types';
+import * as SplashScreen from '../views/Splash';
 import { defaultRouteInfo, type UrlObject } from './getRouteInfoFromState';
 import { getCachedRouteInfo, routeInfoSubscribers } from './routeInfoCache';
 import type {
@@ -8,12 +14,6 @@ import type {
   ReactNavigationState,
   StoreRedirects,
 } from './types';
-import type { RouteNode } from '../Route';
-import type { ExpoLinkingOptions } from '../getLinkingConfig';
-import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import type { NavigationContainerRefWithCurrent } from '../react-navigation/native';
-import type { RequireContext, Href } from '../types';
-import * as SplashScreen from '../views/Splash';
 
 export type RouterStore = typeof store;
 
@@ -26,7 +26,6 @@ type StoreRef = {
   config: any;
   redirects: StoreRedirects[];
   routeInfo?: UrlObject;
-  context?: RequireContext;
 };
 
 export const storeRef = {
@@ -70,7 +69,7 @@ export const store = {
   get rootComponent() {
     return storeRef.current.rootComponent;
   },
-  getStateForHref(href: Href, options?: LinkToOptions) {
+  getStateForHref(href: Href | string, options?: LinkToOptions) {
     href = resolveHref(href);
 
     href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);

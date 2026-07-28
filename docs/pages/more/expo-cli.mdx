@@ -53,7 +53,7 @@ Expo CLI is included in the `expo` package. You can install it with npm or yarn:
 
 <Terminal cmd={['$ yarn add expo']} />
 
-> Projects that are not using [Expo Prebuild](#prebuild) will need to perform additional setup to ensure all custom Expo bundling features work: [Metro: Bare workflow setup](/versions/latest/config/metro/#existing-react-native-apps).
+> Projects that are not using [Expo Prebuild](#prebuild) will need to perform additional setup to ensure all custom Expo bundling features work: [Metro setup for existing React Native apps](/versions/latest/config/metro/#existing-react-native-apps).
 
 ## Develop
 
@@ -78,7 +78,7 @@ The UI that shows up in the process is referred to as the **Terminal UI**. It co
 | <kbd>S</kbd>                    | Switch the launch target between Expo Go and development builds.                                                                                                                         |
 | <kbd>M</kbd>                    | Open the dev menu on any connected native device (web not supported).                                                                                                                    |
 | <kbd>Shift</kbd> + <kbd>M</kbd> | Choose more commands to trigger on connected devices.<br/>This includes toggling the performance monitor, opening the element inspector, reloading the device, and opening the dev menu. |
-| <kbd>J</kbd>                    | Open React Native DevTools for any connected device that is using Hermes as the JavaScript engine. [Learn more](/guides/using-hermes#javascript-inspector-for-hermes).                   |
+| <kbd>J</kbd>                    | Open React Native DevTools for any connected device that is using Hermes as the JavaScript engine. See [debugging JavaScript with Hermes](/guides/using-hermes#javascript-debugger).     |
 | <kbd>O</kbd>                    | Open project code in your editor. This can be configured with the `EXPO_EDITOR` and `EDITOR` [environment variables](#environment-variables).                                            |
 | <kbd>E</kbd>                    | Show the development server URL as a QR code in the terminal.                                                                                                                            |
 | <kbd>?</kbd>                    | Show all Terminal UI commands.                                                                                                                                                           |
@@ -569,7 +569,7 @@ The command `npx expo install expo-camera` and `npx expo install expo-camera --f
 
 ### Configuring dependency validation
 
-There may be circumstances where you want to use a version of a package that is different from the version recommended by `npx expo install`. In this case, you can exclude specific packages from version checking by using the [`expo.install.exclude`](/versions/latest/config/package-json/#exclude) property in your project's **package.json**.
+There may be circumstances where you want to use a version of a package that is different from the version recommended by `npx expo install`. In this case, you can exclude specific packages from version checking by using the [`expo.install.exclude`](/versions/latest/config/package-json/#installexclude) property in your project's **package.json**.
 
 ### Install package managers
 

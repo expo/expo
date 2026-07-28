@@ -55,6 +55,9 @@ jobs:
         run: gem install cocoapods xcpretty
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: ⭐️ Create test-nightlies Project
         run: bun src/index.ts --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
         working-directory: packages/create-expo-nightly
@@ -122,6 +125,9 @@ jobs:
           java-version: '17'
       - name: 📦 Install node modules in root dir
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: ⭐️ Create test-nightlies Project
         run: bun src/index.ts --expo-repo ${{ github.workspace }} --no-install ${{ runner.temp }}
         working-directory: packages/create-expo-nightly

@@ -2,9 +2,9 @@ import React, { useCallback, useDeferredValue, useMemo } from 'react';
 import { View } from 'react-native';
 import type { TabsHostProps } from 'react-native-screens';
 
+import { useTheme } from '../react-navigation/native';
 import type { NativeTabOptions, NativeTabsViewProps } from './types';
 import { useAwaitedScreensIcon } from './utils/icon';
-import { useTheme } from '../react-navigation/native';
 
 export function useSelectedScreenKey({
   focusedIndex,

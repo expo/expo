@@ -9,7 +9,7 @@
  * @oncall react_native
  */
 
-let mockPathModule;
+let mockPathModule: typeof import('path').posix;
 jest.mock('path', () => mockPathModule);
 
 describe.each([['win32'], ['posix']])('removeOverlappingRoots on %s', (platform) => {
@@ -18,11 +18,12 @@ describe.each([['win32'], ['posix']])('removeOverlappingRoots on %s', (platform)
   const p = (filePath: string): string =>
     platform === 'win32' ? filePath.replace(/\//g, '\\').replace(/^\\/, 'C:\\') : filePath;
 
-  let removeOverlappingRoots;
+  let removeOverlappingRoots: typeof import('../removeOverlappingRoots').default;
 
   beforeEach(() => {
     jest.resetModules();
-    mockPathModule = jest.requireActual<any>('path')[platform];
+    mockPathModule =
+      jest.requireActual<typeof import('path')>('path')[platform as 'win32' | 'posix'];
     removeOverlappingRoots = require('../removeOverlappingRoots').default;
   });
 

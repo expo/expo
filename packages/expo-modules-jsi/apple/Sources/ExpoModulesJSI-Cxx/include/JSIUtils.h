@@ -86,6 +86,10 @@ inline const jsi::Value valueFromError(jsi::IRuntime &runtime, const jsi::JSErro
   return jsi::Value(runtime, error.value());
 }
 
+inline jsi::JSError errorFromValue(jsi::IRuntime &runtime, jsi::Value value) {
+  return jsi::JSError(runtime, std::move(value));
+}
+
 inline std::shared_ptr<const jsi::Buffer> makeSharedStringBuffer(const std::string &source) noexcept {
   return std::make_shared<jsi::StringBuffer>(source);
 }
@@ -120,6 +124,16 @@ inline bool isHostObject(jsi::IRuntime &runtime, const jsi::Object &object) {
 }
 
 jsi::Runtime* createHermesRuntime();
+
+/**
+ Destroys a `jsi::Runtime` created by `createHermesRuntime()`. Since the runtime is imported into
+ Swift as an immortal reference type (no ARC-managed lifetime), Swift can't `delete` it directly, so
+ the standalone `JavaScriptRuntime` calls this from its `deinit` to free the runtime it owns. Must
+ not be called on a runtime owned elsewhere (e.g. the React Native-provided one).
+ */
+inline void destroyRuntime(jsi::Runtime &runtime) {
+  delete &runtime;
+}
 
 inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
   return expo::CppError::tryCatch(runtime, ^{
@@ -261,12 +275,21 @@ inline void unsetNativeState(jsi::IRuntime &runtime, const jsi::Object &object) 
  has no native state, or its native state isn't an `expo::NativeState` subclass.
  Adopted native states (those constructed in external C++ code) are recovered too
  as long as their concrete type derives from `expo::NativeState`.
+
+ Hot path: avoids `Object::hasNativeState<expo::NativeState>` (which internally
+ fetches the native state and runs `dynamic_pointer_cast`) followed by another
+ `getNativeState<expo::NativeState>`. Instead, do a single bool check via the
+ specialized `hasNativeState<jsi::NativeState>`, fetch once, and dynamic-cast inline.
+ The pointee survives the temporary shared_ptr's destruction because JSI's slot
+ retains it.
  */
 inline expo::NativeState *_Nullable getExpoNativeState(jsi::IRuntime &runtime, const jsi::Object &object) {
-  if (!object.hasNativeState<expo::NativeState>(runtime)) {
+  if (!object.hasNativeState<jsi::NativeState>(runtime)) {
     return nullptr;
   }
-  return object.getNativeState<expo::NativeState>(runtime).get();
+  return dynamic_cast<expo::NativeState *>(
+    object.getNativeState<jsi::NativeState>(runtime).get()
+  );
 }
 
 /**

@@ -7,8 +7,12 @@
 ### 🎉 New features
 
 - [iOS] Add hostProvidedFrameworks option to skip Frameworks provided by the host app ([#46355](https://github.com/expo/expo/pull/46355) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [android] Add support for publishing a single fused AAR via AGP Fused Library ([#47921](https://github.com/expo/expo/pull/45878) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
+
+- [iOS] Fix `build:ios` with precompiled modules: locate frameworks under `XCFrameworkIntermediates/`, bundle `ExpoModulesJSI`, copy SPM deps as real flavor-matched directories instead of symlinks, and fail fast on duplicate or colliding target names. ([#48065](https://github.com/expo/expo/pull/48065) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [android] Fix `brownfield.fused.strip-packages` corrupting the generated `ExpoModulesPackageList.kt` when given a broad prefix (e.g. `expo.modules`). ([@gabrieldonadel](https://github.com/gabrieldonadel)) ([#48118](https://github.com/expo/expo/pull/48118) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

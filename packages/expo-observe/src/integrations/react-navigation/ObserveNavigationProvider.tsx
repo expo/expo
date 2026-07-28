@@ -1,14 +1,13 @@
-import type { NavigationContainerRef } from '@react-navigation/native';
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { attachActionListener } from './actionListener';
 import { ObserveReactNavigationIntegrationContext } from './context';
 import { createStateChangeHandler } from './handleStateChange';
 import { isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
 import { createReactNavigationIntegrationStorage } from './storage';
-import type { NavigationStateLike } from './types';
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
+import type { NavigationContainerRefLike, NavigationStateLike } from './types';
 
 export interface ObserveNavigationProviderProps {
   /**
@@ -17,7 +16,7 @@ export interface ObserveNavigationProviderProps {
    * and pass the same ref to the container, for example
    * `<Navigation ref={navigationRef} />`.
    */
-  navigationRef: NavigationContainerRef<ReactNavigation.RootParamList>;
+  navigationRef: NavigationContainerRefLike;
   children: ReactNode;
 }
 

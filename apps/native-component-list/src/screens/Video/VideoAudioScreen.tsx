@@ -4,10 +4,10 @@ import { useVideoPlayer, VideoView, AudioMixingMode } from 'expo-video';
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
-import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
-import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import TitledSwitch from '../../components/TitledSwitch';
+import { bigBuckBunnySource, elephantsDreamSource } from './videoSources';
+import { styles } from './videoStyles';
 
 const mixingModes: AudioMixingMode[] = ['mixWithOthers', 'duckOthers', 'auto', 'doNotMix'];
 export default function VideoNowPlayingScreen() {

@@ -845,10 +845,10 @@ index 447b4188985..58d21796e1d 100644
      </resources>
  </document>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index f740040e7be..c3158e3fb9b 100644
+index f740040e7be..1a7b1969798 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -4,12 +4,20 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
+@@ -4,12 +4,23 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
  require 'json'
  podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
  
@@ -868,13 +868,16 @@ index f740040e7be..c3158e3fb9b 100644
 +ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 +ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 +ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
-+ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
-+ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
++ENV['RCT_HERMES_V1_ENABLED'] ||= '0' if podfile_properties['expo.useHermesV1'] == 'false'
++# An explicit `ios.usePrecompiledModules: false` must win even when the env var is already set
++# (e.g. EXPO_USE_PRECOMPILED_MODULES exported by EAS Build), so force-disable here before the default.
++ENV['EXPO_USE_PRECOMPILED_MODULES'] = '0' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == 'false'
++ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
  
  prepare_react_native_project!
  
-@@ -23,7 +31,8 @@ target 'HelloWorld' do
+@@ -23,7 +34,8 @@ target 'HelloWorld' do
        'node',
        '--no-warnings',
        '--eval',
@@ -884,7 +887,7 @@ index f740040e7be..c3158e3fb9b 100644
        'react-native-config',
        '--json',
        '--platform',
-@@ -49,18 +58,7 @@ target 'HelloWorld' do
+@@ -49,18 +61,7 @@ target 'HelloWorld' do
        installer,
        config[:reactNativePath],
        :mac_catalyst_enabled => false,
@@ -905,7 +908,7 @@ index f740040e7be..c3158e3fb9b 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index b51159163bf..6188f97c149 100644
+index b51159163bf..3f727f1b609 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
@@ -913,7 +916,7 @@ index b51159163bf..6188f97c149 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
 -  "version": "52.0.79",
-+  "version": "56.0.16",
++  "version": "56.0.26",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -925,7 +928,7 @@ index b51159163bf..6188f97c149 100644
 -    "expo-status-bar": "~2.0.1",
 -    "react": "18.3.1",
 -    "react-native": "0.76.9"
-+    "expo": "~56.0.2",
++    "expo": "~56.0.12",
 +    "expo-status-bar": "~56.0.4",
 +    "react": "19.2.3",
 +    "react-native": "0.85.3"

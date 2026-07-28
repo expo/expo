@@ -85,6 +85,9 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 📦 Install node modules
         run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 📱 Run instrumented unit tests
         timeout-minutes: 80
         uses: ./.github/actions/use-android-emulator

@@ -30,6 +30,7 @@ export type WidgetConfig = {
     targetCellWidth?: number;
     targetCellHeight?: number;
     resizeMode?: 'none' | 'horizontal' | 'vertical' | 'both';
+    initialLayout?: string;
   } | null;
 };
 
@@ -51,6 +52,7 @@ export type WidgetParameterBoolean = {
 export type WidgetParameterEnum = {
   title: string;
   type: 'enum';
+  dynamic?: boolean;
   values: {
     name: string;
     value: string;

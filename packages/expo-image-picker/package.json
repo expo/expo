@@ -2,37 +2,38 @@
   "name": "expo-image-picker",
   "version": "56.0.14",
   "description": "Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.",
-  "main": "src/ImagePicker.ts",
-  "types": "build/ImagePicker.d.ts",
-  "sideEffects": false,
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
-    "react-native",
     "expo",
     "image",
+    "image-picker",
     "picker",
-    "image-picker"
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/imagepicker/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-image-picker"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/imagepicker/",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "sideEffects": false,
+  "main": "src/ImagePicker.ts",
+  "types": "build/ImagePicker.d.ts",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
     "expo-image-loader": "workspace:~56.0.3"
@@ -40,6 +41,7 @@
   "devDependencies": {
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "expo": "workspace:*",
     "expo-module-scripts": "workspace:*"

@@ -2,8 +2,8 @@ import type { ExpoConfig } from '@expo/config';
 import { modifyConfigAsync } from '@expo/config';
 import chalk from 'chalk';
 
-import { SilentError } from './errors';
 import * as Log from '../log';
+import { SilentError } from './errors';
 
 /** Wraps `[@expo/config] modifyConfigAsync()` and adds additional logging. */
 export async function attemptModification(

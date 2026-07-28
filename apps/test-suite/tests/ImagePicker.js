@@ -2,9 +2,9 @@ import { isDevice } from 'expo-device';
 import * as ImagePicker from 'expo-image-picker';
 import { Platform } from 'react-native';
 
-import { alertAndWaitForResponse } from './helpers';
 import * as TestUtils from '../TestUtils';
 import { isDeviceFarm } from '../utils/Environment';
+import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'ImagePicker';
 

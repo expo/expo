@@ -7,14 +7,14 @@ import { FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'rea
 
 import { useTheme } from '../../common/ThemeProvider';
 import { getTestModules, Module } from '../TestModules';
+import FooterBar from '../components/FooterBar';
+import PlatformTouchable from '../components/PlatformTouchable';
+import { routeNames } from '../constants/routeNames';
 import {
   createQueryString,
   getScreenIdForLinking,
   getSelectedTestNames,
 } from './getScreenIdForLinking';
-import FooterBar from '../components/FooterBar';
-import PlatformTouchable from '../components/PlatformTouchable';
-import { routeNames } from '../constants/routeNames';
 
 const supportsGlass = isLiquidGlassAvailable();
 const SELECTION_STORAGE_KEY = 'test-suite:selected-modules';

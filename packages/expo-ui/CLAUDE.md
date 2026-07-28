@@ -47,7 +47,7 @@ For every component added, create example screens in NCL (native-component-list)
 
 ## Before committing
 
-1. Run `pnpm build` in the package directory — the `build/` output must be committed alongside source changes. CI will fail otherwise.
+1. Run `pnpm build` in the package directory (or `et check-packages @expo/ui`) to confirm it compiles. The `build/` output is gitignored.
 2. Run `pnpm lint --max-warnings 0`.
 3. Add a changelog entry to `CHANGELOG.md` under the "Unpublished" section.
 4. When adding a new component, add documentation for it. When adding a new feature to an existing component, update its documentation accordingly. Docs are MDX files in `docs/pages/versions/unversioned/sdk/ui/swift-ui/` and `docs/pages/versions/unversioned/sdk/ui/jetpack-compose/`.

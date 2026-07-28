@@ -42,11 +42,15 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
       }
       let validatedBody = validateEventBody(options?.body)
       let sanitized = sanitizeLogEventAttributes(options?.attributes)
+      let attributes = withDisplayNameAttribute(
+        sanitized.attributes,
+        displayName: validateDisplayName(options?.displayName)
+      )
       // Globals merge happens in `LogRow.from` so every persistence path picks them up.
       let record = LogRecord(
         name: validatedName,
         body: validatedBody,
-        attributes: sanitized.attributes,
+        attributes: attributes,
         droppedAttributesCount: sanitized.droppedCount,
         severity: options?.severity ?? .info
       )
@@ -131,6 +135,23 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
 
       AsyncFunction("addMetric") { (session: Session, input: SessionMetricInput) in
         try await AppMetricsActor.isolated { try session.addMetric(input) }.value
+      }
+    }
+
+    // Records an unhandled JavaScript error captured by the JS-side `global.ErrorUtils` handler as a
+    // log event. The JS layer owns capture (and chaining to the previous handler).
+    //
+    // A fatal error terminates the process right after this returns, so we can't let the async actor
+    // write race the shutdown. We write it to disk synchronously here (on the JS thread, no actor/DB)
+    // and ingest it on the next launch. Non-fatal errors aren't racing termination, so they go through
+    // the normal async log path.
+    Function("reportError") { (report: ErrorReport) in
+      if report.isFatal {
+        PendingErrorStore.write(report.toPendingError(sessionId: AppMetrics.mainSession.id))
+      } else {
+        AppMetricsActor.isolated {
+          AppMetrics.mainSession.receiveLog(report.toLogRecord())
+        }
       }
     }
 

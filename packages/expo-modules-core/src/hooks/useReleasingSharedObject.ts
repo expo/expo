@@ -2,8 +2,8 @@
 
 import type { DependencyList } from 'react';
 
-import { useReleasingSharedObjectWithLifecycle } from './useReleasingSharedObjectWithLifecycle';
 import type { SharedObject } from '../ts-declarations/SharedObject';
+import { useReleasingSharedObjectWithLifecycle } from './useReleasingSharedObjectWithLifecycle';
 
 /**
  * Returns a shared object, which is automatically cleaned up when the component is unmounted.

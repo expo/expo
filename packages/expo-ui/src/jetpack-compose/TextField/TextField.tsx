@@ -1,14 +1,14 @@
 import { requireNativeView } from 'expo';
 import type { ColorValue } from 'react-native';
 
+import { type ObservableState } from '../../State';
+import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
+import { Slot } from '../SlotView';
 import {
   type CommonNativeTextFieldProps,
   type CommonTextFieldProperties,
   useCommonTextFieldProps,
 } from './shared';
-import { type ObservableState } from '../../State';
-import { parseJSXShape, type ShapeJSXElement, type ShapeRecordProps } from '../Shape';
-import { Slot } from '../SlotView';
 
 // region Types
 
@@ -62,7 +62,7 @@ export type TextFieldColors = {
 };
 
 // Material props inlined per variant (not a shared named base) so docs render them directly.
-export type TextFieldProps = CommonTextFieldProperties & {
+export interface TextFieldProps extends CommonTextFieldProperties {
   /** @default false */
   isError?: boolean;
   /**
@@ -72,9 +72,9 @@ export type TextFieldProps = CommonTextFieldProperties & {
    */
   shape?: ShapeJSXElement;
   colors?: TextFieldColors;
-};
+}
 
-export type OutlinedTextFieldProps = CommonTextFieldProperties & {
+export interface OutlinedTextFieldProps extends CommonTextFieldProperties {
   /** @default false */
   isError?: boolean;
   /**
@@ -84,7 +84,7 @@ export type OutlinedTextFieldProps = CommonTextFieldProperties & {
    */
   shape?: ShapeJSXElement;
   colors?: TextFieldColors;
-};
+}
 
 // endregion Types
 

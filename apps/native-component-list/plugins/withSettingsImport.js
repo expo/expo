@@ -1,4 +1,4 @@
-const { withSettingsGradle } = require('@expo/config-plugins');
+const { withSettingsGradle } = require('expo/config-plugins');
 
 const withSettingsImport = (config, { packageName, packagePath }) => {
   return withSettingsGradle(config, (config) => {

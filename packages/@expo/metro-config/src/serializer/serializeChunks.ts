@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { MetroConfig, AssetData } from '@expo/metro/metro';
+import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import type {
   MixedOutput,
   Module,
@@ -13,10 +14,11 @@ import type {
 } from '@expo/metro/metro/DeltaBundler/types';
 import bundleToString from '@expo/metro/metro/lib/bundleToString';
 import { isResolvedDependency } from '@expo/metro/metro/lib/isResolvedDependency';
-import type { ConfigT, SerializerConfigT } from '@expo/metro/metro-config';
 import assert from 'assert';
 import path from 'path';
 
+import getMetroAssets from '../transform-worker/getAssets';
+import { toPosixPath } from '../utils/filePath';
 import { precomputeChunkFilenames } from './computeChunkFilenames';
 import { stringToUUID } from './debugId';
 import { getExportPathForDependencyWithOptions } from './exportPath';
@@ -25,8 +27,6 @@ import { getCssSerialAssets } from './getCssDeps';
 import type { SerialAsset } from './serializerAssets';
 import { appendDebugIdToSourceMap, sourceMapString } from './sourceMap';
 import type { SerializerConfigOptions } from './withExpoSerializers';
-import getMetroAssets from '../transform-worker/getAssets';
-import { toPosixPath } from '../utils/filePath';
 
 // Lazy-loaded to avoid pulling in metro-source-map at startup
 let _buildHermesBundleAsync: typeof import('./exportHermes').buildHermesBundleAsync;

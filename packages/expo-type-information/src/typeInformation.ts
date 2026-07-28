@@ -54,6 +54,7 @@ export type EnumCase = string;
  */
 export type EnumType = {
   name: string;
+  stringBacked: boolean;
   cases: EnumCase[];
 };
 
@@ -171,6 +172,7 @@ export type FunctionDeclaration = {
   returnType: Type;
   arguments: Argument[];
   parameters: Type[];
+  isStatic: boolean;
 } & DefinitionOffset;
 
 /**
@@ -342,7 +344,7 @@ export function deserializeTypeInformation({
 
 /**
  * Defines the level of type inference to apply when extracting type information.
- * > **Note:** In case where type inference is on, it may take more then twice the time to compute the type information.
+ * > **Note:** In case where type inference is on, it may take more than twice the time to compute the type information.
  */
 export enum TypeInferenceOption {
   /** No type inference will be performed. */

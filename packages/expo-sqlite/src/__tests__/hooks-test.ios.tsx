@@ -22,12 +22,9 @@ describe(useSQLiteContext, () => {
       <SQLiteProvider databaseName=":memory:">{children}</SQLiteProvider>
     );
     const { result } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    await waitFor(() => {
+      expect(result.current).toHaveProperty('execAsync');
     });
-    expect(result.current).toHaveProperty('execAsync');
     expect(result.current).toHaveProperty('runAsync');
   });
 
@@ -60,6 +57,8 @@ describe(useSQLiteContext, () => {
     rerender(<SQLiteProviderWithView databaseName="test.db" />);
     expect(openDatabaseSpy).toHaveBeenCalledTimes(3);
 
+    // Flush the providers' deferred open/state updates so they settle inside act().
+    await act(async () => {});
     openDatabaseSpy.mockRestore();
   });
 
@@ -68,10 +67,8 @@ describe(useSQLiteContext, () => {
       <SQLiteProvider databaseName=":memory:">{children}</SQLiteProvider>
     );
     const { result, rerender } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    await waitFor(() => {
+      expect(result.current).toHaveProperty('execAsync');
     });
     const firstResult = result.current;
     rerender({});
@@ -86,12 +83,9 @@ describe(useSQLiteContext, () => {
       </SQLiteProvider>
     );
     const { result } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    await waitFor(() => {
+      expect(mockonInit).toHaveBeenCalled();
     });
-    expect(mockonInit).toHaveBeenCalled();
     expect(mockonInit.mock.calls[0][0]).toBe(result.current);
   });
 
@@ -111,17 +105,14 @@ describe(useSQLiteContext, () => {
         </SQLiteProvider>
       </React.Suspense>
     );
-    const { result } = renderHook(() => useSQLiteContext(), { wrapper });
+    renderHook(() => useSQLiteContext(), { wrapper });
 
     expect(screen.queryByText(loadingText)).not.toBeNull();
 
     // Ensure that the loading fallback is removed after the database is ready
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    await waitFor(() => {
+      expect(screen.queryByText(loadingText)).toBeNull();
     });
-    expect(screen.queryByText(loadingText)).toBeNull();
   }, 10000);
 
   it('should call onError from SQLiteProvider if failed to open database', async () => {
@@ -154,13 +145,10 @@ describe(useSQLiteContext, () => {
         </React.Suspense>
       </ErrorBoundary>
     );
-    const { result } = renderHook(() => useSQLiteContext(), { wrapper });
-    await act(async () => {
-      await waitFor(() => {
-        expect(result).not.toBeNull();
-      });
+    renderHook(() => useSQLiteContext(), { wrapper });
+    await waitFor(() => {
+      expect(screen.queryByText(errorText)).not.toBeNull();
     });
-    expect(screen.queryByText(errorText)).not.toBeNull();
   });
 
   it('should throw when using `onError` and `useSuspense` together', async () => {

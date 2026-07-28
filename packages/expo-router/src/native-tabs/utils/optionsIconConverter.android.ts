@@ -1,10 +1,10 @@
 import type { PlatformIconAndroid } from 'react-native-screens';
 
+import type { NativeTabsTriggerIconProps } from '../common/elements';
+import type { NativeTabOptions } from '../types';
 import type { AwaitedIcon } from './icon';
 import { convertMaterialIconNameToImageSource } from './materialIconConverter';
 import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
-import type { NativeTabsTriggerIconProps } from '../common/elements';
-import type { NativeTabOptions } from '../types';
 
 export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTriggerIconProps) {
   if ('drawable' in props && props.drawable) {

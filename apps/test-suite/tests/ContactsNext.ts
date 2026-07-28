@@ -1,4 +1,3 @@
-import { fetch } from 'expo/fetch';
 import {
   Contact,
   NonGregorianCalendar,
@@ -10,6 +9,7 @@ import {
   requestPermissionsAsync,
 } from 'expo-contacts';
 import { Paths, File } from 'expo-file-system';
+import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 function timeoutWrapper(fn: () => void, time: number): Promise<void> {

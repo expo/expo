@@ -31,13 +31,13 @@ describe(setGoogleMapsApiKey, () => {
         (e) => e.$['android:name'] === 'com.google.android.geo.API_KEY'
       );
       expect(apiKeyItem).toHaveLength(1);
-      expect(apiKeyItem[0].$['android:value']).toMatch('MY-API-KEY');
+      expect(apiKeyItem[0]!.$['android:value']!).toMatch('MY-API-KEY');
 
       const usesLibraryItem = mainApplication['uses-library']!.filter(
         (e) => e.$['android:name'] === 'org.apache.http.legacy'
       );
       expect(usesLibraryItem).toHaveLength(1);
-      expect(usesLibraryItem[0].$['android:required']).toBe(false);
+      expect(usesLibraryItem[0]!.$['android:required']!).toBe(false);
     }
     function isRemoved(androidManifest: AndroidManifest) {
       const mainApplication = getMainApplicationOrThrow(androidManifest);

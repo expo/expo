@@ -1,5 +1,11 @@
-import { AudioSource, useAudioPlaylist, useAudioPlaylistStatus } from 'expo-audio';
-import React, { useState } from 'react';
+import {
+  AudioLockScreenOptions,
+  AudioSource,
+  setAudioModeAsync,
+  useAudioPlaylist,
+  useAudioPlaylistStatus,
+} from 'expo-audio';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
 
 import { BodyText } from '../../components/BodyText';
@@ -21,6 +27,11 @@ const INITIAL_SOURCES: AudioSource[] = [
 const ADDITIONAL_SOURCES: AudioSource[] = [
   { uri: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3', name: 'Song 4' },
   { uri: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3', name: 'Song 5' },
+];
+
+const ARTWORK_URLS = [
+  'https://images.unsplash.com/photo-1549138144-42ff3cdd2bf8?q=80&w=3504&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
+  'https://images.unsplash.com/photo-1549228167-511375f69159?q=80&w=3676&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
 ];
 
 function getTrackName(uri: string): string {
@@ -56,6 +67,13 @@ function Button({
 
 export default function AudioPlaylistScreen() {
   const [addTrackIndex, setAddTrackIndex] = useState(0);
+  const [lockScreenEnabled, setLockScreenEnabled] = useState(false);
+  const [lockScreenOptions, setLockScreenOptions] = useState<AudioLockScreenOptions>({
+    showNextTrack: true,
+    showPreviousTrack: true,
+    showSeekBackward: false,
+    showSeekForward: false,
+  });
 
   const playlist = useAudioPlaylist({
     sources: INITIAL_SOURCES,
@@ -70,6 +88,33 @@ export default function AudioPlaylistScreen() {
     ? (currentSource.name ?? getTrackName(currentSource.uri ?? ''))
     : 'No track';
 
+  useEffect(() => {
+    setAudioModeAsync({
+      shouldPlayInBackground: true,
+      interruptionMode: 'doNotMix',
+      playsInSilentMode: true,
+      allowsRecording: false,
+    }).catch((error: unknown) =>
+      console.warn(`Error calling setAudioModeAsync: ${JSON.stringify(error)}`)
+    );
+  }, []);
+
+  const getLockScreenMetadata = useCallback(
+    () => ({
+      title: currentTrackName,
+      artist: 'Expo Audio Playlist',
+      albumTitle: `Track ${status.currentIndex + 1} of ${status.trackCount}`,
+      artworkUrl: ARTWORK_URLS[status.currentIndex % ARTWORK_URLS.length],
+    }),
+    [currentTrackName, status.currentIndex, status.trackCount]
+  );
+
+  useEffect(() => {
+    if (lockScreenEnabled) {
+      playlist.updateLockScreenMetadata(getLockScreenMetadata());
+    }
+  }, [getLockScreenMetadata, lockScreenEnabled, playlist]);
+
   const handleAddTrack = () => {
     const sourceToAdd = ADDITIONAL_SOURCES[addTrackIndex % ADDITIONAL_SOURCES.length];
     playlist.add(sourceToAdd);
@@ -77,7 +122,35 @@ export default function AudioPlaylistScreen() {
   };
 
   const handleClear = () => {
+    if (lockScreenEnabled) {
+      playlist.clearLockScreenControls();
+      setLockScreenEnabled(false);
+    }
     playlist.clear();
+  };
+
+  const toggleLockScreenControls = () => {
+    if (lockScreenEnabled) {
+      playlist.clearLockScreenControls();
+      setLockScreenEnabled(false);
+    } else {
+      playlist.setActiveForLockScreen(true, getLockScreenMetadata(), lockScreenOptions);
+      setLockScreenEnabled(true);
+    }
+  };
+
+  const updateLockScreenOptions = (nextOptions: AudioLockScreenOptions) => {
+    setLockScreenOptions(nextOptions);
+    if (lockScreenEnabled) {
+      playlist.setActiveForLockScreen(true, getLockScreenMetadata(), nextOptions);
+    }
+  };
+
+  const toggleLockScreenOption = (key: keyof AudioLockScreenOptions) => {
+    updateLockScreenOptions({
+      ...lockScreenOptions,
+      [key]: !lockScreenOptions[key],
+    });
   };
 
   return (
@@ -201,6 +274,45 @@ export default function AudioPlaylistScreen() {
       <View style={styles.controls}>
         <Button title="Add Track" onPress={handleAddTrack} />
         <Button title="Clear" onPress={handleClear} />
+      </View>
+
+      <HeadingText>Lock Screen Controls</HeadingText>
+      <View style={styles.lockScreenContainer}>
+        <Button
+          title={`${lockScreenEnabled ? 'Disable' : 'Enable'} Controls`}
+          onPress={toggleLockScreenControls}
+          disabled={sources.length === 0}
+        />
+        <Button
+          title="Update Metadata"
+          onPress={() => playlist.updateLockScreenMetadata(getLockScreenMetadata())}
+          disabled={!lockScreenEnabled}
+        />
+        <View style={styles.lockScreenOptions}>
+          <Button
+            title={`Back ${lockScreenOptions.showSeekBackward ? 'On' : 'Off'}`}
+            onPress={() => toggleLockScreenOption('showSeekBackward')}
+          />
+          <Button
+            title={`Forward ${lockScreenOptions.showSeekForward ? 'On' : 'Off'}`}
+            onPress={() => toggleLockScreenOption('showSeekForward')}
+          />
+          <Button
+            title={`Prev Track ${lockScreenOptions.showPreviousTrack ? 'On' : 'Off'}`}
+            onPress={() => toggleLockScreenOption('showPreviousTrack')}
+          />
+          <Button
+            title={`Next Track ${lockScreenOptions.showNextTrack ? 'On' : 'Off'}`}
+            onPress={() => toggleLockScreenOption('showNextTrack')}
+          />
+          <Button
+            title={`Live ${lockScreenOptions.isLiveStream ? 'On' : 'Off'}`}
+            onPress={() => toggleLockScreenOption('isLiveStream')}
+          />
+        </View>
+        <BodyText color="secondary" style={styles.lockScreenStatus}>
+          {lockScreenEnabled ? 'Playlist is active for lock screen controls' : 'Controls disabled'}
+        </BodyText>
       </View>
     </ScrollView>
   );
@@ -327,5 +439,19 @@ const styles = StyleSheet.create({
   statusValue: {
     fontSize: 14,
     fontWeight: '600',
+  },
+  lockScreenContainer: {
+    gap: 10,
+    marginBottom: 20,
+  },
+  lockScreenOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  lockScreenStatus: {
+    textAlign: 'center',
+    fontSize: 12,
   },
 });

@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
+import type { Feature } from '../features';
+import type { Platform } from '../prompts';
 import {
   buildAppSnippets,
   buildModuleSnippets,
@@ -9,9 +11,10 @@ import {
   buildWebModuleSnippets,
   copyFileSnippets,
 } from '../snippets';
+import type { SubstitutionData } from '../types';
 
 // Minimal mock data matching SubstitutionData shape
-const mockData = {
+const mockData: SubstitutionData = {
   project: {
     slug: 'my-module',
     name: 'MyModule',
@@ -172,7 +175,7 @@ describe('buildAppSnippets', () => {
   it('does NOT include onTap prop when only View is selected', async () => {
     const dataViewOnly = {
       ...mockData,
-      project: { ...mockData.project, features: ['View'] },
+      project: { ...mockData.project, features: ['View'] as Feature[] },
     };
     const result = await buildAppSnippets(SNIPPETS_DIR, ['View'], dataViewOnly, 'jsx');
     expect(result).not.toContain('onTap');
@@ -204,7 +207,7 @@ describe('copyFileSnippets', () => {
     const tmpDir = await fs.promises.mkdtemp(path.join(os.tmpdir(), 'snippets-test-'));
     const dataWithoutApple = {
       ...mockData,
-      project: { ...mockData.project, platforms: ['android'] },
+      project: { ...mockData.project, platforms: ['android'] as Platform[] },
     };
     try {
       await copyFileSnippets(SNIPPETS_DIR, ['View'], dataWithoutApple, tmpDir);

@@ -1,6 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
-import { useEvent } from 'expo';
-import { Platform } from 'expo-modules-core';
+import { Platform, useEvent } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';

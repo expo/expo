@@ -79,6 +79,7 @@ describe('openAsync', () => {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
+      getRedirectUrl: jest.fn(),
     });
     manager._getAppIdResolver = jest.fn(
       () =>
@@ -106,6 +107,7 @@ describe('openAsync', () => {
       getCustomRuntimeUrl,
       getDevServerUrl: jest.fn(),
       getExpoGoUrl: jest.fn(),
+      getRedirectUrl: jest.fn(),
     });
 
     manager._getAppIdResolver = jest.fn(

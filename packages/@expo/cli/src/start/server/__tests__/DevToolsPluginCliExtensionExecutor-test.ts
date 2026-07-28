@@ -227,15 +227,15 @@ const executePluginCommandAsync = async (params: {
     spawn:
       spawnFunc ??
       jest.fn().mockReturnValue({
-        on: (_evt, listener) => {
+        on: (_evt: string, listener: (exitCode: number) => void) => {
           closeListeneres.push((exitCode: number) => {
             listener(exitCode);
-            resolver();
+            resolver!();
           });
         },
         kill,
-        stdout: { on: (t) => (log += t) },
-        stderr: { on: (t) => (err += t) },
+        stdout: { on: (t: string) => (log += t) },
+        stderr: { on: (t: string) => (err += t) },
       }),
   };
   jest.doMock('child_process', () => mock);

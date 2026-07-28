@@ -371,7 +371,6 @@ it(`verifies calendar trigger handling`, async () => {
     input.identifier,
     input.content,
     {
-      type: 'calendar',
       repeats: false,
       ...input.trigger,
     }
@@ -388,7 +387,6 @@ it(`verifies calendar trigger handling`, async () => {
     input.identifier,
     input.content,
     {
-      type: 'calendar',
       repeats: false,
       ...input.trigger,
       second: 10,
@@ -407,7 +405,6 @@ it(`verifies calendar trigger handling`, async () => {
     input.identifier,
     input.content,
     {
-      type: 'calendar',
       repeats: true,
       ...input.trigger,
       second: 10,

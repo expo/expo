@@ -1,5 +1,6 @@
 import commander from 'commander';
 
+import { serializeTypeInformation } from '../typeInformation';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -8,7 +9,6 @@ import {
   TypeInformationCommandCommonAllArguments,
   writeStringToFileOrPrintToConsole,
 } from './commandUtils';
-import { serializeTypeInformation } from '../typeInformation';
 
 export function typeInformationCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('type-information'))

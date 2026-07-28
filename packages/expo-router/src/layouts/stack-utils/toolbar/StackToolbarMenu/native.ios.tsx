@@ -2,9 +2,9 @@
 import { useId } from 'react';
 import { StyleSheet } from 'react-native';
 
-import type { NativeToolbarMenuProps } from './types';
 import { LinkMenuAction } from '../../../../link/elements';
 import { NativeLinkPreviewAction } from '../../../../link/preview/native';
+import type { NativeToolbarMenuProps } from './types';
 
 /**
  * Native toolbar menu component for bottom toolbar.

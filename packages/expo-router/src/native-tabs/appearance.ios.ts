@@ -5,13 +5,13 @@ import type {
   TabsScreenItemStateAppearanceIOS,
 } from 'react-native-screens';
 
+import { convertFontWeightToStringFontWeight } from '../utils/style';
 import {
   SUPPORTED_BLUR_EFFECTS,
   type NativeTabOptions,
   type NativeTabsBlurEffect,
   type NativeTabsLabelStyle,
 } from './types';
-import { convertFontWeightToStringFontWeight } from '../utils/style';
 
 const supportedBlurEffectsSet = new Set<string>(SUPPORTED_BLUR_EFFECTS);
 

@@ -1,6 +1,5 @@
-import { useObserve } from 'expo-observe';
+import { ObserveInteractiveMarker } from 'expo-observe';
 import { router } from 'expo-router';
-import { useEffect } from 'react';
 import { Platform, ScrollView, StyleSheet } from 'react-native';
 
 import { Button } from '@/components/Button';
@@ -8,16 +7,17 @@ import { useTheme } from '@/utils/theme';
 
 export default function ExamplesIndex() {
   const theme = useTheme();
-  const { markInteractive } = useObserve();
-
-  useEffect(() => {
-    markInteractive();
-  }, []);
 
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: theme.background.screen }]}
       contentContainerStyle={styles.content}>
+      <ObserveInteractiveMarker />
+      <Button
+        title="Expo Image"
+        description="Oversized-image reporting: correctly sized vs too big"
+        onPress={() => router.push('/examples/expo-image')}
+      />
       <Button
         title="Nested stack"
         description="Network, heavy renders, params, nested modal"

@@ -40,7 +40,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
         <LinkBase
           href="/"
           className="flex items-center gap-3 rounded-md p-2.5 text-secondary hocus:bg-element">
-          <ArrowLeftIcon className="text-icon-secondary" />
+          <ArrowLeftIcon aria-hidden="true" className="text-icon-secondary" />
           Back
         </LinkBase>
       </div>

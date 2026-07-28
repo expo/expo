@@ -6,10 +6,10 @@ import {
 } from '@expo/ui/jetpack-compose';
 import { clip, fillMaxWidth, padding, Shapes } from '@expo/ui/jetpack-compose/modifiers';
 
-import { extractFieldSectionSlots } from './FieldSectionSlots';
-import { getFieldItemPosition, type FieldItemPosition, type FieldSectionProps } from './types';
 import { useUniversalLifecycle } from '../hooks';
 import { transformToModifiers } from '../transformStyle';
+import { extractFieldSectionSlots } from './FieldSectionSlots';
+import { getFieldItemPosition, type FieldItemPosition, type FieldSectionProps } from './types';
 
 /**
  * Android implementation of [`FieldGroup.Section`](#fieldgroupsection). Each

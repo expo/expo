@@ -22,7 +22,8 @@ describe('build number', () => {
   });
 
   it(`falls back to '1' if not provided`, () => {
-    expect(getBuildNumber({ ios: { buildNumber: null } })).toEqual('1');
+    // Verify it tolerates a `null` build number even though the type forbids it.
+    expect(getBuildNumber({ ios: { buildNumber: null as unknown as string } })).toEqual('1');
     expect(getBuildNumber({})).toEqual('1');
   });
 

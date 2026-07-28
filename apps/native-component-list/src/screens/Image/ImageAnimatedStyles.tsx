@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Animated, StyleSheet, Switch, Text, View } from 'react-native';
 
+import Button from '../../components/Button';
+import Colors from '../../constants/Colors';
 import { ImageComparisonBody } from './ImageComparisonScreen';
 import imageTests from './tests';
 import { anyAnimationDriver, jsOnlyAnimationDriver } from './tests/constants';
-import Button from '../../components/Button';
-import Colors from '../../constants/Colors';
 
 export default function ImageAnimatedStyles() {
   const targetValue = React.useRef(1);

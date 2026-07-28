@@ -1,6 +1,3 @@
-import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
-import { store } from './store';
-import type { LinkToOptions } from './types';
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
@@ -10,6 +7,9 @@ import {
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
+import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
+import { store } from './store';
+import type { LinkToOptions } from './types';
 
 export function getNavigateAction(
   baseHref: string,
@@ -36,7 +36,7 @@ export function getNavigateAction(
   href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
   href = applyRedirects(href, store.redirects) ?? undefined;
 
-  // If the href is undefined, it means that the redirect has already been handled the navigation
+  // If the href is undefined, it means that the redirect has already been handled by the navigation
   if (!href) {
     return;
   }

@@ -10,7 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.devmenu.compose.DevMenuAction
 import expo.modules.devmenu.compose.DevMenuActionHandler
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
@@ -33,7 +33,7 @@ fun ComponentsScreen(
       verticalAlignment = Alignment.CenterVertically,
       horizontalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
     ) {
-      Button(
+      UnstyledButton(
         onClick = { onAction(DevMenuAction.CloseSubScreen) },
         shape = RoundedCornerShape(NewAppTheme.borderRadius.full),
         backgroundColor = NewAppTheme.colors.background.element,

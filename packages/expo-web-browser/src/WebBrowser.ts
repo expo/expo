@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 import type { AppStateStatus, EmitterSubscription } from 'react-native';
 import { AppState, Linking, Platform, processColor } from 'react-native';
 

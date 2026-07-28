@@ -51,6 +51,10 @@ describe(getDefaultConfig, () => {
       expect.not.arrayContaining(['expo.js'])
     );
   });
+
+  it("neutralizes Metro's `useWatchman` default so the Node watcher is used by default", () => {
+    expect(getDefaultConfig(projectRoot).resolver?.useWatchman).toBeNull();
+  });
 });
 
 describe(createStableModuleIdFactory, () => {

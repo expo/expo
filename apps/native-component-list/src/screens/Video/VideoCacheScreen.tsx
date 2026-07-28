@@ -1,5 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 import {
   useVideoPlayer,
   VideoView,
@@ -11,6 +11,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ScrollView, Text, View } from 'react-native';
 
+import Button from '../../components/Button';
 import {
   bigBuckBunnySource,
   elephantsDreamSource,
@@ -18,7 +19,6 @@ import {
   forBiggerBlazesSource,
 } from './videoSources';
 import { styles } from './videoStyles';
-import Button from '../../components/Button';
 
 function enableCaching(source: VideoSource) {
   return {

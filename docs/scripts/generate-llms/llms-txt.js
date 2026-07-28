@@ -7,25 +7,38 @@ import { generateCrossLinksSection, getMarkdownUrl, toBlockquote } from './share
 import { EXPO_DESCRIPTION, PAGE_DESCRIPTION_OVERRIDES } from './transforms/descriptions.js';
 import { MISCONCEPTIONS_SECTION } from './transforms/misconceptions.js';
 import { PERFORMANCE_SECTION } from './transforms/performance.js';
-import { buildTalksSections } from './transforms/talks-section.js';
 
 const OUTPUT_DIRECTORY_NAME = 'public';
 const OUTPUT_FILENAME_LLMS_TXT = 'llms.txt';
 const TITLE = 'Expo Documentation';
 
-function generateItemMarkdown(item) {
-  return `- [${item.title}](${item.url})${item.description ? `: ${item.description}` : ''}\n`;
+function isOverviewItem(item) {
+  return item.overview === true || item.url.endsWith('/overview.md');
 }
+
+function generateItemMarkdown(item, withDescription) {
+  return `- [${item.title}](${item.url})${withDescription && item.description ? `: ${item.description}` : ''}\n`;
+}
+
+const FULLY_DESCRIBED_SECTIONS = new Set(['Configuration files']);
 
 function generateSectionMarkdown(section) {
   let content = section.title ? `## ${section.title}\n\n` : '';
 
-  content += section.items.map(generateItemMarkdown).join('');
+  const describeAll = FULLY_DESCRIBED_SECTIONS.has(section.title);
+
+  content += section.items
+    .map((item, index) =>
+      generateItemMarkdown(item, describeAll || index === 0 || isOverviewItem(item))
+    )
+    .join('');
 
   section.groups.forEach(group => {
     if (group.items.length > 0) {
       content += `\n### ${group.title}\n`;
-      content += group.items.map(generateItemMarkdown).join('');
+      content += group.items
+        .map(item => generateItemMarkdown(item, describeAll || isOverviewItem(item)))
+        .join('');
     }
   });
 
@@ -33,7 +46,9 @@ function generateSectionMarkdown(section) {
     if (subSection.title) {
       content += `\n### ${subSection.title}\n`;
     }
-    content += subSection.items.map(generateItemMarkdown).join('');
+    content += subSection.items
+      .map(item => generateItemMarkdown(item, describeAll || isOverviewItem(item)))
+      .join('');
   });
 
   return content + '\n';
@@ -132,6 +147,21 @@ function hasContent(section) {
   return section?.items?.length ?? section?.groups?.length ?? section?.sections?.length;
 }
 
+const COLLAPSED_SECTIONS = new Set(['Expo UI']);
+
+function collapseToOverviews(section) {
+  if (!COLLAPSED_SECTIONS.has(section.title)) {
+    return section;
+  }
+
+  const overviews = [...section.groups, ...section.sections]
+    .map(child => child.items[0])
+    .filter(Boolean)
+    .map(item => ({ ...item, overview: true }));
+
+  return { ...section, items: [...section.items, ...overviews], groups: [], sections: [] };
+}
+
 function processSection(node) {
   if (!node || node.type !== 'section') {
     return null;
@@ -175,12 +205,11 @@ function processSection(node) {
 
 export async function generateLlmsTxt() {
   try {
-    const docSections = Object.values({ home, general, learn, eas, reference: reference.latest })
+    const allSections = Object.values({ home, general, learn, eas, reference: reference.latest })
       .flat()
       .map(processSection)
-      .filter(Boolean);
-    const talksSections = await buildTalksSections();
-    const allSections = [...docSections, ...talksSections];
+      .filter(Boolean)
+      .map(collapseToOverviews);
 
     await fs.promises.writeFile(
       path.join(process.cwd(), OUTPUT_DIRECTORY_NAME, OUTPUT_FILENAME_LLMS_TXT),

@@ -1,5 +1,3 @@
-import type { ActionDispatchedEvent } from 'expo-router';
-
 export interface ScreenTimes {
   dispatchTime?: number;
   isAppLaunch?: boolean;
@@ -7,7 +5,7 @@ export interface ScreenTimes {
 }
 
 export interface PendingAction {
-  actionType: ActionDispatchedEvent['actionType'];
+  actionType: string;
   dispatchTime: number;
 }
 
@@ -18,7 +16,7 @@ export interface RouterIntegrationStorage {
   pendingActions: PendingAction[];
   renderedScreensIds: Set<string>;
   /**
-   * Wether the app had already recorded the first render of the screen
+   * Whether the app had already recorded the first render of the screen
    */
   hasRecordedInitialTtr: boolean;
   /**

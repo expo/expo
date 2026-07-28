@@ -1,4 +1,4 @@
-import { NativeModule, registerWebModule } from 'expo-modules-core';
+import { NativeModule, registerWebModule } from 'expo';
 
 import type { NetworkEvents, NetworkState } from './Network.types';
 import { NetworkStateType } from './Network.types';
@@ -22,13 +22,9 @@ class ExpoNetworkModule extends NativeModule<NetworkEvents> {
   }
 
   async getIpAddressAsync(): Promise<string> {
-    try {
-      const resp = await fetch('https://api.ipify.org?format=json');
-      const data = await resp.json();
-      return data.ip;
-    } catch (e) {
-      throw e;
-    }
+    const resp = await fetch('https://api.ipify.org?format=json');
+    const data = await resp.json();
+    return data.ip;
   }
   async getNetworkStateAsync(): Promise<NetworkState> {
     return getNetworkState();

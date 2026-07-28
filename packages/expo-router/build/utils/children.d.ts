@@ -1,7 +1,0 @@
-import { type JSXElementConstructor, type ReactElement, type ReactNode } from 'react';
-export declare function isChildOfType<ComponentT extends JSXElementConstructor<any>>(element: React.ReactNode, type: ComponentT): element is ReactElement<React.ComponentProps<ComponentT>, ComponentT>;
-export declare function getFirstChildOfType<ComponentT extends JSXElementConstructor<any>>(children: React.ReactNode | React.ReactNode[], type: ComponentT): ReactElement<import("react").ComponentProps<ComponentT>, ComponentT> | undefined;
-export declare function getAllChildrenOfType<ComponentT extends JSXElementConstructor<any>>(children: React.ReactNode | React.ReactNode[], type: ComponentT): ReactElement<import("react").ComponentProps<ComponentT>, ComponentT>[];
-export declare function getAllChildrenNotOfType<ComponentT extends JSXElementConstructor<any>>(children: React.ReactNode | React.ReactNode[], type: ComponentT): (string | number | bigint | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | import("react").ReactPortal | Promise<string | number | bigint | boolean | import("react").ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined>)[];
-export declare function filterAllowedChildrenElements<Components extends JSXElementConstructor<any>[]>(children: ReactNode | ReactNode[], components: Components): React.ReactElement<React.ComponentProps<Components[number]>, Components[number]>[];
-//# sourceMappingURL=children.d.ts.map

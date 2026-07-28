@@ -6,6 +6,7 @@ export const ArchiveIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement
     <svg
       viewBox="0 0 16 13"
       fill="none"
+      aria-hidden="true"
       className={mergeClasses('icon-md text-icon-default', className)}
       {...rest}>
       <path
