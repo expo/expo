@@ -13,6 +13,13 @@ const TEMPLATES = {
   'examples/restaurant/Queries/DishQuery.swift': 'dish query',
   'examples/mail/CreateDraftIntent.swift': 'mail create intent',
   'examples/mail/DeleteDraftIntent.swift': 'mail delete intent',
+  'examples/mail-visual-intelligence/AppIntentsSetup.swift': 'vi setup',
+  'examples/mail-visual-intelligence/OpenMailDraftIntent.swift': 'vi open intent',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Spotlight.swift': 'vi spotlight',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Transferable.swift':
+    'vi transferable',
+  'examples/mail-visual-intelligence/Queries/MailDraftEntityQuery+Indexed.swift':
+    'vi indexed query',
   'examples/mail/Entities/MailDraftEntity.swift': 'mail draft entity',
   'examples/mail/Entities/MailAccountEntity.swift': 'mail account entity',
   'examples/mail/Queries/MailDraftEntityQuery.swift': 'mail draft query',
@@ -126,10 +133,15 @@ describe(runInit, () => {
     expect(vol.existsSync('/project/app-intents/AppIntentsSetup.swift')).toBe(true);
     expect(vol.existsSync('/project/app-intents/IncreaseCounterIntent.swift')).toBe(false);
 
-    expect(vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8')).toContain('[]');
-    expect(vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8')).not.toContain(
-      '@available(iOS 16.0, *)'
-    );
+    // `appShortcuts` is a result builder, so an empty provider must have an empty body rather
+    // than a literal `[]`, which does not compile.
+    const minimalShortcuts = vol.readFileSync(
+      '/project/app-intents/AppShortcuts.swift',
+      'utf8'
+    ) as string;
+    expect(minimalShortcuts).not.toContain('[]');
+    expect(minimalShortcuts).not.toContain('AppShortcut(');
+    expect(minimalShortcuts).not.toContain('@available(iOS 16.0, *)');
   });
 
   it('scaffolds only the selected examples', async () => {
@@ -209,8 +221,86 @@ describe(runInit, () => {
     expect(vol.existsSync('/project/app-intents/CreateDraftIntent.swift')).toBe(true);
 
     const shortcuts = vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8') as string;
-    expect(shortcuts).toContain('[]');
+    expect(shortcuts).not.toContain('[]');
     expect(shortcuts).not.toContain('AppShortcut(');
+  });
+
+  it('adds the visual intelligence layer to the mail example when requested', async () => {
+    const templatesDir = '/pkg/templates';
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ name: 'my-app' }),
+      '/project/app.json': JSON.stringify({ expo: { name: 'my-app', slug: 'my-app' } }, null, 2),
+      ...templateFiles(templatesDir),
+    });
+
+    await runInit({
+      projectRoot: '/project',
+      directory: 'app-intents',
+      examples: ['mail'],
+      visualIntelligence: true,
+      templatesDir,
+    });
+
+    // The base mail example is still scaffolded unchanged.
+    expect(vol.existsSync('/project/app-intents/CreateDraftIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/DeleteDraftIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity.swift')).toBe(true);
+
+    // Plus the additive visual intelligence layer.
+    expect(vol.existsSync('/project/app-intents/OpenMailDraftIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity+Spotlight.swift')).toBe(
+      true
+    );
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity+Transferable.swift')).toBe(
+      true
+    );
+    expect(vol.existsSync('/project/app-intents/Queries/MailDraftEntityQuery+Indexed.swift')).toBe(
+      true
+    );
+
+    // The setup module is the variant that registers the entity kind.
+    expect(vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8')).toBe('vi setup');
+  });
+
+  it('scaffolds no visual intelligence files by default', async () => {
+    const templatesDir = '/pkg/templates';
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ name: 'my-app' }),
+      '/project/app.json': JSON.stringify({ expo: { name: 'my-app', slug: 'my-app' } }, null, 2),
+      ...templateFiles(templatesDir),
+    });
+
+    await runInit({
+      projectRoot: '/project',
+      directory: 'app-intents',
+      examples: ['mail'],
+      templatesDir,
+    });
+
+    expect(vol.existsSync('/project/app-intents/OpenMailDraftIntent.swift')).toBe(false);
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity+Spotlight.swift')).toBe(
+      false
+    );
+    expect(vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8')).toBe('setup');
+  });
+
+  it('rejects visual intelligence without the mail example', async () => {
+    const templatesDir = '/pkg/templates';
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ name: 'my-app' }),
+      '/project/app.json': JSON.stringify({ expo: { name: 'my-app', slug: 'my-app' } }, null, 2),
+      ...templateFiles(templatesDir),
+    });
+
+    await expect(
+      runInit({
+        projectRoot: '/project',
+        directory: 'app-intents',
+        examples: ['counter'],
+        visualIntelligence: true,
+        templatesDir,
+      })
+    ).rejects.toThrow(/--visual-intelligence extends the mail example/);
   });
 
   it('merges into existing experiments and plugins without duplication', async () => {

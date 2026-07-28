@@ -107,7 +107,13 @@ After installing the package, run the initializer from your project root:
 
 <Terminal cmd={['$ npx expo-app-intents init']} />
 
-This command adds the config plugin, enables inline modules for the top-level **app-intents** directory, and writes starter Swift files. Then rebuild the native project:
+This command adds the config plugin, enables inline modules for the top-level **app-intents** directory, and writes starter Swift files.
+
+Pass `--visual-intelligence` alongside the mail example to also scaffold the Spotlight layer: an `IndexedEntity` conformance and Spotlight attributes for the draft, a `Transferable` export, an open intent, and a setup module that registers the `mailDraft` entity kind so [`appEntityIdentifier()`](#appentityidentifier) can mark which draft a view represents. Everything the flag adds is a Swift extension of the base mail types, so the example itself is the same with or without it.
+
+<Terminal cmd={['$ npx expo-app-intents init --examples mail --visual-intelligence']} />
+
+Then rebuild the native project:
 
 <Terminal cmd={['$ npx expo prebuild -p ios', '$ npx expo run:ios']} />
 

@@ -13,6 +13,12 @@ export type InitOptions = {
   directory: string;
   examples: InitExample[];
   templatesDir: string;
+  /**
+   * Adds Spotlight indexing, a `Transferable` export, and an open intent on top of the mail
+   * example, and swaps in a setup module that registers the entity kind so
+   * `appEntityIdentifier()` works from JavaScript.
+   */
+  visualIntelligence?: boolean;
 };
 
 export const DEFAULT_DIRECTORY = 'app-intents';
@@ -41,6 +47,28 @@ const EXAMPLE_TEMPLATE_FILES: Record<Exclude<InitExample, 'minimal'>, string[]> 
     'examples/mail/Queries/MailAccountEntityQuery.swift',
   ],
 };
+
+/** The example that `--visual-intelligence` extends. */
+export const VISUAL_INTELLIGENCE_EXAMPLE: InitExample = 'mail';
+
+/**
+ * Added on top of the mail example by `--visual-intelligence`. These are all extensions of the
+ * base types, so the mail example itself is unchanged whether or not the flag is used.
+ */
+const VISUAL_INTELLIGENCE_TEMPLATE_FILES = [
+  'examples/mail-visual-intelligence/OpenMailDraftIntent.swift',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Spotlight.swift',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Transferable.swift',
+  'examples/mail-visual-intelligence/Queries/MailDraftEntityQuery+Indexed.swift',
+];
+
+/**
+ * The setup module has to register the entity kind and expose the Spotlight bridge, so
+ * `--visual-intelligence` scaffolds its own variant instead of the shared one.
+ */
+const SETUP_TEMPLATE_FILE = 'common/AppIntentsSetup.swift';
+const VISUAL_INTELLIGENCE_SETUP_TEMPLATE_FILE =
+  'examples/mail-visual-intelligence/AppIntentsSetup.swift';
 
 const APP_SHORTCUTS_HEADER = `import AppIntents
 
@@ -183,8 +211,11 @@ function renderAppShortcuts(examples: readonly InitExample[]): string {
   });
 
   if (blocks.length === 0) {
+    // `appShortcuts` is a result builder, so an empty provider needs an empty body. Returning a
+    // literal `[]` does not compile.
     return `${APP_SHORTCUTS_HEADER}
-    []
+    // Add an AppShortcut here to give an intent a spoken launch phrase. Intents that conform to
+    // an Apple schema domain are discovered without one.
 ${APP_SHORTCUTS_FOOTER}`;
   }
 
@@ -193,13 +224,35 @@ ${blocks.join('\n\n')}
 ${APP_SHORTCUTS_FOOTER}`;
 }
 
-function getTemplateFiles(examples: readonly InitExample[]): string[] {
-  const files = ['common/AppIntentsSetup.swift'];
+/**
+ * Throws when `--visual-intelligence` was requested without the example it extends, rather than
+ * scaffolding the flag away silently.
+ */
+export function assertVisualIntelligenceSelection(
+  examples: readonly InitExample[],
+  visualIntelligence: boolean
+): void {
+  if (visualIntelligence && !examples.includes(VISUAL_INTELLIGENCE_EXAMPLE)) {
+    throw new Error(
+      `--visual-intelligence extends the ${VISUAL_INTELLIGENCE_EXAMPLE} example with Spotlight ` +
+        `indexing and on-screen entity support, but that example was not selected. Run again with ` +
+        `--examples ${VISUAL_INTELLIGENCE_EXAMPLE} --visual-intelligence, or drop the flag.`
+    );
+  }
+}
+
+function getTemplateFiles(examples: readonly InitExample[], visualIntelligence: boolean): string[] {
+  const files = [
+    visualIntelligence ? VISUAL_INTELLIGENCE_SETUP_TEMPLATE_FILE : SETUP_TEMPLATE_FILE,
+  ];
   for (const example of examples) {
     if (example === 'minimal') {
       continue;
     }
     files.push(...EXAMPLE_TEMPLATE_FILES[example]);
+  }
+  if (visualIntelligence) {
+    files.push(...VISUAL_INTELLIGENCE_TEMPLATE_FILES);
   }
   return files;
 }
@@ -232,6 +285,8 @@ async function writeFileIfMissing(
  */
 export async function runInit(options: InitOptions): Promise<void> {
   const { projectRoot, directory, examples, templatesDir } = options;
+  const visualIntelligence = options.visualIntelligence ?? false;
+  assertVisualIntelligenceSelection(examples, visualIntelligence);
 
   const appJsonPath = path.join(projectRoot, 'app.json');
   const canUpdateAppJson = existsSync(appJsonPath);
@@ -308,7 +363,7 @@ export async function runInit(options: InitOptions): Promise<void> {
     'AppShortcuts.swift'
   );
 
-  for (const templateFile of getTemplateFiles(examples)) {
+  for (const templateFile of getTemplateFiles(examples, visualIntelligence)) {
     const destinationPath = getDestinationPath(templateFile);
     const destination = path.join(intentsDir, destinationPath);
     if (existsSync(destination)) {
@@ -324,7 +379,9 @@ export async function runInit(options: InitOptions): Promise<void> {
     console.log(`Enabled inline modules for '${directory}' in app.json`);
     console.log("Added 'expo-app-intents' to plugins");
   }
-  console.log(`Selected examples: ${examples.join(', ')}`);
+  console.log(
+    `Selected examples: ${examples.join(', ')}${visualIntelligence ? ' (+ visual intelligence)' : ''}`
+  );
   if (written.length) {
     console.log(`Created ${directory}/: ${written.join(', ')}`);
   }

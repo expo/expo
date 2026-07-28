@@ -7,6 +7,7 @@ type InitCommandOptions = {
   dir?: string;
   directory?: string;
   examples?: string[];
+  visualIntelligence?: boolean;
 };
 
 const TEMPLATES_DIRECTORY_NAME = 'templates';
@@ -38,6 +39,7 @@ async function runInitCommand(options: InitCommandOptions): Promise<void> {
     projectRoot: process.cwd(),
     directory,
     examples,
+    visualIntelligence: options.visualIntelligence ?? false,
     templatesDir:
       process.env.EXPO_APP_INTENTS_TEMPLATES_DIR ??
       path.join(__dirname, '..', '..', TEMPLATES_DIRECTORY_NAME),
@@ -56,6 +58,10 @@ program
   .option(
     '--examples <examples...>',
     'Examples to include. Use "all", or choose any of: minimal, counter, restaurant, mail.'
+  )
+  .option(
+    '--visual-intelligence',
+    'Extend the mail example with Spotlight indexing, a Transferable export, and an open intent.'
   )
   .action(runInitCommand);
 
