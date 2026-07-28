@@ -266,7 +266,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
     }
   }
 
-  func replaceCurrentSource(source: AudioSource) {
+  func replaceCurrentSource(source: AudioSource?) {
     self.source = source
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled

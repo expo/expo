@@ -22,6 +22,7 @@
 - [Android] Don't start playback when the system denies audio focus, and log a warning explaining that background playback needs an active media playback foreground service. ([#46957](https://github.com/expo/expo/pull/46957) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix playlist `currentIndex` freezing after the first auto-advance. ([#47257](https://github.com/expo/expo/pull/47257) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Create a fresh recording file each time `prepareToRecordAsync` is called, matching Android — repeated takes no longer overwrite the previous recording at the same URL. ([#48002](https://github.com/expo/expo/pull/48002) by [@idoyana](https://github.com/idoyana))
+- Fix `player.replace(null)` throwing due to a mismatch between native and TypeScript types. ([#48219](https://github.com/expo/expo/pull/48219) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 
