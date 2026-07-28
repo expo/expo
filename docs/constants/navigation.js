@@ -763,8 +763,8 @@ const archive = [
     makeSection('Workflow', [makePage('archive/classic-updates/publishing.mdx')]),
     makeSection('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.mdx')]),
   ]),
-  makeSection('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
-  makeSection('Push Notifications', [
+  makeSection('Technical specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
+  makeSection('Push notifications', [
     makePage('archive/push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
     makePage('archive/push-notifications/notification-channels.mdx'),
   ]),

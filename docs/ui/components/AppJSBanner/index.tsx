@@ -89,7 +89,7 @@ export function AppJSBanner() {
                 'dark:hocus:border-[#23257b] dark:hocus:bg-[#23257b]',
                 'hocus:border-[#7189ff] hocus:bg-[#7189ff]'
               )}>
-              Learn More
+              Learn more
             </Button>
             <Button
               size="xs"

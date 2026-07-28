@@ -80,7 +80,7 @@ const renderInheritedProps = (
   if (inheritedProps.length > 0) {
     return (
       <div className={mergeClasses('border-t border-palette-gray4 px-4 py-3')}>
-        {exposeInSidebar ? <H3>Inherited Props</H3> : <H4>Inherited Props</H4>}
+        {exposeInSidebar ? <H3>Inherited props</H3> : <H4>Inherited props</H4>}
         <UL>{inheritedProps.map(prop => renderInheritedProp(prop, sdkVersion))}</UL>
       </div>
     );

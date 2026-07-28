@@ -1988,7 +1988,7 @@ jobs:
 
 ## Apple device registration request
 
-Pause a workflow run until an iOS device enrolls for a specific [Apple Team](https://expo.fyi/apple-team) and a team member approves that enrollment on [expo.dev](https://expo.dev). Use this job to automate registering a device for [internal distribution](/build/internal-distribution/) inside EAS Workflows.
+Pause a workflow run until an iOS device enrolls for a specific [Apple team](https://expo.fyi/apple-team) and a team member approves that enrollment on [expo.dev](https://expo.dev). Use this job to automate registering a device for [internal distribution](/build/internal-distribution/) inside EAS Workflows.
 
 When the workflow reaches this job, the job and the run enter `action-required` and stay paused until the flow completes:
 
@@ -2015,7 +2015,7 @@ You can pass the following parameters into the `params` list:
 
 | Parameter             | Type   | Description                                                                                                                                                                                                                                                                                                                    |
 | --------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| apple_team_identifier | string | Optional. The Apple Team ID (for example, `ABCDE12345`). If you omit this parameter and your Expo account has exactly one Apple Team, that team is used. You must set this parameter when your account has no Apple Teams or has two or more Apple Teams. When provided, EAS resolves or creates the team from the identifier. |
+| apple_team_identifier | string | Optional. The Apple Team ID (for example, `ABCDE12345`). If you omit this parameter and your Expo account has exactly one Apple team, that team is used. You must set this parameter when your account has no Apple teams or has two or more Apple teams. When provided, EAS resolves or creates the team from the identifier. |
 
 #### Outputs
 
@@ -2320,7 +2320,7 @@ See [`jobs.<job_id>.hooks`](/eas/workflows/syntax/#jobsjob_idhooks) for the gene
 
 Here are some practical examples of using the Fingerprint with Repack jobs:
 
-<Collapsible summary="Continuous Deployment with Fingerprint and Repack">
+<Collapsible summary="Continuous deployment with Fingerprint and Repack">
 
 This workflow first generates a fingerprint and then builds or repacks the app depending on whether a compatible build for that fingerprint already exists. Finally, it runs Maestro tests.
 
