@@ -7,7 +7,7 @@ import { format } from '../../utils/XML';
 import * as XML from '../../utils/XML';
 import type { AndroidManifest } from '../Manifest';
 import { getMainApplication } from '../Manifest';
-import { readResourcesXMLAsync } from '../Resources';
+import { ensureDefaultResourceXML, readResourcesXMLAsync } from '../Resources';
 import * as Updates from '../Updates';
 
 async function getFixtureManifestAsync() {
@@ -197,7 +197,7 @@ describe('Android Updates config', () => {
       } as any;
       await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
       expect(format(stringsJSON)).toEqual(
-        '<resources>\n  <string name="expo_runtime_version">1.10</string>\n</resources>'
+        '<resources>\n  <string name="expo_runtime_version" translatable="false">1.10</string>\n</resources>'
       );
 
       const config2 = {
@@ -208,6 +208,51 @@ describe('Android Updates config', () => {
       } as any;
       await Updates.applyRuntimeVersionFromConfigAsync(config2, stringsJSON);
       expect(format(stringsJSON)).toEqual('<resources/>');
+    });
+
+    it('Marks the runtime version string non-translatable', async () => {
+      const stringsPath = '/app/android/app/src/main/res/values/strings.xml';
+      const stringsJSON = await readResourcesXMLAsync({ path: stringsPath });
+      const config = {
+        runtimeVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
+      } as any;
+      await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
+
+      const runtimeVersionString = stringsJSON.resources.string?.find(
+        (e) => e.$.name === 'expo_runtime_version'
+      );
+      expect(runtimeVersionString).toBeDefined();
+      // Without this, localization tooling (e.g. Google Play's automatic app string translation)
+      // can emit a locale-qualified copy of the runtime version, which Android prefers over the
+      // default value — devices in that locale then report a stale runtime version and stop
+      // receiving updates.
+      expect(runtimeVersionString!.$.translatable).toBe('false');
+      expect(runtimeVersionString!._).toBe('1.10');
+    });
+
+    it('Adds translatable="false" to a runtime version string written by an older plugin version', async () => {
+      const stringsJSON = ensureDefaultResourceXML({
+        resources: {
+          string: [
+            { $: { name: 'app_name' }, _: 'foo' },
+            { $: { name: 'expo_runtime_version' }, _: '1.9' },
+          ],
+        },
+      });
+      const config = {
+        runtimeVersion: '1.10',
+        modRequest: {
+          projectRoot: '/',
+        },
+      } as any;
+      await Updates.applyRuntimeVersionFromConfigAsync(config, stringsJSON);
+
+      expect(format(stringsJSON)).toEqual(
+        '<resources>\n  <string name="app_name">foo</string>\n  <string name="expo_runtime_version" translatable="false">1.10</string>\n</resources>'
+      );
     });
 
     afterAll(async () => {

@@ -766,6 +766,7 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "name": "expo_runtime_version",
+                  "translatable": "false",
                 },
                 "_": "1.0",
               },
@@ -1435,6 +1436,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
               {
                 "$": {
                   "name": "expo_runtime_version",
+                  "translatable": "false",
                 },
                 "_": "1.0",
               },
