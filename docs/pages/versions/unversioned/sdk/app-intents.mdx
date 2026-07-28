@@ -95,7 +95,9 @@ Parameterized intents use native entities. For example, the restaurant template 
 
 Schema intents, such as the mail example, are also defined in app-target Swift. Apple splits [app schema domains](https://developer.apple.com/documentation/appintents/app-schema-domains) into two groups, and the difference matters when you pick one: types conforming to a *primary* domain such as `mail`, `photos`, or `files` are discoverable by Apple Intelligence and Siri, while *Shortcuts-specific* domains such as `journal`, `books`, or `reader` only surface in the Shortcuts app.
 
-The schema intent can be discovered directly on supported iOS versions, but the template includes a shortcut-facing wrapper intent so the main `AppShortcutsProvider` can remain available on devices below iOS 18. If your app only supports iOS 18 or later for that provider, you can reference the schema intent directly and remove the wrapper.
+A schema intent needs no shortcut phrase. Conforming to the schema is what makes it discoverable: Xcode extracts the App Intents metadata at build time, and the action becomes available to both Siri and the Shortcuts app without appearing in your `AppShortcutsProvider`. The mail example therefore contributes no `AppShortcut`, and if it is the only example you scaffold, the generated provider is empty.
+
+Add an `AppShortcut` only when you want a compiled launch phrase such as "Order food in MyApp". Note that phrases cannot be added conditionally, so a provider that references an availability-gated intent has to carry the same availability. That is the one case where a plain wrapper intent is worth writing.
 
 A schema entity also has to be resolvable by the system, so its default query must be an `EntityStringQuery` or the entity must be indexed. A plain `EntityQuery` is rejected when Xcode extracts App Intents metadata.
 
@@ -192,7 +194,7 @@ export function RestaurantIntentHandler() {
 
 <Collapsible summary="Handle the mail example">
 
-The mail example adopts Apple's `mail` schema domain and dispatches `createMailDraft`. The shortcut-facing intent sends `id`, `subject`, and `body`; the schema-domain intent can also include fields such as `recipients` and `attachmentCount`.
+The mail example adopts Apple's `mail` schema domain and has no shortcut phrases, so both of its intents are reached through Siri, Apple Intelligence, or the Shortcuts app. `createMailDraft` sends `id`, `subject`, `body`, `recipients`, and `attachmentCount`. `deleteMailDrafts` sends an `ids` array, and because deleting is destructive the schema requires local device authentication and shows its own confirmation before the intent runs.
 
 ```tsx
 import { useState } from 'react';
@@ -210,17 +212,22 @@ export function MailIntentHandler() {
 
   AppIntents.useAppIntents(async pendingIntents => {
     for (const invocation of pendingIntents) {
-      if (invocation.name !== 'createMailDraft') {
+      if (invocation.name === 'createMailDraft') {
+        const draft = {
+          id: String(invocation.params.id ?? invocation.id),
+          subject: String(invocation.params.subject ?? 'No subject'),
+          body: String(invocation.params.body ?? ''),
+        };
+
+        setDrafts(current => [draft, ...current]);
+      } else if (invocation.name === 'deleteMailDrafts') {
+        const ids = new Set((invocation.params.ids as string[] | undefined) ?? []);
+
+        setDrafts(current => current.filter(draft => !ids.has(draft.id)));
+      } else {
         continue;
       }
 
-      const draft = {
-        id: String(invocation.params.id ?? invocation.id),
-        subject: String(invocation.params.subject ?? 'No subject'),
-        body: String(invocation.params.body ?? ''),
-      };
-
-      setDrafts(current => [draft, ...current]);
       await AppIntents.removePendingInvocationAsync(invocation.id);
     }
   });
