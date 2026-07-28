@@ -202,6 +202,10 @@ The preview URL is temporary and works only while the session is active. It is f
 
 ## Use Argent instead
 
+Install the Argent CLI:
+
+<Terminal cmd={['$ npm install --global @swmansion/argent']} />
+
 Start an Argent-backed session with:
 
 <Terminal
@@ -210,7 +214,16 @@ Start an Argent-backed session with:
   ]}
 />
 
-Argent uses its own connection variables and app installation commands. An Argent session does not also provision an agent-device daemon, so do not run agent-device commands against it. Follow the connection instructions printed by EAS CLI.
+Run Argent commands through `simulator:exec`, just like agent-device commands. The wrapper loads `ARGENT_TOOLS_URL` and `ARGENT_AUTH_TOKEN` from **.env.eas-simulator**, so `argent link` is not required for commands invoked this way:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:exec argent run reinstall-app --udid <udid> --bundleId com.example.app --appPath ./MyApp.app',
+    '$ npx --yes eas-cli@latest simulator:exec argent run <tool> [args...]',
+  ]}
+/>
+
+Argent uses its own tools and app installation commands. An Argent session does not also provision an agent-device daemon, so do not run agent-device commands against it.
 
 ## Stop when finished
 

@@ -79,11 +79,19 @@ Pass `--no-force` when you want EAS CLI to fail instead of replacing the local s
 
 ## `simulator:exec`
 
-`simulator:exec` loads **.env.eas-simulator**, then spawns the command and arguments that follow:
+`simulator:exec` is controller-agnostic. It loads the connection variables for the active session from **.env.eas-simulator**, then spawns the command and arguments that follow.
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest snapshot -i']} />
+For the default agent-device controller:
 
-It is a connection wrapper, not a device controller. Commands such as `press` and `screenshot` come from agent-device or another controller.
+<Terminal
+  cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest <command> [args...]']}
+/>
+
+For an Argent session:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec argent run <tool> [args...]']} />
+
+It is a connection wrapper, not a device controller. Commands such as `press` come from agent-device, while tools such as `reinstall-app` come from Argent.
 
 ## `simulator:get`
 
