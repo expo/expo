@@ -93,7 +93,11 @@ If Siri or Shortcuts runs while the app is cold, the event cannot be delivered i
 
 Parameterized intents use native entities. For example, the restaurant template defines a `DishEntity` and `DishQuery` in Swift, while JavaScript supplies the current dish list with `setEntityCatalogAsync('dish', dishes)`. The native query reads that catalog through `AppIntentEntityStore.shared`, so Siri and Shortcuts can resolve spoken values by ID, title, or synonym. Calling `setEntityCatalogAsync()` replaces the catalog and requests a shortcut parameter refresh; call it again whenever those values change.
 
-Assistant schema intents, such as the journal example, are also defined in app-target Swift. The schema intent can be discovered directly on supported iOS versions, but the template includes a shortcut-facing wrapper intent so the main `AppShortcutsProvider` can remain available on devices below iOS 18. If your app only supports iOS 18 or later for that provider, you can reference the schema intent directly and remove the wrapper.
+Schema intents, such as the mail example, are also defined in app-target Swift. Apple splits [app schema domains](https://developer.apple.com/documentation/appintents/app-schema-domains) into two groups, and the difference matters when you pick one: types conforming to a *primary* domain such as `mail`, `photos`, or `files` are discoverable by Apple Intelligence and Siri, while *Shortcuts-specific* domains such as `journal`, `books`, or `reader` only surface in the Shortcuts app.
+
+The schema intent can be discovered directly on supported iOS versions, but the template includes a shortcut-facing wrapper intent so the main `AppShortcutsProvider` can remain available on devices below iOS 18. If your app only supports iOS 18 or later for that provider, you can reference the schema intent directly and remove the wrapper.
+
+A schema entity also has to be resolvable by the system, so its default query must be an `EntityStringQuery` or the entity must be indexed. A plain `EntityQuery` is rejected when Xcode extracts App Intents metadata.
 
 ## Usage
 
@@ -186,48 +190,48 @@ export function RestaurantIntentHandler() {
 
 </Collapsible>
 
-<Collapsible summary="Handle the journal example">
+<Collapsible summary="Handle the mail example">
 
-The journal example dispatches `createJournalEntry`. The shortcut-facing intent sends `id`, `title`, and `message`; the schema-domain intent can also include fields such as `entryDate`, `location`, and `mediaItemCount`.
+The mail example adopts Apple's `mail` schema domain and dispatches `createMailDraft`. The shortcut-facing intent sends `id`, `subject`, and `body`; the schema-domain intent can also include fields such as `recipients` and `attachmentCount`.
 
 ```tsx
 import { useState } from 'react';
 import { FlatList, Text } from 'react-native';
 import * as AppIntents from 'expo-app-intents';
 
-type JournalEntry = {
+type MailDraft = {
   id: string;
-  title: string;
-  message: string;
+  subject: string;
+  body: string;
 };
 
-export function JournalIntentHandler() {
-  const [entries, setEntries] = useState<JournalEntry[]>([]);
+export function MailIntentHandler() {
+  const [drafts, setDrafts] = useState<MailDraft[]>([]);
 
   AppIntents.useAppIntents(async pendingIntents => {
     for (const invocation of pendingIntents) {
-      if (invocation.name !== 'createJournalEntry') {
+      if (invocation.name !== 'createMailDraft') {
         continue;
       }
 
-      const entry = {
+      const draft = {
         id: String(invocation.params.id ?? invocation.id),
-        title: String(invocation.params.title ?? 'Untitled'),
-        message: String(invocation.params.message ?? ''),
+        subject: String(invocation.params.subject ?? 'No subject'),
+        body: String(invocation.params.body ?? ''),
       };
 
-      setEntries(current => [entry, ...current]);
+      setDrafts(current => [draft, ...current]);
       await AppIntents.removePendingInvocationAsync(invocation.id);
     }
   });
 
   return (
     <FlatList
-      data={entries}
-      keyExtractor={entry => entry.id}
+      data={drafts}
+      keyExtractor={draft => draft.id}
       renderItem={({ item }) => (
         <Text>
-          {item.title}: {item.message}
+          {item.subject}: {item.body}
         </Text>
       )}
     />
@@ -279,17 +283,18 @@ Classic App Shortcut phrases can interpolate at most one non-array parameter. Th
 - Every App Shortcut phrase must include `\(.applicationName)`.
 - A single App Shortcut phrase can interpolate at most one non-array parameter.
 - Apps can define at most 10 App Shortcuts.
-- Assistant schema examples require iOS 18 or later and must match one of Apple's [supported App Intent domains](https://developer.apple.com/documentation/appintents/app-schema-domains).
+- Schema examples require iOS 18 or later and must match one of Apple's [supported App Intent domains](https://developer.apple.com/documentation/appintents/app-schema-domains). Only primary domains are discoverable by Apple Intelligence and Siri.
+- Some schemas have a higher floor than their domain. For example, `.mail.openDraft` and `.system.open` require iOS 27 or later.
 
 ## Additional resources
 
-To learn how to use `expo-app-intents`, start with the basic examples that `npx expo-app-intents init` scaffolds. The counter example is the simplest. Once you understand it, you understand the foundation `expo-app-intents` is built on. From there, move on to the restaurant and journal examples for more practical usage.
+To learn how to use `expo-app-intents`, start with the basic examples that `npx expo-app-intents init` scaffolds. The counter example is the simplest. Once you understand it, you understand the foundation `expo-app-intents` is built on. From there, move on to the restaurant and mail examples for more practical usage.
 
 The main goal of the examples is to demonstrate the process of connecting the JS and Swift runtimes. Once you master those examples, you should consider learning more about App Intent development from Apple's resources:
 
 - [Accelerating app interactions with App Intents](https://developer.apple.com/documentation/appintents/acceleratingappinteractionswithappintents)
 - [Code-along: Make your app available to Siri](https://developer.apple.com/videos/play/wwdc2026/344/)
-- [Integrating your calendar app with Apple Intelligence](https://developer.apple.com/documentation/AppIntents/integrating-your-calendar-app-with-apple-intelligence)
+- [Making actions and content discoverable by Apple Intelligence](https://developer.apple.com/documentation/AppIntents/making-actions-and-content-discoverable-by-apple-intelligence)
 
 ## API
 
