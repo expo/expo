@@ -418,6 +418,54 @@ describe('getStaticPageAsync', () => {
   });
 });
 
+describe('executeServerDataLoaderAsync', () => {
+  it('only forwards allowlisted loader `Response` headers in SSG', async () => {
+    jest.mocked(getConfig).mockReturnValue({
+      pkg: {},
+      exp: {
+        name: 'test',
+        slug: 'test',
+        web: {
+          output: 'static',
+        },
+        extra: {
+          router: {
+            unstable_useServerDataLoaders: true,
+          },
+        },
+      },
+    } as unknown as ReturnType<typeof getConfig>);
+
+    const devServer = createDevServerForStaticPageTests();
+    devServer['ssrLoadModule'] = jest.fn(async () => ({
+      loader: async () =>
+        Response.json(
+          { foo: 'bar' },
+          {
+            headers: {
+              'Cache-Control': 'public, max-age=3600',
+              'X-Custom-Header': 'test-value',
+            },
+          }
+        ),
+    })) as unknown as (typeof devServer)['ssrLoadModule'];
+
+    const response = await devServer.executeServerDataLoaderAsync(
+      new URL('http://localhost:8081/posts/123'),
+      {
+        file: 'posts/[postId].tsx',
+        contextKey: '/posts/[postId]',
+        pathname: '/posts/123',
+        params: { postId: '123' },
+      }
+    );
+
+    expect(response?.headers.get('Cache-Control')).toBe('public, max-age=3600');
+    expect(response?.headers.get('X-Custom-Header')).toBeNull();
+    await expect(response!.json()).resolves.toEqual({ foo: 'bar' });
+  });
+});
+
 describe('exportServerRouteAsync', () => {
   it('rewrites only the trailing source map directive', async () => {
     // https://github.com/expo/expo/issues/47960
