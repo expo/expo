@@ -1840,6 +1840,23 @@ jobs:
         # @end #
 ```
 
+By default, the step checks out the ref that triggered the job. Use `ref` to check out a different branch, tag, or commit:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/checkout
+        with:
+          ref: feature/add-icon
+        # @end #
+```
+
+Branches accept a bare name or a qualified ref such as `refs/heads/feature/add-icon`, tags require a qualified ref such as `refs/tags/v1.2.3`, and a full commit SHA leaves a detached `HEAD`. The ref is fetched from the source repository's `origin` with a depth-one fetch, so it must be reachable there.
+
+`ref` requires Git-based project sources, such as a job triggered through the GitHub integration, and is not supported for local builds or uploaded project tarballs. The step must also run before any other step that checks out the project, otherwise it fails.
+
 <EASFunctionDescription name="checkout" />
 
 #### `eas/install_node_modules`

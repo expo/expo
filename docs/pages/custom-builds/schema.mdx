@@ -919,6 +919,19 @@ build:
         run: ls assets
 ```
 
+```yaml example.yml
+build:
+  name: Check out a specific ref
+  steps:
+    # @info #
+    - eas/checkout:
+        inputs:
+          ref: feature/add-icon
+    # @end #
+```
+
+The `ref` input requires Git-based project sources and must be set before [`eas/build`](#easbuild), which checks out the project internally.
+
 <EASFunctionDescription name="checkout" />
 
 #### `eas/use_npm_token`
