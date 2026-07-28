@@ -15,6 +15,7 @@ import { Watcher } from './Watcher';
 import { DiskCacheManager } from './cache/DiskCacheManager';
 import H from './constants';
 import createFallbackFilesystem from './crawlers/node/fallback';
+import { event, debugEvent } from './events';
 import { FileProcessor } from './lib/FileProcessor';
 import { FileSystemChangeAggregator } from './lib/FileSystemChangeAggregator';
 import { RootPathUtils } from './lib/RootPathUtils';
@@ -236,7 +237,7 @@ const WATCHMAN_REQUIRED_CAPABILITIES = [
  *       the `FileMap`.
  *
  *  3. visit and extract metadata from changed files, including sha1,
- *     depedendencies, and any plugins.
+ *     dependencies, and any plugins.
  *     * this is done in parallel over worker processes to improve performance.
  *     * the worst case is to visit all files.
  *     * the best case is no file system access and retrieving all data from
@@ -264,6 +265,7 @@ export default class FileMap extends EventEmitter {
   readonly #plugins: readonly IndexedPlugin[];
   readonly #startupPerfLogger: PerfLogger | undefined | null;
   #watcher: Watcher | undefined | null;
+  #usedWatchman: boolean = false;
 
   static create(options: InputOptions): FileMap {
     return new FileMap(options);
@@ -355,7 +357,9 @@ export default class FileMap extends EventEmitter {
   build(): Promise<BuildResult> {
     this.#startupPerfLogger?.point('build_start');
     if (!this.#buildPromise) {
+      const doneBuild = event.span();
       this.#buildPromise = (async () => {
+        const doneHydrate = debugEvent.span();
         let initialData: CacheData | undefined | null;
         if (this.#options.resetCache !== true) {
           initialData = await this.read();
@@ -410,6 +414,7 @@ export default class FileMap extends EventEmitter {
                 serverRoot,
               });
         this.#startupPerfLogger?.point('constructFileSystem_end');
+        doneHydrate('hydrate', { fromCache: initialData != null });
 
         const plugins = this.#plugins;
 
@@ -468,6 +473,10 @@ export default class FileMap extends EventEmitter {
         debug('Finished mapping files (%d changes).', changeSize);
 
         await this.#watch(fileSystem, watchmanClocks, plugins);
+        doneBuild('build', {
+          crawler: this.#usedWatchman ? 'watchman' : 'node',
+          fromCache: initialData != null,
+        });
         return { fileSystem };
       })();
     }
@@ -490,6 +499,7 @@ export default class FileMap extends EventEmitter {
       this.#startupPerfLogger?.annotate({
         string: { cacheReadError: e.toString() },
       });
+      event('cache:read_error', { error: event.error(e as Error) });
     }
     this.#startupPerfLogger?.point('read_end');
     return data;
@@ -527,6 +537,11 @@ export default class FileMap extends EventEmitter {
       }
     })();
 
+    this.#usedWatchman = await this.#shouldUseWatchman();
+    const crawler = this.#usedWatchman ? 'watchman' : 'node';
+    const full = !previousState.clocks || previousState.clocks.size === 0;
+    const doneCrawl = debugEvent.span();
+
     this.#watcher = new Watcher({
       abortSignal: this.#crawlerAbortController.signal,
       computeSha1,
@@ -543,7 +558,7 @@ export default class FileMap extends EventEmitter {
       previousState,
       rootDir,
       roots,
-      useWatchman: await this.#shouldUseWatchman(),
+      useWatchman: this.#usedWatchman,
       watch,
       watchmanDeferStates,
     });
@@ -553,6 +568,12 @@ export default class FileMap extends EventEmitter {
 
     const result = await watcher.crawl();
     this.#startupPerfLogger?.point('buildFileDelta_end');
+    doneCrawl('crawl', {
+      crawler,
+      full,
+      changed: result.changedFiles.size,
+      removed: result.removedFiles.size,
+    });
     return result;
   }
 
@@ -582,6 +603,7 @@ export default class FileMap extends EventEmitter {
     }>
   ): Promise<FileSystemChangeAggregator> {
     this.#startupPerfLogger?.point('applyFileDelta_start');
+    const doneProcess = debugEvent.span();
     const { changedFiles, removedFiles } = delta;
     this.#startupPerfLogger?.point('applyFileDelta_preprocess_start');
     // Remove files first so that we don't mistake moved modules
@@ -602,7 +624,7 @@ export default class FileMap extends EventEmitter {
 
     for (const [normalFilePath, fileData] of changedFiles) {
       // A crawler may preserve the H.VISITED flag to indicate that the file
-      // contents are unchaged and it doesn't need visiting again.
+      // contents are unchanged and it doesn't need visiting again.
       if (fileData[H.VISITED] === 1) {
         continue;
       }
@@ -679,6 +701,7 @@ export default class FileMap extends EventEmitter {
     this.#startupPerfLogger?.point('applyFileDelta_updatePlugins_end');
     this.#startupPerfLogger?.point('applyFileDelta_end');
 
+    doneProcess('process', { processed: filesToProcess.length });
     return changeAggregator;
   }
 
@@ -692,6 +715,7 @@ export default class FileMap extends EventEmitter {
     changedSinceCacheRead: boolean
   ) {
     this.#startupPerfLogger?.point('persist_start');
+    const donePersist = debugEvent.span();
     await this.#cacheManager.write(
       () => ({
         clocks: new Map(clocks),
@@ -721,6 +745,7 @@ export default class FileMap extends EventEmitter {
       }
     );
     this.#startupPerfLogger?.point('persist_end');
+    donePersist('persist', {});
   }
 
   /**
@@ -1054,6 +1079,7 @@ export default class FileMap extends EventEmitter {
               watchmanFailedCapabilityCheck: e?.message ?? '[missing]',
             },
           });
+          event('watchman:unavailable', { reason: e?.message ?? '[missing]' });
           return false;
         });
     }

@@ -7,6 +7,7 @@ description: Learn about rendering React DOM components in Expo native apps usin
 import { Collapsible } from '~/ui/components/Collapsible';
 import { FAQ } from '~/ui/components/FAQ';
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
@@ -117,6 +118,12 @@ export default function App() {
 }
 ```
 
+## Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it when to reach for DOM components and how to migrate web code to native:
+
+<RelatedSkills names={['expo-dom', 'expo-web-to-native']} />
+
 ## Features
 
 - Shared bundler config across web, native, and DOM components.
@@ -125,7 +132,7 @@ export default function App() {
 - Fast Refresh and HMR.
 - Embedded exports for offline support.
 - Assets are unified across web and native.
-- DOM component bundles can be introspected in [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-atlas) for debugging.
+- DOM component bundles can be introspected in [Expo Atlas](/guides/analyzing-bundles/#analyzing-bundle-size-with-expo-atlas) for debugging.
 - Access to all web functionality without needing a native rebuild.
 - Runtime error overlay in development.
 - Supports Expo Go.

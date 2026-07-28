@@ -14,6 +14,14 @@ inputs:
   bare-expo-pods:
     description: 'Restore /apps/bare-expo/ios pods cache'
     required: false
+  bare-expo-pods-configuration:
+    description: >
+      Build configuration the restored /apps/bare-expo/ios pods will be used with.
+      The Pods dir holds configuration-specific prebuilt artifacts (React-Core-prebuilt's
+      React.xcframework and its .last_build_configuration marker), so Debug and Release
+      consumers must not share a cache entry.
+    default: 'Release'
+    required: false
   bare-expo-macos-pods:
     description: 'Restore /apps/bare-expo/macos pods cache'
     required: false
@@ -105,7 +113,7 @@ runs:
       id: bare-expo-pods-cache
       with:
         path: apps/bare-expo/ios/Pods
-        key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
+        key: ${{ runner.os }}-bare-expo-pods-${{ inputs.bare-expo-pods-configuration }}-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
 
     - name: ♻️ Restore apps/bare-expo/macos/Pods from cache
       if: inputs.bare-expo-macos-pods == 'true'
@@ -171,7 +179,8 @@ runs:
         # ccache tracks these files without any sloppiness issues.
         # - C/C++ source files
         # - Gradle files: see https://github.com/expo/expo/pull/44884
-        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h') }}
+        # - Gradle plugin files: see https://github.com/expo/expo/pull/47455
+        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h', 'packages/expo-modules-autolinking/android/expo-gradle-plugin/**/*.kt', 'packages/expo-modules-autolinking/android/expo-gradle-plugin/**/*.kts', 'packages/expo-modules-core/expo-module-gradle-plugin/**/*.kt', 'packages/expo-modules-core/expo-module-gradle-plugin/**/*.kts', 'packages/expo-updates/expo-updates-gradle-plugin/**/*.kt', 'packages/expo-updates/expo-updates-gradle-plugin/**/*.kts', 'packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/**/*.kt', 'packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/**/*.kts', 'packages/expo-network-addons/expo-network-addons-gradle-plugin/**/*.kt', 'packages/expo-network-addons/expo-network-addons-gradle-plugin/**/*.kts') }}
         restore-keys: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}
 
     - name: 🛠 Setup "REACT_NATIVE_DOWNLOADS_DIR" environment variable

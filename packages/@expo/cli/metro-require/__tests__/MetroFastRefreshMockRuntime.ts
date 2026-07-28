@@ -76,7 +76,7 @@ export class Runtime {
     onFullReload: jest.fn(),
 
     /**
-     * Called when Fast Refresh has occured.
+     * Called when Fast Refresh has occurred.
      */
     onFastRefresh: jest.fn(),
   };

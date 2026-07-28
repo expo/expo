@@ -1,6 +1,6 @@
 import type { WebSocket } from 'ws';
 
-const debug = require('debug')('expo:metro:dev-server:socketmap') as typeof console.log;
+import { event } from '../../hmrEvents';
 
 export type SocketId = string;
 export type SocketMap = Map<string, WebSocket>;
@@ -24,7 +24,7 @@ export function createSocketMap() {
 
   const findSocket = (id: SocketId): WebSocket | null => {
     const socket = map.get(id);
-    if (!socket) debug(`No connected socket found with ID: ${id}`);
+    if (!socket) event('socket_not_found', { id });
     return socket ?? null;
   };
 

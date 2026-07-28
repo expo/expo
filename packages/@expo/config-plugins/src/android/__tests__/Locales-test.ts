@@ -43,7 +43,7 @@ describe('e2e: Android locales', () => {
             app_name: 'us-name',
           },
         }),
-        // backwards compatiblity test
+        // backwards compatibility test
         'lang/en.json': JSON.stringify({
           CFBundleDisplayName: 'us-name',
           app_name: 'us-name',

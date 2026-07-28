@@ -322,7 +322,6 @@ it('does not apply the parent guard redirectTo to a route nested in a passing ch
   expect(screen).toHavePathname('/');
 });
 
-
 it('should move away from a focused route when its guard flips false', () => {
   let setGuard: Dispatch<SetStateAction<boolean>>;
 

@@ -78,6 +78,18 @@ struct ExpoCameraUtils {
     }
   }
 
+  // When responsive orientation is off, capture must follow the interface orientation,
+  // which respects the app/device orientation lock, instead of the physical device rotation.
+  static func captureOrientation(
+    responsiveWhenOrientationLocked: Bool,
+    physicalOrientation: UIDeviceOrientation,
+    interfaceOrientation: UIInterfaceOrientation
+  ) -> AVCaptureVideoOrientation {
+    return responsiveWhenOrientationLocked
+      ? videoOrientation(for: physicalOrientation)
+      : videoOrientation(for: interfaceOrientation)
+  }
+
   static func toOrientationString(orientation: UIDeviceOrientation) -> String {
     switch orientation {
     case .portrait:
@@ -167,20 +179,6 @@ struct ExpoCameraUtils {
     return UIImage(cgImage: croppedCgImage, scale: image.scale, orientation: image.imageOrientation)
   }
 
-  static func normalizeOrientation(of image: UIImage) -> UIImage {
-    guard image.imageOrientation != .up else {
-      return image
-    }
-    // Render at the image's own scale — the default format uses the screen scale (2x/3x),
-    // which would upscale the photo to 4-9x its native pixel count
-    let format = UIGraphicsImageRendererFormat()
-    format.scale = image.scale
-    let renderer = UIGraphicsImageRenderer(size: image.size, format: format)
-    return renderer.image { _ in
-      image.draw(in: CGRect(origin: .zero, size: image.size))
-    }
-  }
-
   static func write(data: Data, to path: String) -> String? {
     let url = URL(fileURLWithPath: path)
     do {
@@ -226,6 +224,31 @@ struct ExpoCameraUtils {
     return mutableMetadata
   }
 
+  struct EncodedImage {
+    let data: Data
+    let width: Double
+    let height: Double
+    let base64: String?
+  }
+
+  // Records the capture orientation as an EXIF tag instead of rotating the pixels, so viewers display
+  // it upright. Free of the file system so it can be unit tested.
+  static func encodeForSave(image: UIImage, metadata: [String: Any]?, quality: Double, includeBase64: Bool) throws -> EncodedImage {
+    var metadata = metadata ?? [:]
+    metadata[kCGImagePropertyOrientation as String] = toExifOrientation(orientation: image.imageOrientation)
+
+    guard let data = data(from: image, with: metadata, quality: Float(quality)) else {
+      throw CameraSavingImageException("Image data could not be processed")
+    }
+
+    return EncodedImage(
+      data: data,
+      width: image.size.width,
+      height: image.size.height,
+      base64: includeBase64 ? data.base64EncodedString() : nil
+    )
+  }
+
   /**
    Saves the image as a file.
    */
@@ -234,29 +257,30 @@ struct ExpoCameraUtils {
       throw CameraSavingImageException("Failed to locate `cacheDirectory`")
     }
 
-    let normalizedImage = normalizeOrientation(of: image)
-
-    var result = [String: Any]()
     let directory = URL(fileURLWithPath: cachesDirectory.path).appendingPathComponent("Camera")
     let filename = UUID().uuidString.appending(".jpg")
     let fileUrl = directory.appendingPathComponent(filename)
 
     FileSystemUtilities.ensureDirExists(at: directory)
 
-    guard let data = data(from: normalizedImage, with: options.metadata ?? [:], quality: Float(options.quality)) else {
-      throw CameraSavingImageException("Image data could not be processed")
-    }
-
-    result["url"] = fileUrl.absoluteString
-    result["width"] = normalizedImage.size.width
-    result["height"] = normalizedImage.size.height
-    result["base64"] = options.base64 ? data.base64EncodedString() : nil
+    let encoded = try encodeForSave(
+      image: image,
+      metadata: options.metadata,
+      quality: options.quality,
+      includeBase64: options.base64
+    )
 
     do {
-      try data.write(to: fileUrl, options: .atomic)
+      try encoded.data.write(to: fileUrl, options: .atomic)
     } catch let error {
       throw CameraSavingImageException(error.localizedDescription)
     }
+
+    var result = [String: Any]()
+    result["url"] = fileUrl.absoluteString
+    result["width"] = encoded.width
+    result["height"] = encoded.height
+    result["base64"] = encoded.base64
     return result
   }
 }

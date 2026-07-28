@@ -2,7 +2,6 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.DynamicCastException
 import expo.modules.kotlin.exception.exceptionDecorator
@@ -29,12 +28,12 @@ class PairTypeConverter(
     )
   )
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): Pair<*, *> {
+  override fun convertFromDynamic(value: Dynamic, context: ConverterContext, forceConversion: Boolean): Pair<*, *> {
     val jsArray = value.asArray() ?: throw DynamicCastException(ReadableArray::class)
     return convertFromReadableArray(jsArray, context, forceConversion)
   }
 
-  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): Pair<*, *> {
+  override fun convertFromAny(value: Any, context: ConverterContext, forceConversion: Boolean): Pair<*, *> {
     if (value is ReadableArray) {
       return convertFromReadableArray(value, context, forceConversion)
     }
@@ -42,14 +41,14 @@ class PairTypeConverter(
     return value as Pair<*, *>
   }
 
-  private fun convertFromReadableArray(jsArray: ReadableArray, context: AppContext?, forceConversion: Boolean): Pair<*, *> {
+  private fun convertFromReadableArray(jsArray: ReadableArray, context: ConverterContext, forceConversion: Boolean): Pair<*, *> {
     return Pair(
       convertElement(context, jsArray, 0, forceConversion),
       convertElement(context, jsArray, 1, forceConversion)
     )
   }
 
-  private fun convertElement(context: AppContext?, array: ReadableArray, index: Int, forceConversion: Boolean): Any? {
+  private fun convertElement(context: ConverterContext, array: ReadableArray, index: Int, forceConversion: Boolean): Any? {
     return array.getDynamic(index).recycle {
       exceptionDecorator({ cause ->
         CollectionElementCastException(pairType, pairType.params[index], type, cause)

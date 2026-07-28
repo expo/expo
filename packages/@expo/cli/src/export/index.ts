@@ -74,8 +74,6 @@ export const expoExport: Command = async (argv) => {
   }).catch(logCmdError);
 
   const projectRoot = path.resolve(parsed.projectRoot);
-  const { installEventLogger } = await import('2g');
-  installEventLogger({ command: 'expo export', version: process.env.__EXPO_VERSION });
 
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(projectRoot, {

@@ -64,7 +64,7 @@ public class CalendarAccessGuard {
     }
 
     if !permissionsManager.hasGrantedPermission(usingRequesterClass: requester) {
-      throw MissionPermissionsException(permissionName)
+      throw MissingPermissionsException(permissionName)
     }
 
     resetEventStoreIfPermissionWasChanged(entity: entity)

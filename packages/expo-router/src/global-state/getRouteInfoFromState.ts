@@ -100,7 +100,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
 
   /**
    * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
-   * then the state maybe incomplete. The reset of the path is in the params, instead of being a route
+   * then the state may be incomplete. The rest of the path is in the params, instead of being a route
    */
   let routeParams: StrictFocusedRouteParams | undefined = route.params;
   while (routeParams && 'screen' in routeParams) {

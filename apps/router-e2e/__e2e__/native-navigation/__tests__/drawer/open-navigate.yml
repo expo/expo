@@ -1,0 +1,34 @@
+env:
+  APP_ID: com.expo.routere2e
+appId: ${APP_ID}
+name: Drawer open and navigate
+---
+- stopApp: ${APP_ID}
+- openLink: router-e2e://drawer
+- runFlow: ../close-warning.yml
+- assertVisible: "Home screen"
+- assertVisible: "closed"
+
+# Open drawer imperatively
+- tapOn:
+    id: "e2e-open-drawer"
+- waitForAnimationToEnd
+- assertVisible: "Drawer Home"
+- assertVisible: "Drawer Second"
+
+# Drawer item press navigates and closes the drawer
+- tapOn: "Drawer Second"
+- waitForAnimationToEnd
+- assertVisible: "Second screen"
+- assertVisible: "/drawer/second"
+- assertVisible: "closed"
+
+# Navigate back to Home via the default header toggle button
+- tapOn: "Show navigation menu"
+- waitForAnimationToEnd
+- assertVisible: "Drawer Home"
+- assertVisible: "Drawer Second"
+- tapOn: "Drawer Home"
+- waitForAnimationToEnd
+- assertVisible: "Home screen"
+- assertVisible: "/drawer"

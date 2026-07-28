@@ -5,6 +5,7 @@ import { initRouterIntegration } from './integrations/expo-router/init';
 import { isRouterInstalled } from './integrations/expo-router/router';
 import { initReactNavigationIntegration } from './integrations/react-navigation/init';
 import { isReactNavigationInstalled } from './integrations/react-navigation/reactNavigation';
+import { reportCaughtError } from './reportCaughtError';
 import type { ObserveConfig, ObserveModule } from './types';
 
 const native = requireNativeModule<ObserveModule>('ExpoObserve');
@@ -45,6 +46,10 @@ const Observe: ObserveModule = new Proxy(native, {
         }
         return target.configure(config);
       };
+    }
+
+    if (prop === 'reportError') {
+      return (error: unknown) => reportCaughtError(error);
     }
 
     // On Android, the native module is a JSI host object, so `prop in target` (and `hasOwnProperty`) report

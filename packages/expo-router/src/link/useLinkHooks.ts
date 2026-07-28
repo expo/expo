@@ -13,7 +13,7 @@ import type { SingularOptions } from '../useScreens';
  */
 export type WebAnchorProps = {
   /**
-   * Specifies where to open the [`href`](#href).
+   * Specifies where to open the [`href`](#hreft).
    *
    * - **_self**: the current tab.
    * - **_blank**: opens in a new tab or window.
@@ -33,7 +33,7 @@ export type WebAnchorProps = {
   target?: '_self' | '_blank' | '_parent' | '_top' | (string & object);
 
   /**
-   * Specifies the relationship between the [`href`](#href) and the current route.
+   * Specifies the relationship between the [`href`](#hreft) and the current route.
    *
    * Common values:
    * - **nofollow**: Indicates to search engines that they should not follow the `href`.
@@ -60,7 +60,7 @@ export type WebAnchorProps = {
   rel?: string;
 
   /**
-   * Specifies that the [`href`](#href) should be downloaded when the user clicks on the
+   * Specifies that the [`href`](#hreft) should be downloaded when the user clicks on the
    * link, instead of navigating to it. It is typically used for links that point to
    * files that the user should download, such as PDFs, images, documents, and more.
    *

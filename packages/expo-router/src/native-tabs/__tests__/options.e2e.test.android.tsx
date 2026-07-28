@@ -1026,6 +1026,24 @@ describe('Tab options', () => {
     if (!isValidElement(children)) throw new Error();
     expect(children.type).not.toBe(SafeAreaView);
   });
+
+  it('does not wrap the screen content with SafeAreaView when the tab bar is hidden', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs hidden>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <Text testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    const children = TabsScreen.mock.calls[0][0].children;
+    expect(isValidElement(children)).toBe(true);
+    if (!isValidElement(children)) throw new Error();
+    expect(children.type).not.toBe(SafeAreaView);
+  });
 });
 
 describe('Dynamic options', () => {

@@ -18,11 +18,11 @@ describe('react-navigation/index re-exports', () => {
  * The tests below ensure that we export all types from subpackages
  */
 
-import type * as NativeType from '../native';
 import type * as CoreType from '../core';
 import type * as ElementsType from '../elements';
-import type * as RoutersType from '../routers';
 import type * as IndexType from '../index';
+import type * as NativeType from '../native';
+import type * as RoutersType from '../routers';
 
 type MissingFromIndexNative = Exclude<keyof typeof NativeType, keyof typeof IndexType>;
 type MissingFromIndexCore = Exclude<keyof typeof CoreType, keyof typeof IndexType>;

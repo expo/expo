@@ -13,9 +13,8 @@ import * as AndroidDebugBridge from '../platforms/android/adb';
 import { resolveSchemeAsync } from '../resolveOptions';
 import type { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import DevToolsPluginManager from './DevToolsPluginManager';
+import { debugEvent } from './events';
 import { getPlatformBundlers } from './platformBundlers';
-
-const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -138,7 +137,6 @@ export class DevServerManager {
       skipSDKVersionRequirement: true,
     });
     const bundler = getPlatformBundlers(this.projectRoot, exp).web;
-    debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
         type: bundler,
@@ -168,7 +166,7 @@ export class DevServerManager {
       urlCreator.defaults.scheme = nextScheme;
     }
 
-    debug(`New runtime options (runtime: ${nextMode}):`, this.options);
+    debugEvent('runtime_mode_switched', { mode: nextMode });
     return true;
   }
 

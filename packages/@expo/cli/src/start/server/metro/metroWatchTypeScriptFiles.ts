@@ -4,10 +4,7 @@ import type MetroServer from '@expo/metro/metro/Server';
 import path from 'path';
 
 import type { ServerLike } from '../BundlerDevServer';
-
-const debug = require('debug')(
-  'expo:start:server:metro:metroWatchTypeScriptFiles'
-) as typeof console.log;
+import { debugEvent } from './typegenEvents';
 
 type EventType = 'add' | 'change' | 'delete';
 
@@ -20,7 +17,7 @@ export interface MetroWatchTypeScriptFilesOptions {
   callback(filePath: string, eventType: EventType): void;
   /* Array of eventTypes to watch. Defaults to all events */
   eventTypes?: EventType[];
-  /* Throlle the callback. When true and  a group of events are recieved, callback it will only be called with the
+  /* Throttle the callback. When true and a group of events are received, callback it will only be called with the
    * first event */
   throttle?: boolean;
 }
@@ -74,7 +71,7 @@ export function metroWatchTypeScriptFiles({
     if (watchAdd) {
       for (const change of changes.addedFiles) {
         if (isQualifiedChange(change)) {
-          debug('Detected TypeScript file changed in the project: ', change[0]);
+          debugEvent('ts_file_changed', { path: debugEvent.path(change[0]), eventType: 'add' });
           callback(change[0], 'add');
           if (throttle) return;
         }
@@ -84,7 +81,7 @@ export function metroWatchTypeScriptFiles({
     if (watchChange) {
       for (const change of changes.modifiedFiles) {
         if (isQualifiedChange(change)) {
-          debug('Detected TypeScript file changed in the project: ', change[0]);
+          debugEvent('ts_file_changed', { path: debugEvent.path(change[0]), eventType: 'change' });
           callback(change[0], 'change');
           if (throttle) return;
         }
@@ -94,15 +91,13 @@ export function metroWatchTypeScriptFiles({
     if (watchDelete) {
       for (const change of changes.removedFiles) {
         if (isQualifiedChange(change)) {
-          debug('Detected TypeScript file changed in the project: ', change[0]);
+          debugEvent('ts_file_changed', { path: debugEvent.path(change[0]), eventType: 'delete' });
           callback(change[0], 'delete');
           if (throttle) return;
         }
       }
     }
   };
-
-  debug('Waiting for TypeScript files to be added to the project...');
   watcher.addListener('change', listener);
   watcher.addListener('add', listener);
 

@@ -13,8 +13,8 @@ import {
   Platform,
 } from 'react-native';
 
-import { searchIcon, micIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
 import { ToggleRow } from '../components/ToggleRow';
+import { searchIcon, micIcon, moreVertIcon, sendIcon, deleteIcon } from './icons';
 
 export default function ToolbarScreen() {
   const params = useLocalSearchParams();

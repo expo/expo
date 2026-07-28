@@ -380,7 +380,7 @@ export const TableOfContents = forwardRef<
           className={mergeClasses(
             'flex items-center',
             currentH3 && heading.level > BASE_HEADING_LEVEL + 2 && 'ml-0',
-            hasChildren && isVersioned && '-ml-2'
+            hasChildren && isVersioned && '-ml-6'
           )}>
           {hasChildren && isVersioned && (
             <ButtonBase
@@ -395,7 +395,7 @@ export const TableOfContents = forwardRef<
               }}
               aria-expanded={!collapsedH3s.has(heading.slug)}
               aria-controls={`toc-section-${heading.slug}`}
-              className="-mr-2 flex h-full cursor-pointer items-center justify-center self-start pt-0.5 hocus:opacity-75"
+              className="flex min-h-6 w-6 shrink-0 cursor-pointer items-center justify-center self-start hocus:opacity-75"
               aria-label={`${collapsedH3s.has(heading.slug) ? 'Expand' : 'Collapse'} section ${heading.title}`}>
               <ChevronDownIcon
                 aria-hidden="true"

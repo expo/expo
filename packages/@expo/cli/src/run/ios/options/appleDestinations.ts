@@ -4,8 +4,7 @@ import { Log } from '../../../log';
 import type { OSType, Device } from '../../../start/platforms/ios/simctl';
 import type { BuildProps } from '../XcodeBuild.types';
 import type { ConnectedDevice } from '../appleDevice/AppleDevice';
-
-const debug = require('debug')('expo:apple-destination') as typeof console.log;
+import { debugEvent } from '../../events';
 
 interface Destination {
   // 'visionOS'
@@ -33,7 +32,7 @@ function coerceDestinationPlatformToOsType(platform: string): OSType {
     case 'macOS':
       return 'macOS';
     default:
-      debug('Unknown destination platform (needs to be added to Expo CLI):', platform);
+      debugEvent('apple_device:unknown_platform', { platform });
       return platform as OSType;
   }
 }

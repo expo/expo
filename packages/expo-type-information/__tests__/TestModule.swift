@@ -84,6 +84,17 @@ public class TestModule: Module {
       return a + b
     }
 
+    AsyncFunction("TestAsyncFunctionPromiseArgument1") { (promise: Promise) async ->  String in
+      "some string"
+    }
+
+    AsyncFunction("TestAsyncFunctionPromiseArgument2") { (_: Promise) async -> Void in
+    }
+
+    AsyncFunction("TestAsyncFunctionPromiseArgument3") { (promise: Promise) async in
+      return 123
+    }
+
     AsyncFunction("TestUnderscore") { (url: URL, _  /* Comment 10 */: [BarcodeType]) in
     }
 

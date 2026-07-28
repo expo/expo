@@ -4,6 +4,7 @@ maxHeadingDepth: 4
 description: A command-line tool to create a new Expo and React Native project.
 ---
 
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 
 `create-expo-app` is a command-line tool to create and set up a new Expo and React Native project. This tool simplifies the initialization process by providing various templates to get started quickly without the need for manual configuration.
@@ -68,6 +69,12 @@ For example:
 - Running `npx create-expo-app --example` shows an interactive list of available examples to choose from
 - Running `npx create-expo-app --example with-router` sets up a project with the Expo Router library
 - Running `npx create-expo-app --example with-react-navigation` sets up a project similar to the default template, but configured with plain React Navigation library
+
+#### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it the canonical patterns from the examples repository:
+
+<RelatedSkills names={['expo-examples']} />
 
 ### `--version`
 

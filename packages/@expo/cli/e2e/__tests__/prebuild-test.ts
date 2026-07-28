@@ -4,6 +4,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import semver from 'semver';
 
+import { executeExpoAsync } from '../utils/expo';
+import { createPackageTarball } from '../utils/package';
 import {
   projectRoot,
   getRoot,
@@ -11,8 +13,6 @@ import {
   getLoadedModulesAsync,
   findProjectFiles,
 } from './utils';
-import { executeExpoAsync } from '../utils/expo';
-import { createPackageTarball } from '../utils/package';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;

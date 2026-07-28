@@ -20,3 +20,9 @@ final class WebBrowserNotOpenException: Exception {
   }
 }
 
+final class WebAuthSessionFailedToStartException: Exception {
+  override var reason: String {
+    "The authentication session could not be started."
+  }
+}
+

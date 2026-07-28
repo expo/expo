@@ -1,4 +1,5 @@
 import type { OptionValues } from 'commander';
+import { getConfig } from 'expo/config';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -18,12 +19,15 @@ import type {
 const HOST_PROVIDED_FRAMEWORKS_KEY = 'ios.brownfieldHostProvidedFrameworks';
 
 export const resolveBuildConfigAndroid = (options: OptionValues): AndroidConfig => {
-  const variant = resolveVariant(options);
+  const fused = !!options.fused;
+  const variant: BuildVariant = resolveVariant(options);
+  const library = resolveLibrary(options);
   return {
     ...resolveCommonConfig(options),
-    library: resolveLibrary(options),
-    tasks: resolveTaskArray(options, variant),
+    library,
+    tasks: resolveTaskArray(options, variant, { fused, library }),
     variant,
+    fused,
   };
 };
 
@@ -159,13 +163,64 @@ const resolveLibrary = (options: OptionValues): string => {
   return options.library || findBrownfieldLibrary();
 };
 
-const resolveTaskArray = (options: OptionValues, variant: BuildVariant): string[] => {
+const resolveTaskArray = (
+  options: OptionValues,
+  variant: BuildVariant,
+  fusedOpts: { fused: boolean; library: string }
+): string[] => {
   const tasks: string[] = options.task ?? [];
-  const repoTasks = (options.repository ?? []).map((repo: string) =>
-    buildPublishingTask(variant, repo)
+  let repositories: string[] = options.repository ?? [];
+  if (tasks.length === 0 && repositories.length === 0) {
+    repositories = resolveLocalRepositoriesFromAppConfig(!!options.verbose);
+    if (repositories.length > 0) {
+      console.info(
+        `No --repo or --task specified; defaulting to local repositories from the app config: ${repositories.join(', ')}`
+      );
+    }
+  }
+  // In `--fused` mode, `--all` expands to separate Debug + Release task
+  // invocations against the matching sibling subprojects.
+  const variantsForRepoTasks: BuildVariant[] =
+    fusedOpts.fused && variant === 'All' ? ['Debug', 'Release'] : [variant];
+  const repoTasks = repositories.flatMap((repo) =>
+    variantsForRepoTasks.map((v) => buildPublishingTask(v, repo, fusedOpts))
   );
 
   return Array.from(new Set([...tasks, ...repoTasks]));
+};
+
+const resolveLocalRepositoriesFromAppConfig = (verbose: boolean): string[] => {
+  let publishing: unknown;
+  try {
+    const { exp } = getConfig(process.cwd(), { skipSDKVersionRequirement: true });
+    const plugin = exp.plugins?.find(
+      (entry): entry is [string, any] => Array.isArray(entry) && entry[0] === 'expo-brownfield'
+    );
+    publishing = plugin?.[1]?.android?.publishing;
+  } catch (error) {
+    // App config could not be evaluated here — fall through to the plugin's
+    // default publishing target below.
+    if (verbose) {
+      console.warn(
+        `Could not read \`android.publishing\` from the app config, falling back to MavenLocal: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      );
+    }
+  }
+
+  const entries =
+    Array.isArray(publishing) && publishing.length > 0 ? publishing : [{ type: 'localMaven' }];
+  const repositories = entries.flatMap((entry) => {
+    if (entry?.type === 'localMaven') {
+      return ['MavenLocal'];
+    }
+    if (entry?.type === 'localDirectory' && typeof entry?.name === 'string') {
+      return [entry.name];
+    }
+    return [];
+  });
+  return Array.from(new Set(repositories));
 };
 
 const resolveVariant = (options: OptionValues): BuildVariant => {

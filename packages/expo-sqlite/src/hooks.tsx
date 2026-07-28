@@ -123,7 +123,7 @@ export const SQLiteProvider = memo(
 
 /**
  * A global hook for accessing the SQLite database across components.
- * This hook should only be used within a [`<SQLiteProvider>`](#sqliteprovider) component.
+ * This hook should only be used within a [`<SQLiteProvider>`](#sqlitesqliteprovider) component.
  *
  * @example
  * ```tsx

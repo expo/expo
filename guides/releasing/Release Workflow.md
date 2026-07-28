@@ -13,7 +13,7 @@
 - Assign someone to update each listed module. If you're not sure who to assign, look at who updated it previously.
 - Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
   - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
-- Pay extra attention to messages and warnings printed along the way for each module. Sometimes these's need for some extra manual work to be done in the updated files.
+- Pay extra attention to messages and warnings printed along the way for each module. Sometimes there's need for some extra manual work to be done in the updated files.
 - Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
 - Make sure that each individual library update lands on `main` as a **separate commit** so that it's easy to revert later on if needed.
 
@@ -319,13 +319,13 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 - Monitor GitHub issues.
 - Expo team should all update any dogfooding apps they work on, including building on EAS Build, deploying updates with EAS Update, and ideally even submitting to stores.
 - Test out new features.
-- Report updates in the umbrealla issue.
+- Report updates in the umbrella issue.
 - Fix, test, repeat.
 - Update issue with fixes from latest beta release
 
 ## 4.8. Submit iOS Expo Go for review
 
-**Why:** When the Expo Go app for iOS appears to be a good candidate for the final release, we should submit it for review in order to have an accepted release ready to deploy to the App Store in one button click when we proceed to the next stage. This should be ideally be done ~1-3 days before moving on to the final release, to account for review delays.
+**Why:** When the Expo Go app for iOS appears to be a good candidate for the final release, we should submit it for review in order to have an accepted release ready to deploy to the App Store in one button click when we proceed to the next stage. This should ideally be done ~1-3 days before moving on to the final release, to account for review delays.
 
 **How:**
 
@@ -337,7 +337,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 4.9. Start release notes document
 
-**Why:** The release notes are a collaborative effort, we need contributions from folks who worked on the various improvements shipping with the release to draft brief explainations for them if they believe its worth calling out. It can take time for everyone to carve out time for this, so it's best to start it well before the final release in order to give people a week or so to contribute.
+**Why:** The release notes are a collaborative effort, we need contributions from folks who worked on the various improvements shipping with the release to draft brief explanations for them if they believe its worth calling out. It can take time for everyone to carve out time for this, so it's best to start it well before the final release in order to give people a week or so to contribute.
 
 **How:**
 

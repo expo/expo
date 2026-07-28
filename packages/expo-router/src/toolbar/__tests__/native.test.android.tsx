@@ -62,14 +62,17 @@ describe('RouterToolbarHost (Android bottom toolbar)', () => {
     [true, true],
     [false, false],
     [undefined, false],
-  ])('includes the imePadding modifier only when withImePadding is %s', (withImePadding, expected) => {
-    const { getByTestId } = render(
-      <RouterToolbarHost withImePadding={withImePadding}>
-        <Text>item</Text>
-      </RouterToolbarHost>
-    );
+  ])(
+    'includes the imePadding modifier only when withImePadding is %s',
+    (withImePadding, expected) => {
+      const { getByTestId } = render(
+        <RouterToolbarHost withImePadding={withImePadding}>
+          <Text>item</Text>
+        </RouterToolbarHost>
+      );
 
-    const modifiers = getByTestId('Box').props.modifiers as { type: string }[];
-    expect(modifiers.some((m) => m.type === 'imePadding')).toBe(expected);
-  });
+      const modifiers = getByTestId('Box').props.modifiers as { type: string }[];
+      expect(modifiers.some((m) => m.type === 'imePadding')).toBe(expected);
+    }
+  );
 });

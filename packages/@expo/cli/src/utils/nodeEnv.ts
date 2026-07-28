@@ -22,7 +22,7 @@ declare module '2g' {
     'env:load': {
       mode: string | undefined;
       files: string[];
-      env: Record<string, string | undefined>;
+      keys: string[];
     };
   }
 }
@@ -85,7 +85,7 @@ export function loadEnvFiles(projectRoot: string, options?: LoadEnvFilesOptions)
     event('load', {
       mode: params.mode,
       files: relativeFiles(envInfo.files),
-      env: envOutput,
+      keys: Object.keys(envOutput),
     });
   }
 
@@ -131,7 +131,7 @@ export function reloadEnvFiles(projectRoot: string) {
     event('load', {
       mode: params.mode,
       files: relativeFiles(envInfo.files),
-      env: envOutput,
+      keys: Object.keys(envOutput),
     });
   }
 }

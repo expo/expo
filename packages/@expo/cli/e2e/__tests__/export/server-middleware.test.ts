@@ -1,8 +1,6 @@
-/* eslint-env jest */
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import {
   prepareServers,
@@ -11,6 +9,7 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles, getHtml, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

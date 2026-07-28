@@ -47,3 +47,6 @@ jobs:
       - name: 🚨 Lint TypeScript sources
         run: pnpm lint --max-warnings 0
         working-directory: tools
+      - name: 🧪 Test sources
+        run: pnpm test
+        working-directory: tools

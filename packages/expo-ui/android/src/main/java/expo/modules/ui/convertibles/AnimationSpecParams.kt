@@ -14,6 +14,7 @@ import androidx.compose.animation.core.tween
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.recordFromMap
+import expo.modules.kotlin.types.ConverterContext
 import expo.modules.kotlin.types.Enumerable
 import expo.modules.kotlin.types.OptimizedRecord
 
@@ -85,14 +86,14 @@ internal data class KeyframesSpecParams(
 }
 
 @Suppress("UNCHECKED_CAST")
-internal fun parseAnimationSpec(raw: Any?): AnimationSpec<Float>? {
+internal fun parseAnimationSpec(raw: Any?, converterContext: ConverterContext): AnimationSpec<Float>? {
   if (raw !is Map<*, *>) return null
   val map = raw as Map<String, Any?>
   return when (raw["\$type"]) {
-    "spring" -> recordFromMap<SpringSpecParams>(map).toAnimationSpec()
-    "tween" -> recordFromMap<TweenSpecParams>(map).toAnimationSpec()
-    "snap" -> recordFromMap<SnapSpecParams>(map).toAnimationSpec()
-    "keyframes" -> recordFromMap<KeyframesSpecParams>(map).toAnimationSpec(raw)
+    "spring" -> recordFromMap<SpringSpecParams>(map, converterContext).toAnimationSpec()
+    "tween" -> recordFromMap<TweenSpecParams>(map, converterContext).toAnimationSpec()
+    "snap" -> recordFromMap<SnapSpecParams>(map, converterContext).toAnimationSpec()
+    "keyframes" -> recordFromMap<KeyframesSpecParams>(map, converterContext).toAnimationSpec(raw)
     else -> null
   }
 }

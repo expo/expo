@@ -3,6 +3,7 @@ import GithubSlugger from 'github-slugger';
 import { PropsWithChildren } from 'react';
 
 import { createHeadingManager } from '~/common/headingManager';
+import { axe } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
 
 import { Prerequisites, Requirement } from '.';
@@ -46,5 +47,19 @@ describe('Prerequisites', () => {
     expect(screen.getByText('1.')).toBeVisible();
     expect(screen.getByText('2.')).toBeVisible();
     expect(screen.getByText('3.')).toBeVisible();
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <WrapWithContext>
+        <Prerequisites open>
+          <Requirement title="First">Step one body.</Requirement>
+          <Requirement title="Second">Step two body.</Requirement>
+        </Prerequisites>
+      </WrapWithContext>
+    );
+    expect(
+      await axe(container, { rules: { 'nested-interactive': { enabled: false } } })
+    ).toHaveNoViolations();
   });
 });

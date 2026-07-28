@@ -109,6 +109,7 @@ interface GenerateModulesProviderParams {
   watchedDirectories: string[];
   inlineModulesTargets: { mainTarget?: string; targets: string[] };
   targetPath: string;
+  targetName?: string;
   appRoot: string;
 }
 /**

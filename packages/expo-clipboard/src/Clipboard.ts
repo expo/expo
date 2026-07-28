@@ -214,7 +214,7 @@ export function removeClipboardListener(subscription: EventSubscription) {
 /**
  * Property that determines if the `ClipboardPasteButton` is available.
  *
- * This requires the users device to be using at least iOS 16.
+ * This requires the user's device to be using at least iOS 16.
  *
  * `true` if the component is available, and `false` otherwise.
  */

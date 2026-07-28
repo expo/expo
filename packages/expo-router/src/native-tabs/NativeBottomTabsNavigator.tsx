@@ -1,14 +1,19 @@
 'use client';
 
-import React, { use, useCallback, useMemo, useRef } from 'react';
-import type { NavigatorArgs } from 'standard-navigation';
+import React, { use, useCallback, useEffect, useMemo, useRef } from 'react';
 
+import { useRouteNode } from '../Route';
+import { router } from '../imperative-api';
 import type {
   ParamListBase,
   TabNavigationState,
   TabRouterOptions,
 } from '../react-navigation/native';
 import { unstable_createStandardRouterNavigator } from '../standard-navigation';
+import type {
+  StandardNavigatorContentProps,
+  StandardNavigatorDescriptor,
+} from '../standard-navigation/types';
 import { getAllChildrenNotOfType, getAllChildrenOfType } from '../utils/children';
 import { NativeBottomTabsRouter } from './NativeBottomTabsRouter';
 import { NativeTabTrigger } from './NativeTabTrigger';
@@ -46,9 +51,13 @@ function NativeTabsContent({
   rippleColor,
   disableIndicator,
   labelVisibilityMode,
+  redirectToRouteName,
   ...rest
-}: NavigatorArgs<NativeTabOptions, NativeTabNavigationEventMap> &
-  Omit<InternalNativeTabsProps, 'screenListeners'>) {
+}: StandardNavigatorContentProps<
+  NativeTabOptions,
+  NativeTabNavigationEventMap,
+  Omit<InternalNativeTabsProps, 'screenListeners'>
+>) {
   if (use(NativeTabsContext)) {
     throw new Error(
       'Nesting Native Tabs inside each other is not supported natively. Use JS tabs for nesting instead.'
@@ -60,9 +69,14 @@ function NativeTabsContent({
   const visibleTabs = useMemo(
     () =>
       routes
-        // The <NativeTab.Trigger> always sets `hidden` to defined boolean value.
-        // If it is not defined, then it was not specified, and we should hide the tab.
-        .filter((route) => descriptors[route.key]!.options?.hidden !== true)
+        // Every filesystem route is registered in state; only routes declared by a
+        // non-hidden <NativeTabs.Trigger> become tab items.
+        .filter((route) => {
+          const descriptor = descriptors[
+            route.key
+          ]! as StandardNavigatorDescriptor<NativeTabOptions>;
+          return descriptor.routeSource === 'layout' && descriptor.options?.hidden !== true;
+        })
         .map(
           (route): NativeTabsViewTabItem => ({
             options: descriptors[route.key]!.options,
@@ -82,15 +96,27 @@ function NativeTabsContent({
     [visibleTabs]
   );
 
-  if (visibleFocusedTabIndex < 0) {
-    if (process.env.NODE_ENV !== 'production') {
-      const focusedRoute = routes[state.index];
-      throw new Error(
-        `The focused tab in NativeTabsView cannot be displayed. Make sure path is correct and the route is not hidden. Route: "${focusedRoute?.href ?? focusedRoute?.name}"`
-      );
-    }
-  }
   const focusedIndex = visibleFocusedTabIndex >= 0 ? visibleFocusedTabIndex : 0;
+
+  // The focused route can be hidden or have no trigger at all — for example a path pointing at a
+  // route without a tab, or a trigger hidden while focused. Redirect to the router's initial tab,
+  // falling back to the first visible tab. `replace` keeps the unreachable route out of history.
+  // TODO(@ubax): Show a formsheet for hidden tabs which are focused (Tabs + Stack in one).
+  const redirectTabHref = useMemo(() => {
+    const redirectTab =
+      visibleTabs.find(
+        (tab) =>
+          tab.name === redirectToRouteName ||
+          tab.name.replace(/\/index$/, '') === redirectToRouteName
+      ) ?? visibleTabs[0];
+    return routes.find((route) => route.key === redirectTab?.routeKey)?.href;
+  }, [redirectToRouteName, routes, visibleTabs]);
+  useEffect(() => {
+    if (visibleFocusedTabIndex < 0 && redirectTabHref != null) {
+      router.replace(redirectTabHref);
+    }
+  }, [visibleFocusedTabIndex, redirectTabHref]);
+
   const provenanceRef = useRef(0);
 
   const onTabChange = useCallback(
@@ -147,6 +173,10 @@ function NativeTabsContent({
   > &
     Record<Exclude<keyof typeof rest, keyof NativeTabsViewProps>, never> = rest;
 
+  if (visibleTabs.length === 0) {
+    return null;
+  }
+
   return (
     <NativeTabsContext value>
       <NativeTabsView
@@ -170,9 +200,10 @@ const NativeTabsNavigatorWithContext = unstable_createStandardRouterNavigator<
   NativeTabNavigationEventMap,
   Omit<InternalNativeTabsProps, 'screenListeners'>,
   TabRouterOptions
->(NativeTabsContent, NativeBottomTabsRouter, { useOnlyUserDefinedScreens: true });
+>(NativeTabsContent, NativeBottomTabsRouter);
 
 export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
+  const routeNode = useRouteNode();
   const triggerChildren = useMemo(
     () =>
       getAllChildrenOfType(props.children, NativeTabTrigger).filter((child) => !child.props.hidden),
@@ -252,6 +283,8 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
       children={triggerChildren}
       nonTriggerChildren={nonTriggerChildren}
       screenOptions={screenOptions}
+      initialRouteName={routeNode?.initialRouteName}
+      redirectToRouteName={routeNode?.initialRouteName}
       // Passed to TabRouter
       backBehavior={backBehavior}
     />

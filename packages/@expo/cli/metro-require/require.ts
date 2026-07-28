@@ -500,7 +500,7 @@ function loadModuleImplementation(
     }
     moduleObject.id = moduleId;
 
-    // keep args in sync with with defineModuleCode in
+    // keep args in sync with defineModuleCode in
     // metro/src/Resolver/index.js
     // and metro/src/ModuleGraph/worker.js
     factory?.(

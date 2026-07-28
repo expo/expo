@@ -1,6 +1,7 @@
 import { it, expect } from '@jest/globals';
 import * as fs from 'fs';
 
+import { GetFileTypeInformationOptions } from '../build';
 import { generateTSMockForModule } from '../src/mockgen';
 import {
   FileTypeInformation,
@@ -16,7 +17,6 @@ import {
   generateModuleTypesFileContent,
   generateViewTypesFileContent,
 } from '../src/typescriptGeneration';
-import { GetFileTypeInformationOptions } from '../build';
 
 const swiftFile = fs.realpathSync('./__tests__/TestModule.swift');
 const defaultArgs: GetFileTypeInformationOptions = {

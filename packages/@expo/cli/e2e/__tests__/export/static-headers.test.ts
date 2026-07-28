@@ -2,9 +2,9 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { prepareServers, RUNTIME_EXPO_SERVE, setupServer } from '../../utils/runtime';
 import { findProjectFiles } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 

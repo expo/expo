@@ -2,12 +2,9 @@ import type { Platform } from '@expo/config';
 import type { ResolutionContext } from '@expo/metro/metro-resolver';
 import type { ResolutionResult as AutolinkingResolutionResult } from 'expo-modules-autolinking/exports';
 
+import { event } from './resolveEvents';
 import type { StrictResolverFactory } from './withMetroMultiPlatform';
 import type { ExpoCustomMetroResolver } from './withMetroResolvers';
-
-const debug = require('debug')(
-  'expo:start:server:metro:autolinking-resolver'
-) as typeof console.log;
 
 // This is a list of known modules we want to always include in sticky resolution
 // Specifying these skips platform- and module-specific checks and always includes them in the output
@@ -79,10 +76,7 @@ const toPlatformModuleDescription = (
   if (supportPackage && supportPackage !== 'react-native' && resolvedModulePaths[supportPackage]) {
     moduleNameRewrites['react-native'] = supportPackage;
   }
-  debug(
-    `Sticky resolution for ${platform} registered ${resolvedModuleNames.length} resolutions:`,
-    resolvedModuleNames
-  );
+  event('autolinking_registered', { platform, count: resolvedModuleNames.length });
   return {
     platform,
     moduleTestRe: _dependenciesToRegex(resolvedModuleNames),
@@ -170,9 +164,6 @@ export function createAutolinkingModuleResolver(
         originModulePath: resolvedModulePath,
       };
       const res = getStrictResolver(context, platform)(resolvedModuleName);
-      debug(
-        `Sticky resolution for ${platform}: ${moduleName} -> ${resolvedModuleName} (from: ${resolvedModulePath})`
-      );
       return res;
     }
 

@@ -393,7 +393,7 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           // This can be useful when you accidentally use an async function in a route file for the default export.
           if (routeModule instanceof Promise) {
             throw new Error(
-              `Route "${filePath}" cannot be a promise when async routes is disabled.`
+              `Route "${filePath}" cannot be a promise when async routes are disabled.`
             );
           }
 
@@ -979,7 +979,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
         }
       }
 
-      // Navigators can add initialsRoutes into the history, so they need to be to be included in the entryPoints
+      // Navigators can add initialRoutes into the history, so they need to be included in the entryPoints
       node.initialRouteName = anchor;
       entryPoints.push(anchorRoute.contextKey);
     }

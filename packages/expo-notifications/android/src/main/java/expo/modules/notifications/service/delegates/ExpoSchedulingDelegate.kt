@@ -24,7 +24,7 @@ class ExpoSchedulingDelegate(protected val context: Context) : SchedulingDelegat
       try {
         scheduleNotification(it)
       } catch (e: Exception) {
-        Log.w("expo-notifications", "Notification ${it.identifier} could not have been scheduled: ${e.message}")
+        Log.w("expo-notifications", "Notification ${it.identifier} could not be scheduled: ${e.message}")
         e.printStackTrace()
       }
     }

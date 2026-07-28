@@ -16,6 +16,7 @@ import type { PlatformBundlers } from '../platformBundlers';
 import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
+import { manifestDebugEvent } from './events';
 import {
   createBundleUrlPath,
   getBaseUrlFromExpoConfig,
@@ -26,8 +27,6 @@ import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAsset
 import type { RuntimePlatform } from './resolvePlatform';
 import { parsePlatformHeader } from './resolvePlatform';
 import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
-
-const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -164,7 +163,7 @@ export abstract class ManifestMiddleware<
     }
 
     const entry = resolveRelativeEntryPoint(this.projectRoot, props);
-    debug(`Resolved entry point: ${entry} (project root: ${this.projectRoot})`);
+    manifestDebugEvent('resolved_entry', { path: manifestDebugEvent.path(entry) });
     return entry;
   }
 

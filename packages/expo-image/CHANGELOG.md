@@ -554,7 +554,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fixed ResizeObserver attaching on every image transition. ([#25819](https://github.com/expo/expo/pull/25819) by [@aleqsio](https://github.com/aleqsio))
-- [Android] Fixed the tine color was applied to the mask element. ([#26323](https://github.com/expo/expo/pull/26323) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed the tint color was applied to the mask element. ([#26323](https://github.com/expo/expo/pull/26323) by [@lukmccall](https://github.com/lukmccall))
 - [Web] Fixed `nativeViewRef` invalid prop warning. ([#25922](https://github.com/expo/expo/pull/25922) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ## 1.10.4 - 2024-01-18
@@ -822,7 +822,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Added `recyclingKey` prop that allows reseting the image view content when the view is recycled. ([#21297](https://github.com/expo/expo/pull/21297) & [#21309](https://github.com/expo/expo/pull/21309) by [@tsapeta](https://github.com/tsapeta) & [@lukmccall](https://github.com/lukmccall))
+- Added `recyclingKey` prop that allows resetting the image view content when the view is recycled. ([#21297](https://github.com/expo/expo/pull/21297) & [#21309](https://github.com/expo/expo/pull/21309) by [@tsapeta](https://github.com/tsapeta) & [@lukmccall](https://github.com/lukmccall))
 
 ## 1.0.0-rc.1 — 2023-02-14
 
@@ -830,7 +830,7 @@ _This version does not introduce any user-facing changes._
 
 - Fixed `You can't start or clear loads in RequestListener or Target callbacks` on Android. ([#21192](https://github.com/expo/expo/pull/21192) by [@lukmccall](https://github.com/lukmccall))
 - Fixed SVGs are not rendered in the release mode on Android. ([#21214](https://github.com/expo/expo/pull/21214) by [@lukmccall](https://github.com/lukmccall))
-- Stop sending `onProgress` event when the asset size is unknown which led to diving by zero and a crash. ([#21215](https://github.com/expo/expo/pull/21215) by [@tsapeta](https://github.com/tsapeta))
+- Stop sending `onProgress` event when the asset size is unknown which led to dividing by zero and a crash. ([#21215](https://github.com/expo/expo/pull/21215) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.0.0-rc.0 — 2023-02-09
 

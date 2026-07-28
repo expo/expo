@@ -119,6 +119,43 @@ struct JavaScriptRuntimeTests {
     #expect(result == 100)
   }
 
+  @Test
+  func `runOrSchedule runs inline on the JavaScript thread and schedules otherwise`() async {
+    let scheduler = TestRuntimeScheduler()
+    let owningRuntime = await scheduler.run {
+      JavaScriptRuntime()
+    }
+    let runtime = await scheduler.run {
+      owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+    }
+
+    await scheduler.run {
+      nonisolated(unsafe) var didRunInline = false
+      runtime.runOrSchedule {
+        didRunInline = true
+      }
+      #expect(didRunInline)
+    }
+
+    await withCheckedContinuation { continuation in
+      runtime.runOrSchedule {
+        #expect(runtime.isOnJavaScriptThread())
+        continuation.resume()
+      }
+    }
+
+    // The wrapper borrows both the underlying JSI runtime and the scheduler context.
+    withExtendedLifetime(runtime) {}
+    withExtendedLifetime(owningRuntime) {}
+    withExtendedLifetime(scheduler) {}
+  }
+
   // The execute<R> overloads have a same-thread fast path and a cross-thread path that
   // schedules the closure onto the JS thread and pumps the caller's run loop until it
   // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
@@ -590,7 +627,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function returns promise`() throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
     let result = try fn.call()
 
@@ -601,7 +640,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function propagates promise construction failure`() throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
     runtime.global().setProperty("asyncFn", value: fn.asValue())
     try runtime.eval("globalThis.Promise = undefined")
@@ -614,7 +655,9 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function resolves with value`() async throws {
     let fn = runtime.createAsyncFunction("asyncFn") { this, arguments in
-      return JavaScriptValue(self.runtime, 42)
+      return {
+        return JavaScriptValue(self.runtime, 42)
+      }
     }
 
     let result = try await fn.call().getPromise().await()
@@ -624,9 +667,12 @@ struct JavaScriptRuntimeTests {
   @Test
   func `async function receives arguments`() async throws {
     let fn = runtime.createAsyncFunction("add") { this, arguments in
+      // Decode phase: the buffer is only borrowed here and cannot escape into the body.
       let a = arguments[0].getInt()
       let b = arguments[1].getInt()
-      return JavaScriptValue(self.runtime, a + b)
+      return {
+        return JavaScriptValue(self.runtime, a + b)
+      }
     }
 
     let result = try await fn.call(arguments: 20, 22).getPromise().await()
@@ -634,13 +680,15 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
-  func `async function rejects on error`() async throws {
+  func `async function rejects on error thrown from the body`() async throws {
     struct TestError: Error {
       var localizedDescription: String { "something went wrong" }
     }
 
     let fn = runtime.createAsyncFunction("failing") { this, arguments in
-      throw TestError()
+      return {
+        throw TestError()
+      }
     }
 
     await #expect(throws: Error.self) {
@@ -649,16 +697,84 @@ struct JavaScriptRuntimeTests {
   }
 
   @Test
+  func `async function rejects on error thrown from the decode phase`() async throws {
+    struct TestError: Error {
+      var localizedDescription: String { "something went wrong" }
+    }
+
+    let fn = runtime.createAsyncFunction("failing") { this, arguments in
+      throw TestError()
+    }
+
+    // The closure throws before any suspension, but the call itself must not throw —
+    // matching JavaScript's async-function semantics, the returned promise rejects instead.
+    let promise = try fn.call().getPromise()
+    await #expect(throws: Error.self) {
+      try await promise.await()
+    }
+  }
+
+  @Test
   func `async function callable from JavaScript`() async throws {
     let fn = runtime.createAsyncFunction("greet") { this, arguments in
       let name = arguments[0].getString()
-      return JavaScriptValue(self.runtime, "Hello, \(name)!")
+      return {
+        return JavaScriptValue(self.runtime, "Hello, \(name)!")
+      }
     }
 
     runtime.global().setProperty("greet", value: fn.asValue())
     let result = try await runtime.evalAsync("Promise.resolve(greet('World'))")
 
     #expect(result.getString() == "Hello, World!")
+  }
+
+  @Test
+  func `async function call dropped by a dying scheduler does not touch a freed runtime`() throws {
+    // Regression test for the reload crash (#47716): the React runtime scheduler tears down with
+    // async host function tasks still queued, and the dropped task closures used to own a copy of
+    // the arguments buffer (and `this`). Their `jsi::Value` destructors then ran wherever the
+    // dropped closures were released, against the already destroyed Hermes runtime — the
+    // `JavaScriptValuesBuffer.deinit` use-after-free. With the two-phase `AsyncFunctionClosure`,
+    // the decode happens within the host call and the scheduled task captures no JSI-owned values,
+    // so dropping it after teardown is harmless.
+    heldSchedulerTasks.removeAll()
+    do {
+      let baseRuntime = JavaScriptRuntime()
+      let schedulerRuntime = baseRuntime.withUnsafePointee { pointer in
+        JavaScriptRuntime(
+          unsafePointer: pointer,
+          // Opaque scheduler handle, never dereferenced by `holdSchedulerTask`.
+          scheduler: UnsafeMutableRawPointer(bitPattern: 0x1)!,
+          dispatch: unsafeBitCast(holdSchedulerTask, to: UnsafeRawPointer.self)
+        )
+      }
+      // The body deliberately captures nothing: a captured runtime wrapper would outlive the
+      // runtime inside the dropped task and tear down its cached `jsi::PropNameID`s against freed
+      // memory — a separate, pre-existing hazard of wrappers outliving their runtime.
+      let fn = schedulerRuntime.createAsyncFunction("asyncFn") { this, arguments in
+        return {
+          return .undefined
+        }
+      }
+      // Call with a JS object argument — the kind whose destruction after teardown crashes.
+      _ = try fn.call(arguments: schedulerRuntime.createObject().asValue())
+      // The decode phase ran synchronously within the call; the async body is queued on the
+      // scheduler, emulating a task that React never gets to run before the reload.
+      #expect(heldSchedulerTasks.count == 1)
+      // Leaving the scope destroys the Hermes runtime (emulating the reload) while the scheduler
+      // still holds the task. The teardown sweep releases the promise's JSI state on this thread.
+    }
+    // The dying scheduler drops the task without ever running it. Releasing the last reference to
+    // its closure must not touch the freed runtime — this is the crash point of #47716. Drained
+    // through a local copy defensively: releasing a task can schedule follow-up work (e.g. the
+    // promise wrapper's deinit schedules its cleanup while its runtime is still alive), which
+    // would append to `heldSchedulerTasks` while `removeAll()` is mutating it.
+    do {
+      let droppedTasks = heldSchedulerTasks
+      heldSchedulerTasks.removeAll()
+      _ = consume droppedTasks
+    }
   }
 
   // MARK: - Class creation
@@ -857,7 +973,137 @@ struct JavaScriptRuntimeTests {
     #expect(tracked.released == false)
     #expect(runtime.longLivedObjects.count == 1)
   }
+
+  @Test
+  func `non-owning wrapper outliving its runtime does not destroy cached PropNameIDs against freed memory`() throws {
+    // A non-owning wrapper's `deinit` returns early, so its stored `propNameIdsRegistry` is
+    // destroyed whenever the wrapper deallocates. If the wrapper outlives its runtime (e.g. it is
+    // captured by a task abandoned on reload), the cached `jsi::PropNameID` destructors used to run
+    // against the freed Hermes runtime, a use-after-free. Now the teardown sweep flushes the
+    // registry on the JS thread while the runtime is still valid.
+    var wrapper: JavaScriptRuntime? = nil
+    do {
+      let baseRuntime = JavaScriptRuntime()
+      wrapper = baseRuntime.withUnsafePointee { JavaScriptRuntime(unsafePointer: $0) }
+      // Creating a promise populates the wrapper's registry with cached "Promise" and "then" IDs.
+      _ = try JavaScriptPromise(wrapper!)
+      // Leaving the scope destroys the Hermes runtime while the wrapper is still alive; its
+      // teardown sweep must flush the cached PropNameIDs before Hermes is destroyed.
+    }
+    // Deallocating the wrapper here must not touch the freed runtime. Reaching the end of the test
+    // without a crash is the assertion.
+    wrapper = nil
+    _ = wrapper
+  }
 }
+
+private final class TestRuntimeScheduler: @unchecked Sendable {
+  // A serial dispatch queue may use different worker threads between callbacks, but
+  // JavaScriptRuntime tracks affinity to the specific thread on which it was created.
+  private let state: State
+  private let thread: Thread
+
+  init() {
+    let state = State()
+    self.state = state
+    self.thread = Thread {
+      state.run()
+    }
+    thread.name = "expo.modules.jsi.tests.runtime"
+    thread.start()
+    state.waitUntilReady()
+  }
+
+  deinit {
+    state.stop()
+  }
+
+  var opaquePointer: UnsafeMutableRawPointer {
+    return Unmanaged.passUnretained(self).toOpaque()
+  }
+
+  func schedule(_ operation: @escaping @convention(block) () -> Void) {
+    state.schedule(operation)
+  }
+
+  func run<R: Sendable>(_ operation: @escaping @Sendable () -> R) async -> R {
+    return await withCheckedContinuation { continuation in
+      schedule {
+        continuation.resume(returning: operation())
+      }
+    }
+  }
+
+  private final class State: @unchecked Sendable {
+    private let condition = NSCondition()
+    private let ready = DispatchSemaphore(value: 0)
+    private var operations: [@convention(block) () -> Void] = []
+    private var isStopped = false
+
+    func schedule(_ operation: @escaping @convention(block) () -> Void) {
+      condition.lock()
+      operations.append(operation)
+      condition.signal()
+      condition.unlock()
+    }
+
+    func waitUntilReady() {
+      ready.wait()
+    }
+
+    func stop() {
+      condition.lock()
+      isStopped = true
+      condition.signal()
+      condition.unlock()
+    }
+
+    func run() {
+      ready.signal()
+
+      while true {
+        condition.lock()
+        while operations.isEmpty && !isStopped {
+          condition.wait()
+        }
+        if isStopped {
+          condition.unlock()
+          return
+        }
+        let operation = operations.removeFirst()
+        condition.unlock()
+
+        operation()
+      }
+    }
+  }
+}
+
+private let scheduleOnTestRuntime:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { schedulerPointer, _, callback in
+    guard let schedulerPointer else {
+      return
+    }
+    let scheduler = Unmanaged<TestRuntimeScheduler>.fromOpaque(schedulerPointer).takeUnretainedValue()
+    scheduler.schedule(callback)
+  }
+
+/// Tasks captured by `holdSchedulerTask` instead of being executed, emulating a React
+/// `RuntimeScheduler` that is torn down with work still queued (the #47716 reload scenario).
+/// Safe without synchronization: the dispatch always runs synchronously on the test's thread.
+nonisolated(unsafe) private var heldSchedulerTasks: [() -> Void] = []
+
+/// A `dispatch` trampoline for `JavaScriptRuntime.init(unsafePointer:scheduler:dispatch:)` that
+/// holds the scheduled tasks instead of running them, so a test controls when (and whether) they
+/// are released. Matches `expo.RuntimeScheduler.ScheduleFn`.
+private let holdSchedulerTask:
+  @convention(c) (
+    UnsafeMutableRawPointer?, Int32, @escaping @convention(block) () -> Void
+  ) -> Void = { _, _, callback in
+    heldSchedulerTasks.append(callback)
+  }
 
 /// Runs `body` on a freshly spawned synchronous thread and bridges the result back into the
 /// async test. The thread has a real run loop, which the cross-thread `execute` path pumps.

@@ -835,7 +835,7 @@ export declare class ImageNativeModule extends NativeModule<ImageModuleEvents> {
 }
 
 /**
- * An object with options for the [`useImage`](#useimage) hook.
+ * An object with options for the [`useImage`](#useimagesource-options-dependencies) hook.
  */
 export type ImageLoadOptions = {
   /**

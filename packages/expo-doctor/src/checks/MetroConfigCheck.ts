@@ -38,7 +38,7 @@ export class MetroConfigCheck implements DoctorCheck {
       return {
         isSuccessful: false,
         issues: [
-          'It looks like that you are using a custom metro.config.js that does not extend "expo/metro-config". This can lead to unexpected and hard to debug issues. ' +
+          'It looks like you are using a custom metro.config.js that does not extend "expo/metro-config". This can lead to unexpected and hard to debug issues. ' +
             learnMore('https://docs.expo.dev/guides/customizing-metro/'),
         ],
         advice: [`Update your "metro.config.js" to extend "expo/metro-config".`],

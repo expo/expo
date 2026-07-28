@@ -1,9 +1,9 @@
 import { act, render, screen } from '@testing-library/react-native';
 
-import UseUpdatesTestApp from './UseUpdatesTestApp';
 import type { Manifest, UpdatesNativeStateMachineContext } from '../Updates.types';
 import { emitTestStateChangeEvent, resetLatestContext } from '../UpdatesEmitter';
 import { updateFromManifest } from '../UseUpdatesUtils';
+import UseUpdatesTestApp from './UseUpdatesTestApp';
 
 type UpdatesNativeStateChangeTestEvent = {
   context: UpdatesNativeStateMachineContext & {

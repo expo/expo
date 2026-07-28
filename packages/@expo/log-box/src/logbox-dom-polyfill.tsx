@@ -16,7 +16,7 @@ type LogBoxDOMProps = Record<string, unknown>;
 
 export default function LogBoxPolyfillDOM({
   // Default is mainly used in RedBox replacement,
-  // where we won't to keep the native webview wrapper interface as minimal as possible.
+  // where we want to keep the native webview wrapper interface as minimal as possible.
   onCopyText = (text: string) => navigator.clipboard.writeText(text),
   onMinimize,
   fetchTextAsync,
@@ -40,7 +40,7 @@ export default function LogBoxPolyfillDOM({
 
   // LogBox props
   /**
-   * LobBoxLogs from the JS Runtime
+   * LogBoxLogs from the JS Runtime
    */
   logs?: any[];
   /**

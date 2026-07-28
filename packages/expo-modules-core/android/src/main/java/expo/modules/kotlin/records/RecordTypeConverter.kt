@@ -3,7 +3,6 @@ package expo.modules.kotlin.records
 import android.util.Log
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableMap
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.allocators.ObjectConstructor
 import expo.modules.kotlin.allocators.ObjectConstructorFactory
 import expo.modules.kotlin.exception.DynamicCastException
@@ -14,6 +13,7 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
+import expo.modules.kotlin.types.ConverterContext
 import expo.modules.kotlin.types.DynamicAwareTypeConverters
 import expo.modules.kotlin.types.TypeConverter
 import expo.modules.kotlin.types.TypeConverterProvider
@@ -39,8 +39,8 @@ abstract class RecordConversionStrategy<T : Record>(
     return objectConstructorFactory.get(clazz)
   }
 
-  abstract fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?, forceConversion: Boolean): T
-  abstract fun convertFromMap(map: Map<String, Any?>, context: AppContext?, forceConversion: Boolean): T
+  abstract fun convertFromReadableMap(jsMap: ReadableMap, context: ConverterContext, forceConversion: Boolean): T
+  abstract fun convertFromMap(map: Map<String, Any?>, context: ConverterContext, forceConversion: Boolean): T
 }
 
 class ReflectionRecordConversionStrategy<T : Record>(
@@ -77,7 +77,7 @@ class ReflectionRecordConversionStrategy<T : Record>(
       .toMap()
   }
 
-  override fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?, forceConversion: Boolean): T {
+  override fun convertFromReadableMap(jsMap: ReadableMap, context: ConverterContext, forceConversion: Boolean): T {
     val kClass = typeDescriptor.jClass.kotlin
     val instance = getObjectConstructor(kClass).construct()
 
@@ -109,7 +109,7 @@ class ReflectionRecordConversionStrategy<T : Record>(
     return instance as T
   }
 
-  override fun convertFromMap(map: Map<String, Any?>, context: AppContext?, forceConversion: Boolean): T {
+  override fun convertFromMap(map: Map<String, Any?>, context: ConverterContext, forceConversion: Boolean): T {
     val kClass = typeDescriptor.jClass.kotlin
     val instance = getObjectConstructor(kClass).construct()
 
@@ -210,7 +210,7 @@ class IntrospectableRecordConversionStrategy<T : Record>(
       }
   }
 
-  override fun convertFromReadableMap(jsMap: ReadableMap, context: AppContext?, forceConversion: Boolean): T {
+  override fun convertFromReadableMap(jsMap: ReadableMap, context: ConverterContext, forceConversion: Boolean): T {
     val kClass = typeDescriptor.jClass.kotlin
     val instance = getObjectConstructor(kClass).construct()
 
@@ -238,7 +238,7 @@ class IntrospectableRecordConversionStrategy<T : Record>(
     return instance as T
   }
 
-  override fun convertFromMap(map: Map<String, Any?>, context: AppContext?, forceConversion: Boolean): T {
+  override fun convertFromMap(map: Map<String, Any?>, context: ConverterContext, forceConversion: Boolean): T {
     val kClass = typeDescriptor.jClass.kotlin
     val instance = getObjectConstructor(kClass).construct()
 
@@ -288,13 +288,13 @@ class RecordTypeConverter<T : Record>(
     ReflectionRecordConversionStrategy(converterProvider, typeDescriptor)
   }
 
-  override fun convertFromDynamic(value: Dynamic, context: AppContext?, forceConversion: Boolean): T =
+  override fun convertFromDynamic(value: Dynamic, context: ConverterContext, forceConversion: Boolean): T =
     exceptionDecorator({ cause -> RecordCastException(typeDescriptor, cause) }) {
       val jsMap = value.asMap() ?: throw DynamicCastException(ReadableMap::class)
       return@exceptionDecorator conversionStrategy.convertFromReadableMap(jsMap, context, forceConversion)
     }
 
-  override fun convertFromAny(value: Any, context: AppContext?, forceConversion: Boolean): T {
+  override fun convertFromAny(value: Any, context: ConverterContext, forceConversion: Boolean): T {
     if (value is ReadableMap) {
       return conversionStrategy.convertFromReadableMap(value, context, forceConversion)
     }
@@ -327,12 +327,12 @@ class RecordTypeConverter<T : Record>(
  * This function handles numeric type normalization since JS numbers come as Double in Kotlin Maps.
  */
 @PublishedApi
-internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: RecordTypeConverter<T>, appContext: AppContext? = null): T {
-  return converter.conversionStrategy.convertFromMap(map, appContext, forceConversion = false)
+internal fun <T : Record> recordFromMap(map: Map<String, Any?>, converter: RecordTypeConverter<T>, converterContext: ConverterContext): T {
+  return converter.conversionStrategy.convertFromMap(map, converterContext, forceConversion = false)
 }
 
-inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>, appContext: AppContext? = null): T {
+inline fun <reified T : Record> recordFromMap(map: Map<String, Any?>, converterContext: ConverterContext): T {
   val converter = TypeConverterProviderImpl.obtainTypeConverter(typeDescriptorOf<T>())
   @Suppress("UNCHECKED_CAST")
-  return recordFromMap(map, converter as RecordTypeConverter<T>, appContext = appContext)
+  return recordFromMap(map, converter as RecordTypeConverter<T>, converterContext = converterContext)
 }

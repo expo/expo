@@ -12,8 +12,7 @@ import { getUserAsync } from '../../api/user/user';
 import * as Log from '../../log';
 import { env, envIsWebcontainer } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-
-const debug = require('debug')('expo:start:server:ws-tunnel') as typeof console.log;
+import { debugEvent, event } from './tunnelEvents';
 
 export interface AsyncWsTunnelOptions {
   useExpoAccount?: boolean;
@@ -33,20 +32,27 @@ export class AsyncWsTunnel {
   }
 
   async startAsync(): Promise<void> {
-    this.serverUrl = await tunnel.startAsync({
-      ...(await this.getTunnelOptionsAsync()),
-      onStatusChange(status) {
-        if (status === 'disconnected') {
-          Log.error(
-            chalk.red(
-              'Tunnel connection has been closed. This is often related to intermittent connection problems with the ws proxy servers. Restart the dev server to try connecting again.'
-            ) + chalk.gray('\nCheck the Expo status page for outages: https://status.expo.dev/')
-          );
-        }
-      },
-    });
+    const done = event.span();
+    try {
+      this.serverUrl = await tunnel.startAsync({
+        ...(await this.getTunnelOptionsAsync()),
+        onStatusChange(status) {
+          if (status === 'disconnected') {
+            Log.error(
+              chalk.red(
+                'Tunnel connection has been closed. This is often related to intermittent connection problems with the ws proxy servers. Restart the dev server to try connecting again.'
+              ) + chalk.gray('\nCheck the Expo status page for outages: https://status.expo.dev/')
+            );
+          }
+        },
+      });
+    } catch (error) {
+      event('failed', { provider: 'ws', error: event.error(error as Error) });
+      throw error;
+    }
 
-    debug('Tunnel URL:', this.serverUrl.href);
+    debugEvent('url', { url: this.serverUrl.href });
+    done('done', { provider: 'ws', url: this.serverUrl.href });
   }
 
   private async getTunnelOptionsAsync(): Promise<tunnel.WsTunnelOptions> {
@@ -73,7 +79,6 @@ export class AsyncWsTunnel {
   }
 
   async stopAsync(): Promise<void> {
-    debug('Stopping Tunnel');
     await tunnel.stopAsync();
     this.serverUrl = null;
   }
@@ -109,7 +114,7 @@ function getLegacyTunnelOptions(port: number): tunnel.WsTunnelOptions {
 
   const userDefinedSubdomain = env.EXPO_TUNNEL_SUBDOMAIN;
   if (userDefinedSubdomain && typeof userDefinedSubdomain === 'string') {
-    debug('Session:', userDefinedSubdomain);
+    debugEvent('ws_session', { session: userDefinedSubdomain });
     return { session: userDefinedSubdomain };
   }
   return { session: getWebcontainerSession() };
@@ -127,7 +132,7 @@ export async function getExpoAccountTunnelUrlAsync(projectRoot: string): Promise
           return appOwnerAccountId;
         }
       } catch (error) {
-        debug('Failed to resolve owning account from EAS project ID:', error);
+        debugEvent('ws_account_resolve_failed', { error: debugEvent.error(error as Error) });
       }
     }
 
@@ -148,14 +153,13 @@ export async function getExpoAccountTunnelUrlAsync(projectRoot: string): Promise
   try {
     const accountId = await resolveExpoAccountIdAsync(projectRoot);
     if (!accountId) {
-      debug('No Expo account available to create a signed tunnel URL; user is likely logged out.');
       return null;
     }
     const { url } = await TunnelMutation.createSignedTunnelUrlAsync(accountId);
-    debug('Created signed tunnel URL for account:', accountId);
+    debugEvent('ws_signed_url_created', { accountId });
     return url;
   } catch (error) {
-    debug('Failed to create a signed tunnel URL:', error);
+    debugEvent('ws_signed_url_failed', { error: debugEvent.error(error as Error) });
     return null;
   }
 }

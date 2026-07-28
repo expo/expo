@@ -26,6 +26,7 @@ import {
   getCommentContent,
   getPossibleComponentPropsNames,
 } from '~/components/plugins/api/APISectionUtils';
+import { type ApiSectionData, useApiSectionData } from '~/providers/api-data';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { WithTestRequire } from '~/types/common';
@@ -171,6 +172,7 @@ const groupByHeader = (entries: ApiDataEntry[]) => {
 
 const renderAPI = (
   sdkVersion: string,
+  apiSectionData: ApiSectionData | undefined,
   {
     packageName,
     apiName,
@@ -179,6 +181,23 @@ const renderAPI = (
   }: Omit<Props, 'forceVersion'>
 ) => {
   try {
+    const loadPackageData = (name?: string): GeneratedData[] => {
+      if (testRequire) {
+        const { children } = testRequire(`~/public/static/data/${sdkVersion}/${name}.json`);
+        return children;
+      }
+      const children = apiSectionData?.[`${sdkVersion}/${name}`];
+      if (!children) {
+        throw new Error(
+          `Missing API data for ${sdkVersion}/${name}: the page's getStaticProps did not provide it. ` +
+            'This usually means mdx-plugins/remark-api-section-data.js could not resolve this <APISection> ' +
+            'usage at build time. Keep packageName (and forceVersion) string or array-of-string literals ' +
+            'in the MDX source so the data can be loaded with the page.'
+        );
+      }
+      return children as GeneratedData[];
+    };
+
     let data: GeneratedData[] = [];
     // `deriveComponentsFromProps` synthesizes a derived component entry
     // for each static property typed as `React.FC<X>` or similar. It
@@ -196,19 +215,11 @@ const renderAPI = (
 
     if (Array.isArray(packageName)) {
       data = packageName
-        .map(name => {
-          const { children } = testRequire
-            ? testRequire(`~/public/static/data/${sdkVersion}/${name}.json`)
-            : require(`~/public/static/data/${sdkVersion}/${name}.json`);
-          return children;
-        })
+        .map(name => loadPackageData(name))
         .flat()
         .sort((a: GeneratedData, b: GeneratedData) => a.name.localeCompare(b.name));
     } else {
-      const { children } = testRequire
-        ? testRequire(`~/public/static/data/${sdkVersion}/${packageName}.json`)
-        : require(`~/public/static/data/${sdkVersion}/${packageName}.json`);
-      data = children;
+      data = loadPackageData(packageName);
     }
 
     const functionLikeEntries = data.filter(isFunctionLikeEntry);
@@ -451,6 +462,7 @@ const isDevMode = process.env.NODE_ENV === 'development';
 
 const APISection = ({ forceVersion, ...restProps }: Props) => {
   const { version } = usePageApiVersion();
+  const apiSectionData = useApiSectionData();
   const resolvedVersion =
     forceVersion ??
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
@@ -461,7 +473,7 @@ const APISection = ({ forceVersion, ...restProps }: Props) => {
     }
   }, []);
 
-  return renderAPI(resolvedVersion, restProps);
+  return renderAPI(resolvedVersion, apiSectionData, restProps);
 };
 
 export default APISection;

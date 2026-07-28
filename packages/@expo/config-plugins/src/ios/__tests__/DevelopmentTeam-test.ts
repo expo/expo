@@ -44,7 +44,7 @@ describe('DevelopmentTeam module', () => {
       // Add the development team
       setDevelopmentTeamForPbxproj(projectRoot, 'X0XX00XXXX');
 
-      // Esnure the development team has been added
+      // Ensure the development team has been added
       const contents = memfs.readFileSync(path.join(projectRoot, pbxProjPath), 'utf-8');
       expect(contents).toMatchSnapshot();
     });

@@ -2,7 +2,49 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import type { HashSource } from '../Fingerprint.types';
-import { toPosixPath } from '../utils/Path';
+import { getNodeModulesPackageJsonPath, toPosixPath } from '../utils/Path';
+
+/**
+ * Build a hash source for an autolinked native module - its `package.json` name+version for the
+ * `package` source type, otherwise its whole native directory.
+ */
+export async function createAutolinkingHashSourceAsync(
+  projectRoot: string,
+  dirRelativePath: string,
+  reasons: string[],
+  nativeModuleSourceType: 'files' | 'package'
+): Promise<HashSource> {
+  if (nativeModuleSourceType === 'package') {
+    const packageJsonPath = getNodeModulesPackageJsonPath(dirRelativePath);
+    if (packageJsonPath) {
+      const identity = await readPackageIdentityAsync(path.join(projectRoot, packageJsonPath));
+      if (identity) {
+        return { type: 'package', ...identity, filePath: packageJsonPath, reasons };
+      }
+    }
+  }
+  return { type: 'dir', filePath: dirRelativePath, reasons };
+}
+
+/**
+ * Read a package's identity — its `package.json` `name` and `version` — for a `package` source.
+ * Returns null when the `package.json` is missing so the caller can fall back to hashing files;
+ * any other read/parse error throws, matching `getPackageSourceAsync`.
+ */
+export async function readPackageIdentityAsync(
+  packageJsonPath: string
+): Promise<{ name: string; version: string } | null> {
+  let packageJson: { name?: string; version?: string };
+  try {
+    packageJson = JSON.parse(await fs.readFile(packageJsonPath, 'utf8'));
+  } catch (error: any) {
+    if (error.code === 'ENOENT') {
+      return null;
+    }
+    throw error;
+  }
+  return { name: packageJson.name ?? '', version: packageJson.version ?? '' };
+}
 
 export async function getFileBasedHashSourceAsync(
   projectRoot: string,

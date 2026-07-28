@@ -27,7 +27,7 @@ export { StatusError } from './error';
 
 /** Returns the current request's URL.
  *
- * This typically returns the request's URL, or on certain platform,
+ * This typically returns the request's URL, or on certain platforms,
  * the origin of the request. This does not use the `Origin` header
  * in development as it may contain an untrusted value.
  * @returns A request origin

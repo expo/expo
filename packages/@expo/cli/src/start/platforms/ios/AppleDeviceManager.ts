@@ -21,8 +21,7 @@ import { validateUrl } from '../../../utils/url';
 import { DeviceManager } from '../DeviceManager';
 import { ExpoGoInstaller } from '../ExpoGoInstaller';
 import type { BaseResolveDeviceProps } from '../PlatformManager';
-
-const debug = require('debug')('expo:start:platforms:ios:AppleDeviceManager') as typeof console.log;
+import { event } from '../events';
 
 const EXPO_GO_BUNDLE_IDENTIFIER = 'host.exp.Exponent';
 
@@ -151,14 +150,13 @@ export class AppleDeviceManager extends DeviceManager<SimControl.Device> {
   }
 
   private async getApplicationIdFromBundle(filePath: string): Promise<string> {
-    debug('getApplicationIdFromBundle:', filePath);
     const builtInfoPlistPath = path.join(filePath, 'Info.plist');
     if (fs.existsSync(builtInfoPlistPath)) {
       const { CFBundleIdentifier } = await parsePlistAsync(builtInfoPlistPath);
-      debug('getApplicationIdFromBundle: using built Info.plist', CFBundleIdentifier);
+      event('apple_bundle_id_resolved', { filePath, bundleId: CFBundleIdentifier });
       return CFBundleIdentifier;
     }
-    debug('getApplicationIdFromBundle: no Info.plist found');
+    event('apple_bundle_id_fallback', {});
     return EXPO_GO_BUNDLE_IDENTIFIER;
   }
 
