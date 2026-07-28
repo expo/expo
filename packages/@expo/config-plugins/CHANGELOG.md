@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [iOS] Documented that `UIRequiresFullScreen` no longer opts an app out of resizing as of iOS 27, and noted it in the iPad multitasking warning. ([#48175](https://github.com/expo/expo/pull/48175) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 56.0.8 — 2026-05-23
 
 _This version does not introduce any user-facing changes._
