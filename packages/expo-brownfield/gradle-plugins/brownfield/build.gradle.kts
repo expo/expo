@@ -14,6 +14,8 @@ dependencies {
   implementation("org.json:json:20250517")
   implementation(gradleApi())
   compileOnly("com.android.tools.build:gradle:8.5.0")
+
+  testImplementation("junit:junit:4.13.2")
 }
 
 java {
