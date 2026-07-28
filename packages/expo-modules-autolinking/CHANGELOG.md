@@ -96,6 +96,7 @@ _This version does not introduce any user-facing changes._
 - Fixed build error for unresolvable `expo-modules-macros-plugin`. ([#46294](https://github.com/expo/expo/pull/46294) by [@kudo](https://github.com/kudo))
 
 - [Android] Bump the Gradle plugin's Kotlin version to 2.2.21.
+- [Android] Bump the Gradle plugin's Kotlin version to 2.2.21. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.13 — 2026-05-26
 
