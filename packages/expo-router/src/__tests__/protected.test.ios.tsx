@@ -770,9 +770,7 @@ describe('all routes guarded', () => {
         setId = setState;
         return (
           <Stack id={undefined}>
-            <Stack.Protected
-              guard={false}
-              redirectTo={{ pathname: '/login/[id]', params: { id } }}>
+            <Stack.Protected guard={false} redirectTo={{ pathname: '/login/[id]', params: { id } }}>
               <Stack.Screen name="secret" />
             </Stack.Protected>
           </Stack>
