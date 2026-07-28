@@ -11,6 +11,8 @@
 
 ### 🐛 Bug fixes
 
+- Unset `nativeContainerStyle` in transparent presentations ([#48154](https://github.com/expo/expo/pull/48154) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 - Move `@testing-library/jest-dom` and `@testing-library/user-event` from `dependencies` to `devDependencies` ([#47820](https://github.com/expo/expo/pull/47820) by [@krystofwoldrich](https://github.com/krystofwoldrich))

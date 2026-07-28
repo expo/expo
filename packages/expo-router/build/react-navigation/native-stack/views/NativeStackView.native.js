@@ -44,6 +44,7 @@ const react_native_screens_1 = require("react-native-screens");
 const elements_1 = require("../../elements");
 const useHeaderConfigProps_1 = require("./useHeaderConfigProps");
 const native_1 = require("../../native");
+const ScreenPresentationContext_1 = require("../utils/ScreenPresentationContext");
 const debounce_1 = require("../utils/debounce");
 const getModalRoutesKeys_1 = require("../utils/getModalRoutesKeys");
 const useAnimatedHeaderHeight_1 = require("../utils/useAnimatedHeaderHeight");
@@ -225,31 +226,35 @@ const SceneView = ({ index, focused, shouldFreeze, descriptor, previousDescripto
             // When ts-expect-error is added, it affects all the props below it
             // So we keep any props that need it at the end
             // Otherwise invalid props may not be caught by TypeScript
-            shouldFreeze: shouldFreeze, children: (0, jsx_runtime_1.jsx)(useAnimatedHeaderHeight_1.AnimatedHeaderHeightContext.Provider, { value: animatedHeaderHeight, children: (0, jsx_runtime_1.jsxs)(elements_1.HeaderHeightContext.Provider, { value: headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0), children: [headerBackground != null ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [
-                                styles.background,
-                                headerTransparent ? styles.translucent : null,
-                                { height: headerHeight },
-                            ], children: headerBackground() })) : null, header != null && headerShown !== false ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { onLayout: (e) => {
-                                const headerHeight = e.nativeEvent.layout.height;
-                                setHeaderHeight(headerHeight);
-                                rawAnimatedHeaderHeight.setValue(headerHeight);
-                            }, style: [styles.header, headerTransparent ? styles.absolute : null], children: header({
-                                back: headerBack,
-                                options,
-                                route,
-                                navigation,
-                            }) })) : null, (0, jsx_runtime_1.jsx)(elements_1.HeaderShownContext.Provider, { value: isParentHeaderShown || headerShown !== false, children: (0, jsx_runtime_1.jsx)(elements_1.HeaderBackContext.Provider, { value: headerBack, children: render() }) })] }) }) }) }));
+            shouldFreeze: shouldFreeze, children: (0, jsx_runtime_1.jsx)(ScreenPresentationContext_1.ScreenPresentationContext.Provider, { value: presentation, children: (0, jsx_runtime_1.jsx)(useAnimatedHeaderHeight_1.AnimatedHeaderHeightContext.Provider, { value: animatedHeaderHeight, children: (0, jsx_runtime_1.jsxs)(elements_1.HeaderHeightContext.Provider, { value: headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0), children: [headerBackground != null ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { style: [
+                                    styles.background,
+                                    headerTransparent ? styles.translucent : null,
+                                    { height: headerHeight },
+                                ], children: headerBackground() })) : null, header != null && headerShown !== false ? ((0, jsx_runtime_1.jsx)(react_native_1.View, { onLayout: (e) => {
+                                    const headerHeight = e.nativeEvent.layout.height;
+                                    setHeaderHeight(headerHeight);
+                                    rawAnimatedHeaderHeight.setValue(headerHeight);
+                                }, style: [styles.header, headerTransparent ? styles.absolute : null], children: header({
+                                    back: headerBack,
+                                    options,
+                                    route,
+                                    navigation,
+                                }) })) : null, (0, jsx_runtime_1.jsx)(elements_1.HeaderShownContext.Provider, { value: isParentHeaderShown || headerShown !== false, children: (0, jsx_runtime_1.jsx)(elements_1.HeaderBackContext.Provider, { value: headerBack, children: render() }) })] }) }) }) }) }));
 };
 function NativeStackView({ state, navigation, descriptors, describe, unstable_nativeProps, }) {
     const { colors } = (0, native_1.useTheme)();
     const { setNextDismissedKey } = (0, useDismissedRouteError_1.useDismissedRouteError)(state);
+    const parentPresentation = (0, react_1.use)(ScreenPresentationContext_1.ScreenPresentationContext);
+    const isInTransparentPresentation = parentPresentation === 'formSheet' ||
+        parentPresentation === 'transparentModal' ||
+        parentPresentation === 'containedTransparentModal';
     (0, useInvalidPreventRemoveError_1.useInvalidPreventRemoveError)(descriptors);
     const modalRouteKeys = (0, getModalRoutesKeys_1.getModalRouteKeys)(state.routes, descriptors);
     const preloadedDescriptors = state.preloadedRoutes.reduce((acc, route) => {
         acc[route.key] = acc[route.key] || describe(route, true);
         return acc;
     }, {});
-    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStack, { nativeContainerStyle: { backgroundColor: colors.background }, style: styles.container, ...unstable_nativeProps, children: state.routes.concat(state.preloadedRoutes).map((route, index) => {
+    return ((0, jsx_runtime_1.jsx)(elements_1.SafeAreaProviderCompat, { children: (0, jsx_runtime_1.jsx)(react_native_screens_1.ScreenStack, { nativeContainerStyle: isInTransparentPresentation ? undefined : { backgroundColor: colors.background }, style: styles.container, ...unstable_nativeProps, children: state.routes.concat(state.preloadedRoutes).map((route, index) => {
                 const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key]);
                 const isFocused = state.index === index;
                 const isBelowFocused = state.index - 1 === index;
