@@ -36,6 +36,8 @@
 - Fix GraphQL `data` results with all-null fields being treated as failed, obscuring underlying failure states ([#47860](https://github.com/expo/expo/pull/47860) by [@kitten](https://github.com/kitten))
 - Prevent `expo export` from corrupting server bundles that contain `//# sourceMappingURL=` inside a string literal ([#47981](https://github.com/expo/expo/pull/47981) by [@hassankhan](https://github.com/hassankhan))
 - In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
+- Ignore a whitespace-only `REACT_NATIVE_PACKAGER_HOSTNAME` instead of failing to start the dev server ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Fix opening web from the Terminal UI when the dev server was started without `--web` ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
@@ -50,6 +52,7 @@
 - [Internal] Migrate structured event logging to the `2g` package ([#46667](https://github.com/expo/expo/pull/46667) by [@kitten](https://github.com/kitten))
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
 - Preserve `watchFolders` external to `serverRoot` explicitly, when they've been manually added ([#48177](https://github.com/expo/expo/pull/48177) by [@kitten](https://github.com/kitten))
+- [Internal] Resolve the dev server port once instead of re-deriving it, and read the URL environment variables outside the `UrlCreator` ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ## 56.1.12 — 2026-05-26
 

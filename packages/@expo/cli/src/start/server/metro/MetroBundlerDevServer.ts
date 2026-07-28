@@ -1304,7 +1304,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const parsedOptions = {
       host: options.location.hostType === 'localhost' ? 'localhost' : undefined,
-      port: options.port,
+      port: this.getPort(),
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
     };
@@ -1330,7 +1330,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     // Required for symbolication:
-    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${address?.port ?? options.port}`;
+    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${this.getPort()}`;
     process.env.EXPO_DEV_SERVER_ORIGIN = serverBaseUrl;
 
     if (!options.isExporting) {
@@ -1604,7 +1604,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       server,
       location: {
         // The port is the main thing we want to send back.
-        port: address?.port ?? options.port,
+        port: this.getPort(),
         // localhost isn't always correct.
         host: 'localhost',
         url: serverBaseUrl,
