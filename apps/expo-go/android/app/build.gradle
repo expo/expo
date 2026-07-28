@@ -95,7 +95,7 @@ android {
     }
     release {
       minifyEnabled true
-      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
       consumerProguardFiles 'proguard-rules.pro'
       if (!System.getenv("ANDROID_UNSIGNED")) {
         // EAS and CI supply the release keystore. Local release builds fall back to the debug key so
