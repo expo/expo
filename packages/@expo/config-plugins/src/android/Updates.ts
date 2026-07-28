@@ -103,7 +103,18 @@ export async function applyRuntimeVersionFromConfigForProjectRootAsync(
   const runtimeVersion = await getRuntimeVersionNullableAsync(projectRoot, config, 'android');
   if (runtimeVersion) {
     return setStringItem(
-      [buildResourceItem({ name: 'expo_runtime_version', value: runtimeVersion })],
+      [
+        // `expo_runtime_version` is a technical identifier read back by expo-updates, not
+        // user-facing copy. It must be marked non-translatable so localization tooling doesn't
+        // emit a locale-qualified copy of it — Android prefers the locale-qualified value, so a
+        // translated copy makes devices in that locale report a stale runtime version and
+        // silently stop receiving updates.
+        buildResourceItem({
+          name: 'expo_runtime_version',
+          value: runtimeVersion,
+          translatable: false,
+        }),
+      ],
       stringsJSON
     );
   }
