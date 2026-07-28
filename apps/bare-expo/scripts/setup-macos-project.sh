@@ -89,6 +89,12 @@ else
     fi
 fi
 
+CLI_VERSION=$(jq -r '.devDependencies["@react-native-community/cli"]' package.json)
+if [[ "$CLI_VERSION" == "null" ]]; then
+    echo " Adding @react-native-community/cli as a dev dependency..."
+    pnpm add -D @react-native-community/cli --silent
+fi
+
 echo " Running pnpm from root..."
 cd ../../
 pnpm install --ignore-scripts --frozen-lockfile=false
