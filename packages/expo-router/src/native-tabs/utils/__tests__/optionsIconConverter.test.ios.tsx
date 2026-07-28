@@ -56,6 +56,43 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     expect(convertOptionsIconToScreensPropsIcon(drawableOnly)).toBeUndefined();
   });
 
+  describe('xcasset', () => {
+    it('returns xcasset icon when xcasset is provided', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ xcasset: 'custom-icon' })).toEqual({
+        type: 'xcasset',
+        name: 'custom-icon',
+      });
+    });
+
+    it('returns xcasset icon when iconColor is set, so symbol sets still resolve via imageNamed:', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ xcasset: 'custom-icon' }, '#ff0000')).toEqual({
+        type: 'xcasset',
+        name: 'custom-icon',
+      });
+    });
+
+    it('returns undefined when xcasset is falsy (empty string)', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ xcasset: '' })).toBeUndefined();
+    });
+
+    it('prefers sf over xcasset when both are provided', () => {
+      expect(
+        convertOptionsIconToScreensPropsIcon({ sf: 'star.fill', xcasset: 'custom-icon' })
+      ).toEqual({ type: 'sfSymbol', name: 'star.fill' });
+    });
+
+    // react-native-screens throws "icon and selectedIcon must be same type" when the two
+    // differ, and NativeTabsView converts them with the normal/selected icon colors.
+    it('returns the same icon type for the normal and selected states when only one is tinted', () => {
+      const icon = convertOptionsIconToScreensPropsIcon({ xcasset: 'home-outline' }, undefined);
+      const selectedIcon = convertOptionsIconToScreensPropsIcon(
+        { xcasset: 'home-filled' },
+        '#ff0000'
+      );
+      expect(icon?.type).toBe(selectedIcon?.type);
+    });
+  });
+
   describe('renderingMode', () => {
     it('returns templateSource when renderingMode is "template"', () => {
       const src = { uri: 'https://example.com/icon.png' };

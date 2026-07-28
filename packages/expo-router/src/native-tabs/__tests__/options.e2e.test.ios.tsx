@@ -477,6 +477,76 @@ describe('Icons', () => {
       expect(TabsScreen.mock.calls[0][0].ios?.icon).toEqual(expectedIcon);
     }
   );
+
+  it('when using Icon xcasset, it is passed as an asset catalog icon', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              xcasset={{ default: 'home-outline', selected: 'home-filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      ios: {
+        icon: { type: 'xcasset', name: 'home-outline' },
+        selectedIcon: { type: 'xcasset', name: 'home-filled' },
+      },
+    } as TabsScreenProps);
+  });
+
+  it('when using Icon xcasset with an icon color, it stays an asset catalog icon', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs iconColor="red">
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset="home-outline" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      ios: {
+        icon: { type: 'xcasset', name: 'home-outline' },
+        selectedIcon: { type: 'xcasset', name: 'home-outline' },
+      },
+    } as TabsScreenProps);
+  });
+
+  // React Native Screens throws when `icon` and `selectedIcon` have different types.
+  it.each([
+    { name: 'only selectedIconColor is set', iconColor: { selected: 'red' } as const },
+    { name: 'only iconColor is set', iconColor: { default: 'red' } as const },
+    { name: 'both icon colors are set', iconColor: { default: 'blue', selected: 'red' } as const },
+    { name: 'no icon color is set', iconColor: undefined },
+  ])('icon and selectedIcon have the same type when $name', ({ iconColor }) => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs iconColor={iconColor}>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    const { icon, selectedIcon } = TabsScreen.mock.calls[0][0].ios ?? {};
+    expect(icon?.type).toBe(selectedIcon?.type);
+  });
 });
 
 describe('Badge', () => {

@@ -1,4 +1,4 @@
-import type { ColorValue, ImageSourcePropType } from 'react-native';
+import type { ColorValue } from 'react-native';
 import type { PlatformIconIOS } from 'react-native-screens';
 
 import type { NativeTabsTriggerIconProps } from '../common/elements';
@@ -53,18 +53,24 @@ export function convertOptionsIconToScreensPropsIcon(
       name: icon.sf,
     };
   }
-  if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
-    const imageSource =
-      'xcasset' in icon && icon.xcasset
-        ? { uri: icon.xcasset }
-        : (icon as { src: ImageSourcePropType }).src;
+  // Asset catalog icons have to be resolved natively with `[UIImage imageNamed:]`.
+  // Passing the name to the image loader as a `{ uri }` source happens to work for
+  // image sets, but symbol sets can never be produced that way. Tinting is then
+  // controlled by the asset's "Render As" setting in the asset catalog.
+  if (icon && 'xcasset' in icon && icon.xcasset) {
+    return {
+      type: 'xcasset',
+      name: icon.xcasset,
+    };
+  }
+  if (icon && 'src' in icon && icon.src) {
     const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
     const effectiveRenderingMode =
       renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
     if (effectiveRenderingMode === 'original') {
-      return { type: 'imageSource', imageSource };
+      return { type: 'imageSource', imageSource: icon.src };
     }
-    return { type: 'templateSource', templateSource: imageSource };
+    return { type: 'templateSource', templateSource: icon.src };
   }
   return undefined;
 }
