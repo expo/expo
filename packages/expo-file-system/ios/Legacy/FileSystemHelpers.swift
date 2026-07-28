@@ -86,9 +86,19 @@ internal func copyPHAsset(fromUrl: URL, toUrl: URL, with resourceManager: PHAsse
       return
     }
 
-    let firstResource = PHAssetResource.assetResources(for: asset).first
+    // An edited asset carries both its original resource (`.photo`/`.video`) and the
+    // rendered current version (`.fullSizePhoto`/`.fullSizeVideo`). `.first` returns
+    // the original, which silently discards any edits made in Photos, so prefer the
+    // full-size rendition when one exists.
+    let resources = PHAssetResource.assetResources(for: asset)
+    let firstResource = resources.first { $0.type == .fullSizePhoto }
+      ?? resources.first { $0.type == .fullSizeVideo }
+      ?? resources.first
     if let firstResource {
-      resourceManager.writeData(for: firstResource, toFile: toUrl, options: nil) { error in
+      let resourceOptions = PHAssetResourceRequestOptions()
+      // Assets that only exist in iCloud have no local resource data to write.
+      resourceOptions.isNetworkAccessAllowed = true
+      resourceManager.writeData(for: firstResource, toFile: toUrl, options: resourceOptions) { error in
         if error != nil {
           promise.reject(FailedToCopyAssetException(fromUrl.absoluteString))
           return
