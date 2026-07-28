@@ -1,0 +1,114 @@
+---
+title: Introduction to EAS Simulator
+sidebar_title: Introduction
+description: Run and control remote iOS Simulators and Android Emulators on EAS infrastructure from the CLI, an AI agent, or a browser.
+---
+
+import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** **EAS Simulator is a limited-access preview.** The CLI commands and service behavior are experimental and can change without notice. EAS Simulator uses your plan's compute allowance. See [Expo pricing](https://expo.dev/pricing) for current limits and pricing.
+
+**EAS Simulator** runs a remote iOS Simulator or Android Emulator on EAS infrastructure. You can install an app, inspect its user interface, interact with it, collect screenshots and recordings, and hand an iOS browser preview to another person without running the device locally.
+
+EAS Simulator is especially useful when:
+
+- Your development environment cannot run an iOS Simulator, such as Linux, CI, or a cloud coding agent
+- An AI agent needs to verify a change in a running app instead of only inspecting source code
+- You want a temporary, shareable iOS browser preview
+- You need to offload simulator compute or test on a remote platform
+
+EAS Simulator does not replace local Xcode or Android Studio workflows when you already have the required local simulator and do not need remote or shareable access.
+
+## How it works
+
+An EAS Simulator workflow has four stages:
+
+1. **Start a session** with EAS CLI. EAS boots a remote device and the selected controller.
+2. **Install your app.** The remote device starts blank, so install a local build or an EAS Build artifact.
+3. **Drive the device.** Use [agent-device](/agents/agent-device/), Argent, or the iOS browser preview.
+4. **Stop the session.** An unattended non-interactive session continues consuming usage until it stops.
+
+EAS CLI manages the session lifecycle and connection configuration. The controller provides device actions such as opening an app, pressing a button, entering text, inspecting the accessibility tree, and capturing a screenshot.
+
+## Available surfaces
+
+| Capability                                      | Availability |
+| ----------------------------------------------- | ------------ |
+| Remote iOS Simulator                            | <YesIcon />  |
+| Remote Android Emulator                         | <YesIcon />  |
+| Programmatic control with agent-device          | <YesIcon />  |
+| Programmatic control with Argent                | <YesIcon />  |
+| Live browser preview for iOS                    | <YesIcon />  |
+| Live browser preview for Android                | <NoIcon />   |
+| Physical device access                          | <NoIcon />   |
+| App Store signing or submission                 | <NoIcon />   |
+| Fast Refresh with a development build and Metro | <YesIcon />  |
+
+Use [EAS Build](/build/introduction/) for build and signing workflows, and use local device tooling for physical devices.
+
+## Quick start
+
+Run the commands from a linked Expo project:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:availability --json',
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
+    '$ npx --yes eas-cli@latest simulator:get --json --non-interactive',
+  ]}
+/>
+
+The start command writes **.env.eas-simulator** with the session ID and controller credentials. Run device commands through `simulator:exec` so EAS CLI loads that configuration:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform ios',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest snapshot -i',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest screenshot ./shot.png',
+  ]}
+/>
+
+Always stop the session when you finish:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+
+### Expo Skills for AI agents
+
+If you use an AI coding agent, install [Expo Skills](/skills/) so it can choose the right build, control the remote device, and clean up the session:
+
+<RelatedSkills names={['eas-simulator']} />
+
+## Next steps
+
+<BoxLink
+  title="Get started"
+  description="Check access, start your first session, and open the dashboard and browser preview."
+  href="/preview/eas-simulator/get-started"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="Run and control your app"
+  description="Install a local or EAS build, interact with the app, and capture evidence."
+  href="/preview/eas-simulator/run-and-control"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="CLI reference"
+  description="Review the experimental simulator commands, flags, output, and managed environment file."
+  href="/preview/eas-simulator/cli-reference"
+  Icon={Cloud01Icon}
+/>
+
+<BoxLink
+  title="Troubleshooting"
+  description="Recover from unavailable accounts, stale sessions, dropped tunnels, and incorrect builds."
+  href="/preview/eas-simulator/troubleshooting"
+  Icon={Cloud01Icon}
+/>

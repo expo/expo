@@ -1,0 +1,160 @@
+---
+title: EAS Simulator CLI reference
+sidebar_title: CLI reference
+description: Reference for the experimental EAS CLI commands that create, inspect, control, list, and stop remote simulator sessions.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+The `simulator:*` commands are experimental and hidden. Run them through a current EAS CLI:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:start --help']} />
+
+## Commands
+
+| Command                  | Purpose                                                                  |
+| ------------------------ | ------------------------------------------------------------------------ |
+| `simulator:availability` | Check whether the current project's account can use EAS Simulator        |
+| `simulator:start`        | Create a session and wait for its controller configuration               |
+| `simulator`              | Alias for `simulator:start`                                              |
+| `simulator:exec`         | Run another command with **.env.eas-simulator** loaded                   |
+| `simulator:get`          | Get status, connection details, dashboard URL, timestamps, and artifacts |
+| `simulator:list`         | List and filter sessions for the current project                         |
+| `simulator:stop`         | Stop a session                                                           |
+
+## `simulator:availability`
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:availability --json']} />
+
+The JSON output contains `available` and `accountName`. This command does not create a session or consume simulator usage.
+
+## `simulator:start`
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
+  ]}
+/>
+
+Important flags:
+
+| Flag                     | Description                                                                                             |
+| ------------------------ | ------------------------------------------------------------------------------------------------------- |
+| `-p, --platform`         | `ios` or `android`. Required in non-interactive mode; prompted for in an interactive terminal           |
+| `--type`                 | `agent-device`, `argent`, or `serve-sim`. Defaults to `agent-device`                                    |
+| `--package-version`      | Controller package version. Defaults to the service's latest version                                    |
+| `--max-duration-minutes` | Requested automatic stop time. Custom values are available only on paid plans                           |
+| `--out-config-type`      | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                               |
+| `--[no-]force`           | Whether to create a new session when a session ID already exists in the environment. Defaults to `true` |
+| `--non-interactive`      | Return after the controller is ready instead of staying attached                                        |
+| `--json`                 | Print machine-readable output and imply non-interactive mode                                            |
+
+The default `dotenv` output writes configuration even when `--json` is used. Use `--out-config-type env` when you explicitly do not want the file.
+
+JSON output has this shape:
+
+```json
+{
+  "id": "<session-id>",
+  "type": "agent-device",
+  "deviceRunSessionUrl": "https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>",
+  "remoteConfig": {
+    "__typename": "AgentDeviceRunSessionRemoteConfig",
+    "agentDeviceRemoteSessionUrl": "https://<controller-url>",
+    "agentDeviceRemoteSessionToken": "<secret>",
+    "webPreviewUrl": "https://<preview-url>"
+  }
+}
+```
+
+Treat `remoteConfig` as secret because it includes the controller token.
+
+### Interactive and non-interactive behavior
+
+Without `--non-interactive`, the start command stays attached and polls the session. Press Ctrl+C once to stop it. EAS CLI resets **.env.eas-simulator** after it confirms the session ended.
+
+With `--non-interactive` or `--json`, the command returns after the controller is ready. You must stop the session separately.
+
+### Existing session behavior
+
+The default `--force` behavior creates a new session even when `EAS_SIMULATOR_SESSION_ID` is already loaded. EAS CLI overwrites the dotenv file but does not stop the previous remote session. Use `simulator:list --status in-progress` to find and stop orphaned sessions.
+
+Pass `--no-force` when you want EAS CLI to fail instead of replacing the local session configuration.
+
+## `simulator:exec`
+
+`simulator:exec` loads **.env.eas-simulator**, then spawns the command and arguments that follow:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest snapshot -i']} />
+
+It is a connection wrapper, not a device controller. Commands such as `press` and `screenshot` come from agent-device or another controller.
+
+## `simulator:get`
+
+Get the session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:get --json --non-interactive']} />
+
+Get another session explicitly:
+
+<Terminal
+  cmd={['$ npx --yes eas-cli@latest simulator:get --id <session-id> --json --non-interactive']}
+/>
+
+The response includes:
+
+- ID, type, status, and platform
+- Created, started, finished, and updated timestamps
+- The expo.dev simulator session URL
+- Controller connection configuration
+- Session artifacts, when present
+
+## `simulator:list`
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:list --platform ios --status in-progress --json --non-interactive',
+  ]}
+/>
+
+Filters can be repeated:
+
+| Filter       | Values                                     |
+| ------------ | ------------------------------------------ |
+| `--platform` | `ios`, `android`                           |
+| `--type`     | `agent-device`, `argent`, `serve-sim`      |
+| `--status`   | `new`, `in-progress`, `stopped`, `errored` |
+
+Use `--limit` to control page size and `--after` with the previous response's `endCursor` for pagination.
+
+## `simulator:stop`
+
+Stop the session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+
+Stop a specific session:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop --id <session-id>']} />
+
+The stop mutation is idempotent. After a non-interactive run, remove or reset **.env.eas-simulator** so later commands do not target the stopped session.
+
+## **.env.eas-simulator**
+
+The managed file contains:
+
+```dotenv
+AGENT_DEVICE_DAEMON_BASE_URL="<controller-url>"
+AGENT_DEVICE_DAEMON_AUTH_TOKEN="<secret>"
+EAS_SIMULATOR_SESSION_ID="<session-id>"
+```
+
+Argent sessions use `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN` instead.
+
+Add the file to **.gitignore**:
+
+```gitignore
+.env.eas-simulator
+```
+
+Do not modify its values while the session is running.

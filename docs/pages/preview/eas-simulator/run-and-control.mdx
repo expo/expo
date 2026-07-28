@@ -1,0 +1,219 @@
+---
+title: Run and control an app
+sidebar_title: Run and control an app
+description: Install an app on EAS Simulator and control it with agent-device, Argent, or the iOS browser preview.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+The remote device starts blank. Install a Simulator- or Emulator-compatible build before opening and controlling the app.
+
+Choose the build type based on what you need:
+
+| Goal                                         | Build type                                  |
+| -------------------------------------------- | ------------------------------------------- |
+| Inspect a fixed build or capture evidence    | Local release build or EAS simulator build  |
+| See current source changes with Fast Refresh | Development build connected to Metro        |
+| Use an existing EAS artifact                 | Matching iOS Simulator build or Android APK |
+
+> **warning** A release build contains the JavaScript from build time. Connecting it to Metro does not enable Fast Refresh. Use a development build for live iteration.
+
+## Find the app identifier
+
+Read the resolved app configuration before installing a build:
+
+<Terminal cmd={['$ npx expo config --json']} />
+
+Use `ios.bundleIdentifier` for iOS commands and `android.package` for Android commands. Configure the missing value in **app.json** or your dynamic app config before creating the build.
+
+## Install an EAS Build artifact
+
+Create an installable artifact for each platform in an EAS Build profile. iOS requires `ios.simulator: true`, and Android requires an [APK build](/build-reference/apk/):
+
+```json eas.json
+{
+  "build": {
+    "remote-device": {
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk"
+      }
+    }
+  }
+}
+```
+
+Build the app before starting EAS Simulator. A build can take long enough for an idle simulator session to lose its controller tunnel:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest build --platform ios --profile remote-device --non-interactive',
+  ]}
+/>
+
+You can also find a completed simulator build:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest build:list --platform ios --simulator --status finished --json --non-interactive',
+  ]}
+/>
+
+After the build is ready, start the simulator session and use `install-from-source`. The remote VM downloads the artifact directly:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest install-from-source "https://expo.dev/artifacts/eas/<artifact>.tar.gz" --platform ios',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform ios',
+  ]}
+/>
+
+Replace `com.example.app` with the app's iOS bundle identifier.
+
+For Android, create and install the APK from the same profile:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest build --platform android --profile remote-device --non-interactive',
+    '$ npx --yes eas-cli@latest simulator:start --platform android --type agent-device --non-interactive',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest install-from-source "https://expo.dev/artifacts/eas/<artifact>.apk" --platform android',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform android',
+  ]}
+/>
+
+Replace `com.example.app` with the app's Android package. Android sessions support controller-driven interactions and screenshots, but not the live browser preview.
+
+## Install a local build
+
+For a local iOS Simulator `.app` bundle, `install` uploads the build through the controller:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest install com.example.app ./path/to/MyApp.app --platform ios',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform ios',
+  ]}
+/>
+
+Large local builds take longer because the client uploads them from your machine. Prefer `install-from-source` when an EAS artifact URL is available.
+
+For a local Android APK, use the same command with the Android package, APK path, and `--platform android`.
+
+## Use a development build for live changes
+
+Live iteration requires a [development build](/develop/development-builds/introduction/) with `expo-dev-client`. The development build loads JavaScript from Metro instead of relying only on the bundle embedded at build time.
+
+If the machine cannot create the native build locally, configure an EAS profile with both `developmentClient: true` and `ios.simulator: true`:
+
+```json eas.json
+{
+  "build": {
+    "development-simulator": {
+      "developmentClient": true,
+      "ios": {
+        "simulator": true
+      }
+    }
+  }
+}
+```
+
+Create the build before starting the simulator session:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest build --platform ios --profile development-simulator --non-interactive',
+  ]}
+/>
+
+The same profile produces an installable Android development build when you run the build command with `--platform android`.
+
+Start Metro with a public tunnel that the remote development client can reach:
+
+<Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
+
+Install and open the development build, then enter the public Metro URL in the development client's **Enter URL manually** flow. Keep exactly one Metro process running. After the first bundle loads, Fast Refresh sends source edits to the remote app.
+
+For the complete tested development-client sequence, install the [EAS Simulator skill](https://github.com/expo/skills/blob/main/plugins/expo/skills/eas-simulator/SKILL.md).
+
+## Control the app with agent-device
+
+Every device command should run through `simulator:exec`. It loads the controller URL and token from **.env.eas-simulator**:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest apps --platform ios',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform ios',
+  ]}
+/>
+
+Inspect the interactive accessibility tree:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest snapshot -i']} />
+
+The snapshot returns references such as `@e1` and `@e2`. Use `press` to activate an element:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest press @e2',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest press \'label="Continue"\'',
+  ]}
+/>
+
+The action is named `press`, not `tap` or `click`.
+
+Enter text and capture a screenshot:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest fill @e4 "hello@example.com"',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest screenshot ./artifacts/result.png',
+  ]}
+/>
+
+The screenshot is downloaded to the machine running the command.
+
+Record a flow:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest record start',
+    '# Interact with the app',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest record stop ./artifacts/flow.mp4',
+  ]}
+/>
+
+Other useful controller commands include `scroll`, `gesture`, `logs`, `network`, and `perf`. Read the version-matched help through the active session:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest --help',
+    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest help workflow',
+  ]}
+/>
+
+## Use the iOS browser preview
+
+An iOS `agent-device` session also starts a browser preview. Open the `webPreviewUrl` printed by `simulator:start` in a desktop browser.
+
+The preview URL is temporary and works only while the session is active. It is for the person viewing the simulator; do not open it inside the remote simulator.
+
+## Use Argent instead
+
+Start an Argent-backed session with:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type argent --non-interactive',
+  ]}
+/>
+
+Argent uses its own connection variables and app installation commands. An Argent session does not also provision an agent-device daemon, so do not run agent-device commands against it. Follow the connection instructions printed by EAS CLI.
+
+## Stop when finished
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+
+If you started Metro, stop that process too.

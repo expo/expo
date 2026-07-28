@@ -1,0 +1,185 @@
+---
+title: Get started with EAS Simulator
+sidebar_title: Get started
+description: Check whether EAS Simulator is available, start a remote device session, and connect to it.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+
+> **important** EAS Simulator is a limited-access, experimental service. Sessions use your plan's compute allowance. Check availability before doing work such as creating an EAS Build for the session.
+
+<Prerequisites>
+  <Requirement title="An Expo account with EAS Simulator access">
+    EAS Simulator is not enabled on every account. You will check the current project's account
+    before starting a session.
+  </Requirement>
+  <Requirement title="A linked Expo project">
+    Run these commands from the project directory. If the project does not have an EAS project ID,
+    run `npx --yes eas-cli@latest init` first.
+  </Requirement>
+  <Requirement title="A recent EAS CLI">
+    The `simulator:*` commands are experimental and hidden. Use `npx --yes eas-cli@latest` so an
+    older global installation does not mask them.
+  </Requirement>
+</Prerequisites>
+
+## Start your first session
+
+<Step label="1">
+
+### Authenticate and verify the project
+
+On an interactive machine, log in and confirm the current user:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest login', '$ npx --yes eas-cli@latest whoami']} />
+
+In CI or a headless agent environment, provide an [Expo access token](/accounts/programmatic-access/) in `EXPO_TOKEN` instead of starting an interactive login.
+
+If the project is not linked to EAS, initialize it:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest init']} />
+
+</Step>
+
+<Step label="2">
+
+### Check account availability
+
+The availability check is read-only. It does not start a device or consume simulator usage:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:availability --json']} />
+
+An enabled account returns:
+
+```json
+{
+  "available": true,
+  "accountName": "my-account"
+}
+```
+
+If `available` is `false`, do not call `simulator:start`. Use a local Simulator or Emulator, or wait until the feature is enabled for the account.
+
+</Step>
+
+<Step label="3">
+
+### Protect the session configuration
+
+EAS CLI writes the current session ID and controller credentials to **.env.eas-simulator**. Add the file to **.gitignore** before starting:
+
+```gitignore
+.env.eas-simulator
+```
+
+Do not commit or share this file. It includes the token that lets a controller reach the remote device.
+
+</Step>
+
+<Step label="4">
+
+### Start a remote device
+
+Start an iOS session with agent-device:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
+  ]}
+/>
+
+With a current EAS CLI, `eas simulator` is an alias for `eas simulator:start`:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator --platform ios --type agent-device --non-interactive',
+  ]}
+/>
+
+Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview.
+
+When `--platform` is omitted in an interactive terminal, EAS CLI asks which platform to use. Non-interactive runs require the flag.
+
+The start command waits for the selected controller to become ready, then writes **.env.eas-simulator**. It also prints:
+
+- A direct simulator session page on expo.dev
+- A temporary `webPreviewUrl` for supported iOS sessions
+- The command pattern for controlling the device
+
+> **warning** `--non-interactive` does not automatically stop the session. The command returns when the session is ready, and the remote device remains active.
+
+</Step>
+
+<Step label="5">
+
+### Confirm that the session is active
+
+Use the session ID from **.env.eas-simulator**:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:get --json --non-interactive']} />
+
+Continue when `status` is `IN_PROGRESS` and `remoteConfig` is present. A stopped session can still have old connection configuration, so the dotenv file alone is not proof that the device is live.
+
+</Step>
+
+<Step label="6">
+
+### Open the web surfaces
+
+The start command links to a session page with this shape:
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>
+```
+
+The project-level session list is:
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions
+```
+
+For iOS, open `webPreviewUrl` in a desktop browser to view and interact with the live simulator. The preview URL is not an application deep link. Do not pass it to `agent-device open`.
+
+</Step>
+
+<Step label="7">
+
+### Stop the session
+
+When you finish, stop the current session:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+
+If you started EAS CLI without `--non-interactive`, it remains attached. Press Ctrl+C once to stop the session and let EAS CLI reset **.env.eas-simulator**.
+
+After a non-interactive run, remove the stale local session configuration after the stop succeeds:
+
+<Terminal cmd={['$ rm -f .env.eas-simulator']} />
+
+</Step>
+
+## Bound the session duration
+
+Paid plans can request an automatic stop time:
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --non-interactive --max-duration-minutes 30',
+  ]}
+/>
+
+If `--max-duration-minutes` is not available for the account, omit it to use the plan-derived default.
+
+## Avoid orphaned sessions
+
+Starting another session overwrites **.env.eas-simulator** by default but does not stop the earlier remote session. Before starting again, list active sessions:
+
+<Terminal
+  cmd={['$ npx --yes eas-cli@latest simulator:list --status in-progress --json --non-interactive']}
+/>
+
+Stop each unwanted session by ID:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop --id <session-id>']} />
