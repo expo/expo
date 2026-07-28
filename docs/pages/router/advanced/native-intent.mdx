@@ -90,7 +90,7 @@ export default function RootLayout() {
 
 ### Using `redirectSystemPath`
 
-In native apps, an alternative way to rewrite a URL is to handle it within the [`redirectSystemPath`](#redirectsystempath) method. This approach can be simpler for some use cases but comes with certain drawbacks:
+In native apps, an alternative way to rewrite a URL is to handle it within the [`redirectSystemPath`](#using-redirectsystempath) method. This approach can be simpler for some use cases but comes with certain drawbacks:
 
 - **Native-only**: This method will not work on the web, as `+native-intent` is only available in native apps.
 - **Lacks context**: `+native-intent` is processed outside the context of your app. This means you won't have access to additional logic, such as user authentication status or the current route's state.

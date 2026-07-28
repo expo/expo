@@ -901,6 +901,10 @@ type AppStoreConnectContext = {
     id: string;
     state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
     cf_bundle_version?: string;
+    cf_bundle_short_version_string?: string;
+    platform?: string;
+    uploaded_date?: string;
+    created_date?: string;
     build?: {
       id: string;
     };
@@ -941,6 +945,7 @@ jobs:
         Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
         Upload ID: ${{ app_store_connect.build_upload.id }}
         Upload state: ${{ app_store_connect.build_upload.state }}
+        Version: ${{ app_store_connect.build_upload.cf_bundle_short_version_string }} (${{ app_store_connect.build_upload.cf_bundle_version }})
 ```
 
 Use `build_upload.build.id` as the `asc_build_id` for a `testflight` job:
@@ -1347,20 +1352,13 @@ jobs:
       after_install_node_modules: step[] # optional
 ```
 
-When uploading and submitting with `build_id`, this job outputs the following properties:
+This job outputs the following properties, where `asc_build_id` is only set when submitting an already uploaded build:
 
 ```json
 {
   "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
-  "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
-}
-```
-
-When submitting an already uploaded build with `asc_build_id`, this job outputs the following properties:
-
-```json
-{
-  "asc_build_id": string | null // App Store Connect build ID
+  "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+  "asc_build_id": string | null // App Store Connect build ID. Only when submitting an already uploaded build.
 }
 ```
 

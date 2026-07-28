@@ -184,11 +184,11 @@ export type ImperativeRouter = {
    */
   canGoBack: () => boolean;
   /**
-   * Navigates to the provided [`href`](#href) using a push operation if possible.
+   * Navigates to the provided [`href`](#hreft) using a push operation if possible.
    */
   push: (href: Href, options?: NavigationOptions) => void;
   /**
-   * Navigates to the provided [`href`](#href).
+   * Navigates to the provided [`href`](#hreft).
    */
   navigate: (href: Href, options?: NavigationOptions) => void;
   /**

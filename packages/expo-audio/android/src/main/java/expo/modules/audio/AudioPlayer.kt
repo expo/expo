@@ -98,6 +98,12 @@ class AudioPlayer(
     startUpdating()
   }
 
+  fun clearMediaSource() {
+    previousPlaybackState = Player.STATE_IDLE
+    ref.pause()
+    ref.clearMediaItems()
+  }
+
   override fun onPlaybackStateUpdated(playbackState: Int, justFinished: Boolean) {
     val updateMap = mutableMapOf<String, Any?>(
       "playbackState" to playbackStateToString(playbackState)
