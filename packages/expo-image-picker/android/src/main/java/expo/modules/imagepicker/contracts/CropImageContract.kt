@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.os.Build
 import androidx.core.net.toUri
 import androidx.core.os.bundleOf
 import com.canhub.cropper.CropImage
@@ -55,18 +54,18 @@ internal class CropImageContract(
   }
 
   override fun parseResult(input: CropImageContractOptions, resultCode: Int, intent: Intent?): ImagePickerContractResult {
-    val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT, CropImage.ActivityResult::class.java)
-    } else {
-      @Suppress("DEPRECATION")
-      intent?.getParcelableExtra(CropImage.CROP_IMAGE_EXTRA_RESULT)
-    }
-    if (resultCode == Activity.RESULT_CANCELED || result == null) {
+    if (resultCode == Activity.RESULT_CANCELED) {
       return ImagePickerContractResult.Cancelled
     }
-    val targetUri = requireNotNull(result.uriContent)
-    val contentResolver = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }.contentResolver
-    runBlocking { copyExifData(input.sourceUri.toUri(), input.outputFile, contentResolver) }
+    if (resultCode == CropImage.CROP_IMAGE_ACTIVITY_RESULT_ERROR_CODE) {
+      return ImagePickerContractResult.Error
+    }
+    if (resultCode != Activity.RESULT_OK) {
+      return ImagePickerContractResult.Error
+    }
+    val reactContext = requireNotNull(appContextProvider.appContext.reactContext) { "React Application Context is null" }
+    val targetUri = input.outputFile.getContentUri(reactContext)
+    runBlocking { copyExifData(input.sourceUri.toUri(), input.outputFile, reactContext.contentResolver) }
     return ImagePickerContractResult.Success(listOf(MediaType.IMAGE to targetUri))
   }
 }
