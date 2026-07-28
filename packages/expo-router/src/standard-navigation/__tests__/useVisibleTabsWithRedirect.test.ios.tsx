@@ -34,6 +34,8 @@ const descriptors = {
   'hidden-key': { routeSource: 'layout' as const, options: { hidden: true } },
   'filesystem-key': { routeSource: 'filesystem' as const },
 };
+const routeNames = routes.map((route) => route.name);
+
 let replaceSpy: jest.SpyInstance;
 let warnSpy: jest.SpyInstance;
 let buildHref: jest.Mock;
@@ -58,6 +60,7 @@ describe('useVisibleTabsWithRedirect', () => {
     const { result } = renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
+        routeNames,
         focusedRouteKey: 'settings-key',
         descriptors,
       })
@@ -71,7 +74,12 @@ describe('useVisibleTabsWithRedirect', () => {
 
   it('returns zero when the focused route is not visible', () => {
     const { result } = renderHook(() =>
-      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'hidden-key', descriptors })
+      useVisibleTabsWithRedirect({
+        routes,
+        routeNames,
+        focusedRouteKey: 'hidden-key',
+        descriptors,
+      })
     );
 
     expect(result.current.focusedIndex).toBe(0);
@@ -84,6 +92,7 @@ describe('useVisibleTabsWithRedirect', () => {
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
+        routeNames,
         focusedRouteKey: 'hidden-key',
         descriptors,
       })
@@ -100,6 +109,7 @@ describe('useVisibleTabsWithRedirect', () => {
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
+        routeNames,
         focusedRouteKey: 'hidden-key',
         descriptors,
       })
@@ -115,6 +125,7 @@ describe('useVisibleTabsWithRedirect', () => {
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
+        routeNames,
         focusedRouteKey: 'hidden-key',
         descriptors,
       })
@@ -128,7 +139,12 @@ describe('useVisibleTabsWithRedirect', () => {
     mockedUseIsFocused.mockReturnValue(false);
 
     renderHook(() =>
-      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'hidden-key', descriptors })
+      useVisibleTabsWithRedirect({
+        routes,
+        routeNames,
+        focusedRouteKey: 'hidden-key',
+        descriptors,
+      })
     );
 
     expect(replaceSpy).not.toHaveBeenCalled();
@@ -136,7 +152,12 @@ describe('useVisibleTabsWithRedirect', () => {
 
   it('does not redirect when the focused route is visible', () => {
     renderHook(() =>
-      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'home-key', descriptors })
+      useVisibleTabsWithRedirect({
+        routes,
+        routeNames,
+        focusedRouteKey: 'home-key',
+        descriptors,
+      })
     );
 
     expect(buildHref).toHaveBeenCalledWith(routes[0]);
@@ -150,6 +171,7 @@ describe('useVisibleTabsWithRedirect', () => {
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes: [routes[3]!],
+        routeNames: ['filesystem'],
         focusedRouteKey: 'filesystem-key',
         descriptors,
       })
@@ -157,5 +179,19 @@ describe('useVisibleTabsWithRedirect', () => {
 
     expect(replaceSpy).not.toHaveBeenCalled();
     expect(warnSpy.mock.calls).toMatchSnapshot();
+  });
+
+  it('orders visible routes and redirect fallback by route names', () => {
+    const { result } = renderHook(() =>
+      useVisibleTabsWithRedirect({
+        routes,
+        routeNames: ['settings/index', 'home', 'hidden', 'filesystem'],
+        focusedRouteKey: 'hidden-key',
+        descriptors,
+      })
+    );
+
+    expect(result.current.visibleRoutes).toEqual([routes[1], routes[0]]);
+    expect(replaceSpy).toHaveBeenCalledWith('/href/settings/index');
   });
 });

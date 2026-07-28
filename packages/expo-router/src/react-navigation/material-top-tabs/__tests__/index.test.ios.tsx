@@ -1,5 +1,5 @@
 import { userEvent } from '@testing-library/react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import type { PagerViewProps } from 'react-native-pager-view';
 import { TabView, type TabBarProps, type TabViewProps } from 'react-native-tab-view';
@@ -368,4 +368,44 @@ test('emits swipeStart and swipeEnd events', async () => {
 
   expect(onSwipeStart).toHaveBeenCalledTimes(1);
   expect(onSwipeEnd).toHaveBeenCalledTimes(1);
+});
+
+test('renders tabs in route names order while preserving focus', async () => {
+  let reverse!: () => void;
+
+  function Layout() {
+    const [reversed, setReversed] = useState(false);
+    reverse = () => setReversed(true);
+    const screens = [
+      <TopTabs.Screen key="index" name="index" />,
+      <TopTabs.Screen key="second" name="second" />,
+    ];
+    return (
+      <TopTabs
+        tabBar={({ state }: MaterialTopTabBarProps) => (
+          <View>
+            {state.routes.map((route: MaterialTopTabViewRoute, index: number) => (
+              <Text key={route.key} testID={`tab-${index}`}>
+                {route.name}:{route.key === state.routes[state.index]!.key ? 'focused' : 'blurred'}
+              </Text>
+            ))}
+          </View>
+        )}>
+        {reversed ? screens.reverse() : screens}
+      </TopTabs>
+    );
+  }
+
+  renderRouter({
+    _layout: Layout,
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  act(() => router.navigate('/second'));
+  act(() => reverse());
+
+  expect(screen.getByTestId('tab-0')).toHaveTextContent('second:focused');
+  expect(screen.getByTestId('tab-1')).toHaveTextContent('index:blurred');
+  expect(screen.getByText('Screen second')).toBeVisible();
 });

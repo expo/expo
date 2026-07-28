@@ -47,6 +47,7 @@ function DrawerNavigatorContent({
 }: ContentArgs) {
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: drawerState.routes,
+    routeNames: drawerState.routeNames,
     focusedRouteKey: drawerState.routes[drawerState.index]!.key,
     descriptors,
   });

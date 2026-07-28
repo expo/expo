@@ -30,7 +30,10 @@ const TopTabs = unstable_integrateWithRouter<
   TabRouterOptions,
   MaterialTopTabNavigatorCreateProps
 >(createStandardMaterialTopTabNavigator, TabRouter, {
-  createProps: ({ state }) => ({ preloadedRouteKeys: state.preloadedRouteKeys }),
+  createProps: ({ state }) => ({
+    routeNames: state.routeNames,
+    preloadedRouteKeys: state.preloadedRouteKeys,
+  }),
 });
 
 export type JSTopTabsProps = ComponentProps<typeof TopTabs>;

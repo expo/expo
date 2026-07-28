@@ -53,6 +53,39 @@ test('renders a bottom tab navigator and navigates between screens on tab press'
   expect(screen).toHavePathname('/second');
 });
 
+test('renders tabs in route names order while preserving focus', () => {
+  let reverse!: () => void;
+
+  function Layout() {
+    const [reversed, setReversed] = useState(false);
+    reverse = () => setReversed(true);
+    const screens = [
+      <Tabs.Screen key="index" name="index" />,
+      <Tabs.Screen key="second" name="second" />,
+    ];
+    return <Tabs>{reversed ? screens.reverse() : screens}</Tabs>;
+  }
+
+  renderRouter({
+    _layout: Layout,
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  act(() => router.navigate('/second'));
+  act(reverse);
+
+  expect(
+    screen.getByRole('button', { name: 'second, tab, 1 of 2' }).props.accessibilityState
+  ).toEqual({ selected: true });
+  expect(
+    screen.getByRole('button', { name: 'index, tab, 2 of 2' }).props.accessibilityState
+  ).toEqual({
+    selected: false,
+  });
+  expect(screen.queryByText('Screen second')).not.toBeNull();
+});
+
 test('handles screens preloading', () => {
   renderRouter({
     _layout: () => (

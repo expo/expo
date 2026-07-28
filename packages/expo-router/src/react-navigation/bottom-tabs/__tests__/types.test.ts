@@ -12,6 +12,9 @@ type TabsProps = ComponentProps<typeof Tabs>;
 export type _PublicPropsMatchTabs = Expect<Equal<JSTabsProps, TabsProps>>;
 
 // The props injected by `createProps` reach the content component but never the element.
+export type _RouteNamesIsNotPublic = Expect<
+  Equal<'routeNames' extends keyof TabsProps ? true : false, false>
+>;
 export type _PreloadedRouteKeysIsNotPublic = Expect<
   Equal<'preloadedRouteKeys' extends keyof TabsProps ? true : false, false>
 >;
@@ -20,6 +23,9 @@ export type _PopNestedStackToTopIsNotPublic = Expect<
 >;
 export type _ContentRequiresPreloadedRouteKeys = Expect<
   Equal<BottomTabNavigatorContentProps['preloadedRouteKeys'], string[]>
+>;
+export type _ContentRequiresRouteNames = Expect<
+  Equal<BottomTabNavigatorContentProps['routeNames'], string[]>
 >;
 export type _ContentRequiresPopNestedStackToTop = Expect<
   Equal<BottomTabNavigatorContentProps['popNestedStackToTop'], (routeKey: string) => void>
