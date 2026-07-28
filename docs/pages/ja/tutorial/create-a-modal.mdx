@@ -27,20 +27,20 @@ React Native は、アプリの他のコンテンツの上にコンテンツを�
 
 モーダルを実装する前に、新しいボタンを 3 つ追加します。これらのボタンは、ユーザーがメディアライブラリから画像を選択したり、プレースホルダー画像を使ったりした後に表示されます。ボタンのうちの 1 つが絵文字ピッカーのモーダルを開きます。
 
-**app/(tabs)/index.tsx** で:
+**src/app/(tabs)/index.tsx** で:
 
 1. モーダルを開くボタンや他のオプションの表示・非表示を切り替えるために、ブール値の状態変数 `showAppOptions` を宣言します。アプリ画面の読み込み時には `false` にして、画像を選択する前にはオプションを表示しないようにします。ユーザーが画像を選択したり、プレースホルダー画像を使ったりすると、`true` に設定します。
 2. `pickImageAsync()` 関数を更新して、ユーザーが画像を選択した後に `showAppOptions` の値を `true` に設定します。
 3. テーマが設定されていないボタンに、次の値を持つ `onPress` プロパティを追加して更新します。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 
@@ -106,10 +106,10 @@ const styles = StyleSheet.create({
 
 上記のスニペットでは、`showAppOptions` の値に応じて `Button` コンポーネントをレンダリングし、ボタンを三項演算子ブロックの中に移動しています。`showAppOptions` の値が `true` の場合は、空の `<View>` コンポーネントをレンダリングします。この状態については次のステップで対応します。
 
-次に、**components/Button.tsx** で 2 つ目のボタンをレンダリングする際の `Button` コンポーネントから `alert` を削除し、`onPress` プロパティを更新します。
+次に、**src/components/button.tsx** で 2 つ目のボタンをレンダリングする際の `Button` コンポーネントから `alert` を削除し、`onPress` プロパティを更新します。
 
 {/* prettier-ignore */}
-```tsx components/Button.tsx
+```tsx src/components/button.tsx
 <Pressable style={styles.button} /* @tutinfo `alert()` を `onPress` に置き換えます。*/ onPress={onPress}/* @end */>
 ```
 
@@ -129,9 +129,9 @@ const styles = StyleSheet.create({
 
 親の `<View>` の中に、横一列に並んだ 3 つのボタンが含まれています。中央のプラスアイコン (+) のボタンはモーダルを開くもので、他の 2 つとは異なるスタイルになっています。
 
-**components** ディレクトリ内に、次のコードで新しい **CircleButton.tsx** ファイルを作成します。
+**src/components** ディレクトリ内に、次のコードで新しい **circle-button.tsx** ファイルを作成します。
 
-```tsx components/CircleButton.tsx
+```tsx src/components/circle-button.tsx
 import { View, Pressable, StyleSheet } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -171,13 +171,13 @@ const styles = StyleSheet.create({
 
 プラスアイコンを描画するために、このボタンは `@expo/vector-icons` ライブラリの `<MaterialIcons>` アイコンセットを使用します。
 
-他の 2 つのボタンも `<MaterialIcons>` を使い、縦に並んだテキストラベルとアイコンを表示します。**components** ディレクトリ内に **IconButton.tsx** という名前のファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
+他の 2 つのボタンも `<MaterialIcons>` を使い、縦に並んだテキストラベルとアイコンを表示します。**src/components** ディレクトリ内に **icon-button.tsx** という名前のファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
 
 - `icon`: `MaterialIcons` ライブラリのアイコン名に対応します。
 - `label`: ボタンに表示されるテキストラベルです。
 - `onPress`: ユーザーがボタンを押したときに実行される関数です。
 
-```tsx components/IconButton.tsx
+```tsx src/components/icon-button.tsx
 import { Pressable, StyleSheet, Text } from 'react-native';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
@@ -208,22 +208,22 @@ const styles = StyleSheet.create({
 });
 ```
 
-**app/(tabs)/index.tsx** 内で:
+**src/app/(tabs)/index.tsx** 内で:
 
 1. `CircleButton` と `IconButton` コンポーネントをインポートして表示できるようにします。
 2. これらのボタン用に 3 つのプレースホルダー関数を追加します。`onReset()` 関数はユーザーがリセットボタンを押したときに実行され、画像ピッカーのボタンが再度表示されるようにします。残りの 2 つの関数の機能は後で実装します。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
 /* @tutinfo `IconButton` と `CircleButton` コンポーネントをインポートします。*/
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
 /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
@@ -326,14 +326,14 @@ Android、iOS、web でアプリを確認してみましょう。
 
 ## 絵文字ピッカーのモーダルを作成する
 
-モーダルでは、利用可能な絵文字のリストからユーザーが絵文字を選択できます。**components** ディレクトリ内に **EmojiPicker.tsx** ファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
+モーダルでは、利用可能な絵文字のリストからユーザーが絵文字を選択できます。**src/components** ディレクトリ内に **emoji-picker.tsx** ファイルを作成します。このコンポーネントは 3 つのプロパティを受け取ります。
 
 - `isVisible`: モーダルの表示状態を決定するブール値です。
 - `onClose`: モーダルを閉じる関数です。
 - `children`: 後で絵文字のリストを表示するために使用します。
 
 {/* prettier-ignore */}
-```tsx components/EmojiPicker.tsx|collapseHeight=430
+```tsx src/components/emoji-picker.tsx|collapseHeight=430
 import { Modal, View, Text, Pressable, StyleSheet } from 'react-native';
 import { PropsWithChildren } from 'react';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
 - `animationType` プロパティは、モーダルが画面に表示されるときと消えるときの挙動を決定します。今回は、画面下からスライドして表示されます。
 - 最後に、`<EmojiPicker>` はユーザーが閉じる `<Pressable>` を押したときに `onClose` プロパティを実行します。
 
-それでは、**app/(tabs)/index.tsx** を変更しましょう。
+それでは、**src/app/(tabs)/index.tsx** を変更しましょう。
 
 1. `<EmojiPicker>` コンポーネントをインポートします。
 2. `useState` フックで `isModalVisible` 状態変数を作成します。デフォルト値は `false` で、ユーザーがボタンを押すまでモーダルは非表示のままです。
@@ -405,17 +405,17 @@ const styles = StyleSheet.create({
 5. `Index` コンポーネントの末尾に `<EmojiPicker>` コンポーネントを配置します。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import { View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
 /* @tutinfo `EmojiPicker` コンポーネントをインポートします。 */
-import EmojiPicker from '@/components/EmojiPicker';
+import EmojiPicker from '@/components/emoji-picker';
 /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
@@ -528,10 +528,10 @@ const styles = StyleSheet.create({
 
 モーダルのコンテンツ内に絵文字の横リストを追加しましょう。これには React Native の [`<FlatList>`](https://reactnative.dev/docs/flatlist) コンポーネントを使用します。
 
-**components** ディレクトリ内に **EmojiList.tsx** ファイルを作成し、次のコードを追加します。
+**src/components** ディレクトリ内に **emoji-list.tsx** ファイルを作成し、次のコードを追加します。
 
 {/* prettier-ignore */}
-```tsx components/EmojiList.tsx
+```tsx src/components/emoji-list.tsx
 import { useState } from 'react';
 import { ImageSourcePropType, StyleSheet, FlatList, Platform, Pressable } from 'react-native';
 import { Image } from 'expo-image';
@@ -543,12 +543,12 @@ type Props = {
 
 export default function EmojiList({ onSelect, onCloseModal }: Props) {
   const [emoji] = useState<ImageSourcePropType[]>([
-    require("../assets/images/emoji1.png"),
-    require("../assets/images/emoji2.png"),
-    require("../assets/images/emoji3.png"),
-    require("../assets/images/emoji4.png"),
-    require("../assets/images/emoji5.png"),
-    require("../assets/images/emoji6.png"),
+    require("@/assets/images/emoji1.png"),
+    require("@/assets/images/emoji2.png"),
+    require("@/assets/images/emoji3.png"),
+    require("@/assets/images/emoji4.png"),
+    require("@/assets/images/emoji5.png"),
+    require("@/assets/images/emoji6.png"),
   ]);
 
   return (
@@ -593,21 +593,21 @@ const styles = StyleSheet.create({
 - また、`data` プロパティの値として `emoji` 配列変数のアイテムの配列を受け取ります。`renderItem` プロパティは `data` から各アイテムを受け取り、リスト内のアイテムとして返します。最後に、このアイテムを表示するために `Image` と `<Pressable>` コンポーネントを追加しました。
 - `horizontal` プロパティは、リストを縦ではなく横方向にレンダリングします。`showsHorizontalScrollIndicator` は React Native の `Platform` モジュールで値を判定し、web では横スクロールバーを表示します。
 
-次に、**app/(tabs)/index.tsx** を更新して `<EmojiList>` コンポーネントをインポートし、`<EmojiPicker>` コンポーネント内のコメントを次のコードスニペットに置き換えます。
+次に、**src/app/(tabs)/index.tsx** を更新して `<EmojiList>` コンポーネントをインポートし、`<EmojiPicker>` コンポーネント内のコメントを次のコードスニペットに置き換えます。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx|collapseHeight=440
+```tsx src/app/(tabs)/index.tsx|collapseHeight=440
 import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
-import EmojiPicker from '@/components/EmojiPicker';
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
+import EmojiPicker from '@/components/emoji-picker';
 /* @tutinfo `EmojiList` コンポーネントをインポートします。 */
-import EmojiList from '@/components/EmojiList';
+import EmojiList from '@/components/emoji-list';
 /* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
@@ -719,9 +719,9 @@ Android、iOS、web でアプリを確認してみましょう。
 
 ## 選択した絵文字を表示する
 
-次に、画像の上に絵文字ステッカーを配置します。**components** ディレクトリに新しいファイルを作成し、**EmojiSticker.tsx** という名前にします。そして次のコードを追加します。
+次に、画像の上に絵文字ステッカーを配置します。**src/components** ディレクトリに新しいファイルを作成し、**emoji-sticker.tsx** という名前にします。そして次のコードを追加します。
 
-```tsx components/EmojiSticker.tsx|collapseHeight=300
+```tsx src/components/emoji-sticker.tsx|collapseHeight=300
 import { ImageSourcePropType, View } from 'react-native';
 import { Image } from 'expo-image';
 
@@ -744,21 +744,21 @@ export default function EmojiSticker({ imageSize, stickerSource }: Props) {
 - `imageSize`: `Index` コンポーネント内で定義された値です。次の章で、タップ時に画像サイズを変更するために使用します。
 - `stickerSource`: 選択された絵文字画像のソースです。
 
-このコンポーネントを **app/(tabs)/index.tsx** ファイルでインポートし、`Index` コンポーネントを更新して画像上に絵文字ステッカーを表示します。`pickedEmoji` 状態が `undefined` でないかをチェックします。
+このコンポーネントを **src/app/(tabs)/index.tsx** ファイルでインポートし、`Index` コンポーネントを更新して画像上に絵文字ステッカーを表示します。`pickedEmoji` 状態が `undefined` でないかをチェックします。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/index.tsx
+```tsx src/app/(tabs)/index.tsx
 import { ImageSourcePropType, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import { useState } from 'react';
 
-import Button from '@/components/Button';
-import ImageViewer from '@/components/ImageViewer';
-import IconButton from '@/components/IconButton';
-import CircleButton from '@/components/CircleButton';
-import EmojiPicker from '@/components/EmojiPicker';
-import EmojiList from '@/components/EmojiList';
-/* @tutinfo `EmojiSticker` コンポーネントをインポートします。 */import EmojiSticker from '@/components/EmojiSticker';/* @end */
+import Button from '@/components/button';
+import ImageViewer from '@/components/image-viewer';
+import IconButton from '@/components/icon-button';
+import CircleButton from '@/components/circle-button';
+import EmojiPicker from '@/components/emoji-picker';
+import EmojiList from '@/components/emoji-list';
+/* @tutinfo `EmojiSticker` コンポーネントをインポートします。 */import EmojiSticker from '@/components/emoji-sticker';/* @end */
 
 const PlaceholderImage = require('@/assets/images/background-image.png');
 

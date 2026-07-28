@@ -56,18 +56,12 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
       '# Create a project named StickerSmash',
       '$ npx create-expo-app@latest StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 54.',
-      '$ Select an Expo SDK version > SDK 54',
-      '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
     ],
     yarn: [
       '# Create a project named StickerSmash',
       '$ yarn create expo-app StickerSmash',
-      '',
-      '# CLI will prompt you to choose a template. Select SDK 54.',
-      '$ Select an Expo SDK version > SDK 54',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -76,18 +70,12 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
       '# Create a project named StickerSmash',
       '$ pnpm create expo-app StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 54.',
-      '$ Select an Expo SDK version > SDK 54',
-      '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
     ],
     bun: [
       '# Create a project named StickerSmash',
       '$ bun create expo StickerSmash',
-      '',
-      '# CLI will prompt you to choose a template. Select SDK 54.',
-      '$ Select an Expo SDK version > SDK 54',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -96,8 +84,6 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 />
 
 このコマンドは [デフォルト](/more/create-expo/#--template) テンプレートを使用して、StickerSmash という名前の新しいプロジェクトディレクトリを作成します。このテンプレートには、Expo Router を含む、アプリ構築に必要な基本的なボイラープレートコードとライブラリが含まれています。チュートリアルの中で必要に応じてライブラリを追加していきます。
-
-> **info** 現在、`create-expo-app@latest` は Expo SDK テンプレートの選択を求めます。このチュートリアルは SDK 54 向けに設計されているため、必ず SDK 54 のテンプレートを選択してください。
 
 <Collapsible summary="デフォルトテンプレートを使用するメリット">
 
@@ -148,11 +134,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
   }}
 />
 
-上記のコマンドを実行すると、**app** ディレクトリには 2 つのファイル (**index.tsx** と **\_layout.tsx**) が残ります。**app** ディレクトリと他のディレクトリ (**components**、**constants**、**hooks** &mdash; ボイラープレートコードを含む) からの以前のファイルは、スクリプトによって **app-example** ディレクトリに移動されます。進めながら独自のディレクトリやコンポーネントファイルを作成していきます。
+上記のコマンドを実行すると、**src/app** ディレクトリには 2 つのファイル (**index.tsx** と **\_layout.tsx**) が残ります。**src** ディレクトリと他のディレクトリ (**components**、**constants**、**hooks** — ボイラープレートコードを含む) からの以前のファイルは、スクリプトによって **example** ディレクトリに移動されます。進めながら独自のディレクトリやコンポーネントファイルを作成していきます。
 
 <Collapsible summary={<><CODE>reset-project</CODE> スクリプトは何をしますか？</>}>
 
-`reset-project` スクリプトは、プロジェクト内の **app** ディレクトリ構造をリセットし、プロジェクトのルートディレクトリにあった以前のボイラープレートファイルを、**app-example** という別のサブディレクトリにコピーします。これはメインアプリの構造の一部ではないため、削除して構いません。
+`reset-project` スクリプトは、プロジェクト内の **src/app** ディレクトリ構造をリセットし、プロジェクトの **src** ディレクトリにあった以前のボイラープレートファイルを、**example** という別のサブディレクトリに移動します。これはメインアプリの構造の一部ではないため、削除して構いません。
 
 </Collapsible>
 
@@ -197,11 +183,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 {/* vale on */}
 
-**app/index.tsx** ファイルは、アプリの画面に表示されるテキストを定義します。これはアプリのエントリーポイントであり、開発サーバーが起動したときに実行されます。背景とテキストを表示するために、React Native の `<View>` や `<Text>` などのコアコンポーネントを使用します。
+**src/app/index.tsx** ファイルは、アプリの画面に表示されるテキストを定義します。これはアプリのエントリーポイントであり、開発サーバーが起動したときに実行されます。背景とテキストを表示するために、React Native の `<View>` や `<Text>` などのコアコンポーネントを使用します。
 
 これらのコンポーネントに適用されるスタイルは、web で使われる CSS ではなく JavaScript オブジェクトを使います。ただし、これまでに web で CSS を使ったことがあれば、見覚えのあるプロパティが多いはずです。ほとんどの React Native コンポーネントは、JavaScript オブジェクトを値として受け取る `style` プロパティを受け付けます。詳細については [Styling in React Native](https://reactnative.dev/docs/style) を参照してください。
 
-**app/index.tsx** 画面を変更しましょう。
+**src/app/index.tsx** 画面を変更しましょう。
 
 1. `react-native` から `StyleSheet` をインポートし、カスタムスタイルを定義する `styles` オブジェクトを作成します。
 2. `<View>` に `styles.container.backgroundColor` プロパティを追加し、値を `#25292e` にします。これにより背景色が変わります。
@@ -209,13 +195,13 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 4. `<Text>` に `styles.text.color` プロパティを追加し、テキストの色を変えるために値を `#fff` (白) にします。
 
 {/* prettier-ignore */}
-```tsx app/index.tsx|collapseHeight=340
+```tsx src/app/index.tsx|collapseHeight=340
 import { Text, View, /* @tutinfo スタイルを定義するため `StyleSheet` をインポートします。 */ StyleSheet/* @end */ } from 'react-native';
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo 以前は "Edit app/index.tsx to edit this screen" と表示されていましたが、現在は "Home screen" と表示されます。 */
+      /* @tutinfo 以前は "Edit src/app/index.tsx to edit this screen" と表示されていましたが、現在は "Home screen" と表示されます。 */
       <Text style={styles.text}>Home screen</Text>
       /* @end */
     </View>
