@@ -112,7 +112,7 @@ Apple's Broadcast option lives inside the Push Notifications capability and has 
 
 EAS Build sets the Broadcast option only when it enables the Push Notifications capability, so your entitlements also need `aps-environment`. Apple limits [broadcast push notifications](https://developer.apple.com/documentation/usernotifications/setting-up-broadcast-push-notifications) to Live Activities on iOS 18 and later.
 
-If you enable Broadcast only in [Apple Developer Console][apple-dev-console], the next `eas build` resets the Push Notifications capability to its default options and turns Broadcast off. APNs then rejects your channel management requests with a `FeatureNotEnabled` error.
+If you enable Broadcast only in [Apple Developer Console][apple-dev-console], the next `eas build` resets the Push Notifications capability to its default options and turns Broadcast off. Apple Push Notification service (APNs) then rejects your channel management requests with a `FeatureNotEnabled` error.
 
 ## Capability identifiers
 
