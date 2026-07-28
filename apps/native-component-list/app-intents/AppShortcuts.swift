@@ -33,13 +33,13 @@ struct AppShortcuts: AppShortcutsProvider {
     )
 
     AppShortcut(
-      intent: CreateJournalEntryShortcutIntent(),
+      intent: CreateDraftShortcutIntent(),
       phrases: [
-        "Create a journal entry in \(.applicationName)",
-        "Write a journal entry in \(.applicationName)"
+        "Create a draft in \(.applicationName)",
+        "Draft an email in \(.applicationName)"
       ],
-      shortTitle: "Journal Entry",
-      systemImageName: "book.pages"
+      shortTitle: "New Draft",
+      systemImageName: "square.and.pencil"
     )
   }
 }

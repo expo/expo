@@ -28,23 +28,21 @@ type AppIntentsNavigationContextValue = {
   navigateToInitialAppScreen: () => boolean | void;
 };
 
-const AppIntentsNavigationContext =
-  React.createContext<AppIntentsNavigationContextValue | null>(null);
+const AppIntentsNavigationContext = React.createContext<AppIntentsNavigationContextValue | null>(
+  null
+);
 
 const screenNames: Record<AppIntentRoute, string> = {
   counter: 'AppIntentCounter',
   order: 'AppIntentOrderScreen',
-  journal: 'AppIntentJournalScreen',
+  mail: 'AppIntentMailScreen',
 };
 
 export function AppIntentsNavigationProvider({
   children,
   navigateToInitialAppScreen,
 }: React.PropsWithChildren<AppIntentsNavigationContextValue>) {
-  const value = React.useMemo(
-    () => ({ navigateToInitialAppScreen }),
-    [navigateToInitialAppScreen]
-  );
+  const value = React.useMemo(() => ({ navigateToInitialAppScreen }), [navigateToInitialAppScreen]);
 
   return (
     <AppIntentsNavigationContext.Provider value={value}>

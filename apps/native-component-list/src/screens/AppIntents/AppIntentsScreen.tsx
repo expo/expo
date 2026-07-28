@@ -1,5 +1,5 @@
-import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 import { optionalRequire } from '../../navigation/routeBuilder';
+import ComponentListScreen, { apiScreensToListElements } from '../ComponentListScreen';
 
 export const AppIntentsScreens = [
   {
@@ -19,11 +19,11 @@ export const AppIntentsScreens = [
     },
   },
   {
-    name: 'AppIntentJournalScreen',
-    route: 'app-intents/journal',
-    options: { title: 'App Intent Journal' },
+    name: 'AppIntentMailScreen',
+    route: 'app-intents/mail',
+    options: { title: 'App Intent Mail' },
     getComponent() {
-      return optionalRequire(() => require('./AppIntentJournalScreen'));
+      return optionalRequire(() => require('./AppIntentMailScreen'));
     },
   },
 ];

@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const counterStateKey = 'native-component-list:app-intents:counter';
 const latestOrderKey = 'native-component-list:app-intents:latest-order';
-const journalEntriesKey = 'native-component-list:app-intents:journal-entries';
+const mailDraftsKey = 'native-component-list:app-intents:mail-drafts';
 
 export type AppIntentInvocationLike = {
   id: string;
@@ -24,15 +24,17 @@ export type AppIntentOrder = {
   createdAt: number;
 };
 
-export type AppIntentJournalEntry = {
+export type AppIntentMailDraft = {
   id: string;
   invocationId: string;
-  title: string;
-  message: string;
+  subject: string;
+  body: string;
+  /** Recipient addresses, flattened from the intent's `[IntentPerson]` parameters. */
+  recipients: string[];
   createdAt: number;
 };
 
-export type AppIntentRoute = 'counter' | 'order' | 'journal';
+export type AppIntentRoute = 'counter' | 'order' | 'mail';
 
 export const appIntentDishCatalog = [
   {
@@ -97,6 +99,17 @@ function stringParam(params: Record<string, unknown>, name: string): string | un
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
+/**
+ * Native sends the recipients as a comma-separated address list, because
+ * `IntentPerson` has no JavaScript representation.
+ */
+function recipientsParam(params: Record<string, unknown>): string[] {
+  return (stringParam(params, 'recipients') ?? '')
+    .split(',')
+    .map((recipient) => recipient.trim())
+    .filter(Boolean);
+}
+
 function latestInvocation(invocations: AppIntentInvocationLike[]): AppIntentInvocationLike | null {
   if (invocations.length === 0) {
     return null;
@@ -151,42 +164,41 @@ async function recordLatestOrder(invocations: AppIntentInvocationLike[]): Promis
   });
 }
 
-export async function getJournalEntries(): Promise<AppIntentJournalEntry[]> {
-  return readJson<AppIntentJournalEntry[]>(journalEntriesKey, []);
+export async function getMailDrafts(): Promise<AppIntentMailDraft[]> {
+  return readJson<AppIntentMailDraft[]>(mailDraftsKey, []);
 }
 
-export async function clearJournalEntries(): Promise<void> {
-  await writeJson<AppIntentJournalEntry[]>(journalEntriesKey, []);
+export async function clearMailDrafts(): Promise<void> {
+  await writeJson<AppIntentMailDraft[]>(mailDraftsKey, []);
 }
 
-async function recordJournalEntries(invocations: AppIntentInvocationLike[]): Promise<void> {
+async function recordMailDrafts(invocations: AppIntentInvocationLike[]): Promise<void> {
   if (invocations.length === 0) {
     return;
   }
 
-  const existingEntries = await getJournalEntries();
-  const existingEntryIds = new Set(existingEntries.map((entry) => entry.id));
-  const newEntries = invocations
+  const existingDrafts = await getMailDrafts();
+  const existingDraftIds = new Set(existingDrafts.map((draft) => draft.id));
+  const newDrafts = invocations
     .slice()
     .sort((a, b) => a.createdAt - b.createdAt)
     .map((invocation) => {
-      const message = stringParam(invocation.params, 'message') ?? '';
-      const title = (stringParam(invocation.params, 'title') ?? message.slice(0, 40)) || 'Untitled';
+      const body = stringParam(invocation.params, 'body') ?? '';
+      const subject =
+        (stringParam(invocation.params, 'subject') ?? body.slice(0, 40)) || 'No subject';
       return {
         id: stringParam(invocation.params, 'id') ?? invocation.id,
         invocationId: invocation.id,
-        title,
-        message,
+        subject,
+        body,
+        recipients: recipientsParam(invocation.params),
         createdAt: invocation.createdAt,
       };
     })
-    .filter((entry) => !existingEntryIds.has(entry.id));
+    .filter((draft) => !existingDraftIds.has(draft.id));
 
-  if (newEntries.length > 0) {
-    await writeJson<AppIntentJournalEntry[]>(journalEntriesKey, [
-      ...newEntries,
-      ...existingEntries,
-    ]);
+  if (newDrafts.length > 0) {
+    await writeJson<AppIntentMailDraft[]>(mailDraftsKey, [...newDrafts, ...existingDrafts]);
   }
 }
 
@@ -196,8 +208,8 @@ function routeForInvocation(invocation: AppIntentInvocationLike | null): AppInte
       return 'counter';
     case 'orderFood':
       return 'order';
-    case 'createJournalEntry':
-      return 'journal';
+    case 'createMailDraft':
+      return 'mail';
     default:
       return null;
   }
@@ -219,14 +231,14 @@ export async function processAppIntentInvocations(
   const orderInvocations = supportedInvocations.filter(
     (invocation) => invocation.name === 'orderFood'
   );
-  const journalInvocations = supportedInvocations.filter(
-    (invocation) => invocation.name === 'createJournalEntry'
+  const mailInvocations = supportedInvocations.filter(
+    (invocation) => invocation.name === 'createMailDraft'
   );
 
   await Promise.all([
     recordCounterInvocations(counterInvocations),
     recordLatestOrder(orderInvocations),
-    recordJournalEntries(journalInvocations),
+    recordMailDrafts(mailInvocations),
   ]);
 
   const routeSource =
