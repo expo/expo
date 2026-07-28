@@ -21,6 +21,7 @@ import {
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
+  NativeStackNavigationConfig,
   NativeStackNavigationHelpers,
 } from '../types';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
@@ -31,7 +32,7 @@ type Props = {
   navigation: NativeStackNavigationHelpers;
   descriptors: NativeStackDescriptorMap;
   describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
-};
+} & NativeStackNavigationConfig;
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
 

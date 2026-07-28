@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Expose `unstable_nativeProps` props from Stack component ([#48152](https://github.com/expo/expo/pull/48152) by [@Ubax](https://github.com/Ubax))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
