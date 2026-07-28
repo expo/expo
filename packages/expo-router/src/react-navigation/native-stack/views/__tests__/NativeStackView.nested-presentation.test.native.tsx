@@ -5,7 +5,7 @@ import { ScreenStack as _ScreenStack } from 'react-native-screens';
 import { router } from '../../../../imperative-api';
 import Stack from '../../../../layouts/StackClient';
 import { renderRouter } from '../../../../testing-library';
-import type { NativeStackHostNativeProps, NativeStackNavigationOptions } from '../../types';
+import type { NativeStackNavigationConfig, NativeStackNavigationOptions } from '../../types';
 
 jest.mock('react-native-screens', () => {
   const actualScreens = jest.requireActual(
@@ -29,7 +29,7 @@ function nativeContainerStyleOf(testID: string) {
 /** Renders a root stack with a `sheet` screen using `presentation`, containing a nested stack. */
 function renderNestedStack(
   presentation: NativeStackNavigationOptions['presentation'],
-  nestedNativeProps?: NativeStackHostNativeProps
+  nestedNativeProps?: NativeStackNavigationConfig['unstable_nativeProps']
 ) {
   renderRouter({
     _layout: () => (
