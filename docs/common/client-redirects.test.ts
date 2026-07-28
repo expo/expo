@@ -106,7 +106,7 @@ test('does not rewrite /eas/** paths that are canonical (workflows, hosting, met
 
 test('redirects deleted create-a-build page to the introduction EAS path', () => {
   expect(getRedirectPath('/develop/development-builds/create-a-build/')).toEqual(
-    '/develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas'
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build'
   );
 });
 

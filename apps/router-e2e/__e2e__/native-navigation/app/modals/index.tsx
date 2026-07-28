@@ -29,6 +29,8 @@ const HomeIndex = () => {
           {featureFlags.experiment.synchronousScreenUpdatesEnabled ? 'Enabled' : 'Disabled'}
         </Text>
       </View>
+      <CaseLink href="/modals/form-sheet-nested" text="Form Sheet Modal - nested Stack" />
+      <CaseLink href="/modals/form-sheet-single" text="Form Sheet Modal - no nested Stack" />
       <CaseLink href="/modals/form-sheet" text="Form Sheet Modal" />
       <CaseLink href="/modals/form-sheet-content" text="Form Sheet Modal - fitToContent" />
       <CaseLink href="/modals/page-sheet" text="Page Sheet Modal" />

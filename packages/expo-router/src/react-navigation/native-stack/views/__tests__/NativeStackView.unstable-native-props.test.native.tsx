@@ -1,6 +1,9 @@
 import { screen } from '@testing-library/react-native';
 import { Text } from 'react-native';
-import { ScreenStackItem as _ScreenStackItem } from 'react-native-screens';
+import {
+  ScreenStack as _ScreenStack,
+  ScreenStackItem as _ScreenStackItem,
+} from 'react-native-screens';
 
 import Stack from '../../../../layouts/StackClient';
 import { renderRouter } from '../../../../testing-library';
@@ -12,10 +15,12 @@ jest.mock('react-native-screens', () => {
   ) as typeof import('react-native-screens');
   return {
     ...actualScreens,
+    ScreenStack: jest.fn((props) => <actualScreens.ScreenStack {...props} />),
     ScreenStackItem: jest.fn((props) => <actualScreens.ScreenStackItem {...props} />),
   };
 });
 
+const ScreenStack = _ScreenStack as jest.MockedFunction<typeof _ScreenStack>;
 const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
 
 function renderStack(options?: NativeStackNavigationOptions) {
@@ -35,6 +40,7 @@ function renderStack(options?: NativeStackNavigationOptions) {
 
 describe('unstable_nativeProps', () => {
   beforeEach(() => {
+    ScreenStack.mockClear();
     ScreenStackItem.mockClear();
   });
 
@@ -46,6 +52,34 @@ describe('unstable_nativeProps', () => {
     });
 
     expect(props.gestureEnabled).toBe(false);
+  });
+
+  it('forwards raw stack host props from Stack', () => {
+    const onFinishTransitioning = jest.fn();
+    const nativeContainerStyle = { backgroundColor: 'red' } as const;
+
+    renderRouter({
+      _layout: () => (
+        <Stack
+          unstable_nativeProps={{
+            testID: 'native-stack',
+            nativeContainerStyle,
+            onFinishTransitioning,
+          }}
+        />
+      ),
+      index: () => <Text testID="index">Index</Text>,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(ScreenStack.mock.calls[0]![0]).toEqual(
+      expect.objectContaining({
+        testID: 'native-stack',
+        nativeContainerStyle,
+        onFinishTransitioning,
+      })
+    );
+    expect(ScreenStackItem.mock.calls[0]![0].testID).toBeUndefined();
   });
 
   it('lets raw screen props override expo-router optional props', () => {

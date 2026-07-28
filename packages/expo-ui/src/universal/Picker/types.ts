@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 /**
- * The type of values a [`Picker.Item`](#pickeritem) can carry.
+ * The type of values a [`Picker.Item`](#picker) can carry.
  */
 export type PickerItemValue = string | number;
 
@@ -16,7 +16,7 @@ export type PickerItemValue = string | number;
 export type PickerAppearance = 'wheel' | 'menu';
 
 /**
- * Props for the [`Picker.Item`](#pickeritem) component.
+ * Props for the [`Picker.Item`](#picker) component.
  * A data-only marker used to declare options inside a [`Picker`](#picker).
  */
 export interface PickerItemProps<T extends PickerItemValue = PickerItemValue> {

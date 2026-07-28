@@ -478,6 +478,12 @@ export const LIVE_STREAMS = [
 
 export const YOUTUBE_VIDEOS = [
   {
+    title: 'How to build an iOS widget',
+    event: 'Expo Tutorials',
+    videoId: '3r_OHePTCcI',
+    uploadDate: '2026-07-27',
+  },
+  {
     title: 'The 3 tools you need to build mobile apps with AI',
     event: 'Expo Tutorials',
     videoId: 'WLGAuwagI8o',
