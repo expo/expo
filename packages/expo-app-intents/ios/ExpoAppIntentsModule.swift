@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import ExpoUI
 
 internal final class ShortcutsRefreshUnavailableException: Exception, @unchecked Sendable {
   override var reason: String {
@@ -18,6 +19,12 @@ public final class ExpoAppIntentsModule: Module {
     Events("onIntent")
 
     OnCreate {
+      if #available(iOS 18.4, *) {
+        ViewModifierRegistry.register("appEntityIdentifier") { params, appContext, _ in
+          return try AppEntityIdentifierModifier(from: params, appContext: appContext)
+        }
+      }
+
       invocationEventsTask = Task { [weak self] in
         for await invocation in await AppIntentDispatcher.shared.invocationEvents() {
           await self?.sendIntentEvent(invocation)
@@ -26,6 +33,10 @@ public final class ExpoAppIntentsModule: Module {
     }
 
     OnDestroy {
+      if #available(iOS 18.4, *) {
+        ViewModifierRegistry.unregister("appEntityIdentifier")
+      }
+
       invocationEventsTask?.cancel()
       invocationEventsTask = nil
     }

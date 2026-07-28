@@ -1,10 +1,11 @@
 import AppIntents
+@preconcurrency import CoreSpotlight
 import Foundation
 internal import ExpoAppIntents
 
 @available(iOS 18.0, *)
 @AppEntity(schema: .mail.draft)
-struct MailDraftEntity {
+struct MailDraftEntity: IndexedEntity {
   static let defaultQuery = MailDraftEntityQuery()
 
   var id: String
@@ -42,20 +43,49 @@ struct MailDraftEntity {
    subtitle carries the body, so Siri can resolve a draft the user names out loud.
    */
   init(record: AppIntentEntityRecord) {
+    let bodyText = record.metadata["body"] ?? record.subtitle ?? ""
+    let recipients = (record.metadata["recipients"] ?? "")
+      .split(separator: ",")
+      .map { $0.trimmingCharacters(in: .whitespaces) }
+      .filter { !$0.isEmpty }
+
     self.init(
       id: record.id,
-      to: [],
+      to: recipients.map { IntentPerson(handle: .init(emailAddress: $0)) },
       cc: [],
       bcc: [],
       subject: record.title.isEmpty ? nil : record.title,
-      body: record.subtitle.map(AttributedString.init),
+      body: bodyText.isEmpty ? nil : AttributedString(bodyText),
       attachments: [],
       account: MailAccountEntity.default
     )
   }
 
   var displayRepresentation: DisplayRepresentation {
-    return DisplayRepresentation(title: "\(displaySubject)", subtitle: "\(bodyPreview)")
+    return DisplayRepresentation(
+      title: "\(displaySubject)",
+      subtitle: "\(bodyPreview)",
+      image: DisplayRepresentation.Image(systemName: "envelope", isTemplate: true)
+    )
+  }
+
+  /**
+   Spotlight metadata for the indexed draft. `defaultAttributeSet` already carries what the
+   `.mail.draft` schema declares indexing keys for, so this only fills in the rest.
+   */
+  var attributeSet: CSSearchableItemAttributeSet {
+    let attributes = defaultAttributeSet
+    attributes.displayName = displaySubject
+    attributes.title = displaySubject
+    attributes.subject = subject
+    attributes.textContent = bodyText
+    attributes.contentDescription = bodyText
+    attributes.recipientEmailAddresses = to.compactMap(Self.emailAddress(of:))
+    attributes.authorEmailAddresses = [account.emailAddress]
+    attributes.userCreated = NSNumber(value: true)
+    attributes.domainIdentifier = MailDraftIndexer.domainIdentifier
+    attributes.keywords = ["mail", "draft", "email", displaySubject]
+    return attributes
   }
 
   var displaySubject: String {
@@ -80,6 +110,13 @@ struct MailDraftEntity {
    */
   var recipientList: String {
     return (to + cc + bcc).compactMap(Self.address(of:)).joined(separator: ", ")
+  }
+
+  static func emailAddress(of person: IntentPerson) -> String? {
+    guard let handle = person.handle, case .emailAddress(let emailAddress) = handle.value else {
+      return nil
+    }
+    return emailAddress
   }
 
   private static func address(of person: IntentPerson) -> String? {
