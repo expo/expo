@@ -866,9 +866,13 @@ You can also pass any of the [shared parameters](#shared-parameters).
 
 #### Outputs
 
-| Output       | Type   | Description                     |
-| ------------ | ------ | ------------------------------- |
-| asc_build_id | string | The App Store Connect build ID. |
+You can reference the following outputs in subsequent jobs:
+
+| Output                | Type   | Description                                       |
+| --------------------- | ------ | ------------------------------------------------- |
+| asc_build_id          | string | The App Store Connect build ID.                   |
+| apple_app_id          | string | The Apple App ID of the submitted build.          |
+| ios_bundle_identifier | string | The iOS bundle identifier of the submitted build. |
 
 #### Examples
 
