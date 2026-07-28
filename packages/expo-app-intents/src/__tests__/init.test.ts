@@ -11,10 +11,12 @@ const TEMPLATES = {
   'examples/restaurant/OrderFoodIntent.swift': 'restaurant intent',
   'examples/restaurant/Entities/DishEntity.swift': 'dish entity',
   'examples/restaurant/Queries/DishQuery.swift': 'dish query',
-  'examples/journal/CreateJournalEntryShortcutIntent.swift': 'journal shortcut intent',
-  'examples/journal/CreateJournalEntryIntent.swift': 'journal intent',
-  'examples/journal/Entities/JournalEntryEntity.swift': 'journal entity',
-  'examples/journal/Queries/JournalEntryQuery.swift': 'journal query',
+  'examples/mail/CreateDraftShortcutIntent.swift': 'mail shortcut intent',
+  'examples/mail/CreateDraftIntent.swift': 'mail intent',
+  'examples/mail/Entities/MailDraftEntity.swift': 'mail draft entity',
+  'examples/mail/Entities/MailAccountEntity.swift': 'mail account entity',
+  'examples/mail/Queries/MailDraftEntityQuery.swift': 'mail draft query',
+  'examples/mail/Queries/MailAccountEntityQuery.swift': 'mail account query',
 };
 
 function templateFiles(templatesDir: string) {
@@ -30,10 +32,10 @@ describe(resolveExamples, () => {
   });
 
   it('accepts multiple values and comma-separated values', () => {
-    expect(resolveExamples(['counter', 'restaurant,journal'])).toEqual([
+    expect(resolveExamples(['counter', 'restaurant,mail'])).toEqual([
       'counter',
       'restaurant',
-      'journal',
+      'mail',
     ]);
   });
 
@@ -42,7 +44,7 @@ describe(resolveExamples, () => {
   });
 
   it('expands all to every non-minimal example', () => {
-    expect(resolveExamples(['all'])).toEqual(['counter', 'restaurant', 'journal']);
+    expect(resolveExamples(['all'])).toEqual(['counter', 'restaurant', 'mail']);
   });
 
   it('throws for unknown examples', () => {
@@ -69,7 +71,7 @@ describe(getExamplesPrompt, () => {
           description: expect.stringContaining('Dish entity catalog'),
         }),
         expect.objectContaining({
-          value: 'journal',
+          value: 'mail',
           description: expect.stringContaining('schema domains'),
         }),
       ])
@@ -151,15 +153,15 @@ describe(runInit, () => {
     expect(vol.existsSync('/project/app-intents/OrderFoodIntent.swift')).toBe(true);
     expect(vol.existsSync('/project/app-intents/Entities/DishEntity.swift')).toBe(true);
     expect(vol.existsSync('/project/app-intents/Queries/DishQuery.swift')).toBe(true);
-    expect(vol.existsSync('/project/app-intents/CreateJournalEntryIntent.swift')).toBe(false);
+    expect(vol.existsSync('/project/app-intents/CreateDraftIntent.swift')).toBe(false);
 
     const shortcuts = vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8') as string;
     expect(shortcuts).toContain('IncreaseCounterIntent');
     expect(shortcuts).toContain('OrderFoodIntent');
-    expect(shortcuts).not.toContain('CreateJournalEntryIntent');
+    expect(shortcuts).not.toContain('CreateDraftIntent');
   });
 
-  it('adds a journal shortcut when the journal example is selected', async () => {
+  it('adds a mail shortcut when the mail example is selected', async () => {
     const templatesDir = '/pkg/templates';
     vol.fromJSON({
       '/project/package.json': JSON.stringify({ name: 'my-app' }),
@@ -170,20 +172,20 @@ describe(runInit, () => {
     await runInit({
       projectRoot: '/project',
       directory: 'app-intents',
-      examples: ['counter', 'restaurant', 'journal'],
+      examples: ['counter', 'restaurant', 'mail'],
       templatesDir,
     });
 
-    expect(vol.existsSync('/project/app-intents/CreateJournalEntryShortcutIntent.swift')).toBe(
-      true
-    );
-    expect(vol.existsSync('/project/app-intents/CreateJournalEntryIntent.swift')).toBe(true);
-    expect(vol.existsSync('/project/app-intents/Entities/JournalEntryEntity.swift')).toBe(true);
-    expect(vol.existsSync('/project/app-intents/Queries/JournalEntryQuery.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/CreateDraftShortcutIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/CreateDraftIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/Entities/MailAccountEntity.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/Queries/MailDraftEntityQuery.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/Queries/MailAccountEntityQuery.swift')).toBe(true);
 
     const shortcuts = vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8') as string;
-    expect(shortcuts).toContain('CreateJournalEntryShortcutIntent');
-    expect(shortcuts).toContain('Create a journal entry in \\(.applicationName)');
+    expect(shortcuts).toContain('CreateDraftShortcutIntent');
+    expect(shortcuts).toContain('Create a draft in \\(.applicationName)');
   });
 
   it('merges into existing experiments and plugins without duplication', async () => {

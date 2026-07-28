@@ -4,7 +4,7 @@ import path from 'path';
 import prompts from 'prompts';
 import type { PromptObject } from 'prompts';
 
-export const ALL_INIT_EXAMPLES = ['minimal', 'counter', 'restaurant', 'journal'] as const;
+export const ALL_INIT_EXAMPLES = ['minimal', 'counter', 'restaurant', 'mail'] as const;
 
 export type InitExample = (typeof ALL_INIT_EXAMPLES)[number];
 
@@ -22,7 +22,7 @@ const EXAMPLE_DESCRIPTIONS: Record<InitExample, string> = {
   minimal: 'Adds only the setup module and an empty AppShortcuts provider.',
   counter: 'Adds a Siri shortcut that opens the app and dispatches an increaseCounter invocation.',
   restaurant: 'Adds a dish-ordering shortcut backed by a dynamic Dish entity catalog.',
-  journal: 'Adds a Journal example that uses Apple App Intent schema domains.',
+  mail: 'Adds a mail draft example that uses Apple App Intent schema domains.',
 };
 
 const EXAMPLE_TEMPLATE_FILES: Record<Exclude<InitExample, 'minimal'>, string[]> = {
@@ -32,11 +32,13 @@ const EXAMPLE_TEMPLATE_FILES: Record<Exclude<InitExample, 'minimal'>, string[]> 
     'examples/restaurant/Entities/DishEntity.swift',
     'examples/restaurant/Queries/DishQuery.swift',
   ],
-  journal: [
-    'examples/journal/CreateJournalEntryShortcutIntent.swift',
-    'examples/journal/CreateJournalEntryIntent.swift',
-    'examples/journal/Entities/JournalEntryEntity.swift',
-    'examples/journal/Queries/JournalEntryQuery.swift',
+  mail: [
+    'examples/mail/CreateDraftShortcutIntent.swift',
+    'examples/mail/CreateDraftIntent.swift',
+    'examples/mail/Entities/MailDraftEntity.swift',
+    'examples/mail/Entities/MailAccountEntity.swift',
+    'examples/mail/Queries/MailDraftEntityQuery.swift',
+    'examples/mail/Queries/MailAccountEntityQuery.swift',
   ],
 };
 
@@ -78,14 +80,14 @@ const SHORTCUT_BLOCKS: Partial<Record<InitExample, string>> = {
       shortTitle: "Place an order",
       systemImageName: "fork.knife"
     )`,
-  journal: `    AppShortcut(
-      intent: CreateJournalEntryShortcutIntent(),
+  mail: `    AppShortcut(
+      intent: CreateDraftShortcutIntent(),
       phrases: [
-        "Create a journal entry in \\(.applicationName)",
-        "Write a journal entry in \\(.applicationName)"
+        "Create a draft in \\(.applicationName)",
+        "Draft an email in \\(.applicationName)"
       ],
-      shortTitle: "Journal Entry",
-      systemImageName: "book.pages"
+      shortTitle: "New Draft",
+      systemImageName: "square.and.pencil"
     )`,
 };
 
@@ -115,7 +117,7 @@ export function resolveExamples(values: readonly string[] | undefined): InitExam
     return DEFAULT_EXAMPLES;
   }
   if (normalizedValues.includes('all')) {
-    return ['counter', 'restaurant', 'journal'];
+    return ['counter', 'restaurant', 'mail'];
   }
 
   const invalid = normalizedValues.filter(
@@ -338,7 +340,5 @@ export async function runInit(options: InitOptions): Promise<void> {
   if (skipped.length) {
     console.log(`Skipped existing files: ${skipped.join(', ')}`);
   }
-  console.log(
-    `\nNext steps:\n  1. npx expo prebuild -p ios\n  2. npx expo run:ios`
-  );
+  console.log(`\nNext steps:\n  1. npx expo prebuild -p ios\n  2. npx expo run:ios`);
 }
