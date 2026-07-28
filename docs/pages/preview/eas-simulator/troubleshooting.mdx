@@ -62,14 +62,6 @@ Stop each unwanted ID:
 
 <Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop --id <session-id>']} />
 
-### The dotenv file points to a stopped session
-
-Confirm that the session is stopped, then remove the stale file:
-
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop', '$ rm -f .env.eas-simulator']} />
-
-Do not clear the file before stopping unless you saved the session ID elsewhere.
-
 ### A non-interactive session did not stop automatically
 
 `--non-interactive` returns after the controller is ready. It does not stop the session. Run:
@@ -82,7 +74,7 @@ Do not clear the file before stopping unless you saved the session ID elsewhere.
 
 The controller tunnel has dropped or the remote VM has ended. A dropped controller invalidates the installed app state, accessibility references, and connection configuration.
 
-Stop the session if it is still active, remove **.env.eas-simulator**, then start a fresh session and repeat install → open → drive. Do not repeatedly retry a controller command against the dead endpoint.
+Stop the session if it is still active, then start a fresh session and repeat install → open → drive. Do not repeatedly retry a controller command against the dead endpoint.
 
 ### `Unknown command: tap` or `Unknown command: click`
 
