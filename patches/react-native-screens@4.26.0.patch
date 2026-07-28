@@ -1,22 +1,5 @@
-diff --git a/android/src/main/java/com/swmansion/rnscreens/gamma/helpers/ImageLoader.kt b/android/src/main/java/com/swmansion/rnscreens/gamma/helpers/ImageLoader.kt
-index f3ad60c1fa229957a2281f39d3f3f735eb510f78..0ccc6803a8028b33e4b20df274302618785cf383 100644
---- a/android/src/main/java/com/swmansion/rnscreens/gamma/helpers/ImageLoader.kt
-+++ b/android/src/main/java/com/swmansion/rnscreens/gamma/helpers/ImageLoader.kt
-@@ -56,8 +56,10 @@ private fun loadImageInternal(
- 
-                 if (closeableImage is CloseableStaticBitmap) {
-                     val bitmap = closeableImage.underlyingBitmap
--                    val drawable = bitmap.toDrawable(context.resources)
--                    onLoaded(drawable)
-+                    if (bitmap != null) {
-+                        val drawable = bitmap.toDrawable(context.resources)
-+                        onLoaded(drawable)
-+                    }
-                 }
- 
-                 imageReference.close()
 diff --git a/ios/RNSScreenContentWrapper.mm b/ios/RNSScreenContentWrapper.mm
-index 7756a55b7aef23de1ad248e3471cebf69e4aceba..a99df644938f7bc6f9e1409d3284c15577b4e059 100644
+index 7756a55..a99df64 100644
 --- a/ios/RNSScreenContentWrapper.mm
 +++ b/ios/RNSScreenContentWrapper.mm
 @@ -15,6 +15,15 @@ namespace react = facebook::react;
@@ -36,7 +19,7 @@ index 7756a55b7aef23de1ad248e3471cebf69e4aceba..a99df644938f7bc6f9e1409d3284c155
  {
    [self.delegate contentWrapper:self receivedReactFrame:frame];
 diff --git a/ios/RNSScreenFooter.mm b/ios/RNSScreenFooter.mm
-index 9c6f27973ee29ffb71602869a83bcb0632c47e4c..70774e8d039909f9ac3ce0af18f3158334c56b6d 100644
+index 9c6f279..70774e8 100644
 --- a/ios/RNSScreenFooter.mm
 +++ b/ios/RNSScreenFooter.mm
 @@ -12,6 +12,8 @@
@@ -49,7 +32,7 @@ index 9c6f27973ee29ffb71602869a83bcb0632c47e4c..70774e8d039909f9ac3ce0af18f31583
      _parent = nil;
    }
 diff --git a/ios/gamma/modals/form-sheet/RNSFormSheetContentWrapperComponentView.mm b/ios/gamma/modals/form-sheet/RNSFormSheetContentWrapperComponentView.mm
-index 3ffeda3281f67379a79caceac665ebd97917dc70..7a030292b40ad17c2dde7d413cbcde88b20bd196 100644
+index 3ffeda3..7a03029 100644
 --- a/ios/gamma/modals/form-sheet/RNSFormSheetContentWrapperComponentView.mm
 +++ b/ios/gamma/modals/form-sheet/RNSFormSheetContentWrapperComponentView.mm
 @@ -7,6 +7,15 @@ namespace react = facebook::react;
@@ -69,10 +52,10 @@ index 3ffeda3281f67379a79caceac665ebd97917dc70..7a030292b40ad17c2dde7d413cbcde88
  
  + (react::ComponentDescriptorProvider)componentDescriptorProvider
 diff --git a/ios/gamma/stack/host/RNSStackHostComponentView.mm b/ios/gamma/stack/host/RNSStackHostComponentView.mm
-index 7fc91bc821f1f4db742074cb4e9d517576706be0..2e4f4cc6e2d6027b6f377ee35d77344d15ded65c 100644
+index f947c8e..ec061ab 100644
 --- a/ios/gamma/stack/host/RNSStackHostComponentView.mm
 +++ b/ios/gamma/stack/host/RNSStackHostComponentView.mm
-@@ -29,6 +29,8 @@ namespace react = facebook::react;
+@@ -30,6 +30,8 @@ namespace react = facebook::react;
  - (instancetype)initWithFrame:(CGRect)frame
  {
    if (self = [super initWithFrame:frame]) {
@@ -82,7 +65,7 @@ index 7fc91bc821f1f4db742074cb4e9d517576706be0..2e4f4cc6e2d6027b6f377ee35d77344d
    }
    return self;
 diff --git a/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryComponentView.mm b/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryComponentView.mm
-index a47b40b51aad299d81e8402ee8cb622446845639..ecca7665689569ffae725c55b2121a14dd32f421 100644
+index a47b40b..ecca766 100644
 --- a/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryComponentView.mm
 +++ b/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryComponentView.mm
 @@ -25,6 +25,8 @@ namespace react = facebook::react;
@@ -95,7 +78,7 @@ index a47b40b51aad299d81e8402ee8cb622446845639..ecca7665689569ffae725c55b2121a14
    }
    return self;
 diff --git a/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryContentComponentView.mm b/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryContentComponentView.mm
-index e0c87b4b31400ce813432000028bfc3db8d91142..243210bde0e000b4c79d7f42c58a8134fe6f4be0 100644
+index ec7cec3..595aa31 100644
 --- a/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryContentComponentView.mm
 +++ b/ios/tabs/bottom-accessory/RNSTabsBottomAccessoryContentComponentView.mm
 @@ -17,7 +17,10 @@ namespace react = facebook::react;
