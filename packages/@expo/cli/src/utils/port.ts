@@ -145,7 +145,7 @@ export async function choosePortAsync(
 
 // TODO(Bacon): Revisit after all start and run code is merged.
 /** Picks a port without reading the environment. `resolveMetroPortAsync` is the entry point every command uses. */
-export async function resolvePortAsync(
+export async function _resolvePortAsync(
   projectRoot: string,
   {
     /** Should opt to reuse a port that is running the same project in another window. */
@@ -210,7 +210,7 @@ export async function resolveMetroPortAsync(
 ): Promise<number | null> {
   // NOTE(@kitten): We treat `--port` and `RCT_METRO_PORT` as the fixed preferred ports
   const requestedMetroPort = env.RCT_METRO_PORT;
-  const resolvedPort = await resolvePortAsync(projectRoot, {
+  const resolvedPort = await _resolvePortAsync(projectRoot, {
     reuseExistingPort,
     defaultPort,
     preferredPort: requestedMetroPort || fallbackPort || 8081,
