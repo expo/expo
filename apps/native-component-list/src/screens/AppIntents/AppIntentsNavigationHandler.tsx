@@ -138,10 +138,13 @@ export function AppIntentsNavigationHandler({
       result.handledInvocationIds.map((id) => AppIntents.removePendingInvocationAsync(id))
     );
 
-    const didCreateDraft =
-      pendingIntents.some((invocation) => invocation.name === 'createMailDraft') ||
-      newIntent?.name === 'createMailDraft';
-    if (didCreateDraft) {
+    // Creating or deleting drafts changes the catalog, so the entity store and the Spotlight
+    // index both need to be rebuilt from the new state.
+    const mutatingNames = ['createMailDraft', 'deleteMailDrafts'];
+    const didMutateDrafts =
+      pendingIntents.some((invocation) => mutatingNames.includes(invocation.name)) ||
+      (newIntent != null && mutatingNames.includes(newIntent.name));
+    if (didMutateDrafts) {
       try {
         await syncMailDraftCatalogAsync();
       } catch (error) {
