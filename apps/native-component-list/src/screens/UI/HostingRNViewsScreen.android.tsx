@@ -6,14 +6,18 @@ import {
   RNHostView,
   Card,
   LazyColumn,
+  LazyRow,
 } from '@expo/ui/jetpack-compose';
 import { fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
 import { useState } from 'react';
 import { Text as RNText, View, Pressable, FlatList } from 'react-native';
 
+const LAZY_ROW_BUTTONS = ['Button One', 'Button Two', 'Button Three', 'Button Four'];
+
 export default function HostingRNViewsScreen() {
   const [counter, setCounter] = useState(0);
   const [boxSize, setBoxSize] = useState(200);
+  const [lastPress, setLastPress] = useState<{ label: string; count: number } | null>(null);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -52,6 +56,37 @@ export default function HostingRNViewsScreen() {
                 </Pressable>
               </RNHostView>
             </Row>
+          </Column>
+        </Card>
+        <Card modifiers={[fillMaxWidth()]}>
+          <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
+            <ComposeText>Pressables inside a Compose LazyRow</ComposeText>
+            <ComposeText>
+              {`Regression test for presses on hosted RN content (#48131): taps, presses with slight finger movement, and presses on items scrolled into view must all fire, and must hit the button under the finger. Last press: ${lastPress ? `${lastPress.label} (${lastPress.count})` : 'none'}`}
+            </ComposeText>
+            <LazyRow horizontalArrangement={{ spacedBy: 12 }}>
+              {LAZY_ROW_BUTTONS.map((label) => (
+                <RNHostView key={label} matchContents>
+                  <Pressable
+                    onPress={() =>
+                      setLastPress((prev) => ({
+                        label,
+                        count: prev?.label === label ? prev.count + 1 : 1,
+                      }))
+                    }
+                    style={{
+                      width: 144,
+                      height: 56,
+                      borderRadius: 999,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      backgroundColor: '#9B59B6',
+                    }}>
+                    <RNText style={{ color: 'white', fontWeight: '600' }}>{label}</RNText>
+                  </Pressable>
+                </RNHostView>
+              ))}
+            </LazyRow>
           </Column>
         </Card>
         <Card modifiers={[fillMaxWidth()]}>
