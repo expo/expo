@@ -43,6 +43,7 @@
 
 ### 💡 Others
 
+- Remove the deprecated static-navigation API from `expo-router/react-navigation`. ([#48071](https://github.com/expo/expo/pull/48071) by [@Ubax](https://github.com/Ubax))
 - Remove `UNSTABLE_routeNamesChangeBehavior` and unhandled-state replay from `useNavigationBuilder`. ([#47985](https://github.com/expo/expo/pull/47985) by [@Ubax](https://github.com/Ubax))
 - Remove `useOnlyUserDefinedScreens` from `withLayoutContext` ([#47983](https://github.com/expo/expo/pull/47983) by [@Ubax](https://github.com/Ubax))
 - Move `@testing-library/jest-dom` and `@testing-library/user-event` from `dependencies` to `devDependencies` ([#47820](https://github.com/expo/expo/pull/47820) by [@krystofwoldrich](https://github.com/krystofwoldrich))

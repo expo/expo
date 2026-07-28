@@ -19,7 +19,6 @@ import {
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
-  type StaticConfig,
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../react-navigation/native';
@@ -123,7 +122,6 @@ export function createExperimentalStackNavigator<
     };
     Navigator: typeof ExperimentalStackNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(ExperimentalStackNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(ExperimentalStackNavigator)();
 }

@@ -11,7 +11,6 @@ import {
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
-  type StaticConfig,
   type TypedNavigator,
   useLocale,
   useNavigationBuilder,
@@ -108,7 +107,6 @@ export function createStackNavigator<
     };
     Navigator: typeof StackNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(StackNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(StackNavigator)();
 }
