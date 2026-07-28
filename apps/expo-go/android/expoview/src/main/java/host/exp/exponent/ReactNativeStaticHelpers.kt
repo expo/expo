@@ -4,13 +4,7 @@ package host.exp.exponent
 import android.util.Log
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.common.JavascriptException
-import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor
-import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpNetworkInterceptor
-import host.exp.exponent.network.ExponentNetwork
 import host.exp.expoview.Exponent
-import okhttp3.CookieJar
-import okhttp3.OkHttpClient
-import java.util.concurrent.TimeUnit
 
 @DoNotStrip
 object ReactNativeStaticHelpers {
@@ -156,26 +150,4 @@ object ReactNativeStaticHelpers {
     }
   }
 
-  private var exponentNetwork: ExponentNetwork? = null
-  fun setExponentNetwork(exponentNetwork: ExponentNetwork?) {
-    this.exponentNetwork = exponentNetwork
-  }
-
-  @DoNotStrip
-  @JvmStatic fun getOkHttpClient(callingClass: Class<*>): Any {
-    // we build the OkHttp client here so that one cache instance is shared by all concurrent OkHttp instances
-    val version = RNObject.versionForClassname(callingClass.name)
-    val cookieJar =
-      RNObject("com.facebook.react.modules.network.ReactCookieJarContainer").loadVersion(version)
-        .construct().get()
-    val client = OkHttpClient.Builder()
-      .connectTimeout(0, TimeUnit.MILLISECONDS)
-      .readTimeout(0, TimeUnit.MILLISECONDS)
-      .writeTimeout(0, TimeUnit.MILLISECONDS)
-      .cookieJar(cookieJar as CookieJar)
-      .cache(exponentNetwork!!.cache)
-      .addInterceptor(ExpoNetworkInspectOkHttpAppInterceptor())
-      .addNetworkInterceptor(ExpoNetworkInspectOkHttpNetworkInterceptor())
-    return client.build()
-  }
 }
