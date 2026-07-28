@@ -32,7 +32,7 @@ An app running a conformant Expo Updates client library MUST load the most recen
 
 The following describes how a conformant Expo Updates client library MUST retrieve a new update from a conformant server:
 
-1. The client library will make a [request](#request) for the most recent manifest, with constraints specified in the headers.
+1. The client library will make a [request](#manifest-request) for the most recent manifest, with constraints specified in the headers.
 2. If a new manifest is downloaded, the client library will proceed to make additional requests to download and store any missing assets specified in the manifest.
 3. The client library will edit its local state to reflect that a new update has been added to the local cache. It will also update the local state with the new `expo-manifest-filters` and `expo-server-defined-headers` found in the response [headers](#manifest-response-headers).
 

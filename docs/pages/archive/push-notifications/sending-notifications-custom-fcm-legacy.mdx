@@ -10,7 +10,7 @@ description: Learn how to send notifications with FCM legacy server.
 >
 > Before sending a notification directly through FCM, you will need to [obtain a device token](/push-notifications/sending-notifications-custom/).
 
-Communicating with FCM is done by sending a POST request. However, before sending or receiving any notifications, you'll need to follow the steps to [configure FCM](/push-notifications/push-notifications-setup/#android) to configure FCM and get your `FCM-SERVER-KEY`.
+Communicating with FCM is done by sending a POST request. However, before sending or receiving any notifications, you'll need to follow the steps to [configure FCM](/push-notifications/push-notifications-setup/#get-credentials-for-development-builds) to configure FCM and get your `FCM-SERVER-KEY`.
 
 ```js
 await fetch('https://fcm.googleapis.com/fcm/send', {
@@ -38,7 +38,7 @@ FCM also provides some [server-side libraries in a few different languages](http
 
 ### How to find FCM server key
 
-Your FCM server key can be found by making sure you've followed the [configuration steps](/push-notifications/push-notifications-setup/#android), and instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the previous example).
+Your FCM server key can be found by making sure you've followed the [configuration steps](/push-notifications/push-notifications-setup/#get-credentials-for-development-builds), and instead of uploading your FCM key to Expo, you would use that key directly in your server (as the `FCM-SERVER-KEY` in the previous example).
 
 ## Payload format
 
