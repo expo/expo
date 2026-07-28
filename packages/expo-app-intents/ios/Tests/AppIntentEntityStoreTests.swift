@@ -23,7 +23,13 @@ struct AppIntentEntityStoreTests {
     try await store.setCatalog(
       kind: "trail",
       entities: [
-        AppIntentEntityRecord(id: "t1", title: "Eagle Peak", subtitle: "5 km", synonyms: ["eagle"]),
+        AppIntentEntityRecord(
+          id: "t1",
+          title: "Eagle Peak",
+          subtitle: "5 km",
+          synonyms: ["eagle"],
+          metadata: ["difficulty": "moderate"]
+        ),
         AppIntentEntityRecord(id: "t2", title: "Lake Loop", subtitle: nil, synonyms: []),
       ]
     )
@@ -33,7 +39,9 @@ struct AppIntentEntityStoreTests {
     #expect(all[0].title == "Eagle Peak")
     #expect(all[0].subtitle == "5 km")
     #expect(all[0].synonyms == ["eagle"])
+    #expect(all[0].metadata == ["difficulty": "moderate"])
     #expect(all[1].subtitle == nil)
+    #expect(all[1].metadata == [:])
   }
 
   @Test

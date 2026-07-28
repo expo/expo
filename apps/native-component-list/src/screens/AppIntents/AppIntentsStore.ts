@@ -42,6 +42,49 @@ export type AppIntentMailDraft = {
 
 export type AppIntentRoute = 'counter' | 'order' | 'mail';
 
+export const appIntentSampleMailDrafts: AppIntentMailDraft[] = [
+  {
+    id: 'sample-draft-release-notes',
+    invocationId: 'sample-draft-release-notes',
+    subject: 'Release notes for review',
+    body: 'Draft of the notes for the next release. Skimming for anything that reads as a breaking change before it goes out.',
+    recipients: ['maya@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 8, 20),
+  },
+  {
+    id: 'sample-draft-standup-recap',
+    invocationId: 'sample-draft-standup-recap',
+    subject: 'Standup recap',
+    body: 'Short recap of what we covered: the entity catalog is wired up and the shortcut phrases resolve.',
+    recipients: ['team@example.com', 'ravi@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 10, 45),
+  },
+  {
+    id: 'sample-draft-design-feedback',
+    invocationId: 'sample-draft-design-feedback',
+    subject: 'Feedback on the compose screen',
+    body: 'Two notes on the compose screen: the recipient chips need more contrast, and the subject field should keep focus.',
+    recipients: ['iris@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 13, 10),
+  },
+  {
+    id: 'sample-draft-conference-trip',
+    invocationId: 'sample-draft-conference-trip',
+    subject: 'Conference travel details',
+    body: 'Flights are booked and the hotel is confirmed. Sending the itinerary so nobody has to ask for it twice.',
+    recipients: ['travel@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 18, 35),
+  },
+  {
+    id: 'sample-draft-thanks-next-steps',
+    invocationId: 'sample-draft-thanks-next-steps',
+    subject: 'Thanks and next steps',
+    body: 'Thanks for walking through the App Intents setup. Next step is confirming the draft resolves as an entity in Spotlight.',
+    recipients: ['sam@example.com'],
+    createdAt: Date.UTC(2026, 5, 30, 21, 5),
+  },
+];
+
 export const appIntentDishCatalog = [
   {
     id: 'margherita-pizza',
@@ -78,6 +121,7 @@ type AppIntentProcessingResult = {
    */
   route: AppIntentRoute | null;
   routeInvocationId?: string;
+  routeDraftId?: string;
 };
 
 /**
@@ -315,6 +359,20 @@ export async function clearMailDrafts(): Promise<void> {
   await withSerializedStateUpdate(() => writeJson<AppIntentMailDraft[]>(mailDraftsKey, []));
 }
 
+export async function addSampleMailDrafts(): Promise<AppIntentMailDraft[]> {
+  const existingDrafts = await getMailDrafts();
+  const existingDraftIds = new Set(existingDrafts.map((draft) => draft.id));
+  const newDrafts = appIntentSampleMailDrafts.filter((draft) => !existingDraftIds.has(draft.id));
+
+  if (newDrafts.length === 0) {
+    return existingDrafts;
+  }
+
+  const drafts = [...newDrafts, ...existingDrafts];
+  await writeJson<AppIntentMailDraft[]>(mailDraftsKey, drafts);
+  return drafts;
+}
+
 /**
  * Projects the drafts into the shape the native `MailDraftEntity.init(record:)` reads: the record's
  * title carries the subject and its subtitle carries the body.
@@ -404,6 +462,8 @@ const appIntentHandlers: Record<string, AppIntentHandlerDescriptor> = {
   orderFood: { route: 'order', opensApp: true },
   createMailDraft: { route: 'mail', opensApp: true },
   deleteMailDrafts: { route: 'mail', opensApp: false },
+  // `.system.open`/`.mail.openDraft` exist to bring the app forward, so this one routes.
+  openMailDraft: { route: 'mail', opensApp: true },
 };
 
 function handlerForInvocation(
@@ -505,5 +565,7 @@ async function applyAppIntentInvocations(
     ),
     route: routeForInvocation(routeSource),
     routeInvocationId: routeSource?.id,
+    routeDraftId:
+      routeSource?.name === 'openMailDraft' ? stringParam(routeSource.params, 'id') : undefined,
   };
 }
