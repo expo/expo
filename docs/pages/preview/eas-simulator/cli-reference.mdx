@@ -34,16 +34,15 @@ The JSON output contains `available` and `accountName`. This command does not cr
 
 Important flags:
 
-| Flag                     | Description                                                                                             |
-| ------------------------ | ------------------------------------------------------------------------------------------------------- |
-| `-p, --platform`         | `ios` or `android`. Required in non-interactive mode; prompted for in an interactive terminal           |
-| `--type`                 | `agent-device`, `argent`, or `serve-sim`. Defaults to `agent-device`                                    |
-| `--package-version`      | Controller package version. Defaults to the service's latest version                                    |
-| `--max-duration-minutes` | Requested automatic stop time. Custom values are available only on paid plans                           |
-| `--out-config-type`      | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                               |
-| `--[no-]force`           | Whether to create a new session when a session ID already exists in the environment. Defaults to `true` |
-| `--non-interactive`      | Return after the controller is ready instead of staying attached                                        |
-| `--json`                 | Print machine-readable output and imply non-interactive mode                                            |
+| Flag                | Description                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------------- |
+| `-p, --platform`    | `ios` or `android`. Required in non-interactive mode; prompted for in an interactive terminal           |
+| `--type`            | `agent-device`, `argent`, or `serve-sim`. Defaults to `agent-device`                                    |
+| `--package-version` | Controller package version. Defaults to the service's latest version                                    |
+| `--out-config-type` | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                               |
+| `--[no-]force`      | Whether to create a new session when a session ID already exists in the environment. Defaults to `true` |
+| `--non-interactive` | Return after the controller is ready instead of staying attached                                        |
+| `--json`            | Print machine-readable output and imply non-interactive mode                                            |
 
 The default `dotenv` output writes configuration even when `--json` is used. Use `--out-config-type env` when you explicitly do not want the file.
 

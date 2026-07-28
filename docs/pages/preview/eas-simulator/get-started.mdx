@@ -148,18 +148,6 @@ If you started EAS CLI without `--non-interactive`, it remains attached. Press C
 
 </Step>
 
-## Bound the session duration
-
-Paid plans can request an automatic stop time:
-
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --non-interactive --max-duration-minutes 30',
-  ]}
-/>
-
-If `--max-duration-minutes` is not available for the account, omit it to use the plan-derived default.
-
 ## Avoid orphaned sessions
 
 Starting another session overwrites **.env.eas-simulator** by default but does not stop the earlier remote session. Before starting again, list active sessions:
