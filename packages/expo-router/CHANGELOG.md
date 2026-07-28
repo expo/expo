@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Unset `nativeContainerStyle` in transparent presentations ([#48154](https://github.com/expo/expo/pull/48154) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 56.2.22 — 2026-10-21

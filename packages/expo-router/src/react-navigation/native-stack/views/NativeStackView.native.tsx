@@ -35,6 +35,7 @@ import {
   usePreventRemoveContext,
   useTheme,
 } from '../../native';
+import { ScreenPresentationContext } from '../utils/ScreenPresentationContext';
 import { debounce } from '../utils/debounce';
 import { getModalRouteKeys } from '../utils/getModalRoutesKeys';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
@@ -409,45 +410,49 @@ const SceneView = ({
         // So we keep any props that need it at the end
         // Otherwise invalid props may not be caught by TypeScript
         shouldFreeze={shouldFreeze}>
-        <AnimatedHeaderHeightContext.Provider value={animatedHeaderHeight}>
-          <HeaderHeightContext.Provider
-            value={headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0)}>
-            {headerBackground != null ? (
-              /**
-               * To show a custom header background, we render it at the top of the screen below the header
-               * The header also needs to be positioned absolutely (with `translucent` style)
-               */
-              <View
-                style={[
-                  styles.background,
-                  headerTransparent ? styles.translucent : null,
-                  { height: headerHeight },
-                ]}>
-                {headerBackground()}
-              </View>
-            ) : null}
-            {header != null && headerShown !== false ? (
-              <View
-                onLayout={(e) => {
-                  const headerHeight = e.nativeEvent.layout.height;
+        <ScreenPresentationContext.Provider value={presentation}>
+          <AnimatedHeaderHeightContext.Provider value={animatedHeaderHeight}>
+            <HeaderHeightContext.Provider
+              value={headerShown !== false ? headerHeight : (parentHeaderHeight ?? 0)}>
+              {headerBackground != null ? (
+                /**
+                 * To show a custom header background, we render it at the top of the screen below the header
+                 * The header also needs to be positioned absolutely (with `translucent` style)
+                 */
+                <View
+                  style={[
+                    styles.background,
+                    headerTransparent ? styles.translucent : null,
+                    { height: headerHeight },
+                  ]}>
+                  {headerBackground()}
+                </View>
+              ) : null}
+              {header != null && headerShown !== false ? (
+                <View
+                  onLayout={(e) => {
+                    const headerHeight = e.nativeEvent.layout.height;
 
-                  setHeaderHeight(headerHeight);
-                  rawAnimatedHeaderHeight.setValue(headerHeight);
-                }}
-                style={[styles.header, headerTransparent ? styles.absolute : null]}>
-                {header({
-                  back: headerBack,
-                  options,
-                  route,
-                  navigation,
-                })}
-              </View>
-            ) : null}
-            <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
-              <HeaderBackContext.Provider value={headerBack}>{render()}</HeaderBackContext.Provider>
-            </HeaderShownContext.Provider>
-          </HeaderHeightContext.Provider>
-        </AnimatedHeaderHeightContext.Provider>
+                    setHeaderHeight(headerHeight);
+                    rawAnimatedHeaderHeight.setValue(headerHeight);
+                  }}
+                  style={[styles.header, headerTransparent ? styles.absolute : null]}>
+                  {header({
+                    back: headerBack,
+                    options,
+                    route,
+                    navigation,
+                  })}
+                </View>
+              ) : null}
+              <HeaderShownContext.Provider value={isParentHeaderShown || headerShown !== false}>
+                <HeaderBackContext.Provider value={headerBack}>
+                  {render()}
+                </HeaderBackContext.Provider>
+              </HeaderShownContext.Provider>
+            </HeaderHeightContext.Provider>
+          </AnimatedHeaderHeightContext.Provider>
+        </ScreenPresentationContext.Provider>
       </ScreenStackItem>
     </NavigationProvider>
   );
@@ -470,6 +475,12 @@ export function NativeStackView({
   const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
+  const parentPresentation = use(ScreenPresentationContext);
+  const isInTransparentPresentation =
+    parentPresentation === 'formSheet' ||
+    parentPresentation === 'transparentModal' ||
+    parentPresentation === 'containedTransparentModal';
+
   useInvalidPreventRemoveError(descriptors);
 
   const modalRouteKeys = getModalRouteKeys(state.routes, descriptors);
@@ -485,7 +496,9 @@ export function NativeStackView({
   return (
     <SafeAreaProviderCompat>
       <ScreenStack
-        nativeContainerStyle={{ backgroundColor: colors.background }}
+        nativeContainerStyle={
+          isInTransparentPresentation ? undefined : { backgroundColor: colors.background }
+        }
         style={styles.container}
         {...unstable_nativeProps}>
         {state.routes.concat(state.preloadedRoutes).map((route, index) => {
