@@ -9,13 +9,13 @@ import fs from 'fs-extra';
 import { glob } from 'glob';
 import path from 'path';
 
+import { getPrecompileDir } from '../Directories';
+import { getPackageByName } from '../Packages';
 import type { DownloadedDependencies } from './Artifacts.types';
 import type { SPMPackageSource } from './ExternalPackage';
 import { getExternalPackageByProductName } from './ExternalPackage';
 import { Frameworks } from './Frameworks';
 import { BuildFlavor } from './Prebuilder.types';
-import { getPrecompileDir } from '../Directories';
-import { getPackageByName } from '../Packages';
 import {
   ObjcTarget,
   SwiftTarget,
@@ -1291,6 +1291,13 @@ function collectVfsAndHeaderMapFlags(
       // VFS overlay. Activate the module map (so the includes are modular) and add the headers dir
       // to the search path (so they resolve). `<React/X.h>` keeps resolving via the React.framework
       // binary target. This replaces the entire -ivfsoverlay + -I roots dance below.
+      //
+      // The `continue` also skips `config.includeDirectories`, which on the legacy path contributes
+      // `-I React.xcframework/Headers` and `-I React.xcframework/React_Core`. Both are genuinely
+      // redundant here — verified by prebuilding ExpoModulesCore (C++ target, consumes the react/
+      // and yoga/ namespaces) and ExpoCrypto against 0.87.0-rc.3 artifacts: neither root is emitted
+      // and both flavors compose and verify. Keep them out when the VFS branch below is deleted;
+      // dropping the `continue` without replacing it would silently reintroduce them.
       if (lowerName === 'react' && artifactConfig?.moduleMapXcframework) {
         const isModular =
           reactArtifactIsModular(config.debugBasePath) ||

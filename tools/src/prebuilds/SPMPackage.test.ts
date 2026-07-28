@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { describe, it } from 'node:test';
+import { afterEach, describe, it } from 'node:test';
 
 import type { SPMProduct, SwiftTarget } from './SPMConfig.types';
 import {
@@ -209,9 +209,17 @@ describe('buildSwiftSettings ExpoModulesMacros plugin flags', () => {
 
 describe('React header flags: modular module map vs legacy VFS overlay', () => {
   const version = '1000.0.0';
+  const tmpDirs: string[] = [];
+
+  afterEach(() => {
+    while (tmpDirs.length) {
+      fs.rmSync(tmpDirs.pop()!, { recursive: true, force: true });
+    }
+  });
 
   function withCache(populate: (debugBase: string) => void): string {
     const cachePath = fs.mkdtempSync(path.join(os.tmpdir(), 'spm-react-flags-'));
+    tmpDirs.push(cachePath);
     const debugBase = path.join(cachePath, 'react', version, 'debug');
     fs.mkdirSync(debugBase, { recursive: true });
     populate(debugBase);

@@ -926,9 +926,12 @@ module Expo
 
         module_map = '$(PODS_ROOT)/React-Core-prebuilt/Headers/module.modulemap'
         header_path = '"$(PODS_ROOT)/React-Core-prebuilt/Headers"'
-        cflags_flag = "-fmodule-map-file=#{module_map}"
-        swift_flag = "-Xcc -fmodule-map-file=#{module_map}"
-        swift_flags = "-Xcc -Wno-incomplete-umbrella #{swift_flag}"
+        # Quoted exactly as RN's rncore.rb writes it, for two reasons: a $(PODS_ROOT) containing
+        # spaces has to stay a single clang argument, and the already-present checks below only
+        # recognise RN's own injection — and skip re-adding it — if the spelling matches.
+        cflags_flag = %("-fmodule-map-file=#{module_map}")
+        swift_flag = "-Xcc #{cflags_flag}"
+        umbrella_flag = '-Xcc -Wno-incomplete-umbrella'
 
         patched = 0
         Dir.glob(File.join(installer.sandbox.root, 'Target Support Files', '**', '*.xcconfig')).each do |xcconfig_path|
@@ -940,9 +943,16 @@ module Expo
           # 4.x adds it) yet still lack the flattened-headers search path — in which case the module map
           # activates the yoga/react modules but <yoga/style/Style.h> & co. textually fail to resolve
           # (the modules' headers live under React-Core-prebuilt/Headers/). Add whichever piece is absent.
-          content = append_xcconfig_flag(content, 'HEADER_SEARCH_PATHS', header_path) unless content.include?(header_path)
-          content = append_xcconfig_flag(content, 'OTHER_CFLAGS', cflags_flag) unless content.include?(cflags_flag)
-          content = append_xcconfig_flag(content, 'OTHER_SWIFT_FLAGS', swift_flags) unless content.include?(swift_flag)
+          #
+          # OTHER_CPLUSPLUSFLAGS needs its own copy: Xcode does not fold OTHER_CFLAGS into it, so once a
+          # target sets it (RN's new_architecture.rb does, for -DRCT_NEW_ARCH_ENABLED) that value replaces
+          # OTHER_CFLAGS for every .mm/.cpp/.cc translation unit. Without it the module map never reaches
+          # the C++ sources that consume the relocated react/ and yoga/ namespaces.
+          content = append_xcconfig_flag(content, 'HEADER_SEARCH_PATHS', header_path)
+          content = append_xcconfig_flag(content, 'OTHER_CFLAGS', cflags_flag)
+          content = append_xcconfig_flag(content, 'OTHER_CPLUSPLUSFLAGS', cflags_flag)
+          content = append_xcconfig_flag(content, 'OTHER_SWIFT_FLAGS', umbrella_flag)
+          content = append_xcconfig_flag(content, 'OTHER_SWIFT_FLAGS', swift_flag)
 
           next if content == original
           File.write(xcconfig_path, content)
@@ -973,12 +983,19 @@ module Expo
       end
 
       # Appends `value` to an xcconfig `key` line (preserving $(inherited)), or adds the key if absent.
+      # No-ops when `key` already carries `value`.
+      #
+      # The already-present check is scoped to `key`'s own line, not the whole file: the same flag
+      # legitimately belongs on several keys (OTHER_CFLAGS and OTHER_CPLUSPLUSFLAGS both need the
+      # module map), so a file-wide check would let whichever key is written first silently suppress
+      # every later one.
       def append_xcconfig_flag(content, key, value)
-        if content =~ /^#{Regexp.escape(key)}\s*=.*$/
-          content.sub(/^(#{Regexp.escape(key)}\s*=.*)$/) { "#{$1} #{value}" }
-        else
-          (content.end_with?("\n") ? content : content + "\n") + "#{key} = $(inherited) #{value}\n"
-        end
+        line = /^(#{Regexp.escape(key)}\s*=.*)$/
+        existing = content[line, 1]
+        return content if existing&.include?(value)
+        return content.sub(line) { "#{$1} #{value}" } if existing
+
+        (content.end_with?("\n") ? content : content + "\n") + "#{key} = $(inherited) #{value}\n"
       end
 
       # TODO(ExpoModulesJSI-xcframework): Remove this method when ExpoModulesJSI.xcframework
