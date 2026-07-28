@@ -22,6 +22,7 @@ import {
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
+  NativeStackNavigationConfig,
   NativeStackNavigationHelpers,
 } from '../types';
 import { useHeaderConfigProps } from './useHeaderConfigProps';
@@ -457,9 +458,15 @@ type Props = {
   navigation: NativeStackNavigationHelpers;
   descriptors: NativeStackDescriptorMap;
   describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
-};
+} & NativeStackNavigationConfig;
 
-export function NativeStackView({ state, navigation, descriptors, describe }: Props) {
+export function NativeStackView({
+  state,
+  navigation,
+  descriptors,
+  describe,
+  unstable_nativeProps,
+}: Props) {
   const { colors } = useTheme();
   const { setNextDismissedKey } = useDismissedRouteError(state);
 
@@ -479,7 +486,8 @@ export function NativeStackView({ state, navigation, descriptors, describe }: Pr
     <SafeAreaProviderCompat>
       <ScreenStack
         nativeContainerStyle={{ backgroundColor: colors.background }}
-        style={styles.container}>
+        style={styles.container}
+        {...unstable_nativeProps}>
         {state.routes.concat(state.preloadedRoutes).map((route, index) => {
           const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
           const isFocused = state.index === index;

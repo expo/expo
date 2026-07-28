@@ -1,5 +1,5 @@
 import type { ColorValue, ImageSourcePropType, StyleProp, TextStyle, ViewStyle } from 'react-native';
-import type { ScreenProps, ScreenStackHeaderConfigProps, ScrollEdgeEffect, SearchBarProps } from 'react-native-screens';
+import type { ScreenProps, ScreenStackProps, ScreenStackHeaderConfigProps, ScrollEdgeEffect, SearchBarProps } from 'react-native-screens';
 import type { SFSymbol } from 'sf-symbols-typescript';
 import type { DefaultNavigatorOptions, Descriptor, NavigationHelpers, NavigationProp, ParamListBase, Route, RouteProp, StackActionHelpers, StackNavigationState, StackRouterOptions, Theme } from '../native';
 export type NativeStackNavigationEventMap = {
@@ -49,7 +49,18 @@ export type NativeStackOptionsArgs<ParamList extends ParamListBase, RouteName ex
     theme: Theme;
 };
 export type NativeStackNavigationHelpers = NavigationHelpers<ParamListBase, NativeStackNavigationEventMap>;
-export type NativeStackNavigationConfig = {};
+type NativeStackHostNativeProps = Partial<Omit<ScreenStackProps, 'children'>>;
+export type NativeStackNavigationConfig = {
+    /**
+     * Props passed to the underlying native stack host implementation in `react-native-screens`.
+     *
+     * > **Note:** This is an unstable API and may change or be removed in minor versions.
+     *
+     * @platform android
+     * @platform ios
+     */
+    unstable_nativeProps?: NativeStackHostNativeProps;
+};
 export type NativeStackScreenNativeProps = Partial<Omit<ScreenProps, 'children' | 'screenId' | 'activityState'>>;
 export type NativeStackHeaderNativeProps = Partial<ScreenStackHeaderConfigProps>;
 export type NativeStackNativeProps = NativeStackScreenNativeProps & {
