@@ -99,6 +99,13 @@ function stringParam(params: Record<string, unknown>, name: string): string | un
   return typeof value === 'string' && value.length > 0 ? value : undefined;
 }
 
+function stringArrayParam(params: Record<string, unknown>, name: string): string[] {
+  const value = params[name];
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === 'string')
+    : [];
+}
+
 /**
  * Native sends the recipients as a comma-separated address list, because
  * `IntentPerson` has no JavaScript representation.
@@ -202,6 +209,21 @@ async function recordMailDrafts(invocations: AppIntentInvocationLike[]): Promise
   }
 }
 
+async function removeMailDrafts(invocations: AppIntentInvocationLike[]): Promise<void> {
+  const removedIds = new Set(
+    invocations.flatMap((invocation) => stringArrayParam(invocation.params, 'ids'))
+  );
+  if (removedIds.size === 0) {
+    return;
+  }
+
+  const existingDrafts = await getMailDrafts();
+  const remainingDrafts = existingDrafts.filter((draft) => !removedIds.has(draft.id));
+  if (remainingDrafts.length !== existingDrafts.length) {
+    await writeJson<AppIntentMailDraft[]>(mailDraftsKey, remainingDrafts);
+  }
+}
+
 function routeForInvocation(invocation: AppIntentInvocationLike | null): AppIntentRoute | null {
   switch (invocation?.name) {
     case 'increaseCounter':
@@ -209,6 +231,8 @@ function routeForInvocation(invocation: AppIntentInvocationLike | null): AppInte
     case 'orderFood':
       return 'order';
     case 'createMailDraft':
+      return 'mail';
+    case 'deleteMailDrafts':
       return 'mail';
     default:
       return null;
@@ -234,12 +258,18 @@ export async function processAppIntentInvocations(
   const mailInvocations = supportedInvocations.filter(
     (invocation) => invocation.name === 'createMailDraft'
   );
+  const mailDeleteInvocations = supportedInvocations.filter(
+    (invocation) => invocation.name === 'deleteMailDrafts'
+  );
 
   await Promise.all([
     recordCounterInvocations(counterInvocations),
     recordLatestOrder(orderInvocations),
     recordMailDrafts(mailInvocations),
   ]);
+  // Deletions run after the creations so that a create and a delete queued together while
+  // JavaScript was cold still resolve to the same end state.
+  await removeMailDrafts(mailDeleteInvocations);
 
   const routeSource =
     newInvocation && routeForInvocation(newInvocation)
