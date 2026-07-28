@@ -17,6 +17,7 @@ import {
   getFullBundlerUrl,
   handleCompileError,
   hideLoading,
+  reload,
   resetErrorOverlay,
   showLoading,
 } from './hmrUtils';
@@ -324,7 +325,8 @@ function setHMRUnavailableReason(reason: string) {
 function registerBundleEntryPoints(client: MetroHMRClient | null) {
   if (hmrUnavailableReason != null) {
     // "Bundle Splitting – Metro disconnected"
-    window.location.reload();
+    // `window.location` is undefined on native, use the platform-split helper.
+    reload();
     return;
   }
 

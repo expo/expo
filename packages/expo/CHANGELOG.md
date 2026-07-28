@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix dev-only crash `Cannot read property 'reload' of undefined` on Android and iOS when an async bundle loads after Metro disconnects, by using the platform-split `reload()` helper instead of `window.location.reload()`. ([#48238](https://github.com/expo/expo/pull/48238) by [@chrisnojima](https://github.com/chrisnojima))
 - [Android] Fixed expo-fetch race condition causing out-of-order delivery of initial chunks ([#42161](https://github.com/expo/expo/pull/42161) by [@matthieugicquel](https://github.com/matthieugicquel))
 - [iOS] Pass the React runtime scheduler to `ExpoModulesCore` through a weak handle, so dispatching onto the JS thread during a reload no longer risks calling into a scheduler the React instance already destroyed. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
 - Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))
