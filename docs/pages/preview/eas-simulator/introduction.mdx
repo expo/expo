@@ -10,6 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 > **important** **EAS Simulator is a limited-access preview.** [Contact us](https://expo.dev/contact) if you are interested in trying it.
 
@@ -30,7 +31,7 @@ An EAS Simulator workflow has four stages:
 
 1. **Start a session** with EAS CLI. EAS boots a remote device and the selected controller.
 2. **Install your app.** The remote device starts blank, so install a local build or an EAS Build artifact.
-3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](https://github.com/software-mansion/argent), or the iOS browser preview.
+3. **Drive the device.** Use [agent-device](/agents/agent-device/), [Argent](/agents/argent/) ([repository](https://github.com/software-mansion/argent)), or the iOS browser preview.
 4. **Stop the session.** An unattended non-interactive session continues consuming usage until it stops.
 
 EAS CLI manages the session lifecycle and connection configuration. The controller provides device actions such as opening an app, pressing a button, entering text, inspecting the accessibility tree, and capturing a screenshot.
@@ -52,25 +53,59 @@ Use [EAS Build](/build/introduction/) for build and signing workflows, and use l
 
 ## Quick start
 
-Run the commands from a linked Expo project:
+Run the availability check from a linked Expo project:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:availability --json']} />
+
+Choose the controller you want to use, then start the session with its type explicitly:
+
+<Tabs>
+
+<Tab label="agent-device">
 
 <Terminal
   cmd={[
-    '$ npx --yes eas-cli@latest simulator:availability --json',
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --non-interactive',
-    '$ npx --yes eas-cli@latest simulator:get --json --non-interactive',
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
   ]}
 />
 
-The start command writes **.env.eas-simulator** with the session ID and controller credentials. Run device commands through `simulator:exec` so EAS CLI loads that configuration:
+</Tab>
+
+<Tab label="Argent">
 
 <Terminal
   cmd={[
-    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform ios',
-    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest snapshot -i',
-    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest screenshot ./shot.png',
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type argent --non-interactive',
   ]}
 />
+
+</Tab>
+
+</Tabs>
+
+Confirm that the session is active:
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:get --json --non-interactive']} />
+
+The start command writes **.env.eas-simulator** with the session ID and controller credentials. `simulator:exec` loads that configuration and runs the command for the controller you selected:
+
+<Tabs>
+
+<Tab label="agent-device">
+
+<Terminal
+  cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest <command> [args...]']}
+/>
+
+</Tab>
+
+<Tab label="Argent">
+
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec argent run <tool> [args...]']} />
+
+</Tab>
+
+</Tabs>
 
 Always stop the session when you finish:
 

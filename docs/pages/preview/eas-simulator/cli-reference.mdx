@@ -5,6 +5,7 @@ description: Reference for the experimental EAS CLI commands that create, inspec
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 The `simulator:*` commands are experimental and hidden. Run them through a current EAS CLI:
 
@@ -30,39 +31,60 @@ The JSON output contains `available` and `accountName`. This command does not cr
 
 ## `simulator:start`
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:start --platform ios --non-interactive']} />
+Choose a controller type when starting a session:
+
+<Tabs>
+
+<Tab label="agent-device">
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Argent">
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type argent --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
 
 Important flags:
 
-| Flag                | Description                                                                                             |
-| ------------------- | ------------------------------------------------------------------------------------------------------- |
-| `-p, --platform`    | `ios` or `android`. Required in non-interactive mode; prompted for in an interactive terminal           |
-| `--type`            | `agent-device`, `argent`, or `serve-sim`. Defaults to `agent-device`                                    |
-| `--package-version` | Controller package version. Defaults to the service's latest version                                    |
-| `--out-config-type` | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                               |
-| `--[no-]force`      | Whether to create a new session when a session ID already exists in the environment. Defaults to `true` |
-| `--non-interactive` | Return after the controller is ready instead of staying attached                                        |
-| `--json`            | Print machine-readable output and imply non-interactive mode                                            |
+| Flag                | Description                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `-p, --platform`    | `ios` or `android`. Required in non-interactive mode; prompted for in an interactive terminal                                              |
+| `--type`            | Controller provisioned for the session. Use `agent-device` or `argent` for programmatic control, or `serve-sim` for a browser-only preview |
+| `--package-version` | Controller package version. Defaults to the service's latest version                                                                       |
+| `--out-config-type` | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                                                                  |
+| `--[no-]force`      | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                    |
+| `--non-interactive` | Return after the controller is ready instead of staying attached                                                                           |
+| `--json`            | Print machine-readable output and imply non-interactive mode                                                                               |
 
 The default `dotenv` output writes configuration even when `--json` is used. Use `--out-config-type env` when you explicitly do not want the file.
 
-JSON output has this shape:
+Common JSON output fields have this shape. The fields inside `remoteConfig` depend on the selected controller:
 
 ```json
 {
   "id": "<session-id>",
-  "type": "agent-device",
+  "type": "<controller-type>",
   "deviceRunSessionUrl": "https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>",
   "remoteConfig": {
-    "__typename": "AgentDeviceRunSessionRemoteConfig",
-    "agentDeviceRemoteSessionUrl": "https://<controller-url>",
-    "agentDeviceRemoteSessionToken": "<secret>",
-    "webPreviewUrl": "https://<preview-url>"
+    "<controller-specific-key>": "<value>"
   }
 }
 ```
 
-Treat `remoteConfig` as secret because it includes the controller token.
+Treat `remoteConfig` as secret because it includes controller credentials.
 
 ### Interactive and non-interactive behavior
 
@@ -80,17 +102,27 @@ Pass `--no-force` when you want EAS CLI to fail instead of replacing the local s
 
 `simulator:exec` is controller-agnostic. It loads the connection variables for the active session from **.env.eas-simulator**, then spawns the command and arguments that follow.
 
-For the default agent-device controller:
+Use the command pattern for the controller selected when the session started:
+
+<Tabs>
+
+<Tab label="agent-device">
 
 <Terminal
   cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest <command> [args...]']}
 />
 
-For an Argent session:
+</Tab>
+
+<Tab label="Argent">
 
 <Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec argent run <tool> [args...]']} />
 
-It is a connection wrapper, not a device controller. Commands such as `press` come from agent-device, while tools such as `reinstall-app` come from Argent.
+</Tab>
+
+</Tabs>
+
+`simulator:exec` does not implement device actions. It only supplies the active session's connection environment and runs the command that follows. The available actions and argument syntax come from [agent-device](/agents/agent-device/) or [Argent](/agents/argent/).
 
 ## `simulator:get`
 
@@ -144,15 +176,18 @@ The stop mutation is idempotent.
 
 ## **.env.eas-simulator**
 
-The managed file contains:
+The managed file always contains the session ID:
 
 ```bash .env.eas-simulator
-AGENT_DEVICE_DAEMON_BASE_URL="<controller-url>"
-AGENT_DEVICE_DAEMON_AUTH_TOKEN="<secret>"
 EAS_SIMULATOR_SESSION_ID="<session-id>"
 ```
 
-Argent sessions use `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN` instead.
+Controller connection variables depend on the selected type:
+
+| Controller   | Connection variables                                             |
+| ------------ | ---------------------------------------------------------------- |
+| agent-device | `AGENT_DEVICE_DAEMON_BASE_URL`, `AGENT_DEVICE_DAEMON_AUTH_TOKEN` |
+| Argent       | `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN`       |
 
 Add the file to **.gitignore**:
 

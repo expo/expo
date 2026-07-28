@@ -7,6 +7,7 @@ description: Check whether EAS Simulator is available, start a remote device ses
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
 
 > **important** **EAS Simulator is a limited-access preview.** [Contact us](https://expo.dev/contact) if you are interested in trying it.
 
@@ -80,15 +81,39 @@ Do not commit or share this file. It includes the token that lets a controller r
 
 <Step label="4">
 
-### Start a remote device
+### Choose a controller and start a remote device
 
-Start an iOS session with agent-device:
+Choose the controller you plan to use for installation and device actions. Pass its type explicitly when you start the session.
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:start --platform ios --non-interactive']} />
+<Tabs>
 
-With a current EAS CLI, `eas simulator` is an alias for `eas simulator:start`:
+<Tab label="agent-device">
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator --platform ios --non-interactive']} />
+See [agent-device and Expo](/agents/agent-device/) for controller setup and commands.
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+<Tab label="Argent">
+
+See [Argent and Expo](/agents/argent/) for controller setup and commands.
+
+<Terminal
+  cmd={[
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --type argent --non-interactive',
+  ]}
+/>
+
+</Tab>
+
+</Tabs>
+
+With a current EAS CLI, `eas simulator` is an alias for `eas simulator:start`. Keep the explicit `--type` when you use the alias.
 
 Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview.
 
@@ -132,7 +157,7 @@ The project-level session list is:
 https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions
 ```
 
-For iOS, open `webPreviewUrl` in a desktop browser to view and interact with the live simulator. The preview URL is not an application deep link. Do not pass it to `agent-device open`.
+For supported iOS sessions, open `webPreviewUrl` in a desktop browser to view and interact with the live simulator. The preview URL is not an application deep link. Do not pass it to a controller command that opens apps or URLs.
 
 </Step>
 
