@@ -16,7 +16,7 @@
 
 ### 💡 Others
 
-- [Android] Add support for React Native 0.87
+- [Android] Add support for React Native 0.87 ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.15 — 2026-05-26
 
