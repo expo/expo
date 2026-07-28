@@ -135,12 +135,58 @@ struct UpdatesLogReaderTests {
     #expect((logEntry?.duration)! >= 300)
   }
 
+  /// Regression test for a SIGABRT during log purge.
+  ///
+  /// `logStringToFilteredLogEntry` used to guard on `lengthOfBytes(using: .utf8) < 2` and then
+  /// advance the index by two *Characters*. Every persisted line begins with `LogType.prefix` —
+  /// a colored-circle emoji that is 4–6 UTF-8 bytes but a single Character — so a line consisting
+  /// of only that prefix passed the byte guard and trapped in `index(_:offsetBy:)` with
+  /// "String index is out of bounds". Such a line is what a torn append leaves behind, since
+  /// `PersistentFileLog.appendTextToFile` writes non-atomically. The trap fired before the purge
+  /// could rewrite the file, so the bad line survived and the app aborted on every launch.
+  ///
+  /// Note: on the unfixed reader this aborts the test process (a Swift runtime trap is not a
+  /// recoverable `#expect` failure).
+  @Test
+  @MainActor
+  func `PurgeSurvivesTruncatedSingleCharacterEntry`() async throws {
+    let date1 = Date()
+
+    // U+1F7E2 LARGE GREEN CIRCLE — the value of `LogType.info.prefix`, written as an escape
+    // because `prefix` is internal to ExpoModulesCore. 4 UTF-8 bytes, 1 Character.
+    let truncatedEntry = "\u{1F7E2}"
+    await appendRawEntryAsync(entry: truncatedEntry)
+    await logErrorAsync(message: "Test message", code: .noUpdatesAvailable)
+
+    // Reading must skip the malformed entry rather than trapping.
+    let entries: [String] = logReader.getLogEntries(newerThan: date1)
+    #expect(entries.count == 1)
+
+    // The purge must run to completion and drop the malformed entry, so the next launch is clean.
+    await purgeEntriesAsync(olderThan: date1)
+
+    let remaining = PersistentFileLog(category: category).readEntries()
+    #expect(remaining.count == 1)
+    #expect(!remaining.contains(truncatedEntry))
+  }
+
   // MARK: - Private methods
 
   func clearLogAsync() async {
     await withCheckedContinuation { continuation in
       let persistentLog = PersistentFileLog(category: category)
       persistentLog.clearEntries { _ in
+        continuation.resume()
+      }
+    }
+  }
+
+  /// Appends a raw string as a log line, bypassing `UpdatesLogger`'s formatting. Used to simulate
+  /// a torn write.
+  func appendRawEntryAsync(entry: String) async {
+    await withCheckedContinuation { continuation in
+      let persistentLog = PersistentFileLog(category: category)
+      persistentLog.appendEntry(entry: entry) { _ in
         continuation.resume()
       }
     }
