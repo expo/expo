@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 
-import * as Log from '../../../log';
 import { envIsWebcontainer } from '../../../utils/env';
 import { openBrowserAsync } from '../../../utils/open';
 import { AsyncNgrok } from '../AsyncNgrok';
@@ -50,7 +49,6 @@ const originalEnv = process.env;
 beforeEach(() => {
   vol.reset();
   jest.mocked(envIsWebcontainer).mockReset();
-  jest.mocked(Log.warn).mockClear();
   delete process.env.EXPO_NO_REDIRECT_PAGE;
   delete process.env.EXPO_UNSTABLE_TUNNEL_V2;
   delete process.env.EXPO_PACKAGER_PROXY_URL;
@@ -164,16 +162,10 @@ describe('initUrlCreator', () => {
     expect(urlCreator.constructUrl({})).toBe('http://proxy.dev');
   });
 
-  it(`warns once and ignores a whitespace-only hostname override from the environment`, async () => {
+  it(`ignores a whitespace-only hostname override from the environment`, async () => {
     process.env.REACT_NATIVE_PACKAGER_HOSTNAME = '\t';
     const urlCreator = await createDevServer()['initUrlCreator']({ port: 3000, location: {} });
-
     expect(urlCreator.constructUrl({})).toBe('http://100.100.1.100:3000');
-    expect(urlCreator.constructUrl({})).toBe('http://100.100.1.100:3000');
-    expect(Log.warn).toHaveBeenCalledTimes(1);
-    expect(Log.warn).toHaveBeenCalledWith(
-      expect.stringMatching(/REACT_NATIVE_PACKAGER_HOSTNAME because it is only whitespace/)
-    );
   });
 
   it(`keeps serving URLs from a creator that outlives the dev server`, async () => {

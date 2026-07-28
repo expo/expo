@@ -428,20 +428,14 @@ export abstract class BundlerDevServer {
   ) {
     assert(options?.port, 'Dev server instance not found');
     assert(!this.urlCreator, 'Dev server is already initialized');
+    this.resolvedPort = options.port;
     // TODO: Drop the undocumented REACT_NATIVE_PACKAGER_HOSTNAME
-    const hostnameOverride = env.REACT_NATIVE_PACKAGER_HOSTNAME;
-    if (hostnameOverride && !hostnameOverride.trim()) {
-      Log.warn(
-        `Ignoring REACT_NATIVE_PACKAGER_HOSTNAME because it is only whitespace. Set it to a hostname, or unset it to use the default host.`
-      );
-    }
     const urlCreator = await UrlCreator.init(options.location, {
       getPort: () => this.getPort(),
       getTunnelUrl: this.getTunnelUrl.bind(this),
       getHostnameOverride: () => env.REACT_NATIVE_PACKAGER_HOSTNAME,
       getProxyUrl: () => env.EXPO_PACKAGER_PROXY_URL,
     });
-    this.resolvedPort = options.port;
     this.urlCreator = urlCreator;
     return urlCreator;
   }
