@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
         @"latitude": @(location.coordinate.latitude),
         @"longitude": @(location.coordinate.longitude),
         @"altitude": @(location.ellipsoidalAltitude),
+        @"altitudeAboveMeanSeaLevel": @(location.altitude),
         @"accuracy": @(location.horizontalAccuracy),
         @"altitudeAccuracy": @(location.verticalAccuracy),
         @"heading": @(location.course),

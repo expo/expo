@@ -285,15 +285,27 @@ export type LocationObjectCoords = {
    */
   longitude: number;
   /**
-   * The altitude in meters above the WGS 84 reference ellipsoid. Can be `null` on Web if it's not available.
+   * The altitude in meters above the WGS 84 reference ellipsoid.
+   * On Web, it is `null` when unavailable.
+   * On iOS, it is never `null` — when the altitude is invalid, the value is `0` and `altitudeAccuracy` is negative.
    */
   altitude: number | null;
+  /**
+   * The altitude in meters above mean sea level.
+   * On Android, it is `null` when unavailable — on devices running Android 13 or lower, or when the location fix doesn't include an MSL altitude.
+   * On iOS, it is never `null` — when the altitude is invalid, the value is `0` and `altitudeAccuracy` is negative.
+   * @platform android 14+
+   * @platform ios
+   */
+  altitudeAboveMeanSeaLevel: number | null;
   /**
    * The radius of uncertainty for the location, measured in meters. Can be `null` on Web if it's not available.
    */
   accuracy: number | null;
   /**
-   * The accuracy of the altitude value, in meters. Can be `null` on Web if it's not available.
+   * The accuracy of the altitude value, in meters.
+   * On Android and Web, it is `null` when unavailable.
+   * On iOS, it is never `null` — a negative value indicates that the altitude values are invalid.
    */
   altitudeAccuracy: number | null;
   /**
