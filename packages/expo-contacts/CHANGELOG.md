@@ -35,6 +35,7 @@ _This version does not introduce any user-facing changes._
 
 - [iOS] Fix `ContactField.THUMBNAIL` crash in bulk `getAllDetails` by reading `thumbnailImageData` instead of `imageData`. ([#47779](https://github.com/expo/expo/pull/47779) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 - Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Fix contacts fetch failing for the whole batch when a contact identifier contains a slash, by sanitizing the identifier used as an image cache filename. ([#48201](https://github.com/expo/expo/pull/48201) by [@martintreurnicht](https://github.com/martintreurnicht))
 
 ## 56.0.7 — 2026-05-21
 
