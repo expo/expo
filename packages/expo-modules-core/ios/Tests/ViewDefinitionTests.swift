@@ -5,13 +5,15 @@ import UIKit
 
 @testable import ExpoModulesCore
 
-// `createView` and the UIKit views these tests construct must be touched on the main thread.
-// Swift Testing runs tests on the cooperative pool by default, where `MainActor.assumeIsolated`
-// inside `createView` traps.
+// `createView` and `ConcreteViewProp.set` call `MainActor.assumeIsolated`, so these tests must
+// run on the main thread. Swift Testing runs tests on the cooperative pool by default, where
+// that traps. Actor isolation is not inherited by nested types, so every suite below needs its
+// own `@MainActor` annotation.
 @Suite("ViewDefinition")
 @MainActor
 struct ViewDefinitionTests {
   @Suite("View")
+  @MainActor
   struct ViewTests {
     @Test
     func `creates a view`() {
@@ -22,6 +24,7 @@ struct ViewDefinitionTests {
   }
 
   @Suite("Prop")
+  @MainActor
   struct PropTests {
     let appContext = AppContext.create()
 
@@ -53,6 +56,7 @@ struct ViewDefinitionTests {
   }
 
   @Suite("Events")
+  @MainActor
   struct EventsTests {
     @Test
     func `defines events`() {
