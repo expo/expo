@@ -73,6 +73,24 @@ Observe.logEvent('cache.evicted', {
 - Pick a vocabulary and stick to it. The dashboard groups by exact event name, so `report_exported` and `report.exported` will appear as separate rows.
 - Avoid Personally Identifiable Information (PII) in event names, attribute keys, and attribute values. Everything you pass is visible in the dashboard and is dispatched off-device.
 
+## Display name
+
+Use `displayName` to provide a human-friendly label for the event in the dashboard:
+
+```tsx
+Observe.logEvent('onboarding.completed', {
+  displayName: 'Onboarding completed',
+});
+```
+
+> **Note:** The display name that you set will only be used in the session timeline view.
+
+<ContentSpotlight
+  alt="An event with a custom display name in the EAS Observe session timeline."
+  src="/static/images/expo-observe/observe-log-event-display-name.webp"
+  darkSrc="/static/images/expo-observe/observe-log-event-display-name-dark.webp"
+/>
+
 ## View events
 
 In the dashboard: open your project and navigate to [**Observe > Events**](https://expo.dev/accounts/[account]/projects/[project]/observe/events). The default view lists distinct event names with their counts in the selected time range. Click an event name to see individual events with their timestamps, attributes, and the session they belong to.
