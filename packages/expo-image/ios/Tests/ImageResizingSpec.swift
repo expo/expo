@@ -150,5 +150,40 @@ class ImageResizingSpec: ExpoSpec {
         expect(localAssetName(from: URL(string: "sf:/star"))).to(beNil())
       }
     }
+
+    describe("placeholder content fit") {
+      it("uses source content fit for hash placeholders") {
+        let contentFit = placeholderContentFitForDisplay(
+          placeholderContentFit: .scaleDown,
+          contentFit: .cover,
+          isPlaceholderHash: true,
+          usesDefaultPlaceholderContentFit: true
+        )
+
+        expect(contentFit) == .cover
+      }
+
+      it("uses explicit placeholder content fit for hash placeholders") {
+        let contentFit = placeholderContentFitForDisplay(
+          placeholderContentFit: .contain,
+          contentFit: .cover,
+          isPlaceholderHash: true,
+          usesDefaultPlaceholderContentFit: false
+        )
+
+        expect(contentFit) == .contain
+      }
+
+      it("uses placeholder content fit for non-hash placeholders") {
+        let contentFit = placeholderContentFitForDisplay(
+          placeholderContentFit: .scaleDown,
+          contentFit: .cover,
+          isPlaceholderHash: false,
+          usesDefaultPlaceholderContentFit: true
+        )
+
+        expect(contentFit) == .scaleDown
+      }
+    }
   }
 }
