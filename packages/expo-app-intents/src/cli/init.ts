@@ -25,7 +25,7 @@ export const DEFAULT_DIRECTORY = 'app-intents';
 const DEFAULT_EXAMPLES: InitExample[] = ['minimal'];
 
 const EXAMPLE_DESCRIPTIONS: Record<InitExample, string> = {
-  minimal: 'Adds only the setup module and an empty AppShortcuts provider.',
+  minimal: 'Adds only the setup module, with no intents and no shortcut phrases.',
   counter: 'Adds a Siri shortcut that opens the app and dispatches an increaseCounter invocation.',
   restaurant: 'Adds a dish-ordering shortcut backed by a dynamic Dish entity catalog.',
   mail: 'Adds a mail draft example that uses Apple App Intent schema domains, with no shortcut phrases.',
@@ -66,12 +66,55 @@ const VISUAL_INTELLIGENCE_TEMPLATE_FILES = [
 ];
 
 /**
- * The setup module has to register the entity kind and expose the Spotlight bridge, so
- * `--visual-intelligence` scaffolds its own variant instead of the shared one.
+ * Builds the setup module. It is generated rather than copied because what it wires up depends on
+ * the selection: it can only refer to `AppShortcuts` when a provider is actually written, and it
+ * registers the entity kind only for visual intelligence.
  */
-const SETUP_TEMPLATE_FILE = 'common/AppIntentsSetup.swift';
-const VISUAL_INTELLIGENCE_SETUP_TEMPLATE_FILE =
-  'examples/mail-visual-intelligence/AppIntentsSetup.swift';
+function renderAppIntentsSetup(options: {
+  hasShortcuts: boolean;
+  visualIntelligence: boolean;
+}): string {
+  const onCreate: string[] = [];
+  if (options.visualIntelligence) {
+    onCreate.push(`      if #available(iOS 18.0, *) {
+        AppEntityIdentifierRegistry.shared.register("mailDraft", as: MailDraftEntity.self)
+      }`);
+  }
+  if (options.hasShortcuts) {
+    onCreate.push(`      Task {
+        await AppIntentDispatcher.shared.setShortcutsRefreshHandler {
+          AppShortcuts.updateAppShortcutParameters()
+        }
+        AppShortcuts.updateAppShortcutParameters()
+      }`);
+  }
+
+  const body: string[] = ['    Name("AppIntentsSetup")'];
+  if (onCreate.length > 0) {
+    body.push(`    OnCreate {\n${onCreate.join('\n\n')}\n    }`);
+  }
+  if (options.visualIntelligence) {
+    body.push(`    AsyncFunction("indexMailDraftsAsync") { (records: [AppIntentEntityRecord]) async throws in
+      if #available(iOS 18.0, *) {
+        try await MailDraftIndexer.replaceIndex(with: records)
+      }
+    }`);
+  }
+
+  return `internal import ExpoAppIntents
+internal import ExpoModulesCore
+
+/**
+ Registered Expo inline module that wires app-target App Intents code to expo-app-intents.
+ Do not change the name of this class.
+ */
+final class AppIntentsSetup: Module {
+  public func definition() -> ExpoModulesCore.ModuleDefinition {
+${body.join('\n\n')}
+  }
+}
+`;
+}
 
 const APP_SHORTCUTS_HEADER = `import AppIntents
 
@@ -236,19 +279,22 @@ export function normalizeDirectory(directory: string | undefined): string {
   return segments.join('/');
 }
 
-function renderAppShortcuts(examples: readonly InitExample[]): string {
+/**
+ * Renders the shortcuts provider, or `null` when no selected example contributes a phrase.
+ *
+ * There is no such thing as an empty `AppShortcutsProvider`: the App Intents metadata extractor
+ * rejects a provider whose `appShortcuts` body has no `AppShortcut` in it with
+ * "'AppShortcutsProvider' property 'appShortcuts' requires builder syntax". A project with no
+ * phrases must therefore have no provider at all, which the extractor accepts.
+ */
+function renderAppShortcuts(examples: readonly InitExample[]): string | null {
   const blocks = examples.flatMap((example) => {
     const block = SHORTCUT_BLOCKS[example];
     return block ? [block] : [];
   });
 
   if (blocks.length === 0) {
-    // `appShortcuts` is a result builder, so an empty provider needs an empty body. Returning a
-    // literal `[]` does not compile.
-    return `${APP_SHORTCUTS_HEADER}
-    // Add an AppShortcut here to give an intent a spoken launch phrase. Intents that conform to
-    // an Apple schema domain are discovered without one.
-${APP_SHORTCUTS_FOOTER}`;
+    return null;
   }
 
   return `${APP_SHORTCUTS_HEADER}
@@ -274,9 +320,7 @@ export function assertVisualIntelligenceSelection(
 }
 
 function getTemplateFiles(examples: readonly InitExample[], visualIntelligence: boolean): string[] {
-  const files = [
-    visualIntelligence ? VISUAL_INTELLIGENCE_SETUP_TEMPLATE_FILE : SETUP_TEMPLATE_FILE,
-  ];
+  const files: string[] = [];
   for (const example of examples) {
     if (example === 'minimal') {
       continue;
@@ -387,12 +431,23 @@ export async function runInit(options: InitOptions): Promise<void> {
   const written: string[] = [];
   const skipped: string[] = [];
 
+  const appShortcuts = renderAppShortcuts(examples);
+  if (appShortcuts) {
+    await writeFileIfMissing(
+      path.join(intentsDir, 'AppShortcuts.swift'),
+      appShortcuts,
+      written,
+      skipped,
+      'AppShortcuts.swift'
+    );
+  }
+
   await writeFileIfMissing(
-    path.join(intentsDir, 'AppShortcuts.swift'),
-    renderAppShortcuts(examples),
+    path.join(intentsDir, 'AppIntentsSetup.swift'),
+    renderAppIntentsSetup({ hasShortcuts: appShortcuts !== null, visualIntelligence }),
     written,
     skipped,
-    'AppShortcuts.swift'
+    'AppIntentsSetup.swift'
   );
 
   for (const templateFile of getTemplateFiles(examples, visualIntelligence)) {

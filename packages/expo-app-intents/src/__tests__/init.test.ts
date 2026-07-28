@@ -17,14 +17,12 @@ jest.mock('prompts', () => ({ __esModule: true, default: jest.fn() }));
 const mockedPrompts = prompts as unknown as jest.Mock;
 
 const TEMPLATES = {
-  'common/AppIntentsSetup.swift': 'setup',
   'examples/counter/IncreaseCounterIntent.swift': 'counter',
   'examples/restaurant/OrderFoodIntent.swift': 'restaurant intent',
   'examples/restaurant/Entities/DishEntity.swift': 'dish entity',
   'examples/restaurant/Queries/DishQuery.swift': 'dish query',
   'examples/mail/CreateDraftIntent.swift': 'mail create intent',
   'examples/mail/DeleteDraftIntent.swift': 'mail delete intent',
-  'examples/mail-visual-intelligence/AppIntentsSetup.swift': 'vi setup',
   'examples/mail-visual-intelligence/OpenMailDraftIntent.swift': 'vi open intent',
   'examples/mail-visual-intelligence/Entities/MailDraftEntity+Spotlight.swift': 'vi spotlight',
   'examples/mail-visual-intelligence/Entities/MailDraftEntity+Transferable.swift':
@@ -78,7 +76,7 @@ describe(getExamplesPrompt, () => {
       expect.arrayContaining([
         expect.objectContaining({
           value: 'minimal',
-          description: expect.stringContaining('empty AppShortcuts provider'),
+          description: expect.stringContaining('only the setup module'),
         }),
         expect.objectContaining({
           value: 'counter',
@@ -233,19 +231,16 @@ describe(runInit, () => {
     expect(appJson.expo.experiments.inlineModules.watchedDirectories).toEqual(['app-intents']);
     expect(appJson.expo.plugins).toEqual(['expo-app-intents']);
 
-    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(true);
+    // No example contributes a phrase, so no provider is written: the App Intents metadata
+    // extractor rejects an `AppShortcutsProvider` that has no `AppShortcut` in it.
+    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(false);
     expect(vol.existsSync('/project/app-intents/AppIntentsSetup.swift')).toBe(true);
     expect(vol.existsSync('/project/app-intents/IncreaseCounterIntent.swift')).toBe(false);
 
-    // `appShortcuts` is a result builder, so an empty provider must have an empty body rather
-    // than a literal `[]`, which does not compile.
-    const minimalShortcuts = vol.readFileSync(
-      '/project/app-intents/AppShortcuts.swift',
-      'utf8'
-    ) as string;
-    expect(minimalShortcuts).not.toContain('[]');
-    expect(minimalShortcuts).not.toContain('AppShortcut(');
-    expect(minimalShortcuts).not.toContain('@available(iOS 16.0, *)');
+    // With no provider the setup module must not refer to one.
+    const setup = vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8') as string;
+    expect(setup).toContain('Name("AppIntentsSetup")');
+    expect(setup).not.toContain('AppShortcuts');
   });
 
   it('scaffolds only the selected examples', async () => {
@@ -307,7 +302,7 @@ describe(runInit, () => {
     expect(shortcuts).not.toContain('Draft');
   });
 
-  it('generates an empty shortcuts provider when only the mail example is selected', async () => {
+  it('writes no shortcuts provider when no example contributes a phrase', async () => {
     const templatesDir = '/pkg/templates';
     vol.fromJSON({
       '/project/package.json': JSON.stringify({ name: 'my-app' }),
@@ -323,10 +318,7 @@ describe(runInit, () => {
     });
 
     expect(vol.existsSync('/project/app-intents/CreateDraftIntent.swift')).toBe(true);
-
-    const shortcuts = vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8') as string;
-    expect(shortcuts).not.toContain('[]');
-    expect(shortcuts).not.toContain('AppShortcut(');
+    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(false);
   });
 
   it('adds the visual intelligence layer to the mail example when requested', async () => {
@@ -362,8 +354,13 @@ describe(runInit, () => {
       true
     );
 
-    // The setup module is the variant that registers the entity kind.
-    expect(vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8')).toBe('vi setup');
+    // The generated setup module registers the entity kind and exposes the indexing bridge.
+    const setup = vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8') as string;
+    expect(setup).toContain('AppEntityIdentifierRegistry.shared.register("mailDraft"');
+    expect(setup).toContain('AsyncFunction("indexMailDraftsAsync")');
+    // mail contributes no phrase, so there is no provider to wire up.
+    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(false);
+    expect(setup).not.toContain('AppShortcuts');
   });
 
   it('scaffolds no visual intelligence files by default', async () => {
@@ -385,7 +382,12 @@ describe(runInit, () => {
     expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity+Spotlight.swift')).toBe(
       false
     );
-    expect(vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8')).toBe('setup');
+    const plainSetup = vol.readFileSync(
+      '/project/app-intents/AppIntentsSetup.swift',
+      'utf8'
+    ) as string;
+    expect(plainSetup).not.toContain('AppEntityIdentifierRegistry');
+    expect(plainSetup).not.toContain('indexMailDraftsAsync');
   });
 
   it('rejects visual intelligence without the mail example', async () => {
@@ -500,7 +502,7 @@ describe(runInit, () => {
       templatesDir: '/pkg/templates',
     });
 
-    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/AppIntentsSetup.swift')).toBe(true);
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('app.config.js/ts'));
     warn.mockRestore();
   });
