@@ -5,7 +5,11 @@ import UIKit
 
 @testable import ExpoModulesCore
 
+// `createView` and the UIKit views these tests construct must be touched on the main thread.
+// Swift Testing runs tests on the cooperative pool by default, where `MainActor.assumeIsolated`
+// inside `createView` traps.
 @Suite("ViewDefinition")
+@MainActor
 struct ViewDefinitionTests {
   @Suite("View")
   struct ViewTests {
