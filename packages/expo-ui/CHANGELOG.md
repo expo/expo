@@ -44,6 +44,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `community/masked-view` content being clipped after rotation because of window safe area insets. ([#48243](https://github.com/expo/expo/pull/48243) by [@Elehiggle](https://github.com/Elehiggle))
 - [universal] Add an explicit type annotation to `BottomSheetTextInput` so its type doesn't depend on referencing React Native's internal `TextInputType`. ([#48218](https://github.com/expo/expo/pull/48218) by [@zoontek](https://github.com/zoontek))
 - [Android] Fix unexpected resize when opening the calendar from spinner mode on Android. ([#47273](https://github.com/expo/expo/issues/47273) by [@TomCorvus](https://github.com/TomCorvus)) ([#48125](https://github.com/expo/expo/pull/48125) by [@dileepapeiris](https://github.com/dileepapeiris))
 - [iOS] Fix `tvOS` build failure in the SwiftUI `menuOrder` modifier — `MenuOrder.priority` is unavailable on tvOS, so it now falls back to `.automatic` there. ([#48111](https://github.com/expo/expo/pull/48111) by [@nishan](https://github.com/intergalacticspacehighway))
