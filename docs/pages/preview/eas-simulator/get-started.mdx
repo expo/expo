@@ -84,19 +84,11 @@ Do not commit or share this file. It includes the token that lets a controller r
 
 Start an iOS session with agent-device:
 
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
-  ]}
-/>
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator:start --platform ios --non-interactive']} />
 
 With a current EAS CLI, `eas simulator` is an alias for `eas simulator:start`:
 
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator --platform ios --type agent-device --non-interactive',
-  ]}
-/>
+<Terminal cmd={['$ npx --yes eas-cli@latest simulator --platform ios --non-interactive']} />
 
 Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview.
 

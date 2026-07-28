@@ -65,7 +65,7 @@ After the build is ready, start the simulator session and use `install-from-sour
 
 <Terminal
   cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
+    '$ npx --yes eas-cli@latest simulator:start --platform ios --non-interactive',
     '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest install-from-source "https://expo.dev/artifacts/eas/<artifact>.tar.gz" --platform ios',
     '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform ios',
   ]}
@@ -78,7 +78,7 @@ For Android, create and install the APK from the same profile:
 <Terminal
   cmd={[
     '$ npx --yes eas-cli@latest build --platform android --profile remote-device --non-interactive',
-    '$ npx --yes eas-cli@latest simulator:start --platform android --type agent-device --non-interactive',
+    '$ npx --yes eas-cli@latest simulator:start --platform android --non-interactive',
     '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest install-from-source "https://expo.dev/artifacts/eas/<artifact>.apk" --platform android',
     '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform android',
   ]}
