@@ -147,15 +147,3 @@ When you finish, stop the current session:
 If you started EAS CLI without `--non-interactive`, it remains attached. Press Ctrl+C once to stop the session and let EAS CLI reset **.env.eas-simulator**.
 
 </Step>
-
-## Avoid orphaned sessions
-
-Starting another session overwrites **.env.eas-simulator** by default but does not stop the earlier remote session. Before starting again, list active sessions:
-
-<Terminal
-  cmd={['$ npx --yes eas-cli@latest simulator:list --status in-progress --json --non-interactive']}
-/>
-
-Stop each unwanted session by ID:
-
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop --id <session-id>']} />
