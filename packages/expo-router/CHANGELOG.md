@@ -25,6 +25,7 @@
 
 ### 🐛 Bug fixes
 
+- Redirect fully guarded navigators to parent ([#47984](https://github.com/expo/expo/pull/47984) by [@Ubax](https://github.com/Ubax))
 - Unset `nativeContainerStyle` in transparent presentations ([#48154](https://github.com/expo/expo/pull/48154) by [@Ubax](https://github.com/Ubax))
 - [android] Disable safe area insets in Native Tabs on Android when tab bar is hidden. ([#47611](https://github.com/expo/expo/pull/47611) by [@debitan](https://github.com/debitan))
 - Sync config plugin `Props` type with the options schema, adding the missing `redirects`, `rewrites`, `platformRoutes`, and `disableSynchronousScreensUpdates` options. ([#46677](https://github.com/expo/expo/pull/46677) by [@zoontek](https://github.com/zoontek))
