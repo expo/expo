@@ -30,4 +30,12 @@ describe('expo-app-intents on unsupported platforms', () => {
     expect(typeof subscription.remove).toBe('function');
     subscription.remove();
   });
+
+  it('creates an app entity identifier modifier config', () => {
+    expect(AppIntents.appEntityIdentifier('person', 'maya-chen')).toEqual({
+      $type: 'appEntityIdentifier',
+      entity: 'person',
+      id: 'maya-chen',
+    });
+  });
 });

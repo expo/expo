@@ -1,4 +1,5 @@
 import ExpoModulesCore
+import ExpoUI
 
 internal final class ShortcutsRefreshUnavailableException: Exception, @unchecked Sendable {
   override var reason: String {
@@ -19,6 +20,12 @@ public final class ExpoAppIntentsModule: Module {
     Events("onIntent")
 
     OnCreate {
+      if #available(iOS 18.4, *) {
+        ViewModifierRegistry.register("appEntityIdentifier") { params, appContext, _ in
+          return try AppEntityIdentifierModifier(from: params, appContext: appContext)
+        }
+      }
+
       // The token is created here, synchronously, so `OnDestroy` can invalidate it before the task
       // below ever reaches the dispatcher.
       let subscription = AppIntentEventSubscription()
@@ -34,6 +41,10 @@ public final class ExpoAppIntentsModule: Module {
     }
 
     OnDestroy {
+      if #available(iOS 18.4, *) {
+        ViewModifierRegistry.unregister("appEntityIdentifier")
+      }
+
       invocationEventsSubscription?.invalidate()
       invocationEventsSubscription = nil
       invocationEventsTask?.cancel()
