@@ -328,6 +328,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
   Exclude:
     'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
@@ -415,6 +416,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   SFSymbols6_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   SFSymbols7_0: 'https://github.com/nandorojo/sf-symbols-typescript',
+  SharedObject: '/versions/latest/sdk/expo/#sharedobjecttype',
   SharedRefType: '/versions/latest/sdk/expo/#sharedreftype',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SingularOptions: '/versions/latest/sdk/router/#singularoptions',
