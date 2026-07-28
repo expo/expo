@@ -1,4 +1,6 @@
 import type { DependencyResolution } from 'expo-modules-autolinking/exports';
+import * as Module from 'node:module';
+import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import type { VersionedNativeModuleNamesCache } from './versionedNativeModules';
@@ -17,7 +19,9 @@ export function importAutolinkingExportsFromProject(
     );
   }
   try {
-    const mod = require(autolinkingExportsResolved);
+    const mod = Module.createRequire(path.join(projectDir, 'package.json'))(
+      autolinkingExportsResolved
+    );
     if (
       typeof mod.makeCachedDependenciesLinker !== 'function' ||
       typeof mod.scanDependencyResolutionsForPlatform !== 'function'
