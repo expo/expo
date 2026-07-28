@@ -28,7 +28,6 @@ import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
-import com.facebook.react.runtime.ReactSurfaceImpl
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.manifests.core.Manifest
@@ -449,12 +448,11 @@ abstract class ReactNativeActivity :
     devSettings?.setExponentActivityId(activityId)
 
     val appKey = manifest!!.getAppKey()
-    val surface = ReactSurfaceImpl.createWithView(
+    val surface = reactHost.createSurface(
       this,
       appKey ?: KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle)
     )
-    surface.attach(reactHost)
     surface.start()
     reactSurface = surface
     reactHost.onHostResume(this, this)
