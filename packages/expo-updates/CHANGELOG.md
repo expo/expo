@@ -14,7 +14,7 @@
 - [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [iOS] Isolate UpdatesLogReaderTests from concurrent suites. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
 - Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
-- Drop the previous native state change listener before registering a new one, so re-evaluating `UpdatesEmitter` no longer stacks a subscription that retains the whole module scope — a leak that grew per request under server rendering until the dev server crashed with OOM. ([#47938](https://github.com/expo/expo/issues/47938) by [@ahmdshrif](https://github.com/ahmdshrif))
+- Drop the previous native state change listener before registering a new one, so re-evaluating `UpdatesEmitter` no longer stacks a subscription that retains the whole module scope — a leak that grew per request under server rendering until the dev server crashed with OOM. ([#48241](https://github.com/expo/expo/pull/48241) by [@ahmdshrif](https://github.com/ahmdshrif))
 
 ### 💡 Others
 
