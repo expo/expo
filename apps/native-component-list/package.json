@@ -126,7 +126,7 @@
     "pixi.js": "^4.6.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.87.0-rc.0",
+    "react-native": "0.87.0-rc.3",
     "react-native-dropdown-picker": "^5.3.0",
     "react-native-gesture-handler": "~3.1.0",
     "react-native-keyboard-controller": "^1.21.9",
