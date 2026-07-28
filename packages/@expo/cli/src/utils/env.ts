@@ -112,8 +112,8 @@ class Env {
   }
 
   /** Overwrite the hostname used in dev server URLs, disregarding the `--host`, `--lan` and `--localhost` arguments. */
-  get REACT_NATIVE_PACKAGER_HOSTNAME(): string {
-    return string('REACT_NATIVE_PACKAGER_HOSTNAME', '');
+  get REACT_NATIVE_PACKAGER_HOSTNAME(): string | null {
+    return string('REACT_NATIVE_PACKAGER_HOSTNAME', '')?.trim() || null;
   }
 
   /**

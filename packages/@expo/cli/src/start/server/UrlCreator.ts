@@ -25,7 +25,7 @@ interface BundlerInfo {
   getPort(): number;
   getTunnelUrl?(): string | null;
   /** Hostname that replaces the requested or LAN host. The proxy and tunnel URLs still win over it. */
-  getHostnameOverride?(): string;
+  getHostnameOverride?(): string | null;
   /** Proxy URL that replaces the host and port of every URL. Read before every other host. */
   getProxyUrl?(): string;
 }
@@ -177,9 +177,8 @@ const getDefaultHostname = (
   gateway: GatewayInfo,
   hostnameOverride?: string | null
 ) => {
-  const override = hostnameOverride?.trim();
-  if (override) {
-    return override;
+  if (hostnameOverride) {
+    return hostnameOverride;
   } else if (options.hostname === 'localhost') {
     // NOTE: We always convert "localhost" as a request to 127.0.0.1,
     // to normalize to an address that's consistent

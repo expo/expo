@@ -5,7 +5,7 @@ jest.mock('../../../log');
 
 function createDefaultCreator(overrides?: {
   getProxyUrl?: () => string;
-  getHostnameOverride?: () => string;
+  getHostnameOverride?: () => string | null;
 }) {
   return new UrlCreator(
     {},
@@ -157,9 +157,9 @@ describe('constructUrl', () => {
       })
     ).toMatchInlineSnapshot(`"http://override.dev:8081"`);
   });
-  it(`ignores a blank hostname override`, () => {
+  it(`ignores a missing hostname override`, () => {
     expect(
-      createDefaultCreator({ getHostnameOverride: () => '  ' }).constructUrl({})
+      createDefaultCreator({ getHostnameOverride: () => null }).constructUrl({})
     ).toMatchInlineSnapshot(`"http://100.100.1.100:8081"`);
   });
   it(`reads the hostname override on every url`, () => {
