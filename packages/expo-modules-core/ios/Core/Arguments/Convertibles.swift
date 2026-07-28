@@ -169,4 +169,13 @@ extension Date: Convertible {
     }
     throw Conversions.ConvertingException<Date>(value)
   }
+
+  public static func convertResult(_ result: Any, appContext: AppContext) throws -> Any {
+    if let date = result as? Date {
+      let formatter = ISO8601DateFormatter()
+      formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+      return formatter.string(from: date)
+    }
+    return result
+  }
 }
