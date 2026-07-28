@@ -7,6 +7,7 @@ import {
   type TabRouterOptions as RNTabRouterOptions,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
+import { getRouteHistory } from '../react-navigation/routers/TabRouter';
 import type { TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
@@ -16,6 +17,12 @@ export type ExpoTabRouterOptions = RNTabRouterOptions & {
 export type ExpoTabActionType =
   | RNTabActionType
   | CommonNavigationAction
+  | {
+      type: 'EXPO_ROUTER_TAB_ORDER_CHANGED';
+      source?: string;
+      target?: string;
+      payload: { routeNames: string[] };
+    }
   | {
       type: 'JUMP_TO';
       source?: string;
@@ -35,9 +42,50 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
     ExpoTabActionType | CommonNavigationAction
   > = {
     ...rnTabRouter,
-    getStateForAction(state, action, options) {
-      if (action.type !== 'JUMP_TO') {
-        return rnTabRouter.getStateForAction(state, action, options);
+    getStateForRouteNamesChange(state, options) {
+      return state;
+    },
+    getStateForAction(state, action, routerConfigOptions) {
+      if (action.type === 'EXPO_ROUTER_TAB_ORDER_CHANGED') {
+        // Reorder `state.routes` to the new trigger order, reusing the existing route
+        // objects by name so keys and screen state survive.
+        const { routeNames } = action.payload;
+        const routes = routeNames.map((name) => state.routes.find((r) => r.name === name));
+
+        if (routes.length !== state.routes.length || routes.some((route) => route == null)) {
+          // The set of routes changed, not just the order. Not this action's job.
+          return state;
+        }
+
+        const focusedKey = state.routes[state.index]!.key;
+        const index = routes.findIndex((route) => route!.key === focusedKey);
+
+        const backBehavior = options.backBehavior ?? 'firstRoute';
+        let history = state.history;
+        if (
+          backBehavior === 'firstRoute' ||
+          backBehavior === 'initialRoute' ||
+          backBehavior === 'order'
+        ) {
+          // These behaviors derive history from route order, so recompute it.
+          // `history` back behavior keeps its visit history untouched.
+          history = getRouteHistory(
+            routes as typeof state.routes,
+            index,
+            backBehavior,
+            options.initialRouteName
+          );
+        }
+
+        return {
+          ...state,
+          routeNames,
+          routes: routes as typeof state.routes,
+          index,
+          history,
+        };
+      } else if (action.type !== 'JUMP_TO') {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
       const route = state.routes.find((route) => route.name === action.payload.name);
@@ -55,8 +103,8 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       }
 
       if (shouldReset) {
-        options.routeParamList[route.name] = {
-          ...options.routeParamList[route.name],
+        routerConfigOptions.routeParamList[route.name] = {
+          ...routerConfigOptions.routeParamList[route.name],
         };
         state = {
           ...state,
@@ -67,9 +115,14 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
             return { ...r, state: undefined };
           }),
         };
-        return rnTabRouter.getStateForAction(state, action, options);
-      } else {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
+      } else if (route.state !== undefined) {
+        // TODO(@ubax): Remove this branch together with nested trigger href support. Refocusing
+        // a tab that hosts a navigator must not re-apply the trigger's nested payload
+        // (`params.screen`), which would reset the preserved child state.
         return rnTabRouter.getStateForRouteFocus(state, route.key);
+      } else {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
     },
   };
