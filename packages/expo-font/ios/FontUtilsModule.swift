@@ -52,7 +52,7 @@ public final class FontUtilsModule: Module {
           "uri": outputURL.absoluteString,
           "width": image.size.width,
           "height": image.size.height,
-          "scale": UIScreen.main.scale
+          "scale": image.scale
         ])
       } catch {
         promise.reject(SaveImageException(outputURL.absoluteString))

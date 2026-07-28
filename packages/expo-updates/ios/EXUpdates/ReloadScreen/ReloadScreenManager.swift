@@ -1,4 +1,5 @@
 #if os(iOS) || os(tvOS)
+import ExpoModulesCore
 import UIKit
 
 public class ReloadScreenManager: Reloadable {
@@ -41,11 +42,10 @@ public class ReloadScreenManager: Reloadable {
   private func showReloadScreen() throws {
     let config = currentConfiguration ?? ReloadScreenConfiguration(options: nil)
 
-    if let windowScene = UIApplication.shared.connectedScenes
-      .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+    if let windowScene = SceneGeometry.foregroundActiveScene() {
       overlayWindow = UIWindow(windowScene: windowScene)
     } else {
-      overlayWindow = UIWindow(frame: UIScreen.main.bounds)
+      overlayWindow = UIWindow(frame: .zero)
     }
 
     guard let window = overlayWindow else {
