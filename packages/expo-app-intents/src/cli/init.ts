@@ -22,7 +22,7 @@ const EXAMPLE_DESCRIPTIONS: Record<InitExample, string> = {
   minimal: 'Adds only the setup module and an empty AppShortcuts provider.',
   counter: 'Adds a Siri shortcut that opens the app and dispatches an increaseCounter invocation.',
   restaurant: 'Adds a dish-ordering shortcut backed by a dynamic Dish entity catalog.',
-  mail: 'Adds a mail draft example that uses Apple App Intent schema domains.',
+  mail: 'Adds a mail draft example that uses Apple App Intent schema domains, with no shortcut phrases.',
 };
 
 const EXAMPLE_TEMPLATE_FILES: Record<Exclude<InitExample, 'minimal'>, string[]> = {
@@ -33,8 +33,8 @@ const EXAMPLE_TEMPLATE_FILES: Record<Exclude<InitExample, 'minimal'>, string[]> 
     'examples/restaurant/Queries/DishQuery.swift',
   ],
   mail: [
-    'examples/mail/CreateDraftShortcutIntent.swift',
     'examples/mail/CreateDraftIntent.swift',
+    'examples/mail/DeleteDraftIntent.swift',
     'examples/mail/Entities/MailDraftEntity.swift',
     'examples/mail/Entities/MailAccountEntity.swift',
     'examples/mail/Queries/MailDraftEntityQuery.swift',
@@ -79,15 +79,6 @@ const SHORTCUT_BLOCKS: Partial<Record<InitExample, string>> = {
       ],
       shortTitle: "Place an order",
       systemImageName: "fork.knife"
-    )`,
-  mail: `    AppShortcut(
-      intent: CreateDraftShortcutIntent(),
-      phrases: [
-        "Create a draft in \\(.applicationName)",
-        "Draft an email in \\(.applicationName)"
-      ],
-      shortTitle: "New Draft",
-      systemImageName: "square.and.pencil"
     )`,
 };
 
