@@ -16,14 +16,40 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 **EAS Simulator** runs a remote iOS Simulator or Android Emulator on EAS infrastructure. You can install an app, inspect its user interface, interact with it, collect screenshots and recordings, and hand an iOS browser preview to another person without running the device locally.
 
+EAS Simulator is built for agentic development. It gives coding agents a real device runtime so they can verify agent-written code, fix issues they observe, and return evidence from the running app instead of stopping after a source-code change.
+
 EAS Simulator is especially useful when:
 
-- Your development environment cannot run an iOS Simulator, such as Linux, CI, or a cloud coding agent
+- A background or cloud coding agent needs device access that is not available in its sandbox
 - An AI agent needs to verify a change in a running app instead of only inspecting source code
 - You want a temporary, shareable iOS browser preview
 - You need to offload simulator compute or test on a remote platform
 
 EAS Simulator does not replace local Xcode or Android Studio workflows when you already have the required local simulator and do not need remote or shareable access.
+
+## Close the loop on agent-written code
+
+For agentic development, the recommended starting point is the official EAS Simulator skill. Ask your coding agent to use the skill instead of manually giving it individual EAS CLI and controller commands. The skill teaches the agent how to check access, prepare the appropriate build, start a remote device, drive the app with your selected controller, collect evidence, and stop the session.
+
+<RelatedSkills names={['eas-simulator']} />
+
+For example, give your agent a prompt like:
+
+```text
+Use the EAS Simulator skill to run this project on a remote iOS Simulator. Ask me whether to use agent-device or Argent, verify <flow>, and report what you observe with a screenshot.
+```
+
+The agent can then complete the runtime loop:
+
+1. Implement or fix the code.
+2. Check EAS Simulator access and prepare a compatible app build.
+3. Start a remote device and drive the app through agent-device or Argent.
+4. Inspect the result and iterate if needed.
+5. Return screenshots, recordings, logs, or other evidence and stop the session.
+
+### Typical setup: a Cursor cloud agent
+
+A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another background coding agent working in a cloud project checkout. The environment can edit and build the project but cannot launch a local iOS Simulator. With the EAS Simulator skill, the agent starts a remote device on EAS, controls it through agent-device or Argent, and returns the result to the task or pull request. Your computer does not need to host the simulator.
 
 ## How it works
 
@@ -52,6 +78,8 @@ EAS CLI manages the session lifecycle and connection configuration. The controll
 Use [EAS Build](/build/introduction/) for build and signing workflows, and use local device tooling for physical devices.
 
 ## Quick start
+
+The EAS Simulator skill can perform this sequence for your agent. Use the commands below when you want to operate a session manually or integrate it into custom automation.
 
 Run the availability check from a linked Expo project:
 
@@ -110,12 +138,6 @@ The start command writes **.env.eas-simulator** with the session ID and controll
 Always stop the session when you finish:
 
 <Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
-
-### Expo Skills for AI agents
-
-If you use an AI coding agent, install [Expo Skills](/skills/) so it can choose the right build, control the remote device, and clean up the session:
-
-<RelatedSkills names={['eas-simulator']} />
 
 ## Next steps
 
