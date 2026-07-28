@@ -138,6 +138,7 @@ internal class LocationObjectCoords(
   @Field var latitude: Double? = null,
   @Field var longitude: Double? = null,
   @Field var altitude: Double? = null,
+  @Field var altitudeAboveMeanSeaLevel: Double? = null,
   @Field var accuracy: Double? = null,
   @Field var altitudeAccuracy: Double? = null,
   @Field var heading: Double? = null,
@@ -147,8 +148,13 @@ internal class LocationObjectCoords(
     latitude = location.latitude,
     longitude = location.longitude,
     altitude = location.altitude,
+    altitudeAboveMeanSeaLevel = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE && location.hasMslAltitude()) {
+      location.mslAltitudeMeters
+    } else {
+      null
+    },
     accuracy = location.accuracy.toDouble(),
-    altitudeAccuracy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+    altitudeAccuracy = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && location.hasVerticalAccuracy()) {
       location.verticalAccuracyMeters.toDouble()
     } else {
       null
@@ -169,8 +175,11 @@ internal class LocationObjectCoords(
     latitude?.let { putDouble("latitude", it) }
     longitude?.let { putDouble("longitude", it) }
     altitude?.let { putDouble("altitude", it) }
+    altitudeAboveMeanSeaLevel?.let { putDouble("altitudeAboveMeanSeaLevel", it) }
+      ?: putString("altitudeAboveMeanSeaLevel", null)
     accuracy?.let { putDouble("accuracy", it) }
     altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) }
+      ?: putString("altitudeAccuracy", null)
     heading?.let { putDouble("heading", it) }
     speed?.let { putDouble("speed", it) }
   }
