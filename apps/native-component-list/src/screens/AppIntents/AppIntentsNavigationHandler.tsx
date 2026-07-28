@@ -12,6 +12,8 @@ import { syncMailDraftCatalogAsync } from './syncMailDraftCatalogAsync';
 export type AppIntentNavigationTarget = {
   route: AppIntentRoute;
   invocationId?: string;
+  /** Set when the system asked to open a specific mail draft. */
+  draftId?: string;
 };
 
 export function navigateToAppIntentScreen(
@@ -23,6 +25,7 @@ export function navigateToAppIntentScreen(
     params: {
       source: 'siri',
       ...(target.invocationId ? { intentId: target.invocationId } : {}),
+      ...(target.draftId ? { draftId: target.draftId } : {}),
     },
   });
 }
@@ -73,8 +76,8 @@ export function AppIntentsNavigationHandler() {
         }
       });
 
-      // Creating or deleting drafts changes the catalog, so the entity store needs to be rebuilt
-      // from the new state.
+      // Creating or deleting drafts changes the catalog, so the entity store and the Spotlight
+      // index both need to be rebuilt from the new state.
       const mutatingNames = ['createMailDraft', 'deleteMailDrafts'];
       const didMutateDrafts =
         pendingIntents.some((invocation) => mutatingNames.includes(invocation.name)) ||
@@ -91,6 +94,7 @@ export function AppIntentsNavigationHandler() {
         navigateToAppIntentScreen(router, {
           route: result.route,
           invocationId: result.routeInvocationId,
+          draftId: result.routeDraftId,
         });
       }
     } catch (error) {

@@ -13,9 +13,22 @@ public struct AppIntentEntityRecord: Codable, Sendable {
   public var title: String
   public var subtitle: String?
   public var synonyms: [String] = []
+  public var metadata: [String: String] = [:]
 
-  public init(id: String, title: String, subtitle: String? = nil) {
-    self.init(id: id, title: title, subtitle: subtitle, synonyms: [])
+  public init(
+    id: String,
+    title: String,
+    subtitle: String? = nil,
+    synonyms: [String] = [],
+    metadata: [String: String] = [:]
+  ) {
+    self.init(
+      id: id,
+      title: title,
+      subtitle: subtitle,
+      synonyms: synonyms,
+      metadata: metadata
+    )
   }
 }
 

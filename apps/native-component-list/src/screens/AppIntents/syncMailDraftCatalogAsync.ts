@@ -1,4 +1,6 @@
 import * as AppIntents from 'expo-app-intents';
+import type { AppIntentEntity } from 'expo-app-intents';
+import { requireOptionalNativeModule } from 'expo-modules-core';
 
 import {
   getMailDrafts,
@@ -6,13 +8,16 @@ import {
   type AppIntentMailDraft,
 } from './AppIntentsStore';
 
+type AppIntentsSetupModule = {
+  indexMailDraftsAsync(drafts: AppIntentEntity[]): Promise<void>;
+};
+
+const AppIntentsSetup = requireOptionalNativeModule<AppIntentsSetupModule>('AppIntentsSetup');
+
 /**
  * Publishes the drafts as the `mailDraft` entity catalog, which is what `MailDraftEntityQuery`
- * reads. Without it nothing can resolve a draft as an entity, so `DeleteDraftIntent` never finds
- * one to delete.
- *
- * Pass the drafts to publish a list the store has not been given yet - emptying it, say. Left out,
- * the stored drafts are read back and published.
+ * reads, and pushes the same records into Spotlight through the app-target setup module.
+ * Republishing an unchanged catalog does nothing.
  */
 export async function syncMailDraftCatalogAsync(drafts?: AppIntentMailDraft[]): Promise<void> {
   if (!AppIntents.isAvailable()) {
@@ -21,4 +26,5 @@ export async function syncMailDraftCatalogAsync(drafts?: AppIntentMailDraft[]): 
 
   const catalog = mailDraftsToEntityCatalog(drafts ?? (await getMailDrafts()));
   await AppIntents.setEntityCatalogAsync('mailDraft', catalog);
+  await AppIntentsSetup?.indexMailDraftsAsync(catalog);
 }
