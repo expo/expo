@@ -37,7 +37,7 @@ In this chapter, let's learn how to create a new Expo project and how to get it 
     Install [VS Code](https://code.visualstudio.com/) or any other preferred code editor or IDE.
   </Requirement>
   <Requirement title="A developer machine with a terminal">
-    A macOS, Linux, or Windows (PowerShell and WSL2) with a terminal window open.
+    A macOS, Linux, or Windows (PowerShell and [WSL2](https://expo.fyi/wsl)) with a terminal window open.
   </Requirement>
 </Prerequisites>
 
@@ -235,6 +235,19 @@ Once you save your changes, they're sent and applied to the running apps connect
   src="/static/images/tutorial/02-index-screen-changes.webp"
   className="max-w-[720px]"
 />
+
+<Collapsible summary="What is the blue gear icon?">
+
+The blue gear icon is the **Tools button** for Android and iOS platforms. It's a floating shortcut that opens the [Developer menu](/debugging/tools/#developer-menu), which provides access to debugging functions such as reloading the app and toggling Fast Refresh. It appears only while developing and is never included in a production build.
+
+The remaining screenshots in this tutorial will have it hidden. To hide it:
+
+1. Open the Developer menu. Shake your device, or press <kbd>M</kbd> in the terminal running the development server if you're using an emulator, a simulator, or a device connected with USB.
+2. Find the **Tools button** option and toggle it off.
+
+Hiding it doesn't disable the Developer menu. You can still open it the way described in Step 1 whenever you need it.
+
+</Collapsible>
 
 </Step>
 

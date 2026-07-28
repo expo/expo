@@ -38,7 +38,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
     をインストールします。
   </Requirement>
   <Requirement title="ターミナルが使える開発マシン">
-    macOS、Linux、または Windows (PowerShell および WSL2) でターミナルウィンドウを開けるマシン。
+    macOS、Linux、または Windows (PowerShell および [WSL2](https://expo.fyi/wsl)) でターミナルウィンドウを開けるマシン。
   </Requirement>
 </Prerequisites>
 
@@ -244,6 +244,19 @@ const styles = StyleSheet.create({
   src="/static/images/tutorial/02-index-screen-changes.webp"
   className="max-w-[720px]"
 />
+
+<Collapsible summary="青い歯車アイコンとは何ですか？">
+
+青い歯車アイコンは、Android と iOS プラットフォームの **Tools button** です。これは [開発者メニュー](/debugging/tools/#developer-menu) を開くフローティングショートカットで、アプリのリロードや Fast Refresh の切り替えなどのデバッグ機能を利用できます。開発中にのみ表示され、本番ビルドには含まれません。
+
+このチュートリアルの以降のスクリーンショットでは、このアイコンを非表示にします。非表示にするには:
+
+1. 開発者メニューを開きます。デバイスを振るか、エミュレーター、シミュレーター、または USB 接続したデバイスを使用している場合は、開発サーバーを実行しているターミナルで <kbd>M</kbd> を押します。
+2. **Tools button** の項目を見つけて、オフに切り替えます。
+
+非表示にしても開発者メニューが無効になるわけではありません。必要なときは、手順 1 で説明した方法でいつでも開けます。
+
+</Collapsible>
 
 </Step>
 
