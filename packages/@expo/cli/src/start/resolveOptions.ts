@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import { Log } from '../log';
 import { env, envIsWebcontainer } from '../utils/env';
 import { AbortCommandError, CommandError } from '../utils/errors';
-import { choosePortAsync, resolvePortAsync } from '../utils/port';
+import { choosePortAsync, resolveMetroPortAsync } from '../utils/port';
 import { canResolveDevClient, hasDirectDevClientDependency } from './detectDevClient';
 
 export type Options = {
@@ -162,9 +162,8 @@ export async function resolvePortsAsync(
   options: Partial<Pick<Options, 'port' | 'devClient'>>,
   bundlers: ('metro' | 'webpack')[]
 ): Promise<{ metroPort: number; webpackPort?: number }> {
-  const metroPort = await resolvePortAsync(projectRoot, {
+  const metroPort = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,
-    // resolvePortAsync already honors RCT_METRO_PORT, so we only pass the default
     fallbackPort: 8081,
   });
   if (metroPort == null) {
