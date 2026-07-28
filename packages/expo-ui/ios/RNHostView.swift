@@ -5,6 +5,10 @@ import ExpoModulesCore
 
 internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
   @Field var matchContents: Bool = false
+  // Consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the `RootNodeKind`
+  // trait so `measure()` reports coordinates in the same space as the touches dispatched by the
+  // handler attached below. Declared here only so React Native forwards the prop to native.
+  @Field var layoutRoot: Bool = false
 }
 
 struct RNHostView: ExpoSwiftUI.View {
