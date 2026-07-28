@@ -14,7 +14,7 @@ public final class JavaScriptPropNameID: JavaScriptType {
   /// Creates a PropNameID from the string.
   public init(_ runtime: JavaScriptRuntime, string: String) {
     self.runtime = runtime
-    self.pointee = facebook.jsi.PropNameID.forUtf8(runtime.pointee, string, string.count)
+    self.pointee = facebook.jsi.PropNameID.forUtf8(runtime.pointee, string, string.utf8.count)
   }
 
   /// Copies the data in a PropNameID as UTF8 into a string.
