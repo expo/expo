@@ -51,6 +51,9 @@ const EXAMPLE_TEMPLATE_FILES: Record<Exclude<InitExample, 'minimal'>, string[]> 
 /** The example that `--visual-intelligence` extends. */
 export const VISUAL_INTELLIGENCE_EXAMPLE: InitExample = 'mail';
 
+const VISUAL_INTELLIGENCE_DESCRIPTION =
+  'Allows Siri to more intelligently read the on-screen contents of your app.';
+
 /**
  * Added on top of the mail example by `--visual-intelligence`. These are all extensions of the
  * base types, so the mail example itself is unchanged whether or not the flag is used.
@@ -171,21 +174,50 @@ export function getExamplesPrompt(): PromptObject {
   };
 }
 
+/**
+ * Asked only after the example it extends has been selected, which is why it is a follow-up prompt
+ * rather than an entry in the picker: a `prompts` multiselect cannot enable a choice in response to
+ * another choice being selected.
+ */
+export function getVisualIntelligencePrompt(): PromptObject {
+  return {
+    type: 'confirm',
+    name: 'visualIntelligence',
+    message: `Add visual intelligence support? ${VISUAL_INTELLIGENCE_DESCRIPTION}`,
+    initial: false,
+  };
+}
+
+export type ResolvedExamples = {
+  examples: InitExample[];
+  visualIntelligence: boolean;
+};
+
 export async function resolveExamplesAsync(
   interactive: boolean,
-  values: readonly string[] | undefined
-): Promise<InitExample[]> {
+  values: readonly string[] | undefined,
+  visualIntelligence: boolean = false
+): Promise<ResolvedExamples> {
   if (values && values.length > 0) {
-    return resolveExamples(values);
+    return { examples: resolveExamples(values), visualIntelligence };
   }
   if (!interactive) {
-    return DEFAULT_EXAMPLES;
+    return { examples: DEFAULT_EXAMPLES, visualIntelligence };
   }
 
   const { examples } = await prompts(getExamplesPrompt(), {
     onCancel: () => process.exit(0),
   });
-  return resolveExamples(examples);
+  const selected = resolveExamples(examples);
+
+  if (visualIntelligence || !selected.includes(VISUAL_INTELLIGENCE_EXAMPLE)) {
+    return { examples: selected, visualIntelligence };
+  }
+
+  const answer = await prompts(getVisualIntelligencePrompt(), {
+    onCancel: () => process.exit(0),
+  });
+  return { examples: selected, visualIntelligence: answer.visualIntelligence === true };
 }
 
 export function normalizeDirectory(directory: string | undefined): string {

@@ -33,13 +33,17 @@ export function isInteractive(): boolean {
 async function runInitCommand(options: InitCommandOptions): Promise<void> {
   const interactive = isInteractive();
   const directory = normalizeDirectory(options.directory ?? options.dir);
-  const examples = await resolveExamplesAsync(interactive, options.examples);
+  const { examples, visualIntelligence } = await resolveExamplesAsync(
+    interactive,
+    options.examples,
+    options.visualIntelligence ?? false
+  );
 
   await runInit({
     projectRoot: process.cwd(),
     directory,
     examples,
-    visualIntelligence: options.visualIntelligence ?? false,
+    visualIntelligence,
     templatesDir:
       process.env.EXPO_APP_INTENTS_TEMPLATES_DIR ??
       path.join(__dirname, '..', '..', TEMPLATES_DIRECTORY_NAME),

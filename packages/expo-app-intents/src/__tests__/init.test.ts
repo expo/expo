@@ -1,9 +1,20 @@
 import { vol } from 'memfs';
+import prompts from 'prompts';
 
-import { getExamplesPrompt, normalizeDirectory, resolveExamples, runInit } from '../cli/init';
+import {
+  getExamplesPrompt,
+  getVisualIntelligencePrompt,
+  normalizeDirectory,
+  resolveExamples,
+  resolveExamplesAsync,
+  runInit,
+} from '../cli/init';
 
 jest.mock('fs', () => require('memfs').fs);
 jest.mock('fs/promises', () => require('memfs').fs.promises);
+jest.mock('prompts', () => ({ __esModule: true, default: jest.fn() }));
+
+const mockedPrompts = prompts as unknown as jest.Mock;
 
 const TEMPLATES = {
   'common/AppIntentsSetup.swift': 'setup',
@@ -83,6 +94,99 @@ describe(getExamplesPrompt, () => {
         }),
       ])
     );
+  });
+
+  it('does not offer visual intelligence in the picker itself', () => {
+    const choices = getExamplesPrompt().choices as { value: string }[];
+
+    expect(choices.map((choice) => choice.value)).toEqual([
+      'minimal',
+      'counter',
+      'restaurant',
+      'mail',
+    ]);
+  });
+});
+
+describe(getVisualIntelligencePrompt, () => {
+  it('explains what visual intelligence does and defaults to off', () => {
+    const prompt = getVisualIntelligencePrompt();
+
+    expect(prompt.type).toBe('confirm');
+    expect(prompt.name).toBe('visualIntelligence');
+    expect(prompt.message).toContain(
+      'Allows Siri to more intelligently read the on-screen contents of your app.'
+    );
+    expect(prompt.initial).toBe(false);
+  });
+});
+
+describe(resolveExamplesAsync, () => {
+  beforeEach(() => {
+    mockedPrompts.mockReset();
+  });
+
+  it('never prompts when examples are passed on the command line', async () => {
+    await expect(resolveExamplesAsync(true, ['mail'], true)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: true,
+    });
+    expect(mockedPrompts).not.toHaveBeenCalled();
+  });
+
+  it('never prompts when not interactive', async () => {
+    await expect(resolveExamplesAsync(false, undefined)).resolves.toEqual({
+      examples: ['minimal'],
+      visualIntelligence: false,
+    });
+    expect(mockedPrompts).not.toHaveBeenCalled();
+  });
+
+  it('does not ask about visual intelligence unless the mail example was picked', async () => {
+    mockedPrompts.mockResolvedValueOnce({ examples: ['counter'] });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['counter'],
+      visualIntelligence: false,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks about visual intelligence once the mail example was picked', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['counter', 'mail'] })
+      .mockResolvedValueOnce({ visualIntelligence: true });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['counter', 'mail'],
+      visualIntelligence: true,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(2);
+    expect(mockedPrompts.mock.calls[1][0]).toMatchObject({
+      type: 'confirm',
+      name: 'visualIntelligence',
+    });
+  });
+
+  it('respects declining visual intelligence', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['mail'] })
+      .mockResolvedValueOnce({ visualIntelligence: false });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: false,
+    });
+  });
+
+  it('skips the follow-up when the flag was already passed', async () => {
+    mockedPrompts.mockResolvedValueOnce({ examples: ['mail'] });
+
+    await expect(resolveExamplesAsync(true, undefined, true)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: true,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(1);
   });
 });
 
