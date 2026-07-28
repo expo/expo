@@ -1,4 +1,5 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
+import { createAbortError, FetchError } from './FetchErrors';
 import type { NativeHeadersType, NativeResponse } from './NativeRequest';
 import { createReactNativeBlobAsync, isReactNativeBlobGlobal } from './createBlob';
 
@@ -163,7 +164,10 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     metadata: null,
   };
 
-  constructor(private readonly abortCleanupFunction: AbortSubscriptionCleanupFunction) {
+  constructor(
+    private readonly abortCleanupFunction: AbortSubscriptionCleanupFunction,
+    private readonly signal?: AbortSignal | null
+  ) {
     super();
     this.addListener('readyForJSFinalization', this.finalize);
   }
@@ -230,7 +234,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
                 return;
               }
               isControllerClosed = true;
-              controller.error(new Error(error));
+              controller.error(this.createBodyError(new Error(error)));
             });
           },
 
@@ -338,7 +342,11 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
       return body.readAsBuffer();
     }
 
-    return super.arrayBuffer();
+    try {
+      return await super.arrayBuffer();
+    } catch (e: unknown) {
+      throw this.createBodyError(e);
+    }
   }
 
   override async text(): Promise<string> {
@@ -351,7 +359,11 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
       return new TextDecoder().decode(await body.readAsBuffer());
     }
 
-    return super.text();
+    try {
+      return await super.text();
+    } catch (e: unknown) {
+      throw this.createBodyError(e);
+    }
   }
 
   toString(): string {
@@ -413,6 +425,17 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     state.body.cloned = true;
 
     return clone;
+  }
+
+  // A body read fails through the same states a request does, so it reports the same errors:
+  // the signal's reason when the caller aborted, a `FetchError` for anything else.
+  private createBodyError(error: unknown): unknown {
+    if (this.signal?.aborted) {
+      return createAbortError(this.signal);
+    }
+    return error instanceof Error
+      ? FetchError.createFromError(error)
+      : new FetchError(String(error));
   }
 
   private checkBodyUsedError(method: string): void {

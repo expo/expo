@@ -359,6 +359,7 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
+      expect(error.name).toBe('AbortError');
     });
 
     it('should abort request with AbortSignal.timeout', async () => {
@@ -376,6 +377,8 @@ export function test({ describe, expect, it, ...t }) {
       expect(error).not.toBeNull();
       expect(signal.aborted).toBe(true);
       expect(signal.reason.name).toBe('TimeoutError');
+      // The spec rejects with the signal's reason, so a timeout is not an AbortError.
+      expect(error).toBe(signal.reason);
     });
 
     it('should abort request with AbortSignal.any', async () => {
@@ -394,6 +397,8 @@ export function test({ describe, expect, it, ...t }) {
       }
       expect(error).not.toBeNull();
       expect(signal.aborted).toBe(true);
+      expect(error.name).toBe('AbortError');
+      expect(error).toBe(signal.reason);
     });
 
     it('should abort streaming request', async () => {
@@ -422,6 +427,7 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
+      expect(error.name).toBe('AbortError');
       expect(hasReceivedChunk).toBe(true);
     });
 
@@ -453,7 +459,7 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
-      expect(error.message).toContain('Fetch request has been canceled');
+      expect(error.name).toBe('AbortError');
       expect(hasReceivedChunk).toBe(false);
     });
   });

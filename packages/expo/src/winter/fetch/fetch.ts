@@ -1,5 +1,5 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
-import { FetchError } from './FetchErrors';
+import { createAbortError, FetchError } from './FetchErrors';
 import { FetchResponse, type AbortSubscriptionCleanupFunction } from './FetchResponse';
 import type { NativeRequest, NativeRequestInit } from './NativeRequest';
 import {
@@ -58,7 +58,7 @@ export async function fetch(
 
   const response = new FetchResponse(() => {
     abortSubscription?.();
-  });
+  }, signal);
 
   const request = new ExpoFetchModule.NativeRequest(response) as NativeRequest;
 
@@ -75,7 +75,7 @@ export async function fetch(
   };
 
   if (signal && signal.aborted) {
-    throw new FetchError('The operation was aborted.');
+    throw createAbortError(signal);
   }
   abortSubscription = addAbortSignalListener(signal, () => {
     request.cancel();
@@ -83,6 +83,9 @@ export async function fetch(
   try {
     await request.start(`${url}`, nativeRequestInit, requestBody);
   } catch (e: unknown) {
+    if (signal?.aborted) {
+      throw createAbortError(signal);
+    }
     if (e instanceof Error) {
       throw FetchError.createFromError(e);
     } else {
