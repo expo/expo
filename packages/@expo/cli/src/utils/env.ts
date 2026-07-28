@@ -265,6 +265,11 @@ class Env {
     return boolish('EAS_BUILD', false);
   }
 
+  /** The EAS Build runner: `eas-build` on EAS servers or `local-build-plugin` for `eas build --local`. This is set by EAS: https://docs.expo.dev/eas/environment-variables/ */
+  get EAS_BUILD_RUNNER(): string {
+    return string('EAS_BUILD_RUNNER', '');
+  }
+
   /** Disable the React Native Directory compatibility check for new architecture when installing packages */
   get EXPO_NO_NEW_ARCH_COMPAT_CHECK(): boolean {
     return boolish('EXPO_NO_NEW_ARCH_COMPAT_CHECK', envIsHeadless());
