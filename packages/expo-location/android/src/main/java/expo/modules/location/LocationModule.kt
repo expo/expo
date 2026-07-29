@@ -38,7 +38,6 @@ import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.Priority
 import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.Promise
@@ -75,7 +74,7 @@ import kotlin.coroutines.resumeWithException
 import kotlin.coroutines.suspendCoroutine
 import kotlin.math.abs
 
-class LocationModule : Module(), LifecycleEventListener, SensorEventListener, ActivityEventListener {
+class LocationModule : Module(), SensorEventListener, ActivityEventListener {
   private var mGeofield: GeomagneticField? = null
   private val mLocationCallbacks = HashMap<Int, LocationCallback>()
   private val mLocationRequests = HashMap<Int, LocationRequest>()
@@ -377,10 +376,16 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
 
     OnActivityEntersForeground {
       AppForegroundedSingleton.isForegrounded = true
+      onHostResume()
     }
 
     OnActivityEntersBackground {
       AppForegroundedSingleton.isForegrounded = false
+      onHostPause()
+    }
+
+    OnDestroy {
+      onHostDestroy()
     }
   }
 
@@ -1079,19 +1084,19 @@ class LocationModule : Module(), LifecycleEventListener, SensorEventListener, Ac
     const val TIME_DELTA = 50f // in milliseconds
   }
 
-  override fun onHostResume() {
+  fun onHostResume() {
     startWatching()
     startHeadingUpdate()
     resumeMotionActivityWatch()
   }
 
-  override fun onHostPause() {
+  fun onHostPause() {
     stopWatching()
     stopHeadingWatch()
     pauseMotionActivityWatch()
   }
 
-  override fun onHostDestroy() {
+  fun onHostDestroy() {
     stopWatching()
     stopHeadingWatch()
     stopMotionActivityWatch()
