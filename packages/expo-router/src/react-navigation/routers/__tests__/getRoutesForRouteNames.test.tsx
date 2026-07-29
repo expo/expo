@@ -15,7 +15,6 @@ function stackState(
     routes,
     type: 'stack',
     stale: false,
-    preloadedRoutes: [],
   } as StackNavigationState<ParamListBase>;
 }
 
