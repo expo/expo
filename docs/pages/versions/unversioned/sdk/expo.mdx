@@ -48,7 +48,7 @@ console.log(buffer.length); // 512
 
 > **Note:** On Android and iOS, `expo/fetch` is also installed as the global `fetch`. This means any calls to `fetch(...)` without importing from `expo/fetch` use the same WinterCG-compliant implementation. To keep React Native's built-in `fetch` as the global, set `EXPO_PUBLIC_USE_RN_FETCH=1` in your [environment variables](/guides/environment-variables/). Named imports from `expo/fetch` continue to work regardless of this flag.
 
-Rejections carry a `name` you can branch on. A request stopped through an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) rejects with that signal's `reason`, which is an `AbortError` for `controller.abort()` and a `TimeoutError` for `AbortSignal.timeout()`. Every other failure, such as a dropped connection, rejects with a `FetchError`. The same applies to a body read that fails after the response has arrived, so `response.text()`, `response.json()`, `response.arrayBuffer()`, `response.blob()` and the body stream all report failures the same way.
+Rejections carry a `name` you can branch on. A request stopped through an [`AbortSignal`](https://developer.mozilla.org/en-US/docs/Web/API/AbortSignal) rejects with that signal's `reason`, which is an `AbortError` for `controller.abort()` and a `TimeoutError` for `AbortSignal.timeout()`. On Android and iOS, every other failure, such as a dropped connection, rejects with a `FetchError`. On web, `expo/fetch` is the platform's own `fetch`, so those failures reject with a `TypeError`. The same applies to a body read that fails after the response has arrived, so `response.text()`, `response.json()`, `response.arrayBuffer()`, `response.blob()`, and the body stream all report failures the same way.
 
 ```ts Telling an abort from a network failure
 import { fetch } from 'expo/fetch';
@@ -58,13 +58,14 @@ const controller = new AbortController();
 try {
   const resp = await fetch('https://httpbin.org/get', { signal: controller.signal });
   console.log(await resp.json());
-} catch (error) {
+} catch (error: any) {
   if (error.name === 'AbortError') {
     // The request was canceled on purpose, usually not worth reporting.
   } else if (error.name === 'TimeoutError') {
     // The signal passed to fetch came from AbortSignal.timeout().
   } else {
-    // A FetchError: the request or the body read failed.
+    // A FetchError on Android and iOS, a TypeError on web: the request
+    // or the body read failed.
     console.error(error);
   }
 }
