@@ -2,6 +2,6 @@ module.exports = {
   extends: ['prettier'],
   plugins: ['prettier'],
   rules: {
-    'prettier/prettier': ['off'],
+    'prettier/prettier': 'off',
   },
 };
