@@ -6,14 +6,19 @@ import {
   List,
   Section,
   RNHostView,
+  ScrollView,
+  LazyHStack,
 } from '@expo/ui/swift-ui';
 import { frame, padding } from '@expo/ui/swift-ui/modifiers';
 import { useState } from 'react';
 import { Text as RNText, View, Pressable } from 'react-native';
 
+const LAZY_STACK_BUTTONS = ['Button One', 'Button Two', 'Button Three', 'Button Four'];
+
 export default function HostingRNViewsScreen() {
   const [counter, setCounter] = useState(0);
   const [boxSize, setBoxSize] = useState(200);
+  const [lastPress, setLastPress] = useState<{ label: string; count: number } | null>(null);
 
   return (
     <Host style={{ flex: 1 }}>
@@ -57,6 +62,38 @@ export default function HostingRNViewsScreen() {
                 </Pressable>
               </RNHostView>
             </HStack>
+          </VStack>
+        </Section>
+        <Section title="Pressables inside a SwiftUI LazyHStack">
+          <VStack spacing={12} modifiers={[padding({ all: 12 })]}>
+            <SwiftUIText>
+              {`Presses must fire even with slight finger movement (#48131). Last press: ${lastPress ? `${lastPress.label} (${lastPress.count})` : 'none'}`}
+            </SwiftUIText>
+            <ScrollView axes="horizontal">
+              <LazyHStack spacing={12}>
+                {LAZY_STACK_BUTTONS.map((label) => (
+                  <RNHostView key={label} matchContents>
+                    <Pressable
+                      onPress={() =>
+                        setLastPress((prev) => ({
+                          label,
+                          count: prev?.label === label ? prev.count + 1 : 1,
+                        }))
+                      }
+                      style={{
+                        width: 144,
+                        height: 56,
+                        borderRadius: 999,
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        backgroundColor: '#9B59B6',
+                      }}>
+                      <RNText style={{ color: 'white', fontWeight: '600' }}>{label}</RNText>
+                    </Pressable>
+                  </RNHostView>
+                ))}
+              </LazyHStack>
+            </ScrollView>
           </VStack>
         </Section>
         <Section title="Dynamically increasing size">
