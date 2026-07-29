@@ -58,6 +58,7 @@
 - [iOS] Fix Expo DevTools Network response bodies for JSON content types with parameters. ([#46336](https://github.com/expo/expo/pull/46336) by [@SJvaca30](https://github.com/SJvaca30))
 - [iOS] Resolve the key window across connected scenes in `currentViewController()` so it keeps working with multiple scenes, and expose `Utilities.keyWindow()` for modules to reuse. ([#46956](https://github.com/expo/expo/pull/46956) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix a crash on `Updates.reloadAsync()` where the previous `AppContext` could deallocate before the old runtime finished tearing down, releasing cached JSI objects against a dying runtime on the wrong thread. Its lifetime is now tied to the runtime via native state attached to the `global.expo` object. ([#47051](https://github.com/expo/expo/issues/47051) by [@HaiyiMei](https://github.com/HaiyiMei)) ([#47080](https://github.com/expo/expo/pull/47080), [#47098](https://github.com/expo/expo/pull/47098) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Fixed a stack overflow crash when converting to JavaScript a `Convertible` value that keeps the default `convertResult` implementation, such as `CMTime`. The value now converts to `undefined` and logs a warning. ([#48266](https://github.com/expo/expo/pull/48266) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
