@@ -13,7 +13,6 @@ import {
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
-  type StaticConfig,
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../native';
@@ -28,7 +27,6 @@ import { NativeStackView } from '../views/NativeStackView';
 function NativeStackNavigator({
   id,
   initialRouteName,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -46,7 +44,6 @@ function NativeStackNavigator({
   >(StackRouter, {
     id,
     initialRouteName,
-    UNSTABLE_routeNamesChangeBehavior,
     children,
     layout,
     screenListeners,
@@ -110,7 +107,6 @@ export function createNativeStackNavigator<
     };
     Navigator: typeof NativeStackNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(NativeStackNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(NativeStackNavigator)();
 }

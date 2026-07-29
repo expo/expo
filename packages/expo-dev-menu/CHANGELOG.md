@@ -16,6 +16,7 @@
 - [Android] Re-enable the Fast Refresh toggle in the dev menu's Tools section. ([#47136](https://github.com/expo/expo/pull/47136) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Show the floating Tools button at its final position instead of animating in from the top-left corner. ([#46762](https://github.com/expo/expo/pull/46762) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build failure from `RCTDevMenu.devMenuEnabled` / `keyboardShortcutsEnabled` access, which react-native-macos does not have. ([#47693](https://github.com/expo/expo/pull/47693) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Fixed the dev menu sizing itself from the main screen instead of the app's own window, and the FAB choosing its slide-in edge from the screen rather than its window. ([#48171](https://github.com/expo/expo/pull/48171) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

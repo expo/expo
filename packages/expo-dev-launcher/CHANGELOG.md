@@ -26,6 +26,11 @@
 - [Android] Forward the launching intent's extras when cold-launching the most recently opened bundle, so launch arguments (e.g. from Maestro/Detox or `adb am start -e`) reach the app and `react-native-launch-arguments` can read them. ([#47352](https://github.com/expo/expo/pull/47352) by [@kanzelm3](https://github.com/kanzelm3))
 - [iOS] Fix Release build failure from an unguarded call to `RCTBundleURLProviderAllowPackagerServerAccess`. ([#47688](https://github.com/expo/expo/pull/47688) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [Android] Fix onUserLeaveHint NPE and lost EAS sign-in redirect. ([#47347](https://github.com/expo/expo/pull/47347) by [@vicprz](https://github.com/vicprz))
+- [iOS] Keep the dev-launcher local network Info.plist keys in custom debug build configurations instead of only a configuration literally named "Debug".
+- [iOS] Report a distinct "discovery isn't configured" message and stop mislabeling a missing Info.plist entry, no network, or a pending system prompt as a denied Local Network permission.
+- [iOS] Stop triggering the Local Network permission prompt at launch by suppressing the React Native packager check until a development server is selected.
+- [iOS] Point at the Local Network setting when a local dev server URL can't be reached, and log instead of silently dropping discovered servers that fail to resolve. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Reload the recently opened apps list when the launcher appears so it no longer shows up empty or stale. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

@@ -42,5 +42,8 @@
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

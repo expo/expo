@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Add `Observe.initIntegration` to initialize an integration ([#48245](https://github.com/expo/expo/pull/48245) by [@Ubax](https://github.com/Ubax))
 - Expose `ObserveErrorBoundary`, a React error boundary that records render-phase errors. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
 - Add ObserveInteractiveMarker component ([#46909](https://github.com/expo/expo/pull/46909) by [@Ubax](https://github.com/Ubax))
 - Expose configure event ([#47388](https://github.com/expo/expo/pull/47388) by [@Ubax](https://github.com/Ubax))
@@ -14,6 +15,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix OTel date conversion ([#48161](https://github.com/expo/expo/pull/48161) by [@Ubax](https://github.com/Ubax))
 - [Android] Fix `logEvent` not being forwarded to the AppMetrics module through the native module proxy. ([@Ubax](https://github.com/Ubax)) ([#47766](https://github.com/expo/expo/pull/47766) by [@Ubax](https://github.com/Ubax))
 - Fix non-serializable route params issue ([#47497](https://github.com/expo/expo/pull/47497) by [@Ubax](https://github.com/Ubax))
 - [iOS] Adjust dispatch code to comply with OTLP retry spec. ([#47159](https://github.com/expo/expo/pull/47159) by [@douglowder](https://github.com/douglowder))

@@ -343,7 +343,9 @@ private func writeDataToUri(userId: String, data: Data?, imageKey: String, inclu
   let image = UIImage(data: data)
   let fileExtension = ".png"
 
-  var fileName = "\(userId)-\(imageKey)"
+  // Contact identifiers can contain "/" (e.g. "com.apple.introductions.accepted/494"), which
+  // `appendingPathComponent` would treat as a nested directory that doesn't exist.
+  var fileName = "\(userId.replacingOccurrences(of: "/", with: "_"))-\(imageKey)"
   fileName.append(fileExtension)
   guard let newPath = directory?.appendingPathComponent(fileName) else {
     return nil

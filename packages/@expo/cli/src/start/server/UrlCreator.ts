@@ -1,4 +1,3 @@
-import { getOriginalEnvValue } from '@expo/env';
 import assert from 'assert';
 import { URL } from 'url';
 
@@ -23,8 +22,12 @@ interface UrlComponents {
 }
 
 interface BundlerInfo {
-  port: number;
+  getPort(): number;
   getTunnelUrl?(): string | null;
+  /** Hostname that replaces the requested or LAN host. The proxy and tunnel URLs still win over it. */
+  getHostnameOverride?(): string | null;
+  /** Proxy URL that replaces the host and port of every URL. Read before every other host. */
+  getProxyUrl?(): string;
 }
 
 export class UrlCreator {
@@ -120,7 +123,7 @@ export class UrlCreator {
 
   private getUrlComponents(options: CreateURLOptions): UrlComponents {
     // Proxy comes first.
-    const proxyURL = getProxyUrl();
+    const proxyURL = this.bundlerInfo.getProxyUrl?.();
     if (proxyURL) {
       return getUrlComponentsFromProxyUrl(options, proxyURL);
     }
@@ -137,8 +140,12 @@ export class UrlCreator {
     }
 
     return {
-      hostname: getDefaultHostname(options, this.gatewayInfo),
-      port: this.bundlerInfo.port.toString(),
+      hostname: getDefaultHostname(
+        options,
+        this.gatewayInfo,
+        this.bundlerInfo.getHostnameOverride?.()
+      ),
+      port: this.bundlerInfo.getPort().toString(),
       protocol: options.scheme ?? 'http',
     };
   }
@@ -165,10 +172,13 @@ function getUrlComponentsFromProxyUrl(
   };
 }
 
-const getDefaultHostname = (options: CreateURLOptions, gateway: GatewayInfo) => {
-  // TODO: Drop REACT_NATIVE_PACKAGER_HOSTNAME
-  if (process.env.REACT_NATIVE_PACKAGER_HOSTNAME) {
-    return process.env.REACT_NATIVE_PACKAGER_HOSTNAME.trim();
+const getDefaultHostname = (
+  options: CreateURLOptions,
+  gateway: GatewayInfo,
+  hostnameOverride?: string | null
+) => {
+  if (hostnameOverride) {
+    return hostnameOverride;
   } else if (options.hostname === 'localhost') {
     // NOTE: We always convert "localhost" as a request to 127.0.0.1,
     // to normalize to an address that's consistent
@@ -191,14 +201,3 @@ function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>)
 
   return url;
 }
-
-/** @deprecated */
-function getProxyUrl(): string | undefined {
-  // Read from the pre-dotenv env — overriding this would redirect connected dev
-  // clients through an attacker-controlled URL.
-  return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL');
-}
-
-// TODO: Drop the undocumented env variables:
-// REACT_NATIVE_PACKAGER_HOSTNAME
-// EXPO_PACKAGER_PROXY_URL

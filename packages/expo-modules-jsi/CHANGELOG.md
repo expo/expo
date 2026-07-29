@@ -18,6 +18,9 @@
 - [iOS] Add `JavaScriptRuntime.longLivedObjects`, a `LongLivedObjectCollection` that keeps `LongLivedObject`s (such as in-flight promises) alive across asynchronous boundaries and releases any that remain when the runtime is torn down. ([#47511](https://github.com/expo/expo/pull/47511) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add a `JavaScriptCodable` conformance for `Date`: it encodes to a JS `Date` and decodes from a JS `Date`, a number of milliseconds since the epoch, or a string parsed by the JS engine's `Date` constructor. ([#47602](https://github.com/expo/expo/pull/47602) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `JavaScriptRuntime.runOrSchedule` that runs the given closure synchronously when called on the JavaScript thread and schedules it asynchronously otherwise. ([#47915](https://github.com/expo/expo/pull/47915) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add a `JavaScriptPromise.resolve` overload that takes a `JavaScriptEncodable` value, encoding it on the JavaScript thread and rejecting the promise if encoding or the resolver call throws. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Add a `JavaScriptEncodable` conformance for `Task` that encodes it to a JS `Promise` settling with the task's result, so native code can hand JavaScript a promise as a value. ([#47861](https://github.com/expo/expo/pull/47861) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Split the `Array`, `Optional`, and `Dictionary` `JavaScriptCodable` conformances into separate `JavaScriptDecodable` and `JavaScriptEncodable` halves so an encode-only element type such as `Task` can be carried through a container's encode. ([#47861](https://github.com/expo/expo/pull/47861) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
@@ -38,6 +41,7 @@
 - [iOS] Return `NSNull` instead of trapping in the deprecated `JavaScriptValue.getAny()` when it encounters an unrepresentable value. ([#47381](https://github.com/expo/expo/pull/47381) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fixed the `Build ExpoModulesJSI xcframework` build phase intermittently failing on Xcode 27 when clearing stale build state raced Xcode's background indexer writing into the SwiftPM index store. ([#47914](https://github.com/expo/expo/pull/47914) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `JavaScriptPromise` no longer traps when a resolve or reject call throws, which can realistically only happen against a runtime that is being torn down: a failed resolver call rejects the promise instead and a failed rejecter call is dropped. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

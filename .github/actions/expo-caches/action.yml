@@ -14,6 +14,14 @@ inputs:
   bare-expo-pods:
     description: 'Restore /apps/bare-expo/ios pods cache'
     required: false
+  bare-expo-pods-configuration:
+    description: >
+      Build configuration the restored /apps/bare-expo/ios pods will be used with.
+      The Pods dir holds configuration-specific prebuilt artifacts (React-Core-prebuilt's
+      React.xcframework and its .last_build_configuration marker), so Debug and Release
+      consumers must not share a cache entry.
+    default: 'Release'
+    required: false
   bare-expo-macos-pods:
     description: 'Restore /apps/bare-expo/macos pods cache'
     required: false
@@ -105,7 +113,7 @@ runs:
       id: bare-expo-pods-cache
       with:
         path: apps/bare-expo/ios/Pods
-        key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
+        key: ${{ runner.os }}-bare-expo-pods-${{ inputs.bare-expo-pods-configuration }}-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
 
     - name: ♻️ Restore apps/bare-expo/macos/Pods from cache
       if: inputs.bare-expo-macos-pods == 'true'

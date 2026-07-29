@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-07-25T10:34:54.005Z",
-    "cliVersion": "21.2.0"
+    "fetchedAt": "2026-07-27T09:09:12.251Z",
+    "cliVersion": "21.3.0"
   },
-  "totalCommands": 127,
+  "totalCommands": 129,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -475,6 +475,16 @@
       "command": "eas submit",
       "description": "submit app binary to App Store and/or Play Store",
       "usage": "USAGE\n  $ eas submit [-p android|ios|all] [-e <value>] [--latest | --id <value> | --path <value> | --url <value>]\n    [--what-to-test <value>] [--verbose] [--wait] [--verbose-fastlane] [-g <value>...] [--non-interactive]\n\nFLAGS\n  -e, --profile=<value>       Name of the submit profile from eas.json. Defaults to \"production\" if defined in eas.json.\n  -g, --groups=<value>...     Internal TestFlight testing groups to add the build to (iOS only). Learn more: https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers\n  -p, --platform=<option>     <options: android|ios|all>\n      --id=<value>            ID of the build to submit\n      --latest                Submit the latest build for specified platform\n      --non-interactive       Run command in non-interactive mode\n      --path=<value>          Path to the .apk/.aab/.ipa file\n      --url=<value>           App archive url\n      --verbose               Always print logs from EAS Submit\n      --verbose-fastlane      Enable verbose logging for the submission process\n      --[no-]wait             Wait for submission to complete\n      --what-to-test=<value>  Sets the \"What to test\" information in TestFlight (iOS only).\n\nDESCRIPTION\n  submit app binary to App Store and/or Play Store\n\nALIASES\n  $ eas build:submit"
+    },
+    {
+      "command": "eas testflight:crashes [ID]",
+      "description": "display crashes reported by TestFlight testers, or the full crash log of a single crash",
+      "usage": "USAGE\n  $ eas testflight:crashes [ID] [--type crash|screenshot] [-e <value>] [--offset <value>] [--limit <value>] [--json]\n    [--non-interactive]\n\nARGUMENTS\n  [ID]  ID or App Store Connect API URL of a single submission to show. Accepts ${{ app_store_connect.beta_feedback.id\n        }} or ${{ app_store_connect.beta_feedback.url }} from an EAS workflow trigger.\n\nFLAGS\n  -e, --profile=<value>  Name of the submit profile from eas.json used to resolve the bundle identifier and App Store\n                         Connect API key. Defaults to \"production\".\n      --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --limit=<value>    The number of items to fetch each query. Defaults to 20 and is capped at 200.\n      --non-interactive  Run the command in non-interactive mode.\n      --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n      --type=<option>    Kind of feedback the ID refers to. Only needed when passing a bare ID for screenshot feedback;\n                         a URL already encodes it.\n                         <options: crash|screenshot>\n\nDESCRIPTION\n  display crashes reported by TestFlight testers, or the full crash log of a single crash\n\nEXAMPLES\n  $ eas testflight:crashes  \t # Show the most recent crashes\n\n  $ eas testflight:crashes --limit 50 --offset 20  \t # Page through crashes\n\n  $ eas testflight:crashes AAo2eIIfGzcb1BzuUv3xrh4  \t # Show the full crash log for one crash\n\n  $ eas testflight:crashes --json  \t # Print a page of crashes, with paging metadata, as JSON\n\n  $ eas testflight:crashes ${{ app_store_connect.beta_feedback.url }} --json  \t # Look up whatever an EAS workflow trigger reported"
+    },
+    {
+      "command": "eas testflight:feedback [ID]",
+      "description": "display screenshot feedback submitted by TestFlight testers, including their comments, device information, and screenshot URLs",
+      "usage": "USAGE\n  $ eas testflight:feedback [ID] [--type crash|screenshot] [-e <value>] [--offset <value>] [--limit <value>] [--json]\n    [--non-interactive]\n\nARGUMENTS\n  [ID]  ID or App Store Connect API URL of a single submission to show. Accepts ${{ app_store_connect.beta_feedback.id\n        }} or ${{ app_store_connect.beta_feedback.url }} from an EAS workflow trigger.\n\nFLAGS\n  -e, --profile=<value>  Name of the submit profile from eas.json used to resolve the bundle identifier and App Store\n                         Connect API key. Defaults to \"production\".\n      --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --limit=<value>    The number of items to fetch each query. Defaults to 20 and is capped at 200.\n      --non-interactive  Run the command in non-interactive mode.\n      --offset=<value>   Start queries from specified index. Use for paginating results. Defaults to 0.\n      --type=<option>    Kind of feedback the ID refers to. Only needed when passing a bare ID for a crash; a URL\n                         already encodes it.\n                         <options: crash|screenshot>\n\nDESCRIPTION\n  display screenshot feedback submitted by TestFlight testers, including their comments, device information, and\n  screenshot URLs\n\nEXAMPLES\n  $ eas testflight:feedback  \t # Show the most recent feedback submissions\n\n  $ eas testflight:feedback --limit 50 --offset 20  \t # Page through submissions\n\n  $ eas testflight:feedback --json  \t # Print a page of feedback, with paging metadata, as JSON\n\n  $ eas testflight:feedback AD8JvKbr0BK0Cj9OnM6WO6I  \t # Show a single submission by ID\n\n  $ eas testflight:feedback ${{ app_store_connect.beta_feedback.url }} --json  \t # Look up whatever an EAS workflow trigger reported"
     },
     {
       "command": "eas update",

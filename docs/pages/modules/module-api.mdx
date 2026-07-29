@@ -304,7 +304,7 @@ Such async functions automatically receive an instance of the native view as the
 
 #### Arguments
 
-- **viewType** — The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending--expoview).
+- **viewType** — The class of the native view that will be rendered. Note: On Android, the provided class must inherit from the [`ExpoView`](#expoview), on iOS it's optional. See [`Extending ExpoView`](#extending-expoview).
 - **definition**: `() -> ViewDefinition` — A builder of the view definition.
 
 <CodeBlocksTable>
@@ -1668,7 +1668,7 @@ class ClipboardModule : Module() {
 
 </CodeBlocksTable>
 
-To subscribe to these events in JavaScript/TypeScript, use [`addListener`](/versions/latest/sdk/expo/#addlistenereventname-listener) on the module object returned by `requireNativeModule`. Modules are extending the built-in [`EventEmitter`](/versions/latest/sdk/expo/#eventemitter) class.
+To subscribe to these events in JavaScript/TypeScript, use [`addListener`](/versions/latest/sdk/expo/#addlistenereventname-listener) on the module object returned by `requireNativeModule`. Modules are extending the built-in [`EventEmitter`](/versions/latest/sdk/expo/#eventemittertype) class.
 Alternatively, you can use [`useEvent`](/versions/latest/sdk/expo/#useeventeventemitter-eventname-initialvalue) or [`useEventListener`](/versions/latest/sdk/expo/#useeventlistenereventemitter-eventname-listener) hooks.
 
 ```ts TypeScript

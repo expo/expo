@@ -8,6 +8,7 @@
 
 - [Android] Added the `controllerAutoShow` prop to `VideoView` to control whether the native controls auto-show on play. ([#46665](https://github.com/expo/expo/pull/46665) by [@stevesouth](https://github.com/stevesouth))
 - [Android][iOS] Add `maxResolution` player option to cap adaptive video track selection. ([#46992](https://github.com/expo/expo/pull/46992) by [@vargajacint](https://github.com/vargajacint))
+- [Android] Added the `videoChangeFrameRateStrategy` player builder option to control whether ExoPlayer may change the display refresh rate to match the video frame rate. On adaptive refresh rate displays (Pixel 9/10) the default matching can cap the entire app UI at 30Hz while a 30 fps video is visible. ([#47873](https://github.com/expo/expo/pull/47873) by [@invivek26](https://github.com/invivek26))
 
 ### 🐛 Bug fixes
 
@@ -24,6 +25,7 @@
 
 ### 💡 Others
 
+- [iOS] Reduce main thread load when loading videos. ([#47975](https://github.com/expo/expo/pull/47975) by [@behenate](https://github.com/behenate))
 - [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`). ([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
 - Replace `TimeoutID` typing on `_timeUpdateLoop` ([#46730](https://github.com/expo/expo/pull/46730) by [@kitten](https://github.com/kitten))
 - When `source` of `useVideoPlayer` changes use `replaceAsync` instead of re-creating the player. ([#46495](https://github.com/expo/expo/pull/46495) by [@behenate](https://github.com/behenate))

@@ -121,6 +121,7 @@ internal class VideoSourceLoader {
     cancelCurrentTask()
   }
 
+  @VideoLoadingActor
   private func loadImpl(videoSource: VideoSource) async throws -> LoadingResult {
     do {
       try Task.checkCancellation()

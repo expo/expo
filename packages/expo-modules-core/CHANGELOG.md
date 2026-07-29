@@ -11,6 +11,7 @@
 
 ### 🎉 New features
 
+- [Android] Added a `loadImageForManipulationFromURL` overload to `ImageLoaderInterface` that decodes the image within the given `maxWidth`/`maxHeight` bounds. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
 - [iOS] `ExpoSwiftUI.IgnoreSafeArea` that ignores the device and container safe area regions. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Added the `@Record` macro that synthesizes a record from a type's stored properties, with no `@Field` wrappers needed. ([#46547](https://github.com/expo/expo/pull/46547) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Added the `@Event` macro that turns a function-typed `var` on a module or shared object into a typed JavaScript event. ([#46938](https://github.com/expo/expo/pull/46938) by [@tsapeta](https://github.com/tsapeta))
@@ -23,6 +24,7 @@
 - [iOS] Added module lifecycle hooks that replace the `OnCreate`, `OnDestroy`, `OnStartObserving` and `OnStopObserving` DSL components: `didCreate`, `willDestroy`, `didStartListening` and `didStopListening`. ([#47542](https://github.com/expo/expo/pull/47542) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Support `PlatformColor` as Color. ([#47632](https://github.com/expo/expo/pull/47632) by [@jakex7](https://github.com/jakex7))
 - [Android] Added `ArrayBuffer.withJSBytes` for safe scoped access to underlying bytes from any thread. ([#47261](https://github.com/expo/expo/pull/47261) by [@barthap](https://github.com/barthap))
+- Added a `layoutRoot` prop to Expo views that marks the shadow node with the `RootNodeKind` trait, so `measure()` reports coordinates relative to that node — for views that dispatch touch events from their own root view, like `RNHostView` in `@expo/ui`. ([#48217](https://github.com/expo/expo/pull/48217) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
@@ -73,6 +75,7 @@
 - [iOS] `SharedObject` is now paired with its JS counterpart through a `SharedObjectNativeState` attached to the JS object, so registry lookups in both directions go through the native state and fall back to the legacy id-based path. ([#46712](https://github.com/expo/expo/pull/46712) by [@tsapeta](https://github.com/tsapeta))
 - [iOS][android] Resolve the worklet UI runtime from its `react-native-worklets` holder instead of the reanimated `_WORKLET_RUNTIME` global; `installOnUIRuntime` now takes the holder from `getUIRuntimeHolder()`. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway))
 - iOS Turn `getModule(implementing:)` into a public function ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
+- [iOS] Added `SceneGeometry` for reading bounds, safe area, display scale and interface orientation from the scene a view belongs to. ([#48168](https://github.com/expo/expo/pull/48168) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.13 — 2026-05-26
 

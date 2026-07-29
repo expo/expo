@@ -14,10 +14,11 @@ import path from 'path';
 import type { ContentsJson, ContentsJsonImage } from './AssetContents';
 import { writeContentsJsonAsync } from './AssetContents';
 
-const { getProjectName } = IOSConfig.XcodeUtils;
+const { getProjectName, unquote } = IOSConfig.XcodeUtils;
 
 const IMAGE_CACHE_NAME = 'icons';
 const IMAGESET_PATH = 'Images.xcassets/AppIcon.appiconset';
+const DEFAULT_APPICON_NAME = 'AppIcon';
 
 export const withIosIcons: ConfigPlugin = (config) => {
   config = withDangerousMod(config, [
@@ -32,10 +33,14 @@ export const withIosIcons: ConfigPlugin = (config) => {
     const icon = getIcons(config);
     const projectName = config.modRequest.projectName;
 
-    if (icon && typeof icon === 'string' && path.extname(icon) === '.icon' && projectName) {
+    if (projectName && icon && typeof icon === 'string' && path.extname(icon) === '.icon') {
       const iconName = path.basename(icon, '.icon');
       setIconName(config.modResults, projectName, iconName);
       addIconFileToProject(config.modResults, projectName, iconName);
+    } else if (projectName && icon) {
+      const previousIconNames = getIconNames(config.modResults, projectName);
+      setIconName(config.modResults, projectName, DEFAULT_APPICON_NAME);
+      removeIconFilesFromProject(config.modResults, projectName, previousIconNames);
     }
     return config;
   });
@@ -96,7 +101,10 @@ export async function setIconsAsync(config: ExpoConfig, projectRoot: string) {
   const iosNamedProjectRoot = getIosNamedProjectPath(projectRoot);
 
   if (typeof icon === 'string' && path.extname(icon) === '.icon') {
-    return await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot);
+    if (await addLiquidGlassIcon(icon, projectRoot, iosNamedProjectRoot)) {
+      await removeGeneratedIconImagesAsync(iosNamedProjectRoot);
+    }
+    return;
   }
 
   // Ensure the Images.xcassets/AppIcon.appiconset path exists
@@ -233,7 +241,7 @@ async function addLiquidGlassIcon(
   iconPath: string,
   projectRoot: string,
   iosNamedProjectRoot: string
-): Promise<void> {
+): Promise<boolean> {
   const iconName = path.basename(iconPath, '.icon');
   const sourceIconPath = path.join(projectRoot, iconPath);
   const targetIconPath = path.join(iosNamedProjectRoot, `${iconName}.icon`);
@@ -243,10 +251,18 @@ async function addLiquidGlassIcon(
       'icon',
       `Liquid glass icon file not found at path: ${iconPath}`
     );
-    return;
+    return false;
   }
 
   await fs.promises.cp(sourceIconPath, targetIconPath, { recursive: true });
+  return true;
+}
+
+async function removeGeneratedIconImagesAsync(iosNamedProjectRoot: string): Promise<void> {
+  await fs.promises.rm(path.join(iosNamedProjectRoot, IMAGESET_PATH), {
+    force: true,
+    recursive: true,
+  });
 }
 
 /**
@@ -279,4 +295,51 @@ function addIconFileToProject(project: any, projectName: string, iconName: strin
     isBuildFile: true,
     verbose: true,
   });
+}
+
+function getIconNames(project: any, projectName: string): string[] {
+  const [, target] = findNativeTargetByName(project, projectName);
+  const configurations = IOSConfig.XcodeUtils.getBuildConfigurationsForListId(
+    project,
+    target.buildConfigurationList
+  );
+
+  return Array.from(
+    new Set(
+      configurations
+        .map(([, config]) => (config as any)?.buildSettings?.ASSETCATALOG_COMPILER_APPICON_NAME)
+        .filter((iconName): iconName is string => typeof iconName === 'string')
+        .map(unquote)
+    )
+  );
+}
+
+function removeIconFilesFromProject(project: any, projectName: string, iconNames: string[]): void {
+  const [targetUuid] = findNativeTargetByName(project, projectName);
+  const groupKey = project.findPBXGroupKey({ name: projectName });
+
+  for (const iconName of iconNames) {
+    removeIconFileFromProject(project, `${projectName}/${iconName}.icon`, targetUuid, groupKey);
+  }
+}
+
+function removeIconFileFromProject(
+  project: any,
+  iconPath: string,
+  targetUuid: string,
+  groupKey?: string
+): void {
+  const file = {
+    basename: path.basename(iconPath),
+    group: 'Resources',
+    path: iconPath,
+    target: targetUuid,
+  };
+
+  project.removeFromPbxBuildFileSection(file);
+  project.removeFromPbxFileReferenceSection(file);
+  if (groupKey) {
+    project.removeFromPbxGroup(file, groupKey);
+  }
+  project.removeFromPbxResourcesBuildPhase(file);
 }
