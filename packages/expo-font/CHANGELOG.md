@@ -16,7 +16,6 @@
 - [android] Apply `fontWeight` and `fontStyle` to fonts loaded with `useFonts`, instancing a variable font's `wght` axis at each weight. Bold and italic text previously fell back to a system font. ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
 - [iOS] Fixed `renderToImageAsync` reporting the main screen's scale rather than the scale the image was rendered at. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
 
-
 ### 💡 Others
 
 - Resolve package-style font paths. ([#46784](https://github.com/expo/expo/pull/46784) by [@maxlapides](https://github.com/maxlapides))
