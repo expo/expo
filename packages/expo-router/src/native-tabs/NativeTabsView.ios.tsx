@@ -107,13 +107,18 @@ function Screen(props: InternalTabScreenProps) {
 
   const shared = useSharedScreenProps(props);
 
-  const iosIcon = convertOptionsIconToScreensPropsIcon(
-    shared.icon,
-    standardAppearance?.stacked?.normal?.tabBarItemIconColor
-  );
+  // React Native Screens requires `icon` and `selectedIcon` to resolve to the same icon
+  // type and throws otherwise. The icon color only decides whether an image icon is
+  // rendered as a template, so derive it from both states — using the per-state color
+  // would make the two icons disagree whenever only one of the states sets a color.
+  const iconColor =
+    standardAppearance?.stacked?.normal?.tabBarItemIconColor ??
+    standardAppearance?.stacked?.selected?.tabBarItemIconColor;
+
+  const iosIcon = convertOptionsIconToScreensPropsIcon(shared.icon, iconColor);
   const iosSelectedIcon = convertOptionsIconToScreensPropsIcon(
     shared.selectedIcon ?? shared.icon,
-    standardAppearance?.stacked?.selected?.tabBarItemIconColor
+    iconColor
   );
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;

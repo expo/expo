@@ -477,6 +477,30 @@ describe('Icons', () => {
       expect(TabsScreen.mock.calls[0][0].ios?.icon).toEqual(expectedIcon);
     }
   );
+
+  // React Native Screens throws when `icon` and `selectedIcon` have different types.
+  it.each([
+    { name: 'only selectedIconColor is set', iconColor: { selected: 'red' } as const },
+    { name: 'only iconColor is set', iconColor: { default: 'red' } as const },
+    { name: 'both icon colors are set', iconColor: { default: 'blue', selected: 'red' } as const },
+    { name: 'no icon color is set', iconColor: undefined },
+  ])('icon and selectedIcon have the same type when $name', ({ iconColor }) => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs iconColor={iconColor}>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    const { icon, selectedIcon } = TabsScreen.mock.calls[0][0].ios ?? {};
+    expect(icon?.type).toBe(selectedIcon?.type);
+  });
 });
 
 describe('Badge', () => {
