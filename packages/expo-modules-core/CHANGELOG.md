@@ -10,6 +10,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed infinite recursion and `EXC_BAD_ACCESS` when encoding native `Date` values to JavaScript. ([#48239](https://github.com/expo/expo/issues/48239), [#48240](https://github.com/expo/expo/pull/48240) by [@samuelcorsan](https://github.com/samuelcorsan))
+- [iOS] Fixed a stack overflow crash when converting to JavaScript a `Convertible` value that keeps the default `convertResult` implementation, such as `CMTime`. The value now converts to `undefined` and logs a warning. ([#48266](https://github.com/expo/expo/pull/48266) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
 
 ## 57.0.8 — 2026-07-29
@@ -44,7 +47,6 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed infinite recursion and `EXC_BAD_ACCESS` when encoding native `Date` values to JavaScript. ([#48239](https://github.com/expo/expo/issues/48239), [#48240](https://github.com/expo/expo/pull/48240) by [@samuelcorsan](https://github.com/samuelcorsan))
 - [iOS] Fix SwiftUI-hosted React views corrupting Fabric rendering after unmount: `UIViewHost` now hands SwiftUI a disposable isolation container instead of the React-managed view, so leaked `autoresizingMask`/frame/visibility mutations (including deferred ones from `Menu`/`ContextMenu` teardown) can no longer zero-size or hide unrelated components. ([#47707](https://github.com/expo/expo/pull/47707) by [@cvburgess](https://github.com/cvburgess))
 - [Android] Fix Compose-hosted React Native content (e.g. the `@expo/ui` community `BottomSheet`) keeping a stale size after a rapid resize such as dismissing the software keyboard, leaving bottom-anchored content stranded mid-view. The final shadow node size update could be dropped when its one-shot pre-draw listener fired without a following draw pass; the pending update is now also posted to the view so the latest size always flushes. ([#47778](https://github.com/expo/expo/issues/47778) by [@zayyartun-cgm](https://github.com/zayyartun-cgm)) ([#47810](https://github.com/expo/expo/pull/47810) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fixed a crash when the runtime is reloaded while async function calls are still suspended in their native body. Concurrent functions now decode `this` and the arguments buffer synchronously inside the host call and schedule only converted native values, so no JSI-owned wrappers are destroyed off the JS thread after the runtime is torn down. ([#47716](https://github.com/expo/expo/issues/47716), [#47717](https://github.com/expo/expo/pull/47717) by [@AlirezaHadjar](https://github.com/AlirezaHadjar))
