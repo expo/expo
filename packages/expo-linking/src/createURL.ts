@@ -4,8 +4,34 @@ import type { CreateURLOptions, ParsedURL } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
 import { validateURL } from './validateURL';
 
+function getDevServerLocation(): { authority: string; isSecure: boolean } | null {
+  // A published app in Expo Go also loads its bundle from a server, so its origin is not a
+  // development server to link back to.
+  if (!Constants.expoGoConfig?.developer) {
+    return null;
+  }
+  // Required lazily, because reading the bundle URL initializes React Native's native module bridge,
+  // which isn't available in every runtime that loads this file, such as server rendering.
+  let bundleOrigin: string | null = null;
+  try {
+    bundleOrigin = (
+      require('expo/internal/bundle-origin') as typeof import('expo/internal/bundle-origin')
+    ).getBundleOrigin();
+  } catch {
+    return null;
+  }
+  if (!bundleOrigin) {
+    return null;
+  }
+  const { host, protocol } = new URL(bundleOrigin);
+  return { authority: host, isSecure: protocol === 'https:' };
+}
+
 function getHostUri(): string | null {
-  if (Constants.expoConfig?.hostUri) {
+  const devServer = getDevServerLocation();
+  if (devServer) {
+    return devServer.authority;
+  } else if (Constants.expoConfig?.hostUri) {
     return Constants.expoConfig.hostUri;
   } else if (!hasCustomScheme()) {
     // we're probably not using up-to-date xdl, so just fake it for now
@@ -79,7 +105,13 @@ export function createURL(
   path: string,
   { scheme, queryParams = {}, isTripleSlashed = false }: CreateURLOptions = {}
 ): string {
-  const resolvedScheme = resolveScheme({ scheme });
+  let resolvedScheme = resolveScheme({ scheme });
+
+  // Expo Go maps the `exps` scheme to HTTPS, which `exp` can't express, so an HTTPS development
+  // server needs it to be reached over the scheme it's actually served on.
+  if (!scheme && resolvedScheme === 'exp' && getDevServerLocation()?.isSecure) {
+    resolvedScheme = 'exps';
+  }
 
   let hostUri = getHostUri() || '';
 
