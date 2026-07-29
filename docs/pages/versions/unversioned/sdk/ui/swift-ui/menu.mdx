@@ -17,7 +17,7 @@ Expo UI Menu matches the official SwiftUI [Menu API](https://developer.apple.com
   aspect="landscape"
   src="/static/images/expo-ui/menu/ios-light.webp"
   darkSrc="/static/images/expo-ui/menu/ios-dark.webp"
-  alt="Open Menu showing Settings, Profile and a destructive Delete item"
+  alt="Open menu showing Settings, Profile, and a destructive Delete item"
 />
 
 > **Note:** On tvOS, Menu requires tvOS 17.0 or later.
@@ -159,7 +159,7 @@ export default function PrimaryActionMenuExample() {
   return (
     <Host matchContents>
       <Menu
-        label="Tap or Hold"
+        label="Tap or hold"
         systemImage="play.circle"
         onPrimaryAction={() => console.log('Primary action triggered!')}>
         <Button label="Menu Item 1" onPress={() => console.log('Menu Item 1')} />
@@ -261,20 +261,20 @@ export default function MenuWithControlGroupExample() {
         <Section>
           <Button
             systemImage="text.badge.plus"
-            label="Add to a Playlist"
-            onPress={() => console.log('Add to Playlist')}
+            label="Add to a playlist"
+            onPress={() => console.log('Add to playlist')}
           />
           <Button
             systemImage="antenna.radiowaves.left.and.right"
-            label="Create Station"
-            onPress={() => console.log('Create Station')}
+            label="Create station"
+            onPress={() => console.log('Create station')}
           />
         </Section>
         <Divider />
         <Button
           systemImage="hand.thumbsdown"
-          label="Suggest Less"
-          onPress={() => console.log('Suggest Less')}
+          label="Suggest less"
+          onPress={() => console.log('Suggest less')}
         />
       </Menu>
     </Host>

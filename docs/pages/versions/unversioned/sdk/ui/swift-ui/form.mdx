@@ -73,7 +73,7 @@ export default function FormWithSectionsExample() {
         </Section>
 
         <Section>
-          <Button label="Save Changes" onPress={() => console.log('Saved!')} />
+          <Button label="Save changes" onPress={() => console.log('Saved!')} />
         </Section>
       </Form>
     </Host>
@@ -150,7 +150,7 @@ export default function RefreshableFormExample() {
   return (
     <Host style={{ flex: 1 }}>
       <Form modifiers={[refreshable(handleRefresh)]}>
-        <Section title="Pull to Refresh">
+        <Section title="Pull to refresh">
           <Text>Last refreshed: {lastRefresh.toLocaleTimeString()}</Text>
         </Section>
       </Form>

@@ -167,7 +167,7 @@ export default function EditableListExample() {
         onSelectionChange={ids => setSelectedIds(ids.map(String))}
         modifiers={[environment('editMode', editMode ? 'active' : 'inactive')]}>
         <Section title="Settings">
-          <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />
+          <Toggle label="Edit mode" isOn={editMode} onIsOnChange={setEditMode} />
         </Section>
         <Section title="Tasks">
           <List.ForEach onDelete={handleDelete} onMove={handleMove}>
