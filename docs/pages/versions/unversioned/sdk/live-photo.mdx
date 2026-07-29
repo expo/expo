@@ -67,7 +67,7 @@ export default function LivePhotoScreen() {
         }}
       />
       <View style={livePhoto ? styles.pickImageCollapsed : styles.pickImageExpanded}>
-        <Button title={livePhoto ? 'Change Image' : 'Pick an image'} onPress={pickImage} />
+        <Button title={livePhoto ? 'Change image' : 'Pick an image'} onPress={pickImage} />
       </View>
       <Button title="Start playback hint" onPress={() => viewRef.current?.startPlayback('hint')} />
       <Button title="Start playback" onPress={() => viewRef.current?.startPlayback('full')} />

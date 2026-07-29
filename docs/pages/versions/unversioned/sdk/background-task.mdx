@@ -166,7 +166,7 @@ export default function BackgroundTaskScreen() {
       </View>
       <Button
         disabled={status === BackgroundTask.BackgroundTaskStatus.Restricted}
-        title={isRegistered ? 'Cancel Background Task' : 'Schedule Background Task'}
+        title={isRegistered ? 'Cancel background task' : 'Schedule background task'}
         onPress={toggle}
       />
       <Button title="Check background task status" onPress={updateAsync} />

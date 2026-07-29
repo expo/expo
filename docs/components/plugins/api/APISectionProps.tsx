@@ -171,7 +171,7 @@ export const renderProp = (
       />
       <div className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, 'mb-2.5')}>
         {flags?.isOptional && <>Optional&emsp;&bull;&emsp;</>}
-        {flags?.isReadonly && <>Read Only&emsp;&bull;&emsp;</>}
+        {flags?.isReadonly && <>Read only&emsp;&bull;&emsp;</>}
         {definedLiteralGeneric && <>Literal type: {definedLiteralGeneric}</>}
         {!isLiteralLike && (
           <>
