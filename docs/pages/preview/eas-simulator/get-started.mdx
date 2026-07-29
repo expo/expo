@@ -5,28 +5,33 @@ description: Check whether EAS Simulator is available, start a remote device ses
 ---
 
 import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **important** **EAS Simulator is a limited-access preview.** [Contact us](https://expo.dev/contact) if you are interested in trying it.
-
-> **info** For an agentic workflow, install [Expo Skills](/skills/) and ask your coding agent to use the EAS Simulator skill. The agent can perform the session workflow below and drive the app for you. Use this page when you want to understand or run the commands manually.
+> **important** **EAS Simulator is a limited-access [preview](/more/release-statuses/#preview).** [Contact us](https://expo.dev/contact) if you are interested in trying it.
 
 <Prerequisites>
   <Requirement title="An Expo account with EAS Simulator access">
-    EAS Simulator is not enabled on every account. You will check the current project's account
-    before starting a session.
+    EAS Simulator is not enabled on every account. Check the current project's account before
+    starting a session.
   </Requirement>
   <Requirement title="A linked Expo project">
     Run these commands from the project directory. If the project does not have an EAS project ID,
-    run `npx --yes eas-cli@latest init` first.
+    run `eas init` first.
   </Requirement>
   <Requirement title="A recent EAS CLI">
-    The `simulator:*` commands are experimental and hidden. Use `npx --yes eas-cli@latest` so an
-    older global installation does not mask them.
+    The `simulator:*` commands are experimental and hidden. [Install or update EAS CLI](/eas/cli/)
+    before using them.
   </Requirement>
 </Prerequisites>
+
+## Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) and ask it to use the EAS Simulator skill. The skill can perform the session workflow below, drive the app, and collect evidence for you. Use this page when you want to understand or run the commands manually.
+
+<RelatedSkills names={['eas-simulator']} />
 
 ## Start a session manually
 
@@ -36,13 +41,13 @@ import { Tab, Tabs } from '~/ui/components/Tabs';
 
 On an interactive machine, log in and confirm the current user:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest login', '$ npx --yes eas-cli@latest whoami']} />
+<Terminal cmd={['$ eas login', '$ eas whoami']} />
 
 In CI or a headless agent environment, provide an [Expo access token](/accounts/programmatic-access/) in `EXPO_TOKEN` instead of starting an interactive login.
 
 If the project is not linked to EAS, initialize it:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest init']} />
+<Terminal cmd={['$ eas init']} />
 
 </Step>
 
@@ -52,7 +57,7 @@ If the project is not linked to EAS, initialize it:
 
 The availability check is read-only. It does not start a device or consume simulator usage:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:availability --json']} />
+<Terminal cmd={['$ eas simulator:availability --json']} />
 
 An enabled account returns:
 
@@ -63,7 +68,7 @@ An enabled account returns:
 }
 ```
 
-If `available` is `false`, do not call `simulator:start`. Use a local Simulator or Emulator, or wait until the feature is enabled for the account.
+If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or wait until the feature is enabled for the account.
 
 </Step>
 
@@ -73,7 +78,7 @@ If `available` is `false`, do not call `simulator:start`. Use a local Simulator 
 
 EAS CLI writes the current session ID and controller credentials to **.env.eas-simulator**. Add the file to **.gitignore** before starting:
 
-```bash .gitignore
+```sh .gitignore
 .env.eas-simulator
 ```
 
@@ -93,11 +98,7 @@ Choose the controller you plan to use for installation and device actions. Pass 
 
 See [agent-device and Expo](/agents/agent-device/) for controller setup and commands.
 
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
-  ]}
-/>
+<Terminal cmd={['$ eas simulator:start --platform ios --type agent-device --non-interactive']} />
 
 </Tab>
 
@@ -105,11 +106,7 @@ See [agent-device and Expo](/agents/agent-device/) for controller setup and comm
 
 See [Argent and Expo](/agents/argent/) for controller setup and commands.
 
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --type argent --non-interactive',
-  ]}
-/>
+<Terminal cmd={['$ eas simulator:start --platform ios --type argent --non-interactive']} />
 
 </Tab>
 
@@ -117,7 +114,7 @@ See [Argent and Expo](/agents/argent/) for controller setup and commands.
 
 With a current EAS CLI, `eas simulator` is an alias for `eas simulator:start`. Keep the explicit `--type` when you use the alias.
 
-Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview.
+Use `--platform android` for an Android emulator. Android sessions do not currently include a live browser preview.
 
 When `--platform` is omitted in an interactive terminal, EAS CLI asks which platform to use. Non-interactive runs require the flag.
 
@@ -137,7 +134,7 @@ The start command waits for the selected controller to become ready, then writes
 
 Use the session ID from **.env.eas-simulator**:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:get --json --non-interactive']} />
+<Terminal cmd={['$ eas simulator:get --json --non-interactive']} />
 
 Continue when `status` is `IN_PROGRESS` and `remoteConfig` is present. A stopped session can still have old connection configuration, so the dotenv file alone is not proof that the device is live.
 
@@ -169,7 +166,7 @@ For supported iOS sessions, open `webPreviewUrl` in a desktop browser to view an
 
 When you finish, stop the current session:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+<Terminal cmd={['$ eas simulator:stop']} />
 
 If you started EAS CLI without `--non-interactive`, it remains attached. Press Ctrl+C once to stop the session and let EAS CLI reset **.env.eas-simulator**.
 

@@ -1,7 +1,7 @@
 ---
 title: Introduction to EAS Simulator
 sidebar_title: Introduction
-description: Run and control remote iOS Simulators and Android Emulators on EAS infrastructure from the CLI, an AI agent, or a browser.
+description: Run and control remote iOS simulators and Android emulators on EAS infrastructure from the CLI, an AI agent, or a browser.
 ---
 
 import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
@@ -9,14 +9,12 @@ import { Cloud01Icon } from '@expo/styleguide-icons/outline/Cloud01Icon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { RelatedSkills } from '~/ui/components/RelatedSkills';
-import { Terminal } from '~/ui/components/Snippet';
-import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **important** **EAS Simulator is a limited-access preview.** [Contact us](https://expo.dev/contact) if you are interested in trying it.
+> **important** **EAS Simulator is a limited-access [preview](/more/release-statuses/#preview).** [Contact us](https://expo.dev/contact) if you are interested in trying it.
 
-**EAS Simulator** runs a remote iOS Simulator or Android Emulator on EAS infrastructure. You can install an app, inspect its user interface, interact with it, collect screenshots and recordings, and hand an iOS browser preview to another person without running the device locally.
+**EAS Simulator** runs a remote iOS simulator or Android emulator on EAS infrastructure. You can install an app, inspect its user interface, and interact with it. You can also collect screenshots and recordings or share an iOS browser preview without running the device locally.
 
-EAS Simulator is built for agentic development. It gives coding agents a real device runtime so they can verify agent-written code, fix issues they observe, and return evidence from the running app instead of stopping after a source-code change.
+EAS Simulator is built for agentic development. It gives coding agents a real device runtime for verifying agent-written code. Agents can fix issues they observe and return evidence from the running app.
 
 EAS Simulator is especially useful when:
 
@@ -25,11 +23,11 @@ EAS Simulator is especially useful when:
 - You want a temporary, shareable iOS browser preview
 - You need to offload simulator compute or test on a remote platform
 
-EAS Simulator does not replace local Xcode or Android Studio workflows when you already have the required local simulator and do not need remote or shareable access.
+EAS Simulator does not replace local Xcode or Android Studio workflows when you already have the required local device runtime. Use it when you need remote or shareable access.
 
-## Close the loop on agent-written code
+## Use EAS Simulator with a coding agent
 
-For agentic development, the recommended starting point is the official EAS Simulator skill. Ask your coding agent to use the skill instead of manually giving it individual EAS CLI and controller commands. The skill teaches the agent how to check access, prepare the appropriate build, start a remote device, drive the app with your selected controller, collect evidence, and stop the session.
+For agentic development, start with the official EAS Simulator skill. Ask your coding agent to use the skill instead of giving it individual EAS CLI and controller commands. The skill covers the access check, build preparation, remote session, controller workflow, evidence collection, and cleanup.
 
 <RelatedSkills names={['eas-simulator']} />
 
@@ -43,7 +41,7 @@ The agent can then complete the runtime loop:
 
 ### Typical setup: a Cursor cloud agent
 
-A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another background coding agent working in a cloud project checkout. The environment can edit and build the project but cannot launch a local iOS Simulator. With the EAS Simulator skill, the agent starts a remote device on EAS, controls it through agent-device or Argent, and returns the result to the task or pull request. Your computer does not need to host the simulator.
+A common setup is a [Cursor cloud agent](https://cursor.com/cloud) or another background coding agent working in a cloud project checkout. The environment can edit and build the project, but it cannot launch a local iOS simulator. With the EAS Simulator skill, the agent starts a remote device on EAS and controls it through agent-device or Argent. It then returns the result to the task or pull request, while your computer does not need to host the simulator.
 
 ## How it works
 
@@ -60,8 +58,8 @@ EAS CLI manages the session lifecycle and connection configuration. The controll
 
 | Capability                                      | Availability |
 | ----------------------------------------------- | ------------ |
-| Remote iOS Simulator                            | <YesIcon />  |
-| Remote Android Emulator                         | <YesIcon />  |
+| Remote iOS simulator                            | <YesIcon />  |
+| Remote Android emulator                         | <YesIcon />  |
 | Programmatic control with agent-device          | <YesIcon />  |
 | Programmatic control with Argent                | <YesIcon />  |
 | Live browser preview for iOS                    | <YesIcon />  |
@@ -69,96 +67,34 @@ EAS CLI manages the session lifecycle and connection configuration. The controll
 | Physical device access                          | <NoIcon />   |
 | Fast Refresh with a development build and Metro | <YesIcon />  |
 
-Use [EAS Build](/build/introduction/) for build and signing workflows, and use local device tooling for physical devices.
-
-## Quick start
-
-The EAS Simulator skill can perform this sequence for your agent. Use the commands below when you want to operate a session manually or integrate it into custom automation.
-
-Run the availability check from a linked Expo project:
-
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:availability --json']} />
-
-Choose the controller you want to use, then start the session with its type explicitly:
-
-<Tabs>
-
-<Tab label="agent-device">
-
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
-  ]}
-/>
-
-</Tab>
-
-<Tab label="Argent">
-
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --type argent --non-interactive',
-  ]}
-/>
-
-</Tab>
-
-</Tabs>
-
-Confirm that the session is active:
-
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:get --json --non-interactive']} />
-
-The start command writes **.env.eas-simulator** with the session ID and controller credentials. `simulator:exec` loads that configuration and runs the command for the controller you selected:
-
-<Tabs>
-
-<Tab label="agent-device">
-
-<Terminal
-  cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest <command> [args...]']}
-/>
-
-</Tab>
-
-<Tab label="Argent">
-
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec argent run <tool> [args...]']} />
-
-</Tab>
-
-</Tabs>
-
-Always stop the session when you finish:
-
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+Use [EAS Build](/build/introduction/) to create installable builds, and use local device tooling for physical devices.
 
 ## Next steps
 
 <BoxLink
   title="Get started"
   description="Check access, start your first session, and open the dashboard and browser preview."
-  href="/preview/eas-simulator/get-started"
+  href="/preview/eas-simulator/get-started/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
   title="Run and control your app"
   description="Install a local or EAS build, interact with the app, and capture evidence."
-  href="/preview/eas-simulator/run-and-control"
+  href="/preview/eas-simulator/run-and-control/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
   title="CLI reference"
   description="Review the experimental simulator commands, flags, output, and managed environment file."
-  href="/preview/eas-simulator/cli-reference"
+  href="/preview/eas-simulator/cli-reference/"
   Icon={Cloud01Icon}
 />
 
 <BoxLink
   title="Troubleshooting"
   description="Recover from unavailable accounts, stale sessions, dropped tunnels, and incorrect builds."
-  href="/preview/eas-simulator/troubleshooting"
+  href="/preview/eas-simulator/troubleshooting/"
   Icon={Cloud01Icon}
 />

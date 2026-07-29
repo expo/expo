@@ -10,9 +10,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 ### `Command simulator:start not found`
 
-The installed EAS CLI is too old. Run the command with the latest version:
+The installed EAS CLI is too old. [Install or update EAS CLI](/eas/cli/), then inspect the command:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:start --help']} />
+<Terminal cmd={['$ eas simulator:start --help']} />
 
 The commands remain hidden because the API is experimental.
 
@@ -22,21 +22,21 @@ The commands remain hidden because the API is experimental.
 
 Check before starting:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:availability --json']} />
+<Terminal cmd={['$ eas simulator:availability --json']} />
 
-If `available` is `false`, do not retry `simulator:start`. Use a local Simulator or Emulator, or wait for access to be enabled.
+If `available` is `false`, do not retry `simulator:start`. Use a local simulator or emulator, or wait for access to be enabled.
 
 ### EAS CLI reports that a user account is required
 
 Log in interactively or provide `EXPO_TOKEN` in a headless environment:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest whoami']} />
+<Terminal cmd={['$ eas whoami']} />
 
 ### EAS CLI reports that the project is not linked
 
 Run the command inside the Expo project and initialize EAS:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest init']} />
+<Terminal cmd={['$ eas init']} />
 
 ## Session lifecycle problems
 
@@ -44,29 +44,15 @@ Run the command inside the Expo project and initialize EAS:
 
 Boot time varies with device capacity. Do not start a second session to retry a slow boot. Poll the existing session:
 
-<Terminal
-  cmd={['$ npx --yes eas-cli@latest simulator:get --id <session-id> --json --non-interactive']}
-/>
+<Terminal cmd={['$ eas simulator:get --id <session-id> --json --non-interactive']} />
 
 Continue when the status is `IN_PROGRESS` and `remoteConfig` is present. Stop and recreate the session only after it reaches `STOPPED` or `ERRORED`, or the start command reports a terminal failure.
-
-### Two sessions are running
-
-Starting another session replaces the ID in **.env.eas-simulator** but does not stop the old device. List active sessions:
-
-<Terminal
-  cmd={['$ npx --yes eas-cli@latest simulator:list --status in-progress --json --non-interactive']}
-/>
-
-Stop each unwanted ID:
-
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop --id <session-id>']} />
 
 ### A non-interactive session did not stop automatically
 
 `--non-interactive` returns after the controller is ready. It does not stop the session. Run:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+<Terminal cmd={['$ eas simulator:stop']} />
 
 ## Controller and tunnel problems
 
@@ -80,7 +66,7 @@ Stop the session if it is still active, then start a fresh session and repeat in
 
 The agent-device action is named `press`:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest press @e2']} />
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest press @e2']} />
 
 ### A controller action hangs
 
@@ -92,7 +78,7 @@ Pass the platform:
 
 <Terminal
   cmd={[
-    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest install com.example.app ./MyApp.app --platform ios',
+    '$ eas simulator:exec npx agent-device@latest install com.example.app ./MyApp.app --platform ios',
   ]}
 />
 
@@ -102,8 +88,8 @@ Open an installed app before taking the screenshot:
 
 <Terminal
   cmd={[
-    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest open com.example.app --platform ios',
-    '$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest screenshot ./shot.png',
+    '$ eas simulator:exec npx agent-device@latest open com.example.app --platform ios',
+    '$ eas simulator:exec npx agent-device@latest screenshot ./shot.png',
   ]}
 />
 
@@ -111,7 +97,7 @@ Open an installed app before taking the screenshot:
 
 ### The remote device does not contain the app
 
-This is expected. Each session starts with a blank device. Install a local Simulator or Emulator build, or use `install-from-source` with an EAS Build artifact.
+This is expected. Each session starts with a blank device. Install a local simulator or emulator build, or use `install-from-source` with an EAS Build artifact.
 
 ### The screenshot shows old source code
 
@@ -143,16 +129,6 @@ Android browser preview is not currently supported. Use agent-device or Argent a
 ### The preview appears inside the simulator
 
 The `webPreviewUrl` was opened as though it were an app URL. Open it in the desktop browser instead. It is a browser stream, not an application deep link.
-
-## Unexpected usage
-
-List all active sessions for the current project:
-
-<Terminal
-  cmd={['$ npx --yes eas-cli@latest simulator:list --status in-progress --json --non-interactive']}
-/>
-
-Stop every session that is no longer needed.
 
 ## Report feedback
 

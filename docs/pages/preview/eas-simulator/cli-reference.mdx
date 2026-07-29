@@ -7,9 +7,11 @@ description: Reference for the experimental EAS CLI commands that create, inspec
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-The `simulator:*` commands are experimental and hidden. Run them through a current EAS CLI:
+The `simulator:*` commands are experimental and hidden. Use a current [EAS CLI](/eas/cli/) to run them:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:start --help']} />
+<Terminal cmd={['$ eas simulator:start --help']} />
+
+The `--help` flag displays the available options for `simulator:start`.
 
 ## Commands
 
@@ -25,33 +27,29 @@ The `simulator:*` commands are experimental and hidden. Run them through a curre
 
 ## `simulator:availability`
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:availability --json']} />
+<Terminal cmd={['$ eas simulator:availability --json']} />
 
 The JSON output contains `available` and `accountName`. This command does not create a session or consume simulator usage.
 
 ## `simulator:start`
 
-Choose a controller type when starting a session:
+A controller is the tool provisioned with the remote device to install, inspect, and interact with apps. Choose a controller type when starting a session:
 
 <Tabs>
 
 <Tab label="agent-device">
 
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --type agent-device --non-interactive',
-  ]}
-/>
+Use [agent-device](/agents/agent-device/) for accessibility-driven device actions and app installation.
+
+<Terminal cmd={['$ eas simulator:start --platform ios --type agent-device --non-interactive']} />
 
 </Tab>
 
 <Tab label="Argent">
 
-<Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:start --platform ios --type argent --non-interactive',
-  ]}
-/>
+Use [Argent](/agents/argent/) to run its remote device tools through the session.
+
+<Terminal cmd={['$ eas simulator:start --platform ios --type argent --non-interactive']} />
 
 </Tab>
 
@@ -61,7 +59,7 @@ Important flags:
 
 | Flag                | Description                                                                                                                                |
 | ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `-p, --platform`    | `ios` or `android`. Required in non-interactive mode; prompted for in an interactive terminal                                              |
+| `-p, --platform`    | `android` or `ios`. Required in non-interactive mode; prompted for in an interactive terminal                                              |
 | `--type`            | Controller provisioned for the session. Use `agent-device` or `argent` for programmatic control, or `serve-sim` for a browser-only preview |
 | `--package-version` | Controller package version. Defaults to the service's latest version                                                                       |
 | `--out-config-type` | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                                                                  |
@@ -92,12 +90,6 @@ Without `--non-interactive`, the start command stays attached and polls the sess
 
 With `--non-interactive` or `--json`, the command returns after the controller is ready. You must stop the session separately.
 
-### Existing session behavior
-
-The default `--force` behavior creates a new session even when `EAS_SIMULATOR_SESSION_ID` is already loaded. EAS CLI overwrites the dotenv file but does not stop the previous remote session. Use `simulator:list --status in-progress` to find and stop orphaned sessions.
-
-Pass `--no-force` when you want EAS CLI to fail instead of replacing the local session configuration.
-
 ## `simulator:exec`
 
 `simulator:exec` is controller-agnostic. It loads the connection variables for the active session from **.env.eas-simulator**, then spawns the command and arguments that follow.
@@ -108,15 +100,13 @@ Use the command pattern for the controller selected when the session started:
 
 <Tab label="agent-device">
 
-<Terminal
-  cmd={['$ npx --yes eas-cli@latest simulator:exec npx agent-device@latest <command> [args...]']}
-/>
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest <command> [args...]']} />
 
 </Tab>
 
 <Tab label="Argent">
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:exec argent run <tool> [args...]']} />
+<Terminal cmd={['$ eas simulator:exec argent run <tool> [args...]']} />
 
 </Tab>
 
@@ -128,13 +118,11 @@ Use the command pattern for the controller selected when the session started:
 
 Get the session referenced by **.env.eas-simulator**:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:get --json --non-interactive']} />
+<Terminal cmd={['$ eas simulator:get --json --non-interactive']} />
 
 Get another session explicitly:
 
-<Terminal
-  cmd={['$ npx --yes eas-cli@latest simulator:get --id <session-id> --json --non-interactive']}
-/>
+<Terminal cmd={['$ eas simulator:get --id <session-id> --json --non-interactive']} />
 
 The response includes:
 
@@ -147,9 +135,7 @@ The response includes:
 ## `simulator:list`
 
 <Terminal
-  cmd={[
-    '$ npx --yes eas-cli@latest simulator:list --platform ios --status in-progress --json --non-interactive',
-  ]}
+  cmd={['$ eas simulator:list --platform ios --status in-progress --json --non-interactive']}
 />
 
 Filters can be repeated:
@@ -166,11 +152,11 @@ Use `--limit` to control page size and `--after` with the previous response's `e
 
 Stop the session referenced by **.env.eas-simulator**:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop']} />
+<Terminal cmd={['$ eas simulator:stop']} />
 
 Stop a specific session:
 
-<Terminal cmd={['$ npx --yes eas-cli@latest simulator:stop --id <session-id>']} />
+<Terminal cmd={['$ eas simulator:stop --id <session-id>']} />
 
 The stop mutation is idempotent.
 
@@ -178,7 +164,7 @@ The stop mutation is idempotent.
 
 The managed file always contains the session ID:
 
-```bash .env.eas-simulator
+```sh .env.eas-simulator
 EAS_SIMULATOR_SESSION_ID="<session-id>"
 ```
 
@@ -191,7 +177,7 @@ Controller connection variables depend on the selected type:
 
 Add the file to **.gitignore**:
 
-```bash .gitignore
+```sh .gitignore
 .env.eas-simulator
 ```
 
