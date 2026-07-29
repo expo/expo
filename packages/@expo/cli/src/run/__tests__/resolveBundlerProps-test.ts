@@ -13,6 +13,18 @@ describe(resolveBundlerPropsAsync, () => {
       /mutually exclusive arguments/
     );
   });
+  it(`ignores an invalid port when the bundler is skipped`, async () => {
+    expect(await resolveBundlerPropsAsync('/', { bundler: false, port: NaN })).toEqual({
+      port: 8081,
+      shouldStartBundler: false,
+    });
+  });
+  it(`ignores an invalid port when the bundler is started`, async () => {
+    expect(await resolveBundlerPropsAsync('/', { port: NaN })).toEqual({
+      port: 8081,
+      shouldStartBundler: true,
+    });
+  });
   it(`skips bundling if the port is busy`, async () => {
     jest.mocked(resolveMetroPortAsync).mockResolvedValueOnce(null);
 
