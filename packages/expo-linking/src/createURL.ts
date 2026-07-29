@@ -1,4 +1,5 @@
 import Constants from 'expo-constants';
+import { getBundleOrigin } from 'expo/internal/bundle-origin';
 
 import type { CreateURLOptions, ParsedURL } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
@@ -10,16 +11,7 @@ function getDevServerLocation(): { authority: string; isSecure: boolean } | null
   if (!Constants.expoGoConfig?.developer) {
     return null;
   }
-  // Required lazily, because reading the bundle URL initializes React Native's native module bridge,
-  // which isn't available in every runtime that loads this file, such as server rendering.
-  let bundleOrigin: string | null = null;
-  try {
-    bundleOrigin = (
-      require('expo/internal/bundle-origin') as typeof import('expo/internal/bundle-origin')
-    ).getBundleOrigin();
-  } catch {
-    return null;
-  }
+  const bundleOrigin = getBundleOrigin();
   if (!bundleOrigin) {
     return null;
   }
