@@ -19,10 +19,10 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
 import host.exp.exponent.experience.ExpoGoReactNativeHost
+import host.exp.exponent.factories.ExpoGoDevSupportManager
 import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
-import host.exp.exponent.modules.perfmonitor.ExpoBridgelessDevSupportManager
 import host.exp.exponent.storage.ExponentDB
 import host.exp.exponent.storage.ExponentDBObject
 import host.exp.exponent.taskManager.AppLoaderInterface
@@ -249,7 +249,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
       devServerBundleUrl = ExponentUrls.toHttp(manifest!!.getBundleURL())
     )
 
-    (reactHost.devSupportManager as? ExpoBridgelessDevSupportManager)?.exponentActivityId = activityId
+    (reactHost.devSupportManager as? ExpoGoDevSupportManager)?.exponentActivityId = activityId
 
     // keep a reference in app record, so it can be invalidated through AppRecord.invalidate()
     appRecord!!.setReactHost(reactHost)

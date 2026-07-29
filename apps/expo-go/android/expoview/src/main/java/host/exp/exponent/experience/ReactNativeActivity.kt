@@ -36,6 +36,7 @@ import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity.ExperienceContentLoaded
 import host.exp.exponent.experience.splashscreen.LoadingView
+import host.exp.exponent.factories.ExpoGoDevSupportManager
 import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExponentError
@@ -46,7 +47,6 @@ import host.exp.exponent.kernel.KernelConstants.AddedExperienceEventEvent
 import host.exp.exponent.kernel.KernelProvider
 import host.exp.exponent.kernel.services.ErrorRecoveryManager
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
-import host.exp.exponent.modules.perfmonitor.ExpoBridgelessDevSupportManager
 import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.BundleJSONConverter
@@ -445,7 +445,7 @@ abstract class ReactNativeActivity :
       return reactHost
     }
 
-    (reactHost.devSupportManager as? ExpoBridgelessDevSupportManager)?.exponentActivityId = activityId
+    (reactHost.devSupportManager as? ExpoGoDevSupportManager)?.exponentActivityId = activityId
 
     val appKey = manifest!!.getAppKey()
     val surface = reactHost.createSurface(

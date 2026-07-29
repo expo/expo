@@ -951,26 +951,7 @@ class Kernel : KernelInterface() {
      * Error handling
      *
      */
-    // Called using reflection from ReactAndroid.
-    @DoNotStrip
     fun handleReactNativeError(
-      errorMessage: String?,
-      detailsUnversioned: Any?,
-      exceptionId: Int?,
-      isFatal: Boolean
-    ) {
-      handleReactNativeError(
-        developerErrorMessage(errorMessage),
-        detailsUnversioned,
-        exceptionId,
-        isFatal
-      )
-    }
-
-    // Called using reflection from ReactAndroid.
-    @DoNotStrip
-    fun handleReactNativeError(
-      throwable: Throwable?,
       errorMessage: String?,
       detailsUnversioned: Any?,
       exceptionId: Int?,

@@ -4,7 +4,6 @@ import android.content.Context
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.react.devsupport.ReactInstanceDevHelper
-import com.facebook.react.devsupport.ReleaseDevSupportManager
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -33,7 +32,7 @@ class ExpoGoDevSupportFactory(
     pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
   ): DevSupportManager {
     // This method was used only by legacy architecture and is stubbed here.
-    return ReleaseDevSupportManager()
+    return ExpoGoReleaseDevSupportManager()
   }
 
   override fun create(
@@ -51,7 +50,7 @@ class ExpoGoDevSupportFactory(
     useDevSupport: Boolean
   ): DevSupportManager {
     if (!useDevSupport) {
-      return ReleaseDevSupportManager()
+      return ExpoGoReleaseDevSupportManager()
     }
 
     // Dev support starts disabled so the dev server is in place before the packager connection
