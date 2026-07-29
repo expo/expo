@@ -10,7 +10,7 @@ import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-> **important** **EAS Simulator is a limited-access [preview](/more/release-statuses/#preview).** It is not included with paid or free plans and is currently available only to select partners. [Contact us](https://expo.dev/contact) if you are interested in trying it.
+> **important** **EAS Simulator is a limited-access [preview](/more/release-statuses/#preview).** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulator) if you are interested in trying it.
 
 <Prerequisites>
   <Requirement title="An Expo account with EAS Simulator access">
@@ -55,7 +55,7 @@ If the project is not linked to EAS, initialize it:
 
 ### Check account availability
 
-The availability check is read-only. It does not start a device or consume simulator usage:
+The availability check is read-only. It does not start a device or consume simulator usage. The `--json` flag is optional, but it makes the result easy for an agent or script to inspect:
 
 <Terminal cmd={['$ eas simulator:availability --json']} />
 
@@ -68,7 +68,7 @@ An enabled account returns:
 }
 ```
 
-If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or wait until the feature is enabled for the account.
+If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or [join the waitlist](https://expo.dev/services/simulator) for access.
 
 </Step>
 
@@ -111,8 +111,6 @@ See [Argent and Expo](/agents/argent/) for controller setup and commands.
 </Tab>
 
 </Tabs>
-
-With a current EAS CLI, `eas simulator` is an alias for `eas simulator:start`. Keep the explicit `--type` when you use the alias.
 
 Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview.
 

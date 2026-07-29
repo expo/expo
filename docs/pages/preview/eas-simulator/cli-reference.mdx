@@ -7,7 +7,7 @@ description: Reference for the experimental EAS CLI commands that create, inspec
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-The `simulator:*` commands are experimental and hidden. Use a current [EAS CLI](/eas/cli/) to run them:
+The `simulator:*` commands are experimental and hidden. Install or update [EAS CLI](/eas/cli/) before running them:
 
 <Terminal cmd={['$ eas simulator:start --help']} />
 
@@ -15,21 +15,21 @@ The `--help` flag displays the available options for `simulator:start`.
 
 ## Commands
 
-| Command                  | Purpose                                                                  |
-| ------------------------ | ------------------------------------------------------------------------ |
-| `simulator:availability` | Check whether the current project's account can use EAS Simulator        |
-| `simulator:start`        | Create a session and wait for its controller configuration               |
-| `simulator`              | Alias for `simulator:start`                                              |
-| `simulator:exec`         | Run another command with **.env.eas-simulator** loaded                   |
-| `simulator:get`          | Get status, connection details, dashboard URL, timestamps, and artifacts |
-| `simulator:list`         | List and filter sessions for the current project                         |
-| `simulator:stop`         | Stop a session                                                           |
+| Command                                            | Purpose                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`simulator:availability`](#simulatoravailability) | Check whether the current project's account can use EAS Simulator        |
+| [`simulator:start`](#simulatorstart)               | Create a session and wait for its controller configuration               |
+| [`simulator`](#simulatorstart)                     | Alias for `simulator:start`                                              |
+| [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                   |
+| [`simulator:get`](#simulatorget)                   | Get status, connection details, dashboard URL, timestamps, and artifacts |
+| [`simulator:list`](#simulatorlist)                 | List and filter sessions for the current project                         |
+| [`simulator:stop`](#simulatorstop)                 | Stop a session                                                           |
 
 ## `simulator:availability`
 
 <Terminal cmd={['$ eas simulator:availability --json']} />
 
-The JSON output contains `available` and `accountName`. This command does not create a session or consume simulator usage.
+The `--json` flag is optional. It prints a stable, machine-readable result for agents and automation; omit it for human-readable output. The JSON object contains `available` and `accountName`. This command does not create a session or consume simulator usage.
 
 ## `simulator:start`
 
