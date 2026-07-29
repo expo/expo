@@ -15,7 +15,7 @@ import {
   ConfigPluginProperties,
 } from '~/ui/components/ConfigSection';
 
-> **important** To provide quicker updates, `expo-calendar` is currently unsupported in Expo Go and Snack. To use it, create a [development build](/develop/development-builds/create-a-build/).
+> **important** To provide quicker updates, `expo-calendar` is currently unsupported in Expo Go and Snack. To use it, create a [development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
 
 `expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
@@ -177,7 +177,7 @@ Otherwise, you must add the following permissions to your **app.json** inside th
 
 ### iOS
 
-To only add events without reading existing calendar data, enable the `writeOnlyAccess` option in the [config plugin](#configuration-in-app-config) and request write-only access by passing `true` to [`requestCalendarPermissions`](#requestcalendarpermissions). This is sufficient for methods like [`ExpoCalendar.createEvent`](#createeventdetails). Methods that read calendar data, such as [`getCalendars`](#getcalendars), [`listEvents`](#listevents), or [`presentPicker`](#presentpicker), require full calendar access.
+To only add events without reading existing calendar data, enable the `writeOnlyAccess` option in the [config plugin](#configuration-in-app-config) and request write-only access by passing `true` to [`requestCalendarPermissions`](#calendarrequestcalendarpermissionswriteonly). This is sufficient for methods like [`ExpoCalendar.createEvent`](#createeventdetails). Methods that read calendar data, such as [`getCalendars`](#calendargetcalendarsentitytype), [`listEvents`](#calendarlisteventscalendars-startdate-enddate), or [`presentPicker`](#calendarpresentpicker), require full calendar access.
 
 The following usage description keys are used by this library:
 
