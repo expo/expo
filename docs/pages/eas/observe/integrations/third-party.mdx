@@ -117,24 +117,24 @@ Observe.configure({
 Call `initIntegration()` with your integration key. The callback receives the configuration for your integration:
 
 ```ts observe.ts
-import { enableObserveIntegration } from './monitoring';
+export function initObserveIntegration() {
+  if (typeof window !== 'undefined' && observeModule) {
+    const { Observe } = observeModule;
 
-let initialized = false;
-
-export function initObserveIntegrationIfNeeded() {
-  if (initialized || typeof window === 'undefined' || !observeModule) {
-    return;
+    Observe.initIntegration('your-package', config => {
+      if (config) {
+        enableObserveIntegration(config === true ? {} : config);
+      }
+    });
   }
-  initialized = true;
+}
 
-  const { Observe } = observeModule;
+let enabled = false;
 
-  Observe.initIntegration('your-package', config => {
-    if (!config) {
-      return;
-    }
-    enableObserveIntegration(config === true ? {} : config);
-  });
+function enableObserveIntegration() {
+  // Initialize the integration here
+  // For example:
+  enabled = true;
 }
 ```
 
@@ -143,11 +143,11 @@ Implement `enableObserveIntegration()` in your package. The callback does not ru
 Call the initialization function from your package entry point:
 
 ```ts index.ts
-import { initObserveIntegrationIfNeeded } from './observe';
+import { initObserveIntegration } from './observe';
 
 export type { YourPackageIntegrationConfig } from './observe.types';
 
-initObserveIntegrationIfNeeded();
+initObserveIntegration();
 ```
 
 </Step>
@@ -160,11 +160,13 @@ Call `Observe.logEvent()` when your package detects an actionable issue. Use a l
 
 ```ts observe.ts
 export function logExpensiveOperation(durationMs: number, thresholdMs: number) {
-  if (!observeModule) {
+  if (!observeModule || !enabled) {
     return;
   }
 
-  observeModule.Observe.logEvent('your-package.expensive-operation', {
+  const { Observe } = observeModule;
+
+  Observe.logEvent('your-package.expensive-operation', {
     severity: 'warn',
     body: 'Reduce the work performed by this operation or increase the configured threshold.',
     attributes: {
