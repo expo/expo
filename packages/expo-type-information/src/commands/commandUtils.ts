@@ -330,10 +330,9 @@ export function contentHasChanged(fileContent: string): boolean {
 
 const generatedFileComment = '// Automatically generated with expo-type-information.';
 export function insertFileHashCommentGeneratedPrefix(fileContent: string): string {
-  const hashString = getContentHash(fileContent);
-  return `// File hash: ${hashString}
-${generatedFileComment}
-${fileContent}`;
+  const fileContentWithComment = `${generatedFileComment}\n${fileContent}`;
+  const hashString = getContentHash(fileContentWithComment);
+  return `// File hash: ${hashString}\n${fileContentWithComment}`;
 }
 
 export async function writeToStableFile({
