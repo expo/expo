@@ -743,6 +743,17 @@ export const learn = [
 const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
+    makeGroup(
+      'EAS Simulator',
+      [
+        makePage('preview/eas-simulator/introduction.mdx'),
+        makePage('preview/eas-simulator/get-started.mdx'),
+        makePage('preview/eas-simulator/run-and-control.mdx'),
+        makePage('preview/eas-simulator/cli-reference.mdx'),
+        makePage('preview/eas-simulator/troubleshooting.mdx'),
+      ],
+      { expanded: true }
+    ),
     makeGroup('Expo Router', [makePage('preview/singular.mdx'), { expanded: true }]),
   ]),
 ];
