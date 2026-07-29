@@ -103,6 +103,8 @@ describe('getParsedHeaders', () => {
       responseContentType: ResponseContentType.TEXT_PLAIN,
       hostname: null,
       platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -116,6 +118,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -132,6 +136,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
 
     expect(
@@ -146,6 +152,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -168,6 +176,8 @@ describe('getParsedHeaders', () => {
       hostname: 'localhost',
       // We don't care much about the platform here since it's already tested.
       platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -191,7 +201,7 @@ describe('getParsedHeaders', () => {
     });
   });
 
-  it('omits the forwarded address for direct requests', () => {
+  it('returns a null forwarded address for direct requests', () => {
     expect(
       middleware.getParsedHeaders(
         asReq({
@@ -199,7 +209,12 @@ describe('getParsedHeaders', () => {
           headers: { host: 'localhost:8081', 'expo-platform': 'ios' },
         })
       )
-    ).not.toHaveProperty('forwarded');
+    ).toMatchObject({
+      hostname: 'localhost',
+      platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
+    });
   });
 });
 

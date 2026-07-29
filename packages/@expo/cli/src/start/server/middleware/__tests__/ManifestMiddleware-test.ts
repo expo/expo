@@ -294,13 +294,14 @@ describe('_resolveProjectSettingsAsync', () => {
     const settings = await middleware._resolveProjectSettingsAsync({
       hostname: 'localhost',
       platform: 'android',
-      forwarded: { protocol: 'https' },
-    } as any);
+      protocol: 'https',
+      forwarded: { authority: undefined, protocol: 'https' },
+    });
 
     expect(settings.hostUri).toBe('fake.mock:8081');
     expect(settings.expoGoConfig.debuggerHost).toBe('fake.mock:8081');
-    // The bundle URL stays relative, since the request was still forwarded.
-    expect(settings.bundleUrl).toBe('index.bundle');
+    // The bundle URL stays absolute, since no forwarded authority was reported.
+    expect(settings.bundleUrl).toBe('https://fake.mock:8081/index.bundle');
   });
   it(`normalizes relative asset paths`, async () => {
     const middleware = new MockManifestMiddleware('/', {

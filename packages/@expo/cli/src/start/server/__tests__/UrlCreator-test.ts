@@ -98,10 +98,10 @@ describe('constructUrl', () => {
   it(`uses the forwarded authority without a port`, () => {
     expect(
       createDefaultCreator().constructUrl({
-        scheme: '',
+        scheme: 'http',
         forwarded: { authority: 'proxy.test', protocol: undefined },
       })
-    ).toMatchInlineSnapshot(`"proxy.test"`);
+    ).toMatchInlineSnapshot(`"http://proxy.test"`);
   });
   it(`uses the forwarded authority over a requested hostname and the tunnel`, () => {
     expect(
