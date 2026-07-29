@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Dropped the `prettier` shared config, `.prettierrc`, and the `eslint-config-prettier` / `eslint-plugin-prettier` dependencies, since the repo now formats with `oxfmt`.
+
 ## 15.2.0 — 2026-05-20
 
 _This version does not introduce any user-facing changes._
