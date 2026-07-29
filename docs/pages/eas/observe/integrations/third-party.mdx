@@ -18,9 +18,8 @@ Events should describe actionable issues that developers can fix. For example, a
 ## Prerequisites
 
 <Prerequisites>
-  <Requirement title="Expo SDK 57 or later">
-    Third-party integrations require SDK 57 or later to access `getIntegrations()` and listen for
-    the `configure` event.
+  <Requirement title="Expo SDK 57 and later">
+    Third-party integrations require SDK 57 and later to access `Observe.initIntegration()`.
   </Requirement>
   <Requirement title="An app already using EAS Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
@@ -30,7 +29,7 @@ Events should describe actionable issues that developers can fix. For example, a
 
 <Step label="1">
 
-## Add `expo-observe` as an optional dependency
+## Add `expo-observe` as an optional peer dependency
 
 Add `expo-observe` as an optional peer dependency so your package continues to work when it is not installed. Also, add it as a development dependency for TypeScript types and tests. Do not add it as a required runtime dependency.
 
@@ -114,10 +113,11 @@ Observe.configure({
 
 ## Initialize the integration
 
-Call `initIntegration()` with your integration key. The callback receives the configuration for your integration:
+Call `Observe.initIntegration()` with your integration key. The callback receives the configuration for your integration:
 
 ```ts observe.ts
 export function initObserveIntegration() {
+  // The `typeof window` check skips initialization during server-side rendering on web.
   if (typeof window !== 'undefined' && observeModule) {
     const { Observe } = observeModule;
 
