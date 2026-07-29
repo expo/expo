@@ -19,7 +19,7 @@ Events should describe actionable issues that developers can fix. For example, a
 
 <Prerequisites>
   <Requirement title="Expo SDK 57 and later">
-    Third-party integrations require SDK 57 and later to access `Observe.initIntegration()`.
+    Third-party integrations require SDK 57 and later to access `Observe.registerIntegration()`.
   </Requirement>
   <Requirement title="An app already using EAS Observe">
     Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
@@ -111,9 +111,9 @@ Observe.configure({
 
 <Step label="3">
 
-## Initialize the integration
+## Register the integration
 
-Call `Observe.initIntegration()` with your integration key. The callback receives the configuration for your integration:
+Call `Observe.registerIntegration()` with your integration key. The callback receives the configuration for your integration:
 
 ```ts observe.ts
 export function initObserveIntegration() {
@@ -121,7 +121,7 @@ export function initObserveIntegration() {
   if (typeof window !== 'undefined' && observeModule) {
     const { Observe } = observeModule;
 
-    Observe.initIntegration('your-package', config => {
+    Observe.registerIntegration('your-package', config => {
       if (config) {
         enableObserveIntegration(config === true ? {} : config);
       }

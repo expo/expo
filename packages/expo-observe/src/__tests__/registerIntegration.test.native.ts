@@ -28,7 +28,7 @@ const mockNative = new Proxy(mockNativeTarget, {
 });
 
 const mockAppMetrics = {
-  initIntegration: jest.fn(),
+  registerIntegration: jest.fn(),
 };
 
 jest.mock('expo', () => ({
@@ -73,12 +73,12 @@ beforeEach(() => {
   configureListeners.clear();
 });
 
-describe('Observe.initIntegration', () => {
+describe('Observe.registerIntegration', () => {
   it('calls the callback synchronously without adding a listener when the key is present', () => {
     integrations = { 'expo-router': true };
     const callback = jest.fn();
 
-    loadModule().initIntegration('expo-router', callback);
+    loadModule().registerIntegration('expo-router', callback);
 
     expect(callback).toHaveBeenCalledWith(true);
     expect(mockNativeTarget.addListener).not.toHaveBeenCalled();
@@ -90,7 +90,7 @@ describe('Observe.initIntegration', () => {
       integrations = { 'expo-router': value };
       const callback = jest.fn();
 
-      loadModule().initIntegration('expo-router', callback);
+      loadModule().registerIntegration('expo-router', callback);
 
       expect(callback).not.toHaveBeenCalled();
       expect(mockNativeTarget.addListener).not.toHaveBeenCalled();
@@ -101,7 +101,7 @@ describe('Observe.initIntegration', () => {
     integrations = {};
     const callback = jest.fn();
 
-    loadModule().initIntegration('expo-router', callback);
+    loadModule().registerIntegration('expo-router', callback);
 
     expect(callback).not.toHaveBeenCalled();
     expect(mockNativeTarget.addListener).not.toHaveBeenCalled();
@@ -110,7 +110,7 @@ describe('Observe.initIntegration', () => {
   it('adds a listener when the initial integrations value is falsy', () => {
     const callback = jest.fn();
 
-    loadModule().initIntegration('expo-router', callback);
+    loadModule().registerIntegration('expo-router', callback);
 
     expect(mockNativeTarget.addListener).toHaveBeenCalledWith(CONFIGURE, expect.any(Function));
     expect(callback).not.toHaveBeenCalled();
@@ -118,7 +118,7 @@ describe('Observe.initIntegration', () => {
 
   it('removes the subscription before calling the callback when an event contains the key', () => {
     const callback = jest.fn(() => expect(remove).toHaveBeenCalledTimes(1));
-    loadModule().initIntegration('expo-router', callback);
+    loadModule().registerIntegration('expo-router', callback);
 
     emit({ 'expo-router': true });
 
@@ -128,7 +128,7 @@ describe('Observe.initIntegration', () => {
 
   it('removes the subscription without calling the callback when an event omits the key', () => {
     const callback = jest.fn();
-    loadModule().initIntegration('expo-router', callback);
+    loadModule().registerIntegration('expo-router', callback);
 
     emit({});
 
@@ -141,7 +141,7 @@ describe('Observe.initIntegration', () => {
 
   it('calls the callback at most once across multiple events', () => {
     const callback = jest.fn();
-    loadModule().initIntegration('expo-router', callback);
+    loadModule().registerIntegration('expo-router', callback);
 
     emit({ 'expo-router': true });
     emit({ 'expo-router': false });
@@ -153,7 +153,7 @@ describe('Observe.initIntegration', () => {
     'removes the subscription without calling the callback when an event value is %s',
     (value) => {
       const callback = jest.fn();
-      loadModule().initIntegration('expo-router', callback);
+      loadModule().registerIntegration('expo-router', callback);
 
       emit({ 'expo-router': value });
 
@@ -166,7 +166,7 @@ describe('Observe.initIntegration', () => {
     const callback = jest.fn(() => {
       throw new Error('callback failed');
     });
-    loadModule().initIntegration('expo-router', callback);
+    loadModule().registerIntegration('expo-router', callback);
 
     expect(() => emit({ 'expo-router': true })).toThrow('callback failed');
     expect(() => emit({ 'expo-router': false })).not.toThrow();
@@ -177,17 +177,17 @@ describe('Observe.initIntegration', () => {
     const config = { filteredParams: ['token'] };
     integrations = { 'expo-router': config };
     const objectCallback = jest.fn();
-    loadModule().initIntegration('expo-router', objectCallback);
+    loadModule().registerIntegration('expo-router', objectCallback);
     expect(objectCallback).toHaveBeenCalledTimes(1);
     expect(objectCallback.mock.calls[0][0]).toBe(config);
   });
 
-  it('does not forward initIntegration to AppMetrics', () => {
+  it('does not forward registerIntegration to AppMetrics', () => {
     const callback = jest.fn();
 
-    loadModule().initIntegration('expo-router', callback);
+    loadModule().registerIntegration('expo-router', callback);
 
-    expect(mockAppMetrics.initIntegration).not.toHaveBeenCalled();
+    expect(mockAppMetrics.registerIntegration).not.toHaveBeenCalled();
     expect(mockNativeTarget.getIntegrations).toHaveBeenCalledTimes(1);
   });
 });
