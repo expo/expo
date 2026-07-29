@@ -171,7 +171,7 @@ describe('getParsedHeaders', () => {
     });
   });
 
-  it('requests relative manifest URLs when forwarding headers are present', () => {
+  it('parses the forwarded address when forwarding headers are present', () => {
     expect(
       middleware.getParsedHeaders(
         asReq({
@@ -179,15 +179,27 @@ describe('getParsedHeaders', () => {
           headers: {
             host: 'localhost:8081',
             'expo-platform': 'ios',
-            forwarded: 'host=proxy.test;proto=https',
+            forwarded: 'host="proxy.test:4443";proto=https',
           },
         })
       )
     ).toMatchObject({
       hostname: 'localhost',
       platform: 'ios',
-      shouldUseRelativeManifestUrls: true,
+      protocol: 'https',
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
     });
+  });
+
+  it('omits the forwarded address for direct requests', () => {
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: { host: 'localhost:8081', 'expo-platform': 'ios' },
+        })
+      )
+    ).not.toHaveProperty('forwarded');
   });
 });
 
