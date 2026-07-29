@@ -1,4 +1,5 @@
 import { execSync, exec } from 'child_process';
+import { assert } from 'console';
 import fs from 'fs';
 import { promisify } from 'util';
 import YAML from 'yaml';
@@ -220,6 +221,34 @@ const convertibleTypesConversions = new Map<string, ConvertibleType>([
   ['Data', ConvertibleType.UINT8_ARRAY],
 ]);
 
+function mapParametrizedTypeToTsType(parametrizedType: ParametrizedType): Type {
+  if (isEitherTypeIdentifier(parametrizedType.name)) {
+    return {
+      kind: TypeKind.SUM,
+      type: { types: parametrizedType.types },
+    };
+  } else if ('ValueOrUndefined' === parametrizedType.name) {
+    assert(1 === parametrizedType.types.length);
+    return {
+      kind: TypeKind.SUM,
+      type: {
+        types: [parametrizedType.types[0]!, { kind: TypeKind.BASIC, type: BasicType.UNDEFINED }],
+      },
+    };
+  } else if ('SharedRef' === parametrizedType.name) {
+    return {
+      kind: TypeKind.CONVERTIBLE,
+      // TODO(@HubertBer) Ignore the typing of `SharedRef` for now, need to handle it better in the future.
+      type: ConvertibleType.SHARED_REF,
+    };
+  }
+
+  return {
+    kind: TypeKind.PARAMETRIZED,
+    type: parametrizedType,
+  };
+}
+
 function mapSwiftTypeToTsType(type?: string): Type {
   if (!type) {
     return { kind: TypeKind.BASIC, type: BasicType.UNRESOLVED };
@@ -252,17 +281,7 @@ function mapSwiftTypeToTsType(type?: string): Type {
 
   if (isParametrizedType(type)) {
     const parametrizedType = unwrapParametrizedType(type);
-    if (isEitherTypeIdentifier(parametrizedType.name)) {
-      return {
-        kind: TypeKind.SUM,
-        type: { types: parametrizedType.types },
-      };
-    }
-
-    return {
-      kind: TypeKind.PARAMETRIZED,
-      type: parametrizedType,
-    };
+    return mapParametrizedTypeToTsType(parametrizedType);
   }
 
   const tsBasicType = basicTypesConversions.get(type);
@@ -664,11 +683,16 @@ async function parseModuleClassStructure(
 
   const removeImplicitThis = (functionDeclaration: FunctionDeclaration) => {
     const firstArg = functionDeclaration.arguments[0];
+    const firstArgIsNotAnnotated =
+      firstArg &&
+      firstArg.type.kind === TypeKind.BASIC &&
+      firstArg.type.type === BasicType.UNRESOLVED;
     if (
-      functionDeclaration.isStatic ||
-      firstArg === undefined ||
-      firstArg.type.kind !== TypeKind.IDENTIFIER ||
-      firstArg.type.type !== name
+      !firstArgIsNotAnnotated &&
+      (functionDeclaration.isStatic ||
+        firstArg === undefined ||
+        firstArg.type.kind !== TypeKind.IDENTIFIER ||
+        firstArg.type.type !== name)
     ) {
       return;
     }

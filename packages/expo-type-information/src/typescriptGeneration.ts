@@ -138,6 +138,7 @@ const BASIC_TYPE_MAP: Record<BasicType, ts.KeywordTypeSyntaxKind> = {
   [BasicType.NEVER]: ts.SyntaxKind.NeverKeyword,
   [BasicType.OBJECT]: ts.SyntaxKind.ObjectKeyword,
   [BasicType.UNRESOLVED]: ts.SyntaxKind.UndefinedKeyword, // This is handled separately
+  [BasicType.NULL]: ts.SyntaxKind.UndefinedKeyword, // This is handled separately
 };
 
 function mapBasicTypeToTypeNode(basicType: BasicType): ts.TypeNode {
@@ -147,6 +148,9 @@ function mapBasicTypeToTypeNode(basicType: BasicType): ts.TypeNode {
       ts.SyntaxKind.MultiLineCommentTrivia,
       "The type couldn't be resolved automatically."
     );
+  }
+  if (basicType === BasicType.NULL) {
+    return ts.factory.createLiteralTypeNode(ts.factory.createNull());
   }
 
   return ts.factory.createKeywordTypeNode(BASIC_TYPE_MAP[basicType]);
@@ -182,6 +186,8 @@ const CONVERTIBLE_TYPE_MAP: Record<ConvertibleType, () => ts.TypeNode> = {
       createPropertySignature({ name: 'height', typeNode: numberKeywordType() }),
     ]),
   [ConvertibleType.JS_FUNCTION]: () => createAnyFunctionTypeNode({ returnType: anyKeywordType() }),
+  [ConvertibleType.SHARED_REF]: () =>
+    ts.factory.createTypeReferenceNode('SharedRef', [anyKeywordType()]),
 };
 
 function mapConvertibleTypeToTypeNode(convertibleType: ConvertibleType): ts.TypeNode {
@@ -215,13 +221,10 @@ export function mapTypeToTsTypeNode(type: Type): ts.TypeNode {
     }
     // Technically this one should only be the top one and it should be handled somewhere else
     // for example when creating argument adding the '?' token.
-    //
-    // However we can just make it (type | undefined) in here.
-    // TODO(@HubertBer): Maybe also need null?
     case TypeKind.OPTIONAL:
       return ts.factory.createUnionTypeNode([
         mapTypeToTsTypeNode(type.type as Type),
-        mapBasicTypeToTypeNode(BasicType.UNDEFINED),
+        mapBasicTypeToTypeNode(BasicType.NULL),
       ]);
     case TypeKind.PARAMETRIZED:
       return ts.factory.createTypeReferenceNode(
@@ -590,20 +593,44 @@ function buildNativeModuleClassDeclaration({
   ];
 }
 
-function buildArgumentDeclarationAndName(arg: Argument): {
+// Index of the first argument in the trailing run of optionals.
+function firstTrailingOptionalIndex(args: Argument[]): number {
+  let index = args.length;
+  while (index > 0 && args[index - 1]!.type.kind === TypeKind.OPTIONAL) {
+    index -= 1;
+  }
+  return index;
+}
+
+function buildArgumentDeclarationAndName(
+  arg: Argument,
+  isTrailingOptional: boolean
+): {
   argDeclaration: ts.ParameterDeclaration;
   argName: string;
 } {
   const argName = arg.name ?? '_' + getNextFreeId();
+  const useQuestionToken = isTrailingOptional && arg.type.kind === TypeKind.OPTIONAL;
   const argDeclaration = createParameter({
     name: argName,
-    type: mapTypeToTsTypeNode(arg.type),
+    questionToken: useQuestionToken
+      ? ts.factory.createToken(ts.SyntaxKind.QuestionToken)
+      : undefined,
+
+    type: useQuestionToken
+      ? // The type is optional, need to get to its inner type.
+        mapTypeToTsTypeNode(arg.type.type as Type)
+      : mapTypeToTsTypeNode(arg.type),
   });
   return { argDeclaration, argName };
 }
 
-function buildArgumentDeclaration(arg: Argument): ts.ParameterDeclaration {
-  return buildArgumentDeclarationAndName(arg).argDeclaration;
+function buildArgumentDeclarations(args: Argument[]): ts.ParameterDeclaration[] {
+  const trailingOptionalsStart = firstTrailingOptionalIndex(args);
+  return args.map(
+    (arg, index) =>
+      buildArgumentDeclarationAndName(arg, index >= trailingOptionalsStart).argDeclaration
+  );
 }
 
 export type buildFunctionOptions = {
@@ -645,7 +672,7 @@ export function buildFunction({
     returnTypeNode = undefined;
   }
   const argumentDeclarations =
-    overrideArgumentDeclarations ?? functionDeclaration.arguments.map(buildArgumentDeclaration);
+    overrideArgumentDeclarations ?? buildArgumentDeclarations(functionDeclaration.arguments);
 
   if (method) {
     return ts.factory.createMethodDeclaration(
@@ -676,7 +703,7 @@ export function buildConstructor(
 ): ts.ClassElement {
   return ts.factory.createConstructorDeclaration(
     undefined,
-    constructor.arguments.map(buildArgumentDeclaration),
+    buildArgumentDeclarations(constructor.arguments),
     declaration ? undefined : ts.factory.createBlock([])
   );
 }
@@ -1067,6 +1094,7 @@ function baseIdentifierFileMap(): IdentifierDeclarationImportMap {
     ['requireNativeView', 'expo'],
     ['requireNativeModule', 'expo'],
     ['NativeModule', 'expo'],
+    ['SharedRef', 'expo'],
   ]);
 }
 
@@ -1321,8 +1349,12 @@ function buildStableNativeModuleInterface(ctx: GenerationContext): ts.Node[] {
     (isAsync: boolean) => (functionDeclaration: FunctionDeclaration) => {
       const argumentDeclarations = [];
       const argumentNames = [];
-      for (const arg of functionDeclaration.arguments) {
-        const { argDeclaration, argName } = buildArgumentDeclarationAndName(arg);
+      const trailingOptionalsStart = firstTrailingOptionalIndex(functionDeclaration.arguments);
+      for (const [index, arg] of functionDeclaration.arguments.entries()) {
+        const { argDeclaration, argName } = buildArgumentDeclarationAndName(
+          arg,
+          index >= trailingOptionalsStart
+        );
         argumentDeclarations.push(argDeclaration);
         argumentNames.push(argName);
       }
