@@ -41,8 +41,8 @@ open class FontLoaderModule : Module() {
       val instanced = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         buildVariableWeightTypeface(fontFamilyName, source)
       } else {
-        // Needs `android.graphics.fonts`, added in API 29. Below that, every weight comes from the
-        // one weight Android loads, with bold synthesized from it.
+        // This needs `android.graphics.fonts`, which API 29 added. Before API 29, every weight
+        // comes from the one weight that Android loads, and Android synthesizes bold from it.
         null
       }
       val typeface = instanced ?: source.load()
@@ -73,24 +73,25 @@ open class FontLoaderModule : Module() {
 }
 
 /**
- * A typeface that can draw [source] at every weight `fontWeight` can ask for, or `null` if [source]
- * isn't a variable font with a `wght` axis.
+ * A typeface that can draw [source] at every weight that `fontWeight` can request. `null` if
+ * [source] is not a variable font with a `wght` axis.
  *
- * Never fatal: on any error, the caller loads the font unchanged, only the weights are lost.
+ * An error here is never fatal. The caller then loads the font without changes. Only the weights
+ * are lost.
  */
 @RequiresApi(Build.VERSION_CODES.Q)
 private fun buildVariableWeightTypeface(
   fontFamilyName: String,
   source: FontSource
 ): Typeface? {
-  // Outside the `try`: a font that can't be read at all should fail as itself, not as a weight
-  // problem.
+  // Read the font outside the `try`. A font that the code cannot read must then fail as a read
+  // error, not as a weight error.
   val fontData = source.readForInstancing() ?: return null
 
   return try {
     VariableTypefaces.build(fontData)
   } catch (e: IOException) {
-    // The `fvar` table read fine, but the font doesn't parse.
+    // The `fvar` table read correctly, but the font does not parse.
     Log.w(
       TAG,
       "Couldn't build the weights of '$fontFamilyName' from its `wght` axis, so `fontWeight` " +
@@ -100,8 +101,8 @@ private fun buildVariableWeightTypeface(
     )
     null
   } catch (e: RuntimeException) {
-    // Everything VariableTypefaces passes to Font.Builder is hardcoded or clamped, so this is our
-    // bug, not the font's. Degrade the same way, but say so.
+    // VariableTypefaces sets every Font.Builder argument to a constant or a clamped value. An
+    // exception here therefore shows a defect in expo-font, not a limit of the font.
     Log.e(
       TAG,
       "expo-font couldn't build the weights of '$fontFamilyName' because of an internal error, so " +

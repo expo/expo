@@ -6,12 +6,12 @@ import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
 /**
- * Reads a font's `fvar` table to answer two questions:
- *  - [declaresVariations] — does this font vary at all?
- *  - [readWeightAxis] and [weightsFor] — which weights can it draw? These feed into
- *    [VariableTypefaces.buildInstancedFamily] and are not needed on Android 15+.
+ * Reads a font `fvar` table to answer two questions:
+ *  - [declaresVariations] — does this font vary?
+ *  - [readWeightAxis] and [weightsFor] — which weights can it draw? These two functions supply
+ *    [VariableTypefaces.buildInstancedFamily]. Android 15 and later do not need them.
  *
- * Deliberately free of Android APIs so that it can be unit tested on the JVM.
+ * This object uses no Android APIs. Unit tests can therefore run it on the JVM.
  *
  * See https://learn.microsoft.com/en-us/typography/opentype/spec/fvar
  */
@@ -28,52 +28,57 @@ internal object FontVariationAxes {
   private const val TABLE_RECORD_SIZE = 16
   private const val AXIS_RECORD_SIZE = 20
 
-  // `wght` runs from 1 to 1000. A bound outside that means we read a bad offset, not a real axis.
+  // `wght` has a range of 1 to 1000. A bound outside that range shows a bad offset, not a real
+  // axis.
   private val VALID_WEIGHTS = 1..1000
 
-  // Real fonts have a few dozen tables. This is well past anything we need to read.
+  // Real fonts have a few dozen tables. This limit is much larger than necessary.
   private const val MAX_TABLES = 255
 
-  /** The most bytes [declaresVariations] reads from the start of a font. */
+  /** The maximum number of bytes that [declaresVariations] reads from the start of a font. */
   const val TABLE_DIRECTORY_LIMIT = OFFSET_TABLE_SIZE + MAX_TABLES * TABLE_RECORD_SIZE
 
   /**
-   * Whether the font starting with [prefix] has an `fvar` table, so it may vary on some axis.
+   * `true` if the font that starts with [prefix] has an `fvar` table. Such a font can vary on an
+   * axis.
    *
-   * Reads at most [TABLE_DIRECTORY_LIMIT] bytes, so a caller can skip a static font before reading
-   * it whole. Says `true` when [prefix] is too short to tell; [readWeightAxis] decides later.
+   * The function reads a maximum of [TABLE_DIRECTORY_LIMIT] bytes. A caller can therefore skip a
+   * static font before it reads the full file. The function gives `true` if [prefix] is too short
+   * for a decision. [readWeightAxis] then makes the decision.
    *
-   * [prefix] is not modified, so the caller can read the rest of the font on top of it.
+   * The function does not change [prefix]. The caller can therefore read the remainder of the font
+   * after it.
    */
   fun declaresVariations(prefix: ByteBuffer): Boolean {
     val font = prefix.duplicate().order(ByteOrder.BIG_ENDIAN)
-    // `limit`, not `capacity`: that is what the reads below are bound by.
+    // Use `limit`, not `capacity`. The reads below stop at `limit`.
     if (font.limit() < OFFSET_TABLE_SIZE) {
-      // Too short to be a font.
+      // This is too short for a font.
       return false
     }
 
     return try {
       findFvarTable(font) != null
     } catch (_: IndexOutOfBoundsException) {
-      // The table directory runs past the end of [prefix], so `fvar` can't be ruled out.
+      // The table directory ends after [prefix]. The font can still have an `fvar` table.
       true
     }
   }
 
   /**
-   * The values to pin a font's `wght` axis to: every weight `fontWeight` can ask for, clamped to
-   * [axis]. Clamping keeps the ends — an axis stopping at 700 offers 700, not a 900 it can't draw.
+   * The `wght` values to set: every weight that `fontWeight` can request, clamped to [axis]. The
+   * clamp keeps the axis ends. An axis that stops at 700 gives 700. It does not give 900, because
+   * the font cannot draw 900.
    *
-   * The nine fixed steps come from the pre-Android 15 API, not from the font. See
+   * The API before Android 15 causes the nine fixed steps, not the font. See
    * [VariableTypefaces.buildInstancedFamily].
    */
   fun weightsFor(axis: IntRange): List<Int> =
     (100..900 step 100).map { it.coerceIn(axis) }.distinct()
 
   /**
-   * Returns the range of the `wght` axis declared by the font in [buffer], or `null` if it
-   * declares no such axis. [buffer] is left untouched, including its position and byte order.
+   * The range of the `wght` axis that the font in [buffer] declares. `null` if the font declares
+   * no such axis. The function does not change [buffer], its position, or its byte order.
    */
   fun readWeightAxis(buffer: ByteBuffer): IntRange? {
     val font = buffer.duplicate().order(ByteOrder.BIG_ENDIAN)
@@ -81,7 +86,7 @@ internal object FontVariationAxes {
       val fvarOffset = findFvarTable(font) ?: return null
       readWeightAxis(font, fvarOffset)
     } catch (_: IndexOutOfBoundsException) {
-      // The font is truncated or malformed. The caller loads it without variation settings.
+      // The font is truncated or has an error. The caller then loads it without variation settings.
       null
     }
   }
@@ -107,8 +112,8 @@ internal object FontVariationAxes {
     val axisCount = font.getUInt16(fvarOffset + 8)
     val axisSize = font.getUInt16(fvarOffset + 10)
 
-    // `axisSize` may grow in later spec revisions, so extra trailing fields are fine. A record
-    // smaller than what we read is not.
+    // Later revisions of the spec can increase `axisSize`. Extra fields at the end are therefore
+    // correct. A record that is smaller than the fields we read is not correct.
     if (axisSize < AXIS_RECORD_SIZE) {
       return null
     }

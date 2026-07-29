@@ -6,11 +6,11 @@ import java.io.InputStream
 import java.nio.ByteBuffer
 import java.nio.channels.Channels
 
-// No Android APIs here, so these can be unit tested on the JVM.
+// This file uses no Android APIs. Unit tests can therefore run it on the JVM.
 
 /**
- * Up to [count] bytes from the start of the stream. The buffer's limit is how many bytes were
- * really read, so a caller can't mistake an unread tail for font data.
+ * Up to [count] bytes from the start of the stream. The buffer limit gives the number of bytes
+ * that the function read. A caller therefore cannot read unwritten bytes as font data.
  */
 internal fun InputStream.readAtMost(count: Int): ByteBuffer {
   val bytes = ByteArray(count)
@@ -26,13 +26,15 @@ internal fun InputStream.readAtMost(count: Int): ByteBuffer {
 }
 
 /**
- * [prefix] plus the rest of [rest], in one direct buffer.
- * [android.graphics.fonts.Font.Builder] takes direct buffers only, and reads the whole capacity, so
- * the size has to be exact.
+ * [prefix] and the remainder of [rest], in one direct buffer.
  *
- * `AssetManager` reports the exact remaining length, so the font normally goes straight into native
- * memory with no heap copy. But `available()` can be wrong, so the size is checked and fixed: too
- * low truncates the font, too high leaves zeros after it.
+ * [android.graphics.fonts.Font.Builder] accepts only direct buffers, and it reads the full
+ * capacity. The buffer size must therefore be exact.
+ *
+ * `AssetManager` gives the exact number of bytes that remain. The function therefore writes
+ * the font into native memory directly, with no copy on the heap. But `available()` can give a
+ * wrong number, so the function checks the size and corrects it. A number that is too small
+ * truncates the font. A number that is too large adds zeros after the font.
  */
 internal fun readWholeFont(prefix: ByteBuffer, rest: InputStream): ByteBuffer {
   val buffer = ByteBuffer.allocateDirect(prefix.remaining() + rest.available())
@@ -40,10 +42,10 @@ internal fun readWholeFont(prefix: ByteBuffer, rest: InputStream): ByteBuffer {
 
   val channel = Channels.newChannel(rest)
   while (buffer.hasRemaining() && channel.read(buffer) >= 0) {
-    // One read may not fill the buffer.
+    // One read can fill less than the full buffer.
   }
 
-  // Empty if `available()` was right.
+  // This is empty if `available()` gave the correct number.
   val leftover = rest.readBytes()
   if (!buffer.hasRemaining() && leftover.isEmpty()) {
     return buffer.apply { rewind() }

@@ -17,19 +17,21 @@ private class FileNotFoundException(uri: String) :
   CodedException("File '$uri' doesn't exist")
 
 /**
- * Where a font to load lives.
+ * The location of a font to load.
  *
- * Both cases check the font's header before reading the whole file, so a static font is never read
- * in full for nothing. They differ in how they reach that header: an asset can only be streamed, a
- * file can be mapped.
+ * Both cases read the font header first. A static font therefore does not get a full read. The
+ * cases differ in how they read that header. An asset supports only streaming. A file supports
+ * mapping.
  */
 internal sealed interface FontSource {
-  /** The font as Android loads it: one weight, with bold synthesized from it. */
+  /** The font as Android loads it: one weight. Android synthesizes bold from that weight. */
   fun load(): Typeface
 
   /**
-   * The whole font in a direct buffer, or `null` if the header says it isn't a variable font.
-   * Non-null is not a promise of a variable font — [VariableTypefaces.build] decides.
+   * The full font in a direct buffer. `null` if the header shows that this is not a variable font.
+   *
+   * A result that is not `null` does not confirm a variable font. [VariableTypefaces.build] makes
+   * the final decision.
    */
   fun readForInstancing(): ByteBuffer?
 
@@ -37,7 +39,7 @@ internal sealed interface FontSource {
     override fun load(): Typeface =
       Typeface.createFromAsset(context.assets, path)
 
-    /** Reads the header first, so a static font is never copied into memory. */
+    /** Reads the header first. A static font therefore does not go into memory. */
     override fun readForInstancing(): ByteBuffer? =
       context.assets.open(path).use { input ->
         val header = input.readAtMost(FontVariationAxes.TABLE_DIRECTORY_LIMIT)
