@@ -24,6 +24,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the `Build ExpoModulesJSI xcframework` phase failing with "type of expression is ambiguous without a type annotation" on Xcode 26.2 by qualifying the `abs` call in `JavaScriptCodable+Date.swift` as `Swift.abs` — under C++ interop the unqualified call is ambiguous with the C/C++ overloads. ([#48261](https://github.com/expo/expo/pull/48261) by [@Bram-dc](https://github.com/Bram-dc))
 - [iOS] Fixed a use-after-free when a `JavaScriptPromise` outlives its runtime (e.g. an async function's promise held by a completion handler that fires after `reloadAsync()`) by having the runtime's `LongLivedObjectCollection` own its JSI values and release them on the JavaScript thread when the wrapper is dropped or at teardown, instead of against a freed runtime. ([#47521](https://github.com/expo/expo/pull/47521) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a standalone `JavaScriptRuntime` leaking its underlying Hermes runtime: a runtime it creates itself is now destroyed on `deinit`, while runtimes adopted from elsewhere (e.g. React Native) are left untouched. ([#47515](https://github.com/expo/expo/pull/47515) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed `Build ExpoModulesJSI xcframework` build phase failing on Xcode 26 because the nested SwiftPM build ignored `-derivedDataPath` and wrote products outside the expected location. ([#46326](https://github.com/expo/expo/issues/46326) by [@Kurogoma4D](https://github.com/Kurogoma4D))
