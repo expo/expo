@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] The SwiftPM autolinking plugin now contributes build-time script phases, so an Expo module that needs a build step under SwiftPM gets one — SwiftPM has no equivalent of CocoaPods' `script_phase`. First consumer: expo-constants' embedded `app.config`. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
 ### 🐛 Bug fixes
 
 - [iOS] Fix `expo/fetch` streaming race between URLSession delegate callbacks and `startStreaming()` that could deliver an empty body on a 200 response, drop chunks, or leave the body stream open. ([#47796](https://github.com/expo/expo/pull/47796) by [@idoyana](https://github.com/idoyana))
