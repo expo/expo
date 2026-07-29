@@ -11,7 +11,12 @@ const allExtensions = computeExpoExtensions(
 );
 
 module.exports = {
-  extends: ['./shared/core.js', './shared/typescript.js', './shared/react.js'],
+  extends: [
+    './shared/core.js',
+    './shared/typescript.js',
+    './shared/react.js',
+    './shared/prettier.js',
+  ],
   globals: {
     __DEV__: false,
     Atomics: false,

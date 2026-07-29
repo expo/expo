@@ -8,6 +8,7 @@ const {
   platformSubextensions,
   computeExpoExtensions,
 } = require('./shared/extensions');
+const prettierConfig = require('./shared/prettier.js');
 const reactConfig = require('./shared/react.js');
 const typescriptConfig = require('./shared/typescript.js');
 
@@ -66,4 +67,5 @@ module.exports = defineConfig([
       },
     },
   },
+  prettierConfig,
 ]);

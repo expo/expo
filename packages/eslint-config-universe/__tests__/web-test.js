@@ -1,6 +1,7 @@
 const eslint = require('eslint8');
 const path = require('path');
 
+const checkPrettierRulesAsync = require('./tools/checkPrettierRulesAsync');
 const getBaseConfig = require('./tools/getBaseConfig');
 const lintAsync = require('./tools/lintAsync');
 
@@ -33,3 +34,9 @@ it(`lints with the web config`, async () => {
     expect(result).toMatchSnapshot(platformIndependentPath);
   }
 }, 20000);
+
+it(`doesn't conflict with Prettier`, async () => {
+  const { success, message } = await checkPrettierRulesAsync(configFile, 'web');
+  expect(success).toMatchSnapshot('success');
+  expect(message).toMatchSnapshot('message');
+}, 10000);
