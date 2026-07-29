@@ -1,5 +1,4 @@
 import { execSync, exec } from 'child_process';
-import { assert } from 'console';
 import fs from 'fs';
 import { promisify } from 'util';
 import YAML from 'yaml';
@@ -227,15 +226,14 @@ function mapParametrizedTypeToTsType(parametrizedType: ParametrizedType): Type {
       kind: TypeKind.SUM,
       type: { types: parametrizedType.types },
     };
-  } else if ('ValueOrUndefined' === parametrizedType.name) {
-    assert(1 === parametrizedType.types.length);
+  } else if (parametrizedType.name === 'ValueOrUndefined') {
     return {
       kind: TypeKind.SUM,
       type: {
         types: [parametrizedType.types[0]!, { kind: TypeKind.BASIC, type: BasicType.UNDEFINED }],
       },
     };
-  } else if ('SharedRef' === parametrizedType.name) {
+  } else if (parametrizedType.name === 'SharedRef') {
     return {
       kind: TypeKind.CONVERTIBLE,
       // TODO(@HubertBer) Ignore the typing of `SharedRef` for now, need to handle it better in the future.
