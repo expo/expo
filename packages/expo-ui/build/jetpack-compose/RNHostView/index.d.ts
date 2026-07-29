@@ -20,9 +20,7 @@ export interface RNHostProps extends PrimitiveBaseProps {
     modifiers?: ModifierConfig[];
     /**
      * Style applied to the host view's React Native shadow node. Useful for
-     * controlling its layout position (e.g. `position: 'absolute'`) so the shadow
-     * layout matches where the hosting Compose component draws the content —
-     * important for `measure()`-based hit-testing such as `Pressable`.
+     * controlling its layout position (e.g. `position: 'absolute'`).
      */
     style?: StyleProp<ViewStyle>;
 }
