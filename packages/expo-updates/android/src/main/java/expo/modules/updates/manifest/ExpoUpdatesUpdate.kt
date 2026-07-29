@@ -140,7 +140,11 @@ class ExpoUpdatesUpdate private constructor(
     }
 
     private fun resolveUrl(url: String, baseUrl: Uri): String {
-      return URI(baseUrl.toString()).resolve(url).toString()
+      return try {
+        URI(baseUrl.toString()).resolve(url).toString()
+      } catch (e: Exception) {
+        url
+      }
     }
   }
 }

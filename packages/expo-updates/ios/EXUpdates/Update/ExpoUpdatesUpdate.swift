@@ -103,14 +103,14 @@ public final class ExpoUpdatesUpdate: Update {
 
     var launchAsset: [String: Any] = resolvedManifestJson.requiredValue(forKey: "launchAsset")
     let launchAssetUrlString: String = launchAsset.requiredValue(forKey: "url")
-    launchAsset["url"] = resolveUrl(launchAssetUrlString, baseUrl: baseUrl).absoluteString
+    launchAsset["url"] = resolveUrl(launchAssetUrlString, baseUrl: baseUrl)
     resolvedManifestJson["launchAsset"] = launchAsset
 
     if var assets: [[String: Any]] = resolvedManifestJson.optionalValue(forKey: "assets") {
       assets = assets.map { asset in
         var resolvedAsset = asset
         let assetUrlString: String = resolvedAsset.requiredValue(forKey: "url")
-        resolvedAsset["url"] = resolveUrl(assetUrlString, baseUrl: baseUrl).absoluteString
+        resolvedAsset["url"] = resolveUrl(assetUrlString, baseUrl: baseUrl)
         return resolvedAsset
       }
       resolvedManifestJson["assets"] = assets
@@ -119,8 +119,7 @@ public final class ExpoUpdatesUpdate: Update {
     return resolvedManifestJson
   }
 
-  private static func resolveUrl(_ urlString: String, baseUrl: URL) -> URL {
-    return URL(string: urlString, relativeTo: baseUrl)?.absoluteURL
-      ?? URL(string: urlString).require("asset url should be a valid URL")
+  private static func resolveUrl(_ urlString: String, baseUrl: URL) -> String {
+    return URL(string: urlString, relativeTo: baseUrl)?.absoluteURL.absoluteString ?? urlString
   }
 }

@@ -62,7 +62,11 @@ class DevLauncherManifestParser(
   }
 
   private fun resolveUrl(rawUrl: String): String {
-    return URI(url.toString()).resolve(rawUrl).toString()
+    return try {
+      URI(url.toString()).resolve(rawUrl).toString()
+    } catch (e: Exception) {
+      rawUrl
+    }
   }
 
   private fun getHeaders(): Headers {
@@ -86,4 +90,5 @@ class DevLauncherManifestParser(
       "x-forwarded-proto" to scheme
     )
   }
+
 }

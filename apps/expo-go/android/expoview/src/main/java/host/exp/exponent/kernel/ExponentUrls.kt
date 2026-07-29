@@ -32,7 +32,11 @@ object ExponentUrls {
 
   @JvmStatic fun resolveManifestUrl(rawUrl: String, manifestUrl: String): String {
     val baseUrl = ExponentManifest.httpManifestUrl(manifestUrl).toString()
-    return URI(baseUrl).resolve(rawUrl).toString()
+    return try {
+      URI(baseUrl).resolve(rawUrl).toString()
+    } catch (e: Exception) {
+      rawUrl
+    }
   }
 
   @JvmStatic fun addExponentHeadersToUrl(urlString: String): Request.Builder {
