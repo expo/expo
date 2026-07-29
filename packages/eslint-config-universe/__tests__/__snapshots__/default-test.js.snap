@@ -1,11 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`doesn't conflict with Prettier: message 1`] = `
+"No rules that are unnecessary or conflict with Prettier were found.
+"
+`;
+
+exports[`doesn't conflict with Prettier: success 1`] = `true`;
+
 exports[`lints with the default config: fixtures/all-00.js 1`] = `
 {
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 4,
+  "fixableWarningCount": 1,
   "messages": [
     {
       "column": 14,
@@ -34,60 +41,6 @@ exports[`lints with the default config: fixtures/all-00.js 1`] = `
       "messageId": "useConst",
       "nodeType": "Identifier",
       "ruleId": "prefer-const",
-      "severity": 1,
-    },
-    {
-      "column": 1,
-      "endColumn": 5,
-      "endLine": 49,
-      "fix": {
-        "range": [
-          598,
-          602,
-        ],
-        "text": "",
-      },
-      "line": 49,
-      "message": "Trailing spaces not allowed.",
-      "messageId": "trailingSpace",
-      "nodeType": "Program",
-      "ruleId": "no-trailing-spaces",
-      "severity": 1,
-    },
-    {
-      "column": 10,
-      "endColumn": 11,
-      "endLine": 60,
-      "fix": {
-        "range": [
-          715,
-          716,
-        ],
-        "text": "",
-      },
-      "line": 60,
-      "message": "Unexpected space before *.",
-      "messageId": "unexpectedBefore",
-      "nodeType": "Punctuator",
-      "ruleId": "generator-star-spacing",
-      "severity": 1,
-    },
-    {
-      "column": 10,
-      "endColumn": 11,
-      "endLine": 60,
-      "fix": {
-        "range": [
-          717,
-          717,
-        ],
-        "text": " ",
-      },
-      "line": 60,
-      "message": "Missing space after *.",
-      "messageId": "missingAfter",
-      "nodeType": "Punctuator",
-      "ruleId": "generator-star-spacing",
       "severity": 1,
     },
   ],
@@ -153,133 +106,8 @@ function _fn() {}
 function *gen() {}
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [],
-      "ruleId": "array-bracket-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "arrow-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "block-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-dangle",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "computed-property-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "dot-location",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "eol-last",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "func-call-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "generator-star-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "jsx-quotes",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "new-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-extra-semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-floating-decimal",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-mixed-spaces-and-tabs",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-trailing-spaces",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-whitespace-before-property",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "operator-linebreak",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "rest-spread-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-blocks",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-function-paren",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-in-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-infix-ops",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "switch-colon-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-curly-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-tag-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "yield-star-spacing",
-    },
-  ],
-  "warningCount": 5,
+  "usedDeprecatedRules": [],
+  "warningCount": 2,
 }
 `;
 
@@ -350,132 +178,7 @@ export class Example {
 function _fn(...args: any): void {}
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [],
-      "ruleId": "array-bracket-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "arrow-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "block-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-dangle",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "computed-property-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "dot-location",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "eol-last",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "func-call-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "generator-star-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "jsx-quotes",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "new-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-extra-semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-floating-decimal",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-mixed-spaces-and-tabs",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-trailing-spaces",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-whitespace-before-property",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "operator-linebreak",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "rest-spread-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-blocks",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-function-paren",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-in-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-infix-ops",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "switch-colon-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-curly-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-tag-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "yield-star-spacing",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 2,
 }
 `;
@@ -528,132 +231,7 @@ function unused2() {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [],
-      "ruleId": "array-bracket-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "arrow-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "block-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-dangle",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "computed-property-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "dot-location",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "eol-last",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "func-call-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "generator-star-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "jsx-quotes",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "new-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-extra-semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-floating-decimal",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-mixed-spaces-and-tabs",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-trailing-spaces",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-whitespace-before-property",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "operator-linebreak",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "rest-spread-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-blocks",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-function-paren",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-in-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-infix-ops",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "switch-colon-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-curly-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-tag-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "yield-star-spacing",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 3,
 }
 `;
@@ -737,132 +315,7 @@ function tsUnused2() {
 }
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [],
-      "ruleId": "array-bracket-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "arrow-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "block-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-dangle",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "computed-property-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "dot-location",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "eol-last",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "func-call-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "generator-star-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "jsx-quotes",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "new-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-extra-semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-floating-decimal",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-mixed-spaces-and-tabs",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-trailing-spaces",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-whitespace-before-property",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "operator-linebreak",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "rest-spread-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-blocks",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-function-paren",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-in-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-infix-ops",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "switch-colon-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-curly-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-tag-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "yield-star-spacing",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 5,
 }
 `;
@@ -898,132 +351,7 @@ exports[`lints with the default config: fixtures/all-04.ts 1`] = `
 };
 ",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [],
-      "ruleId": "array-bracket-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "arrow-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "block-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-dangle",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "computed-property-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "dot-location",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "eol-last",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "func-call-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "generator-star-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "jsx-quotes",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "new-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-extra-semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-floating-decimal",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-mixed-spaces-and-tabs",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-trailing-spaces",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-whitespace-before-property",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "operator-linebreak",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "rest-spread-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-blocks",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-function-paren",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-in-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-infix-ops",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "switch-colon-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-curly-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-tag-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "yield-star-spacing",
-    },
-  ],
+  "usedDeprecatedRules": [],
   "warningCount": 1,
 }
 `;
@@ -1033,7 +361,7 @@ exports[`lints with the default config: fixtures/all-05.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 2,
+  "fixableWarningCount": 1,
   "messages": [
     {
       "column": 21,
@@ -1053,153 +381,11 @@ exports[`lints with the default config: fixtures/all-05.ts 1`] = `
       "ruleId": "@typescript-eslint/no-extra-non-null-assertion",
       "severity": 1,
     },
-    {
-      "column": 25,
-      "fix": {
-        "range": [
-          24,
-          24,
-        ],
-        "text": "
-",
-      },
-      "line": 1,
-      "message": "Newline required at end of file but not found.",
-      "messageId": "missing",
-      "nodeType": "Program",
-      "ruleId": "eol-last",
-      "severity": 1,
-    },
   ],
   "source": "export const blah = 3!!;",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [],
-      "ruleId": "array-bracket-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "arrow-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "block-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-dangle",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "computed-property-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "dot-location",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "eol-last",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "func-call-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "generator-star-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "jsx-quotes",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "new-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-extra-semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-floating-decimal",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-mixed-spaces-and-tabs",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-trailing-spaces",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-whitespace-before-property",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "operator-linebreak",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "rest-spread-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-blocks",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-function-paren",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-in-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-infix-ops",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "switch-colon-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-curly-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-tag-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "yield-star-spacing",
-    },
-  ],
-  "warningCount": 2,
+  "usedDeprecatedRules": [],
+  "warningCount": 1,
 }
 `;
 
@@ -1208,7 +394,7 @@ exports[`lints with the default config: fixtures/all-06.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 6,
+  "fixableWarningCount": 5,
   "messages": [
     {
       "column": 26,
@@ -1344,23 +530,6 @@ exports[`lints with the default config: fixtures/all-06.ts 1`] = `
         },
       ],
     },
-    {
-      "column": 52,
-      "fix": {
-        "range": [
-          288,
-          288,
-        ],
-        "text": "
-",
-      },
-      "line": 6,
-      "message": "Newline required at end of file but not found.",
-      "messageId": "missing",
-      "nodeType": "Program",
-      "ruleId": "eol-last",
-      "severity": 1,
-    },
   ],
   "source": "export const numberTest: Number | null = null;
 export const booleanTest: Boolean | null = null;
@@ -1369,133 +538,8 @@ export const objectTest: Object | null = null;
 export const stringTest: String | null = null;
 export const objectShorthandTest: {} | null = null;",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [],
-      "ruleId": "array-bracket-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "arrow-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "block-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-dangle",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "computed-property-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "dot-location",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "eol-last",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "func-call-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "generator-star-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "jsx-quotes",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "new-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-extra-semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-floating-decimal",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-mixed-spaces-and-tabs",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-trailing-spaces",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-whitespace-before-property",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "operator-linebreak",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "rest-spread-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-blocks",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-function-paren",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-in-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-infix-ops",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "switch-colon-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-curly-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-tag-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "yield-star-spacing",
-    },
-  ],
-  "warningCount": 7,
+  "usedDeprecatedRules": [],
+  "warningCount": 6,
 }
 `;
 
@@ -1504,7 +548,7 @@ exports[`lints with the default config: fixtures/all-07.js 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 10,
+  "fixableWarningCount": 9,
   "messages": [
     {
       "column": 11,
@@ -1677,23 +721,6 @@ import c from 'c';
       "ruleId": "import/order",
       "severity": 1,
     },
-    {
-      "column": 34,
-      "fix": {
-        "range": [
-          141,
-          141,
-        ],
-        "text": "
-",
-      },
-      "line": 7,
-      "message": "Newline required at end of file but not found.",
-      "messageId": "missing",
-      "nodeType": "Program",
-      "ruleId": "eol-last",
-      "severity": 1,
-    },
   ],
   "source": "const a = require('a');
 import d from './d';
@@ -1703,132 +730,7 @@ import b from 'b';
 
 export default a + b + c + d + e;",
   "suppressedMessages": [],
-  "usedDeprecatedRules": [
-    {
-      "replacedBy": [],
-      "ruleId": "array-bracket-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "arrow-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "block-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-dangle",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "comma-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "computed-property-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "dot-location",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "eol-last",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "func-call-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "generator-star-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "jsx-quotes",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "new-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-extra-semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-floating-decimal",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-mixed-spaces-and-tabs",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-trailing-spaces",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "no-whitespace-before-property",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "operator-linebreak",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "rest-spread-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "semi-style",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-blocks",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-before-function-paren",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-in-parens",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "space-infix-ops",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "switch-colon-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-curly-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "template-tag-spacing",
-    },
-    {
-      "replacedBy": [],
-      "ruleId": "yield-star-spacing",
-    },
-  ],
-  "warningCount": 10,
+  "usedDeprecatedRules": [],
+  "warningCount": 9,
 }
 `;

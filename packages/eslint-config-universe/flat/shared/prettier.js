@@ -5,7 +5,7 @@ module.exports = defineConfig([
   eslintPluginPrettierRecommended,
   {
     rules: {
-      'prettier/prettier': ['warn'],
+      'prettier/prettier': ['off'],
     },
   },
 ]);
