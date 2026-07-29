@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Emit `#if DEBUG || EXPO_CONFIGURATION_DEBUG` in the generated modules provider, so debug-only modules (`expo-dev-menu`, `expo-dev-launcher`) still register in debug builds of a project that never ran `pod install` — for example a SwiftPM app, where the CocoaPods project integrator never sets `EXPO_CONFIGURATION_DEBUG`. ([#48254](https://github.com/expo/expo/pull/48254) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Propagate `buildFromSource` across the precompiled dependency graph, so building a prebuilt dependency from source (e.g. `react-native-worklets`) also forces its dependents (e.g. `react-native-reanimated`) to build from source, instead of linking a prebuilt XCFramework against a source-built dependency. ([#48041](https://github.com/expo/expo/pull/48041) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Only stub a source pod bundled inside a prebuilt XCFramework (e.g. `SDWebImage` in `ExpoImage.xcframework`) when one of its consumers also links the owning prebuilt pod. An app extension that depends on such a pod on its own now keeps building it from source instead of failing to link with undefined symbols. ([#47847](https://github.com/expo/expo/pull/47847) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Pass target name to the generateModulesProviderCommand to match it against inline modules targets, when checking if inline modules should be autolinked with that target. ([#47502](https://github.com/expo/expo/pull/47502) by [@HubertBer](https://github.com/HubertBer))
