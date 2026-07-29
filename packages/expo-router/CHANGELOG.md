@@ -40,6 +40,7 @@
 - Guard the deep link decode in `extractExactPathFromURL` against malformed percent-encoding. ([#47526](https://github.com/expo/expo/pull/47526) by [@momomuchu](https://github.com/momomuchu))
 - [android][ios] Fix `expo-router/head` and `expo-router/stack` resolution on native platforms. ([#47870](https://github.com/expo/expo/pull/47870) by [@hassankhan](https://github.com/hassankhan))
 - Fix missing subpath warning from Metro when importing from `expo-router/server` ([#48045](https://github.com/expo/expo/pull/48045) by [@hassankhan](https://github.com/hassankhan))
+- [ios][native-tabs] Resolve `Icon` `xcasset` names through the asset catalog so symbol sets render. Their rendering mode now comes from the asset's "Render As" setting instead of `iconColor`. ([#PR_A](https://github.com/expo/expo/pull/PR_A) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 
 ### 💡 Others
 
