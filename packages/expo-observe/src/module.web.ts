@@ -16,6 +16,12 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   getIntegrations(): ObserveIntegrationsConfig {
     return {};
   }
+  initIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void {
+    // Web does not provide integration configuration or emit `configure` events.
+  }
   logEvent(name: string, options?: LogEventOptions): void {
     AppMetrics.logEvent(name, options);
   }
