@@ -3,6 +3,39 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      # @info #
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          restore_keys: cache
+          path: /path/to/cache
+      # @end #
+```
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - uses: eas/prebuild
+      # @info #
+      - uses: eas/restore_cache
+        with:
+          key: cache-${{ hashFiles('package-lock.json') }}
+          path: /path/to/cache
+      # @end #
+```
+
+##### Properties
+
 | Property       | Type     | Required    | Description                                                                                                                                              |
 | -------------- | -------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `key`          | `string` | <YesIcon /> | The cache key to restore. You can use expressions like `${{ hashFiles('package-lock.json') }}` to create dynamic keys based on file hashes.              |

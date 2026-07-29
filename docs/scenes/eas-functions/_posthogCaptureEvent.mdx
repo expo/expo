@@ -2,6 +2,55 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { EASFunctionExampleTabs } from '~/ui/components/EASFunctionDescription';
+import { Tab } from '~/ui/components/Tabs';
+
+export const modes = ['Workflow', 'Custom Build'];
+
+Sends an analytics event to [PostHog](https://posthog.com/). Use it to mark builds, releases, and other milestones on your PostHog timeline.
+
+When you do not provide a `distinct_id`, the event is sent anonymously and does not create a PostHog [person profile](https://posthog.com/docs/data/persons), which keeps these events out of your list of people.
+
+<EASFunctionExampleTabs>
+
+<Tab label="Workflow">
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_capture_event
+        # @end #
+        with:
+          event: ota_update_published
+          properties:
+            branch: main
+```
+
+</Tab>
+
+<Tab label="Custom Build">
+
+```yaml posthog-capture-event.yml
+build:
+  name: Build and mark the release in PostHog
+  steps:
+    - eas/build
+    - eas/posthog_capture_event:
+        name: Capture a PostHog event
+        inputs:
+          event: store_build_finished
+          properties:
+            platform: ios
+            profile: production
+```
+
+</Tab>
+
+</EASFunctionExampleTabs>
+
+##### Properties
 
 | Property       | Type    | Required    | Description                                                                                                                                                                                  |
 | -------------- | ------- | ----------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

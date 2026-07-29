@@ -1,6 +1,52 @@
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { EASFunctionExampleTabs } from '~/ui/components/EASFunctionDescription';
+import { Tab } from '~/ui/components/Tabs';
+
+export const modes = ['Workflow', 'Custom Build'];
+
+Configures Node package managers (bun, npm, pnpm, or Yarn) for use with private packages, published either to npm or a private registry.
+
+Set `NPM_TOKEN` in your project's secrets, and this function will configure the build environment by creating **.npmrc** with the token.
+
+<EASFunctionExampleTabs>
+
+<Tab label="Workflow">
+
+```yaml example.yml
+jobs:
+  my_job:
+    name: Install private npm modules
+    steps:
+      - uses: eas/checkout
+      # @info #
+      - uses: eas/use_npm_token
+      # @end #
+      - name: Install dependencies
+        run: npm install # <---- Can now install private packages
+```
+
+</Tab>
+
+<Tab label="Custom Build">
+
+```yaml example.yml
+build:
+  name: Install private npm modules
+  steps:
+    - eas/checkout
+    # @info #
+    - eas/use_npm_token
+    # @end #
+    - run:
+        name: Install dependencies
+        run: npm install # <---- Can now install private packages
+```
+
+</Tab>
+
+</EASFunctionExampleTabs>
 
 <BoxLink
   title="eas/use_npm_token source code"

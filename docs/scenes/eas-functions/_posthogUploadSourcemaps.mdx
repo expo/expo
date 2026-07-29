@@ -2,6 +2,57 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { NoIcon } from '~/ui/components/DocIcons';
+import { EASFunctionExampleTabs } from '~/ui/components/EASFunctionDescription';
+import { Tab } from '~/ui/components/Tabs';
+
+export const modes = ['Workflow', 'Custom Build'];
+
+Uploads JavaScript source maps to PostHog so that PostHog symbolicates stack traces in [error tracking](/guides/using-posthog/#error-tracking). Run it after the step that produces your bundle, in the same job, so the bundle and source maps are available on disk. Export with `npx expo export --source-maps`, and configure the PostHog Metro config from the [Source maps guide](/guides/using-posthog/#source-maps) so bundles carry the chunk IDs that match them to their source maps.
+
+> **warning** This step runs the PostHog CLI, which cannot tell a permissions error apart from any other failure. Unlike the other PostHog functions, setting `ignore_error: true` also hides authentication and scope errors.
+
+<EASFunctionExampleTabs>
+
+<Tab label="Workflow">
+
+```yaml
+jobs:
+  publish_update:
+    steps:
+      - uses: eas/checkout
+      - uses: eas/install_node_modules
+      - run: npx expo export --source-maps
+      # @info #
+      - uses: eas/posthog_upload_sourcemaps
+        # @end #
+        with:
+          directory: dist
+```
+
+</Tab>
+
+<Tab label="Custom Build">
+
+```yaml posthog-upload-sourcemaps.yml
+build:
+  name: Export and upload source maps
+  steps:
+    - eas/checkout
+    - eas/install_node_modules
+    - run:
+        name: Export the bundle and source maps
+        command: npx expo export --source-maps --platform ios
+    - eas/posthog_upload_sourcemaps:
+        name: Upload source maps to PostHog
+        inputs:
+          directory: dist
+```
+
+</Tab>
+
+</EASFunctionExampleTabs>
+
+##### Properties
 
 | Property       | Type    | Required   | Description                                                                                                              |
 | -------------- | ------- | ---------- | ------------------------------------------------------------------------------------------------------------------------ |

@@ -3,6 +3,18 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
+```yaml
+jobs:
+  my_job:
+    steps:
+      - uses: eas/download_build
+        with:
+          build_id: string # Required. ID of the build to download.
+          extensions: [apk, aab, ipa, app] # Optional. List of file extensions to look for. Defaults to ["apk", "aab", "ipa", "app"].
+```
+
+##### Properties
+
 | Property     | Type     | Required    | Default                        | Description                                                                |
 | ------------ | -------- | ----------- | ------------------------------ | -------------------------------------------------------------------------- |
 | `build_id`   | string   | <YesIcon /> | –                              | The ID of the build to download. Must be a valid UUID.                     |
@@ -13,6 +25,28 @@ import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 | Property        | Type   | Description                                                                                                                                                       |
 | --------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `artifact_path` | string | The absolute path to the matching application archive. This output can be used as input into other steps. For example, to upload or process the artifact further. |
+
+Example usage:
+
+```yaml
+jobs:
+  build_ios:
+    type: build
+    params:
+      platform: ios
+      profile: production
+
+  my_job:
+    needs: [build_ios]
+    steps:
+      - uses: eas/download_build
+        id: download_build
+        with:
+          build_id: ${{ needs.build_ios.outputs.build_id }}
+      - name: Print artifact path
+        run: |
+          echo "Artifact path: ${{ steps.download_build.outputs.artifact_path }}"
+```
 
 <BoxLink
   title="eas/download_build source code"

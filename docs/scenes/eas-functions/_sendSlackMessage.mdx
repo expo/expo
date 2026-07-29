@@ -1,6 +1,136 @@
 import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
+import { EASFunctionExampleTabs } from '~/ui/components/EASFunctionDescription';
+import { Tab } from '~/ui/components/Tabs';
+
+export const modes = ['Workflow', 'Custom Build'];
+
+<EASFunctionExampleTabs>
+
+<Tab label="Workflow">
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/send_slack_message
+        # @end #
+        with:
+          message: 'This is a message sent to a Slack channel'
+          slack_hook_url: ${{ env.ANOTHER_SLACK_HOOK_URL }}
+```
+
+</Tab>
+
+<Tab label="Custom Build">
+
+```yaml send-slack-message.yml
+build:
+  name: Slack your team from custom build
+  steps:
+    # @info #
+    - eas/send_slack_message:
+        name: Send Slack message to a given webhook URL
+        inputs:
+          message: 'This is a message to plain input URL'
+          slack_hook_url: 'https://hooks.slack.com/services/[rest_of_hook_url]'
+    # @end #
+    - eas/send_slack_message:
+        name: Send Slack message to a default webhook URL from SLACK_HOOK_URL secret
+        inputs:
+          message: 'This is a test message to default URL from SLACK_HOOK_URL secret'
+    - eas/send_slack_message:
+        name: Send Slack message to a webhook URL from specified secret
+        inputs:
+          message: 'This is a test message to a URL from specified secret'
+          slack_hook_url: ${ eas.env.ANOTHER_SLACK_HOOK_URL }
+
+    - eas/build
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message when the build finishes (Android)
+        inputs:
+          message: |
+            This is a test message when Android build finishes
+            Status: `${ steps.run_gradle.status_text }`
+            Link: `${ eas.job.expoBuildUrl }`
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message when the build finishes (iOS)
+        inputs:
+          message: |
+            This is a test message when iOS build finishes
+            Status: `${ steps.run_fastlane.status_text }`
+            Link: `${ eas.job.expoBuildUrl }`
+    - eas/send_slack_message:
+        if: ${ failure() }
+        name: Send Slack message when the build fails (Android)
+        inputs:
+          message: |
+            This is a test message when Android build fails
+            Error: `${ steps.run_gradle.error_text }`
+    - eas/send_slack_message:
+        if: ${ failure() }
+        name: Send Slack message when the build fails (iOS)
+        inputs:
+          message: |
+            This is a test message when iOS build fails
+            Error: `${ steps.run_fastlane.error_text }`
+    - eas/send_slack_message:
+        if: ${ success() }
+        name: Send Slack message when the build succeeds
+        inputs:
+          message: |
+            This is a test message when build succeeds
+    - eas/send_slack_message:
+        if: ${ always() }
+        name: Send Slack message with Slack Block Kit layout
+        inputs:
+          payload:
+            blocks:
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: |-
+                    Hello, Sir Developer
+
+                     *Your build has finished!*
+              - type: divider
+              - type: section
+                text:
+                  type: mrkdwn
+                  text: |-
+                    *${ eas.env.EAS_BUILD_ID }*
+                    *Status:* `${ steps.run_gradle.status_text }`
+                    *Link:* `${ eas.job.expoBuildUrl }`
+                accessory:
+                  type: image
+                  image_url: [your_image_url]
+                  alt_text: alt text for image
+              - type: divider
+              - type: actions
+                elements:
+                  - type: button
+                    text:
+                      type: plain_text
+                      text: 'Do a thing :rocket:'
+                      emoji: true
+                    value: a_thing
+                  - type: button
+                    text:
+                      type: plain_text
+                      text: 'Do another thing :x:'
+                      emoji: true
+                    value: another_thing
+```
+
+</Tab>
+
+</EASFunctionExampleTabs>
+
+##### Properties
 
 | Property         | Type     | Description                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ---------------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |

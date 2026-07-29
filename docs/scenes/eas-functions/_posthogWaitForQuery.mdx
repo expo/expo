@@ -2,6 +2,51 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { EASFunctionExampleTabs } from '~/ui/components/EASFunctionDescription';
+import { Tab } from '~/ui/components/Tabs';
+
+export const modes = ['Workflow', 'Custom Build'];
+
+Pauses until a [HogQL](https://posthog.com/docs/hogql) query returns true. Use it when the condition is easier to express in the query itself. For a numeric comparison with an explicit threshold, use [`eas/posthog_wait_for_metric`](#easposthog_wait_for_metric) instead.
+
+The step clears when the first column of the first row is `true` or a nonzero number, so write the query to select a single boolean, such as `SELECT count() > 100 FROM events`.
+
+> **info** Like `eas/posthog_wait_for_metric`, this step has no `ignore_error` input. A timeout or an unreadable query always fails the step.
+
+<EASFunctionExampleTabs>
+
+<Tab label="Workflow">
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/posthog_wait_for_query
+        # @end #
+        with:
+          query: SELECT count() > 0 FROM events WHERE event = 'smoke_test_passed' AND timestamp > now() - INTERVAL 30 MINUTE
+```
+
+</Tab>
+
+<Tab label="Custom Build">
+
+```yaml posthog-wait-for-query.yml
+build:
+  name: Wait for a smoke test event
+  steps:
+    - eas/posthog_wait_for_query:
+        name: Wait for the smoke test to pass
+        inputs:
+          query: SELECT count() > 0 FROM events WHERE event = 'smoke_test_passed' AND timestamp > now() - INTERVAL 30 MINUTE
+```
+
+</Tab>
+
+</EASFunctionExampleTabs>
+
+##### Properties
 
 | Property           | Type   | Required    | Description                                                                                                            |
 | ------------------ | ------ | ----------- | ---------------------------------------------------------------------------------------------------------------------- |
