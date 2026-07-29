@@ -6,6 +6,7 @@ import {
   getFontPaths,
   getXmlSpecs,
   generateFontManagerCalls,
+  assertNoConflictingDefinitions,
 } from '../withFontsAndroid';
 
 const input = [
@@ -89,6 +90,55 @@ describe('getFontPaths', () => {
 
   it('should handle empty input', () => {
     expect(getFontPaths({})).toEqual([]);
+  });
+});
+
+describe('assertNoConflictingDefinitions', () => {
+  it('should accept one variable font file backing several weights', () => {
+    // The shape the docs recommend for variable fonts, so it has to stay legal.
+    expect(() => assertNoConflictingDefinitions(groupByFamily(input))).not.toThrow();
+  });
+
+  it('should accept the same weight at different styles', () => {
+    const italicAndUpright = groupByFamily([
+      {
+        fontFamily: 'Inter',
+        fontDefinitions: [
+          { path: './Inter[wght].ttf', weight: 400, style: 'normal' },
+          { path: './Inter-Italic[wght].ttf', weight: 400, style: 'italic' },
+        ],
+      },
+    ]);
+
+    expect(() => assertNoConflictingDefinitions(italicAndUpright)).not.toThrow();
+  });
+
+  it('should accept the same weight in different families', () => {
+    const twoFamilies = groupByFamily([
+      { fontFamily: 'Inter', fontDefinitions: [{ path: './Inter[wght].ttf', weight: 400 }] },
+      { fontFamily: 'Inter Tight', fontDefinitions: [{ path: './Inter[wght].ttf', weight: 400 }] },
+    ]);
+
+    expect(() => assertNoConflictingDefinitions(twoFamilies)).not.toThrow();
+  });
+
+  it('should reject a repeated weight and style within a family', () => {
+    // Android resolves a family by (weight, style), so `FontFamily.Builder.addFont` throws on the
+    // second entry and the app dies in `MainApplication.onCreate`. Catch it during prebuild.
+    // Different files on purpose: it is the pair that has to be unique, not the file.
+    const conflicting = groupByFamily([
+      {
+        fontFamily: 'Inter',
+        fontDefinitions: [
+          { path: './Inter-Regular.ttf', weight: 400 },
+          { path: './Inter-Book.ttf', weight: 400, style: 'normal' },
+        ],
+      },
+    ]);
+
+    expect(() => assertNoConflictingDefinitions(conflicting)).toThrow(
+      /"Inter".+weight 400.+style "normal".+Inter-Regular\.ttf.+Inter-Book\.ttf/s
+    );
   });
 });
 

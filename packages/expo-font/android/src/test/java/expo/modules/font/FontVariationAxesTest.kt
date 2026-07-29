@@ -244,6 +244,17 @@ class DeclaresVariationsTest {
   fun `reads no further than it advertises`() {
     assertEquals(12 + 255 * 16, FontVariationAxes.TABLE_DIRECTORY_LIMIT)
   }
+
+  @Test
+  fun `leaves the caller's buffer untouched`() {
+    // `readWholeFont` reads the rest of the font on top of the prefix it was handed, so consuming
+    // the prefix here would silently drop the font's first few thousand bytes.
+    val prefix = font(tables)
+
+    assertTrue(FontVariationAxes.declaresVariations(prefix))
+    assertEquals(0, prefix.position())
+    assertEquals(ByteOrder.BIG_ENDIAN, prefix.order())
+  }
 }
 
 class WeightsForTest {

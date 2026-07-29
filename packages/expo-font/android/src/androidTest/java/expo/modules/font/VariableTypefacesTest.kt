@@ -75,10 +75,34 @@ class VariableTypefacesTest {
     false
   }
 
+  /** Whichever way [VariableTypefaces.build] gets there on this device. */
   @Test
-  fun rendersHeavierWeightsWithMoreInk() {
+  fun instancesTheAxis() {
+    val typeface = VariableTypefaces.build(map(variableFont!!))
+    assertHeavierWeightsPutDownMoreInk(typeface)
+    assertMatchesTheFontInstancedDirectly(typeface)
+  }
+
+  /**
+   * The same properties on the family we assemble ourselves.
+   *
+   * [VariableTypefaces.build] only takes that path below Android 15, so the test above exercises
+   * `FontFamily.Builder.buildVariableFamily` on every API level CI runs. Without this, the branch
+   * that ships to Android 10 through 14 would go unchecked.
+   */
+  @Test
+  fun instancesTheAxisWithoutTheFramework() {
     val font = variableFont!!
-    val typeface = VariableTypefaces.build(map(font))
+    val family = VariableTypefaces.buildInstancedFamily(map(font))
+    assertNotNull("${font.name} declares a `wght` axis but wasn't assembled by hand", family)
+
+    val typeface = typefaceFrom(family!!)
+    assertHeavierWeightsPutDownMoreInk(typeface)
+    assertMatchesTheFontInstancedDirectly(typeface)
+  }
+
+  private fun assertHeavierWeightsPutDownMoreInk(typeface: Typeface?) {
+    val font = variableFont!!
     assertNotNull("${font.name} declares a `wght` axis but wasn't built as a variable typeface", typeface)
 
     val axis = FontVariationAxes.readWeightAxis(map(font))!!
@@ -88,25 +112,35 @@ class VariableTypefacesTest {
     val ink = weights.map { it to inkCoverage(typeface!!, it) }
     Log.i(TAG, "${font.name} axis=$axis ink by weight: $ink")
 
-    // The whole point of the change: each weight is instanced from the axis, so heavier weights
-    // put more ink on the canvas. Were the axis ignored, every weight would draw the default
-    // instance and these would all come out equal.
-    ink.zipWithNext { (lightWeight, lighter), (heavyWeight, heavier) ->
+    // The whole point of the change: the weights come out of the axis, so the heaviest instance
+    // puts strictly more ink on the canvas than the lightest. Were the axis ignored, every weight
+    // would draw the default instance and these would all come out equal.
+    val (lightestWeight, lightest) = ink.first()
+    val (heaviestWeight, heaviest) = ink.last()
+    assertTrue(
+      "${font.name}: weight $heaviestWeight drew $heaviest ink, not more than weight " +
+        "$lightestWeight at $lightest. Measured: $ink",
+      heaviest > lightest
+    )
+
+    // Adjacent steps only have to be monotonic. Requiring a strict increase between them would be
+    // flaky: `weightsFor` clamps to the ends of the axis, so a narrow one yields neighbours a few
+    // units apart — 295 and 300, say — whose stems land on the same pixels at this size.
+    ink.zipWithNext { (lighterWeight, lighter), (heavierWeight, heavier) ->
       assertTrue(
-        "${font.name}: weight $heavyWeight drew $heavier ink, not more than weight $lightWeight " +
+        "${font.name}: weight $heavierWeight drew $heavier ink, less than weight $lighterWeight " +
           "at $lighter. Measured: $ink",
-        heavier > lighter
+        heavier >= lighter
       )
     }
   }
 
-  @Test
-  fun instancesTheAxisRatherThanSynthesizingBold() {
+  private fun assertMatchesTheFontInstancedDirectly(typeface: Typeface?) {
     val font = variableFont!!
+    assertNotNull("${font.name} declares a `wght` axis but wasn't built as a variable typeface", typeface)
+
     val axis = FontVariationAxes.readWeightAxis(map(font))!!
     val heaviest = FontVariationAxes.weightsFor(axis).last()
-
-    val built = VariableTypefaces.build(map(font))!!
 
     // Asking the assembled family for the heaviest weight has to land on the same pixels as
     // instancing the font at that weight directly. Declaring the weights without applying the
@@ -116,7 +150,7 @@ class VariableTypefacesTest {
       "${font.name} at weight $heaviest didn't render as the font instanced at 'wght' $heaviest, " +
         "so the requested weight isn't selecting the right instance",
       render(instancedAt(font, heaviest), heaviest).toList(),
-      render(built, heaviest).toList()
+      render(typeface!!, heaviest).toList()
     )
 
     // And it must not be the old behaviour: one default instance with a system-faked bold.
@@ -124,9 +158,15 @@ class VariableTypefacesTest {
       "${font.name} at weight $heaviest rendered identically to the synthetically emboldened " +
         "default instance, so the axis isn't being applied",
       render(Typeface.createFromFile(font), heaviest).toList(),
-      render(built, heaviest).toList()
+      render(typeface, heaviest).toList()
     )
   }
+
+  /** Wraps [family] the way [VariableTypefaces.build] does, so renders are comparable. */
+  private fun typefaceFrom(family: FontFamily): Typeface =
+    Typeface.CustomFallbackBuilder(family)
+      .setSystemFallback("sans-serif")
+      .build()
 
   /** The font instanced at exactly [weight], built without going through [VariableTypefaces]. */
   private fun instancedAt(file: File, weight: Int): Typeface {
@@ -146,6 +186,10 @@ class VariableTypefacesTest {
     assertNull(
       "${font!!.name} has no `wght` axis but was built as a variable typeface",
       VariableTypefaces.build(map(font))
+    )
+    assertNull(
+      "${font.name} has no `wght` axis but was assembled by hand anyway",
+      VariableTypefaces.buildInstancedFamily(map(font))
     )
   }
 

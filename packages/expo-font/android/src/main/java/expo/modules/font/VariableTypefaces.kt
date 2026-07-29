@@ -7,46 +7,66 @@ import android.graphics.fonts.Font
 import android.graphics.fonts.FontFamily
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.annotation.VisibleForTesting
 import java.nio.ByteBuffer
 
 /**
- * Builds a typeface holding an instance of a variable font at every weight `fontWeight` can request.
+ * A variable font holds every weight in one file, but Android loads it as one weight: the font's
+ * default. React Native then asks for a weight with `Typeface.create(typeface, weight, italic)`,
+ * which can only pick from the weights the typeface already has.
  *
- * Android hands back only a variable font's default instance and won't expand its named instances,
- * so the family has to be assembled by hand. [com.facebook.react.common.assets.ReactFontManager]
- * then resolves `fontWeight` against it with `Typeface.create(typeface, weight, italic)`.
+ * So the weights have to be put there first. Two ways to do it:
+ *  - [buildVariableFamily] — Android builds the family. Android 15 and up.
+ *  - [buildInstancedFamily] — we build it, one weight at a time.
  */
 @RequiresApi(Build.VERSION_CODES.Q)
 internal object VariableTypefaces {
+  // What `createFromAsset` and `createFromFile` use, so missing glyphs still come from the system
+  // font.
+  private const val SYSTEM_FALLBACK = "sans-serif"
+
   /**
-   * Returns a typeface covering every weight of the variable font in [fontData], or `null` if
-   * [fontData] isn't a variable font with a `wght` axis. [fontData] has to be a direct buffer, the
-   * only kind [Font.Builder] takes.
+   * A typeface with every weight of the variable font in [fontData], or `null` if [fontData] has no
+   * `wght` axis. [fontData] has to be a direct buffer.
    */
   fun build(fontData: ByteBuffer): Typeface? {
-    val family = buildFamily(fontData) ?: return null
+    // The two don't apply the same test, so only `null` from both means there are no weights.
+    val family = buildVariableFamily(fontData)
+      ?: buildInstancedFamily(fontData)
+      ?: return null
 
-    // Matches the fallback `Typeface.createFromAsset` and `createFromFile` set up, so glyphs the
-    // font doesn't cover keep coming from the system font.
     return Typeface.CustomFallbackBuilder(family)
-      .setSystemFallback("sans-serif")
+      .setSystemFallback(SYSTEM_FALLBACK)
       .build()
   }
 
-  private fun buildFamily(fontData: ByteBuffer): FontFamily? {
+  /**
+   * The family Android builds itself. It covers the axis continuously instead of at nine fixed
+   * steps, and applies `ital` if the font has one.
+   *
+   * `null` below Android 15, or if Android doesn't take [fontData] for a variable font.
+   */
+  private fun buildVariableFamily(fontData: ByteBuffer): FontFamily? {
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+      return null
+    }
+    val defaultInstance = Font.Builder(fontData).build()
+    return FontFamily.Builder(defaultInstance).buildVariableFamily()
+  }
+
+  /**
+   * The family built by hand: one copy of the font per weight `fontWeight` can name. `null` if
+   * [fontData] has no `wght` axis.
+   *
+   * Only for Android 14 and below. [buildVariableFamily] replaces it, and this and the `fvar`
+   * reading it needs can be deleted once Android 15 is min supported sdk.
+   */
+  @VisibleForTesting
+  internal fun buildInstancedFamily(fontData: ByteBuffer): FontFamily? {
     val weightAxis = FontVariationAxes.readWeightAxis(fontData) ?: return null
 
-    // Android 15 assembles the family itself, covering every weight rather than the nine steps
-    // below and applying the `ital` axis when the font declares one.
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-      FontFamily.Builder(Font.Builder(fontData).build())
-        .buildVariableFamily()
-        ?.let { return it }
-    }
-
     val fonts = FontVariationAxes.weightsFor(weightAxis).map { weight ->
-      // The variation setting picks the glyphs to draw, while the weight is what the closest-match
-      // lookup reads when resolving a requested `fontWeight`.
+      // The variation setting picks the glyphs; the weight is what the closest-match lookup reads.
       Font.Builder(fontData)
         .setFontVariationSettings("'wght' $weight")
         .setWeight(weight)

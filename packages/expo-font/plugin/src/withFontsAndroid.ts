@@ -51,8 +51,39 @@ export function getFontPaths(fontsByFamily: GroupedFontObject): string[] {
   ];
 }
 
+/**
+ * Throws when two definitions in the same family claim the same weight and style.
+ *
+ * Android resolves a family by (weight, style), and `FontFamily.Builder.addFont` rejects a second
+ * font carrying a pair the family already holds — which surfaces as a crash while
+ * `MainApplication.onCreate` registers the family, long after prebuild. Listing one variable font
+ * file once per weight stays legal; repeating a weight does not.
+ */
+export function assertNoConflictingDefinitions(fontsByFamily: GroupedFontObject) {
+  for (const [fontFamily, definitions] of Object.entries(fontsByFamily)) {
+    const pathByWeightAndStyle = new Map<string, string>();
+
+    for (const definition of definitions) {
+      const style = definition.style || 'normal';
+      const key = `${definition.weight}/${style}`;
+      const alreadyDeclaredBy = pathByWeightAndStyle.get(key);
+
+      if (alreadyDeclaredBy) {
+        throw new Error(
+          `Font family ${JSON.stringify(fontFamily)} declares more than one font for weight ${definition.weight} and style ${JSON.stringify(style)}: ${alreadyDeclaredBy} and ${definition.path}. ` +
+            `Android resolves a font family by weight and style, so it cannot hold two fonts with the same pair — the app would crash on startup while registering the family. ` +
+            `Remove the duplicate, or give each definition a weight or style of its own. One variable font file can back several weights, but each definition needs a different weight.`
+        );
+      }
+
+      pathByWeightAndStyle.set(key, definition.path);
+    }
+  }
+}
+
 function addXmlFonts(config: ExpoConfig, xmlFontObjects: FontObject[]) {
   const fontsByFamily = groupByFamily(xmlFontObjects);
+  assertNoConflictingDefinitions(fontsByFamily);
   const fontPaths = getFontPaths(fontsByFamily);
 
   config = copyFontsToDir(config, fontPaths, resourcesFontsDir, (filenameWithExt) => {
