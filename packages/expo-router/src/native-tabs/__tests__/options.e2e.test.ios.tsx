@@ -551,6 +551,74 @@ describe('Icons', () => {
       }
     );
   });
+
+  it('when using Icon xcasset, it is passed as an asset catalog icon', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon
+              xcasset={{ default: 'home-outline', selected: 'home-filled' }}
+            />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      ios: {
+        icon: { type: 'xcasset', name: 'home-outline' },
+        selectedIcon: { type: 'xcasset', name: 'home-filled' },
+      },
+    } as TabsScreenProps);
+  });
+
+  it('when using Icon xcasset with an icon color, it stays an asset catalog icon', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs iconColor="red">
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset="home-outline" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0]).toMatchObject({
+      ios: {
+        icon: { type: 'xcasset', name: 'home-outline' },
+        selectedIcon: { type: 'xcasset', name: 'home-outline' },
+      },
+    } as TabsScreenProps);
+  });
+
+  it('warns when using Icon xcasset together with renderingMode', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    renderRouter({
+      _layout: () => (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index">
+            <NativeTabs.Trigger.Icon xcasset="home-outline" renderingMode="template" />
+          </NativeTabs.Trigger>
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('`renderingMode` has no effect on `xcasset` icons')
+    );
+
+    warnSpy.mockRestore();
+  });
 });
 
 describe('Badge', () => {

@@ -59,6 +59,46 @@ describe(convertOptionsIconToScreensPropsIcon, () => {
     expect(convertOptionsIconToScreensPropsIcon(drawableOnly)).toBeUndefined();
   });
 
+  describe('xcasset', () => {
+    it('returns xcasset icon when xcasset is provided', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ xcasset: 'custom-icon' })).toEqual({
+        type: 'xcasset',
+        name: 'custom-icon',
+      });
+    });
+
+    it('returns xcasset icon even when a renderingMode override is passed, so symbol sets still resolve via imageNamed:', () => {
+      expect(
+        convertOptionsIconToScreensPropsIcon({ xcasset: 'custom-icon' }, 'template')
+      ).toEqual({
+        type: 'xcasset',
+        name: 'custom-icon',
+      });
+    });
+
+    it('returns undefined when xcasset is falsy (empty string)', () => {
+      expect(convertOptionsIconToScreensPropsIcon({ xcasset: '' })).toBeUndefined();
+    });
+
+    it('prefers sf over xcasset when both are provided', () => {
+      expect(
+        convertOptionsIconToScreensPropsIcon({ sf: 'star.fill', xcasset: 'custom-icon' })
+      ).toEqual({ type: 'sfSymbol', name: 'star.fill' });
+    });
+
+    // react-native-screens throws "icon and selectedIcon must be same type" when the two
+    // differ. xcasset icons always resolve to the same type regardless of renderingMode,
+    // since it has no effect on them.
+    it('returns the same icon type for the normal and selected states regardless of renderingMode', () => {
+      const icon = convertOptionsIconToScreensPropsIcon({ xcasset: 'home-outline' }, undefined);
+      const selectedIcon = convertOptionsIconToScreensPropsIcon(
+        { xcasset: 'home-filled' },
+        'template'
+      );
+      expect(icon?.type).toBe(selectedIcon?.type);
+    });
+  });
+
   describe('renderingMode', () => {
     it('returns templateSource when renderingMode is "template"', () => {
       const src = { uri: 'https://example.com/icon.png' };
