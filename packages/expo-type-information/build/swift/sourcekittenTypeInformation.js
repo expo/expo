@@ -53,13 +53,22 @@ function isClassStructure(structure) {
 function isStructStructure(structure) {
     return structure['key.kind'] === swiftDeclarationKind.struct;
 }
-function isRecordStructure(structure) {
+function containsFieldAnnotation(file, structure) {
+    const startIndex = structure['key.offset'];
+    const endIndex = startIndex + structure['key.length'];
+    const fieldIndex = file.content.substring(startIndex, endIndex).indexOf('@Field');
+    return fieldIndex !== -1;
+}
+function isRecordStructure(file, structure) {
     const isRecordOrClass = structure['key.kind'] === swiftDeclarationKind.struct ||
         structure['key.kind'] === swiftDeclarationKind.class;
+    // To check whether a structure represents a record, check if it has any @Field annotated fields.
+    // For the case of empty structs add a check if the struct directly conforms to the Record.
+    const hasFields = containsFieldAnnotation(file, structure);
     const inheritsFromRecord = structure['key.inheritedtypes']?.find((type) => {
         return type['key.name'] === 'Record';
     }) !== undefined;
-    return isRecordOrClass && inheritsFromRecord;
+    return isRecordOrClass && (hasFields || inheritsFromRecord);
 }
 function isModuleStructure(structure) {
     return structure['key.typename'] === 'ModuleDefinition';
@@ -729,16 +738,19 @@ async function parseModuleStructure(moduleStructure, name, definitionOffset, opt
     sortModuleClassDeclaration(moduleClassDeclaration);
     return moduleClassDeclaration;
 }
-function parseStructure(structure, name, modulesStructures, recordsStructures, enumsStructures) {
+function parseStructure({ file, structure, name }, 
+// Note that instead of returning and merging the enum, record and module arrays, we're just collecting the items in the 3 arrays inside this object.
+parsedStructuresOutput) {
+    const { modulesStructures, recordsStructures, enumsStructures } = parsedStructuresOutput;
     // TODO(@HubertBer): Find out why sometimes the structure is undefined (for example when parsing expo-audio)
-    if (!structure || !structure['key.substructure']) {
+    const substructure = structure['key.substructure'];
+    if (!structure || !substructure) {
         return;
     }
-    const substructure = structure['key.substructure'];
     if (isModuleStructure(structure)) {
         modulesStructures.push({ structure, name });
     }
-    else if (isRecordStructure(structure)) {
+    else if (isRecordStructure(file, structure)) {
         recordsStructures.push(structure);
     }
     else if (isEnumStructure(structure)) {
@@ -746,7 +758,11 @@ function parseStructure(structure, name, modulesStructures, recordsStructures, e
     }
     else if (Array.isArray(substructure) && substructure.length > 0) {
         for (const substructure of structure['key.substructure']) {
-            parseStructure(substructure, structure['key.name'] ?? name, modulesStructures, recordsStructures, enumsStructures);
+            parseStructure({
+                file,
+                structure: substructure,
+                name: structure['key.name'] ?? name,
+            }, parsedStructuresOutput);
         }
     }
 }
@@ -817,7 +833,7 @@ function collectModuleTypeIdentifiers(moduleClassDeclaration, fileTypeInformatio
 }
 function parseNamespaces(structure, namespaces, file, currentNamespace) {
     if (isModuleStructure(structure) ||
-        isRecordStructure(structure) ||
+        isRecordStructure(file, structure) ||
         isStructStructure(structure) ||
         isEnumStructure(structure) ||
         isClassStructure(structure)) {
@@ -844,7 +860,15 @@ async function getSwiftFileTypeInformation(filePath, options) {
     const recordsStructures = [];
     const enumsStructures = [];
     const fileStructure = getStructureFromFile(file);
-    parseStructure(fileStructure, '', modulesStructures, recordsStructures, enumsStructures);
+    parseStructure({
+        file,
+        structure: getStructureFromFile(file),
+        name: '',
+    }, {
+        modulesStructures,
+        recordsStructures,
+        enumsStructures,
+    });
     const namespaces = {};
     namespaces[''] = {};
     parseNamespaces(fileStructure, namespaces, file, namespaces['']);
