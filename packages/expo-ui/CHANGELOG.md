@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a `TextField` selection crash when JavaScript replaces the text while the user types, by using the clamped selection binding on all OS versions and clearing the selection on external writes. ([#48274](https://github.com/expo/expo/issues/48274) by [@realZachi](https://github.com/realZachi)) ([#48277](https://github.com/expo/expo/pull/48277) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `community/masked-view` content being clipped after rotation because of window safe area insets. ([#48243](https://github.com/expo/expo/pull/48243) by [@Elehiggle](https://github.com/Elehiggle))
 - [iOS] Fix `community/menu` `MenuView` not tinting a leaf action `Button`'s leading SF Symbol from `imageColor` — it applied `.foregroundColor` (which the iOS system menu ignores for a button's content) where checkable `Toggle` items applied `.tint`; leaf buttons now use `.tint` too. ([#47908](https://github.com/expo/expo/issues/47908) by [@cvburgess](https://github.com/cvburgess)) ([#47909](https://github.com/expo/expo/pull/47909) by [@cvburgess](https://github.com/cvburgess))
 
