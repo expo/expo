@@ -18,6 +18,14 @@ extension IntentPerson {
 }
 
 /**
+ Lets expo-app-intents rebuild drafts from the catalog that JavaScript publishes, which is what
+ keeps the Spotlight index in step with `setEntityCatalogAsync`. The base entity already has the
+ matching initializer, so this only declares the conformance.
+ */
+@available(iOS 18.0, *)
+extension MailDraftEntity: AppIntentEntityRecordConvertible {}
+
+/**
  Makes the draft entity Spotlight-indexable. This is added as an extension so the base
  `MailDraftEntity` stays unchanged: conformance and indexing are the only things visual
  intelligence adds to it.

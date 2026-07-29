@@ -32,7 +32,8 @@ final class AppIntentDispatcherTests: XCTestCase {
 
     let emitted = await eventTask.value
     XCTAssertEqual(emitted?.name, "startHike")
-    XCTAssertEqual((await dispatcher.pendingInvocations()).count, 1)
+    let pending = await dispatcher.pendingInvocations()
+    XCTAssertEqual(pending.count, 1)
   }
 
   func testTerminatingOldEventStreamDoesNotClearNewerListener() async {
@@ -62,21 +63,25 @@ final class AppIntentDispatcherTests: XCTestCase {
     await dispatcher.dispatch(name: "b", params: [:])
 
     await dispatcher.removePendingInvocation(id: id)
-    XCTAssertEqual((await dispatcher.pendingInvocations()).count, 1)
+    let afterRemove = await dispatcher.pendingInvocations()
+    XCTAssertEqual(afterRemove.count, 1)
 
     await dispatcher.clearPendingInvocations()
-    XCTAssertEqual((await dispatcher.pendingInvocations()).count, 0)
+    let afterClear = await dispatcher.pendingInvocations()
+    XCTAssertEqual(afterClear.count, 0)
   }
 
   func testRequestShortcutsRefreshInvokesHandler() async {
     var called = false
     await dispatcher.setShortcutsRefreshHandler { called = true }
-    XCTAssertTrue(await dispatcher.requestShortcutsRefresh())
+    let didRefresh = await dispatcher.requestShortcutsRefresh()
+    XCTAssertTrue(didRefresh)
     XCTAssertTrue(called)
   }
 
   func testRequestShortcutsRefreshWithoutHandlerReturnsFalse() async {
-    XCTAssertFalse(await dispatcher.requestShortcutsRefresh())
+    let didRefresh = await dispatcher.requestShortcutsRefresh()
+    XCTAssertFalse(didRefresh)
   }
 
   private func nextInvocationWithTimeout(

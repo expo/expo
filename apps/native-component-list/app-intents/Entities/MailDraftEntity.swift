@@ -5,7 +5,7 @@ internal import ExpoAppIntents
 
 @available(iOS 18.0, *)
 @AppEntity(schema: .mail.draft)
-struct MailDraftEntity: IndexedEntity {
+struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
   static let defaultQuery = MailDraftEntityQuery()
 
   var id: String

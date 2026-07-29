@@ -12,7 +12,9 @@ final class AppIntentsSetup: Module {
     OnCreate {
       AppEntityIdentifierRegistry.shared.register("dish", as: DishEntity.self)
       if #available(iOS 18.0, *) {
-        AppEntityIdentifierRegistry.shared.register("mailDraft", as: MailDraftEntity.self)
+        // `registerIndexed` also mirrors the catalog published with `setEntityCatalogAsync` into
+        // Spotlight, so nothing has to index the drafts by hand.
+        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
       }
 
       Task {
@@ -20,12 +22,6 @@ final class AppIntentsSetup: Module {
           AppShortcuts.updateAppShortcutParameters()
         }
         AppShortcuts.updateAppShortcutParameters()
-      }
-    }
-
-    AsyncFunction("indexMailDraftsAsync") { (records: [AppIntentEntityRecord]) async throws in
-      if #available(iOS 18.0, *) {
-        try await MailDraftIndexer.replaceIndex(with: records)
       }
     }
   }

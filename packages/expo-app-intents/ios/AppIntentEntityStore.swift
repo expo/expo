@@ -88,10 +88,27 @@ public actor AppIntentEntityStore {
     return entities(ofKind: kind).filter { identifiers.contains($0.id) }
   }
 
-  internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) {
-    guard let data = try? JSONEncoder().encode(entities) else {
-      return
+  /**
+   Replaces the catalog for the given kind and reports whether anything actually changed, so
+   callers can skip work that only makes sense for a new catalog.
+
+   `.sortedKeys` is required rather than cosmetic: `metadata` is a dictionary, and Swift does not
+   guarantee a stable iteration order across runs, so without it two encodings of equal content
+   could differ and every write would look like a change.
+   */
+  @discardableResult
+  internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) -> Bool {
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = .sortedKeys
+
+    guard let data = try? encoder.encode(entities) else {
+      return false
     }
+    guard data != defaults.data(forKey: storageKey(kind: kind)) else {
+      return false
+    }
+
     defaults.set(data, forKey: storageKey(kind: kind))
+    return true
   }
 }

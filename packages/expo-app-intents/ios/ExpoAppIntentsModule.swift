@@ -54,8 +54,17 @@ public final class ExpoAppIntentsModule: Module {
     }
 
     AsyncFunction("setEntityCatalogAsync") { (kind: String, entities: [AppIntentEntityRecord]) async throws in
-      await AppIntentEntityStore.shared.setCatalog(kind: kind, entities: entities)
+      // Nothing downstream of the catalog can have changed if the catalog itself did not, and
+      // JavaScript commonly republishes an identical catalog on every app start.
+      guard await AppIntentEntityStore.shared.setCatalog(kind: kind, entities: entities) else {
+        return
+      }
+      await AppEntityIdentifierRegistry.shared.reindex(kind: kind, records: entities)
       try await self.refreshShortcuts()
+    }
+
+    AsyncFunction("reindexEntitiesAsync") { (kind: String?) async in
+      await self.reindexEntities(kind: kind)
     }
 
     AsyncFunction("getEntityCatalogAsync") { (kind: String) async -> [AppIntentEntityRecord] in
@@ -64,6 +73,22 @@ public final class ExpoAppIntentsModule: Module {
 
     AsyncFunction("refreshShortcutsAsync") { () async throws in
       try await self.refreshShortcuts()
+    }
+  }
+
+  /**
+   Rebuilds the Spotlight index from the stored catalog. Unlike `setEntityCatalogAsync` this does
+   not check whether the catalog changed, because the point of asking for it explicitly is to
+   recover from an index that no longer matches: one the system evicted, or one left stale by an
+   app update that changed how entities describe themselves.
+   */
+  private func reindexEntities(kind: String?) async {
+    let registry = AppEntityIdentifierRegistry.shared
+    let kinds = kind.map { [$0] } ?? registry.indexedKinds
+
+    for kind in kinds {
+      let records = await AppIntentEntityStore.shared.entities(ofKind: kind)
+      await registry.reindex(kind: kind, records: records)
     }
   }
 

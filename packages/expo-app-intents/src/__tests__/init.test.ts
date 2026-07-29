@@ -356,8 +356,9 @@ describe(runInit, () => {
 
     // The generated setup module registers the entity kind and exposes the indexing bridge.
     const setup = vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8') as string;
-    expect(setup).toContain('AppEntityIdentifierRegistry.shared.register("mailDraft"');
-    expect(setup).toContain('AsyncFunction("indexMailDraftsAsync")');
+    expect(setup).toContain('AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft"');
+    // Indexing is driven by setEntityCatalogAsync now, so the scaffold exposes no bridge for it.
+    expect(setup).not.toContain('AsyncFunction');
     // mail contributes no phrase, so there is no provider to wire up.
     expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(false);
     expect(setup).not.toContain('AppShortcuts');
@@ -387,7 +388,7 @@ describe(runInit, () => {
       'utf8'
     ) as string;
     expect(plainSetup).not.toContain('AppEntityIdentifierRegistry');
-    expect(plainSetup).not.toContain('indexMailDraftsAsync');
+    expect(plainSetup).not.toContain('registerIndexed');
   });
 
   it('rejects visual intelligence without the mail example', async () => {

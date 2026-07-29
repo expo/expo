@@ -76,8 +76,10 @@ function renderAppIntentsSetup(options: {
 }): string {
   const onCreate: string[] = [];
   if (options.visualIntelligence) {
+    // `registerIndexed` also mirrors the catalog published with `setEntityCatalogAsync` into
+    // Spotlight, so nothing has to index the drafts by hand.
     onCreate.push(`      if #available(iOS 18.0, *) {
-        AppEntityIdentifierRegistry.shared.register("mailDraft", as: MailDraftEntity.self)
+        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
       }`);
   }
   if (options.hasShortcuts) {
@@ -93,14 +95,6 @@ function renderAppIntentsSetup(options: {
   if (onCreate.length > 0) {
     body.push(`    OnCreate {\n${onCreate.join('\n\n')}\n    }`);
   }
-  if (options.visualIntelligence) {
-    body.push(`    AsyncFunction("indexMailDraftsAsync") { (records: [AppIntentEntityRecord]) async throws in
-      if #available(iOS 18.0, *) {
-        try await MailDraftIndexer.replaceIndex(with: records)
-      }
-    }`);
-  }
-
   return `internal import ExpoAppIntents
 internal import ExpoModulesCore
 
