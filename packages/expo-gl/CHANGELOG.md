@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the GL surface using a cached main-screen scale instead of the scale of the scene the view is in. ([#48169](https://github.com/expo/expo/pull/48169) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 - Update docs to `createContextAsync` and `destroyContextAsync` methods which purpose wasn't documented and [was confusing](https://github.com/expo/expo/issues/40037). ([#47200](https://github.com/expo/expo/pull/47200) by [@HubertBer](https://github.com/HubertBer))

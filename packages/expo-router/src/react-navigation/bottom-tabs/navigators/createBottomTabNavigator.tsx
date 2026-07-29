@@ -3,7 +3,6 @@ import {
   createNavigatorFactory,
   type NavigatorTypeBagBase,
   type ParamListBase,
-  type StaticConfig,
   type TabActionHelpers,
   type TabNavigationState,
   TabRouter,
@@ -23,7 +22,6 @@ function BottomTabNavigator({
   id,
   initialRouteName,
   backBehavior,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -42,7 +40,6 @@ function BottomTabNavigator({
     id,
     initialRouteName,
     backBehavior,
-    UNSTABLE_routeNamesChangeBehavior,
     children,
     layout,
     screenListeners,
@@ -72,7 +69,6 @@ export function createBottomTabNavigator<
     };
     Navigator: typeof BottomTabNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(BottomTabNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(BottomTabNavigator)();
 }

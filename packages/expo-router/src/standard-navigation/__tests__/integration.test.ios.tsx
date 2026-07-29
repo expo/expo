@@ -220,7 +220,7 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(routeSourceByName).toEqual({ index: 'layout', second: 'filesystem' });
   });
 
-  it('keeps Protected screens whose guard is false hidden', () => {
+  it('keeps Protected screens whose guard is false registered but hidden', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -239,6 +239,7 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
 
     expect(args.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
     expect(args.descriptors[second.key]!.options).toMatchObject({ hidden: true });
+    expect(screen.queryByTestId('second')).toBeNull();
   });
 
   it('propagates route params into state and href', () => {

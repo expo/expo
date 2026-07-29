@@ -2,7 +2,6 @@ import {
   createNavigatorFactory,
   type NavigatorTypeBagBase,
   type ParamListBase,
-  type StaticConfig,
   type TabActionHelpers,
   type TabNavigationState,
   TabRouter,
@@ -22,7 +21,6 @@ function MaterialTopTabNavigator({
   id,
   initialRouteName,
   backBehavior,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -41,7 +39,6 @@ function MaterialTopTabNavigator({
     id,
     initialRouteName,
     backBehavior,
-    UNSTABLE_routeNamesChangeBehavior,
     children,
     layout,
     screenListeners,
@@ -80,7 +77,6 @@ export function createMaterialTopTabNavigator<
     };
     Navigator: typeof MaterialTopTabNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(MaterialTopTabNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(MaterialTopTabNavigator)();
 }
