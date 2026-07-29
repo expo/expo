@@ -3,7 +3,6 @@ const nodePlugin = require('eslint-plugin-n');
 const globals = require('globals');
 
 const coreConfig = require('./shared/core.js');
-const prettierConfig = require('./shared/prettier.js');
 const typescriptConfig = require('./shared/typescript.js');
 
 module.exports = defineConfig([
@@ -25,5 +24,4 @@ module.exports = defineConfig([
   },
   coreConfig,
   typescriptConfig,
-  prettierConfig,
 ]);
