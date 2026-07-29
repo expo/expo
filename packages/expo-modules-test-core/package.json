@@ -39,11 +39,11 @@
     "xml-js": "^1.6.11",
     "yaml": "^2.8.3"
   },
-  "peerDependencies": {
-    "expo": "*"
-  },
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }
