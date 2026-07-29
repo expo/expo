@@ -38,7 +38,7 @@ PODS:
   - EXManifests/Tests (56.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - Expo (56.0.17):
+  - Expo (56.0.18):
     - ExpoModulesCore
     - ExpoModulesJSI
     - hermes-engine
@@ -299,7 +299,7 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Expo/Tests (56.0.17):
+  - Expo/Tests (56.0.18):
     - ExpoModulesCore
     - ExpoModulesJSI
     - ExpoModulesTestCore
@@ -384,12 +384,12 @@ PODS:
     - ExpoModulesCore
   - ExpoAudio (56.0.13):
     - ExpoModulesCore
-  - ExpoBackgroundFetch (56.0.23):
+  - ExpoBackgroundFetch (56.0.24):
     - ExpoModulesCore
-  - ExpoBackgroundTask (56.0.23):
+  - ExpoBackgroundTask (56.0.24):
     - ExpoModulesCore
     - ExpoTaskManager
-  - ExpoBackgroundTask/Tests (56.0.23):
+  - ExpoBackgroundTask/Tests (56.0.24):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - ExpoTaskManager
@@ -401,7 +401,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBrightness (56.0.5):
     - ExpoModulesCore
-  - ExpoBrownfield (56.0.25):
+  - ExpoBrownfield (56.0.26):
     - ExpoModulesCore
   - ExpoCalendar (56.0.9):
     - ExpoModulesCore
@@ -418,7 +418,7 @@ PODS:
   - ExpoClipboard/Tests (56.0.4):
     - ExpoModulesCore
     - ExpoModulesTestCore
-  - ExpoContacts (56.0.11):
+  - ExpoContacts (56.0.12):
     - ExpoModulesCore
   - ExpoCrypto (56.0.4):
     - ExpoModulesCore
@@ -568,7 +568,7 @@ PODS:
   - ExpoModulesJSI/Tests (56.0.12):
     - React-Core
     - ReactCommon
-  - ExpoModulesTestCore (56.0.12):
+  - ExpoModulesTestCore (56.0.13):
     - ExpoModulesCore
     - Nimble (~> 13.0.0)
     - Quick (~> 7.3.0)
@@ -689,16 +689,16 @@ PODS:
     - ExpoModulesCore
   - ExpoSystemUI (56.0.5):
     - ExpoModulesCore
-  - ExpoTaskManager (56.0.23):
+  - ExpoTaskManager (56.0.24):
     - ExpoModulesCore
     - UMAppLoader
-  - ExpoTaskManager/Tests (56.0.23):
+  - ExpoTaskManager/Tests (56.0.24):
     - ExpoModulesCore
     - ExpoModulesTestCore
     - UMAppLoader
   - ExpoTrackingTransparency (56.0.5):
     - ExpoModulesCore
-  - ExpoUI (56.0.23):
+  - ExpoUI (56.0.24):
     - ExpoModulesCore
     - ExpoModulesWorklets
     - React-RCTFabric
@@ -3972,7 +3972,7 @@ SPEC CHECKSUMS:
   EXConstants: 9fff81852f1d2e72502786a66f5ddb6d0eb76436
   EXJSONUtils: dba2755f4e24009eaf87a876b2d615ea06c16e42
   EXManifests: 7e19be8df665a338493060a419847dae76ffcd43
-  Expo: d61d808084d52a00653a95fa47e861b5c67826a0
+  Expo: c9a574554757067cac2ebe8de1f0426728c13fb8
   expo-dev-client: b06707e53822c2da7304ad132afcdedd27607baa
   expo-dev-launcher: 1cbefd6f8e7fcb39c7ed22e054792473440e6455
   expo-dev-menu: 5e13cae291667277a740487cc9896c364c57ec13
@@ -3980,22 +3980,22 @@ SPEC CHECKSUMS:
   ExpoAgeRange: 9e88382316caa2ef6e3873ae27ccdb1efd127843
   ExpoAppIntegrity: 43cc62f24c533b960de07b5038568acedc3a567a
   ExpoAppleAuthentication: 3dd8ddd3016396a8171f06af8cc5e3e008e8eaf4
-  ExpoAppMetrics: 80782a0742a5acf2aa243964f2d1dc13752e42b0
+  ExpoAppMetrics: 0cd9115830bbe910f642c28c9f478bfbda8ed121
   ExpoAsset: 26f77f0cdaffe419b80e86f02cc5365722bc135e
   ExpoAudio: 2970e2d332b52bfbb64d88564105df4b422c78a4
-  ExpoBackgroundFetch: d281ee84f71e17003a88472dc42c1743c589621d
-  ExpoBackgroundTask: 98bff6be09aaf03efd2dd4c2568185f7f0bafb36
+  ExpoBackgroundFetch: 3e8a120c33d2da9b9e20a528c792cbae8dc0d24e
+  ExpoBackgroundTask: c067a7f49184e8ae6543340f53bf006afcb367b3
   ExpoBattery: a42e918404ceee07a957db4312918ec0c52bc0d6
   ExpoBlob: 3e896c97726abf49bdecf63151e09fb4f7e21195
   ExpoBlur: 234b3c1f42a35851428e10fa9d347701ae707c4d
   ExpoBrightness: db4e1904c09d8cad3e120cd82466fdb3cfb8ff85
-  ExpoBrownfield: 0e1da6d9d0b6cfe9e82e14640e86c7f04be575b7
+  ExpoBrownfield: ef562b1ff7f7e558bd093b0b48a8f2c76ca188ca
   ExpoCalendar: eb85085f63dd2c6e8ea07ea25f02abd1040f1137
   ExpoCamera: 68008452cc12ad5ad5d46cc7c835073228c008da
   ExpoCameraBarcodeScanning: 2acb6385fe6aa7563da5241c775092aac40195ce
   ExpoCellular: 61e540ab0138c7f441639b51a27b3cca2bbc5ae8
   ExpoClipboard: 342ae52697ff1cf89b8849bee624a9a320e77d3c
-  ExpoContacts: 6946ac520f556fb816cb8f1c05d8766cf6327c77
+  ExpoContacts: 5653b294b19f78c96cbeb9fcf7ff5c5bf0bdbbdd
   ExpoCrypto: b54a97c4357d46d7f8de079e69fa89029572244b
   ExpoDevice: f527f8bbefa6efa12f8ef63e9038dd1d5d903697
   ExpoDocumentPicker: caa9c7c1071dc31262d86a8fe48f51929d291a43
@@ -4023,7 +4023,7 @@ SPEC CHECKSUMS:
   ExpoMeshGradient: baf62012104fd9c1719de67f88c69958abcd2ed1
   ExpoModulesCore: 1df8d7029aef28ff753ec1856ae9e7163afe6c7d
   ExpoModulesJSI: e62656cfaffb5aeb3fdc1dd2bc49f77e87ed2261
-  ExpoModulesTestCore: 7f6cc688308499d8faf2db19166c8eb251d1e4be
+  ExpoModulesTestCore: d0d57220949ae5c74c0bd67a6b37425c3671799f
   ExpoModulesWorklets: 3aaf91bb08abf910858592221480d6519f0daa1e
   ExpoModulesWorkletsAdapter: f912c4708184dda9249a3e59962b30ee79f6f3b0
   ExpoNetwork: 06f00de1f1d3b33327d392232b1e5dd866b05444
@@ -4042,9 +4042,9 @@ SPEC CHECKSUMS:
   ExpoStoreReview: f785057aececd9c63a113c69a82b491e5f90694e
   ExpoSymbols: 377747de25bcb1ab68ec68f23d81fb81d43eae83
   ExpoSystemUI: 8f4fb641c6a6ebe2a01dda0fbd3fdd952ab5823a
-  ExpoTaskManager: 045db4ef8965277c6e0c6f095e5e9f469dbdb0b7
+  ExpoTaskManager: 43ba27d09b72c2dd7909b4126de742bf89cc9c66
   ExpoTrackingTransparency: a5117d608c3abd938cd40ebcaa2f00049b886a8c
-  ExpoUI: fc8fed8b0c8b48ab4945efeb225685439a4fba30
+  ExpoUI: f9e6ceecc862e81051b9397a97fae0fc55003725
   ExpoVideo: 292b8c6be12bacf0b2e5a697276788280cdccdfb
   ExpoVideoDashSupportModule: a8197584e7b7e533a67e75d3349c5fa827358ad6
   ExpoVideoThumbnails: 116c2563d2bd3a1e98326a267020e25fea8af79e
