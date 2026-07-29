@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import { getBundleUrl } from './getBundleUrl';
+export { getBundleUrl } from './getBundleUrl';
 
 /**
  * Origin the running bundle was served from, or `null` when it wasn't served over HTTP.
