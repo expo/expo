@@ -39,25 +39,10 @@ export function groupByFamily(array: FontObject[]): GroupedFontObject {
 }
 
 /**
- * The font files to copy, once each. A variable font backs one definition per weight, so the same
- * path shows up several times, and copying it once per definition races two writes onto the same
- * destination file.
- */
-export function getFontPaths(fontsByFamily: GroupedFontObject): string[] {
-  return [
-    ...new Set(
-      Object.values(fontsByFamily).flatMap((definitions) => definitions.map((it) => it.path))
-    ),
-  ];
-}
-
-/**
  * Throws when two definitions in the same family claim the same weight and style.
  *
  * Android resolves a family by (weight, style), and `FontFamily.Builder.addFont` rejects a second
- * font carrying a pair the family already holds — which surfaces as a crash while
- * `MainApplication.onCreate` registers the family, long after prebuild. Listing one variable font
- * file once per weight stays legal; repeating a weight does not.
+ * font carrying a pair the family already holds.
  */
 export function assertNoConflictingDefinitions(fontsByFamily: GroupedFontObject) {
   for (const [fontFamily, definitions] of Object.entries(fontsByFamily)) {
@@ -84,7 +69,9 @@ export function assertNoConflictingDefinitions(fontsByFamily: GroupedFontObject)
 function addXmlFonts(config: ExpoConfig, xmlFontObjects: FontObject[]) {
   const fontsByFamily = groupByFamily(xmlFontObjects);
   assertNoConflictingDefinitions(fontsByFamily);
-  const fontPaths = getFontPaths(fontsByFamily);
+  const fontPaths = Object.values(fontsByFamily).flatMap((definitions) =>
+    definitions.map((it) => it.path)
+  );
 
   config = copyFontsToDir(config, fontPaths, resourcesFontsDir, (filenameWithExt) => {
     const filename = toValidAndroidResourceName(filenameWithExt);
@@ -193,6 +180,37 @@ export function generateFontManagerCalls(
   );
 }
 
+/**
+ * A variable font backs one definition per weight, so the same file arrives several times and must
+ * only be copied once. Throws when two different files woul land on the same one.
+ */
+export function planFontCopies(
+  resolvedFonts: string[],
+  fontsDir: string,
+  filenameProcessor: (filenameWithExt: string) => string
+) {
+  const targets = resolvedFonts
+    .map((asset) => ({
+      asset,
+      destination: path.join(fontsDir, filenameProcessor(path.basename(asset))),
+    }))
+    .filter(({ destination }) => destination.endsWith('.ttf') || destination.endsWith('.otf'));
+
+  const sourceByDestination = new Map<string, string>();
+
+  for (const { asset, destination } of targets) {
+    const claimed = sourceByDestination.get(destination);
+    if (claimed && claimed !== asset) {
+      throw new Error(
+        `Font files ${claimed} and ${asset} both become ${path.basename(destination)} in the native project, so only one of them can be embedded. Rename one of them so their file names differ.`
+      );
+    }
+    sourceByDestination.set(destination, asset);
+  }
+
+  return sourceByDestination;
+}
+
 function copyFontsToDir(
   config: ExpoConfig,
   paths: string[],
@@ -206,16 +224,10 @@ function copyFontsToDir(
       await fs.mkdir(fontsDir, { recursive: true });
 
       const resolvedFonts = await resolveFontPaths(paths, config.modRequest.projectRoot);
+      const copies = planFontCopies(resolvedFonts, fontsDir, filenameProcessor);
 
       await Promise.all(
-        resolvedFonts.map(async (asset) => {
-          const filenameWithExt = path.basename(asset);
-          const outputFileName = filenameProcessor(filenameWithExt);
-          const output = path.join(fontsDir, outputFileName);
-          if (output.endsWith('.ttf') || output.endsWith('.otf')) {
-            await fs.copyFile(asset, output);
-          }
-        })
+        Array.from(copies, ([destination, asset]) => fs.copyFile(asset, destination))
       );
       return config;
     },

@@ -1,9 +1,10 @@
 import * as path from 'path';
 
+import { toValidAndroidResourceName } from '../utils';
 import type { FontObject } from '../withFonts';
 import {
   groupByFamily,
-  getFontPaths,
+  planFontCopies,
   getXmlSpecs,
   generateFontManagerCalls,
   assertNoConflictingDefinitions,
@@ -65,31 +66,43 @@ describe('groupByFamily', () => {
   });
 });
 
-describe('getFontPaths', () => {
-  it('should list each font file once', () => {
-    // `Inter[wght].ttf` backs two weights but is one file — copying it twice would race two
-    // writes onto the same destination.
-    expect(getFontPaths(groupByFamily(input))).toEqual([
-      './assets/fonts/SourceSerif4-Regular.ttf',
-      './assets/fonts/SourceSerif4-Medium.ttf',
-      './assets/fonts/SourceSerif4-SemiBold.ttf',
-      './assets/fonts/SourceSerif4-Bold.ttf',
-      './assets/fonts/SpaceMono-Regular.ttf',
-      './assets/fonts/Inter[wght].ttf',
+describe('planFontCopies', () => {
+  const dir = '/res/font';
+  const asResourceName = (filenameWithExt: string) =>
+    `${toValidAndroidResourceName(filenameWithExt)}${path.extname(filenameWithExt)}`;
+
+  it('should copy each destination once', () => {
+    // One variable font file backing several weights resolves to the same path several times.
+    const copies = planFontCopies(
+      ['/p/Inter[wght].ttf', '/p/Inter[wght].ttf', '/p/Other.ttf'],
+      dir,
+      (it) => it
+    );
+
+    expect([...copies]).toEqual([
+      ['/res/font/Inter[wght].ttf', '/p/Inter[wght].ttf'],
+      ['/res/font/Other.ttf', '/p/Other.ttf'],
     ]);
   });
 
-  it('should deduplicate a file shared across font families', () => {
-    const shared = groupByFamily([
-      { fontFamily: 'Inter', fontDefinitions: [{ path: './Inter[wght].ttf', weight: 400 }] },
-      { fontFamily: 'Inter Tight', fontDefinitions: [{ path: './Inter[wght].ttf', weight: 700 }] },
-    ]);
-
-    expect(getFontPaths(shared)).toEqual(['./Inter[wght].ttf']);
+  it('should reject two different files landing on one destination', () => {
+    // `toValidAndroidResourceName` drops the directory, so these collide. Copying both would leave
+    // whichever won the race, with no sign the other was dropped.
+    expect(() => planFontCopies(['/a/Inter.ttf', '/b/Inter.ttf'], dir, asResourceName)).toThrow(
+      /Inter\.ttf.+Inter\.ttf.+inter\.ttf/s
+    );
   });
 
-  it('should handle empty input', () => {
-    expect(getFontPaths({})).toEqual([]);
+  it('should apply the filename processor to the destination', () => {
+    const copies = planFontCopies(['/p/SpaceMono-Regular.ttf'], dir, asResourceName);
+
+    expect([...copies.keys()]).toEqual(['/res/font/space_mono_regular.ttf']);
+  });
+
+  it('should skip files that are not fonts', () => {
+    const copies = planFontCopies(['/p/a.ttf', '/p/b.woff2', '/p/c.otf'], dir, (it) => it);
+
+    expect([...copies.keys()]).toEqual(['/res/font/a.ttf', '/res/font/c.otf']);
   });
 });
 

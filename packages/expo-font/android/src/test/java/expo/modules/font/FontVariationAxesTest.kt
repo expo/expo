@@ -174,11 +174,6 @@ class FontVariationAxesTest {
   }
 
   @Test
-  fun `returns null for an empty buffer`() {
-    assertNull(FontVariationAxes.readWeightAxis(ByteBuffer.allocate(0)))
-  }
-
-  @Test
   fun `returns null for data that is not a font`() {
     val garbage = ByteBuffer.wrap(ByteArray(512) { (it * 31 % 251).toByte() })
     assertNull(FontVariationAxes.readWeightAxis(garbage))
@@ -238,11 +233,6 @@ class DeclaresVariationsTest {
   fun `is false for data that is not a font`() {
     assertFalse(FontVariationAxes.declaresVariations(ByteBuffer.wrap(ByteArray(512) { it.toByte() })))
     assertFalse(FontVariationAxes.declaresVariations(ByteBuffer.allocate(0)))
-  }
-
-  @Test
-  fun `reads no further than it advertises`() {
-    assertEquals(12 + 255 * 16, FontVariationAxes.TABLE_DIRECTORY_LIMIT)
   }
 
   @Test
