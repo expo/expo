@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Quote script-phase paths so iOS builds work from a project path containing a space. ([#48747](https://github.com/expo/expo/pull/48747) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Generate the embedded `app.config` in apps built with SwiftPM instead of CocoaPods, fixing the "Unable to find the embedded app config" warning there. The generator no longer requires the Pods project, can be pointed at another destination, and creates `EXConstants.bundle` itself rather than relying on CocoaPods' `resource_bundles`. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
 
 ### 💡 Others
 

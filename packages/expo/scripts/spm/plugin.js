@@ -39,6 +39,7 @@ const { resolveExpoModules, generateModulesProvider } = require('./cli');
 const { collectWatchPaths, findModuleRoot, moduleNeedsReact, isPureSwift } = require('./classify');
 const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
 const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
+const { scriptPhasesForModules } = require('./script-phases');
 
 /** Nearest ancestor of `dir` (inclusive) containing a package.json, or `dir` itself. */
 function findAppPackageRoot(dir) {
@@ -232,11 +233,19 @@ module.exports = function expoSpmPlugin(context) {
   }
   const watchPaths = collectWatchPaths([...moduleRoots]);
 
+  const scriptPhases = scriptPhasesForModules(modules.map((m) => m.packageName));
+  if (scriptPhases.length > 0) {
+    console.log(
+      `[expo-spm-plugin] script phases (${scriptPhases.length}): ${scriptPhases.map((p) => p.id).join(', ')}`
+    );
+  }
+
   return {
     packageDependencies,
     productDependencies,
     generatedSources,
     flavoredFrameworks,
     watchPaths,
+    scriptPhases,
   };
 };

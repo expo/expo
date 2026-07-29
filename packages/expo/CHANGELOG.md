@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] The SwiftPM autolinking plugin now contributes build-time script phases, so an Expo module that needs a build step under SwiftPM gets one — SwiftPM has no equivalent of CocoaPods' `script_phase`. First consumer: expo-constants' embedded `app.config`. ([#47647](https://github.com/expo/expo/pull/47647) by [@chrfalch](https://github.com/chrfalch))
 ### 🐛 Bug fixes
 
 - [iOS] Fix a Hermes JSI crash during reloads where two overlapping `RCTHost` runtime callbacks shared `EXReactNativeFactory`'s app context ivar, letting one callback decorate objects against the other callback's runtime. ([#48576](https://github.com/expo/expo/issues/48576) by [@LizunovSergey](https://github.com/LizunovSergey))
