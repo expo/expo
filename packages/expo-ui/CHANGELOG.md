@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.8 — 2026-07-29
+
+### 🎉 New features
+
 - [iOS] Added an `anchor` prop to `BottomSheet` to anchor the sheet to a view so opening it doesn't shift surrounding layout. ([#48063](https://github.com/expo/expo/issues/48063) by [@loganwishartcraig](https://github.com/loganwishartcraig)) ([#48109](https://github.com/expo/expo/pull/48109) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Add a `colorScheme` prop to the community `MenuView`. ([#48017](https://github.com/expo/expo/pull/48017) by [@mkaradeniz](https://github.com/mkaradeniz))
 - [iOS] Added the SwiftUI `menuOrder` modifier (`automatic`/`fixed`/`priority`) to control menu item ordering. With the default `automatic` order, menus that open upward display their items reversed. ([#48049](https://github.com/expo/expo/pull/48049) by [@Gauvino](https://github.com/Gauvino))
@@ -18,8 +26,6 @@
 - [Android] Fix unexpected resize when opening the calendar from spinner mode on Android. ([#47273](https://github.com/expo/expo/issues/47273) by [@TomCorvus](https://github.com/TomCorvus)) ([#48125](https://github.com/expo/expo/pull/48125) by [@dileepapeiris](https://github.com/dileepapeiris))
 - [iOS] Fix `tvOS` build failure in the SwiftUI `menuOrder` modifier — `MenuOrder.priority` is unavailable on tvOS, so it now falls back to `.automatic` there. ([#48111](https://github.com/expo/expo/pull/48111) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `community/menu` `MenuView` not tinting a leaf action `Button`'s leading SF Symbol from `imageColor` — it applied `.foregroundColor` (which the iOS system menu ignores for a button's content) where checkable `Toggle` items applied `.tint`; leaf buttons now use `.tint` too. ([#47908](https://github.com/expo/expo/issues/47908) by [@cvburgess](https://github.com/cvburgess)) ([#47909](https://github.com/expo/expo/pull/47909) by [@cvburgess](https://github.com/cvburgess))
-
-### 💡 Others
 
 ## 57.0.7 — 2026-07-17
 

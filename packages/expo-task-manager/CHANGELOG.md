@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Fix `TaskService` leaking a `TaskExecutionCallback` (and the `JobService` it retains) for every executed background task. ([#47844](https://github.com/expo/expo/pull/47844) by [@chrfalch](https://github.com/chrfalch))
-
 ### 💡 Others
+
+## 57.0.7 — 2026-07-29
+
+### 🐛 Bug fixes
+
+- [Android] Fix `TaskService` leaking a `TaskExecutionCallback` (and the `JobService` it retains) for every executed background task. ([#47844](https://github.com/expo/expo/pull/47844) by [@chrfalch](https://github.com/chrfalch))
 
 ## 57.0.6 — 2026-07-22
 
