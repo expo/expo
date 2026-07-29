@@ -5,10 +5,6 @@ internal import ExpoAppIntents
 /**
   On devices running the new AI Siri, the `CreateDraftIntent` should be automatically
   picked up by the system without the need of registering it in AppShortcutProvider phrases.
-
-  `.mail` is one of Apple's primary schema domains, so conforming types are discoverable by
-  Siri and Apple Intelligence. Shortcuts-specific domains such as `.journal` or `.reader` only
-  surface in the Shortcuts app.
  */
 @available(iOS 18.0, *)
 @AppIntent(schema: .mail.createDraft)
