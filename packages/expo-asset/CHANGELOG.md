@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Warn when an asset is missing from the local asset map instead of silently resolving to an empty URI. ([#48262](https://github.com/expo/expo/pull/48262) by [@ClasherCr](https://github.com/ClasherCr))
+
 ### 💡 Others
 
 ## 56.0.15 — 2026-05-26
