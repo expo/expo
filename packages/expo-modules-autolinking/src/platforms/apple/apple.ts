@@ -321,20 +321,27 @@ export function formatArrayOfReactDelegateHandler(modules: ModuleDescriptorIos[]
 ${indent.repeat(2)}]`;
 }
 
+// `EXPO_CONFIGURATION_DEBUG` is set by the CocoaPods project integrator, so it is
+// never defined where no `pod install` runs — notably a SwiftPM app, which would
+// silently get release registration in a debug build. `DEBUG` covers that case;
+// the two are kept together because `DEBUG` alone is not dependable across
+// projects (https://github.com/expo/expo/pull/17378). Mirrors `Logger.swift`.
+const DEBUG_CONFIGURATION_CONDITION = 'DEBUG || EXPO_CONFIGURATION_DEBUG';
+
 function wrapInDebugConfigurationCheck(
   indentationLevel: number,
   debugBlock: string,
   releaseBlock: string | null = null
 ) {
   if (releaseBlock) {
-    return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
+    return `${indent.repeat(indentationLevel)}#if ${DEBUG_CONFIGURATION_CONDITION}\n${indent.repeat(
       indentationLevel
     )}${debugBlock}\n${indent.repeat(indentationLevel)}#else\n${indent.repeat(
       indentationLevel
     )}${releaseBlock}\n${indent.repeat(indentationLevel)}#endif`;
   }
 
-  return `${indent.repeat(indentationLevel)}#if EXPO_CONFIGURATION_DEBUG\n${indent.repeat(
+  return `${indent.repeat(indentationLevel)}#if ${DEBUG_CONFIGURATION_CONDITION}\n${indent.repeat(
     indentationLevel
   )}${debugBlock}\n${indent.repeat(indentationLevel)}#endif`;
 }
