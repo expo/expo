@@ -14,7 +14,11 @@ import com.facebook.react.packagerconnection.RequestHandler
 import host.exp.exponent.modules.perfmonitor.ExpoBridgelessDevSupportManager
 import versioned.host.exp.exponent.VersionedUtils
 
-class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDownloadListener?, private val minNumShakes: Int = 100) : DevSupportManagerFactory {
+class ExpoGoDevSupportFactory(
+  private val devBundleDownloadListener: DevBundleDownloadListener?,
+  private val minNumShakes: Int = 100,
+  private val devServerBundleUrl: String? = null
+) : DevSupportManagerFactory {
   override fun create(
     applicationContext: Context,
     reactInstanceManagerHelper: ReactInstanceDevHelper,
@@ -50,11 +54,13 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
       return ReleaseDevSupportManager()
     }
 
+    // Dev support starts disabled so the dev server is in place before the packager connection
+    // opens. Enabling it is what connects, and it would otherwise use the default host.
     return ExpoBridgelessDevSupportManager(
       applicationContext,
       reactInstanceManagerHelper,
       packagerPathForJSBundleName,
-      enableOnCreate,
+      false,
       redBoxHandler,
       this.devBundleDownloadListener,
       this.minNumShakes,
@@ -62,6 +68,9 @@ class ExpoGoDevSupportFactory(private val devBundleDownloadListener: DevBundleDo
       surfaceDelegateFactory,
       devLoadingViewManager,
       pausedInDebuggerOverlayManager
-    )
+    ).apply {
+      devServerBundleUrl?.let { setDevServer(it) }
+      devSupportEnabled = enableOnCreate
+    }
   }
 }
