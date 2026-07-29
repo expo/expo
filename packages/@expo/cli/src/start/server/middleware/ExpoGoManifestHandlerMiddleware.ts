@@ -17,6 +17,7 @@ import { stripPort } from '../../../utils/url';
 import type { ManifestRequestInfo } from './ManifestMiddleware';
 import { ManifestMiddleware } from './ManifestMiddleware';
 import { manifestDebugEvent } from './events';
+import { parseForwardedRequestInfo } from './resolveForwarded';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
 import { resolveRuntimeVersionWithExpoUpdatesAsync } from './resolveRuntimeVersionWithExpoUpdatesAsync';
 import type { ServerRequest } from './server.types';
@@ -51,14 +52,6 @@ export enum ResponseContentType {
 interface ExpoGoManifestRequestInfo extends ManifestRequestInfo {
   responseContentType: ResponseContentType;
   expectSignature: string | null;
-}
-
-function shouldUseRelativeManifestUrls(req: ServerRequest): boolean {
-  return !!(
-    req.headers['forwarded'] ||
-    req.headers['x-forwarded-host'] ||
-    req.headers['x-forwarded-proto']
-  );
 }
 
 export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoManifestRequestInfo> {
@@ -102,14 +95,15 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     }
 
     const expectSignature = req.headers['expo-expect-signature'];
+    const forwarded = parseForwardedRequestInfo(req);
 
     return {
       responseContentType,
       platform,
       expectSignature: expectSignature ? String(expectSignature) : null,
       hostname: stripPort(req.headers['host']),
-      protocol: req.headers['x-forwarded-proto'] as 'http' | 'https' | undefined,
-      ...(shouldUseRelativeManifestUrls(req) ? { shouldUseRelativeManifestUrls: true } : null),
+      protocol: forwarded?.protocol,
+      forwarded,
     };
   }
 
