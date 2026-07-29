@@ -140,6 +140,9 @@ module Expo
       targets.each do |target|
         unless macro_flags
           core_pod_target = target.pod_targets.find { |pod_target| pod_target.name == 'ExpoModulesCore' }
+          # Targets without ExpoModulesCore (e.g. app extension targets) cannot be used
+          # to derive the macro flags, skip them so a later target provides the flags.
+          next if core_pod_target.nil? && Expo::PrecompiledModules.package_root_for('ExpoModulesCore').nil?
           core_src_root = Expo::PrecompiledModules.package_root_for('ExpoModulesCore') ||
             File.realpath(core_pod_target.sandbox.pod_dir(core_pod_target.root_spec.name).to_s)
           macros_plugin_dir = resolve_macros_plugin_dir(core_src_root)
