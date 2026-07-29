@@ -252,8 +252,7 @@ describe('_resolveProjectSettingsAsync', () => {
     jest.mocked(resolveManifestAssets).mockClear();
 
     middleware._getBundleUrl = jest.fn(
-      () =>
-        'http://fake.mock/index.bundle?platform=android&dev=true&hot=false&lazy=true#debug'
+      () => 'http://fake.mock/index.bundle?platform=android&dev=true&hot=false&lazy=true#debug'
     );
 
     const settings = await middleware._resolveProjectSettingsAsync({
