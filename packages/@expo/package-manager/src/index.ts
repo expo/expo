@@ -6,6 +6,7 @@ export * from './node/NpmPackageManager';
 export * from './node/PnpmPackageManager';
 export * from './node/YarnPackageManager';
 export * from './node/BunPackageManager';
+export * from './node/DenoPackageManager';
 
 export * from './utils/nodeManagers';
 export { isYarnOfflineAsync } from './utils/yarn';
