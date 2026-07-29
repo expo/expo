@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Dropped the `prettier` shared config, `.prettierrc`, and the `eslint-config-prettier` / `eslint-plugin-prettier` dependencies, since the repo now formats with `oxfmt`.
+- Disable the `prettier/prettier` ESLint rule, since the repo now formats with `oxfmt`. ([#48264](https://github.com/expo/expo/pull/48264) by [@zoontek](https://github.com/zoontek))
 
 ## 15.2.0 — 2026-05-20
 
