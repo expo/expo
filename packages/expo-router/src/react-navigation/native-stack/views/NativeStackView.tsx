@@ -22,16 +22,17 @@ import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
   NativeStackNavigationConfig,
-  NativeStackNavigationHelpers,
+  NativeStackViewEmit,
 } from '../types';
 import { AnimatedHeaderHeightContext } from '../utils/useAnimatedHeaderHeight';
 
 type Props = {
   state: StackNavigationState<ParamListBase>;
-  // This is used for the native implementation of the stack.
-  navigation: NativeStackNavigationHelpers;
   descriptors: NativeStackDescriptorMap;
   describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => NativeStackDescriptor;
+  // These are used for the native implementation of the stack.
+  emit: NativeStackViewEmit;
+  pop: (count: number, sourceRouteKey: string) => void;
 } & NativeStackNavigationConfig;
 
 const TRANSPARENT_PRESENTATIONS = ['transparentModal', 'containedTransparentModal'];
