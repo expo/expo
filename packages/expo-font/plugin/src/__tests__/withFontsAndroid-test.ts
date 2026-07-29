@@ -8,6 +8,7 @@ import {
   getXmlSpecs,
   generateFontManagerCalls,
   assertNoConflictingDefinitions,
+  assertAndroidCanLoadFonts,
 } from '../withFontsAndroid';
 
 const input = [
@@ -103,6 +104,32 @@ describe('planFontCopies', () => {
     const copies = planFontCopies(['/p/a.ttf', '/p/b.woff2', '/p/c.otf'], dir, (it) => it);
 
     expect([...copies.keys()]).toEqual(['/res/font/a.ttf', '/res/font/c.otf']);
+  });
+});
+
+describe('assertAndroidCanLoadFonts', () => {
+  const declaring = (...paths: string[]) =>
+    groupByFamily([
+      {
+        fontFamily: 'Inter',
+        fontDefinitions: paths.map((path, index) => ({ path, weight: (index + 1) * 100 })),
+      },
+    ]);
+
+  it('should accept TrueType and OpenType files', () => {
+    expect(() =>
+      assertAndroidCanLoadFonts(declaring('./Inter[wght].ttf', './Inter-Bold.otf'))
+    ).not.toThrow();
+    expect(() => assertAndroidCanLoadFonts(groupByFamily(input))).not.toThrow();
+  });
+
+  it('should reject a web font format', () => {
+    // Android reads SFNT files only, and `planFontCopies` copies nothing else, so the XML would
+    // reference a `res/font` entry that prebuild never wrote.
+    expect(() => assertAndroidCanLoadFonts(declaring('./Inter[wght].woff2'))).toThrow(
+      /"Inter".+Inter\[wght\]\.woff2.+\.ttf.+\.otf/s
+    );
+    expect(() => assertAndroidCanLoadFonts(declaring('./Inter[wght].woff'))).toThrow(/\.woff/);
   });
 });
 

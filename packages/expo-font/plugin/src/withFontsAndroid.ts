@@ -17,6 +17,9 @@ import type { Font, FontObject } from './withFonts';
 const assetsFontsFir = 'app/src/main/assets/fonts';
 const resourcesFontsDir = 'app/src/main/res/font';
 
+// The formats Android's font loader reads. `resolveFontPaths` deliberately keeps `.woff` and `.woff2` for iOS.
+const extensionsAndroidCanLoad = ['.ttf', '.otf'];
+
 export const withFontsAndroid: ConfigPlugin<Font[]> = (config, fonts) => {
   const assetFontPaths = fonts.filter((it) => typeof it === 'string');
   config = copyFontsToDir(config, assetFontPaths, assetsFontsFir);
@@ -36,6 +39,21 @@ export function groupByFamily(array: FontObject[]): GroupedFontObject {
     result[keyValue].push(...item.fontDefinitions);
     return result;
   }, {});
+}
+
+export function assertAndroidCanLoadFonts(fontsByFamily: GroupedFontObject) {
+  for (const [fontFamily, definitions] of Object.entries(fontsByFamily)) {
+    for (const definition of definitions) {
+      if (extensionsAndroidCanLoad.includes(path.extname(definition.path).toLowerCase())) {
+        continue;
+      }
+
+      throw new Error(
+        `Font family ${JSON.stringify(fontFamily)} declares ${definition.path}, which Android cannot load. ` +
+          `Android reads TrueType (.ttf) and OpenType (.otf) files only. To convert a web font such as WOFF or WOFF2, use a utility such as fontTools: https://fonttools.readthedocs.io/`
+      );
+    }
+  }
 }
 
 /**
@@ -68,6 +86,7 @@ export function assertNoConflictingDefinitions(fontsByFamily: GroupedFontObject)
 
 function addXmlFonts(config: ExpoConfig, xmlFontObjects: FontObject[]) {
   const fontsByFamily = groupByFamily(xmlFontObjects);
+  assertAndroidCanLoadFonts(fontsByFamily);
   assertNoConflictingDefinitions(fontsByFamily);
   const fontPaths = Object.values(fontsByFamily).flatMap((definitions) =>
     definitions.map((it) => it.path)
@@ -182,7 +201,7 @@ export function generateFontManagerCalls(
 
 /**
  * A variable font backs one definition per weight, so the same file arrives several times and must
- * only be copied once. Throws when two different files woul land on the same one.
+ * only be copied once. Throws when two different files would land on the same one.
  */
 export function planFontCopies(
   resolvedFonts: string[],
@@ -194,7 +213,7 @@ export function planFontCopies(
       asset,
       destination: path.join(fontsDir, filenameProcessor(path.basename(asset))),
     }))
-    .filter(({ destination }) => destination.endsWith('.ttf') || destination.endsWith('.otf'));
+    .filter(({ destination }) => extensionsAndroidCanLoad.some((it) => destination.endsWith(it)));
 
   const sourceByDestination = new Map<string, string>();
 
