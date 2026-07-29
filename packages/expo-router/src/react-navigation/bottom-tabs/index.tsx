@@ -8,11 +8,6 @@ import * as TransitionSpecs from './TransitionConfigs/TransitionSpecs';
 export { SceneStyleInterpolators, TransitionPresets, TransitionSpecs };
 
 /**
- * Navigators
- */
-export { createBottomTabNavigator } from './navigators/createBottomTabNavigator';
-
-/**
  * Views
  */
 export { BottomTabBar } from './views/BottomTabBar';
@@ -26,16 +21,25 @@ export { BottomTabBarHeightContext } from './utils/BottomTabBarHeightContext';
 export { useBottomTabBarHeight } from './utils/useBottomTabBarHeight';
 
 /**
+ * Navigators
+ */
+/**
+ * @unstable Prefer the `Tabs` layout.
+ */
+export { createStandardBottomTabNavigator } from './navigators/createBottomTabNavigator';
+
+/**
  * Types
  */
 export type {
   BottomTabBarButtonProps,
   BottomTabBarProps,
+  BottomTabEmitter,
   BottomTabHeaderProps,
   BottomTabNavigationEventMap,
   BottomTabNavigationOptions,
   BottomTabNavigationProp,
-  BottomTabNavigatorProps,
   BottomTabOptionsArgs,
   BottomTabScreenProps,
+  BottomTabViewState,
 } from './types';

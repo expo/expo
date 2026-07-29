@@ -3,7 +3,7 @@ import { Screen } from '../views/Screen';
 import Tabs from './TabsClient';
 
 export {
-  createBottomTabNavigator,
+  createStandardBottomTabNavigator,
   BottomTabBar,
   BottomTabView,
   BottomTabBarHeightCallbackContext,
@@ -20,10 +20,10 @@ export type {
   BottomTabNavigationEventMap,
   BottomTabNavigationOptions,
   BottomTabNavigationProp,
-  BottomTabNavigatorProps,
   BottomTabOptionsArgs,
   BottomTabScreenProps,
 } from '../react-navigation/bottom-tabs';
+export type { BottomTabNavigatorProps } from './TabsClient';
 
 Tabs.Screen = Screen;
 Tabs.Protected = Protected;

@@ -12,14 +12,12 @@ import type { NavigatorArgs } from 'standard-navigation';
 
 import type { HeaderOptions, PlatformPressable } from '../elements';
 import type {
-  DefaultNavigatorOptions,
   Descriptor,
   NavigationProp,
   ParamListBase,
   RouteProp,
   TabActionHelpers,
   TabNavigationState,
-  TabRouterOptions,
   Theme,
 } from '../native';
 
@@ -439,14 +437,3 @@ export type BottomTabBarButtonProps = Omit<
   style?: StyleProp<ViewStyle>;
   onPress?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent> | GestureResponderEvent) => void;
 };
-
-export type BottomTabNavigatorProps = DefaultNavigatorOptions<
-  ParamListBase,
-  string | undefined,
-  TabNavigationState<ParamListBase>,
-  BottomTabNavigationOptions,
-  BottomTabNavigationEventMap,
-  BottomTabNavigationProp<ParamListBase>
-> &
-  TabRouterOptions &
-  BottomTabNavigationConfig;
