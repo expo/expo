@@ -2,10 +2,14 @@
 
 /// <reference path="../ts-declarations/react-native.d.ts" />
 
-import SourceCode from 'react-native/Libraries/NativeModules/specs/NativeSourceCode';
+type NativeSourceCode =
+  typeof import('react-native/Libraries/NativeModules/specs/NativeSourceCode').default;
 
 export function getBundleUrl(): string | null {
-  let scriptURL = SourceCode.getConstants().scriptURL;
+  // NOTE(@kitten): Requiring this initialises module bridge, which may not be available server-side
+  const __nativeSourceCode = require('react-native/Libraries/NativeModules/specs/NativeSourceCode');
+  const NativeSourceCode: NativeSourceCode = __nativeSourceCode.default ?? __nativeSourceCode;
+  let scriptURL = NativeSourceCode.getConstants().scriptURL;
   if (scriptURL == null) {
     return null;
   }
