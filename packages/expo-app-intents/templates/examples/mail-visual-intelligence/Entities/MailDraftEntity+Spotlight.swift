@@ -32,6 +32,9 @@ extension MailDraftEntity: AppIntentEntityRecordConvertible {}
  */
 @available(iOS 18.0, *)
 extension MailDraftEntity: IndexedEntity {
+  /** Groups the app's Spotlight items so they can be managed together. */
+  static let spotlightDomainIdentifier = "dev.expo.appintents.mailDraft"
+
   /**
    `defaultAttributeSet` already carries the properties the `.mail.draft` schema declares
    indexing keys for (subject, body, and the recipient lists), so this only fills in the rest.
@@ -46,46 +49,8 @@ extension MailDraftEntity: IndexedEntity {
     attributes.recipientEmailAddresses = to.compactMap(\.emailAddress)
     attributes.authorEmailAddresses = [account.emailAddress]
     attributes.userCreated = NSNumber(value: true)
-    attributes.domainIdentifier = MailDraftIndexer.domainIdentifier
+    attributes.domainIdentifier = Self.spotlightDomainIdentifier
     attributes.keywords = ["mail", "email", "draft", displaySubject]
     return attributes
-  }
-}
-
-/**
- Keeps the Spotlight index in step with the entity catalog that JavaScript publishes with
- `setEntityCatalogAsync('mailDraft', drafts)`.
- */
-@available(iOS 18.0, *)
-enum MailDraftIndexer {
-  static let domainIdentifier = "dev.expo.appintents.mailDraft"
-
-  static func currentEntities() async -> [MailDraftEntity] {
-    return await AppIntentEntityStore.shared.entities(ofKind: "mailDraft")
-      .map(MailDraftEntity.init(record:))
-  }
-
-  static func entities(for identifiers: [MailDraftEntity.ID]) async -> [MailDraftEntity] {
-    return await AppIntentEntityStore.shared.entities(ofKind: "mailDraft", matching: identifiers)
-      .map(MailDraftEntity.init(record:))
-  }
-
-  static func replaceIndex(with records: [AppIntentEntityRecord]) async throws {
-    try await replaceIndex(with: records.map(MailDraftEntity.init(record:)))
-  }
-
-  static func replaceIndex(with entities: [MailDraftEntity]) async throws {
-    try await CSSearchableIndex.default().deleteAppEntities(ofType: MailDraftEntity.self)
-    guard !entities.isEmpty else {
-      return
-    }
-    try await CSSearchableIndex.default().indexAppEntities(entities)
-  }
-
-  static func index(_ entities: [MailDraftEntity]) async throws {
-    guard !entities.isEmpty else {
-      return
-    }
-    try await CSSearchableIndex.default().indexAppEntities(entities)
   }
 }

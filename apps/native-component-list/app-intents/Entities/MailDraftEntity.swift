@@ -6,6 +6,9 @@ internal import ExpoAppIntents
 @available(iOS 18.0, *)
 @AppEntity(schema: .mail.draft)
 struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
+  /** Groups the app's Spotlight items so they can be managed together. */
+  static let spotlightDomainIdentifier = "dev.expo.appintents.mailDraft"
+
   static let defaultQuery = MailDraftEntityQuery()
 
   var id: String
@@ -83,7 +86,7 @@ struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
     attributes.recipientEmailAddresses = to.compactMap(Self.emailAddress(of:))
     attributes.authorEmailAddresses = [account.emailAddress]
     attributes.userCreated = NSNumber(value: true)
-    attributes.domainIdentifier = MailDraftIndexer.domainIdentifier
+    attributes.domainIdentifier = Self.spotlightDomainIdentifier
     attributes.keywords = ["mail", "draft", "email", displaySubject]
     return attributes
   }

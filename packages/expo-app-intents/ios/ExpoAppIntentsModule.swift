@@ -59,7 +59,7 @@ public final class ExpoAppIntentsModule: Module {
       guard await AppIntentEntityStore.shared.setCatalog(kind: kind, entities: entities) else {
         return
       }
-      await AppEntityIdentifierRegistry.shared.reindex(kind: kind, records: entities)
+      await AppEntityIdentifierRegistry.shared.replaceIndex(kind: kind, records: entities)
       try await self.refreshShortcuts()
     }
 
@@ -87,8 +87,7 @@ public final class ExpoAppIntentsModule: Module {
     let kinds = kind.map { [$0] } ?? registry.indexedKinds
 
     for kind in kinds {
-      let records = await AppIntentEntityStore.shared.entities(ofKind: kind)
-      await registry.reindex(kind: kind, records: records)
+      await registry.replaceIndexFromCatalog(kind: kind)
     }
   }
 
