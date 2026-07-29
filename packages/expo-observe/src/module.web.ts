@@ -16,7 +16,7 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   getIntegrations(): ObserveIntegrationsConfig {
     return {};
   }
-  initIntegration<K extends keyof ObserveIntegrationsConfig>(
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
     name: K,
     callback: (config: ObserveIntegrationsConfig[K]) => void
   ): void {

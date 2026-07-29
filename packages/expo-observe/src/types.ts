@@ -134,12 +134,12 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    *
    * @example
    * ```ts
-   * Observe.initIntegration('expo-router', config => {
+   * Observe.registerIntegration('expo-router', config => {
    *   console.log(config);
    * });
    * ```
    */
-  initIntegration<K extends keyof ObserveIntegrationsConfig>(
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
     name: K,
     callback: (config: ObserveIntegrationsConfig[K]) => void
   ): void;

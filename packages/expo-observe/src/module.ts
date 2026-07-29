@@ -52,11 +52,11 @@ const Observe: ObserveModule = new Proxy(native, {
       return (error: unknown) => reportCaughtError(error);
     }
 
-    if (prop === 'initIntegration') {
+    if (prop === 'registerIntegration') {
       return <K extends keyof ObserveIntegrationsConfig>(
         name: K,
         callback: (config: ObserveIntegrationsConfig[K]) => void
-      ) => initIntegrationImpl(target, name, callback);
+      ) => registerIntegrationImpl(target, name, callback);
     }
 
     // On Android, the native module is a JSI host object, so `prop in target` (and `hasOwnProperty`) report
@@ -70,7 +70,7 @@ const Observe: ObserveModule = new Proxy(native, {
   },
 });
 
-export function initIntegrationImpl<K extends keyof ObserveIntegrationsConfig>(
+export function registerIntegrationImpl<K extends keyof ObserveIntegrationsConfig>(
   target: Pick<ObserveModule, 'addListener' | 'getIntegrations'>,
   name: K,
   callback: (config: ObserveIntegrationsConfig[K]) => void
