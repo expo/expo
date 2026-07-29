@@ -4631,11 +4631,11 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
-  glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
+  glog: 9c7bd858f1402a8e680d1637276210773c093b76
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: 96e33dc3060da2a095dd0bbd1ae3491af7dbb7a2
+  hermes-engine: 1aac0336ab06465103e89322838baf2911318c89
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
