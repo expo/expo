@@ -1,13 +1,14 @@
 'use client';
 import * as React from 'react';
 
-import type { ParamListBase, StackNavigationState } from '../../native';
+import type { NativeStackViewState } from '../types';
 
-export function useDismissedRouteError(state: StackNavigationState<ParamListBase>) {
+export function useDismissedRouteError(state: NativeStackViewState) {
   const [nextDismissedKey, setNextDismissedKey] = React.useState<string | null>(null);
+  const activeRoutes = state.routes.slice(0, state.index + 1);
 
   const dismissedRouteName = nextDismissedKey
-    ? state.routes.find((route) => route.key === nextDismissedKey)?.name
+    ? activeRoutes.find((route) => route.key === nextDismissedKey)?.name
     : null;
 
   React.useEffect(() => {

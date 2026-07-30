@@ -148,6 +148,31 @@ struct OpenTelemetryTests {
     #expect(otMetric.gauge.dataPoints[0].timeUnixNano == expectedNanos)
   }
 
+  @Test
+  func `toOTMetric converts ISO8601 timestamp with fractional seconds to nanoseconds`() {
+    let metric = makeMetric(name: "loadTime", value: 1.0, timestamp: "2026-01-09T12:08:09.123Z")
+    let otMetric = metric.toOTMetric()
+
+    #expect(otMetric.gauge.dataPoints[0].timeUnixNano == 1_767_960_489_123_000_000)
+  }
+
+  @Test
+  func `toOTLogRecord converts ISO8601 timestamp with fractional seconds to nanoseconds`() {
+    let log = Event.Log(
+      name: "auth.login_failed",
+      body: nil,
+      timestamp: "2026-01-09T12:08:09.123Z",
+      severity: .info,
+      attributes: nil,
+      droppedAttributesCount: 0,
+      sessionId: testSessionId
+    )
+    let otLog = log.toOTLogRecord()
+
+    #expect(otLog.timeUnixNano == 1_767_960_489_123_000_000)
+    #expect(otLog.observedTimeUnixNano == 1_767_960_489_123_000_000)
+  }
+
   // MARK: - Event metadata
 
   @Test

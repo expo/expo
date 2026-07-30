@@ -3,13 +3,14 @@ import { UrlCreator } from '../UrlCreator';
 
 jest.mock('../../../log');
 
-beforeEach(() => {
-  delete process.env.EXPO_PACKAGER_PROXY_URL;
-  delete process.env.REACT_NATIVE_PACKAGER_HOSTNAME;
-});
-
-function createDefaultCreator() {
-  return new UrlCreator({}, { port: 8081, getTunnelUrl: () => `http://tunnel.dev/` });
+function createDefaultCreator(overrides?: {
+  getProxyUrl?: () => string;
+  getHostnameOverride?: () => string | null;
+}) {
+  return new UrlCreator(
+    {},
+    { getPort: () => 8081, getTunnelUrl: () => `http://tunnel.dev/`, ...overrides }
+  );
 }
 
 describe('constructLoadingUrl', () => {
@@ -76,9 +77,10 @@ describe('constructDevClientUrl', () => {
 });
 
 describe('constructUrl', () => {
-  it(`skips default port with environment variable`, () => {
-    process.env.EXPO_PACKAGER_PROXY_URL = 'http://expo.dev';
-    expect(createDefaultCreator().constructUrl({})).toMatchInlineSnapshot(`"http://expo.dev"`);
+  it(`skips default port with proxy url`, () => {
+    expect(
+      createDefaultCreator({ getProxyUrl: () => 'http://expo.dev' }).constructUrl({})
+    ).toMatchInlineSnapshot(`"http://expo.dev"`);
   });
 
   it(`creates default`, () => {
@@ -108,18 +110,20 @@ describe('constructUrl', () => {
   });
   it(`uses defaults`, () => {
     expect(
-      new UrlCreator({ scheme: 'foobar' }, { port: 8081 }).constructUrl({})
+      new UrlCreator({ scheme: 'foobar' }, { getPort: () => 8081 }).constructUrl({})
     ).toMatchInlineSnapshot(`"foobar://100.100.1.100:8081"`);
   });
   it(`uses function options over defaults`, () => {
     expect(
-      new UrlCreator({ scheme: 'foobar' }, { port: 8081 }).constructUrl({ scheme: 'newer' })
+      new UrlCreator({ scheme: 'foobar' }, { getPort: () => 8081 }).constructUrl({
+        scheme: 'newer',
+      })
     ).toMatchInlineSnapshot(`"newer://100.100.1.100:8081"`);
   });
   it(`warns when tunnel isn't available`, () => {
     jest.mocked(Log.warn).mockClear();
     expect(
-      new UrlCreator({}, { port: 8081, getTunnelUrl: () => null }).constructUrl({
+      new UrlCreator({}, { getPort: () => 8081, getTunnelUrl: () => null }).constructUrl({
         hostType: 'tunnel',
       })
     ).toMatchInlineSnapshot(`"http://100.100.1.100:8081"`);
@@ -136,15 +140,33 @@ describe('constructUrl', () => {
       `"http://foobar.dev:8081"`
     );
   });
-  it(`uses env variable as proxy`, () => {
-    process.env.EXPO_PACKAGER_PROXY_URL = 'http://localhost:9999';
+  it(`uses proxy url over every other host`, () => {
     expect(
-      createDefaultCreator().constructUrl({
+      createDefaultCreator({ getProxyUrl: () => 'http://localhost:9999' }).constructUrl({
         // scheme will be used, all others will be ignored...
         scheme: 'foobar',
         hostType: 'tunnel',
         hostname: 'foobar.dev',
       })
     ).toMatchInlineSnapshot(`"foobar://localhost:9999"`);
+  });
+  it(`uses hostname override over a custom hostname`, () => {
+    expect(
+      createDefaultCreator({ getHostnameOverride: () => 'override.dev' }).constructUrl({
+        hostname: 'foobar.dev',
+      })
+    ).toMatchInlineSnapshot(`"http://override.dev:8081"`);
+  });
+  it(`ignores a missing hostname override`, () => {
+    expect(
+      createDefaultCreator({ getHostnameOverride: () => null }).constructUrl({})
+    ).toMatchInlineSnapshot(`"http://100.100.1.100:8081"`);
+  });
+  it(`reads the hostname override on every url`, () => {
+    let hostname = 'first.dev';
+    const urlCreator = createDefaultCreator({ getHostnameOverride: () => hostname });
+    expect(urlCreator.constructUrl({})).toBe('http://first.dev:8081');
+    hostname = 'second.dev';
+    expect(urlCreator.constructUrl({})).toBe('http://second.dev:8081');
   });
 });

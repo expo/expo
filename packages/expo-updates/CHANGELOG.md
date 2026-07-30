@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Skip reading and hashing embedded assets on first launch by default, serving them from the app binary instead of copying them into the updates cache. ([#47284](https://github.com/expo/expo/pull/47284) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Allow overriding the package used to detect the installed dev client via the `expo.updates.devClientPackage`. ([#48020](https://github.com/expo/expo/pull/48020) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
@@ -21,6 +22,7 @@
 - [Android] Use `OkHttpClientProvider` instead of raw `OkHttpClient` in `FileDownloader` so React Native's shared client and its interceptors are applied. ([#46926](https://github.com/expo/expo/pull/46926) by [@cortinico](https://github.com/cortinico))
 - [Android] Log purge completion errors via `android.util.Log.e` directly instead of `logger.error`, so the failure path doesn't re-enter the `PersistentFileLog` dispatch queue from inside one of its own tasks. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Internal] Align find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
+- [iOS] Resolved the reload screen's window through the shared scene geometry helper. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 56.0.17 — 2026-05-26
 

@@ -4,9 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] RTL layout is no longer force-enabled from the current device locale when `supportsRTL` is `true`. RTL now follows React Native's `I18nManager`. ([#48086](https://github.com/expo/expo/pull/48086) by [@zoontek](https://github.com/zoontek))
+
 ### 🎉 New features
 
+- Set `android:supportsRtl` in the `AndroidManifest.xml` from the `supportsRTL` config plugin prop. ([#48080](https://github.com/expo/expo/pull/48080) by [@zoontek](https://github.com/zoontek))
+
 ### 🐛 Bug fixes
+
+- Prevent the `supportedLocales` config plugin from duplicating `resourceConfigurations` in `app/build.gradle` on repeated `expo prebuild --no-clean` runs. ([#48092](https://github.com/expo/expo/pull/48092) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 

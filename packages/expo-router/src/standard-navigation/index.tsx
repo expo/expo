@@ -20,7 +20,6 @@ import type {
   StandardRouterNavigatorProps,
   StandardUseNavigationBuilderOptions,
 } from './types';
-import { useProjectedDescriptors } from './useProjectedDescriptors';
 import { useStandardActions } from './useStandardActions';
 import { useStandardEmitter } from './useStandardEmitter';
 import { useStandardState } from './useStandardState';
@@ -28,6 +27,7 @@ import { useStandardState } from './useStandardState';
 export type {
   IntegrateWithRouterOptions,
   NavigatorContentProps,
+  StandardNavigatorDescriptor,
   StandardNavigatorEventMapBase,
   StandardUseNavigationBuilderOptions,
 } from './types';
@@ -167,7 +167,7 @@ export function unstable_integrateWithRouter<
       NavigatorProps,
       RouterOptions
     >(props);
-    const { state, navigation, descriptors, describe, NavigationContent } = useNavigationBuilder<
+    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
@@ -184,7 +184,7 @@ export function unstable_integrateWithRouter<
 
     const standardArgs: NavigatorArgs<NavigatorOptions, EventMap> = {
       state: useStandardState(state),
-      descriptors: useProjectedDescriptors(state, descriptors, describe),
+      descriptors,
       actions: useStandardActions(navigation, state.key),
       emitter: useStandardEmitter(navigation),
     };
@@ -209,9 +209,7 @@ export function unstable_integrateWithRouter<
   }
 
   return withLayoutContext<NavigatorOptions, typeof StandardRouterNavigator, State, EventMap>(
-    StandardRouterNavigator,
-    undefined,
-    options?.useOnlyUserDefinedScreens
+    StandardRouterNavigator
   );
 }
 
@@ -247,7 +245,6 @@ function partitionNavigatorProps<
     screenLayout,
     screenListeners,
     screenOptions,
-    UNSTABLE_routeNamesChangeBehavior,
     UNSTABLE_router,
     ...extraProps
   } = props;
@@ -268,7 +265,6 @@ function partitionNavigatorProps<
     screenLayout,
     screenListeners,
     screenOptions,
-    UNSTABLE_routeNamesChangeBehavior,
     UNSTABLE_router,
   };
   return {

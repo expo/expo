@@ -2068,6 +2068,10 @@ extension ViewModifierRegistry {
       return try PickerStyleModifier(from: params, appContext: appContext)
     }
 
+    register("menuOrder") { params, appContext, _ in
+      return try MenuOrderModifier(from: params, appContext: appContext)
+    }
+
     register("submitLabel") { params, appContext, _ in
       return try SubmitLabelModifier(from: params, appContext: appContext)
     }

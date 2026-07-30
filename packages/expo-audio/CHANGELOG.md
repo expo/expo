@@ -7,18 +7,22 @@
 ### 🎉 New features
 
 - Added support for storing recordings in the app document directory on Android and iOS. ([#46189](https://github.com/expo/expo/pull/46189) by [@shubh73](https://github.com/shubh73))
+- Added `fileName` option to `RecordingOptions` to allow specifying the recording file basename on Android and iOS. ([#47265](https://github.com/expo/expo/pull/47265) by [@silwalprabin](https://github.com/silwalprabin))
 - Support lockscreen controls with playlists. ([#46020](https://github.com/expo/expo/pull/46020) by [@alanjhughes](https://github.com/alanjhughes))
 - Added a `fileSize` field to `RecorderState` reporting the current size of the recording file in bytes. ([#46808](https://github.com/expo/expo/pull/46808) by [@behenate](https://github.com/behenate))
 - Added `startFileRecordingAsync` and `stopFileRecordingAsync` methods to `AudioStream` for continuous WAV and PCM file recording alongside buffer streaming. ([#46771](https://github.com/expo/expo/pull/46771) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
+- [Android] Pause audio players and playlists when headphones or Bluetooth audio devices disconnect. ([#48151](https://github.com/expo/expo/pull/48151) by [@vivekjm](https://github.com/vivekjm))
 - [Android] Give the lock-screen `MediaSession` instances a unique ID so concurrent active players (and the basic session) no longer collide on the empty default. ([#47101](https://github.com/expo/expo/issues/47101) by [@tsushanth](https://github.com/tsushanth))
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
 - [Android] Fix recording crash in apps wrapped with Microsoft Intune. ([#47005](https://github.com/expo/expo/pull/47005) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Deactivate the audio session off the main thread to avoid app hangs. ([#47066](https://github.com/expo/expo/pull/47066) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Don't start playback when the system denies audio focus, and log a warning explaining that background playback needs an active media playback foreground service. ([#46957](https://github.com/expo/expo/pull/46957) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix playlist `currentIndex` freezing after the first auto-advance. ([#47257](https://github.com/expo/expo/pull/47257) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Create a fresh recording file each time `prepareToRecordAsync` is called, matching Android — repeated takes no longer overwrite the previous recording at the same URL. ([#48002](https://github.com/expo/expo/pull/48002) by [@idoyana](https://github.com/idoyana))
+- Fix `player.replace(null)` throwing due to a mismatch between native and TypeScript types. ([#48219](https://github.com/expo/expo/pull/48219) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
 

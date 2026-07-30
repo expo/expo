@@ -167,6 +167,9 @@ PODS:
     - SDWebImageWebPCoder
   - ExpoImagePicker (56.0.14):
     - ExpoModulesCore
+  - ExpoImagePicker/Tests (56.0.14):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoKeepAwake (56.0.3):
     - ExpoModulesCore
   - ExpoLinearGradient (56.0.4):
@@ -4183,6 +4186,7 @@ DEPENDENCIES:
   - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
+  - ExpoImagePicker/Tests (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
@@ -4766,7 +4770,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 89364cf3c3ca2cfd54cafed42f3be3169bab6d42
   ExpoImage: 3f44073bf450afdb87333f9671ffe7b9bfa5f70e
   ExpoImageManipulator: 441ca8a28fe700c5948863772578bab2ffd79e77
-  ExpoImagePicker: 30a39958c3c92b3cf33534489db0b63d9ca13da3
+  ExpoImagePicker: 25027f16965fca672abf93c2a79d22e71527b53f
   ExpoKeepAwake: 359c47a1d9ccc3a3c519bca6e39562cce230c5bb
   ExpoLinearGradient: 16c2b9c6105444883d34958d573725de1293b8d0
   ExpoLinking: 82458b046854a5802092a37a5228a8a228f928a4
@@ -4820,7 +4824,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: d5c6d584ad5c5461ad9e34e0afb5d40d56e428f5
+  hermes-engine: 42f0ed2cf70592b35e2ca49a6b725d31c8ad4136
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
