@@ -162,6 +162,38 @@ test('keeps the search params of a tab when it is re-selected', async () => {
   expect(screen).toHaveSearchParams({ foo: 'bar' });
 });
 
+test('does not remount a tab when it is re-selected', async () => {
+  let mountCount = 0;
+
+  function Second() {
+    useEffect(() => {
+      mountCount++;
+    }, []);
+    return <View testID="second" />;
+  }
+
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+      </Tabs>
+    ),
+    index: () => <View testID="index" />,
+    second: Second,
+  });
+
+  act(() => router.navigate('/second?foo=bar'));
+  expect(mountCount).toBe(1);
+
+  await userEvent.press(screen.getByRole('button', { name: 'index, tab, 1 of 2' }));
+  await userEvent.press(screen.getByRole('button', { name: 'second, tab, 2 of 2' }));
+
+  expect(mountCount).toBe(1);
+  expect(screen).toHavePathname('/second');
+  expect(screen).toHaveSearchParams({ foo: 'bar' });
+});
+
 test('keeps the dynamic segment of a tab when it is re-selected', async () => {
   renderRouter(
     {

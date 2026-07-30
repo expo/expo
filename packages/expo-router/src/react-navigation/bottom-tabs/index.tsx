@@ -21,10 +21,7 @@ export { BottomTabBarHeightContext } from './utils/BottomTabBarHeightContext';
 export { useBottomTabBarHeight } from './utils/useBottomTabBarHeight';
 
 /**
- * Navigators
- */
-/**
- * @unstable Prefer the `Tabs` layout.
+ * > **warning** This API is unstable and may change between minor releases.
  */
 export { createStandardBottomTabNavigator } from './navigators/createBottomTabNavigator';
 

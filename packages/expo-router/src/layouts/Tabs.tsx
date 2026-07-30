@@ -23,7 +23,7 @@ export type {
   BottomTabOptionsArgs,
   BottomTabScreenProps,
 } from '../react-navigation/bottom-tabs';
-export type { BottomTabNavigatorProps } from './TabsClient';
+export type { JSTabsProps, TabsScreenOptions } from './TabsClient';
 
 Tabs.Screen = Screen;
 Tabs.Protected = Protected;

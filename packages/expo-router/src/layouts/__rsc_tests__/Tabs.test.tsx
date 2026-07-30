@@ -8,7 +8,7 @@ import Tabs, {
   SceneStyleInterpolators,
   TransitionPresets,
   TransitionSpecs,
-  createBottomTabNavigator,
+  createStandardBottomTabNavigator,
   useBottomTabBarHeight,
 } from '../Tabs';
 
@@ -17,7 +17,7 @@ function expectClientReference(value: unknown) {
 }
 
 it('resolves React Navigation exports as client references', () => {
-  expectClientReference(createBottomTabNavigator);
+  expectClientReference(createStandardBottomTabNavigator);
   expectClientReference(BottomTabBar);
   expectClientReference(BottomTabView);
   expectClientReference(BottomTabBarHeightCallbackContext);

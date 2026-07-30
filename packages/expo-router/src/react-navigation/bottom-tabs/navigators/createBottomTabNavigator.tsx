@@ -3,7 +3,6 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
-import type { Href } from '../../../types';
 import type {
   BottomTabDescriptorMap,
   BottomTabNavigationConfig,
@@ -11,8 +10,6 @@ import type {
   BottomTabNavigationOptions,
 } from '../types';
 import { BottomTabView } from '../views/BottomTabView';
-
-export type TabsScreenOptions = BottomTabNavigationOptions & { href?: Href | null };
 
 export interface BottomTabNavigatorCreateProps {
   preloadedRouteKeys: string[];
@@ -23,7 +20,7 @@ export type BottomTabNavigatorContentProps = BottomTabNavigationConfig &
   BottomTabNavigatorCreateProps;
 
 type ContentArgs = NavigatorContentProps<
-  TabsScreenOptions,
+  BottomTabNavigationOptions,
   BottomTabNavigationEventMap,
   BottomTabNavigationConfig,
   BottomTabNavigatorCreateProps
@@ -66,7 +63,7 @@ function BottomTabNavigatorContent({
 }
 
 export const createStandardBottomTabNavigator = createStandardNavigator<
-  TabsScreenOptions,
+  BottomTabNavigationOptions,
   BottomTabNavigationEventMap,
   BottomTabNavigatorContentProps
 >(BottomTabNavigatorContent);

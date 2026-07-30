@@ -39,8 +39,6 @@ const IMPORT_MAP: Record<string, string> = {
   '@react-navigation/core': 'expo-router/react-navigation',
   '@react-navigation/routers': 'expo-router/react-navigation',
   '@react-navigation/stack': 'expo-router/js-stack',
-  // TODO: `expo-router/js-tabs` no longer exports `createBottomTabNavigator` — rewrite that
-  // specifier to `createStandardBottomTabNavigator` in a follow-up.
   '@react-navigation/bottom-tabs': 'expo-router/js-tabs',
   '@react-navigation/material-top-tabs': 'expo-router/js-top-tabs',
 };

@@ -7,11 +7,11 @@ import { Link } from '../link/Link';
 import {
   createStandardBottomTabNavigator,
   type BottomTabNavigatorCreateProps,
-  type TabsScreenOptions,
 } from '../react-navigation/bottom-tabs/navigators/createBottomTabNavigator';
 import type {
   BottomTabNavigationConfig,
   BottomTabNavigationEventMap,
+  BottomTabNavigationOptions,
 } from '../react-navigation/bottom-tabs/types';
 import {
   StackActions,
@@ -21,6 +21,12 @@ import {
   type TabRouterOptions,
 } from '../react-navigation/native';
 import { unstable_integrateWithRouter } from '../standard-navigation';
+import type { Href } from '../types';
+
+// Keep React Navigation client-only so the entry evaluates in React Server Components.
+export * from '../react-navigation/bottom-tabs';
+
+export type TabsScreenOptions = BottomTabNavigationOptions & { href?: Href | null };
 
 /**
  * Renders a tabs navigator.
@@ -82,6 +88,6 @@ const Tabs = unstable_integrateWithRouter<
     }),
 });
 
-export type BottomTabNavigatorProps = ComponentProps<typeof Tabs>;
+export type JSTabsProps = ComponentProps<typeof Tabs>;
 
 export default Tabs;
