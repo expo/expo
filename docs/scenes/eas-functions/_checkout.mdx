@@ -3,9 +3,9 @@ import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { NoIcon } from '~/ui/components/DocIcons';
 
-| Property | Type     | Required   | Description                                                                                                                                                                                                           |
-| -------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `ref`    | `string` | <NoIcon /> | Git branch, tag, or full commit SHA to check out instead of the ref that triggered the job. Requires project sources from a Git repository, and this step must run before any other step that checks out the project. |
+| Property | Type     | Required   | Description                                                                                                     |
+| -------- | -------- | ---------- | --------------------------------------------------------------------------------------------------------------- |
+| `ref`    | `string` | <NoIcon /> | Git branch, tag, or full commit SHA to check out. Defaults to the ref that triggered the build or workflow job. |
 
 <BoxLink
   title="eas/checkout source code"
