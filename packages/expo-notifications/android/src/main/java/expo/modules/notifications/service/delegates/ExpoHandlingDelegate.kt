@@ -96,8 +96,19 @@ class ExpoHandlingDelegate(protected val context: Context) : HandlingDelegate {
       return null
     }
 
-    private fun getMainActivityLauncher(context: Context) =
-      context.packageManager.getLaunchIntentForPackage(context.packageName)
+    /**
+     * Returns the intent that launches the app's main activity, or `null` if there is none.
+     *
+     * Some OEM ROMs throw (e.g. `NullPointerException: class name is null`) instead of
+     * returning `null` when no launcher activity resolves for the package. A throwing
+     * lookup is treated as "no launch intent" so callers degrade gracefully.
+     */
+    fun getMainActivityLauncher(context: Context): Intent? =
+      runCatching { context.packageManager.getLaunchIntentForPackage(context.packageName) }
+        .onFailure {
+          Log.w("expo-notifications", "getLaunchIntentForPackage threw while resolving the main activity launcher; treating as no launch intent.", it)
+        }
+        .getOrNull()
   }
 
   fun isAppInForeground() = ProcessLifecycleOwner.get().lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
