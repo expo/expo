@@ -14,6 +14,9 @@ import type { Href } from '../types';
 import { Protected } from '../views/Protected';
 import { withLayoutContext } from './withLayoutContext';
 
+// Keep React Navigation client-only so the entry evaluates in React Server Components.
+export * from '../react-navigation/bottom-tabs';
+
 // This is the only way to access the navigator.
 const BottomTabNavigator = createBottomTabNavigator().Navigator;
 
