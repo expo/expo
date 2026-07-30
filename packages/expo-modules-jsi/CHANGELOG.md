@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed `JavaScriptPropNameID(_:string:)` and the array's string-keyed subscript truncating non-ASCII property keys: they passed `String.count` (the grapheme-cluster count) as the UTF-8 byte length to `PropNameID::forUtf8`, so keys like `"café"` or `"🎉"` were built from mangled bytes and no longer matched the intended property. ([#48329](https://github.com/expo/expo/pull/48329) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed the prebuilt `ExpoModulesJSI.xcframework` shipping with code coverage instrumentation: building through the auto-generated SwiftPM scheme made Xcode pass `-profile-generate -profile-coverage-mapping` to swiftc even for a plain Release `build`, adding a counter increment to every function on the host function call path and about 40% to the binary size. The benchmark target had the same instrumentation and now runs without it. ([#49637](https://github.com/expo/expo/pull/49637) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
