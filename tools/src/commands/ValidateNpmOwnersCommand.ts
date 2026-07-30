@@ -9,7 +9,8 @@ import {
   listOwnersAsync,
   removeOwnerAsync,
 } from '../Npm';
-import { runWithSpinner } from '../Utils';
+import { promptOtp, withOtpRetry } from '../NpmOtp';
+import { runWithSpinner, spawnErrorOutput } from '../Utils';
 
 type ActionOptions = object;
 
@@ -21,6 +22,24 @@ const CONCURRENCY_LIMIT = 8;
 
 // If we want to add any exemptions for particular users, add them here.
 const USERS_TO_SKIP: string[] = [];
+
+/**
+ * Packages that the organization can access but cannot govern, so their owners
+ * are not ours to change. `npm access list packages` returns everything the
+ * organization has access to, which includes scopes owned by someone else.
+ *
+ * A pattern ending with `/` exempts an entire scope, anything else is an exact
+ * package name. Every entry needs a reason, so that an exemption stays a
+ * documented decision instead of a way to make the command quiet.
+ */
+const PACKAGES_TO_SKIP: { pattern: string; reason: string }[] = [
+  {
+    pattern: '@config-plugins/',
+    reason:
+      'Owned by the separate `config-plugins` npm organization, which only grants the expo ' +
+      'organization access. `npm owner rm` fails with "Team not found" for non-members.',
+  },
+];
 
 export default (program: Command) => {
   program
@@ -44,23 +63,48 @@ async function action(_options: ActionOptions) {
   }
 
   const orgMembers = await runWithSpinner('Fetching organization members...', async (step) => {
-    const memberNames = memberNamesFromOrgMembersResponse(await getOrgMembersAsync(ORG_NAME));
+    const memberNames = memberNamesFromOrgMembersResponse(
+      await getOrgMembersAsync(ORG_NAME).catch(rethrowNpmAuthError)
+    );
     step.succeed(`${memberNames.length} members found: ${chalk.dim(memberNames.join(', '))}`);
     return memberNames;
   });
 
   const packages = await runWithSpinner('Fetching organization packages...', async (step) => {
-    const packageNames = packageNamesFromOrgPackagesResponse(await getTeamPackagesAsync(ORG_NAME));
-    step.succeed(`${packageNames.length} packages found: ${chalk.dim(packageNames.join(', '))}`);
-    return packageNames;
+    const packageNames = packageNamesFromOrgPackagesResponse(
+      await getTeamPackagesAsync(ORG_NAME).catch(rethrowNpmAuthError)
+    );
+    const { validated, exempt, matched } = partitionExemptPackages(packageNames);
+
+    if (validated.length === 0) {
+      throw new Error(
+        `All ${packageNames.length} packages of the "${ORG_NAME}" organization are exempted by ` +
+          '`PACKAGES_TO_SKIP`, so the validation would check nothing. Narrow the exemptions.'
+      );
+    }
+
+    step.succeed(`${validated.length} packages found: ${chalk.dim(validated.join(', '))}`);
+
+    if (exempt.length > 0) {
+      logger.log(chalk.dim(`Skipping ${pluralizePackages(exempt.length)}:`));
+      for (const { pattern, reason, count } of matched) {
+        logger.log(chalk.dim(`  ${pattern} (${pluralizePackages(count)}) — ${reason}`));
+      }
+      logger.log();
+    }
+    return validated;
   });
 
   const packagesWithInvalidOwners = await runWithSpinner(
     'Validating package owners...',
     (step) => {
-      return validatePackageOwnersAsync([...orgMembers, ...USERS_TO_SKIP], packages, (completed) => {
-        step.text = chalk.bold(`Validating package owners... ${completed}/${packages.length}`);
-      });
+      return validatePackageOwnersAsync(
+        [...orgMembers, ...USERS_TO_SKIP],
+        packages,
+        (completed) => {
+          step.text = chalk.bold(`Validating package owners... ${completed}/${packages.length}`);
+        }
+      );
     },
     `Validated owners of ${packages.length} packages`
   );
@@ -91,6 +135,163 @@ async function action(_options: ActionOptions) {
   } else {
     process.exitCode = 1;
   }
+}
+
+/**
+ * Replaces npm's opaque non-zero exit with an explanation of which credentials
+ * were rejected. Rethrows anything that is not an authentication failure.
+ */
+function rethrowNpmAuthError(error: unknown): never {
+  if (isNpmAuthError(error)) {
+    throw new Error(
+      'npm rejected the credentials used to read the organization. ' +
+        npmCredentialsHelp(!!API_TOKEN)
+    );
+  }
+  throw error;
+}
+
+/**
+ * Splits the organization packages into the ones to validate and the ones
+ * exempted by `PACKAGES_TO_SKIP`, preserving the original order of both.
+ */
+export function partitionExemptPackages(packageNames: string[]): {
+  validated: string[];
+  exempt: string[];
+  matched: { pattern: string; reason: string; count: number }[];
+} {
+  const matches = (packageName: string, pattern: string) =>
+    pattern.endsWith('/') ? packageName.startsWith(pattern) : packageName === pattern;
+
+  const validated: string[] = [];
+  const exempt: string[] = [];
+
+  for (const packageName of packageNames) {
+    const isExempt = PACKAGES_TO_SKIP.some(({ pattern }) => matches(packageName, pattern));
+    (isExempt ? exempt : validated).push(packageName);
+  }
+
+  // Only report exemptions that did something, so a stale entry stays quiet
+  // instead of claiming to have skipped packages that no longer exist.
+  const matched = PACKAGES_TO_SKIP.map(({ pattern, reason }) => ({
+    pattern,
+    reason,
+    count: exempt.filter((packageName) => matches(packageName, pattern)).length,
+  })).filter(({ count }) => count > 0);
+
+  return { validated, exempt, matched };
+}
+
+type RemovalFailure = { owner: string; packageName: string; reason: string };
+
+type RemovalFailureCategory = { key: string; title: string; hint: string };
+
+/**
+ * The failures that npm reports for `npm owner rm`, in the order we check them.
+ * The permission-to-publish message is also a 403, so it has to be matched
+ * before the generic refusal.
+ */
+const REMOVAL_FAILURE_CATEGORIES: (RemovalFailureCategory & { test: RegExp })[] = [
+  {
+    key: 'other-org',
+    test: /Team not found/i,
+    title: 'The package belongs to another npm organization',
+    hint: 'Only a member of the owning organization can change these owners. Add them to `PACKAGES_TO_SKIP` if the organization is not ours to govern.',
+  },
+  {
+    key: 'not-maintainer',
+    test: /do not have permission to publish/i,
+    title: 'You are not a maintainer of the package',
+    hint: 'Ask a current maintainer to run the removal. `npm owner ls <package>` lists who can.',
+  },
+  {
+    key: 'refused',
+    test: /\b403\b|Forbidden/i,
+    title: 'npm refused the owner change',
+    hint: 'Access to these packages comes from the organization grant rather than from being a package maintainer, so `npm owner rm` cannot change them. A maintainer of the package has to do it.',
+  },
+];
+
+const UNKNOWN_REMOVAL_FAILURE: RemovalFailureCategory = {
+  key: 'unknown',
+  title: 'npm failed for another reason',
+  hint: 'Read the messages above and re-run the command if they look temporary.',
+};
+
+/**
+ * Maps a failure reason to the category that explains what to do about it.
+ * Resolves to `null` when no category matches.
+ */
+export function classifyRemovalFailure(reason: string): RemovalFailureCategory | null {
+  const matched = REMOVAL_FAILURE_CATEGORIES.find(({ test }) => test.test(reason));
+  return matched ? { key: matched.key, title: matched.title, hint: matched.hint } : null;
+}
+
+/**
+ * Groups removal failures by category so that the report explains each kind of
+ * failure once instead of repeating it for every package. Categories keep the
+ * order of `REMOVAL_FAILURE_CATEGORIES`, with the unknown ones last. Empty
+ * categories are left out.
+ */
+export function groupFailuresByCategory(
+  failures: RemovalFailure[]
+): { category: RemovalFailureCategory; failures: RemovalFailure[] }[] {
+  const categories = [...REMOVAL_FAILURE_CATEGORIES, UNKNOWN_REMOVAL_FAILURE];
+
+  return categories
+    .map((category) => ({
+      category: { key: category.key, title: category.title, hint: category.hint },
+      failures: failures.filter(
+        (failure) =>
+          (classifyRemovalFailure(failure.reason) ?? UNKNOWN_REMOVAL_FAILURE).key === category.key
+      ),
+    }))
+    .filter(({ failures }) => failures.length > 0);
+}
+
+/**
+ * Formats why a removal failed. `npm owner rm` wraps every failure in a generic
+ * `EOWNERMUTATE` code and prints the actual cause on the next line, so keeping
+ * only the first line would hide the reason.
+ */
+export function removalFailureReason(error: unknown): string {
+  const output = spawnErrorOutput(error) || String((error as any)?.message ?? '');
+
+  const lines = output
+    .split('\n')
+    .map((line) => line.replace(/^npm error\s*/, '').trim())
+    .filter((line) => line.length > 0 && !line.startsWith('A complete log of this run'));
+
+  return lines.join(' — ') || 'Unknown error';
+}
+
+/**
+ * Whether the spawned npm command failed to authenticate. npm reports this as
+ * an `E401` code, both in stderr and in the JSON error object on stdout.
+ */
+export function isNpmAuthError(error: unknown): boolean {
+  return /\bE401\b/.test(spawnErrorOutput(error));
+}
+
+/**
+ * Explains which credentials npm used and how to replace them. The token from
+ * the environment takes precedence over the local `.npmrc`, which is easy to
+ * miss when the token expires but plain `npm` commands still work.
+ */
+export function npmCredentialsHelp(hasApiToken: boolean): string {
+  if (hasApiToken) {
+    return (
+      'npm used the token from the `NPM_TOKEN_READ_ONLY` environment variable, which overrides ' +
+      'the credentials in your local `.npmrc`. The token is most likely expired or revoked. ' +
+      'Set the variable to a valid read-only token of an organization member, or unset it to use ' +
+      'the credentials from `npm login`.'
+    );
+  }
+  return (
+    'npm used the credentials from your local `.npmrc`. Run `npm login` as a member of the ' +
+    `"${ORG_NAME}" organization, or set the \`NPM_TOKEN_READ_ONLY\` environment variable to a ` +
+    'read-only token of an organization member.'
+  );
 }
 
 /**
@@ -139,12 +340,21 @@ async function promptToRemoveInvalidOwnersAsync(packagesWithInvalidOwners: {
         )}`
       );
       try {
-        await removeOwnerAsync(packageName, owner);
-      } catch (error: any) {
-        const reason = String(error.stderr ?? error.message)
-          .trim()
-          .split('\n')[0];
-        failures.push({ owner, packageName, reason });
+        // npm requires a one-time password for owner mutations when the account
+        // has two-factor auth enabled for writes. A code expires long before
+        // hundreds of removals finish, so re-prompt whenever npm rejects it.
+        // The spinner has to stop first, otherwise it redraws over the prompt.
+        await withOtpRetry(
+          () => removeOwnerAsync(packageName, owner),
+          async () => {
+            step.stop();
+            const otp = await promptOtp();
+            step.start();
+            return otp;
+          }
+        );
+      } catch (error) {
+        failures.push({ owner, packageName, reason: removalFailureReason(error) });
       }
     }
 
@@ -155,14 +365,13 @@ async function promptToRemoveInvalidOwnersAsync(packagesWithInvalidOwners: {
     }
   });
 
-  if (failures.length > 0) {
-    for (const { owner, packageName, reason } of failures) {
-      logger.log(`- ${chalk.red(owner)} from ${chalk.green(packageName)}: ${reason}`);
+  for (const { category, failures: categoryFailures } of groupFailuresByCategory(failures)) {
+    logger.log(`\n${chalk.yellow.bold(category.title)} ${chalk.dim(`(${category.key})`)}`);
+
+    for (const { owner, packageName, reason } of categoryFailures) {
+      logger.log(`- ${chalk.red(owner)} from ${chalk.green(packageName)}: ${chalk.dim(reason)}`);
     }
-    logger.log(
-      'If your npm account uses two-factor auth, set the `NPM_OTP` env var ' +
-        'to a fresh one-time password and re-run this command.'
-    );
+    logger.log(`  ${category.hint}`);
   }
 
   return failures.length === 0 && ownersToRemove.length === groupedByOwner.length;
@@ -198,7 +407,7 @@ export function memberNamesFromOrgMembersResponse(response: unknown): string[] {
     throw new Error(
       `npm returned no members for the "${ORG_NAME}" organization. ` +
         'This usually means the request was not authenticated, in which case npm silently returns an empty list. ' +
-        'Run `npm login` or set the `NPM_TOKEN_READ_ONLY` env var to a token of an organization member.'
+        npmCredentialsHelp(!!API_TOKEN)
     );
   }
 
