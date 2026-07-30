@@ -38,12 +38,19 @@ export async function resolveModuleAsync(
   }
 
   const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
-    ({ id, group, sourceDir, applyToRootProject }) => ({
-      id,
-      group,
-      sourceDir: path.join(revision.path, sourceDir),
-      applyToRootProject: applyToRootProject ?? true,
-    })
+    ({ id, group, sourceDir, version, applyToRootProject }) =>
+      sourceDir
+        ? {
+            id,
+            group,
+            sourceDir: path.join(revision.path, sourceDir),
+            applyToRootProject,
+          }
+        : { id,
+            group,
+            version,
+            applyToRootProject,
+          }
   );
 
   const defaultProjectName = convertPackageToProjectName(packageName);
