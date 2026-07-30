@@ -16,7 +16,7 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 [Clerk](https://clerk.com/expo-authentication) is an authentication and user management platform that provides sign-up, sign-in, multi-factor authentication, social sign-in, organizations, and a hosted user database. The [`@clerk/expo`](https://www.npmjs.com/package/@clerk/expo) SDK gives you React hooks, control components, hosted authentication, and prebuilt native UI components that render with Jetpack Compose on Android and SwiftUI on iOS.
 
-This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvider>`, and choose the integration approach that fits your project. It targets `@clerk/expo` Core 3 (the 3.x release line), which supports Expo SDK 53, 54, and 55.
+This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvider>`, and choose the integration approach that fits your project. It targets `@clerk/expo` 4.x, which supports Expo SDK 54 and later.
 
 ## Choose your integration approach
 
@@ -109,7 +109,7 @@ You do not need any of these extra packages if you only use `<AuthView />` from 
 
 ### Verify the config plugins
 
-Expo automatically adds the required config plugins to your [app config](/workflow/configuration/) when you install the packages. Verify that `@clerk/expo` and `expo-secure-store` appear in the `plugins` array:
+Add `@clerk/expo` and `expo-secure-store` to the `plugins` array in your [app config](/workflow/configuration/). If your project uses a static **app.json** and you installed the packages with `npx expo install`, Expo has already added them:
 
 ```json app.json
 {
@@ -121,7 +121,7 @@ Expo automatically adds the required config plugins to your [app config](/workfl
 
 The `@clerk/expo` plugin adds the Apple Sign In entitlement (disable it with the `appleSignIn: false` plugin option if your app doesn't use it), registers the Android intent filter for the hosted authentication callback, and applies the Android packaging fixes required by the underlying `clerk-android` SDK. If you use the native Sign in with Google buttons, also add the `@clerk/expo-google-signin` plugin alongside it.
 
-Hosted authentication derives its default callback from the `ios.bundleIdentifier` and `android.package` values in your app config. Before you create a production build, add the app on the [Native applications](https://dashboard.clerk.com/last-active?path=native-applications) page in the Clerk Dashboard with the same iOS bundle identifier and Android package name, since production instances validate the callback against the registered values.
+Hosted authentication derives its default callback from the `android.package` and `ios.bundleIdentifier` values in your app config. Before you create a production build, add the app on the [Native applications](https://dashboard.clerk.com/last-active?path=native-applications) page in the Clerk Dashboard with the same Android package name and iOS bundle identifier, since production instances validate the callback against the registered values.
 
 </Step>
 
@@ -259,13 +259,13 @@ export default function MainScreen() {
 
 After the user signs in, the native session is synchronized back to the JavaScript SDK, so `useAuth()` and `useUser()` reflect the signed-in state. Pass `treatPendingAsSignedOut: false` to `useAuth()` so pending [session tasks](https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks) are not treated as signed out.
 
-> **warning** Keep the `<Modal>` that contains `<AuthView />` mounted at the same level as your signed-in and signed-out content. Don't render the modal only inside signed-out content, because auth state can change before required session tasks are finished and unmount the modal too early.
+> **warning** Keep the `<Modal>` that contains `<AuthView />` mounted at the same level as your signed-in and signed-out content. If you render it only inside signed-out content, auth state can change while session tasks are still pending, and your conditional render unmounts the modal too early.
 
 `<AuthView />` accepts `mode="signIn" | "signUp" | "signInOrUp"` (the default), an `isDismissible` boolean that controls the native dismiss button, and an `onDismiss` callback. When users must authenticate before continuing, render it as a full-screen view with `isDismissible={false}` instead of in a modal.
 
 `<UserButton />` takes no props. It displays the signed-in user's profile image or initials and opens the native `<UserProfileView />` when tapped, where users can manage personal information, security settings, and sign out.
 
-`<AuthView />` automatically shows sign-in buttons for any social connections enabled in the Clerk Dashboard and handles the flows internally, so you don't need `expo-crypto` or the native sign-in hooks. Native OAuth still requires credential setup in the Clerk Dashboard and provider consoles, otherwise the buttons appear but fail when tapped. Follow the Clerk Sign in with Google and Sign in with Apple guides linked at the bottom of this page.
+`<AuthView />` automatically shows sign-in buttons for any social connections enabled in the Clerk Dashboard and handles the flows internally, so you don't need `expo-crypto` or the native sign-in hooks. Native OAuth still requires credential setup in the Clerk Dashboard and provider consoles. Otherwise, the buttons appear but fail when tapped. Follow the Clerk Sign in with Google and Sign in with Apple guides linked at the bottom of this page.
 
 This approach requires a development build because the components are backed by native modules:
 
@@ -419,7 +419,9 @@ if (signIn.status === 'complete') {
 }
 ```
 
-To add native Sign in with Google and Sign in with Apple buttons to your custom screens, use the `useSignInWithGoogle()` hook from `@clerk/expo/google` and the `useSignInWithApple()` hook from `@clerk/expo/apple`. Both return a start method (`startGoogleAuthenticationFlow()` and `startAppleAuthenticationFlow()`) that resolves with `{ createdSessionId, setActive }`. These hooks use native modules, so they require a development build and the packages from the install step, and `useSignInWithGoogle()` also needs the `@clerk/expo-google-signin` config plugin. On iOS, App Store Guideline 4.8 requires that any app offering third-party social sign-in must also offer Sign in with Apple. Follow the Clerk guides linked at the bottom of this page to register your credentials in the Clerk Dashboard and the provider consoles.
+To add native Sign in with Google and Sign in with Apple buttons to your custom screens, use the `useSignInWithGoogle()` hook from `@clerk/expo/google` and the `useSignInWithApple()` hook from `@clerk/expo/apple`. Both return a start method (`startGoogleAuthenticationFlow()` and `startAppleAuthenticationFlow()`) that resolves with `{ createdSessionId, setActive }`.
+
+Both hooks use native modules, so they require a development build and the packages from the install step. `useSignInWithGoogle()` also needs the `@clerk/expo-google-signin` config plugin. On iOS, App Store Guideline 4.8 requires that any app offering third-party social sign-in must also offer Sign in with Apple. Follow the Clerk guides linked at the bottom of this page to register your credentials in the Clerk Dashboard and the provider consoles.
 
 </Tab>
 
