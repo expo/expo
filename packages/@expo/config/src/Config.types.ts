@@ -139,7 +139,7 @@ export enum ProjectPrivacy {
   UNLISTED = 'unlisted',
 }
 
-export type Platform = 'android' | 'ios' | 'web' | 'tvos' | 'macos';
+export type Platform = 'android' | 'ios' | 'web' | 'tvos' | 'macos' | 'windows';
 export type NativePlatform = Exclude<Platform, 'web'>;
 export type ProjectTarget = 'managed' | 'bare';
 

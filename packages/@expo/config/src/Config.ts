@@ -87,6 +87,9 @@ function getSupportedPlatforms(projectRoot: string, exp: Partial<ExpoConfig>): P
     if (resolveFrom(projectRoot, 'react-native-macos/package.json')) {
       platforms.push('macos');
     }
+    if (resolveFrom(projectRoot, 'react-native-windows/package.json')) {
+      platforms.push('windows');
+    }
   }
   return platforms;
 }

@@ -45,6 +45,17 @@ describe(getPlatformExtensions, () => {
   it(`returns null for platforms without a custom order`, () => {
     expect(getPlatformExtensions('ios', ['js'])).toBeNull();
   });
+
+  it(`expands windows extensions, falling back to native (no ios/apple fallback)`, () => {
+    expect(getPlatformExtensions('windows', ['js', 'ts'])).toStrictEqual([
+      'windows.js',
+      'windows.ts',
+      'native.js',
+      'native.ts',
+      'js',
+      'ts',
+    ]);
+  });
 });
 
 // Enforce that all extensions are returned in the correct order, this is very important!
