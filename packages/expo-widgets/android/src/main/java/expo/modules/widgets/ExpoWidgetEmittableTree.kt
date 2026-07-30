@@ -18,7 +18,6 @@ import expo.modules.kotlin.views.createComposeProps
 import expo.modules.ui.BackgroundParams
 import expo.modules.ui.CheckboxProps
 import expo.modules.ui.CircularProgressIndicatorProps
-import expo.modules.ui.DefaultMinSizeParams
 import expo.modules.ui.FillMaxHeightParams
 import expo.modules.ui.FillMaxSizeParams
 import expo.modules.ui.FillMaxWidthParams
@@ -52,41 +51,49 @@ import expo.modules.ui.convertibles.HorizontalAlignment
 import expo.modules.ui.convertibles.HorizontalArrangementDefault
 import expo.modules.ui.convertibles.VerticalAlignment
 import expo.modules.ui.convertibles.VerticalArrangementDefault
-import io.github.jakex7.peek.emittables.Emittable
-import io.github.jakex7.peek.emittables.EmittableBox
-import io.github.jakex7.peek.emittables.EmittableButton
-import io.github.jakex7.peek.emittables.EmittableCheckBox
-import io.github.jakex7.peek.emittables.EmittableCircularProgressIndicator
-import io.github.jakex7.peek.emittables.EmittableColumn
-import io.github.jakex7.peek.emittables.EmittableLinearProgressIndicator
-import io.github.jakex7.peek.emittables.EmittableRadioButton
-import io.github.jakex7.peek.emittables.EmittableRow
-import io.github.jakex7.peek.emittables.EmittableSpacer
-import io.github.jakex7.peek.emittables.EmittableSwitch
-import io.github.jakex7.peek.emittables.EmittableText
-import io.github.jakex7.peek.emittables.PeekModifier
-import io.github.jakex7.peek.emittables.PeekRoot
-import io.github.jakex7.peek.emittables.background
-import io.github.jakex7.peek.emittables.clickable
-import io.github.jakex7.peek.emittables.defaultMinSize
-import io.github.jakex7.peek.emittables.fillMaxHeight
-import io.github.jakex7.peek.emittables.fillMaxSize
-import io.github.jakex7.peek.emittables.fillMaxWidth
-import io.github.jakex7.peek.emittables.height
-import io.github.jakex7.peek.emittables.padding
-import io.github.jakex7.peek.emittables.size
-import io.github.jakex7.peek.emittables.then
-import io.github.jakex7.peek.emittables.width
-import io.github.jakex7.peek.emittables.wrapContentHeight
-import io.github.jakex7.peek.emittables.wrapContentWidth
-import io.github.jakex7.peek.emittables.Alignment as PeekAlignment
-import io.github.jakex7.peek.emittables.ColorProvider as PeekColorProvider
-import io.github.jakex7.peek.emittables.FontStyle as PeekFontStyle
-import io.github.jakex7.peek.emittables.FontWeight as PeekFontWeight
-import io.github.jakex7.peek.emittables.HorizontalAlignment as PeekHorizontalAlignment
-import io.github.jakex7.peek.emittables.TextAlign as PeekTextAlign
-import io.github.jakex7.peek.emittables.TextDecoration as PeekTextDecoration
-import io.github.jakex7.peek.emittables.VerticalAlignment as PeekVerticalAlignment
+import androidx.compose.ui.graphics.Color
+import androidx.glance.Emittable
+import androidx.glance.EmittableButton
+import androidx.glance.GlanceModifier
+import androidx.glance.action.clickable
+import androidx.glance.appwidget.CheckboxDefaults
+import androidx.glance.appwidget.EmittableCheckBox
+import androidx.glance.appwidget.EmittableCircularProgressIndicator
+import androidx.glance.appwidget.EmittableLinearProgressIndicator
+import androidx.glance.appwidget.EmittableRadioButton
+import androidx.glance.appwidget.EmittableSwitch
+import androidx.glance.appwidget.ProgressIndicatorDefaults
+import androidx.glance.appwidget.RadioButtonDefaults
+import androidx.glance.appwidget.SwitchDefaults
+import androidx.glance.background
+import androidx.glance.layout.Alignment
+import androidx.glance.layout.EmittableBox
+import androidx.glance.layout.EmittableColumn
+import androidx.glance.layout.EmittableRow
+import androidx.glance.layout.EmittableSpacer
+import androidx.glance.layout.fillMaxHeight
+import androidx.glance.layout.fillMaxSize
+import androidx.glance.layout.fillMaxWidth
+import androidx.glance.layout.height
+import androidx.glance.layout.padding
+import androidx.glance.layout.size
+import androidx.glance.layout.width
+import androidx.glance.layout.wrapContentHeight
+import androidx.glance.layout.wrapContentWidth
+import androidx.glance.text.EmittableText
+import androidx.glance.text.FontStyle
+import androidx.glance.text.FontWeight
+import androidx.glance.text.TextAlign
+import androidx.glance.text.TextDecoration
+import androidx.glance.text.TextDefaults
+import androidx.glance.text.TextStyle
+import androidx.glance.unit.ColorProvider
+import io.github.jakex7.peek.glance.determinateCircularProgressIndicatorEmittable
+
+private val DefaultCheckedColor = ColorProvider(Color(0xff6750a4))
+private val DefaultUncheckedColor = ColorProvider(Color(0xff79747e))
+private val DefaultCheckedTrackColor = ColorProvider(Color(0xffe8def8))
+private val DefaultUncheckedTrackColor = ColorProvider(Color(0xffe7e0ec))
 
 private class WidgetConverterContext(
   override val applicationContext: Context
@@ -94,23 +101,19 @@ private class WidgetConverterContext(
   override val runtime: Runtime? = null
 }
 
-internal fun ReadableMap.toPeekRoot(context: Context, source: String): PeekRoot {
+internal fun ReadableMap.toPeekRoot(context: Context, source: String): Emittable {
   val converterContext = WidgetConverterContext(context)
-  return PeekRoot().also { root ->
+  return EmittableColumn().also { root ->
     root.children += toPeekNodes(converterContext, source)
   }
 }
 
-internal fun createErrorRoot(message: String): PeekRoot {
-  return PeekRoot().also { root ->
-    root.children += createErrorText(message)
-  }
-}
+internal fun createErrorRoot(message: String): Emittable = createErrorText(message)
 
 private fun createErrorText(message: String): EmittableText {
   return EmittableText().also {
     it.text = message
-    it.modifier = PeekModifier.padding(8.dp)
+    it.modifier = GlanceModifier.padding(8.dp)
   }
 }
 
@@ -140,7 +143,7 @@ private fun ReadableMap.toPeekBox(converterContext: ConverterContext, source: St
   val props = props<LayoutProps>(converterContext)
   return EmittableBox().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
-    it.contentAlignment = props.contentAlignment?.toPeekAlignment() ?: PeekAlignment.TopStart
+    it.contentAlignment = props.contentAlignment?.toGlanceAlignment() ?: Alignment.TopStart
     it.children += children().flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
 }
@@ -173,17 +176,18 @@ private fun ReadableMap.toPeekSpacer(converterContext: ConverterContext): Emitta
 
 private fun ReadableMap.toPeekText(converterContext: ConverterContext): EmittableText {
   val props = props<TextProps>(converterContext)
-  val typography = props.typography?.toPeekTypography()
+  val typography = props.typography?.toGlanceTypography()
   return EmittableText().also {
     it.text = props.textContent()
     it.modifier = props.textModifier(converterContext)
-    it.color = props.color.toPeekColorProvider() ?: typography?.color ?: it.color
-    it.fontSize = props.fontSize?.sp ?: typography?.fontSize ?: TextUnit.Unspecified
-    it.fontWeight =
-      props.fontWeight?.toPeekFontWeight() ?: typography?.fontWeight ?: PeekFontWeight.Normal
-    it.fontStyle = props.fontStyle?.toPeekFontStyle() ?: PeekFontStyle.Normal
-    it.textAlign = props.textAlign?.toPeekTextAlign()
-    it.textDecoration = props.textDecoration?.toPeekTextDecoration() ?: PeekTextDecoration.None
+    it.style = TextStyle(
+      color = props.color.toGlanceColorProvider() ?: typography?.color ?: TextDefaults.defaultTextColor,
+      fontSize = props.fontSize?.sp ?: typography?.fontSize,
+      fontWeight = props.fontWeight?.toGlanceFontWeight() ?: typography?.fontWeight,
+      fontStyle = props.fontStyle?.toGlanceFontStyle(),
+      textAlign = props.textAlign?.toGlanceTextAlign(),
+      textDecoration = props.textDecoration?.toGlanceTextDecoration()
+    )
     it.maxLines = props.maxLines ?: Int.MAX_VALUE
   }
 }
@@ -192,17 +196,16 @@ private fun ReadableMap.toPeekButton(converterContext: ConverterContext, source:
   val props = props<WidgetButtonProps>(converterContext)
   val children = children()
   val action =
-    props.target?.let { target -> WidgetInteraction(source, target).toPeekAction(converterContext.context) }
+    props.target?.let { target -> WidgetInteraction(source, target).toGlanceAction(converterContext.applicationContext) }
   val modifier = props.buttonModifier(converterContext)
   val contentColor = props.contentColorProvider()
   val textContent = children.textContent(converterContext) ?: props.label
   if (textContent != null && (children.isEmpty() || children.isTextOnlyContent())) {
     return EmittableButton().also {
       it.text = textContent
-      it.modifier = modifier
+      it.modifier = if (props.enabled && action != null) modifier.clickable(action) else modifier
       it.enabled = props.enabled
-      it.onClick = action
-      it.color = contentColor ?: it.color
+      it.style = TextStyle(color = contentColor ?: TextDefaults.defaultTextColor)
     }
   }
 
@@ -212,42 +215,40 @@ private fun ReadableMap.toPeekButton(converterContext: ConverterContext, source:
     } else {
       modifier
     }
-    it.contentAlignment = PeekAlignment.Center
+    it.contentAlignment = Alignment.Center
     it.children += children.flatMap { child -> child.toPeekNodes(converterContext, source) }
   }
 }
 
 private fun ReadableMap.toPeekCheckBox(converterContext: ConverterContext): EmittableCheckBox {
   val props = props<CheckboxProps>(converterContext)
-  return EmittableCheckBox().also {
+  val checked = props.colors.checkedColor.toGlanceColorProvider() ?: DefaultCheckedColor
+  val unchecked = props.colors.uncheckedColor.toGlanceColorProvider() ?: DefaultUncheckedColor
+  return EmittableCheckBox(CheckboxDefaults.checkBoxColors(checked, unchecked)).also {
     it.checked = props.value
-    it.enabled = props.enabled
     it.modifier = props.modifiers.toPeekModifier(converterContext)
-    it.color = if (props.value) {
-      props.colors.checkedColor.toPeekColorProvider() ?: it.color
-    } else {
-      props.colors.uncheckedColor.toPeekColorProvider() ?: it.color
-    }
   }
 }
 
 private fun ReadableMap.toPeekSwitch(converterContext: ConverterContext): EmittableSwitch {
   val props = props<SwitchProps>(converterContext)
-  return EmittableSwitch().also {
+  val colors = SwitchDefaults.switchColors(
+    checkedThumbColor = props.colors.checkedThumbColor.toGlanceColorProvider() ?: DefaultCheckedColor,
+    uncheckedThumbColor = props.colors.uncheckedThumbColor.toGlanceColorProvider() ?: DefaultUncheckedColor,
+    checkedTrackColor = props.colors.checkedTrackColor.toGlanceColorProvider() ?: DefaultCheckedTrackColor,
+    uncheckedTrackColor = props.colors.uncheckedTrackColor.toGlanceColorProvider() ?: DefaultUncheckedTrackColor
+  )
+  return EmittableSwitch(colors).also {
     it.checked = props.value
-    it.enabled = props.enabled
     it.modifier = props.modifiers.toPeekModifier(converterContext)
-    it.color = if (props.value) {
-      props.colors.checkedThumbColor.toPeekColorProvider() ?: it.color
-    } else {
-      props.colors.uncheckedThumbColor.toPeekColorProvider() ?: it.color
-    }
   }
 }
 
 private fun ReadableMap.toPeekRadioButton(converterContext: ConverterContext): EmittableRadioButton {
   val props = props<RadioButtonProps>(converterContext)
-  return EmittableRadioButton().also {
+  return EmittableRadioButton(
+    RadioButtonDefaults.colors(DefaultCheckedColor, DefaultUncheckedColor)
+  ).also {
     it.checked = props.selected
     it.enabled = props.clickable
     it.modifier = props.modifiers.toPeekModifier(converterContext)
@@ -257,92 +258,91 @@ private fun ReadableMap.toPeekRadioButton(converterContext: ConverterContext): E
 private fun ReadableMap.toPeekLinearProgress(converterContext: ConverterContext): EmittableLinearProgressIndicator {
   val props = props<LinearProgressIndicatorProps>(converterContext)
   return EmittableLinearProgressIndicator().also {
-    it.progress = props.progress
+    it.progress = props.progress ?: 0f
+    it.indeterminate = props.progress == null
     it.modifier = props.modifiers.toPeekModifier(converterContext)
-    it.color = props.color.toPeekColorProvider() ?: it.color
-    it.trackColor = props.trackColor.toPeekColorProvider() ?: it.trackColor
+    it.color = props.color.toGlanceColorProvider() ?: it.color
+    it.backgroundColor = props.trackColor.toGlanceColorProvider() ?: it.backgroundColor
   }
 }
 
-private fun ReadableMap.toPeekCircularProgress(converterContext: ConverterContext): EmittableCircularProgressIndicator {
+private fun ReadableMap.toPeekCircularProgress(converterContext: ConverterContext): Emittable {
   val props = props<CircularProgressIndicatorProps>(converterContext)
-  return EmittableCircularProgressIndicator().also {
-    it.progress = props.progress
-    it.modifier = props.modifiers.toPeekModifier(converterContext)
-    it.color = props.color.toPeekColorProvider() ?: it.color
-    it.trackColor = props.trackColor.toPeekColorProvider() ?: it.trackColor
+  val progress = props.progress
+  if (progress == null) {
+    return EmittableCircularProgressIndicator().also {
+      it.modifier = props.modifiers.toPeekModifier(converterContext)
+      it.color = props.color.toGlanceColorProvider() ?: it.color
+    }
   }
+  return determinateCircularProgressIndicatorEmittable(
+    progress = progress,
+    modifier = props.modifiers.toPeekModifier(converterContext),
+    color = props.color.toGlanceColorProvider() ?: ProgressIndicatorDefaults.IndicatorColorProvider,
+    trackColor = props.trackColor.toGlanceColorProvider() ?: ProgressIndicatorDefaults.BackgroundColorProvider
+  )
 }
 
 private fun ReadableMap.toPeekLoadingIndicator(converterContext: ConverterContext): EmittableCircularProgressIndicator {
   val props = props<LoadingIndicatorProps>(converterContext)
   return EmittableCircularProgressIndicator().also {
     it.modifier = props.modifiers.toPeekModifier(converterContext)
-    it.color = props.color.toPeekColorProvider() ?: it.color
+    it.color = props.color.toGlanceColorProvider() ?: it.color
   }
 }
 
-private fun ModifierList.toPeekModifier(converterContext: ConverterContext): PeekModifier {
-  var result: PeekModifier = PeekModifier
+private fun ModifierList.toPeekModifier(converterContext: ConverterContext): GlanceModifier {
+  var result: GlanceModifier = GlanceModifier
   for (config in this) {
     result = result.then(config.toPeekModifier(converterContext))
   }
   return result
 }
 
-private fun ModifierType.toPeekModifier(converterContext: ConverterContext): PeekModifier {
+private fun ModifierType.toPeekModifier(converterContext: ConverterContext): GlanceModifier {
   return when (this["\$type"]?.asString()) {
-    "paddingAll" -> asRecord<PaddingAllParams>(converterContext)?.let { PeekModifier.padding(it.all.dp) }
+    "paddingAll" -> asRecord<PaddingAllParams>(converterContext)?.let { GlanceModifier.padding(it.all.dp) }
     "padding" -> asRecord<PaddingParams>(converterContext)?.let {
-      PeekModifier.padding(
+      GlanceModifier.padding(
         start = it.start.dp, top = it.top.dp, end = it.end.dp, bottom = it.bottom.dp
       )
     }
 
-    "size" -> asRecord<SizeParams>(converterContext)?.let { PeekModifier.size(it.width.dp, it.height.dp) }
-    "width" -> asRecord<WidthParams>(converterContext)?.let { PeekModifier.width(it.width.dp) }
-    "height" -> asRecord<HeightParams>(converterContext)?.let { PeekModifier.height(it.height.dp) }
-    "defaultMinSize" -> asRecord<DefaultMinSizeParams>(converterContext)?.toPeekModifier()
-    "wrapContentWidth" -> asRecord<WrapContentWidthParams>(converterContext)?.let { PeekModifier.wrapContentWidth() }
-    "wrapContentHeight" -> asRecord<WrapContentHeightParams>(converterContext)?.let { PeekModifier.wrapContentHeight() }
-    "fillMaxSize" -> asRecord<FillMaxSizeParams>(converterContext)?.let { PeekModifier.fillMaxSize() }
-    "fillMaxWidth" -> asRecord<FillMaxWidthParams>(converterContext)?.let { PeekModifier.fillMaxWidth() }
-    "fillMaxHeight" -> asRecord<FillMaxHeightParams>(converterContext)?.let { PeekModifier.fillMaxHeight() }
-    "background" -> asRecord<BackgroundParams>(converterContext)?.color?.toPeekColorProvider()
-      ?.let { PeekModifier.background(it) }
-    // TODO(@jakex7): Unsupported Expo UI modifiers are intentionally ignored until Peek
-    //  can represent them as RemoteViews without changing semantics.
+    "size" -> asRecord<SizeParams>(converterContext)?.let { GlanceModifier.size(it.width.dp, it.height.dp) }
+    "width" -> asRecord<WidthParams>(converterContext)?.let { GlanceModifier.width(it.width.dp) }
+    "height" -> asRecord<HeightParams>(converterContext)?.let { GlanceModifier.height(it.height.dp) }
+    "wrapContentWidth" -> asRecord<WrapContentWidthParams>(converterContext)?.let { GlanceModifier.wrapContentWidth() }
+    "wrapContentHeight" -> asRecord<WrapContentHeightParams>(converterContext)?.let { GlanceModifier.wrapContentHeight() }
+    "fillMaxSize" -> asRecord<FillMaxSizeParams>(converterContext)?.let { GlanceModifier.fillMaxSize() }
+    "fillMaxWidth" -> asRecord<FillMaxWidthParams>(converterContext)?.let { GlanceModifier.fillMaxWidth() }
+    "fillMaxHeight" -> asRecord<FillMaxHeightParams>(converterContext)?.let { GlanceModifier.fillMaxHeight() }
+    "background" -> asRecord<BackgroundParams>(converterContext)?.color?.toGlanceColorProvider()
+      ?.let { GlanceModifier.background(it) }
+    // Unsupported Expo UI modifiers are ignored until they have exact Glance semantics.
     else -> null
-  } ?: PeekModifier
-}
-
-private fun DefaultMinSizeParams.toPeekModifier(): PeekModifier {
-  return PeekModifier.defaultMinSize(
-    minWidth = minWidth?.dp ?: androidx.compose.ui.unit.Dp.Unspecified,
-    minHeight = minHeight?.dp ?: androidx.compose.ui.unit.Dp.Unspecified
-  )
+  } ?: GlanceModifier
 }
 
 private inline fun <reified T : Record> ModifierType.asRecord(converterContext: ConverterContext): T? {
   return runCatching { recordFromMap<T>(this, converterContext) }.getOrNull()
 }
 
-private fun TextProps.textModifier(converterContext: ConverterContext): PeekModifier {
+private fun TextProps.textModifier(converterContext: ConverterContext): GlanceModifier {
   var modifier = modifiers.toPeekModifier(converterContext)
-  background.toPeekColorProvider()?.let {
+  background.toGlanceColorProvider()?.let {
     modifier = modifier.background(it)
   }
   return modifier
 }
 
-private fun WidgetButtonProps.buttonModifier(converterContext: ConverterContext): PeekModifier {
+private fun WidgetButtonProps.buttonModifier(converterContext: ConverterContext): GlanceModifier {
   var modifier = modifiers.toPeekModifier(converterContext)
   val color = if (enabled) {
     colors.containerColor
   } else {
     colors.disabledContainerColor ?: colors.containerColor
   }
-  color.toPeekColorProvider()?.let {
+  color.toGlanceColorProvider()?.let {
     modifier = modifier.background(it)
   }
   contentPadding?.let {
@@ -351,17 +351,17 @@ private fun WidgetButtonProps.buttonModifier(converterContext: ConverterContext)
   return modifier
 }
 
-private fun WidgetButtonProps.contentColorProvider(): PeekColorProvider? {
+private fun WidgetButtonProps.contentColorProvider(): ColorProvider? {
   val color = if (enabled) {
     colors.contentColor
   } else {
     colors.disabledContentColor ?: colors.contentColor
   }
-  return color.toPeekColorProvider()
+  return color.toGlanceColorProvider()
 }
 
-private fun ContentPaddingRecord.toPeekModifier(): PeekModifier {
-  return PeekModifier.padding(
+private fun ContentPaddingRecord.toPeekModifier(): GlanceModifier {
+  return GlanceModifier.padding(
     start = (start ?: 0.0).toFloat().dp,
     top = (top ?: 0.0).toFloat().dp,
     end = (end ?: 0.0).toFloat().dp,
@@ -369,132 +369,132 @@ private fun ContentPaddingRecord.toPeekModifier(): PeekModifier {
   )
 }
 
-private fun AndroidColor?.toPeekColorProvider(): PeekColorProvider? {
-  return colorToComposeColorOrNull(this)?.let(::PeekColorProvider)
+private fun AndroidColor?.toGlanceColorProvider(): ColorProvider? {
+  return colorToComposeColorOrNull(this)?.let(::ColorProvider)
 }
 
-private fun LayoutProps.toPeekHorizontalAlignment(): PeekHorizontalAlignment {
+private fun LayoutProps.toPeekHorizontalAlignment(): Alignment.Horizontal {
   horizontalAlignment?.let {
-    return it.toPeekHorizontalAlignment()
+    return it.toGlanceHorizontalAlignment()
   }
 
   val arrangement = horizontalArrangement
   return if (arrangement?.`is`(HorizontalArrangementDefault::class) == true) {
     when (arrangement.first()) {
-      HorizontalArrangementDefault.START -> PeekAlignment.Start
-      HorizontalArrangementDefault.CENTER -> PeekAlignment.CenterHorizontally
-      HorizontalArrangementDefault.END -> PeekAlignment.End
-      else -> PeekAlignment.Start
+      HorizontalArrangementDefault.START -> Alignment.Start
+      HorizontalArrangementDefault.CENTER -> Alignment.CenterHorizontally
+      HorizontalArrangementDefault.END -> Alignment.End
+      else -> Alignment.Start
     }
   } else {
-    PeekAlignment.Start
+    Alignment.Start
   }
 }
 
-private fun LayoutProps.toPeekVerticalAlignment(): PeekVerticalAlignment {
+private fun LayoutProps.toPeekVerticalAlignment(): Alignment.Vertical {
   verticalAlignment?.let {
-    return it.toPeekVerticalAlignment()
+    return it.toGlanceVerticalAlignment()
   }
 
   val arrangement = verticalArrangement
   return if (arrangement?.`is`(VerticalArrangementDefault::class) == true) {
     when (arrangement.first()) {
-      VerticalArrangementDefault.TOP -> PeekAlignment.Top
-      VerticalArrangementDefault.CENTER -> PeekAlignment.CenterVertically
-      VerticalArrangementDefault.BOTTOM -> PeekAlignment.Bottom
-      else -> PeekAlignment.Top
+      VerticalArrangementDefault.TOP -> Alignment.Top
+      VerticalArrangementDefault.CENTER -> Alignment.CenterVertically
+      VerticalArrangementDefault.BOTTOM -> Alignment.Bottom
+      else -> Alignment.Top
     }
   } else {
-    PeekAlignment.Top
+    Alignment.Top
   }
 }
 
-private fun ContentAlignment.toPeekAlignment(): PeekAlignment {
+private fun ContentAlignment.toGlanceAlignment(): Alignment {
   return when (this) {
-    ContentAlignment.TOP_START -> PeekAlignment.TopStart
-    ContentAlignment.TOP_CENTER -> PeekAlignment.TopCenter
-    ContentAlignment.TOP_END -> PeekAlignment.TopEnd
-    ContentAlignment.CENTER_START -> PeekAlignment.CenterStart
-    ContentAlignment.CENTER -> PeekAlignment.Center
-    ContentAlignment.CENTER_END -> PeekAlignment.CenterEnd
-    ContentAlignment.BOTTOM_START -> PeekAlignment.BottomStart
-    ContentAlignment.BOTTOM_CENTER -> PeekAlignment.BottomCenter
-    ContentAlignment.BOTTOM_END -> PeekAlignment.BottomEnd
+    ContentAlignment.TOP_START -> Alignment.TopStart
+    ContentAlignment.TOP_CENTER -> Alignment.TopCenter
+    ContentAlignment.TOP_END -> Alignment.TopEnd
+    ContentAlignment.CENTER_START -> Alignment.CenterStart
+    ContentAlignment.CENTER -> Alignment.Center
+    ContentAlignment.CENTER_END -> Alignment.CenterEnd
+    ContentAlignment.BOTTOM_START -> Alignment.BottomStart
+    ContentAlignment.BOTTOM_CENTER -> Alignment.BottomCenter
+    ContentAlignment.BOTTOM_END -> Alignment.BottomEnd
   }
 }
 
-private fun HorizontalAlignment.toPeekHorizontalAlignment(): PeekHorizontalAlignment {
+private fun HorizontalAlignment.toGlanceHorizontalAlignment(): Alignment.Horizontal {
   return when (this) {
-    HorizontalAlignment.START -> PeekAlignment.Start
-    HorizontalAlignment.CENTER -> PeekAlignment.CenterHorizontally
-    HorizontalAlignment.END -> PeekAlignment.End
+    HorizontalAlignment.START -> Alignment.Start
+    HorizontalAlignment.CENTER -> Alignment.CenterHorizontally
+    HorizontalAlignment.END -> Alignment.End
   }
 }
 
-private fun VerticalAlignment.toPeekVerticalAlignment(): PeekVerticalAlignment {
+private fun VerticalAlignment.toGlanceVerticalAlignment(): Alignment.Vertical {
   return when (this) {
-    VerticalAlignment.TOP -> PeekAlignment.Top
-    VerticalAlignment.CENTER -> PeekAlignment.CenterVertically
-    VerticalAlignment.BOTTOM -> PeekAlignment.Bottom
+    VerticalAlignment.TOP -> Alignment.Top
+    VerticalAlignment.CENTER -> Alignment.CenterVertically
+    VerticalAlignment.BOTTOM -> Alignment.Bottom
   }
 }
 
-private fun TextFontWeight.toPeekFontWeight(): PeekFontWeight {
+private fun TextFontWeight.toGlanceFontWeight(): FontWeight {
   return when (this) {
-    TextFontWeight.BOLD, TextFontWeight.W700, TextFontWeight.W800, TextFontWeight.W900 -> PeekFontWeight.Bold
-    TextFontWeight.NORMAL, TextFontWeight.W100, TextFontWeight.W200, TextFontWeight.W300, TextFontWeight.W400, TextFontWeight.W500, TextFontWeight.W600 -> PeekFontWeight.Normal
+    TextFontWeight.BOLD, TextFontWeight.W700, TextFontWeight.W800, TextFontWeight.W900 -> FontWeight.Bold
+    TextFontWeight.NORMAL, TextFontWeight.W100, TextFontWeight.W200, TextFontWeight.W300, TextFontWeight.W400, TextFontWeight.W500, TextFontWeight.W600 -> FontWeight.Normal
   }
 }
 
-private fun TextFontStyle.toPeekFontStyle(): PeekFontStyle {
+private fun TextFontStyle.toGlanceFontStyle(): FontStyle {
   return when (this) {
-    TextFontStyle.NORMAL -> PeekFontStyle.Normal
-    TextFontStyle.ITALIC -> PeekFontStyle.Italic
+    TextFontStyle.NORMAL -> FontStyle.Normal
+    TextFontStyle.ITALIC -> FontStyle.Italic
   }
 }
 
-private fun TextAlignType.toPeekTextAlign(): PeekTextAlign {
+private fun TextAlignType.toGlanceTextAlign(): TextAlign {
   return when (this) {
-    TextAlignType.LEFT -> PeekTextAlign.Left
-    TextAlignType.RIGHT -> PeekTextAlign.Right
-    TextAlignType.CENTER -> PeekTextAlign.Center
-    TextAlignType.JUSTIFY, TextAlignType.START -> PeekTextAlign.Start
+    TextAlignType.LEFT -> TextAlign.Left
+    TextAlignType.RIGHT -> TextAlign.Right
+    TextAlignType.CENTER -> TextAlign.Center
+    TextAlignType.JUSTIFY, TextAlignType.START -> TextAlign.Start
 
-    TextAlignType.END -> PeekTextAlign.End
+    TextAlignType.END -> TextAlign.End
   }
 }
 
-private fun TextDecorationType.toPeekTextDecoration(): PeekTextDecoration {
+private fun TextDecorationType.toGlanceTextDecoration(): TextDecoration {
   return when (this) {
-    TextDecorationType.NONE -> PeekTextDecoration.None
-    TextDecorationType.UNDERLINE -> PeekTextDecoration.Underline
-    TextDecorationType.LINE_THROUGH -> PeekTextDecoration.LineThrough
+    TextDecorationType.NONE -> TextDecoration.None
+    TextDecorationType.UNDERLINE -> TextDecoration.Underline
+    TextDecorationType.LINE_THROUGH -> TextDecoration.LineThrough
   }
 }
 
-private data class PeekTypography(
+private data class GlanceTypography(
   val fontSize: TextUnit,
-  val fontWeight: PeekFontWeight? = null,
-  val color: PeekColorProvider? = null
+  val fontWeight: FontWeight? = null,
+  val color: ColorProvider? = null
 )
 
-private fun TypographyStyle.toPeekTypography(): PeekTypography {
+private fun TypographyStyle.toGlanceTypography(): GlanceTypography {
   return when (this) {
-    TypographyStyle.DISPLAY_LARGE -> PeekTypography(fontSize = 57.sp)
-    TypographyStyle.DISPLAY_MEDIUM -> PeekTypography(fontSize = 45.sp)
-    TypographyStyle.DISPLAY_SMALL -> PeekTypography(fontSize = 36.sp)
-    TypographyStyle.HEADLINE_LARGE -> PeekTypography(fontSize = 32.sp)
-    TypographyStyle.HEADLINE_MEDIUM -> PeekTypography(fontSize = 28.sp)
-    TypographyStyle.HEADLINE_SMALL -> PeekTypography(fontSize = 24.sp)
-    TypographyStyle.TITLE_LARGE -> PeekTypography(fontSize = 22.sp)
-    TypographyStyle.TITLE_MEDIUM -> PeekTypography(fontSize = 16.sp)
-    TypographyStyle.TITLE_SMALL -> PeekTypography(fontSize = 14.sp)
-    TypographyStyle.BODY_LARGE -> PeekTypography(fontSize = 16.sp)
-    TypographyStyle.BODY_MEDIUM -> PeekTypography(fontSize = 14.sp)
-    TypographyStyle.BODY_SMALL -> PeekTypography(fontSize = 12.sp)
-    TypographyStyle.LABEL_LARGE -> PeekTypography(fontSize = 14.sp)
-    TypographyStyle.LABEL_MEDIUM -> PeekTypography(fontSize = 12.sp)
-    TypographyStyle.LABEL_SMALL -> PeekTypography(fontSize = 11.sp)
+    TypographyStyle.DISPLAY_LARGE -> GlanceTypography(fontSize = 57.sp)
+    TypographyStyle.DISPLAY_MEDIUM -> GlanceTypography(fontSize = 45.sp)
+    TypographyStyle.DISPLAY_SMALL -> GlanceTypography(fontSize = 36.sp)
+    TypographyStyle.HEADLINE_LARGE -> GlanceTypography(fontSize = 32.sp)
+    TypographyStyle.HEADLINE_MEDIUM -> GlanceTypography(fontSize = 28.sp)
+    TypographyStyle.HEADLINE_SMALL -> GlanceTypography(fontSize = 24.sp)
+    TypographyStyle.TITLE_LARGE -> GlanceTypography(fontSize = 22.sp)
+    TypographyStyle.TITLE_MEDIUM -> GlanceTypography(fontSize = 16.sp)
+    TypographyStyle.TITLE_SMALL -> GlanceTypography(fontSize = 14.sp)
+    TypographyStyle.BODY_LARGE -> GlanceTypography(fontSize = 16.sp)
+    TypographyStyle.BODY_MEDIUM -> GlanceTypography(fontSize = 14.sp)
+    TypographyStyle.BODY_SMALL -> GlanceTypography(fontSize = 12.sp)
+    TypographyStyle.LABEL_LARGE -> GlanceTypography(fontSize = 14.sp)
+    TypographyStyle.LABEL_MEDIUM -> GlanceTypography(fontSize = 12.sp)
+    TypographyStyle.LABEL_SMALL -> GlanceTypography(fontSize = 11.sp)
   }
 }
 
