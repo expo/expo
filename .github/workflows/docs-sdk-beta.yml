@@ -36,12 +36,12 @@ concurrency:
 env:
   # JS-only job, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
   SKIP_SKIA_DOWNLOAD: '1'
-  SDK_VERSION: ${{ inputs.sdkVersion || '99' }}
-  DRY_RUN: ${{ github.event_name != 'workflow_dispatch' || inputs.dryRun }}
+  SDK_VERSION: ${{ inputs.sdkVersion || '58' }}
+  DRY_RUN: ${{ inputs.dryRun || false }}
 
 jobs:
   beta:
-    if: github.repository == 'expo/expo'
+    if: github.repository == 'expo/expo' && !startsWith(github.head_ref, 'bot/')
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
@@ -60,7 +60,6 @@ jobs:
         id: expo-caches
         with:
           pnpm-docs: 'true'
-          docs-api-data: 'true'
       - name: 📦 Install workspace deps
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: 📦 Install tools deps
@@ -73,6 +72,11 @@ jobs:
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🛠 Build expotools
         run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 🛠 Build packages required by docs API data generation
+        run: pnpm turbo build --filter expo-task-manager
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
