@@ -11,6 +11,7 @@
 - Support lockscreen controls with playlists. ([#46020](https://github.com/expo/expo/pull/46020) by [@alanjhughes](https://github.com/alanjhughes))
 - Added a `fileSize` field to `RecorderState` reporting the current size of the recording file in bytes. ([#46808](https://github.com/expo/expo/pull/46808) by [@behenate](https://github.com/behenate))
 - Added `startFileRecordingAsync` and `stopFileRecordingAsync` methods to `AudioStream` for continuous WAV and PCM file recording alongside buffer streaming. ([#46771](https://github.com/expo/expo/pull/46771) by [@behenate](https://github.com/behenate))
+- [Android] Added an `onAudioFocusChanged` event so apps can tell a transient audio focus loss apart from a permanent one, which cannot be inferred from playback stopping or obtained in userland. ([#48310](https://github.com/expo/expo/pull/48310) by [@michaellcraig80-stack](https://github.com/michaellcraig80-stack))
 
 ### 🐛 Bug fixes
 
