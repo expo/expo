@@ -24,10 +24,6 @@ on:
         description: 'Validate and print the plan without writing anything'
         type: boolean
         default: false
-  pull_request:
-    paths:
-      - '.github/workflows/docs-sdk-beta.yml'
-      - 'docs/scripts/sdk-release/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -36,12 +32,12 @@ concurrency:
 env:
   # JS-only job, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
   SKIP_SKIA_DOWNLOAD: '1'
-  SDK_VERSION: ${{ inputs.sdkVersion || '58' }}
-  DRY_RUN: ${{ inputs.dryRun || false }}
+  SDK_VERSION: ${{ inputs.sdkVersion }}
+  DRY_RUN: ${{ inputs.dryRun }}
 
 jobs:
   beta:
-    if: github.repository == 'expo/expo' && !startsWith(github.head_ref, 'bot/')
+    if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
@@ -117,7 +113,7 @@ jobs:
           echo "::error::Some beta cutoff steps failed. Check the 'Cut beta docs' step log for details."
           exit 1
       - name: 🔔 Notify on Slack
-        if: failure() && github.event_name != 'pull_request'
+        if: failure()
         uses: ./.github/actions/slack-notify
         with:
           webhook: ${{ secrets.slack_webhook_docs }}
