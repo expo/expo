@@ -156,7 +156,7 @@ class ExpoAutolinkingConfigTest {
       "projects": [],
       "plugins": [
         {
-          "id": "some-plugin",
+          "id": "io.github.example.some-plugin",
           "group": "io.github.example",
           "version": "1.0.0",
           "applyToRootProject": true
@@ -172,6 +172,8 @@ class ExpoAutolinkingConfigTest {
 
     Truth.assertThat(plugin.sourceDir).isNull()
     Truth.assertThat(plugin.classpathCoordinate)
-      .isEqualTo("io.github.example:some-plugin:1.0.0")
+      .isEqualTo(
+        "io.github.example.some-plugin:io.github.example.some-plugin.gradle.plugin:1.0.0"
+      )
   }
 }

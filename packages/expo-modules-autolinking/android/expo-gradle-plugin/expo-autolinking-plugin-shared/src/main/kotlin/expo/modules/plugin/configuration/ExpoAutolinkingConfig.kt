@@ -146,7 +146,7 @@ data class GradlePlugin(
   val classpathCoordinate: String
     get() = when {
       sourceDir != null -> "$group:$id"
-      version != null -> "$group:$id:$version"
+      version != null -> "$id:$id.gradle.plugin:$version"
       else -> throw IllegalArgumentException(
         "The gradle plugin '$id' declares neither a 'sourceDir' nor a 'version'."
       )
