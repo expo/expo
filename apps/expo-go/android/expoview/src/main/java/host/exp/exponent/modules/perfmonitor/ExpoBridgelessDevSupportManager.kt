@@ -2,8 +2,9 @@ package host.exp.exponent.modules.perfmonitor
 
 import android.content.Context
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.SurfaceDelegateFactory
-import com.facebook.react.devsupport.BridgelessDevSupportManager
+import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.ReactInstanceDevHelper
 import com.facebook.react.devsupport.interfaces.DevBundleDownloadListener
 import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
@@ -24,7 +25,7 @@ internal class ExpoBridgelessDevSupportManager(
   devLoadingViewManager: DevLoadingViewManager?,
   pausedInDebuggerOverlayManager: PausedInDebuggerOverlayManager?
 ) :
-  BridgelessDevSupportManager(
+  DevSupportManagerBase(
     applicationContext,
     reactInstanceManagerHelper,
     packagerPathForJSBundleName,
@@ -40,6 +41,16 @@ internal class ExpoBridgelessDevSupportManager(
 
   private val perfController = PerfMonitorController(applicationContext) {
     devSettings.isFpsDebugEnabled = false
+  }
+
+  // Kept as "Bridgeless" because it keys persisted dev support state.
+  override val uniqueTag: String
+    get() = "Bridgeless"
+
+  override fun handleReloadJS() {
+    UiThreadUtil.assertOnUiThread()
+    hideRedboxDialog()
+    reactInstanceDevHelper.reload("ExpoBridgelessDevSupportManager.handleReloadJS()")
   }
 
   override fun setFpsDebugEnabled(isFpsDebugEnabled: Boolean) {
