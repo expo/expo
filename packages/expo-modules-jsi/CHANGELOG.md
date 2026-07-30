@@ -45,6 +45,7 @@
 
 ### 💡 Others
 
+- [iOS] `CppError::tryCatch` now takes a C++ callable instead of an Objective-C block. Every caller already passes a pure C++ body, so the block bridged no Swift closure and only added a non-inlinable indirect call and an Objective-C runtime dependency on the JS call/eval error-handling path. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptActor.assumeIsolated` no longer heap-allocates a closure box per call by keeping its `operation` non-escaping, making synchronous host calls ~1.6× faster. ([#47837](https://github.com/expo/expo/pull/47837) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Sync host functions no longer allocate a `JavaScriptRef` per call: the arguments buffer is now built inside the synchronous `assumeIsolated` closure instead of being boxed to cross the closure boundary, removing a heap allocation and its retain/release/dealloc from every host call (measured ~10% faster on the no-op `@JS` host-call floor). ([#46949](https://github.com/expo/expo/pull/46949) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptUnownedValue` and `JavaScriptValuesBuffer` now cache the runtime as the immortal `facebook.jsi.IRuntime` instead of the ARC-managed `JavaScriptRuntime` wrapper, removing per-call retain/release on the argument-decode hot path (measured ~16% faster `addNumbers`, ~24% faster `addStrings`). ([#46678](https://github.com/expo/expo/pull/46678) by [@tsapeta](https://github.com/tsapeta))
