@@ -4,11 +4,21 @@ import Testing
 
 @Suite("EXDevLauncherRecentlyOpenedAppsRegistry")
 struct EXDevLauncherRecentlyOpenedAppsRegistryTest {
+  /// A registry that backdates every entry it writes past the removal window.
+  class ThreeDaysAgoRegistry: EXDevLauncherRecentlyOpenedAppsRegistry {
+    override func getCurrentTimestamp() -> Int64 {
+      // 3 days and 1 second ago
+      return Int64((Date().timeIntervalSince1970 - (60 * 60 * 24 * 3) - 1) * 1_000)
+    }
+  }
+
+  // Tests run in parallel and the registry persists to `UserDefaults`, so each one gets its own
+  // storage key. Sharing a key lets a sibling test drop the entries this one wrote.
+  let storageKey = "expo.devlauncher.tests.\(UUID().uuidString)"
   let appsRegistry: EXDevLauncherRecentlyOpenedAppsRegistry
 
   init() {
-    appsRegistry = EXDevLauncherRecentlyOpenedAppsRegistry()
-    appsRegistry.resetStorage()
+    appsRegistry = EXDevLauncherRecentlyOpenedAppsRegistry(storageKey: storageKey)
   }
 
   @Test
@@ -44,5 +54,41 @@ struct EXDevLauncherRecentlyOpenedAppsRegistryTest {
 
     #expect(registerTimestamp <= now)
     #expect(registerTimestamp > now - 1_000)
+  }
+
+  @Test
+  func `app is added to the registry`() {
+    let urlString = "http://localhost:8081"
+
+    appsRegistry.appWasOpened(urlString, queryParams: [:], manifest: nil)
+
+    let recentlyOpenedApps = appsRegistry.recentlyOpenedApps()
+    #expect(recentlyOpenedApps[0]["url"] as? String == urlString)
+  }
+
+  @Test
+  func `registry is persisted between instances`() {
+    // instance of the registry class shouldn't matter
+    // if this fails, `old app is removed from the registry` could have a false positive
+    let urlString = "http://localhost:8081"
+
+    let registry1 = EXDevLauncherRecentlyOpenedAppsRegistry(storageKey: storageKey)
+    registry1.appWasOpened(urlString, queryParams: [:], manifest: nil)
+
+    let registry2 = EXDevLauncherRecentlyOpenedAppsRegistry(storageKey: storageKey)
+    let recentlyOpenedApps = registry2.recentlyOpenedApps()
+
+    #expect(recentlyOpenedApps[0]["url"] as? String == urlString)
+  }
+
+  @Test
+  func `old app is removed from the registry`() {
+    let urlString = "http://localhost:8081"
+
+    let registryOld = ThreeDaysAgoRegistry(storageKey: storageKey)
+    registryOld.appWasOpened(urlString, queryParams: [:], manifest: nil)
+
+    let registryNew = EXDevLauncherRecentlyOpenedAppsRegistry(storageKey: storageKey)
+    #expect(registryNew.recentlyOpenedApps().count == 0)
   }
 }
