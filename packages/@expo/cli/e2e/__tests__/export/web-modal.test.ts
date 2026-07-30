@@ -26,7 +26,6 @@ describe.each(['0', '1'])(
           NODE_ENV: 'production',
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'web-modal',
-          E2E_ROUTER_ASYNC: 'production',
           EXPO_UNSTABLE_WEB_MODAL,
         },
       });

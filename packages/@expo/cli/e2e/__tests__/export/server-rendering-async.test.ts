@@ -22,7 +22,6 @@ describe('server rendering with async routes', () => {
       export: {
         env: {
           EXPO_USE_STATIC: 'server',
-          E2E_ROUTER_ASYNC: 'true',
           E2E_ROUTER_SERVER_RENDERING: 'true',
         },
       },

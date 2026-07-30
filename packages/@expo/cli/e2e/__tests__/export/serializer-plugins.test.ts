@@ -25,7 +25,6 @@ describe('exports with serializer plugins', () => {
           E2E_USE_MOCK_SERIALIZER_PLUGINS: '1',
           EXPO_USE_STATIC: 'static',
           E2E_ROUTER_SRC: 'modal-splitting',
-          E2E_ROUTER_ASYNC: 'production',
         },
       }
     );
