@@ -30,8 +30,6 @@ This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvi
 
 > **info** The native UI components in `@clerk/expo/native` are currently in beta. They render with Jetpack Compose on Android and SwiftUI on iOS and they synchronize the signed-in session back to the JavaScript SDK so all `@clerk/expo` hooks (such as `useAuth()` and `useUser()`) stay in sync.
 
-The custom flow approach runs in Expo Go as-is. Adding native Sign in with Google or Sign in with Apple buttons to it requires a development build because those hooks use native modules.
-
 ## Prerequisites
 
 <Prerequisites>
@@ -406,16 +404,30 @@ In Core 3, methods such as `signUp.password()` and `signUp.verifications.verifyE
 The corresponding sign-in flow uses `useSignIn()`, where `finalize()` accepts a `navigate` callback so you can handle [session tasks](https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks) before redirecting:
 
 ```tsx
-const { error } = await signIn.password({ emailAddress, password });
-if (error) return;
+import { useSignIn } from '@clerk/expo';
+import { type Href, useRouter } from 'expo-router';
 
-if (signIn.status === 'complete') {
-  await signIn.finalize({
-    navigate: ({ session, decorateUrl }) => {
-      if (session?.currentTask) return; // let the session task layer handle it
-      router.replace(decorateUrl('/') as Href);
-    },
-  });
+export default function SignInScreen() {
+  const { signIn } = useSignIn();
+  const router = useRouter();
+
+  const handleSignIn = async (emailAddress: string, password: string) => {
+    const { error } = await signIn.password({ emailAddress, password });
+    if (error) {
+      return;
+    }
+
+    if (signIn.status === 'complete') {
+      await signIn.finalize({
+        navigate: ({ session, decorateUrl }) => {
+          if (session?.currentTask) return; // let the session task layer handle it
+          router.replace(decorateUrl('/') as Href);
+        },
+      });
+    }
+  };
+
+  // ... render your email and password fields
 }
 ```
 
@@ -462,7 +474,22 @@ export default function HomeScreen() {
 
 ## Run the app
 
-<Tabs tabs={['Android', 'iOS', 'Expo Go']}>
+<Tabs tabs={['Expo Go', 'Android', 'iOS']}>
+
+<Tab>
+
+For the hosted authentication and custom flow approaches, run the following command and open the project in Expo Go:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+</Tab>
 
 <Tab>
 
@@ -485,21 +512,6 @@ export default function HomeScreen() {
     yarn: ['$ yarn expo run:ios'],
     pnpm: ['$ pnpm expo run:ios'],
     bun: ['$ bun expo run:ios'],
-  }}
-/>
-
-</Tab>
-
-<Tab>
-
-For the hosted authentication and custom flow approaches, run the following command and open the project in Expo Go:
-
-<Terminal
-  cmd={{
-    npm: ['$ npx expo start'],
-    yarn: ['$ yarn expo start'],
-    pnpm: ['$ pnpm expo start'],
-    bun: ['$ bun expo start'],
   }}
 />
 
