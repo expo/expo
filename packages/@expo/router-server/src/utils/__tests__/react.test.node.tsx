@@ -23,6 +23,18 @@ describe(createFaviconAsNode, () => {
       ReactDOMServer.renderToStaticMarkup(createFaviconAsNode('/favicon.ico') as ReactElement)
     ).toBe('<link rel="icon" href="/favicon.ico"/>');
   });
+
+  it('adds `type="image/svg+xml"` for .svg hrefs', () => {
+    expect(
+      ReactDOMServer.renderToStaticMarkup(createFaviconAsNode('/favicon.svg') as ReactElement)
+    ).toBe('<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>');
+  });
+
+  it('matches .SVG case-insensitively', () => {
+    expect(
+      ReactDOMServer.renderToStaticMarkup(createFaviconAsNode('/FAVICON.SVG') as ReactElement)
+    ).toBe('<link rel="icon" type="image/svg+xml" href="/FAVICON.SVG"/>');
+  });
 });
 
 describe(createInjectedExternalCssAsNodes, () => {

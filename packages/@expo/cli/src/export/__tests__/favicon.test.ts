@@ -16,9 +16,15 @@ const { getUserDefinedFile } = jest.requireMock('../publicFolder') as {
   getUserDefinedFile: jest.Mock;
 };
 
+const SVG_CONTENT = Buffer.from('<svg xmlns="http://www.w3.org/2000/svg"></svg>');
+
 describe(generateFaviconAssetAsync, () => {
   beforeEach(() => {
     getUserDefinedFile.mockReturnValue(null);
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   it('returns `null` when the user already supplied a `public/favicon.ico`', async () => {
@@ -71,5 +77,43 @@ describe(generateFaviconAssetAsync, () => {
     } finally {
       fsMock.mockRestore();
     }
+  });
+
+  it('copies `.svg` files raw with `.svg` extension', async () => {
+    const files: ExportAssetMap = new Map();
+    const readFileMock = jest
+      .spyOn(require('fs').promises, 'readFile')
+      .mockResolvedValue(SVG_CONTENT);
+
+    const result = await generateFaviconAssetAsync('/project', {
+      baseUrl: '',
+      outputDir: '/out',
+      files,
+      exp: { name: '', slug: '', web: { favicon: './assets/favicon.svg' } } as any,
+    });
+
+    expect(result).toEqual({ href: '/favicon.svg' });
+    expect(files.get('favicon.svg')).toEqual({
+      contents: SVG_CONTENT,
+      targetDomain: 'client',
+    });
+    expect(readFileMock).toHaveBeenCalledWith(path.resolve('/project', './assets/favicon.svg'));
+  });
+
+  it('returns `null` with a warning when SVG source file is missing and not forced', async () => {
+    const warnMock = jest.spyOn(require('../log').Log, 'warn').mockImplementation(() => {});
+    jest.spyOn(require('fs').promises, 'readFile').mockRejectedValue({ code: 'ENOENT' });
+
+    const result = await generateFaviconAssetAsync('/project', {
+      baseUrl: '',
+      outputDir: '/out',
+      exp: { name: '', slug: '', web: { favicon: './missing.svg' } } as any,
+    });
+
+    expect(result).toBeNull();
+    expect(warnMock).toHaveBeenCalledWith(
+      'Favicon source file in Expo config (web.favicon) does not exist: ./missing.svg'
+    );
+    warnMock.mockRestore();
   });
 });
