@@ -4,10 +4,25 @@ on:
   workflow_dispatch: {}
   schedule:
     - cron: '0 8 * * *' # 8:00 AM UTC time every day
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/validate-npm-owners.yml
+      - tools/src/commands/ValidateNpmOwnersCommand.ts
+  pull_request:
+    paths:
+      - .github/workflows/validate-npm-owners.yml
+      - tools/src/commands/ValidateNpmOwnersCommand.ts
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate-npm-owners:
-    if: github.repository == 'expo/expo'
+    # Fork PRs have no access to `NPM_TOKEN_READ_ONLY`, so the command could
+    # not authenticate and would always fail. Skip them.
+    if: github.repository == 'expo/expo' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'expo/expo')
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
@@ -39,7 +54,9 @@ jobs:
           NPM_TOKEN_READ_ONLY: ${{ secrets.NPM_TOKEN_READ_ONLY }}
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
-        if: failure()
+        # Only the scheduled run guards the organization; a failure on a PR or
+        # push belongs to its author, not to the Slack channel.
+        if: failure() && github.event_name == 'schedule'
         with:
           webhook: ${{ secrets.slack_webhook_api }}
           author_name: Validate npm owners
