@@ -123,19 +123,45 @@ class AudioModule : Module() {
         AudioManager.AUDIOFOCUS_GAIN -> {
           focusAcquired = true
 
-          if (!shouldPlayInSilentMode()) {
-            return@launch
-          }
-
-          allPlayables.forEach { playable ->
-            playable.setVolume(playable.previousVolume)
-            if (playable.isPaused) {
-              playable.isPaused = false
-              playable.play()
+          // NOTE: this was an early `return@launch`. It is a positive condition so
+          // that the event emitted below is not skipped on this path. Behaviour is
+          // unchanged.
+          if (shouldPlayInSilentMode()) {
+            allPlayables.forEach { playable ->
+              playable.setVolume(playable.previousVolume)
+              if (playable.isPaused) {
+                playable.isPaused = false
+                playable.play()
+              }
             }
           }
         }
       }
+
+      // Emitted AFTER the branches above have handled the change, deliberately.
+      //
+      // Emitting first would let a JS listener pause a player while `focusAcquired`
+      // is still true, and `AudioPlayer.onPlaybackStateChange` then reaches
+      // `releaseAudioFocus()` and abandons the request. Every loss branch above
+      // clears `focusAcquired` before pausing, which is what keeps a later
+      // AUDIOFOCUS_GAIN deliverable, so abandoning it here would mean the app never
+      // hears that focus came back.
+      sendEvent(
+        "onAudioFocusChanged",
+        mapOf(
+          "reason" to when (focusChange) {
+            AudioManager.AUDIOFOCUS_LOSS -> "loss"
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> "lossTransient"
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> "lossTransientCanDuck"
+            AudioManager.AUDIOFOCUS_GAIN,
+            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT,
+            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK,
+            AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_EXCLUSIVE -> "gain"
+            else -> "unknown"
+          },
+          "interruptionMode" to interruptionMode?.value
+        )
+      )
     }
   }
 
@@ -225,6 +251,8 @@ class AudioModule : Module() {
   @OptIn(DelicateCoroutinesApi::class)
   override fun definition() = ModuleDefinition {
     Name("ExpoAudio")
+
+    Events("onAudioFocusChanged")
 
     OnCreate {
       audioManager = appContext.reactContext?.getSystemService(Context.AUDIO_SERVICE) as AudioManager
