@@ -9,6 +9,8 @@ import { fileURLToPath } from 'node:url';
 const SDK_INPUT = /^(\d{2})(?:\.0\.0)?$/;
 const LLMS_SOURCE_URL = 'https://docs.expo.dev/llms-sdk.txt';
 const LLMS_MIN_BYTES = 500_000;
+const EXPO_REGISTRY_URL = 'https://registry.npmjs.org/expo';
+const CANARY_EXAMPLE = /`\d+\.\d+\.\d+-canary-\d{8}-[\da-f]+`/;
 
 const docsDir = process.cwd();
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
@@ -195,6 +197,50 @@ function expotools(args: string[]) {
 }
 
 const notes: string[] = [];
+
+async function updateCanaryExampleAsync() {
+  const indexPath = join(docsDir, 'pages', 'versions', 'unversioned', 'index.mdx');
+  const page = readFileSync(indexPath, 'utf8');
+  const current = CANARY_EXAMPLE.exec(page);
+
+  if (!current) {
+    throw new Error(
+      'Could not find a canary version example in pages/versions/unversioned/index.mdx. The Canary ' +
+        'releases wording may have changed, so the example was left alone.'
+    );
+  }
+
+  const response = await fetch(EXPO_REGISTRY_URL);
+  if (!response.ok) {
+    throw new Error(
+      `Could not read the expo package from ${EXPO_REGISTRY_URL} (HTTP ${response.status}), so the ` +
+        'canary example could not be refreshed.'
+    );
+  }
+
+  const registry = (await response.json()) as Record<string, Record<string, string> | undefined>;
+  const canary = registry['dist-tags']?.canary;
+
+  if (!canary) {
+    throw new Error(
+      `${EXPO_REGISTRY_URL} has no canary dist-tag, so there is no published version to copy.`
+    );
+  }
+
+  if (canary === current[0].replaceAll('`', '')) {
+    notes.push(`Canary example was already \`${canary}\`.`);
+    return;
+  }
+
+  writeFileSync(indexPath, page.replace(CANARY_EXAMPLE, `\`${canary}\``));
+
+  notes.push(
+    canary.startsWith(`${major}.`)
+      ? `Canary example updated to \`${canary}\` (was ${current[0]}).`
+      : `Canary example updated to \`${canary}\` (was ${current[0]}), but that is not an SDK ${major} ` +
+          `build. Re-run this once main publishes a ${version} canary.`
+  );
+}
 
 function regenerateUnversionedApiData() {
   expotools(['generate-docs-api-data']);
@@ -401,6 +447,7 @@ const steps: {
   preview?: () => void;
   skip?: boolean;
 }[] = [
+  { label: 'Refresh the canary example on the Reference index', run: updateCanaryExampleAsync },
   { label: 'Regenerate unversioned API data', run: regenerateUnversionedApiData },
   { label: `Generate ${versionDir} reference docs`, run: generateVersionedDocs },
   { label: 'Sync app config schema and repoint the import', run: syncAppConfigSchema },
