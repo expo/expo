@@ -28,9 +28,7 @@ const EXAMPLE_BUILD_GRADLE = `
   }
   `;
 
-// Recent React Native Android templates define the applicationId and namespace
-// using the Gradle assignment form rather than the legacy method-call form.
-const EXAMPLE_BUILD_GRADLE_ASSIGNMENT = `
+const EXAMPLE_BUILD_GRADLE_ASSIGNMENT_FORM = `
   android {
       compileSdkVersion rootProject.ext.compileSdkVersion
       buildToolsVersion rootProject.ext.buildToolsVersion
@@ -58,44 +56,29 @@ describe('package', () => {
     expect(getPackage({ android: { package: 'com.example.xyz' } })).toBe('com.example.xyz');
   });
 
-  it(`returns the applicationId defined in build.gradle`, () => {
-    const projectRoot = '/';
-    vol.fromJSON(rnFixture, projectRoot);
-
-    expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
-  });
-
   describe.each([
-    ['method-call', EXAMPLE_BUILD_GRADLE, "applicationId 'my.new.app'", "namespace 'my.new.app'"],
-    [
-      'assignment',
-      EXAMPLE_BUILD_GRADLE_ASSIGNMENT,
-      "applicationId = 'my.new.app'",
-      "namespace = 'my.new.app'",
-    ],
-  ])(
-    `with Gradle %s syntax`,
-    (_syntax, buildGradle, expectedApplicationId, expectedNamespace) => {
-      it(`returns the applicationId defined in build.gradle`, async () => {
-        const projectRoot = '/';
-        vol.fromJSON({ 'android/app/build.gradle': buildGradle }, projectRoot);
+    ['method-call', EXAMPLE_BUILD_GRADLE, ' '],
+    ['assignment', EXAMPLE_BUILD_GRADLE_ASSIGNMENT_FORM, ' = '],
+  ])(`with Gradle %s syntax`, (_syntax, buildGradle, separator) => {
+    it(`returns the applicationId defined in build.gradle`, async () => {
+      const projectRoot = '/';
+      vol.fromJSON({ 'android/app/build.gradle': buildGradle }, projectRoot);
 
-        await expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
-      });
+      await expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
+    });
 
-      it(`sets the applicationId in build.gradle if package is given`, () => {
-        expect(setPackageInBuildGradle({ android: { package: 'my.new.app' } }, buildGradle)).toMatch(
-          expectedApplicationId
-        );
-      });
+    it(`sets the applicationId in build.gradle if package is given`, () => {
+      expect(setPackageInBuildGradle({ android: { package: 'my.new.app' } }, buildGradle)).toMatch(
+        `applicationId${separator}'my.new.app'`
+      );
+    });
 
-      it(`sets the namespace in build.gradle if package is given`, () => {
-        expect(setPackageInBuildGradle({ android: { package: 'my.new.app' } }, buildGradle)).toMatch(
-          expectedNamespace
-        );
-      });
-    }
-  );
+    it(`sets the namespace in build.gradle if package is given`, () => {
+      expect(setPackageInBuildGradle({ android: { package: 'my.new.app' } }, buildGradle)).toMatch(
+        `namespace${separator}'my.new.app'`
+      );
+    });
+  });
 });
 
 describe(renamePackageOnDiskForType, () => {

@@ -238,9 +238,6 @@ export function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, bui
     return buildGradle;
   }
 
-  // Match either declaration syntax, preserving the original separator so the
-  // method-call form stays `applicationId '...'` and the assignment form stays
-  // `applicationId = '...'`.
   const pattern = new RegExp(`(applicationId|namespace)(\\s*=\\s*|\\s+)['"].*['"]`, 'g');
   return buildGradle.replace(pattern, `$1$2'${packageName}'`);
 }
@@ -252,8 +249,7 @@ export async function getApplicationIdAsync(projectRoot: string): Promise<string
   }
   const buildGradle = await fs.promises.readFile(buildGradlePath, 'utf8');
   // Match both the legacy method-call form (`applicationId "com.app"`) and the
-  // Gradle assignment form (`applicationId = "com.app"`) emitted by recent
-  // React Native Android templates.
+  // Gradle assignment form (`applicationId = "com.app"`)
   const matchResult = buildGradle.match(/applicationId\s*=?\s*['"](.*)['"]/);
   // TODO add fallback for legacy cases to read from AndroidManifest.xml
   return matchResult?.[1] ?? null;
