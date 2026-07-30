@@ -37,6 +37,13 @@ const path = require('path');
 
 const { resolveExpoModules, generateModulesProvider } = require('./cli');
 const { collectWatchPaths, findModuleRoot, moduleNeedsReact, isPureSwift } = require('./classify');
+const {
+  classifyUnsupported,
+  collectUnmappedDependencies,
+  renderUnmappedDependencyWarning,
+  reportUnsupported,
+  spmConfigProduct,
+} = require('./diagnostics');
 const { prepareCompileInterfaces, resolveFlavoredFramework } = require('./flavored-frameworks');
 const { emitSourceManifestPackage, emitPureSwiftSourcePackage } = require('./manifests');
 const { scriptPhasesForModules } = require('./script-phases');
@@ -84,7 +91,7 @@ module.exports = function expoSpmPlugin(context) {
   const reactWired = []; // pods that got React wired (for logging)
   const sourceManifest = []; // packages emitted from a checked-in manifest
   const pureSwiftSource = []; // packages emitted from a pure-Swift descriptor
-  const stillPending = []; // source pods with no manifest and not pure-Swift
+  const unmappedDeps = []; // emitted pods depending on pods with no SwiftPM counterpart
 
   // Pass 1 — precompiled runtime frameworks. The declaration is all-or-nothing:
   // once one flavor exists, the resolver requires and prepares both before RN
@@ -118,7 +125,8 @@ module.exports = function expoSpmPlugin(context) {
 
   // Pass 2 — invariant source modules. They compile against the generated
   // headers/module-interface tree and leave runtime linking entirely to RN.
-  if (precompiledFrameworks.has('ExpoModulesCore') && frameworkSearchPath != null) {
+  const coreAvailable = precompiledFrameworks.has('ExpoModulesCore') && frameworkSearchPath != null;
+  if (coreAvailable) {
     for (const mod of modules) {
       const pods = mod.pods ?? [];
       if (!pods.length || pods.every((p) => emitted.has(p.podName))) continue;
@@ -159,13 +167,37 @@ module.exports = function expoSpmPlugin(context) {
           if (react != null) reactWired.push(pod.podName);
         }
       }
+
+      if (emitted.has(pod.podName)) {
+        const unmapped = collectUnmappedDependencies(pod.podspecDir);
+        if (unmapped.length > 0) {
+          unmappedDeps.push({
+            packageName: mod.packageName,
+            podName: pod.podName,
+            pods: unmapped,
+          });
+        }
+      }
     }
   }
 
-  // Whatever's left is mixed Swift/ObjC with no xcframework and no manifest.
+  // Anything still uncovered has no xcframework and no way to be built from
+  // source. Collect the facts each diagnostic needs, then report and fail —
+  // dropping a module here would surface as a runtime "Cannot find native
+  // module" instead of a build error.
+  const pending = [];
   for (const mod of modules) {
     for (const pod of mod.pods ?? []) {
-      if (!emitted.has(pod.podName)) stillPending.push(pod.podName);
+      if (emitted.has(pod.podName)) continue;
+      const moduleRoot = findModuleRoot(pod.podspecDir);
+      pending.push({
+        podName: pod.podName,
+        packageName: mod.packageName,
+        moduleRoot,
+        pureSwift: isPureSwift(moduleRoot),
+        hasSources: ['ios', 'apple'].some((s) => fs.existsSync(path.join(moduleRoot, s))),
+        prebuildProduct: spmConfigProduct(moduleRoot, pod.podName),
+      });
     }
   }
 
@@ -182,12 +214,20 @@ module.exports = function expoSpmPlugin(context) {
     `[expo-spm-plugin] React wired into (${reactWired.length}): ${reactWired.join(', ') || '—'}`
   );
   console.log(
-    `[expo-spm-plugin] still pending — mixed, no manifest (${stillPending.length}): ${stillPending.join(', ') || '—'}`
+    `[expo-spm-plugin] not supported (${pending.length}): ${pending.map((p) => p.podName).join(', ') || '—'}`
   );
+  if (unmappedDeps.length > 0) {
+    console.warn(renderUnmappedDependencyWarning(unmappedDeps));
+  }
   if (react == null) {
     console.warn(
       '[expo-spm-plugin] WARNING: context.react is null — no React dependency available.'
     );
+  }
+
+  const unsupported = reportUnsupported(classifyUnsupported({ pending, coreAvailable }));
+  if (unsupported != null) {
+    throw unsupported;
   }
 
   // ExpoModulesProvider.swift — the module registry. Written to a stable path and
