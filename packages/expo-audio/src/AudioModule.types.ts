@@ -20,9 +20,55 @@ import type { AudioLockScreenOptions } from './AudioConstants';
 import type { AudioStream } from './AudioStream.types';
 
 /**
+ * Why the system audio focus changed.
+ *
+ * - `'loss'`: focus was lost for the foreseeable future, for example another app
+ *   started playing music. Playback is not expected to resume on its own.
+ * - `'lossTransient'`: focus was lost briefly, for example an incoming call. The
+ *   system is expected to hand focus back with `'gain'`.
+ * - `'lossTransientCanDuck'`: another app wants focus but is happy for this app to
+ *   keep playing quietly. Whether the audio is ducked or paused depends on
+ *   `interruptionMode`.
+ * - `'gain'`: focus was regained after a loss.
+ * @platform android
+ */
+export type AudioFocusChangeReason =
+  | 'loss'
+  | 'lossTransient'
+  | 'lossTransientCanDuck'
+  | 'gain'
+  | 'unknown';
+
+/**
+ * @platform android
+ */
+export type AudioFocusChangeEvent = {
+  /** Why the focus changed. */
+  reason: AudioFocusChangeReason;
+  /** The interruption mode in effect when the change happened, which determines whether a duck request ducks or pauses. */
+  interruptionMode: AudioMode['interruptionMode'] | null;
+};
+
+/**
  * @hidden
  */
-export declare class NativeAudioModule extends NativeModule {
+export type AudioModuleEvents = {
+  /**
+   * Fires when the system audio focus changes.
+   *
+   * The module already handles focus changes internally (pausing, ducking and
+   * resuming). This event exists so an app can tell a brief interruption apart from
+   * a permanent one, which it cannot infer from playback simply stopping, and decide
+   * for itself whether resuming is appropriate.
+   * @platform android
+   */
+  onAudioFocusChanged(event: AudioFocusChangeEvent): void;
+};
+
+/**
+ * @hidden
+ */
+export declare class NativeAudioModule extends NativeModule<AudioModuleEvents> {
   setIsAudioActiveAsync(active: boolean): Promise<void>;
   setAudioModeAsync(category: Partial<AudioMode>): Promise<void>;
   requestRecordingPermissionsAsync(): Promise<PermissionResponse>;
