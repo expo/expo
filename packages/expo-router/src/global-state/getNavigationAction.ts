@@ -36,7 +36,7 @@ export function getNavigateAction(
   href = resolveHrefStringWithSegments(href, store.getRouteInfo(), options);
   href = applyRedirects(href, store.redirects) ?? undefined;
 
-  // If the href is undefined, it means that the redirect has already been handled the navigation
+  // If the href is undefined, it means that the redirect has already been handled by the navigation
   if (!href) {
     return;
   }

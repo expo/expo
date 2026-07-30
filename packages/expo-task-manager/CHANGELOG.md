@@ -9,6 +9,9 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix a crash when a task execution request is evaluated re-entrantly, by making its completion callback fire exactly once. ([#47594](https://github.com/expo/expo/pull/47594) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Clear headless task manager on context destroy ([#47958](https://github.com/expo/expo/pull/47958) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Fix `TaskService` leaking a `TaskExecutionCallback` (and the `JobService` it retains) for every executed background task. ([#47844](https://github.com/expo/expo/pull/47844) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Fix a crash on Android 9 when delivering a task event through `JobScheduler` (geofencing, background location), where the job was built without the scheduling constraint that `JobInfo.Builder.build()` requires. ([#48305](https://github.com/expo/expo/pull/48305) by [@rvaccone](https://github.com/rvaccone))
 
 ### 💡 Others
 

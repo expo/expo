@@ -137,7 +137,7 @@ export async function prebuildAsync(
       Log.log(chalk.gray('  ' + changedDependencies.join(', ')));
 
       // Installing dependencies is a legacy feature from the unversioned
-      // command. We know opt to not change dependencies unless a template
+      // command. We now opt to not change dependencies unless a template
       // indicates a new dependency is required, or if the core dependencies are wrong.
       if (
         await confirmAsync({

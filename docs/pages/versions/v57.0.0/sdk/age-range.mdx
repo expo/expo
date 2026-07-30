@@ -58,7 +58,7 @@ For existing React Native projects, add the entitlement to your project's **ios/
 
 ## Usage
 
-<SnackInline label="Age Range Usage" dependencies={['expo-age-range']} platforms={['android', 'ios']}>
+<SnackInline label="Age Range usage" dependencies={['expo-age-range']} platforms={['android', 'ios']}>
 
 ```tsx
 import * as AgeRange from 'expo-age-range';
@@ -83,7 +83,7 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <Button title="Request Age Range" onPress={requestAgeRange} />
+      <Button title="Request age range" onPress={requestAgeRange} />
       {result && (
         <Text style={styles.result}>
           {'error' in result ? `Error: ${result.error}` : `Lower age bound: ${result.lowerBound}`}

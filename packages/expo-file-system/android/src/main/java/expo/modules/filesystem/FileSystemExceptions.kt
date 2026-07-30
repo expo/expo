@@ -41,6 +41,9 @@ internal class UnsupportedContentUriReadWriteException :
       "Use READ or WRITE mode instead."
   )
 
+internal class UnsupportedDigestAlgorithmException(algorithm: String) :
+  CodedException("Unsupported digest algorithm: '$algorithm'.")
+
 internal class MissingAppContextException :
   CodedException("The app context is missing.")
 

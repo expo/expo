@@ -108,9 +108,9 @@ const getModuleDescriptionWithResolver = (
     : null;
 };
 
-/** Creates a fallback module resolver that resolves dependencis of modules named in `originModuleNames` via their path.
+/** Creates a fallback module resolver that resolves dependencies of modules named in `originModuleNames` via their path.
  * @remarks
- * The fallback resolver targets modules dependended on by modules named in `originModuleNames` and resolves
+ * The fallback resolver targets modules depended on by modules named in `originModuleNames` and resolves
  * them from the module root of these origin modules instead.
  * It should only be used as a fallback after normal Node resolution (and other resolvers) have failed for:
  * - the `expo` package

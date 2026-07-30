@@ -70,7 +70,7 @@ public class ArgumentsNotificationContentBuilder extends NotificationContent.Bui
     try {
       return payload.containsKey(COLOR_KEY) ? Color.parseColor(payload.getString(COLOR_KEY)) : null;
     } catch (IllegalArgumentException e) {
-      Log.e("expo-notifications", "Could not have parsed color passed in notification.");
+      Log.e("expo-notifications", "Could not parse color passed in notification.");
       return null;
     }
   }

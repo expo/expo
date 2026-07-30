@@ -70,7 +70,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         role="listitem"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate text-pretty! focus-visible:relative focus-visible:z-10"
+          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#base-level-heading"
         >
@@ -87,7 +87,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         role="listitem"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
+          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#level-3-subheading"
         >
@@ -104,7 +104,7 @@ exports[`TableOfContents correctly matches snapshot 1`] = `
         role="listitem"
       >
         <a
-          class="mb-1.5 flex items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
+          class="mb-1 flex min-h-6 items-center justify-between truncate text-pretty! pl-3 focus-visible:relative focus-visible:z-10"
           data-state="closed"
           href="#code-heading-depth-1"
         >

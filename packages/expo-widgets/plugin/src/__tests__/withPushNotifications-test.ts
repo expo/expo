@@ -1,7 +1,7 @@
 import { type InfoPlist, withEntitlementsPlist, withInfoPlist } from 'expo/config-plugins';
 
-import { mockModWithResults } from './mockMods';
 import withPushNotifications from '../ios/withPushNotifications';
+import { mockModWithResults } from './mockMods';
 
 jest.mock('expo/config-plugins', () => {
   const plugins = jest.requireActual('expo/config-plugins');

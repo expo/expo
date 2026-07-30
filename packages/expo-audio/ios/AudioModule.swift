@@ -231,8 +231,8 @@ public class AudioModule: Module {
         }
       }
 
-      Function("replace") { (player, source: AudioSource) in
-        if let uri = source.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
+      Function("replace") { (player, source: AudioSource?) in
+        if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
           let cachedItem = cachedPlayer.currentItem
           cachedPlayer.replaceCurrentItem(with: nil)
           player.replaceWithPreloadedItem(cachedItem)

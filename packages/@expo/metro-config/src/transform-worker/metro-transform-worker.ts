@@ -846,7 +846,7 @@ export function getCacheKey(
   opts?: Readonly<{ projectRoot: string }>
 ): string {
   const {
-    // The `expo_customTransformerPath` from `./supervising-transform-worker` should not participate be part of the cache key
+    // The `expo_customTransformerPath` from `./supervising-transform-worker` should not be part of the cache key
     expo_customTransformerPath: _customTransformerPath,
     babelTransformerPath,
     minifierPath,

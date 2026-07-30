@@ -8,8 +8,16 @@ jest.unstable_mockModule('~/ui/components/ExpoSkillsTable/data/expo-skills.json'
       url: 'https://api.github.com/repos/expo/skills/contents/plugins/expo/skills',
       fetchedAt: '2026-01-01T00:00:00.000Z',
     },
-    totalSkills: 3,
+    totalSkills: 4,
     skills: [
+      {
+        name: 'skill-with-code',
+        category: 'framework',
+        description:
+          'Scaffold from the repo of ~70 `with-*` integrations (Stripe and more). Use when adapting canonical patterns.',
+        githubUrl:
+          'https://github.com/expo/skills/blob/main/plugins/expo/skills/skill-with-code/SKILL.md',
+      },
       {
         name: 'skill-multi-sentence',
         category: 'eas',
@@ -89,5 +97,50 @@ describe('RelatedSkills', () => {
     render(<RelatedSkills names={['skill-no-period']} />);
 
     expect(screen.getByText('Trailing period is missing.')).toBeInTheDocument();
+  });
+
+  it('uses a custom description from the descriptions prop', () => {
+    render(
+      <RelatedSkills
+        names={['skill-multi-sentence']}
+        descriptions={{ 'skill-multi-sentence': 'Custom short line.' }}
+      />
+    );
+
+    expect(screen.getByText('Custom short line.')).toBeInTheDocument();
+    expect(screen.queryByText('Build things quickly.')).not.toBeInTheDocument();
+  });
+
+  it('renders backtick spans in a synced description as code', () => {
+    const { container } = render(<RelatedSkills names={['skill-with-code']} />);
+
+    const code = screen.getByText('with-*');
+    expect(code.tagName).toBe('CODE');
+    expect(container.textContent).not.toContain('`');
+  });
+
+  it('renders backtick spans in a custom description as code', () => {
+    const { container } = render(
+      <RelatedSkills
+        names={['skill-single-sentence']}
+        descriptions={{ 'skill-single-sentence': 'Configure `expo-observe` quickly.' }}
+      />
+    );
+
+    const code = screen.getByText('expo-observe');
+    expect(code.tagName).toBe('CODE');
+    expect(container.textContent).not.toContain('`');
+  });
+
+  it('falls back to the first sentence for skills without a custom description', () => {
+    render(
+      <RelatedSkills
+        names={['skill-multi-sentence', 'skill-single-sentence']}
+        descriptions={{ 'skill-multi-sentence': 'Custom short line.' }}
+      />
+    );
+
+    expect(screen.getByText('Custom short line.')).toBeInTheDocument();
+    expect(screen.getByText('Set up a single thing.')).toBeInTheDocument();
   });
 });

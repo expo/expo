@@ -134,7 +134,7 @@ async function downloadAndExtractRepoAsync(
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
   // Only extract the relevant (sub)directories, ignoring irrelevant files
-  // The filder auto-ignores dotfiles, unless explicitly included
+  // The filter auto-ignores dotfiles, unless explicitly included
   const filter = createGlobFilter(
     !directory.length
       ? ['*/**', '*/ios/.xcode.env']

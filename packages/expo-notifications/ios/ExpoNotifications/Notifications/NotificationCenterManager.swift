@@ -50,7 +50,7 @@ public class NotificationCenterManager: NSObject,
     super.init()
     if UNUserNotificationCenter.current().delegate != nil {
       NSLog(
-        "[expo-notifications] NotificationCenterManager encountered already present delegate of " +
+        "[expo-notifications] NotificationCenterManager encountered an already present delegate of " +
         "UNUserNotificationCenter. NotificationCenterManager will not overwrite the value not to break other " +
         "features of your app. In return, expo-notifications may not work properly. To fix this problem either " +
         "remove setting of the second delegate, or set the delegate to an instance of NotificationCenterManager " +

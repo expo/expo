@@ -1,6 +1,5 @@
 import * as Log from '../../log';
 import { logCmdError } from '../../utils/errors';
-import { event } from './events';
 
 const CTRL_C = '\u0003';
 
@@ -38,7 +37,6 @@ export class KeyPressHandler {
     }
     this.isHandlingKeyPress = true;
     try {
-      event('key_pressed', { key });
       await this.onPress(key);
     } catch (error: any) {
       await logCmdError(error);

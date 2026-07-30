@@ -110,7 +110,7 @@ public class NotificationContent implements Parcelable, Serializable, INotificat
         return BitmapFactory.decodeResource(context.getResources(), resourceId);
       }
     } catch (PackageManager.NameNotFoundException | ClassCastException e) {
-      Log.e("expo-notifications", "Could not have fetched large notification icon.", e);
+      Log.e("expo-notifications", "Could not fetch large notification icon.", e);
     }
     return null;
   }

@@ -130,7 +130,7 @@ final class FetchUpdateProcedure: StateMachineProcedure {
         }
 
         self.successBlock(FetchUpdateResult.failure)
-        procedureContext.processStateEvent(.downloadComplete)
+        procedureContext.processStateEvent(.downloadCompleteUnavailable)
         procedureContext.onComplete()
         return
       }

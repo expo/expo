@@ -155,6 +155,7 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
   const {
     ref,
     actions,
+    colorScheme,
     onPressAction,
     onOpenMenu,
     onCloseMenu,
@@ -189,7 +190,7 @@ export function MenuView(props: MenuComponentProps & { ref?: React.Ref<MenuCompo
 
   return (
     <View style={style} testID={testID}>
-      <Host matchContents>
+      <Host colorScheme={colorScheme} matchContents>
         <DropdownMenu expanded={expanded} onDismissRequest={dismissAll}>
           <DropdownMenu.Trigger>
             <RNHostView matchContents>

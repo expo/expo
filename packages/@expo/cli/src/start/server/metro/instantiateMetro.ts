@@ -698,7 +698,7 @@ function pruneCustomTransformOptions(
 }
 
 /**
- * Simplify and communicate if Metro is running without watching file updates,.
+ * Simplify and communicate if Metro is running without watching file updates.
  * Exposed for testing.
  */
 export function isWatchEnabled() {

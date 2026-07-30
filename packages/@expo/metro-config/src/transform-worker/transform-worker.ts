@@ -270,7 +270,7 @@ async function transformCss(
   // in development and a static CSS file in production.
   if (matchCssModule(filename)) {
     const results = await transformCssModuleWeb({
-      // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+      // NOTE(cedric): use POSIX-formatted filename for consistent CSS module class names.
       // This affects the content hashes, which should be stable across platforms.
       filename: toPosixPath(filename),
       src: code,

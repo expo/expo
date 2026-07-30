@@ -45,7 +45,6 @@ import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { getEnvFiles, reloadEnvFiles } from '../../../utils/nodeEnv';
-import { getFreePortAsync } from '../../../utils/port';
 import { AndroidAppIdResolver } from '../../platforms/android/AndroidAppIdResolver';
 import { AppleAppIdResolver } from '../../platforms/ios/AppleAppIdResolver';
 import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
@@ -92,6 +91,7 @@ import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   fromRuntimeManifestRoute,
   fromServerManifestRoute,
+  SSG_LOADER_HEADER_ALLOWLIST,
   type ResolvedLoaderRoute,
 } from './resolveLoader';
 import {
@@ -151,12 +151,6 @@ declare namespace globalThis {
   let __expo_rsc_inject_module: (params: { code: string; id: string }) => void | undefined;
 }
 
-/** Default port to use for apps running in Expo Go. */
-const EXPO_GO_METRO_PORT = 8081;
-
-/** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
-const DEV_CLIENT_METRO_PORT = 8081;
-
 declare module '2g' {
   interface EventRegistry {
     'devserver:start': {
@@ -189,20 +183,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return 'metro';
   }
 
-  async resolvePortAsync(options: Partial<BundlerStartOptions> = {}): Promise<number> {
-    const port =
-      // If the manually defined port is busy then an error should be thrown...
-      options.port ??
-      // Otherwise use the default port based on the runtime target.
-      (options.devClient
-        ? // Don't check if the port is busy if we're using the dev client since most clients are hardcoded to 8081.
-          Number(process.env.RCT_METRO_PORT) || DEV_CLIENT_METRO_PORT
-        : // Otherwise (running in Expo Go) use a free port that falls back on the classic 8081 port.
-          await getFreePortAsync(EXPO_GO_METRO_PORT));
-
-    return port;
-  }
-
   private async exportServerRouteAsync({
     contents,
     artifactFilename,
@@ -225,7 +205,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // https://github.com/expo/expo/blob/0dffdb15/packages/%40expo/metro-config/src/serializer/serializeChunks.ts#L422-L439
       // Alternatively, check whether `sourcesRoot` helps here
       const artifactBasename = encodeURIComponent(path.basename(artifactFilename) + '.map');
-      src = src.replace(/\/\/# sourceMappingURL=.*/g, `//# sourceMappingURL=${artifactBasename}`);
+      // Match only the trailing sourcemap directive
+      src = src.replace(
+        /(?<=^|\n)\/\/# sourceMappingURL=[^\n]*(?=\s*$)/,
+        `//# sourceMappingURL=${artifactBasename}`
+      );
       const parsedMap = typeof contents.map === 'string' ? JSON.parse(contents.map) : contents.map;
       const mapData: any = {
         ...descriptor,
@@ -1266,7 +1250,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
-    options.port = await this.resolvePortAsync(options);
+    assert(options.port, 'Expected a port to be defined before starting the Metro dev server');
+
     await this.initUrlCreator(options);
 
     const config = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
@@ -1319,7 +1304,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const parsedOptions = {
       host: options.location.hostType === 'localhost' ? 'localhost' : undefined,
-      port: options.port,
+      port: this.getPort(),
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
     };
@@ -1345,7 +1330,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     // Required for symbolication:
-    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${address?.port ?? options.port}`;
+    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${this.getPort()}`;
     process.env.EXPO_DEV_SERVER_ORIGIN = serverBaseUrl;
 
     if (!options.isExporting) {
@@ -1619,7 +1604,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       server,
       location: {
         // The port is the main thing we want to send back.
-        port: address?.port ?? options.port,
+        port: this.getPort(),
         // localhost isn't always correct.
         host: 'localhost',
         url: serverBaseUrl,
@@ -1922,19 +1907,27 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
+        let headers: Headers | undefined;
         if (maybeResponse instanceof Response) {
           // In SSR, preserve `Response` from the loader
           if (exp.web?.output === 'server' && unstable_useServerRendering) {
             return maybeResponse;
           }
 
-          // In SSG, extract body
+          // In SSG, extract the body and the allowlisted headers
           data = await maybeResponse.json();
+          headers = new Headers();
+          for (const name of SSG_LOADER_HEADER_ALLOWLIST) {
+            const value = maybeResponse.headers.get(name);
+            if (value) {
+              headers.set(name, value);
+            }
+          }
         } else {
           data = maybeResponse;
         }
 
-        return Response.json(data ?? null);
+        return Response.json(data ?? null, { headers });
       }
 
       return undefined;

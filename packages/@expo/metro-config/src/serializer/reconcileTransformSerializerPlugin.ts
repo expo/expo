@@ -105,7 +105,7 @@ export function sortDependencies(
     );
   };
 
-  // Metro uses this Map hack so we need to create a new map and add the items in the expected order/
+  // Metro uses this Map hack so we need to create a new map and add the items in the expected order.
   dependencies.forEach((dep) => {
     const original = findDependency(dep);
 

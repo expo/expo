@@ -1,4 +1,3 @@
-import { mockConnection } from './mockConnection';
 import { createHandlersFactory } from '../createHandlersFactory';
 import type {
   NetworkGetResponseBody,
@@ -6,6 +5,7 @@ import type {
 } from '../messageHandlers/NetworkResponse';
 import { pageIsSupported } from '../pageIsSupported';
 import type { DebuggerRequest, DeviceRequest } from '../types';
+import { mockConnection } from './mockConnection';
 
 jest.mock('../pageIsSupported');
 

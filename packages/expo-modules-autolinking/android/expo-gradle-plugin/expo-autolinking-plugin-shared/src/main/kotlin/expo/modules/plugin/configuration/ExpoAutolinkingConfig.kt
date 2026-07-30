@@ -41,7 +41,7 @@ data class ExpoAutolinkingConfig(
       }
 
       Json {
-        // We don't want to fail on a unknown key
+        // We don't want to fail on an unknown key
         ignoreUnknownKeys = true
         serializersModule = module
       }
@@ -141,7 +141,7 @@ data class GradlePlugin(
 )
 
 /**
- * Object representing an gradle project containing AAR file
+ * Object representing a gradle project containing AAR file
  */
 @Serializable
 data class GradleAarProject(

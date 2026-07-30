@@ -194,23 +194,31 @@ internal struct ImageUtils {
     orFileUrl fileUrl: URL,
     tryReadingFile: Bool
   ) throws -> String? {
-    let sourceImage: UIImage
     if tryReadingFile {
-      do {
-        let data = try Data(contentsOf: fileUrl)
-        guard let loaded = UIImage(data: data) else {
-          throw FailedToReadImageDataException()
-        }
-        sourceImage = loaded
-      } catch {
-        throw FailedToReadImageDataException()
-          .causedBy(error)
-      }
-    } else {
-      sourceImage = image
+      return try readJpegBase64From(fileUrl: fileUrl, compressionQuality: compressionQuality)
     }
+    return try readJpegBase64From(image: image, compressionQuality: compressionQuality)
+  }
 
-    guard let jpegData = sourceImage.jpegData(compressionQuality: compressionQuality) else {
+  // Decodes the file at `fileUrl` and re-encodes it as JPEG, so base64 output is always JPEG
+  // regardless of the source file's original format (e.g. HEIC, PNG).
+  static func readJpegBase64From(fileUrl: URL, compressionQuality: Double) throws -> String? {
+    let sourceImage: UIImage
+    do {
+      let data = try Data(contentsOf: fileUrl)
+      guard let loaded = UIImage(data: data) else {
+        throw FailedToReadImageDataException()
+      }
+      sourceImage = loaded
+    } catch {
+      throw FailedToReadImageDataException()
+        .causedBy(error)
+    }
+    return try readJpegBase64From(image: sourceImage, compressionQuality: compressionQuality)
+  }
+
+  static func readJpegBase64From(image: UIImage, compressionQuality: Double) throws -> String? {
+    guard let jpegData = image.jpegData(compressionQuality: compressionQuality) else {
       throw FailedToReadImageDataForBase64Exception()
     }
     return jpegData.base64EncodedString()

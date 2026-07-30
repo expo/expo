@@ -54,14 +54,14 @@ Add the following scripts to your `package.json` and run `yarn`
 
 Running `yarn` will now run the `prepare` script, which generates any missing files:
 
-- [`.npmignore`](./templates/.npmignore) ([docs](https://docs.npmjs.com/misc/developers)) currently only ignores the `babel.config.js` in your module. You might also want to also add tests and docs.
+- [`.npmignore`](./templates/.npmignore) ([docs](https://docs.npmjs.com/misc/developers)) currently only ignores the `babel.config.js` in your module. You might also want to add tests and docs.
   - Expo modules use `.npmignore` **instead of** the `files` field in the `package.json`.
   - (Pro Tip) Test which files get packaged by running `npm pack`. If you see files that aren't crucial to running the module, you should add them to `.npmignore`.
 - [`README.md`](./templates/README.md) A default template for Unimodule installation.
   - Project docs should try to have relevant emojis in headers because OSS is fun.
   - Use [badges](https://github.com/expo/expo#-badges)
   - Try and incorporate a table of contents (TOC).
-- [`tsconfig.json`](./templates/tsconfig.json) ([docs](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)) extends [`tsconfig.base.json`](./tsconfig.base.json) this is important for ensuring all Unimodules use the same version of TypeScript.
+- [`tsconfig.json`](./templates/tsconfig.json) ([docs](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html)) extends [`tsconfig.base.json`](./tsconfig.base.json); this is important for ensuring all Unimodules use the same version of TypeScript.
 
 Besides, running `yarn prepare` script will also synchronize optional files from `expo-module-scripts` when the file is present and contains the `@generated` pattern:
 
@@ -276,14 +276,14 @@ One of the rules enforced is restricting any imports from the `fbjs` library. As
 
 > If you are consuming the code here and you are not also a Facebook project, be prepared for a bad time.
 
-Replacements for common `fbjs` uses-cases are listed below:
+Replacements for common `fbjs` use-cases are listed below:
 
 - `invariant`- replace with [`invariant`](https://www.npmjs.com/package/invariant)
 - `ExecutionEnvironment`- replace with [`Platform` from `@unimodules/core`](https://github.com/expo/expo/blob/main/packages/%40unimodules/react-native-adapter/src/Platform.ts)
 
 #### lint plugin
 
-Running `lint plugin` will lints the plugin source code in `plugin/src`.
+Running `lint plugin` will lint the plugin source code in `plugin/src`.
 
 ### clean
 

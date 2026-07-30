@@ -1,7 +1,7 @@
 import { useReleasingSharedObject } from 'expo';
 import type { SharedRef } from 'expo-modules-core/types';
 
-import type { Action, ImageResult, SaveOptions } from './ImageManipulator.types';
+import type { Action, ImageLoadOptions, ImageResult, SaveOptions } from './ImageManipulator.types';
 import { SaveFormat } from './ImageManipulator.types';
 import type { ImageManipulatorContext } from './ImageManipulatorContext';
 import ExpoImageManipulator from './NativeImageManipulatorModule';
@@ -54,8 +54,14 @@ export async function manipulateAsync(
   return result;
 }
 
-export function useImageManipulator(source: string | SharedRef<'image'>): ImageManipulatorContext {
-  return useReleasingSharedObject(() => ExpoImageManipulator.manipulate(source), [source]);
+export function useImageManipulator(
+  source: string | SharedRef<'image'>,
+  options?: ImageLoadOptions
+): ImageManipulatorContext {
+  return useReleasingSharedObject(
+    () => ExpoImageManipulator.manipulate(source, options),
+    [source, options?.maxWidth, options?.maxHeight]
+  );
 }
 
 export { ExpoImageManipulator as ImageManipulator };

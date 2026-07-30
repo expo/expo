@@ -477,6 +477,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/environment.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
     makePage('eas/workflows/rest-api.mdx'),
     makePage('eas/workflows/troubleshooting.mdx'),
@@ -554,6 +555,7 @@ export const eas = [
   makeSection('EAS Submit', [
     makePage('submit/android.mdx'),
     makePage('submit/ios.mdx'),
+    makePage('submit/testflight.mdx'),
     makePage('submit/android-manual.mdx'),
     makePage('submit/ios-manual.mdx'),
     makePage('submit/eas-json.mdx'),
@@ -636,6 +638,7 @@ export const eas = [
     makeGroup('Integrations', [
       makePage('eas/observe/integrations/expo-router.mdx'),
       makePage('eas/observe/integrations/react-navigation.mdx'),
+      makePage('eas/observe/integrations/third-party.mdx'),
     ]),
     makeGroup('Reference', [
       makePage('eas/observe/reference/metrics.mdx'),
@@ -740,6 +743,17 @@ export const learn = [
 const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
+    makeGroup(
+      'EAS Simulator',
+      [
+        makePage('preview/eas-simulator/introduction.mdx'),
+        makePage('preview/eas-simulator/get-started.mdx'),
+        makePage('preview/eas-simulator/run-and-control.mdx'),
+        makePage('preview/eas-simulator/cli-reference.mdx'),
+        makePage('preview/eas-simulator/troubleshooting.mdx'),
+      ],
+      { expanded: true }
+    ),
     makeGroup('Expo Router', [makePage('preview/singular.mdx'), { expanded: true }]),
   ]),
 ];
@@ -761,8 +775,8 @@ const archive = [
     makeSection('Workflow', [makePage('archive/classic-updates/publishing.mdx')]),
     makeSection('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.mdx')]),
   ]),
-  makeSection('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
-  makeSection('Push Notifications', [
+  makeSection('Technical specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
+  makeSection('Push notifications', [
     makePage('archive/push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
     makePage('archive/push-notifications/notification-channels.mdx'),
   ]),

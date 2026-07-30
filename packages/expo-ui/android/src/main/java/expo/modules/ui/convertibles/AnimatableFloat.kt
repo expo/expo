@@ -6,9 +6,10 @@ import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.spring
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import expo.modules.kotlin.types.ConverterContext
 
 @Composable
-fun resolveAnimatable(map: Map<String, Any?>, key: String, default: Float): Float {
+fun resolveAnimatable(map: Map<String, Any?>, key: String, default: Float, converterContext: ConverterContext): Float {
   val raw = map[key]
   val targetValue = when {
     raw is Number -> raw.toFloat()
@@ -18,7 +19,7 @@ fun resolveAnimatable(map: Map<String, Any?>, key: String, default: Float): Floa
   }
   val spec: AnimationSpec<Float> = when {
     raw is Map<*, *> && raw["\$animated"] == true ->
-      parseAnimationSpec(raw["animationSpec"]) ?: spring()
+      parseAnimationSpec(raw["animationSpec"], converterContext) ?: spring()
     else -> snap()
   }
   val animated by animateFloatAsState(targetValue, spec, label = key)

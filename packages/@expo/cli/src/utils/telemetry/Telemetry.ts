@@ -10,11 +10,11 @@ import { getAgentTelemetryContext } from './utils/agent';
 import { createContext } from './utils/context';
 
 type TelemetryOptions = {
-  /** A locally generated ID, untracable to an actual user */
+  /** A locally generated ID, untraceable to an actual user */
   anonymousId?: string;
   /** A locally generated ID, per CLI invocation */
   sessionId?: string;
-  /** The authenticated user ID, this is used to generate an untracable hash */
+  /** The authenticated user ID, this is used to generate an untraceable hash */
   userId?: string;
   /** The underlying telemetry strategy to use */
   strategy?: TelemetryClientStrategy;
@@ -22,7 +22,7 @@ type TelemetryOptions = {
 
 type TelemetryActor = Required<Pick<TelemetryOptions, 'anonymousId' | 'sessionId'>> & {
   /**
-   * Hashed version of the user ID, untracable to an actual user.
+   * Hashed version of the user ID, untraceable to an actual user.
    * If this value is set to `undefined`, telemetry is considered uninitialized and will wait until its set.
    * If this value is set to `null`, telemetry is considered initialized without an authenticated user.
    * If this value is set to a string, telemetry is considered initialized with an authenticated user.
@@ -150,7 +150,7 @@ function createMessageId(record: TelemetryRecord) {
   return `node-${md5}-${uuid}`;
 }
 
-/** Hash the user identifier to make it untracable */
+/** Hash the user identifier to make it untraceable */
 function hashUserId(userId: string) {
   return crypto.createHash('sha256').update(userId).digest('hex');
 }

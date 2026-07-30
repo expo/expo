@@ -1,6 +1,6 @@
 {
   "name": "submit-expo-feedback",
-  "version": "0.0.0",
+  "version": "0.0.2",
   "description": "Send feedback to the Expo team",
   "keywords": [
     "expo",
@@ -42,7 +42,8 @@
     "chalk": "^4.0.0",
     "ci-info": "^3.3.0",
     "expo-module-scripts": "workspace:*",
-    "prompts": "^2.3.2"
+    "prompts": "^2.3.2",
+    "sandbox-cli-detector": "^0.2.0"
   },
   "engines": {
     "node": "^22.13.0 || ^24.3.0 || ^26.0.0 || >=27.0.0"

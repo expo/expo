@@ -420,7 +420,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 
 /**
  * Convert all path separators to `/`, including on Windows.
- * Metro asumes that all module specifiers are posix paths.
+ * Metro assumes that all module specifiers are posix paths.
  * References to directories can still be Windows-style paths in Metro.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#importing_features_into_your_script

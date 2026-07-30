@@ -79,7 +79,7 @@ class AppContextActivityResultRegistry(
 
   /**
    * A register that stores contract-specific parameters that allow proper resumption of the process
-   * in case of launching Activity being is destroyed.
+   * in case of launching Activity being destroyed.
    * These are serialized and deserialized.
    */
   private val keyToInputParam: MutableMap<String, Serializable> = HashMap()

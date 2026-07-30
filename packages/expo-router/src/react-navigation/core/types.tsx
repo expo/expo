@@ -103,27 +103,6 @@ export type DefaultNavigatorOptions<
   UNSTABLE_router?: <Action extends NavigationAction>(
     original: Router<State, Action>
   ) => Partial<Router<State, Action>>;
-
-  /**
-   * What should happen when the available route names change.
-   * e.g. when different screens are rendered based on a condition.
-   *
-   * - 'firstMatch': Navigate to the first route in the new list of routes (default).
-   * - 'lastUnhandled': Restore the last state that was unhandled due to conditional render.
-   *
-   * Example cases where previous state might have been unhandled:
-   * - Opened a deep link to a screen, but a login screen was shown.
-   * - Navigated to a screen containing a navigator, but a different screen was shown.
-   * - Reset the navigator to a state with different routes not matching the current list of routes.
-   *
-   * In these cases, 'lastUnhandled' will reuse the unhandled state if present.
-   * If there's no unhandled state, it will fallback to 'firstMatch' behavior.
-   *
-   * Caveats:
-   * - Direct navigation is only handled for `NAVIGATE` actions.
-   * - Unhandled state is restored only if the current state becomes invalid, i.e. it doesn't contain any currently defined screens.
-   */
-  UNSTABLE_routeNamesChangeBehavior?: 'firstMatch' | 'lastUnhandled';
 } & (NavigatorID extends string
     ? {
         /**
@@ -562,6 +541,12 @@ export type ScreenLayoutArgs<
   children: React.ReactElement;
 };
 
+/**
+ * Whether a screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+ * or inferred from the filesystem.
+ */
+export type RouteSource = 'layout' | 'filesystem';
+
 export type Descriptor<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
@@ -587,6 +572,13 @@ export type Descriptor<
    * Navigation object for the screen
    */
   navigation: Navigation;
+
+  /**
+   * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+   * or inferred from the filesystem. Set by Expo Router; `undefined` for screens
+   * created outside Expo Router's screen pipeline.
+   */
+  routeSource?: RouteSource;
 };
 
 export type ScreenListeners<
@@ -702,6 +694,12 @@ export type RouteConfigProps<
    * Initial params object for the route.
    */
   initialParams?: Partial<ParamList[RouteName]>;
+
+  /**
+   * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+   * or inferred from the filesystem.
+   */
+  routeSource?: RouteSource;
 };
 
 export type RouteConfig<
@@ -792,7 +790,7 @@ export type NavigationContainerEventMap = {
        */
       action: NavigationAction;
       /**
-       * Whether the action was a no-op, i.e. resulted any state changes.
+       * Whether the action was a no-op, i.e. resulted in any state changes.
        */
       noop: boolean;
       /**
@@ -915,10 +913,7 @@ export type NavigatorTypeBag<
   Navigator: Navigator;
 };
 
-export type TypedNavigator<
-  Bag extends NavigatorTypeBagBase,
-  Config = unknown,
-> = TypedNavigatorInternal<
+export type TypedNavigator<Bag extends NavigatorTypeBagBase> = TypedNavigatorInternal<
   Bag['ParamList'],
   Bag['NavigatorID'],
   Bag['State'],
@@ -926,9 +921,7 @@ export type TypedNavigator<
   Bag['EventMap'],
   Bag['NavigationList'],
   Bag['Navigator']
-> &
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  (undefined extends Config ? {} : { config: Config });
+>;
 
 type TypedNavigatorInternal<
   ParamList extends ParamListBase,
@@ -1011,8 +1004,8 @@ type PathConfigAlias = {
    */
   path: string;
   /**
-   * Whether the path should be consider parent paths or use the exact path.
-   * By default, paths are relating to the path config on the parent screen.
+   * Whether the path should consider parent paths or use the exact path.
+   * By default, paths are relative to the path config on the parent screen.
    * If `exact` is set to `true`, the parent path configuration is not used.
    */
   exact?: boolean;

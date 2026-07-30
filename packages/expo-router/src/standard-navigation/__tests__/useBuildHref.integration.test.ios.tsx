@@ -33,7 +33,7 @@ const StandardTabs = unstable_createStandardRouterNavigator<
   Record<string, never>,
   object,
   TabRouterOptions
->(NavigatorContent, TabRouter, { useOnlyUserDefinedScreens: true });
+>(NavigatorContent, TabRouter);
 
 describe('useBuildHref (integration)', () => {
   it('resolves real hrefs (index → /, group segment stripped) for navigator routes', () => {
