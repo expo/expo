@@ -20,6 +20,7 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.interfaces.fabric.ReactSurface
+import com.facebook.react.modules.network.OkHttpClientProvider
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
@@ -35,7 +36,6 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.LauncherActivity
 import host.exp.exponent.RNObject
-import host.exp.exponent.ReactNativeStaticHelpers
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ExceptionUtils
@@ -51,6 +51,7 @@ import host.exp.exponent.headless.InternalHeadlessAppLoader
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
 import host.exp.exponent.kernel.ExponentUrls.toHttp
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
+import host.exp.exponent.network.ExpoGoOkHttpClientFactory
 import host.exp.exponent.network.ExponentNetwork
 import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.notifications.ExponentNotificationManager
@@ -136,7 +137,7 @@ class Kernel : KernelInterface() {
   private var hasError = false
 
   private fun updateKernelRNOkHttp() {
-    ReactNativeStaticHelpers.setExponentNetwork(exponentNetwork)
+    OkHttpClientProvider.setOkHttpClientFactory(ExpoGoOkHttpClientFactory(exponentNetwork))
   }
 
   private val kernelInitialURL: String?
