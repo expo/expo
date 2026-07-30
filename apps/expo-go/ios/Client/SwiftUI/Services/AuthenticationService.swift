@@ -3,6 +3,7 @@
 import Foundation
 import AuthenticationServices
 import Combine
+import ExpoModulesCore
 
 @MainActor
 class AuthenticationService: ObservableObject {
@@ -184,10 +185,6 @@ class AuthenticationService: ObservableObject {
 
 private class AuthPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-    let window = UIApplication.shared.connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }
-    return window ?? ASPresentationAnchor()
+    return SceneGeometry.keyWindow() ?? ASPresentationAnchor()
   }
 }
