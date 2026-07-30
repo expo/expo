@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import SwiftUI
+import ExpoModulesCore
 
 enum SnappedEdge {
   case left, right
@@ -231,11 +232,7 @@ struct DevMenuFABView: View {
 
   // Get safe area from window since .ignoresSafeArea() or initial render may zero out geometry values
   private var windowSafeArea: UIEdgeInsets {
-    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-          let window = windowScene.windows.first else {
-      return .zero
-    }
-    return window.safeAreaInsets
+    return SceneGeometry.keyWindow()?.safeAreaInsets ?? .zero
   }
 
   var body: some View {
