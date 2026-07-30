@@ -5,7 +5,7 @@ import { Text } from 'react-native';
 
 import { router, Slot } from '../../exports';
 import Tabs from '../../layouts/Tabs';
-import { LoaderCache, LoaderCacheContext } from '../../loaders/LoaderCache';
+import { defaultLoaderClient, LoaderClient, LoaderClientContext } from '../../loaders/LoaderClient';
 import { ServerDataLoaderContext } from '../../loaders/ServerDataLoaderContext';
 import { fetchLoader } from '../../loaders/utils';
 import { renderRouter } from '../../testing-library';
@@ -21,6 +21,9 @@ describe(useLoaderData, () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // `renderRouter` installs fake timers and leaks them into later tests; the loader lifecycle
+    // relies on real microtasks.
+    jest.useRealTimers();
     global.window = {
       location: { origin: 'http://localhost:8081' },
     } as any;
@@ -29,6 +32,7 @@ describe(useLoaderData, () => {
   afterEach(() => {
     global.window = originalWindow;
     delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
+    defaultLoaderClient.clear();
   });
 
   it.each([
@@ -99,7 +103,7 @@ describe(useLoaderData, () => {
     expect(result.current).toEqual({ source: 'server' });
   });
 
-  it('retrieves server-injected data from `globalThis.__EXPO_ROUTER_LOADER_DATA__`', () => {
+  it('consumes server-injected data from `globalThis.__EXPO_ROUTER_LOADER_DATA__` once', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/index': { some: 'data' },
     };
@@ -109,6 +113,38 @@ describe(useLoaderData, () => {
     });
 
     expect(result.current).toEqual({ some: 'data' });
+    expect(globalThis.__EXPO_ROUTER_LOADER_DATA__).not.toHaveProperty('/index');
+  });
+
+  it('fetches on a later remount once the hydrated entry is gone', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { fromHydration: true },
+    };
+
+    const client = new LoaderClient();
+    const ClientWrapper = ({ children }: { children: React.ReactNode }) => (
+      <LoaderClientContext value={client}>{children}</LoaderClientContext>
+    );
+
+    const firstMount = renderHook(() => useLoaderData(), ['index'], {
+      initialUrl: '/',
+      wrapper: ClientWrapper,
+    });
+    expect(firstMount.result.current).toEqual({ fromHydration: true });
+    expect(fetchLoaderMock).not.toHaveBeenCalled();
+
+    firstMount.unmount();
+    await act(async () => {});
+    expect(client.suspense.get('/index')).toBeUndefined();
+
+    renderHook(() => useLoaderData(), ['index'], {
+      initialUrl: '/',
+      wrapper: ClientWrapper,
+    });
+    expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
+    expect(fetchLoaderMock).toHaveBeenCalledWith('/index');
   });
 
   it('retrieves fresh data from `fetchLoaderModule()`', async () => {
@@ -119,15 +155,15 @@ describe(useLoaderData, () => {
       '/': { home: true },
     };
 
-    const cache = new LoaderCache();
+    const client = new LoaderClient();
 
-    const CacheWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderCacheContext value={cache}>{children}</LoaderCacheContext>
+    const ClientWrapper = ({ children }: { children: React.ReactNode }) => (
+      <LoaderClientContext value={client}>{children}</LoaderClientContext>
     );
 
     renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
-      wrapper: CacheWrapper,
+      wrapper: ClientWrapper,
     });
 
     expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
@@ -136,27 +172,28 @@ describe(useLoaderData, () => {
       await fetchLoaderMock.mock.results[0]!.value;
     });
 
-    expect(cache.getData('/users/123')).toEqual({ fromFetch: true });
+    expect(client.suspense.get('/users/123')).toEqual({ data: { fromFetch: true } });
   });
 
-  it('retrieves cached data from `LoaderCacheContext`', () => {
+  it('retrieves settled data from the Suspense store without fetching', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/': { home: true },
     };
 
-    const cache = new LoaderCache();
-    cache.setData('/users/123', { fromCache: true });
+    const client = new LoaderClient();
+    client.suspense.set('/users/123', { data: { fromStore: true } });
 
-    const CacheWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderCacheContext value={cache}>{children}</LoaderCacheContext>
+    const ClientWrapper = ({ children }: { children: React.ReactNode }) => (
+      <LoaderClientContext value={client}>{children}</LoaderClientContext>
     );
 
     const { result } = renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
-      wrapper: CacheWrapper,
+      wrapper: ClientWrapper,
     });
 
-    expect(result.current).toEqual({ fromCache: true });
+    expect(result.current).toEqual({ fromStore: true });
+    expect(fetchLoader).not.toHaveBeenCalled();
   });
 
   it(`uses the loader function's return types`, () => {
