@@ -12,7 +12,9 @@ import {
 import { promptOtp, withOtpRetry } from '../NpmOtp';
 import { runWithSpinner, spawnErrorOutput } from '../Utils';
 
-type ActionOptions = object;
+type ActionOptions = {
+  byPackage?: boolean;
+};
 
 const API_TOKEN = process.env.NPM_TOKEN_READ_ONLY;
 const ORG_NAME = 'expo';
@@ -46,10 +48,15 @@ export default (program: Command) => {
     .command('validate-npm-owners')
     .alias('vnpmo')
     .description('Ensures that owners of npm packages are all members of the expo organization.')
+    .option(
+      '--by-package',
+      'List the invalid owners of each package instead of the packages of each owner, then exit ' +
+        'without offering to remove anyone.'
+    )
     .asyncAction(action);
 };
 
-async function action(_options: ActionOptions) {
+async function action(options: ActionOptions) {
   if (API_TOKEN) {
     // npm reads auth from the environment config, so every npm command
     // spawned by this process authenticates with the token.
@@ -86,9 +93,9 @@ async function action(_options: ActionOptions) {
     step.succeed(`${validated.length} packages found: ${chalk.dim(validated.join(', '))}`);
 
     if (exempt.length > 0) {
-      logger.log(chalk.dim(`Skipping ${pluralizePackages(exempt.length)}:`));
+      logger.log(chalk.dim(`Skipping ${pluralize(exempt.length, 'package')}:`));
       for (const { pattern, reason, count } of matched) {
-        logger.log(chalk.dim(`  ${pattern} (${pluralizePackages(count)}) — ${reason}`));
+        logger.log(chalk.dim(`  ${pattern} (${pluralize(count, 'package')}) — ${reason}`));
       }
       logger.log();
     }
@@ -112,6 +119,12 @@ async function action(_options: ActionOptions) {
 
   if (Object.keys(packagesWithInvalidOwners).length === 0) {
     logger.log('✅ All packages have valid owners');
+    return;
+  }
+
+  if (options.byPackage) {
+    printInvalidOwnersByPackage(packagesWithInvalidOwners);
+    process.exitCode = 1;
     return;
   }
 
@@ -312,7 +325,7 @@ async function promptToRemoveInvalidOwnersAsync(packagesWithInvalidOwners: {
       choices: groupedByOwner.map(([owner, ownedPackages]) => ({
         value: owner,
         short: owner,
-        name: `${owner} ${chalk.dim(`(${pluralizePackages(ownedPackages.length)})`)}`,
+        name: `${owner} ${chalk.dim(`(${pluralize(ownedPackages.length, 'package')})`)}`,
       })),
       pageSize: Math.min(groupedByOwner.length, (process.stdout.rows || 100) - 4),
     },
@@ -513,6 +526,37 @@ export function groupPackagesByInvalidOwner(packagesWithInvalidOwners: {
 }
 
 /**
+ * The inverse of {@link groupPackagesByInvalidOwner}. Returns `[packageName,
+ * owners]` pairs sorted by the number of invalid owners in descending order,
+ * then by the package name. Owners of each package are sorted alphabetically.
+ */
+export function groupInvalidOwnersByPackage(packagesWithInvalidOwners: {
+  [key: string]: string[];
+}): [string, string[]][] {
+  return Object.entries(packagesWithInvalidOwners)
+    .map(([packageName, owners]): [string, string[]] => [packageName, [...owners].sort()])
+    .sort(([nameA, ownersA], [nameB, ownersB]) => {
+      return ownersB.length - ownersA.length || nameA.localeCompare(nameB);
+    });
+}
+
+/**
+ * Prints the invalid owners of each package. Removing owners one package at a
+ * time is the safer order, because npm rewrites the whole maintainer list on
+ * every removal and loses writes when the same package is changed repeatedly.
+ */
+function printInvalidOwnersByPackage(packagesWithInvalidOwners: { [key: string]: string[] }) {
+  const groupedByPackage = groupInvalidOwnersByPackage(packagesWithInvalidOwners);
+
+  for (const [packageName, owners] of groupedByPackage) {
+    logger.log(
+      `${chalk.green.bold(packageName)} has ${pluralize(owners.length, 'invalid owner')}:`
+    );
+    logger.log(`  ${chalk.dim(owners.join(', '))}\n`);
+  }
+}
+
+/**
  * Print the users that own some packages but are not members of the organization,
  * together with the packages they own, to summarize the validation.
  */
@@ -526,11 +570,11 @@ function printPackagesWithInvalidOwners(packagesWithInvalidOwners: { [key: strin
   );
 
   for (const [owner, ownedPackages] of groupedByOwner) {
-    logger.log(`${chalk.red.bold(owner)} owns ${pluralizePackages(ownedPackages.length)}:`);
+    logger.log(`${chalk.red.bold(owner)} owns ${pluralize(ownedPackages.length, 'package')}:`);
     logger.log(`  ${chalk.dim(ownedPackages.join(', '))}\n`);
   }
 }
 
-function pluralizePackages(count: number): string {
-  return `${count} ${count === 1 ? 'package' : 'packages'}`;
+function pluralize(count: number, noun: string): string {
+  return `${count} ${count === 1 ? noun : `${noun}s`}`;
 }

@@ -4,6 +4,7 @@ import { describe, it } from 'node:test';
 import {
   classifyRemovalFailure,
   groupFailuresByCategory,
+  groupInvalidOwnersByPackage,
   groupPackagesByInvalidOwner,
   isNpmAuthError,
   partitionExemptPackages,
@@ -150,6 +151,42 @@ describe('isNpmAuthError', () => {
   it('returns false for values that are not spawn errors', () => {
     assert.equal(isNpmAuthError(null), false);
     assert.equal(isNpmAuthError(new Error('something else')), false);
+  });
+});
+
+describe('groupInvalidOwnersByPackage', () => {
+  it('sorts packages by how many invalid owners they have, descending', () => {
+    const grouped = groupInvalidOwnersByPackage({
+      'expo-battery': ['quinlanj'],
+      'expo-device': ['szdziedzic', 'jonsamp', 'quinlanj'],
+      'expo-cli': ['kadikraman', 'quinlanj'],
+    });
+    assert.deepEqual(grouped, [
+      ['expo-device', ['jonsamp', 'quinlanj', 'szdziedzic']],
+      ['expo-cli', ['kadikraman', 'quinlanj']],
+      ['expo-battery', ['quinlanj']],
+    ]);
+  });
+
+  it('breaks ties on the package name', () => {
+    const grouped = groupInvalidOwnersByPackage({
+      'expo-network': ['jonsamp'],
+      'expo-application': ['fiber-god'],
+    });
+    assert.deepEqual(grouped, [
+      ['expo-application', ['fiber-god']],
+      ['expo-network', ['jonsamp']],
+    ]);
+  });
+
+  it('does not mutate the owner arrays it is given', () => {
+    const owners = ['szdziedzic', 'jonsamp'];
+    groupInvalidOwnersByPackage({ 'expo-device': owners });
+    assert.deepEqual(owners, ['szdziedzic', 'jonsamp']);
+  });
+
+  it('returns an empty list when no packages have invalid owners', () => {
+    assert.deepEqual(groupInvalidOwnersByPackage({}), []);
   });
 });
 
