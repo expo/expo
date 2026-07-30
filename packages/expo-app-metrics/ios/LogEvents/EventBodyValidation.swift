@@ -6,10 +6,6 @@
 /// was cut. Mirrors the OTel `OTEL_ATTRIBUTE_VALUE_LENGTH_LIMIT` default.
 private let maxEventBodyLength = 4096
 
-/// Suffix appended to truncated bodies. Single character so the prefix stays
-/// close to the original length budget.
-private let truncationSuffix = "…"
-
 /// Truncates a caller-provided log event body to `maxEventBodyLength` characters,
 /// logging a warning when truncation happens. Returns `nil` for `nil` input so
 /// the call site can pass the result through unchanged.
@@ -17,12 +13,11 @@ func validateEventBody(_ body: String?) -> String? {
   guard let body else {
     return nil
   }
-  if body.count <= maxEventBodyLength {
-    return body
-  }
-  let truncated = body.prefix(maxEventBodyLength - truncationSuffix.count) + truncationSuffix
-  logger.warn(
-    "[AppMetrics] logEvent truncated body from \(body.count) characters to the \(maxEventBodyLength)-character limit."
+  return truncateToMaxLength(
+    body,
+    maxLength: maxEventBodyLength,
+    warningMessage:
+      "[AppMetrics] logEvent truncated body from \(body.count) characters "
+      + "to the \(maxEventBodyLength)-character limit."
   )
-  return String(truncated)
 }

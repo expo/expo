@@ -5,7 +5,9 @@ declare class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implem
     dispatchEvents(): Promise<void>;
     configure(config: ObserveConfig): void;
     getIntegrations(): ObserveIntegrationsConfig;
+    registerIntegration<K extends keyof ObserveIntegrationsConfig>(name: K, callback: (config: ObserveIntegrationsConfig[K]) => void): void;
     logEvent(name: string, options?: LogEventOptions): void;
+    reportError(error: unknown): void;
     markFirstRender(): void;
     markInteractive(attributes?: MetricAttributes): void;
     setGlobalAttributes(attributes?: ObserveAttributes | null): void;

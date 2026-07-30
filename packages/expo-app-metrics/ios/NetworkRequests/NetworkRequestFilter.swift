@@ -9,7 +9,7 @@ import Foundation
 /// Only attributes knowable the moment a request starts are supported (host and method), so the
 /// same predicate yields the same answer at start and at completion. That keeps the
 /// `requestStarted`/`requestCompleted` pair consistent: a request that matches always emits both, a
-/// request that doesn't matches neither.
+/// request that doesn't match emits neither.
 ///
 /// Different fields combine with AND; entries within a field combine with OR. A field that is left
 /// unset places no constraint on its dimension, while a field set to an empty array allows nothing
