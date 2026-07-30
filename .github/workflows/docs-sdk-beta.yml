@@ -107,6 +107,7 @@ jobs:
             docs
             preview
           assignees: amandeepmittal
+          reviewers: amandeepmittal
           delete-branch: true
           committer: Expo Bot <expo-bot@users.noreply.github.com>
           author: Expo Bot <expo-bot@users.noreply.github.com>

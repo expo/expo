@@ -2,8 +2,8 @@
 // workflow uses to raise a PR. Run: pnpm sdk-beta --sdk 58 [--dry-run]
 
 import { execFileSync, execSync } from 'node:child_process';
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { join, relative } from 'node:path';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SDK_INPUT = /^(\d{2})(?:\.0\.0)?$/;
@@ -211,20 +211,32 @@ function generateVersionedDocs() {
 }
 
 function syncAppConfigSchema() {
-  execSync(`pnpm schema-sync ${major}`, { cwd: docsDir, stdio: 'pipe' });
+  const schemasDir = join(docsDir, 'public', 'static', 'schemas');
+  const schemaPath = join(schemasDir, versionDir, 'app-config-schema.json');
 
-  const schemaPath = join(
-    docsDir,
-    'public',
-    'static',
-    'schemas',
-    versionDir,
-    'app-config-schema.json'
-  );
+  let syncError = '';
+  try {
+    execSync(`pnpm schema-sync ${major}`, { cwd: docsDir, stdio: 'pipe' });
+  } catch (error) {
+    syncError = describeError(error).split('\n').at(-1) ?? '';
+  }
+
   if (!existsSync(schemaPath)) {
-    throw new Error(
-      `pnpm schema-sync ${major} did not write public/static/schemas/${versionDir}/app-config-schema.json. ` +
-        `The SDK ${version} schema may not be published to exp.host or staging yet.`
+    const unversionedSchema = join(schemasDir, 'unversioned', 'app-config-schema.json');
+
+    if (!existsSync(unversionedSchema)) {
+      throw new Error(
+        `SDK ${version} has no published schema and public/static/schemas/unversioned/app-config-schema.json ` +
+          `is missing, so there is nothing to fall back to. Run pnpm schema-sync unversioned first.`
+      );
+    }
+
+    mkdirSync(dirname(schemaPath), { recursive: true });
+    copyFileSync(unversionedSchema, schemaPath);
+    notes.push(
+      `SDK ${version} is not on exp.host or staging yet, so app-config-schema.json was copied from ` +
+        `\`unversioned\` and the import still points at ${versionDir}. Re-run \`pnpm schema-sync ${major}\` ` +
+        `once the ${version} schema is published (Release Workflow §0.2)${syncError ? `. Sync reported: ${syncError}` : '.'}`
     );
   }
 
