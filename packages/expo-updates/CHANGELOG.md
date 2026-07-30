@@ -15,6 +15,7 @@
 - [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [iOS] Isolate UpdatesLogReaderTests from concurrent suites. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
 - Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
+- [iOS] Fix SIGABRT during log purge when the persistent log contains a truncated line: `UpdatesLogReader` guarded on UTF-8 byte length but advanced the string index by Characters, so a line holding only the multi-byte emoji log prefix trapped with "String index is out of bounds". ([#48222](https://github.com/expo/expo/pull/48222) by [@valinagacevschi](https://github.com/valinagacevschi))
 
 ### 💡 Others
 
