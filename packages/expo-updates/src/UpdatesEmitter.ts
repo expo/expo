@@ -6,6 +6,13 @@ import type {
 
 export let latestContext = transformNativeStateMachineContext(ExpoUpdatesModule.initialContext);
 
+// The native module instance lives on the global object and therefore outlives this module's
+// scope (see `requireNativeModule` and `registerWebModule`). Whenever this module is evaluated
+// again against the same global — which happens once per request when the server rendering
+// runtime recreates the module graph, and on Fast Refresh — adding another listener would stack
+// a subscription that keeps the entire previous module scope alive. Dropping the previous
+// listener first keeps exactly one live subscription at all times.
+ExpoUpdatesModule.removeAllListeners('Expo.nativeUpdatesStateChangeEvent');
 ExpoUpdatesModule.addListener('Expo.nativeUpdatesStateChangeEvent', _handleNativeStateChangeEvent);
 
 interface UpdatesStateChangeSubscription {
