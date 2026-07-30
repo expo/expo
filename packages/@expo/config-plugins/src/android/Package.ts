@@ -238,8 +238,11 @@ export function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, bui
     return buildGradle;
   }
 
-  const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
-  return buildGradle.replace(pattern, `$1 '${packageName}'`);
+  // Match either declaration syntax, preserving the original separator so the
+  // method-call form stays `applicationId '...'` and the assignment form stays
+  // `applicationId = '...'`.
+  const pattern = new RegExp(`(applicationId|namespace)(\\s*=\\s*|\\s+)['"].*['"]`, 'g');
+  return buildGradle.replace(pattern, `$1$2'${packageName}'`);
 }
 
 export async function getApplicationIdAsync(projectRoot: string): Promise<string | null> {

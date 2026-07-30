@@ -28,6 +28,24 @@ const EXAMPLE_BUILD_GRADLE = `
   }
   `;
 
+// Recent React Native Android templates define the applicationId and namespace
+// using the Gradle assignment form rather than the legacy method-call form.
+const EXAMPLE_BUILD_GRADLE_ASSIGNMENT = `
+  android {
+      compileSdkVersion rootProject.ext.compileSdkVersion
+      buildToolsVersion rootProject.ext.buildToolsVersion
+
+      namespace = "com.helloworld"
+      defaultConfig {
+          applicationId = "com.helloworld"
+          minSdkVersion rootProject.ext.minSdkVersion
+          targetSdkVersion rootProject.ext.targetSdkVersion
+          versionCode 1
+          versionName "1.0"
+      }
+  }
+  `;
+
 describe('package', () => {
   afterAll(async () => {
     vol.reset();
@@ -47,38 +65,37 @@ describe('package', () => {
     expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
   });
 
-  it(`returns the applicationId when defined with Gradle assignment syntax (applicationId = '...')`, () => {
-    const projectRoot = '/';
-    // Recent React Native Android templates define the applicationId using the
-    // Gradle assignment form rather than the legacy method-call form.
-    vol.fromJSON(
-      {
-        'android/app/build.gradle': [
-          'android {',
-          '    namespace = "com.helloworld"',
-          '    defaultConfig {',
-          '        applicationId = "com.helloworld"',
-          '    }',
-          '}',
-        ].join('\n'),
-      },
-      projectRoot
-    );
+  describe.each([
+    ['method-call', EXAMPLE_BUILD_GRADLE, "applicationId 'my.new.app'", "namespace 'my.new.app'"],
+    [
+      'assignment',
+      EXAMPLE_BUILD_GRADLE_ASSIGNMENT,
+      "applicationId = 'my.new.app'",
+      "namespace = 'my.new.app'",
+    ],
+  ])(
+    `with Gradle %s syntax`,
+    (_syntax, buildGradle, expectedApplicationId, expectedNamespace) => {
+      it(`returns the applicationId defined in build.gradle`, async () => {
+        const projectRoot = '/';
+        vol.fromJSON({ 'android/app/build.gradle': buildGradle }, projectRoot);
 
-    expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
-  });
+        await expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
+      });
 
-  it(`sets the applicationId in build.gradle if package is given`, () => {
-    expect(
-      setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
-    ).toMatch("applicationId 'my.new.app'");
-  });
+      it(`sets the applicationId in build.gradle if package is given`, () => {
+        expect(setPackageInBuildGradle({ android: { package: 'my.new.app' } }, buildGradle)).toMatch(
+          expectedApplicationId
+        );
+      });
 
-  it(`sets the namespace in build.gradle if package is given`, () => {
-    expect(
-      setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
-    ).toMatch("namespace 'my.new.app'");
-  });
+      it(`sets the namespace in build.gradle if package is given`, () => {
+        expect(setPackageInBuildGradle({ android: { package: 'my.new.app' } }, buildGradle)).toMatch(
+          expectedNamespace
+        );
+      });
+    }
+  );
 });
 
 describe(renamePackageOnDiskForType, () => {
