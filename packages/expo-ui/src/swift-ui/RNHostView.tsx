@@ -8,13 +8,11 @@ export interface RNHostViewProps {
    * When `false`, the RNHost will use the size of the parent SwiftUI View.
    * Can be only set once on mount.
    *
-   * > **warning** When the hosted children provide the content of a `matchContents` host (for
-   * > example, as a `Menu` label), their width must not derive from the width they are granted.
-   * > Inside the hosted subtree, avoid `flex: 1`, percentage widths, and the default stretch
-   * > alignment (set `alignSelf: 'flex-start'` on the root child), and give wrapping text a
-   * > constant `maxWidth`. Grant-dependent sizing creates a layout feedback loop between Yoga
-   * > and SwiftUI, and system settings that add chrome around controls, such as the iOS Button
-   * > Shapes accessibility setting, make that loop grow without bound.
+   * > **Note:** `matchContents` only works when the child has a natural size of its own. If the
+   * > child just fills whatever space it is given (`flex: 1`, percentage widths, or text that
+   * > wraps to the available width), SwiftUI and Yoga keep resizing each other and layout can
+   * > loop forever. Let the child size to its content instead, for example with
+   * > `alignSelf: 'flex-start'`, and give long text a `maxWidth`.
    * @default false
    */
   matchContents?: boolean;
