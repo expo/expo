@@ -1,9 +1,9 @@
-import { assertSdkRoot } from './AndroidSdk';
-import type { Device } from './adb';
-import { adbArgs, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
 import * as Log from '../../../log';
 import { installExitHooks } from '../../../utils/exit';
 import { event } from '../events';
+import { assertSdkRoot } from './AndroidSdk';
+import type { Device } from './adb';
+import { adbArgs, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
 
 let removeExitHook: (() => void) | null = null;
 

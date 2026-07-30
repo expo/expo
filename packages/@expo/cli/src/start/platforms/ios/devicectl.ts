@@ -16,7 +16,6 @@ import type { Ora } from 'ora';
 import { EOL } from 'os';
 import path from 'path';
 
-import { xcrunAsync } from './xcrun';
 import { getExpoHomeDirectory } from '../../../api/user/UserSettings';
 import * as Log from '../../../log';
 import { createTempFilePath } from '../../../utils/createTempPath';
@@ -26,6 +25,7 @@ import { isInteractive } from '../../../utils/interactive';
 import { ora } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
 import { event } from '../events';
+import { xcrunAsync } from './xcrun';
 
 const DEVICE_CTL_EXISTS_PATH = path.join(getExpoHomeDirectory(), 'devicectl-exists');
 
@@ -295,7 +295,6 @@ async function installAppWithDeviceCtlInternalAsync(
           updateProgress(100);
         }
       });
-
     });
 
     let stderrBuffer = '';

@@ -1,11 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import { ClientManager } from './ClientManager';
-import type { IPLookupResult, OnInstallProgressCallback } from './client/InstallationProxyClient';
-import { LockdowndClient } from './client/LockdowndClient';
-import { UsbmuxdClient } from './client/UsbmuxdClient';
-import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
 import { Log } from '../../../log';
 import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
 import * as devicectl from '../../../start/platforms/ios/devicectl';
@@ -17,6 +12,11 @@ import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { profile } from '../../../utils/profile';
 import { debugEvent } from '../../events';
+import { ClientManager } from './ClientManager';
+import type { IPLookupResult, OnInstallProgressCallback } from './client/InstallationProxyClient';
+import { LockdowndClient } from './client/LockdowndClient';
+import { UsbmuxdClient } from './client/UsbmuxdClient';
+import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
 
 // NOTE(EvanBacon): I have a feeling this shape will change with new iOS versions (tested against iOS 15).
 export interface ConnectedDevice {
