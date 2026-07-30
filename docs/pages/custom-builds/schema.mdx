@@ -930,7 +930,7 @@ build:
     # @end #
 ```
 
-The `ref` input only works when your project sources come from a Git repository. Place the step before [`eas/build`](#easbuild), which checks out the project internally.
+The `ref` input only works when your project sources come from a Git repository, for example, a build triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. A branch takes a bare name or a qualified ref such as `refs/heads/feature/add-icon`. A tag takes the qualified form, such as `refs/tags/v1.2.3`. A commit takes a full SHA. Place the step before [`eas/build`](#easbuild), which checks out the project internally.
 
 <EASFunctionDescription name="checkout" />
 
