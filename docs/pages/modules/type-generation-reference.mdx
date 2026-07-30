@@ -40,14 +40,15 @@ To use this package you also need to have `sourcekitten` installed. You can use 
 
 Every CLI command in this library uses the following common options for configuration. The only exception is the `inline-modules-interface` which has slightly different options.
 
-| Flag                                   | Description                                                                                                                                                                                                                                                      | Default                    |
-| :------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------- |
-| `-i, --input-paths <filePaths...>`     | Paths to Swift files for some module, glob patterns are allowed.                                                                                                                                                                                                 |                            |
-| `-m --module-path <modulePath>`        | Path to Expo module root directory.                                                                                                                                                                                                                              |                            |
-| `-o, --output-path <filePath>`         | Path to save the generated output. If this option is not provided the generated output is printed to console.                                                                                                                                                    |                            |
-| `-t, --type-inference <typeInference>` | Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`. | `PREPROCESS_AND_INFERENCE` |
-| `-s, --skip-unicode-character-mapping` | Skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.                                                                         |                            |
-| `-w --watcher`                         | Starts a watcher that checks for changes in input-path file.                                                                                                                                                                                                     |                            |
+| Flag                                       | Description                                                                                                                                                                                                                                                      | Default                    |
+| :----------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :------------------------- |
+| `-i, --input-paths <filePaths...>`         | Paths to Swift files for some module, glob patterns are allowed.                                                                                                                                                                                                 |                            |
+| `-m, --module-path <modulePath>`           | Path to Expo module root directory.                                                                                                                                                                                                                              |                            |
+| `-o, --output-path <filePath>`             | Path to save the generated output. If this option is not provided the generated output is printed to console.                                                                                                                                                    |                            |
+| `-t, --type-inference <typeInference>`     | Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`. | `PREPROCESS_AND_INFERENCE` |
+| `-s, --skip-unicode-character-mapping`     | Skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.                                                                         |                            |
+| `-d, --disable-run-on-queue-preprocessing` | Disable preprocessing that removes `runOnQueue` calls before parsing.                                                                                                                                                                                            |                            |
+| `-w, --watcher`                            | Starts a watcher that checks for changes in input-path file.                                                                                                                                                                                                     |                            |
 
 ### Main commands
 
@@ -59,6 +60,8 @@ Generates a full TypeScript interface for a Swift module. It consists of:
 - **module.ts** with the native module definition
 - **view.tsx** for each view defined in the module
 - **index.ts** file which reexports some functions
+
+If there are multiple modules provided, then a **Common.types.ts** file will be generated. It exports the common declarations (enums, structs), so they are defined exactly once.
 
 > Accepts standard [Common CLI options](#common-cli-options).
 
@@ -72,7 +75,7 @@ Creates a TypeScript interface for every Swift inline module in the project. The
 **Options:**
 | Flag | Description | Default |
 | :--- | :--- | :--- |
-| `-a --app-json <appJsonPath>` | A path to the [app config](/workflow/configuration/) file where the `inline.modules.watchedDirectories` are defined. | |
+| `-a, --app-json <appJsonPath>` | A path to the [app config](/workflow/configuration/) file where the `expo.experiments.inlineModules.watchedDirectories` are defined. | |
 | `-w --watcher` | Starts a watcher that checks for changes in inline modules files. | |
 | `-t, --type-inference <typeInference>` | Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`. | `SIMPLE_INFERENCE` |
 
@@ -133,9 +136,9 @@ Print the preprocessed file(s) in the state right before parsing them using `sou
 
 <Collapsible summary="Known issues about the current version of parsing the Swift file">
 
-- Nested classes will not be resolved fully.
+- Nested declarations will not be resolved fully.
 
-  `Sourcekitten` has a limit on resolving nested closures, so classes defined in your module may not be fully resolved. This is the reason why if there is a DSL `Class` in a module, its methods will have their return types `unresolved`.
+  `Sourcekitten` has a limit on resolving nested closures, so declarations nested deeper in your module (such as methods of a DSL `Class`) may not be fully resolved. Type inference doesn't work at this nesting depth, so only explicitly annotated types can be resolved there.
 
 - Return type resolution, `PREPROCESS_AND_INFERENCE` inference option.
 
@@ -148,15 +151,72 @@ Print the preprocessed file(s) in the state right before parsing them using `sou
 
 - Unsupported Expo Module DSL declarations.
 
-  Not all of the DSL declarations are parsed right now, and some are not parsed in every context. For example `Events` are parsed inside a `View` but not in a Module definition.
+  Most of the DSL declarations are parsed, but some details are not. For example, property setters (`Property(...).get { ... }.set { ... }`) are not modeled, so every generated property is `readonly`. Event payload types are not resolved, so generated event maps type the payload as a generic object.
+
+- `SharedRef` types lose their `nativeRefType` tag.
+
+  A Swift `SharedRef<InnerType>` is generated as `SharedRef<any>` instead of `SharedRef<'nativeRefType'>`. The tool doesn't extract the `nativeRefType` string that a `SharedRef` subclass overrides (for example, `'image'` in `expo-image`), so the generated references are compatible with any `SharedRef` and are not checked against the tagged `SharedRef` types that other libraries declare.
 
 - Using Unicode characters breaks `sourcekitten` offsets.
+
+  By default the tool works around this by mapping all non-ASCII characters to ASCII strings before parsing. The `-s, --skip-unicode-character-mapping` option disables the workaround.
 
 </Collapsible>
 ### Supported Expo modules DSL declarations
 
-| Feature                      | Notes and limitations                                                                                                           |
-| :--------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
-| **Expo DSL Declarations**    | Supports parsing for: `AsyncFunction`, `Constant`, `Constructor`, `Events`, `Function`, `Name`, `Prop`, `Property`, and `View`. |
-| **Swift `struct` & `class`** | Must conform to the `Record` protocol. Only properties marked with the `@Field` annotation are parsed.                          |
-| **Swift `enum`**             | Basic cases are supported. Values associated with enum cases are not currently parsed.                                          |
+| Feature                      | Notes and limitations                                                                                                                                                             |
+| :--------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Expo DSL Declarations**    | Supports parsing for: `AsyncFunction`, `Class`, `Constant`, `Constructor`, `Events`, `Function`, `Name`, `Prop`, `Property`, `StaticAsyncFunction`, `StaticFunction`, and `View`. |
+| **Swift `struct` & `class`** | structs and classes conforming to `Record` protocol (technically classes/structs which declare `@Field`). Only properties marked with the `@Field` annotation are parsed.         |
+| **Swift `enum`**             | Basic cases are supported. Values associated with enum cases are not currently parsed.                                                                                            |
+
+### Type conversions
+
+The tables below show how Swift types map to types in the generated TypeScript interface.
+
+#### Basic types
+
+| Swift type                          | Generated TypeScript type |
+| :---------------------------------- | :------------------------ |
+| `Any`, `JavaScriptValue`            | `any`                     |
+| `String`, `URL`                     | `string`                  |
+| `Bool`                              | `boolean`                 |
+| `Int`, `Float`, `Double`, `CGFloat` | `number`                  |
+| `Void`, `()`                        | `void`                    |
+| `Never`                             | `never`                   |
+| `JavaScriptObject`                  | `object`                  |
+
+#### Convertible types
+
+| Swift type           | Generated TypeScript type                                 |
+| :------------------- | :-------------------------------------------------------- |
+| `UIColor`, `CGColor` | `ColorValue` (from `react-native`)                        |
+| `Data`               | `Uint8Array`                                              |
+| `CGPoint`            | `{ x: number; y: number }`                                |
+| `CGSize`             | `{ width: number; height: number }`                       |
+| `CGVector`           | `{ dx: number; dy: number }`                              |
+| `CGRect`             | `{ x: number; y: number; width: number; height: number }` |
+| `JavaScriptFunction` | `(...args: any[]) => any`                                 |
+
+#### Compound and generic types
+
+| Swift type                                      | Generated TypeScript type                                                        |
+| :---------------------------------------------- | :------------------------------------------------------------------------------- |
+| `[T]`                                           | `T[]`                                                                            |
+| `[K: V]`                                        | `{ [key: K]: V }`                                                                |
+| `T?`                                            | `arg?: T` for trailing optional arguments and for structs, `T \| null` otherwise |
+| `Either<A, B>`, `EitherOfThree`, `EitherOfFour` | A union of the wrapped types, for example `A \| B`                               |
+| `ValueOrUndefined<T>`                           | `T \| undefined`                                                                 |
+| `SharedRef<T>`                                  | `SharedRef<any>` (from `expo`)                                                   |
+
+Types that cannot be mapped or resolved are generated as `unknown`. For type identifiers that are used but not declared in the parsed files, the tool additionally generates an `export type SomeType = unknown;` alias.
+
+### Generated events
+
+Events are generated differently depending on where they are declared:
+
+- **Module events**: `Events(...)` in a module definition generates a `<ModuleName>Events` type, and the module class extends `NativeModule<<ModuleName>Events>`. Module events are sent with a dictionary body, so the payload is typed as `Record<string, any>`.
+- **Class events**: `Events(...)` in a DSL `Class` generates a `<ClassName>Events` type, and the class extends `SharedObject<<ClassName>Events>`. Shared objects emit a single payload of any type, or none at all, so the listener is typed as `(payload?: any) => void`.
+- **View events**: events declared in a `View` become optional callback props on the generated props interface, typed as `(event: any) => void`.
+
+The payload types of events are not resolved from the native code, which is why the payloads are typed permissively.
