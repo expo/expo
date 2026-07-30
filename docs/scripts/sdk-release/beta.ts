@@ -150,7 +150,7 @@ if (unknownOverride) {
 }
 
 if (!options.dryRun) {
-  const dirtyFiles = git('status', '--porcelain')
+  const dirtyFiles = git('status', '--porcelain', '--untracked-files=all')
     .split('\n')
     .filter(Boolean)
     .filter(line => line.slice(3) !== self);
@@ -540,7 +540,7 @@ for (const { label, run, preview, skip } of steps) {
 
 const changed = options.dryRun
   ? []
-  : git('status', '--porcelain')
+  : git('status', '--porcelain', '--untracked-files=all')
       .split('\n')
       .filter(Boolean)
       .map(line => line.slice(3))
