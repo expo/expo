@@ -154,8 +154,8 @@ export function BottomTabView(props: Props) {
     previousRouteKeyRef.current = focusedRouteKey;
   }, [
     descriptors,
-    emitter,
     focusedRouteKey,
+    emitter,
     popNestedStackToTop,
     state.index,
     state.routes,
