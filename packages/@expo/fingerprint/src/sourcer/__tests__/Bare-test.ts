@@ -281,5 +281,32 @@ describe('getCoreAutolinkingSources', () => {
         })
       );
     });
+
+    it('should not depend on the order of autolinking dependencies', async () => {
+      const mockSpawnAsync = spawnAsync as jest.MockedFunction<typeof spawnAsync>;
+      const fixture = fs.readFileSync(
+        path.join(__dirname, 'fixtures', 'RncoreAutoLinkingFromRncCli.json'),
+        'utf8'
+      );
+      const config = JSON.parse(fixture);
+      const reorderedFixture = JSON.stringify({
+        ...config,
+        dependencies: Object.fromEntries(Object.entries(config.dependencies).reverse()),
+      });
+
+      const getContentsAsync = async (stdout: string) => {
+        mockSpawnAsync.mockResolvedValue({
+          stdout,
+          stderr: '',
+          status: 0,
+          signal: null,
+          output: [stdout, ''],
+        });
+        const sources = await testFn('/root/apps/demo', await normalizeOptionsAsync('/app'));
+        return sources.flatMap((source) => (source.type === 'contents' ? [source.contents] : []));
+      };
+
+      expect(await getContentsAsync(reorderedFixture)).toEqual(await getContentsAsync(fixture));
+    });
   }
 });

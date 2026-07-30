@@ -16,6 +16,7 @@
 ### 🐛 Bug fixes
 
 - Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
+- Fixed non-deterministic fingerprint when react-native core autolinking returns its dependencies in a different order. ([#48027](https://github.com/expo/expo/pull/48027) by [@Oupsla](https://github.com/Oupsla))
 
 ### 💡 Others
 

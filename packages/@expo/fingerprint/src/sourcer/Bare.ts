@@ -14,6 +14,7 @@ import {
   createAutolinkingHashSourceAsync,
   getFileBasedHashSourceAsync,
   maybeGetRealPathAsync,
+  stringifyJsonSorted,
 } from './Utils';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
@@ -220,7 +221,9 @@ async function parseCoreAutolinkingSourcesAsync({
   results.push({
     type: 'contents',
     id: contentsId,
-    contents: JSON.stringify(autolinkingConfig),
+    // Autolinking returns its dependencies in resolution order, which is not
+    // stable across runs, so the key order must not leak into the hash.
+    contents: stringifyJsonSorted(autolinkingConfig),
     reasons,
   });
   return results;
