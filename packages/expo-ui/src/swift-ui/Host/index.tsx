@@ -8,6 +8,15 @@ export interface HostProps extends CommonViewModifierProps {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
    * Can be only set once on mount.
+   *
+   * > **Note:** Matching works only when the content's measured size does not depend on the size
+   * > the host is granted. Content that stretches to fill the offered space (for example, hosted
+   * > React Native children using `flex: 1` or percentage widths, or text that wraps to the
+   * > available width) reports the granted size back, so every layout pass schedules another
+   * > measurement. System settings that add chrome around controls, such as the iOS Button Shapes
+   * > accessibility setting, then increase the reported size on every pass and the layout never
+   * > settles. See the `matchContents` warning on `RNHostView` for how to keep hosted React
+   * > Native content safe to match.
    * @default false
    */
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
