@@ -50,7 +50,8 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
         const routes = routeNames.map((name) => state.routes.find((r) => r.name === name));
 
         if (routes.length !== state.routes.length || routes.some((route) => route == null)) {
-          // The set of routes changed, not just the order. Not this action's job.
+          // The set of routes changed, not just the order. That is reconciled separately by
+          // the `ROUTE_NAMES_CHANGED` action (dispatched from `useStateForRouteNamesChange`).
           return state;
         }
 

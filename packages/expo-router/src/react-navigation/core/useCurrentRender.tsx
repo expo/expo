@@ -22,6 +22,7 @@ export function useCurrentRender({ state, navigation, descriptors }: Options) {
   const current = use(CurrentRenderContext);
 
   if (current && navigation.isFocused()) {
-    current.options = descriptors[state.routes[state.index]!.key]!.options;
+    // The descriptor may be missing while a route-names change is in flight.
+    current.options = descriptors[state.routes[state.index]!.key]?.options;
   }
 }

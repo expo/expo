@@ -16,6 +16,7 @@ import {
   StackRouter,
   useNavigationBuilder,
   usePreventRemoveContext,
+  useStateForRouteNamesChange,
   useTheme,
 } from '../../react-navigation/native';
 import type {
@@ -37,7 +38,13 @@ function ModalStackNavigator({
   children,
   screenOptions,
 }: ModalStackNavigatorProps) {
-  const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
+  const {
+    state: builderState,
+    navigation,
+    descriptors,
+    NavigationContent,
+    routeNames,
+  } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -48,6 +55,10 @@ function ModalStackNavigator({
     screenOptions,
     initialRouteName,
   });
+
+  // Reconcile the state when the declared route names change (e.g. HMR); the view receives the
+  // filtered display state while the `ROUTE_NAMES_CHANGED` dispatch commits.
+  const state = useStateForRouteNamesChange({ state: builderState, routeNames, navigation });
 
   useEffect(
     () =>

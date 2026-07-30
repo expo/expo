@@ -9,8 +9,10 @@ import type {
   DefaultRouterOptions,
   NavigationState,
   ParamListBase,
+  PartialState,
   Route,
   Router,
+  RouterConfigOptions,
 } from './types';
 
 export type StackActionType =
@@ -219,6 +221,72 @@ export function getRoutesForRouteNames(
  * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
 export function StackRouter(options: StackRouterOptions) {
+  // Builds a fully rehydrated state (with a fresh navigator key) from a possibly partial one.
+  // Shared by `getRehydratedState` and the `ROUTE_NAMES_CHANGED` handler.
+  function rehydrate(
+    state: PartialState<StackNavigationState<ParamListBase>> | StackNavigationState<ParamListBase>,
+    { routeNames, routeParamList }: Pick<RouterConfigOptions, 'routeNames' | 'routeParamList'>
+  ): StackNavigationState<ParamListBase> {
+    const index = state.index ?? state.routes.length - 1;
+    const activeRoutes = state.routes.slice(0, index + 1);
+    const stalePreloadedRoutes = state.routes.slice(index + 1);
+
+    const routes: Route<string>[] = activeRoutes
+      .filter((route) => routeNames.includes(route.name))
+      .map((route) => ({
+        ...route,
+        key: route.key || `${route.name}-${nanoid()}`,
+        params:
+          routeParamList[route.name] !== undefined
+            ? {
+                ...routeParamList[route.name],
+                ...route.params,
+              }
+            : route.params,
+      }));
+
+    const preloadedRoutes =
+      stalePreloadedRoutes
+        ?.filter((route) => routeNames.includes(route.name))
+        .map(
+          (route) =>
+            ({
+              ...route,
+              key: route.key || `${route.name}-${nanoid()}`,
+              params:
+                routeParamList[route.name] !== undefined
+                  ? {
+                      ...routeParamList[route.name],
+                      ...route.params,
+                    }
+                  : route.params,
+            }) as Route<string>
+        ) ?? [];
+
+    if (routes.length === 0) {
+      // `initialRouteName` may itself no longer exist (its route file was removed).
+      const initialRouteName =
+        options.initialRouteName !== undefined && routeNames.includes(options.initialRouteName)
+          ? options.initialRouteName
+          : routeNames[0]!;
+
+      routes.push({
+        key: `${initialRouteName}-${nanoid()}`,
+        name: initialRouteName,
+        params: routeParamList[initialRouteName],
+      });
+    }
+
+    return {
+      stale: false,
+      type: 'stack',
+      key: `stack-${nanoid()}`,
+      index: routes.length - 1,
+      routeNames,
+      routes: routes.concat(preloadedRoutes),
+    };
+  }
+
   const router: Router<
     StackNavigationState<ParamListBase>,
     CommonNavigationAction | StackActionType
@@ -250,67 +318,11 @@ export function StackRouter(options: StackRouterOptions) {
     },
 
     getRehydratedState(partialState, { routeNames, routeParamList }) {
-      const state = partialState;
-
-      if (state.stale === false && areRouteNamesEqual(state.routeNames, routeNames)) {
-        return state;
+      if (partialState.stale === false) {
+        return partialState;
       }
 
-      const index = state.index ?? state.routes.length - 1;
-      const activeRoutes = state.routes.slice(0, index + 1);
-      const stalePreloadedRoutes = state.routes.slice(index + 1);
-
-      const routes: Route<string>[] = activeRoutes
-        .filter((route) => routeNames.includes(route.name))
-        .map((route) => ({
-          ...route,
-          key: route.key || `${route.name}-${nanoid()}`,
-          params:
-            routeParamList[route.name] !== undefined
-              ? {
-                  ...routeParamList[route.name],
-                  ...route.params,
-                }
-              : route.params,
-        }));
-
-      const preloadedRoutes =
-        stalePreloadedRoutes
-          ?.filter((route) => routeNames.includes(route.name))
-          .map(
-            (route) =>
-              ({
-                ...route,
-                key: route.key || `${route.name}-${nanoid()}`,
-                params:
-                  routeParamList[route.name] !== undefined
-                    ? {
-                        ...routeParamList[route.name],
-                        ...route.params,
-                      }
-                    : route.params,
-              }) as Route<string>
-          ) ?? [];
-
-      if (routes.length === 0) {
-        const initialRouteName =
-          options.initialRouteName !== undefined ? options.initialRouteName : routeNames[0]!;
-
-        routes.push({
-          key: `${initialRouteName}-${nanoid()}`,
-          name: initialRouteName,
-          params: routeParamList[initialRouteName],
-        });
-      }
-
-      return {
-        stale: false,
-        type: 'stack',
-        key: `stack-${nanoid()}`,
-        index: routes.length - 1,
-        routeNames,
-        routes: routes.concat(preloadedRoutes),
-      };
+      return rehydrate(partialState, { routeNames, routeParamList });
     },
 
     getStateForRouteFocus(state, key) {
@@ -717,8 +729,18 @@ export function StackRouter(options: StackRouterOptions) {
           }
         }
 
+        case 'ROUTE_NAMES_CHANGED': {
+          if (areRouteNamesEqual(state.routeNames, options.routeNames)) {
+            return state;
+          }
+
+          // Reconcile with the fresh route names, preserving the navigator key so the
+          // navigator is not treated as a new one by its parent and views.
+          return { ...rehydrate(state, options), key: state.key };
+        }
+
         default:
-          return BaseRouter.getStateForAction(state, action);
+          return BaseRouter.getStateForAction(state, action, options);
       }
     },
 

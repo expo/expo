@@ -256,6 +256,87 @@ test("doesn't rehydrate state if it's not stale", () => {
   ).toBe(state);
 });
 
+test('returns the state on ROUTE_NAMES_CHANGED when route names already match', () => {
+  const router = DrawerRouter({});
+
+  const state: DrawerNavigationState<ParamListBase> = {
+    index: 0,
+    key: 'drawer-old',
+    routeNames: ['bar', 'baz'],
+    preloadedRouteKeys: [],
+    routes: [
+      { key: 'bar-0', name: 'bar' },
+      { key: 'baz-1', name: 'baz' },
+    ],
+    history: [{ type: 'route', key: 'bar-0' }],
+    default: 'closed',
+    stale: false,
+    type: 'drawer',
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', target: 'drawer-old' },
+      {
+        routeNames: ['baz', 'bar'],
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toBe(state);
+});
+
+test('rehydrates the state on ROUTE_NAMES_CHANGED keeping drawer history and the navigator key', () => {
+  const router = DrawerRouter({});
+
+  expect(
+    router.getStateForAction(
+      {
+        index: 2,
+        key: 'drawer-old',
+        routeNames: ['bar', 'baz', 'qux'],
+        preloadedRouteKeys: [],
+        routes: [
+          { key: 'bar-0', name: 'bar' },
+          { key: 'baz-1', name: 'baz' },
+          { key: 'qux-2', name: 'qux' },
+        ],
+        history: [
+          { type: 'route', key: 'bar-0' },
+          { type: 'route', key: 'qux-2' },
+          { type: 'drawer', status: 'open' },
+        ],
+        default: 'closed',
+        stale: false,
+        type: 'drawer',
+      },
+      { type: 'ROUTE_NAMES_CHANGED', target: 'drawer-old' },
+      {
+        routeNames: ['bar', 'baz'],
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toEqual({
+    index: 0,
+    key: 'drawer-old',
+    routeNames: ['bar', 'baz'],
+    preloadedRouteKeys: [],
+    routes: [
+      { key: 'bar-0', name: 'bar', params: undefined },
+      { key: 'baz-1', name: 'baz', params: undefined },
+    ],
+    history: [
+      { type: 'route', key: 'bar-0' },
+      { type: 'drawer', status: 'open' },
+    ],
+    default: 'closed',
+    stale: false,
+    type: 'drawer',
+  });
+});
+
 test('handles navigate action', () => {
   const router = DrawerRouter({});
   const options: RouterConfigOptions = {

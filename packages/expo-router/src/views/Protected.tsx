@@ -4,6 +4,9 @@ import { isValidElement } from 'react';
 import { Group } from '../primitives';
 import type { Href } from '../types';
 
+// TODO(@ubax): `Protected` replaces the removed `<Screen redirect>` prop: guarded screens stay
+// registered and render a redirect instead of changing the navigator's route-name set, and state
+// cleanup happens via `REMOVE_ROUTES`.
 export type ProtectedProps = {
   guard: boolean;
   /** Where to redirect when `guard` is false. Defaults to the containing navigator's anchor. */

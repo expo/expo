@@ -13,7 +13,11 @@ import type {
   TabNavigationState,
   TabRouterOptions,
 } from '../react-navigation/native';
-import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import {
+  LinkingContext,
+  useNavigationBuilder,
+  useStateForRouteNamesChange,
+} from '../react-navigation/native';
 import { shouldLinkExternally } from '../utils/url';
 import { useHiddenTabRedirect } from '../utils/useHiddenTabRedirect';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -179,11 +183,20 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   });
 
   const {
-    state,
+    state: builderState,
     descriptors,
     navigation,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
+
+  // Reconcile the state when the declared route names change (e.g. HMR); consumers receive the
+  // filtered display state while the `ROUTE_NAMES_CHANGED` dispatch commits. Order-only changes
+  // are handled separately by `EXPO_ROUTER_TAB_ORDER_CHANGED` below.
+  const state = useStateForRouteNamesChange({
+    state: builderState,
+    routeNames: navigatorContext.routeNames,
+    navigation,
+  });
 
   // `state.routeNames` keeps the mount-time order, so derive the current order from the
   // rendered screens and ask the router to reorder its state when it changes.
@@ -216,10 +229,11 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () => ({
       ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
+      state,
       contextKey,
       router: ExpoTabRouter,
     }),
-    [navigatorContext, contextKey, ExpoTabRouter]
+    [navigatorContext, state, contextKey, ExpoTabRouter]
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
@@ -230,7 +244,13 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     </TabTriggerMapContext.Provider>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent };
+  return {
+    state,
+    descriptors,
+    navigation,
+    NavigationContent,
+    routeNames: navigatorContext.routeNames,
+  };
 }
 
 function parseTriggersFromChildren(

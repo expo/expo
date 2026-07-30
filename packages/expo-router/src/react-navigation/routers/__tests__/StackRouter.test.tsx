@@ -212,11 +212,39 @@ test('keeps the focused route when rehydration filters an earlier active route',
   expect(result.routes.map((route) => route.key)).toEqual(['focused', 'preloaded']);
 });
 
-test('rehydrates committed state if route names changed', () => {
+test('returns the state on ROUTE_NAMES_CHANGED when route names already match', () => {
+  const router = StackRouter({});
+
+  const state = {
+    index: 1,
+    key: 'stack-old',
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar-0', name: 'bar' },
+      { key: 'baz-1', name: 'baz' },
+    ],
+    stale: false as const,
+    type: 'stack' as const,
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', target: 'stack-old' },
+      {
+        routeNames: ['baz', 'bar'],
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toBe(state);
+});
+
+test('rehydrates the state on ROUTE_NAMES_CHANGED preserving the navigator key', () => {
   const router = StackRouter({});
 
   expect(
-    router.getRehydratedState(
+    router.getStateForAction(
       {
         index: 2,
         key: 'stack-old',
@@ -230,6 +258,7 @@ test('rehydrates committed state if route names changed', () => {
         stale: false,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', target: 'stack-old' },
       {
         routeNames: ['bar', 'baz'],
         routeParamList: {},
@@ -238,12 +267,72 @@ test('rehydrates committed state if route names changed', () => {
     )
   ).toEqual({
     index: 1,
-    key: 'stack-test',
+    key: 'stack-old',
     routeNames: ['bar', 'baz'],
     routes: [
       { key: 'bar-0', name: 'bar' },
       { key: 'baz-1', name: 'baz' },
     ],
+    stale: false,
+    type: 'stack',
+  });
+});
+
+test('ignores a removed initialRouteName in the ROUTE_NAMES_CHANGED fallback', () => {
+  const router = StackRouter({ initialRouteName: 'bar' });
+
+  expect(
+    router.getStateForAction(
+      {
+        index: 0,
+        key: 'stack-old',
+        routeNames: ['bar'],
+        routes: [{ key: 'bar-0', name: 'bar' }],
+        stale: false,
+        type: 'stack',
+      },
+      { type: 'ROUTE_NAMES_CHANGED', target: 'stack-old' },
+      {
+        routeNames: ['baz'],
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toEqual({
+    index: 0,
+    key: 'stack-old',
+    routeNames: ['baz'],
+    routes: [{ key: 'baz-test', name: 'baz' }],
+    stale: false,
+    type: 'stack',
+  });
+});
+
+test('falls back to the initial route on ROUTE_NAMES_CHANGED when no route survives', () => {
+  const router = StackRouter({});
+
+  expect(
+    router.getStateForAction(
+      {
+        index: 0,
+        key: 'stack-old',
+        routeNames: ['bar'],
+        routes: [{ key: 'bar-0', name: 'bar' }],
+        stale: false,
+        type: 'stack',
+      },
+      { type: 'ROUTE_NAMES_CHANGED', target: 'stack-old' },
+      {
+        routeNames: ['baz'],
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toEqual({
+    index: 0,
+    key: 'stack-old',
+    routeNames: ['baz'],
+    routes: [{ key: 'baz-test', name: 'baz' }],
     stale: false,
     type: 'stack',
   });

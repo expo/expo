@@ -14,6 +14,7 @@ import {
   type TypedNavigator,
   useLocale,
   useNavigationBuilder,
+  useStateForRouteNamesChange,
 } from '../../native';
 import type {
   StackNavigationEventMap,
@@ -36,7 +37,13 @@ function StackNavigator({
 }: StackNavigatorProps) {
   const { direction } = useLocale();
 
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const {
+    state: builderState,
+    descriptors,
+    navigation,
+    NavigationContent,
+    routeNames,
+  } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -52,6 +59,10 @@ function StackNavigator({
     screenLayout,
     UNSTABLE_router,
   });
+
+  // Reconcile the state when the declared route names change (e.g. HMR); the view receives the
+  // filtered display state while the `ROUTE_NAMES_CHANGED` dispatch commits.
+  const state = useStateForRouteNamesChange({ state: builderState, routeNames, navigation });
 
   React.useEffect(
     () =>

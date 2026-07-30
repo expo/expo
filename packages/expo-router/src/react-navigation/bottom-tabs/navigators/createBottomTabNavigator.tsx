@@ -9,6 +9,7 @@ import {
   type TabRouterOptions,
   type TypedNavigator,
   useNavigationBuilder,
+  useStateForRouteNamesChange,
 } from '../../native';
 import type {
   BottomTabNavigationEventMap,
@@ -30,7 +31,13 @@ function BottomTabNavigator({
   UNSTABLE_router,
   ...rest
 }: BottomTabNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const {
+    state: builderState,
+    descriptors,
+    navigation,
+    NavigationContent,
+    routeNames,
+  } = useNavigationBuilder<
     TabNavigationState<ParamListBase>,
     TabRouterOptions,
     TabActionHelpers<ParamListBase>,
@@ -47,6 +54,10 @@ function BottomTabNavigator({
     screenLayout,
     UNSTABLE_router,
   });
+
+  // Reconcile the state when the declared route names change (e.g. HMR); the view receives the
+  // filtered display state while the `ROUTE_NAMES_CHANGED` dispatch commits.
+  const state = useStateForRouteNamesChange({ state: builderState, routeNames, navigation });
 
   return (
     <NavigationContent>

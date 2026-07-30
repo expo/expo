@@ -288,11 +288,41 @@ test("doesn't rehydrate state if it's not stale", () => {
   ).toBe(state);
 });
 
-test('rehydrates committed state if route names changed', () => {
+test('returns the state on ROUTE_NAMES_CHANGED when route names already match', () => {
+  const router = TabRouter({});
+
+  const state: TabNavigationState<ParamListBase> = {
+    index: 0,
+    key: 'tab-old',
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar-0', name: 'bar' },
+      { key: 'baz-1', name: 'baz' },
+    ],
+    history: [{ type: 'route', key: 'bar-0' }],
+    stale: false,
+    type: 'tab',
+    preloadedRouteKeys: [],
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', target: 'tab-old' },
+      {
+        routeNames: ['baz', 'bar'],
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toBe(state);
+});
+
+test('rehydrates the state on ROUTE_NAMES_CHANGED preserving the navigator key', () => {
   const router = TabRouter({ backBehavior: 'history' });
 
   expect(
-    router.getRehydratedState(
+    router.getStateForAction(
       {
         index: 2,
         key: 'tab-old',
@@ -311,6 +341,7 @@ test('rehydrates committed state if route names changed', () => {
         type: 'tab',
         preloadedRouteKeys: ['qux-2'],
       },
+      { type: 'ROUTE_NAMES_CHANGED', target: 'tab-old' },
       {
         routeNames: ['bar', 'baz'],
         routeParamList: {},
@@ -319,7 +350,7 @@ test('rehydrates committed state if route names changed', () => {
     )
   ).toEqual({
     index: 0,
-    key: 'tab-test',
+    key: 'tab-old',
     routeNames: ['bar', 'baz'],
     routes: [
       { key: 'bar-0', name: 'bar', params: undefined },

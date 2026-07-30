@@ -26,6 +26,8 @@ import { PreventRemoveProvider } from './PreventRemoveProvider';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
+import { isArrayEqual } from './isArrayEqual';
+import { isRecordEqual } from './isRecordEqual';
 import {
   type DefaultNavigatorOptions,
   type EventMapBase,
@@ -236,6 +238,21 @@ const getRouteConfigsFromChildren = <
   return configs;
 };
 
+/**
+ * Returns the previous value while `isEqual` reports the same content, so consumers can rely on
+ * referential equality. The ref is synced in an effect to keep the render phase mutation-free.
+ */
+function useContentMemo<T>(value: T, isEqual: (a: T, b: T) => boolean): T {
+  const ref = React.useRef(value);
+  const memoized = isEqual(ref.current, value) ? ref.current : value;
+
+  React.useEffect(() => {
+    ref.current = memoized;
+  });
+
+  return memoized;
+}
+
 const getStateFromParams = (params: NavigatorRoute['params']) => {
   if (params?.state != null) {
     return params.state;
@@ -337,12 +354,24 @@ export function useNavigationBuilder<
     return acc;
   }, {});
 
-  const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
-    const { initialParams } = screens[curr]!.props;
-    acc[curr] = initialParams;
-    return acc;
-  }, {});
+  // `routeNames` and `routeParamList` are content-memoized so they only change identity on
+  // genuine config changes. This makes them usable as real dependencies of `onAction` (see
+  // `useOnAction`), which lets payload-less actions such as `ROUTE_NAMES_CHANGED` read fresh
+  // values from the router config options — even when dispatched from a layout effect in the
+  // same commit. `routeGetIdList` (and full screen configs) cannot be compared: their values
+  // are closures recreated on every render.
+  const routeNames = useContentMemo(
+    routeConfigs.map((config) => config.props.name),
+    isArrayEqual
+  );
+  const routeParamList = useContentMemo(
+    routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
+      const { initialParams } = screens[curr]!.props;
+      acc[curr] = initialParams;
+      return acc;
+    }, {}),
+    isRecordEqual
+  );
   const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
     (acc, curr) =>
       Object.assign(acc, {
@@ -638,29 +667,31 @@ export function useNavigationBuilder<
       return;
     }
 
-    const navigation = descriptors[route.key]!.navigation;
+    // The descriptor may be missing while a route-names change is in flight (the route's screen
+    // config no longer exists); there is nothing to notify in that case.
+    const navigation = descriptors[route.key]?.navigation;
+
+    if (navigation == null) {
+      return;
+    }
 
     const listeners = ([] as (((e: any) => void) | undefined)[])
       .concat(
         // Get an array of listeners for all screens + common listeners on navigator
-        ...[
-          screenListeners,
-          ...routeNames.map((name) => {
-            const { listeners } = screens[name]!.props;
-            return listeners;
-          }),
-        ].map((listeners) => {
-          const map =
-            typeof listeners === 'function'
-              ? listeners({ route: route as any, navigation })
-              : listeners;
+        ...[screenListeners, ...routeNames.map((name) => screens[name]?.props.listeners)].map(
+          (listeners) => {
+            const map =
+              typeof listeners === 'function'
+                ? listeners({ route: route as any, navigation })
+                : listeners;
 
-          return map
-            ? Object.keys(map)
-                .filter((type) => type === e.type)
-                .map((type) => map?.[type])
-            : undefined;
-        })
+            return map
+              ? Object.keys(map)
+                  .filter((type) => type === e.type)
+                  .map((type) => map?.[type])
+              : undefined;
+          }
+        )
       )
       // We don't want same listener to be called multiple times for same event
       // So we remove any duplicate functions from the array
@@ -779,5 +810,8 @@ export function useNavigationBuilder<
     navigation,
     descriptors,
     NavigationContent,
+    // The navigator's declared route names (content-memoized). `state.routeNames` lags behind
+    // until `ROUTE_NAMES_CHANGED` commits; navigators pass this to `useStateForRouteNamesChange`.
+    routeNames,
   };
 }

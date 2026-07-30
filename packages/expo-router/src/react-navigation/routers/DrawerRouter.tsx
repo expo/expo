@@ -8,7 +8,6 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import { areRouteNamesEqual } from './areRouteNamesEqual';
 import type { CommonNavigationAction, ParamListBase, PartialState, Router } from './types';
 export type DrawerStatus = 'open' | 'closed';
 
@@ -165,7 +164,7 @@ export function DrawerRouter({
     },
 
     getRehydratedState(partialState, { routeNames, routeParamList, routeGetIdList }) {
-      if (partialState.stale === false && areRouteNamesEqual(partialState.routeNames, routeNames)) {
+      if (partialState.stale === false) {
         return partialState;
       }
 
@@ -229,6 +228,29 @@ export function DrawerRouter({
           }
 
           return router.getStateForAction(state, action, options);
+
+        case 'ROUTE_NAMES_CHANGED': {
+          // Delegate the reconciliation to the tab router, then re-apply the drawer specifics:
+          // the drawer history entry (dropped by the tab rehydration), `default`, and the type.
+          const result = router.getStateForAction(state, action, options);
+
+          if (result == null || result === state) {
+            return result;
+          }
+
+          let nextState = result as DrawerNavigationState<ParamListBase>;
+
+          if (isDrawerInHistory(state)) {
+            nextState = addDrawerToHistory(removeDrawerFromHistory(nextState));
+          }
+
+          return {
+            ...nextState,
+            default: defaultStatus,
+            type: 'drawer',
+            key: state.key,
+          };
+        }
 
         default:
           return router.getStateForAction(state, action, options);

@@ -21,6 +21,7 @@ import {
   type StackRouterOptions,
   type TypedNavigator,
   useNavigationBuilder,
+  useStateForRouteNamesChange,
 } from '../../react-navigation/native';
 import { ExperimentalStackView } from './ExperimentalStackView';
 import type {
@@ -41,7 +42,13 @@ function ExperimentalStackNavigator({
   UNSTABLE_router,
   ...rest
 }: ExperimentalStackNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const {
+    state: builderState,
+    descriptors,
+    navigation,
+    NavigationContent,
+    routeNames,
+  } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -57,6 +64,10 @@ function ExperimentalStackNavigator({
     screenLayout,
     UNSTABLE_router,
   });
+
+  // Reconcile the state when the declared route names change (e.g. HMR); the view receives the
+  // filtered display state while the `ROUTE_NAMES_CHANGED` dispatch commits.
+  const state = useStateForRouteNamesChange({ state: builderState, routeNames, navigation });
 
   const { registry, contextValue } = useCompositionRegistry();
 

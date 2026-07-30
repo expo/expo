@@ -1,6 +1,12 @@
 import { nanoid } from 'nanoid/non-secure';
 
-import type { CommonNavigationAction, NavigationState, PartialState } from './types';
+import { areRouteNamesEqual } from './areRouteNamesEqual';
+import type {
+  CommonNavigationAction,
+  NavigationState,
+  PartialState,
+  RouterConfigOptions,
+} from './types';
 
 /**
  * Base router object that can be used when writing custom routers.
@@ -9,7 +15,8 @@ import type { CommonNavigationAction, NavigationState, PartialState } from './ty
 export const BaseRouter = {
   getStateForAction<State extends NavigationState>(
     state: State,
-    action: CommonNavigationAction
+    action: CommonNavigationAction,
+    options?: RouterConfigOptions
   ): State | PartialState<State> | null {
     switch (action.type) {
       case 'SET_PARAMS':
@@ -65,6 +72,38 @@ export const BaseRouter = {
         }
 
         return nextState;
+      }
+
+      case 'ROUTE_NAMES_CHANGED': {
+        // Generic fallback for custom routers: update the names, drop routes whose screens no
+        // longer exist, and clamp the index. Built-in routers handle this action themselves.
+        const routeNames = options?.routeNames;
+
+        if (routeNames == null) {
+          return null;
+        }
+
+        if (areRouteNamesEqual(state.routeNames, routeNames)) {
+          return state;
+        }
+
+        const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+        if (routes.length === 0) {
+          return null;
+        }
+
+        // Keep the focused route focused when it survives; otherwise clamp the index.
+        const focusedIndex = routes.findIndex(
+          (route) => route.key === state.routes[state.index]!.key
+        );
+
+        return {
+          ...state,
+          routeNames,
+          routes,
+          index: focusedIndex === -1 ? Math.min(state.index, routes.length - 1) : focusedIndex,
+        };
       }
 
       default:

@@ -9,7 +9,7 @@ import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
 import type { RouterFactory } from '../react-navigation/native';
-import { useNavigationBuilder } from '../react-navigation/native';
+import { useNavigationBuilder, useStateForRouteNamesChange } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
 import { Screen } from './Screen';
 
@@ -64,13 +64,21 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
 
   router ||= StackRouter as unknown as T;
 
-  const navigation = useNavigationBuilder(router, {
+  const builder = useNavigationBuilder(router, {
     // Used for getting the parent with navigation.getParent('/normalized/path')
     ...routerOptions,
     id: contextKey,
     children: sortedScreens || [<Screen key="default" />],
     screenOptions,
     initialRouteName,
+  });
+
+  // Reconcile the state when the declared route names change (e.g. HMR); consumers receive the
+  // filtered display state while the `ROUTE_NAMES_CHANGED` dispatch commits.
+  const state = useStateForRouteNamesChange({
+    state: builder.state,
+    routeNames: builder.routeNames,
+    navigation: builder.navigation,
   });
 
   // useNavigationBuilder requires at least one screen to be defined otherwise it will throw.
@@ -82,7 +90,8 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   return (
     <NavigatorContext.Provider
       value={{
-        ...navigation,
+        ...builder,
+        state,
         contextKey,
         router,
       }}>
@@ -113,11 +122,20 @@ function SlotNavigator(props: NavigatorProps<any>) {
     contextKey,
   });
 
-  const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
+  const {
+    state: builderState,
+    descriptors,
+    navigation,
+    NavigationContent,
+    routeNames,
+  } = useNavigationBuilder(StackRouter, {
     ...props,
     id: contextKey,
     children: useSortedScreens(screens ?? [], guardedRedirects),
   });
+
+  // Reconcile the state when the declared route names change (e.g. HMR).
+  const state = useStateForRouteNamesChange({ state: builderState, routeNames, navigation });
 
   return (
     <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>

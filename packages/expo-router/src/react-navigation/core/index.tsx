@@ -93,6 +93,7 @@ export { usePreventRemoveContext } from './usePreventRemoveContext';
  */
 export { useRoute } from './useRoute';
 export { useStateForPath } from './useStateForPath';
+export { useStateForRouteNamesChange } from './useStateForRouteNamesChange';
 /**
  * @deprecated Will be removed in a future SDK.
  */

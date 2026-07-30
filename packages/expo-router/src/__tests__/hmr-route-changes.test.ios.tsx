@@ -149,3 +149,35 @@ it('does not crash when a tab route file is renamed after navigation', () => {
     'third',
   ]);
 });
+
+it('reconciles a JS Tabs route-name change without an unhandled-action warning', () => {
+  const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+
+  try {
+    const routes: Record<string, () => ReactElement | null> = {
+      _layout: () => <Tabs />,
+      index: () => <Text testID="index">Index</Text>,
+      second: () => <Text testID="second">Second</Text>,
+    };
+
+    const result = renderRouter(routes, { initialUrl: '/' });
+    expect(screen.getByTestId('index')).toBeVisible();
+
+    delete routes.second;
+
+    expect(() =>
+      result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />)
+    ).not.toThrow();
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(result.getRouterState()!.routes[0]!.state!.routeNames).toStrictEqual(['index']);
+
+    const unhandledActionWarnings = errorSpy.mock.calls.filter(
+      ([message]) =>
+        typeof message === 'string' && message.includes('was not handled by any navigator')
+    );
+    expect(unhandledActionWarnings).toEqual([]);
+  } finally {
+    errorSpy.mockRestore();
+  }
+});

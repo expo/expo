@@ -11,6 +11,7 @@ import type {
   PartialState,
   Route,
   Router,
+  RouterConfigOptions,
 } from './types';
 
 export type TabActionType =
@@ -219,6 +220,60 @@ export function TabRouter({
   TabNavigationState<ParamListBase>,
   TabActionType | CommonNavigationAction
 > {
+  // Builds a fully rehydrated state (with a fresh navigator key) from a possibly partial one.
+  // Shared by `getRehydratedState` and the `ROUTE_NAMES_CHANGED` handler.
+  function rehydrate(
+    state: PartialState<TabNavigationState<ParamListBase>> | TabNavigationState<ParamListBase>,
+    { routeNames, routeParamList }: Pick<RouterConfigOptions, 'routeNames' | 'routeParamList'>
+  ): TabNavigationState<ParamListBase> {
+    const routes = routeNames.map((name) => {
+      const route = (state as PartialState<TabNavigationState<ParamListBase>>).routes.find(
+        (r) => r.name === name
+      );
+
+      return {
+        ...route,
+        name,
+        key: route && route.name === name && route.key ? route.key : `${name}-${nanoid()}`,
+        params:
+          routeParamList[name] !== undefined
+            ? {
+                ...routeParamList[name],
+                ...(route ? route.params : undefined),
+              }
+            : route
+              ? route.params
+              : undefined,
+      } as Route<string>;
+    });
+
+    const index = Math.min(
+      Math.max(routeNames.indexOf(state.routes[state?.index ?? 0]?.name as string), 0),
+      routes.length - 1
+    );
+
+    const routeKeys = routes.map((route) => route.key);
+
+    const history = state.history?.filter((it) => routeKeys.includes(it.key)) ?? [];
+
+    return changeIndex(
+      {
+        stale: false,
+        type: 'tab',
+        key: `tab-${nanoid()}`,
+        index,
+        routeNames,
+        history,
+        routes,
+        preloadedRouteKeys:
+          state.preloadedRouteKeys?.filter((key) => routeKeys.includes(key)) ?? [],
+      },
+      index,
+      backBehavior,
+      initialRouteName
+    );
+  }
+
   const router: Router<
     TabNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
@@ -254,58 +309,11 @@ export function TabRouter({
     },
 
     getRehydratedState(partialState, { routeNames, routeParamList }) {
-      const state = partialState;
-
-      if (state.stale === false && areRouteNamesEqual(state.routeNames, routeNames)) {
-        return state;
+      if (partialState.stale === false) {
+        return partialState;
       }
 
-      const routes = routeNames.map((name) => {
-        const route = (state as PartialState<TabNavigationState<ParamListBase>>).routes.find(
-          (r) => r.name === name
-        );
-
-        return {
-          ...route,
-          name,
-          key: route && route.name === name && route.key ? route.key : `${name}-${nanoid()}`,
-          params:
-            routeParamList[name] !== undefined
-              ? {
-                  ...routeParamList[name],
-                  ...(route ? route.params : undefined),
-                }
-              : route
-                ? route.params
-                : undefined,
-        } as Route<string>;
-      });
-
-      const index = Math.min(
-        Math.max(routeNames.indexOf(state.routes[state?.index ?? 0]?.name as string), 0),
-        routes.length - 1
-      );
-
-      const routeKeys = routes.map((route) => route.key);
-
-      const history = state.history?.filter((it) => routeKeys.includes(it.key)) ?? [];
-
-      return changeIndex(
-        {
-          stale: false,
-          type: 'tab',
-          key: `tab-${nanoid()}`,
-          index,
-          routeNames,
-          history,
-          routes,
-          preloadedRouteKeys:
-            state.preloadedRouteKeys?.filter((key) => routeKeys.includes(key)) ?? [],
-        },
-        index,
-        backBehavior,
-        initialRouteName
-      );
+      return rehydrate(partialState, { routeNames, routeParamList });
     },
 
     getStateForRouteFocus(state, key) {
@@ -318,7 +326,7 @@ export function TabRouter({
       return changeIndex(state, index, backBehavior, initialRouteName);
     },
 
-    getStateForAction(state, action, { routeParamList, routeGetIdList }) {
+    getStateForAction(state, action, { routeNames, routeParamList, routeGetIdList }) {
       if (action.target && action.target !== state.key) {
         return null;
       }
@@ -495,8 +503,22 @@ export function TabRouter({
           };
         }
 
+        case 'ROUTE_NAMES_CHANGED': {
+          if (areRouteNamesEqual(state.routeNames, routeNames)) {
+            return state;
+          }
+
+          // Reconcile with the fresh route names, preserving the navigator key so the
+          // navigator is not treated as a new one by its parent and views.
+          return { ...rehydrate(state, { routeNames, routeParamList }), key: state.key };
+        }
+
         default:
-          return BaseRouter.getStateForAction(state, action);
+          return BaseRouter.getStateForAction(state, action, {
+            routeNames,
+            routeParamList,
+            routeGetIdList,
+          });
       }
     },
 

@@ -7,6 +7,7 @@ import type { NavigatorArgs } from 'standard-navigation';
 import { withLayoutContext } from '../layouts/withLayoutContext';
 import {
   useNavigationBuilder,
+  useStateForRouteNamesChange,
   type DefaultRouterOptions,
   type NavigationAction,
   type NavigationState,
@@ -167,13 +168,23 @@ export function unstable_integrateWithRouter<
       NavigatorProps,
       RouterOptions
     >(props);
-    const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
+    const {
+      state: builderState,
+      navigation,
+      descriptors,
+      NavigationContent,
+      routeNames,
+    } = useNavigationBuilder<
       State,
       RouterOptions,
       Record<string, (...args: unknown[]) => void>,
       NavigatorOptions,
       EventMap
     >(router, useNavigationBuilderProps);
+
+    // Reconcile the state when the declared route names change (e.g. HMR); views receive the
+    // filtered display state while the `ROUTE_NAMES_CHANGED` dispatch commits.
+    const state = useStateForRouteNamesChange({ state: builderState, routeNames, navigation });
 
     const { dispatch } = navigation;
 

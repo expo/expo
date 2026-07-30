@@ -68,6 +68,16 @@ type PreloadAction = {
   target?: string;
 };
 
+// Internal action, dispatched by `useStateForRouteNamesChange` when a navigator's declared route
+// names change (for example on an HMR update that adds or removes a route file). Routers reconcile
+// their state with the fresh `options.routeNames`; the action carries no payload. There is
+// intentionally no exported creator so it stays off the public `navigation.*` surface.
+type RouteNamesChangedAction = {
+  type: 'ROUTE_NAMES_CHANGED';
+  source?: string;
+  target?: string;
+};
+
 export type Action =
   | GoBackAction
   | NavigateAction
@@ -75,7 +85,8 @@ export type Action =
   | ResetAction
   | SetParamsAction
   | ReplaceParamsAction
-  | PreloadAction;
+  | PreloadAction
+  | RouteNamesChangedAction;
 
 export function goBack(): Action {
   return { type: 'GO_BACK' };

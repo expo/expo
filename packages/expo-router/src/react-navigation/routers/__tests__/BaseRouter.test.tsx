@@ -225,3 +225,98 @@ test("doesn't handle RESET if there are no routes", () => {
 
   expect(result).toBeNull();
 });
+
+test('returns the state on ROUTE_NAMES_CHANGED when route names already match', () => {
+  const result = BaseRouter.getStateForAction(
+    STATE,
+    { type: 'ROUTE_NAMES_CHANGED' },
+    {
+      routeNames: ['qux', 'baz', 'bar', 'foo'],
+      routeParamList: {},
+      routeGetIdList: {},
+    }
+  );
+
+  expect(result).toBe(STATE);
+});
+
+test('updates route names and filters routes on ROUTE_NAMES_CHANGED', () => {
+  const result = BaseRouter.getStateForAction(
+    STATE,
+    { type: 'ROUTE_NAMES_CHANGED' },
+    {
+      routeNames: ['foo', 'bar'],
+      routeParamList: {},
+      routeGetIdList: {},
+    }
+  );
+
+  expect(result).toEqual({
+    ...STATE,
+    index: 1,
+    routeNames: ['foo', 'bar'],
+    routes: [
+      { key: 'foo', name: 'foo' },
+      { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
+    ],
+  });
+});
+
+test('keeps the focused route on ROUTE_NAMES_CHANGED when an earlier route is removed', () => {
+  const result = BaseRouter.getStateForAction(
+    STATE,
+    { type: 'ROUTE_NAMES_CHANGED' },
+    {
+      routeNames: ['bar', 'baz'],
+      routeParamList: {},
+      routeGetIdList: {},
+    }
+  );
+
+  expect(result).toEqual({
+    ...STATE,
+    index: 0,
+    routeNames: ['bar', 'baz'],
+    routes: [
+      { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
+      { key: 'baz', name: 'baz', params: { sort: 'latest' } },
+    ],
+  });
+});
+
+test('clamps the index on ROUTE_NAMES_CHANGED when the focused route is removed', () => {
+  const result = BaseRouter.getStateForAction(
+    STATE,
+    { type: 'ROUTE_NAMES_CHANGED' },
+    {
+      routeNames: ['foo'],
+      routeParamList: {},
+      routeGetIdList: {},
+    }
+  );
+
+  expect(result).toEqual({
+    ...STATE,
+    index: 0,
+    routeNames: ['foo'],
+    routes: [{ key: 'foo', name: 'foo' }],
+  });
+});
+
+test("doesn't handle ROUTE_NAMES_CHANGED without router config options", () => {
+  expect(BaseRouter.getStateForAction(STATE, { type: 'ROUTE_NAMES_CHANGED' })).toBeNull();
+});
+
+test("doesn't handle ROUTE_NAMES_CHANGED when no route survives", () => {
+  expect(
+    BaseRouter.getStateForAction(
+      STATE,
+      { type: 'ROUTE_NAMES_CHANGED' },
+      {
+        routeNames: ['ten'],
+        routeParamList: {},
+        routeGetIdList: {},
+      }
+    )
+  ).toBeNull();
+});

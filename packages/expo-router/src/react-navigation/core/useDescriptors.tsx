@@ -270,6 +270,23 @@ export function useDescriptors<
     >
   >((acc, route, i) => {
     const navigation = navigations[route.key]!;
+
+    // Routes without a screen config get an inert descriptor that renders nothing. This happens
+    // for one render when a route file is removed (e.g. HMR) before the `ROUTE_NAMES_CHANGED`
+    // dispatch commits. Navigators render a filtered display state during that window; the
+    // placeholder keeps views crash-free when nothing survives the filter.
+    if (screens[route.name] == null) {
+      acc[route.key] = {
+        route,
+        // @ts-expect-error: it's missing action helpers, same as the descriptor below
+        navigation,
+        render: () => <React.Fragment />,
+        options: {} as ScreenOptions,
+        routeSource: undefined,
+      };
+
+      return acc;
+    }
     const customOptions = getOptions(route, navigation, options[route.key]!);
     const element = render(route, navigation, customOptions, routes[i]!.state);
 

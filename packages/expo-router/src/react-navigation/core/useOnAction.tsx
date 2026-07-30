@@ -61,10 +61,17 @@ export function useOnAction<State extends NavigationState>({
   } = use(NavigationBuilderContext);
   const navigationInChildEnabled = use(DeprecatedNavigationInChildContext);
 
-  const routerConfigOptionsRef = React.useRef<RouterConfigOptions>(routerConfigOptions);
+  const { routeNames, routeParamList, routeGetIdList } = routerConfigOptions;
+
+  // `routeNames` and `routeParamList` are content-memoized by `useNavigationBuilder`, so they
+  // are used as real dependencies below — a dispatch right after a commit (e.g. the
+  // `ROUTE_NAMES_CHANGED` layout effect) then sees fresh values instead of a stale ref.
+  // `routeGetIdList` values are closures recreated every render and cannot be compared, so it
+  // stays behind a ref.
+  const routeGetIdListRef = React.useRef(routeGetIdList);
 
   React.useEffect(() => {
-    routerConfigOptionsRef.current = routerConfigOptions;
+    routeGetIdListRef.current = routeGetIdList;
   });
 
   const onAction = React.useCallback(
@@ -80,7 +87,11 @@ export function useOnAction<State extends NavigationState>({
       visitedNavigators.add(state.key);
 
       if (typeof action.target !== 'string' || action.target === state.key) {
-        let result = router.getStateForAction(state, action, routerConfigOptionsRef.current);
+        let result = router.getStateForAction(state, action, {
+          routeNames,
+          routeParamList,
+          routeGetIdList: routeGetIdListRef.current,
+        });
 
         // If a target is specified and set to current navigator, the action shouldn't bubble
         // So instead of `null`, we use the state object for such cases to signal that action was handled
@@ -155,6 +166,8 @@ export function useOnAction<State extends NavigationState>({
       onDispatchAction,
       onRouteFocusParent,
       router,
+      routeNames,
+      routeParamList,
       setState,
     ]
   );
@@ -165,6 +178,11 @@ export function useOnAction<State extends NavigationState>({
     beforeRemoveListeners,
   });
 
+  // When `onAction` is recreated (e.g. route names changed), the parent's listener re-registers
+  // here, in a regular effect — after the layout effects of the same commit have run. That is
+  // fine: a layout-effect dispatch targeted at this navigator enters through its own
+  // `navigation.dispatch`, which already closes over the fresh `onAction`; only bubbling from
+  // other navigators goes through the parent's listener list.
   React.useEffect(() => addListenerParent?.('action', onAction), [addListenerParent, onAction]);
 
   return onAction;
