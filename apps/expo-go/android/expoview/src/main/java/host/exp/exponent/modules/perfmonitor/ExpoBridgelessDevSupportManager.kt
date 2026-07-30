@@ -5,6 +5,7 @@ import android.net.Uri
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.common.JavascriptException
 import com.facebook.react.common.SurfaceDelegateFactory
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.ReactInstanceDevHelper
@@ -13,6 +14,7 @@ import com.facebook.react.devsupport.interfaces.DevLoadingViewManager
 import com.facebook.react.devsupport.interfaces.PausedInDebuggerOverlayManager
 import com.facebook.react.devsupport.interfaces.RedBoxHandler
 import com.facebook.react.packagerconnection.RequestHandler
+import host.exp.exponent.factories.ExpoGoDevSupportManager
 import host.exp.exponent.kernel.Kernel
 
 internal class ExpoBridgelessDevSupportManager(
@@ -40,14 +42,14 @@ internal class ExpoBridgelessDevSupportManager(
     surfaceDelegateFactory,
     devLoadingViewManager,
     pausedInDebuggerOverlayManager
-  ) {
+  ),
+  ExpoGoDevSupportManager {
 
   private val perfController = PerfMonitorController(applicationContext) {
     devSettings.isFpsDebugEnabled = false
   }
 
-  // Expo Go runs one Activity per open project. Reload and bundle URL lookups are scoped to it.
-  var exponentActivityId: Int = -1
+  override var exponentActivityId: Int = -1
 
   /**
    * Points React Native's dev server plumbing at this project's packager. React Native builds the
@@ -91,6 +93,17 @@ internal class ExpoBridgelessDevSupportManager(
       Log.e(TAG, "Could not reload from the manifest, falling back to a JS reload", e)
       reactInstanceDevHelper.reload("ExpoBridgelessDevSupportManager.handleReloadJS() fallback")
     }
+  }
+
+  override fun handleException(e: Exception) {
+    // A fatal JS error reaches this as the JavascriptException that ExceptionsManagerModule throws.
+    // Expo Go shows its own error screen for those, which offers a way back to the home screen.
+    // Everything else keeps React Native's redbox.
+    if (e is JavascriptException) {
+      Kernel.handleReactNativeError(e.message, null, -1, true)
+      return
+    }
+    super.handleException(e)
   }
 
   override fun setFpsDebugEnabled(isFpsDebugEnabled: Boolean) {
