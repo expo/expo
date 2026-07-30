@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - [iOS] `JavaScriptValue.undefined` and `JavaScriptValue.null` now return shared immortal instances instead of allocating a new value on each access, removing one allocation from every void-returning host call. ([#49545](https://github.com/expo/expo/pull/49545) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] `CppError::tryCatch` now takes a C++ callable instead of an Objective-C block. Every caller already passes a pure C++ body, so the block bridged no Swift closure and only added a non-inlinable indirect call and an Objective-C runtime dependency on the JS call/eval error-handling path. ([#48333](https://github.com/expo/expo/pull/48333) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.6 — 2026-08-26
 
