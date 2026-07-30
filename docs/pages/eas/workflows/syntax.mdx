@@ -1861,7 +1861,7 @@ jobs:
 
 The step runs a shallow fetch (`--depth 1`) from the source repository's `origin`, so the ref must be reachable there.
 
-`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Put `ref` on the first `eas/checkout` in the job. If the project was already checked out by an earlier `eas/checkout` or by [`eas/build`](/custom-builds/schema/#easbuild), setting `ref` fails the step.
+`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Set `ref` on the job's first `eas/checkout` step. Setting it on a later step fails, because the project is already checked out.
 
 <EASFunctionDescription name="checkout" />
 
