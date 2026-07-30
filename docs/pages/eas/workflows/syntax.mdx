@@ -1855,7 +1855,7 @@ jobs:
 
 Branches accept a bare name or a qualified ref such as `refs/heads/feature/add-icon`. Tags need the qualified form, such as `refs/tags/v1.2.3`. A full commit SHA also works and leaves the repository on a detached `HEAD`. The step performs a shallow, depth-one fetch from the source repository's `origin`, so the ref must be reachable there.
 
-`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Place the step before any other step that checks out the project. Setting `ref` after checkout fails the step.
+`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Put `ref` on the first `eas/checkout` in the job. If the project was already checked out by an earlier `eas/checkout` or by [`eas/build`](/custom-builds/schema/#easbuild), setting `ref` fails the step.
 
 <EASFunctionDescription name="checkout" />
 
