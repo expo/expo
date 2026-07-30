@@ -1,5 +1,7 @@
 import { z } from 'zod';
 
+import { type MetroInspectorProxyApp } from './middleware/inspector/JsInspector';
+
 const CommandParameterSchema = z.object({
   name: z.string().min(1),
   type: z.enum(['text', 'number', 'confirm']),
@@ -21,6 +23,7 @@ export type DevToolsPluginExecutorArguments = {
   command: string;
   metroServerOrigin: string;
   args?: Record<string, string | number | boolean> | undefined;
+  app: MetroInspectorProxyApp;
   onOutput?: (output: DevToolsPluginOutput) => void;
 };
 
