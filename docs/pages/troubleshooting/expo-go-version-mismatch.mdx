@@ -50,7 +50,7 @@ After installing the compatible build, restart the development server with `npx 
 If the error remains after installing the correct Expo Go build:
 
 1. Check the `expo` dependency in **package.json** to confirm the project's SDK version.
-2. If **app.json** contains an `sdkVersion` field, remove it or make sure that it matches the `expo` dependency.
+2. If your [app config](/workflow/configuration/) contains an `sdkVersion` field, remove it or make sure that it matches the `expo` dependency.
 3. Run `npx expo-doctor@latest` to check for dependency version issues.
 4. Run `npx expo install --fix` to align package versions with the installed Expo SDK.
 
