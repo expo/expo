@@ -22,7 +22,8 @@ import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
-import { PreventRemoveProvider } from './PreventRemoveProvider';
+import { PreventRemoveContext } from './PreventRemoveContext';
+import { usePreventRemoveState } from './PreventRemoveProvider';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
@@ -739,13 +740,20 @@ export function useNavigationBuilder<
 
   const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
 
+  const { isRoutePrevented, preventRemoveContextValue } = usePreventRemoveState({
+    getState,
+    state,
+  });
+
   const onAction = useOnAction({
     router,
     getState,
     setState,
     key: route?.key,
     actionListeners: childListeners.action,
+    preventRemoveListeners: keyedListeners.preventRemove,
     beforeRemoveListeners: keyedListeners.beforeRemove,
+    isRoutePrevented,
     routerConfigOptions: {
       routeNames,
       routeParamList,
@@ -803,7 +811,6 @@ export function useNavigationBuilder<
     // @ts-expect-error: this should have both core and custom events, but too much work right now
     emitter,
   });
-
   useCurrentRender({
     state,
     navigation,
@@ -826,7 +833,9 @@ export function useNavigationBuilder<
         <NavigationHelpersContext.Provider value={navigation}>
           <NavigationStateListenerProvider state={state}>
             <FocusedRouteKeyContext.Provider value={state.routes[state.index]!.key}>
-              <PreventRemoveProvider>{element}</PreventRemoveProvider>
+              <PreventRemoveContext.Provider value={preventRemoveContextValue}>
+                {element}
+              </PreventRemoveContext.Provider>
             </FocusedRouteKeyContext.Provider>
           </NavigationStateListenerProvider>
         </NavigationHelpersContext.Provider>

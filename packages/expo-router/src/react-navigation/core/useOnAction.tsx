@@ -13,12 +13,15 @@ import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChil
 import {
   type ChildActionListener,
   type ChildBeforeRemoveListener,
+  type ChildPreventRemoveListener,
   NavigationBuilderContext,
 } from './NavigationBuilderContext';
+import type { IsRoutePrevented } from './PreventRemoveProvider';
 import type { EventMapCore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
 import {
   getPreventableRoutes,
+  emitBeforeRemove,
   shouldPreventRemove,
   useOnPreventRemove,
 } from './useOnPreventRemove';
@@ -29,7 +32,9 @@ type Options<State extends NavigationState> = {
   getState: () => State;
   setState: (state: State | PartialState<State>) => void;
   actionListeners: ChildActionListener[];
+  preventRemoveListeners: Record<string, ChildPreventRemoveListener | undefined>;
   beforeRemoveListeners: Record<string, ChildBeforeRemoveListener | undefined>;
+  isRoutePrevented: IsRoutePrevented;
   routerConfigOptions: RouterConfigOptions;
   emitter: NavigationEventEmitter<EventMapCore<any>>;
 };
@@ -49,7 +54,9 @@ export function useOnAction<State extends NavigationState>({
   setState,
   key,
   actionListeners,
+  preventRemoveListeners,
   beforeRemoveListeners,
+  isRoutePrevented,
   routerConfigOptions,
   emitter,
 }: Options<State>) {
@@ -92,7 +99,8 @@ export function useOnAction<State extends NavigationState>({
           if (state !== result) {
             const isPrevented = shouldPreventRemove(
               emitter,
-              beforeRemoveListeners,
+              preventRemoveListeners,
+              isRoutePrevented,
               getPreventableRoutes(state),
               getPreventableRoutes(result, state.type),
               action
@@ -102,6 +110,13 @@ export function useOnAction<State extends NavigationState>({
               return true;
             }
 
+            emitBeforeRemove(
+              emitter,
+              beforeRemoveListeners,
+              getPreventableRoutes(state),
+              getPreventableRoutes(result, state.type),
+              action
+            );
             setState(result);
           }
 
@@ -149,6 +164,7 @@ export function useOnAction<State extends NavigationState>({
       beforeRemoveListeners,
       emitter,
       getState,
+      isRoutePrevented,
       navigationInChildEnabled,
       key,
       onActionParent,
@@ -156,12 +172,15 @@ export function useOnAction<State extends NavigationState>({
       onRouteFocusParent,
       router,
       setState,
+      preventRemoveListeners,
     ]
   );
 
   useOnPreventRemove({
     getState,
+    isRoutePrevented,
     emitter,
+    preventRemoveListeners,
     beforeRemoveListeners,
   });
 
