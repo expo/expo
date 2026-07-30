@@ -26,6 +26,7 @@
 - [iOS] Preserve the capture orientation as EXIF metadata instead of rotating captured pixels, so `takePictureAsync` and `savePictureAsync` return the real orientation tag and dimensions. ([#47824](https://github.com/expo/expo/pull/47824) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Return zeroed `bounds` and `cornerPoints` from the ZXing fallback scanner so scanning a `pdf417`, `code39`, or `codabar` code no longer crashes with `Cannot read property 'origin' of undefined`. ([#47854](https://github.com/expo/expo/pull/47854) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fix `responsiveOrientationWhenOrientationLocked: false` being ignored — photos and videos captured while the app orientation is locked now follow the locked interface orientation instead of the physical device rotation. ([#47881](https://github.com/expo/expo/pull/47881) by [@jiunshinn](https://github.com/jiunshinn))
+- [iOS] Read the capture interface orientation from the scene the camera view is in rather than an arbitrary connected scene. ([#48315](https://github.com/expo/expo/pull/48315) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
