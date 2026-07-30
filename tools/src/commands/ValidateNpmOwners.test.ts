@@ -8,6 +8,7 @@ import {
   groupPackagesByInvalidOwner,
   isNpmAuthError,
   partitionExemptPackages,
+  isOwnerExempt,
   memberNamesFromOrgMembersResponse,
   npmCredentialsHelp,
   ownerNamesFromOwnerLsOutput,
@@ -224,6 +225,24 @@ describe('partitionExemptPackages', () => {
     assert.equal(matched[0].pattern, '@config-plugins/');
     assert.equal(matched[0].count, 2);
     assert.match(matched[0].reason, /config-plugins` npm organization/);
+  });
+});
+
+describe('isOwnerExempt', () => {
+  const usersToSkip = {
+    davidmokos: ['agent-cli-detector', 'sandbox-cli-detector'],
+  };
+
+  it('accepts an owner for a package on their list', () => {
+    assert.equal(isOwnerExempt('davidmokos', 'agent-cli-detector', usersToSkip), true);
+  });
+
+  it('rejects an owner for a package outside their list', () => {
+    assert.equal(isOwnerExempt('davidmokos', 'expo-camera', usersToSkip), false);
+  });
+
+  it('rejects an owner that is not listed at all', () => {
+    assert.equal(isOwnerExempt('ccheever', 'agent-cli-detector', usersToSkip), false);
   });
 });
 

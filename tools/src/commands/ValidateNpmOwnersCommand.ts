@@ -22,8 +22,62 @@ const ORG_NAME = 'expo';
 // Limits the number of `npm view` processes that run at the same time.
 const CONCURRENCY_LIMIT = 8;
 
-// If we want to add any exemptions for particular users, add them here.
-const USERS_TO_SKIP: string[] = [];
+/**
+ * Owners who are not members of the organization but are allowed to keep the
+ * packages listed here. Anything else they own is still reported.
+ */
+const USERS_TO_SKIP: { [owner: string]: string[] } = {
+  evanbacon: [
+    'altool',
+    'create-expo-app',
+    'expo-app-auth',
+    'expo-asset-utils',
+    'expo-firebase-analytics',
+    'expo-firebase-app',
+    'expo-firebase-auth',
+    'expo-firebase-crashlytics',
+    'expo-firebase-database',
+    'expo-firebase-firestore',
+    'expo-firebase-functions',
+    'expo-firebase-instance-id',
+    'expo-firebase-invites',
+    'expo-firebase-links',
+    'expo-firebase-messaging',
+    'expo-firebase-notifications',
+    'expo-firebase-performance',
+    'expo-firebase-remote-config',
+    'expo-firebase-storage',
+    'expo-google-sign-in',
+    'expo-liquid-glass',
+    'expo-optimize',
+    'expo-phaser',
+    'expo-pixi',
+    'expo-server',
+    'liquid-glass',
+    'pod-install',
+    'react-liquid-glass',
+    'react-native-liquid-glass',
+    'testflight',
+    'uri-scheme',
+  ],
+  esamelson: [
+    'expo-2d-context',
+    'expo-pwa',
+    'expo-splash-screen',
+    'expo-updates',
+    'expo-updates-interface',
+  ],
+  fson: ['expo-codemod', 'expo-template-blank', 'expo-template-tabs'],
+  wkozyra: ['eas-cli-local-build-plugin', 'expo-codemod', 'turtle-cli'],
+  davidmokos: ['agent-cli-detector', 'sandbox-cli-detector'],
+  ijzerenhein: ['snack-build', 'snack-sdk'],
+  nikki93: ['expo-development-client', 'snack-sdk'],
+  tcdavis: ['snack-build', 'snack-sdk'],
+  jake7: ['expo-type-information'],
+  jesseruder: ['snack-sdk'],
+  nacl: ['expo-2d-context'],
+  sjchmiela: ['expo-blur'],
+};
 
 /**
  * Packages that the organization can access but cannot govern, so their owners
@@ -102,16 +156,25 @@ async function action(options: ActionOptions) {
     return validated;
   });
 
+  const skippedOwners = Object.entries(USERS_TO_SKIP);
+  if (skippedOwners.length > 0) {
+    logger.log(
+      chalk.dim(
+        `Accepting ${pluralize(skippedOwners.length, 'user')} as valid owners of their listed packages:`
+      )
+    );
+    for (const [owner, allowedPackages] of skippedOwners) {
+      logger.log(chalk.dim(`  ${owner}: ${allowedPackages.join(', ')}`));
+    }
+    logger.log();
+  }
+
   const packagesWithInvalidOwners = await runWithSpinner(
     'Validating package owners...',
     (step) => {
-      return validatePackageOwnersAsync(
-        [...orgMembers, ...USERS_TO_SKIP],
-        packages,
-        (completed) => {
-          step.text = chalk.bold(`Validating package owners... ${completed}/${packages.length}`);
-        }
-      );
+      return validatePackageOwnersAsync(orgMembers, packages, (completed) => {
+        step.text = chalk.bold(`Validating package owners... ${completed}/${packages.length}`);
+      });
     },
     `Validated owners of ${packages.length} packages`
   );
@@ -475,6 +538,18 @@ export function ownerNamesFromOwnerLsOutput(output: string): string[] {
   return ownerNames;
 }
 
+/**
+ * Whether `USERS_TO_SKIP` allows the owner to keep the package. The list is
+ * injectable for tests.
+ */
+export function isOwnerExempt(
+  owner: string,
+  packageName: string,
+  usersToSkip: { [owner: string]: string[] } = USERS_TO_SKIP
+): boolean {
+  return usersToSkip[owner]?.includes(packageName) ?? false;
+}
+
 async function validatePackageOwnersAsync(
   orgMembers: string[],
   packages: string[],
@@ -487,11 +562,14 @@ async function validatePackageOwnersAsync(
   const worker = async () => {
     let pkg: string | undefined;
     while ((pkg = queue.shift()) !== undefined) {
-      const owners = await getPackageOwnersAsync(pkg);
-      const invalidOwners = owners.filter((owner) => !orgMembers.includes(owner));
+      const packageName = pkg;
+      const owners = await getPackageOwnersAsync(packageName);
+      const invalidOwners = owners.filter(
+        (owner) => !orgMembers.includes(owner) && !isOwnerExempt(owner, packageName)
+      );
 
       if (invalidOwners.length > 0) {
-        packagesWithInvalidOwners[pkg] = invalidOwners;
+        packagesWithInvalidOwners[packageName] = invalidOwners;
       }
       onProgress(++completedCount);
     }
