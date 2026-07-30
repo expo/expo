@@ -1,7 +1,6 @@
 import { it, expect } from '@jest/globals';
 import * as fs from 'fs';
 
-import { GetFileTypeInformationOptions } from '../build';
 import { generateTSMockForModule } from '../src/mockgen';
 import {
   getFileTypeInformation,
