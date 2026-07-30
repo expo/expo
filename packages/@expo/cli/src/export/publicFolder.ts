@@ -1,19 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 
-import { copyAsync, isPathInside } from '../utils/dir';
+import { copyAsync, isPathInside, maybeRealpathSync } from '../utils/dir';
 import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
-
-const debug = require('debug')('expo:public-folder') as typeof console.log;
-
-const maybeRealpath = (target: string) => {
-  try {
-    return fs.realpathSync(target);
-  } catch {
-    return target;
-  }
-};
+import { debugEvent } from './events';
 
 /**
  * Resolve `EXPO_PUBLIC_FOLDER` against the project root and ensure the result
@@ -23,7 +14,8 @@ const maybeRealpath = (target: string) => {
  * that serves or copies the public folder.
  */
 export function getPublicFolderPath(projectRoot: string): string {
-  const publicPath = maybeRealpath(path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER));
+  const unresolvedPublicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
+  const publicPath = maybeRealpathSync(unresolvedPublicPath) ?? unresolvedPublicPath;
   if (!isPathInside(publicPath, projectRoot)) {
     throw new CommandError(
       'EXPO_PUBLIC_FOLDER',
@@ -40,7 +32,7 @@ export function getUserDefinedFile(projectRoot: string, possiblePaths: string[])
   for (const possiblePath of possiblePaths) {
     const fullPath = path.join(publicPath, possiblePath);
     if (fs.existsSync(fullPath)) {
-      debug(`Found user-defined public file: ` + possiblePath);
+      debugEvent('public_folder:found_file', { possiblePath });
       return fullPath;
     }
   }

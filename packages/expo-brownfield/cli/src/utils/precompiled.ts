@@ -109,6 +109,105 @@ export const enumeratePrecompiledModules = (iosDir: string): ModuleXCFramework[]
 };
 
 /**
+ * Scans `ios/Pods/` for pods that build their vendored xcframework during the app build
+ * (`<Pod>/Products/<Pod>.xcframework`, e.g. ExpoModulesJSI). Prebuilt modules like
+ * ExpoModulesCore publicly depend on these, so without bundling them consumers fail with
+ * `unable to resolve module dependency: '<Name>'`.
+ */
+export const enumeratePodBuiltXcframeworks = (
+  iosDir: string,
+  existingNames: Set<string>
+): ModuleXCFramework[] => {
+  const podsDir = path.join(iosDir, 'Pods');
+  if (!fs.existsSync(podsDir)) {
+    return [];
+  }
+
+  const results: ModuleXCFramework[] = [];
+  for (const entry of fs.readdirSync(podsDir, { withFileTypes: true })) {
+    if (
+      !entry.isDirectory() ||
+      RESERVED_POD_DIRS.has(entry.name) ||
+      existingNames.has(entry.name)
+    ) {
+      continue;
+    }
+    const podDir = path.join(podsDir, entry.name);
+    const xcframeworkPath = path.join(podDir, 'Products', `${entry.name}.xcframework`);
+    if (!fs.existsSync(xcframeworkPath)) {
+      continue;
+    }
+    results.push({
+      name: entry.name,
+      podDir,
+      xcframeworkPath,
+      mainProduct: entry.name,
+    });
+  }
+
+  return results;
+};
+
+/**
+ * A shared SPM-dep xcframework staged as a symlink whose target only exists in a different
+ * build flavor than the requested one (e.g. only `.../SDWebImage/debug/` is on disk but a
+ * `--release` build was requested).
+ */
+export interface FlavorMismatch {
+  name: string;
+  /** The requested flavor that could not be found. */
+  flavor: string;
+  /** The wrong-flavor path the staged symlink resolves to. */
+  xcframeworkPath: string;
+}
+
+const FLAVOR_DIR_NAMES = new Set(['debug', 'release']);
+
+/**
+ * Autolinking stages shared SPM-dep xcframeworks as symlinks into a `<store>/<name>/<flavor>/`
+ * tree, using the flavor active at `pod install` time. Copying the symlink verbatim would make
+ * the package non-portable and could ship the wrong flavor, so resolve it to its real path and
+ * swap to the requested flavor's sibling directory — recording a `FlavorMismatch` when that
+ * sibling is missing.
+ */
+const resolveStagedXcframework = (
+  module: ModuleXCFramework,
+  flavor: string,
+  flavorMismatches: FlavorMismatch[]
+): ModuleXCFramework => {
+  let isSymlink = false;
+  try {
+    isSymlink = fs.lstatSync(module.xcframeworkPath).isSymbolicLink();
+  } catch {
+    return module;
+  }
+  if (!isSymlink) {
+    return module;
+  }
+
+  let real: string;
+  try {
+    real = fs.realpathSync(module.xcframeworkPath);
+  } catch {
+    // Dangling symlink — leave it; the copy step will surface the failure with context.
+    return module;
+  }
+
+  const flavorDir = path.dirname(real);
+  const stagedFlavor = path.basename(flavorDir).toLowerCase();
+  if (FLAVOR_DIR_NAMES.has(stagedFlavor) && stagedFlavor !== flavor) {
+    const candidate = path.join(path.dirname(flavorDir), flavor, path.basename(real));
+    if (fs.existsSync(candidate)) {
+      real = fs.realpathSync(candidate);
+    } else {
+      flavorMismatches.push({ name: module.name, flavor, xcframeworkPath: real });
+    }
+  }
+
+  return { ...module, xcframeworkPath: real };
+};
+
+/**
  * Reads `<podDir>/artifacts/.last_build_configuration` and, if it doesn't match the requested
  * build configuration, shells out to autolinking's `replace-xcframework.js` to extract the
  * correct flavor tarball in place. This protects against the user having run
@@ -608,9 +707,23 @@ export const enumerateAllPrebuildModules = (
     modules: allModules,
     podModules,
     podToNpm,
+    flavorMismatches,
   } = enumeratePrebuildModulesRaw(cwd, buildConfiguration);
 
   const modules = allModules.filter((m) => !hostProvided.has(m.name));
+
+  // Shipping a wrong-flavor SPM dep would silently mix debug and release binaries in the
+  // package, so fail fast unless the host app provides the framework itself.
+  const blockingMismatches = flavorMismatches.filter(({ name }) => !hostProvided.has(name));
+  if (blockingMismatches.length > 0) {
+    const detail = blockingMismatches
+      .map(
+        ({ name, flavor, xcframeworkPath }) =>
+          `${name} (requested ${flavor}, only found ${xcframeworkPath})`
+      )
+      .join(', ');
+    CLIError.handle('ios-prebuilds-spm-dep-flavor-mismatch', detail);
+  }
 
   // Drop host-provided names from the completeness check
   const declaredDeps = collectDeclaredSpmDeps(podModules, podToNpm).filter(
@@ -639,10 +752,18 @@ export const enumeratePrebuildModulesRaw = (
   modules: ModuleXCFramework[];
   podModules: ModuleXCFramework[];
   podToNpm: Map<string, NpmPackageInfo>;
+  flavorMismatches: FlavorMismatch[];
 } => {
-  const podModules = enumeratePrecompiledModules(path.join(cwd, 'ios'));
+  const flavor = buildConfiguration.toLowerCase();
+  const flavorMismatches: FlavorMismatch[] = [];
+  const podModules = enumeratePrecompiledModules(path.join(cwd, 'ios')).map((module) =>
+    resolveStagedXcframework(module, flavor, flavorMismatches)
+  );
   const podToNpm = buildPodToNpmPackageMap(cwd);
   const seenNames = new Set(podModules.map((m) => m.name));
+
+  const podBuiltModules = enumeratePodBuiltXcframeworks(path.join(cwd, 'ios'), seenNames);
+  podBuiltModules.forEach((m) => seenNames.add(m.name));
 
   const bundledModules = enumerateBundledSpmDepsXcframeworks(
     podModules,
@@ -655,8 +776,9 @@ export const enumeratePrebuildModulesRaw = (
   const spmDepModules = enumerateSpmDepsXcframeworks(cwd, buildConfiguration, seenNames);
 
   return {
-    modules: [...podModules, ...bundledModules, ...spmDepModules],
+    modules: [...podModules, ...podBuiltModules, ...bundledModules, ...spmDepModules],
     podModules,
     podToNpm,
+    flavorMismatches,
   };
 };

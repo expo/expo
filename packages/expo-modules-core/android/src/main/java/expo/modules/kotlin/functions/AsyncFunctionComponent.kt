@@ -1,6 +1,5 @@
 package expo.modules.kotlin.functions
 
-import android.view.View
 import expo.modules.BuildConfig
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
@@ -9,7 +8,6 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.jni.decorators.JSDecoratorsBridgingObject
 import expo.modules.kotlin.types.AnyType
-import expo.modules.kotlin.types.inheritFrom
 import expo.modules.kotlin.weak
 import kotlinx.coroutines.launch
 
@@ -67,17 +65,6 @@ abstract class AsyncFunctionComponent(
       }
 
       Queues.MAIN -> {
-        if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED && desiredArgsTypes.any { it.inheritFrom<View>() }) {
-          // On certain occasions, invoking a function on a view could lead to an error
-          // because of the asynchronous communication between the JavaScript and native components.
-          // In such cases, the native view may not have been mounted yet,
-          // but the JavaScript code has already received the future tag of the view.
-          // To avoid this issue, we have decided to temporarily utilize
-          // the UIManagerModule for dispatching functions on the main thread.
-          appContext.dispatchOnMainUsingUIManager(block)
-          return
-        }
-
         appContext.mainQueue.launch {
           block()
         }

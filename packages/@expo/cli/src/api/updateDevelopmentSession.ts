@@ -2,8 +2,8 @@ import type { ExpoConfig } from '@expo/config';
 import os from 'os';
 import { URLSearchParams } from 'url';
 
-import { fetchAsync } from './rest/client';
 import { CommandError } from '../utils/errors';
+import { fetchAsync } from './rest/client';
 
 /** Create the expected session info. */
 export function createSessionInfo({

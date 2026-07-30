@@ -216,37 +216,33 @@ async function readFile(targetFile: File, options: { base64: boolean }): Promise
   const mimeType = targetFile.type;
   const baseUri = URL.createObjectURL(targetFile);
 
-  try {
-    let metadata: { width: number; height: number; duration?: number };
-    let base64: string | undefined;
+  let metadata: { width: number; height: number; duration?: number };
+  let base64: string | undefined;
 
-    if (mimeType.startsWith('image/')) {
-      metadata = await getImageMetadata(baseUri);
-    } else if (mimeType.startsWith('video/')) {
-      metadata = await getVideoMetadata(baseUri);
-    } else {
-      throw new Error(`Unsupported file type: ${mimeType}. Only images and videos are supported.`);
-    }
-
-    if (options.base64) {
-      base64 = await readFileAsBase64(targetFile);
-    }
-
-    return {
-      uri: baseUri,
-      width: metadata.width,
-      height: metadata.height,
-      type: mimeType.startsWith('image/') ? 'image' : 'video',
-      mimeType,
-      fileName: targetFile.name,
-      fileSize: targetFile.size,
-      file: targetFile,
-      ...(metadata.duration !== undefined && { duration: metadata.duration }),
-      ...(base64 && { base64 }),
-    };
-  } catch (error) {
-    throw error;
+  if (mimeType.startsWith('image/')) {
+    metadata = await getImageMetadata(baseUri);
+  } else if (mimeType.startsWith('video/')) {
+    metadata = await getVideoMetadata(baseUri);
+  } else {
+    throw new Error(`Unsupported file type: ${mimeType}. Only images and videos are supported.`);
   }
+
+  if (options.base64) {
+    base64 = await readFileAsBase64(targetFile);
+  }
+
+  return {
+    uri: baseUri,
+    width: metadata.width,
+    height: metadata.height,
+    type: mimeType.startsWith('image/') ? 'image' : 'video',
+    mimeType,
+    fileName: targetFile.name,
+    fileSize: targetFile.size,
+    file: targetFile,
+    ...(metadata.duration !== undefined && { duration: metadata.duration }),
+    ...(base64 && { base64 }),
+  };
 }
 
 /**

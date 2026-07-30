@@ -1,5 +1,5 @@
 diff --git a/templates/expo-template-bare-minimum/android/app/build.gradle b/templates/expo-template-bare-minimum/android/app/build.gradle
-index 84879d83acd..fc185e53bc3 100644
+index 84879d83acd..66d64fd22ed 100644
 --- a/templates/expo-template-bare-minimum/android/app/build.gradle
 +++ b/templates/expo-template-bare-minimum/android/app/build.gradle
 @@ -11,9 +11,10 @@ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
@@ -50,11 +50,12 @@ index 84879d83acd..fc185e53bc3 100644
              signingConfig signingConfigs.debug
 -            shrinkResources (findProperty('android.enableShrinkResourcesInReleaseBuilds')?.toBoolean() ?: false)
 -            minifyEnabled enableProguardInReleaseBuilds
+-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+-            crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
 +            def enableShrinkResources = findProperty('android.enableShrinkResourcesInReleaseBuilds') ?: 'false'
 +            shrinkResources enableShrinkResources.toBoolean()
 +            minifyEnabled enableMinifyInReleaseBuilds
-             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
--            crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
++            proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
 +            def enablePngCrunchInRelease = findProperty('android.enablePngCrunchInReleaseBuilds') ?: 'true'
 +            crunchPngs enablePngCrunchInRelease.toBoolean()
          }
@@ -285,16 +286,18 @@ index abbcb8ec8a1..0554dd156c1 100644
 +apply plugin: "expo-root-project"
 +apply plugin: "com.facebook.react.rootproject"
 diff --git a/templates/expo-template-bare-minimum/android/gitignore b/templates/expo-template-bare-minimum/android/gitignore
-index 8a6be077181..1ea9b6464ec 100644
+index 8a6be077181..01581731149 100644
 --- a/templates/expo-template-bare-minimum/android/gitignore
 +++ b/templates/expo-template-bare-minimum/android/gitignore
-@@ -12,5 +12,8 @@ local.properties
+@@ -11,6 +11,10 @@ local.properties
+ *.iml
  *.hprof
  .cxx/
- 
++gradle/gradle-daemon-jvm.properties
++
 +# generated inline modules
 +app/src/main/java/inline/
-+
+ 
  # Bundle artifacts
  *.jsbundle
 diff --git a/templates/expo-template-bare-minimum/android/gradle.properties b/templates/expo-template-bare-minimum/android/gradle.properties
@@ -496,10 +499,10 @@ index 39b188e065c..7fe91512213 100644
 -includeBuild(new File(["node", "--print", "require.resolve('@react-native/gradle-plugin/package.json', { paths: [require.resolve('react-native/package.json')] })"].execute(null, rootDir).text.trim()).getParentFile())
 +includeBuild(expoAutolinking.reactNativeGradlePlugin)
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-index 1ccb9b422d5..39fa5afe55b 100644
+index 1ccb9b422d5..4670609274a 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld.xcodeproj/project.pbxproj
-@@ -3,33 +3,25 @@
+@@ -3,33 +3,27 @@
  	archiveVersion = 1;
  	classes = {
  	};
@@ -516,6 +519,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
 -		B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */; };
  		BB2F792D24A3F905000567C9 /* Expo.plist in Resources */ = {isa = PBXBuildFile; fileRef = BB2F792C24A3F905000567C9 /* Expo.plist */; };
 +		F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748412D0307B40044C1D9 /* AppDelegate.swift */; };
++		F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F11748432D0307B40044C1D9 /* SceneDelegate.swift */; };
  /* End PBXBuildFile section */
  
  /* Begin PBXFileReference section */
@@ -533,11 +537,12 @@ index 1ccb9b422d5..39fa5afe55b 100644
  		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 -		FAC715A2D49A985799AEE119 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-HelloWorld/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
 +		F11748412D0307B40044C1D9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = HelloWorld/AppDelegate.swift; sourceTree = "<group>"; };
++		F11748432D0307B40044C1D9 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = SceneDelegate.swift; path = HelloWorld/SceneDelegate.swift; sourceTree = "<group>"; };
 +		F11748442D0722820044C1D9 /* HelloWorld-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "HelloWorld-Bridging-Header.h"; path = "HelloWorld/HelloWorld-Bridging-Header.h"; sourceTree = "<group>"; };
  /* End PBXFileReference section */
  
  /* Begin PBXFrameworksBuildPhase section */
-@@ -37,7 +29,6 @@
+@@ -37,7 +31,6 @@
  			isa = PBXFrameworksBuildPhase;
  			buildActionMask = 2147483647;
  			files = (
@@ -545,11 +550,12 @@ index 1ccb9b422d5..39fa5afe55b 100644
  			);
  			runOnlyForDeploymentPostprocessing = 0;
  		};
-@@ -47,12 +38,11 @@
+@@ -47,12 +40,12 @@
  		13B07FAE1A68108700A75B9A /* HelloWorld */ = {
  			isa = PBXGroup;
  			children = (
 +				F11748412D0307B40044C1D9 /* AppDelegate.swift */,
++				F11748432D0307B40044C1D9 /* SceneDelegate.swift */,
 +				F11748442D0722820044C1D9 /* HelloWorld-Bridging-Header.h */,
  				BB2F792B24A3F905000567C9 /* Supporting */,
 -				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -560,7 +566,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  				AA286B85B6C04FC6940260E9 /* SplashScreen.storyboard */,
  			);
  			name = HelloWorld;
-@@ -62,7 +52,6 @@
+@@ -62,7 +55,6 @@
  			isa = PBXGroup;
  			children = (
  				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
@@ -568,7 +574,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  			);
  			name = Frameworks;
  			sourceTree = "<group>";
-@@ -81,8 +70,6 @@
+@@ -81,8 +73,6 @@
  				832341AE1AAA6A7D00B99B32 /* Libraries */,
  				83CBBA001A601CBA00E9B192 /* Products */,
  				2D16E6871FA4F8E400B85C8A /* Frameworks */,
@@ -577,7 +583,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  			);
  			indentWidth = 2;
  			sourceTree = "<group>";
-@@ -97,14 +84,6 @@
+@@ -97,14 +87,6 @@
  			name = Products;
  			sourceTree = "<group>";
  		};
@@ -592,7 +598,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  		BB2F792B24A3F905000567C9 /* Supporting */ = {
  			isa = PBXGroup;
  			children = (
-@@ -114,23 +93,6 @@
+@@ -114,23 +96,6 @@
  			path = HelloWorld/Supporting;
  			sourceTree = "<group>";
  		};
@@ -616,7 +622,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  /* End PBXGroup section */
  
  /* Begin PBXNativeTarget section */
-@@ -206,6 +168,8 @@
+@@ -206,6 +171,8 @@
  			files = (
  			);
  			inputPaths = (
@@ -625,7 +631,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  			);
  			name = "Bundle React Native code and images";
  			outputPaths = (
-@@ -265,9 +229,7 @@
+@@ -265,9 +232,8 @@
  			isa = PBXSourcesBuildPhase;
  			buildActionMask = 2147483647;
  			files = (
@@ -633,10 +639,11 @@ index 1ccb9b422d5..39fa5afe55b 100644
 -				13B07FC11A68108700A75B9A /* main.m in Sources */,
 -				B18059E884C0ABDD17F3DC3D /* ExpoModulesProvider.swift in Sources */,
 +				F11748422D0307B40044C1D9 /* AppDelegate.swift in Sources */,
++				F11748442D0307B40044C1D9 /* SceneDelegate.swift in Sources */,
  			);
  			runOnlyForDeploymentPostprocessing = 0;
  		};
-@@ -276,7 +238,6 @@
+@@ -276,7 +242,6 @@
  /* Begin XCBuildConfiguration section */
  		13B07F941A680F5B00A75B9A /* Debug */ = {
  			isa = XCBuildConfiguration;
@@ -644,7 +651,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  			buildSettings = {
  				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
  				CLANG_ENABLE_MODULES = YES;
-@@ -287,8 +248,12 @@
+@@ -287,8 +252,12 @@
  					"FB_SONARKIT_ENABLED=1",
  				);
  				INFOPLIST_FILE = HelloWorld/Info.plist;
@@ -659,7 +666,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  				MARKETING_VERSION = 1.0;
  				OTHER_LDFLAGS = (
  					"$(inherited)",
-@@ -297,6 +262,7 @@
+@@ -297,6 +266,7 @@
  				);
  				PRODUCT_BUNDLE_IDENTIFIER = org.name.HelloWorld;
  				PRODUCT_NAME = HelloWorld;
@@ -667,7 +674,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
  				SWIFT_VERSION = 5.0;
  				VERSIONING_SYSTEM = "apple-generic";
-@@ -305,14 +271,17 @@
+@@ -305,14 +275,17 @@
  		};
  		13B07F951A680F5B00A75B9A /* Release */ = {
  			isa = XCBuildConfiguration;
@@ -688,7 +695,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  				MARKETING_VERSION = 1.0;
  				OTHER_LDFLAGS = (
  					"$(inherited)",
-@@ -321,6 +290,7 @@
+@@ -321,6 +294,7 @@
  				);
  				PRODUCT_BUNDLE_IDENTIFIER = org.name.HelloWorld;
  				PRODUCT_NAME = HelloWorld;
@@ -696,7 +703,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  				SWIFT_VERSION = 5.0;
  				VERSIONING_SYSTEM = "apple-generic";
  			};
-@@ -373,8 +343,11 @@
+@@ -373,8 +347,11 @@
  				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
  				GCC_WARN_UNUSED_FUNCTION = YES;
  				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -710,7 +717,7 @@ index 1ccb9b422d5..39fa5afe55b 100644
  				LIBRARY_SEARCH_PATHS = "\"$(inherited)\"";
  				MTL_ENABLE_DEBUG_INFO = YES;
  				ONLY_ACTIVE_ARCH = YES;
-@@ -422,8 +395,11 @@
+@@ -422,8 +399,11 @@
  				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
  				GCC_WARN_UNUSED_FUNCTION = YES;
  				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -726,16 +733,16 @@ index 1ccb9b422d5..39fa5afe55b 100644
  				SDKROOT = iphoneos;
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
 new file mode 100644
-index 00000000000..9670a1ff07e
+index 00000000000..34fd928b70c
 --- /dev/null
 +++ b/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.swift
-@@ -0,0 +1,69 @@
+@@ -0,0 +1,44 @@
 +internal import Expo
 +import React
 +import ReactAppDependencyProvider
 +
 +@main
-+class AppDelegate: ExpoAppDelegate {
++class AppDelegate: ExpoAppDelegate, ExpoReactNativeFactoryProvider {
 +  var window: UIWindow?
 +
 +  var reactNativeDelegate: ExpoReactNativeFactoryDelegate?
@@ -752,34 +759,9 @@ index 00000000000..9670a1ff07e
 +    reactNativeDelegate = delegate
 +    reactNativeFactory = factory
 +
-+#if os(iOS) || os(tvOS)
-+    window = UIWindow(frame: UIScreen.main.bounds)
-+    factory.startReactNative(
-+      withModuleName: "main",
-+      in: window,
-+      launchOptions: launchOptions)
-+#endif
-+
++    // The window is created and React Native is started by `SceneDelegate` under the
++    // scene-based life cycle (required by the iOS 27 SDK).
 +    return super.application(application, didFinishLaunchingWithOptions: launchOptions)
-+  }
-+
-+  // Linking API
-+  public override func application(
-+    _ app: UIApplication,
-+    open url: URL,
-+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
-+  ) -> Bool {
-+    return super.application(app, open: url, options: options) || RCTLinkingManager.application(app, open: url, options: options)
-+  }
-+
-+  // Universal Links
-+  public override func application(
-+    _ application: UIApplication,
-+    continue userActivity: NSUserActivity,
-+    restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
-+  ) -> Bool {
-+    let result = RCTLinkingManager.application(application, continue: userActivity, restorationHandler: restorationHandler)
-+    return super.application(application, continue: userActivity, restorationHandler: restorationHandler) || result
 +  }
 +}
 +
@@ -808,6 +790,46 @@ index 00000000000..8361941afc2
 +//
 +// Use this file to import your target's public headers that you would like to expose to Swift.
 +//
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+index 596dc7ce6b5..e33bda957c9 100644
+--- a/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/Info.plist
+@@ -33,6 +33,23 @@
+ 		<key>NSAllowsLocalNetworking</key>
+ 		<true/>
+ 	</dict>
++	<key>UIApplicationSceneManifest</key>
++	<dict>
++		<key>UIApplicationSupportsMultipleScenes</key>
++		<false/>
++		<key>UISceneConfigurations</key>
++		<dict>
++			<key>UIWindowSceneSessionRoleApplication</key>
++			<array>
++				<dict>
++					<key>UISceneConfigurationName</key>
++					<string>Default Configuration</string>
++					<key>UISceneDelegateClassName</key>
++					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
++				</dict>
++			</array>
++		</dict>
++	</dict>
+ 	<key>UILaunchStoryboardName</key>
+ 	<string>SplashScreen</string>
+ 	<key>UIRequiredDeviceCapabilities</key>
+diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift b/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift
+new file mode 100644
+index 00000000000..788dde8f463
+--- /dev/null
++++ b/templates/expo-template-bare-minimum/ios/HelloWorld/SceneDelegate.swift
+@@ -0,0 +1,6 @@
++internal import Expo
++
++@objc(SceneDelegate)
++class SceneDelegate: ExpoAppSceneDelegate {
++  // Extension point for config plugins.
++}
 diff --git a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard b/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
 index 447b4188985..58d21796e1d 100644
 --- a/templates/expo-template-bare-minimum/ios/HelloWorld/SplashScreen.storyboard
@@ -845,10 +867,10 @@ index 447b4188985..58d21796e1d 100644
      </resources>
  </document>
 diff --git a/templates/expo-template-bare-minimum/ios/Podfile b/templates/expo-template-bare-minimum/ios/Podfile
-index f740040e7be..c3158e3fb9b 100644
+index f740040e7be..1a7b1969798 100644
 --- a/templates/expo-template-bare-minimum/ios/Podfile
 +++ b/templates/expo-template-bare-minimum/ios/Podfile
-@@ -4,12 +4,20 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
+@@ -4,12 +4,23 @@ require File.join(File.dirname(`node --print "require.resolve('react-native/pack
  require 'json'
  podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
  
@@ -868,13 +890,16 @@ index f740040e7be..c3158e3fb9b 100644
 +ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] ||= podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR']
 +ENV['RCT_USE_RN_DEP'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
 +ENV['RCT_USE_PREBUILT_RNCORE'] ||= podfile_properties['ios.buildReactNativeFromSource'] == 'true' ? '0' : '1'
-+ENV['RCT_HERMES_V1_ENABLED'] ||= '1' if podfile_properties['expo.useHermesV1'] == 'true'
-+ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] != 'false'
++ENV['RCT_HERMES_V1_ENABLED'] ||= '0' if podfile_properties['expo.useHermesV1'] == 'false'
++# An explicit `ios.usePrecompiledModules: false` must win even when the env var is already set
++# (e.g. EXPO_USE_PRECOMPILED_MODULES exported by EAS Build), so force-disable here before the default.
++ENV['EXPO_USE_PRECOMPILED_MODULES'] = '0' if podfile_properties['EXPO_USE_PRECOMPILED_MODULES'] == 'false'
++ENV['EXPO_USE_PRECOMPILED_MODULES'] ||= '1'
 +platform :ios, podfile_properties['ios.deploymentTarget'] || '16.4'
  
  prepare_react_native_project!
  
-@@ -23,7 +31,8 @@ target 'HelloWorld' do
+@@ -23,7 +34,8 @@ target 'HelloWorld' do
        'node',
        '--no-warnings',
        '--eval',
@@ -884,7 +909,7 @@ index f740040e7be..c3158e3fb9b 100644
        'react-native-config',
        '--json',
        '--platform',
-@@ -49,18 +58,7 @@ target 'HelloWorld' do
+@@ -49,18 +61,7 @@ target 'HelloWorld' do
        installer,
        config[:reactNativePath],
        :mac_catalyst_enabled => false,
@@ -905,7 +930,7 @@ index f740040e7be..c3158e3fb9b 100644
    end
  end
 diff --git a/templates/expo-template-bare-minimum/package.json b/templates/expo-template-bare-minimum/package.json
-index b51159163bf..8843d0fcae7 100644
+index b51159163bf..92989571f5f 100644
 --- a/templates/expo-template-bare-minimum/package.json
 +++ b/templates/expo-template-bare-minimum/package.json
 @@ -2,7 +2,7 @@
@@ -913,7 +938,7 @@ index b51159163bf..8843d0fcae7 100644
    "description": "This bare project template includes a minimal setup for using unimodules with React Native.",
    "license": "0BSD",
 -  "version": "52.0.79",
-+  "version": "56.0.17",
++  "version": "56.0.19",
    "main": "index.js",
    "scripts": {
      "start": "expo start --dev-client",
@@ -925,10 +950,10 @@ index b51159163bf..8843d0fcae7 100644
 -    "expo-status-bar": "~2.0.1",
 -    "react": "18.3.1",
 -    "react-native": "0.76.9"
-+    "expo": "~56.0.3",
++    "expo": "~56.0.5",
 +    "expo-status-bar": "~56.0.4",
 +    "react": "19.2.3",
-+    "react-native": "0.85.3"
++    "react-native": "0.86.0"
    },
 -  "devDependencies": {
 -    "@babel/core": "^7.20.0"

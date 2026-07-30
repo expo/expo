@@ -3,12 +3,12 @@ import * as React from 'react';
 import { use } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { HeaderSegment } from './HeaderSegment';
 import { getHeaderTitle, HeaderShownContext } from '../../../elements';
 import { StackActions } from '../../../native';
 import type { StackHeaderProps } from '../../types';
 import { ModalPresentationContext } from '../../utils/ModalPresentationContext';
 import { throttle } from '../../utils/throttle';
+import { HeaderSegment } from './HeaderSegment';
 
 export const Header = React.memo(function Header({
   back,

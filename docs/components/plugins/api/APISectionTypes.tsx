@@ -216,7 +216,10 @@ const renderType = (
               'mt-3.5 flex flex-row items-start gap-2'
             )}>
             <div className="flex flex-row items-center gap-2">
-              <CornerDownRightIcon className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary" />
+              <CornerDownRightIcon
+                aria-hidden="true"
+                className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
+              />
               <span className={STYLES_SECONDARY}>Returns:</span>
             </div>
             <CALLOUT>
@@ -307,7 +310,7 @@ const renderType = (
           <APISectionDeprecationNote comment={comment} sticky />
           <APIBoxHeader name={name} comment={comment} />
           <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1.5')}>
-            <span className={STYLES_SECONDARY}>Literal Type: </span>
+            <span className={STYLES_SECONDARY}>Literal type: </span>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
           <APICommentTextBlock

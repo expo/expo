@@ -2,12 +2,11 @@
 
 import ExpoModulesCore
 
-/**
- Options accepted by the `logEvent` module function. The event name is
- passed as a separate positional argument and is therefore not part of this
- record.
- */
+/// Options accepted by the `logEvent` module function. The event name is
+/// passed as a separate positional argument and is therefore not part of this
+/// record.
 struct LogEventOptions: Record {
+  @Field var displayName: String?
   @Field var body: String?
   @Field var attributes: [String: Any]?
   @Field var severity: Severity?

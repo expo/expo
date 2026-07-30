@@ -4,9 +4,7 @@
     {
       "name": "ExpoLocation",
       "podName": "ExpoLocation",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -21,18 +19,9 @@
           "path": "ios",
           "pattern": "**/*.m",
           "headerPattern": "**/*.h",
-          "dependencies": [
-            "ReactNativeDependencies",
-            "React",
-            "Hermes"
-          ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ],
-          "includeDirectories": [
-            "."
-          ]
+          "dependencies": ["ReactNativeDependencies", "React", "Hermes"],
+          "linkedFrameworks": ["Foundation", "UIKit"],
+          "includeDirectories": ["."]
         },
         {
           "type": "swift",
@@ -46,10 +35,7 @@
             "expo-modules-core/ExpoModulesCore",
             "ExpoLocation_ios_objc"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit"]
         }
       ]
     }

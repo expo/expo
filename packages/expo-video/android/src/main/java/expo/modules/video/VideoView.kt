@@ -152,6 +152,12 @@ open class VideoView(context: Context, appContext: AppContext, useTextureView: B
       field = value
     }
 
+  var controllerAutoShow: Boolean = true
+    set(value) {
+      playerView.controllerAutoShow = value
+      field = value
+    }
+
   var allowsFullscreen: Boolean = true
     set(value) {
       if (value) {

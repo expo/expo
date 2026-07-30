@@ -31,8 +31,8 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.TextField
 import com.composeunstyled.TextInput
+import com.composeunstyled.UnstyledTextField
 import expo.modules.devlauncher.compose.utils.sanitizeUrlString
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
@@ -59,7 +59,7 @@ fun ServerUrlInput(
   Column(
     verticalArrangement = Arrangement.spacedBy(NewAppTheme.spacing.`2`)
   ) {
-    TextField(
+    UnstyledTextField(
       value = url,
       onValueChange = { newUrl ->
         url = newUrl

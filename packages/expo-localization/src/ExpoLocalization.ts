@@ -1,5 +1,5 @@
 /* eslint-env browser */
-import { type EventSubscription, Platform } from 'expo-modules-core';
+import { type EventSubscription, Platform } from 'expo';
 
 import type { Calendar, CalendarIdentifier, Locale } from './Localization.types';
 

@@ -1,5 +1,4 @@
-import { type PermissionResponse } from 'expo';
-import { type EventSubscription, UnavailabilityError, uuid } from 'expo-modules-core';
+import { type PermissionResponse, type EventSubscription, UnavailabilityError, uuid } from 'expo';
 import { Platform, Share, type ShareOptions } from 'react-native';
 
 import ExpoContacts from './ExpoContacts';
@@ -322,7 +321,7 @@ export type Contact = {
    * Additional information.
    * > The `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
    * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
-   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
+   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
    */
   note?: string;
   /**
@@ -546,7 +545,7 @@ export type ContainerQuery = {
    */
   groupId?: string;
   /**
-   * Query all the containers that matches ID or an array od IDs.
+   * Query all the containers that matches ID or an array of IDs.
    */
   containerId?: string | string[];
 };
@@ -557,7 +556,6 @@ export type Container = {
   type: ContainerType;
 };
 
-// TODO(@kitten): Remove re-exports from EMC
 export { PermissionStatus, type PermissionResponse, type PermissionExpiration } from 'expo';
 
 /**

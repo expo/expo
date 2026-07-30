@@ -62,7 +62,6 @@ describe('scheme', () => {
           scheme: ['android-only'],
           package: 'com.demo.value',
         },
-        ios: { scheme: 'ios-only' },
       },
       androidManifestJson
     );
@@ -87,9 +86,9 @@ describe('scheme', () => {
   });
 });
 
-function removeSingleTaskFromActivities(manifest) {
-  for (const application of manifest.manifest.application) {
-    for (const activity of application.activity) {
+function removeSingleTaskFromActivities(manifest: AndroidManifest) {
+  for (const application of manifest.manifest.application ?? []) {
+    for (const activity of application.activity ?? []) {
       if (activity.$['android:launchMode'] === 'singleTask') {
         delete activity.$['android:launchMode'];
       }

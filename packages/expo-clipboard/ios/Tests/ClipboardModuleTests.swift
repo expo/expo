@@ -119,7 +119,7 @@ struct ClipboardModuleTests {
 
   @Test
   func `setImageAsync copies image to clipboard`() async throws {
-    _ = try await runtime.evalAsync("expo.modules.ExpoClipboard.setImageAsync('\(Self.testImageBase64)')")
+    _ = try await runtime.evalAsync("expo.modules.ExpoClipboard.setImageAsync('\(Self.testImageBase64)', {})")
 
     let pasteboardImgData = UIPasteboard.general.image?.pngData()?.base64EncodedString()
     #expect(UIPasteboard.general.hasImages == true)
@@ -130,7 +130,7 @@ struct ClipboardModuleTests {
   @Test
   func `setImageAsync throws when given invalid base64`() async throws {
     let error = try await runtime
-      .evalAsync("expo.modules.ExpoClipboard.setImageAsync('invalid').then(() => null, (e) => e)")
+      .evalAsync("expo.modules.ExpoClipboard.setImageAsync('invalid', {}).then(() => null, (e) => e)")
       .asObject()
     #expect(error.getProperty("message").getString().contains("Invalid base64 image"))
   }

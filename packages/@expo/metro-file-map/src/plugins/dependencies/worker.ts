@@ -9,13 +9,13 @@
 
 'use strict';
 
-import { extract } from './dependencyExtractor';
 import type {
   DependencyExtractor,
   MetadataWorker,
   V8Serializable,
   WorkerMessage,
 } from '../../types';
+import { extract } from './dependencyExtractor';
 
 export default class DependencyExtractorWorker implements MetadataWorker {
   readonly #dependencyExtractor: DependencyExtractor | undefined | null;

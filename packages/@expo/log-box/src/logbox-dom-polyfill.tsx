@@ -12,9 +12,11 @@ import { setFetchText } from './fetchHelper';
 import { LogBoxInspectorContainer } from './overlay/Overlay';
 import { convertNativeToExpoLogBoxLog, convertToExpoLogBoxLog } from './utils/convertLogBoxLog';
 
+type LogBoxDOMProps = Record<string, unknown>;
+
 export default function LogBoxPolyfillDOM({
   // Default is mainly used in RedBox replacement,
-  // where we won't to keep the native webview wrapper interface as minimal as possible.
+  // where we want to keep the native webview wrapper interface as minimal as possible.
   onCopyText = (text: string) => navigator.clipboard.writeText(text),
   onMinimize,
   fetchTextAsync,
@@ -38,7 +40,7 @@ export default function LogBoxPolyfillDOM({
 
   // LogBox props
   /**
-   * LobBoxLogs from the JS Runtime
+   * LogBoxLogs from the JS Runtime
    */
   logs?: any[];
   /**
@@ -48,7 +50,7 @@ export default function LogBoxPolyfillDOM({
   selectedIndex?: number;
 
   // DOM props
-  dom?: import('expo/dom/internal').DOMPropsInternal;
+  dom?: LogBoxDOMProps;
 }) {
   useEnvironmentVariablesPolyfill(props);
   const logs = React.useMemo(() => {
@@ -92,10 +94,12 @@ function useNativeLogBoxDataPolyfill(
 ) {
   // @ts-ignore
   // eslint-disable-next-line import/namespace
+  // oxlint-disable-next-line no-import-assign
   LogBoxData.setSelectedLog = polyfill.onChangeSelectedIndex;
 
   // @ts-ignore
   // eslint-disable-next-line import/namespace
+  // oxlint-disable-next-line no-import-assign
   LogBoxData.dismiss = (log: LogBoxLog) => {
     const index = logs.indexOf(log);
     polyfill.onDismiss?.(index);

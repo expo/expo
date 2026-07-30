@@ -1,5 +1,5 @@
-import { spawnExpoCLI } from './spawnExpoCLI';
 import type { DoctorCheckParams } from '../checks/checks.types';
+import { spawnExpoCLI } from './spawnExpoCLI';
 
 type ProjectConfig = Omit<DoctorCheckParams, 'projectRoot'>;
 

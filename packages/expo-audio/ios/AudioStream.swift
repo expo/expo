@@ -19,6 +19,10 @@ class AudioStream: SharedObject {
   private(set) var isStreaming: Bool = false
   private var startTimestamp: AVAudioTime?
 
+  private var fileWriter: AudioStreamFileWriter?
+  private let fileWriterQueue = DispatchQueue(label: "expo.audio.filewrite", qos: .default)
+  private var fileWriterError: Error?
+
   init(options: AudioStreamOptions) {
     self.requestedSampleRate = options.sampleRate
     self.requestedChannels = options.channels
@@ -109,7 +113,63 @@ class AudioStream: SharedObject {
     startTimestamp = nil
     emitStatus()
 
+    // Auto-finalize any in-progress file recording.
+    // removeTap above ensures no more data is dispatched to fileWriterQueue;
+    // syncing on the queue drains any appends already in flight before closing the writer.
+    fileWriterQueue.sync {
+      try? self.fileWriter?.finish()
+      self.fileWriter = nil
+      self.fileWriterError = nil
+    }
+
     try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+  }
+
+  func startFileRecording(url: URL, format: AudioStreamFileFormat) throws -> String {
+    guard fileWriter == nil else {
+      throw AudioStreamFileException(
+        "A file recording is already in progress. Each stream supports one file recording at a time. Call stopFileRecordingAsync() before starting another."
+      )
+    }
+    guard isStreaming else {
+      throw AudioStreamFileException(
+        "The stream must be running to start file recording. Call start() before startFileRecordingAsync()."
+      )
+    }
+    fileWriterError = nil
+    fileWriter = try AudioStreamFileWriter(url: url, format: format, sampleRate: sampleRate, channels: channels, encoding: encoding)
+    return url.absoluteString
+  }
+
+  func stopFileRecording() throws -> AudioStreamFileRecordingResult {
+    guard let writer = fileWriter else {
+      throw AudioStreamFileException(
+        "No file recording is in progress. Call startFileRecordingAsync() before stopFileRecordingAsync()."
+      )
+    }
+    // 1. Nil out fileWriter on the serial queue so the tap callback stops dispatching new appends,
+    //    and capture any pending write error.
+    var appendError: Error?
+    fileWriterQueue.sync {
+      appendError = fileWriterError
+      fileWriterError = nil
+      fileWriter = nil
+    }
+    // 2. Drain any appends dispatched while fileWriter was still non-nil during the sync above.
+    //    After this second sync returns, no further appends can run on writer, so finish() is safe.
+    fileWriterQueue.sync {}
+    if let appendError {
+      throw appendError
+    }
+    let (totalSize, frames) = try writer.finish()
+    return AudioStreamFileRecordingResult(
+      uri: writer.url.absoluteString,
+      duration: sampleRate > 0 ? Double(frames) / sampleRate : 0,
+      size: Int(totalSize),
+      sampleRate: Int(sampleRate),
+      channels: channels,
+      encoding: encoding
+    )
   }
 
   private func setupTapWithoutConversion(engine: AVAudioEngine, inputNode: AVAudioInputNode, format: AVAudioFormat) {
@@ -163,6 +223,30 @@ class AudioStream: SharedObject {
   private func emitBuffer(buffer: AVAudioPCMBuffer, when: AVAudioTime) {
     let frameLength = Int(buffer.frameLength)
     guard frameLength > 0 else { return }
+
+    // Write to file if recording — extract bytes on audio thread, write on fileWriterQueue
+    if let writer = fileWriter {
+      let channelCount = Int(buffer.format.channelCount)
+      var pcmData: Data?
+      if encoding == .int16, let int16Data = buffer.int16ChannelData {
+        let byteCount = frameLength * channelCount * MemoryLayout<Int16>.size
+        pcmData = Data(bytes: int16Data[0], count: byteCount)
+      } else if let floatData = buffer.floatChannelData {
+        let byteCount = frameLength * channelCount * MemoryLayout<Float32>.size
+        pcmData = Data(bytes: floatData[0], count: byteCount)
+      }
+      if let data = pcmData {
+        fileWriterQueue.async { [weak self, weak writer] in
+          guard let writer else { return }
+          do {
+            try writer.append(pcmData: data)
+          } catch {
+            guard let self else { return }
+            self.fileWriterError = error
+          }
+        }
+      }
+    }
 
     let timestamp = timestampSinceStart(when)
     let channelCount = Int(buffer.format.channelCount)

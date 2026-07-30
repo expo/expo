@@ -25,12 +25,12 @@ struct MemoryUsageSnapshot: Metrics, CustomStringConvertible, Sendable {
 
   var description: String {
     return """
-MemoryUsageSnapshot {
-  \(memoryFootprint.formatted(.byteCount(style: .memory))) allocated,
-  \(residentSize.formatted(.byteCount(style: .memory))) physical,
-  \(freeMemory.formatted(.byteCount(style: .memory))) available
-}
-"""
+      MemoryUsageSnapshot {
+        \(memoryFootprint.formatted(.byteCount(style: .memory))) allocated,
+        \(residentSize.formatted(.byteCount(style: .memory))) physical,
+        \(freeMemory.formatted(.byteCount(style: .memory))) available
+      }
+      """
   }
 
   // MARK: - Statics
@@ -55,8 +55,12 @@ MemoryUsageSnapshot {
   }
 
   private static func getMemoryFootprint() -> UInt {
-    let TASK_VM_INFO_COUNT = mach_msg_type_number_t(MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
-    let TASK_VM_INFO_REV1_COUNT = mach_msg_type_number_t(MemoryLayout.offset(of: \task_vm_info_data_t.min_address)! / MemoryLayout<integer_t>.size)
+    // swift-format-ignore: AlwaysUseLowerCamelCase
+    let TASK_VM_INFO_COUNT = mach_msg_type_number_t(
+      MemoryLayout<task_vm_info_data_t>.size / MemoryLayout<integer_t>.size)
+    // swift-format-ignore: AlwaysUseLowerCamelCase
+    let TASK_VM_INFO_REV1_COUNT = mach_msg_type_number_t(
+      MemoryLayout.offset(of: \task_vm_info_data_t.min_address)! / MemoryLayout<integer_t>.size)
     var info = task_vm_info_data_t()
     var count = TASK_VM_INFO_COUNT
     let kerr = withUnsafeMutablePointer(to: &info) { infoPtr in

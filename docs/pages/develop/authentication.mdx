@@ -15,7 +15,7 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Authentication is a critical part of 90 to 95 percent of modern apps. This guide explains common methods, patterns, and solutions to help you implement authentication in your Expo app.
 
-> **info** **TL;DR**: Auth is hard. If you want to skip the complexity, jump to the [Auth solutions](/#auth-solutions) section for ready-made solutions. Otherwise, keep reading.
+> **info** **TL;DR**: Auth is hard. If you want to skip the complexity, jump to the [Auth solutions](#auth-solutions) section for ready-made solutions. Otherwise, keep reading.
 
 Implementing authentication involves more than writing client-side code. You'll need to manage server requests, password flows, third-party providers like Google or Apple, email handling, and OAuth standards. It can get complex quickly.
 
@@ -55,7 +55,7 @@ Email and password is a popular option when adding authentication to your app.
 
 To make this flow user-friendly, you also need to implement forgot password and reset password functionality so users who lose access to their accounts can recover them.
 
-If you want a quicker solution, several services offer built-in email and password authentication, including [Clerk](/#clerk), [Supabase](/#supabase), [Cognito](/#cognito), [Firebase](/#firebase-auth), and [Better Auth](/#better-auth). Most of these have generous free tiers, but it is a good idea to evaluate pricing if your app grows quickly.
+If you want a quicker solution, several services offer built-in email and password authentication, including [Clerk](#clerk), [Supabase](#supabase), [Cognito](#cognito), [Firebase](#firebase-auth), and [Better Auth](#better-auth). Most of these have generous free tiers, but it is a good idea to evaluate pricing if your app grows quickly.
 
 The biggest advantage of these services is their ease of integration. They usually offer clear documentation, starter kits, and prebuilt components that save you time.
 
@@ -78,7 +78,7 @@ If you're building this flow yourself, be sure to review the [Authentication Che
 
 Passwordless login removes the need for users to create or remember a password. Instead, they provide their email address or phone number during registration. Your app then sends a [magic link](https://auth0.com/docs/authenticate/passwordless/authentication-methods/email-magic-link#classic-login-flow-with-magic-links) or [one-time passcode (OTP)](https://en.wikipedia.org/wiki/One-time_password) to their inbox or device. This is a smoother experience for most users and reduces friction during onboarding.
 
-<Collapsible summary="Magic Links">
+<Collapsible summary="Magic links">
 
 With magic links, the user receives an email containing a link that redirects them back into your app. If everything works correctly, the session is verified and established.
 
@@ -117,6 +117,7 @@ If you are looking for full control or want to understand how OAuth works under 
 OAuth works by introducing an authorization server that acts as a secure middleman. Instead of giving your app their password, users log in through this server and approve access to specific data (like their name or email). The server then issues a temporary code, which your app can exchange for a secure access token.
 
 <ContentSpotlight
+  alt="A diagram of the OAuth flow, where the user signs in with the authorization server, which returns a temporary code that the app exchanges for an access token."
   src="/static/images/develop/authentication/oauth-flow.avif"
   caption="In this diagram, 'client' simply refers to the application and does not imply any specific implementation details, such as whether it runs on a server, desktop, mobile device, or other platform."
 />
@@ -129,7 +130,10 @@ The previous diagram shows a high-level overview of the OAuth flow. However, the
 
 The following diagram illustrates this flow in more detail:
 
-<ContentSpotlight src="/static/images/develop/authentication/api-routes-oauth-flow.avif" />
+<ContentSpotlight
+  alt="A diagram of the OAuth flow that uses Expo API Routes as the authorization server intermediary between the app and the OAuth provider."
+  src="/static/images/develop/authentication/api-routes-oauth-flow.avif"
+/>
 
 Expo lets you implement the entire OAuth flow directly in your app using:
 

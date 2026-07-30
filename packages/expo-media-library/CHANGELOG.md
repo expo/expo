@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
+- [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
+- Add filtering by `isFavorite` to `Query` ([#45769](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
+- Add `Query.exeForMetadata()` for cheap bulk fetch ([#46485](https://github.com/expo/expo/pull/46485) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🐛 Bug fixes
 
+- [iOS] Fix resolving iCloud-offloaded assets ("Optimize iPhone Storage"): allow network access when extracting asset URIs so `Asset.getUri()`, `getInfo()`, `getExif()` and `getOrientation()` can download originals from iCloud, matching the legacy API's `shouldDownloadFromNetwork` default. ([#47790](https://github.com/expo/expo/pull/47790) by [@oeddyo](https://github.com/oeddyo))
+- [Android] Fix saving files larger than ~2 GB (e.g. `createAssetAsync` with large videos) failing with "Unable to copy file into external storage" by looping `FileChannel.transferTo` until the whole file is copied. ([#47811](https://github.com/expo/expo/pull/47811) by [@jiunshinn](https://github.com/jiunshinn))
+- Add `accessPrivileges` to `PermissionResponse` type ([#47177](https://github.com/expo/expo/pull/47177) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Fix permission guards for limited and write-only photo library access. ([#47216](https://github.com/expo/expo/pull/47216) by [@Wenszel](https://github.com/Wenszel))
+
 ### 💡 Others
+
+- [android] Add `getAssetContentUriAsync` for legacy ID migration ([#46854](https://github.com/expo/expo/pull/45769) by [@Wenszel](https://github.com/Wenszel))
+- Re-organize TS code ([#45953](https://github.com/expo/expo/pull/45953) by [@Wenszel](https://github.com/Wenszel))
 
 ## 56.0.6 — 2026-05-21
 

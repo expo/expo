@@ -1,6 +1,7 @@
 import type {
   ContactField,
   ContactQueryOptions,
+  CreateFormOptions,
   FormOptions,
   PartialContactDetails,
 } from './Contact.props';
@@ -516,7 +517,7 @@ export declare class Contact {
 
   /**
    * Opens the native contact editor for this contact.
-   * @param options - Configuration options for the form.
+   * @param options - iOS only configuration options for the form.
    * @returns a promise resolving to `true` if changes were saved, `false` otherwise.
    */
   editWithForm(options?: FormOptions): Promise<boolean>;
@@ -856,7 +857,7 @@ export declare class Contact {
    * Retrieves the note associated with the contact.
    * > On iOS the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
    * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
-   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
+   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
    * @returns a promise resolving to the note string or `null` if not set.
    * @example
    * ```ts
@@ -869,7 +870,7 @@ export declare class Contact {
    * Sets the note for the contact.
    * > On iOS the `note` field [requires your app to request additional entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_contacts_notes).
    * > The Expo Go app does not contain those entitlements, so in order to test this feature you will need to [request the entitlement from Apple](https://developer.apple.com/contact/request/contact-note-field),
-   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/create-a-build/).
+   * > set the [`ios.accessesContactNotes`](./../config/app/#accessescontactnotes) field in **app config** to `true`, and [create your development build](/develop/development-builds/introduction/#how-would-you-like-to-build-your-development-build).
    * @param note - The new note string or `null` to clear it.
    * @returns a promise resolving to a boolean indicating whether the operation was successful.
    * @example
@@ -997,6 +998,7 @@ export declare class Contact {
   /**
    * A static method that opens the native "Create Contact" form.
    * @param contact - Optional pre-filled data for the form.
+   * @param options - iOS only configuration options for the form.
    * @returns a promise resolving to `true` if a contact was created, `false` otherwise.
    * @example
    * ```ts
@@ -1006,7 +1008,10 @@ export declare class Contact {
    * });
    * ```
    */
-  static presentCreateForm(contact?: CreateContactRecord): Promise<boolean>;
+  static presentCreateForm(
+    contact?: CreateContactRecord,
+    options?: CreateFormOptions
+  ): Promise<boolean>;
 
   /**
    * A static method that retrieves the total count of contacts in the address book.

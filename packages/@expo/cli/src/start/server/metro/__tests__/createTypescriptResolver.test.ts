@@ -1,3 +1,4 @@
+import type { FileData, FileMetadata } from '@expo/metro/metro-file-map/flow-types';
 import TreeFS from '@expo/metro/metro-file-map/lib/TreeFS';
 import type { Resolution } from '@expo/metro/metro-resolver';
 import { vol } from 'memfs';
@@ -17,14 +18,15 @@ beforeEach(() => {
 // Build a real TreeFS from the current memfs volume as the depGraph._fileSystem
 function createDepGraph(treeRoot: string = '/') {
   const volJson = vol.toJSON();
-  const files = new Map<string, [number, number, number, null, number]>();
+  const files: FileData = new Map<string, FileMetadata>();
   for (const absPath of Object.keys(volJson)) {
     const normalPath = path.relative(treeRoot, absPath);
     if (!normalPath.startsWith('..')) {
-      files.set(normalPath, [0, 0, 0, null, 0]);
+      const metadata: FileMetadata = [0, 0, 0, null, 0];
+      files.set(normalPath, metadata);
     }
   }
-  const treeFS = new TreeFS({ rootDir: treeRoot });
+  const treeFS = new TreeFS({ rootDir: treeRoot, processFile: () => null });
   treeFS.bulkAddOrModify(files);
   return { _fileSystem: treeFS } as any;
 }
@@ -84,7 +86,7 @@ describe(_toResolveConfig, () => {
     const config = buildConfig({
       paths: { '@/*': ['./src/*', './types/*.d.ts'] },
     });
-    expect(config.prefixMap['@/'][0].mapping).toEqual(['/project/src/*']);
+    expect(config.prefixMap['@/']![0]!.mapping).toEqual(['/project/src/*']);
   });
 
   it('sorts prefixes longest first', () => {
@@ -99,7 +101,7 @@ describe(_toResolveConfig, () => {
       { paths: { '@/*': ['./src/*'] }, pathsBasePath: '/monorepo' },
       '/project'
     );
-    expect(config!.prefixMap['@/'][0].mapping).toEqual(['/monorepo/src/*']);
+    expect(config!.prefixMap['@/']![0]!.mapping).toEqual(['/monorepo/src/*']);
   });
 
   it('prefers baseUrl over pathsBasePath', () => {
@@ -107,7 +109,7 @@ describe(_toResolveConfig, () => {
       { paths: { '@/*': ['./src/*'] }, baseUrl: '/custom', pathsBasePath: '/monorepo' },
       '/project'
     );
-    expect(config!.prefixMap['@/'][0].mapping).toEqual(['/custom/src/*']);
+    expect(config!.prefixMap['@/']![0]!.mapping).toEqual(['/custom/src/*']);
   });
 });
 

@@ -9,9 +9,9 @@ namespace gl_cpp {
 
 constexpr const char *EXGLContextsMapPropertyName = "__EXGLContexts";
 
-// There is no way to crate function that can be used as constructor
+// There is no way to create function that can be used as constructor
 // using jsi api, so we need to set it up via eval, it will be called
-// only once so perofmance impact should be minimal
+// only once so performance impact should be minimal
 constexpr const char *evalStubConstructors = R"(
 WebGLRenderingContext = function() {};
 WebGL2RenderingContext = function() {};

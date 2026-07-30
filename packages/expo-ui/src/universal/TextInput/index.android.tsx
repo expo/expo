@@ -1,5 +1,6 @@
 import {
-  TextField as ComposeTextField,
+  BasicTextField,
+  Box,
   Text,
   type TextFieldImeAction,
   type TextFieldKeyboardType,
@@ -97,8 +98,6 @@ export function TextInput({
   const numberOfLines = numberOfLinesProp ?? rows;
   const keyboardType = keyboardTypeProp ?? inputModeToKeyboardType(inputMode);
   const returnKeyType = returnKeyTypeProp ?? enterKeyHintToReturnKeyType(enterKeyHint);
-  const { backgroundColor: styleBackgroundColor, ...boxStyle } = style ?? {};
-  const hideIndicator = boxStyle.borderWidth === 0 && underlineColorAndroid == null;
 
   const initialFallbackRef = useRef(defaultValue ?? '');
   const fallback = useNativeState<string>(initialFallbackRef.current);
@@ -156,11 +155,11 @@ export function TextInput({
     : undefined;
 
   return (
-    <ComposeTextField
+    <BasicTextField
       ref={innerRef}
       modifiers={[
         ...(userModifiers ?? []),
-        ...transformToModifiers(boxStyle, {}),
+        ...transformToModifiers(style, {}),
         ...(testID ? [testIDModifier(testID)] : []),
         ...(autoComplete ? [semantics({ contentType: autoComplete })] : []),
         ...(onContentSizeChange ? [onSizeChanged(onContentSizeChange)] : []),
@@ -171,50 +170,7 @@ export function TextInput({
       singleLine={!multiline}
       maxLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
       minLines={multiline && numberOfLines && numberOfLines > 0 ? numberOfLines : undefined}
-      colors={
-        caretHidden ||
-        cursorColor ||
-        underlineColorAndroid ||
-        placeholderTextColor ||
-        styleBackgroundColor ||
-        hideIndicator
-          ? {
-              ...(caretHidden
-                ? { cursorColor: 'transparent' }
-                : cursorColor
-                  ? { cursorColor }
-                  : null),
-              ...(styleBackgroundColor
-                ? {
-                    focusedContainerColor: styleBackgroundColor,
-                    unfocusedContainerColor: styleBackgroundColor,
-                    disabledContainerColor: styleBackgroundColor,
-                    errorContainerColor: styleBackgroundColor,
-                  }
-                : null),
-              ...(underlineColorAndroid
-                ? {
-                    unfocusedIndicatorColor: underlineColorAndroid,
-                    focusedIndicatorColor: underlineColorAndroid,
-                  }
-                : hideIndicator
-                  ? {
-                      focusedIndicatorColor: 'transparent',
-                      unfocusedIndicatorColor: 'transparent',
-                      disabledIndicatorColor: 'transparent',
-                      errorIndicatorColor: 'transparent',
-                    }
-                  : null),
-              ...(placeholderTextColor
-                ? {
-                    unfocusedPlaceholderColor: placeholderTextColor,
-                    focusedPlaceholderColor: placeholderTextColor,
-                    disabledPlaceholderColor: placeholderTextColor,
-                  }
-                : null),
-            }
-          : undefined
-      }
+      cursorColor={caretHidden ? 'transparent' : (cursorColor ?? selectionColor)}
       textStyle={
         textStyle || (textAlign && textAlign !== 'auto')
           ? {
@@ -237,18 +193,28 @@ export function TextInput({
       onValueChange={onChangeText}
       maxLength={maxLength}
       onFocusChanged={handleFocusChanged}
-      selection={selection as Parameters<typeof ComposeTextField>[0]['selection']}
+      selection={selection as Parameters<typeof BasicTextField>[0]['selection']}
       onSelectionChange={onSelectionChange}>
-      {placeholder ? (
-        <ComposeTextField.Placeholder>
-          <Text
-            modifiers={[fillMaxWidth()]}
-            style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
-            {placeholder}
-          </Text>
-        </ComposeTextField.Placeholder>
-      ) : null}
-    </ComposeTextField>
+      <BasicTextField.DecorationBox>
+        <Box
+          modifiers={[fillMaxWidth()]}
+          contentAlignment={
+            textAlign === 'center' ? 'topCenter' : textAlign === 'right' ? 'topEnd' : undefined
+          }>
+          {placeholder != null ? (
+            <BasicTextField.Placeholder>
+              <Text
+                color={placeholderTextColor as string | undefined}
+                modifiers={[fillMaxWidth()]}
+                style={textAlign && textAlign !== 'auto' ? { textAlign } : undefined}>
+                {placeholder}
+              </Text>
+            </BasicTextField.Placeholder>
+          ) : null}
+          <BasicTextField.InnerTextField />
+        </Box>
+      </BasicTextField.DecorationBox>
+    </BasicTextField>
   );
 }
 

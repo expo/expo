@@ -1,3 +1,4 @@
+import type { ExpoConfig } from '@expo/config-types';
 import * as path from 'path';
 
 import {
@@ -130,8 +131,8 @@ describe('plugin resolver', () => {
     it('loads and transpiles a TypeScript plugin entry', () => {
       const plugin = resolveConfigPluginFunction(projectRoot, 'test-lib-ts');
       expect(typeof plugin).toBe('function');
-      const input = { name: 'app' };
-      expect(plugin(input)).toBe(input);
+      const input = { name: 'app' } as ExpoConfig;
+      expect(plugin(input, undefined)).toBe(input);
     });
   });
 });

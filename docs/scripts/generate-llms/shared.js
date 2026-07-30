@@ -2,10 +2,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { buildAgentInstructions } from '../agent-instructions.ts';
+import {
+  DOCS_BASE_URL,
+  getMarkdownHref,
+  getMarkdownUrl,
+  rewriteDocsLinksToMarkdown,
+} from '../markdown-link-utils.ts';
+
+export { DOCS_BASE_URL, getMarkdownHref, getMarkdownUrl, rewriteDocsLinksToMarkdown };
 
 export const OUTPUT_DIRECTORY_NAME = 'public';
 export const BUILD_OUTPUT_DIR = 'out';
-export const DOCS_BASE_URL = 'https://docs.expo.dev';
 
 const LLMS_FILES = [
   { filename: 'llms.txt', description: 'A list of all available documentation files' },
@@ -25,18 +32,6 @@ const LLMS_FILES = [
   {
     filename: 'llms-sdk-v54.0.0.txt',
     description: 'Complete documentation for Expo SDK 54',
-  },
-  {
-    filename: 'llms-sdk-v53.0.0.txt',
-    description: 'Complete documentation for Expo SDK 53',
-  },
-  {
-    filename: 'llms-sdk-v52.0.0.txt',
-    description: 'Complete documentation for Expo SDK 52',
-  },
-  {
-    filename: 'llms-sdk-v51.0.0.txt',
-    description: 'Complete documentation for Expo SDK 51',
   },
 ];
 
@@ -144,7 +139,9 @@ export function readUniqueMarkdownContent(markdownPaths, { warnOnMissing = false
       continue;
     }
 
-    const content = stripDocIndexBlockquote(stripAgentInstructions(rawContent)).trim();
+    const content = rewriteDocsLinksToMarkdown(
+      stripDocIndexBlockquote(stripAgentInstructions(rawContent))
+    ).trim();
     if (!content) {
       continue;
     }

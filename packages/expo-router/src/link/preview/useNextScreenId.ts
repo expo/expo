@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useLinkPreviewContext } from './LinkPreviewContext';
-import type { TabPath } from './native';
-import { getPreloadedRouteFromRootStateByHref, getTabPathFromRootStateByHref } from './utils';
 import { store } from '../../global-state/router-store';
 import { useRouter } from '../../hooks';
 import type { Href } from '../../types';
+import { useLinkPreviewContext } from './LinkPreviewContext';
+import type { TabPath } from './native';
+import { getPreloadedRouteFromRootStateByHref, getTabPathFromRootStateByHref } from './utils';
 
 export function useNextScreenId(): [
   { nextScreenId: string | undefined; tabPath: TabPath[] },

@@ -37,11 +37,12 @@ export const ReactNativeCompatibilityTable = () => {
                 <Tooltip.Trigger asChild>
                   <button
                     type="button"
+                    aria-label="More information about minimum Node.js version"
                     onClick={() => {
                       setIsTooltipOpen(!isTooltipOpen);
                     }}
                     className="inline-flex items-center justify-center rounded-full p-1 text-icon-secondary hover:text-icon-default focus:ring-2 focus:ring-link focus:ring-offset-1 focus:outline-none active:text-icon-default">
-                    <InfoCircleDuotoneIcon className="icon-xs" />
+                    <InfoCircleDuotoneIcon aria-hidden="true" className="icon-xs" />
                   </button>
                 </Tooltip.Trigger>
                 <Tooltip.Content

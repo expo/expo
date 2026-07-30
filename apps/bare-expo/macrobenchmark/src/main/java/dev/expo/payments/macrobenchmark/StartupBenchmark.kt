@@ -22,7 +22,7 @@ class StartupBenchmark {
       packageName = "dev.expo.payments",
       metrics = listOf(StartupTimingMetric()),
       iterations = 5,
-      startupMode = StartupMode.COLD,
+      startupMode = StartupMode.COLD
     ) {
       startActivityAndWait(
         Intent(Intent.ACTION_MAIN).apply {

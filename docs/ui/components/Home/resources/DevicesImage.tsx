@@ -3,6 +3,7 @@ import { palette } from '@expo/styleguide-base';
 
 export const DevicesImage = () => (
   <svg
+    aria-hidden="true"
     className={mergeClasses(
       'absolute right-0 bottom-0 z-1 max-w-[60%] asset-shadow',
       'max-lg:-bottom-4',
@@ -337,7 +338,7 @@ export const DevicesImage = () => (
 );
 
 export const DevicesImageMasks = () => (
-  <svg width="0" height="0">
+  <svg aria-hidden="true" width="0" height="0">
     <filter
       id="3fe977fb0acabded0c62aa0c9c945938"
       x="162.611"

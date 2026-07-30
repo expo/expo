@@ -99,8 +99,6 @@ describe(resolveModuleAsync, () => {
     jest.resetAllMocks();
   });
 
-  const expoRoot = path.join(__dirname, '..', '..', '..', '..', '..');
-
   it('should resolve podspec in ios/ folder', async () => {
     const name = 'react-native-third-party';
     const podName = 'RNThirdParty';

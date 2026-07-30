@@ -74,7 +74,8 @@ export function test({ describe, it, xit, expect }) {
       });
 
       it('five groups', () => {
-        const re = /(?<proto>\w+):\/\/(?<host>[^/:]+)(?::(?<port>\d+))?(?<path>\/[^?]*)?(?:\?(?<query>.*))?/;
+        const re =
+          /(?<proto>\w+):\/\/(?<host>[^/:]+)(?::(?<port>\d+))?(?<path>\/[^?]*)?(?:\?(?<query>.*))?/;
         const match = re.exec('https://example.com:8080/path?q=1');
         expect(match.groups.proto).toBe('https');
         expect(match.groups.host).toBe('example.com');
@@ -89,7 +90,7 @@ export function test({ describe, it, xit, expect }) {
         const re = /(?<quote>['"]).*?\k<quote>/;
         expect(re.test("'hello'")).toBe(true);
         expect(re.test('"hello"')).toBe(true);
-        expect(re.test("'hello\"")).toBe(false);
+        expect(re.test('\'hello"')).toBe(false);
       });
 
       it('\\k<name> with exec', () => {
@@ -341,7 +342,9 @@ export function test({ describe, it, xit, expect }) {
     describe('destructuring groups', () => {
       it('destructure groups from exec result', () => {
         const re = /(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})/;
-        const { groups: { year, month, day } } = re.exec('2025-05-01');
+        const {
+          groups: { year, month, day },
+        } = re.exec('2025-05-01');
         expect(year).toBe('2025');
         expect(month).toBe('05');
         expect(day).toBe('01');
@@ -349,7 +352,9 @@ export function test({ describe, it, xit, expect }) {
 
       it('destructure with default for optional group', () => {
         const re = /(?<host>[^:]+)(?::(?<port>\d+))?/;
-        const { groups: { host, port = '80' } } = re.exec('example.com');
+        const {
+          groups: { host, port = '80' },
+        } = re.exec('example.com');
         expect(host).toBe('example.com');
         expect(port).toBe('80');
       });
@@ -435,7 +440,8 @@ export function test({ describe, it, xit, expect }) {
 
     describe('practical patterns', () => {
       it('parse semver version string', () => {
-        const re = /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:-(?<pre>[a-z0-9.]+))?(?:\+(?<build>[a-z0-9.]+))?$/i;
+        const re =
+          /^(?<major>\d+)\.(?<minor>\d+)\.(?<patch>\d+)(?:-(?<pre>[a-z0-9.]+))?(?:\+(?<build>[a-z0-9.]+))?$/i;
         const m1 = re.exec('1.2.3');
         expect(m1.groups.major).toBe('1');
         expect(m1.groups.minor).toBe('2');

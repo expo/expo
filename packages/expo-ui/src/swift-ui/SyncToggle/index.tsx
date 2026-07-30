@@ -5,7 +5,7 @@ import { getStateId, type ObservableState, useWorkletProp } from '../../State';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type SyncToggleProps = {
+export interface SyncToggleProps extends CommonViewModifierProps {
   /**
    * An observable state that drives the toggle.
    * Create one with `useNativeState(false)`.
@@ -24,7 +24,7 @@ export type SyncToggleProps = {
    * Must be marked with the `'worklet'` directive.
    */
   onIsOnChangeSync?: (isOn: boolean) => void;
-} & CommonViewModifierProps;
+}
 
 type NativeSyncToggleProps = Omit<SyncToggleProps, 'isOn' | 'onIsOnChangeSync'> & {
   isOn?: number | null;

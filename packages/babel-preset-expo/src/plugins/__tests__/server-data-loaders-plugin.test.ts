@@ -94,7 +94,7 @@ function transformTest(code: string, { bundleType, ...defaultOverrideOpts }: Tra
 }
 
 describe('client and server', () => {
-  describe.each(['client', 'server'])(
+  describe.each<BundleTypes>(['client', 'server'])(
     'removes loader exports for %s bundles',
     (bundleType: BundleTypes) => {
       it('removes `export async function loader() {}`', () => {

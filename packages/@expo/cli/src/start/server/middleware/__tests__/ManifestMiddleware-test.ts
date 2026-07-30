@@ -1,5 +1,4 @@
 import { getConfig } from '@expo/config';
-import http from 'http';
 import { vol } from 'memfs';
 import { PassThrough } from 'stream';
 
@@ -75,6 +74,8 @@ describe('checkBrowserRequestAsync', () => {
       web: 'metro',
       ios: 'metro',
       android: 'metro',
+      tvos: 'metro',
+      macos: 'metro',
     });
 
     jest.mocked(getConfig).mockReturnValueOnce({
@@ -122,6 +123,8 @@ describe('checkBrowserRequestAsync', () => {
       web: 'webpack',
       ios: 'metro',
       android: 'metro',
+      tvos: 'metro',
+      macos: 'metro',
     });
 
     const middleware = new MockManifestMiddleware('/', {

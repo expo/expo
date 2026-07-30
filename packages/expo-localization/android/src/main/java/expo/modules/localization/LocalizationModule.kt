@@ -5,7 +5,6 @@ import android.icu.util.LocaleData
 import android.icu.util.ULocale
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.os.Bundle
 import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
@@ -53,22 +52,14 @@ class LocalizationModule : Module() {
   }
 
   private fun setRTLFromStringResources(context: Context) {
-    // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
-    val supportsRTL = context.getString(R.string.ExpoLocalization_supportsRTL)
-    val forcesRTL = context.getString(R.string.ExpoLocalization_forcesRTL)
+    val supportsRTL =
+      context.getString(R.string.ExpoLocalization_supportsRTL).toBooleanStrictOrNull() ?: true
+    val forcesRTL =
+      context.getString(R.string.ExpoLocalization_forcesRTL).toBooleanStrictOrNull() ?: false
 
-    if (forcesRTL == "true") {
-      I18nUtil.instance.allowRTL(context, true)
-      I18nUtil.instance.forceRTL(context, true)
-    } else {
-      if (supportsRTL == "true" || supportsRTL == "false") {
-        val shouldSupport = supportsRTL == "true"
-        I18nUtil.instance.allowRTL(context, shouldSupport)
-        if (forcesRTL == "false") {
-          I18nUtil.instance.forceRTL(context, false)
-        }
-      }
-    }
+    // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
+    I18nUtil.instance.allowRTL(context, supportsRTL)
+    I18nUtil.instance.forceRTL(context, forcesRTL)
   }
 
   private fun getMeasurementSystem(locale: Locale): String? {
@@ -165,15 +156,4 @@ class LocalizationModule : Module() {
       )
     )
   }
-}
-
-/**
- * Creates a shallow [Map] from the [Bundle]. Does not traverse nested arrays and bundles.
- */
-private fun Bundle.toShallowMap(): Map<String, Any?> {
-  val map = HashMap<String, Any?>()
-  for (key in this.keySet()) {
-    map[key] = this[key]
-  }
-  return map
 }

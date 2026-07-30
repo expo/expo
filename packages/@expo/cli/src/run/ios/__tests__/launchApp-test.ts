@@ -62,6 +62,7 @@ describe(launchAppAsync, () => {
       device: {
         name: 'simulator',
         udid: '123',
+        osType: 'iOS',
       },
       isSimulator: true,
       shouldStartBundler: true,
@@ -78,6 +79,7 @@ describe(launchAppAsync, () => {
       device: {
         name: 'simulator',
         udid: '123',
+        osType: 'iOS',
       },
       isSimulator: true,
       shouldStartBundler: false,
@@ -95,6 +97,7 @@ describe(launchAppAsync, () => {
       device: {
         name: "Evan's phone",
         udid: '00008101-001964A22629003A',
+        osType: 'iOS',
       },
       isSimulator: false,
       shouldStartBundler: true,

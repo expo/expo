@@ -29,7 +29,11 @@ export * from './SyncSwitch';
 export {
   TextField,
   OutlinedTextField,
+  BasicTextField,
   type TextFieldProps,
+  type OutlinedTextFieldProps,
+  type BasicTextFieldProps,
+  type BasicTextFieldRef,
   type TextFieldRef,
   type TextFieldCapitalization,
   type TextFieldImeAction,
@@ -37,6 +41,8 @@ export {
   type TextFieldKeyboardType,
   type TextFieldKeyboardActions,
   type TextFieldColors,
+  type TextFieldTextStyle,
+  type CommonTextFieldProperties,
 } from './TextField';
 export * from './ToggleButton';
 export * from './Shape';

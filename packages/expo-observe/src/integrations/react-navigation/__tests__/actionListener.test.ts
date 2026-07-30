@@ -50,7 +50,7 @@ describe('attachActionListener', () => {
   it('pushes a pending action for a non-noop NAVIGATE', () => {
     ref.fire(action('NAVIGATE'));
     expect(storage.pendingActions).toHaveLength(1);
-    expect(storage.pendingActions[0].actionType).toBe('NAVIGATE');
+    expect(storage.pendingActions[0]!.actionType).toBe('NAVIGATE');
   });
 
   it('drops noop actions', () => {

@@ -34,7 +34,7 @@ export type IBColor = IBItem<
     key: string;
   } & (
     | /** Custom color */
-    {
+      {
         /** @example `0.86584504117670746` */
         red: number;
         /** @example `0.26445041990630447` */

@@ -106,6 +106,48 @@ await asset.delete();
 await Asset.delete([asset1, asset2]);
 ```
 
+### Use legacy assets alongside the new API
+
+> If possible, migrate your app to use the new API end-to-end. The helpers below are intended for gradual migrations where both APIs are used at the same time.
+
+If you have a legacy `Asset` object in memory and need a new `Asset` instance, use `asset.uri` on iOS (it is already a `ph://` URI accepted by the new API) and `getAssetContentUriAsync` on Android to convert the numeric MediaStore ID to a `content://` URI.
+
+```ts
+import { Asset } from 'expo-media-library';
+import * as LegacyMediaLibrary from 'expo-media-library/legacy';
+import { Platform } from 'react-native';
+
+async function toNewAsset(legacyAsset: LegacyMediaLibrary.Asset): Promise<Asset> {
+  switch (Platform.OS) {
+    case 'ios':
+      return new Asset(legacyAsset.uri);
+    case 'android': {
+      const contentUri = await LegacyMediaLibrary.getAssetContentUriAsync(legacyAsset);
+      return new Asset(contentUri);
+    }
+    default:
+      throw new Error(`Unsupported platform: ${Platform.OS}`);
+  }
+}
+```
+
+If your app stores asset IDs returned by the legacy API (for example, in a database), convert them before creating `Asset` instances. On iOS, prefix the legacy ID with `ph://`. On Android, use `getAssetContentUriAsync` to resolve the numeric MediaStore ID to a `content://` URI.
+
+```ts
+async function convertStoredId(legacyId: string): Promise<Asset> {
+  switch (Platform.OS) {
+    case 'ios':
+      return new Asset(`ph://${legacyId}`);
+    case 'android': {
+      const contentUri = await LegacyMediaLibrary.getAssetContentUriAsync(legacyId);
+      return new Asset(contentUri);
+    }
+    default:
+      throw new Error(`Unsupported platform: ${Platform.OS}`);
+  }
+}
+```
+
 ## Albums
 
 ### Get an album by name

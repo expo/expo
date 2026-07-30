@@ -87,7 +87,7 @@ export async function getSessionUsingBrowserAuthFlowAsync({
 
   // Start server and begin auth flow
   const executeAuthFlow = (): Promise<string> => {
-    return new Promise<string>(async (resolve, reject) => {
+    return new Promise<string>((resolve, reject) => {
       const connections = new Set<Socket>();
 
       const server = http.createServer(

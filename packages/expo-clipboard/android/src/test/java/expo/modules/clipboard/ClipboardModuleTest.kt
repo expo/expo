@@ -163,6 +163,81 @@ class ClipboardModuleTest {
     }
   }
 
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // API 33
+  fun `setStringAsync should set isSensitive flag on Android 13+`() = withClipboardMock {
+    module.setStringAsync(
+      "sensitive password",
+      SetStringOptions().apply {
+        isSensitive = true
+      }
+    )
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("isSensitive flag should be set", extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true)
+  }
+
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.S]) // API 31
+  fun `setStringAsync should set isSensitive flag on Android 12L and below`() = withClipboardMock {
+    module.setStringAsync(
+      "sensitive password",
+      SetStringOptions().apply {
+        isSensitive = true
+      }
+    )
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("isSensitive flag should be set with legacy key", extras?.getBoolean("android.content.extra.IS_SENSITIVE") == true)
+  }
+
+  @Test
+  fun `setStringAsync should not set isSensitive flag when false`() = withClipboardMock {
+    module.setStringAsync(
+      "normal text",
+      SetStringOptions().apply {
+        isSensitive = false
+      }
+    )
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("extras should be null when isSensitive is false", extras == null)
+  }
+
+  @Test
+  fun `setStringAsync should not set isSensitive flag by default`() = withClipboardMock {
+    module.setStringAsync("normal text")
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("extras should be null by default", extras == null)
+  }
+
+  @Test
+  @Config(sdk = [Build.VERSION_CODES.TIRAMISU]) // API 33
+  fun `setStringAsync with HTML should set isSensitive flag`() = withClipboardMock {
+    module.setStringAsync(
+      "<p>sensitive content</p>",
+      SetStringOptions().apply {
+        inputFormat = StringFormat.HTML
+        isSensitive = true
+      }
+    )
+
+    val clipDescription = clipboardManager.primaryClipDescription
+    val extras = clipDescription?.extras
+
+    assertTrue("HTML content should have isSensitive flag", extras?.getBoolean(ClipDescription.EXTRA_IS_SENSITIVE) == true)
+    assertTrue("Should be HTML content", clipDescription?.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML) == true)
+  }
+
   private val clipboardManager: ClipboardManager
     get() = ApplicationProvider
       .getApplicationContext<Context>()

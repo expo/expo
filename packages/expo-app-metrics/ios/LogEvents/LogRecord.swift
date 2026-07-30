@@ -1,23 +1,17 @@
 // Copyright 2025-present 650 Industries. All rights reserved.
 
-/**
- A single log event collected during a session. Records of this shape are
- persisted in the local storage and exposed to consumers (e.g. `expo-observe`)
- that decide how to dispatch or display them.
- */
+/// A single log event collected during a session. Records of this shape are
+/// persisted in the local storage and exposed to consumers (e.g. `expo-observe`)
+/// that decide how to dispatch or display them.
 public struct LogRecord: Codable, Sendable {
   public let name: String
   public let body: String?
   public let attributes: AnyCodable?
-  /**
-   Number of attributes the SDK dropped while accepting this record (caller
-   tried to use a reserved key, exceeded the per-record cap, etc.). Consumers
-   may choose to forward this count to whatever ingest format they target.
-   */
+  /// Number of attributes the SDK dropped while accepting this record (caller
+  /// tried to use a reserved key, exceeded the per-record cap, etc.). Consumers
+  /// may choose to forward this count to whatever ingest format they target.
   public let droppedAttributesCount: Int
-  /**
-   Severity of the event.
-   */
+  /// Severity of the event.
   public let severity: Severity
   public var timestamp: String = Date.now.ISO8601Format()
 

@@ -9,9 +9,9 @@
  * https://github.com/facebook/metro/blob/87f717b8f5987827c75c82b3cb390060672628f0/packages/metro/src/DeltaBundler/Serializers/hmrJSBundle.js#L1C1-L152C30
  */
 
-import type { DeltaResult, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import type { HmrModule } from '@expo/metro/metro-runtime/modules/types';
 import { addParamsToDefineCall } from '@expo/metro/metro-transform-plugins';
+import type { DeltaResult, Module, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import jscSafeUrl from 'jsc-safe-url';
 import path from 'node:path';
 

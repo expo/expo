@@ -5,6 +5,7 @@ import { addTemplateTarball } from './addTemplateTarball';
 import { bundleIOSPrebuilds } from './bundleIOSPrebuilds';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
+import { checkPackagesWithTurbo } from './checkPackagesWithTurbo';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
 // import { commentOnIssuesTask } from './commentOnIssuesTask';
 import { commitStagedChanges } from './commitStagedChanges';
@@ -83,6 +84,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
       loadRequestedParcels,
       checkPackagesIntegrity,
       selectPackagesToPublish,
+      checkPackagesWithTurbo,
       updatePackageVersions,
       updateBundledNativeModulesFile,
       updateProjectTemplates,

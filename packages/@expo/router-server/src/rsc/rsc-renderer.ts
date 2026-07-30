@@ -12,7 +12,6 @@
 
 // Import the runtime to support polyfills for webpack to load modules in the server using Metro.
 import '@expo/metro-runtime/rsc/runtime';
-
 import { decodeActionId } from 'expo-router/internal/rsc';
 import type { ReactNode } from 'react';
 import { renderToReadableStream, decodeReply } from 'react-server-dom-webpack/server';
@@ -297,7 +296,7 @@ const streamToString = async (stream: ReadableStream): Promise<string> => {
     result = await reader.read();
     if (result.value) {
       if (!(result.value instanceof Uint8Array)) {
-        throw new Error('Unexepected buffer type');
+        throw new Error('Unexpected buffer type');
       }
       outs.push(decoder.decode(result.value, { stream: true }));
     }

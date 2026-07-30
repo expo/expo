@@ -9,6 +9,7 @@ import {
   renameTemplateAppNameAsync,
   sanitizeTemplateAsync,
 } from './Template';
+import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { env } from './utils/env';
 import { fetch } from './utils/fetch';
 import { extractNpmTarballAsync } from './utils/npm';
@@ -111,8 +112,15 @@ export async function promptExamplesAsync() {
   return answer;
 }
 
-/** Download and move the selected example from https://github.com/expo/examples. */
-export async function downloadAndExtractExampleAsync(root: string, name: string) {
+/**
+ * Download and move the selected example from https://github.com/expo/examples.
+ *
+ * If the example ships a `.create-expo.json`, its `renamePatterns`
+ * field overrides the default rename config used by the HelloWorld
+ * find-and-replace pass. The config file is read once and deleted from disk
+ * immediately so it can never leak into the user's project.
+ */
+export async function downloadAndExtractExampleAsync(root: string, name: string): Promise<void> {
   const projectName = path.basename(root);
   const response = await fetch('https://codeload.github.com/expo/examples/tar.gz/master');
   if (!response.ok) {
@@ -134,7 +142,12 @@ export async function downloadAndExtractExampleAsync(root: string, name: string)
     filter: (entryName) => entryName.startsWith(prefix),
   });
 
-  const files = await getTemplateFilesToRenameAsync({ cwd: root });
+  const monorepoConfig = await consumeMonorepoConfigAsync(root);
+
+  const files = await getTemplateFilesToRenameAsync({
+    cwd: root,
+    renameConfig: monorepoConfig?.renamePatterns,
+  });
   await renameTemplateAppNameAsync({
     cwd: root,
     files,

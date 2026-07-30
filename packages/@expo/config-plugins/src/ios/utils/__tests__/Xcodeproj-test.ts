@@ -15,12 +15,14 @@ describe(sanitizedName, () => {
 describe(resolveXcodeBuildSetting, () => {
   it(`resolves build setting`, () => {
     const lookup = jest.fn(
-      (v) =>
-        ({
-          CURRENT_VARIANT: 'variant',
-          PLATFORM_PREFERRED_ARCH: 'arch',
-          LINK_FILE_LIST_variant_arch: './../foo/./bar.js',
-        })[v]
+      (v: string): string | undefined =>
+        (
+          ({
+            CURRENT_VARIANT: 'variant',
+            PLATFORM_PREFERRED_ARCH: 'arch',
+            LINK_FILE_LIST_variant_arch: './../foo/./bar.js',
+          }) as Record<string, string>
+        )[v]
     );
     const r = resolveXcodeBuildSetting(
       '$(LINK_FILE_LIST_$(CURRENT_VARIANT)_$(PLATFORM_PREFERRED_ARCH):dir:standardizepath:file:default=arm64)',
@@ -33,14 +35,17 @@ describe(resolveXcodeBuildSetting, () => {
     expect(r).toBe('foo');
   });
   it(`resolves build setting using "default" modifier`, () => {
-    const lookup = jest.fn((v) => ({})[v]);
+    const lookup = jest.fn((v: string): string | undefined => (({}) as Record<string, string>)[v]);
     const r = resolveXcodeBuildSetting('$(LINK_FILE_LIST:default=arm64)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'LINK_FILE_LIST');
     expect(lookup).toHaveBeenCalledTimes(1);
     expect(r).toBe('arm64');
   });
   it(`resolves build settings looked up with more build settings`, () => {
-    const lookup = jest.fn((v) => ({ FOO: '$(BAR:lower)', BAR: '$(hey)', hey: 'Found' })[v]);
+    const lookup = jest.fn(
+      (v: string): string | undefined =>
+        (({ FOO: '$(BAR:lower)', BAR: '$(hey)', hey: 'Found' }) as Record<string, string>)[v]
+    );
     const r = resolveXcodeBuildSetting('$(FOO)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(lookup).toHaveBeenNthCalledWith(2, 'BAR');
@@ -49,7 +54,9 @@ describe(resolveXcodeBuildSetting, () => {
     expect(r).toBe('found');
   });
   it(`resolves build setting using "default" modifier with variable`, () => {
-    const lookup = jest.fn((v) => ({ FOO: 'FOO' })[v]);
+    const lookup = jest.fn(
+      (v: string): string | undefined => (({ FOO: 'FOO' }) as Record<string, string>)[v]
+    );
     const r = resolveXcodeBuildSetting('$(LINK_FILE_LIST:default=$(FOO:lower))', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(lookup).toHaveBeenNthCalledWith(2, 'LINK_FILE_LIST');
@@ -57,13 +64,17 @@ describe(resolveXcodeBuildSetting, () => {
     expect(r).toBe('foo');
   });
   it(`resolves with "rfc1034identifier" modifier`, () => {
-    const lookup = jest.fn((v) => ({ FOO: 'ab/cd-e_f.g h*' })[v]);
+    const lookup = jest.fn(
+      (v: string): string | undefined => (({ FOO: 'ab/cd-e_f.g h*' }) as Record<string, string>)[v]
+    );
     const r = resolveXcodeBuildSetting('$(FOO:rfc1034identifier)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(r).toBe('ab-cd-e-f-g-h-');
   });
   it(`resolves with "c99extidentifier" modifier`, () => {
-    const lookup = jest.fn((v) => ({ FOO: 'ab/cd-e_f.g h*' })[v]);
+    const lookup = jest.fn(
+      (v: string): string | undefined => (({ FOO: 'ab/cd-e_f.g h*' }) as Record<string, string>)[v]
+    );
     const r = resolveXcodeBuildSetting('$(FOO:c99extidentifier)', lookup);
     expect(lookup).toHaveBeenNthCalledWith(1, 'FOO');
     expect(r).toBe('ab/cd_e_f.g_h*');

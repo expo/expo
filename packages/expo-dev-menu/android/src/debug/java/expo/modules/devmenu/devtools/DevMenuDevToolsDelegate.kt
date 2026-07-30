@@ -19,12 +19,16 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
+import java.lang.reflect.Proxy
 
 class DevMenuDevToolsDelegate(
-  private val weakDevSupportManager: WeakReference<out DevSupportManager>
+  private val devSupportManagerProvider: () -> DevSupportManager?
 ) {
+  constructor(weakDevSupportManager: WeakReference<out DevSupportManager>) :
+    this({ weakDevSupportManager.get() })
+
   private val devSupportManager: DevSupportManager?
-    get() = weakDevSupportManager.get()
+    get() = devSupportManagerProvider()
 
   private val currentActivity: Activity?
     get() = devSupportManager?.currentActivity
@@ -77,14 +81,41 @@ class DevMenuDevToolsDelegate(
     internalSettings.isHotModuleReplacementEnabled = nextEnabled
 
     if (nextEnabled) {
-      reactContext?.getJSModule(HMRClient::class.java)?.enable()
+      reactContext?.callHMRClientMethod("enable")
     } else {
-      reactContext?.getJSModule(HMRClient::class.java)?.disable()
+      reactContext?.callHMRClientMethod("disable")
     }
 
     if (nextEnabled && !internalSettings.isJSDevModeEnabled) {
       internalSettings.isJSDevModeEnabled = true
       reload()
+    }
+  }
+
+  /**
+   * Invokes a no-argument [HMRClient] method (`enable`/`disable`) without tripping a bug in React
+   * Native's bridgeless JS module proxy.
+   *
+   * When a zero-argument method is invoked through the proxy returned by [ReactContext.getJSModule],
+   * the JDK passes a `null` args array to the invocation handler. In bridgeless mode that handler
+   * (`BridgelessReactContext.BridgelessJSModuleInvocationHandler`) declares the parameter non-null,
+   * so Kotlin's null check throws a [NullPointerException] before the call ever reaches JS. We
+   * invoke the handler directly with an explicit empty args array to sidestep the null. The legacy
+   * (bridge) handler tolerates the empty array too, so this is safe on both architectures.
+   */
+  private fun ReactContext.callHMRClientMethod(methodName: String) {
+    val hmrClient = getJSModule(HMRClient::class.java) ?: return
+    val method = HMRClient::class.java.getMethod(methodName)
+    if (Proxy.isProxyClass(hmrClient.javaClass)) {
+      Proxy
+        .getInvocationHandler(hmrClient)
+        .invoke(
+          hmrClient,
+          method,
+          emptyArray<Any?>()
+        )
+    } else {
+      method.invoke(hmrClient)
     }
   }
 

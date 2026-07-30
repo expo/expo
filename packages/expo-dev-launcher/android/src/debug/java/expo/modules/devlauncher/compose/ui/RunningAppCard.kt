@@ -16,7 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.composeunstyled.Button
+import com.composeunstyled.UnstyledButton
 import expo.modules.devmenu.compose.fromHex
 import expo.modules.devmenu.compose.newtheme.NewAppTheme
 import expo.modules.devmenu.compose.primitives.NewText
@@ -40,7 +40,7 @@ fun RunningAppCard(
     borderRadius = NewAppTheme.borderRadius.xl,
     color = NewAppTheme.colors.background.subtle
   ) {
-    Button(
+    UnstyledButton(
       onClick = { onClick(appIp) }
     ) {
       Row(

@@ -1,21 +1,21 @@
 package expo.modules.kotlin.views
 
 import com.facebook.react.bridge.ReadableMap
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.recycle
+import expo.modules.kotlin.types.ConverterContext
 
 /**
  * A marker interface for props classes that are used to pass data to Compose views.
- * Needed for the R8 to not remove needed  signatures that are used to receive prop types.
+ * Needed for the R8 to not remove needed signatures that are used to receive prop types.
  */
 interface ComposeProps
 
 inline fun <reified Props : ComposeProps> createComposeProps(
   propsMap: ReadableMap?,
-  appContext: AppContext? = null
+  converterContext: ConverterContext
 ): Props {
   val propsParsingStrategy = toPropsParsingStrategy<Props>()
-  val propsInstance = propsParsingStrategy.createNewInstance()
+  var propsInstance = propsParsingStrategy.createNewInstance()
 
   if (propsMap == null) {
     return propsInstance
@@ -29,12 +29,13 @@ inline fun <reified Props : ComposeProps> createComposeProps(
     val prop = props[name] ?: continue
 
     propsMap.getDynamic(name).recycle {
-      @Suppress("UNCHECKED_CAST")
-      prop.setPropDirectly(
-        prop = this,
-        currentProps = propsInstance,
-        appContext = appContext
-      ) as Props
+      propsInstance = (
+        prop.copyPropsWithNewValue(
+          prop = this,
+          currentProps = propsInstance,
+          converterContext = converterContext
+        ) ?: propsInstance
+        ) as Props
     }
   }
 

@@ -1,5 +1,6 @@
 import { requireNativeView } from 'expo';
 import type { ReactElement, ComponentType } from 'react';
+import type { StyleProp, ViewStyle } from 'react-native';
 
 import type { ModifierConfig } from '../../types';
 import type { PrimitiveBaseProps } from '../layout';
@@ -21,9 +22,16 @@ export interface RNHostProps extends PrimitiveBaseProps {
    * Modifiers for the component.
    */
   modifiers?: ModifierConfig[];
+  /**
+   * Style applied to the host view's React Native shadow node. Useful for
+   * controlling its layout position (e.g. `position: 'absolute'`).
+   */
+  style?: StyleProp<ViewStyle>;
 }
 
-type NativeRNHostProps = RNHostProps;
+type NativeRNHostProps = RNHostProps & {
+  layoutRoot: boolean;
+};
 const NativeRNHostView: ComponentType<NativeRNHostProps> = requireNativeView(
   'ExpoUI',
   'RNHostView'
@@ -35,6 +43,9 @@ function transformProps(props: RNHostProps): NativeRNHostProps {
     modifiers,
     ...(modifiers ? createViewModifierEventListener(modifiers) : undefined),
     ...restProps,
+    // Touches on hosted content are dispatched relative to the host, so `measure()` must report
+    // the same coordinate space; otherwise `Pressable` cancels the press on any finger movement.
+    layoutRoot: true,
   };
 }
 

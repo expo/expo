@@ -8,6 +8,12 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   // so the runtime is always alive while the buffer exists.
   internal unowned let runtime: JavaScriptRuntime
 
+  // The raw `facebook.jsi.IRuntime`, cached alongside the `JavaScriptRuntime` wrapper. `IRuntime` is
+  // an immortal reference (`jsi.apinotes`), so reading it costs no ARC, whereas reading `.pointee`
+  // off the `unowned` wrapper emits an unowned retain/release on every access. The hot decode path
+  // (`unownedValue(at:)`, `set`) reads this; `subscript`/`copy` still need the wrapper.
+  internal nonisolated(unsafe) let iRuntime: facebook.jsi.IRuntime
+
   internal nonisolated(unsafe) let bufferPointer: UnsafeMutableBufferPointer<facebook.jsi.Value>
   private let ownsMemory: Bool
 
@@ -34,6 +40,7 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     ownsMemory: Bool = false
   ) {
     self.runtime = runtime
+    self.iRuntime = runtime.pointee
     self.bufferPointer = buffer
     self.ownsMemory = ownsMemory
   }
@@ -69,7 +76,7 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
   /// `baseAddress`, so passing any index into an empty buffer crashes, and an out-of-range index reads past
   /// the buffer. The caller is responsible for the bounds check.
   public func unownedValue(at index: Int) -> JavaScriptUnownedValue {
-    return JavaScriptUnownedValue(runtime, bufferPointer.baseAddress! + index)
+    return JavaScriptUnownedValue(iRuntime, bufferPointer.baseAddress! + index)
   }
 
   @discardableResult
@@ -78,7 +85,7 @@ public struct JavaScriptValuesBuffer: JavaScriptType, ~Copyable {
     guard (0..<count).contains(index) else {
       FatalError.valuesBufferIndexOutRange(index: index, capacity: count)
     }
-    bufferPointer.initializeElement(at: index, to: value.toJSIValue(in: runtime.pointee))
+    bufferPointer.initializeElement(at: index, to: value.toJSIValue(in: iRuntime))
     return self
   }
 

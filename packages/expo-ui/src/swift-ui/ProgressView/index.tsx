@@ -3,7 +3,7 @@ import { requireNativeView } from 'expo';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type ClosedRangeDate, type CommonViewModifierProps } from '../types';
 
-export type ProgressViewProps = {
+export interface ProgressViewProps extends CommonViewModifierProps {
   /**
    * The current progress value. A value between `0` and `1`.
    * When `undefined`, the progress view displays an indeterminate indicator.
@@ -26,7 +26,7 @@ export type ProgressViewProps = {
    * A label describing the progress view's purpose.
    */
   children?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 type NativeProgressViewProps = Omit<ProgressViewProps, 'timerInterval'> & {
   timerInterval?: { lower: number; upper: number };

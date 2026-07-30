@@ -1,8 +1,8 @@
 'use client';
 import { useId } from 'react';
 
-import type { NativeToolbarSpacerProps } from './types';
 import { RouterToolbarItem } from '../../../../toolbar/native';
+import type { NativeToolbarSpacerProps } from './types';
 
 /**
  * Native toolbar spacer component for bottom toolbar.

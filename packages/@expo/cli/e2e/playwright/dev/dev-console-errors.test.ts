@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { platform } from 'node:process';
 import { stripVTControlCharacters } from 'node:util';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
@@ -11,6 +12,7 @@ test.beforeAll(() => clearEnv());
 test.afterAll(() => restoreEnv());
 
 const projectRoot = getRouterE2ERoot();
+const isWindows = platform === 'win32';
 
 test.describe('dev console errors', () => {
   const expoStart = createExpoStart({
@@ -47,19 +49,52 @@ test.describe('dev console errors', () => {
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('throw new Error()', { exact: true }).click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  [Error: unhandled-throw] 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: unhandled-throw]
 
 Code: index.tsx
-  42 |         title="throw new Error()"
-  43 |         onPress={() => {
-> 44 |           throw new Error('unhandled-throw');
+  41 |         title="throw new Error()"
+  42 |         onPress={() => {
+> 43 |           throw new Error('unhandled-throw');
      |                 ^
-  45 |         }}
-  46 |       />
-  47 |       <BigButton
+  44 |         }}
+  45 |       />
+  46 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:44:17) 
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:43:17)
+
+Code: index.tsx
+  139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  140 |   return (
+> 141 |     <Text
+      |     ^
+  142 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+  143 |       onPress={onPress}>
+  144 |       {title}
+Call Stack
+  BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:141:5)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:40:7)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: unhandled-throw]
+
+Code: index.tsx
+  41 |         title="throw new Error()"
+  42 |         onPress={() => {
+> 43 |           throw new Error('unhandled-throw');
+     |                 ^
+  44 |         }}
+  45 |       />
+  46 |       <BigButton
+Call Stack
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:43:17)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -71,10 +106,10 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:41:7)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:40:7)
+        `.trim()
+      );
+    }
   });
 
   test('prints call stack of unhandled rejections', async ({ page }) => {
@@ -83,32 +118,78 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('async throw new Error()').click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  [Error: unhandled-async-throw] 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: unhandled-async-throw]
 
 Code: index.tsx
-  49 |         onPress={() => {
-  50 |           async function throwAsyncError() {
-> 51 |             throw new Error('unhandled-async-throw');
+  48 |         onPress={() => {
+  49 |           async function throwAsyncError() {
+> 50 |             throw new Error('unhandled-async-throw');
      |                   ^
-  52 |           }
-  53 |           void throwAsyncError();
-  54 |         }}
+  51 |           }
+  52 |           throwAsyncError();
+  53 |         }}
 Call Stack
-  throwAsyncError (apps/router-e2e/__e2e__/06-errors/app/index.tsx:51:19)
-    `.trim();
+  throwAsyncError (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:50:19)
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:52:11)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: unhandled-async-throw]
 
-    await expectOutput(output, expectedConsoleOutput);
+Code: index.tsx
+  48 |         onPress={() => {
+  49 |           async function throwAsyncError() {
+> 50 |             throw new Error('unhandled-async-throw');
+     |                   ^
+  51 |           }
+  52 |           throwAsyncError();
+  53 |         }}
+Call Stack
+  throwAsyncError (apps/router-e2e/__e2e__/06-errors/app/index.tsx:50:19)
+        `.trim()
+      );
+    }
   });
 
-  test('prints component stack of unhandled thrown non-Error values (strings)', async ({ page }) => {
+  test('prints component stack of unhandled thrown non-Error values (strings)', async ({
+    page,
+  }) => {
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('throw string').click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  unhandled-throw-string 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  unhandled-throw-string
+
+Code: index.tsx
+  139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  140 |   return (
+> 141 |     <Text
+      |     ^
+  142 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+  143 |       onPress={onPress}>
+  144 |       {title}
+Call Stack
+  BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:141:5)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:55:7)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  unhandled-throw-string
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -120,10 +201,10 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:56:7)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:55:7)
+        `.trim()
+      );
+    }
   });
 
   test('prints no stack for unhandled rejected non-Error values (strings)', async ({ page }) => {
@@ -142,19 +223,52 @@ Call Stack
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('console.error(new Error())').click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  [Error: console-error-object] 
+    if (isWindows) {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: console-error-object]
 
 Code: index.tsx
-  89 |         title="console.error(new Error())"
-  90 |         onPress={() => {
-> 91 |           console.error(new Error('console-error-object'));
+  90 |         title="console.error(new Error())"
+  91 |         onPress={() => {
+> 92 |           console.error(new Error('console-error-object'));
      |                         ^
-  92 |         }}
-  93 |       />
-  94 |       <BigButton
+  93 |         }}
+  94 |       />
+  95 |       <BigButton
 Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:91:25) 
+  BigButton.props.onPress (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:92:25)
+
+Code: index.tsx
+  139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
+  140 |   return (
+> 141 |     <Text
+      |     ^
+  142 |       style={{ fontSize: 24, backgroundColor: 'darkcyan', color: 'white', padding: 16 }}
+  143 |       onPress={onPress}>
+  144 |       {title}
+Call Stack
+  BigButton (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:141:5)
+  App (apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx:89:7)
+        `.trim()
+      );
+    } else {
+      await expectOutput(
+        output,
+        `
+Web  ERROR  [Error: console-error-object]
+
+Code: index.tsx
+  90 |         title="console.error(new Error())"
+  91 |         onPress={() => {
+> 92 |           console.error(new Error('console-error-object'));
+     |                         ^
+  93 |         }}
+  94 |       />
+  95 |       <BigButton
+Call Stack
+  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:92:25)
 
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
@@ -166,32 +280,42 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:88:7)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:89:7)
+        `.trim()
+      );
+    }
   });
 
-  test('prints call stack and component stack of console.error non-Error values (strings)', async ({ page }) => {
+  test('prints call stack and component stack of console.error non-Error values (strings)', async ({
+    page,
+  }) => {
     const output = processCollectOutput(expoStart.process);
 
     await openPageAndEagerlyLoadJS(expoStart, page);
     await page.getByText('console.error(string)').click();
 
-    const expectedConsoleOutput = `
-Web  ERROR  console-error-string 
+    // `expo` and `@expo/log-box` are in `packages/` here, not `node_modules/`, so the collapse
+    // patterns miss them and those frames show up. In a real app both are installed under
+    // `node_modules` and get collapsed.
+    await expectOutputAnySeparator(output, 'Web  ERROR  console-error-string');
+    await expectOutputAnySeparator(output, 'Code: setupHMR.js');
+    // These line numbers come from built output, so don't match on them.
+    await expectOutputAnySeparator(
+      output,
+      'captureCurrentStack (packages/expo/build/async-require/setupHMR.js'
+    );
+    await expectOutputAnySeparator(
+      output,
+      'consoleErrorMiddleware (packages/@expo/log-box/build/LogBox.js'
+    );
+    await expectOutputAnySeparator(
+      output,
+      'BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:98:19)'
+    );
 
-Code: index.tsx
-   95 |         title="console.error(string)"
-   96 |         onPress={() => {
->  97 |           console.error('console-error-string');
-      |                   ^
-   98 |         }}
-   99 |       />
-  100 |       <BigButton
-Call Stack
-  BigButton.props.onPress (apps/router-e2e/__e2e__/06-errors/app/index.tsx:97:19) 
-
+    await expectOutputAnySeparator(
+      output,
+      `
 Code: index.tsx
   139 | function BigButton({ title, onPress }: { title: string; onPress: () => void }) {
   140 |   return (
@@ -202,10 +326,9 @@ Code: index.tsx
   144 |       {title}
 Call Stack
   BigButton (apps/router-e2e/__e2e__/06-errors/app/index.tsx:141:5)
-  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:94:7)
-    `.trim();
-
-    await expectOutput(output, expectedConsoleOutput);
+  App (apps/router-e2e/__e2e__/06-errors/app/index.tsx:95:7)
+      `.trim()
+    );
   });
 
   test('prints console.warn strings without stack traces', async ({ page }) => {
@@ -221,14 +344,35 @@ Call Stack
 
 async function expectOutput(output: { all: string }, expectedConsoleOutput: string) {
   await expect
-    .poll(() => stripVTControlCharacters(output.all), { timeout: 30_000 })
-    .toContain(expectedConsoleOutput);
+    .poll(() => normalizeConsoleOutput(output.all), { timeout: 30_000 })
+    .toContain(normalizeConsoleOutput(expectedConsoleOutput));
+}
+
+/** Same as `expectOutput`, but ignores the path separator so Windows matches too. */
+async function expectOutputAnySeparator(output: { all: string }, expectedConsoleOutput: string) {
+  await expect
+    .poll(() => toPosixOutput(output.all), { timeout: 30_000 })
+    .toContain(toPosixOutput(expectedConsoleOutput));
+}
+
+function toPosixOutput(output: string) {
+  return normalizeConsoleOutput(output).replace(/\\/g, '/');
 }
 
 function expectNoStackTrace(output: { all: string }) {
-  const terminalOutput = stripVTControlCharacters(output.all);
+  const terminalOutput = normalizeConsoleOutput(output.all);
   // `http://localhost:8081/apps/router-e2e` would mean an unsymbolicated stack trace leaked.
   expect(terminalOutput).not.toContain('http://localhost:8081/apps/router-e2e');
   // `apps/router-e2e/__e2e__/06-errors/app/index.tsx` would mean a symbolicated stack trace leaked.
   expect(terminalOutput).not.toContain('apps/router-e2e/__e2e__/06-errors/app/index.tsx');
+  // `apps\router-e2e\__e2e__\06-errors\app\index.tsx` would mean a symbolicated stack trace leaked.
+  expect(terminalOutput).not.toContain('apps\\router-e2e\\__e2e__\\06-errors\\app\\index.tsx');
+}
+
+function normalizeConsoleOutput(output: string) {
+  return (
+    stripVTControlCharacters(output)
+      // Remove trailing whitespace from each line.
+      .replace(/[ \t]+$/gm, '')
+  );
 }

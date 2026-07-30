@@ -13,7 +13,7 @@ When you make a change to your iOS entitlements, this change needs to be updated
 
 In an Expo app, the entitlements are read from the introspected app config. To edit them, see the [`ios.entitlements`](/versions/latest/config/app/#entitlements) field in your app config file. You can see your introspected config by running `npx expo config --type introspect` in your project and then look for the `ios.entitlements` object for the results.
 
-In a bare React Native app, the entitlements are read from your **ios/\*\*/\*.entitlements** file.
+In an [existing React Native project](/bare/overview/), the entitlements are read from your **ios/\*\*/\*.entitlements** file.
 
 ## Enabling
 
@@ -95,6 +95,24 @@ EAS Build will only enable capabilities that it has built-in support for, any un
 | <NoIcon />  | HLS Interstitial Previews                         | Unknown                                                                                                          |
 
 The unsupported capabilities either don't support iOS, or they don't have a corresponding entitlement value. Here is a list of all of the [official Apple capabilities](https://developer.apple.com/help/account/reference/supported-capabilities-ios).
+
+### Broadcast push notifications
+
+Apple's Broadcast option lives inside the Push Notifications capability and has no entitlement of its own. To turn it on, set [`ios.usesBroadcastPushNotifications`](/versions/latest/config/app/#usesbroadcastpushnotifications) to `true` in your [app config](/workflow/configuration/):
+
+```json app.json
+{
+  "expo": {
+    "ios": {
+      "usesBroadcastPushNotifications": true
+    }
+  }
+}
+```
+
+EAS Build sets the Broadcast option only when it enables the Push Notifications capability, so your entitlements also need `aps-environment`. Apple limits [broadcast push notifications](https://developer.apple.com/documentation/usernotifications/setting-up-broadcast-push-notifications) to Live Activities on iOS 18 and later.
+
+If you enable Broadcast only in [Apple Developer Console][apple-dev-console], the next `eas build` resets the Push Notifications capability to its default options and turns Broadcast off. Apple Push Notification service (APNs) then rejects your channel management requests with a `FeatureNotEnabled` error.
 
 ## Capability identifiers
 

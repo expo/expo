@@ -72,12 +72,13 @@ function formatProgramStatementLocs(ast: t.File, code: string) {
 function adjustPosForCodeFrame(
   pos: t.SourceLocation['start'] | t.SourceLocation['end'] | null | undefined
 ) {
-  return pos ? { ...pos, column: pos.column + 1 } : pos;
+  return pos ? { ...pos, column: pos.column + 1 } : undefined;
 }
 
 function adjustLocForCodeFrame(loc: t.SourceLocation) {
   return {
-    start: adjustPosForCodeFrame(loc.start),
+    // A real statement's location always has a non-null start.
+    start: adjustPosForCodeFrame(loc.start)!,
     end: adjustPosForCodeFrame(loc.end),
   };
 }

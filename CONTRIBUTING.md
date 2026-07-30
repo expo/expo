@@ -31,13 +31,12 @@ Manual smoke tests are included in `apps/native-component-list`, which is a good
 1. If you are an Expo team member, clone the repository. If you are an external contributor, [fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, skipping most of the branches and history to clone it faster.
 2. Install [direnv](https://direnv.net/). On macOS: `brew install direnv`. Don't forget to install the [shell hook](https://direnv.net/docs/hook.html) to your shell profile.
 3. Install Ruby 3.3 or later. On macOS: `brew install ruby@3.3`
-4. Install [git-lfs](https://git-lfs.github.com/). On macOS: `brew install git-lfs`.
-5. Install [Node LTS](https://nodejs.org/).
-6. Some of the scripts in this repository require Bun. You won't need it for most tasks, but can install it via [these options](https://bun.com/docs/installation).
+4. Install [Node LTS](https://nodejs.org/).
+5. Some of the scripts in this repository require Bun. You won't need it for most tasks, but can install it via [these options](https://bun.com/docs/installation).
 
 ### Set up documentation
 
-If you plan to contribute to the documentation, run `npm run setup:docs`.
+If you plan to contribute to the documentation, see [Updating Documentation](#-updating-documentation) section below.
 
 ### Set up Android
 
@@ -88,7 +87,6 @@ If you will be working with the iOS project, ensure **ruby 3.3** is installed on
 
 1. Navigate to the bare sandbox project `cd apps/bare-expo`
 2. Run the project on any native platform:
-
    - iOS: `pnpm ios`
    - Android: `pnpm android`
    - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
@@ -102,7 +100,7 @@ If you will be working with the iOS project, ensure **ruby 3.3** is installed on
 All Expo SDK packages can be found in the `packages/` directory. These packages are automatically linked to the projects in the `apps/` directory, so you can edit them in-place and see the changes in the running app.
 
 1. Navigate to a package you want to edit. Ex: `cd packages/expo-constants`
-2. Start the TypeScript build in watch mode: `pnpm build` (skip this if such script is not present)
+2. Compile the package's TypeScript after editing: `pnpm build` (skip this if such script is not present)
 3. Edit code in that package's `src/` directory
 4. Play with your changes on a simulator or device through `bare-expo`:
    - Add or modify a file named after the API you're working on. Ex: `apps/test-suite/tests/Constants.js`
@@ -115,6 +113,26 @@ All Expo SDK packages can be found in the `packages/` directory. These packages 
    - Xcode: `pnpm edit:ios`
    - Remember to **rebuild** the native project whenever you make a native change
 6. (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
+
+### Common package scripts
+
+Almost every package in `packages/` exposes the same set of npm scripts, orchestrated across the monorepo by [Turborepo](https://turborepo.com/). The compiled `build/` output is not committed to Git (it is in `.gitignore`); Turborepo builds it on demand and caches the result, locally and in a shared remote cache, so a `git pull` or `git checkout` doesn't force you to rebuild every package.
+
+| Script      | What it does                                                        |
+|-------------|---------------------------------------------------------------------|
+| `build`     | Compiles `src/` → `build/`.                                         |
+| `typecheck` | Type-checks the package with `tsc`.                                 |
+| `test`      | Runs the package's Jest unit tests.                                 |
+| `lint`      | Lints the package. Pass `--fix` to autofix.                         |
+| `format`    | Formats the package. Pass `--check` to check without modifying.     |
+| `depscheck` | Verifies the package's declared dependencies match what it imports. |
+
+Run them two ways:
+
+- **From the repo root** with `pnpm <script>` (e.g. `pnpm build`, `pnpm test`, `pnpm lint`, `pnpm format`, `pnpm typecheck`). This invokes `turbo <task>` and runs the script across every workspace package — respecting the cache and dependency graph
+- **From a single package directory** with `pnpm run <script>` (e.g. `cd packages/expo-constants && pnpm run test`) to run just that package's script.
+
+For a one-shot "did my change build, typecheck, lint, and pass tests?" check across the packages you touched, use `et check-packages <...packages>`, which runs the same Turborepo task graph as CI.
 
 ### Finding a task to work on
 
@@ -135,7 +153,6 @@ All modules should adhere to the style guides which can be found here:
 
 - The React Native dev tools are currently disabled in our fork [#5602](https://github.com/expo/expo/issues/5602). You can hack around this by cloning React Native outside this repo, then copying the contents `react-native/React/DevSupport` into `expo/react-native-lab/react-native/React/DevSupport` (this will only enable the shake gesture, CMD+R won't work yet).
 - We use a fork of `react-native` in this repo; this fork is located at `react-native-lab/react-native` (you can make changes or cherry-picks from here if you want). It diverges the minimal amount necessary from the `react-native` version in its `package.json`.
-- All of the package's `build/` code should be committed. This is because it is simpler to reproduce issues if all contributors are running the same code and so we don't need to rebuild dozens of packages locally on every `git pull` or `git checkout` operation.
 - We use a unified set of basic Bash scripts and configs called `expo-module-scripts` to ensure everything runs smoothly (TypeScript, Babel, Jest, etc...).
 
 ## ⏱ Testing Your Changes
@@ -191,18 +208,17 @@ To keep CI green, please make sure of the following:
 
 ### If you modified anything in `packages/`:
 
-  - You transpiled the TypeScript with `pnpm build` in the directory of whichever package you modified.
-  - Run `pnpm lint --fix` to fix the formatting of the code. Ensure that `pnpm lint` succeeds without errors or warnings.
-  - Run `pnpm test` to ensure all existing tests pass for that package, along with any new tests you would've written.
-  - (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
-  - All `console.log`s or commented out code blocks are removed!
+- Run `et check-packages <...packages>` (or `pnpm build`, `pnpm typecheck`, `pnpm test`, `pnpm lint` and `pnpm format`) for the packages you changed. See [Common package scripts](#common-package-scripts).
+- Run `pnpm lint --fix` and `pnpm format` to fix the formatting of the code. Ensure that both commands succeed without errors or warnings.
+- (optional) Package docs are partially generated from sources. Run `et generate-docs-api-data -p <package-name>` to generate the package docs [read more](#-updating-documentation).
+- All `console.log`s or commented out code blocks are removed!
 
 ### If you edited the docs directory:
 
-  - Any changes to docs for the current SDK version should also be applied to the unversioned copy. The current docs SDK version is defined in [`docs/package.json`](./docs/package.json), and the versioning workflow is described in [docs/README.md](./docs/README.md#update-latest-version-of-api-reference-docs). Example:
-    - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
-    - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
-  - You don't need to run the docs tests locally. Just ensure the links you include aren't broken, the format is correct, and the changes are following our [writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
+- Any changes to docs for the current SDK version should also be applied to the unversioned copy. The current docs SDK version is defined in [`docs/package.json`](./docs/package.json), and the versioning workflow is described in [docs/README.md](./docs/README.md#update-latest-version-of-api-reference-docs). Example:
+  - You fixed a typo in `docs/pages/versions/vXX.0.0/sdk/app-auth.md`
+  - Ensure you copy that change to: `docs/pages/versions/unversioned/sdk/app-auth.md`
+- You don't need to run the docs tests locally. Just ensure the links you include aren't broken, the format is correct, and the changes are following our [writing style guide](/guides/Expo%20Documentation%20Writing%20Style%20Guide.md).
 
 ### Extra Credit
 

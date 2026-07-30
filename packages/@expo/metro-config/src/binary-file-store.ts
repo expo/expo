@@ -1,12 +1,12 @@
 import UpstreamFileStore, { type Options } from '@expo/metro/metro-cache/stores/FileStore';
-import { Packr } from 'msgpackr';
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { decode, encode } from './binary-file-store/serializer';
+import { event } from './events';
 import { tryRenameAndDeleteAsync } from './file-store';
 
 const { pid } = process;
-const debug = require('debug')('expo:metro:cache') as typeof console.log;
 
 /** Pre-create shard directories all at once as a preflight task */
 function ensureShardDirs(root: string): Promise<void> {
@@ -34,13 +34,6 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
   #root: string;
   #prepare: Promise<void> | undefined;
 
-  #packr = new Packr({
-    useRecords: true,
-    moreTypes: true,
-    // NOTE(@kitten): Experimentally validated to help performance with our cache file format
-    bundleStrings: true,
-  });
-
   constructor(options: Options) {
     super(options);
     this.#root = path.resolve(options.root);
@@ -66,7 +59,7 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
     }
 
     try {
-      return this.#packr.decode(data);
+      return decode(data) as T;
     } catch (err) {
       fs.promises.unlink(filePath).catch(() => {});
       return null;
@@ -76,11 +69,11 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
   async set(key: Buffer, value: T): Promise<void> {
     // Prevent caching of CSS files that have the skipCache flag set.
     if ((value as any)?.output?.[0]?.data?.css?.skipCache) {
-      debug('Skipping caching for CSS file:', (value as any).path);
+      event('cache:skipped_css', { path: (value as any).path });
       return;
     }
 
-    const buffer = this.#packr.encode(value);
+    const buffer = encode(value);
     await this.prepare();
     const fileDir = this.#getFileDir(key);
     const fileName = this.#getFileName(key);

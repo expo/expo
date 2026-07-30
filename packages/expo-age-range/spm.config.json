@@ -4,18 +4,14 @@
     {
       "name": "ExpoAgeRange",
       "podName": "ExpoAgeRange",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
         "Hermes",
         "expo-modules-core/ExpoModulesCore"
       ],
-      "swiftLanguageVersions": [
-        "6.0"
-      ],
+      "swiftLanguageVersions": ["6.0"],
       "targets": [
         {
           "type": "swift",
@@ -28,9 +24,7 @@
             "ReactNativeDependencies",
             "expo-modules-core/ExpoModulesCore"
           ],
-          "linkedFrameworks": [
-            "Foundation"
-          ]
+          "linkedFrameworks": ["Foundation"]
         }
       ]
     }

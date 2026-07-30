@@ -39,7 +39,7 @@ const withAndroidNetworkSecurityConfigXml = (config) => {
 `
       );
 
-      for (const debuggableBuildTypes in ['debug', 'debugOptimized']) {
+      for (const debuggableBuildTypes of ['debug', 'debugOptimized']) {
         await fs.mkdir(path.join(projectPath, `app/src/${debuggableBuildTypes}/res/xml`), {
           recursive: true,
         });

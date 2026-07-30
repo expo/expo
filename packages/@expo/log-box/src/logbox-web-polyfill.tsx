@@ -1,5 +1,3 @@
-import React from 'react';
-
 import type { useLogs } from './Data/LogBoxLog';
 import { LogBoxLog } from './Data/LogBoxLog';
 import LogBoxInspectorContainer from './logbox-dom-polyfill';

@@ -176,21 +176,30 @@ export function test({ describe, it, xit, expect }) {
 
       it('left side evaluated only once', () => {
         let count = 0;
-        const fn = () => { count++; return null; };
+        const fn = () => {
+          count++;
+          return null;
+        };
         fn() ?? 'default';
         expect(count).toBe(1);
       });
 
       it('right side not evaluated when left is non-nullish', () => {
         let evaluated = false;
-        const right = () => { evaluated = true; return 'right'; };
+        const right = () => {
+          evaluated = true;
+          return 'right';
+        };
         'left' ?? right();
         expect(evaluated).toBe(false);
       });
 
       it('right side evaluated when left is nullish', () => {
         let evaluated = false;
-        const right = () => { evaluated = true; return 'right'; };
+        const right = () => {
+          evaluated = true;
+          return 'right';
+        };
         const result = null ?? right();
         expect(evaluated).toBe(true);
         expect(result).toBe('right');
@@ -200,35 +209,35 @@ export function test({ describe, it, xit, expect }) {
     describe('short-circuit evaluation', () => {
       it('does not evaluate right side when left is 0', () => {
         let sideEffect = false;
-        const result = 0 ?? (sideEffect = true, 'fallback');
+        const result = 0 ?? ((sideEffect = true), 'fallback');
         expect(result).toBe(0);
         expect(sideEffect).toBe(false);
       });
 
       it('does not evaluate right side when left is empty string', () => {
         let sideEffect = false;
-        const result = '' ?? (sideEffect = true, 'fallback');
+        const result = '' ?? ((sideEffect = true), 'fallback');
         expect(result).toBe('');
         expect(sideEffect).toBe(false);
       });
 
       it('does not evaluate right side when left is false', () => {
         let sideEffect = false;
-        const result = false ?? (sideEffect = true, 'fallback');
+        const result = false ?? ((sideEffect = true), 'fallback');
         expect(result).toBe(false);
         expect(sideEffect).toBe(false);
       });
 
       it('evaluates right side when left is null', () => {
         let sideEffect = false;
-        const result = null ?? (sideEffect = true, 'fallback');
+        const result = null ?? ((sideEffect = true), 'fallback');
         expect(result).toBe('fallback');
         expect(sideEffect).toBe(true);
       });
 
       it('evaluates right side when left is undefined', () => {
         let sideEffect = false;
-        const result = undefined ?? (sideEffect = true, 'fallback');
+        const result = undefined ?? ((sideEffect = true), 'fallback');
         expect(result).toBe('fallback');
         expect(sideEffect).toBe(true);
       });
@@ -321,22 +330,22 @@ export function test({ describe, it, xit, expect }) {
 
       it('symbol value preserved', () => {
         const sym = Symbol('test');
-        expect((sym ?? 'fallback')).toBe(sym);
+        expect(sym ?? 'fallback').toBe(sym);
       });
 
       it('bigint value preserved', () => {
         const big = BigInt(0);
-        expect((big ?? 'fallback')).toBe(big);
+        expect(big ?? 'fallback').toBe(big);
       });
 
       it('regex value preserved', () => {
         const re = /test/;
-        expect((re ?? 'fallback')).toBe(re);
+        expect(re ?? 'fallback').toBe(re);
       });
 
       it('Date value preserved', () => {
         const date = new Date(0);
-        expect((date ?? 'fallback')).toBe(date);
+        expect(date ?? 'fallback').toBe(date);
       });
     });
 
@@ -428,7 +437,7 @@ export function test({ describe, it, xit, expect }) {
         const a = null;
         const b = undefined;
         const c = 'found';
-        expect(a ?? (b ?? c)).toBe('found');
+        expect(a ?? b ?? c).toBe('found');
       });
 
       it('in return statement', () => {
@@ -442,7 +451,11 @@ export function test({ describe, it, xit, expect }) {
       it('in throw expression right side', () => {
         const val = null;
         try {
-          const result = val ?? (() => { throw new Error('nullish'); })();
+          const result =
+            val ??
+            (() => {
+              throw new Error('nullish');
+            })();
           // Should have thrown
           expect(true).toBe(false);
         } catch (e) {
@@ -531,8 +544,12 @@ export function test({ describe, it, xit, expect }) {
       it('in getter', () => {
         class Box {
           #value;
-          constructor(v) { this.#value = v; }
-          get content() { return this.#value ?? 'empty'; }
+          constructor(v) {
+            this.#value = v;
+          }
+          get content() {
+            return this.#value ?? 'empty';
+          }
         }
         expect(new Box(null).content).toBe('empty');
         expect(new Box(0).content).toBe(0);
@@ -559,7 +576,7 @@ export function test({ describe, it, xit, expect }) {
 
       it('works with comma operator', () => {
         let x;
-        const result = (x = null, x) ?? 'default';
+        const result = ((x = null), x) ?? 'default';
         expect(result).toBe('default');
       });
 
@@ -569,7 +586,7 @@ export function test({ describe, it, xit, expect }) {
       });
 
       it('deeply nested nullish coalescing', () => {
-        const a = null ?? (null ?? (null ?? (null ?? 'deep')));
+        const a = null ?? null ?? null ?? null ?? 'deep';
         expect(a).toBe('deep');
       });
 

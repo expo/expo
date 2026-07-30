@@ -1,19 +1,30 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
-import type { ActionDispatchedEvent, PageFocusedEvent, PagePreloadedEvent } from 'expo-router';
 
-import { initListeners } from '../init';
+import { initListeners, initRouterIntegration } from '../init';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 
+// These are `expo-router`'s event types, but importing them here would pull expo-router's source
+// (and its vendored react-navigation global augmentation of `ReactNavigation.RootParamList`/`Theme`)
+// into the program, which clashes with the real `@react-navigation/core` augmentation loaded by the
+// sibling react-navigation integration tests. They're only used to shape test event payloads, so we
+// alias them to `any` to keep the clash out of this package.
+type ActionDispatchedEvent = any;
+type PageFocusedEvent = any;
+type PagePreloadedEvent = any;
+
 jest.mock('expo-app-metrics', () => {
-  const addCustomMetricToSession = jest.fn();
-  const getMainSession = jest.fn(async () => ({ id: 'session-1' }));
+  const mainSession = {
+    id: 'session-1',
+    type: 'main',
+    startDate: '2026-01-01T00:00:00.000Z',
+    addMetric: jest.fn(),
+  };
   return {
     __esModule: true,
     default: {
       markInteractive: jest.fn(),
-      getMainSession,
-      addCustomMetricToSession,
+      getMainSession: jest.fn(() => mainSession),
     },
   };
 });
@@ -21,8 +32,7 @@ jest.mock('expo-app-metrics', () => {
 jest.mock('../router', () => ({ optionalRouter: undefined, isRouterInstalled: false }));
 
 const mockGetMainSession = AppMetrics.getMainSession as jest.Mock;
-const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
-const mockSessionId = 'session-1';
+const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 
 type Listener<T> = (event: T) => void;
 
@@ -35,9 +45,10 @@ function createFakeNavigationEvents(): FakeNavigationEvents {
   const listeners: Record<string, Set<Listener<any>>> = {};
   return {
     addListener(type, cb) {
-      listeners[type] = listeners[type] ?? new Set();
-      listeners[type].add(cb);
-      return () => listeners[type].delete(cb);
+      const set = listeners[type] ?? new Set();
+      listeners[type] = set;
+      set.add(cb);
+      return () => set.delete(cb);
     },
     emit(type, event) {
       listeners[type]?.forEach((cb) => cb(event));
@@ -94,12 +105,19 @@ let warnSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  initRouterIntegration(undefined);
   logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   storage = createRouterIntegrationStorage();
   events = createFakeNavigationEvents();
   cleanup = initListeners(storage, events as any);
 });
+
+function setRouterConfig(config: Parameters<typeof initRouterIntegration>[0]) {
+  cleanup?.();
+  initRouterIntegration(config);
+  cleanup = initListeners(storage, events as any);
+}
 
 afterEach(() => {
   cleanup?.();
@@ -115,15 +133,67 @@ describe('initListeners', () => {
     focus(events, 'a');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric).toHaveBeenCalledWith({
-      sessionId: mockSessionId,
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric).toHaveBeenCalledWith({
       timestamp: expect.any(String),
       category: 'navigation',
       name: 'cold_ttr',
       routeName: '/a',
       value: expect.closeTo(0.1, 2),
       params: { isAppLaunch: true, routeParams: {}, url: '/a' },
+    });
+  });
+
+  it('filters route params from cold_ttr, warm_ttr, and deferred tti metrics', async () => {
+    setRouterConfig({ filteredParams: ['userId', 'token'] });
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    storage.screenTimes['b'] = { lastInteractiveCall: performance.now() };
+
+    focus(events, 'a', { params: { userId: '1', tab: 'home', callback: () => {}, circular } });
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b', {
+      pathname: '/b?token=secret',
+      params: { token: 'secret', q: 'ok', callback: () => {}, circular },
+    });
+    await flushAsync();
+
+    expect(mockAddMetric.mock.calls[0][0].params).toEqual({
+      isAppLaunch: true,
+      routeParams: { tab: 'home' },
+      urlHidden: true,
+    });
+    expect(mockAddMetric.mock.calls[1][0].params).toEqual({
+      isAppLaunch: false,
+      routeParams: { q: 'ok' },
+      urlHidden: true,
+    });
+    expect(mockAddMetric.mock.calls[2][0].params).toEqual({
+      isAppLaunch: false,
+      routeParams: { q: 'ok' },
+      urlHidden: true,
+    });
+  });
+
+  it('keeps URL visible when filteredParams does not remove any route param', async () => {
+    setRouterConfig({ filteredParams: ['userId'] });
+    storage.screenTimes['a'] = { lastInteractiveCall: performance.now() };
+
+    focus(events, 'a', { pathname: '/a?token=secret', params: { token: 'secret' } });
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledTimes(2);
+    expect(mockAddMetric.mock.calls[0][0].params).toEqual({
+      isAppLaunch: true,
+      routeParams: { token: 'secret' },
+      url: '/a?token=secret',
+    });
+    expect(mockAddMetric.mock.calls[1][0].params).toEqual({
+      isAppLaunch: true,
+      routeParams: { token: 'secret' },
+      url: '/a?token=secret',
     });
   });
 
@@ -158,15 +228,15 @@ describe('initListeners', () => {
     dispatch(events, 'NAVIGATE');
     focus(events, 'a');
     await flushAsync();
-    mockAddCustomMetric.mockClear();
+    mockAddMetric.mockClear();
 
     dispatch(events, 'NAVIGATE');
     focus(events, 'b');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
-    expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddMetric.mock.calls[0][0].params).toEqual({
       isAppLaunch: false,
       routeParams: {},
       url: '/b',
@@ -185,21 +255,21 @@ describe('initListeners', () => {
     focus(events, 'a');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(3);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
-    expect(mockAddCustomMetric.mock.calls[0][0].params).toEqual({
+    expect(mockAddMetric).toHaveBeenCalledTimes(3);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddMetric.mock.calls[0][0].params).toEqual({
       isAppLaunch: true,
       routeParams: {},
       url: '/a',
     });
-    expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
-    expect(mockAddCustomMetric.mock.calls[1][0].params).toEqual({
+    expect(mockAddMetric.mock.calls[1][0].name).toBe('cold_ttr');
+    expect(mockAddMetric.mock.calls[1][0].params).toEqual({
       isAppLaunch: false,
       routeParams: {},
       url: '/b',
     });
-    expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
-    expect(mockAddCustomMetric.mock.calls[2][0].params).toEqual({
+    expect(mockAddMetric.mock.calls[2][0].name).toBe('warm_ttr');
+    expect(mockAddMetric.mock.calls[2][0].params).toEqual({
       isAppLaunch: false,
       routeParams: {},
       url: '/a',
@@ -225,8 +295,8 @@ describe('initListeners', () => {
       focus(events, 'screen', { pathname, params: routeParams, segments });
       await flushAsync();
 
-      expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-      expect(mockAddCustomMetric).toHaveBeenCalledWith(
+      expect(mockAddMetric).toHaveBeenCalledTimes(1);
+      expect(mockAddMetric).toHaveBeenCalledWith(
         expect.objectContaining({
           routeName: expectedRouteName,
           params: expect.objectContaining({
@@ -244,7 +314,7 @@ describe('initListeners', () => {
     dispatch(events, 'PRELOAD');
     focus(events, 'a');
     await flushAsync();
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
   });
 
   it('records warm_ttr when a preloaded screen is focused for the first time', async () => {
@@ -254,8 +324,8 @@ describe('initListeners', () => {
     focus(events, 'a');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('warm_ttr');
   });
 
   it('records cold_ttr for a non-preloaded screen even when a different screen was preloaded', async () => {
@@ -265,8 +335,8 @@ describe('initListeners', () => {
     focus(events, 'b');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('cold_ttr');
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('cold_ttr');
   });
 
   it('does not emit a metric when a screen is preloaded but never focused', async () => {
@@ -276,7 +346,7 @@ describe('initListeners', () => {
     preload(events, 'a');
     await flushAsync();
 
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(storage.renderedScreensIds.has('a')).toBe(true);
   });
 
@@ -287,8 +357,8 @@ describe('initListeners', () => {
     focus(events, 'a');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(1);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
+    expect(mockAddMetric).toHaveBeenCalledTimes(1);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('warm_ttr');
     expect(storage.renderedScreensIds.size).toBe(1);
   });
 
@@ -306,10 +376,10 @@ describe('initListeners', () => {
     focus(events, 'a');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(3);
-    expect(mockAddCustomMetric.mock.calls[0][0].name).toBe('warm_ttr');
-    expect(mockAddCustomMetric.mock.calls[1][0].name).toBe('cold_ttr');
-    expect(mockAddCustomMetric.mock.calls[2][0].name).toBe('warm_ttr');
+    expect(mockAddMetric).toHaveBeenCalledTimes(3);
+    expect(mockAddMetric.mock.calls[0][0].name).toBe('warm_ttr');
+    expect(mockAddMetric.mock.calls[1][0].name).toBe('cold_ttr');
+    expect(mockAddMetric.mock.calls[2][0].name).toBe('warm_ttr');
   });
 
   it('cleanup unsubscribes all listeners', async () => {
@@ -318,7 +388,7 @@ describe('initListeners', () => {
     preload(events, 'a');
     focus(events, 'a');
     await flushAsync();
-    expect(mockAddCustomMetric).not.toHaveBeenCalled();
+    expect(mockAddMetric).not.toHaveBeenCalled();
     expect(storage.pendingActions).toHaveLength(0);
     expect(storage.renderedScreensIds.size).toBe(0);
     cleanup = () => {};
@@ -328,7 +398,7 @@ describe('initListeners', () => {
     // Cold-launch first screen so the next focus runs through the warm branch.
     focus(events, 'a');
     await flushAsync();
-    mockAddCustomMetric.mockClear();
+    mockAddMetric.mockClear();
 
     // markInteractive ran before pageFocused — wrote lastInteractiveCall with
     // no dispatchTime.
@@ -338,9 +408,9 @@ describe('initListeners', () => {
     focus(events, 'b');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
-    const ttrCall = mockAddCustomMetric.mock.calls[0][0];
-    const ttiCall = mockAddCustomMetric.mock.calls[1][0];
+    expect(mockAddMetric).toHaveBeenCalledTimes(2);
+    const ttrCall = mockAddMetric.mock.calls[0][0];
+    const ttiCall = mockAddMetric.mock.calls[1][0];
     expect(ttrCall.name).toBe('cold_ttr');
     expect(ttrCall.params.isAppLaunch).toBe(false);
     expect(ttiCall.name).toBe('tti');
@@ -356,9 +426,9 @@ describe('initListeners', () => {
     focus(events, 'a');
     await flushAsync();
 
-    expect(mockAddCustomMetric).toHaveBeenCalledTimes(2);
-    const ttrCall = mockAddCustomMetric.mock.calls.find((c) => c[0].name === 'cold_ttr')?.[0];
-    const ttiCall = mockAddCustomMetric.mock.calls.find((c) => c[0].name === 'tti')?.[0];
+    expect(mockAddMetric).toHaveBeenCalledTimes(2);
+    const ttrCall = mockAddMetric.mock.calls.find((c) => c[0].name === 'cold_ttr')?.[0];
+    const ttiCall = mockAddMetric.mock.calls.find((c) => c[0].name === 'tti')?.[0];
     expect(ttrCall.params.isAppLaunch).toBe(true);
     expect(ttiCall.value).toBe(ttrCall.value);
     expect(ttiCall.routeName).toBe('/a');
@@ -384,13 +454,13 @@ describe('initListeners', () => {
     expect(entry?.lastInteractiveCall).toBe(2100);
   });
 
-  it('uses getMainSession from AppMetrics for the metric session id', async () => {
-    mockGetMainSession.mockResolvedValueOnce({ id: 'custom-session' });
+  it('records metrics against the session returned by getMainSession', async () => {
     dispatch(events, 'NAVIGATE');
     focus(events, 'a');
     await new Promise((resolve) => setImmediate(resolve));
-    expect(mockAddCustomMetric).toHaveBeenCalledWith(
-      expect.objectContaining({ sessionId: 'custom-session' })
+    expect(mockGetMainSession).toHaveBeenCalled();
+    expect(mockAddMetric).toHaveBeenCalledWith(
+      expect.objectContaining({ name: 'cold_ttr', routeName: '/a' })
     );
   });
 });

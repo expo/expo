@@ -114,6 +114,40 @@ struct MetricParamsBuilderTests {
   }
 
   @Test
+  func `omits network request keys when summary is nil`() {
+    let params = MetricParamsBuilder.build(userParams: ["tenant": "acme"])
+    #expect(params["expo.network.requests.count"] == nil)
+    #expect(params["expo.network.requests.slowestHost"] == nil)
+  }
+
+  @Test
+  func `omits network request keys when summary is empty`() {
+    let params = MetricParamsBuilder.build(networkRequests: .empty)
+    #expect(params["expo.network.requests.count"] == nil)
+  }
+
+  @Test
+  func `emits all network request keys when summary has data`() {
+    let summary = NetworkRequestSummary(
+      count: 4,
+      failed: 1,
+      bytesReceived: 12_000,
+      bytesSent: 800,
+      totalDuration: 1.4,
+      slowestDuration: 0.6,
+      slowestHost: "api.expo.dev"
+    )
+    let params = MetricParamsBuilder.build(networkRequests: summary)
+    #expect(params["expo.network.requests.count"] as? Int == 4)
+    #expect(params["expo.network.requests.failed"] as? Int == 1)
+    #expect(params["expo.network.requests.bytesReceived"] as? Int64 == 12_000)
+    #expect(params["expo.network.requests.bytesSent"] as? Int64 == 800)
+    #expect(params["expo.network.requests.totalDuration"] as? TimeInterval == 1.4)
+    #expect(params["expo.network.requests.slowestDuration"] as? TimeInterval == 0.6)
+    #expect(params["expo.network.requests.slowestHost"] as? String == "api.expo.dev")
+  }
+
+  @Test
   func `framework-emitted device keys override user-supplied ones on collision`() {
     let deviceState = DeviceState(
       lowPowerMode: true,

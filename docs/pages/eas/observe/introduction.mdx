@@ -3,6 +3,7 @@ title: Introduction to EAS Observe
 sidebar_title: Introduction
 description: EAS Observe is a performance monitoring service that tracks how your app performs in production across real devices and conditions.
 searchRank: 10
+hasVideoLink: true
 ---
 
 import { ActivityIcon } from '@expo/styleguide-icons/outline/ActivityIcon';
@@ -12,7 +13,9 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { FAQ } from '~/ui/components/FAQ';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
+import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 > **important** **EAS Observe** is in [Open Beta](/more/release-statuses/#beta). The first 10,000 monthly active users are free. For higher usage, contact [sales@expo.dev](mailto:sales@expo.dev).
 
@@ -22,9 +25,17 @@ Debugging performance in React Native has traditionally been limited to developm
 
 <ContentSpotlight
   alt="EAS Observe showing cold launch and warm launch metrics with release markers across two weeks of app startup data."
-  src="/static/images/expo-observe/observe-light.png"
-  darkSrc="/static/images/expo-observe/observe-dark.png"
+  src="/static/images/expo-observe/observe-light.webp"
+  darkSrc="/static/images/expo-observe/observe-dark.webp"
 />
+
+<VideoBoxLink
+  videoId="5JqK9JLD140"
+  title="Watch: Introducing EAS Observe"
+  description="See how EAS Observe surfaces real-world startup and rendering performance from your production app across different devices, networks, and conditions."
+/>
+
+<br />
 
 ## Quick start
 
@@ -38,6 +49,18 @@ Debugging performance in React Native has traditionally been limited to developm
 />
 
 Wrap your root layout with the `AppMetricsRoot` component (SDK 55) or the `ObserveRoot` component (SDK 56 and later) and call `markInteractive()` when your app is ready for user input. See [Get started](/eas/observe/get-started/) for the full setup guide.
+
+### Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it how to set up `expo-observe` and query your app's performance metrics:
+
+<RelatedSkills
+  names={['eas-observe']}
+  descriptions={{
+    'eas-observe':
+      'Set up expo-observe, query metrics with the EAS CLI, and interpret startup and navigation performance data.',
+  }}
+/>
 
 ## Why EAS Observe
 
@@ -79,6 +102,12 @@ EAS Observe focuses on startup metrics: cold launch time, warm launch time, time
 <Collapsible summary="Which platforms are supported?">
 
 EAS Observe supports Android and iOS. Metrics are collected from production builds and can be filtered by platform in both the dashboard and CLI.
+
+</Collapsible>
+
+<Collapsible summary="Is EAS Observe available in Expo Go?">
+
+No. EAS Observe relies on the `expo-observe` native library, which is not included in Expo Go. To use it, create a [development build](/develop/development-builds/introduction/) or a production build.
 
 </Collapsible>
 

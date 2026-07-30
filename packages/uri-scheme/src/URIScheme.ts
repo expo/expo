@@ -9,6 +9,23 @@ import * as Ios from './Ios';
 import type { Options } from './Options';
 import { CommandError } from './Options';
 
+/**
+ * Escape special characters in URI search parameters exactly once.
+ *
+ * `URLSearchParams` already decodes percent-encoded values when iterating over
+ * them, so we re-encode each value a single time and join the params manually.
+ * Relying on `URLSearchParams.toString()` would encode the values a second time
+ * (e.g. `@` -> `%40` -> `%2540`).
+ *
+ * Decoding first makes this idempotent: passing already-escaped input back in
+ * produces the same output.
+ */
+export function escapeUriParams(uriParams: string): string {
+  return Array.from(new URLSearchParams(uriParams).entries())
+    .map(([key, value]) => `${encodeURIComponent(key)}=${encodeURIComponent(value)}`)
+    .join('&');
+}
+
 function fileExists(filePath: string): boolean {
   try {
     return statSync(filePath).isFile();

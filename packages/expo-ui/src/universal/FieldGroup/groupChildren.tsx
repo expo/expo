@@ -21,6 +21,9 @@ export function groupFieldGroupChildren(children: ReactNode): ReactNode[] {
   };
 
   Children.forEach(children, (child) => {
+    if (child == null || typeof child === 'boolean') {
+      return;
+    }
     if (isSectionElement(child)) {
       flush();
       result.push(child);

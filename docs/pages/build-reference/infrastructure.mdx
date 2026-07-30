@@ -1,5 +1,5 @@
 ---
-modificationDate: May 21st, 2026
+modificationDate: July 8th, 2026
 title: Build server infrastructure
 sidebar_title: Server infrastructure
 maxHeadingDepth: 4
@@ -20,11 +20,12 @@ Linux runners are hosted in Google Cloud Platform. macOS runners are hosted in o
 
 Images for each platform have one specific version of Node.js, Yarn, CocoaPods, Xcode, Ruby, Fastlane, and so on. You can override some of the versions in [eas.json](/build/eas-json). If there is no dedicated configuration option you are looking for, you can use [npm hooks](/build-reference/npm-hooks) to install or update any system dependencies with `apt-get` or `brew`. Consider that those customizations are applied during the build and will increase your build times.
 
-When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-56`.
+When selecting an image for the build you can use the full name provided below or one of the aliases: `auto`, `latest`, or for a particular SDK such as `sdk-57`.
 
 - The use of a specific name guarantees a consistent environment with only minor updates.
 - When using the `auto` alias, the build image will be selected based on the project configuration, Expo SDK version, and React Native version. You can check what image is used for a build in the **Spin up build environment** build logs section.
 - The `latest` alias will be assigned to the image with the most up-to-date versions of the software.
+- The `sdk-57` alias will be assigned to the image best suited for SDK 57 builds.
 - The `sdk-56` alias will be assigned to the image best suited for SDK 56 builds.
 - The `sdk-55` alias will be assigned to the image best suited for SDK 55 builds.
 - The `sdk-54` alias will be assigned to the image best suited for SDK 54 builds.
@@ -89,6 +90,23 @@ You can replace the worker default by setting `GRADLE_OPTS` under a build profil
 
 ### Android server images
 
+#### <CopyTextButton>`ubuntu-26.04-jdk-17-ndk-r27b-sdk-57` (`latest`, `sdk-57`)</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- GCE image: `ubuntu-2604-resolute-amd64-v20260624`
+- NDK 27.1.12297006
+- Node.js 22.23.1
+- Bun 1.3.14
+- Yarn 1.22.22
+- pnpm 11.9.0
+- npm 10.9.8
+- Java 17
+- node-gyp 13.0.0
+- Maestro 2.6.1
+
+</Collapsible>
+
 #### <CopyTextButton>`ubuntu-26.04-jdk-17-ndk-r27b` (`sdk-56`)</CopyTextButton>
 
 <Collapsible summary="Details">
@@ -106,7 +124,7 @@ You can replace the worker default by setting `GRADLE_OPTS` under a build profil
 
 </Collapsible>
 
-#### <CopyTextButton>`ubuntu-24.04-jdk-17-ndk-r27b-sdk-55` (`latest`, `sdk-55`)</CopyTextButton>
+#### <CopyTextButton>`ubuntu-24.04-jdk-17-ndk-r27b-sdk-55` (`sdk-55`)</CopyTextButton>
 
 <Collapsible summary="Details">
 
@@ -359,6 +377,25 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 ### iOS server images
 
+#### <CopyTextButton>`macos-tahoe-26.5-xcode-26.6` (`latest`, `sdk-57`)</CopyTextButton>
+
+<Collapsible summary="Details">
+
+- macOS Tahoe 26.5.2
+- Xcode 26.6 (17F113)
+- Node.js 22.23.1
+- Bun 1.3.14
+- Yarn 1.22.22
+- pnpm 11.9.0
+- npm 10.9.8
+- fastlane 2.236.1
+- CocoaPods 1.16.2
+- Ruby 3.2
+- node-gyp 13.0.0
+- Maestro 2.6.1
+
+</Collapsible>
+
 #### <CopyTextButton>`macos-tahoe-26.4-xcode-26.4` (`sdk-56`)</CopyTextButton>
 
 <Collapsible summary="Details">
@@ -378,7 +415,7 @@ iOS builder VMs run on Mac mini hosts in an isolated environment. Every build ge
 
 </Collapsible>
 
-#### <CopyTextButton>`macos-sequoia-15.6-xcode-26.2` (`latest`, `sdk-55`)</CopyTextButton>
+#### <CopyTextButton>`macos-sequoia-15.6-xcode-26.2` (`sdk-55`)</CopyTextButton>
 
 <Collapsible summary="Details">
 

@@ -3,20 +3,19 @@ import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 
+import {
+  type ParamListBase,
+  StackActions,
+  type StackNavigationState,
+  usePreventRemoveContext,
+} from '../../react-navigation/native';
+import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 import type {
   ExperimentalStackDescriptor,
   ExperimentalStackDescriptorMap,
   ExperimentalStackNavigationHelpers,
   ExperimentalStackNavigationOptions,
 } from './types';
-import {
-  type ParamListBase,
-  type RouteProp,
-  StackActions,
-  type StackNavigationState,
-  usePreventRemoveContext,
-} from '../../react-navigation/native';
-import { useDismissedRouteError } from '../../react-navigation/native-stack/utils/useDismissedRouteError';
 
 const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>([
   'title',
@@ -29,28 +28,18 @@ type Props = {
   state: StackNavigationState<ParamListBase>;
   navigation: ExperimentalStackNavigationHelpers;
   descriptors: ExperimentalStackDescriptorMap;
-  describe: (route: RouteProp<ParamListBase>, placeholder: boolean) => ExperimentalStackDescriptor;
 };
 
-export function ExperimentalStackView({ state, navigation, descriptors, describe }: Props) {
+export function ExperimentalStackView({ state, navigation, descriptors }: Props) {
   const { setNextDismissedKey } = useDismissedRouteError(state);
   const { preventedRoutes } = usePreventRemoveContext();
-
-  const preloadedDescriptors = state.preloadedRoutes.reduce<ExperimentalStackDescriptorMap>(
-    (acc, route) => {
-      acc[route.key] = acc[route.key] || describe(route, true);
-      return acc;
-    },
-    {}
-  );
 
   return (
     <View style={styles.container}>
       <ScreensStackV5.Host>
-        {state.routes.concat(state.preloadedRoutes).map((route) => {
-          const descriptor = (descriptors[route.key] ?? preloadedDescriptors[route.key])!;
-          const isPreloaded =
-            preloadedDescriptors[route.key] !== undefined && descriptors[route.key] === undefined;
+        {state.routes.map((route, index) => {
+          const descriptor = descriptors[route.key]!;
+          const isPreloaded = index > state.index;
           const options = (descriptor.options ?? {}) as ExperimentalStackNavigationOptions;
 
           return (

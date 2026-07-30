@@ -19,12 +19,13 @@ Observe.configure({
 });
 ```
 
-| Option               | Type      | Default                | Description                                                                                        |
-| -------------------- | --------- | ---------------------- | -------------------------------------------------------------------------------------------------- |
-| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events                                                     |
-| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server                                                     |
-| `dispatchInDebug`    | `boolean` | `false`                | Whether to dispatch metrics that were collected in a debug build. Has no effect on release builds. |
-| `sampleRate`         | `number`  | `undefined`            | Fraction of installations that dispatch metrics, in `[0, 1]`. See [Sampling](#sampling).           |
+| Option               | Type      | Default                | Description                                                                                                                                                                                                                                           |
+| -------------------- | --------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `environment`        | `string`  | `process.env.NODE_ENV` | The environment label for observability events                                                                                                                                                                                                        |
+| `dispatchingEnabled` | `boolean` | `true`                 | Whether to send collected events to the server                                                                                                                                                                                                        |
+| `dispatchInDebug`    | `boolean` | `false`                | Whether to dispatch metrics that were collected in a debug build. Has no effect on release builds.                                                                                                                                                    |
+| `sampleRate`         | `number`  | `undefined`            | Fraction of installations that dispatch metrics, in `[0, 1]`. See [Sampling](#sampling).                                                                                                                                                              |
+| `integrations`       | `object`  | `undefined`            | Opt-in settings for EAS Observe integrations. See [Expo Router](/eas/observe/integrations/expo-router/) and [React Navigation](/eas/observe/integrations/react-navigation/), or [integrate your own package](/eas/observe/integrations/third-party/). |
 
 ## `dispatchEvents()`
 
@@ -79,7 +80,9 @@ A build is treated as a debug build if either the native app is a debug build or
 
 ## Custom endpoint
 
-If you need to change the endpoint for the observability API, set the `endpointUrl` value in your **app config**:
+EAS Observe sends data using the OpenTelemetry Protocol (OTLP) over HTTP with a JSON payload. It posts metrics to `<endpointUrl>/<project-id>/v1/metrics` and logs to `<endpointUrl>/<project-id>/v1/logs`, where `<project-id>` is your EAS project ID. This means you can set `endpointUrl` to an OpenTelemetry-compatible backend or an OpenTelemetry Collector to route your observability data there.
+
+To change the endpoint, set the `endpointUrl` value in your **app config**:
 
 ```json app.json
 {
@@ -96,6 +99,8 @@ If you need to change the endpoint for the observability API, set the `endpointU
 ```
 
 The endpoint URL is baked into the native layer of the app at build time, so changing it requires regenerating native code. After updating your app config, run `npx expo prebuild` and create a new build to apply the change.
+
+The path includes your project ID before the standard `/v1/metrics` and `/v1/logs` OTLP paths. If your backend expects the standard OTLP path without that prefix, send the data to an OpenTelemetry Collector that receives it and re-exports it to your backend.
 
 ## Environments
 

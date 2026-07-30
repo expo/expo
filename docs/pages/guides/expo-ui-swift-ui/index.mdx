@@ -13,6 +13,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 import { FAQ } from '~/ui/components/FAQ';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 import { CODE } from '~/ui/components/Text';
@@ -42,9 +43,15 @@ You'll need to install the `@expo/ui` package in your Expo project. Run the foll
 
 <Terminal cmd={['$ npx expo install @expo/ui']} />
 
+## Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) to teach it how to build native-feeling screens:
+
+<RelatedSkills names={['expo-ui', 'expo-native-ui']} />
+
 ## Usage
 
-Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`Host`](/versions/latest/sdk/ui/#host) component. The [`Host`](/versions/latest/sdk/ui/#host) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
+Expo UI has several SwiftUI components available. You can use them in your app by importing them from `@expo/ui/swift-ui`. However, to cross the boundary from React Native (UIKit) to SwiftUI, you need to use the [`Host`](/versions/latest/sdk/ui/swift-ui/host/) component. The [`Host`](/versions/latest/sdk/ui/swift-ui/host/) is the container for SwiftUI views. You can think of it like [`<svg>`](https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/svg) in the DOM or [`<Canvas>`](https://shopify.github.io/react-native-skia/docs/canvas/overview/) in [`react-native-skia`](https://shopify.github.io/react-native-skia/). Under the hood, it uses [`UIHostingController`](https://developer.apple.com/documentation/swiftui/uihostingcontroller) to render SwiftUI views in UIKit.
 
 ### Basic usage with `Host`
 
@@ -70,7 +77,7 @@ Expo UI has several SwiftUI components available. You can use them in your app b
   <Tab label="Preview">
     <ContentSpotlight
       alt="Loading view"
-      src="/static/images/expo-ui/swift-ui-guide/loading.png"
+      src="/static/images/expo-ui/swift-ui-guide/loading.webp"
       className="max-w-[480px]"
     />
   </Tab>
@@ -106,7 +113,7 @@ You can also use the `HStack` and `VStack` components to build the entire layout
   <Tab label="Preview">
     <ContentSpotlight
       alt="HStack and VStack"
-      src="/static/images/expo-ui/swift-ui-guide/hstack-vstack.png"
+      src="/static/images/expo-ui/swift-ui-guide/hstack-vstack.webp"
       className="max-w-[480px]"
     />
   </Tab>
@@ -172,7 +179,7 @@ You can also use the `HStack` and `VStack` components to build the entire layout
   <Tab label="Preview">
     <ContentSpotlight
       alt="Liquid Glass effect"
-      src="/static/images/expo-ui/swift-ui-guide/glass-effect.png"
+      src="/static/images/expo-ui/swift-ui-guide/glass-effect.webp"
       className="max-w-[240px]"
     />
   </Tab>
@@ -256,7 +263,7 @@ Combining the Expo UI components and modifiers, you can build a UI like iOS Sett
   <Tab label="Preview">
     <ContentSpotlight
       alt="Form example to build iOS Settings app"
-      src="/static/images/expo-ui/swift-ui-guide/form.png"
+      src="/static/images/expo-ui/swift-ui-guide/form.webp"
       className="max-w-[480px]"
     />
   </Tab>
@@ -310,7 +317,7 @@ Use `foregroundStyle` to apply a [hierarchical style](/versions/latest/sdk/ui/sw
   <Tab label="Preview">
     <ContentSpotlight
       alt="Secondary text styling"
-      src="/static/images/expo-ui/swift-ui-guide/secondary-text.png"
+      src="/static/images/expo-ui/swift-ui-guide/secondary-text.webp"
       className="max-w-[480px]"
     />
   </Tab>
@@ -380,7 +387,7 @@ A common pattern for brightness or volume controls is to flank a `Slider` with i
   <Tab label="Preview">
     <ContentSpotlight
       alt="Slider with icons"
-      src="/static/images/expo-ui/swift-ui-guide/slider-with-icons.png"
+      src="/static/images/expo-ui/swift-ui-guide/slider-with-icons.webp"
       className="max-w-[480px]"
     />
   </Tab>
@@ -454,7 +461,7 @@ Use `VStack` with `alignment="leading"` for list items with title and subtitle.
   <Tab label="Preview">
     <ContentSpotlight
       alt="Multi-line list item"
-      src="/static/images/expo-ui/swift-ui-guide/multi-line-list-item.png"
+      src="/static/images/expo-ui/swift-ui-guide/multi-line-list-item.webp"
       className="max-w-[480px]"
     />
   </Tab>

@@ -1,7 +1,7 @@
 import { Children, use, type ReactNode } from 'react';
 
-import { ZoomTransitionTargetContext } from './zoom-transition-context';
 import { LinkZoomTransitionAlignmentRectDetector } from '../preview/native';
+import { ZoomTransitionTargetContext } from './zoom-transition-context';
 
 /**
  * Defines the target for an Apple zoom transition.

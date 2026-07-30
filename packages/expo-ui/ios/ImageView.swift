@@ -7,8 +7,6 @@ public final class ImageViewProps: UIBaseViewProps {
   @Field var uiImage: String?
   @Field var systemName: String?
   @Field var assetName: String?
-  @Field var size: Double?
-  @Field var color: Color?
   @Field var variableValue: Double?
   @Field var useTapGesture: Bool?
   var onTap = EventDispatcher()
@@ -41,8 +39,7 @@ public struct ImageView: ExpoSwiftUI.View {
   public var body: some View {
     if let symbolImage {
       symbolImage
-        .font(.system(size: CGFloat(props.size ?? 24)))
-        .foregroundColor(props.color)
+        .applyImageModifiers(props.modifiers, appContext: props.appContext)
         .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
     } else if let url = props.uiImage,
               let url = URL(string: url),
@@ -50,7 +47,6 @@ public struct ImageView: ExpoSwiftUI.View {
               let uiImage = UIImage(data: data) {
       Image(uiImage: uiImage)
         .applyImageModifiers(props.modifiers, appContext: props.appContext)
-        .foregroundColor(props.color)
         .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
     }
   }

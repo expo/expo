@@ -10,12 +10,13 @@ import {
   clip,
   dropShadow,
   innerShadow,
+  onGloballyPositioned,
   Shapes,
 } from '@expo/ui/jetpack-compose/modifiers';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import * as React from 'react';
 import { useState } from 'react';
-import { ScrollView, Button, StyleSheet, View, TextInput } from 'react-native';
+import { ScrollView, Button, StyleSheet, View, TextInput, Text as RNText } from 'react-native';
 
 import { Section } from '../../components/Page';
 
@@ -27,6 +28,7 @@ export default function ModifiersScreen() {
   return (
     <>
       <ScrollView style={{ flex: 1 }} contentContainerStyle={{ padding: 16 }}>
+        <GloballyPositionedSection />
         <Section title="imePadding">
           <Button
             title={showImePadding ? 'Hide' : 'Show'}
@@ -154,6 +156,31 @@ export default function ModifiersScreen() {
         </View>
       )}
     </>
+  );
+}
+
+function GloballyPositionedSection() {
+  const [layout, setLayout] = useState({ x: 0, y: 0, width: 0, height: 0 });
+  return (
+    <Section title="onGloballyPositioned">
+      <Host style={{ height: 120 }}>
+        <Box contentAlignment="center" modifiers={[fillMaxSize()]}>
+          <Box
+            modifiers={[
+              size(120, 64),
+              background('#6200EE'),
+              clip(Shapes.RoundedCorner(12)),
+              onGloballyPositioned(setLayout),
+            ]}
+          />
+        </Box>
+      </Host>
+      <RNText style={{ marginTop: 8, fontVariant: ['tabular-nums'] }}>
+        {`window x: ${layout.x.toFixed(0)}  y: ${layout.y.toFixed(0)}  •  size ${layout.width.toFixed(
+          0
+        )} × ${layout.height.toFixed(0)} (dp)`}
+      </RNText>
+    </Section>
   );
 }
 

@@ -6,7 +6,7 @@ import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type LabelProps = {
+export interface LabelProps extends CommonViewModifierProps {
   /**
    * The title text to be displayed in the label.
    */
@@ -34,7 +34,7 @@ export type LabelProps = {
    * @deprecated Use `foregroundStyle` modifier instead.
    */
   color?: ColorValue;
-} & CommonViewModifierProps;
+}
 
 const LabelNativeView: React.ComponentType<LabelProps & { children?: React.ReactNode }> =
   requireNativeView('ExpoUI', 'LabelView');

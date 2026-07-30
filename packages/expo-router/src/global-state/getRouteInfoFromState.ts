@@ -1,7 +1,8 @@
-import type { FocusedRouteState } from './types';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import type { NavigationState, PartialState } from '../react-navigation/native';
+import { safeDecodeURIComponent } from '../utils/url';
+import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
   unstable_globalHref: string;
@@ -99,7 +100,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
 
   /**
    * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
-   * then the state maybe incomplete. The reset of the path is in the params, instead of being a route
+   * then the state may be incomplete. The rest of the path is in the params, instead of being a route
    */
   let routeParams: StrictFocusedRouteParams | undefined = route.params;
   while (routeParams && 'screen' in routeParams) {
@@ -212,13 +213,4 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     // TODO: Remove this, it is not used anywhere
     isIndex: false,
   };
-}
-
-function safeDecodeURIComponent(value: any) {
-  try {
-    return typeof value === 'string' ? decodeURIComponent(value) : value;
-  } catch {
-    // If the value is not a valid URI component, return it as is
-    return value;
-  }
 }

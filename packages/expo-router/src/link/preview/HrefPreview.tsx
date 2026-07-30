@@ -3,7 +3,6 @@
 import { useMemo } from 'react';
 import { Text, View } from 'react-native';
 
-import { PreviewRouteContext } from './PreviewRouteContext';
 import type { RouteNode } from '../../Route';
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../../constants';
 import type { ResultState } from '../../exports';
@@ -20,6 +19,7 @@ import type { Href, UnknownOutputParams } from '../../types';
 import { useNavigation } from '../../useNavigation';
 import { getQualifiedRouteComponent } from '../../useScreens';
 import { getPathFromState } from '../linking';
+import { PreviewRouteContext } from './PreviewRouteContext';
 
 export function HrefPreview({ href }: { href: Href }) {
   const hrefState = useMemo(() => getHrefState(href), [href]);
@@ -144,7 +144,7 @@ function getParamsAndNodeFromHref(hrefState: ResultState) {
 
   while (state && routeNode) {
     // TODO(@kitten): This looks wrong as it's defaulting `index === 0`
-    const route = state.routes[state.index || state.routes.length - 1]!;
+    const route = state.routes[state.index ?? state.routes.length - 1]!;
     Object.assign(params, route.params);
     state = route.state;
     routeNode = routeNode.children.find((child) => child.route === route.name);

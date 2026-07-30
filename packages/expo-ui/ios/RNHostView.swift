@@ -8,8 +8,11 @@ internal final class RNHostViewProps: ExpoSwiftUI.ViewProps {
 }
 
 struct RNHostView: ExpoSwiftUI.View {
-  
+
   @ObservedObject var props: RNHostViewProps
+  // Owns the RCTSurfaceTouchHandler we attach to the hosted RN view so it is detached again when
+  // this host disappears.
+  @StateObject private var touchHandler = RNHostTouchHandler()
 
   var body: some View {
     if props.matchContents, let childUIView = firstChildUIView {
@@ -17,22 +20,61 @@ struct RNHostView: ExpoSwiftUI.View {
         Children()
       }
       .onAppear {
-        ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: childUIView)
+        touchHandler.attach(to: childUIView)
       }
+      .onDisappear {
+        touchHandler.detach()
+      }
+    } else if props.matchContents {
+      // No hosted UIView (a pure SwiftUI child, e.g. Text/Image). Render it at its
+      // natural size instead of falling into the fill branch below, which would
+      // stretch a self-sizing SwiftUI view to fill its container.
+      Children()
     } else {
       Children()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .modifier(ReportSizeToYogaNodeModifier(shadowNodeProxy: props.shadowNodeProxy))
         .onAppear {
           if let view = firstChildUIView {
-            ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: view)
+            touchHandler.attach(to: view)
           }
+        }
+        .onDisappear {
+          touchHandler.detach()
         }
     }
   }
 
   private var firstChildUIView: UIView? {
     props.children?.first?.uiView
+  }
+}
+
+// Tracks the `RCTSurfaceTouchHandler` attached to a hosted RN view so it can be detached when the
+// `RNHostView` disappears, instead of leaking onto the recycled component view.
+private final class RNHostTouchHandler: ObservableObject {
+  private weak var touchHandler: UIGestureRecognizer?
+  private weak var attachedView: UIView?
+
+  func attach(to view: UIView) {
+    if attachedView === view, touchHandler != nil {
+      return
+    }
+    detach()
+    touchHandler = ExpoUITouchHandlerHelper.createAndAttachTouchHandler(for: view)
+    attachedView = view
+  }
+
+  func detach() {
+    if let touchHandler, let attachedView {
+      ExpoUITouchHandlerHelper.detachTouchHandler(touchHandler, from: attachedView)
+    }
+    touchHandler = nil
+    attachedView = nil
+  }
+
+  deinit {
+    detach()
   }
 }
 

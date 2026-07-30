@@ -4,9 +4,9 @@ import spawnAsync from '@expo/spawn-async';
 import npmPackageArg from 'npm-package-arg';
 import path from 'path';
 
-import { BasePackageManager } from './BasePackageManager';
 import { resolveWorkspaceRoot, NPM_LOCK_FILE } from '../utils/nodeManagers';
 import { createPendingSpawnAsync } from '../utils/spawn';
+import { BasePackageManager } from './BasePackageManager';
 
 export class NpmPackageManager extends BasePackageManager {
   readonly name = 'npm';
@@ -147,7 +147,7 @@ export class NpmPackageManager extends BasePackageManager {
 
   /**
    * Older npm versions have issues with mismatched nested dependencies when adding exact versions.
-   * This propagates as issues like mismatched `@expo/config-pugins` versions.
+   * This propagates as issues like mismatched `@expo/config-plugins` versions.
    * As a workaround, we update the `package.json` directly and run `npm install`.
    */
   private async updatePackageFileAsync(

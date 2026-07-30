@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
+import { Color } from '../../../../utils/color';
 import useLatestCallback from '../../../../utils/useLatestCallback';
 import type { LocaleDirection } from '../../../native';
 import type {
@@ -30,7 +31,6 @@ import {
   type PanGestureHandlerGestureEvent,
 } from '../GestureHandler';
 import { CardContent } from './CardContent';
-import { Color } from '../../../../utils/color';
 
 type Props = {
   animated: boolean;
@@ -366,7 +366,7 @@ function Card({
     if (!didInitiallyAnimate.current) {
       // Animate the card in on initial mount
       // Wrap in setTimeout to ensure animation starts after
-      // rending of the screen is done. This is especially important
+      // rendering of the screen is done. This is especially important
       // in the new architecture
       // cf., https://github.com/react-navigation/react-navigation/issues/12401
       clearTimeout(timeoutRef.current);

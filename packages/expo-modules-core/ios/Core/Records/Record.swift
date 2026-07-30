@@ -4,7 +4,7 @@ import ExpoModulesJSI
  A protocol that allows initializing the object with a dictionary.
  For supported field types, see https://docs.expo.dev/modules/module-api/#argument-types
  */
-public protocol Record: Convertible {
+public protocol Record: Convertible, JavaScriptDecodable, JavaScriptEncodable {
   /**
    The dictionary type that the record can be created from or converted back.
    */

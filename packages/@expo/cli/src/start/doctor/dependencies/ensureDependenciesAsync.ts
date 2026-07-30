@@ -3,14 +3,14 @@ import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 import wrapAnsi from 'wrap-ansi';
 
-import type { ResolvedPackage } from './getMissingPackages';
-import { getMissingPackagesAsync } from './getMissingPackages';
 import { installAsync } from '../../../install/installAsync';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { isInteractive } from '../../../utils/interactive';
 import { logNewSection } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
+import type { ResolvedPackage } from './getMissingPackages';
+import { getMissingPackagesAsync } from './getMissingPackages';
 
 export type EnsureDependenciesOptions = {
   /** The packages and/or version ranges that should be enforced in the project */

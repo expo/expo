@@ -1,19 +1,18 @@
-import type { NavigationRoute, NavigationState, ParamListBase } from '@react-navigation/native';
-
 import { getPathname } from '../getPathname';
+import type { NavigationRouteLike, NavigationStateLike } from '../types';
 
 type RouteSpec = {
   name: string;
   params?: object;
-  state?: NavigationState;
+  state?: NavigationStateLike;
 };
 
 function state(
   type: 'stack' | 'tab',
   routes: RouteSpec[],
   index = routes.length - 1
-): NavigationState {
-  const navRoutes: NavigationRoute<ParamListBase, string>[] = routes.map((route, i) => ({
+): NavigationStateLike {
+  const navRoutes: NavigationRouteLike[] = routes.map((route, i) => ({
     key: `${route.name}-${i}`,
     name: route.name,
     params: route.params,
@@ -26,7 +25,7 @@ function state(
     routeNames: routes.map((route) => route.name),
     stale: false,
     routes: navRoutes,
-  };
+  } as NavigationStateLike;
 }
 
 describe('getPathname', () => {
@@ -103,7 +102,7 @@ describe('getPathname', () => {
           state: { routes: [{ key: 'Details-0', name: 'Details' }] },
         },
       ],
-    } as unknown as NavigationState;
+    } as unknown as NavigationStateLike;
     expect(getPathname(subtree)).toBe('/Group/Details');
   });
 });

@@ -4,6 +4,7 @@
   "description": "Shared ESLint configs for internal Expo projects.",
   "main": "default.js",
   "scripts": {
+    "depscheck": "expo-module depscheck",
     "lint": "eslint .",
     "test": "jest"
   },

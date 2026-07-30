@@ -1,9 +1,6 @@
 #pragma once
 
 #include "../ExpoHeader.pch"
-
-#if WORKLETS_ENABLED
-
 #include "WorkletNativeRuntime.h"
 #include "Serializable.h"
 
@@ -47,5 +44,3 @@ public:
 };
 
 } // namespace expo
-
-#endif

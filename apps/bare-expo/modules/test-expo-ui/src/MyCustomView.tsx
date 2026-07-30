@@ -4,6 +4,7 @@ import { requireNativeView } from 'expo';
 
 export interface MyCustomViewProps extends CommonViewModifierProps {
   title: string;
+  onCustomTap?: () => void;
   children?: React.ReactNode;
 }
 

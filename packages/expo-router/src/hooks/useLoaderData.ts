@@ -1,13 +1,13 @@
 'use client';
 
 import type { LoaderFunction } from 'expo-server';
-import { use, useMemo, useSyncExternalStore } from 'react';
+import { use, useEffect, useMemo, useSyncExternalStore } from 'react';
 
 import { useContextKey } from '../Route';
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { LoaderCacheContext } from '../loaders/LoaderCache';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
-import { getLoaderData } from '../loaders/getLoaderData';
+import { readLoaderData } from '../loaders/readLoaderData';
 import { fetchLoader } from '../loaders/utils';
 import { useStateForPath } from '../react-navigation/native';
 import { getSingularId } from '../useScreens';
@@ -55,6 +55,11 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
     return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
   }, [contextKey, stateForPath]);
 
+  useEffect(() => {
+    loaderCache.suspense.retain(resolvedPath);
+    return () => loaderCache.suspense.release(resolvedPath);
+  }, [loaderCache, resolvedPath]);
+
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {
     return serverDataLoaderContext[resolvedPath];
@@ -68,15 +73,6 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
     }
   }
 
-  const result = getLoaderData<LoaderFunctionResult<T>>({
-    resolvedPath,
-    cache: loaderCache,
-    fetcher: fetchLoader,
-  });
-
-  if (result instanceof Promise) {
-    return use(result);
-  }
-
-  return result;
+  const result = readLoaderData<LoaderFunctionResult<T>>(loaderCache, resolvedPath, fetchLoader);
+  return result instanceof Promise ? use(result) : result;
 }

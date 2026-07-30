@@ -19,6 +19,7 @@ import {
 } from '@expo/ui/swift-ui/modifiers';
 
 import type { UniversalTextStyle } from './Text/types';
+import { omitUserOverridden } from './modifierUtils';
 import type { UniversalBaseProps, UniversalStyle } from './types';
 
 const FONT_WEIGHT_MAP: Record<string, Parameters<typeof font>[0]['weight']> = {
@@ -43,6 +44,9 @@ const FONT_WEIGHT_MAP: Record<string, Parameters<typeof font>[0]['weight']> = {
  * To match React Native's box model (background fills the full box):
  *   padding → sizing → background → clip → border → opacity
  *   → events → lifecycle → behavior → user escape-hatch
+ *
+ * Style-derived modifiers yield to user-supplied modifiers of the same
+ * `$type`, so the escape hatch can override anything derived from props.
  */
 export function transformToModifiers(
   style: UniversalStyle | undefined,
@@ -58,7 +62,7 @@ export function transformToModifiers(
     textStyle?: UniversalTextStyle;
   }
 ): ModifierConfig[] {
-  const mods: ModifierConfig[] = [];
+  let mods: ModifierConfig[] = [];
 
   // Text styling (innermost — applies to text content before container modifiers)
   const textStyle = options?.textStyle;
@@ -145,6 +149,10 @@ export function transformToModifiers(
       mods.push(opacity(style.opacity as number));
     }
   }
+
+  // A user-supplied modifier replaces any style-derived modifier of the same
+  // type. The event, lifecycle, and behavior modifiers below are never dropped.
+  mods = omitUserOverridden(mods, extraModifiers);
 
   // Events
   if (props.onPress) mods.push(onTapGesture(props.onPress));

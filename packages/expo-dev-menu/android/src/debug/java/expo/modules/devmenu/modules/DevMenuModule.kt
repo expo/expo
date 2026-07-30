@@ -64,5 +64,9 @@ class DevMenuModule : Module() {
         }
       )
     }
+
+    AsyncFunction("setAvailableAppKeys") { keys: List<String> ->
+      viewModel.updateAvailableAppKeys(keys)
+    }
   }
 }

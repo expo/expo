@@ -1,17 +1,24 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 export {};
 
-const mockNative = {
+const mockNativeTarget = {
   configure: jest.fn(),
   setBundleDefaults: jest.fn(),
   dispatchEvents: jest.fn(() => Promise.resolve()),
 };
+// The real native module is a JSI host object.
+// Mirror that here so the AppMetrics-fallback tests exercise the actual on-device bug — a fallback
+// gated on `in`/`hasOwnProperty` would wrongly treat every prop as native and never forward.
+const mockNative = new Proxy(mockNativeTarget, {
+  has: () => true,
+});
 
 const mockAppMetrics = {
   logEvent: jest.fn(),
   markFirstRender: jest.fn(),
   markInteractive: jest.fn(),
   setGlobalAttributes: jest.fn(),
+  reportError: jest.fn(),
 };
 
 jest.mock('expo', () => ({
@@ -31,6 +38,7 @@ jest.mock('../integrations/expo-router/router', () => ({
 jest.mock('../integrations/expo-router/init', () => ({
   initRouterIntegration: jest.fn(),
   isInitialized: jest.fn(() => false),
+  getRouterIntegrationConfig: jest.fn(() => undefined),
   initListeners: jest.fn(() => () => {}),
 }));
 
@@ -42,6 +50,7 @@ jest.mock('../integrations/react-navigation/reactNavigation', () => ({
 jest.mock('../integrations/react-navigation/init', () => ({
   initReactNavigationIntegration: jest.fn(),
   isInitialized: jest.fn(() => false),
+  getReactNavigationIntegrationConfig: jest.fn(() => undefined),
 }));
 
 let warnSpy: jest.SpyInstance;
@@ -59,6 +68,7 @@ beforeEach(() => {
   jest.doMock('../integrations/expo-router/init', () => ({
     initRouterIntegration: jest.fn(),
     isInitialized: jest.fn(() => false),
+    getRouterIntegrationConfig: jest.fn(() => undefined),
     initListeners: jest.fn(() => () => {}),
   }));
   jest.doMock('../integrations/react-navigation/reactNavigation', () => ({
@@ -68,6 +78,7 @@ beforeEach(() => {
   jest.doMock('../integrations/react-navigation/init', () => ({
     initReactNavigationIntegration: jest.fn(),
     isInitialized: jest.fn(() => false),
+    getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   }));
 });
 
@@ -100,6 +111,31 @@ describe('module Proxy', () => {
     }
   );
 
+  it('forwards object integration config to native unchanged', () => {
+    const Observe = loadModule();
+    const { initRouterIntegration } = loadInit();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    const routerConfig = { filteredParams: ['userId', 'token'] };
+    const reactNavigationConfig = { filteredParams: ['userIdRN', 'Rtoken'] };
+    Observe.configure({
+      environment: 'test',
+      integrations: {
+        'expo-router': routerConfig,
+        'react-navigation': reactNavigationConfig,
+      },
+    });
+
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      integrations: {
+        'expo-router': routerConfig,
+        'react-navigation': reactNavigationConfig,
+      },
+    });
+    expect(initRouterIntegration).toHaveBeenCalledWith(routerConfig);
+    expect(initReactNavigationIntegration).not.toHaveBeenCalled();
+  });
+
   it("calls initRouterIntegration when router is installed and integrations['expo-router'] is true", () => {
     const Observe = loadModule();
     const { initRouterIntegration } = loadInit();
@@ -108,6 +144,7 @@ describe('module Proxy', () => {
       integrations: { 'expo-router': true },
     });
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
+    expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
@@ -221,6 +258,20 @@ describe('module Proxy', () => {
       integrations: { 'react-navigation': true },
     });
     expect(initReactNavigationIntegration).toHaveBeenCalledTimes(1);
+    expect(initReactNavigationIntegration).toHaveBeenCalledWith(true);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it("passes integrations['react-navigation'] object config to initReactNavigationIntegration", () => {
+    const Observe = loadModule();
+    const { initReactNavigationIntegration } = loadReactNavigationInit();
+    const config = { filteredParams: ['userId', 'token'] };
+    Observe.configure({
+      environment: 'test',
+      integrations: { 'react-navigation': config },
+    });
+    expect(initReactNavigationIntegration).toHaveBeenCalledTimes(1);
+    expect(initReactNavigationIntegration).toHaveBeenCalledWith(config);
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
@@ -320,5 +371,86 @@ describe('module Proxy', () => {
     Observe.setGlobalAttributes({ tier: 'pro' });
     expect(mockAppMetrics.setGlobalAttributes).toHaveBeenCalledWith({ tier: 'pro' });
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('reports a caught Error as a non-fatal reportedByUser-source error', () => {
+    const Observe = loadModule();
+    const error = new Error('boom');
+    Observe.reportError(error);
+    expect(mockAppMetrics.reportError).toHaveBeenCalledWith({
+      source: 'reportedByUser',
+      type: 'Error',
+      message: 'boom',
+      stacktrace: error.stack,
+      isFatal: false,
+    });
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('normalizes a non-Error thrown value with String() and no type or stacktrace', () => {
+    const Observe = loadModule();
+    Observe.reportError('just a string');
+    expect(mockAppMetrics.reportError).toHaveBeenCalledWith({
+      source: 'reportedByUser',
+      message: 'just a string',
+      isFatal: false,
+    });
+  });
+
+  it('stringifies a plain object with Error-like keys instead of forwarding non-string fields', () => {
+    const Observe = loadModule();
+    // A plain object whose `message`/`name` are non-strings must not be forwarded into the native
+    // string fields (which would fail the record decode and drop the report).
+    Observe.reportError({ message: 404, name: 500, stack: {} });
+    expect(mockAppMetrics.reportError).toHaveBeenCalledWith({
+      source: 'reportedByUser',
+      message: '[object Object]',
+      isFatal: false,
+    });
+  });
+
+  it('falls back to String() when an Error carries a non-string message', () => {
+    const Observe = loadModule();
+    const error = new Error('real');
+    // A caller can mutate an Error's fields to non-strings; those must not reach native as-is.
+    (error as { message: unknown }).message = 404;
+    Observe.reportError(error);
+    const [[payload]] = mockAppMetrics.reportError.mock.calls;
+    expect(typeof payload.message).toBe('string');
+    expect(payload.source).toBe('reportedByUser');
+    expect(payload.isFatal).toBe(false);
+  });
+
+  it('never throws when reading the thrown value throws (a getter that throws)', () => {
+    const Observe = loadModule();
+    const error = new Error('outer');
+    Object.defineProperty(error, 'message', {
+      get() {
+        throw new Error('getter blew up');
+      },
+    });
+    // reportError is called from a catch block, so it must never throw back into the caller.
+    expect(() => Observe.reportError(error)).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('never throws when String() on the thrown value throws (a throwing toString)', () => {
+    const Observe = loadModule();
+    const hostile = {
+      toString() {
+        throw new Error('toString blew up');
+      },
+    };
+    expect(() => Observe.reportError(hostile)).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
+  });
+
+  it('never throws when the native reportError call throws', () => {
+    const Observe = loadModule();
+    mockAppMetrics.reportError.mockImplementationOnce(() => {
+      throw new Error('native rejected the payload');
+    });
+    expect(() => Observe.reportError(new Error('boom'))).not.toThrow();
+    expect(warnSpy).toHaveBeenCalled();
   });
 });

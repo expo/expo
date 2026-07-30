@@ -1,28 +1,31 @@
+import type { ExpoConfig, ProjectConfig } from '@expo/config';
 import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
-import type { ExpoConfig, ProjectConfig } from 'expo/config';
 import type { Props as SplashProps } from 'expo-splash-screen/plugin';
 import path from 'path';
 import semver from 'semver';
 
+import type { LoadedModuleSource } from '../ExpoConfigLoader';
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
+import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
+import { getNodeModulesPackageJsonPath, toPosixPath } from '../utils/Path';
 import { SourceSkips } from './SourceSkips';
 import {
+  createAutolinkingHashSourceAsync,
   getFileBasedHashSourceAsync,
   maybeGetRealPathAsync,
+  readPackageIdentityAsync,
   relativizeJsonPaths,
   stringifyJsonSorted,
 } from './Utils';
-import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
-import { toPosixPath } from '../utils/Path';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 
 export async function getExpoConfigSourcesAsync(
   projectRoot: string,
   config: ProjectConfig | null,
-  loadedModules: string[] | null,
+  loadedModules: LoadedModuleSource[] | null,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
   if (options.sourceSkips & SourceSkips.ExpoConfigAll) {
@@ -111,11 +114,35 @@ export async function getExpoConfigSourcesAsync(
   });
 
   // config plugins
-  const configPluginModules: HashSource[] = (loadedModules ?? []).map((modulePath) => ({
-    type: 'file',
-    filePath: toPosixPath(modulePath),
-    reasons: ['expoConfigPlugins'],
-  }));
+  // With `configPluginSourceType: 'package'`, node_modules plugin files collapse to their package
+  // name+version; in-repo files and virtual modules are hashed directly.
+  const configPluginModules: HashSource[] = await Promise.all(
+    (loadedModules ?? []).map(async (loadedModule): Promise<HashSource> => {
+      if (loadedModule.type === 'contents') {
+        return {
+          type: 'contents',
+          id: loadedModule.id,
+          contents: loadedModule.contents,
+          reasons: ['expoConfigPlugins'],
+        };
+      }
+      if (options.configPluginSourceType === 'package') {
+        const packageJsonPath = getNodeModulesPackageJsonPath(loadedModule.path);
+        if (packageJsonPath) {
+          const identity = await readPackageIdentityAsync(path.join(projectRoot, packageJsonPath));
+          if (identity) {
+            return {
+              type: 'package',
+              ...identity,
+              filePath: packageJsonPath,
+              reasons: ['expoConfigPlugins'],
+            };
+          }
+        }
+      }
+      return { type: 'file', filePath: loadedModule.path, reasons: ['expoConfigPlugins'] };
+    })
+  );
   results.push(...configPluginModules);
 
   return results;
@@ -135,7 +162,9 @@ function normalizeExpoConfig(
   if (sourceSkips & SourceSkips.ExpoConfigVersions) {
     delete normalizedConfig.version;
     delete normalizedConfig.android?.versionCode;
+    delete normalizedConfig.android?.version;
     delete normalizedConfig.ios?.buildNumber;
+    delete normalizedConfig.ios?.version;
   }
 
   if (sourceSkips & SourceSkips.ExpoConfigRuntimeVersionIfString) {
@@ -297,7 +326,14 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
         const filePath = toPosixPath(path.relative(realProjectRoot, project.sourceDir));
         project.sourceDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
-        results.push({ type: 'dir', filePath, reasons });
+        results.push(
+          await createAutolinkingHashSourceAsync(
+            realProjectRoot,
+            filePath,
+            reasons,
+            options.nativeModuleSourceType
+          )
+        );
         // `aarProjects` is present in project starting from SDK 53+.
         if (project.aarProjects) {
           for (const aarProject of project.aarProjects) {
@@ -322,7 +358,14 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
           const filePath = toPosixPath(path.relative(realProjectRoot, plugin.sourceDir));
           plugin.sourceDir = filePath; // use relative path for the dir
           debug(`Adding expo-modules-autolinking android dir - ${chalk.dim(filePath)}`);
-          results.push({ type: 'dir', filePath, reasons });
+          results.push(
+            await createAutolinkingHashSourceAsync(
+              realProjectRoot,
+              filePath,
+              reasons,
+              options.nativeModuleSourceType
+            )
+          );
         }
       }
       // Backward compatibility for SDK versions earlier than 53
@@ -391,7 +434,14 @@ export async function getExpoAutolinkingIosSourcesAsync(
         const filePath = toPosixPath(path.relative(realProjectRoot, pod.podspecDir));
         pod.podspecDir = filePath; // use relative path for the dir
         debug(`Adding expo-modules-autolinking ios dir - ${chalk.dim(filePath)}`);
-        results.push({ type: 'dir', filePath, reasons });
+        results.push(
+          await createAutolinkingHashSourceAsync(
+            realProjectRoot,
+            filePath,
+            reasons,
+            options.nativeModuleSourceType
+          )
+        );
       }
     }
     results.push({

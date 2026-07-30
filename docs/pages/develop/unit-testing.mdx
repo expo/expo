@@ -133,7 +133,22 @@ You can transpile node modules your project uses by configuring [`transformIgnor
   "preset": "jest-expo",
   /* @info */
   "transformIgnorePatterns": [
-    "node_modules/(?!(?:.pnpm/)?((jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
+    "node_modules/(?!(.pnpm|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
+  ]
+  /* @end */
+}
+```
+
+</Tab>
+
+<Tab label="Bun">
+
+```json package.json
+"jest": {
+  "preset": "jest-expo",
+  /* @info */
+  "transformIgnorePatterns": [
+    "node_modules/(?!(.bun|(jest-)?react-native|@react-native(-community)?|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|@sentry/react-native|native-base|react-native-svg))"
   ]
   /* @end */
 }
@@ -235,8 +250,8 @@ import { render } from '@testing-library/react-native';
 import HomeScreen, { CustomText } from '@/app/index';
 
 describe('<HomeScreen />', () => {
-  test('Text renders correctly on HomeScreen', () => {
-    const { getByText } = render(<HomeScreen />);
+  test('Text renders correctly on HomeScreen', async () => {
+    const { getByText } = await render(<HomeScreen />);
 
     getByText('Welcome!');
   });
@@ -303,8 +318,8 @@ To add a snapshot test for `<HomeScreen />`, add the following code snippet in t
 describe('<HomeScreen />', () => {
   /* @hide ... */ /* @end */
 
-  test('CustomText renders correctly', () => {
-    const tree = render(<CustomText>Some text</CustomText>).toJSON();
+  test('CustomText renders correctly', async () => {
+    const tree = (await render(<CustomText>Some text</CustomText>)).toJSON();
 
     expect(tree).toMatchSnapshot();
   });

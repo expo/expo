@@ -45,6 +45,11 @@ public:
   std::shared_ptr<jsi::Object> get() override;
 
   /**
+   * @return the `jsi::Runtime` this object is bound to.
+   */
+  jsi::Runtime &getRuntime();
+
+  /**
    * @return a bool whether the object has a property with the given name
    */
   bool hasProperty(const std::string &name);

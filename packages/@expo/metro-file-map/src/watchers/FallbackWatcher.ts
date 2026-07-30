@@ -16,9 +16,9 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import type { ChangeEventMetadata } from '../types';
 import { AbstractWatcher, type WatcherBackendChangeEventWithoutRoot } from './AbstractWatcher';
 import * as common from './common';
-import type { ChangeEventMetadata } from '../types';
 
 // NOTE(@kitten): No typings
 const walker = require('walker');
@@ -270,7 +270,7 @@ export default class FallbackWatcher extends AbstractWatcher {
     try {
       const stat = await fsPromises.lstat(fullPath);
       if (stat.isDirectory()) {
-        // win32 emits usless change events on dirs.
+        // win32 emits useless change events on dirs.
         if (event === 'change') {
           return;
         }

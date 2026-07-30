@@ -22,12 +22,9 @@ Add `expo` to the plugins section of your `.eslintrc` configuration file. You ca
 
 ```json
 {
-  "plugins": [
-    "expo"
-  ]
+  "plugins": ["expo"]
 }
 ```
-
 
 Then configure the rules you want to use under the rules section.
 
@@ -37,17 +34,16 @@ Then configure the rules you want to use under the rules section.
     "expo/no-env-var-destructuring": "error",
     "expo/no-dynamic-env-var": "error",
     "expo/use-dom-exports": "error",
-    "expo/prefer-box-shadow": "warn",
+    "expo/prefer-box-shadow": "warn"
   }
 }
 ```
 
-
 ## Rules
 
-| Name                                                               | Description                                          |
-| :----------------------------------------------------------------- | :--------------------------------------------------- |
-| [no-dynamic-env-var](docs/rules/no-dynamic-env-var.md)             | Prevents process.env from being accessed dynamically |
-| [no-env-var-destructuring](docs/rules/no-env-var-destructuring.md) | Disallow destructuring of environment variables     |
-| [use-dom-exports](docs/rules/use-dom-exports.md)                   | Enforce using DOM exports from react-native-web |
+| Name                                                               | Description                                                                             |
+| :----------------------------------------------------------------- | :-------------------------------------------------------------------------------------- |
+| [no-dynamic-env-var](docs/rules/no-dynamic-env-var.md)             | Prevents process.env from being accessed dynamically                                    |
+| [no-env-var-destructuring](docs/rules/no-env-var-destructuring.md) | Disallow destructuring of environment variables                                         |
+| [use-dom-exports](docs/rules/use-dom-exports.md)                   | Enforce using DOM exports from react-native-web                                         |
 | [prefer-box-shadow](docs/rules/prefer-box-shadow.md)               | Suggest using box-shadow instead of shadowColor/shadowOffset/shadowOpacity/shadowRadius |

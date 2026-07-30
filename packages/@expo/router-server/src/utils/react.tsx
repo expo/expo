@@ -17,6 +17,21 @@ export function createInjectedCssAsNodes(hrefs: string[]): CreateNodeResult {
   };
 }
 
+export function createInjectedExternalCssAsNodes(
+  externalCss: { href: string; media?: string }[] = []
+): CreateNodeResult {
+  return {
+    headNodes: externalCss.map(({ href, media }) => (
+      <link
+        key={`css-external-${href}-${media ?? ''}`}
+        rel="stylesheet"
+        href={href}
+        media={media}
+      />
+    )),
+  };
+}
+
 export function createInjectedInlineCssAsNodes(
   inlineCss: { source: string; hmrId?: string }[] = []
 ): CreateNodeResult {

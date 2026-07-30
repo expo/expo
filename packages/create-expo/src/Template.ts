@@ -8,6 +8,7 @@ import { glob } from 'glob';
 import ora from 'ora';
 import path from 'path';
 
+import { consumeMonorepoConfigAsync } from './createExpoConfig';
 import { sanitizedName } from './createFileTransform';
 import { Log } from './log';
 import type { PackageManagerName } from './resolvePackageManager';
@@ -117,11 +118,16 @@ export function resolvePackageModuleId(moduleId: string) {
 /**
  * Extract a template app to a given file path and clean up any properties left over from npm to
  * prepare it for usage.
+ *
+ * If the template ships a `.create-expo.json`, its `renamePatterns`
+ * field overrides the default rename config used by the HelloWorld
+ * find-and-replace pass. The config file is read once and deleted from disk
+ * immediately so it can never leak into the user's project.
  */
 export async function extractAndPrepareTemplateAppAsync(
   projectRoot: string,
   { npmPackage }: { npmPackage?: string | null }
-) {
+): Promise<string> {
   const projectName = path.basename(projectRoot);
 
   debug(`Extracting template app (pkg: ${npmPackage}, projectName: ${projectName})`);
@@ -140,8 +146,13 @@ export async function extractAndPrepareTemplateAppAsync(
     });
   }
 
+  const monorepoConfig = await consumeMonorepoConfigAsync(projectRoot);
+
   try {
-    const files = await getTemplateFilesToRenameAsync({ cwd: projectRoot });
+    const files = await getTemplateFilesToRenameAsync({
+      cwd: projectRoot,
+      renameConfig: monorepoConfig?.renamePatterns,
+    });
     await renameTemplateAppNameAsync({
       cwd: projectRoot,
       files,
@@ -196,8 +207,8 @@ function escapeXMLCharacters(original: string): string {
  * Whitespace is trimmed and whitespace-only lines are ignored.
  *
  * If no rename config has been passed directly to
- * `getTemplateFilesToRenameAsync()` then this default rename config will be
- * used instead.
+ * `getTemplateFilesToRenameAsync()`, then this default
+ * rename config will be used instead.
  */
 export const defaultRenameConfig = [
   // Common
@@ -284,7 +295,9 @@ export async function renameTemplateAppNameAsync({
 
       let contents: string;
       try {
-        contents = await fs.promises.readFile(absoluteFilePath, { encoding: 'utf-8' });
+        contents = await fs.promises.readFile(absoluteFilePath, {
+          encoding: 'utf-8',
+        });
       } catch (error) {
         throw new Error(
           `Failed to read template file: "${absoluteFilePath}". Was it removed mid-operation?`,
@@ -357,7 +370,9 @@ export async function sanitizeTemplateAsync(projectRoot: string) {
     slug: projectName,
   };
 
-  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), { default: {} });
+  const appFile = new JsonFile(path.join(projectRoot, 'app.json'), {
+    default: {},
+  });
   const appContent = (await appFile.readAsync()) as ExpoConfig | Record<'expo', ExpoConfig>;
   const appJson = deepMerge(
     appContent,

@@ -98,11 +98,11 @@ export function test({ describe, it, expect }) {
       // From: exec/for-loop-head.js
       it('let in for-loop head does not leak', () => {
         expect(
-          function () {
+          (function () {
             let a = 1;
             for (let a = 0; a < 8; a++) {}
             return a;
-          }()
+          })()
         ).toBe(1);
       });
 
@@ -749,7 +749,10 @@ export function test({ describe, it, expect }) {
         var results = [];
         for (let i = 0; i < 3; i++) {
           results.push(
-            ((val) => () => val)(i)
+            (
+              (val) => () =>
+                val
+            )(i)
           );
         }
         expect(results[0]()).toBe(0);
@@ -759,7 +762,12 @@ export function test({ describe, it, expect }) {
 
       it('let in arrow function parameter default does not leak', () => {
         let x = 'outer';
-        const fn = (val = (() => { let x = 'default'; return x; })()) => val;
+        const fn = (
+          val = (() => {
+            let x = 'default';
+            return x;
+          })()
+        ) => val;
         expect(fn()).toBe('default');
         expect(x).toBe('outer');
       });

@@ -14,7 +14,7 @@ inputs:
     description: 'Paths to ignore for all platforms'
     required: false
     default: >-
-      "!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore,**/*.web.*}"
+      "!{**/*.md,**/LICENSE*,**/.gitignore,**/CHANGELOG*,**/.npmignore,**/.eslintrc*,**/.prettierrc*,**/oxlint.config.*,**/.oxfmtrc*,**/.gitattributes,**/.watchmanconfig,**/.fingerprintignore,**/*.web.*}"
 
 outputs:
   should_run_android:
@@ -26,13 +26,13 @@ runs:
   using: 'composite'
   steps:
     - name: 👀 Checkout
-      uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5
+      uses: actions/checkout@93cb6efe18208431cddfb8368fd83d5badbf9bfd # v5.0.1
       with:
         fetch-depth: 1000
         filter: 'blob:none'
     - name: 🧐 Check changes categories
       id: changes
-      uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47
+      uses: tj-actions/changed-files@24d32ffd492484c1d75e0c0b894501ddb9d30d62 # v47.0.0
       with:
         # If the number of commits from actions/checkout is not sufficient to find a base commit,
         # tj-actions/changed-files tries 10 times to fetch more commits by this amount:

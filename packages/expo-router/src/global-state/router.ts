@@ -1,10 +1,7 @@
-import { IS_DOM } from 'expo/dom';
 import * as Linking from 'expo-linking';
+import { IS_DOM } from 'expo/dom';
 import { Platform } from 'react-native';
 
-import { routingQueue } from './routingQueue';
-import { store } from './store';
-import type { LinkToOptions, NavigationOptions } from './types';
 import {
   emitDomDismiss,
   emitDomDismissAll,
@@ -14,7 +11,11 @@ import {
 } from '../domComponents/emitDomEvent';
 import { resolveHref } from '../link/href';
 import type { Href, RoutePath, RouteInputParams } from '../types';
+import { getHistoryLength } from '../utils/stack';
 import { shouldLinkExternally } from '../utils/url';
+import { routingQueue } from './routingQueue';
+import { store } from './store';
+import type { LinkToOptions, NavigationOptions } from './types';
 
 export function navigate(url: Href, options?: NavigationOptions) {
   return linkTo(resolveHref(url), { ...options, event: 'NAVIGATE' });
@@ -91,7 +92,7 @@ export function canDismiss(): boolean {
 
   // Keep traversing down the state tree until we find a stack navigator that we can pop
   while (state) {
-    if (state.type === 'stack' && state.routes.length > 1) {
+    if (state.type === 'stack' && getHistoryLength(state) > 1) {
       return true;
     }
     if (state.index === undefined) return false;
@@ -112,9 +113,9 @@ export function setParams(
   return (store.navigationRef?.current?.setParams as any)(params);
 }
 
-export function linkTo(originalHref: Href, options: LinkToOptions = {}) {
-  originalHref = typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
-  let href: string | undefined | null = originalHref;
+export function linkTo(originalHref: Href | string, options: LinkToOptions = {}) {
+  let href: string | undefined | null =
+    typeof originalHref == 'string' ? originalHref : resolveHref(originalHref);
 
   if (emitDomLinkEvent(href, options)) {
     return;
@@ -184,11 +185,11 @@ export type ImperativeRouter = {
    */
   canGoBack: () => boolean;
   /**
-   * Navigates to the provided [`href`](#href) using a push operation if possible.
+   * Navigates to the provided [`href`](#hreft) using a push operation if possible.
    */
   push: (href: Href, options?: NavigationOptions) => void;
   /**
-   * Navigates to the provided [`href`](#href).
+   * Navigates to the provided [`href`](#hreft).
    */
   navigate: (href: Href, options?: NavigationOptions) => void;
   /**
@@ -200,7 +201,7 @@ export type ImperativeRouter = {
    * */
   replace: (href: Href, options?: NavigationOptions) => void;
   /**
-   * Navigates to the a stack lower than the current screen using the provided count if possible, otherwise 1.
+   * Navigates to a stack lower than the current screen using the provided count if possible, otherwise 1.
    *
    * If the current screen is the only route, it will dismiss the entire stack.
    */

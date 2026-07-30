@@ -11,7 +11,7 @@ struct BarcodeSettings: Record {
   }
 }
 
-enum BarcodeType: String, Enumerable {
+public enum BarcodeType: String, Enumerable {
   case aztec
   case ean13
   case ean8
@@ -62,7 +62,7 @@ enum BarcodeType: String, Enumerable {
     }
   }
 
-  static func toBarcodeType(type: AVMetadataObject.ObjectType) -> BarcodeType {
+  public static func toBarcodeType(type: AVMetadataObject.ObjectType) -> BarcodeType {
     if #available(iOS 15.4, *) {
       if type == .codabar {
         return .codabar

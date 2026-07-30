@@ -29,7 +29,7 @@ export function GridBox({ icon, title, link, className }: GridBoxProps) {
       </div>
       <LABEL className="flex h-full min-h-7.5 items-center justify-between gap-3 bg-default p-4">
         {title}
-        <Icon className="text-icon-secondary" />
+        <Icon aria-hidden="true" className="text-icon-secondary" />
       </LABEL>
     </A>
   );

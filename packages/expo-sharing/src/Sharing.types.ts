@@ -80,7 +80,7 @@ export type SharePayload = {
   shareType: ShareType;
 
   /**
-   * The MIME type of the contents of the`value` field.
+   * The MIME type of the contents of the `value` field.
    *
    * @default 'text/plain'
    */

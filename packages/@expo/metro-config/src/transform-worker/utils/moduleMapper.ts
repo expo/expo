@@ -1,6 +1,8 @@
 import BuiltinModule from 'module';
 import path from 'path';
 
+import { debugEvent } from '../events';
+
 declare module 'node:module' {
   // Internal Function of Node.js:
   // This is called when resolving a module,
@@ -12,10 +14,6 @@ declare module 'node:module' {
     options?: { paths?: string[] }
   ): string;
 }
-
-const debug = require('debug')(
-  'expo:metro-config:supervising-transform-worker:module-mapper'
-) as typeof console.log;
 
 const requireResolveBasepath = (request: string, params?: { paths?: string[] }) =>
   path.dirname(require.resolve(`${request}/package.json`, params));
@@ -106,7 +104,6 @@ export const patchNodeModuleResolver = () => {
     // separate Node.js thread to prevent `@expo/cli`'s imports from
     // being manipulated. This is dangerous and it'd get hard to
     // predict what would happen
-    debug('Module interception disabled: Not in a child process!');
   }
   hasPatchedNodeModuleResolver = true;
   const moduleMapper = createModuleMapper();
@@ -133,17 +130,23 @@ export const patchNodeModuleResolver = () => {
           // 4. the user's transform-worker now imports `metro-transform-worker` from `@expo/metro`'s dependencies instead
           const redirectedRequest = moduleMapper(request);
           if (redirectedRequest) {
-            debug(`Redirected request "${request}" -> "${redirectedRequest}"`);
+            debugEvent('module_mapper:request_redirected', {
+              request,
+              resolved: redirectedRequest,
+            });
             return redirectedRequest;
           }
         }
       } catch (error) {
-        debug(`Could not redirect request "${request}": ${error}`);
+        debugEvent('module_mapper:redirect_failed', {
+          request,
+          error: debugEvent.error(error as Error),
+        });
       } finally {
         // This guards against infinite recursion
         isInCustomResolver = false;
       }
     }
-    return originalResolveFilename.call(this, request, parent, isMain, options);
+    return originalResolveFilename.call(this, request, parent ?? null, isMain, options);
   };
 };

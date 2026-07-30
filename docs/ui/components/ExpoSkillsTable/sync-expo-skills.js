@@ -11,6 +11,11 @@ const GITHUB_API_URL = 'https://api.github.com/repos/expo/skills/contents/plugin
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/expo/skills/main/plugins/expo/skills';
 const GITHUB_BLOB_BASE = 'https://github.com/expo/skills/blob/main/plugins/expo/skills';
 
+const CATEGORY_LABELS = [
+  { pattern: /^Framework \(OSS\)\.\s*/, category: 'framework' },
+  { pattern: /^EAS service \(paid\)\.\s*/, category: 'eas' },
+];
+
 async function fetchJson(url) {
   const response = await fetch(url, {
     headers: { Accept: 'application/vnd.github.v3+json' },
@@ -54,14 +59,25 @@ function parseFrontmatter(content) {
   return frontmatter;
 }
 
+function categorizeSkill(skillName, description) {
+  for (const { pattern, category } of CATEGORY_LABELS) {
+    if (pattern.test(description)) {
+      return { category, description: description.replace(pattern, '') };
+    }
+  }
+  return { category: skillName.startsWith('eas-') ? 'eas' : 'framework', description };
+}
+
 async function fetchSkillMetadata(skillName) {
   const url = `${GITHUB_RAW_BASE}/${skillName}/SKILL.md`;
   const content = await fetchText(url);
   const frontmatter = parseFrontmatter(content);
+  const { category, description } = categorizeSkill(skillName, frontmatter.description ?? '');
 
   return {
     name: skillName,
-    description: ensureTrailingPeriod(frontmatter.description),
+    category,
+    description: ensureTrailingPeriod(description),
     githubUrl: `${GITHUB_BLOB_BASE}/${skillName}/SKILL.md`,
   };
 }

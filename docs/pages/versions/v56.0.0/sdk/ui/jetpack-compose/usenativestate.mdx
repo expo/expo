@@ -11,13 +11,15 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 `useNativeState` returns an [`ObservableState`](#observablestate) that maps to a Compose [`MutableState`](https://developer.android.com/reference/kotlin/androidx/compose/runtime/MutableState) on the native side, so reads and writes to `.value` are tracked directly by Compose without going through the React render cycle. This lets you update the native view synchronously from a worklet on the UI thread.
 
+> **Note:** When working with the [React Compiler](https://react.dev/learn/react-compiler), you should refrain from accessing and modifying the `value` property directly. Instead, use the [`get`](#observablestate) and [`set`](#observablestate) methods, which are compliant with the React Compiler standards.
+
 ## Installation
 
 <APIInstallSection />
 
 ## Usage
 
-> **Note:** Using worklets requires installing [`react-native-reanimated`](https://docs.swmansion.com/react-native-reanimated/) and [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) in your project. `useNativeState` itself works without them, but the synchronous UI-thread updates shown below depend on the worklet runtime.
+> **Note:** Using worklets requires installing [`react-native-worklets`](https://docs.swmansion.com/react-native-worklets/) in your project. `useNativeState` itself works without it, but the synchronous UI-thread updates shown below depend on the worklet runtime.
 
 The example below masks a phone number as the user types. The formatting and the writes to `maskedPhone.value` (text) and `selection.value` (cursor position) all happen synchronously on the UI thread, so there is no flicker between the typed value and the masked value.
 

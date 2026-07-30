@@ -6,19 +6,21 @@ import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import android.widget.FrameLayout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.view.NestedScrollingChild3
+import androidx.core.view.NestedScrollingChildHelper
+import androidx.core.view.ViewCompat
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.common.annotations.UnstableReactNativeAPI
 import com.facebook.react.config.ReactFeatureFlags
@@ -52,8 +54,19 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   private val childViewState = mutableStateOf<View?>(null)
   private val wrapperState = mutableStateOf<TouchDispatchingRootViewGroup?>(null)
 
+  private val childSizeState = mutableStateOf(IntSize.Zero)
+  private val childLayoutListener = View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
+    childSizeState.value = IntSize(r - l, b - t)
+  }
+
   override fun addView(child: View, index: Int, params: ViewGroup.LayoutParams) {
     childViewState.value = child
+    childSizeState.value = if (child.width > 0 && child.height > 0) {
+      IntSize(child.width, child.height)
+    } else {
+      IntSize.Zero
+    }
+    child.addOnLayoutChangeListener(childLayoutListener)
     val wrapper = TouchDispatchingRootViewGroup(child.context).apply {
       val reactContext = child.context as? ReactContext
       if (reactContext != null) {
@@ -68,6 +81,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
   override fun removeView(view: View) {
     if (view == childViewState.value) {
+      view.removeOnLayoutChangeListener(childLayoutListener)
       wrapperState.value?.removeView(view)
       childViewState.value = null
       wrapperState.value = null
@@ -78,6 +92,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
 
   override fun removeViewAt(index: Int) {
     childViewState.value?.let { child ->
+      child.removeOnLayoutChangeListener(childLayoutListener)
       wrapperState.value?.removeView(child)
     }
     childViewState.value = null
@@ -90,9 +105,9 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     val scope: ComposableScope = this
 
     wrapperState.value?.let { wrapper ->
-      val childView = childViewState.value ?: return@let
+      childViewState.value ?: return@let
       val sizingModifier = if (matchContents) {
-        applySizeFromYogaNodeModifier(childView)
+        applySizeFromYogaNodeModifier()
       } else {
         Modifier
           .fillMaxSize()
@@ -111,35 +126,17 @@ internal class RNHostView(context: Context, appContext: AppContext) :
     }
   }
 
-  // Sets Compose view size from Yoga node size
-  // Listens yoga node size changes and updates the Compose view size
+  // Sets Compose view size from Yoga node size, tracked by the view-owned layout listener above.
   @Composable
-  private fun applySizeFromYogaNodeModifier(childView: View): Modifier {
+  private fun applySizeFromYogaNodeModifier(): Modifier {
     val density = LocalDensity.current
-
-    val childSize = remember {
-      mutableStateOf(
-        if (childView.width > 0 && childView.height > 0) {
-          IntSize(childView.width, childView.height)
-        } else {
-          IntSize.Zero
-        }
-      )
-    }
-
-    DisposableEffect(childView) {
-      val listener = View.OnLayoutChangeListener { _, l, t, r, b, _, _, _, _ ->
-        childSize.value = IntSize(r - l, b - t)
-      }
-      childView.addOnLayoutChangeListener(listener)
-      onDispose { childView.removeOnLayoutChangeListener(listener) }
-    }
+    val childSize = childSizeState.value
 
     return with(density) {
-      if (childSize.value.width > 0 && childSize.value.height > 0) {
+      if (childSize.width > 0 && childSize.height > 0) {
         Modifier.requiredSize(
-          childSize.value.width.toDp(),
-          childSize.value.height.toDp()
+          childSize.width.toDp(),
+          childSize.height.toDp()
         )
       } else {
         Modifier
@@ -148,7 +145,7 @@ internal class RNHostView(context: Context, appContext: AppContext) :
   }
 
   // Sets Yoga node size from Compose view size
-  // Listens Compose view size changes and updates the Yoga node size
+  // Listens to Compose view size changes and updates the Yoga node size
   @Composable
   private fun reportSizeToYogaNodeModifier(): Modifier {
     val density = LocalDensity.current
@@ -158,7 +155,6 @@ internal class RNHostView(context: Context, appContext: AppContext) :
           size.width.toDp().value.toDouble(),
           size.height.toDp().value.toDouble()
         )
-        flushPendingStateUpdates()
       }
     }
   }
@@ -168,12 +164,29 @@ internal class RNHostView(context: Context, appContext: AppContext) :
  * A thin FrameLayout that intercepts touch events and dispatches them to JS via
  * JSTouchDispatcher/JSPointerDispatcher, replicating the pattern from React Native's
  * DialogRootViewGroup in ReactModalHostView.
+ * Implements NestedScrollingChild3 to forward scroll events up to the parent Compose view, because Compose only listens for NestedScrollingChild3 nested-scroll events.
  */
 private class TouchDispatchingRootViewGroup(
   context: Context
-) : FrameLayout(context), RootView {
+) : FrameLayout(context), RootView, NestedScrollingChild3 {
   private val jsTouchDispatcher = JSTouchDispatcher(this)
   private var jsPointerDispatcher: JSPointerDispatcher? = null
+
+  // The "child face": this helper does the real work of finding the nearest scrolling-aware
+  // ancestor (Compose, here) and forwarding our scroll offers to it.
+  private val childHelper = NestedScrollingChildHelper(this)
+
+  // How far the sheet has slid this view on-screen since the gesture began. Used to keep the
+  // FlatList's touch coordinates coherent while the view moves under the finger.
+  private val gestureStartLocation = IntArray(2)
+  private val currentLocation = IntArray(2)
+  private var trackingGestureOffset = false
+
+  // True if the sheet consumed scroll on the most recent drag frame; drives the settle decision.
+  private var sheetMovingOnLastDragFrame = false
+
+  // True once a fling was dispatched this gesture, so the gentle-release settle doesn't double-fire.
+  private var flingHandledThisGesture = false
 
   var eventDispatcher: EventDispatcher? = null
 
@@ -184,6 +197,7 @@ private class TouchDispatchingRootViewGroup(
     if (ReactFeatureFlags.dispatchPointerEvents) {
       jsPointerDispatcher = JSPointerDispatcher(this)
     }
+    childHelper.isNestedScrollingEnabled = true
   }
 
   override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
@@ -198,6 +212,52 @@ private class TouchDispatchingRootViewGroup(
   override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
     // No-op: don't re-layout children. Yoga calls child.layout() directly
     // and we must not override those values.
+  }
+
+  override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+    if (ev.actionMasked == MotionEvent.ACTION_DOWN) {
+      // Ancestor React roots (the surface root, outer hosts) also see this gesture and dispatch a
+      // duplicate JS touch stream in their own coordinate space. Their moves land outside the
+      // host-relative responder region and break `Pressable`. Tell them a native child owns the
+      // gesture, before dispatching our own start, so their stream ends ahead of it.
+      notifyAncestorRootViews { it.onChildStartedNativeGesture(this, ev) }
+      // dispatchTouchEvent is the true start of every gesture, so reset all per-gesture state here.
+      getLocationInWindow(gestureStartLocation)
+      trackingGestureOffset = true
+      sheetMovingOnLastDragFrame = false
+      flingHandledThisGesture = false
+    }
+
+    // While a nested scroll is in flight the sheet may be sliding this whole view up/down. Re-express
+    // every event as if the view hadn't moved, so the FlatList's own scroll tracking stays coherent.
+    val handled = if (trackingGestureOffset && hasNestedScrollingParent()) {
+      getLocationInWindow(currentLocation)
+      val dy = currentLocation[1] - gestureStartLocation[1]
+      if (dy != 0) {
+        ev.offsetLocation(0f, dy.toFloat())
+        val result = super.dispatchTouchEvent(ev)
+        ev.offsetLocation(0f, -dy.toFloat())
+        result
+      } else {
+        super.dispatchTouchEvent(ev)
+      }
+    } else {
+      super.dispatchTouchEvent(ev)
+    }
+
+    if (ev.actionMasked == MotionEvent.ACTION_UP || ev.actionMasked == MotionEvent.ACTION_CANCEL) {
+      trackingGestureOffset = false
+      notifyAncestorRootViews { it.onChildEndedNativeGesture(this, ev) }
+    }
+    return handled
+  }
+
+  private inline fun notifyAncestorRootViews(block: (RootView) -> Unit) {
+    var current: ViewParent? = parent
+    while (current != null) {
+      (current as? RootView)?.let(block)
+      current = current.parent
+    }
   }
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
@@ -241,12 +301,136 @@ private class TouchDispatchingRootViewGroup(
     jsPointerDispatcher?.onChildEndedNativeGesture()
   }
 
-  override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
-    // No-op - override to still receive events in onInterceptTouchEvent
-    // even when a child view disallows interception
-  }
-
   override fun handleException(t: Throwable) {
     reactContext.reactApplicationContext.handleException(RuntimeException(t))
   }
+
+  override fun requestDisallowInterceptTouchEvent(disallowIntercept: Boolean) {
+    // Forward the request up so Compose learns the list claimed the gesture and its own sheet-drag
+    // yields. But don't call super: setting our own FLAG_DISALLOW_INTERCEPT would skip
+    // onInterceptTouchEvent, which must keep firing to dispatch touches to JS (the reason #43716
+    // added this override).
+    parent?.requestDisallowInterceptTouchEvent(disallowIntercept)
+  }
+
+  // --- Parent face: catch the FlatList's scroll offers and relay them up via the child face. ---
+  override fun onStartNestedScroll(child: View, target: View, axes: Int): Boolean =
+    axes and ViewCompat.SCROLL_AXIS_VERTICAL != 0
+
+  override fun onNestedScrollAccepted(child: View, target: View, axes: Int) {
+    super.onNestedScrollAccepted(child, target, axes)
+    startNestedScroll(axes)
+  }
+
+  override fun onNestedPreScroll(target: View, dx: Int, dy: Int, consumed: IntArray) {
+    // Expand path: offer the delta to the sheet (above us) before the list scrolls with the rest.
+    dispatchNestedPreScroll(dx, dy, consumed, null)
+    // Did the sheet move this frame? consumed[1] is what it consumed in y axis.
+    sheetMovingOnLastDragFrame = consumed[1] != 0
+  }
+
+  override fun onNestedScroll(target: View, dxConsumed: Int, dyConsumed: Int, dxUnconsumed: Int, dyUnconsumed: Int) {
+    // Collapse path: after the list scrolled what it could, hand the leftover up to the sheet.
+    // Use the (…, type, consumed) variant so we can read how much the sheet ate (consumed[1]).
+    val consumed = IntArray(2)
+    dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, null, ViewCompat.TYPE_TOUCH, consumed)
+    if (consumed[1] != 0) sheetMovingOnLastDragFrame = true
+  }
+
+  override fun onNestedPreFling(target: View, velocityX: Float, velocityY: Float): Boolean {
+    // A real fling is being dispatched, so its settle is already in motion; note that so the
+    // gentle-release fallback in onStopNestedScroll doesn't add a second, redundant settle.
+    flingHandledThisGesture = true
+    val composeConsumed = dispatchNestedPreFling(velocityX, velocityY)
+    // RN's ScrollView wants a synchronous yes/no, but Compose's pre-fling is async (it returns false
+    // now and settles later). So decide here: if the sheet was mid-move and this is an up-flick
+    // (velocityY > 0), swallow the list's fling so the sheet finishes expanding. A down-flick passes
+    // through so it can still settle/collapse.
+    return composeConsumed || (sheetMovingOnLastDragFrame && velocityY > 0)
+  }
+
+  override fun onNestedFling(target: View, velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
+    // Post-fling: hand the leftover flick up so the sheet can fling to its next anchor.
+    dispatchNestedFling(velocityX, velocityY, consumed)
+
+  override fun onStopNestedScroll(target: View) {
+    // Must run BEFORE stopNestedScroll() so Compose is still our parent and can receive the fling.
+    settleSheetIfNoFling()
+    super.onStopNestedScroll(target)
+    stopNestedScroll()
+  }
+
+  // A slow (sub-threshold) release never flings, so the sheet would hang where it was dragged. If the
+  // sheet moved this gesture and no real fling settled it, dispatch a zero-velocity fling so the
+  // holder snaps it to the nearest anchor.
+  private fun settleSheetIfNoFling() {
+    if (sheetMovingOnLastDragFrame && !flingHandledThisGesture) {
+      flingHandledThisGesture = true
+      dispatchNestedFling(0f, 0f, false)
+    }
+  }
+
+  // --- Child face: the wrapper's upstream voice. The parent hooks above relay through these. ---
+  // So we listen to ViewGroup nested scroll methods and call below methods from them,
+  // which essentially converts regular Nested scrolling methods to NestedScrollingChild3.
+  override fun setNestedScrollingEnabled(enabled: Boolean) {
+    childHelper.isNestedScrollingEnabled = enabled
+  }
+  override fun isNestedScrollingEnabled(): Boolean = childHelper.isNestedScrollingEnabled
+  override fun startNestedScroll(axes: Int): Boolean = childHelper.startNestedScroll(axes)
+  override fun startNestedScroll(axes: Int, type: Int): Boolean = childHelper.startNestedScroll(axes, type)
+  override fun stopNestedScroll() = childHelper.stopNestedScroll()
+  override fun stopNestedScroll(type: Int) = childHelper.stopNestedScroll(type)
+  override fun hasNestedScrollingParent(): Boolean = childHelper.hasNestedScrollingParent()
+  override fun hasNestedScrollingParent(type: Int): Boolean = childHelper.hasNestedScrollingParent(type)
+
+  override fun dispatchNestedScroll(
+    dxConsumed: Int,
+    dyConsumed: Int,
+    dxUnconsumed: Int,
+    dyUnconsumed: Int,
+    offsetInWindow: IntArray?
+  ): Boolean = childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow)
+
+  override fun dispatchNestedScroll(
+    dxConsumed: Int,
+    dyConsumed: Int,
+    dxUnconsumed: Int,
+    dyUnconsumed: Int,
+    offsetInWindow: IntArray?,
+    type: Int
+  ): Boolean = childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type)
+
+  override fun dispatchNestedScroll(
+    dxConsumed: Int,
+    dyConsumed: Int,
+    dxUnconsumed: Int,
+    dyUnconsumed: Int,
+    offsetInWindow: IntArray?,
+    type: Int,
+    consumed: IntArray
+  ) {
+    childHelper.dispatchNestedScroll(dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed, offsetInWindow, type, consumed)
+  }
+
+  override fun dispatchNestedPreScroll(
+    dx: Int,
+    dy: Int,
+    consumed: IntArray?,
+    offsetInWindow: IntArray?
+  ): Boolean = childHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow)
+
+  override fun dispatchNestedPreScroll(
+    dx: Int,
+    dy: Int,
+    consumed: IntArray?,
+    offsetInWindow: IntArray?,
+    type: Int
+  ): Boolean = childHelper.dispatchNestedPreScroll(dx, dy, consumed, offsetInWindow, type)
+
+  override fun dispatchNestedFling(velocityX: Float, velocityY: Float, consumed: Boolean): Boolean =
+    childHelper.dispatchNestedFling(velocityX, velocityY, consumed)
+
+  override fun dispatchNestedPreFling(velocityX: Float, velocityY: Float): Boolean =
+    childHelper.dispatchNestedPreFling(velocityX, velocityY)
 }

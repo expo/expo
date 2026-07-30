@@ -1,0 +1,147 @@
+---
+title: Troubleshoot EAS Simulator
+sidebar_title: Troubleshooting
+description: Diagnose access, session lifecycle, controller, installation, preview, and Fast Refresh issues in EAS Simulator.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+
+## Command not found
+
+### `Command simulator:start not found`
+
+The installed EAS CLI is too old. [Install or update EAS CLI](/eas/cli/), then inspect the command:
+
+<Terminal cmd={['$ eas simulator:start --help']} />
+
+The commands remain hidden because the API is experimental.
+
+## Access and project errors
+
+### EAS Simulator is not enabled for the account
+
+Check before starting:
+
+<Terminal cmd={['$ eas simulator:availability --json']} />
+
+If `available` is `false`, do not retry `simulator:start`. Use a local simulator or emulator, or [join the waitlist](https://expo.dev/services/simulator) for access.
+
+### EAS CLI reports that a user account is required
+
+Log in interactively or provide `EXPO_TOKEN` in a headless environment:
+
+<Terminal cmd={['$ eas whoami']} />
+
+### EAS CLI reports that the project is not linked
+
+Run the command inside the Expo project and initialize EAS:
+
+<Terminal cmd={['$ eas init']} />
+
+## Session lifecycle problems
+
+### The session takes a long time to start
+
+Boot time varies with device capacity. While the device is starting, poll the existing session:
+
+<Terminal cmd={['$ eas simulator:get --id <session-id> --json --non-interactive']} />
+
+The session is ready when the status is `IN_PROGRESS` and `remoteConfig` is present. If it reaches `STOPPED` or `ERRORED`, or the start command reports a terminal failure, start a new session. Starting a second session while the first is still booting does not speed up the process.
+
+### A non-interactive session did not stop automatically
+
+`--non-interactive` returns after the controller is ready. It does not stop the session. Run:
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+## Controller and tunnel problems
+
+### `Remote daemon is unavailable` or the tunnel endpoint is offline
+
+The controller tunnel has dropped or the remote VM has ended. A dropped controller invalidates the installed app state, accessibility references, and connection configuration.
+
+Stop the session if it is still active, then start a fresh session and repeat install → open → drive. Do not repeatedly retry a controller command against the dead endpoint.
+
+### `Unknown command: tap` or `Unknown command: click`
+
+The agent-device action is named `press`:
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest press @e2']} />
+
+### A controller action hangs
+
+Some iOS snapshots and interactions can take tens of seconds. If an action times out, refresh the interactive accessibility tree before retrying:
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest snapshot -i']} />
+
+The original action may have reached the device even when the response was delayed, and blindly retrying can perform it twice.
+
+### `install requires an active session or an explicit device selector`
+
+Pass the platform:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest install com.example.app ./MyApp.app --platform ios',
+  ]}
+/>
+
+### Screenshot reports that there is no active session
+
+Open an installed app before taking the screenshot:
+
+<Terminal
+  cmd={[
+    '$ eas simulator:exec npx agent-device@latest open com.example.app --platform ios',
+    '$ eas simulator:exec npx agent-device@latest screenshot ./shot.png',
+  ]}
+/>
+
+## App and build problems
+
+### The remote device does not contain the app
+
+This is expected. Each session starts with a blank device. Install a local simulator or emulator build, or use `install-from-source` with an EAS Build artifact.
+
+### The screenshot shows old source code
+
+A release build embeds JavaScript at build time. Rebuild it from the current source, confirm that an existing EAS Build has the matching fingerprint, or install a development build and connect it to Metro.
+
+Changing source files does not update an already-installed release build.
+
+### Fast Refresh does not work
+
+Confirm all of the following:
+
+- The installed binary is a development build with `expo-dev-client`, not a release build
+- Metro is running once, without another process occupying port 8081
+- The development client is connected to the public Metro tunnel URL
+- The simulator session and controller are still active
+
+Use tunnel v2 in remote or headless agent environments:
+
+<Terminal cmd={['$ EXPO_UNSTABLE_TUNNEL_V2=1 npx expo start --tunnel']} />
+
+If the first connection fails, reset the simulator session and Metro once, then repeat the documented development-build flow. Reconnecting a release build cannot enable Fast Refresh.
+
+## Browser preview problems
+
+### Android did not return a `webPreviewUrl`
+
+Android browser preview is not currently supported. Use agent-device or Argent and collect screenshots or recordings instead.
+
+### The preview appears inside the simulator
+
+The `webPreviewUrl` was opened as though it were an app URL. Open it in the desktop browser instead. It is a browser stream, not an application deep link.
+
+## Report feedback
+
+EAS Simulator and its CLI are experimental. Include the EAS CLI version, session ID, platform, controller type, and failing command when reporting a problem.
+
+For feedback about the official EAS Simulator skill:
+
+<Terminal
+  cmd={[
+    '$ npx --yes submit-expo-feedback@latest --category skills --subject "eas-simulator" "<actionable feedback>"',
+  ]}
+/>

@@ -89,6 +89,7 @@ jest.mock('../ExpoFetchModule', () => {
     ExpoFetchModule: {
       NativeRequest: StubNativeRequest,
       NativeResponse: StubNativeResponse,
+      unstable_createBlobData: jest.fn(async () => 'mock-blob-id'),
     },
   };
 });
@@ -251,6 +252,15 @@ describe('FetchResponse', () => {
       const cloned = response.clone();
       const formData = await cloned.formData();
       expect(formData.get('hello world')).toBe('');
+    });
+  });
+
+  describe('blob()', () => {
+    it('should create a blob with type from the content-type header', async () => {
+      const response = makeResponse();
+      const blob = await response.blob();
+      expect(blob.size).toBe(11);
+      expect(blob.type).toBe('text/plain');
     });
   });
 

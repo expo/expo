@@ -4,8 +4,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { packNpmTarballAsync, extractLocalNpmTarballAsync } from '../utils/npm';
-
-const debug = require('debug')('expo:prebuild:resolveLocalTemplate') as typeof console.log;
+import { debugEvent } from './events';
 
 /** Returns the `local-template` target path, only for the `expo/expo` monorepo */
 const getMonorepoTemplatePath = async () => {
@@ -32,10 +31,10 @@ export async function resolveLocalTemplateAsync({
   // In the expo/expo monorepo only, we use `templates/expo-template-bare-minimum` directly
   const monorepoTemplatePath = await getMonorepoTemplatePath();
   if (monorepoTemplatePath) {
-    debug('Packing local template from expo-template-bare-minimum path:', monorepoTemplatePath);
+    debugEvent('local_template_packing', { path: debugEvent.path(monorepoTemplatePath) });
     try {
       templatePath = await packNpmTarballAsync(monorepoTemplatePath);
-      debug('Using packed local template at:', templatePath);
+      debugEvent('local_template_packed', { path: debugEvent.path(templatePath) });
     } catch (error) {
       // We're vocal here about an error, since we don't expect this to fail, and it's only for our monorepo
       console.error(
@@ -47,7 +46,7 @@ export async function resolveLocalTemplateAsync({
   } else {
     // The default is to use `expo/template.tgz` which exists in all published versions of it
     templatePath = resolveFrom(projectRoot, 'expo/template.tgz');
-    debug('Using local template from Expo package:', templatePath);
+    debugEvent('local_template_fallback', { path: debugEvent.path(templatePath) });
   }
 
   return await extractLocalNpmTarballAsync(templatePath, templateDirectory, {

@@ -219,11 +219,33 @@ private struct StatefulSelectableTextField: View {
     )
   }
 
+  // SwiftUI can throw an out-of-bounds exception when selection becomes invalid after text is changed programmatically.
+  // Resetting to nil avoids passing SwiftUI the stale selection.
+  // https://github.com/expo/expo/issues/47434
+  // https://github.com/expo/expo/issues/48274
+  // https://github.com/swiftlang/swift/issues/82359#issuecomment-3038538035
+  private var clampedSelectionBinding: Binding<SwiftUI.TextSelection?> {
+    Binding(
+      get: {
+        guard let selection = localSelection,
+              case let .selection(range) = selection.indices else {
+          return localSelection
+        }
+        let text = (state.value as? String) ?? ""
+        if range.lowerBound > text.endIndex || range.upperBound > text.endIndex {
+          return nil
+        }
+        return localSelection
+      },
+      set: { localSelection = $0 }
+    )
+  }
+
   var body: some View {
     TextField(
       promptText == nil ? props.placeholder : "",
       text: textBinding,
-      selection: $localSelection,
+      selection: clampedSelectionBinding,
       prompt: promptText,
       axis: swiftUIAxis
     )
@@ -250,7 +272,11 @@ private struct StatefulSelectableTextField: View {
       props.onSelectionChange(["start": start, "end": end])
     }
     .onChange(of: state.value as? String) { newValue in
-      guard userMutatingState else { return }
+      guard userMutatingState else {
+        // The text was replaced from JS; drop the selection so indices built for the old string are never validated against the new one.
+        localSelection = nil
+        return
+      }
       if let max = props.maxLength, let str = newValue, str.count > max {
         state.value = String(str.prefix(max))
         return

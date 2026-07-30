@@ -12,9 +12,9 @@ import type { AssetData } from '@expo/metro/metro';
 import fs from 'fs';
 import path from 'path';
 
+import { Log } from '../log';
 import { drawableFileTypes, getAssetLocalPath } from './metroAssetLocalPath';
 import type { ExportAssetMap } from './saveAssets';
-import { Log } from '../log';
 
 function cleanAssetCatalog(catalogDir: string): void {
   const files = fs.readdirSync(catalogDir).filter((file) => file.endsWith('.imageset'));

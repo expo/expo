@@ -4,9 +4,7 @@
     {
       "name": "ExpoAudio",
       "podName": "ExpoAudio",
-      "platforms": [
-        "iOS(.v16)"
-      ],
+      "platforms": ["iOS(.v16)"],
       "externalDependencies": [
         "ReactNativeDependencies",
         "React",
@@ -21,19 +19,9 @@
           "path": "ios",
           "pattern": "*.m",
           "headerPattern": "*.h",
-          "dependencies": [
-            "Hermes",
-            "React",
-            "ReactNativeDependencies"
-          ],
-          "linkedFrameworks": [
-            "Foundation",
-            "AVFoundation",
-            "AudioToolbox"
-          ],
-          "includeDirectories": [
-            "."
-          ]
+          "dependencies": ["Hermes", "React", "ReactNativeDependencies"],
+          "linkedFrameworks": ["Foundation", "AVFoundation", "AudioToolbox"],
+          "includeDirectories": ["."]
         },
         {
           "type": "swift",
@@ -47,12 +35,7 @@
             "expo-modules-core/ExpoModulesCore",
             "ExpoAudio_ios_objc"
           ],
-          "linkedFrameworks": [
-            "Foundation",
-            "UIKit",
-            "AVFoundation",
-            "MediaPlayer"
-          ]
+          "linkedFrameworks": ["Foundation", "UIKit", "AVFoundation", "MediaPlayer"]
         }
       ]
     }

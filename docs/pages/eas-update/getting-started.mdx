@@ -29,10 +29,10 @@ Setting up EAS Update allows you to push critical bug fixes and improvements tha
 
     <Terminal
       cmd={{
-        npm: ['$ npx create-expo-app@latest my-app --template default@sdk-56'],
-        yarn: ['$ yarn create expo-app my-app --template default@sdk-56'],
-        pnpm: ['$ pnpm create expo-app my-app --template default@sdk-56'],
-        bun: ['$ bun create expo my-app --template default@sdk-56'],
+        npm: ['$ npx create-expo-app@latest my-app --template default@sdk-57'],
+        yarn: ['$ yarn create expo-app my-app --template default@sdk-57'],
+        pnpm: ['$ pnpm create expo-app my-app --template default@sdk-57'],
+        bun: ['$ bun create expo my-app --template default@sdk-57'],
       }}
     />
 
@@ -114,7 +114,7 @@ The `eas update:configure` command will update your **app.json** file with the `
 
 When you run `eas update:configure` in a project that doesn't use [CNG](/workflow/continuous-native-generation/), you'll see the following changes to your native projects:
 
-#### Android
+### Android
 
 Inside the **android/app/src/main/AndroidManifest.xml** file, you'll see the following additions:
 
@@ -129,7 +129,7 @@ Inside **android/app/src/main/res/values/strings.xml**, you'll see the `expo_run
 
 <DiffBlock source="/static/diffs/expo-updates-strings-xml.diff" />
 
-#### iOS
+### iOS
 
 Inside **ios/project-name/Supporting/Expo.plist**, you'll see the following additions:
 
@@ -234,7 +234,7 @@ In **Expo.plist**, you'll need to add the following, replacing `your-channel-nam
 <Step label="5">
 ## Create a build for the project
 
-You need to create a build for Android or iOS. We recommend creating a build with the `preview` build profile first. See [Create your first build](/build/setup/) on how to get started and set up [Internal distribution](/build/internal-distribution/#setting-up-internal-distribution) for your device or simulator.
+You need to create a build for Android or iOS. We recommend creating a build with the `preview` build profile first. See [Create your first build](/build/setup/) on how to get started and set up [Internal distribution](/build/internal-distribution/#using-internal-distribution) for your device or simulator.
 
 Once you have a build running on your device or a simulator, you are ready to send an update.
 

@@ -11,6 +11,8 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 
 A scrollable container for grouped settings-style rows, mirroring the look of an iOS Settings screen. Compose `FieldGroup.Section` (for explicit groups), `FieldGroup.SectionHeader`, and `FieldGroup.SectionFooter` slots inside.
 
+> **Note:** `FieldGroup` scrolls and has no height of its own. It stretches to fill its parent, so give it a parent with a definite size, such as a `<Host style={{ flex: 1 }}>` or a host with an explicit height. It will not appear inside a size-to-fit container like `<Host matchContents>`, because there is no bounded height for the group to fill.
+
 ## Installation
 
 <APIInstallSection />

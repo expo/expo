@@ -6,8 +6,7 @@ import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
-
-const debug = require('debug')('expo:start:platforms:android:adb') as typeof console.log;
+import { event } from '../events';
 
 export enum DeviceABI {
   // The arch specific android target platforms are soft-deprecated.
@@ -362,14 +361,14 @@ export async function getPropertyDataForDeviceAsync(
     // [wifi.interface]: [wlan0]
 
     if (prop) {
-      debug(`Property data: (device pid: ${device.pid}, prop: ${prop}, data: ${results})`);
+      event('adb_property_data', { devicePid: device.pid, prop, data: results });
       return {
         [prop]: results,
       };
     }
     const props = parseAdbDeviceProperties(results);
 
-    debug(`Parsed data:`, props);
+    event('adb_parsed_properties', { props });
 
     return props;
   } catch (error: any) {

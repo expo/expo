@@ -37,11 +37,12 @@ internal fun Window.setNavigationBarStyle(
     return // isAppearanceLightNavigationBars is not available below Android O.
   }
 
-  // android:enforceNavigationBarContrast is not available below Android Q.
-  // This means the button style is not automatically adjusted for contrast,
-  // so we set an explicit navigation bar color to avoid invisible buttons.
   if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-    navigationBarColor = if (hasLightBackground) LightNavigationBarColor else DarkNavigationBarColor
+    navigationBarColor = when {
+      !isContrastEnforced -> Color.TRANSPARENT
+      hasLightBackground -> LightNavigationBarColor
+      else -> DarkNavigationBarColor
+    }
   } else {
     isNavigationBarContrastEnforced = isContrastEnforced
   }
@@ -67,18 +68,19 @@ class NavigationBarModule : Module(), ExtraWindowEventListener {
   private val reactContext get() = appContext.reactContext as? ReactApplicationContext
 
   private val isContrastEnforced: Boolean by lazy {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-      true
-    } else {
-      val theme = currentActivity.theme
-      val resId = android.R.attr.enforceNavigationBarContrast
-      val value = TypedValue()
+    val theme = currentActivity.theme
+    val value = TypedValue()
 
-      if (theme.resolveAttribute(resId, value, true)) {
-        value.data != 0
-      } else {
-        true
-      }
+    val resId = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+      R.attr.expoEnforceNavigationBarContrast
+    } else {
+      android.R.attr.enforceNavigationBarContrast
+    }
+
+    if (theme.resolveAttribute(resId, value, true)) {
+      value.data != 0
+    } else {
+      true
     }
   }
 

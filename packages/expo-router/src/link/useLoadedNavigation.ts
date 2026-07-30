@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 
-import { store } from '../global-state/router-store';
+import { store } from '../global-state/store';
 import type { NavigationProp, NavigationState } from '../react-navigation/native';
 import { useNavigation } from '../react-navigation/native';
 

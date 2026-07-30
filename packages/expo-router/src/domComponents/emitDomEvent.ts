@@ -1,3 +1,4 @@
+import type { LinkToOptions } from '../global-state/routing';
 import {
   ROUTER_SET_PARAMS_TYPE,
   ROUTER_DISMISS_TYPE,
@@ -5,7 +6,6 @@ import {
   ROUTER_DISMISS_ALL_TYPE,
   ROUTER_LINK_TYPE,
 } from './events';
-import type { LinkToOptions } from '../global-state/routing';
 
 function emitDomEvent(type: string, data: any = {}) {
   // @ts-expect-error: ReactNativeWebView is a global variable injected by the WebView

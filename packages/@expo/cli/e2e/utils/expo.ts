@@ -10,7 +10,7 @@ import {
   createBackgroundServer,
 } from './server';
 
-const EXPO_CLI_BIN = require.resolve('../../build/bin/cli');
+const EXPO_CLI_BIN = require.resolve('../../bin/cli');
 
 /** Execute the Expo CLI, from source and with verbose logging on unexpected errors */
 export const executeExpoAsync: typeof executeAsync = (cwd, flags, options) =>
@@ -95,7 +95,9 @@ async function fetchBundleAsync(server: BackgroundServer, url: string, init?: Re
       throw new Error(`Bundle fetch failed, received ${stripVTControlCharacters(error.message)}`);
     }
 
-    throw new Error(`Bundle fetch failed, received ${response.statusText} (${response.status})\n\n${text}`);
+    throw new Error(
+      `Bundle fetch failed, received ${response.statusText} (${response.status})\n\n${text}`
+    );
   }
 
   return response;

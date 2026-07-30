@@ -1,7 +1,5 @@
 import { use, useLayoutEffect } from 'react';
 
-import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
-import { ZoomTransitionTargetContext } from './zoom-transition-context';
 import { DescriptorsContext } from '../../fork/native-stack/descriptors-context';
 import {
   getInternalExpoRouterParams,
@@ -12,6 +10,8 @@ import {
 import { isModalPresentation } from '../../utils/stackPresentation';
 import { useIsPreview } from '../preview/PreviewRouteContext';
 import { LinkZoomTransitionEnabler } from '../preview/native';
+import type { ZoomTransitionEnablerProps } from './ZoomTransitionEnabler.types';
+import { ZoomTransitionTargetContext } from './zoom-transition-context';
 
 let _isZoomTransitionEnabled = process.env.EXPO_OS === 'ios';
 

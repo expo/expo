@@ -42,12 +42,14 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
       return
     }
     let currentTime = CACurrentMediaTime()
+    let currentDate = Date()
 
     AppMetricsActor.isolated { [self] in
       if startupState != .launching {
         return
       }
       markers.finishedLaunching = currentTime
+      markers.finishedLaunchingDate = currentDate
 
       // Start tracking frame metrics from this point so the data
       // matches the TTI window (finishedLaunching → markInteractive).
@@ -105,11 +107,18 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
         let frameMetrics = frameMetricsRecorder.stop()
         let deviceState = await DeviceConditions.deviceState()
         let networkPath = await NetworkPathMonitor.shared.waitForFirstPath()
+        let networkRequests: NetworkRequestSummary? = {
+          guard let anchor = markers.finishedLaunchingDate else {
+            return nil
+          }
+          return NetworkRequestMonitor.shared.summarize(start: anchor, end: Date())
+        }()
         let mergedParams = MetricParamsBuilder.build(
           userParams: params,
           frameMetrics: frameMetrics,
           deviceState: deviceState,
-          networkPath: networkPath
+          networkPath: networkPath,
+          networkRequests: networkRequests
         )
         let metric = Metric(
           category: .appStartup,
@@ -138,30 +147,22 @@ final class AppStartupMonitoring: MetricReporter, @unchecked Sendable {
   // MARK: - AppLaunchType
 
   internal enum AppLaunchType: String {
-    /**
-     The app is launched from scratch. The system must allocate memory, start a fresh runtime environment,
-     load the app's code and resources from disk, and initialize its components before rendering the UI.
-     This is the slowest type of launch and typically occurs after a fresh install, reboot,
-     or when the OS has killed the app to reclaim memory
-     */
+    /// The app is launched from scratch. The system must allocate memory, start a fresh runtime environment,
+    /// load the app's code and resources from disk, and initialize its components before rendering the UI.
+    /// This is the slowest type of launch and typically occurs after a fresh install, reboot,
+    /// or when the OS has killed the app to reclaim memory
     case cold
-    /**
-     The app's main process is still running in memory, but the UI and navigation state have been torn down.
-     The system does not need to restart the app process or reinitialize the runtime environment,
-     but it must recreate the app's interface and restore any preserved state.
-     This often happens when the app is in a background state and the system has cleared its UI to free up memory.
-     */
+    /// The app's main process is still running in memory, but the UI and navigation state have been torn down.
+    /// The system does not need to restart the app process or reinitialize the runtime environment,
+    /// but it must recreate the app's interface and restore any preserved state.
+    /// This often happens when the app is in a background state and the system has cleared its UI to free up memory.
     case warm
-    /**
-     The system prewarmed the app, partially running its launch sequence in the background before the user opens it.
-     In this case we can't reliably measure app startup times, so we do not collect these metrics.
-     */
+    /// The system prewarmed the app, partially running its launch sequence in the background before the user opens it.
+    /// In this case we can't reliably measure app startup times, so we do not collect these metrics.
     case prewarmed
   }
 
-  /**
-   Tries to guess what type of launch it was. This most likely does not cover all cases and may sometimes return warm when it was actually cold
-   */
+  /// Tries to guess what type of launch it was. This most likely does not cover all cases and may sometimes return warm when it was actually cold
   private func getAppLaunchType() -> AppLaunchType {
     // `ActivePrewarm` flag was set => prewarmed launch
     if AppLoadTimeProvider.wasPrewarmActive() {

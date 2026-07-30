@@ -138,7 +138,7 @@ public final class ImageView: ExpoView {
   public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
     super.traitCollectionDidChange(previousTraitCollection)
     if self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection) {
-      // The mask layer we adjusted would be invaliated from `RCTViewComponentView.traitCollectionDidChange`.
+      // The mask layer we adjusted would be invalidated from `RCTViewComponentView.traitCollectionDidChange`.
       // After that we have to recalculate the mask layer in `applyContentPosition`.
       applyContentPosition(contentSize: imageLayoutSize, containerSize: frame.size)
     }
@@ -269,6 +269,12 @@ public final class ImageView: ExpoView {
           "isAnimated": image.sd_isAnimated
         ]
       ])
+
+      appContext?.moduleRegistry.getModule(implementing: ImageModule.self)?.emitImageLoaded(
+        url: imageUrl?.absoluteString ?? "",
+        width: image.size.width * image.scale,
+        height: image.size.height * image.scale
+      )
 
       let scale = window?.screen.scale ?? UIScreen.main.scale
       imageLayoutSize = idealSize(

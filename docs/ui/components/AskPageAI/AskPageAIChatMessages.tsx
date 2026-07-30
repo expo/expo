@@ -59,7 +59,7 @@ export function AskPageAIChatMessages({
   if (conversation.length === 0) {
     return (
       <div className="rounded-md border border-default bg-subtle px-3 py-2 shadow-xs">
-        <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
+        <FOOTNOTE className="font-medium text-default">AI assistant</FOOTNOTE>
         <div className="mt-1 space-y-3 text-sm text-secondary">
           I'm an SDK AI assistant — ask me a question about the{' '}
           <span className="font-medium text-default">
@@ -129,7 +129,7 @@ export function AskPageAIChatMessages({
               </div>
             </div>
             <div className="px-0">
-              <FOOTNOTE className="font-medium text-default">AI Assistant</FOOTNOTE>
+              <FOOTNOTE className="font-medium text-default">AI assistant</FOOTNOTE>
               <div className="mt-1 space-y-3 text-sm text-secondary">
                 {answerForDisplay ? (
                   <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
@@ -152,7 +152,10 @@ export function AskPageAIChatMessages({
                     onClick={() => {
                       onSearchAcrossDocs(displayQuestion);
                     }}>
-                    <FileSearch02Icon className="mr-2 icon-xs text-icon-secondary" />
+                    <FileSearch02Icon
+                      aria-hidden="true"
+                      className="mr-2 icon-xs text-icon-secondary"
+                    />
                     {hasTriggeredGlobalSearch || isPendingGlobal
                       ? 'Searching Expo docs…'
                       : 'Search Expo docs'}
@@ -183,6 +186,7 @@ export function AskPageAIChatMessages({
                         onFeedback(qa.id, qa.reaction ?? null, 'upvote');
                       }}>
                       <ThumbsUpIcon
+                        aria-hidden="true"
                         className={mergeClasses(
                           'icon-xs',
                           isUpvoted ? 'text-icon-success' : 'text-icon-default'
@@ -204,6 +208,7 @@ export function AskPageAIChatMessages({
                         onFeedback(qa.id, qa.reaction ?? null, 'downvote');
                       }}>
                       <ThumbsDownIcon
+                        aria-hidden="true"
                         className={mergeClasses(
                           'icon-xs',
                           isDownvoted ? 'text-icon-danger' : 'text-icon-default'

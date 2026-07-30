@@ -72,7 +72,7 @@ public struct JavaScriptTypedArray: ~Copyable {
 
   // We need to redefine the C++ enum (see TypedArray.h) to expose it to Swift
   // without leaking the C++ type into the public API. Please keep them in-sync!
-  public enum Kind: Int {
+  public enum Kind: Int, Sendable {
     case Int8Array = 1
     case Int16Array = 2
     case Int32Array = 3

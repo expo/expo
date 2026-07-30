@@ -2,8 +2,8 @@
 
 import { use } from 'react';
 
-import type { MenuActionProps, MenuProps } from './types';
 import { InternalLinkPreviewContext } from '../link/InternalLinkPreviewContext';
+import type { MenuActionProps, MenuProps } from './types';
 
 /**
  * This component renders a context menu action for a link.

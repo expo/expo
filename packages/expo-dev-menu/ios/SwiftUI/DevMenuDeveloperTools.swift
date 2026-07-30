@@ -35,6 +35,31 @@ struct DevMenuDeveloperTools: View {
         .buttonStyle(.plain)
 
         Divider()
+
+        if viewModel.availableAppKeys.count > 1 {
+          NavigationLink(destination: DevMenuComponentsView().environmentObject(viewModel)) {
+            HStack {
+              Image(systemName: "square.stack.3d.up")
+                .frame(width: 24, height: 24)
+                .foregroundColor(.primary)
+                .opacity(0.6)
+
+              Text("Components")
+                .foregroundColor(.primary)
+
+              Spacer()
+
+              Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(Color.expoSecondarySystemBackground)
+          }
+          .buttonStyle(.plain)
+
+          Divider()
+        }
         #endif
 
         DevMenuActionButton(

@@ -1,86 +1,65 @@
 'use client';
-import {
-  createNavigatorFactory,
-  type DrawerActionHelpers,
-  type DrawerNavigationState,
-  DrawerRouter,
-  type DrawerRouterOptions,
-  type NavigatorTypeBagBase,
-  type ParamListBase,
-  type StaticConfig,
-  type TypedNavigator,
-  useNavigationBuilder,
-} from '../../native';
+// TODO: Rename this file to `createStandardDrawerNavigator.tsx` in a follow-up.
+import { createStandardNavigator } from 'standard-navigation';
+
+import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
+import type { DrawerNavigationState, ParamListBase } from '../../native';
 import type {
+  DrawerDescriptorMap,
+  DrawerNavigationConfig,
   DrawerNavigationEventMap,
+  DrawerNavigationHelpers,
   DrawerNavigationOptions,
-  DrawerNavigationProp,
-  DrawerNavigatorProps,
 } from '../types';
 import { DrawerView } from '../views/DrawerView';
 
-function DrawerNavigator({
-  id,
-  initialRouteName,
-  defaultStatus = 'closed',
-  backBehavior,
-  UNSTABLE_routeNamesChangeBehavior,
-  children,
-  layout,
-  screenListeners,
-  screenOptions,
-  screenLayout,
-  UNSTABLE_router,
-  ...rest
-}: DrawerNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
-    DrawerNavigationState<ParamListBase>,
-    DrawerRouterOptions,
-    DrawerActionHelpers<ParamListBase>,
-    DrawerNavigationOptions,
-    DrawerNavigationEventMap
-  >(DrawerRouter, {
-    id,
-    initialRouteName,
-    defaultStatus,
-    backBehavior,
-    UNSTABLE_routeNamesChangeBehavior,
-    children,
-    layout,
-    screenListeners,
-    screenOptions,
-    screenLayout,
-    UNSTABLE_router,
-  });
+export interface DrawerNavigatorCreateProps {
+  drawerState: DrawerNavigationState<ParamListBase>;
+  navigation: DrawerNavigationHelpers;
+}
 
+export interface DrawerNavigatorConfig extends DrawerNavigationConfig {
+  defaultStatus?: 'open' | 'closed';
+}
+
+export type DrawerNavigatorContentProps = DrawerNavigatorConfig & DrawerNavigatorCreateProps;
+
+export type StandardDrawerNavigationEventMap = {
+  [Event in keyof DrawerNavigationEventMap]: DrawerNavigationEventMap[Event] & {
+    canPreventDefault: Event extends 'drawerItemPress' ? true : false;
+  };
+};
+
+type ContentArgs = StandardNavigatorContentProps<
+  DrawerNavigationOptions,
+  StandardDrawerNavigationEventMap,
+  DrawerNavigatorContentProps
+>;
+
+function DrawerNavigatorContent({
+  descriptors,
+  drawerState,
+  navigation,
+  defaultStatus = 'closed',
+  drawerContent,
+  detachInactiveScreens,
+}: ContentArgs) {
   return (
-    <NavigationContent>
-      <DrawerView
-        {...rest}
-        defaultStatus={defaultStatus}
-        state={state}
-        descriptors={descriptors}
-        navigation={navigation}
-      />
-    </NavigationContent>
+    <DrawerView
+      state={drawerState}
+      navigation={navigation}
+      // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
+      // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
+      descriptors={descriptors as unknown as DrawerDescriptorMap}
+      defaultStatus={defaultStatus}
+      drawerContent={drawerContent}
+      detachInactiveScreens={detachInactiveScreens}
+    />
   );
 }
 
-export function createDrawerNavigator<
-  const ParamList extends ParamListBase,
-  const NavigatorID extends string | undefined = string | undefined,
-  const TypeBag extends NavigatorTypeBagBase = {
-    ParamList: ParamList;
-    NavigatorID: NavigatorID;
-    State: DrawerNavigationState<ParamList>;
-    ScreenOptions: DrawerNavigationOptions;
-    EventMap: DrawerNavigationEventMap;
-    NavigationList: {
-      [RouteName in keyof ParamList]: DrawerNavigationProp<ParamList, RouteName, NavigatorID>;
-    };
-    Navigator: typeof DrawerNavigator;
-  },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(DrawerNavigator)(config);
-}
+export const createStandardDrawerNavigator = createStandardNavigator<
+  DrawerNavigationOptions,
+  StandardDrawerNavigationEventMap,
+  DrawerNavigatorContentProps
+>(DrawerNavigatorContent);

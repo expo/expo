@@ -6,7 +6,6 @@ buildscript {
 
 plugins {
   id 'com.android.library'
-  id 'kotlin-kapt'
   id 'expo-module-gradle-plugin'
 }
 

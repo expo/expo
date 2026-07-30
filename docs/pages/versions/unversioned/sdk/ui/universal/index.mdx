@@ -5,7 +5,6 @@ description: Cross-platform components for building shared UIs across Android, i
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
 packageName: '@expo/ui'
 platforms: ['android', 'ios', 'web', 'expo-go']
-hideTOC: true
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
@@ -35,16 +34,18 @@ export default function Example() {
 }
 ```
 
-## Components
+## Available components
 
-- **Container:** [`Host`](host) — the required root for every universal subtree.
-- **Layout:** [`Column`](column), [`Row`](row), [`Spacer`](spacer), [`ScrollView`](scrollview).
-- **Display:** [`Text`](text), [`Icon`](icon).
-- **Controls:** [`Button`](button), [`Switch`](switch), [`Checkbox`](checkbox), [`Slider`](slider), [`TextInput`](textinput), [`Picker`](picker).
-- **Disclosure and presentation:** [`BottomSheet`](bottomsheet), [`Collapsible`](collapsible).
-- **Collections and forms:** [`List`](list) (with `ListItem`), [`FieldGroup`](fieldgroup).
+| Category                    | Components                                                                                                                       |
+| --------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
+| Container                   | [`Host`](host), the required root for every universal subtree.                                                                   |
+| Layout                      | [`Column`](column), [`Row`](row), [`Spacer`](spacer), [`ScrollView`](scrollview)                                                 |
+| Display                     | [`Text`](text), [`Icon`](icon)                                                                                                   |
+| Controls                    | [`Button`](button), [`Switch`](switch), [`Checkbox`](checkbox), [`Slider`](slider), [`TextInput`](textinput), [`Picker`](picker) |
+| Disclosure and presentation | [`BottomSheet`](bottomsheet), [`Collapsible`](collapsible)                                                                       |
+| Collections and forms       | [`List`](list) (with `ListItem`), [`FieldGroup`](fieldgroup)                                                                     |
 
-## When to use this versus `swift-ui` / `jetpack-compose`
+## When to use this versus `jetpack-compose`/`swift-ui`
 
 - Reach for **universal** components when you want one component tree that runs unmodified on Android, iOS, and web. The platform-native look and feel is preserved on Android and iOS because the components delegate to Jetpack Compose/SwiftUI under the hood.
-- Reach for **[`@expo/ui/swift-ui`](../swift-ui)** or **[`@expo/ui/jetpack-compose`](../jetpack-compose)** directly when you need platform-specific controls, modifiers, or behavior that the universal API doesn't surface.
+- Reach for **[`@expo/ui/jetpack-compose`](../jetpack-compose)** or **[`@expo/ui/swift-ui`](../swift-ui)** directly when you need platform-specific controls, modifiers, or behavior that the universal API doesn't surface.

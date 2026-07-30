@@ -26,7 +26,7 @@ export type HorizontalFloatingToolbarColors = {
   fabContentColor?: ColorValue;
 };
 
-export type HorizontalFloatingToolbarProps = {
+export interface HorizontalFloatingToolbarProps {
   /**
    * The variant of the horizontal floating toolbar.
    * @default 'standard'
@@ -48,9 +48,9 @@ export type HorizontalFloatingToolbarProps = {
    * Modifiers for the component.
    */
   modifiers?: ExpoModifier[];
-};
+}
 
-export type HorizontalFloatingToolbarFloatingActionButtonProps = {
+export interface HorizontalFloatingToolbarFloatingActionButtonProps {
   /**
    * A callback that is called when the button is pressed.
    */
@@ -60,7 +60,7 @@ export type HorizontalFloatingToolbarFloatingActionButtonProps = {
    * The children of the component.
    */
   children: React.ReactNode;
-};
+}
 
 type NativeHorizontalFloatingToolbarProps = HorizontalFloatingToolbarProps & {};
 

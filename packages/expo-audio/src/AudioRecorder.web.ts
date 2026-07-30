@@ -31,7 +31,7 @@ export class AudioRecorderWeb
   private mediaRecorder: MediaRecorder | null = null;
   private mediaRecorderUptimeOfLastStartResume = 0;
   private mediaRecorderIsRecording = false;
-  private timeoutIds: number[] = [];
+  private timeoutIds: ReturnType<typeof setTimeout>[] = [];
   private cachedInputs: RecordingInput[] = [];
   private selectedDeviceId: string | null = null;
   private stream: MediaStream | null = null;
@@ -40,6 +40,7 @@ export class AudioRecorderWeb
   private analyserBuffer: Float32Array<ArrayBuffer> | null = null;
   private analyserSource: MediaStreamAudioSourceNode | null = null;
   private meteringEnabled = false;
+  private recordedBytes = 0;
 
   get isRecording(): boolean {
     return this.mediaRecorder?.state === 'recording';
@@ -108,6 +109,7 @@ export class AudioRecorderWeb
         this.mediaRecorder?.state === 'recording' || this.mediaRecorder?.state === 'inactive',
       isRecording: this.mediaRecorder?.state === 'recording',
       durationMillis: this.getAudioRecorderDurationMillis(),
+      fileSize: this.recordedBytes,
       mediaServicesDidReset: false,
       url: this.uri,
     };
@@ -183,6 +185,7 @@ export class AudioRecorderWeb
 
     this.mediaRecorderUptimeOfLastStartResume = 0;
     this.currentTime = 0;
+    this.recordedBytes = 0;
 
     const audioConstraints = this.selectedDeviceId
       ? { deviceId: { exact: this.selectedDeviceId } }
@@ -242,6 +245,10 @@ export class AudioRecorderWeb
       this.mediaRecorderUptimeOfLastStartResume = Date.now();
       this.currentTime = 0;
       this.mediaRecorderIsRecording = true;
+    });
+
+    mediaRecorder.addEventListener('dataavailable', (event) => {
+      this.recordedBytes += event.data.size;
     });
 
     mediaRecorder?.addEventListener('stop', () => {

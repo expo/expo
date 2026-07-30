@@ -1,7 +1,6 @@
 {
   "name": "create-expo-nightly",
   "version": "0.4.1",
-  "license": "MIT",
   "description": "A tool to create an Expo app for react-native nightlies testing",
   "keywords": [
     "expo",
@@ -9,37 +8,50 @@
     "react-native",
     "testing"
   ],
-  "bin": {
-    "create-expo-nightly": "src/index.ts"
-  },
-  "main": "src/index.ts",
-  "type": "module",
-  "files": [
-    "src",
-    "patches"
-  ],
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck",
-    "prepublishOnly": "pnpm run clean && pnpm run build"
-  },
   "homepage": "https://github.com/expo/expo/tree/main/packages/create-expo-nightly#readme",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
+  "license": "MIT",
   "repository": {
     "url": "git+https://github.com/expo/expo.git",
     "directory": "packages/create-expo-nightly"
+  },
+  "bin": {
+    "create-expo-nightly": "src/index.ts"
+  },
+  "files": [
+    "src",
+    "patches"
+  ],
+  "type": "module",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json",
+    "prepublishOnly": "pnpm run clean && pnpm run build"
   },
   "dependencies": {
     "commander": "^12.1.0",
     "zx": "^8.8.5"
   },
   "devDependencies": {
-    "@tsconfig/node22": "^22.0.3",
     "expo-module-scripts": "workspace:*"
   }
 }

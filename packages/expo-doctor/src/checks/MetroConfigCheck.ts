@@ -2,9 +2,9 @@ import path from 'path';
 import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 import semver from 'semver';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { loadMetroUserConfigAsync, getDefaultMetroConfig } from '../utils/metroConfigLoader';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 const isSubsetOf = (
   defaultValues: readonly string[] | undefined,
@@ -38,7 +38,7 @@ export class MetroConfigCheck implements DoctorCheck {
       return {
         isSuccessful: false,
         issues: [
-          'It looks like that you are using a custom metro.config.js that does not extend "expo/metro-config". This can lead to unexpected and hard to debug issues. ' +
+          'It looks like you are using a custom metro.config.js that does not extend "expo/metro-config". This can lead to unexpected and hard to debug issues. ' +
             learnMore('https://docs.expo.dev/guides/customizing-metro/'),
         ],
         advice: [`Update your "metro.config.js" to extend "expo/metro-config".`],

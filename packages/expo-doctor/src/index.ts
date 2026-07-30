@@ -9,7 +9,7 @@ import { actionAsync } from './doctor';
 
 // Check Node.js version and issue a loud warning if it's too outdated
 // This is sent to stderr (console.error) so it doesn't interfere with programmatic commands
-const NODE_MIN = [20, 19, 4] as const;
+const NODE_MIN = [22, 13, 0] as const;
 const nodeVersion = process.version?.slice(1).split('.', 3).map(Number);
 if (
   nodeVersion[0]! < NODE_MIN[0] ||

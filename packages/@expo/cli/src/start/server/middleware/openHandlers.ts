@@ -1,3 +1,4 @@
+import type { UrlCreator } from '../UrlCreator';
 import type {
   OpenActionResult,
   OpenInfoResult,
@@ -7,7 +8,6 @@ import type {
   OpenPlatformInfo,
   OpenRequestedRuntime,
 } from './OpenMiddleware';
-import type { UrlCreator } from '../UrlCreator';
 
 interface InfoHandlerDeps {
   /** Stable UrlCreator instance — its `defaults` mutate when `toggleRuntimeMode` runs, so the same instance keeps producing fresh URLs and reflects the current scheme. */

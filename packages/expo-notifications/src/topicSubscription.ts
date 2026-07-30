@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import TopicSubscriptionModule from './TopicSubscriptionModule';
 import { warnOfExpoGoPushUsage } from './warnOfExpoGoPushUsage';

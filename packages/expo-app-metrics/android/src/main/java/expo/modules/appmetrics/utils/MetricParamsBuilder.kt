@@ -1,6 +1,7 @@
 package expo.modules.appmetrics.utils
 
 import expo.modules.appmetrics.frames.FrameMetricsRecord
+import expo.modules.appmetrics.networkrequests.NetworkRequestSummary
 
 /**
  * Single source of truth for the `expo.*` keys we attach to metrics. Takes
@@ -16,7 +17,8 @@ object MetricParamsBuilder {
     userParams: Map<String, Any>? = null,
     frameMetrics: FrameMetricsRecord? = null,
     deviceState: DeviceState? = null,
-    networkState: NetworkState? = null
+    networkState: NetworkState? = null,
+    networkRequests: NetworkRequestSummary? = null
   ): Map<String, Any> {
     val params = mutableMapOf<String, Any>()
     userParams?.let { params.putAll(it) }
@@ -34,6 +36,15 @@ object MetricParamsBuilder {
     if (networkState != null) {
       params["expo.network.connected"] = networkState.connected
       params["expo.network.type"] = networkTransportString(networkState.transport)
+    }
+    if (networkRequests != null && !networkRequests.isEmpty) {
+      params["expo.network.requests.count"] = networkRequests.count
+      params["expo.network.requests.failed"] = networkRequests.failed
+      params["expo.network.requests.bytesReceived"] = networkRequests.bytesReceived
+      params["expo.network.requests.bytesSent"] = networkRequests.bytesSent
+      params["expo.network.requests.totalDuration"] = networkRequests.totalDuration
+      networkRequests.slowestDuration?.let { params["expo.network.requests.slowestDuration"] = it }
+      networkRequests.slowestHost?.let { params["expo.network.requests.slowestHost"] = it }
     }
     return params
   }

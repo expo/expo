@@ -238,8 +238,11 @@ struct JavaScriptObjectTests {
     @JavaScriptActor
     func `set property with async function closure`() async throws {
       let object = JavaScriptObject(runtime)
-      object.setProperty("addAsync") { this, arguments async throws in
-        return JavaScriptValue(self.runtime, arguments[0].getInt() + arguments[1].getInt())
+      object.setProperty("addAsync") { this, arguments in
+        let sum = arguments[0].getInt() + arguments[1].getInt()
+        return {
+          return JavaScriptValue(self.runtime, sum)
+        }
       }
       let fn = try object.getPropertyAsFunction("addAsync")
       let result = try await fn.call(arguments: 20, 22).getPromise().await()

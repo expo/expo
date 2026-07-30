@@ -1,5 +1,6 @@
 import commander from 'commander';
 
+import { generateJSXIntrinsicsFileContent } from '../typescriptGeneration';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -8,7 +9,6 @@ import {
   TypeInformationCommandCommonAllArguments,
   writeStringToFileOrPrintToConsole,
 } from './commandUtils';
-import { generateJSXIntrinsicsFileContent } from '../typescriptGeneration';
 
 export function generateJsxIntrinsics(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-jsx-intrinsics'))

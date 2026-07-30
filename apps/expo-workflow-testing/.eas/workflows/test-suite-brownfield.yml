@@ -1,5 +1,9 @@
 name: Test Suite Brownfield Integrated
 
+defaults:
+  tools:
+    pnpm: '10.34.5'
+
 on:
   workflow_dispatch: {}
   pull_request:

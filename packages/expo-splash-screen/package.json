@@ -2,42 +2,49 @@
   "name": "expo-splash-screen",
   "version": "56.0.10",
   "description": "Provides a module to allow keeping the native Splash Screen visible until you choose to hide it.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "exports": {
-    ".": "./build/index.js",
-    "./plugin": "./plugin/build/index.js",
-    "./package.json": "./package.json",
-    "./app.plugin.js": "./app.plugin.js"
-  },
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
-    "react-native",
     "expo",
     "expo-splash-screen",
-    "splash-screen",
-    "splash",
+    "launch",
     "launch-screen",
-    "launch"
+    "react-native",
+    "splash",
+    "splash-screen"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/splash-screen/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-splash-screen"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./plugin": "./plugin/build/index.js",
+    "./package.json": "./package.json",
+    "./app.plugin.js": "./app.plugin.js"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/splash-screen/",
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
+  },
   "dependencies": {
     "@expo/config-plugins": "workspace:~56.0.8",
     "@expo/image-utils": "workspace:^0.10.1",
@@ -45,9 +52,9 @@
   },
   "devDependencies": {
     "@expo/plist": "workspace:*",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "@types/xml2js": "~0.4.11",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "memfs": "^3.2.0"
   },

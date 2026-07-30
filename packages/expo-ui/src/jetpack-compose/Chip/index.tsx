@@ -81,7 +81,7 @@ const SlotNativeView: React.ComponentType<NativeSlotViewProps> = requireNativeVi
 
 // region AssistChip
 
-export type AssistChipProps = {
+export interface AssistChipProps {
   /**
    * Whether the chip is enabled and can be clicked.
    * @default true
@@ -111,7 +111,7 @@ export type AssistChipProps = {
    * Children containing Label, LeadingIcon, and TrailingIcon slots.
    */
   children: React.ReactNode;
-};
+}
 
 type NativeAssistChipProps = Omit<AssistChipProps, 'onClick'> & {
   onNativeClick?: () => void;
@@ -170,7 +170,7 @@ export { AssistChipComponent as AssistChip };
 
 // region FilterChip
 
-export type FilterChipProps = {
+export interface FilterChipProps {
   /**
    * Whether the chip is currently selected.
    */
@@ -203,7 +203,7 @@ export type FilterChipProps = {
    * Children containing Label, LeadingIcon, and TrailingIcon slots.
    */
   children: React.ReactNode;
-};
+}
 
 type NativeFilterChipProps = Omit<FilterChipProps, 'onClick'> & {
   onNativeClick?: () => void;
@@ -262,7 +262,7 @@ export { FilterChipComponent as FilterChip };
 
 // region InputChip
 
-export type InputChipProps = {
+export interface InputChipProps {
   /**
    * Whether the chip is enabled and can be interacted with.
    * @default true
@@ -297,7 +297,7 @@ export type InputChipProps = {
    * Children containing Label, Avatar, and TrailingIcon slots.
    */
   children: React.ReactNode;
-};
+}
 
 type NativeInputChipProps = Omit<InputChipProps, 'onClick'> & {
   onNativeClick?: () => void;
@@ -356,7 +356,7 @@ export { InputChipComponent as InputChip };
 
 // region SuggestionChip
 
-export type SuggestionChipProps = {
+export interface SuggestionChipProps {
   /**
    * Whether the chip is enabled and can be clicked.
    * @default true
@@ -386,7 +386,7 @@ export type SuggestionChipProps = {
    * Children containing Label and Icon slots.
    */
   children: React.ReactNode;
-};
+}
 
 type NativeSuggestionChipProps = Omit<SuggestionChipProps, 'onClick'> & {
   onNativeClick?: () => void;

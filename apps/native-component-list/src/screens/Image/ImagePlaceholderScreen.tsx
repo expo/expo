@@ -37,8 +37,7 @@ export default function ImagePlaceholderScreen() {
           <Text style={styles.text}>
             Set one below and try it multiple times{'\n'}
             to confirm that the placeholder is not{'\n'}
-            displayed when switching the sources{'\n'}
-            👇
+            displayed when switching the sources{'\n'}👇
           </Text>
           <Button
             style={styles.actionButton}
@@ -46,10 +45,7 @@ export default function ImagePlaceholderScreen() {
             onPress={loadAnyImage}
           />
 
-          <Text style={styles.text}>
-            Now reset it back to the placeholder{'\n'}
-            👇
-          </Text>
+          <Text style={styles.text}>Now reset it back to the placeholder{'\n'}👇</Text>
           <Button style={styles.actionButton} title="Reset the source" onPress={resetSource} />
 
           <View
@@ -64,8 +60,7 @@ export default function ImagePlaceholderScreen() {
           <Text style={styles.text}>
             The placeholder should cover the whole container (if you can see the red background,
             something is wrong)
-            {'\n'}
-            👇
+            {'\n'}👇
           </Text>
           <Image
             style={[styles.image, { backgroundColor: 'red', width: 300, height: 200 }]}

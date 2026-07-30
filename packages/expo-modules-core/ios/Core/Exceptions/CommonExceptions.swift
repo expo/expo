@@ -31,6 +31,15 @@ public struct Exceptions {
     }
   }
 
+  /// No app context is associated with a JavaScript runtime because that runtime was never prepared
+  /// by Expo modules (its `global.expo` object carries no native state). Thrown by code that only
+  /// has a runtime and recovers the context via `AppContext.from(runtime:)`.
+  public final class AppContextNotFound: Exception {
+    override public var reason: String {
+      "Cannot find an app context associated with the JavaScript runtime"
+    }
+  }
+
   /**
    An exception to throw when the operation is not supported on the simulator.
    */
@@ -51,6 +60,21 @@ public struct Exceptions {
   public final class SwiftUIViewNotFound<ViewType: ExpoSwiftUIView>: GenericException<(tag: Int, type: ViewType.Type)> {
     override public var reason: String {
       "Unable to find the '\(param.type)' view with tag '\(param.tag)'"
+    }
+  }
+
+  /**
+   An exception to throw when a JavaScript caller passes a number of arguments outside the range the
+   native function accepts. The accepted range spans the required count (total minus the trailing run
+   of parameters that have a default value or an optional type) through the maximum (total parameters).
+   Thrown by the bindings the Expo Modules macros synthesize for `@JS` functions.
+   */
+  public final class ArgumentsRangeMismatch: GenericException<(functionName: String, received: Int, required: Int, maximum: Int)> {
+    override public var reason: String {
+      if param.required == param.maximum {
+        return "'\(param.functionName)' takes \(param.maximum) argument(s), but received \(param.received)"
+      }
+      return "'\(param.functionName)' takes from \(param.required) to \(param.maximum) arguments, but received \(param.received)"
     }
   }
 

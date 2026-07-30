@@ -54,7 +54,7 @@ function setupNodeModules(
     if (!match) {
       return undefined;
     }
-    const packageName = match[1];
+    const packageName = match[1]!;
 
     if (resolutionGraph) {
       const key = `${baseDir} > ${packageName}`;
@@ -332,7 +332,7 @@ describe('runAsync', () => {
       if (!match) {
         return undefined;
       }
-      const packageName = match[1];
+      const packageName = match[1]!;
 
       const graph: Record<string, string | undefined> = {
         [`${projectRoot} > expo`]: expoDir,

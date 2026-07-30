@@ -1,5 +1,4 @@
-import { isRunningInExpoGo } from 'expo';
-import { requireOptionalNativeModule } from 'expo-modules-core';
+import { isRunningInExpoGo, requireOptionalNativeModule } from 'expo';
 
 import type { SplashScreenNativeModule, SplashScreenOptions } from './SplashScreen.types';
 

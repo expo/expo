@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { type NavigatorArgs } from 'standard-navigation';
 
-import type { StandardNavigatorEventMapBase } from './types';
 import { type EventEmitter } from '../react-navigation/core';
+import type { StandardNavigatorEventMapBase } from './types';
 
 export function useStandardEmitter<NavigatorEventMap extends StandardNavigatorEventMapBase>(
   navigation: EventEmitter<NavigatorEventMap>

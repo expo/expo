@@ -1,3 +1,4 @@
+import type { ExpoConfig } from '@expo/config';
 import { vol } from 'memfs';
 import * as path from 'path';
 
@@ -201,6 +202,8 @@ describe('runAsync', () => {
     const result = await check.runAsync({
       pkg: { name: 'name', version: '1.0.0' },
       ...additionalProjectProps,
+      // `splash` is a valid runtime app-config field that isn't part of the
+      // top-level ExpoConfig type, so cast to satisfy excess-property checks.
       exp: {
         name: 'name',
         slug: 'slug',
@@ -208,7 +211,7 @@ describe('runAsync', () => {
         android: {},
         splash: {},
         icon: 'path/to/icon.png',
-      },
+      } as ExpoConfig,
       staticConfigPath: '/tmp/project/app.json',
     });
 

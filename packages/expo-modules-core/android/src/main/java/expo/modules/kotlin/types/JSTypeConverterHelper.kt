@@ -10,9 +10,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.formatters.FormattedRecord
 import expo.modules.kotlin.records.formatters.ValueOrSkip
-import io.github.lukmccall.pika.PIntrospectionData
-import io.github.lukmccall.pika.PIntrospectionProvider
-import io.github.lukmccall.pika.PProperty
+import io.github.expo.pika.PIntrospectionData
+import io.github.expo.pika.PIntrospectionProvider
+import io.github.expo.pika.PProperty
 import java.io.File
 import java.net.URI
 import java.net.URL

@@ -8,7 +8,7 @@ import {
  * Presentation detent type for controlling sheet heights.
  * - `'medium'`: System medium height (approximately half screen)
  * - `'large'`: System large height (full screen)
- * - `{ fraction: number }`: Fraction of screen height (0-1, for example, 0.4 equals to 40% of screen)
+ * - `{ fraction: number }`: Fraction of screen height (0-1, for example, 0.4 equals 40% of screen)
  * - `{ height: number }`: Fixed height in points
  */
 export type PresentationDetent = 'medium' | 'large' | { fraction: number } | { height: number };
@@ -103,3 +103,25 @@ export const presentationBackground = (color: string) =>
  */
 export const interactiveDismissDisabled = (isDisabled: boolean = true) =>
   createModifier('interactiveDismissDisabled', { isDisabled });
+
+/**
+ * Sizing behavior for a sheet presentation.
+ * - `'automatic'`: The system default sizing.
+ * - `'fitted'`: Sizes the sheet to fit its content.
+ * - `'form'`: A compact, centered form sheet.
+ * - `'page'`: A larger page sheet.
+ *
+ * @remarks Sizing mainly affects the regular size class (iPad); in a compact size class (iPhone)
+ * sheets remain edge-attached and detents drive the height.
+ */
+export type PresentationSizingType = 'automatic' | 'fitted' | 'form' | 'page';
+
+/**
+ * Sets the sizing of a sheet presentation.
+ * @param sizing - The sizing behavior to apply.
+ * @platform ios 18.0+
+ * @platform tvos 18.0+
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/presentationsizing(_:)).
+ */
+export const presentationSizing = (sizing: PresentationSizingType) =>
+  createModifier('presentationSizing', { sizing });

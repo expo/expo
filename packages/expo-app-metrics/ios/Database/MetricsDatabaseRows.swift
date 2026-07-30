@@ -2,10 +2,8 @@
 
 import Foundation
 
-/**
- A session paired with its child metrics, logs, and (optional) crash report payload — the shape
- dispatch and the JS bridge consume.
- */
+/// A session paired with its child metrics, logs, and (optional) crash report payload — the shape
+/// dispatch and the JS bridge consume.
 struct SessionWithChildren: Sendable {
   let session: SessionRow
   let metrics: [MetricRow]
@@ -13,10 +11,8 @@ struct SessionWithChildren: Sendable {
   let crashReportJSON: String?
 }
 
-/**
- Persistence-layer representation of a session row. Mirrors the columns of the `sessions` table
- and is intentionally decoupled from the in-memory `Session` class hierarchy.
- */
+/// Persistence-layer representation of a session row. Mirrors the columns of the `sessions` table
+/// and is intentionally decoupled from the in-memory `Session` class hierarchy.
 public struct SessionRow: Sendable {
   public let id: String
   public let type: String
@@ -123,10 +119,8 @@ extension SessionRow {
   }
 }
 
-/**
- Persistence-layer representation of a metric row. `id` is `nil` for rows that have not yet been
- inserted; assigned by SQLite on insert.
- */
+/// Persistence-layer representation of a metric row. `id` is `nil` for rows that have not yet been
+/// inserted; assigned by SQLite on insert.
 public struct MetricRow: Sendable {
   public let id: Int64?
   public let sessionId: String
@@ -136,9 +130,7 @@ public struct MetricRow: Sendable {
   public let value: Double
   public let routeName: String?
   public let updateId: String?
-  /**
-   JSON-encoded blob for free-form parameters. The persistence layer doesn't interpret the contents.
-   */
+  /// JSON-encoded blob for free-form parameters. The persistence layer doesn't interpret the contents.
   public let params: String?
 
   public init(
@@ -180,9 +172,7 @@ extension MetricRow {
   }
 }
 
-/**
- Persistence-layer representation of a log row.
- */
+/// Persistence-layer representation of a log row.
 public struct LogRow: Sendable {
   public let id: Int64?
   public let sessionId: String
@@ -190,9 +180,7 @@ public struct LogRow: Sendable {
   public let severity: String
   public let name: String
   public let body: String?
-  /**
-   JSON-encoded attributes blob. The persistence layer doesn't interpret the contents.
-   */
+  /// JSON-encoded attributes blob. The persistence layer doesn't interpret the contents.
   public let attributes: String?
   public let droppedAttributesCount: Int
 

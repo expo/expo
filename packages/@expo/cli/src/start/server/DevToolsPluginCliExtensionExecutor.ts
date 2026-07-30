@@ -1,13 +1,13 @@
 import { spawn, type ChildProcessWithoutNullStreams } from 'child_process';
 import path from 'path';
 
+import { isPathInside } from '../../utils/dir';
 import type {
   DevToolsPluginExecutorArguments,
   DevToolsPluginInfo,
   DevToolsPluginOutput,
 } from './DevToolsPlugin.schema';
 import { DevToolsPluginCliExtensionResults } from './DevToolsPluginCliExtensionResults';
-import { isPathInside } from '../../utils/dir';
 
 const DEFAULT_TIMEOUT_MS = 10_000; // 10 seconds
 

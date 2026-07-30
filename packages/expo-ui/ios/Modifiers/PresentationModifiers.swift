@@ -67,17 +67,13 @@ internal struct PresentationDetentsModifier: ViewModifier, Record {
 
   func body(content: Content) -> some View {
     if #available(iOS 16.0, tvOS 16.0, *) {
-      if selection != nil || eventDispatcher != nil {
-        PresentationDetentsSelectionView(
-          detents: parseDetents(),
-          rawDetents: detents ?? [],
-          initialSelection: selection.flatMap { parsePresentationDetent($0) },
-          eventDispatcher: eventDispatcher
-        ) {
-          content
-        }
-      } else {
-        content.presentationDetents(parseDetents())
+      PresentationDetentsSelectionView(
+        detents: parseDetents(),
+        rawDetents: detents ?? [],
+        initialSelection: selection.flatMap { parsePresentationDetent($0) },
+        eventDispatcher: eventDispatcher
+      ) {
+        content
       }
     } else {
       content
@@ -128,7 +124,10 @@ private struct PresentationDetentsSelectionView<WrappedContent: View>: View {
     self.initialSelection = initialSelection
     self.eventDispatcher = eventDispatcher
     self.wrappedContent = content()
-    self._selectedDetent = State(initialValue: initialSelection ?? detents.first ?? .large)
+    // Default to the first detent in the ordered array, not `detents.first` (the Set's order is
+    // randomized per process), so the sheet always opens at the same detent.
+    let firstOrderedDetent = rawDetents.compactMap { parsePresentationDetent($0) }.first
+    self._selectedDetent = State(initialValue: initialSelection ?? firstOrderedDetent ?? .large)
   }
 
   var body: some View {
@@ -214,6 +213,36 @@ internal struct PresentationBackgroundModifier: ViewModifier, Record {
   func body(content: Content) -> some View {
     if #available(iOS 16.4, tvOS 16.4, *), let color {
       content.presentationBackground(color)
+    } else {
+      content
+    }
+  }
+}
+
+// MARK: - Presentation Sizing
+
+internal enum PresentationSizingOption: String, Enumerable {
+  case automatic
+  case fitted
+  case form
+  case page
+}
+
+internal struct PresentationSizingModifier: ViewModifier, Record {
+  @Field var sizing: PresentationSizingOption = .automatic
+
+  func body(content: Content) -> some View {
+    if #available(iOS 18.0, tvOS 18.0, macOS 15.0, *) {
+      switch sizing {
+      case .automatic:
+        content.presentationSizing(.automatic)
+      case .fitted:
+        content.presentationSizing(.fitted)
+      case .form:
+        content.presentationSizing(.form)
+      case .page:
+        content.presentationSizing(.page)
+      }
     } else {
       content
     }

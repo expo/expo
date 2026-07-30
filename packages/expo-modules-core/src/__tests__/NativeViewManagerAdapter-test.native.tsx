@@ -1,5 +1,5 @@
 import { render } from '@testing-library/react-native';
-import React, { Children, type ElementType } from 'react';
+import { Children, type ElementType } from 'react';
 
 import { requireNativeViewManager } from '../NativeViewManagerAdapter';
 

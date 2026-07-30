@@ -1,6 +1,6 @@
 import 'react-native';
 import '../Expo.fx';
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 jest.mock('../async-require/getDevServer');
 

@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Animated, SectionList, StyleSheet, Text, View } from 'react-native';
 
+import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
+import Colors from '../../constants/Colors';
 import { ImageTestListItem } from './ImageTestListItem';
 import imageTests from './tests';
 import { ImageTest } from './types';
-import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
-import Colors from '../../constants/Colors';
 
 export function ImageComparisonBody({
   useAnimatedComponent,

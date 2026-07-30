@@ -55,17 +55,38 @@ This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvi
 
 Use `npx expo install` so versions match your Expo SDK:
 
-<Terminal cmd={['$ npx expo install @clerk/expo expo-secure-store']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @clerk/expo expo-secure-store'],
+    yarn: ['$ yarn expo install @clerk/expo expo-secure-store'],
+    pnpm: ['$ pnpm expo install @clerk/expo expo-secure-store'],
+    bun: ['$ bun expo install @clerk/expo expo-secure-store'],
+  }}
+/>
 
 `expo-secure-store` is a peer dependency. Clerk uses it through `@clerk/expo/token-cache` to encrypt session tokens with the iOS Keychain and the Android Keystore.
 
 If you plan to use native Sign in with Google, also install `expo-crypto`:
 
-<Terminal cmd={['$ npx expo install expo-crypto']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-crypto'],
+    yarn: ['$ yarn expo install expo-crypto'],
+    pnpm: ['$ pnpm expo install expo-crypto'],
+    bun: ['$ bun expo install expo-crypto'],
+  }}
+/>
 
 For native Sign in with Apple, install both `expo-apple-authentication` and `expo-crypto`:
 
-<Terminal cmd={['$ npx expo install expo-apple-authentication expo-crypto']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-apple-authentication expo-crypto'],
+    yarn: ['$ yarn expo install expo-apple-authentication expo-crypto'],
+    pnpm: ['$ pnpm expo install expo-apple-authentication expo-crypto'],
+    bun: ['$ bun expo install expo-apple-authentication expo-crypto'],
+  }}
+/>
 
 You do not need any of these extra packages if you only use `<AuthView />` from `@clerk/expo/native`, since the component handles social sign-in flows internally.
 
@@ -206,15 +227,44 @@ export function ProfileLink() {
 This approach requires a development build because the components are backed by native modules:
 
 <Terminal
-  cmd={[
-    '# Run a development build locally',
-    '$ npx expo run:android',
-    '',
-    '$ npx expo run:ios',
-    '',
-    '# Or build with EAS',
-    '$ eas build --platform ios --profile development',
-  ]}
+  cmd={{
+    npm: [
+      '# Run a development build locally',
+      '$ npx expo run:android',
+      '',
+      '$ npx expo run:ios',
+      '',
+      '# Or build with EAS',
+      '$ eas build --platform ios --profile development',
+    ],
+    yarn: [
+      '# Run a development build locally',
+      '$ yarn expo run:android',
+      '',
+      '$ yarn expo run:ios',
+      '',
+      '# Or build with EAS',
+      '$ eas build --platform ios --profile development',
+    ],
+    pnpm: [
+      '# Run a development build locally',
+      '$ pnpm expo run:android',
+      '',
+      '$ pnpm expo run:ios',
+      '',
+      '# Or build with EAS',
+      '$ eas build --platform ios --profile development',
+    ],
+    bun: [
+      '# Run a development build locally',
+      '$ bun expo run:android',
+      '',
+      '$ bun expo run:ios',
+      '',
+      '# Or build with EAS',
+      '$ eas build --platform ios --profile development',
+    ],
+  }}
 />
 
 </Tab>
@@ -383,13 +433,27 @@ export default function HomeScreen() {
 
 <Tab>
 
-<Terminal cmd={['$ npx expo run:android']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:android'],
+    yarn: ['$ yarn expo run:android'],
+    pnpm: ['$ pnpm expo run:android'],
+    bun: ['$ bun expo run:android'],
+  }}
+/>
 
 </Tab>
 
 <Tab>
 
-<Terminal cmd={['$ npx expo run:ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo run:ios'],
+    yarn: ['$ yarn expo run:ios'],
+    pnpm: ['$ pnpm expo run:ios'],
+    bun: ['$ bun expo run:ios'],
+  }}
+/>
 
 </Tab>
 
@@ -397,7 +461,14 @@ export default function HomeScreen() {
 
 For the JavaScript-only approach, run the following command and open the project in Expo Go:
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 </Tab>
 

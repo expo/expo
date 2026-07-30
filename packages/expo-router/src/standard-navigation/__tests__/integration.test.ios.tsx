@@ -1,5 +1,5 @@
 import { Fragment } from 'react';
-import { View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import { createStandardNavigator, type NavigatorArgs } from 'standard-navigation';
 
 import { router } from '../../imperative-api';
@@ -15,8 +15,9 @@ import {
   type TabNavigationState,
   type TabRouterOptions,
 } from '../../react-navigation/routers';
-import { act, renderRouter, screen } from '../../testing-library';
+import { act, fireEvent, renderRouter, screen } from '../../testing-library';
 import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
+import type { NavigatorContentProps, StandardNavigatorDescriptor } from '../types';
 
 type TestOptions = { title?: string };
 type TestEventMap = Record<string, { data: object | undefined; canPreventDefault: boolean }>;
@@ -39,15 +40,6 @@ const StandardTabs = unstable_createStandardRouterNavigator<
   TabNavigationState<ParamListBase>,
   TestEventMap,
   { tintColor?: string },
-  TabRouterOptions
->(NavigatorContent, TabRouter, { useOnlyUserDefinedScreens: true });
-
-// Same navigator, but without restricting to user-defined screens (the default).
-const StandardTabsAll = unstable_createStandardRouterNavigator<
-  TestOptions,
-  TabNavigationState<ParamListBase>,
-  TestEventMap,
-  object,
   TabRouterOptions
 >(NavigatorContent, TabRouter);
 
@@ -189,26 +181,12 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().tintColor).toBe('rebeccapurple');
   });
 
-  it('respects useOnlyUserDefinedScreens by filtering undeclared routes', () => {
+  it('always registers undeclared filesystem routes', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
         </StandardTabs>
-      ),
-      index: () => <View testID="index" />,
-      second: () => <View testID="second" />,
-    });
-
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
-  });
-
-  it('includes undeclared matched routes when useOnlyUserDefinedScreens is false', () => {
-    renderRouter({
-      _layout: () => (
-        <StandardTabsAll>
-          <StandardTabsAll.Screen name="index" />
-        </StandardTabsAll>
       ),
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
@@ -221,7 +199,28 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     ).toEqual(['index', 'second']);
   });
 
-  it('filters out Protected screens whose guard is false', () => {
+  it('distinguishes declared and inferred routes via descriptor routeSource', () => {
+    renderRouter({
+      _layout: () => (
+        <StandardTabs>
+          <StandardTabs.Screen name="index" />
+        </StandardTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    const { state, descriptors } = lastArgs();
+    const routeSourceByName = Object.fromEntries(
+      state.routes.map((route) => [
+        route.name,
+        (descriptors[route.key]! as StandardNavigatorDescriptor<TestOptions>).routeSource,
+      ])
+    );
+    expect(routeSourceByName).toEqual({ index: 'layout', second: 'filesystem' });
+  });
+
+  it('keeps Protected screens whose guard is false registered but hidden', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -235,7 +234,12 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
+    const args = lastArgs();
+    const second = args.state.routes.find((route) => route.name === 'second')!;
+
+    expect(args.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
+    expect(args.descriptors[second.key]!.options).toMatchObject({ hidden: true });
+    expect(screen.queryByTestId('second')).toBeNull();
   });
 
   it('propagates route params into state and href', () => {
@@ -300,10 +304,10 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
-      { focusedName?: string },
-      TabRouterOptions
+      object,
+      TabRouterOptions,
+      { focusedName: string }
     >(NavigatorContent, TabRouter, {
-      useOnlyUserDefinedScreens: true,
       createProps: ({ state }) => ({ focusedName: state.routes[state.index]!.name }),
     });
 
@@ -332,10 +336,10 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
-      { goToSecond?: () => void },
-      TabRouterOptions
+      object,
+      TabRouterOptions,
+      { goToSecond: () => void }
     >(NavigatorContent, TabRouter, {
-      useOnlyUserDefinedScreens: true,
       createProps: ({ dispatch }) => ({
         goToSecond: () => dispatch(TabActions.jumpTo('second')),
       }),
@@ -385,7 +389,7 @@ describe('preloaded routes projected through the integration (StackRouter)', () 
     TestEventMap,
     object,
     StackRouterOptions
-  >(NavigatorContent, StackRouter, { useOnlyUserDefinedScreens: true });
+  >(NavigatorContent, StackRouter);
 
   const renderStack = () =>
     renderRouter({
@@ -513,5 +517,145 @@ describe('assertStandardNavigator (via unstable_integrateWithRouter)', () => {
         TabRouter
       )
     ).not.toThrow();
+  });
+});
+
+describe('custom-navigators guide example', () => {
+  type TabsContentProps = NavigatorContentProps<{ title?: string }>;
+
+  function TabsContent({ state, descriptors, actions }: TabsContentProps) {
+    const focusedRoute = state.routes[state.index]!;
+
+    return (
+      <View style={{ flex: 1 }}>
+        {/* Render the screen for the focused route. */}
+        <View style={{ flex: 1 }}>{descriptors[focusedRoute.key]!.render()}</View>
+
+        {/* A simple tab bar. */}
+        <View style={{ flexDirection: 'row' }}>
+          {state.routes.map((route) => (
+            <Pressable
+              key={route.key}
+              style={{ flex: 1, padding: 16 }}
+              onPress={() => actions.navigate(route.name)}>
+              <Text>{descriptors[route.key]!.options.title ?? route.name}</Text>
+            </Pressable>
+          ))}
+        </View>
+      </View>
+    );
+  }
+
+  const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter);
+
+  const renderExample = () =>
+    renderRouter({
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="index" options={{ title: 'Home' }} />
+          <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+        </Tabs>
+      ),
+      index: () => <View testID="index" />,
+      settings: () => <View testID="settings" />,
+    });
+
+  it('renders the focused screen and a tab bar with each screen title', () => {
+    renderExample();
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(screen.getByText('Home')).toBeVisible();
+    expect(screen.getByText('Settings')).toBeVisible();
+  });
+
+  it('navigates to a screen when its tab is pressed', () => {
+    renderExample();
+
+    act(() => {
+      fireEvent.press(screen.getByText('Settings'));
+    });
+
+    expect(screen.getByTestId('settings')).toBeVisible();
+  });
+});
+
+describe('custom-navigators guide example', () => {
+  // Mirrors the `createProps` snippet from the guide (docs/pages/router/advanced/custom-navigators.mdx).
+  // The guide dispatches a `PRELOAD` action; this test proves that action actually reaches the
+  // TabRouter and preloads the route. The previous `POP_TO_TOP` example was a silent no-op on tabs
+  // (only StackRouter handles it), so a copy-paste user got a button that did nothing.
+  //
+  // `preloadedNames` is derived from the raw `state` — exactly the "router-specific information that
+  // is not part of the standard state" that `createProps` exists to expose (TabRouter keeps preloaded
+  // routes in `preloadedRouteKeys`, which the standard contract does not project).
+  type CreatePropsProps = {
+    activeRouteKey: string;
+    preload: (name: string) => void;
+    preloadedNames: string[];
+  };
+  type ContentProps = NavigatorContentProps<
+    { title?: string },
+    Record<string, never>,
+    object,
+    CreatePropsProps
+  >;
+
+  const contentSpy = jest.fn<void, [ContentProps]>();
+  const lastProps = () => contentSpy.mock.calls.at(-1)![0];
+
+  function TabsContent(props: ContentProps) {
+    contentSpy(props);
+    const focusedRoute = props.state.routes[props.state.index]!;
+    return <View style={{ flex: 1 }}>{props.descriptors[focusedRoute.key]!.render()}</View>;
+  }
+
+  const Tabs = unstable_createStandardRouterNavigator<
+    { title?: string },
+    TabNavigationState<ParamListBase>,
+    Record<string, never>,
+    object,
+    TabRouterOptions,
+    CreatePropsProps
+  >(TabsContent, TabRouter, {
+    createProps: ({ state, dispatch }) => ({
+      activeRouteKey: state.routes[state.index]!.key,
+      preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
+      preloadedNames: state.preloadedRouteKeys
+        .map((key) => state.routes.find((route) => route.key === key)?.name)
+        .filter((name): name is string => name !== undefined),
+    }),
+  });
+
+  const renderExample = () =>
+    renderRouter({
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="index" options={{ title: 'Home' }} />
+          <Tabs.Screen name="settings" options={{ title: 'Settings' }} />
+        </Tabs>
+      ),
+      index: () => <View testID="index" />,
+      settings: () => <View testID="settings" />,
+    });
+
+  beforeEach(() => {
+    contentSpy.mockClear();
+  });
+
+  it('exposes the focused route key via createProps', () => {
+    renderExample();
+    expect(lastProps().activeRouteKey).toBe(lastProps().state.routes[0]!.key);
+  });
+
+  it('preloads a route via the createProps PRELOAD dispatch without moving focus', () => {
+    renderExample();
+    expect(lastProps().preloadedNames).toEqual([]);
+
+    act(() => lastProps().preload('settings'));
+
+    // The action reached the TabRouter: `settings` is now preloaded, and focus stayed on `index`.
+    expect(lastProps().preloadedNames).toEqual(['settings']);
+    expect(lastProps().state.index).toBe(0);
+    expect(lastProps().state.routes[lastProps().state.index]!.name).toBe('index');
   });
 });

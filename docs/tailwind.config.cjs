@@ -29,19 +29,16 @@ module.exports = {
       xl: '1328px',
       '2xl': '1572px',
     },
-    backgroundColor: {
-      'launch-party-red': '#D22323',
-      'launch-party-blue': '#006CFF',
-      'launch-party-yellow': '#F3AD0D',
-    },
     borderColor: {
       'palette-orange3.5': 'hsl(from var(--orange-4) h calc(s - 5) calc(l + 5));',
+    },
+    textColor: {
+      'link-on-blue': 'var(--expo-theme-text-link-on-blue)',
     },
     backgroundImage: {
       'cell-quickstart-pattern': "url('/static/images/home/QuickStartPattern.svg')",
       'cell-tutorial-pattern': "url('/static/images/home/TutorialPattern.svg')",
-      'launch-party-banner': "url('/static/images/launch-party-banner-bg.svg')",
-      'launch-party-banner-mobile': "url('/static/images/launch-party-banner-bg.svg') 200px",
+      'cell-workflows-pattern': "url('/static/images/home/WorkflowsPattern.svg')",
     },
     keyframes: {
       wave: {

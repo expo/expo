@@ -2,58 +2,41 @@
   "name": "babel-preset-expo",
   "version": "56.0.13",
   "description": "The Babel preset for Expo projects",
-  "main": "build/index.js",
-  "files": [
-    "build"
-  ],
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/expo/expo.git",
-    "directory": "packages/babel-preset-expo"
-  },
   "keywords": [
     "babel",
     "babel-preset",
     "expo",
     "expo-web",
+    "metro",
     "react-native",
     "react-native-web",
-    "metro",
     "webpack"
   ],
-  "author": "Expo <support@expo.dev>",
-  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/babel-preset-expo#readme",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/babel-preset-expo#readme",
-  "eslintConfig": {
-    "extends": "universe/node"
+  "license": "MIT",
+  "author": "Expo <support@expo.dev>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/babel-preset-expo"
   },
-  "peerDependencies": {
-    "@babel/runtime": "^7.20.0",
-    "expo": "*",
-    "expo-widgets": "workspace:^56.0.15",
-    "react-refresh": ">=0.14.0 <1.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@babel/runtime": {
-      "optional": true
-    },
-    "expo": {
-      "optional": true
-    },
-    "expo-widgets": {
-      "optional": true
-    }
+  "files": [
+    "build"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@babel/generator": "^7.20.5",
@@ -92,26 +75,49 @@
     "@babel/plugin-transform-typescript": "^7.25.2",
     "@babel/plugin-transform-unicode-regex": "^7.24.7",
     "@babel/preset-typescript": "^7.23.0",
-    "@react-native/babel-plugin-codegen": "0.86.0-rc.3",
+    "@react-native/babel-plugin-codegen": "0.86.0",
     "babel-plugin-react-compiler": "^1.0.0",
     "babel-plugin-react-native-web": "~0.21.0",
-    "babel-plugin-syntax-hermes-parser": "^0.33.3",
+    "babel-plugin-syntax-hermes-parser": "^0.36.0",
     "babel-plugin-transform-flow-enums": "^0.0.2",
     "debug": "^4.3.4"
   },
   "devDependencies": {
+    "@babel/code-frame": "^7.20.0",
     "@babel/core": "^7.26.0",
+    "@expo/config": "workspace:*",
     "@expo/metro": "~56.0.0",
     "@expo/metro-config": "workspace:*",
+    "@expo/spawn-async": "^1.8.0",
+    "@types/babel__code-frame": "^7.0.1",
     "@types/babel__core": "^7.20.5",
     "@types/babel__generator": "^7.27.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^22.14.0",
     "babel-plugin-module-resolver": "^5.0.2",
-    "expo": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "expo-splash-screen": "workspace:*",
     "jest": "^29.2.1",
-    "react-refresh": "^0.14.2",
-    "resolve-from": "^5.0.0"
+    "react-refresh": "^0.14.2"
+  },
+  "peerDependencies": {
+    "@babel/runtime": "^7.20.0",
+    "expo": "*",
+    "expo-widgets": "workspace:^56.0.15",
+    "react-refresh": ">=0.14.0 <1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@babel/runtime": {
+      "optional": true
+    },
+    "expo": {
+      "optional": true
+    },
+    "expo-widgets": {
+      "optional": true
+    }
+  },
+  "eslintConfig": {
+    "extends": "universe/node"
   }
 }

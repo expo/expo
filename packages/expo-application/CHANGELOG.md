@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- [iOS] Expose the embedded provisioning profile's `expirationDate`. ([#47190](https://github.com/expo/expo/pull/47190) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 56.0.3 — 2026-05-06
 
 _This version does not introduce any user-facing changes._

@@ -1,14 +1,13 @@
 import './expect';
 import './mocks';
-
 import type { RenderResult } from '@testing-library/react-native';
 
-import { type MockContextConfig, getMockContext } from './mock-config';
 import { ExpoRoot } from '../ExpoRoot';
 import type { ExpoLinkingOptions } from '../getLinkingConfig';
 import type { ReactNavigationState } from '../global-state/router-store';
 import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
+import { type MockContextConfig, getMockContext } from './mock-config';
 
 export { type MockContextConfig, getMockConfig, getMockContext } from './mock-config';
 
@@ -73,7 +72,14 @@ export function renderRouter(
   context: MockContextConfig = './app',
   { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
 ): Result {
+  // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
+  const systemTime = Date.now();
   jest.useFakeTimers();
+  try {
+    jest.setSystemTime(systemTime);
+  } catch {
+    // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
+  }
 
   const mockContext = getMockContext(context);
 
@@ -110,7 +116,7 @@ export function renderRouter(
 }
 
 export const testRouter = {
-  /** Navigate to the provided pathname and the pathname */
+  /** Navigate to the provided pathname and assert the pathname */
   navigate(path: string) {
     rnTestingLibrary.act(() => router.navigate(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
@@ -125,7 +131,7 @@ export const testRouter = {
     rnTestingLibrary.act(() => router.replace(path));
     expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
   },
-  /** Go back in history and asset the new pathname */
+  /** Go back in history and assert the new pathname */
   back(path?: string) {
     expect(router.canGoBack()).toBe(true);
     rnTestingLibrary.act(() => router.back());

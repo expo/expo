@@ -1,10 +1,10 @@
 import type { SpawnResult } from '@expo/spawn-async';
 import semver from 'semver';
 
-import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { learnMore } from '../utils/TerminalLink';
 import { parseInstallCheckOutput } from '../utils/parseInstallCheckOutput';
 import { spawnExpoCLI } from '../utils/spawnExpoCLI';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 function isSpawnResult(result: any): result is SpawnResult {
   return 'stderr' in result && 'stdout' in result && 'status' in result;

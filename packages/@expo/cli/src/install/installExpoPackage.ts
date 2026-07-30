@@ -3,8 +3,9 @@ import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 
 import * as Log from '../log';
-import type { Options } from './resolveOptions';
 import { getRunningProcess } from '../utils/getRunningProcess';
+import { event } from './events';
+import type { Options } from './resolveOptions';
 
 /**
  * Given a list of incompatible packages, installs the correct versions of the packages with the package manager used for the project.
@@ -41,12 +42,18 @@ export async function installExpoPackageAsync(
   }
 
   // Safe to use current process to upgrade Expo package- doesn't affect current process
+  const done = event.span();
   try {
     if (dev) {
       await packageManager.addDevAsync([...packageManagerArguments, expoPackageToInstall]);
     } else {
       await packageManager.addAsync([...packageManagerArguments, expoPackageToInstall]);
     }
+    done('done', {
+      packages: [expoPackageToInstall],
+      dev: !!dev,
+      packageManager: packageManager.name,
+    });
   } catch (error) {
     Log.error(
       chalk`Cannot install the latest Expo package. Install {bold expo@latest} with ${packageManager.name} and then run {bold npx expo install} again.`

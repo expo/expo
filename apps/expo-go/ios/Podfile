@@ -160,6 +160,17 @@ target 'Expo Go' do
         config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] << 'RCT_DEV_SETTINGS_ENABLE_PACKAGER_CONNECTION=0'
       end
     end
+
+    if installer.pods_project
+      installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+          current = config.build_settings['IPHONEOS_DEPLOYMENT_TARGET']
+          if current.to_s =~ /\A\d/ && Gem::Version.new(current) < Gem::Version.new('16.4')
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '16.4'
+          end
+        end
+      end
+    end
   end
 
   target 'Tests' do

@@ -1,6 +1,7 @@
 package expo.modules.filesystem
 
 import android.net.Uri
+import android.os.Build
 import android.os.FileObserver
 import androidx.core.net.toUri
 import expo.modules.kotlin.AppContext
@@ -91,12 +92,29 @@ internal class FileSystemWatcher(
       return
     }
 
-    observer = object : FileObserver(watchedFile.path, WATCH_MASK) {
-      override fun onEvent(event: Int, path: String?) {
-        handleEvent(RawWatchEvent(WatchEventFlags(event), path))
-      }
-    }.also {
+    observer = createFileObserver(watchedFile).also {
       it.startWatching()
+    }
+  }
+
+  private fun createFileObserver(watchedFile: File): FileObserver {
+    fun handleRawEvent(event: Int, path: String?) {
+      handleEvent(RawWatchEvent(WatchEventFlags(event), path))
+    }
+
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      object : FileObserver(watchedFile, WATCH_MASK) {
+        override fun onEvent(event: Int, path: String?) {
+          handleRawEvent(event, path)
+        }
+      }
+    } else {
+      @Suppress("DEPRECATION")
+      object : FileObserver(watchedFile.path, WATCH_MASK) {
+        override fun onEvent(event: Int, path: String?) {
+          handleRawEvent(event, path)
+        }
+      }
     }
   }
 

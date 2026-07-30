@@ -5,7 +5,6 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import Debug from 'debug';
 import * as fs from 'fs';
 import type { Socket } from 'net';
 import * as path from 'path';
@@ -19,8 +18,8 @@ import {
   AFC_STATUS,
   AFCProtocolClient,
 } from '../protocol/AFCProtocol';
+import { debugEvent } from '../../../events';
 
-const debug = Debug('expo:apple-device:client:afc');
 const MAX_OPEN_FILES = 240;
 
 export class AFCClient extends ServiceClient<AFCProtocolClient> {
@@ -29,13 +28,10 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
   }
 
   async getFileInfo(path: string): Promise<string[]> {
-    debug(`getFileInfo: ${path}`);
-
     const response = await this.protocolClient.sendMessage({
       operation: AFC_OPS.GET_FILE_INFO,
       data: toCString(path),
     });
-    debug(`getFileInfo:response: %O`, response);
 
     const strings: string[] = [];
     let currentString = '';
@@ -52,20 +48,16 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
   }
 
   async writeFile(fd: Buffer, data: Buffer): Promise<AFCResponse> {
-    debug(`writeFile: ${Array.prototype.toString.call(fd)} data size: ${data.length}`);
-
     const response = await this.protocolClient.sendMessage({
       operation: AFC_OPS.FILE_WRITE,
       data: fd,
       payload: data,
     });
 
-    debug(`writeFile:response:`, response);
     return response;
   }
 
   protected async openFile(path: string): Promise<Buffer> {
-    debug(`openFile: ${path}`);
     // mode + path + null terminator
     const data = Buffer.alloc(8 + path.length + 1);
     // write mode
@@ -93,18 +85,15 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
   }
 
   protected async closeFile(fd: Buffer): Promise<AFCResponse> {
-    debug(`closeFile fd: ${Array.prototype.toString.call(fd)}`);
     const response = await this.protocolClient.sendMessage({
       operation: AFC_OPS.FILE_CLOSE,
       data: fd,
     });
 
-    debug(`closeFile:response:`, response);
     return response;
   }
 
   protected async uploadFile(srcPath: string, destPath: string): Promise<void> {
-    debug(`uploadFile: ${srcPath}, ${destPath}`);
 
     const destFile = await this.openFile(destPath);
 
@@ -121,35 +110,29 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
   }
 
   async makeDirectory(path: string): Promise<AFCResponse> {
-    debug(`makeDirectory: ${path}`);
-
     const response = await this.protocolClient.sendMessage({
       operation: AFC_OPS.MAKE_DIR,
       data: toCString(path),
     });
 
-    debug(`makeDirectory:response:`, response);
     return response;
   }
 
   async uploadDirectory(srcPath: string, destPath: string): Promise<void> {
-    debug(`uploadDirectory: ${srcPath}`);
     await this.makeDirectory(destPath);
 
     // AFC doesn't seem to give out more than 240 file handles,
     // so we delay any requests that would push us over until more open up
     let numOpenFiles = 0;
     const pendingFileUploads: (() => void)[] = [];
-    const _this = this;
-    return uploadDir(srcPath);
 
-    async function uploadDir(dirPath: string): Promise<void> {
+    const uploadDir = async (dirPath: string): Promise<void> => {
       const promises: Promise<void>[] = [];
       for (const file of fs.readdirSync(dirPath)) {
         const filePath = path.join(dirPath, file);
         const remotePath = path.join(destPath, path.relative(srcPath, filePath));
         if (fs.lstatSync(filePath).isDirectory()) {
-          promises.push(_this.makeDirectory(remotePath).then(() => uploadDir(filePath)));
+          promises.push(this.makeDirectory(remotePath).then(() => uploadDir(filePath)));
         } else {
           // Create promise to add to promises array
           // this way it can be resolved once a pending upload has finished
@@ -164,8 +147,7 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
           // wrap upload in a function in case we need to save it for later
           const uploadFile = (tries = 0) => {
             numOpenFiles++;
-            _this
-              .uploadFile(filePath, remotePath)
+            this.uploadFile(filePath, remotePath)
               .then(() => {
                 resolve();
                 numOpenFiles--;
@@ -178,7 +160,7 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
                 // Couldn't get fd for whatever reason, try again
                 // # of retries is arbitrary and can be adjusted
                 if (err.status === AFC_STATUS.NO_RESOURCES && tries < 10) {
-                  debug(`Received NO_RESOURCES from AFC, retrying ${filePath} upload. ${tries}`);
+                  debugEvent('apple_device:afc_no_resources_retry', { path: filePath, tries });
                   uploadFile(tries++);
                 } else {
                   numOpenFiles--;
@@ -190,15 +172,15 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
           if (numOpenFiles < MAX_OPEN_FILES) {
             uploadFile();
           } else {
-            debug(
-              `numOpenFiles >= ${MAX_OPEN_FILES}, adding to pending queue. Length: ${pendingFileUploads.length}`
-            );
+            debugEvent('apple_device:afc_pending_queue', { length: pendingFileUploads.length });
             pendingFileUploads.push(uploadFile);
           }
         }
       }
       await Promise.all(promises);
-    }
+    };
+
+    return uploadDir(srcPath);
   }
 }
 

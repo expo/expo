@@ -15,6 +15,7 @@
     "expo-dev-client": "workspace:*",
     "expo-router": "workspace:*",
     "expo-image": "workspace:*",
+    "expo-image-manipulator": "workspace:*",
     "expo-media-library": "workspace:*",
     "expo-notifications": "workspace:*",
     "expo-observe": "workspace:*",
@@ -22,7 +23,7 @@
     "expo-updates": "workspace:*",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-native": "0.86.0-rc.3"
+    "react-native": "0.86.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

@@ -48,10 +48,11 @@ object JsonAny {
       is JsonNull -> null
       is JsonPrimitive -> when {
         element.isString -> element.content
-        else -> element.booleanOrNull
-          ?: element.longOrNull
-          ?: element.doubleOrNull
-          ?: element.content
+        else ->
+          element.booleanOrNull
+            ?: element.longOrNull
+            ?: element.doubleOrNull
+            ?: element.content
       }
       is JsonObject -> element.mapValues { (_, v) -> fromElement(v) }
       is JsonArray -> element.map { fromElement(it) }

@@ -17,10 +17,13 @@ export function RouterToolbarHost(props: RouterToolbarHostProps) {
     return baseModifiers;
   }, [insets.bottom, props.withImePadding]);
 
+  // The wrapper fills the screen so it can pin the toolbar to the bottom, but `box-none` keeps it
+  // from being a touch target. The Compose `Host` then wraps just the toolbar (matchContents), so
+  // only that area swallows touches — taps elsewhere reach the screen content below (ENG-22124).
   return (
-    <View style={[StyleSheet.absoluteFill]} pointerEvents="box-none">
-      <Host style={styles.host}>
-        <Box modifiers={modifiers} contentAlignment="bottomCenter">
+    <View testID="RouterToolbarWrapper" style={styles.container} pointerEvents="box-none">
+      <Host matchContents={{ vertical: true }} style={styles.host}>
+        <Box modifiers={modifiers} contentAlignment="center">
           <HorizontalFloatingToolbar
             colors={{
               ...(props.backgroundColor ? { toolbarContainerColor: props.backgroundColor } : {}),
@@ -35,5 +38,6 @@ export function RouterToolbarHost(props: RouterToolbarHostProps) {
 }
 
 const styles = StyleSheet.create({
-  host: { width: '100%', height: '100%', paddingHorizontal: 24 },
+  container: { ...StyleSheet.absoluteFill, justifyContent: 'flex-end' },
+  host: { width: '100%', paddingHorizontal: 24 },
 });

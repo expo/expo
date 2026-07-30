@@ -2,36 +2,97 @@
   "name": "expo-auth-session",
   "version": "56.0.12",
   "description": "Expo module for browser-based authentication",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
   "keywords": [
-    "react-native",
+    "auth",
+    "auth-session",
+    "authentication",
     "expo",
     "expo-auth-session",
-    "auth",
     "oauth",
-    "authentication",
-    "auth-session"
+    "react-native"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-auth-session"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./providers/facebook": {
+      "types": {
+        "expo-source": "./src/providers/Facebook.ts",
+        "default": "./build/providers/Facebook.d.ts"
+      },
+      "expo-source": "./src/providers/Facebook.ts",
+      "default": "./build/providers/Facebook.js"
+    },
+    "./providers/facebook.js": {
+      "types": {
+        "expo-source": "./src/providers/Facebook.ts",
+        "default": "./build/providers/Facebook.d.ts"
+      },
+      "expo-source": "./src/providers/Facebook.ts",
+      "default": "./build/providers/Facebook.js"
+    },
+    "./providers/google": {
+      "types": {
+        "expo-source": "./src/providers/Google.ts",
+        "default": "./build/providers/Google.d.ts"
+      },
+      "expo-source": "./src/providers/Google.ts",
+      "default": "./build/providers/Google.js"
+    },
+    "./providers/google.js": {
+      "types": {
+        "expo-source": "./src/providers/Google.ts",
+        "default": "./build/providers/Google.d.ts"
+      },
+      "expo-source": "./src/providers/Google.ts",
+      "default": "./build/providers/Google.js"
+    },
+    "./build/PKCE": {
+      "types": {
+        "expo-source": "./src/PKCE.ts",
+        "default": "./build/PKCE.d.ts"
+      },
+      "expo-source": "./src/PKCE.ts",
+      "default": "./build/PKCE.js"
+    },
+    "./build/PKCE.js": {
+      "types": {
+        "expo-source": "./src/PKCE.ts",
+        "default": "./build/PKCE.d.ts"
+      },
+      "expo-source": "./src/PKCE.ts",
+      "default": "./build/PKCE.js"
+    },
+    "./package.json": "./package.json"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/auth-session",
+  "scripts": {
+    "build": "expo-build src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
   "dependencies": {
     "expo-application": "workspace:~56.0.3",
     "expo-constants": "workspace:~56.0.16",
@@ -41,8 +102,8 @@
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "@types/react": "~19.2.0",
     "@types/invariant": "^2.2.33",
+    "@types/react": "~19.2.0",
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {

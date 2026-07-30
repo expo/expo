@@ -1,5 +1,4 @@
-import { requireNativeModule } from 'expo';
-import { type SharedObject, useReleasingSharedObject } from 'expo-modules-core';
+import { requireNativeModule, type SharedObject, useReleasingSharedObject } from 'expo';
 
 import { worklets } from './optionalWorklets';
 

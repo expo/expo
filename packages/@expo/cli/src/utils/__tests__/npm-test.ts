@@ -13,7 +13,7 @@ describe(sanitizeNpmPackageName, () => {
       ['Hello World', 'helloworld'],
       ['\u2665', 'love'],
       ['あいう', 'app'],
-    ]) {
+    ] as [string, string][]) {
       expect(sanitizeNpmPackageName(before)).toBe(after);
     }
   });

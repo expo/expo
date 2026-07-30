@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
 
-import { buildAndroid, buildIos, mangle, tasksAndroid } from './commands';
 import packageJson from '../../package.json';
+import { buildAndroid, buildIos, mangle, tasksAndroid } from './commands';
 
 const program = new Command();
 
@@ -16,6 +16,7 @@ program
   .option('-d, --debug', 'build debug variant')
   .option('-r, --release', 'build release variant')
   .option('-a, --all', 'build both debug and release variants')
+  .option('--fused', 'publish a single fat AAR per variant via AGP Fused Library')
   .option('--verbose', 'forward all output to the terminal')
   .option('-l, --library <library>', 'name of the brownfield library')
   .option('-t, --task <task...>', 'publishing task to be run (multiple can be passed)')

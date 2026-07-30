@@ -453,10 +453,19 @@ struct ConvertiblesTests {
     }
 
     @Test
-    func `converts from Date.now() to Date`() throws {
+    func `converts from Int timestamp to Date`() throws {
       let date = try Date.convert(from: 1703718341639, appContext: appContext)
       // The current calendar uses the local timezone, so basically the `day` component
       // could differ depending on the current timezone. Set it to GMT for correctness.
+      let components = Calendar.current.dateComponents(in: TimeZone(abbreviation: "GMT")!, from: date)
+
+      #expect(components.month == 12)
+      #expect(components.day == 27)
+    }
+
+    @Test
+    func `converts from JS Double timestamp to Date`() throws {
+      let date = try Date.convert(from: 1703718341639.0, appContext: appContext)
       let components = Calendar.current.dateComponents(in: TimeZone(abbreviation: "GMT")!, from: date)
 
       #expect(components.month == 12)

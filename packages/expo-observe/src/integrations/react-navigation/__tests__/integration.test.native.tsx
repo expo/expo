@@ -8,6 +8,7 @@ import {
   useNavigationBuilder,
   type LinkingOptions,
   type NavigationContainerRef,
+  type NavigatorScreenParams,
 } from '@react-navigation/native';
 import { act, fireEvent, render } from '@testing-library/react-native';
 import AppMetrics from 'expo-app-metrics';
@@ -17,23 +18,32 @@ import { Pressable, Text } from 'react-native';
 import { ObserveNavigationContainer } from '../ObserveNavigationContainer';
 import { useObserveForReactNavigation } from '../useObserveForReactNavigation';
 
-jest.mock('expo-app-metrics', () => ({
-  __esModule: true,
-  default: {
-    markInteractive: jest.fn(),
-    getMainSession: jest.fn(async () => ({ id: 'session-1' })),
-    addCustomMetricToSession: jest.fn(async () => {}),
-  },
-}));
+jest.mock('expo-app-metrics', () => {
+  const mainSession = {
+    id: 'session-1',
+    type: 'main',
+    startDate: '2026-01-01T00:00:00.000Z',
+    addMetric: jest.fn(async () => {}),
+  };
+  return {
+    __esModule: true,
+    default: {
+      markInteractive: jest.fn(),
+      getMainSession: jest.fn(() => mainSession),
+    },
+  };
+});
 
 jest.mock('../init', () => ({
   __esModule: true,
   isInitialized: jest.fn(() => true),
+  getReactNavigationIntegrationConfig: jest.fn(() => undefined),
   initReactNavigationIntegration: jest.fn(),
 }));
 
-const mockAddCustomMetric = AppMetrics.addCustomMetricToSession as jest.Mock;
+const mockAddMetric = AppMetrics.getMainSession().addMetric as jest.Mock;
 const mockMarkInteractive = AppMetrics.markInteractive as jest.Mock;
+const initModule = require('../init') as { getReactNavigationIntegrationConfig: jest.Mock };
 
 type EmittedMetric = {
   name: string;
@@ -43,7 +53,7 @@ type EmittedMetric = {
 };
 
 function emittedMetrics(name?: string): EmittedMetric[] {
-  const all = mockAddCustomMetric.mock.calls.map((call) => call[0] as EmittedMetric);
+  const all = mockAddMetric.mock.calls.map((call) => call[0] as EmittedMetric);
   return name ? all.filter((metric) => metric.name === name) : all;
 }
 
@@ -61,8 +71,8 @@ function createTestNavigator(router: typeof StackRouter) {
       children,
       initialRouteName,
     });
-    const focused = state.routes[state.index];
-    return <NavigationContent>{descriptors[focused.key].render()}</NavigationContent>;
+    const focused = state.routes[state.index]!;
+    return <NavigationContent>{descriptors[focused.key]!.render()}</NavigationContent>;
   }
   return createNavigatorFactory(TestNavigator)();
 }
@@ -88,11 +98,27 @@ function InteractiveDetailsScreen() {
   );
 }
 
-type ContainerRef = NavigationContainerRef<Record<string, object | undefined>>;
+type SessionsParamList = {
+  List: undefined;
+  Details: { id: string };
+};
+
+type TabsParamList = {
+  Feed: undefined;
+  Sessions: NavigatorScreenParams<SessionsParamList> | undefined;
+};
+
+type RootParamList = {
+  Home: { from?: string } | undefined;
+  Details: { id: string };
+  Tabs: NavigatorScreenParams<TabsParamList> | undefined;
+};
+
+type ContainerRef = NavigationContainerRef<RootParamList>;
 
 // `enabled: false` keeps NavigationContainer from subscribing to URL handling
 // in jest;
-const linking: LinkingOptions<Record<string, object | undefined>> = {
+const linking: LinkingOptions<RootParamList> = {
   enabled: false,
   prefixes: [],
   config: {
@@ -134,13 +160,17 @@ async function renderApp(children: React.ReactNode) {
 
 async function navigate(ref: React.RefObject<ContainerRef | null>, name: string, params?: object) {
   await act(async () => {
-    ref.current!.navigate(name as never, params as never);
+    // The test navigates by dynamic name/params, so bypass the per-route
+    // navigate() overloads with a loose call signature.
+    const navigate = ref.current!.navigate as (name: string, params?: object) => void;
+    navigate(name, params);
     await flushAsync();
   });
 }
 
 beforeEach(() => {
   jest.clearAllMocks();
+  initModule.getReactNavigationIntegrationConfig.mockReturnValue(undefined);
   jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
@@ -161,7 +191,6 @@ describe('react-navigation integration (real navigation tree)', () => {
       const [metric, ...rest] = emittedMetrics('cold_ttr');
       expect(rest).toHaveLength(0);
       expect(metric).toEqual({
-        sessionId: 'session-1',
         timestamp: expect.any(String),
         category: 'navigation',
         name: 'cold_ttr',
@@ -169,7 +198,7 @@ describe('react-navigation integration (real navigation tree)', () => {
         value: expect.any(Number),
         params: { isAppLaunch: true, routeParams: { from: 'launch' } },
       });
-      expect(metric.routeName).not.toContain('launch');
+      expect(metric!.routeName).not.toContain('launch');
     });
 
     it('does not bake navigate() params into the routeName and reports them as routeParams', async () => {
@@ -182,6 +211,21 @@ describe('react-navigation integration (real navigation tree)', () => {
       expect(metric.routeName).toBe('/Details');
       expect(metric.routeName).not.toContain('abc');
       expect(metric.params).toEqual({ isAppLaunch: false, routeParams: { id: 'abc' } });
+    });
+
+    it('filters route params from real navigation metrics', async () => {
+      initModule.getReactNavigationIntegrationConfig.mockReturnValue({ filteredParams: ['id'] });
+      const { ref } = await app();
+
+      await navigate(ref, 'Details', { id: 'abc', tab: 'posts' });
+
+      const metric = emittedMetrics().at(-1)!;
+      expect(metric.routeName).toBe('/Details');
+      expect(metric.params).toEqual({
+        isAppLaunch: false,
+        routeParams: { tab: 'posts' },
+        urlHidden: true,
+      });
     });
 
     it('emits warm_ttr with a params-free routeName when revisiting a screen', async () => {
@@ -284,9 +328,9 @@ describe('react-navigation integration (real navigation tree)', () => {
       expect(mockMarkInteractive).toHaveBeenCalledWith({ routeName: '/Details' });
       const [tti, ...rest] = emittedMetrics('tti');
       expect(rest).toHaveLength(0);
-      expect(tti.routeName).toBe('/Details');
-      expect(tti.routeName).not.toContain('abc');
-      expect(tti.params).toEqual({ routeParams: { id: 'abc' } });
+      expect(tti!.routeName).toBe('/Details');
+      expect(tti!.routeName).not.toContain('abc');
+      expect(tti!.params).toEqual({ routeParams: { id: 'abc' } });
     });
   });
 

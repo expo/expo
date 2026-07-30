@@ -1,10 +1,10 @@
 import { ScrollView, StyleSheet, View } from 'react-native';
 
+import HeadingText from '../../components/HeadingText';
+import { Colors } from '../../constants';
 import { AccordionExample } from './ReanimatedAccordion';
 import { FlipCardExample } from './ReanimatedFlipCard';
 import { SliderExample } from './ReanimatedSlider';
-import HeadingText from '../../components/HeadingText';
-import { Colors } from '../../constants';
 
 export default function ReanimatedScreen() {
   return (

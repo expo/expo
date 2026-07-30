@@ -78,13 +78,18 @@ export function AppJSBanner() {
               size="xs"
               href="https://appjs.co/"
               openInNewTab
-              rightSlot={<ArrowUpRightIcon className="icon-xs text-palette-white opacity-75" />}
+              rightSlot={
+                <ArrowUpRightIcon
+                  aria-hidden="true"
+                  className="icon-xs text-palette-white opacity-75"
+                />
+              }
               className={mergeClasses(
                 'gap-1.5 border-[#494CFC] bg-[#494CFC] text-palette-white shadow-none',
                 'dark:hocus:border-[#23257b] dark:hocus:bg-[#23257b]',
                 'hocus:border-[#7189ff] hocus:bg-[#7189ff]'
               )}>
-              Learn More
+              Learn more
             </Button>
             <Button
               size="xs"
@@ -94,7 +99,7 @@ export function AppJSBanner() {
                 setIsOpen(false);
               }}
               className="bg-transparent text-palette-white shadow-none dark:hocus:bg-[#23257b] hocus:bg-[#ccd8ff]"
-              leftSlot={<XIcon className="text-[#494CFC]" />}
+              leftSlot={<XIcon aria-hidden="true" className="text-[#494CFC]" />}
             />
           </div>
         </div>

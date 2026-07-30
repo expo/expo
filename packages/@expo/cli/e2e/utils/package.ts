@@ -32,7 +32,14 @@ export async function createPackageTarball(fixtureRoot: string, packagePath: str
   const { stdout } = await execa(
     'npm',
     // Run `npm pack --json` without the script logging (see: https://github.com/npm/cli/issues/7354)
-    ['--foreground-scripts=false', '--ignore-scripts', 'pack', '--json', '--pack-destination', outputDir],
+    [
+      '--foreground-scripts=false',
+      '--ignore-scripts',
+      'pack',
+      '--json',
+      '--pack-destination',
+      outputDir,
+    ],
     { cwd: packageDir, stdio: boolish('CI', false) ? 'pipe' : undefined }
   );
 

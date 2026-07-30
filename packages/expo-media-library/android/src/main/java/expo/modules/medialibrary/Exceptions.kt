@@ -17,6 +17,9 @@ class AlbumPathException :
 class AlbumNotFound :
   CodedException("Couldn't find album")
 
+class AssetNotFound(assetId: String) :
+  CodedException("Couldn't find asset with id: $assetId")
+
 class AssetQueryException :
   CodedException("Could not get asset. Query returns null")
 

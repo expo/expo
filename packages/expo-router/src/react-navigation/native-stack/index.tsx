@@ -12,11 +12,13 @@ export { NativeStackView } from './views/NativeStackView';
  * Hooks
  */
 export { useAnimatedHeaderHeight } from './utils/useAnimatedHeaderHeight';
+export { makePopAction } from './utils/makePopAction';
 
 /**
  * Types
  */
 export type {
+  NativeStackEmit,
   NativeStackHeaderBackProps,
   NativeStackHeaderItem,
   NativeStackHeaderItemButton,
@@ -29,10 +31,16 @@ export type {
   NativeStackHeaderLeftProps,
   NativeStackHeaderProps,
   NativeStackHeaderRightProps,
+  NativeStackHeaderNativeProps,
+  NativeStackNativeProps,
   NativeStackNavigationEventMap,
+  NativeStackDescriptorMap,
   NativeStackNavigationOptions,
   NativeStackNavigationProp,
   NativeStackNavigatorProps,
   NativeStackOptionsArgs,
+  NativeStackScreenNativeProps,
   NativeStackScreenProps,
+  NativeStackViewEmit,
+  NativeStackViewState,
 } from './types';

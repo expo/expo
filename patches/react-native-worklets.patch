@@ -1,16 +1,16 @@
 diff --git a/RNWorklets.podspec b/RNWorklets.podspec
-index d658b49..7462f91 100644
+index 73cf28f2ac05d4c4b0b0f2649fdcf7e0ad5817e4..385558f99bf6c61a32fb85bbf6ed1ad527ef832f 100644
 --- a/RNWorklets.podspec
 +++ b/RNWorklets.podspec
-@@ -44,6 +44,7 @@ Pod::Spec.new do |s|
+@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
    install_modules_dependencies(s)
  
    s.dependency 'React-jsi'
 +  s.dependency 'React-jsitooling'
-   using_hermes = ENV['USE_HERMES'] == nil || ENV['USE_HERMES'] == '1'
-   if using_hermes && !$worklets_config[:is_tvos_target]
-     s.dependency 'React-hermes'
-@@ -71,6 +72,7 @@ Pod::Spec.new do |s|
+   s.dependency 'React-hermes'
+   
+   s.pod_target_xcconfig = {
+@@ -70,6 +71,7 @@ Pod::Spec.new do |s|
        '"$(PODS_ROOT)/DoubleConversion"',
        '"$(PODS_ROOT)/Headers/Private/React-Core"',
        '"$(PODS_ROOT)/Headers/Private/Yoga"',

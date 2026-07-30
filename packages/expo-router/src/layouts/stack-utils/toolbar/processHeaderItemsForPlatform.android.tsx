@@ -2,17 +2,17 @@
 import { Host, Row } from '@expo/ui/jetpack-compose';
 import { type ReactNode, useMemo } from 'react';
 
+import { NativeMenuContext } from '../../../link/NativeMenuContext';
+import type {
+  NativeStackHeaderItemProps,
+  NativeStackNavigationOptions,
+} from '../../../react-navigation/native-stack';
 import {
   ToolbarColorContext,
   ToolbarPlacementContext,
   type ToolbarColors,
   type ToolbarPlacement,
 } from './context';
-import { NativeMenuContext } from '../../../link/NativeMenuContext';
-import type {
-  NativeStackHeaderItemProps,
-  NativeStackNavigationOptions,
-} from '../../../react-navigation/native-stack';
 
 /**
  * On Android, renders toolbar children as native Compose components inside `headerLeft`/`headerRight`.

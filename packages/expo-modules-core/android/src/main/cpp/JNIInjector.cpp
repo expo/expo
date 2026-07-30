@@ -8,6 +8,7 @@
 #include "JavaScriptObject.h"
 #include "JavaScriptWeakObject.h"
 #include "JavaScriptFunction.h"
+#include "ArrayBuffer.h"
 #include "JavaScriptArrayBuffer.h"
 #include "JavaScriptTypedArray.h"
 #include "NativeArrayBuffer.h"
@@ -17,9 +18,6 @@
 #include "types/FrontendConverterProvider.h"
 #include "decorators/JSDecoratorsBridgingObject.h"
 #include "installers/MainRuntimeInstaller.h"
-#include "installers/WorkletRuntimeInstaller.h"
-#include "worklets/Worklet.h"
-#include "worklets/WorkletNativeRuntime.h"
 
 #if RN_FABRIC_ENABLED
 #include "fabric/FabricComponentsRegistry.h"
@@ -40,23 +38,18 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *) {
     expo::RuntimeHolder::registerNatives();
 #endif
     expo::MainRuntimeInstaller::registerNatives();
-    expo::WorkletNativeRuntime::registerNatives();
-    expo::WorkletRuntimeInstaller::registerNatives();
     expo::JSIContext::registerNatives();
     expo::JavaScriptModuleObject::registerNatives();
     expo::JavaScriptValue::registerNatives();
     expo::JavaScriptObject::registerNatives();
     expo::JavaScriptWeakObject::registerNatives();
     expo::JavaScriptFunction::registerNatives();
+    expo::ArrayBuffer::registerNatives();
     expo::JavaScriptArrayBuffer::registerNatives();
     expo::JavaScriptTypedArray::registerNatives();
     expo::NativeArrayBuffer::registerNatives();
     expo::JavaCallback::registerNatives();
     expo::JNIUtils::registerNatives();
-
-#if WORKLETS_ENABLED
-    expo::Worklet::registerNatives();
-#endif
 
     // Decorators
     expo::JSDecoratorsBridgingObject::registerNatives();

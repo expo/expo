@@ -43,6 +43,7 @@ exceptions:
   - '.*Apple Developer Portal.*'
   - '.*Apple ID.*'
   - '.*Apple Pay.*'
+  - '.*Argent.*'
   - '.*Asset Links.*'
   - '.*Async Storage.*'
   - '.*Autolinking.*'
@@ -51,6 +52,7 @@ exceptions:
   - '.*AWS.*'
   - '.*Babel.*'
   - '.*babel\.config\.js.*'
+  - '.*Beta App Review.*'
   - '.*Bundler.*'
   - '.*Cache-Control.*'
   - '.*Can I pay.*'
@@ -60,16 +62,19 @@ exceptions:
   - '.*CLI.*'
   - '.*TTI.*'
   - '.*Classic Updates.*'
+  - '.*Claude Code.*'
   - '.*Clerk.*'
   - '.*CNG.*'
   - '.*CocoaPods.*'
   - '.*CodePush.*'
+  - '.*Codex.*'
   - '.*Convex.*'
   - '.*Command Line Tools.*'
   - '.*Config Plugin.*'
   - '.*CORS.*'
   - '.*CRUD.*'
   - '.*credentials\.json.*'
+  - '.*Cursor.*'
   - '.*DevTools.*'
   - '.*Developer Console.*'
   - '.*Developer Mode.*'
@@ -99,7 +104,6 @@ exceptions:
   - '.*FileSystem.*'
   - '.*FlatList.*'
   - '.*Flipper.*'
-  - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
   - '.*FAB.*'
   - '.*FAQ.*'
@@ -130,6 +134,7 @@ exceptions:
   - '.*HTTPS.*'
   - '.*Info\.plist.*'
   - '.*iOS.*Simulator.*'
+  - '.*JDK.*'
   - '.*JSON.*'
   - '.*JavaScript.*'
   - '.*JavaScriptCore.*'
@@ -150,7 +155,6 @@ exceptions:
   - '.*Maven.*'
   - '.*Netlify.*'
   - '.*Node\.js.*'
-  - '.*Node Package Managers.*'
   - '.*NavigationContainer.*'
   - '.*Next\.js.*'
   - '.*New Architecture.*'
@@ -290,7 +294,6 @@ exceptions:
   - Maestro
   - Maestro Cloud
   - Require Approval
-  - Asset Caching
   - Getting Started
   - Keyboard Controller
   - PR
@@ -309,8 +312,9 @@ exceptions:
   - Live Activity
   - 'Prerequisite: Creating widget'
   - 'Prerequisite: Creating Live Activity'
+  - 'Prerequisite: Creating a widget'
+  - 'Prerequisite: Creating a Live Activity'
   - Hiding the Tab bar
-  - Integrated vs Isolated
   - Expo Skills
   - DSL
   - TriStateCheckbox

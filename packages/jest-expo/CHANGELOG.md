@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Align `jest-expo` Babel options for all platforms with `resolveBabelOptions` output
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

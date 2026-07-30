@@ -1,1 +1,0 @@
-{"version":3,"file":"handleStateChange.d.ts","sourceRoot":"","sources":["../../../src/integrations/react-navigation/handleStateChange.ts"],"names":[],"mappings":"AAKA,OAAO,KAAK,EAAE,iCAAiC,EAAE,MAAM,WAAW,CAAC;AACnE,OAAO,KAAK,EAAE,mBAAmB,EAAE,MAAM,SAAS,CAAC;AAEnD,wBAAgB,wBAAwB,CACtC,OAAO,EAAE,iCAAiC,EAC1C,aAAa,EAAE,MAAM,GACpB,CAAC,KAAK,EAAE,mBAAmB,GAAG,SAAS,KAAK,IAAI,CAuHlD"}

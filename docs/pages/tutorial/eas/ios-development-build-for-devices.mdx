@@ -116,6 +116,8 @@ This command prompts us with the following questions when we create the build fo
 - **Do you want to log in to your Apple account?**. Since we are creating a development build for the first time, it will ask us to **Generate a new Apple Distribution Certificate**. Press <kbd>Y</kbd> both times.
 - **Select a device for ad hoc build**. This is the key part, which is why we had to register a provisioning profile before. We can select one or all of our registered devices here and then press return to install that build on those devices later.
 
+> **warning** **On a new or recently renewed Apple Developer Program membership, a newly registered device may not be immediately installable.** Registering a device with Expo does not register it with Apple. The device is added to Apple only when it's first included in a build. For such a membership, Apple can then take [up to 24–72 hours](https://developer.apple.com/help/account/reference/device-registration-updates/) to finish processing the device before it can be added to a provisioning profile, so a build may fail the first time you include a newly registered device. If that happens, wait for Apple to finish processing and then run the build again.
+
 > **info** **Only if you have skipped [iOS Simulator chapter](/tutorial/eas/ios-development-build-for-simulators/):** You'll be prompted **iOS app only uses standard/exempt encryption?** Press <kbd>Y</kbd> to select the default value provided for this prompt. Since our app doesn't use encryption, it sets `ITSAppUsesNonExemptEncryption` in the **Info.plist** file to `NO` and manages the compliance check for the same when you are releasing your app to TestFlight/Apple App Store. When you are releasing your own app, and it uses encryption, you can select `N` to skip this prompt next time.
 
 After responding, the build will queue up, and we can track its progress via a provided link by the EAS CLI in the EAS dashboard:
@@ -235,10 +237,6 @@ Start the development server by running the `npx expo start` command from the pr
 ## Summary
 
 <ProgressTracker
-  currentChapterIndex={3}
   name="EAS_TUTORIAL"
-  summary="We successfully used EAS Build to create and run development builds on iOS devices."
-  nextChapterDescription="In the next chapter, learn how to configure our app config to install multiple app variants on a single device."
-  nextChapterTitle="Configure multiple app variants"
-  nextChapterLink="/tutorial/eas/multiple-app-variants/"
+  currentChapterSlug="/tutorial/eas/ios-development-build-for-devices"
 />

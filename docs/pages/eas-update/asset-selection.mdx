@@ -47,6 +47,8 @@ After adding this configuration all **.png** files in all subdirectories of **ap
 
 If `assetPatternsToBeBundled` isn't included in the app config, all assets resolved by the bundler will be included in updates (as per SDK 49 and earlier behavior).
 
+> **info** Asset selection controls which assets are eligible for over-the-air updates. It does not change which assets are bundled into the native binary, so it does not reduce app startup time.
+
 ## Verifying that an update includes all required app assets
 
 When using the asset selection, assets that do not match any file patterns will resolve in the Metro bundler. However, these assets will not be uploaded to the updates server. You have to be certain that assets not included in updates are built into the native build of the app.

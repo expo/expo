@@ -5,11 +5,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { ensureTrailingPeriod } from '../utils/syncUtils.ts';
+import { getExpoMcpAccessToken, EXPO_MCP_URL } from './expo-mcp-oauth.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUTPUT_FILE = path.join(__dirname, 'data/expo-mcp-tools.json');
-
-const EXPO_MCP_URL = 'https://mcp.expo.dev/mcp';
 
 const GITHUB_RAW_BASE =
   'https://raw.githubusercontent.com/expo/expo-mcp/main/packages/expo-mcp/src/mcp';
@@ -94,17 +93,13 @@ async function fetchText(url) {
 
 /**
  * Fetches server tools from the Expo MCP server using the MCP client SDK.
- * Requires EXPO_TOKEN environment variable.
+ *
+ * mcp.expo.dev is an OAuth 2.0 protected resource (it no longer accepts Expo
+ * personal access tokens), so this runs the authorization-code + PKCE flow via
+ * getExpoMcpAccessToken() and sends the resulting access token as a bearer.
  */
 async function fetchServerTools() {
-  const token = process.env.EXPO_TOKEN;
-  if (!token) {
-    throw new Error(
-      'EXPO_TOKEN environment variable is required to fetch server tools.\n' +
-        'Create a personal access token at https://expo.dev/settings/access-tokens\n' +
-        'and add it to docs/.env as EXPO_TOKEN=<your-token>'
-    );
-  }
+  const token = await getExpoMcpAccessToken();
 
   const client = new Client({ name: 'expo-docs-sync', version: '1.0.0' });
 

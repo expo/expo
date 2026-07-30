@@ -1,12 +1,12 @@
 import escape from 'escape-string-regexp';
 
-import { findFocusedRoute } from './findFocusedRoute';
-import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
-import * as expo from './getStateFromPath-forks';
 import { INTERNAL_SLOT_NAME } from '../constants';
 import type { PathConfigMap } from '../react-navigation/native';
 import { validatePathConfig } from '../react-navigation/native';
 import type { InitialState, NavigationState, PartialState } from '../react-navigation/routers';
+import { findFocusedRoute } from './findFocusedRoute';
+import type { ExpoOptions, ExpoRouteConfig } from './getStateFromPath-forks';
+import * as expo from './getStateFromPath-forks';
 
 export type Options<ParamList extends object> = ExpoOptions & {
   path?: string;
@@ -675,7 +675,7 @@ const createNestedStateObject = (
     while ((route = routes.shift() as ParsedRoute)) {
       initialRoute = findInitialRoute(route.name, parentScreens, initialRoutes);
 
-      const nestedStateIndex = nestedState.index || nestedState.routes.length - 1;
+      const nestedStateIndex = nestedState.index ?? nestedState.routes.length - 1;
 
       nestedState.routes[nestedStateIndex]!.state = createStateObject(
         initialRoute,

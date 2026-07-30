@@ -49,6 +49,13 @@ function jsxProd(
     }
   }
 
+  // React flattens nested children arrays (e.g. a `.map()` result mixed with sibling
+  // elements) during reconciliation. There is no reconciler here - the element tree is
+  // serialized for the native widget parsers, which expect a flat children list.
+  if (Array.isArray(props.children)) {
+    props.children = props.children.flat(Infinity);
+  }
+
   return ReactElement(type, key, props);
 }
 

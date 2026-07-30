@@ -1,5 +1,30 @@
 'use strict';
 
+const { createModulesTransform } = require('./jest-modules-transform.cjs');
+
+// NOTE: Many modules ship as ESM-only but are otherwise ready to be used directly
+// We can manually list them here to extend support to them and only transpile to CJS with SWC
+const cjsTransformIncludeNames = ['@react-navigation', 'standard-navigation'];
+
+// WARN: Packages here ship Flow/untranspiled source or ESM and assume a transforming bundler
+// Anything not listed (e.g. plain-CommonJS deps) runs as-is to keep test transforms fast
+const baseTransformIncludeNames = [
+  // negative lookahead skip the virtual-store segment
+  '\\.pnpm',
+  // React Native packages are shipped with Flow source and/or ESM
+  'react-native',
+  '@react-native/assets-registry',
+  '@react-native/js-polyfills',
+  '@react-native/normalize-colors',
+  '@react-native/virtualized-lists',
+  '@react-native/jest-preset',
+  '@react-native-masked-view',
+  // Google Fonts packages ship ESM
+  '@expo-google-fonts',
+  // We need to include the above packages that need to be transformed by SWC
+  ...cjsTransformIncludeNames,
+];
+
 module.exports = function createJestPreset(basePreset) {
   // Explicitly catch and log errors since Jest sometimes suppresses error messages
   try {
@@ -10,67 +35,36 @@ module.exports = function createJestPreset(basePreset) {
   }
 };
 
-function getPlatformFromPreset(basePreset) {
-  const haste = basePreset.haste || {};
-
-  if (haste && haste.defaultPlatform) {
-    if (!haste.defaultPlatform) {
-      throw new Error(
-        'Jest haste.defaultPlatform is not defined. Cannot determine the platform to bundle for.'
-      );
-    }
-  }
-
-  if (haste.defaultPlatform === 'node') {
-    return { platform: 'web', isServer: true };
-  } else if (haste.defaultPlatform === 'web') {
-    if (basePreset.testEnvironment && basePreset.testEnvironment === 'node') {
-      return { platform: 'web', isServer: true };
-    } else {
-      return { platform: 'web', isServer: false };
-    }
-  } else {
-    return {
-      platform: haste.defaultPlatform,
-      // TODO: Account for react-server in the future.
-      isServer: false,
-    };
-  }
-}
-
 function _createJestPreset(basePreset) {
-  const { platform, isServer } = getPlatformFromPreset(basePreset);
+  const customExportConditions =
+    basePreset.testEnvironmentOptions?.customExportConditions?.slice() ?? [];
+  if (!customExportConditions.includes('expo-source')) {
+    customExportConditions.push('expo-source');
+  }
   // Jest does not support chained presets so we flatten this preset before exporting it
   return {
     ...basePreset,
     clearMocks: true,
     roots: ['<rootDir>/src'],
     transform: {
+      // NOTE: Many modules ship as ESM-only but are otherwise ready to be used directly
+      // We can manually list them here to extend support to them and only transpile to CJS with SWC
+      ...createModulesTransform(cjsTransformIncludeNames),
       ...basePreset.transform,
-      '^.+\\.tsx?$': [
-        'ts-jest',
-        {
-          babelConfig: {
-            // NOTE: Assuming the default babel options will be enough to find the correct Babel config for testing.
-            // https://babeljs.io/docs/options
-            // We only need to set the caller so `babel-preset-expo` knows how to compile the project.
-            caller: {
-              name: 'metro',
-              bundler: 'metro',
-              // Add support for the `platform` babel transforms and inlines such as
-              // Platform.OS and `process.env.EXPO_OS`.
-              platform,
-              // Add support for removing server related code from the bundle.
-              isServer,
-            },
-          },
-          ...basePreset.transform?.['^.+\\.tsx?$']?.[1],
-          tsconfig: {
-            module: 'esnext',
-            moduleResolution: 'bundler',
-          },
-        },
-      ],
+    },
+    transformIgnorePatterns: [
+      ...(basePreset.transformIgnorePatterns ?? []),
+      `/node_modules/(?!(?:${baseTransformIncludeNames.join('|')}))`,
+    ],
+    testEnvironmentOptions: {
+      ...basePreset.testEnvironmentOptions,
+      customExportConditions,
+    },
+    moduleNameMapper: {
+      // Source exports can contain TypeScript files that use explicit `.js`
+      // extensions for runtime ESM compatibility.
+      '^(\\.{1,2}/.*)\\.js$': '$1',
+      ...basePreset.moduleNameMapper,
     },
     // Add the React 19 workaround
     setupFiles: [...basePreset.setupFiles, require.resolve('./jest-setup-react-19.cjs')],

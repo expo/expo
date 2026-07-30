@@ -1,5 +1,6 @@
 import { ExpoFetchModule } from './ExpoFetchModule';
 import type { NativeHeadersType, NativeResponse } from './NativeRequest';
+import { createReactNativeBlobAsync, isReactNativeBlobGlobal } from './createBlob';
 
 const ConcreteNativeResponse = ExpoFetchModule.NativeResponse as typeof NativeResponse;
 export type AbortSubscriptionCleanupFunction = () => void;
@@ -19,6 +20,8 @@ interface ResponseMetadata {
 }
 
 const stateKey = Symbol('FetchResponse.state');
+
+let hasWarnedAboutReactNativeBlob = false;
 
 interface ConsumptionWrapper {
   stream: ReadableStream<Uint8Array<ArrayBuffer>>;
@@ -280,13 +283,22 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     return this.status >= 200 && this.status < 300;
   }
 
-  /**
-   * This method is not currently supported by react-native's Blob constructor.
-   */
   async blob(): Promise<Blob> {
     this.checkBodyUsedError('blob');
+    const type = this.headers.get('content-type') ?? '';
     const buffer = await this.arrayBuffer();
-    return new Blob([buffer]);
+
+    if (isReactNativeBlobGlobal()) {
+      if (__DEV__ && !hasWarnedAboutReactNativeBlob) {
+        hasWarnedAboutReactNativeBlob = true;
+        console.warn(
+          "Response.blob() is using React Native's Blob, which copies the response into the native blob store and reads it back through base64 encoding. This may be slow for large responses. Add the `expo-blob` package to your app to avoid the performance overhead."
+        );
+      }
+      return createReactNativeBlobAsync(buffer, type);
+    }
+
+    return new Blob([buffer], { type });
   }
 
   async formData(): Promise<UniversalFormData> {

@@ -2,35 +2,29 @@
   "name": "expo-test-runner",
   "version": "0.4.0",
   "description": "Script that enchants test experience.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "bin": {
-    "expo-test-runner": "bin/expo-test-runner.js"
+  "homepage": "https://github.com/expo/expo-test-runner#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo-test-runner/issues"
   },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/expo/expo-test-runner.git"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo-test-runner/issues"
+  "bin": {
+    "expo-test-runner": "bin/expo-test-runner.js"
   },
-  "homepage": "https://github.com/expo/expo-test-runner#readme",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "build": "expo-module build",
+    "build": "expo-build src",
     "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
-  },
-  "devDependencies": {
-    "@babel/core": "^7.23.7",
-    "@types/node": "^22.14.0",
-    "@types/node-fetch": "^2.5.12",
-    "eslint-config-universe": "workspace:*",
-    "expo-module-scripts": "workspace:*"
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
   },
   "dependencies": {
     "@babel/runtime": "^7.23.8",
@@ -38,8 +32,13 @@
     "chalk": "^4.1.2",
     "commander": "^7.2.0",
     "dot": "^2.0.0-beta.1",
-    "node-fetch": "^2.6.1",
+    "fetch-nodeshim": "^0.4.10",
     "temp-dir": "~2.0.0",
     "unique-string": "~2.0.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.23.7",
+    "@types/node": "^22.14.0",
+    "expo-module-scripts": "workspace:*"
   }
 }

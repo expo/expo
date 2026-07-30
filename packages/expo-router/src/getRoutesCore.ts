@@ -31,9 +31,14 @@ export type Options = {
   platformRoutes?: boolean;
   sitemap?: boolean;
   platform?: string;
+  /** Redirect rules declared in config plugin options */
   redirects?: RedirectConfig[];
+  /** Rewrite rules declared in config plugin options */
   rewrites?: RewriteConfig[];
+  /** Global headers declared in config plugin options */
   headers?: Record<string, string | string[]>;
+  /** Per-path header rules declared in config plugin options */
+  pageHeaders?: PageHeadersConfig[];
   /* Keep redirects as valid routes within the RouteConfig tree */
   preserveRedirectAndRewrites?: boolean;
 
@@ -67,6 +72,11 @@ export type RewriteConfig = {
   destination: string;
   destinationContextKey: string;
   methods?: string[];
+};
+
+export type PageHeadersConfig = {
+  source: string;
+  headers: Record<string, string | string[]>;
 };
 
 const validPlatforms = new Set(['android', 'ios', 'native', 'web']);
@@ -368,12 +378,22 @@ function getDirectoryTree(contextModule: RequireContext, options: Options) {
           routeModule = contextModule(filePath);
         }
 
+        // See: expo/src/async-require/asyncRequireModule.ts
+        // The "lazy" async require function returns  a thenable that may carry
+        // a raw `_result` value that's either a promise or the synchronously resolved module
+        if (importMode === 'lazy' || importMode === 'lazy-once') {
+          routeModule =
+            '_result' in routeModule && routeModule._result != null
+              ? routeModule._result
+              : routeModule;
+        }
+
         if (process.env.NODE_ENV === 'development' && importMode === 'sync') {
           // In development mode, when async routes are disabled, add some extra error handling to improve the developer experience.
           // This can be useful when you accidentally use an async function in a route file for the default export.
           if (routeModule instanceof Promise) {
             throw new Error(
-              `Route "${filePath}" cannot be a promise when async routes is disabled.`
+              `Route "${filePath}" cannot be a promise when async routes are disabled.`
             );
           }
 
@@ -959,7 +979,7 @@ function crawlAndAppendInitialRoutesAndEntryFiles(
         }
       }
 
-      // Navigators can add initialsRoutes into the history, so they need to be to be included in the entryPoints
+      // Navigators can add initialRoutes into the history, so they need to be included in the entryPoints
       node.initialRouteName = anchor;
       entryPoints.push(anchorRoute.contextKey);
     }

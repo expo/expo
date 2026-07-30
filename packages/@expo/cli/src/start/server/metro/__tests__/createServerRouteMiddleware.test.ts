@@ -1,3 +1,5 @@
+import type { MiddlewareMatcher } from 'expo-server';
+
 import { warnInvalidMiddlewareMatcherSettings } from '../router';
 
 describe(warnInvalidMiddlewareMatcherSettings, () => {
@@ -11,7 +13,7 @@ describe(warnInvalidMiddlewareMatcherSettings, () => {
     it('logs if methods is not an array', () => {
       const matcher = {
         methods: {},
-      };
+      } as unknown as MiddlewareMatcher;
       warnInvalidMiddlewareMatcherSettings(matcher);
 
       expect(consoleErrorSpy).toHaveBeenCalledWith(
@@ -37,7 +39,7 @@ describe(warnInvalidMiddlewareMatcherSettings, () => {
     it('logs if patterns are not a string or regex', () => {
       const matcher = {
         patterns: [1, null, undefined, {}, []],
-      };
+      } as unknown as MiddlewareMatcher;
       warnInvalidMiddlewareMatcherSettings(matcher);
 
       expect(consoleErrorSpy).toHaveBeenCalledTimes(5);

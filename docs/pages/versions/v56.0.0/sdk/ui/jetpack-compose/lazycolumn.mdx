@@ -12,6 +12,8 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 A lazily-loaded vertical list component that only renders visible items for efficient scrolling. See the [official Jetpack Compose documentation](https://developer.android.com/develop/ui/compose/lists) for more information.
 
+> **info** `LazyColumn` is not truly lazy yet: the native side only composes visible items, but React still creates every child up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
+
 <ContentSpotlight
   variant="component"
   aspect="landscape"
@@ -29,7 +31,7 @@ A lazily-loaded vertical list component that only renders visible items for effi
 ### Basic lazy column
 
 ```tsx BasicLazyColumn.tsx
-import { Host, LazyColumn, ListItem } from '@expo/ui/jetpack-compose';
+import { Host, LazyColumn, ListItem, Text } from '@expo/ui/jetpack-compose';
 
 const items = Array.from({ length: 100 }, (_, i) => `Item ${i + 1}`);
 
@@ -38,7 +40,11 @@ export default function BasicLazyColumn() {
     <Host style={{ height: 400 }}>
       <LazyColumn>
         {items.map(item => (
-          <ListItem key={item} headline={item} />
+          <ListItem key={item}>
+            <ListItem.HeadlineContent>
+              <Text>{item}</Text>
+            </ListItem.HeadlineContent>
+          </ListItem>
         ))}
       </LazyColumn>
     </Host>

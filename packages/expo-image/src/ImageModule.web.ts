@@ -1,9 +1,15 @@
-import { NativeModule, registerWebModule } from 'expo-modules-core';
+import { NativeModule, registerWebModule } from 'expo';
 
-import type { ImageCacheConfig, ImageRef, ImageSource, ImageNativeModule } from './Image.types';
+import type {
+  ImageCacheConfig,
+  ImageRef,
+  ImageSource,
+  ImageNativeModule,
+  ImageModuleEvents,
+} from './Image.types';
 import ImageRefWeb from './web/ImageRef';
 
-class ImageModule extends NativeModule implements ImageNativeModule {
+class ImageModule extends NativeModule<ImageModuleEvents> implements ImageNativeModule {
   Image: typeof ImageRef = ImageRefWeb;
 
   async prefetch(urls: string | string[], _: unknown, __: unknown): Promise<boolean> {
@@ -62,6 +68,14 @@ class ImageModule extends NativeModule implements ImageNativeModule {
   }
 
   getCachePathAsync(_: string): Promise<string | null> {
+    return Promise.resolve(null);
+  }
+
+  writeToCacheAsync(_: string | ImageRef, __: string): Promise<void> {
+    throw new Error('Writing to the cache is not supported on Web.');
+  }
+
+  readFromCacheAsync(_: string): Promise<ImageRef | null> {
     return Promise.resolve(null);
   }
 

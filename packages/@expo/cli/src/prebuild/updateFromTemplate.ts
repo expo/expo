@@ -2,6 +2,11 @@ import type { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import type { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
 
+import * as Log from '../log';
+import { createTempDirectoryPath } from '../utils/createTempPath';
+import { AbortCommandError, SilentError } from '../utils/errors';
+import { logNewSection } from '../utils/ora';
+import { profile } from '../utils/profile';
 import { copyTemplateFiles, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { getTemplateFilesToRenameAsync, renameTemplateAppNameAsync } from './renameTemplateAppName';
 import type { ResolvedTemplateOption } from './resolveOptions';
@@ -9,11 +14,6 @@ import { cloneTemplateAsync } from './resolveTemplate';
 import type { DependenciesModificationResults } from './updatePackageJson';
 import { updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
-import * as Log from '../log';
-import { createTempDirectoryPath } from '../utils/createTempPath';
-import { AbortCommandError, SilentError } from '../utils/errors';
-import { logNewSection } from '../utils/ora';
-import { profile } from '../utils/profile';
 
 /**
  * Creates local native files from an input template file path.

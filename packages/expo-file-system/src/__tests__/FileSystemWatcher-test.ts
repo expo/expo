@@ -1,6 +1,8 @@
 import { Platform } from 'expo-modules-core';
 
-import { DEFAULT_DEBOUNCE_MS, Directory, File } from '../..';
+import { Directory } from '../Directory';
+import { File } from '../File';
+import { DEFAULT_DEBOUNCE_MS } from '../FileSystemWatcher.types';
 import { FileSystemWatcher } from '../internal/FileSystemWatcher';
 
 jest.mock('../ExpoFileSystem', () => {
@@ -69,7 +71,7 @@ describeNative('FileSystemWatcher', () => {
     }));
 
     const callback = jest.fn();
-    const _watcher = new FileSystemWatcher(
+    new FileSystemWatcher(
       'file:///project',
       callback,
       { events: ['renamed'] },
@@ -154,7 +156,7 @@ describeNative('FileSystemWatcher', () => {
       stop,
     }));
 
-    const _watcher = new FileSystemWatcher(
+    new FileSystemWatcher(
       'file:///project/file.txt',
       callback,
       { events: ['modified'] },

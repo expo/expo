@@ -41,6 +41,7 @@ void JavaCallback::registerNatives() {
                    makeNativeMethod("invokeNative", JavaCallback::invokeWritableArray),
                    makeNativeMethod("invokeNative", JavaCallback::invokeWritableMap),
                    makeNativeMethod("invokeNative", JavaCallback::invokeSharedObject),
+                   makeNativeMethod("invokeNative", JavaCallback::invokeArrayBuffer),
                    makeNativeMethod("invokeNative", JavaCallback::invokeJavaScriptArrayBuffer),
                    makeNativeMethod("invokeNative", JavaCallback::invokeNativeArrayBuffer),
                    makeNativeMethod("invokeNative", JavaCallback::invokeError),
@@ -205,6 +206,15 @@ void JavaCallback::invokeWritableMap(jni::alias_ref<react::WritableNativeMap::ja
 }
 
 void JavaCallback::invokeSharedObject(jni::alias_ref<JSharedObject::javaobject> result) {
+  auto globalResult = jni::make_global(result);
+  invokeWithResolver(
+    [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {
+      jsFunction.call(rt, convertToJS(jni::Environment::current(), rt, std::move(globalResult)));
+    }
+  );
+}
+
+void JavaCallback::invokeArrayBuffer(jni::alias_ref<ArrayBuffer::javaobject> result) {
   auto globalResult = jni::make_global(result);
   invokeWithResolver(
     [globalResult = std::move(globalResult)](jsi::Runtime &rt, jsi::Function &jsFunction) mutable {

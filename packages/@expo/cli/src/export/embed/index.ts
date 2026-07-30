@@ -3,7 +3,7 @@ import type arg from 'arg';
 import chalk from 'chalk';
 import path from 'path';
 
-import type { Command } from '../../../bin/cli';
+import type { Command } from '../../index';
 import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
 export const expoExportEmbed: Command = async (argv) => {

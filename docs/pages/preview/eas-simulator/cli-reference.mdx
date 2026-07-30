@@ -1,0 +1,184 @@
+---
+title: EAS Simulator CLI reference
+sidebar_title: CLI reference
+description: Reference for the experimental EAS CLI commands that create, inspect, control, list, and stop remote simulator sessions.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+The `simulator:*` commands are experimental and hidden. Install or update [EAS CLI](/eas/cli/) before running them:
+
+<Terminal cmd={['$ eas simulator:start --help']} />
+
+The `--help` flag displays the available options for `simulator:start`.
+
+## Commands
+
+| Command                                            | Purpose                                                                  |
+| -------------------------------------------------- | ------------------------------------------------------------------------ |
+| [`simulator:availability`](#simulatoravailability) | Check whether the current project's account can use EAS Simulator        |
+| [`simulator:start`](#simulatorstart)               | Create a session and wait for its controller configuration               |
+| [`simulator`](#simulatorstart)                     | Alias for `simulator:start`                                              |
+| [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                   |
+| [`simulator:get`](#simulatorget)                   | Get status, connection details, dashboard URL, timestamps, and artifacts |
+| [`simulator:list`](#simulatorlist)                 | List and filter sessions for the current project                         |
+| [`simulator:stop`](#simulatorstop)                 | Stop a session                                                           |
+
+## `simulator:availability`
+
+<Terminal cmd={['$ eas simulator:availability --json']} />
+
+The `--json` flag is optional. It prints a stable, machine-readable result for agents and automation; omit it for human-readable output. The JSON object contains `available` and `accountName`. This command does not create a session or consume simulator usage.
+
+## `simulator:start`
+
+A controller is the tool provisioned with the remote device to install, inspect, and interact with apps. Choose a controller type when starting a session:
+
+<Tabs>
+
+<Tab label="agent-device">
+
+Use [agent-device](/agents/agent-device/) for accessibility-driven device actions and app installation.
+
+<Terminal cmd={['$ eas simulator:start --platform ios --type agent-device --non-interactive']} />
+
+</Tab>
+
+<Tab label="Argent">
+
+Use [Argent](/agents/argent/) to run its remote device tools through the session.
+
+<Terminal cmd={['$ eas simulator:start --platform ios --type argent --non-interactive']} />
+
+</Tab>
+
+</Tabs>
+
+Important flags:
+
+| Flag                | Description                                                                                                                                |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `-p, --platform`    | `android` or `ios`. Required in non-interactive mode; prompted for in an interactive terminal                                              |
+| `--type`            | Controller provisioned for the session. Use `agent-device` or `argent` for programmatic control, or `serve-sim` for a browser-only preview |
+| `--package-version` | Controller package version. Defaults to the service's latest version                                                                       |
+| `--out-config-type` | `dotenv` to write **.env.eas-simulator**, or `env` to print shell exports                                                                  |
+| `--[no-]force`      | Whether to create a new session when a session ID already exists in the environment. Defaults to `true`                                    |
+| `--non-interactive` | Return after the controller is ready instead of staying attached                                                                           |
+| `--json`            | Print machine-readable output and imply non-interactive mode                                                                               |
+
+The default `dotenv` output writes configuration even when `--json` is used. Use `--out-config-type env` when you explicitly do not want the file.
+
+Common JSON output fields have this shape. The fields inside `remoteConfig` depend on the selected controller:
+
+```json
+{
+  "id": "<session-id>",
+  "type": "<controller-type>",
+  "deviceRunSessionUrl": "https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>",
+  "remoteConfig": {
+    "<controller-specific-key>": "<value>"
+  }
+}
+```
+
+Treat `remoteConfig` as secret because it includes controller credentials.
+
+### Interactive and non-interactive behavior
+
+Without `--non-interactive`, the start command stays attached and polls the session. Press Ctrl+C once to stop it. EAS CLI resets **.env.eas-simulator** after it confirms the session ended.
+
+With `--non-interactive` or `--json`, the command returns after the controller is ready. You must stop the session separately.
+
+## `simulator:exec`
+
+`simulator:exec` is controller-agnostic. It loads the connection variables for the active session from **.env.eas-simulator**, then spawns the command and arguments that follow.
+
+Use the command pattern for the controller selected when the session started:
+
+<Tabs>
+
+<Tab label="agent-device">
+
+<Terminal cmd={['$ eas simulator:exec npx agent-device@latest <command> [args...]']} />
+
+</Tab>
+
+<Tab label="Argent">
+
+<Terminal cmd={['$ eas simulator:exec argent run <tool> [args...]']} />
+
+</Tab>
+
+</Tabs>
+
+`simulator:exec` does not implement device actions. It only supplies the active session's connection environment and runs the command that follows. The available actions and argument syntax come from [agent-device](/agents/agent-device/) or [Argent](/agents/argent/).
+
+## `simulator:get`
+
+Get the session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:get --json --non-interactive']} />
+
+Get another session explicitly:
+
+<Terminal cmd={['$ eas simulator:get --id <session-id> --json --non-interactive']} />
+
+The response includes:
+
+- ID, type, status, and platform
+- Created, started, finished, and updated timestamps
+- The expo.dev simulator session URL
+- Controller connection configuration
+- Session artifacts, when present
+
+## `simulator:list`
+
+<Terminal
+  cmd={['$ eas simulator:list --platform ios --status in-progress --json --non-interactive']}
+/>
+
+Filters can be repeated:
+
+| Filter       | Values                                     |
+| ------------ | ------------------------------------------ |
+| `--platform` | `ios`, `android`                           |
+| `--type`     | `agent-device`, `argent`, `serve-sim`      |
+| `--status`   | `new`, `in-progress`, `stopped`, `errored` |
+
+Use `--limit` to control page size and `--after` with the previous response's `endCursor` for pagination.
+
+## `simulator:stop`
+
+Stop the session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+Stop a specific session:
+
+<Terminal cmd={['$ eas simulator:stop --id <session-id>']} />
+
+The stop mutation is idempotent.
+
+## **.env.eas-simulator**
+
+The managed file always contains the session ID:
+
+```sh .env.eas-simulator
+EAS_SIMULATOR_SESSION_ID="<session-id>"
+```
+
+Controller connection variables depend on the selected type:
+
+| Controller   | Connection variables                                             |
+| ------------ | ---------------------------------------------------------------- |
+| agent-device | `AGENT_DEVICE_DAEMON_BASE_URL`, `AGENT_DEVICE_DAEMON_AUTH_TOKEN` |
+| Argent       | `ARGENT_TOOLS_URL` and, when required, `ARGENT_AUTH_TOKEN`       |
+
+Add the file to **.gitignore**:
+
+```sh .gitignore
+.env.eas-simulator
+```
+
+Do not modify its values while the session is running.

@@ -1225,9 +1225,8 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
           p('/project/node_modules/pkg/package.json'),
         ]);
 
-        expect(tfs.lookup(p('/project/newdir/link-to-link-to-bar.js')).realPath).toEqual(
-          p('/project/bar.js')
-        );
+        const linkLookup = tfs.lookup(p('/project/newdir/link-to-link-to-bar.js'));
+        expect(linkLookup.exists && linkLookup.realPath).toEqual(p('/project/bar.js'));
 
         expect(tfs.linkStats('bar.js')).toEqual({
           modifiedTime: 999,
@@ -2150,7 +2149,7 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
         const found = fbTfs.hierarchicalLookup(
           p('/project/node_modules/react/index.js'),
           'package.json',
-          { subpathType: 'f' }
+          { breakOnSegment: null, invalidatedBy: null, subpathType: 'f' }
         );
         expect(found).not.toBeNull();
         expect(found?.absolutePath).toBe(
@@ -2328,8 +2327,9 @@ describe.each([['win32'], ['posix']] as const)('TreeFS on %s', (platform) => {
 
     describe('interaction with lazy stat and symlink resolution', () => {
       test('fallback-discovered file with null mtime is stat-ed by getOrComputeSha1', async () => {
-        const mockProcessFile = jest.fn((_path: string, metadata: FileMetadata) => {
+        const mockProcessFile = jest.fn(async (_path: string, metadata: FileMetadata) => {
           metadata[H.SHA1] = 'computed';
+          return null;
         });
         mockFallback = {
           lookup: jest.fn().mockReturnValue(null),

@@ -32,7 +32,8 @@ Swift/Kotlin unit tests live in `packages/<pkg>/ios/Tests/` and `android/`, and 
 On iOS/macOS (Android needs no pod step), install pods before running native tests or building,
 and again after adding or changing an iOS `test_spec`. Run `pod install` directly in the relevant
 `apps/*/ios` or `apps/*/macos` directory rather than `et pod-install` — running it directly is
-faster and avoids installing for apps you aren't working on, like Expo Go.
+faster and avoids installing for apps you aren't working on, like Expo Go. iOS unit tests run
+against bare-expo, so install pods in `apps/bare-expo/ios`.
 
 Running native tests:
 `et native-unit-tests` — run native unit tests for all packages that provide them. Scope to
@@ -40,10 +41,9 @@ one package with `--packages <name>` (e.g. `et native-unit-tests -p ios --packag
 
 ## Committing
 
-Before committing, run `et check-packages <...packages>` with the names of the packages that changed. It runs the unit tests **and** builds the package's
-JS files. The build output is committed alongside your source changes, so a commit that skips
-this step will be missing its built files. Stage both your source edits and the regenerated
-build output.
+Before committing, you may use `turbo run <task>` to run an npm script for a given task on all dependents, for example `build`, `typecheck`, `depscheck`, `test`, and `lint`. This may also be run via `et check-packages <...packages>` with the names of the packages that changed. This matches how CI checks packages.
+
+The compiled `build/` output is gitignored and is **not** committed. Turborepo regenerates and caches it on demand. Stage only your source edits (and other source files); do not stage `build/`.
 
 ## Creating PRs
 
@@ -57,11 +57,11 @@ Follow the contribution guide: https://github.com/expo/expo/blob/main/CONTRIBUTI
 - **How:** how you built the feature or fixed the bug, and why you took that approach.
 - **Test Plan:** how you tested the change and how a reviewer can reproduce it — include terminal
   output or screenshots when there are no automated tests.
-- **Checklist:** added a `CHANGELOG.md` entry and rebuilt the package sources; confirmed the change
-  works with `npx expo prebuild` & EAS Build if relevant; follows the documentation style guide.
-
-**Before submitting:** run `et check-packages` (builds, lints, and tests), commit the `build/`
-output, and remove stray `console.log`s or commented-out code.
+- **Checklist:** added a `CHANGELOG.md` entry and verified the change builds, type-checks, lints,
+  and tests via `et check-packages`; confirmed the change works with `npx expo prebuild` & EAS Build
+  if relevant; follows the documentation style guide.
+**Before submitting:** run `et check-packages` (builds, type-checks, lints, and tests), remove stray
+`console.log`s or commented-out code, and do not stage the gitignored `build/` output.
 
 **See also:**
 

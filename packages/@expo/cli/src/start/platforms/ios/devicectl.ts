@@ -25,10 +25,9 @@ import { installExitHooks } from '../../../utils/exit';
 import { isInteractive } from '../../../utils/interactive';
 import { ora } from '../../../utils/ora';
 import { confirmAsync } from '../../../utils/prompts';
+import { event } from '../events';
 
 const DEVICE_CTL_EXISTS_PATH = path.join(getExpoHomeDirectory(), 'devicectl-exists');
-
-const debug = require('debug')('expo:devicectl') as typeof console.log;
 
 type AnyEnum<T extends string = string> = T | (string & object);
 
@@ -152,12 +151,12 @@ export async function devicectlAsync(
 
 export async function getConnectedAppleDevicesAsync() {
   if (!hasDevicectlEverBeenInstalled()) {
-    debug('devicectl not found, skipping remote Apple devices.');
+    event('devicectl_not_found', {});
     return [];
   }
 
   const tmpPath = createTempFilePath();
-  const devices = await devicectlAsync([
+  await devicectlAsync([
     'list',
     'devices',
     '--json-output',
@@ -166,7 +165,6 @@ export async function getConnectedAppleDevicesAsync() {
     '--timeout',
     '5',
   ]);
-  debug(devices.stdout);
   const devicesJson = await JsonFile.readAsync(tmpPath);
 
   if (![2, 3].includes((devicesJson as any)?.info?.jsonVersion)) {
@@ -257,7 +255,7 @@ async function installAppWithDeviceCtlInternalAsync(
       bundleIdOrAppPath,
     ];
     const childProcess = spawn('xcrun', args);
-    debug('xcrun ' + args.join(' '));
+    event('devicectl_install_spawn', { command: 'xcrun ' + args.join(' ') });
 
     let currentProgress = 0;
     let hasStarted = false;
@@ -298,7 +296,6 @@ async function installAppWithDeviceCtlInternalAsync(
         }
       });
 
-      debug('[stdout]:', strings);
     });
 
     let stderrBuffer = '';
@@ -307,7 +304,6 @@ async function installAppWithDeviceCtlInternalAsync(
     });
 
     childProcess.on('close', (code) => {
-      debug('[close]: ' + code);
       if (code === 0) {
         resolve();
       } else {
@@ -388,7 +384,7 @@ export async function installAndLaunchAppAsync(props: {
   udid: string;
   deviceName: string;
 }): Promise<void> {
-  debug('Running on device:', props);
+  event('devicectl_install_device', { props: props as Record<string, unknown> });
   const { bundle, bundleIdentifier, udid, deviceName } = props;
   let indicator: Ora | undefined;
 

@@ -100,9 +100,12 @@ export const SnackInline = ({
           <CopyAction text={cleanCopyValue(value, context.version)} />
           <SnippetAction
             disabled={!isReady}
-            rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}
+            rightSlot={
+              <ArrowUpRightIcon aria-hidden="true" className="icon-sm text-icon-secondary" />
+            }
             className="max-sm:gap-0 [&_p]:max-sm:hidden"
-            type="submit">
+            type="submit"
+            aria-label="Open in Snack">
             <span className="max-sm:hidden">
               <span className="max-md:hidden">Open in </span>Snack
             </span>

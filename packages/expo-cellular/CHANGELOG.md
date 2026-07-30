@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Remove deprecated allowsVoipAsync ([#47148](https://github.com/expo/expo/pull/47148) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

@@ -166,14 +166,20 @@ const RENAMED_PAGES: Record<string, string> = {
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issues/',
-  '/introduction/why-not-expo/': '/faq/#limitations',
+  '/introduction/why-not-expo/': '/faq/',
   '/next-steps/community/': '/',
   '/workflow/expo-go/': '/get-started/set-up-your-environment/',
   '/guides/splash-screens/': '/develop/user-interface/splash-screen/',
   '/guides/app-icons/': '/develop/user-interface/app-icons/',
   '/guides/color-schemes/': '/develop/user-interface/color-themes/',
   '/development/introduction/': '/develop/development-builds/introduction/',
-  '/development/create-development-builds/': '/develop/development-builds/create-a-build/',
+  '/develop/development-builds/create-a-build/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
+  '/develop/development-builds/expo-go-to-dev-build/':
+    '/develop/development-builds/introduction/#build-locally',
+  '/develop/development-builds/next-steps/': '/develop/development-builds/faq/',
+  '/development/create-development-builds/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
   '/development/use-development-builds/': '/develop/development-builds/use-development-builds/',
   '/development/development-workflows/': '/develop/development-builds/development-workflows/',
   '/workflow/expo-cli/': '/more/expo-cli/',
@@ -181,8 +187,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/debugging/': '/debugging/runtime-issues/',
   '/debugging/runtime-issue/': '/debugging/runtime-issues/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
-  '/develop/development-builds/installation/': '/develop/development-builds/create-a-build/',
+  '/develop/development-builds/installation/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
   '/develop/development-builds/parallel-installation': '/build-reference/variants/',
+
+  // MCP server moved out of the EAS section to the top-level /mcp route
+  '/eas/ai/mcp/': '/mcp/',
 
   // Picker replaced by SegmentedButton
   '/versions/latest/sdk/ui/jetpack-compose/picker/':
@@ -207,11 +217,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/building-standalone-apps/': '/build/setup/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
-  '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
-  '/development/build/': '/develop/development-builds/create-a-build/',
-  '/development/getting-started/': '/develop/development-builds/create-a-build/',
+  '/development/build/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
+  '/development/getting-started/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
   '/development/troubleshooting/': '/develop/development-builds/introduction/',
   '/development/upgrading/': '/develop/development-builds/introduction/',
   '/development/extensions/': '/develop/development-builds/development-workflows/',
@@ -222,7 +233,6 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
-  '/guides/expokit/': '/archive/glossary/#expokit/',
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/up-and-running/': '/get-started/create-a-project/',
@@ -244,6 +254,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
   '/introduction/walkthrough/': '/tutorial/introduction/',
 
+  // Redirects and rewrites guide was consolidated into the reference page
+  '/router/advanced/redirects/': '/router/reference/redirects/',
+
   // Redirects after Expo Router docs reorganization from Home to Guides
   '/routing/next-steps/': '/router/introduction/',
   '/routing/introduction/': '/router/introduction/',
@@ -261,7 +274,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/api/': '/versions/latest/',
 
   // Redirect to expand Expo Accounts and permissions
-  '/guides/account-permissions/': '/accounts/personal/',
+  '/guides/account-permissions/': '/accounts/account-types/',
 
   // Redirects based on Sentry reports
   '/next-steps/installation/': '/get-started/create-a-project/',
@@ -270,11 +283,10 @@ const RENAMED_PAGES: Record<string, string> = {
   '/push-notifications/': '/push-notifications/overview/',
   '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
   '/get-started/': '/get-started/create-a-project/',
-  '/guides/detach/': '/archive/glossary/#detach',
   '/workflow/snack/': '/more/glossary-of-terms/#snack',
-  '/eas/submit/': '/submit/introduction/',
-  '/development/tools/expo-dev-client/':
-    '/develop/development-builds/introduction/#what-is-expo-dev-client',
+  '/eas/submit/': '/deploy/submit-to-app-stores/',
+  '/submit/introduction/': '/deploy/submit-to-app-stores/',
+  '/development/tools/expo-dev-client/': '/develop/development-builds/introduction/',
   '/develop/user-interface/custom-fonts/': '/develop/user-interface/fonts/#add-a-custom-font',
   '/accounts/teams-and-accounts/': '/accounts/account-types/',
   '/push-notifications/fcm/': '/push-notifications/sending-notifications-custom/',
@@ -289,7 +301,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/how-expo-works/': '/faq/#what-is-the-difference-between-expo-and-react-native',
 
   // Archive unused pages
-  '/guides/notification-channels/': '/archive/notification-channels/',
+  '/guides/notification-channels/': '/archive/push-notifications/notification-channels/',
 
   // Permissions API is moved to guide
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
@@ -311,17 +323,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/security/': '/app-signing/security/',
 
   // Redirects for removed/archived pages or guides
-  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
-  '/expokit/eject/': '/archive/glossary/#eject',
-  '/expokit/expokit/': '/archive/glossary/#expokit',
-  '/submit/classic-builds/': '/submit/introduction/',
+  '/submit/classic-builds/': '/deploy/submit-to-app-stores/',
   '/technical-specs/expo-updates-0/': '/technical-specs/expo-updates-1/',
   '/technical-specs/latest/': '/technical-specs/expo-updates-1/',
-  '/archive/expokit/overview/': '/archive/glossary/',
-  '/expokit/overview/': '/archive/glossary/',
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup/',
   '/workflow/already-used-react-native/': '/workflow/overview/',
-  '/development/installation/': '/develop/development-builds/create-a-build/',
+  '/development/installation/':
+    '/develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build',
   '/guides/routing-and-navigation/': '/routing/introduction/',
   '/build-reference/custom-build-config/': '/custom-builds/get-started/',
   '/eas-update/migrate-codepush-to-eas-update/': '/eas-update/codepush/',
@@ -377,7 +385,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/hermes/': '/guides/using-hermes/',
   '/config/app/': '/workflow/configuration/',
   '/versions/latest/sdk/settings/': '/versions/latest/',
-  '/archive/expokit/eject/': '/archive/glossary/#eject',
   '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
   '/distribution/app-icons/': '/develop/user-interface/splash-screen-and-app-icon/',
   '/guides/using-libraries/': '/workflow/using-libraries/',
@@ -465,7 +472,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After new environment variables guide
   '/build-reference/variables/': '/eas/environment-variables/',
-  '/eas-update/environment-variables/': '/eas/environment-variables/#eas-update',
+  '/eas-update/environment-variables/':
+    '/eas/environment-variables/usage/#using-environment-variables-with-eas-update',
 
   // After moving common questions from Expo Router FAQ to Introduction
   '/router/reference/faq/': '/router/introduction/',
@@ -535,7 +543,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After Expo Router Getting Started Guide
   '/router/reference/authentication/': '/router/advanced/authentication/',
-  '/router/advanced/root-layout/': '/router/basics/navigation-layouts/#root-layout/',
+  '/router/advanced/root-layout/': '/router/basics/navigation-layouts/#root-layout',
   '/router/reference/not-found/': '/router/error-handling/',
   '/router/navigating-pages/': '/router/basics/navigation/',
   '/router/create-pages/': '/router/basics/core-concepts/',
@@ -643,4 +651,17 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // After archiving Configure JS engines guide
   '/guides/configuring-js-engines/': '/archive/configuring-js-engines/',
+
+  // Trailing-slash variants of `_redirects` rules that only matched the no-slash form
+  '/versions/latest/sdk/admob/': '/versions/latest/',
+  '/versions/latest/workflow/linking/': '/guides/linking/',
+  '/versions/latest/introduction/faq/': '/faq/',
+  '/guides/setting-up-continuous-integration/': '/build/building-on-ci/',
+  '/eas-update/debug-advanced/': '/eas-update/debug/',
+  '/eas-update/publish/': '/eas-update/getting-started/',
+  '/clients/installation/': '/versions/latest/sdk/dev-client/',
+  '/module-api/': '/modules/module-api/',
+  '/module-config/': '/modules/module-config/',
+  '/troubleshooting/clear-cache-mac/': '/troubleshooting/clear-cache-macos-linux/',
+  '/router/advance/router-setttings/': '/router/advanced/router-settings/',
 };

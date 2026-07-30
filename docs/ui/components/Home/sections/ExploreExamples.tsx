@@ -25,22 +25,22 @@ export function ExploreExamples() {
         <GridBox
           title="StickerSmash"
           link="https://github.com/expo/examples/tree/master/stickersmash"
-          icon={<StickerCircleDuotoneIcon className="size-16!" />}
+          icon={<StickerCircleDuotoneIcon aria-hidden="true" className="size-16!" />}
         />
         <GridBox
           title="Router + menus"
           link="https://github.com/expo/examples/tree/master/with-router-menus"
-          icon={<Rows03DuotoneIcon className="size-16!" />}
+          icon={<Rows03DuotoneIcon aria-hidden="true" className="size-16!" />}
         />
         <GridBox
           title="API Routes + Open AI"
           link="https://github.com/expo/examples/tree/master/with-openai"
-          icon={<MessageChatSquareDuotoneIcon className="size-16!" />}
+          icon={<MessageChatSquareDuotoneIcon aria-hidden="true" className="size-16!" />}
         />
         <GridBox
           title="View all examples"
           link="https://github.com/expo/examples"
-          icon={<GithubIcon className="size-16!" />}
+          icon={<GithubIcon aria-hidden="true" className="size-16!" />}
         />
       </div>
     </>

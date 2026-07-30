@@ -2,40 +2,62 @@
   "name": "expo-updates",
   "version": "56.0.17",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
-  "main": "build/index.js",
-  "types": "build/index.d.ts",
-  "sideEffects": false,
-  "bin": {
-    "expo-updates": "bin/cli.js"
-  },
-  "scripts": {
-    "build": "expo-module build",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "test": "expo-module test",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "pretest:e2e-cli": "expo-module prepublishOnly",
-    "test:e2e-cli": "expo-module test --config e2e-cli/jest.config.js"
-  },
   "keywords": [
-    "react-native",
     "expo",
+    "react-native",
     "updates"
   ],
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/updates/",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/expo-updates"
   },
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
+  "bin": {
+    "expo-updates": "bin/cli.js"
   },
-  "author": "650 Industries, Inc.",
-  "license": "MIT",
-  "homepage": "https://docs.expo.dev/versions/latest/sdk/updates/",
-  "jest": {
-    "preset": "expo-module-scripts"
+  "sideEffects": false,
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "exports": {
+    ".": {
+      "types": {
+        "expo-source": "./src/index.ts",
+        "default": "./build/index.d.ts"
+      },
+      "expo-source": "./src/index.ts",
+      "default": "./build/index.js"
+    },
+    "./package.json": "./package.json",
+    "./*": "./*.js",
+    "./*.js": "./*.js"
+  },
+  "publishConfig": {
+    "executableFiles": [
+      "./scripts/create-updates-resources-ios.sh",
+      "./scripts/with-node.sh"
+    ]
+  },
+  "scripts": {
+    "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:utils && pnpm run build:cli",
+    "build:lib": "expo-build src",
+    "build:plugin": "expo-build --base plugin cjs:src",
+    "build:utils": "expo-build --base utils cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "pretest:e2e-cli": "expo-module prepublishOnly",
+    "test:e2e-cli": "jest --config e2e-cli/jest.config.js",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -b tsconfig.all.json"
   },
   "dependencies": {
     "@expo/code-signing-certificates": "^0.0.6",
@@ -65,7 +87,6 @@
     "@types/picomatch": "^4.0.0",
     "@types/react": "~19.2.0",
     "@vercel/ncc": "^0.38.3",
-    "expo": "workspace:*",
     "expo-dev-client": "workspace:*",
     "expo-module-scripts": "workspace:*",
     "express": "^5.1.0",
@@ -85,11 +106,5 @@
     "expo-dev-client": {
       "optional": true
     }
-  },
-  "publishConfig": {
-    "executableFiles": [
-      "./scripts/create-updates-resources-ios.sh",
-      "./scripts/with-node.sh"
-    ]
   }
 }

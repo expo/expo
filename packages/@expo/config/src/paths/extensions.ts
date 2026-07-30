@@ -74,7 +74,7 @@ const PLATFORM_EXTENSIONS: Record<string, readonly string[]> = {
 export function getPlatformExtensions(
   platform: string,
   extensions: readonly string[],
-  customPlatformExtensions: readonly string[] | undefined
+  customPlatformExtensions?: readonly string[] | undefined
 ): string[] | null {
   const platformExtensions = customPlatformExtensions || PLATFORM_EXTENSIONS[platform];
   return platformExtensions ? getExtensions(platformExtensions, extensions, []) : null;

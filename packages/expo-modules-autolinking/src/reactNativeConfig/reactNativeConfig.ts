@@ -1,6 +1,18 @@
 import fs from 'fs';
 import path from 'path';
 
+import type { ExpoModuleConfig } from '../ExpoModuleConfig';
+import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
+import type { AutolinkingOptions } from '../commands/autolinkingOptions';
+import type { DependencyResolution } from '../dependencies';
+import {
+  filterMapResolutionResult,
+  mergeResolutionResults,
+  scanDependenciesFromRNProjectConfig,
+  scanDependenciesInSearchPath,
+  scanDependenciesRecursively,
+} from '../dependencies';
+import { getSupportPackageForPlatform } from '../platforms';
 import type { SupportedPlatform } from '../types';
 import {
   findGradleAndManifestAsync,
@@ -19,19 +31,7 @@ import type {
   RNConfigReactNativeProjectConfig,
   RNConfigResult,
 } from './reactNativeConfig.types';
-import type { ExpoModuleConfig } from '../ExpoModuleConfig';
-import { discoverExpoModuleConfigAsync } from '../ExpoModuleConfig';
-import type { AutolinkingOptions } from '../commands/autolinkingOptions';
-import type { DependencyResolution } from '../dependencies';
-import {
-  filterMapResolutionResult,
-  mergeResolutionResults,
-  scanDependenciesFromRNProjectConfig,
-  scanDependenciesInSearchPath,
-  scanDependenciesRecursively,
-} from '../dependencies';
 import { checkDependencyWebAsync } from './webResolver';
-import { getSupportPackageForPlatform } from '../platforms';
 
 const deepObjectMerge = (target: any, source: any): any => {
   if (

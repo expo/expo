@@ -161,7 +161,10 @@ export const renderMethod = (
         />
         {hasOverloads && (
           <div className="px-4 pb-2 text-tertiary">
-            <BracketsEllipsesDuotoneIcon className="mr-1 inline icon-xs shrink-0" />
+            <BracketsEllipsesDuotoneIcon
+              aria-hidden="true"
+              className="mr-1 inline icon-xs shrink-0"
+            />
             <span className="text-xs">Overload #{overloadIndex + 1}</span>
           </div>
         )}
@@ -184,7 +187,10 @@ export const renderMethod = (
                     !returnComment && getAllTagData('example', comment) && ELEMENT_SPACING
                   )}>
                   <div className="flex flex-row items-center gap-2">
-                    <CornerDownRightIcon className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary" />
+                    <CornerDownRightIcon
+                      aria-hidden="true"
+                      className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
+                    />
                     <span className={STYLES_SECONDARY}>Returns:</span>
                   </div>
                   <APIDataType typeDefinition={type} sdkVersion={sdkVersion} />

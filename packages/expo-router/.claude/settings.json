@@ -3,7 +3,6 @@
     "allow": [
       "Bash(CI=1 yarn test:*)",
       "Bash(yarn test:*)",
-      "Bash(yarn test:types)",
       "Bash(yarn build:*)",
       "Bash(yarn lint:*)",
       "Bash(yarn clean && yarn build)",

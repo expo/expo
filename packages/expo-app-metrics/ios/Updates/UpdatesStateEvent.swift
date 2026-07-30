@@ -9,7 +9,7 @@ struct UpdatesStateEvent {
     case checkCompleteWithRollback = "checkCompleteWithRollback"
     case checkError = "checkError"
     case download = "download"
-    case downloadComplete = "downloadComplete"
+    case downloadCompleteUnavailable = "downloadCompleteUnavailable"
     case downloadCompleteWithUpdate = "downloadCompleteWithUpdate"
     case downloadCompleteWithRollback = "downloadCompleteWithRollback"
     case downloadError = "downloadError"

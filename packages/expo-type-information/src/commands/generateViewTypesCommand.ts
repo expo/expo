@@ -1,5 +1,6 @@
 import commander from 'commander';
 
+import { generateViewTypesFileContent } from '../typescriptGeneration';
 import {
   addCommonOptions,
   getFileTypeInformationFromArgs,
@@ -8,7 +9,6 @@ import {
   TypeInformationCommandCommonAllArguments,
   writeStringToFileOrPrintToConsole,
 } from './commandUtils';
-import { generateViewTypesFileContent } from '../typescriptGeneration';
 
 export function generateViewTypesCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-view-types'))

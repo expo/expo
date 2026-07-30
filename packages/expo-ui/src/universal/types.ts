@@ -44,6 +44,8 @@ export interface UniversalBaseProps {
   /**
    * Platform-specific modifier escape hatch. Pass an array of modifier configs
    * from `@expo/ui/swift-ui/modifiers` or `@expo/ui/jetpack-compose/modifiers`.
+   * A modifier supplied here replaces any modifier of the same type that the
+   * component derives from `style` or other props.
    * @platform android
    * @platform ios
    */

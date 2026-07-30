@@ -1,4 +1,3 @@
-import type { TabPath } from './native';
 import { store, type ReactNavigationState } from '../../global-state/router-store';
 import { findDivergentState, getPayloadFromStateRoute } from '../../global-state/routing';
 import { removeInternalExpoRouterParams } from '../../navigationParams';
@@ -11,6 +10,7 @@ import type {
 } from '../../react-navigation/native';
 import type { Href } from '../../types';
 import { resolveHref } from '../href';
+import type { TabPath } from './native';
 
 export function getTabPathFromRootStateByHref(
   href: Href,
@@ -69,8 +69,10 @@ export function getPreloadedRouteFromRootStateByHref(
   if (navigationState.type === 'stack') {
     const stackState = navigationState as StackNavigationState<ParamListBase>;
     const payload = getPayloadFromStateRoute(actionStateRoute);
+    const activeRoutes = stackState.routes.slice(0, stackState.index + 1);
+    const preloadedRoutes = stackState.routes.slice(stackState.index + 1);
 
-    const preloadedRoute = stackState.preloadedRoutes.find(
+    const preloadedRoute = preloadedRoutes.find(
       (route) =>
         route.name === actionStateRoute.name &&
         deepEqual(
@@ -79,7 +81,7 @@ export function getPreloadedRouteFromRootStateByHref(
         )
     );
 
-    const activeRoute = stackState.routes[stackState.index]!;
+    const activeRoute = activeRoutes[stackState.index]!;
     // When the active route is the same as the preloaded route,
     // then we should not navigate. It aligns with base link behavior.
     if (

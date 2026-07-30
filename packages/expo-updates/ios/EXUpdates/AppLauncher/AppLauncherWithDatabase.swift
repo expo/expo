@@ -32,6 +32,11 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   public var launchAssetUrl: URL?
   public var assetFilesMap: [String: String]?
 
+  /// Set when the launched update is served directly from the embedded app binary. Tracked
+  /// explicitly because `assetFilesMap` is now populated with the bundle-resolved embedded assets,
+  /// so it can no longer double as the "using embedded assets" signal.
+  private var launchedFromEmbeddedBundle = false
+
   private let launcherQueue: DispatchQueue
   private var completedAssets: Int
   private let config: UpdatesConfig
@@ -54,7 +59,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   }
 
   public func isUsingEmbeddedAssets() -> Bool {
-    return assetFilesMap == nil
+    return launchedFromEmbeddedBundle
   }
 
   public static func launchableUpdate(
@@ -178,7 +183,10 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
 
     if launchedUpdate.status == UpdateStatus.StatusEmbedded {
-      precondition(assetFilesMap == nil, "assetFilesMap should be null for embedded updates")
+      launchedFromEmbeddedBundle = true
+      // The embedded update's assets aren't copied into the cache, so resolve them from the app
+      // binary. Populating the map here keeps `Updates.localAssets` available instead of empty.
+      assetFilesMap = UpdatesUtils.embeddedAssetsMap(withConfig: config, database: database, logger: logger)
       launchAssetUrl = updatesBundle.url(
         forResource: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
         withExtension: EmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType

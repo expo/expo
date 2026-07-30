@@ -1,13 +1,12 @@
 import { installOnUIRuntime } from 'expo';
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, TouchableOpacity, ScrollView } from 'react-native';
-import { runOnJS } from 'react-native-worklets';
-import 'react-native-reanimated';
+import { getUIRuntimeHolder, runOnJS } from 'react-native-worklets';
 import { WorkletsTester } from 'worklets-tester';
 
 import { BodyText } from '../../components/BodyText';
 
-installOnUIRuntime();
+installOnUIRuntime(getUIRuntimeHolder());
 
 type TestResult = {
   name: string;

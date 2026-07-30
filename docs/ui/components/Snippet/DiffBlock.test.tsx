@@ -6,6 +6,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { createHeadingManager } from '~/common/headingManager';
+import { axe } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
 
 import { DiffBlock } from '.';
@@ -108,5 +109,10 @@ index 43aaf83..3d5a6c7 100644
     expect(screen.queryByRole('link', { name: /Show settings/ })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Raw' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Show settings' })).toBeInTheDocument();
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = render(<DiffBlock raw={DIFF_CONTENT} />);
+    expect(await axe(container)).toHaveNoViolations();
   });
 });
