@@ -20,7 +20,6 @@ import androidx.core.view.contains
 import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
 import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation
-import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -41,11 +40,13 @@ import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExponentError
 import host.exp.exponent.kernel.ExponentErrorMessage
+import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelConstants.AddedExperienceEventEvent
 import host.exp.exponent.kernel.KernelProvider
 import host.exp.exponent.kernel.services.ErrorRecoveryManager
 import host.exp.exponent.kernel.services.ExpoKernelServiceRegistry
+import host.exp.exponent.modules.perfmonitor.ExpoBridgelessDevSupportManager
 import host.exp.exponent.notifications.ExponentNotification
 import host.exp.exponent.storage.ExponentSharedPreferences
 import host.exp.exponent.utils.BundleJSONConverter
@@ -380,8 +381,7 @@ abstract class ReactNativeActivity :
     )
 
     if (delegate.isDebugModeEnabled) {
-      val debuggerHost = manifest!!.getDebuggerHost()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName!!, nativeHost)
+      Exponent.enableDeveloperSupport(mainModuleName!!, nativeHost)
       DefaultDevLoadingViewImplementation.setDevLoadingEnabled(true)
     } else {
       waitForReactAndFinishLoading()
@@ -393,7 +393,8 @@ abstract class ReactNativeActivity :
       jsMainModulePath = nativeHost.jsMainModuleName,
       jsBundleFilePath = nativeHost.jsBundleFile,
       useDevSupport = nativeHost.useDeveloperSupport,
-      devBundleDownloadListener = devBundleDownloadListener
+      devBundleDownloadListener = devBundleDownloadListener,
+      devServerBundleUrl = ExponentUrls.toHttp(manifest!!.getBundleURL())
     )
     devSupportManager = reactHost.devSupportManager
 
@@ -444,8 +445,7 @@ abstract class ReactNativeActivity :
       return reactHost
     }
 
-    val devSettings = reactHost.devSupportManager?.devSettings as? DevInternalSettings
-    devSettings?.setExponentActivityId(activityId)
+    (reactHost.devSupportManager as? ExpoBridgelessDevSupportManager)?.exponentActivityId = activityId
 
     val appKey = manifest!!.getAppKey()
     val surface = reactHost.createSurface(

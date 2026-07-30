@@ -47,7 +47,6 @@ import host.exp.exponent.experience.HomeActivity
 import host.exp.exponent.experience.KernelData
 import host.exp.exponent.experience.KernelReactNativeHost
 import host.exp.exponent.factories.ReactHostFactory
-import host.exp.exponent.headless.InternalHeadlessAppLoader
 import host.exp.exponent.kernel.ExponentErrorMessage.Companion.developerErrorMessage
 import host.exp.exponent.kernel.ExponentUrls.toHttp
 import host.exp.exponent.kernel.KernelConstants.ExperienceOptions
@@ -241,11 +240,7 @@ class Kernel : KernelInterface() {
           if (!KernelConfig.FORCE_NO_KERNEL_DEBUG_MODE &&
             manifest.isDevelopmentMode()
           ) {
-            Exponent.enableDeveloperSupport(
-              manifest.getDebuggerHost(),
-              manifest.getMainModuleName(),
-              nativeHost
-            )
+            Exponent.enableDeveloperSupport(manifest.getMainModuleName(), nativeHost)
           }
 
           reactHost = ReactHostFactory.getDefaultReactHost(
@@ -253,7 +248,8 @@ class Kernel : KernelInterface() {
             packageList = nativeHost.packages,
             jsMainModulePath = nativeHost.jsMainModuleName,
             jsBundleFilePath = nativeHost.jsBundleFile,
-            useDevSupport = nativeHost.useDeveloperSupport
+            useDevSupport = nativeHost.useDeveloperSupport,
+            devServerBundleUrl = toHttp(manifest.getBundleURL())
           )
 
           reactNativeHost = nativeHost
@@ -946,50 +942,8 @@ class Kernel : KernelInterface() {
       }
     }
 
-    // Called from DevServerHelper via ReactNativeStaticHelpers
-    @JvmStatic
-    @DoNotStrip
-    fun getManifestUrlForActivityId(activityId: Int): String? {
+    private fun getManifestUrlForActivityId(activityId: Int): String? {
       return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.manifestUrl
-    }
-
-    // Called from DevServerHelper via ReactNativeStaticHelpers
-    @JvmStatic
-    @DoNotStrip
-    fun getBundleUrlForActivityId(
-      activityId: Int,
-      host: String,
-      mainModuleId: String?,
-      bundleTypeId: String?,
-      devMode: Boolean,
-      jsMinify: Boolean
-    ): String? {
-      // NOTE: This current implementation doesn't look at the bundleTypeId (see RN's private
-      // BundleType enum for the possible values) but may need to
-      if (activityId == -1) {
-        // This is the kernel
-        return instance.bundleUrl
-      }
-      if (InternalHeadlessAppLoader.hasBundleUrlForActivityId(activityId)) {
-        return InternalHeadlessAppLoader.getBundleUrlForActivityId(activityId)
-      }
-      return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.bundleUrl
-    }
-
-    // <= SDK 25
-    @DoNotStrip
-    fun getBundleUrlForActivityId(
-      activityId: Int,
-      host: String,
-      jsModulePath: String?,
-      devMode: Boolean,
-      jsMinify: Boolean
-    ): String? {
-      if (activityId == -1) {
-        // This is the kernel
-        return instance.bundleUrl
-      }
-      return manifestUrlToExperienceActivityTask.values.find { it.activityId == activityId }?.bundleUrl
     }
 
     /*
