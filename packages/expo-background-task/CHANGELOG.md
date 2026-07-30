@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added a CLI extension exposing devtools commands for background tasks to the CLI and MCP server.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

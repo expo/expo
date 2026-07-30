@@ -23,9 +23,10 @@
   "main": "build/BackgroundTask.js",
   "types": "build/BackgroundTask.d.ts",
   "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:cli",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
