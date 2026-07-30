@@ -2,11 +2,11 @@ import { useVideoPlayer, VideoView, isPictureInPictureSupported } from 'expo-vid
 import React, { useCallback, useRef, useState } from 'react';
 import { ScrollView, View, Text } from 'react-native';
 
+import { starVideoSource } from './videoSources';
+import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import TitledSwitch from '../../components/TitledSwitch';
-import { starVideoSource } from './videoSources';
-import { styles } from './videoStyles';
 
 export default function VideoPictureInPictureScreen() {
   const ref = useRef<VideoView>(null);

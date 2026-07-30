@@ -2,13 +2,13 @@ import {
   createNativeStackNavigator,
   NativeStackNavigationProp,
 } from '@react-navigation/native-stack';
-import { useObserve } from '../../utilities/useObserveSafe';
 import React, { useEffect } from 'react';
 import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
 
 import Container from './container';
 import NativeStack from './nativeStack';
 import Navigation from './navigation';
+import { useObserve } from '../../utilities/useObserveSafe';
 
 const SCREENS: Record<string, { component: any; options: { title: string } }> = {
   Container: { component: Container, options: { title: 'ScreenContainer example' } },

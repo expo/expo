@@ -1,6 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link, NavigationAction, useLinkBuilder, useLinkProps } from '@react-navigation/native';
-import { useObserve } from '../utilities/useObserveSafe';
 import React from 'react';
 import {
   FlatList,
@@ -20,6 +19,7 @@ import { getScreenIdForLinking } from 'test-suite/screens/getScreenIdForLinking'
 
 import { useTheme } from '../../../common/ThemeProvider';
 import type { ScreenConfig } from '../types/ScreenConfig';
+import { useObserve } from '../utilities/useObserveSafe';
 
 export interface ListElement {
   screenName?: string;

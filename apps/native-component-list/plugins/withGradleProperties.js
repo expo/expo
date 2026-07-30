@@ -1,5 +1,5 @@
-const { withDangerousMod } = require('expo/config-plugins');
 const assert = require('assert');
+const { withDangerousMod } = require('expo/config-plugins');
 const fs = require('fs/promises');
 const path = require('path');
 

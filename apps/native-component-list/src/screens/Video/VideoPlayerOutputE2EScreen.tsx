@@ -3,11 +3,11 @@ import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform, View, StyleSheet, Text } from 'react-native';
 
+import { localVideoSource, starVideoSource } from './videoSources';
+import { styles } from './videoStyles';
 import Button from '../../components/Button';
 import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
 import TitledSwitch from '../../components/TitledSwitch';
-import { localVideoSource, starVideoSource } from './videoSources';
-import { styles } from './videoStyles';
 
 // Drives the player-output e2e test (apps/bare-expo/e2e/expo-video/player-output-test.yaml).
 // The screen moves two players between four views and is built for screenshot determinism:
