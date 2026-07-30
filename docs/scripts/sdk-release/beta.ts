@@ -256,6 +256,44 @@ function generateVersionedDocs() {
   }
 }
 
+function addStaticDataTypeLinks() {
+  const staticDataPath = join(docsDir, 'components', 'plugins', 'api', 'APIStaticData.ts');
+  const source = readFileSync(staticDataPath, 'utf8');
+
+  if (source.includes(`'${versionDir}': {`)) {
+    notes.push(`APIStaticData.ts already had a ${versionDir} block and was left alone.`);
+    return;
+  }
+
+  const unversioned = /^ {2}unversioned: {\n([\S\s]*?)^ {2}},\n/m.exec(source);
+  if (!unversioned?.[1]) {
+    throw new Error(
+      'Could not find the unversioned block in components/plugins/api/APIStaticData.ts, so the ' +
+        `${versionDir} type links were not added. The sdkVersionHardcodedTypeLinks shape may have changed.`
+    );
+  }
+
+  const anchor = /^ {2}latest: {$/m;
+  if (!anchor.test(source)) {
+    throw new Error(
+      'Could not find the latest block in components/plugins/api/APIStaticData.ts, so there was no ' +
+        `place to insert ${versionDir} ahead of it.`
+    );
+  }
+
+  const body = unversioned[1].replaceAll('/versions/unversioned/', `/versions/${versionDir}/`);
+  const block = `  '${versionDir}': {\n${body}  },\n`;
+
+  writeFileSync(staticDataPath, source.replace(anchor, `${block}  latest: {`));
+  execSync(`pnpm exec oxfmt --write ${relative(docsDir, staticDataPath)}`, {
+    cwd: docsDir,
+    stdio: 'pipe',
+  });
+
+  const linkCount = body.split(`/versions/${versionDir}/`).length - 1;
+  notes.push(`Cloned ${linkCount} hardcoded type links from \`unversioned\` into ${versionDir}.`);
+}
+
 function syncAppConfigSchema() {
   const schemasDir = join(docsDir, 'public', 'static', 'schemas');
   const schemaPath = join(schemasDir, versionDir, 'app-config-schema.json');
@@ -450,6 +488,7 @@ const steps: {
   { label: 'Refresh the canary example on the Reference index', run: updateCanaryExampleAsync },
   { label: 'Regenerate unversioned API data', run: regenerateUnversionedApiData },
   { label: `Generate ${versionDir} reference docs`, run: generateVersionedDocs },
+  { label: `Clone hardcoded type links into ${versionDir}`, run: addStaticDataTypeLinks },
   { label: 'Sync app config schema and repoint the import', run: syncAppConfigSchema },
   { label: 'Create the native-modules.json stub', run: createNativeModulesStub },
   {
