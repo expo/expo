@@ -6,6 +6,11 @@ import { CommandError } from './errors';
 import { testPortAsync, freePortAsync } from './freeport';
 import { isInteractive } from './interactive';
 
+/** Whether the port is in the usable range. Port 0 is valid and means "pick any available port". */
+export function isValidPort(port: number | undefined): port is number {
+  return port != null && Number.isInteger(port) && port >= 0 && port <= 65_535;
+}
+
 /** Get a free port or assert a CLI command error. */
 async function getFreePortAsync(rangeStart: number): Promise<number> {
   const port = await freePortAsync(rangeStart, [null, 'localhost']);
@@ -152,25 +157,19 @@ export async function _resolvePortAsync(
     reuseExistingPort,
     /** Requested port, e.g. from `--port`. */
     defaultPort,
-    /** Port to use when none is requested, and the port to scan from when `--port 0` is used. */
+    /** Port to use when no valid port is requested, and the port to scan from when `--port 0` is used. */
     preferredPort,
     /** Whether the preferred port was requested rather than defaulted, making it a hard requirement. */
     isPreferredPortExplicit,
   }: {
     reuseExistingPort?: boolean;
-    defaultPort?: string | number;
+    defaultPort?: number;
     preferredPort: number;
     isPreferredPortExplicit?: boolean;
   }
 ): Promise<number | null> {
-  let port: number;
-  if (typeof defaultPort === 'string') {
-    port = parseInt(defaultPort, 10);
-  } else if (typeof defaultPort === 'number') {
-    port = defaultPort;
-  } else {
-    port = preferredPort;
-  }
+  const isRequestedPortValid = isValidPort(defaultPort);
+  const port = isRequestedPortValid ? defaultPort : preferredPort;
 
   // Port 0 means "pick any available port"
   if (port === 0) {
@@ -181,7 +180,7 @@ export async function _resolvePortAsync(
   const resolvedPort = await choosePortAsync(projectRoot, {
     defaultPort: port,
     reuseExistingPort,
-    explicitPort: defaultPort != null || !!isPreferredPortExplicit,
+    explicitPort: isRequestedPortValid || !!isPreferredPortExplicit,
   });
   if (resolvedPort == null) {
     Log.log('\u203A Skipping dev server');
@@ -200,16 +199,18 @@ export async function resolveMetroPortAsync(
   {
     reuseExistingPort,
     defaultPort,
-    /** Backup port for when neither `--port` nor `RCT_METRO_PORT` is set. */
+    /** Backup port for when neither `--port` nor `RCT_METRO_PORT` gives a valid port. */
     fallbackPort,
   }: {
     reuseExistingPort?: boolean;
-    defaultPort?: string | number;
+    defaultPort?: number;
     fallbackPort?: number;
   } = {}
 ): Promise<number | null> {
   // NOTE(@kitten): We treat `--port` and `RCT_METRO_PORT` as the fixed preferred ports
-  const requestedMetroPort = env.RCT_METRO_PORT;
+  const metroPort = env.RCT_METRO_PORT;
+  // `env.RCT_METRO_PORT` returns 0 when unset, so invalid values use the same fallback path.
+  const requestedMetroPort = isValidPort(metroPort) ? metroPort : 0;
   const resolvedPort = await _resolvePortAsync(projectRoot, {
     reuseExistingPort,
     defaultPort,
