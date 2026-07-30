@@ -47,9 +47,10 @@
     "./plugin": "./plugin/build/index.js"
   },
   "scripts": {
-    "build": "pnpm run build:lib && pnpm run build:plugin",
+    "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:cli",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
+    "build:cli": "expo-build --base cli cjs:src",
     "bundle:webui": "pushd dev-plugin-webui && bun run build && popd && rm -rf dev-plugin-dist && mv dev-plugin-webui/dist dev-plugin-dist",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
