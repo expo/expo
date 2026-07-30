@@ -87,7 +87,7 @@
 
 ### 💡 Others
 
-- [iOS] Documented that `matchContents` on `Host` and `RNHostView` needs content with a natural size. Content that fills whatever space it is given can make SwiftUI and Yoga resize each other forever, for example with the iOS Button Shapes accessibility setting enabled. ([#48058](https://github.com/expo/expo/issues/48058), [#48309](https://github.com/expo/expo/pull/48309) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS][Android] Documented that `matchContents` on `Host` and `RNHostView` needs content with a natural size. Content that fills whatever space it is given can make the native layout and Yoga resize each other forever, for example with the iOS Button Shapes accessibility setting enabled. ([#48058](https://github.com/expo/expo/issues/48058), [#48309](https://github.com/expo/expo/pull/48309) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - Export public component props as interfaces to support module augmentation. by [@Brentlok](https://github.com/Brentlok)
 - [universal] Revamp web universal components (`Button`, `Checkbox`, `FieldGroup`, `Picker`, `Slider`,`Switch`,`TextInput`) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258), [#46541](https://github.com/expo/expo/pull/46541) by [@zoontek](https://github.com/zoontek))
 - [iOS][android] Removed the `react-native-reanimated` dependency from the worklet integration; worklet features rely on `react-native-worklets` directly. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway))

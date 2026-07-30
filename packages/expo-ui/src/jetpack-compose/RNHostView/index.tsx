@@ -11,6 +11,12 @@ export interface RNHostProps extends PrimitiveBaseProps {
    * When `true`, the RNHost will update its size in the Jetpack Compose view tree to match the children's size.
    * When `false`, the RNHost will use the size of the parent Jetpack Compose View.
    * Can be only set once on mount.
+   *
+   * > **Note:** `matchContents` only works when the child has a natural size of its own. If the
+   * > child just fills whatever space it is given (`flex: 1`, percentage widths, or text that
+   * > wraps to the available width), Jetpack Compose and Yoga keep resizing each other and
+   * > layout can loop forever. Let the child size to its content instead, for example with
+   * > `alignSelf: 'flex-start'`, and give long text a `maxWidth`.
    * @default false
    */
   matchContents?: boolean;
