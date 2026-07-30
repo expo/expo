@@ -51,7 +51,7 @@ export function addCommonOptions(command: commander.Command): commander.Command 
       '-i, --input-paths <filePaths...>',
       'Paths to Swift files for some module, glob patterns are allowed.'
     )
-    .option('-m --module-path <modulePath>', 'Path to Expo module root directory.')
+    .option('-m, --module-path <modulePath>', 'Path to Expo module root directory.')
     .option(
       '-o, --output-path <filePath>',
       'Path to save the generated output. If this option is not provided the generated output is printed to console.'

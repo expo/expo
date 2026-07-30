@@ -166,10 +166,10 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
 - **Module.tsx**: This one is not regenerated if you change it`
     )
     .requiredOption(
-      '-a --app-json <appJsonPath>',
-      'A path to the app config file where the `inline.modules.watchedDirectories` are defined.'
+      '-a, --app-json <appJsonPath>',
+      'A path to the app config file where the `expo.experiments.inlineModules.watchedDirectories` are defined.'
     )
-    .option('-w --watcher', 'Starts a watcher that checks for changes in inline modules files.')
+    .option('-w, --watcher', 'Starts a watcher that checks for changes in inline modules files.')
     .option(
       '-t, --type-inference <typeInference>',
       'Level of type inference: `NO_INFERENCE`, `SIMPLE_INFERENCE`, or `PREPROCESS_AND_INFERENCE`. Note that the `PREPROCESS_AND_INFERENCE` option can occasionally fail on some modules. If you encountered errors, fall back to `SIMPLE_INFERENCE` or `NO_INFERENCE`.',
