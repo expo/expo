@@ -20,8 +20,6 @@ import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.interfaces.fabric.ReactSurface
-import com.facebook.react.runtime.ReactHostImpl
-import com.facebook.react.runtime.ReactSurfaceImpl
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
@@ -329,12 +327,14 @@ class Kernel : KernelInterface() {
 
   val surface: ReactSurface
     get() {
-      val surface = ReactSurfaceImpl.createWithView(
+      val host = checkNotNull(reactHost) {
+        "Kernel React host must be created before requesting its surface"
+      }
+      val surface = host.createSurface(
         context,
         KernelConstants.HOME_MODULE_NAME,
         kernelLaunchOptions
       )
-      surface.attach(reactHost as ReactHostImpl)
       surface.start()
       return surface
     }
