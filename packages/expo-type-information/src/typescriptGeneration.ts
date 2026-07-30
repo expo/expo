@@ -40,6 +40,7 @@ const unknownKeywordType = () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.
 const anyKeywordType = () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword);
 const voidKeywordType = () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.VoidKeyword);
 const numberKeywordType = () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.NumberKeyword);
+const stringKeywordType = () => ts.factory.createKeywordTypeNode(ts.SyntaxKind.StringKeyword);
 
 const newlineIdentifier = () => ts.factory.createIdentifier('\n\n');
 
@@ -873,21 +874,29 @@ function buildDefaultViewComponent({
   ];
 }
 
+function createFunctionTypeNode({
+  args,
+  returnType,
+}: {
+  args: ts.ParameterDeclaration[];
+  returnType: ts.TypeNode;
+}) {
+  return ts.factory.createFunctionTypeNode(undefined, args, returnType);
+}
+
 function createAnyFunctionTypeNode({ returnType }: { returnType: ts.TypeNode }) {
-  return ts.factory.createFunctionTypeNode(
-    undefined,
-    [
-      ts.factory.createParameterDeclaration(
-        undefined,
-        ts.factory.createToken(ts.SyntaxKind.DotDotDotToken),
-        ts.factory.createIdentifier('args'),
-        undefined,
-        ts.factory.createArrayTypeNode(ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)),
-        undefined
-      ),
+  return createFunctionTypeNode({
+    args: [
+      createParameter({
+        dotDotDotToken: ts.factory.createToken(ts.SyntaxKind.DotDotDotToken),
+        name: 'args',
+        type: ts.factory.createArrayTypeNode(
+          ts.factory.createKeywordTypeNode(ts.SyntaxKind.AnyKeyword)
+        ),
+      }),
     ],
-    returnType
-  );
+    returnType,
+  });
 }
 
 interface DeclarationWithEvents {
@@ -897,9 +906,36 @@ interface DeclarationWithEvents {
 
 function buildEventsTypeDeclaration(
   moduleClassDeclaration: DeclarationWithEvents,
-  { exported }: { exported?: boolean }
+  { exported, isModule }: { exported?: boolean; isModule?: boolean }
 ): ts.Node[] {
-  const createEventType = () => createAnyFunctionTypeNode({ returnType: voidKeywordType() });
+  const createEventType = () => {
+    if (isModule) {
+      // Module events are objects i.e. Record<string, any>
+      return createFunctionTypeNode({
+        args: [
+          createParameter({
+            name: 'payload',
+            type: ts.factory.createTypeReferenceNode('Record', [
+              stringKeywordType(),
+              anyKeywordType(),
+            ]),
+          }),
+        ],
+        returnType: voidKeywordType(),
+      });
+    }
+    // Shared object events can be anything
+    return createFunctionTypeNode({
+      args: [
+        createParameter({
+          name: 'payload',
+          questionToken: ts.factory.createToken(ts.SyntaxKind.QuestionToken),
+          type: anyKeywordType(),
+        }),
+      ],
+      returnType: voidKeywordType(),
+    });
+  };
 
   const eventsTypeName = getEventsTypeName(moduleClassDeclaration);
   if (!eventsTypeName) {
@@ -914,14 +950,14 @@ function buildEventsTypeDeclaration(
         type: ts.factory.createTypeLiteralNode(
           moduleClassDeclaration.events.map((event) => {
             return createPropertySignature({
-              name: event,
+              name: ts.factory.createStringLiteral(event),
               typeNode: createEventType(),
             });
           })
         ),
       }),
       ts.SyntaxKind.SingleLineCommentTrivia,
-      ` These events may have arguments that weren't resolved!`
+      ` These events may have payloads that weren't resolved!`
     ),
   ];
 }
@@ -962,7 +998,7 @@ export function buildExposedModuleTypesDeclarations(
 
   return joinTSNodesWithNewlines([
     ...ctx.module.classes.map(classDeclarationMap),
-    buildEventsTypeDeclaration(ctx.module, options),
+    buildEventsTypeDeclaration(ctx.module, { ...options, isModule: true }),
   ]);
 }
 
