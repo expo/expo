@@ -3,22 +3,27 @@
 ## Unpublished
 
 ### 🛠 Breaking changes
+
 - [iOS] `AsyncFunctionClosure` (taken by `createAsyncFunction` and the async `setProperty(_:function:)` overload) is now a synchronous closure that receives a borrowed unowned `this` and consumes the arguments buffer, matching the sync closure shape, and returns the async body of the function (`AsyncFunctionBody`). Decoding happens within the host function call, so nothing JSI-owned crosses the asynchronous boundary anymore: this removes the per-call copy of the arguments buffer and fixes a use-after-free when the runtime is reloaded while async host function calls are still queued or suspended. ([#47716](https://github.com/expo/expo/issues/47716), [#47755](https://github.com/expo/expo/pull/47755) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🎉 New features
+
 - [iOS] Add `JavaScriptRuntime.runOrSchedule` that runs the given closure synchronously when called on the JavaScript thread and schedules it asynchronously otherwise. ([#47915](https://github.com/expo/expo/pull/47915) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add a `JavaScriptPromise.resolve` overload that takes a `JavaScriptEncodable` value, encoding it on the JavaScript thread and rejecting the promise if encoding or the resolver call throws. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add a `JavaScriptEncodable` conformance for `Task` that encodes it to a JS `Promise` settling with the task's result, so native code can hand JavaScript a promise as a value. ([#47861](https://github.com/expo/expo/pull/47861) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Split the `Array`, `Optional`, and `Dictionary` `JavaScriptCodable` conformances into separate `JavaScriptDecodable` and `JavaScriptEncodable` halves so an encode-only element type such as `Task` can be carried through a container's encode. ([#47861](https://github.com/expo/expo/pull/47861) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
+
 - [iOS] Fixed `JavaScriptPropNameID(_:string:)` and the array's string-keyed subscript truncating non-ASCII property keys: they passed `String.count` (the grapheme-cluster count) as the UTF-8 byte length to `PropNameID::forUtf8`, so keys like `"café"` or `"🎉"` were built from mangled bytes and no longer matched the intended property. ([#48329](https://github.com/expo/expo/pull/48329) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptPromise` no longer traps when a resolve or reject call throws, which can realistically only happen against a runtime that is being torn down: a failed resolver call rejects the promise instead and a failed rejecter call is dropped. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
+
 - [iOS] `CppError::tryCatch` now takes a C++ callable instead of an Objective-C block. Every caller already passes a pure C++ body, so the block bridged no Swift closure and only added a non-inlinable indirect call and an Objective-C runtime dependency on the JS call/eval error-handling path. ([#48333](https://github.com/expo/expo/pull/48333) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptActor.assumeIsolated` no longer heap-allocates a closure box per call by keeping its `operation` non-escaping, making synchronous host calls ~1.6× faster. ([#47837](https://github.com/expo/expo/pull/47837) by [@tsapeta](https://github.com/tsapeta))
+
 ## 57.0.4 — 2026-07-22
 
 ### 💡 Others
