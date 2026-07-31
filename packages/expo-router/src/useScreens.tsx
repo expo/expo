@@ -80,11 +80,19 @@ export type SingularOptions =
   | boolean
   | ((name: string, params: UnknownOutputParams) => string | undefined);
 
-function getSortedChildren(
+function getSortedChildren<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
   children: RouteNode[],
-  order: ScreenProps[] = [],
+  order: ScreenProps<TOptions, TState, TEventMap>[] = [],
   initialRouteName?: string
-): { route: RouteNode; props: Partial<ScreenProps>; routeSource: RouteSource }[] {
+): {
+  route: RouteNode;
+  props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
+  routeSource: RouteSource;
+}[] {
   if (!order?.length) {
     return children
       .sort(sortRoutesWithInitial(initialRouteName))
@@ -161,7 +169,7 @@ function getSortedChildren(
     )
     .filter(Boolean) as {
     route: RouteNode;
-    props: Partial<ScreenProps>;
+    props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
     routeSource: RouteSource;
   }[];
 
@@ -178,8 +186,12 @@ function getSortedChildren(
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-export function useSortedScreens(
-  order: ScreenProps[],
+export function useSortedScreens<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
+  order: ScreenProps<TOptions, TState, TEventMap>[],
   guardedRedirects: GuardedRedirects = new Map()
 ): React.ReactNode[] {
   const node = useRouteNode();
@@ -534,9 +546,13 @@ export function screenOptionsFactory(
 }
 
 // TODO: Refactor to take a single named-args object instead of positional params.
-export function routeToScreen(
+export function routeToScreen<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
   route: RouteNode,
-  { options, getId, ...props }: Partial<ScreenProps> = {},
+  { options, getId, ...props }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
   isGuarded?: boolean,
   routeSource?: RouteSource
 ) {
