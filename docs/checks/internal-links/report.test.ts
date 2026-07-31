@@ -47,7 +47,7 @@ function linkReport(overrides: Partial<LinkReport> = {}): LinkReport {
 describe(composeLinkReport, () => {
   it('leads the title with anchors and dangling redirects', () => {
     const { title } = composeLinkReport(linkReport(), { date: REPORT_DATE });
-    expect(title).toBe('Docs link report: 46 broken anchors, 1 dangling redirect (Jul 27, 2026)');
+    expect(title).toBe('Docs link report: 2 broken anchors, 1 dangling redirect (Jul 27, 2026)');
   });
 
   it('leads the title with broken pages when any ship', () => {
@@ -116,15 +116,27 @@ describe(composePageView, () => {
     [
       '/guides/server-components',
       [
-        { kind: 'anchor', target: '/more/release-statuses', hash: 'experimental', self: false },
-        { kind: 'via-redirect', target: '/develop/development-builds/create-a-build' },
+        {
+          kind: 'anchor',
+          target: '/more/release-statuses',
+          hash: 'experimental',
+          self: false,
+          count: 3,
+        },
+        { kind: 'via-redirect', target: '/develop/development-builds/create-a-build', count: 1 },
       ],
     ],
     [
       '/versions/latest/sdk/router',
       [
-        { kind: 'anchor', target: '/versions/latest/sdk/router', hash: 'state', self: true },
-        { kind: 'broken', target: '/versions/latest/sdk/router/index' },
+        {
+          kind: 'anchor',
+          target: '/versions/latest/sdk/router',
+          hash: 'state',
+          self: true,
+          count: 1,
+        },
+        { kind: 'broken', target: '/versions/latest/sdk/router/index', count: 1 },
       ],
     ],
   ]);
@@ -139,6 +151,12 @@ describe(composePageView, () => {
       view.indexOf('/guides/server-components')
     );
     expect(view).toContain('/develop/development-builds/create-a-build');
+  });
+
+  it('marks how many links share a repeated issue', () => {
+    const view = composePageView(issuesByPage, dangling);
+    expect(view).toContain('/more/release-statuses#experimental (3 links)');
+    expect(view).not.toContain('(1 link)');
   });
 
   it('renders self anchors with the hash only', () => {

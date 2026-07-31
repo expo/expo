@@ -22,6 +22,7 @@ export type LinkReport = {
 export type PageIssue = {
   kind: 'broken' | 'anchor' | 'via-redirect';
   target: string;
+  count: number;
   hash?: string;
   self?: boolean;
 };
@@ -97,15 +98,18 @@ export async function scanSiteAsync(outDir: string, redirectsFile: string): Prom
   const anchorChecks: { source: string; target: string; hash: string }[] = [];
 
   const issuesByPage = new Map<string, PageIssue[]>();
-  const issueKeys = new Set<string>();
-  const addIssue = (page: string, issue: PageIssue) => {
+  const issuesByKey = new Map<string, PageIssue>();
+  const addIssue = (page: string, issue: Omit<PageIssue, 'count'>) => {
     const key = `${page}|${issue.kind}|${issue.target}|${issue.hash ?? ''}`;
-    if (issueKeys.has(key)) {
+    const seen = issuesByKey.get(key);
+    if (seen) {
+      seen.count++;
       return;
     }
-    issueKeys.add(key);
+    const tracked = { ...issue, count: 1 };
+    issuesByKey.set(key, tracked);
     const list = issuesByPage.get(page) ?? [];
-    list.push(issue);
+    list.push(tracked);
     issuesByPage.set(page, list);
   };
 

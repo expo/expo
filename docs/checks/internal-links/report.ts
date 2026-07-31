@@ -76,13 +76,18 @@ export function composePageView(
   pages.forEach((page, index) => {
     lines.push(`\x1b[1m${page}\x1b[0m`);
     for (const issue of issuesByPage.get(page)!) {
+      const notes = [
+        ...(issue.kind === 'anchor' && issue.self ? ['self'] : []),
+        ...(issue.count > 1 ? [plural(issue.count, 'link')] : []),
+      ];
+      const suffix = notes.length > 0 ? ` (${notes.join(', ')})` : '';
       if (issue.kind === 'broken') {
-        lines.push(`  \x1b[31m✗\x1b[0m page      ${issue.target}`);
+        lines.push(`  \x1b[31m✗\x1b[0m page      ${issue.target}${suffix}`);
       } else if (issue.kind === 'anchor') {
-        const location = issue.self ? `#${issue.hash} (self)` : `${issue.target}#${issue.hash}`;
-        lines.push(`  \x1b[31m✗\x1b[0m anchor    ${location}`);
+        const location = issue.self ? `#${issue.hash}` : `${issue.target}#${issue.hash}`;
+        lines.push(`  \x1b[31m✗\x1b[0m anchor    ${location}${suffix}`);
       } else {
-        lines.push(`  \x1b[33m⚠\x1b[0m redirect  ${issue.target}`);
+        lines.push(`  \x1b[33m⚠\x1b[0m redirect  ${issue.target}${suffix}`);
       }
     }
     if (index < pages.length - 1) {
@@ -111,7 +116,7 @@ export function composeLinkReport(
 
   const headline = [
     ...(report.broken.length > 0 ? [plural(report.broken.length, 'broken page')] : []),
-    plural(anchorTotal, 'broken anchor'),
+    plural(distinctAnchors, 'broken anchor'),
     plural(report.danglingRedirects.length, 'dangling redirect'),
   ].join(', ');
   const title = `Docs link report: ${headline} (${dateLabel})`;

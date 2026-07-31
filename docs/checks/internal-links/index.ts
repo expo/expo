@@ -75,7 +75,7 @@ async function mainAsync() {
 
   if (brokenTotal > 0 || dangling.length > 0 || anchorTotal > 0) {
     console.warn(
-      `\n \x1b[1m\x1b[33m⚠\x1b[0m Report: ${brokenTotal} broken page link(s), ${dangling.length} dangling redirect(s), ${anchorTotal} broken anchor(s), ${report.viaRedirect.length} via-redirect target(s)`
+      `\n \x1b[1m\x1b[33m⚠\x1b[0m Report: ${brokenTotal} broken page link(s), ${dangling.length} dangling redirect(s), ${anchorTotal} broken anchor link(s), ${report.viaRedirect.length} via-redirect target(s)`
     );
     return;
   }
