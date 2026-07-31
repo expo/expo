@@ -25,6 +25,7 @@ import expo.modules.location.LocationUnauthorizedException
 import expo.modules.location.NoPermissionInManifestException
 import expo.modules.location.NoPermissionsModuleException
 import expo.modules.location.next.locationProviders.AndroidLocationProvider
+import expo.modules.location.next.locationProviders.FallbackLocationProvider
 import expo.modules.location.next.locationProviders.GmsLocationProvider
 import expo.modules.location.records.PermissionDetailsLocationAndroid
 import expo.modules.location.records.PermissionRequestResponse
@@ -50,7 +51,7 @@ class LocationModuleNext : Module() {
   override fun definition() = ModuleDefinition {
     OnCreate {
       mContext = appContext.reactContext ?: throw Exceptions.ReactContextLost()
-      defaultLocationProvider = androidLocationProviderInstance.ref
+      defaultLocationProvider = fusedLocationProviderInstance.ref
     }
 
     // Permissions
@@ -85,9 +86,11 @@ class LocationModuleNext : Module() {
       StaticFunction("Gms") { ->
         fusedLocationProviderInstance
       }
-
       StaticFunction("Android") { ->
         androidLocationProviderInstance
+      }
+      StaticFunction("Fallback") { ->
+        FallbackLocationProvider(listOf(fusedLocationProviderInstance.ref, androidLocationProviderInstance.ref))
       }
     }
 
@@ -108,6 +111,10 @@ class LocationModuleNext : Module() {
     }
     
     Class (LocationWatchHandle::class) {
+      Constructor { ->
+        throw LocationWatchHandleCreationException()
+      }
+
       Events(POSITION_CHANGED)
 
       Function("pause") { locationWatchHandle: LocationWatchHandle ->
@@ -216,7 +223,6 @@ class Coordinates (
   @Field val latitude: Double,
   @Field val longitude: Double,
 ): Record, Serializable
-
 
 @OptimizedRecord
 class Position (
@@ -389,6 +395,7 @@ interface LocationProvider {
   suspend fun getLastKnownPosition(): Position?
 }
 
+class LocationWatchHandleCreationException: CodedException("LocationWatchHandle cannot be created from JavaScript!")
 class LocationUnavailableException: CodedException("Location fix is currently unavailable")
 class LocationOperationNotSupportedException: CodedException("This location operation is not supported")
 

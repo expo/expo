@@ -13,3 +13,5 @@ export {
   LocationGeofencingEventType as GeofencingEventType,
   LocationGeofencingRegionState as GeofencingRegionState,
 } from './Location.types';
+
+export * as LocationNext from './next/generated/index';

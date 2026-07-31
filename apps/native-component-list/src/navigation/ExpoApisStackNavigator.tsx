@@ -366,6 +366,12 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/Location/LocationNextScreen'));
+    },
+    name: 'LocationNext',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/Location/GeocodingScreen'));
     },
     name: 'Geocoding',

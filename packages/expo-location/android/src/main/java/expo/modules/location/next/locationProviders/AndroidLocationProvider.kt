@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Location
 import android.location.LocationManager
-import android.location.LocationRequest
 import android.os.Build
 import android.os.CancellationSignal
 import android.os.Looper
@@ -13,7 +12,6 @@ import expo.modules.location.next.LocationProvider
 import expo.modules.location.next.LocationWatchHandle
 import expo.modules.location.next.PausableWatchSession
 import expo.modules.location.next.Position
-import expo.modules.location.next.PositionWatchSession
 import expo.modules.location.next.ProviderOutcome
 import expo.modules.location.next.WatchSession
 import expo.modules.location.next.toPosition
