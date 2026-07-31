@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix `Contact.getAllDetails` always returning `null` for `thumbnail`, `birthday` and `nonGregorianBirthday`. ([#48384](https://github.com/expo/expo/pull/48384) by [@martintreurnicht](https://github.com/martintreurnicht))
+- [iOS] Fix `Contact.getAll` and `Contact.getAllDetails` returning contacts linked across accounts once per account record, and honour the `rawContacts` query option. ([#48387](https://github.com/expo/expo/pull/48387) by [@martintreurnicht](https://github.com/martintreurnicht))
 
 ### 💡 Others
 
