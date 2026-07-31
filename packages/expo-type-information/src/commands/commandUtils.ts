@@ -51,7 +51,7 @@ export function addCommonOptions(command: commander.Command): commander.Command 
       '-i, --input-paths <filePaths...>',
       'Paths to Swift files for some module, glob patterns are allowed.'
     )
-    .option('-m --module-path <modulePath>', 'Path to Expo module root directory.')
+    .option('-m, --module-path <modulePath>', 'Path to Expo module root directory.')
     .option(
       '-o, --output-path <filePath>',
       'Path to save the generated output. If this option is not provided the generated output is printed to console.'
@@ -63,10 +63,10 @@ export function addCommonOptions(command: commander.Command): commander.Command 
     )
     .option(
       '-s, --skip-unicode-character-mapping',
-      'skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.'
+      'Skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.'
     )
     .option('-d, --disable-run-on-queue-preprocessing', 'Disable preprocessing runOnQueue.')
-    .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
+    .option('-w, --watcher', 'Starts a watcher that checks for changes in input-path file.');
 }
 
 /**

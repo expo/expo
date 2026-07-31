@@ -22,6 +22,8 @@ export function moduleInterfaceCommand(cli: commander.Command) {
 - **module.ts** with the native module definition
 - **view.tsx** for each view defined in the module
 - **index.ts** file which reexports some functions
+
+If there are multiple modules provided, then a **Common.types.ts** file will be generated. It exports the common declarations (enums, structs), so they are defined exactly once.
 `
     )
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
