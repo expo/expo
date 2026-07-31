@@ -44,6 +44,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix a `Pressable` hosted in `RNHostView` firing `onLongPress` while the user pans to scroll a surrounding `ScrollView`. ([#48355](https://github.com/expo/expo/pull/48355) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix a `TextField` selection crash when JavaScript replaces the text while the user types, by using the clamped selection binding on all OS versions and clearing the selection on external writes. ([#48274](https://github.com/expo/expo/issues/48274) by [@realZachi](https://github.com/realZachi)) ([#48277](https://github.com/expo/expo/pull/48277) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fix `Pressable` (and other responder-based touchables) hosted in `RNHostView` dropping presses on any finger movement. ([#48131](https://github.com/expo/expo/issues/48131) by [@BrianUribe6](https://github.com/BrianUribe6)) ([#48217](https://github.com/expo/expo/pull/48217) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `community/masked-view` content being clipped after rotation because of window safe area insets. ([#48243](https://github.com/expo/expo/pull/48243) by [@Elehiggle](https://github.com/Elehiggle))
