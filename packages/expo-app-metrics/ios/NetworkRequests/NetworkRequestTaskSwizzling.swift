@@ -575,14 +575,40 @@ private final class DelegateProxy: NSObject {
     return wrapped?.responds(to: aSelector) ?? false
   }
 
+  /// Class checks have to answer for the wrapped delegate, not for the proxy. Libraries branch on
+  /// the class of `session.delegate` and a proxy that answers for itself sends them down the wrong
+  /// branch.
+  ///
+  /// GTMSessionFetcher (FirebaseAuth's HTTP layer) is the case that forced this: it makes the fetcher
+  /// its own session delegate for sessions it can't share, then decides whether the delegate is its
+  /// internal dispatcher with `delegate != nil && ![delegate isKindOfClass:[GTMSessionFetcher class]]`.
+  /// Answering that check for the proxy made GTM treat us as a dispatcher and send us
+  /// `setFetcher:forTask:`, a selector only the dispatcher implements — crashing the app on
+  /// FirebaseAuth's first token refresh.
+  override func isKind(of aClass: AnyClass) -> Bool {
+    if let wrapped = wrapped as? NSObject, wrapped.isKind(of: aClass) {
+      return true
+    }
+    return super.isKind(of: aClass)
+  }
+
+  override func isMember(of aClass: AnyClass) -> Bool {
+    if let wrapped = wrapped as? NSObject, wrapped.isMember(of: aClass) {
+      return true
+    }
+    return super.isMember(of: aClass)
+  }
+
+  /// Everything except the metrics callback goes to the wrapped delegate — including selectors it
+  /// doesn't implement. Returning `nil` for those would raise `unrecognized selector` on the proxy,
+  /// naming `ExpoAppMetrics` in a crash the app would have hit on its own delegate anyway. Forwarding
+  /// unconditionally keeps the failure where it belongs and keeps the crash report pointing at the
+  /// real culprit.
   override func forwardingTarget(for aSelector: Selector!) -> Any? {
     if aSelector == Self.metricsSelector {
       return nil
     }
-    if let wrapped, wrapped.responds(to: aSelector) {
-      return wrapped
-    }
-    return nil
+    return wrapped
   }
 
   /// Canonical recording site. `didFinishCollectingMetrics:` is Apple's "task is fully done" signal
