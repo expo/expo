@@ -31,7 +31,7 @@ export function preprocessFileCommand(cli: commander.Command) {
             input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
             typeInference,
             mapUnicodeCharacters,
-            runOnQueue: runOnQueuePreprocessing,
+            removeRunOnQueue: runOnQueuePreprocessing,
           },
           async (filePath) => {
             console.log(await fs.promises.readFile(filePath, 'utf-8'));

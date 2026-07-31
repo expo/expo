@@ -383,7 +383,7 @@ export type GetFileTypeInformationOptions = {
   /** An option to map unicode code points to ASCII strings to fix underlying SourceKit issue. */
   mapUnicodeCharacters: boolean;
   /** Preprocess the file to remove all `runOnQueue(.*)` from it. */
-  runOnQueue: boolean;
+  removeRunOnQueue: boolean;
 };
 
 async function mergeFileContents(absoluteFilePaths: string[]): Promise<string> {
@@ -406,13 +406,13 @@ async function withTempFile<T>(content: string, fn: (filePath: string) => Promis
 }
 
 export async function withPreparedSingleFile<T>(
-  { input, typeInference, mapUnicodeCharacters, runOnQueue }: GetFileTypeInformationOptions,
+  { input, typeInference, mapUnicodeCharacters, removeRunOnQueue }: GetFileTypeInformationOptions,
   fn: (filePath: string) => Promise<T>
 ): Promise<T> {
   const shouldPreprocessFile =
     typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE ||
     mapUnicodeCharacters ||
-    runOnQueue;
+    removeRunOnQueue;
   if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
     return fn(input.inputFileAbsolutePaths[0] as string);
   }
@@ -425,7 +425,7 @@ export async function withPreparedSingleFile<T>(
   const preprocessFileOptions = {
     preprocessReturns: shouldPreprocessFile,
     mapUnicodeCharacters,
-    runOnQueue,
+    removeRunOnQueue,
   };
   if (shouldPreprocessFile) {
     return withTempFile(preprocessSwiftFile(fileContent, preprocessFileOptions), fn);
@@ -445,11 +445,11 @@ export async function getFileTypeInformation({
   input,
   typeInference,
   mapUnicodeCharacters,
-  runOnQueue,
+  removeRunOnQueue,
 }: GetFileTypeInformationOptions): Promise<FileTypeInformation | null> {
   const shouldPreprocessFile =
     typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE ||
-    runOnQueue ||
+    removeRunOnQueue ||
     mapUnicodeCharacters;
   const typeInferenceOn = typeInference !== TypeInferenceOption.NO_INFERENCE;
   if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 0) {
@@ -459,7 +459,7 @@ export async function getFileTypeInformation({
   }
 
   return withPreparedSingleFile(
-    { input, typeInference, mapUnicodeCharacters, runOnQueue },
+    { input, typeInference, mapUnicodeCharacters, removeRunOnQueue },
     async (tempFilePath) => {
       return getSwiftFileTypeInformation(tempFilePath, { typeInference: typeInferenceOn });
     }
