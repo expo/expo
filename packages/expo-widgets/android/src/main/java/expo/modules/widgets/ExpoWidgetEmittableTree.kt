@@ -88,6 +88,9 @@ import androidx.glance.text.TextDecoration
 import androidx.glance.text.TextDefaults
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import androidx.glance.appwidget.lazy.EmittableLazyColumn
+import androidx.glance.appwidget.lazy.EmittableLazyListItem
+import androidx.glance.appwidget.lazy.ReservedItemIdRangeEnd
 import io.github.jakex7.peek.glance.determinateCircularProgressIndicatorEmittable
 
 private val DefaultCheckedColor = ColorProvider(Color(0xff6750a4))
@@ -123,6 +126,7 @@ private fun ReadableMap.toPeekNodes(converterContext: ConverterContext, source: 
     "CheckboxView" -> listOf(toPeekCheckBox(converterContext))
     "CircularProgressIndicatorView" -> listOf(toPeekCircularProgress(converterContext))
     "ColumnView" -> listOf(toPeekColumn(converterContext, source))
+    "LazyColumnView" -> listOf(toPeekLazyColumn(converterContext, source))
     "LinearProgressIndicatorView" -> listOf(toPeekLinearProgress(converterContext))
     "LoadingIndicatorView" -> listOf(toPeekLoadingIndicator(converterContext))
     "RadioButtonView" -> listOf(toPeekRadioButton(converterContext))
@@ -165,6 +169,24 @@ private fun ReadableMap.toPeekColumn(converterContext: ConverterContext, source:
     it.verticalAlignment = props.toPeekVerticalAlignment()
     it.horizontalAlignment = props.toPeekHorizontalAlignment()
     it.children += children().flatMap { child -> child.toPeekNodes(converterContext, source) }
+  }
+}
+
+private fun ReadableMap.toPeekLazyColumn(converterContext: ConverterContext, source: String): EmittableLazyColumn {
+  val props = props<LayoutProps>(converterContext)
+  val alignment = props.toPeekHorizontalAlignment()
+  return EmittableLazyColumn().also { lazyColumn ->
+    lazyColumn.modifier = props.modifiers.toPeekModifier(converterContext)
+    lazyColumn.horizontalAlignment = alignment
+    children()
+      .flatMap { child -> child.toPeekNodes(converterContext, source) }
+      .forEachIndexed { index, child ->
+        lazyColumn.children += EmittableLazyListItem().also { item ->
+          item.itemId = ReservedItemIdRangeEnd - index
+          item.alignment = Alignment(alignment, Alignment.Vertical.CenterVertically)
+          item.children += child
+        }
+      }
   }
 }
 
