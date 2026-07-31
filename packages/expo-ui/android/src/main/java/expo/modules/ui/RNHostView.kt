@@ -182,6 +182,10 @@ private class TouchDispatchingRootViewGroup(
   private val currentLocation = IntArray(2)
   private var trackingGestureOffset = false
 
+  // Timestamp which is sent to JSTouchDispatcher to propogae a custom ACTION_CANCEL event
+  // JSTouchDispatcher uses timestamp as id to recognize the event
+  private var gestureKeyTime = -1L
+
   // True if the sheet consumed scroll on the most recent drag frame; drives the settle decision.
   private var sheetMovingOnLastDragFrame = false
 
@@ -226,6 +230,7 @@ private class TouchDispatchingRootViewGroup(
       trackingGestureOffset = true
       sheetMovingOnLastDragFrame = false
       flingHandledThisGesture = false
+      gestureKeyTime = ev.eventTime
     }
 
     // While a nested scroll is in flight the sheet may be sliding this whole view up/down. Re-express
@@ -247,6 +252,7 @@ private class TouchDispatchingRootViewGroup(
 
     if (ev.actionMasked == MotionEvent.ACTION_UP || ev.actionMasked == MotionEvent.ACTION_CANCEL) {
       trackingGestureOffset = false
+      gestureKeyTime = -1L
       notifyAncestorRootViews { it.onChildEndedNativeGesture(this, ev) }
     }
     return handled
@@ -261,21 +267,44 @@ private class TouchDispatchingRootViewGroup(
   }
 
   override fun onInterceptTouchEvent(event: MotionEvent): Boolean {
-    eventDispatcher?.let { dispatcher ->
-      jsTouchDispatcher.handleTouchEvent(event, dispatcher, reactContext)
-      jsPointerDispatcher?.handleMotionEvent(event, dispatcher, true)
-    }
+    dispatchTouchEventToJS(event, isCapture = true)
     return super.onInterceptTouchEvent(event)
   }
 
   @SuppressLint("ClickableViewAccessibility")
   override fun onTouchEvent(event: MotionEvent): Boolean {
-    eventDispatcher?.let { dispatcher ->
-      jsTouchDispatcher.handleTouchEvent(event, dispatcher, reactContext)
-      jsPointerDispatcher?.handleMotionEvent(event, dispatcher, false)
-    }
+    dispatchTouchEventToJS(event, isCapture = false)
     super.onTouchEvent(event)
     return true
+  }
+
+  private fun dispatchTouchEventToJS(event: MotionEvent, isCapture: Boolean) {
+    val dispatcher = eventDispatcher ?: return
+    val reissued = if (event.actionMasked == MotionEvent.ACTION_CANCEL) reissueCancel(event) else null
+    val outgoing = reissued ?: event
+
+    jsTouchDispatcher.handleTouchEvent(outgoing, dispatcher, reactContext)
+    jsPointerDispatcher?.handleMotionEvent(outgoing, dispatcher, isCapture)
+    reissued?.recycle()
+  }
+
+  /**
+   * We recreate a custom ACTION_CANCEL event by passing the same gestureKeyTime which was set on ACTION_DOWN
+   * This is sent to JSTouchDispatcher so it can cancel the touch event as some other parent view handled it
+   * TODO(@nishan): This probably will not be needed when RN enables pointer events feature flag. So revisit it
+   */
+  private fun reissueCancel(event: MotionEvent): MotionEvent? {
+    if (gestureKeyTime < 0 || event.downTime == gestureKeyTime) {
+      return null
+    }
+    return MotionEvent.obtain(
+      gestureKeyTime,
+      event.eventTime,
+      MotionEvent.ACTION_CANCEL,
+      event.x,
+      event.y,
+      event.metaState
+    )
   }
 
   override fun onInterceptHoverEvent(event: MotionEvent): Boolean {
