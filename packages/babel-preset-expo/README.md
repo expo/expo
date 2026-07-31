@@ -11,6 +11,34 @@ at https://github.com/expo/expo.
 
 A bundler must follow these requirements if they are to be considered spec compliant for use with a **universal React** (Expo) project.
 
+### Babel Loader
+
+The Babel loading mechanism must include the following properties on its `caller`.
+
+#### platform
+
+A `platform` property denoting the target platform. If the `platform` is not defined, it will default to using `web` when the `bundler` is `webpack` -- this is temporary and will throw an error in the future.
+
+| Value     | Description             |
+| --------- | ----------------------- |
+| `ios`     | Runs on iOS devices     |
+| `android` | Runs on Android devices |
+| `web`     | Runs in web browsers    |
+
+#### bundler
+
+A `bundler` property denoting the name of the bundler that is being used to create the JavaScript bundle.
+If the `bundler` is not defined, it will default to checking if a `babel-loader` is used, if so then `webpack` will be used, otherwise it will default to `metro`.
+
+| Value     | Description                      |
+| --------- | -------------------------------- |
+| `metro`   | Bundling with [Metro][metro]     |
+| `webpack` | Bundling with [Webpack][webpack] |
+
+[metro]: https://facebook.github.io/metro/
+[webpack]: https://webpack.js.org/
+
+
 ## Options
 
 ### `react-compiler`
@@ -182,30 +210,3 @@ All options can be passed in the platform-specific objects `native` and `web` to
 ```
 
 Platform-specific options have higher priority over top-level options.
-
-### Babel Loader
-
-The Babel loading mechanism must include the following properties on its `caller`.
-
-#### platform
-
-A `platform` property denoting the target platform. If the `platform` is not defined, it will default to using `web` when the `bundler` is `webpack` -- this is temporary and will throw an error in the future.
-
-| Value     | Description             |
-| --------- | ----------------------- |
-| `ios`     | Runs on iOS devices     |
-| `android` | Runs on Android devices |
-| `web`     | Runs in web browsers    |
-
-#### bundler
-
-A `bundler` property denoting the name of the bundler that is being used to create the JavaScript bundle.
-If the `bundler` is not defined, it will default to checking if a `babel-loader` is used, if so then `webpack` will be used, otherwise it will default to `metro`.
-
-| Value     | Description                      |
-| --------- | -------------------------------- |
-| `metro`   | Bundling with [Metro][metro]     |
-| `webpack` | Bundling with [Webpack][webpack] |
-
-[metro]: https://facebook.github.io/metro/
-[webpack]: https://webpack.js.org/
