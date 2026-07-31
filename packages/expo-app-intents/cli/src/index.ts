@@ -1,5 +1,5 @@
-import path from 'path';
 import { Command } from 'commander';
+import path from 'path';
 
 import { normalizeDirectory, resolveExamplesAsync, runInit } from './init.js';
 
@@ -46,9 +46,7 @@ async function runInitCommand(options: InitCommandOptions): Promise<void> {
 
 const program = new Command();
 
-program
-  .name('expo-app-intents')
-  .description('Add Apple App Intents support to Expo apps.');
+program.name('expo-app-intents').description('Add Apple App Intents support to Expo apps.');
 
 program
   .command('init')
@@ -57,7 +55,7 @@ program
   .option('--directory <directory>', 'Alias for --dir.')
   .option(
     '--examples <examples...>',
-    'Examples to include. Use "all", or choose any of: minimal, counter, restaurant, journal.'
+    'Examples to include. Use "all", or choose any of: minimal, counter, restaurant, mail.'
   )
   .action(runInitCommand);
 

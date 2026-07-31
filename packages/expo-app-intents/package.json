@@ -12,7 +12,7 @@
     "build": "pnpm run build:lib && pnpm run build:plugin && pnpm run build:cli",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
-    "build:cli": "expo-build cjs:src/cli=build/bin",
+    "build:cli": "expo-build --base cli cjs:src",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "test": "jest",
@@ -46,8 +46,7 @@
     "@types/prompts": "^2.4.9",
     "@types/react": "~19.2.0",
     "expo": "workspace:*",
-    "expo-module-scripts": "workspace:*",
-    "memfs": "^3.2.0"
+    "expo-module-scripts": "workspace:*"
   },
   "dependencies": {
     "commander": "^12.1.0",

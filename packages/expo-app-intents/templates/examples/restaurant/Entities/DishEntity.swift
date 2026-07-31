@@ -1,9 +1,10 @@
 import AppIntents
-import Foundation
 internal import ExpoAppIntents
+import Foundation
 
 private func normalizeDishText(_ value: String) -> String {
-  return value
+  return
+    value
     .folding(options: [.caseInsensitive, .diacriticInsensitive], locale: .current)
     .trimmingCharacters(in: .whitespacesAndNewlines)
 }
