@@ -10,8 +10,12 @@ import ExpoModulesCore
  datasets should publish only the subset needed for Siri and Shortcuts resolution.
  */
 public struct AppIntentEntityRecord: Codable, Record {
-  @Field public var id: String = ""
-  @Field public var title: String = ""
+  // `.required` despite the default value: `Record` needs `init()`, so every field has to be
+  // initialized, but a default alone makes the field optional at the JavaScript boundary. Without
+  // this, `setEntityCatalogAsync('dish', [{}])` from untyped JavaScript would store an entity with
+  // an empty id that Siri can never resolve, instead of telling the caller what is wrong.
+  @Field(.required) public var id: String = ""
+  @Field(.required) public var title: String = ""
   @Field public var subtitle: String?
   @Field public var synonyms: [String] = []
 
@@ -63,22 +67,84 @@ public actor AppIntentEntityStore {
     return "dev.expo.appintents.entities.\(kind)"
   }
 
-  public func entities(ofKind kind: String) -> [AppIntentEntityRecord] {
-    if let data = defaults.data(forKey: storageKey(kind: kind)),
-      let entities = try? JSONDecoder().decode([AppIntentEntityRecord].self, from: data) {
-      return entities
+  /**
+   Returns the stored catalog of the given kind, throwing when the stored blob cannot be decoded.
+
+   Returning an empty catalog instead would be indistinguishable from "JavaScript has not published
+   this kind yet": Siri would offer no values for the parameter, and the developer would have nothing
+   to go on. `getEntityCatalogAsync` turns the throw into a rejected promise, and an app-target
+   `EntityQuery` method is a throwing context too, so every call site can report the failure.
+
+   Nothing is set aside the way `AppIntentInvocationStore.pending()` sets a corrupt queue aside. A
+   catalog is owned by JavaScript rather than accumulated natively, so the next `setCatalog` for the
+   kind replaces the unreadable blob and nothing is lost by leaving it in place until then.
+   */
+  public func entities(ofKind kind: String) throws -> [AppIntentEntityRecord] {
+    guard let data = defaults.data(forKey: storageKey(kind: kind)) else {
+      return []
     }
-    return []
+
+    do {
+      return try JSONDecoder().decode([AppIntentEntityRecord].self, from: data)
+    } catch {
+      let message =
+        "expo-app-intents could not read the '\(kind)' entity catalog, so Siri and Shortcuts have no "
+        + "values to offer or resolve for it. The stored data is not valid JSON for this version of "
+        + "the module, which usually means a different version wrote it. Call "
+        + "setEntityCatalogAsync('\(kind)', ...) to replace it, and please report this at "
+        + "https://github.com/expo/expo/issues. Decoding error: \(error.localizedDescription)"
+      log.error(message)
+      throw AppIntentEntityInvalidException(message)
+    }
   }
 
-  public func entities(ofKind kind: String, matching identifiers: [String]) -> [AppIntentEntityRecord] {
-    return entities(ofKind: kind).filter { identifiers.contains($0.id) }
+  public func entities(
+    ofKind kind: String,
+    matching identifiers: [String]
+  ) throws -> [AppIntentEntityRecord] {
+    return try entities(ofKind: kind).filter { identifiers.contains($0.id) }
   }
 
-  internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) {
-    guard let data = try? JSONEncoder().encode(entities) else {
-      return
+  /**
+   Replaces the catalog of the given kind, throwing instead of leaving the previous one in place
+   without saying so.
+
+   `setEntityCatalogAsync` is the only caller, so the throw becomes a rejected promise in
+   JavaScript. Logging alone would not do: the global `log` writes to OSLog, which never reaches
+   Metro or LogBox, so the developer whose catalog was rejected would never see it.
+   */
+  internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) throws {
+    // An entity without an identifier can never be resolved or matched, and an entity without a
+    // title has nothing for Siri to match speech against. `@Field(.required)` rejects a missing
+    // key, but not a key explicitly set to an empty string.
+    if let invalid = entities.first(where: { $0.id.isEmpty || $0.title.isEmpty }) {
+      throw AppIntentEntityInvalidException(
+        "expo-app-intents rejected the '\(kind)' entity catalog because an entity has an empty "
+          + "\(invalid.id.isEmpty ? "id" : "title"), and Siri and Shortcuts cannot resolve such an "
+          + "entity. Give every entity a non-empty 'id' and 'title', then call "
+          + "setEntityCatalogAsync again."
+      )
     }
-    defaults.set(data, forKey: storageKey(kind: kind))
+
+    do {
+      let data = try JSONEncoder().encode(entities)
+      defaults.set(data, forKey: storageKey(kind: kind))
+    } catch {
+      // Every field of `AppIntentEntityRecord` is a string, so this should never happen.
+      throw AppIntentEntityInvalidException(
+        "expo-app-intents could not save the '\(kind)' entity catalog, so Siri and Shortcuts keep "
+          + "resolving against the previous one. This is a bug in expo-app-intents; please report "
+          + "it at https://github.com/expo/expo/issues. Encoding error: "
+          + "\(error.localizedDescription)"
+      )
+    }
+  }
+}
+
+/// Thrown when an entity catalog cannot be stored or read. Surfaces to JavaScript as a rejected
+/// promise.
+internal final class AppIntentEntityInvalidException: GenericException<String>, @unchecked Sendable {
+  override var reason: String {
+    return param
   }
 }

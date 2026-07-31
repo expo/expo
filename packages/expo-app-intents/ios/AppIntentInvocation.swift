@@ -18,7 +18,9 @@ public struct AppIntentInvocation: Codable, Sendable {
   public init(name: String, params: AppIntentParams) {
     self.id = UUID().uuidString
     self.name = name
-    self.params = params
+    // Params are made JSON-representable here, so the same values reach the persisted queue and
+    // the live event, and so no invocation can be lost to an encoding failure later on.
+    self.params = params.mapValues { $0.jsonSafe() }
     self.createdAt = Date().timeIntervalSince1970 * 1000
   }
 

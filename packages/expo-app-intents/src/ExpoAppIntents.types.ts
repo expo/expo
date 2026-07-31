@@ -8,7 +8,14 @@ export type AppIntentInvocation = {
   id: string;
   /** The invocation name passed to `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift. */
   name: string;
-  /** Parameters passed from the native intent. */
+  /**
+   * Parameters passed from the native intent.
+   *
+   * > **Note:** Values arrive as JavaScript numbers, strings, booleans, `null`, arrays, and plain
+   * > objects. A whole number whose magnitude exceeds `Number.MAX_SAFE_INTEGER` is rounded on the
+   * > way in, because JavaScript has no exact type for it. Dispatch such a value as a string from
+   * > Swift when every digit matters.
+   */
   params: Record<string, unknown>;
   /** Unix timestamp in milliseconds at which the intent ran. */
   createdAt: number;

@@ -11,6 +11,7 @@ internal final class ShortcutsRefreshUnavailableException: Exception, @unchecked
 
 public final class ExpoAppIntentsModule: Module {
   private var invocationEventsTask: Task<Void, Never>?
+  private var invocationEventsSubscription: AppIntentEventSubscription?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAppIntents")
@@ -18,24 +19,31 @@ public final class ExpoAppIntentsModule: Module {
     Events("onIntent")
 
     OnCreate {
+      // The token is created here, synchronously, so `OnDestroy` can invalidate it before the task
+      // below ever reaches the dispatcher. Cancelling the task alone cannot do that: a cancelled
+      // task still runs its body.
+      let subscription = AppIntentEventSubscription()
+      invocationEventsSubscription = subscription
       invocationEventsTask = Task { [weak self] in
-        for await invocation in await AppIntentDispatcher.shared.invocationEvents() {
+        for await invocation in await AppIntentDispatcher.shared.invocationEvents(for: subscription) {
           await self?.sendIntentEvent(invocation)
         }
       }
     }
 
     OnDestroy {
+      invocationEventsSubscription?.invalidate()
+      invocationEventsSubscription = nil
       invocationEventsTask?.cancel()
       invocationEventsTask = nil
     }
 
-    AsyncFunction("getPendingInvocationsAsync") { () async -> [[String: Any]] in
-      return await AppIntentDispatcher.shared.pendingInvocations().map { $0.toDict() }
+    AsyncFunction("getPendingInvocationsAsync") { () async throws -> [[String: Any]] in
+      return try await AppIntentDispatcher.shared.pendingInvocations().map { $0.toDict() }
     }
 
-    AsyncFunction("removePendingInvocationAsync") { (id: String) async in
-      await AppIntentDispatcher.shared.removePendingInvocation(id: id)
+    AsyncFunction("removePendingInvocationAsync") { (id: String) async throws in
+      try await AppIntentDispatcher.shared.removePendingInvocation(id: id)
     }
 
     AsyncFunction("clearPendingInvocationsAsync") { () async in
@@ -43,12 +51,16 @@ public final class ExpoAppIntentsModule: Module {
     }
 
     AsyncFunction("setEntityCatalogAsync") { (kind: String, entities: [AppIntentEntityRecord]) async throws in
-      await AppIntentEntityStore.shared.setCatalog(kind: kind, entities: entities)
-      try await self.refreshShortcuts()
+      try await AppIntentEntityStore.shared.setCatalog(kind: kind, entities: entities)
+      // Best-effort, and deliberately not propagated: the catalog is already stored by this point,
+      // so failing the call would report a write that did happen as an error. An app with no App
+      // Shortcut phrases has no `AppShortcutsProvider` to register a refresh handler, and no
+      // shortcut parameters to re-train either.
+      await AppIntentDispatcher.shared.requestShortcutsRefresh()
     }
 
-    AsyncFunction("getEntityCatalogAsync") { (kind: String) async -> [AppIntentEntityRecord] in
-      return await AppIntentEntityStore.shared.entities(ofKind: kind)
+    AsyncFunction("getEntityCatalogAsync") { (kind: String) async throws -> [AppIntentEntityRecord] in
+      return try await AppIntentEntityStore.shared.entities(ofKind: kind)
     }
 
     AsyncFunction("refreshShortcutsAsync") { () async throws in
