@@ -21,6 +21,7 @@
 
 ### 💡 Others
 
+- [iOS] Fix flaky recently opened apps registry tests by giving each one its own storage key. ([#48349](https://github.com/expo/expo/pull/48349) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Remove the legacy (old architecture) dev support manager and dead build configuration. ([#47640](https://github.com/expo/expo/pull/47640) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Remove legacy (old architecture) code paths and dead build configuration. ([#47639](https://github.com/expo/expo/pull/47639) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Replace swizzling and reflection into React Native internals (packager access, RedBox, instance teardown) with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))

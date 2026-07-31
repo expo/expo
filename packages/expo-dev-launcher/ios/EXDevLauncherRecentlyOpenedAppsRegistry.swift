@@ -9,12 +9,26 @@ let TIME_TO_REMOVE = 1000 * 60 * 60 * 24 * 3 // 3 days
 
 @objc(EXDevLauncherRecentlyOpenedAppsRegistry)
 public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
+  /// Storage key, overridable so that parallel tests don't share a single registry.
+  let storageKey: String
+
+  @objc
+  public override init() {
+    storageKey = RECENTLY_OPENED_APPS_REGISTRY_KEY
+    super.init()
+  }
+
+  init(storageKey: String) {
+    self.storageKey = storageKey
+    super.init()
+  }
+
   private var appRegistry: [String: Any] {
     get {
-      return UserDefaults.standard.dictionary(forKey: RECENTLY_OPENED_APPS_REGISTRY_KEY) ?? [String: Any]()
+      return UserDefaults.standard.dictionary(forKey: storageKey) ?? [String: Any]()
     }
     set (newAppRegistry) {
-      UserDefaults.standard.set(newAppRegistry, forKey: RECENTLY_OPENED_APPS_REGISTRY_KEY)
+      UserDefaults.standard.set(newAppRegistry, forKey: storageKey)
     }
   }
 
@@ -107,6 +121,6 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   func resetStorage() {
-    UserDefaults.standard.removeObject(forKey: RECENTLY_OPENED_APPS_REGISTRY_KEY)
+    UserDefaults.standard.removeObject(forKey: storageKey)
   }
 }
