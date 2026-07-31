@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Hoisted the ignore-path Minimatch build out of the per-module filter in `ExpoConfigLoader`, avoiding O(modules × patterns) Minimatch constructions during config load. Byte-identical fingerprint hash. ([#48367](https://github.com/expo/expo/pull/48367) by [@alfonsocj](https://github.com/alfonsocj))
 - Reworked config-plugin module capture with a `Module.prototype._compile` hook. ([#47666](https://github.com/expo/expo/pull/47666) by [@kudo](https://github.com/kudo))
 - Derived config-plugin modules by diffing a plugins-skipped config load, which drops most config-loading framework modules automatically and shrinks the hand-maintained allowlist. ([#47678](https://github.com/expo/expo/pull/47678) by [@kudo](https://github.com/kudo))
 
