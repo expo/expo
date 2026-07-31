@@ -156,6 +156,103 @@ struct JavaScriptRuntimeTests {
     withExtendedLifetime(scheduler) {}
   }
 
+  @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+  @Test
+  func `execute async prefers runtime task executor across suspension`() async throws {
+    let executors = try await runtime.execute {
+      let before = withUnsafeCurrentTask { $0?.unownedTaskExecutor }
+      try await Task.sleep(for: .milliseconds(1))
+      let after = withUnsafeCurrentTask { $0?.unownedTaskExecutor }
+      return (before, after)
+    }
+    let secondTaskExecutor = try await runtime.execute {
+      await Task.yield()
+      return withUnsafeCurrentTask { $0?.unownedTaskExecutor }
+    }
+    let otherRuntime = JavaScriptRuntime()
+    let otherRuntimeExecutor = try await otherRuntime.execute {
+      await Task.yield()
+      return withUnsafeCurrentTask { $0?.unownedTaskExecutor }
+    }
+
+    #expect(executors.0 != nil)
+    #expect(executors.1 == executors.0)
+    // The preference is the runtime's own executor: shared by tasks on the same runtime,
+    // distinct from another runtime's.
+    #expect(secondTaskExecutor == executors.0)
+    #expect(otherRuntimeExecutor != nil)
+    #expect(otherRuntimeExecutor != executors.0)
+  }
+
+  @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+  @Test
+  func `schedule async prefers runtime task executor across suspension`() async {
+    let executors = await withCheckedContinuation { continuation in
+      runtime.schedule {
+        let before = withUnsafeCurrentTask { $0?.unownedTaskExecutor }
+        try? await Task.sleep(for: .milliseconds(1))
+        let after = withUnsafeCurrentTask { $0?.unownedTaskExecutor }
+        continuation.resume(returning: (before, after))
+      }
+    }
+    let secondTaskExecutor = await withCheckedContinuation { continuation in
+      runtime.schedule {
+        await Task.yield()
+        continuation.resume(returning: withUnsafeCurrentTask { $0?.unownedTaskExecutor })
+      }
+    }
+
+    #expect(executors.0 != nil)
+    #expect(executors.1 == executors.0)
+    // Scheduled tasks carry the same per-runtime executor preference as `execute` tasks.
+    #expect(secondTaskExecutor == executors.0)
+  }
+
+  @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
+  @Test
+  func `schedule async stays on JavaScript thread across suspension points`() async {
+    let scheduler = TestRuntimeScheduler()
+    let owningRuntime = await scheduler.run {
+      JavaScriptRuntime()
+    }
+    let runtime = await scheduler.run {
+      owningRuntime.withUnsafePointee { runtimePointer in
+        JavaScriptRuntime(
+          unsafePointer: runtimePointer,
+          scheduler: scheduler.opaquePointer,
+          dispatch: unsafeBitCast(scheduleOnTestRuntime, to: UnsafeRawPointer.self)
+        )
+      }
+    }
+
+    await withCheckedContinuation { continuation in
+      runtime.schedule {
+        #expect(runtime.isOnJavaScriptThread())
+
+        await Task.yield()
+        #expect(runtime.isOnJavaScriptThread())
+
+        try? await Task.sleep(for: .milliseconds(1))
+        #expect(runtime.isOnJavaScriptThread())
+
+        await withCheckedContinuation { continuation in
+          Thread.detachNewThread {
+            Thread.sleep(forTimeInterval: 0.001)
+            continuation.resume()
+          }
+        }
+        #expect(runtime.isOnJavaScriptThread())
+
+        continuation.resume()
+      }
+    }
+
+    // The wrapper borrows both the underlying JSI runtime and the scheduler context.
+    withExtendedLifetime(runtime) {}
+    withExtendedLifetime(owningRuntime) {}
+    withExtendedLifetime(scheduler) {}
+  }
+
   // The execute<R> overloads have a same-thread fast path and a cross-thread path that
   // schedules the closure onto the JS thread and pumps the caller's run loop until it
   // completes. The tests above run on `@JavaScriptActor` (the JS thread), so they only
