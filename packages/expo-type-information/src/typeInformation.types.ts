@@ -201,6 +201,7 @@ export type ConstructorDeclaration = {
  */
 export type ClassDeclaration = {
   name: string;
+  events: string[];
   constructor: ConstructorDeclaration | null;
   methods: FunctionDeclaration[];
   asyncMethods: FunctionDeclaration[];
