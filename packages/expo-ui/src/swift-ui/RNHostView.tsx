@@ -20,6 +20,10 @@ export function RNHostView(props: RNHostViewProps) {
   return (
     <RNHostNativeView
       {...props}
+      // The host dispatches touches to the hosted content from its own touch handler, so touch
+      // coordinates are relative to the host. Mark the shadow node as a layout root so `measure()`
+      // reports the same coordinate space; otherwise `Pressable` cancels the press on any movement.
+      layoutRoot
       // `matchContents` can only be used once on mount
       // So we force unmount when it changes to prevent unexpected layout
       key={props.matchContents ? 'matchContents' : 'noMatchContents'}
