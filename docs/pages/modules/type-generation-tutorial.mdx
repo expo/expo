@@ -149,9 +149,9 @@ export interface ExpoWebViewProps extends ViewProps {
 export declare class FirstInlineViewNativeModuleType extends NativeModule {}
 ```
 
-Looking at the "generated" file, we can see that an `ExpoWebViewProps` interface has been generated, it has the props and events from `FirstInlineView`. The Swift `URL` type of the `url` prop correctly maps to `string` in TypeScript.
+Looking at the "generated" file, we can see that an `ExpoWebViewProps` interface has been generated with the props and events from `FirstInlineView`. The Swift `URL` type of the `url` prop correctly maps to `string` in TypeScript.
 
-Types that the tool cannot map or find a definition for are different. When a type is not one of the known convertible types and is not defined in the provided files (or the tool failed to parse its definition), the tool generates an `export type SomeType = unknown;` alias for it.
+The tool handles types it cannot resolve differently. For a type that is neither a convertible type nor defined in the provided files, it generates an `export type SomeType = unknown;` alias. It does the same when it fails to parse a definition.
 
 ```tsx app/FirstInlineView.tsx
 // File hash: 7c626aee408cce9e26967afedaf3907b911e12e321b784c5ee642c72f9d50ea6
@@ -417,7 +417,7 @@ export type ExpoSettingsEvents = {
 };
 ```
 
-The `*.types.ts` file contains the definitions of all types defined in the module. In our case we've declared a `Theme` enum which has correctly been put in the file, together with an `ExpoSettingsEvents` type describing the module's events. Note that the tool doesn't resolve the payload types of events, so the payload is typed as a generic object.
+The `*.types.ts` file contains the definitions of all types defined in the module. In our case we declared a `Theme` enum, and the tool emitted it here along with an `ExpoSettingsEvents` type for the module's events. Note that the tool doesn't resolve event payload types, so the payload is typed as a generic object.
 
 ```tsx expo-settings/src/ExpoSettingsModule.ts
 // File hash: e30ca48525429f211d7d3a6cb86d8caa39610ae3774be2e321fdce98895caf9e
