@@ -14,6 +14,7 @@ import { MapsScreens } from '../screens/ExpoMaps/MapsScreen';
 import { GLScreens } from '../screens/GL/GLScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
 import { SVGScreens } from '../screens/SVG/SVGScreen';
+import { UIModifierScreens } from '../screens/UI/UIModifierScreens';
 import { UIScreens } from '../screens/UI/UIScreen';
 import { UIUniversalScreens } from '../screens/UIUniversal/UIUniversalScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
@@ -312,6 +313,7 @@ export const Screens: ScreenConfig[] = [
   ...ImageScreens,
   ...VideoScreens,
   ...UIScreens,
+  ...UIModifierScreens,
   ...UIUniversalScreens,
   ...SVGScreens,
   ...MapsScreens,
