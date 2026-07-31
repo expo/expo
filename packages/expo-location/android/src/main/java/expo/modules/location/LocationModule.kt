@@ -376,16 +376,23 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
 
     OnActivityEntersForeground {
       AppForegroundedSingleton.isForegrounded = true
-      onHostResume()
+      resumeGeocoder()
+      resumeLocationUpdates()
+      resumeHeadingWatch()
+      resumeMotionActivityWatch()
     }
 
     OnActivityEntersBackground {
       AppForegroundedSingleton.isForegrounded = false
-      onHostPause()
+      stopWatching()
+      stopHeadingWatch()
+      pauseMotionActivityWatch()
     }
 
     OnDestroy {
-      onHostDestroy()
+      stopWatching()
+      stopHeadingWatch()
+      stopMotionActivityWatch()
     }
   }
 
@@ -698,14 +705,18 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
     mAccuracy = 0
   }
 
-  private fun startWatching() {
+  private fun resumeGeocoder() {
     // if permissions not granted it won't work anyway, but this can be invoked when permission dialog disappears
     if (!isMissingForegroundPermissions()) {
       mGeocoderPaused = false
     }
+  }
 
-    // Resume paused location updates
-    resumeLocationUpdates()
+  private fun resumeHeadingWatch() {
+    if (mHeadingId == 0) {
+      return
+    }
+    startHeadingUpdate()
   }
 
   private fun stopWatching() {
@@ -1082,24 +1093,6 @@ class LocationModule : Module(), SensorEventListener, ActivityEventListener {
 
     const val DEGREE_DELTA = 0.0355 // in radians, about 2 degrees
     const val TIME_DELTA = 50f // in milliseconds
-  }
-
-  fun onHostResume() {
-    startWatching()
-    startHeadingUpdate()
-    resumeMotionActivityWatch()
-  }
-
-  fun onHostPause() {
-    stopWatching()
-    stopHeadingWatch()
-    pauseMotionActivityWatch()
-  }
-
-  fun onHostDestroy() {
-    stopWatching()
-    stopHeadingWatch()
-    stopMotionActivityWatch()
   }
 
   override fun onSensorChanged(event: SensorEvent?) {
