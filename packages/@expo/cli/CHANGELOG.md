@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Bump to `multitars@1.0.2` to address symlink and unicode bugs ([#48833](https://github.com/expo/expo/pull/48833) by [@kitten](https://github.com/kitten))
+- Resolve the signed-in username for partner provisioned actors so Expo Go can verify the account match ([#48354](https://github.com/expo/expo/pull/48354) by [@davidko604](https://github.com/davidko604))
 
 ## 57.0.14 — 2026-08-10
 
