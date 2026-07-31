@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Scope each notification observer to its own event so subscribing to one battery event no longer starts observing the others. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ignigena](https://github.com/Ignigena))
+- [iOS] Scope each notification observer to its own event so subscribing to one battery event no longer starts observing the others. ([#48377](https://github.com/expo/expo/pull/48377) by [@Ignigena](https://github.com/Ignigena))
 
 ### 💡 Others
 
