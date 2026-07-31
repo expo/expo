@@ -5,7 +5,10 @@ import Foundation
 
 @available(iOS 18.0, *)
 @AppEntity(schema: .mail.draft)
-struct MailDraftEntity: IndexedEntity {
+struct MailDraftEntity: IndexedEntity, AppIntentEntityRecordConvertible {
+  /** Groups the app's Spotlight items so they can be managed together. */
+  static let spotlightDomainIdentifier = "dev.expo.appintents.mailDraft"
+
   static let defaultQuery = MailDraftEntityQuery()
 
   var id: String
@@ -17,6 +20,18 @@ struct MailDraftEntity: IndexedEntity {
   var attachments: [IntentFile]
   var account: MailAccountEntity
 
+  /** Mirrors the `hideInSpotlight` flag from the catalog. */
+  var isHiddenInSpotlight: Bool = false
+
+  /**
+   Apple's own opt-out, honoured by Spotlight from iOS 18.4. expo-app-intents already keeps hidden
+   drafts out of the index it manages; forwarding it here also covers indexing the system performs
+   itself.
+   */
+  var hideInSpotlight: Bool {
+    return isHiddenInSpotlight
+  }
+
   init(
     id: String,
     to: [IntentPerson],
@@ -25,7 +40,8 @@ struct MailDraftEntity: IndexedEntity {
     subject: String?,
     body: AttributedString?,
     attachments: [IntentFile],
-    account: MailAccountEntity
+    account: MailAccountEntity,
+    isHiddenInSpotlight: Bool = false
   ) {
     self.id = id
     self.to = to
@@ -35,6 +51,7 @@ struct MailDraftEntity: IndexedEntity {
     self.body = body
     self.attachments = attachments
     self.account = account
+    self.isHiddenInSpotlight = isHiddenInSpotlight
   }
 
   /// Builds a draft from a catalog record published by JavaScript with
@@ -55,7 +72,8 @@ struct MailDraftEntity: IndexedEntity {
       subject: record.title.isEmpty ? nil : record.title,
       body: bodyText.isEmpty ? nil : AttributedString(bodyText),
       attachments: [],
-      account: MailAccountEntity.default
+      account: MailAccountEntity.default,
+      isHiddenInSpotlight: record.hideInSpotlight
     )
   }
 
@@ -81,7 +99,7 @@ struct MailDraftEntity: IndexedEntity {
     attributes.recipientEmailAddresses = to.compactMap(Self.emailAddress(of:))
     attributes.authorEmailAddresses = [account.emailAddress]
     attributes.userCreated = NSNumber(value: true)
-    attributes.domainIdentifier = MailDraftIndexer.domainIdentifier
+    attributes.domainIdentifier = Self.spotlightDomainIdentifier
     attributes.keywords = ["mail", "draft", "email", displaySubject]
     return attributes
   }

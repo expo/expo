@@ -45,6 +45,101 @@ struct AppIntentEntityStoreTests {
   }
 
   @Test
+  func `setCatalog reports whether anything changed`() async throws {
+    let records = [
+      AppIntentEntityRecord(
+        id: "t1",
+        title: "Eagle Peak",
+        subtitle: "5 km",
+        synonyms: ["eagle"],
+        metadata: ["difficulty": "moderate", "region": "north"]
+      )
+    ]
+
+    let firstWrite = try await store.setCatalog(kind: "trail", entities: records)
+    #expect(firstWrite, "the first write introduces a catalog")
+
+    let identicalWrite = try await store.setCatalog(kind: "trail", entities: records)
+    #expect(!identicalWrite, "republishing the same catalog is not a change")
+
+    // Built from scratch rather than copied and mutated: `@Field` is a class, so assigning through
+    // a copy of the array would write into `records` as well and leave nothing to compare against.
+    let changed = [
+      AppIntentEntityRecord(
+        id: "t1",
+        title: "Eagle Peak Trail",
+        subtitle: "5 km",
+        synonyms: ["eagle"],
+        metadata: ["difficulty": "moderate", "region": "north"]
+      )
+    ]
+    let changedWrite = try await store.setCatalog(kind: "trail", entities: changed)
+    #expect(changedWrite, "a different catalog is a change")
+    #expect(records.map(\.title) == ["Eagle Peak"], "the original records are untouched")
+
+    let readBack = try await store.entities(ofKind: "trail")
+    #expect(readBack.map(\.title) == ["Eagle Peak Trail"])
+  }
+
+  @Test
+  func `setCatalog is stable across metadata ordering`() async throws {
+    // Encoding uses sorted keys, so two records whose metadata was built in a different order
+    // must still compare as unchanged. Without that, dictionary ordering would make every write
+    // look like a change.
+    let first = AppIntentEntityRecord(
+      id: "t1",
+      title: "Eagle Peak",
+      subtitle: nil,
+      synonyms: [],
+      metadata: ["a": "1", "b": "2", "c": "3"]
+    )
+    var reordered: [String: String] = [:]
+    reordered["c"] = "3"
+    reordered["b"] = "2"
+    reordered["a"] = "1"
+    let second = AppIntentEntityRecord(
+      id: "t1",
+      title: "Eagle Peak",
+      subtitle: nil,
+      synonyms: [],
+      metadata: reordered
+    )
+
+    let firstWrite = try await store.setCatalog(kind: "trail", entities: [first])
+    #expect(firstWrite)
+
+    let reorderedWrite = try await store.setCatalog(kind: "trail", entities: [second])
+    #expect(!reorderedWrite, "metadata insertion order must not count as a change")
+  }
+
+  @Test
+  func `hideInSpotlight round-trips and counts as a change`() async throws {
+    let visible = AppIntentEntityRecord(id: "t1", title: "Eagle Peak", subtitle: nil, synonyms: [])
+    #expect(!visible.hideInSpotlight, "entities are indexed unless told otherwise")
+
+    let firstWrite = try await store.setCatalog(kind: "trail", entities: [visible])
+    #expect(firstWrite)
+
+    // Flipping the flag has to register as a change, or the index would never be rebuilt.
+    let hidden = AppIntentEntityRecord(
+      id: "t1",
+      title: "Eagle Peak",
+      subtitle: nil,
+      synonyms: [],
+      metadata: [:],
+      hideInSpotlight: true
+    )
+    let hiddenWrite = try await store.setCatalog(kind: "trail", entities: [hidden])
+    #expect(hiddenWrite, "hiding an entity is a catalog change")
+
+    let readBack = try await store.entities(ofKind: "trail")
+    #expect(readBack.map(\.hideInSpotlight) == [true])
+
+    let repeatWrite = try await store.setCatalog(kind: "trail", entities: [hidden])
+    #expect(!repeatWrite, "republishing the same flag is not a change")
+  }
+
+  @Test
   func `filters entities by matching identifiers`() async throws {
     try await store.setCatalog(
       kind: "trail",

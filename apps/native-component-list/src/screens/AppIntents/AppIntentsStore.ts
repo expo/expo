@@ -38,6 +38,13 @@ export type AppIntentMailDraft = {
   /** Recipient addresses, flattened from the intent's `[IntentPerson]` parameters. */
   recipients: string[];
   createdAt: number;
+  /** Keeps the draft out of the Spotlight index. Enforced by expo-app-intents. */
+  hideInSpotlight?: boolean;
+  /**
+   * Keeps the draft from being offered to Siri or matched by name. Travels in `metadata` because
+   * expo-app-intents does not know about it — the app-target query is what honours it.
+   */
+  hideInSuggestions?: boolean;
 };
 
 export type AppIntentRoute = 'counter' | 'order' | 'mail';
@@ -66,6 +73,7 @@ export const appIntentSampleMailDrafts: AppIntentMailDraft[] = [
     body: 'Two notes on the compose screen: the recipient chips need more contrast, and the subject field should keep focus.',
     recipients: ['iris@example.com'],
     createdAt: Date.UTC(2026, 5, 30, 13, 10),
+    hideInSpotlight: true,
   },
   {
     id: 'sample-draft-conference-trip',
@@ -74,6 +82,7 @@ export const appIntentSampleMailDrafts: AppIntentMailDraft[] = [
     body: 'Flights are booked and the hotel is confirmed. Sending the itinerary so nobody has to ask for it twice.',
     recipients: ['travel@example.com'],
     createdAt: Date.UTC(2026, 5, 30, 18, 35),
+    hideInSuggestions: true,
   },
   {
     id: 'sample-draft-thanks-next-steps',
@@ -369,24 +378,46 @@ export async function addSampleMailDrafts(): Promise<AppIntentMailDraft[]> {
   }
 
   const drafts = [...newDrafts, ...existingDrafts];
-  await writeJson<AppIntentMailDraft[]>(mailDraftsKey, drafts);
+  await withSerializedStateUpdate(() => writeJson<AppIntentMailDraft[]>(mailDraftsKey, drafts));
   return drafts;
+}
+
+/** Flips one of the visibility flags on a draft and returns the updated list. */
+export async function toggleMailDraftFlag(
+  id: string,
+  flag: 'hideInSpotlight' | 'hideInSuggestions'
+): Promise<AppIntentMailDraft[]> {
+  const drafts = await getMailDrafts();
+  const updated = drafts.map((draft) =>
+    draft.id === id ? { ...draft, [flag]: !draft[flag] } : draft
+  );
+  await withSerializedStateUpdate(() => writeJson<AppIntentMailDraft[]>(mailDraftsKey, updated));
+  return updated;
 }
 
 /**
  * Projects the drafts into the shape the native `MailDraftEntity.init(record:)` reads: the record's
- * title carries the subject and its subtitle carries the body.
+ * title carries the subject, and `metadata` carries the rest, since `AppIntentEntity` has no field
+ * for a recipient or a timestamp.
  *
- * The recipients are deliberately left out. Nothing native reads them - `init(record:)` builds a
- * draft with no recipients, and `MailDraftEntityQuery` matches on the subject and the body - so
- * publishing them as `synonyms` would only imply that "the draft to Maya" resolves, when it does
- * not.
+ * `metadata.recipients` is what rebuilds the draft's `to` list, which is what makes "the draft to
+ * Maya" resolve: `MailDraftEntityQuery.entities(matching:)` searches `recipientList`. They are not
+ * also published as `synonyms`, because nothing reads that for a draft - `DishEntity` is the example
+ * that uses it.
  */
 export function mailDraftsToEntityCatalog(drafts: AppIntentMailDraft[]): AppIntentEntity[] {
   return drafts.map((draft) => ({
     id: draft.id,
     title: draft.subject,
     subtitle: draft.body,
+    hideInSpotlight: draft.hideInSpotlight,
+    metadata: {
+      body: draft.body,
+      recipients: draft.recipients.join(','),
+      createdAt: String(draft.createdAt),
+      invocationId: draft.invocationId,
+      hideInSuggestions: draft.hideInSuggestions ? 'true' : 'false',
+    },
   }));
 }
 

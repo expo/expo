@@ -1,3 +1,7 @@
+// A type-only import, so nothing from ExpoUI is pulled in at runtime on the platforms where App
+// Intents do not exist.
+import type { ModifierConfig } from '@expo/ui/swift-ui/modifiers';
+
 /**
  * A single recorded App Intent invocation.
  *
@@ -57,19 +61,30 @@ export type AppIntentEntity = {
   synonyms?: string[];
   /** App-specific string metadata consumed by native AppEntity implementations. */
   metadata?: Record<string, string>;
+  /**
+   * Whether to keep this entity out of the Spotlight index. It stays resolvable, so Siri can still
+   * offer it as a parameter and open it by identifier — it just is not searchable.
+   *
+   * Only applies to entities registered natively with `registerIndexed`. Defaults to `false`.
+   *
+   * @platform ios
+   */
+  hideInSpotlight?: boolean;
 };
 
 /**
  * ExpoUI modifier config that associates a SwiftUI view with an AppEntity identifier.
+ *
+ * Built on `@expo/ui`'s own `ModifierConfig` rather than restating its shape, so that a change to
+ * what the `modifiers` prop accepts is a type error here instead of a value ExpoUI rejects at
+ * runtime.
  */
-export type AppEntityIdentifierModifier = {
+export type AppEntityIdentifierModifier = ModifierConfig & {
   $type: 'appEntityIdentifier';
-  $scope?: string;
   /** App-specific entity kind registered natively, for example `person` or `dish`. */
   entity: string;
   /** Stable entity id from the matching App Intents entity catalog. */
   id: string;
-  [key: string]: unknown;
 };
 
 export type ExpoAppIntentsModuleEvents = {
