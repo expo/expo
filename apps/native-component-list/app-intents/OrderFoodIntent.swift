@@ -9,7 +9,7 @@ internal import ExpoAppIntents
  */
 struct OrderFoodIntent: AppIntent {
   static let title: LocalizedStringResource = "Order Food"
-  static var openAppWhenRun: Bool = true
+  static let openAppWhenRun: Bool = true
 
   @Parameter(title: "Dish", requestValueDialog: "What would you like to order?")
   var dish: DishEntity

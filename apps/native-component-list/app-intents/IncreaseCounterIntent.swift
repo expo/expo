@@ -6,7 +6,7 @@ internal import ExpoAppIntents
  */
 struct IncreaseCounterIntent: AppIntent {
   static let title: LocalizedStringResource = "Increase Counter"
-  static var openAppWhenRun: Bool = true
+  static let openAppWhenRun: Bool = true
 
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {
