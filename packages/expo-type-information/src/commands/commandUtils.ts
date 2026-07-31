@@ -19,6 +19,7 @@ export type TypeInformationCommandCommonAllArguments = {
   outputPath?: string;
   typeInference?: 'NO_INFERENCE' | 'SIMPLE_INFERENCE' | 'PREPROCESS_AND_INFERENCE';
   skipUnicodeCharacterMapping?: boolean;
+  disableRunOnQueuePreprocessing?: boolean;
   watcher?: boolean;
   appJson?: string;
 };
@@ -42,6 +43,7 @@ export interface ParsedArguments {
   realOutputPath?: string;
   typeInference: TypeInferenceOption;
   mapUnicodeCharacters: boolean;
+  runOnQueuePreprocessing: boolean;
   watcher: boolean;
   appJsonPath?: string;
 }
@@ -66,6 +68,7 @@ export function addCommonOptions(command: commander.Command): commander.Command 
       '-s, --skip-unicode-character-mapping',
       'skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.'
     )
+    .option('-d, --disable-run-on-queue-preprocessing', 'Disable preprocessing runOnQueue.')
     .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
 }
 
@@ -254,6 +257,7 @@ export function parseCommandArguments(
   }
 
   const mapUnicodeCharacters = !options.skipUnicodeCharacterMapping;
+  const runOnQueuePreprocessing = !options.disableRunOnQueuePreprocessing;
   const watcher = options.watcher ?? false;
   return {
     realInputPaths,
@@ -262,6 +266,7 @@ export function parseCommandArguments(
     mapUnicodeCharacters,
     watcher,
     appJsonPath,
+    runOnQueuePreprocessing,
   };
 }
 
@@ -269,15 +274,18 @@ export async function getFileTypeInformationFromArgs({
   realInputPaths,
   typeInference,
   mapUnicodeCharacters,
+  runOnQueuePreprocessing,
 }: {
   realInputPaths: string[];
   typeInference: TypeInferenceOption;
   mapUnicodeCharacters: boolean;
+  runOnQueuePreprocessing: boolean;
 }): Promise<FileTypeInformation | null> {
   const typeInfo = await getFileTypeInformation({
     input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
     typeInference,
     mapUnicodeCharacters,
+    runOnQueue: runOnQueuePreprocessing,
   });
 
   if (!typeInfo) {
