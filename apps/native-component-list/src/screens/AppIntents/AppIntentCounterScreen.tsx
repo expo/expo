@@ -3,18 +3,14 @@ import { useTheme } from 'ThemeProvider';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
-import {
-  getCounterState,
-  resetCounterState,
-  type AppIntentCounterState,
-} from './AppIntentsStore';
-import { AppIntentExitButton } from './AppIntentExitButton';
-import { useAppIntentState } from './useAppIntentState';
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import { ScrollPage, Section } from '../../components/Page';
+import { AppIntentExitButton } from './AppIntentExitButton';
+import { getCounterState, resetCounterState, type AppIntentCounterState } from './AppIntentsStore';
+import { useAppIntentState } from './useAppIntentState';
 
-const initialCounterState: AppIntentCounterState = { count: 0 };
+const initialCounterState: AppIntentCounterState = { count: 0, countedInvocationIds: [] };
 
 function formatDate(timestamp?: number): string {
   return timestamp ? new Date(timestamp).toLocaleString() : 'Never';
@@ -33,9 +29,7 @@ export default function AppIntentCounterScreen() {
           style={[
             styles.hero,
             {
-              backgroundColor: openedBySiri
-                ? 'rgba(72, 187, 120, 0.18)'
-                : theme.background.default,
+              backgroundColor: openedBySiri ? 'rgba(72, 187, 120, 0.18)' : theme.background.default,
               borderColor: openedBySiri ? '#38a169' : theme.border.default,
             },
           ]}>
@@ -56,7 +50,17 @@ export default function AppIntentCounterScreen() {
       <Section title="Controls">
         <View style={styles.controls}>
           <AppIntentExitButton />
-          <Button title="Reset counter" onPress={() => resetCounterState()} />
+          <Button
+            title="Reset counter"
+            onPress={() => {
+              resetCounterState().catch((error: unknown) => {
+                console.warn(
+                  'Could not reset the counter. The previous count stays on screen; check that AsyncStorage is writable.',
+                  error
+                );
+              });
+            }}
+          />
         </View>
       </Section>
     </ScrollPage>

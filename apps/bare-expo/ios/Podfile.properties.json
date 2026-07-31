@@ -2,8 +2,8 @@
   "expo.jsEngine": "hermes",
   "newArchEnabled": "true",
   "EX_DEV_CLIENT_NETWORK_INSPECTOR": "true",
-  "expo.inlineModules.watchedDirectories": "[\"../native-component-list/src/screens/inlineModules/inlineModulesExamples\", \"../native-component-list/app-intents\",\"../native-component-list/src/screens/ModulesCore\"]",
-  "expo.inlineModules.xcodeProjectTargets": "{\"mainTarget\":\"BareExpo\",\"targets\":[\"BareExpoMain-BareExpo\"]}",
+  "expo.inlineModules.watchedDirectories": "[\"../native-component-list/src/screens/inlineModules/inlineModulesExamples\",\"../native-component-list/src/screens/ModulesCore\",\"../native-component-list/app-intents\"]",
+  "expo.inlineModules.xcodeProjectTargets": "{\"targets\":[\"BareExpo\"]}",
   "ios.buildReactNativeFromSource": "false",
   "EXPO_USE_PRECOMPILED_MODULES": "false"
 }

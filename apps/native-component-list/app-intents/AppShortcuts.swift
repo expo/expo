@@ -32,14 +32,8 @@ struct AppShortcuts: AppShortcutsProvider {
       systemImageName: "fork.knife"
     )
 
-    AppShortcut(
-      intent: CreateJournalEntryShortcutIntent(),
-      phrases: [
-        "Create a journal entry in \(.applicationName)",
-        "Write a journal entry in \(.applicationName)"
-      ],
-      shortTitle: "Journal Entry",
-      systemImageName: "book.pages"
-    )
+    // The mail example deliberately adds no phrase. Its intents conform to Apple's `mail`
+    // schema domain, so Siri, Apple Intelligence, and the Shortcuts app discover them from
+    // the extracted App Intents metadata instead.
   }
 }

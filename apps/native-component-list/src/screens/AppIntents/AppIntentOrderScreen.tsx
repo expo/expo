@@ -46,15 +46,25 @@ export default function AppIntentOrderScreen() {
 
       <Section title="Intent Handling">
         <BodyText>
-          When several unhandled order intents are pending, BareExpo keeps the latest order and
-          removes the rest from the pending queue.
+          When several unhandled order intents are pending, this example stores only the newest
+          order, then removes every handled invocation from the pending queue.
         </BodyText>
       </Section>
 
       <Section title="Controls">
         <View style={styles.controls}>
           <AppIntentExitButton />
-          <Button title="Clear latest order" onPress={() => clearLatestOrder()} />
+          <Button
+            title="Clear latest order"
+            onPress={() => {
+              clearLatestOrder().catch((error: unknown) => {
+                console.warn(
+                  'Could not clear the stored order. The order stays on screen; check that AsyncStorage is writable.',
+                  error
+                );
+              });
+            }}
+          />
         </View>
       </Section>
     </ScrollPage>

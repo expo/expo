@@ -23,6 +23,9 @@ function useSplashScreen(loadingFunction: () => Promise<void>) {
         console.warn(e);
       } finally {
         setLoadingComplete(true);
+        // The splash screen comes down here and nowhere else, so no feature can keep the app
+        // from starting.
+        await SplashScreen.hide();
       }
     }
 

@@ -6,31 +6,34 @@ import { subscribeToAppIntentState } from './AppIntentsStore';
 export function useAppIntentState<T>(loader: () => Promise<T>, initialValue: T): T {
   const [state, setState] = React.useState<T>(initialValue);
 
-  const refresh = React.useCallback(async () => {
-    setState(await loader());
-  }, [loader]);
-
   useFocusEffect(
     React.useCallback(() => {
       let isActive = true;
 
-      loader().then((value) => {
-        if (isActive) {
-          setState(value);
-        }
-      });
+      const refresh = () => {
+        loader()
+          .then((value) => {
+            // The screen can lose focus, or unmount, while the read is in flight.
+            if (isActive) {
+              setState(value);
+            }
+          })
+          .catch((error: unknown) => {
+            console.warn(
+              'Could not read the stored App Intents example state. The screen keeps showing the value it read last.',
+              error
+            );
+          });
+      };
 
-      const subscription = subscribeToAppIntentState(() => {
-        if (isActive) {
-          void refresh();
-        }
-      });
+      refresh();
+      const subscription = subscribeToAppIntentState(refresh);
 
       return () => {
         isActive = false;
         subscription.remove();
       };
-    }, [loader, refresh])
+    }, [loader])
   );
 
   return state;
