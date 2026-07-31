@@ -8,23 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0349B76C6320565D0B2E851A /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 41AAB6FC8982ACA48EAD8CCE /* PrivacyInfo.xcprivacy */; };
-		40EB3193301CB4FB006F3D9D /* SourceTreeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3191301CB4FB006F3D9D /* SourceTreeTests.swift */; };
-		40EB3194301CB4FB006F3D9D /* BundlePatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3181301CB4FB006F3D9D /* BundlePatchTests.swift */; };
-		40EB3195301CB4FB006F3D9D /* BundleSourceMapProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3182301CB4FB006F3D9D /* BundleSourceMapProviderTests.swift */; };
-		40EB3196301CB4FB006F3D9D /* DependencyResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3183301CB4FB006F3D9D /* DependencyResolverTests.swift */; };
-		40EB3197301CB4FB006F3D9D /* SnackDiffTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB318D301CB4FB006F3D9D /* SnackDiffTests.swift */; };
-		40EB3198301CB4FB006F3D9D /* SnackAPIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB318C301CB4FB006F3D9D /* SnackAPIClientTests.swift */; };
-		40EB3199301CB4FB006F3D9D /* SourceProviderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3190301CB4FB006F3D9D /* SourceProviderTests.swift */; };
-		40EB319A301CB4FB006F3D9D /* PublishedBundleIndexTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB318A301CB4FB006F3D9D /* PublishedBundleIndexTests.swift */; };
-		40EB319B301CB4FB006F3D9D /* FakeWebSocket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3186301CB4FB006F3D9D /* FakeWebSocket.swift */; };
-		40EB319C301CB4FB006F3D9D /* PublishedBundleApplierTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3189301CB4FB006F3D9D /* PublishedBundleApplierTests.swift */; };
-		40EB319D301CB4FB006F3D9D /* EditOverlayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3185301CB4FB006F3D9D /* EditOverlayTests.swift */; };
-		40EB319E301CB4FB006F3D9D /* PatchedBundleRegistryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3188301CB4FB006F3D9D /* PatchedBundleRegistryTests.swift */; };
-		40EB319F301CB4FB006F3D9D /* HighlightPolicyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3187301CB4FB006F3D9D /* HighlightPolicyTests.swift */; };
-		40EB31A0301CB4FB006F3D9D /* SnackpubTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB318F301CB4FB006F3D9D /* SnackpubTransportTests.swift */; };
-		40EB31A1301CB4FB006F3D9D /* SanityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB318B301CB4FB006F3D9D /* SanityTests.swift */; };
-		40EB31A2301CB4FB006F3D9D /* EditApplierRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB3184301CB4FB006F3D9D /* EditApplierRoutingTests.swift */; };
-		40EB31A3301CB4FB006F3D9D /* SnackpubFrameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40EB318E301CB4FB006F3D9D /* SnackpubFrameTests.swift */; };
 		4A62800A2E69DBF000D916B0 /* AppIcon.icon in Resources */ = {isa = PBXBuildFile; fileRef = 4A6280092E69DBF000D916B0 /* AppIcon.icon */; };
 		4C887F86984A4773F56C0177 /* libPods-Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 38B4E4BA47682D80D656A6C5 /* libPods-Tests.a */; };
 		ABE005EBFA92123617D22216 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70D1A518C4DFB7D94147AC4B /* ExpoModulesProvider.swift */; };
@@ -74,23 +57,6 @@
 		3451876A2368FE9E008C4171 /* cp-bundle-resources-conditionally.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "cp-bundle-resources-conditionally.sh"; sourceTree = "<group>"; };
 		38B4E4BA47682D80D656A6C5 /* libPods-Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		39E8C61B17879D7B4A44D983 /* Pods-ExponentIntegrationTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExponentIntegrationTests.release.xcconfig"; path = "Target Support Files/Pods-ExponentIntegrationTests/Pods-ExponentIntegrationTests.release.xcconfig"; sourceTree = "<group>"; };
-		40EB3181301CB4FB006F3D9D /* BundlePatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundlePatchTests.swift; sourceTree = "<group>"; };
-		40EB3182301CB4FB006F3D9D /* BundleSourceMapProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleSourceMapProviderTests.swift; sourceTree = "<group>"; };
-		40EB3183301CB4FB006F3D9D /* DependencyResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyResolverTests.swift; sourceTree = "<group>"; };
-		40EB3184301CB4FB006F3D9D /* EditApplierRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditApplierRoutingTests.swift; sourceTree = "<group>"; };
-		40EB3185301CB4FB006F3D9D /* EditOverlayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditOverlayTests.swift; sourceTree = "<group>"; };
-		40EB3186301CB4FB006F3D9D /* FakeWebSocket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeWebSocket.swift; sourceTree = "<group>"; };
-		40EB3187301CB4FB006F3D9D /* HighlightPolicyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HighlightPolicyTests.swift; sourceTree = "<group>"; };
-		40EB3188301CB4FB006F3D9D /* PatchedBundleRegistryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatchedBundleRegistryTests.swift; sourceTree = "<group>"; };
-		40EB3189301CB4FB006F3D9D /* PublishedBundleApplierTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishedBundleApplierTests.swift; sourceTree = "<group>"; };
-		40EB318A301CB4FB006F3D9D /* PublishedBundleIndexTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PublishedBundleIndexTests.swift; sourceTree = "<group>"; };
-		40EB318B301CB4FB006F3D9D /* SanityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SanityTests.swift; sourceTree = "<group>"; };
-		40EB318C301CB4FB006F3D9D /* SnackAPIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnackAPIClientTests.swift; sourceTree = "<group>"; };
-		40EB318D301CB4FB006F3D9D /* SnackDiffTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnackDiffTests.swift; sourceTree = "<group>"; };
-		40EB318E301CB4FB006F3D9D /* SnackpubFrameTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnackpubFrameTests.swift; sourceTree = "<group>"; };
-		40EB318F301CB4FB006F3D9D /* SnackpubTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnackpubTransportTests.swift; sourceTree = "<group>"; };
-		40EB3190301CB4FB006F3D9D /* SourceProviderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceProviderTests.swift; sourceTree = "<group>"; };
-		40EB3191301CB4FB006F3D9D /* SourceTreeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceTreeTests.swift; sourceTree = "<group>"; };
 		41AAB6FC8982ACA48EAD8CCE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		45675DFC5DFCA8A77C135D1D /* Pods-Expo Go (main)-Expo Go.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Expo Go (main)-Expo Go.release.xcconfig"; path = "Target Support Files/Pods-Expo Go (main)-Expo Go/Pods-Expo Go (main)-Expo Go.release.xcconfig"; sourceTree = "<group>"; };
 		4A6280092E69DBF000D916B0 /* AppIcon.icon */ = {isa = PBXFileReference; lastKnownFileType = folder.iconcomposer.icon; path = AppIcon.icon; sourceTree = "<group>"; };
@@ -135,6 +101,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		40EB3C6D301CBB4E006F3D9D /* Tests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Tests;
+			sourceTree = "<group>";
+		};
 		XXEXPOCLIENTXXXXXXXXXXXX /* Client */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Client;
@@ -199,30 +170,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		40EB3192301CB4FB006F3D9D /* Tests */ = {
-			isa = PBXGroup;
-			children = (
-				40EB3181301CB4FB006F3D9D /* BundlePatchTests.swift */,
-				40EB3182301CB4FB006F3D9D /* BundleSourceMapProviderTests.swift */,
-				40EB3183301CB4FB006F3D9D /* DependencyResolverTests.swift */,
-				40EB3184301CB4FB006F3D9D /* EditApplierRoutingTests.swift */,
-				40EB3185301CB4FB006F3D9D /* EditOverlayTests.swift */,
-				40EB3186301CB4FB006F3D9D /* FakeWebSocket.swift */,
-				40EB3187301CB4FB006F3D9D /* HighlightPolicyTests.swift */,
-				40EB3188301CB4FB006F3D9D /* PatchedBundleRegistryTests.swift */,
-				40EB3189301CB4FB006F3D9D /* PublishedBundleApplierTests.swift */,
-				40EB318A301CB4FB006F3D9D /* PublishedBundleIndexTests.swift */,
-				40EB318B301CB4FB006F3D9D /* SanityTests.swift */,
-				40EB318C301CB4FB006F3D9D /* SnackAPIClientTests.swift */,
-				40EB318D301CB4FB006F3D9D /* SnackDiffTests.swift */,
-				40EB318E301CB4FB006F3D9D /* SnackpubFrameTests.swift */,
-				40EB318F301CB4FB006F3D9D /* SnackpubTransportTests.swift */,
-				40EB3190301CB4FB006F3D9D /* SourceProviderTests.swift */,
-				40EB3191301CB4FB006F3D9D /* SourceTreeTests.swift */,
-			);
-			path = Tests;
-			sourceTree = "<group>";
-		};
 		78CEE2B71ACD07D70095B124 = {
 			isa = PBXGroup;
 			children = (
@@ -232,7 +179,7 @@
 				XXEXPOCLIENTXXXXXXXXXXXX /* Client */,
 				XXEXPONENTXXXXXXXXXXXXXX /* Exponent */,
 				F1F7433C24ABECD400EA5023 /* Exponent-Bridging-Header.h */,
-				40EB3192301CB4FB006F3D9D /* Tests */,
+				40EB3C6D301CBB4E006F3D9D /* Tests */,
 				FCF6D36E25B34BC200808BF5 /* ExpoNotificationServiceExtension */,
 				3050F5A98E56E9379C36ABD2 /* Frameworks */,
 				AE58247EE2419C33B3A8CBAE /* Pods */,
@@ -354,6 +301,9 @@
 			);
 			dependencies = (
 				B505BA1420CAF77A0046ACFB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				40EB3C6D301CBB4E006F3D9D /* Tests */,
 			);
 			name = Tests;
 			productName = Tests;
@@ -680,23 +630,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				40EB3193301CB4FB006F3D9D /* SourceTreeTests.swift in Sources */,
-				40EB3194301CB4FB006F3D9D /* BundlePatchTests.swift in Sources */,
-				40EB3195301CB4FB006F3D9D /* BundleSourceMapProviderTests.swift in Sources */,
-				40EB3196301CB4FB006F3D9D /* DependencyResolverTests.swift in Sources */,
-				40EB3197301CB4FB006F3D9D /* SnackDiffTests.swift in Sources */,
-				40EB3198301CB4FB006F3D9D /* SnackAPIClientTests.swift in Sources */,
-				40EB3199301CB4FB006F3D9D /* SourceProviderTests.swift in Sources */,
-				40EB319A301CB4FB006F3D9D /* PublishedBundleIndexTests.swift in Sources */,
-				40EB319B301CB4FB006F3D9D /* FakeWebSocket.swift in Sources */,
-				40EB319C301CB4FB006F3D9D /* PublishedBundleApplierTests.swift in Sources */,
-				40EB319D301CB4FB006F3D9D /* EditOverlayTests.swift in Sources */,
-				40EB319E301CB4FB006F3D9D /* PatchedBundleRegistryTests.swift in Sources */,
-				40EB319F301CB4FB006F3D9D /* HighlightPolicyTests.swift in Sources */,
-				40EB31A0301CB4FB006F3D9D /* SnackpubTransportTests.swift in Sources */,
-				40EB31A1301CB4FB006F3D9D /* SanityTests.swift in Sources */,
-				40EB31A2301CB4FB006F3D9D /* EditApplierRoutingTests.swift in Sources */,
-				40EB31A3301CB4FB006F3D9D /* SnackpubFrameTests.swift in Sources */,
 				FF1B221110BC9E2991CC0B68 /* ExpoModulesProvider.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
