@@ -41,21 +41,33 @@ public class BatteryModule: Module {
       UIDevice.current.isBatteryMonitoringEnabled = false
     }
 
-    OnStartObserving {
+    OnStartObserving(batteryLevelDidChange) {
       NotificationCenter.default.addObserver(
         self,
         selector: #selector(self.batteryLevelListener),
         name: UIDevice.batteryLevelDidChangeNotification,
         object: nil
       )
+    }
 
+    OnStopObserving(batteryLevelDidChange) {
+      NotificationCenter.default.removeObserver(self, name: UIDevice.batteryLevelDidChangeNotification, object: nil)
+    }
+
+    OnStartObserving(batteryStateDidChange) {
       NotificationCenter.default.addObserver(
         self,
         selector: #selector(self.batteryStateListener),
         name: UIDevice.batteryStateDidChangeNotification,
         object: nil
       )
+    }
 
+    OnStopObserving(batteryStateDidChange) {
+      NotificationCenter.default.removeObserver(self, name: UIDevice.batteryStateDidChangeNotification, object: nil)
+    }
+
+    OnStartObserving(powerModeDidChange) {
       NotificationCenter.default.addObserver(
         self,
         selector: #selector(self.powerModeListener),
@@ -64,9 +76,7 @@ public class BatteryModule: Module {
       )
     }
 
-    OnStopObserving {
-      NotificationCenter.default.removeObserver(self, name: UIDevice.batteryLevelDidChangeNotification, object: nil)
-      NotificationCenter.default.removeObserver(self, name: UIDevice.batteryStateDidChangeNotification, object: nil)
+    OnStopObserving(powerModeDidChange) {
       NotificationCenter.default.removeObserver(self, name: Notification.Name.NSProcessInfoPowerStateDidChange, object: nil)
     }
   }
