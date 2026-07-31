@@ -6,20 +6,13 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (56.0.1):
     - ExpoModulesCore
-  - EASClient/Tests (56.0.1):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - EXApplication (56.0.3):
     - ExpoModulesCore
   - EXConstants (56.0.16):
     - ExpoModulesCore
   - EXJSONUtils (56.0.0)
-  - EXJSONUtils/Tests (56.0.0)
   - EXManifests (56.0.4):
     - ExpoModulesCore
-  - EXManifests/Tests (56.0.4):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - Expo (56.0.5):
     - boost
     - DoubleConversion
@@ -52,53 +45,14 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - Expo/Tests (56.0.5):
-    - boost
-    - DoubleConversion
-    - ExpoModulesCore
-    - ExpoModulesJSI
-    - ExpoModulesTestCore
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTAppDelegate
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactAppDependencyProvider
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - ExpoAsset (56.0.15):
     - ExpoModulesCore
   - ExpoAudio (56.0.11):
-    - ExpoModulesCore
-  - ExpoAudio/Tests (56.0.11):
     - ExpoModulesCore
   - ExpoBackgroundFetch (56.0.15):
     - ExpoModulesCore
   - ExpoBackgroundTask (56.0.15):
     - ExpoModulesCore
-    - ExpoTaskManager
-  - ExpoBackgroundTask/Tests (56.0.15):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
     - ExpoTaskManager
   - ExpoBattery (56.0.4):
     - ExpoModulesCore
@@ -112,8 +66,6 @@ PODS:
     - ExpoModulesCore
   - ExpoCamera (56.0.7):
     - ExpoModulesCore
-  - ExpoCamera/Tests (56.0.7):
-    - ExpoModulesCore
   - ExpoCameraBarcodeScanning (56.0.7):
     - ExpoCamera
     - ZXingObjC/OneD
@@ -122,9 +74,6 @@ PODS:
     - ExpoModulesCore
   - ExpoClipboard (56.0.3):
     - ExpoModulesCore
-  - ExpoClipboard/Tests (56.0.3):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - ExpoContacts (56.0.7):
     - ExpoModulesCore
   - ExpoCrypto (56.0.4):
@@ -154,26 +103,11 @@ PODS:
     - SDWebImageAVIFCoder (~> 0.11.0)
     - SDWebImageSVGCoder (~> 1.7.0)
     - SDWebImageWebPCoder (~> 0.14.6)
-  - ExpoImage/Tests (56.0.9):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-    - libavif/libdav1d
-    - SDWebImage (~> 5.21.0)
-    - SDWebImageAVIFCoder (~> 0.11.0)
-    - SDWebImageSVGCoder (~> 1.7.0)
-    - SDWebImageWebPCoder (~> 0.14.6)
   - ExpoImageManipulator (56.0.15):
     - ExpoModulesCore
     - SDWebImageWebPCoder
-  - ExpoImageManipulator/Tests (56.0.15):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-    - SDWebImageWebPCoder
   - ExpoImagePicker (56.0.14):
     - ExpoModulesCore
-  - ExpoImagePicker/Tests (56.0.14):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - ExpoKeepAwake (56.0.3):
     - ExpoModulesCore
   - ExpoLinearGradient (56.0.4):
@@ -192,10 +126,6 @@ PODS:
     - ExpoModulesCore
   - ExpoMediaLibrary (56.0.6):
     - ExpoModulesCore
-    - React-Core
-  - ExpoMediaLibrary/Tests (56.0.6):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
     - React-Core
   - ExpoModulesCore (56.0.13):
     - boost
@@ -227,55 +157,12 @@ PODS:
     - ReactCommon/turbomodule/core
     - SocketRocket
     - Yoga
-  - ExpoModulesCore/Tests (56.0.13):
-    - boost
-    - DoubleConversion
-    - ExpoModulesJSI
-    - ExpoModulesTestCore
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-jsinspector
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
   - ExpoModulesJSI (56.0.7):
     - React-Core
     - ReactCommon
-  - ExpoModulesJSI/Tests (56.0.7):
-    - React-Core
-    - ReactCommon
-  - ExpoModulesTestCore (56.0.5):
-    - ExpoModulesCore
-    - Nimble (~> 13.0.0)
-    - Quick (~> 7.3.0)
-    - React-hermes
   - ExpoModulesWorklets (56.0.13):
     - ExpoModulesCore
     - ExpoModulesJSI
-  - ExpoModulesWorklets/Tests (56.0.13):
-    - ExpoModulesCore
-    - ExpoModulesJSI
-    - ExpoModulesTestCore
   - ExpoModulesWorkletsAdapter (56.0.13):
     - ExpoModulesCore
     - ExpoModulesJSI
@@ -285,17 +172,10 @@ PODS:
     - ExpoModulesCore
   - ExpoNotifications (56.0.14):
     - ExpoModulesCore
-  - ExpoNotifications/Tests (56.0.14):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
   - ExpoPrint (56.0.3):
     - ExpoModulesCore
   - ExpoRouter (56.2.7):
     - ExpoModulesCore
-    - RNScreens
-  - ExpoRouter/Tests (56.2.7):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
     - RNScreens
   - ExpoScreenCapture (56.0.4):
     - ExpoModulesCore
@@ -349,10 +229,6 @@ PODS:
   - ExpoTaskManager (56.0.15):
     - ExpoModulesCore
     - UMAppLoader
-  - ExpoTaskManager/Tests (56.0.15):
-    - ExpoModulesCore
-    - ExpoModulesTestCore
-    - UMAppLoader
   - ExpoTrackingTransparency (56.0.5):
     - ExpoModulesCore
   - ExpoUI (56.0.14):
@@ -361,55 +237,17 @@ PODS:
     - React-RCTFabric
   - ExpoVideo (56.1.2):
     - ExpoModulesCore
-  - ExpoVideo/Tests (56.1.2):
-    - ExpoModulesCore
   - ExpoVideoThumbnails (56.0.3):
     - ExpoModulesCore
   - ExpoWebBrowser (56.0.5):
     - ExpoModulesCore
   - EXStructuredHeaders (56.0.0)
-  - EXStructuredHeaders/Tests (56.0.0)
   - EXUpdates (56.0.17):
     - boost
     - DoubleConversion
     - EASClient
     - EXManifests
     - ExpoModulesCore
-    - EXStructuredHeaders
-    - EXUpdatesInterface
-    - fast_float
-    - fmt
-    - glog
-    - hermes-engine
-    - RCT-Folly
-    - RCT-Folly/Fabric
-    - RCTRequired
-    - RCTTypeSafety
-    - ReachabilitySwift
-    - React-Core
-    - React-debug
-    - React-Fabric
-    - React-featureflags
-    - React-graphics
-    - React-ImageManager
-    - React-jsi
-    - React-NativeModulesApple
-    - React-RCTFabric
-    - React-renderercss
-    - React-rendererdebug
-    - React-utils
-    - ReactCodegen
-    - ReactCommon/turbomodule/bridging
-    - ReactCommon/turbomodule/core
-    - SocketRocket
-    - Yoga
-  - EXUpdates/Tests (56.0.17):
-    - boost
-    - DoubleConversion
-    - EASClient
-    - EXManifests
-    - ExpoModulesCore
-    - ExpoModulesTestCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - fast_float
@@ -617,11 +455,9 @@ PODS:
     - nanopb/encode (= 3.30910.0)
   - nanopb/decode (3.30910.0)
   - nanopb/encode (3.30910.0)
-  - Nimble (13.0.0)
   - PromisesObjC (2.4.0)
   - PromisesSwift (2.4.0):
     - PromisesObjC (= 2.4.0)
-  - Quick (7.3.1)
   - RCT-Folly (2024.11.18.00):
     - boost
     - DoubleConversion
@@ -4136,8 +3972,6 @@ PODS:
     - StripeCore (= 25.11.0)
   - SwiftUIIntrospect (1.3.0)
   - UMAppLoader (56.0.1)
-  - UMAppLoader/Tests (56.0.1):
-    - ExpoModulesTestCore
   - Yoga (0.0.0)
   - ZXingObjC/Core (3.6.9)
   - ZXingObjC/OneD (3.6.9):
@@ -4150,32 +3984,24 @@ DEPENDENCIES:
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
-  - EASClient/Tests (from `../../../packages/expo-eas-client/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
-  - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
-  - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - Expo (from `../../../packages/expo`)
-  - Expo/Tests (from `../../../packages/expo`)
   - ExpoAsset (from `../../../packages/expo-asset/ios`)
   - ExpoAudio (from `../../../packages/expo-audio/ios`)
-  - ExpoAudio/Tests (from `../../../packages/expo-audio/ios`)
   - ExpoBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
   - ExpoBackgroundTask (from `../../../packages/expo-background-task/ios`)
-  - ExpoBackgroundTask/Tests (from `../../../packages/expo-background-task/ios`)
   - ExpoBattery (from `../../../packages/expo-battery/ios`)
   - ExpoBlob (from `../../../packages/expo-blob/ios`)
   - ExpoBlur (from `../../../packages/expo-blur/ios`)
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
   - ExpoCalendar (from `../../../packages/expo-calendar/ios`)
   - ExpoCamera (from `../../../packages/expo-camera/ios`)
-  - ExpoCamera/Tests (from `../../../packages/expo-camera/ios`)
   - ExpoCameraBarcodeScanning (from `../../../packages/expo-camera/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
-  - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
   - ExpoContacts (from `../../../packages/expo-contacts/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
@@ -4187,11 +4013,8 @@ DEPENDENCIES:
   - ExpoGlassEffect (from `../../../packages/expo-glass-effect/ios`)
   - ExpoHaptics (from `../../../packages/expo-haptics/ios`)
   - ExpoImage (from `../../../packages/expo-image/ios`)
-  - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
-  - ExpoImageManipulator/Tests (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
-  - ExpoImagePicker/Tests (from `../../../packages/expo-image-picker/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
   - ExpoLinking (from `../../../packages/expo-linking/ios`)
@@ -4201,21 +4024,14 @@ DEPENDENCIES:
   - "ExpoLogBox (from `../../../packages/@expo/log-box`)"
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMediaLibrary (from `../../../packages/expo-media-library/ios`)
-  - ExpoMediaLibrary/Tests (from `../../../packages/expo-media-library/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
-  - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesJSI (from `../../../packages/expo-modules-jsi/apple`)
-  - ExpoModulesJSI/Tests (from `../../../packages/expo-modules-jsi/apple`)
-  - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoModulesWorklets (from `../../../packages/expo-modules-core`)
-  - ExpoModulesWorklets/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesWorkletsAdapter (from `../../../packages/expo-modules-core`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoNotifications (from `../../../packages/expo-notifications/ios`)
-  - ExpoNotifications/Tests (from `../../../packages/expo-notifications/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
   - ExpoRouter (from `../../../packages/expo-router/ios`)
-  - ExpoRouter/Tests (from `../../../packages/expo-router/ios`)
   - ExpoScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - ExpoScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
@@ -4228,17 +4044,13 @@ DEPENDENCIES:
   - ExpoSymbols (from `../../../packages/expo-symbols/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTaskManager (from `../../../packages/expo-task-manager/ios`)
-  - ExpoTaskManager/Tests (from `../../../packages/expo-task-manager/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
   - ExpoUI (from `../../../packages/expo-ui/ios`)
   - ExpoVideo (from `../../../packages/expo-video/ios`)
-  - ExpoVideo/Tests (from `../../../packages/expo-video/ios`)
   - ExpoVideoThumbnails (from `../../../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../../../packages/expo-web-browser/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
-  - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
   - EXUpdates (from `../../../packages/expo-updates/ios`)
-  - EXUpdates/Tests (from `../../../packages/expo-updates/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - fast_float (from `../../../react-native-lab/react-native/packages/react-native/third-party-podspecs/fast_float.podspec`)
   - FBLazyVector (from `../../../react-native-lab/react-native/packages/react-native/Libraries/FBLazyVector`)
@@ -4350,7 +4162,6 @@ DEPENDENCIES:
   - SocketRocket (~> 0.7.1)
   - "stripe-react-native (from `../../../node_modules/.pnpm/@stripe+stripe-react-native@0.64.0_expo@packages+expo_react-native-webview@13.16.1_reac_3c13e5735b9afe0361b2f46dc53f20d1/node_modules/@stripe/stripe-react-native`)"
   - UMAppLoader (from `../../../packages/unimodules-app-loader/ios`)
-  - UMAppLoader/Tests (from `../../../packages/unimodules-app-loader/ios`)
   - Yoga (from `../../../react-native-lab/react-native/packages/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -4373,10 +4184,8 @@ SPEC REPOS:
     - lottie-ios
     - MBProgressHUD
     - nanopb
-    - Nimble
     - PromisesObjC
     - PromisesSwift
-    - Quick
     - ReachabilitySwift
     - SDWebImage
     - SDWebImageAVIFCoder
@@ -4486,8 +4295,6 @@ EXTERNAL SOURCES:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesJSI:
     :path: "../../../packages/expo-modules-jsi/apple"
-  ExpoModulesTestCore:
-    :path: "../../../packages/expo-modules-test-core/ios"
   ExpoModulesWorklets:
     :path: "../../../packages/expo-modules-core"
   ExpoModulesWorkletsAdapter:
@@ -4787,7 +4594,6 @@ SPEC CHECKSUMS:
   ExpoMediaLibrary: 5ab82b8ace3f9ab7ac4ca3b2060bd915a4f1568f
   ExpoModulesCore: 2df76e8c28726ded05b235b029e099bc72486a24
   ExpoModulesJSI: f25a013ea9a79904bdd535e4bea0872e155cde09
-  ExpoModulesTestCore: 768a9a2b0401e87090bc7280cdb0607ab4cad382
   ExpoModulesWorklets: 874ceeb92a8da1dfa32adf197aa65f926e74b9c5
   ExpoModulesWorkletsAdapter: fad365939baece1af888494a70a5784da1e0f13e
   ExpoNetwork: d244aa406eb0aba7e36e5f009a061b2744ab11d7
@@ -4825,11 +4631,11 @@ SPEC CHECKSUMS:
   FirebaseRemoteConfigInterop: 85bdce8babed7814816496bb6f082bc05b0a45e1
   FirebaseSessions: f5c6bfeb66a7202deaf33352017bb6365e395820
   fmt: 530618a01105dae0fa3a2f27c81ae11fa8f67eac
-  glog: 9c7bd858f1402a8e680d1637276210773c093b76
+  glog: e56ede4028c4b7418e6b1195a36b1656bb35e225
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: ff5096b4b68fee24fa4fc7aa9267e0bcccf03713
+  hermes-engine: 1aac0336ab06465103e89322838baf2911318c89
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
@@ -4837,10 +4643,8 @@ SPEC CHECKSUMS:
   lottie-react-native: b410d8c9dcaf536198ce852ea47e73c9158ad04e
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
   nanopb: fad817b59e0457d11a5dfbde799381cd727c1275
-  Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   PromisesObjC: f5707f49cb48b9636751c5b2e7d227e43fba9f47
   PromisesSwift: 9d77319bbe72ebf6d872900551f7eeba9bce2851
-  Quick: 83e25bf349dd84f894b024f48033274512d6129b
   RCT-Folly: 36c4f904fb6cd0219dcb76b94e9502d2a72fab0b
   RCTDeprecation: debcd5d989dc39edd50d61566b56e96da1c167b0
   RCTRequired: f06ef156c6b0244ac76aa51ef2e830a1a13004c8
@@ -4952,6 +4756,6 @@ SPEC CHECKSUMS:
   Yoga: 0b38f02674a32b9a15de1f41f8680ffa06eaf8ef
   ZXingObjC: 8898711ab495761b2dbbdec76d90164a6d7e14c5
 
-PODFILE CHECKSUM: 3a791729857914d683ccc497dc6a526dc0c3263a
+PODFILE CHECKSUM: db8e53e3184baff2a768ba7cce6154f7a7551fd7
 
 COCOAPODS: 1.16.2
