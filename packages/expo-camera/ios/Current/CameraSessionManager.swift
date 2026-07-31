@@ -235,11 +235,9 @@ class CameraSessionManager: NSObject, DeviceDiscoveryDelegate {
 
     // Lens ordering can be varied which causes problems if you keep the result in react state.
     // We sort them to provide a stable ordering
-    return availableLenses.map { 
-      LensInfo(deviceType: $0.deviceType.rawValue, localizedName: $0.localizedName)
-    }.sorted {
-      $0.deviceType < $1.deviceType
-    }
+    return availableLenses
+      .map { LensInfo(deviceType: $0.deviceType.rawValue, localizedName: $0.localizedName) }
+      .sorted { $0.deviceType < $1.deviceType }
   }
 
   func setupMovieFileCapture(withSessionConfiguration: Bool = true) {

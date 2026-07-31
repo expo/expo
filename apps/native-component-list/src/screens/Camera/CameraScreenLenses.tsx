@@ -2,8 +2,14 @@ import { Ionicons } from '@expo/vector-icons';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Slider from '@react-native-community/slider';
-import { Camera, CameraMode, CameraType, CameraView, PermissionStatus } from 'expo-camera';
-import { LensInfo } from 'expo-camera';
+import {
+  Camera,
+  CameraMode,
+  CameraType,
+  CameraView,
+  LensInfo,
+  PermissionStatus,
+} from 'expo-camera';
 import { useEffect, useRef, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
 
