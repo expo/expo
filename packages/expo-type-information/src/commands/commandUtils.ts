@@ -65,10 +65,10 @@ export function addCommonOptions(command: commander.Command): commander.Command 
       'PREPROCESS_AND_INFERENCE'
     )
     .option(
-      '-s, --skip-unicode-character-mapping',
+      '--skip-unicode-character-mapping',
       'skip mapping all non-ASCII characters in a file to ASCII strings. By default this mapping is performed as SourceKitten is inconsistent when calculating offsets of non-ASCII characters.'
     )
-    .option('-d, --disable-run-on-queue-preprocessing', 'Disable preprocessing runOnQueue.')
+    .option('--disable-run-on-queue-preprocessing', 'Disable preprocessing runOnQueue.')
     .option('-w --watcher', 'Starts a watcher that checks for changes in input-path file.');
 }
 
@@ -285,7 +285,7 @@ export async function getFileTypeInformationFromArgs({
     input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
     typeInference,
     mapUnicodeCharacters,
-    runOnQueue: runOnQueuePreprocessing,
+    removeRunOnQueue: runOnQueuePreprocessing,
   });
 
   if (!typeInfo) {
