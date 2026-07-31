@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Persist the ReactCodegen autolinking build phase so transitive native components remain registered. ([#44314](https://github.com/expo/expo/issues/44314) by [@vivekjm](https://github.com/vivekjm))
+
 ### 💡 Others
 
 ## 3.0.26 — 2026-05-28
