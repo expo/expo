@@ -16,6 +16,8 @@ When React Native views are placed inside Jetpack Compose components like [`Moda
 - **With [`matchContents`](#matchcontents)**: The shadow node size is set to match the child React Native view's intrinsic size, allowing the Jetpack Compose parent to size itself based on the React Native content.
 - **Without `matchContents`**: The shadow node size is set to match the parent Jetpack Compose view's size, allowing the React Native content to fill the available space (useful for `flex: 1` layouts).
 
+> **Note:** `matchContents` only works when the child has a natural size of its own. If the child just fills whatever space it is given (`flex: 1`, percentage widths, or text that wraps to the available width), Jetpack Compose and Yoga keep resizing each other and layout can loop forever. Let the child size to its content instead, for example with `alignSelf: 'flex-start'`, and give long text a `maxWidth`.
+
 ## Installation
 
 <APIInstallSection />

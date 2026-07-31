@@ -8,6 +8,12 @@ export interface HostProps extends CommonViewModifierProps {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
    * Can be only set once on mount.
+   *
+   * > **Note:** `matchContents` only works when the child has a natural size of its own. If the
+   * > child just fills whatever space it is given (`flex: 1`, percentage widths, or text that
+   * > wraps to the available width), SwiftUI and Yoga keep resizing each other and layout can
+   * > loop forever. Let the child size to its content instead, for example with
+   * > `alignSelf: 'flex-start'`, and give long text a `maxWidth`.
    * @default false
    */
   matchContents?: boolean | { vertical?: boolean; horizontal?: boolean };
