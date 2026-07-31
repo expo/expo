@@ -3,7 +3,15 @@ import os from 'os';
 import path from 'path';
 import prompts from 'prompts';
 
-import { normalizeDirectory, resolveExamples, resolveExamplesAsync, runInit } from '../init';
+import {
+  getExamplesPrompt,
+  getVisualIntelligencePrompt,
+  type InitExample,
+  normalizeDirectory,
+  resolveExamples,
+  resolveExamplesAsync,
+  runInit,
+} from '../init';
 
 jest.mock('prompts');
 
@@ -16,6 +24,12 @@ const TEMPLATES = {
   'examples/restaurant/Queries/DishQuery.swift': 'dish query',
   'examples/mail/CreateDraftIntent.swift': 'mail create intent',
   'examples/mail/DeleteDraftIntent.swift': 'mail delete intent',
+  'examples/mail-visual-intelligence/OpenMailDraftIntent.swift': 'vi open intent',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Spotlight.swift': 'vi spotlight',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Transferable.swift':
+    'vi transferable',
+  'examples/mail-visual-intelligence/Queries/MailDraftEntityQuery+Indexed.swift':
+    'vi indexed query',
   'examples/mail/Entities/MailDraftEntity.swift': 'mail draft entity',
   'examples/mail/Entities/MailAccountEntity.swift': 'mail account entity',
   'examples/mail/Queries/MailDraftEntityQuery.swift': 'mail draft query',
@@ -49,29 +63,109 @@ describe(resolveExamples, () => {
   });
 });
 
+describe(getExamplesPrompt, () => {
+  it('does not offer visual intelligence in the picker itself', () => {
+    const choices = getExamplesPrompt().choices as { value: string }[];
+
+    expect(choices.map((choice) => choice.value)).toEqual([
+      'minimal',
+      'counter',
+      'restaurant',
+      'mail',
+    ]);
+  });
+});
+
+describe(getVisualIntelligencePrompt, () => {
+  it('explains what visual intelligence does and defaults to off', () => {
+    const prompt = getVisualIntelligencePrompt();
+
+    expect(prompt.type).toBe('confirm');
+    expect(prompt.name).toBe('visualIntelligence');
+    expect(prompt.message).toContain(
+      'Allows Siri to more intelligently read the on-screen contents of your app.'
+    );
+    expect(prompt.initial).toBe(false);
+  });
+});
 describe(resolveExamplesAsync, () => {
   beforeEach(() => {
     mockedPrompts.mockReset();
   });
 
-  it('uses the given values without prompting', async () => {
-    await expect(resolveExamplesAsync(true, ['counter'])).resolves.toEqual(['counter']);
+  it('never prompts when examples are passed on the command line', async () => {
+    await expect(resolveExamplesAsync(true, ['mail'], true)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: true,
+    });
     expect(mockedPrompts).not.toHaveBeenCalled();
   });
 
-  it('defaults to minimal without prompting when not interactive', async () => {
-    await expect(resolveExamplesAsync(false, undefined)).resolves.toEqual(['minimal']);
+  it('never prompts when not interactive', async () => {
+    await expect(resolveExamplesAsync(false, undefined)).resolves.toEqual({
+      examples: ['minimal'],
+      visualIntelligence: false,
+    });
     expect(mockedPrompts).not.toHaveBeenCalled();
   });
 
-  it('prompts when interactive and no values are given', async () => {
-    mockedPrompts.mockResolvedValue({ examples: ['minimal', 'mail'] });
+  it('asks for examples with a cancellable multiselect prompt', async () => {
+    // `counter` rather than `mail`, so the visual-intelligence follow-up does not run — this test
+    // is about the shape of the examples prompt itself.
+    mockedPrompts.mockResolvedValueOnce({ examples: ['minimal', 'counter'] });
 
-    await expect(resolveExamplesAsync(true, [])).resolves.toEqual(['mail']);
+    await expect(resolveExamplesAsync(true, [])).resolves.toMatchObject({ examples: ['counter'] });
     expect(mockedPrompts).toHaveBeenCalledWith(
       expect.objectContaining({ name: 'examples', type: 'multiselect' }),
       expect.objectContaining({ onCancel: expect.any(Function) })
     );
+  });
+
+  it('does not ask about visual intelligence unless the mail example was picked', async () => {
+    mockedPrompts.mockResolvedValueOnce({ examples: ['counter'] });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['counter'],
+      visualIntelligence: false,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks about visual intelligence once the mail example was picked', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['counter', 'mail'] })
+      .mockResolvedValueOnce({ visualIntelligence: true });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['counter', 'mail'],
+      visualIntelligence: true,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(2);
+    expect(mockedPrompts.mock.calls[1]![0]).toMatchObject({
+      type: 'confirm',
+      name: 'visualIntelligence',
+    });
+  });
+
+  it('respects declining visual intelligence', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['mail'] })
+      .mockResolvedValueOnce({ visualIntelligence: false });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: false,
+    });
+  });
+
+  it('skips the follow-up when the flag was already passed', async () => {
+    mockedPrompts.mockResolvedValueOnce({ examples: ['mail'] });
+
+    await expect(resolveExamplesAsync(true, undefined, true)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: true,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -181,7 +275,12 @@ describe(runInit, () => {
   it('writes config and scaffolds the default minimal app-intents directory', async () => {
     writeProject(staticConfig());
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     const appJson = readConfig();
     expect(appJson.expo.experiments.inlineModules.watchedDirectories).toEqual(['app-intents']);
@@ -251,21 +350,134 @@ describe(runInit, () => {
   it('writes no shortcuts provider when no example contributes a phrase', async () => {
     writeProject(staticConfig());
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['mail'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['mail'],
+      templatesDir,
+    });
 
     expect(exists('app-intents/CreateDraftIntent.swift')).toBe(true);
     expect(exists('app-intents/AppShortcuts.swift')).toBe(false);
+  });
+
+  it('adds the visual intelligence layer to the mail example when requested', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['mail'],
+      visualIntelligence: true,
+      templatesDir,
+    });
+
+    // The base mail example is still scaffolded unchanged.
+    expect(exists('app-intents/CreateDraftIntent.swift')).toBe(true);
+    expect(exists('app-intents/DeleteDraftIntent.swift')).toBe(true);
+    expect(exists('app-intents/Entities/MailDraftEntity.swift')).toBe(true);
+
+    // Plus the additive visual intelligence layer.
+    expect(exists('app-intents/OpenMailDraftIntent.swift')).toBe(true);
+    expect(exists('app-intents/Entities/MailDraftEntity+Spotlight.swift')).toBe(true);
+    expect(exists('app-intents/Entities/MailDraftEntity+Transferable.swift')).toBe(true);
+    expect(exists('app-intents/Queries/MailDraftEntityQuery+Indexed.swift')).toBe(true);
+
+    // The generated setup module registers the entity kind and exposes the indexing bridge.
+    const setup = read('app-intents/AppIntentsSetup.swift');
+    expect(setup).toContain('AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft"');
+    // Indexing is driven by setEntityCatalogAsync now, so the scaffold exposes no bridge for it.
+    expect(setup).not.toContain('AsyncFunction');
+    // mail contributes no phrase, so there is no provider to wire up.
+    expect(exists('app-intents/AppShortcuts.swift')).toBe(false);
+    expect(setup).not.toContain('AppShortcuts');
+  });
+
+  it('scaffolds no visual intelligence files by default', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['mail'],
+      templatesDir,
+    });
+
+    expect(exists('app-intents/OpenMailDraftIntent.swift')).toBe(false);
+    expect(exists('app-intents/Entities/MailDraftEntity+Spotlight.swift')).toBe(false);
+    const plainSetup = read('app-intents/AppIntentsSetup.swift');
+    expect(plainSetup).not.toContain('AppEntityIdentifierRegistry');
+    expect(plainSetup).not.toContain('registerIndexed');
+  });
+
+  it('rejects visual intelligence without the mail example', async () => {
+    writeProject(staticConfig());
+
+    await expect(
+      runInit({
+        projectRoot,
+        directory: 'app-intents',
+        examples: ['counter'],
+        visualIntelligence: true,
+        templatesDir,
+      })
+    ).rejects.toThrow(/--visual-intelligence extends the mail example/);
+  });
+
+  it('names the selected examples and both ways to add the missing one', async () => {
+    writeProject(staticConfig());
+
+    const error = await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['counter'],
+      visualIntelligence: true,
+      templatesDir,
+    }).catch((caught: Error) => caught);
+
+    const message = (error as Error).message;
+    expect(message).toContain('counter');
+    // The flag also reaches this check from the interactive picker, where it was already passed on
+    // the command line, so the message has to name the picker as a way out as well.
+    expect(message).toContain('--examples mail');
+    expect(message).toContain('picker');
+  });
+
+  it('lists the scaffolded files and points at the guide for receiving invocations', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['counter'],
+      templatesDir,
+    });
+
+    const output = messages(log);
+    expect(output).toContain('AppIntentsSetup.swift');
+    expect(output).toContain('IncreaseCounterIntent.swift');
+    // Nothing receives an invocation until the JavaScript side is wired up, so the guide has to be
+    // reachable from the output.
+    expect(output).toContain('https://docs.expo.dev/versions/latest/sdk/app-intents/#usage');
   });
 
   it('merges into existing experiments and plugins without duplication', async () => {
     writeProject(
       staticConfig({
         plugins: ['expo-app-intents', ['other-plugin', {}]],
-        experiments: { inlineModules: { watchedDirectories: ['modules'] }, typedRoutes: true },
+        experiments: {
+          inlineModules: { watchedDirectories: ['modules'] },
+          typedRoutes: true,
+        },
       })
     );
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     const appJson = readConfig();
     expect(appJson.expo.experiments.inlineModules.watchedDirectories).toEqual([
@@ -286,7 +498,12 @@ describe(runInit, () => {
       })
     );
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     const appJson = readConfig();
     expect(appJson.expo.experiments.inlineModules.watchedDirectories).toEqual(['app-intents']);
@@ -386,7 +603,12 @@ describe(runInit, () => {
   it('writes plugin props when using a custom directory', async () => {
     writeProject(staticConfig());
 
-    await runInit({ projectRoot, directory: 'siri', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'siri',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     const appJson = readConfig();
     expect(appJson.expo.experiments.inlineModules.watchedDirectories).toEqual(['siri']);
@@ -396,7 +618,12 @@ describe(runInit, () => {
   it('keeps unrelated plugin props when adding the directory prop', async () => {
     writeProject(staticConfig({ plugins: [['expo-app-intents', { unrelated: true }]] }));
 
-    await runInit({ projectRoot, directory: 'siri', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'siri',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     const appJson = readConfig();
     expect(appJson.expo.plugins).toEqual([
@@ -417,7 +644,12 @@ describe(runInit, () => {
     write({ 'project/siri/AppShortcuts.swift': 'existing shortcuts' });
 
     await expect(
-      runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir })
+      runInit({
+        projectRoot,
+        directory: 'app-intents',
+        examples: ['minimal'],
+        templatesDir,
+      })
     ).rejects.toThrow(/already configured to use the 'siri' directory/);
 
     // Nothing was changed, so the project still builds and a re-run with --dir siri works.
@@ -457,7 +689,12 @@ describe(runInit, () => {
       })
     );
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     const appJson = readConfig();
     expect(appJson.expo.plugins).toEqual([['expo-app-intents', { directory: 'app-intents' }]]);
@@ -523,12 +760,115 @@ describe(runInit, () => {
     expect(messages(warn)).toBe('');
   });
 
+  // `init` never overwrites AppIntentsSetup.swift, so adding --visual-intelligence to an existing
+  // setup copies the layer but leaves the entity kind unregistered, which makes the layer inert.
+  it('warns when visual intelligence is added to an existing setup module', async () => {
+    writeProject(staticConfig());
+
+    await runInit({ projectRoot, directory: 'app-intents', examples: ['mail'], templatesDir });
+    warn.mockClear();
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['mail'],
+      visualIntelligence: true,
+      templatesDir,
+    });
+
+    // The layer itself is still scaffolded, so the warning is the only sign anything is missing.
+    expect(exists('app-intents/Entities/MailDraftEntity+Spotlight.swift')).toBe(true);
+    expect(read('app-intents/AppIntentsSetup.swift')).not.toContain('registerIndexed');
+
+    const warned = messages(warn);
+    expect(warned).toContain('AppIntentsSetup.swift');
+    expect(warned).toContain('appEntityIdentifier()');
+    expect(warned).toContain(
+      'AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)'
+    );
+  });
+
+  // The mail example contributes no phrase, so the setup module it wrote has no `OnCreate` at all
+  // and pasting the statement alone would not compile.
+  it('includes the OnCreate wrapper when the existing setup module has none', async () => {
+    writeProject(staticConfig());
+
+    await runInit({ projectRoot, directory: 'app-intents', examples: ['mail'], templatesDir });
+    warn.mockClear();
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['mail'],
+      visualIntelligence: true,
+      templatesDir,
+    });
+
+    expect(messages(warn)).toContain('OnCreate {');
+  });
+
+  // With counter selected there is a provider to refresh, so the existing setup module already has
+  // an `OnCreate` and only the statement inside it is missing.
+  it('adds the registration to the OnCreate the existing setup module already has', async () => {
+    writeProject(staticConfig());
+
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['counter', 'mail'],
+      templatesDir,
+    });
+    warn.mockClear();
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['counter', 'mail'],
+      visualIntelligence: true,
+      templatesDir,
+    });
+
+    const warned = messages(warn);
+    expect(warned).toContain('registerIndexed');
+    expect(warned).toContain('OnCreate block');
+    expect(warned).not.toContain('OnCreate {');
+  });
+
+  it('does not warn when the existing setup module already registers the entity kind', async () => {
+    writeProject(staticConfig());
+
+    const options = {
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['mail'] as InitExample[],
+      visualIntelligence: true,
+      templatesDir,
+    };
+    await runInit(options);
+    warn.mockClear();
+    await runInit(options);
+
+    expect(messages(warn)).toBe('');
+  });
+
+  it('does not warn about the registration when visual intelligence was not requested', async () => {
+    writeProject(staticConfig());
+
+    await runInit({ projectRoot, directory: 'app-intents', examples: ['mail'], templatesDir });
+    warn.mockClear();
+    await runInit({ projectRoot, directory: 'app-intents', examples: ['mail'], templatesDir });
+
+    expect(messages(warn)).toBe('');
+  });
+
   it('leaves the app config untouched when a template cannot be copied', async () => {
     writeProject(staticConfig());
     fs.rmSync(path.join(templatesDir, 'examples/counter/IncreaseCounterIntent.swift'));
 
     await expect(
-      runInit({ projectRoot, directory: 'app-intents', examples: ['counter'], templatesDir })
+      runInit({
+        projectRoot,
+        directory: 'app-intents',
+        examples: ['counter'],
+        templatesDir,
+      })
     ).rejects.toThrow();
 
     const appJson = readConfig();
@@ -543,11 +883,21 @@ describe(runInit, () => {
     fs.rmSync(template);
 
     await expect(
-      runInit({ projectRoot, directory: 'app-intents', examples: ['counter'], templatesDir })
+      runInit({
+        projectRoot,
+        directory: 'app-intents',
+        examples: ['counter'],
+        templatesDir,
+      })
     ).rejects.toThrow();
 
     fs.writeFileSync(template, 'counter');
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['counter'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['counter'],
+      templatesDir,
+    });
 
     expect(exists('app-intents/AppShortcuts.swift')).toBe(true);
     expect(exists('app-intents/AppIntentsSetup.swift')).toBe(true);
@@ -568,7 +918,12 @@ describe(runInit, () => {
 }
 `);
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     const appJson = readConfig();
     expect(appJson.expo.experiments.inlineModules.watchedDirectories).toEqual(['app-intents']);
@@ -580,7 +935,12 @@ describe(runInit, () => {
   it('updates app.config.json when that is the static config', async () => {
     writeProject(staticConfig(), 'app.config.json');
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     const appConfig = readConfig('app.config.json');
     expect(appConfig.expo.experiments.inlineModules.watchedDirectories).toEqual(['app-intents']);
@@ -594,7 +954,12 @@ describe(runInit, () => {
       'project/app.config.js': `module.exports = { expo: { name: 'my-app', slug: 'my-app' } };`,
     });
 
-    await runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir });
+    await runInit({
+      projectRoot,
+      directory: 'app-intents',
+      examples: ['minimal'],
+      templatesDir,
+    });
 
     expect(exists('app-intents/AppIntentsSetup.swift')).toBe(true);
     const warned = messages(warn);
@@ -658,10 +1023,20 @@ describe(runInit, () => {
     writeProject('{ "expo": { "name": ');
 
     await expect(
-      runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir })
+      runInit({
+        projectRoot,
+        directory: 'app-intents',
+        examples: ['minimal'],
+        templatesDir,
+      })
     ).rejects.toThrow(/app\.json/);
     await expect(
-      runInit({ projectRoot, directory: 'app-intents', examples: ['minimal'], templatesDir })
+      runInit({
+        projectRoot,
+        directory: 'app-intents',
+        examples: ['minimal'],
+        templatesDir,
+      })
     ).rejects.toThrow(/expo-app-intents init/);
   });
 
