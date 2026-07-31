@@ -61,7 +61,7 @@ Generates a full TypeScript interface for a Swift module. It consists of:
 - **view.tsx** for each view defined in the module
 - **index.ts** file which reexports some functions
 
-If there are multiple modules provided, then a **Common.types.ts** file will be generated. It exports the common declarations (enums, structs), so they are defined exactly once.
+When you provide multiple modules, the tool also generates a **Common.types.ts** file. It exports the common declarations (enums and structs), so each one is defined exactly once.
 
 > Accepts standard [Common CLI options](#common-cli-options).
 
