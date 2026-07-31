@@ -43,6 +43,9 @@ class AuthenticationService: ObservableObject {
     isAuthenticated = !(sessionSecret?.isEmpty ?? true)
 
     if isAuthenticated {
+      if let sessionSecret {
+        synchronizeNativeSession(sessionSecret)
+      }
       Task {
         if let sessionSecret {
           await APIClient.shared.setSession(sessionSecret)
@@ -50,6 +53,7 @@ class AuthenticationService: ObservableObject {
         await loadUserInfo()
       }
     } else {
+      clearNativeSession()
       user = nil
       selectedAccountId = nil
     }
@@ -106,6 +110,7 @@ class AuthenticationService: ObservableObject {
 
   func completeLogin(with sessionSecret: String) async {
     UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
+    synchronizeNativeSession(sessionSecret)
     await APIClient.shared.setSession(sessionSecret)
     // Fetch user info before setting isAuthenticated so account data is ready
     // when the UI switches to the account selector
@@ -117,12 +122,31 @@ class AuthenticationService: ObservableObject {
     UserDefaults.standard.removeObject(forKey: sessionKey)
     UserDefaults.standard.removeObject(forKey: usernameKey)
     UserDefaults.standard.removeObject(forKey: selectedAccountKey)
+    clearNativeSession()
     Task {
       await APIClient.shared.setSession(nil)
     }
     user = nil
     selectedAccountId = nil
     isAuthenticated = false
+  }
+
+  private func synchronizeNativeSession(_ sessionSecret: String) {
+    do {
+      try Session.sharedInstance.saveSession(
+        toKeychain: ["sessionSecret": sessionSecret] as NSDictionary
+      )
+    } catch {
+      print("[AuthenticationService] Failed to save native session: \(error.localizedDescription)")
+    }
+  }
+
+  private func clearNativeSession() {
+    do {
+      try Session.sharedInstance.deleteSessionFromKeychain()
+    } catch {
+      print("[AuthenticationService] Failed to clear native session: \(error.localizedDescription)")
+    }
   }
 
   func selectAccount(accountId: String) {
