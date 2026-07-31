@@ -96,63 +96,50 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(
-      ({
-        name,
-        initialParams,
-        listeners,
-        options,
-        getId,
-        dangerouslySingular: singular,
-      }) => {
-        if (!entries.length) {
-          console.warn(
-            `[Layout children]: Too many screens defined. Route "${name}" is extraneous.`
-          );
-          return null;
-        }
-        const matchIndex = entries.findIndex(
-          (child) => child.route === name || child.route === `${name}/index`
-        );
-        if (matchIndex === -1) {
-          console.warn(
-            `[Layout children]: No route named "${name}" exists in nested children:`,
-            children.map(({ route }) => route)
-          );
-          return null;
-        } else {
-          // Get match and remove from entries
-          const match = entries[matchIndex];
-          entries.splice(matchIndex, 1);
-
-          if (getId) {
-            console.warn(
-              `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
-            );
-            if (singular) {
-              console.warn(
-                `Screen ${name} cannot use both getId and dangerouslySingular together.`
-              );
-            }
-          } else if (singular) {
-            // If singular is set, use it as the getId function.
-            if (typeof singular === 'string') {
-              getId = () => singular;
-            } else if (typeof singular === 'function' && name) {
-              getId = (options) => singular(name, options.params || {});
-            } else if (singular === true && name) {
-              getId = (options) => getSingularId(name, options);
-            }
-          }
-
-          return {
-            route: match,
-            props: { initialParams, listeners, options, getId },
-            routeSource: 'layout' as const,
-          };
-        }
+    .map(({ name, initialParams, listeners, options, getId, dangerouslySingular: singular }) => {
+      if (!entries.length) {
+        console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
+        return null;
       }
-    )
+      const matchIndex = entries.findIndex(
+        (child) => child.route === name || child.route === `${name}/index`
+      );
+      if (matchIndex === -1) {
+        console.warn(
+          `[Layout children]: No route named "${name}" exists in nested children:`,
+          children.map(({ route }) => route)
+        );
+        return null;
+      } else {
+        // Get match and remove from entries
+        const match = entries[matchIndex];
+        entries.splice(matchIndex, 1);
+
+        if (getId) {
+          console.warn(
+            `Deprecated: prop 'getId' on screen ${name} is deprecated. Please rename the prop to 'dangerouslySingular'`
+          );
+          if (singular) {
+            console.warn(`Screen ${name} cannot use both getId and dangerouslySingular together.`);
+          }
+        } else if (singular) {
+          // If singular is set, use it as the getId function.
+          if (typeof singular === 'string') {
+            getId = () => singular;
+          } else if (typeof singular === 'function' && name) {
+            getId = (options) => singular(name, options.params || {});
+          } else if (singular === true && name) {
+            getId = (options) => getSingularId(name, options);
+          }
+        }
+
+        return {
+          route: match,
+          props: { initialParams, listeners, options, getId },
+          routeSource: 'layout' as const,
+        };
+      }
+    })
     .filter(Boolean) as {
     route: RouteNode;
     props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
