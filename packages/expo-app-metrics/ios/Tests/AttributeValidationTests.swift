@@ -136,4 +136,26 @@ struct AttributeValidationTests {
     #expect(attributes.count == 1)
     #expect(attributes["valid"] as? String == "ok")
   }
+
+  @Test
+  func `withDisplayNameAttribute leaves attributes unchanged when display name is nil`() {
+    #expect(withDisplayNameAttribute(["userId": "u_42"], displayName: nil)?["userId"] as? String == "u_42")
+    #expect(withDisplayNameAttribute(nil, displayName: nil) == nil)
+  }
+
+  @Test
+  func `withDisplayNameAttribute adds the reserved key even onto a nil map`() {
+    let result = try! #require(withDisplayNameAttribute(nil, displayName: "Login failed"))
+    #expect(result["expo.log.display_name"] as? String == "Login failed")
+  }
+
+  @Test
+  func `withDisplayNameAttribute injects the reserved key past sanitization`() {
+    // The key matches the `expo.*` reserved pattern, so it only survives because it is
+    // added after `sanitizeLogEventAttributes` rather than passing through it.
+    let sanitized = sanitizeLogEventAttributes(["userId": "u_42"]).attributes
+    let result = try! #require(withDisplayNameAttribute(sanitized, displayName: "Login failed"))
+    #expect(result["userId"] as? String == "u_42")
+    #expect(result["expo.log.display_name"] as? String == "Login failed")
+  }
 }

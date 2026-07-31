@@ -1,6 +1,7 @@
 import AppMetrics, { type MetricAttributes } from 'expo-app-metrics';
 import { use, useCallback, useEffect, useRef } from 'react';
 
+import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 import { getNavigationRouteParams } from '../navigationConfig';
 import { ObserveReactNavigationIntegrationContext } from './context';
 import { emitTTI } from './emitTTI';
@@ -8,7 +9,6 @@ import { getPathname } from './getPathname';
 import { getReactNavigationIntegrationConfig, isInitialized } from './init';
 import { optionalReactNavigation } from './reactNavigation';
 import type { NavigationStateLike } from './types';
-import { useAssertValueDoesNotChange } from '../../useAssertValueDoesNotChange';
 
 type MarkInteractive = (typeof AppMetrics)['markInteractive'];
 

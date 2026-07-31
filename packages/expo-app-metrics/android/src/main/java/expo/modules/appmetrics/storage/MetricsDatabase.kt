@@ -49,7 +49,7 @@ abstract class MetricsDatabase : RoomDatabase() {
             "app_metrics"
           )
           // Allow destructive migration for schema changes during development. Replace with proper Migration if desired.
-          .fallbackToDestructiveMigration()
+          .fallbackToDestructiveMigration(false)
           .build()
         INSTANCE = instance
         instance

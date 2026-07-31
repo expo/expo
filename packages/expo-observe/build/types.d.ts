@@ -122,6 +122,20 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
      */
     getIntegrations(): ObserveIntegrationsConfig;
     /**
+     * Invokes a callback once when the named integration configuration becomes available.
+     *
+     * @param name Integration name.
+     * @param callback Function called with the integration configuration.
+     *
+     * @example
+     * ```ts
+     * Observe.registerIntegration('expo-router', config => {
+     *   console.log(config);
+     * });
+     * ```
+     */
+    registerIntegration<K extends keyof ObserveIntegrationsConfig>(name: K, callback: (config: ObserveIntegrationsConfig[K]) => void): void;
+    /**
      * Records a log event against the current main session. The event is
      * persisted locally and dispatched on the next `dispatchEvents()` flush.
      *
@@ -131,6 +145,26 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
      * @param options Optional body, attributes, and severity overrides.
      */
     logEvent(name: string, options?: LogEventOptions): void;
+    /**
+     * Reports an error your code caught and handled, recorded as a non-fatal `exception` event. Use it
+     * to keep visibility into failures you recover from, which never reach the automatic global handler
+     * or an error boundary.
+     *
+     * The thrown value is normalized: an `Error`'s `name`, `message`, and `stack` are captured; any
+     * other value (a string, a plain object) is stringified as the message.
+     *
+     * @param error The caught value. An `Error` is preferred, but any thrown value is accepted.
+     *
+     * @example
+     * ```ts
+     * try {
+     *   await syncCart();
+     * } catch (error) {
+     *   Observe.reportError(error);
+     * }
+     * ```
+     */
+    reportError(error: unknown): void;
     /**
      * Marks the first render of the app. Used to compute the `cold_ttr` and
      * `warm_ttr` metrics.
