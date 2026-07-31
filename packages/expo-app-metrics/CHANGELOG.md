@@ -16,6 +16,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a crash on FirebaseAuth's first token refresh. GTMSessionFetcher branches on the class of `session.delegate`, so our network-observing delegate proxy now answers class checks for the delegate it wraps. ([#48359](https://github.com/expo/expo/pull/48359) by [@tsapeta](https://github.com/tsapeta))
 - Fix integer metric and log attributes equal to `0` or `1` serializing as booleans on iOS. ([#47108](https://github.com/expo/expo/pull/47108) by [@tsapeta](https://github.com/tsapeta))
 - fix race condition between db inserts ([#46702](https://github.com/expo/expo/pull/46702) by [@Ubax](https://github.com/Ubax))
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
