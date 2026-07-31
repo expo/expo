@@ -1,6 +1,6 @@
 {
   "name": "expo-brightness",
-  "version": "56.0.5",
+  "version": "57.0.1",
   "description": "Provides an API to get and set screen brightness.",
   "keywords": [
     "brightness",

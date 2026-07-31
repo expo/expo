@@ -6,11 +6,23 @@
 
 ### 🎉 New features
 
-- Add macOS support. ([#46471](https://github.com/expo/expo/pull/46471) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 - 2026-06-05
+
+### 🎉 New features
+
+- Add macOS support. ([#46471](https://github.com/expo/expo/pull/46471) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.5 — 2026-05-07
 

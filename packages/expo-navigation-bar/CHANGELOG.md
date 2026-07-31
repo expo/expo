@@ -6,14 +6,27 @@
 
 ### 🎉 New features
 
-- Apply `setStyle` and `setHidden` to React Native `<Modal>` windows via `ExtraWindowEventListener` on Android. ([#46491](https://github.com/expo/expo/pull/46491) by [@zoontek](https://github.com/zoontek))
-
 ### 🐛 Bug fixes
 
 - Prevent unhandled promise rejections when declarative navigation bar updates race with Android activity teardown. ([#48097](https://github.com/expo/expo/pull/48097) by [@zoontek](https://github.com/zoontek))
-- Polyfill `enforceContrast` on Android 8 and 9. ([#47382](https://github.com/expo/expo/pull/47382) by [@zoontek](https://github.com/zoontek))
 
 ### 💡 Others
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
+### 🐛 Bug fixes
+
+- Polyfill `enforceContrast` on Android 8 and 9. ([#47382](https://github.com/expo/expo/pull/47382) by [@zoontek](https://github.com/zoontek))
+
+## 57.0.0 - 2026-06-25
+
+### 🎉 New features
+
+- Apply `setStyle` and `setHidden` to React Native `<Modal>` windows via `ExtraWindowEventListener` on Android. ([#46491](https://github.com/expo/expo/pull/46491) by [@zoontek](https://github.com/zoontek))
 
 ## 56.0.3 — 2026-05-06
 

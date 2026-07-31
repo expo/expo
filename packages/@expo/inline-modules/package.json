@@ -1,6 +1,6 @@
 {
   "name": "@expo/inline-modules",
-  "version": "0.0.10",
+  "version": "0.1.4",
   "description": "The Expo inline modules",
   "keywords": [
     "expo",
