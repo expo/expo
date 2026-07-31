@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `Contact.getAll` and `Contact.getAllDetails` returning contacts linked across accounts once per account record, and honour the `rawContacts` query option. ([#48387](https://github.com/expo/expo/pull/48387) by [@martintreurnicht](https://github.com/martintreurnicht))
+
 ### 💡 Others
 
 ## 57.0.3 - 2026-07-29

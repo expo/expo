@@ -13,5 +13,5 @@ struct ContactQueryOptions: Record {
   @Field var sortOrder: SortOrder?
   @Field var name: String?
   // iOS only
-  @Field var unifyContacts: Bool?
+  @Field var rawContacts: Bool?
 }
