@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
+- [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ### 💡 Others
 
