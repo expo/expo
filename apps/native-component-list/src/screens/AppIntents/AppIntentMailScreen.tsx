@@ -13,6 +13,7 @@ import {
   addSampleMailDrafts,
   clearMailDrafts,
   getMailDrafts,
+  toggleMailDraftFlag,
   type AppIntentMailDraft,
 } from './AppIntentsStore';
 import { syncMailDraftCatalogAsync } from './syncMailDraftCatalogAsync';
@@ -26,7 +27,15 @@ function formatDate(timestamp?: number): string {
  * The card is rendered with `@expo/ui` so it can carry an `appEntityIdentifier` modifier, which
  * tells the system which `MailDraftEntity` the visible view represents.
  */
-function MailDraft({ draft, highlight }: { draft: AppIntentMailDraft; highlight: boolean }) {
+function MailDraft({
+  draft,
+  highlight,
+  onToggleFlag,
+}: {
+  draft: AppIntentMailDraft;
+  highlight: boolean;
+  onToggleFlag: (flag: 'hideInSpotlight' | 'hideInSuggestions') => void;
+}) {
   const { theme } = useTheme();
   const draftStyle = {
     backgroundColor: highlight ? 'rgba(159, 122, 234, 0.16)' : theme.background.default,
@@ -41,20 +50,33 @@ function MailDraft({ draft, highlight }: { draft: AppIntentMailDraft; highlight:
   const secondaryTextStyle = { color: theme.text.secondary, fontSize: 14 };
 
   return (
-    <Host matchContents={{ vertical: true }} seedColor="#805ad5" style={styles.draftHost}>
-      <Column
-        modifiers={[AppIntents.appEntityIdentifier('mailDraft', draft.id)]}
-        spacing={6}
-        style={draftStyle}>
-        <Text textStyle={subjectTextStyle}>{draft.subject}</Text>
-        <Text textStyle={bodyTextStyle}>{draft.body}</Text>
-        {draft.recipients.length > 0 ? (
-          <Text textStyle={secondaryTextStyle}>{`To: ${draft.recipients.join(', ')}`}</Text>
-        ) : null}
-        <Text textStyle={secondaryTextStyle}>{`Created at: ${formatDate(draft.createdAt)}`}</Text>
-        <Text textStyle={secondaryTextStyle}>{`Invocation id: ${draft.invocationId}`}</Text>
-      </Column>
-    </Host>
+    <View style={styles.draftGroup}>
+      <Host matchContents={{ vertical: true }} seedColor="#805ad5" style={styles.draftHost}>
+        <Column
+          modifiers={[AppIntents.appEntityIdentifier('mailDraft', draft.id)]}
+          spacing={6}
+          style={draftStyle}>
+          <Text textStyle={subjectTextStyle}>{draft.subject}</Text>
+          <Text textStyle={bodyTextStyle}>{draft.body}</Text>
+          {draft.recipients.length > 0 ? (
+            <Text textStyle={secondaryTextStyle}>{`To: ${draft.recipients.join(', ')}`}</Text>
+          ) : null}
+          <Text textStyle={secondaryTextStyle}>{`Created at: ${formatDate(draft.createdAt)}`}</Text>
+          <Text textStyle={secondaryTextStyle}>{`Invocation id: ${draft.invocationId}`}</Text>
+        </Column>
+      </Host>
+
+      <View style={styles.draftFlags}>
+        <Button
+          title={draft.hideInSpotlight ? 'Show in Spotlight' : 'Hide from Spotlight'}
+          onPress={() => onToggleFlag('hideInSpotlight')}
+        />
+        <Button
+          title={draft.hideInSuggestions ? 'Show in suggestions' : 'Hide from suggestions'}
+          onPress={() => onToggleFlag('hideInSuggestions')}
+        />
+      </View>
+    </View>
   );
 }
 
@@ -69,6 +91,14 @@ export default function AppIntentMailScreen() {
     const drafts = await addSampleMailDrafts();
     await syncMailDraftCatalogAsync(drafts);
   }, []);
+  const toggleFlag = React.useCallback(
+    async (id: string, flag: 'hideInSpotlight' | 'hideInSuggestions') => {
+      // Republishing the catalog is what applies the change: expo-app-intents rebuilds the
+      // Spotlight index from it, and the app-target query reads hideInSuggestions out of metadata.
+      await syncMailDraftCatalogAsync(await toggleMailDraftFlag(id, flag));
+    },
+    []
+  );
   return (
     <ScrollPage>
       <Section title="Mail Drafts">
@@ -81,6 +111,11 @@ export default function AppIntentMailScreen() {
                 highlight={
                   draft.invocationId === highlightedInvocationId || draft.id === highlightedDraftId
                 }
+                onToggleFlag={(flag) => {
+                  toggleFlag(draft.id, flag).catch((error) => {
+                    console.warn('Could not change the draft visibility.', error);
+                  });
+                }}
               />
             ))}
           </View>
@@ -140,6 +175,13 @@ AppIntentMailScreen.navigationOptions = {
 const styles = StyleSheet.create({
   drafts: {
     gap: 10,
+  },
+  draftGroup: {
+    gap: 6,
+  },
+  draftFlags: {
+    flexDirection: 'row',
+    gap: 8,
   },
   draftHost: {
     width: '100%',

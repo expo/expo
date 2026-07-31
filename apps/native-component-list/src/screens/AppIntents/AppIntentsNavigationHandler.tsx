@@ -76,25 +76,25 @@ export function AppIntentsNavigationHandler() {
         }
       });
 
-      // Creating or deleting drafts changes the catalog, so the entity store and the Spotlight
-      // index both need to be rebuilt from the new state.
-      const mutatingNames = ['createMailDraft', 'deleteMailDrafts'];
-      const didMutateDrafts =
-        pendingIntents.some((invocation) => mutatingNames.includes(invocation.name)) ||
-        (newIntent != null && mutatingNames.includes(newIntent.name));
-      if (didMutateDrafts) {
-        try {
-          await syncMailDraftCatalogAsync();
-        } catch (error) {
-          console.warn('Could not sync App Intents mail draft catalogs.', error);
-        }
-      }
-
       if (result.route) {
         navigateToAppIntentScreen(router, {
           route: result.route,
           invocationId: result.routeInvocationId,
           draftId: result.routeDraftId,
+        });
+      }
+
+      // Creating or deleting drafts changes the catalog, so the entity store and the Spotlight
+      // index both need to be rebuilt from the new state. Deliberately not awaited: rebuilding the
+      // index is a CoreSpotlight round trip, and a cold-start Siri navigation must not wait for it
+      // — the target is already set above, and `didProcessInitialIntents` is set right after.
+      const mutatingNames = ['createMailDraft', 'deleteMailDrafts'];
+      const didMutateDrafts =
+        pendingIntents.some((invocation) => mutatingNames.includes(invocation.name)) ||
+        (newIntent != null && mutatingNames.includes(newIntent.name));
+      if (didMutateDrafts) {
+        syncMailDraftCatalogAsync().catch((error: unknown) => {
+          console.warn('Could not sync App Intents mail draft catalogs.', error);
         });
       }
     } catch (error) {

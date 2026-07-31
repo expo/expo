@@ -16,6 +16,16 @@ struct MailDraftEntity {
   var attachments: [IntentFile]
   var account: MailAccountEntity
 
+  /// Mirrors the `hideInSpotlight` flag from the catalog published by JavaScript.
+  ///
+  /// Nothing in this example reads it. It only starts to matter with the visual intelligence layer,
+  /// where **MailDraftEntity+Spotlight.swift** forwards it to `IndexedEntity.hideInSpotlight` so
+  /// Spotlight honours the flag too, and not only expo-app-intents. Scaffold that layer with
+  /// `npx expo-app-intents init --examples mail --visual-intelligence`. It is declared here rather
+  /// than in the layer itself because a Swift extension cannot add stored properties and
+  /// `init(record:)` below has to fill it in; drop the property if you never index drafts.
+  var isHiddenInSpotlight: Bool = false
+
   init(
     id: String,
     to: [IntentPerson],
@@ -24,7 +34,8 @@ struct MailDraftEntity {
     subject: String?,
     body: AttributedString?,
     attachments: [IntentFile],
-    account: MailAccountEntity
+    account: MailAccountEntity,
+    isHiddenInSpotlight: Bool = false
   ) {
     self.id = id
     self.to = to
@@ -34,21 +45,30 @@ struct MailDraftEntity {
     self.body = body
     self.attachments = attachments
     self.account = account
+    self.isHiddenInSpotlight = isHiddenInSpotlight
   }
 
   /// Builds a draft from a catalog record published by JavaScript with
   /// `setEntityCatalogAsync('mailDraft', drafts)`. The record's title carries the subject and its
-  /// subtitle carries the body, so Siri can resolve a draft the user names out loud.
+  /// subtitle carries the body, so Siri can resolve a draft the user names out loud. Anything with
+  /// no field of its own on the record travels in `metadata`.
   init(record: AppIntentEntityRecord) {
+    let bodyText = record.metadata["body"] ?? record.subtitle ?? ""
+    let recipients = (record.metadata["recipients"] ?? "")
+      .split(separator: ",")
+      .map { $0.trimmingCharacters(in: .whitespaces) }
+      .filter { !$0.isEmpty }
+
     self.init(
       id: record.id,
-      to: [],
+      to: recipients.map { IntentPerson(handle: .init(emailAddress: $0)) },
       cc: [],
       bcc: [],
       subject: record.title.isEmpty ? nil : record.title,
-      body: record.subtitle.map(AttributedString.init),
+      body: bodyText.isEmpty ? nil : AttributedString(bodyText),
       attachments: [],
-      account: MailAccountEntity.default
+      account: MailAccountEntity.default,
+      isHiddenInSpotlight: record.hideInSpotlight
     )
   }
 

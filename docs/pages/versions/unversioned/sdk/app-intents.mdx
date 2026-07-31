@@ -19,9 +19,9 @@ import { Terminal } from '~/ui/components/Snippet';
 
 You cannot create App Intent types dynamically from JavaScript at runtime. Declare the `AppIntent` types you need in Swift. Parameterized intents also require `AppEntity` and `EntityQuery` types. If your app exposes shortcut phrases, you usually declare an `AppShortcutsProvider`. You can leave it out when your app does not use shortcut phrases, such as when it exposes only schema intents. Use this package to deliver invocations to JavaScript and keep dynamic entity values in sync.
 
-## Limitations
+## Apple Intelligence support
 
-With `expo-app-intents`, you can implement many Apple Intelligence features. The package does not currently support [on-screen intelligence](https://developer.apple.com/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri).
+With `expo-app-intents`, you can implement Apple Intelligence features, including [on-screen intelligence](https://developer.apple.com/documentation/appintents/providing-contextual-cues-to-apple-intelligence-and-siri). [`appEntityIdentifier()`](#appintentsappentityidentifierentity-id) marks the entity represented by a view so Siri can act on the visible content. You can apply it to [`@expo/ui`](/versions/latest/sdk/ui/) views on iOS 18.4 and later.
 
 ## Installation
 
@@ -195,6 +195,10 @@ Pass `--dir` to generate the module in a directory other than **app-intents**. T
 <Terminal cmd={['$ npx expo-app-intents init --dir siri']} />
 
 Keep the App Intents directory at the project root, like the default **app-intents** directory. This location keeps the native declarations easy to find and separate from the rest of the app.
+
+Pass `--visual-intelligence` with the mail example to scaffold its Spotlight integration. This adds native code that makes drafts searchable, lets the system transfer and open a draft, and registers the `mailDraft` entity kind so [`appEntityIdentifier()`](#appintentsappentityidentifierentity-id) can identify the draft represented by a view. The generated code extends the base mail types, so the example works the same way with or without this flag.
+
+<Terminal cmd={['$ npx expo-app-intents init --examples mail --visual-intelligence']} />
 
 Then rebuild the native project:
 
@@ -408,6 +412,17 @@ await AppIntents.setEntityCatalogAsync('dish', [
 ```
 
 The generated entity queries read these values through `await AppIntentEntityStore.shared.entities(ofKind:)`. Siri and Shortcuts can then offer and resolve them as intent parameters.
+
+Set `hideInSpotlight` on an entity to keep it out of the Spotlight index while leaving it resolvable, so Siri can still offer it as a parameter and open it by identifier:
+
+```ts
+await AppIntents.setEntityCatalogAsync('mailDraft', [
+  { id: 'release-notes', title: 'Release notes for review' },
+  { id: 'salary-review', title: 'Salary review', hideInSpotlight: true },
+]);
+```
+
+The flag only applies to entities registered natively with `registerIndexed`. Flipping it takes effect the next time the catalog is published, and an entity that was already indexed is removed. To keep an entity away from Siri altogether, leave it out of the catalog instead — an entity that isn't published can't be offered, matched, or resolved.
 
 Classic App Shortcut phrases can interpolate at most one non-array parameter. The generated restaurant order example declares four phrases:
 
