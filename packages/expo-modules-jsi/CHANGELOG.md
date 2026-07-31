@@ -44,6 +44,7 @@
 - [iOS] Fixed a use-after-free when a non-owning `JavaScriptRuntime` wrapper outlives its runtime (e.g. it is captured by a task abandoned on reload): its cached `jsi::PropNameID`s were destroyed against the freed runtime when the wrapper deallocated. The teardown sweep now flushes the cache on the JavaScript thread while the runtime is still valid. ([#47927](https://github.com/expo/expo/pull/47927) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] `JavaScriptPromise` no longer traps when a resolve or reject call throws, which can realistically only happen against a runtime that is being torn down: a failed resolver call rejects the promise instead and a failed rejecter call is dropped. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Keep asynchronous `JavaScriptRuntime.schedule` and `execute` tasks on the runtime's JavaScript thread after suspension points by using a runtime-specific task executor preference on iOS 18 and newer. ([#47900](https://github.com/expo/expo/pull/47900) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Keep asynchronous `JavaScriptRuntime.schedule` and `execute` tasks on the runtime's JavaScript thread after suspension points on iOS 16 and 17 by binding a runtime-specific serial executor while creating the task. ([#47917](https://github.com/expo/expo/pull/47917) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 

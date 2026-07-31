@@ -208,7 +208,6 @@ struct JavaScriptRuntimeTests {
     #expect(secondTaskExecutor == executors.0)
   }
 
-  @available(macOS 15.0, iOS 18.0, watchOS 11.0, tvOS 18.0, visionOS 2.0, *)
   @Test
   func `schedule async stays on JavaScript thread across suspension points`() async {
     let scheduler = TestRuntimeScheduler()
