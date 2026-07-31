@@ -32,13 +32,18 @@
         "expo-source": "./src/index.ts",
         "default": "./build/index.d.ts"
       },
+      "react-native": {
+        "expo-source": "./src/index.native.ts",
+        "default": "./build/index.native.js"
+      },
       "expo-source": "./src/index.ts",
+      "node": "./build/cjs/index.js",
       "default": "./build/index.js"
     },
     "./package.json": "./package.json"
   },
   "scripts": {
-    "build": "expo-build src",
+    "build": "expo-build src cjs:src=build/cjs",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",

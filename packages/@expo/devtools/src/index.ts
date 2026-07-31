@@ -1,3 +1,9 @@
+import { setGetConnectionInfo } from './DevToolsPluginClientFactory';
+import { getConnectionInfo } from './getConnectionInfo';
+
+// Initialize the platform-specific getConnectionInfo implementation
+setGetConnectionInfo(getConnectionInfo);
+
 export * from './hooks';
 export { setEnableLogging } from './logger';
 export { getDevToolsPluginClientAsync } from './DevToolsPluginClientFactory';

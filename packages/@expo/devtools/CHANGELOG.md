@@ -10,6 +10,9 @@
 
 ### 💡 Others
 
+- Split platform-specific `getConnectionInfo` resolution to support CLI extensions.
+- Ship a Node/CJS entry so CLI extensions can load `@expo/devtools` when spawned by the Expo CLI.
+
 ## 56.0.2 — 2026-05-06
 
 _This version does not introduce any user-facing changes._
