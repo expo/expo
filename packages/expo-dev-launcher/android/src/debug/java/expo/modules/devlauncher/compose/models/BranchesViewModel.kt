@@ -26,7 +26,8 @@ sealed interface BranchesAction {
 data class BranchesState(
   val branches: List<Branch> = emptyList(),
   val isLoading: Boolean = false,
-  val needToSignIn: Boolean = false
+  val needToSignIn: Boolean = false,
+  val hasMore: Boolean = true
 )
 
 class BranchesViewModel : ViewModel() {
@@ -52,7 +53,8 @@ class BranchesViewModel : ViewModel() {
         hasMore.value = false
         _state.value = _state.value.copy(
           branches = emptyList(),
-          isLoading = false
+          isLoading = false,
+          hasMore = false
         )
       }
 
@@ -61,7 +63,8 @@ class BranchesViewModel : ViewModel() {
           hasMore.value = true
           _state.value = _state.value.copy(
             branches = emptyList(),
-            isLoading = true
+            isLoading = true,
+            hasMore = true
           )
           viewModelScope.launch {
             loadMoreBranches()
@@ -158,7 +161,8 @@ class BranchesViewModel : ViewModel() {
     hasMore.value = branches.size == limit
     _state.value = _state.value.copy(
       isLoading = false,
-      branches = _state.value.branches + branches
+      branches = _state.value.branches + branches,
+      hasMore = hasMore.value
     )
   }
 
