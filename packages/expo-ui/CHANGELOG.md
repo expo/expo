@@ -4,95 +4,179 @@
 
 ### 🛠 Breaking changes
 
-- [universal][android] Use `BasicTextField` component instead of Filled Material TextField. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `<Host>` centering its content instead of top-aligning it, so a `flex: 1` host matches Android's top-leading layout. ([#47561](https://github.com/expo/expo/pull/47561) by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🎉 New features
 
-- [iOS] Added an `anchor` prop to `BottomSheet` to anchor the sheet to a view so opening it doesn't shift surrounding layout. ([#48063](https://github.com/expo/expo/issues/48063) by [@loganwishartcraig](https://github.com/loganwishartcraig)) ([#48109](https://github.com/expo/expo/pull/48109) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
+
+### 🐛 Bug fixes
+
+- [universal] Add an explicit type annotation to `BottomSheetTextInput` so its type doesn't depend on referencing React Native's internal `TextInputType`. ([#48218](https://github.com/expo/expo/pull/48218) by [@zoontek](https://github.com/zoontek))
+- [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fixed viewport size measurement reading the main screen instead of the scene the view is in. ([#48170](https://github.com/expo/expo/pull/48170) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Change modifiers type and provide appContext. ([#47616](https://github.com/expo/expo/pull/47616) by [@jakex7](https://github.com/jakex7))
+- [Android] Change `Text` color props to `ColorValue`. ([#47739](https://github.com/expo/expo/pull/47739) by [@jakex7](https://github.com/jakex7))
+
+## 57.0.8 - 2026-07-29
+
+### 🎉 New features
+
+- [iOS] Added an `anchor` prop to `BottomSheet` to anchor the sheet to a view so opening it doesn't shift surrounding layout. ([#48063](https://github.com/expo/expo/issues/48063) by [@loganwishartcraig](https://github.com/loganwishartcraig)) ([#48109](https://github.com/expo/expo/pull/48109) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#48109](https://github.com/expo/expo/pull/48109) by [@loganwishartcraig](https://github.com/loganwishartcraig), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Add a `colorScheme` prop to the community `MenuView`. ([#48017](https://github.com/expo/expo/pull/48017) by [@mkaradeniz](https://github.com/mkaradeniz))
 - [iOS] Added the SwiftUI `menuOrder` modifier (`automatic`/`fixed`/`priority`) to control menu item ordering. With the default `automatic` order, menus that open upward display their items reversed. ([#48049](https://github.com/expo/expo/pull/48049) by [@Gauvino](https://github.com/Gauvino))
-- [iOS] Added the `ignoreSafeArea="container"` option to `<Host>`, which ignores the device and container safe area insets (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Use it to keep a `matchContents` host pinned to a screen edge interactive. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Added the SwiftUI `redacted`, `unredacted`, `privacySensitive`, and `invalidatableContent` modifiers, mapping SwiftUI's redaction family for native skeleton-loading and sensitive-content states. ([#47269](https://github.com/expo/expo/pull/47269) by [@ramonclaudio](https://github.com/ramonclaudio))
-- [iOS] Added a `modifiers` prop to `ListItem` to override its default `buttonStyle(.plain)`. ([#47124](https://github.com/expo/expo/pull/47124) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Added the SwiftUI `presentationSizing` modifier (`automatic`/`fitted`/`form`/`page`) to control sheet sizing, and applied `fitted` in `community/bottom-sheet` dynamic sizing so the sheet hugs its content on iPad instead of opening near full-screen. ([#47050](https://github.com/expo/expo/pull/47050) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Added the SwiftUI `accessibilityElement` modifier, which collapses a view's subtree into a single accessibility element via `ignore`, `combine`, or `contain`. ([#47156](https://github.com/expo/expo/pull/47156) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a `TextField` selection crash when JavaScript replaces the text while the user types, by using the clamped selection binding on all OS versions and clearing the selection on external writes. ([#48274](https://github.com/expo/expo/issues/48274) by [@realZachi](https://github.com/realZachi)) ([#48277](https://github.com/expo/expo/pull/48277) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#48277](https://github.com/expo/expo/pull/48277) by [@realZachi](https://github.com/realZachi), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix `Pressable` (and other responder-based touchables) hosted in `RNHostView` dropping presses on any finger movement. ([#48131](https://github.com/expo/expo/issues/48131) by [@BrianUribe6](https://github.com/BrianUribe6)) ([#48217](https://github.com/expo/expo/pull/48217) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#48217](https://github.com/expo/expo/pull/48217) by [@BrianUribe6](https://github.com/BrianUribe6), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `community/masked-view` content being clipped after rotation because of window safe area insets. ([#48243](https://github.com/expo/expo/pull/48243) by [@Elehiggle](https://github.com/Elehiggle))
+- [Android] Fix unexpected resize when opening the calendar from spinner mode on Android. ([#47273](https://github.com/expo/expo/issues/47273) by [@TomCorvus](https://github.com/TomCorvus)) ([#48125](https://github.com/expo/expo/pull/48125) by [@dileepapeiris](https://github.com/dileepapeiris)) ([#48125](https://github.com/expo/expo/pull/48125) by [@TomCorvus](https://github.com/TomCorvus), [@dileepapeiris](https://github.com/dileepapeiris))
+- [iOS] Fix `tvOS` build failure in the SwiftUI `menuOrder` modifier — `MenuOrder.priority` is unavailable on tvOS, so it now falls back to `.automatic` there. ([#48111](https://github.com/expo/expo/pull/48111) by [@nishan](https://github.com/intergalacticspacehighway)) ([#48111](https://github.com/expo/expo/pull/48111) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `community/menu` `MenuView` not tinting a leaf action `Button`'s leading SF Symbol from `imageColor` — it applied `.foregroundColor` (which the iOS system menu ignores for a button's content) where checkable `Toggle` items applied `.tint`; leaf buttons now use `.tint` too. ([#47908](https://github.com/expo/expo/issues/47908) by [@cvburgess](https://github.com/cvburgess)) ([#47909](https://github.com/expo/expo/pull/47909) by [@cvburgess](https://github.com/cvburgess)) ([#47909](https://github.com/expo/expo/pull/47909) by [@cvburgess](https://github.com/cvburgess), [@cvburgess](https://github.com/cvburgess))
+
+## 57.0.7 - 2026-07-17
+
+### 🐛 Bug fixes
+
+- [Android] Fix the `community/datetime-picker` (and Jetpack Compose `DateTimePicker`) year-selector chevron always rendering black regardless of `navigationContentColor` or dark mode — Material3 tints it from the ambient `LocalContentColor` (which defaults to black) instead of the navigation color — and let the `accentColor`/`color` prop tint the date/time dialog's confirm and dismiss buttons. ([#47773](https://github.com/expo/expo/issues/47773) by [@fwielstra](https://github.com/fwielstra)) ([#47817](https://github.com/expo/expo/pull/47817) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#47817](https://github.com/expo/expo/pull/47817) by [@fwielstra](https://github.com/fwielstra), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 57.0.6 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fix RN `Modal`s (and other presented view controllers) becoming untappable and missing from the accessibility tree after a `community/bottom-sheet` `BottomSheet` is dismissed. `RNHostView` attached an `RCTSurfaceTouchHandler` to the hosted RN view but never detached it, so it rode the recycled Fabric component view into the next surface and terminated that surface's touch responder. The handler is now detached when the host disappears. ([#47708](https://github.com/expo/expo/issues/47708) by [@oeddyo](https://github.com/oeddyo)) ([#47713](https://github.com/expo/expo/pull/47713) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#47713](https://github.com/expo/expo/pull/47713) by [@oeddyo](https://github.com/oeddyo), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `BottomSheet` opening at an unpredictable detent when multiple detents are set without a `selection`. The initial detent now follows the first entry in the array instead of the unordered set. ([#47652](https://github.com/expo/expo/pull/47652) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47652](https://github.com/expo/expo/pull/47652) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix components crashing on Android 7 (API 24/25), where `android.graphics.Color` props had no type converter below API 26. `Color` props and the seeded Material color palette now work on those versions. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)) ([#47575](https://github.com/expo/expo/pull/47575) by [@anasvemmully](https://github.com/anasvemmully), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 57.0.4 - 2026-07-07
+
+### 🐛 Bug fixes
+
+- [iOS] Fix the graphical `DatePicker` style (`community/datetime-picker` `display="inline"`) rendering undersized on mount and jumping to its correct size on the first tap. ([#47062](https://github.com/expo/expo/issues/47062) by [@etiennetalbot](https://github.com/etiennetalbot)) ([#47465](https://github.com/expo/expo/pull/47465) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47465](https://github.com/expo/expo/pull/47465) by [@etiennetalbot](https://github.com/etiennetalbot), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 57.0.3 - 2026-07-03
+
+### 🎉 New features
+
 - [iOS] Added `accessibilityAddTraits` and `accessibilityRemoveTraits` SwiftUI modifiers, accepting an array of trait names. ([#47387](https://github.com/expo/expo/pull/47387) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `strokeBorder` modifier with a full `StrokeStyle` (line width, cap, join, miter limit, dash array, dash phase) for dashed and dotted inset borders that follow the shape's corners. ([#47426](https://github.com/expo/expo/pull/47426) by [@ramonclaudio](https://github.com/ramonclaudio))
-- [iOS] Added the SwiftUI `activityBackgroundTint` modifier for setting Live Activity background. ([#46756](https://github.com/expo/expo/pull/46756) by [@jakex7](https://github.com/jakex7))
-- [iOS] Added the SwiftUI `imageScale` modifier to scale SF Symbols within a view relative to the surrounding text (`small`, `medium`, `large`). ([#46774](https://github.com/expo/expo/pull/46774) by [@ramonclaudio](https://github.com/ramonclaudio))
-- [jetpack-compose] Added `onGloballyPositioned` modifier, which reports a composable's window position and size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Extended the SwiftUI `onGeometryChange` modifier to also report the view's global position (`x`/`y`) alongside its size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Added the SwiftUI `minimumScaleFactor` modifier to let text shrink down to a given fraction of its size before truncating. ([#46740](https://github.com/expo/expo/pull/46740) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS][android] Added React Compiler-friendly `get()` / `set()` accessors to `useNativeState`, as an alternative to reading and writing `.value`. ([#46690](https://github.com/expo/expo/pull/46692) by [@nishan](https://github.com/intergalacticspacehighway))
-- [jetpack-compose] Added `BasicTextField` component. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Added the SwiftUI `accessibilityInputLabels` modifier to set alternative spoken phrases Voice Control uses to refer to a view (for example "Hang up" for an "End" button). ([#46661](https://github.com/expo/expo/pull/46661) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix the SwiftUI `TextField` crashing with "String index is out of bounds" on iOS 18 when JS writes new text into a focused field that holds an active text selection. ([#47447](https://github.com/expo/expo/pull/47447) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47447](https://github.com/expo/expo/pull/47447) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS][android] Fix `community/masked-view` doubling offsets and transforms by re-applying the user-supplied `style` to the inner mask/content `View` wrappers. ([#47067](https://github.com/expo/expo/issues/47067) by [@tsushanth](https://github.com/tsushanth))
+
+### 💡 Others
+
+- Removed `CLAUDE.md` and `CONTRIBUTING.md` from publishing and fixed side effects. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
+
+## 57.0.2 - 2026-07-01
+
+### 🐛 Bug fixes
+
+- [iOS][Android] Fix a scrollable child (e.g. `FlatList`, `ScrollView`) inside `@expo/ui/community/bottom-sheet` not scrolling to the end when using fixed snap points. ([#47245](https://github.com/expo/expo/pull/47245) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47245](https://github.com/expo/expo/pull/47245) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 57.0.1 - 2026-06-27
+
+### 🎉 New features
+
+- [iOS] Added the `ignoreSafeArea="container"` option to `<Host>`, which ignores the device and container safe area insets (notch, home indicator, status and navigation bars) while still avoiding the keyboard. Use it to keep a `matchContents` host pinned to a screen edge interactive. ([#47619](https://github.com/expo/expo/pull/47619) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47619](https://github.com/expo/expo/pull/47619) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the SwiftUI `redacted`, `unredacted`, `privacySensitive`, and `invalidatableContent` modifiers, mapping SwiftUI's redaction family for native skeleton-loading and sensitive-content states. ([#47269](https://github.com/expo/expo/pull/47269) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 57.0.0 - 2026-06-25
+
+### 🎉 New features
+
+- [iOS] Added a `modifiers` prop to `ListItem` to override its default `buttonStyle(.plain)`. ([#47124](https://github.com/expo/expo/pull/47124) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47124](https://github.com/expo/expo/pull/47124) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS][web] Added `seedColor` prop to the universal and SwiftUI `<Host>`, used as the SwiftUI tint on iOS and to derive the primary color scale on web. ([#46566](https://github.com/expo/expo/pull/46566) by [@zoontek](https://github.com/zoontek))
+- [web] Honor the `colorScheme` prop on `<Host>` to override the system color scheme for its subtree, matching native parity. ([#46459](https://github.com/expo/expo/pull/46459) by [@zoontek](https://github.com/zoontek))
+- [iOS] Added the SwiftUI `accessibilityElement` modifier, which collapses a view's subtree into a single accessibility element via `ignore`, `combine`, or `contain`. ([#47156](https://github.com/expo/expo/pull/47156) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+### 🐛 Bug fixes
+
+- [iOS] Fix universal `ListItem` stretching a fixed-size raw RN view in its leading/trailing slot to fill the row instead of honoring its size, matching Android. ([#46883](https://github.com/expo/expo/issues/46883) by [@david-videau-ortega](https://github.com/david-videau-ortega)) ([#47236](https://github.com/expo/expo/pull/47236) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47236](https://github.com/expo/expo/pull/47236) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Fix the `@expo-ui/community/datetime-picker` dialog ignoring `minimumDate`/`maximumDate` for its year range, so the calendar and year picker no longer always span 1900–2100. ([#47206](https://github.com/expo/expo/issues/47206) by [@vioodle](https://github.com/vioodle)) ([#47213](https://github.com/expo/expo/pull/47213) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47213](https://github.com/expo/expo/pull/47213) by [@vioodle](https://github.com/vioodle), [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS][Android] Fix a scrollable (e.g. `FlatList`) inside `@expo/ui/community/bottom-sheet` not scrolling when the `<BottomSheet>` is mounted inside another same-orientation list (such as a `FlatList` header). ([#47197](https://github.com/expo/expo/pull/47197) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47197](https://github.com/expo/expo/pull/47197) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 💡 Others
+
+- Export public component props as interfaces to support module augmentation. by [@Brentlok](https://github.com/Brentlok)
+- [universal] Revamp web universal components (`Button`, `Checkbox`, `FieldGroup`, `Picker`, `Slider`,`Switch`,`TextInput`) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258), [#46541](https://github.com/expo/expo/pull/46541) by [@zoontek](https://github.com/zoontek))
+- [iOS][android] Removed the `react-native-reanimated` dependency from the worklet integration; worklet features rely on `react-native-worklets` directly. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+## 56.0.18 - 2026-06-15
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `activityBackgroundTint` modifier for setting Live Activity background. ([#46756](https://github.com/expo/expo/pull/46756) by [@jakex7](https://github.com/jakex7))
+
+## 56.0.17 - 2026-06-10
+
+### 🛠 Breaking changes
+
+- [universal][android] Use `BasicTextField` component instead of Filled Material TextField. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46442](https://github.com/expo/expo/pull/46442) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 🎉 New features
+
+- [iOS] Added the SwiftUI `presentationSizing` modifier (`automatic`/`fitted`/`form`/`page`) to control sheet sizing, and applied `fitted` in `community/bottom-sheet` dynamic sizing so the sheet hugs its content on iPad instead of opening near full-screen. ([#47050](https://github.com/expo/expo/pull/47050) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47050](https://github.com/expo/expo/pull/47050) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the SwiftUI `imageScale` modifier to scale SF Symbols within a view relative to the surrounding text (`small`, `medium`, `large`). ([#46774](https://github.com/expo/expo/pull/46774) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [jetpack-compose] Added `onGloballyPositioned` modifier, which reports a composable's window position and size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46744](https://github.com/expo/expo/pull/46744) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Extended the SwiftUI `onGeometryChange` modifier to also report the view's global position (`x`/`y`) alongside its size. ([#46744](https://github.com/expo/expo/pull/46744) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46744](https://github.com/expo/expo/pull/46744) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the SwiftUI `minimumScaleFactor` modifier to let text shrink down to a given fraction of its size before truncating. ([#46740](https://github.com/expo/expo/pull/46740) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46740](https://github.com/expo/expo/pull/46740) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS][android] Added React Compiler-friendly `get()` / `set()` accessors to `useNativeState`, as an alternative to reading and writing `.value`. ([#46690](https://github.com/expo/expo/pull/46692) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46692](https://github.com/expo/expo/pull/46692) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [jetpack-compose] Added `BasicTextField` component. ([#46442](https://github.com/expo/expo/pull/46442) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46442](https://github.com/expo/expo/pull/46442) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the SwiftUI `accessibilityInputLabels` modifier to set alternative spoken phrases Voice Control uses to refer to a view (for example "Hang up" for an "End" button). ([#46661](https://github.com/expo/expo/pull/46661) by [@ramonclaudio](https://github.com/ramonclaudio))
+
+## 56.0.16 - 2026-06-05
+
+### 🎉 New features
+
 - [iOS] Added the SwiftUI `accessibilityHidden` modifier to hide decorative views from VoiceOver and other assistive technologies during element traversal. ([#46579](https://github.com/expo/expo/pull/46579) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `accessibilityIdentifier` modifier to set a stable identifier for UI testing tools such as XCUITest. ([#46556](https://github.com/expo/expo/pull/46556) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added the SwiftUI `dynamicTypeSize` modifier to set or constrain the Dynamic Type size within a view. Accepts a single size or a `{ min, max }` range, and cascades from `<Host>` to bound how far text scales at the largest accessibility sizes. ([#46540](https://github.com/expo/expo/pull/46540) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Added `children` prop to `Label` component, allowing custom title views (e.g. a `VStack` with title and subtitle) while preserving native icon spacing and Dynamic Type icon sizing.
-- [web] Honor the `colorScheme` prop on `<Host>` to override the system color scheme for its subtree, matching native parity. ([#46459](https://github.com/expo/expo/pull/46459) by [@zoontek](https://github.com/zoontek))
-- [iOS] Add `buttonBorderShape` SwiftUI modifier, which reshapes a styled button (for example a `glass` button) while preserving its native press effect. ([#46348](https://github.com/expo/expo/pull/46348) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Add `buttonBorderShape` SwiftUI modifier, which reshapes a styled button (for example a `glass` button) while preserving its native press effect. ([#46348](https://github.com/expo/expo/pull/46348) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46348](https://github.com/expo/expo/pull/46348) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [jetpack-compose] Added `NavigationBar` and `NavigationBarItem` components.
 - [iOS] Added the SwiftUI `listRowSpacing` modifier. ([#46417](https://github.com/expo/expo/pull/46417) by [@qiyangdev](https://github.com/qiyangdev))
 - [iOS] Added support for custom SF Symbols in the SwiftUI `Image` component. ([#46183](https://github.com/expo/expo/pull/46183) by [@cinques](https://github.com/cinques))
-- [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
 - [swift-ui] Added `<DisclosureGroup.Label>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
 - [universal] Added `<Collapsible.labelStyle>` for custom label style. ([#46288](https://github.com/expo/expo/pull/46288) by [@kudo](https://github.com/kudo))
 - [jetpack-compose] Added `dropShadow` and `innerShadow` modifiers. ([#46364](https://github.com/expo/expo/discussions/46364) by [@duyanhv](https://github.com/duyanhv))
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix a `TextField` selection crash when JavaScript replaces the text while the user types, by using the clamped selection binding on all OS versions and clearing the selection on external writes. ([#48274](https://github.com/expo/expo/issues/48274) by [@realZachi](https://github.com/realZachi)) ([#48277](https://github.com/expo/expo/pull/48277) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [Android] Fix `Pressable` (and other responder-based touchables) hosted in `RNHostView` dropping presses on any finger movement. ([#48131](https://github.com/expo/expo/issues/48131) by [@BrianUribe6](https://github.com/BrianUribe6)) ([#48217](https://github.com/expo/expo/pull/48217) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Fix `community/masked-view` content being clipped after rotation because of window safe area insets. ([#48243](https://github.com/expo/expo/pull/48243) by [@Elehiggle](https://github.com/Elehiggle))
-- [universal] Add an explicit type annotation to `BottomSheetTextInput` so its type doesn't depend on referencing React Native's internal `TextInputType`. ([#48218](https://github.com/expo/expo/pull/48218) by [@zoontek](https://github.com/zoontek))
-- [Android] Fix unexpected resize when opening the calendar from spinner mode on Android. ([#47273](https://github.com/expo/expo/issues/47273) by [@TomCorvus](https://github.com/TomCorvus)) ([#48125](https://github.com/expo/expo/pull/48125) by [@dileepapeiris](https://github.com/dileepapeiris))
-- [iOS] Fix `tvOS` build failure in the SwiftUI `menuOrder` modifier — `MenuOrder.priority` is unavailable on tvOS, so it now falls back to `.automatic` there. ([#48111](https://github.com/expo/expo/pull/48111) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Fix `community/menu` `MenuView` not tinting a leaf action `Button`'s leading SF Symbol from `imageColor` — it applied `.foregroundColor` (which the iOS system menu ignores for a button's content) where checkable `Toggle` items applied `.tint`; leaf buttons now use `.tint` too. ([#47908](https://github.com/expo/expo/issues/47908) by [@cvburgess](https://github.com/cvburgess)) ([#47909](https://github.com/expo/expo/pull/47909) by [@cvburgess](https://github.com/cvburgess))
-- [Android] Fix the `community/datetime-picker` (and Jetpack Compose `DateTimePicker`) year-selector chevron always rendering black regardless of `navigationContentColor` or dark mode — Material3 tints it from the ambient `LocalContentColor` (which defaults to black) instead of the navigation color — and let the `accentColor`/`color` prop tint the date/time dialog's confirm and dismiss buttons. ([#47773](https://github.com/expo/expo/issues/47773) by [@fwielstra](https://github.com/fwielstra)) ([#47817](https://github.com/expo/expo/pull/47817) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Fix RN `Modal`s (and other presented view controllers) becoming untappable and missing from the accessibility tree after a `community/bottom-sheet` `BottomSheet` is dismissed. `RNHostView` attached an `RCTSurfaceTouchHandler` to the hosted RN view but never detached it, so it rode the recycled Fabric component view into the next surface and terminated that surface's touch responder. The handler is now detached when the host disappears. ([#47708](https://github.com/expo/expo/issues/47708) by [@oeddyo](https://github.com/oeddyo)) ([#47713](https://github.com/expo/expo/pull/47713) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Fix `BottomSheet` opening at an unpredictable detent when multiple detents are set without a `selection`. The initial detent now follows the first entry in the array instead of the unordered set. ([#47652](https://github.com/expo/expo/pull/47652) by [@nishan](https://github.com/intergalacticspacehighway))
-- [Android] Fix components crashing on Android 7 (API 24/25), where `android.graphics.Color` props had no type converter below API 26. `Color` props and the seeded Material color palette now work on those versions. ([#47546](https://github.com/expo/expo/issues/47546) by [@anasvemmully](https://github.com/anasvemmully)) ([#47575](https://github.com/expo/expo/pull/47575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Fix the graphical `DatePicker` style (`community/datetime-picker` `display="inline"`) rendering undersized on mount and jumping to its correct size on the first tap. ([#47062](https://github.com/expo/expo/issues/47062) by [@etiennetalbot](https://github.com/etiennetalbot)) ([#47465](https://github.com/expo/expo/pull/47465) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS][android] Fix `community/masked-view` doubling offsets and transforms by re-applying the user-supplied `style` to the inner mask/content `View` wrappers. ([#47067](https://github.com/expo/expo/issues/47067) by [@tsushanth](https://github.com/tsushanth))
-- [iOS] Fix the SwiftUI `TextField` crashing with "String index is out of bounds" on iOS 18 when JS writes new text into a focused field that holds an active text selection. ([#47447](https://github.com/expo/expo/pull/47447) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS][Android] Fix a scrollable child (e.g. `FlatList`, `ScrollView`) inside `@expo/ui/community/bottom-sheet` not scrolling to the end when using fixed snap points. ([#47245](https://github.com/expo/expo/pull/47245) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Fix universal `ListItem` stretching a fixed-size raw RN view in its leading/trailing slot to fill the row instead of honoring its size, matching Android. ([#46883](https://github.com/expo/expo/issues/46883) by [@david-videau-ortega](https://github.com/david-videau-ortega)) ([#47236](https://github.com/expo/expo/pull/47236) by [@nishan](https://github.com/intergalacticspacehighway))
-- [Android] Fix the `@expo-ui/community/datetime-picker` dialog ignoring `minimumDate`/`maximumDate` for its year range, so the calendar and year picker no longer always span 1900–2100. ([#47206](https://github.com/expo/expo/issues/47206) by [@vioodle](https://github.com/vioodle)) ([#47213](https://github.com/expo/expo/pull/47213) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS][Android] Fix a scrollable (e.g. `FlatList`) inside `@expo/ui/community/bottom-sheet` not scrolling when the `<BottomSheet>` is mounted inside another same-orientation list (such as a `FlatList` header). ([#47197](https://github.com/expo/expo/pull/47197) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
 - [iOS] Fix Mac Catalyst build failure with `activityBackgroundTint` ([#46929](https://github.com/expo/expo/pull/46929) by [@theeket](https://github.com/theeket))
-- [iOS] Fix the SwiftUI `listRowInsets` modifier being ignored when every edge is set to `0`, so a row can now reset all of its insets. ([#47000](https://github.com/expo/expo/pull/47000) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix the SwiftUI `listRowInsets` modifier being ignored when every edge is set to `0`, so a row can now reset all of its insets. ([#47000](https://github.com/expo/expo/pull/47000) by [@nishan](https://github.com/intergalacticspacehighway)) ([#47000](https://github.com/expo/expo/pull/47000) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [android] Fix `FieldGroup` rendering an empty row/section when a conditional child (e.g. `{condition && <FieldGroup.Section>…</FieldGroup.Section>}`) evaluates to `false`. ([##46874](https://github.com/expo/expo/pull/46874) by [@dileepapeiris](https://github.com/dileepapeiris))
-- [android] Fix React Native `Pressable`/`Button` taps not registering on `community/pager-view` pages after the first on physical devices. ([#46851](https://github.com/expo/expo/pull/46851) by [@nishan](https://github.com/intergalacticspacehighway))
-- [universal] Fix user-supplied `modifiers` having no effect when the component derives a modifier of the same type from its props, e.g. `buttonStyle` on `Button` always losing to the `variant` prop. ([#46815](https://github.com/expo/expo/pull/46815) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Fix React Native `Pressable`/`Button` taps not registering on `community/pager-view` pages after the first on physical devices. ([#46851](https://github.com/expo/expo/pull/46851) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46851](https://github.com/expo/expo/pull/46851) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [universal] Fix user-supplied `modifiers` having no effect when the component derives a modifier of the same type from its props, e.g. `buttonStyle` on `Button` always losing to the `variant` prop. ([#46815](https://github.com/expo/expo/pull/46815) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46815](https://github.com/expo/expo/pull/46815) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [android] Fix race between JS imperative `expand()` and Compose handler registration on `ModalBottomSheet`. Adds `initialFullyExpanded` prop to drive initial snap state natively. ([#46367](https://github.com/expo/expo/pull/46367) by [@duyanhv](https://github.com/duyanhv))
-- [iOS][android] Fix `community/bottom-sheet` blocking touches behind the sheet after it's dismissed. ([#46805](https://github.com/expo/expo/pull/46805) by [@nishan](https://github.com/intergalacticspacehighway))
-- [android] Fix React Native touchables (e.g. `Pressable`) on `community/pager-view` pages not responding, or triggering the wrong page's handler, after navigating between pages. ([#46778](https://github.com/expo/expo/pull/46778) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS][android] Fix `community/bottom-sheet` blocking touches behind the sheet after it's dismissed. ([#46805](https://github.com/expo/expo/pull/46805) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46805](https://github.com/expo/expo/pull/46805) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [android] Fix React Native touchables (e.g. `Pressable`) on `community/pager-view` pages not responding, or triggering the wrong page's handler, after navigating between pages. ([#46778](https://github.com/expo/expo/pull/46778) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46778](https://github.com/expo/expo/pull/46778) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix `font`, `dynamicTypeSize`, and `resizable` modifiers not applying to the SwiftUI `Image`. SF Symbols scale with Dynamic Type when a `font` modifier sets a `textStyle`. ([#46714](https://github.com/expo/expo/pull/46714) by [@ramonclaudio](https://github.com/ramonclaudio))
-- [android] Fix React Native `ScrollView` nested scrolling inside `BottomSheet`. ([#46544](https://github.com/expo/expo/pull/46544) by [@nishan](https://github.com/intergalacticspacehighway))
-- [jetpack-compose] Fix layout shift when `Host` with `matchContents` is used inside React Native Screens. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Fix `PagerView` offsetting `ScrollView` by safe area insets. ([#46637](https://github.com/expo/expo/pull/46637) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Fix `SegmentedControl` being overlapped by sibling components inside a `ScrollView`, by disabling the `Host` safe area insets. ([#46575](https://github.com/expo/expo/pull/46575) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Fix the community `DateTimePicker`, `MenuView`, `Picker`, and `Slider` applying safe area insets (including keyboard avoidance) twice, by disabling the `Host` safe area insets (`ignoreSafeArea="all"`). ([#46721](https://github.com/expo/expo/pull/46721) by [@nishan](https://github.com/intergalacticspacehighway))
-- [jetpack-compose] Fix `TextField` jiggling the surrounding content while its label animates on focus (a Material 3 expressive motion spring overshoot). ([#46568](https://github.com/expo/expo/pull/46568) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Fix `BottomSheet` animating open from the bottom-left corner in `fitToContents` mode. ([#46546](https://github.com/expo/expo/pull/46546) by [@nishan](https://github.com/intergalacticspacehighway))
-- [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway))
+- [android] Fix React Native `ScrollView` nested scrolling inside `BottomSheet`. ([#46544](https://github.com/expo/expo/pull/46544) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46544](https://github.com/expo/expo/pull/46544) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [jetpack-compose] Fix layout shift when `Host` with `matchContents` is used inside React Native Screens. ([#46604](https://github.com/expo/expo/pull/46604) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46604](https://github.com/expo/expo/pull/46604) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `PagerView` offsetting `ScrollView` by safe area insets. ([#46637](https://github.com/expo/expo/pull/46637) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46637](https://github.com/expo/expo/pull/46637) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `SegmentedControl` being overlapped by sibling components inside a `ScrollView`, by disabling the `Host` safe area insets. ([#46575](https://github.com/expo/expo/pull/46575) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46575](https://github.com/expo/expo/pull/46575) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix the community `DateTimePicker`, `MenuView`, `Picker`, and `Slider` applying safe area insets (including keyboard avoidance) twice, by disabling the `Host` safe area insets (`ignoreSafeArea="all"`). ([#46721](https://github.com/expo/expo/pull/46721) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46721](https://github.com/expo/expo/pull/46721) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [jetpack-compose] Fix `TextField` jiggling the surrounding content while its label animates on focus (a Material 3 expressive motion spring overshoot). ([#46568](https://github.com/expo/expo/pull/46568) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46568](https://github.com/expo/expo/pull/46568) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `BottomSheet` animating open from the bottom-left corner in `fitToContents` mode. ([#46546](https://github.com/expo/expo/pull/46546) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46546](https://github.com/expo/expo/pull/46546) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `TextField` and `SecureField` worklet `onTextChange` firing more than once per keystroke (when a change triggers reformatting) and on programmatic text updates. ([#46483](https://github.com/expo/expo/pull/46483) by [@nishan](https://github.com/intergalacticspacehighway)) ([#46483](https://github.com/expo/expo/pull/46483) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `font` modifier dropping Dynamic Type scaling (`relativeTo`) and `weight` on concatenated `Text` runs. The Text-concatenation path now resolves the same `Font` as the view path. ([#46509](https://github.com/expo/expo/pull/46509) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [android] Fix universal `TextInput` ignoring `style` `backgroundColor` / `borderWidth` and not applying `textAlign` to the placeholder. ([#46441](https://github.com/expo/expo/pull/46441) by [@duyanhv](https://github.com/duyanhv))
 - [android] Fix `Switch` alignment when `label` is provided ([#47088](https://github.com/expo/expo/pull/47088) by [@rklomp](https://github.com/rklomp))
-- [iOS] Fixed viewport size measurement reading the main screen instead of the scene the view is in. ([#48170](https://github.com/expo/expo/pull/48170) by [@alanjhughes](https://github.com/alanjhughes))
 
-### 💡 Others
+## 56.0.15 - 2026-05-29
 
-- Export public component props as interfaces to support module augmentation. by [@Brentlok](https://github.com/Brentlok)
-- [universal] Revamp web universal components (`Button`, `Checkbox`, `FieldGroup`, `Picker`, `Slider`,`Switch`,`TextInput`) with shared design tokens, light / dark themes, and keyboard focus styles. ([#46258](https://github.com/expo/expo/pull/46258), [#46541](https://github.com/expo/expo/pull/46541) by [@zoontek](https://github.com/zoontek))
-- [iOS][android] Removed the `react-native-reanimated` dependency from the worklet integration; worklet features rely on `react-native-worklets` directly. ([#46922](https://github.com/expo/expo/pull/46922), [#46935](https://github.com/expo/expo/pull/46935) by [@nishan](https://github.com/intergalacticspacehighway))
-- Removed `CLAUDE.md` and `CONTRIBUTING.md` from publishing and fixed side effects. ([#47451](https://github.com/expo/expo/pull/47451) by [@kudo](https://github.com/kudo))
-- [Android] Change modifiers type and provide appContext. ([#47616](https://github.com/expo/expo/pull/47616) by [@jakex7](https://github.com/jakex7))
-- [Android] Change `Text` color props to `ColorValue`. ([#47739](https://github.com/expo/expo/pull/47739) by [@jakex7](https://github.com/jakex7))
+_This version does not introduce any user-facing changes._
 
 ## 56.0.14 — 2026-05-26
 

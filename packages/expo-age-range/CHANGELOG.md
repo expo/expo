@@ -8,9 +8,21 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-07
+
+### 🐛 Bug fixes
+
 - [iOS] Add support for `AgeRangeService.AgeRangeDeclaration.confirmed` and fix the runtime crash it caused. ([#47475](https://github.com/expo/expo/pull/47475) by [@kudo](https://github.com/kudo))
 
-### 💡 Others
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.5 — 2026-05-26
 

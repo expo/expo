@@ -1,6 +1,6 @@
 {
   "name": "@expo/local-build-cache-provider",
-  "version": "56.0.8",
+  "version": "57.0.5",
   "description": "Local build cache provider for Expo",
   "keywords": [
     "build-cache-provider",

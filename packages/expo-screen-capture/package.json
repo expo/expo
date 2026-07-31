@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-capture",
-  "version": "56.0.4",
+  "version": "57.0.1",
   "description": "Protects screens in your app from being captured or recorded, and notifies if a screenshot is taken.",
   "keywords": [
     "expo",

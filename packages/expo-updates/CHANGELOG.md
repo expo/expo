@@ -14,7 +14,6 @@
 - [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [iOS] Isolate UpdatesLogReaderTests from concurrent suites. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
-- Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
 - [iOS] Fix SIGABRT during log purge when the persistent log contains a truncated line: `UpdatesLogReader` guarded on UTF-8 byte length but advanced the string index by Characters, so a line holding only the multi-byte emoji log prefix trapped with "String index is out of bounds". ([#48222](https://github.com/expo/expo/pull/48222) by [@valinagacevschi](https://github.com/valinagacevschi))
 
 ### 💡 Others
@@ -24,6 +23,64 @@
 - [Android] Log purge completion errors via `android.util.Log.e` directly instead of `logger.error`, so the failure path doesn't re-enter the `PersistentFileLog` dispatch queue from inside one of its own tasks. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Internal] Align find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - [iOS] Resolved the reload screen's window through the shared scene geometry helper. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.11 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.10 - 2026-07-23
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.9 - 2026-07-22
+
+### 🐛 Bug fixes
+
+- Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
+
+## 57.0.8 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.7 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.19 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.18 - 2026-06-05
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.17 — 2026-05-26
 
