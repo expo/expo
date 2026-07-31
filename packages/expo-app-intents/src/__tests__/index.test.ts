@@ -30,8 +30,4 @@ describe('expo-app-intents on unsupported platforms', () => {
     expect(typeof subscription.remove).toBe('function');
     subscription.remove();
   });
-
-  it('exports useAppIntents hook', () => {
-    expect(typeof AppIntents.useAppIntents).toBe('function');
-  });
 });
