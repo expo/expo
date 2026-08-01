@@ -16,8 +16,57 @@ import type { ScreenProps as BaseScreenProps } from '../../useScreens';
 import { isChildOfType } from '../../utils/children';
 import { Screen } from '../../views/Screen';
 
+/**
+ * Extends `NativeStackNavigationOptions` with Expo Router web-specific options.
+ * Placing this type here (rather than in `StackClient`) makes it available to
+ * `Stack.Screen` so users don't get a TypeScript error when passing `webModalStyle`.
+ */
+export type ExtendedStackNavigationOptions = NativeStackNavigationOptions & {
+  /**
+   * Style overrides for the modal when rendered on web. Has no effect on native platforms.
+   * @platform web
+   */
+  webModalStyle?: {
+    /**
+     * Override the width of the modal (px or percentage).
+     * @platform web
+     */
+    width?: number | string;
+    /**
+     * Override the height of the modal (px or percentage). Applies on web desktop.
+     * @platform web
+     */
+    height?: number | string;
+    /**
+     * Minimum height of the desktop modal. Overrides the default 640px clamp.
+     * @platform web
+     */
+    minHeight?: number | string;
+    /**
+     * Minimum width of the desktop modal. Overrides the default 580px.
+     * @platform web
+     */
+    minWidth?: number | string;
+    /**
+     * Border of the desktop modal (any valid CSS border value, for example `'1px solid #ccc'`).
+     * @platform web
+     */
+    border?: string;
+    /**
+     * Overlay background color (any valid CSS color, rgba, or hsla value).
+     * @platform web
+     */
+    overlayBackground?: string;
+    /**
+     * Modal shadow filter (any valid CSS `filter` value).
+     * @platform web
+     */
+    shadow?: string;
+  };
+};
+
 type StackBaseScreenProps = BaseScreenProps<
-  NativeStackNavigationOptions,
+  ExtendedStackNavigationOptions,
   StackNavigationState<ParamListBase>,
   NativeStackNavigationEventMap
 >;
@@ -152,14 +201,14 @@ const VALID_PRESENTATIONS = [
 ] as const;
 
 export function validateStackPresentation(
-  options: NativeStackNavigationOptions
-): NativeStackNavigationOptions;
+  options: ExtendedStackNavigationOptions
+): ExtendedStackNavigationOptions;
 export function validateStackPresentation<
-  F extends (...args: never[]) => NativeStackNavigationOptions,
+  F extends (...args: never[]) => ExtendedStackNavigationOptions,
 >(options: F): F;
 export function validateStackPresentation(
-  options: NativeStackNavigationOptions | ((...args: never[]) => NativeStackNavigationOptions)
-): ((...args: never[]) => NativeStackNavigationOptions) | NativeStackNavigationOptions {
+  options: ExtendedStackNavigationOptions | ((...args: never[]) => ExtendedStackNavigationOptions)
+): ((...args: never[]) => ExtendedStackNavigationOptions) | ExtendedStackNavigationOptions {
   if (typeof options === 'function') {
     return (...args: never[]) => {
       const resolved = options(...args);
@@ -181,14 +230,14 @@ export function validateStackPresentation(
 }
 
 export function appendScreenStackPropsToOptions(
-  options: NativeStackNavigationOptions,
+  options: ExtendedStackNavigationOptions,
   props: StackScreenProps
-): NativeStackNavigationOptions {
+): ExtendedStackNavigationOptions {
   let updatedOptions = { ...options, ...props.options };
 
   validateStackPresentation(updatedOptions);
 
-  function appendChildOptions(child: React.ReactElement, opts: NativeStackNavigationOptions) {
+  function appendChildOptions(child: React.ReactElement, opts: ExtendedStackNavigationOptions) {
     if (isChildOfType(child, StackHeaderComponent)) {
       return appendStackHeaderPropsToOptions(opts, child.props);
     }
