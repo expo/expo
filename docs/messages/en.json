@@ -31,7 +31,7 @@
   "footerShareFeedback": "Share your feedback",
   "footerAskOnForums": "Ask a question on the forums",
   "footerEditPage": "Edit this page",
-  "footerLlmsView": "View <llmsLink>llms.txt</llmsLink> and <fullLink>{fullName}</fullLink>",
+  "footerLlmsView": "View <llmsLink>llms.txt</llmsLink>",
   "footerNewsletterTitle": "Sign up for the Expo Newsletter",
   "footerSignUp": "Sign up",
   "footerThankYouSignUp": "Thank you for the sign up! 💙",
