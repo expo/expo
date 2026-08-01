@@ -79,6 +79,8 @@ You can configure `expo-calendar` using its built-in [config plugin](/config-plu
   ]}
 />
 
+To localize an iOS calendar or reminders permission message, keep the matching config-plugin property as the default value and add its `NS*UsageDescription` key to the `ios` object in each [locale file](/guides/localization/#translating-app-metadata). Expo writes the localized values to `InfoPlist.strings` during prebuild.
+
 <ConfigReactNative>
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **ios** project manually), then you need to configure following permissions in your native project:
