@@ -148,7 +148,7 @@ async function npmPackAsync(
   try {
     results = (await spawnAsync(npm, [...cmd, '--json'], { cwd })).stdout?.trim();
   } catch (error: any) {
-    if (error?.stderr.match(/npm ERR! code E404/)) {
+    if (error?.stderr?.match(/npm ERR! code E404/)) {
       const pkg =
         error.stderr.match(/npm ERR! 404\s+'(.*)' is not in this registry\./)?.[1] ?? error.stderr;
       throw new Error(`NPM package not found: ` + pkg);
@@ -160,12 +160,46 @@ async function npmPackAsync(
     return null;
   }
 
+  // =========================================================================
+  // 🛠️ BUG FIX: NPM OUTPUT NOISE & OBJECT-TO-ARRAY NORMALIZATION
+  // 1. Terminalga chiqadigan "npm WARN" va keraksiz matnlarni tozalash uchun
+  //    JSON boshlanishi ('{' yoki '[') va tugashini ('}' yoki ']') ajratib olamiz.
+  // 2. npm 10+ versiyalari --json berilganda javobni Massiv emas, Obyekt
+  //    ({ "expo-template-default": {...} }) shaklida qaytargani uchun uni
+  //    Object.values() yordamida qayta Massivga o'giramiz.
+  // =========================================================================
+
+  const firstCurly = results.indexOf('{');
+  const firstSquare = results.indexOf('[');
+
+  let jsonStart = -1;
+  if (firstCurly !== -1 && firstSquare !== -1) {
+    jsonStart = Math.min(firstCurly, firstSquare);
+  } else {
+    jsonStart = firstCurly !== -1 ? firstCurly : firstSquare;
+  }
+
+  const lastCurly = results.lastIndexOf('}');
+  const lastSquare = results.lastIndexOf(']');
+  const jsonEnd = Math.max(lastCurly, lastSquare);
+
+  const cleanJson =
+    jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart
+      ? results.slice(jsonStart, jsonEnd + 1)
+      : results;
+
   try {
-    const json = JSON.parse(results);
+    let json = JSON.parse(cleanJson);
+
+    // Agar npm javobni Obyekt ko'rinishida qaytarsa, uni Expo kutayotgan Massivga o'giramiz
+    if (json && typeof json === 'object' && !Array.isArray(json)) {
+      json = Object.values(json);
+    }
+
     if (Array.isArray(json) && json.every(isNpmPackageInfo)) {
       return json.map(sanitizeNpmPackageFilename);
     } else {
-      throw new Error(`Invalid response from npm: ${results}`);
+      throw new Error(`Invalid response from npm: ${cleanJson}`);
     }
   } catch (error: any) {
     throw new Error(
