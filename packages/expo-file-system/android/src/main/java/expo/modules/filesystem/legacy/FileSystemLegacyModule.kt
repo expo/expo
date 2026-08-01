@@ -184,7 +184,7 @@ open class FileSystemLegacyModule : Module() {
 
       val encoding = options.encoding
 
-      val contents = getInputStreamForReading(uri, uriStr).use { inputStream ->
+      val contents = getInputStream(uri, uriStr).use { inputStream ->
         readInputStreamAsString(inputStream, encoding, options)
       }
       return@AsyncFunction contents
@@ -1049,18 +1049,10 @@ open class FileSystemLegacyModule : Module() {
   }
 
   @Throws(IOException::class)
-  private fun getInputStream(uri: Uri) = when {
+  private fun getInputStream(uri: Uri, uriStr: String? = null) = when {
     uri.scheme == "file" -> FileInputStream(uri.toFile())
     uri.scheme == "asset" -> openAssetInputStream(uri)
-    uri.isSAFUri -> context.contentResolver.openInputStream(uri)!!
-    else -> throw IOException("Unsupported scheme for location '$uri'.")
-  }
-
-  @Throws(IOException::class)
-  private fun getInputStreamForReading(uri: Uri, uriStr: String) = when {
-    uri.scheme == "file" -> FileInputStream(uri.toFile())
-    uri.scheme == "asset" -> openAssetInputStream(uri)
-    uri.scheme == null -> openResourceInputStream(uriStr)
+    uri.scheme == null && !uriStr.isNullOrEmpty() -> openResourceInputStream(uriStr)
     uri.isSAFUri -> context.contentResolver.openInputStream(uri)!!
     else -> throw IOException("Unsupported scheme for location '$uri'.")
   }

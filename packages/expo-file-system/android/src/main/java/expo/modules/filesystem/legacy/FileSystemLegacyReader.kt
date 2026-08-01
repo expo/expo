@@ -1,8 +1,6 @@
 package expo.modules.filesystem.legacy
 
 import android.util.Base64
-import java.io.ByteArrayOutputStream
-import java.io.IOException
 import java.io.InputStream
 
 internal fun readInputStreamAsString(
@@ -23,7 +21,7 @@ private fun InputStream.readBytes(options: ReadingOptions): ByteArray {
     skipBytes(options.position.toLong())
     return readByteRange(options.length)
   }
-  return readAllBytesCompat()
+  return readBytes()
 }
 
 private fun InputStream.skipBytes(position: Long) {
@@ -52,22 +50,4 @@ private fun InputStream.readByteRange(length: Int): ByteArray {
     offset += bytesRead
   }
   return buffer.copyOf(offset)
-}
-
-@Throws(IOException::class)
-private fun InputStream.readAllBytesCompat(): ByteArray {
-  val byteBuffer = ByteArrayOutputStream()
-  val buffer = ByteArray(1024)
-  try {
-    var len: Int
-    while (read(buffer).also { len = it } != -1) {
-      byteBuffer.write(buffer, 0, len)
-    }
-    return byteBuffer.toByteArray()
-  } finally {
-    try {
-      byteBuffer.close()
-    } catch (ignored: IOException) {
-    }
-  }
 }
