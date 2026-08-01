@@ -10,6 +10,13 @@ final class AppIntentsSetup: Module {
     Name("AppIntentsSetup")
 
     OnCreate {
+      AppEntityIdentifierRegistry.shared.register("dish", as: DishEntity.self)
+      if #available(iOS 18.0, *) {
+        // `registerIndexed` also mirrors the catalog published with `setEntityCatalogAsync` into
+        // Spotlight, so nothing has to index the drafts by hand.
+        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
+      }
+
       Task {
         await AppIntentDispatcher.shared.setShortcutsRefreshHandler {
           AppShortcuts.updateAppShortcutParameters()

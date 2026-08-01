@@ -2,6 +2,7 @@ import { type EventSubscription, UnavailabilityError } from 'expo-modules-core';
 import { useEffect, useRef } from 'react';
 
 import type {
+  AppEntityIdentifierModifier,
   AppIntentEntity,
   AppIntentInvocation,
   AppIntentsHandler,
@@ -151,7 +152,11 @@ export async function clearPendingInvocationsAsync(): Promise<void> {
 
 /**
  * Replaces the entity catalog of the given kind and asks the system to re-train
- * parameterized shortcut phrases against the new values.
+ * parameterized shortcut phrases against the new values. Entities registered natively with
+ * `registerIndexed` also have their Spotlight index rebuilt from the new catalog.
+ *
+ * Publishing a catalog that matches the stored one does nothing, so it is safe to call this on
+ * every app start.
  *
  * The native store is UserDefaults-backed, so keep catalogs compact. For large
  * datasets such as thousands of contacts, songs, or menu items, store the full
@@ -165,6 +170,24 @@ export async function setEntityCatalogAsync(
     return;
   }
   return ExpoAppIntents.setEntityCatalogAsync(kind, entities);
+}
+
+/**
+ * Rebuilds the Spotlight index from the stored entity catalog, whether or not the catalog
+ * changed. `setEntityCatalogAsync` already keeps the index in step, so this is only needed to
+ * recover from an index that no longer matches the catalog: one the system evicted, or one left
+ * stale by an app update that changed how entities describe themselves.
+ *
+ * Pass a `kind` to rebuild one catalog, or omit it to rebuild every kind registered natively with
+ * `registerIndexed`. Kinds with no indexed registration are ignored.
+ *
+ * @platform ios
+ */
+export async function reindexEntitiesAsync(kind?: string): Promise<void> {
+  if (!ExpoAppIntents) {
+    return;
+  }
+  return ExpoAppIntents.reindexEntitiesAsync(kind ?? null);
 }
 
 /**
@@ -185,4 +208,18 @@ export async function refreshShortcutsAsync(): Promise<void> {
     throw new UnavailabilityError('expo-app-intents', 'refreshShortcutsAsync');
   }
   return ExpoAppIntents.refreshShortcutsAsync();
+}
+
+/**
+ * Returns an ExpoUI SwiftUI modifier config that ties a view to an AppEntity identifier.
+ *
+ * The `entity` value must be registered from app-target Swift with
+ * `AppEntityIdentifierRegistry.shared.register(_:as:)`.
+ */
+export function appEntityIdentifier(entity: string, id: string): AppEntityIdentifierModifier {
+  return {
+    $type: 'appEntityIdentifier',
+    entity,
+    id,
+  };
 }

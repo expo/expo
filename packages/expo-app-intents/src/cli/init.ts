@@ -13,13 +13,19 @@ export type InitOptions = {
   directory: string;
   examples: InitExample[];
   templatesDir: string;
+  /**
+   * Adds Spotlight indexing, a `Transferable` export, and an open intent on top of the mail
+   * example, and swaps in a setup module that registers the entity kind so
+   * `appEntityIdentifier()` works from JavaScript.
+   */
+  visualIntelligence?: boolean;
 };
 
 export const DEFAULT_DIRECTORY = 'app-intents';
 const DEFAULT_EXAMPLES: InitExample[] = ['minimal'];
 
 const EXAMPLE_DESCRIPTIONS: Record<InitExample, string> = {
-  minimal: 'Adds only the setup module and an empty AppShortcuts provider.',
+  minimal: 'Adds only the setup module, with no intents and no shortcut phrases.',
   counter: 'Adds a Siri shortcut that opens the app and dispatches an increaseCounter invocation.',
   restaurant: 'Adds a dish-ordering shortcut backed by a dynamic Dish entity catalog.',
   mail: 'Adds a mail draft example that uses Apple App Intent schema domains, with no shortcut phrases.',
@@ -41,6 +47,68 @@ const EXAMPLE_TEMPLATE_FILES: Record<Exclude<InitExample, 'minimal'>, string[]> 
     'examples/mail/Queries/MailAccountEntityQuery.swift',
   ],
 };
+
+/** The example that `--visual-intelligence` extends. */
+export const VISUAL_INTELLIGENCE_EXAMPLE: InitExample = 'mail';
+
+const VISUAL_INTELLIGENCE_DESCRIPTION =
+  'Allows Siri to more intelligently read the on-screen contents of your app.';
+
+/**
+ * Added on top of the mail example by `--visual-intelligence`. These are all extensions of the
+ * base types, so the mail example itself is unchanged whether or not the flag is used.
+ */
+const VISUAL_INTELLIGENCE_TEMPLATE_FILES = [
+  'examples/mail-visual-intelligence/OpenMailDraftIntent.swift',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Spotlight.swift',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Transferable.swift',
+  'examples/mail-visual-intelligence/Queries/MailDraftEntityQuery+Indexed.swift',
+];
+
+/**
+ * Builds the setup module. It is generated rather than copied because what it wires up depends on
+ * the selection: it can only refer to `AppShortcuts` when a provider is actually written, and it
+ * registers the entity kind only for visual intelligence.
+ */
+function renderAppIntentsSetup(options: {
+  hasShortcuts: boolean;
+  visualIntelligence: boolean;
+}): string {
+  const onCreate: string[] = [];
+  if (options.visualIntelligence) {
+    // `registerIndexed` also mirrors the catalog published with `setEntityCatalogAsync` into
+    // Spotlight, so nothing has to index the drafts by hand.
+    onCreate.push(`      if #available(iOS 18.0, *) {
+        AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft", as: MailDraftEntity.self)
+      }`);
+  }
+  if (options.hasShortcuts) {
+    onCreate.push(`      Task {
+        await AppIntentDispatcher.shared.setShortcutsRefreshHandler {
+          AppShortcuts.updateAppShortcutParameters()
+        }
+        AppShortcuts.updateAppShortcutParameters()
+      }`);
+  }
+
+  const body: string[] = ['    Name("AppIntentsSetup")'];
+  if (onCreate.length > 0) {
+    body.push(`    OnCreate {\n${onCreate.join('\n\n')}\n    }`);
+  }
+  return `internal import ExpoAppIntents
+internal import ExpoModulesCore
+
+/**
+ Registered Expo inline module that wires app-target App Intents code to expo-app-intents.
+ Do not change the name of this class.
+ */
+final class AppIntentsSetup: Module {
+  public func definition() -> ExpoModulesCore.ModuleDefinition {
+${body.join('\n\n')}
+  }
+}
+`;
+}
 
 const APP_SHORTCUTS_HEADER = `import AppIntents
 
@@ -143,21 +211,50 @@ export function getExamplesPrompt(): PromptObject {
   };
 }
 
+/**
+ * Asked only after the example it extends has been selected, which is why it is a follow-up prompt
+ * rather than an entry in the picker: a `prompts` multiselect cannot enable a choice in response to
+ * another choice being selected.
+ */
+export function getVisualIntelligencePrompt(): PromptObject {
+  return {
+    type: 'confirm',
+    name: 'visualIntelligence',
+    message: `Add visual intelligence support? ${VISUAL_INTELLIGENCE_DESCRIPTION}`,
+    initial: false,
+  };
+}
+
+export type ResolvedExamples = {
+  examples: InitExample[];
+  visualIntelligence: boolean;
+};
+
 export async function resolveExamplesAsync(
   interactive: boolean,
-  values: readonly string[] | undefined
-): Promise<InitExample[]> {
+  values: readonly string[] | undefined,
+  visualIntelligence: boolean = false
+): Promise<ResolvedExamples> {
   if (values && values.length > 0) {
-    return resolveExamples(values);
+    return { examples: resolveExamples(values), visualIntelligence };
   }
   if (!interactive) {
-    return DEFAULT_EXAMPLES;
+    return { examples: DEFAULT_EXAMPLES, visualIntelligence };
   }
 
   const { examples } = await prompts(getExamplesPrompt(), {
     onCancel: () => process.exit(0),
   });
-  return resolveExamples(examples);
+  const selected = resolveExamples(examples);
+
+  if (visualIntelligence || !selected.includes(VISUAL_INTELLIGENCE_EXAMPLE)) {
+    return { examples: selected, visualIntelligence };
+  }
+
+  const answer = await prompts(getVisualIntelligencePrompt(), {
+    onCancel: () => process.exit(0),
+  });
+  return { examples: selected, visualIntelligence: answer.visualIntelligence === true };
 }
 
 export function normalizeDirectory(directory: string | undefined): string {
@@ -176,16 +273,22 @@ export function normalizeDirectory(directory: string | undefined): string {
   return segments.join('/');
 }
 
-function renderAppShortcuts(examples: readonly InitExample[]): string {
+/**
+ * Renders the shortcuts provider, or `null` when no selected example contributes a phrase.
+ *
+ * There is no such thing as an empty `AppShortcutsProvider`: the App Intents metadata extractor
+ * rejects a provider whose `appShortcuts` body has no `AppShortcut` in it with
+ * "'AppShortcutsProvider' property 'appShortcuts' requires builder syntax". A project with no
+ * phrases must therefore have no provider at all, which the extractor accepts.
+ */
+function renderAppShortcuts(examples: readonly InitExample[]): string | null {
   const blocks = examples.flatMap((example) => {
     const block = SHORTCUT_BLOCKS[example];
     return block ? [block] : [];
   });
 
   if (blocks.length === 0) {
-    return `${APP_SHORTCUTS_HEADER}
-    []
-${APP_SHORTCUTS_FOOTER}`;
+    return null;
   }
 
   return `${APP_SHORTCUTS_HEADER}
@@ -193,13 +296,33 @@ ${blocks.join('\n\n')}
 ${APP_SHORTCUTS_FOOTER}`;
 }
 
-function getTemplateFiles(examples: readonly InitExample[]): string[] {
-  const files = ['common/AppIntentsSetup.swift'];
+/**
+ * Throws when `--visual-intelligence` was requested without the example it extends, rather than
+ * scaffolding the flag away silently.
+ */
+export function assertVisualIntelligenceSelection(
+  examples: readonly InitExample[],
+  visualIntelligence: boolean
+): void {
+  if (visualIntelligence && !examples.includes(VISUAL_INTELLIGENCE_EXAMPLE)) {
+    throw new Error(
+      `--visual-intelligence extends the ${VISUAL_INTELLIGENCE_EXAMPLE} example with Spotlight ` +
+        `indexing and on-screen entity support, but that example was not selected. Run again with ` +
+        `--examples ${VISUAL_INTELLIGENCE_EXAMPLE} --visual-intelligence, or drop the flag.`
+    );
+  }
+}
+
+function getTemplateFiles(examples: readonly InitExample[], visualIntelligence: boolean): string[] {
+  const files: string[] = [];
   for (const example of examples) {
     if (example === 'minimal') {
       continue;
     }
     files.push(...EXAMPLE_TEMPLATE_FILES[example]);
+  }
+  if (visualIntelligence) {
+    files.push(...VISUAL_INTELLIGENCE_TEMPLATE_FILES);
   }
   return files;
 }
@@ -232,6 +355,8 @@ async function writeFileIfMissing(
  */
 export async function runInit(options: InitOptions): Promise<void> {
   const { projectRoot, directory, examples, templatesDir } = options;
+  const visualIntelligence = options.visualIntelligence ?? false;
+  assertVisualIntelligenceSelection(examples, visualIntelligence);
 
   const appJsonPath = path.join(projectRoot, 'app.json');
   const canUpdateAppJson = existsSync(appJsonPath);
@@ -300,15 +425,26 @@ export async function runInit(options: InitOptions): Promise<void> {
   const written: string[] = [];
   const skipped: string[] = [];
 
+  const appShortcuts = renderAppShortcuts(examples);
+  if (appShortcuts) {
+    await writeFileIfMissing(
+      path.join(intentsDir, 'AppShortcuts.swift'),
+      appShortcuts,
+      written,
+      skipped,
+      'AppShortcuts.swift'
+    );
+  }
+
   await writeFileIfMissing(
-    path.join(intentsDir, 'AppShortcuts.swift'),
-    renderAppShortcuts(examples),
+    path.join(intentsDir, 'AppIntentsSetup.swift'),
+    renderAppIntentsSetup({ hasShortcuts: appShortcuts !== null, visualIntelligence }),
     written,
     skipped,
-    'AppShortcuts.swift'
+    'AppIntentsSetup.swift'
   );
 
-  for (const templateFile of getTemplateFiles(examples)) {
+  for (const templateFile of getTemplateFiles(examples, visualIntelligence)) {
     const destinationPath = getDestinationPath(templateFile);
     const destination = path.join(intentsDir, destinationPath);
     if (existsSync(destination)) {
@@ -324,7 +460,9 @@ export async function runInit(options: InitOptions): Promise<void> {
     console.log(`Enabled inline modules for '${directory}' in app.json`);
     console.log("Added 'expo-app-intents' to plugins");
   }
-  console.log(`Selected examples: ${examples.join(', ')}`);
+  console.log(
+    `Selected examples: ${examples.join(', ')}${visualIntelligence ? ' (+ visual intelligence)' : ''}`
+  );
   if (written.length) {
     console.log(`Created ${directory}/: ${written.join(', ')}`);
   }

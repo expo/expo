@@ -1,18 +1,34 @@
 import { vol } from 'memfs';
+import prompts from 'prompts';
 
-import { getExamplesPrompt, normalizeDirectory, resolveExamples, runInit } from '../cli/init';
+import {
+  getExamplesPrompt,
+  getVisualIntelligencePrompt,
+  normalizeDirectory,
+  resolveExamples,
+  resolveExamplesAsync,
+  runInit,
+} from '../cli/init';
 
 jest.mock('fs', () => require('memfs').fs);
 jest.mock('fs/promises', () => require('memfs').fs.promises);
+jest.mock('prompts', () => ({ __esModule: true, default: jest.fn() }));
+
+const mockedPrompts = prompts as unknown as jest.Mock;
 
 const TEMPLATES = {
-  'common/AppIntentsSetup.swift': 'setup',
   'examples/counter/IncreaseCounterIntent.swift': 'counter',
   'examples/restaurant/OrderFoodIntent.swift': 'restaurant intent',
   'examples/restaurant/Entities/DishEntity.swift': 'dish entity',
   'examples/restaurant/Queries/DishQuery.swift': 'dish query',
   'examples/mail/CreateDraftIntent.swift': 'mail create intent',
   'examples/mail/DeleteDraftIntent.swift': 'mail delete intent',
+  'examples/mail-visual-intelligence/OpenMailDraftIntent.swift': 'vi open intent',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Spotlight.swift': 'vi spotlight',
+  'examples/mail-visual-intelligence/Entities/MailDraftEntity+Transferable.swift':
+    'vi transferable',
+  'examples/mail-visual-intelligence/Queries/MailDraftEntityQuery+Indexed.swift':
+    'vi indexed query',
   'examples/mail/Entities/MailDraftEntity.swift': 'mail draft entity',
   'examples/mail/Entities/MailAccountEntity.swift': 'mail account entity',
   'examples/mail/Queries/MailDraftEntityQuery.swift': 'mail draft query',
@@ -60,7 +76,7 @@ describe(getExamplesPrompt, () => {
       expect.arrayContaining([
         expect.objectContaining({
           value: 'minimal',
-          description: expect.stringContaining('empty AppShortcuts provider'),
+          description: expect.stringContaining('only the setup module'),
         }),
         expect.objectContaining({
           value: 'counter',
@@ -76,6 +92,99 @@ describe(getExamplesPrompt, () => {
         }),
       ])
     );
+  });
+
+  it('does not offer visual intelligence in the picker itself', () => {
+    const choices = getExamplesPrompt().choices as { value: string }[];
+
+    expect(choices.map((choice) => choice.value)).toEqual([
+      'minimal',
+      'counter',
+      'restaurant',
+      'mail',
+    ]);
+  });
+});
+
+describe(getVisualIntelligencePrompt, () => {
+  it('explains what visual intelligence does and defaults to off', () => {
+    const prompt = getVisualIntelligencePrompt();
+
+    expect(prompt.type).toBe('confirm');
+    expect(prompt.name).toBe('visualIntelligence');
+    expect(prompt.message).toContain(
+      'Allows Siri to more intelligently read the on-screen contents of your app.'
+    );
+    expect(prompt.initial).toBe(false);
+  });
+});
+
+describe(resolveExamplesAsync, () => {
+  beforeEach(() => {
+    mockedPrompts.mockReset();
+  });
+
+  it('never prompts when examples are passed on the command line', async () => {
+    await expect(resolveExamplesAsync(true, ['mail'], true)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: true,
+    });
+    expect(mockedPrompts).not.toHaveBeenCalled();
+  });
+
+  it('never prompts when not interactive', async () => {
+    await expect(resolveExamplesAsync(false, undefined)).resolves.toEqual({
+      examples: ['minimal'],
+      visualIntelligence: false,
+    });
+    expect(mockedPrompts).not.toHaveBeenCalled();
+  });
+
+  it('does not ask about visual intelligence unless the mail example was picked', async () => {
+    mockedPrompts.mockResolvedValueOnce({ examples: ['counter'] });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['counter'],
+      visualIntelligence: false,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(1);
+  });
+
+  it('asks about visual intelligence once the mail example was picked', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['counter', 'mail'] })
+      .mockResolvedValueOnce({ visualIntelligence: true });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['counter', 'mail'],
+      visualIntelligence: true,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(2);
+    expect(mockedPrompts.mock.calls[1][0]).toMatchObject({
+      type: 'confirm',
+      name: 'visualIntelligence',
+    });
+  });
+
+  it('respects declining visual intelligence', async () => {
+    mockedPrompts
+      .mockResolvedValueOnce({ examples: ['mail'] })
+      .mockResolvedValueOnce({ visualIntelligence: false });
+
+    await expect(resolveExamplesAsync(true, undefined)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: false,
+    });
+  });
+
+  it('skips the follow-up when the flag was already passed', async () => {
+    mockedPrompts.mockResolvedValueOnce({ examples: ['mail'] });
+
+    await expect(resolveExamplesAsync(true, undefined, true)).resolves.toEqual({
+      examples: ['mail'],
+      visualIntelligence: true,
+    });
+    expect(mockedPrompts).toHaveBeenCalledTimes(1);
   });
 });
 
@@ -122,14 +231,16 @@ describe(runInit, () => {
     expect(appJson.expo.experiments.inlineModules.watchedDirectories).toEqual(['app-intents']);
     expect(appJson.expo.plugins).toEqual(['expo-app-intents']);
 
-    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(true);
+    // No example contributes a phrase, so no provider is written: the App Intents metadata
+    // extractor rejects an `AppShortcutsProvider` that has no `AppShortcut` in it.
+    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(false);
     expect(vol.existsSync('/project/app-intents/AppIntentsSetup.swift')).toBe(true);
     expect(vol.existsSync('/project/app-intents/IncreaseCounterIntent.swift')).toBe(false);
 
-    expect(vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8')).toContain('[]');
-    expect(vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8')).not.toContain(
-      '@available(iOS 16.0, *)'
-    );
+    // With no provider the setup module must not refer to one.
+    const setup = vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8') as string;
+    expect(setup).toContain('Name("AppIntentsSetup")');
+    expect(setup).not.toContain('AppShortcuts');
   });
 
   it('scaffolds only the selected examples', async () => {
@@ -191,7 +302,7 @@ describe(runInit, () => {
     expect(shortcuts).not.toContain('Draft');
   });
 
-  it('generates an empty shortcuts provider when only the mail example is selected', async () => {
+  it('writes no shortcuts provider when no example contributes a phrase', async () => {
     const templatesDir = '/pkg/templates';
     vol.fromJSON({
       '/project/package.json': JSON.stringify({ name: 'my-app' }),
@@ -207,10 +318,96 @@ describe(runInit, () => {
     });
 
     expect(vol.existsSync('/project/app-intents/CreateDraftIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(false);
+  });
 
-    const shortcuts = vol.readFileSync('/project/app-intents/AppShortcuts.swift', 'utf8') as string;
-    expect(shortcuts).toContain('[]');
-    expect(shortcuts).not.toContain('AppShortcut(');
+  it('adds the visual intelligence layer to the mail example when requested', async () => {
+    const templatesDir = '/pkg/templates';
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ name: 'my-app' }),
+      '/project/app.json': JSON.stringify({ expo: { name: 'my-app', slug: 'my-app' } }, null, 2),
+      ...templateFiles(templatesDir),
+    });
+
+    await runInit({
+      projectRoot: '/project',
+      directory: 'app-intents',
+      examples: ['mail'],
+      visualIntelligence: true,
+      templatesDir,
+    });
+
+    // The base mail example is still scaffolded unchanged.
+    expect(vol.existsSync('/project/app-intents/CreateDraftIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/DeleteDraftIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity.swift')).toBe(true);
+
+    // Plus the additive visual intelligence layer.
+    expect(vol.existsSync('/project/app-intents/OpenMailDraftIntent.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity+Spotlight.swift')).toBe(
+      true
+    );
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity+Transferable.swift')).toBe(
+      true
+    );
+    expect(vol.existsSync('/project/app-intents/Queries/MailDraftEntityQuery+Indexed.swift')).toBe(
+      true
+    );
+
+    // The generated setup module registers the entity kind and exposes the indexing bridge.
+    const setup = vol.readFileSync('/project/app-intents/AppIntentsSetup.swift', 'utf8') as string;
+    expect(setup).toContain('AppEntityIdentifierRegistry.shared.registerIndexed("mailDraft"');
+    // Indexing is driven by setEntityCatalogAsync now, so the scaffold exposes no bridge for it.
+    expect(setup).not.toContain('AsyncFunction');
+    // mail contributes no phrase, so there is no provider to wire up.
+    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(false);
+    expect(setup).not.toContain('AppShortcuts');
+  });
+
+  it('scaffolds no visual intelligence files by default', async () => {
+    const templatesDir = '/pkg/templates';
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ name: 'my-app' }),
+      '/project/app.json': JSON.stringify({ expo: { name: 'my-app', slug: 'my-app' } }, null, 2),
+      ...templateFiles(templatesDir),
+    });
+
+    await runInit({
+      projectRoot: '/project',
+      directory: 'app-intents',
+      examples: ['mail'],
+      templatesDir,
+    });
+
+    expect(vol.existsSync('/project/app-intents/OpenMailDraftIntent.swift')).toBe(false);
+    expect(vol.existsSync('/project/app-intents/Entities/MailDraftEntity+Spotlight.swift')).toBe(
+      false
+    );
+    const plainSetup = vol.readFileSync(
+      '/project/app-intents/AppIntentsSetup.swift',
+      'utf8'
+    ) as string;
+    expect(plainSetup).not.toContain('AppEntityIdentifierRegistry');
+    expect(plainSetup).not.toContain('registerIndexed');
+  });
+
+  it('rejects visual intelligence without the mail example', async () => {
+    const templatesDir = '/pkg/templates';
+    vol.fromJSON({
+      '/project/package.json': JSON.stringify({ name: 'my-app' }),
+      '/project/app.json': JSON.stringify({ expo: { name: 'my-app', slug: 'my-app' } }, null, 2),
+      ...templateFiles(templatesDir),
+    });
+
+    await expect(
+      runInit({
+        projectRoot: '/project',
+        directory: 'app-intents',
+        examples: ['counter'],
+        visualIntelligence: true,
+        templatesDir,
+      })
+    ).rejects.toThrow(/--visual-intelligence extends the mail example/);
   });
 
   it('merges into existing experiments and plugins without duplication', async () => {
@@ -306,7 +503,7 @@ describe(runInit, () => {
       templatesDir: '/pkg/templates',
     });
 
-    expect(vol.existsSync('/project/app-intents/AppShortcuts.swift')).toBe(true);
+    expect(vol.existsSync('/project/app-intents/AppIntentsSetup.swift')).toBe(true);
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('app.config.js/ts'));
     warn.mockRestore();
   });

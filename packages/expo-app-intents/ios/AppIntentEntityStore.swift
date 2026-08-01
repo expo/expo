@@ -14,21 +14,30 @@ public struct AppIntentEntityRecord: Codable, Record {
   @Field public var title: String = ""
   @Field public var subtitle: String?
   @Field public var synonyms: [String] = []
+  @Field public var metadata: [String: String] = [:]
 
   private enum CodingKeys: String, CodingKey {
     case id
     case title
     case subtitle
     case synonyms
+    case metadata
   }
 
   public init() {}
 
-  public init(id: String, title: String, subtitle: String? = nil, synonyms: [String] = []) {
+  public init(
+    id: String,
+    title: String,
+    subtitle: String? = nil,
+    synonyms: [String] = [],
+    metadata: [String: String] = [:]
+  ) {
     self.id = id
     self.title = title
     self.subtitle = subtitle
     self.synonyms = synonyms
+    self.metadata = metadata
   }
 
   public init(from decoder: Decoder) throws {
@@ -37,7 +46,8 @@ public struct AppIntentEntityRecord: Codable, Record {
       id: try container.decode(String.self, forKey: .id),
       title: try container.decode(String.self, forKey: .title),
       subtitle: try container.decodeIfPresent(String.self, forKey: .subtitle),
-      synonyms: try container.decodeIfPresent([String].self, forKey: .synonyms) ?? []
+      synonyms: try container.decodeIfPresent([String].self, forKey: .synonyms) ?? [],
+      metadata: try container.decodeIfPresent([String: String].self, forKey: .metadata) ?? [:]
     )
   }
 
@@ -47,6 +57,9 @@ public struct AppIntentEntityRecord: Codable, Record {
     try container.encode(title, forKey: .title)
     try container.encodeIfPresent(subtitle, forKey: .subtitle)
     try container.encode(synonyms, forKey: .synonyms)
+    if !metadata.isEmpty {
+      try container.encode(metadata, forKey: .metadata)
+    }
   }
 }
 
@@ -75,10 +88,27 @@ public actor AppIntentEntityStore {
     return entities(ofKind: kind).filter { identifiers.contains($0.id) }
   }
 
-  internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) {
-    guard let data = try? JSONEncoder().encode(entities) else {
-      return
+  /**
+   Replaces the catalog for the given kind and reports whether anything actually changed, so
+   callers can skip work that only makes sense for a new catalog.
+
+   `.sortedKeys` is required rather than cosmetic: `metadata` is a dictionary, and Swift does not
+   guarantee a stable iteration order across runs, so without it two encodings of equal content
+   could differ and every write would look like a change.
+   */
+  @discardableResult
+  internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) -> Bool {
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = .sortedKeys
+
+    guard let data = try? encoder.encode(entities) else {
+      return false
     }
+    guard data != defaults.data(forKey: storageKey(kind: kind)) else {
+      return false
+    }
+
     defaults.set(data, forKey: storageKey(kind: kind))
+    return true
   }
 }

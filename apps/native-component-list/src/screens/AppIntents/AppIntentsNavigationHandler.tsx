@@ -7,10 +7,13 @@ import {
   type AppIntentRoute,
   processAppIntentInvocations,
 } from './AppIntentsStore';
+import { syncMailDraftCatalogAsync } from './syncMailDraftCatalogAsync';
 
 export type AppIntentNavigationTarget = {
   route: AppIntentRoute;
   invocationId?: string;
+  /** Set when the system asked to open a specific mail draft. */
+  draftId?: string;
 };
 
 export type AppIntentNavigationRef = {
@@ -66,6 +69,7 @@ export function navigateToAppIntentScreen(
   const params = {
     source: 'siri',
     ...(target.invocationId ? { intentId: target.invocationId } : {}),
+    ...(target.draftId ? { draftId: target.draftId } : {}),
   };
 
   navigation.navigate('main', {
@@ -114,6 +118,10 @@ export function AppIntentsNavigationHandler({
       console.warn('Could not seed App Intents restaurant catalogs.', error);
     });
 
+    syncMailDraftCatalogAsync().catch((error: unknown) => {
+      console.warn('Could not seed App Intents mail draft catalogs.', error);
+    });
+
     AppIntents.refreshShortcutsAsync().catch((error: unknown) => {
       console.warn('Could not refresh App Intents shortcuts.', error);
     });
@@ -130,10 +138,25 @@ export function AppIntentsNavigationHandler({
       result.handledInvocationIds.map((id) => AppIntents.removePendingInvocationAsync(id))
     );
 
+    // Creating or deleting drafts changes the catalog, so the entity store and the Spotlight
+    // index both need to be rebuilt from the new state.
+    const mutatingNames = ['createMailDraft', 'deleteMailDrafts'];
+    const didMutateDrafts =
+      pendingIntents.some((invocation) => mutatingNames.includes(invocation.name)) ||
+      (newIntent != null && mutatingNames.includes(newIntent.name));
+    if (didMutateDrafts) {
+      try {
+        await syncMailDraftCatalogAsync();
+      } catch (error) {
+        console.warn('Could not sync App Intents mail draft catalogs.', error);
+      }
+    }
+
     if (result.route) {
       setPendingNavigationTarget({
         route: result.route,
         invocationId: result.routeInvocationId,
+        draftId: result.routeDraftId,
       });
     }
     if (newIntent == null) {

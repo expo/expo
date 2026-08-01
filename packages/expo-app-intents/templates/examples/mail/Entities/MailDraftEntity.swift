@@ -39,16 +39,23 @@ struct MailDraftEntity {
   /**
    Builds a draft from a catalog record published by JavaScript with
    `setEntityCatalogAsync('mailDraft', drafts)`. The record's title carries the subject and its
-   subtitle carries the body, so Siri can resolve a draft the user names out loud.
+   subtitle carries the body, so Siri can resolve a draft the user names out loud. Anything with
+   no field of its own on the record travels in `metadata`.
    */
   init(record: AppIntentEntityRecord) {
+    let bodyText = record.metadata["body"] ?? record.subtitle ?? ""
+    let recipients = (record.metadata["recipients"] ?? "")
+      .split(separator: ",")
+      .map { $0.trimmingCharacters(in: .whitespaces) }
+      .filter { !$0.isEmpty }
+
     self.init(
       id: record.id,
-      to: [],
+      to: recipients.map { IntentPerson(handle: .init(emailAddress: $0)) },
       cc: [],
       bcc: [],
       subject: record.title.isEmpty ? nil : record.title,
-      body: record.subtitle.map(AttributedString.init),
+      body: bodyText.isEmpty ? nil : AttributedString(bodyText),
       attachments: [],
       account: MailAccountEntity.default
     )

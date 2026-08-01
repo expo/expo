@@ -95,7 +95,7 @@ Parameterized intents use native entities. For example, the restaurant template 
 
 Schema intents, such as the mail example, are also defined in app-target Swift. Apple splits [app schema domains](https://developer.apple.com/documentation/appintents/app-schema-domains) into two groups, and the difference matters when you pick one: types conforming to a *primary* domain such as `mail`, `photos`, or `files` are discoverable by Apple Intelligence and Siri, while *Shortcuts-specific* domains such as `journal`, `books`, or `reader` only surface in the Shortcuts app.
 
-A schema intent needs no shortcut phrase. Conforming to the schema is what makes it discoverable: Xcode extracts the App Intents metadata at build time, and the action becomes available to both Siri and the Shortcuts app without appearing in your `AppShortcutsProvider`. The mail example therefore contributes no `AppShortcut`, and if it is the only example you scaffold, the generated provider is empty.
+A schema intent needs no shortcut phrase. Conforming to the schema is what makes it discoverable: Xcode extracts the App Intents metadata at build time, and the action becomes available to both Siri and the Shortcuts app without appearing in your `AppShortcutsProvider`. The mail example therefore contributes no `AppShortcut`, and if no example you scaffold contributes one, no **AppShortcuts.swift** is written at all. There is no such thing as an empty provider: Xcode rejects an `AppShortcutsProvider` whose `appShortcuts` body contains no `AppShortcut` with `'AppShortcutsProvider' property 'appShortcuts' requires builder syntax`. Add the file yourself once you have a phrase to declare.
 
 Add an `AppShortcut` only when you want a compiled launch phrase such as "Order food in MyApp". Note that phrases cannot be added conditionally, so a provider that references an availability-gated intent has to carry the same availability. That is the one case where a plain wrapper intent is worth writing.
 
@@ -107,7 +107,13 @@ After installing the package, run the initializer from your project root:
 
 <Terminal cmd={['$ npx expo-app-intents init']} />
 
-This command adds the config plugin, enables inline modules for the top-level **app-intents** directory, and writes starter Swift files. Then rebuild the native project:
+This command adds the config plugin, enables inline modules for the top-level **app-intents** directory, and writes starter Swift files.
+
+Pass `--visual-intelligence` alongside the mail example to also scaffold the Spotlight layer: an `IndexedEntity` conformance and Spotlight attributes for the draft, a `Transferable` export, an open intent, and a setup module that registers the `mailDraft` entity kind so [`appEntityIdentifier()`](#appentityidentifier) can mark which draft a view represents. Everything the flag adds is a Swift extension of the base mail types, so the example itself is the same with or without it.
+
+<Terminal cmd={['$ npx expo-app-intents init --examples mail --visual-intelligence']} />
+
+Then rebuild the native project:
 
 <Terminal cmd={['$ npx expo prebuild -p ios', '$ npx expo run:ios']} />
 
