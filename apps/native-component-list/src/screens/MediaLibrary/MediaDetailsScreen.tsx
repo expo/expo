@@ -1,6 +1,6 @@
-import { StackScreenProps } from '@react-navigation/stack';
 import { Image } from 'expo-image';
 import * as MediaLibrary from 'expo-media-library/legacy';
+import { type NativeStackScreenProps } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, View, Alert, Platform } from 'react-native';
 
@@ -15,7 +15,7 @@ type Links = {
   MediaDetails: { assetId: string; albumId?: string; albumTitle?: string };
 };
 
-type Props = StackScreenProps<Links, 'MediaDetails'>;
+type Props = NativeStackScreenProps<Links, 'MediaDetails'>;
 
 export default class MediaDetailsScreen extends React.Component<Props> {
   static navigationOptions = {

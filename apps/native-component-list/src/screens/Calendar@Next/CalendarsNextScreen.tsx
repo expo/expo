@@ -1,4 +1,3 @@
-import type { StackNavigationProp } from '@react-navigation/stack';
 import {
   AttendeeType,
   CalendarAccessLevel,
@@ -10,6 +9,7 @@ import {
   useCalendarPermissions,
   useRemindersPermissions,
 } from 'expo-calendar';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -18,14 +18,7 @@ import HeadingText from '../../components/HeadingText';
 import ListButton from '../../components/ListButton';
 import MonoText from '../../components/MonoText';
 
-// Route params must stay serializable, so the target screens receive the id and refetch the calendar.
-type StackNavigation = StackNavigationProp<{
-  RemindersNext: { calendarId: string };
-  EventsNext: { calendarId: string };
-}>;
-
 const CalendarRow = (props: {
-  navigation: StackNavigation;
   calendar: ExpoCalendar;
   updateCalendar: (calendar: ExpoCalendar) => void;
   deleteCalendar: (calendar: ExpoCalendar) => void;
@@ -33,12 +26,16 @@ const CalendarRow = (props: {
   const { calendar } = props;
   const calendarTypeName =
     calendar.entityType === EntityTypes.REMINDER ? 'RemindersNext' : 'EventsNext';
+  const calendarRoute =
+    calendar.entityType === EntityTypes.REMINDER ? '/apis/reminders-next' : '/apis/events-next';
   return (
     <View style={styles.calendarRow}>
       <HeadingText>{calendar.title}</HeadingText>
       <MonoText>{JSON.stringify(calendar, null, 2)}</MonoText>
       <ListButton
-        onPress={() => props.navigation.navigate(calendarTypeName, { calendarId: calendar.id })}
+        onPress={() =>
+          router.push({ pathname: calendarRoute, params: { calendarId: calendar.id } })
+        }
         title={`View ${calendarTypeName}`}
       />
       <ListButton
@@ -55,7 +52,7 @@ const CalendarRow = (props: {
   );
 };
 
-export default function CalendarsNextScreen({ navigation }: { navigation: StackNavigation }) {
+export default function CalendarsNextScreen() {
   const [, askForCalendarPermissions] = useCalendarPermissions();
   const [, askForReminderPermissions] = useRemindersPermissions();
 
@@ -167,7 +164,6 @@ export default function CalendarsNextScreen({ navigation }: { navigation: StackN
           <CalendarRow
             calendar={calendar}
             key={calendar.id}
-            navigation={navigation}
             updateCalendar={updateCalendar}
             deleteCalendar={deleteCalendar}
           />
