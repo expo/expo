@@ -2,7 +2,7 @@
   "name": "bare-expo",
   "version": "0.0.1",
   "private": true,
-  "main": "index.js",
+  "main": "expo-router/entry",
   "scripts": {
     "android": "NODE_ENV=\"development\" ./scripts/start-emulator.sh",
     "android:clean": "pushd android; rm -rf ./.gradle && ./gradlew --configure-on-demand; popd",

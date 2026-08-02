@@ -1,4 +1,3 @@
-import { Stack } from 'expo-router';
 import * as React from 'react';
 
 import { optionalRequire } from '../../../optionalRequire';
@@ -11,13 +10,5 @@ const screenApiItems = optionalRequire(() =>
 )?.screenApiItems;
 
 export default function ComponentsIndex() {
-  if (!ExpoComponents) {
-    return null;
-  }
-  return (
-    <>
-      <Stack.Screen options={{ title: 'Components in Expo SDK' }} />
-      <ExpoComponents apis={screenApiItems} />
-    </>
-  );
+  return ExpoComponents ? <ExpoComponents apis={screenApiItems} /> : null;
 }

@@ -6,6 +6,6 @@ import { createQueryString, getSelectedTestNames } from 'test-suite/screens/getS
 export default function SelectTests() {
   const { tests } = useLocalSearchParams<{ tests?: string | string[] }>();
   const raw = Array.isArray(tests) ? tests.join(',') : (tests ?? '');
-  const query = createQueryString(getSelectedTestNames(decodeURIComponent(raw)));
+  const query = createQueryString(getSelectedTestNames(raw));
   return <Redirect href={{ pathname: '/test-suite/run', params: { tests: query } }} />;
 }

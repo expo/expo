@@ -113,14 +113,6 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/ExpoObserveScreen'));
-    },
-    name: 'ExpoObserve',
-    options: { title: 'Expo Observe' },
-    route: 'expo-observe',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/AsyncStorageScreen'));
     },
     name: 'AsyncStorage',

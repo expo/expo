@@ -10,6 +10,7 @@ export function getStackScreenOptions(theme: ThemeType): NativeStackNavigationOp
     headerStyle: { backgroundColor: theme.background.default },
     headerTintColor: theme.icon.info,
     headerTitleStyle: { color: theme.text.default },
+    // TODO(kudo,20260802): Convert this into a `Stack.Toolbar.Right` once we adopt the native toolbar API.
     headerRight: () => <HeaderRightComponent theme={theme} />,
   };
 }

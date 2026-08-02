@@ -10,5 +10,9 @@ const getStackScreenOptions = optionalRequire(() =>
 
 export default function ComponentsLayout() {
   const { theme } = useTheme();
-  return <Stack screenOptions={getStackScreenOptions?.(theme)} />;
+  return (
+    <Stack screenOptions={getStackScreenOptions?.(theme)}>
+      <Stack.Screen name="index" options={{ title: 'Components in Expo SDK' }} />
+    </Stack>
+  );
 }

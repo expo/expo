@@ -100,6 +100,7 @@ function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      {/* TODO(kudo,20260802): Unify these navigation themes with `ThemeProvider` so there's a single source of truth. */}
       <NavigationThemeProvider value={themeName === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
