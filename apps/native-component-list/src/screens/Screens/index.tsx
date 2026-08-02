@@ -6,6 +6,9 @@ import { FlatList, StyleSheet, Text, TouchableHighlight, View } from 'react-nati
 import { optionalRequire } from '../../navigation/routeBuilder';
 import { type ScreenConfig } from '../../types/ScreenConfig';
 
+// TODO(kudo,20260802): cleanup this in a separate PR.
+// Once bare-expo runs on expo-router, react-native-screens is exercised app-wide,
+// so these hand-written primitive demos may be redundant.
 export const ScreensExampleScreens: ScreenConfig[] = [
   {
     name: 'ScreensContainer',

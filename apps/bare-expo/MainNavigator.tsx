@@ -56,13 +56,9 @@ const NativeComponentList: NativeComponentListExportsType = optionalRequire(() =
 const Redirect = optionalRequire(() =>
   require('native-component-list/src/screens/RedirectScreen')
 ) as any;
-const SearchScreenModule = (() => {
-  try {
-    return require('native-component-list/src/screens/SearchScreen');
-  } catch {
-    return null;
-  }
-})();
+const SearchScreenModule = optionalRequire(() => ({
+  default: require('native-component-list/src/screens/SearchScreen'),
+})) as typeof import('native-component-list/src/screens/SearchScreen') | null;
 const Search = (SearchScreenModule?.default ?? null) as any;
 const getSearchScreenOptions = SearchScreenModule?.getSearchScreenOptions ?? null;
 
