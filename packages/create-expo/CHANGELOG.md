@@ -15,6 +15,8 @@
 
 ### 💡 Others
 
+- Add test coverage for the GitHub template resolver ([#48415](https://github.com/expo/expo/pull/48415) by [@00vortexlabsoneuzb00-wq](https://github.com/00vortexlabsoneuzb00-wq))
+
 ## 5.0.0 - 2026-06-25
 
 _This version does not introduce any user-facing changes._
