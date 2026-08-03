@@ -5,7 +5,7 @@ import {
 } from 'expo-router';
 import Fuse from 'fuse.js';
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
 import type { SearchBarCommands } from 'react-native-screens';
 
 import { ThemeType, useTheme } from '../../../common/ThemeProvider';
@@ -36,6 +36,9 @@ export default function SearchScreen() {
   const searchBarRef = React.useRef<SearchBarCommands>(null);
 
   React.useLayoutEffect(() => {
+    if (Platform.OS === 'web') {
+      return;
+    }
     navigation.setOptions({
       headerSearchBarOptions: {
         ref: searchBarRef,
@@ -79,7 +82,7 @@ export default function SearchScreen() {
     []
   );
 
-  return (
+  const list = (
     <ComponentListScreen
       contentInsetAdjustmentBehavior="automatic"
       renderItemRight={renderItemRight}
@@ -87,4 +90,37 @@ export default function SearchScreen() {
       sort={false}
     />
   );
+
+  if (Platform.OS !== 'web') {
+    return list;
+  }
+
+  // The web header only renders a button that expands the search field, so web gets its own input.
+  return (
+    <View style={[styles.webContainer, { backgroundColor: theme.background.default }]}>
+      <TextInput
+        autoFocus
+        placeholder="Search"
+        placeholderTextColor={theme.text.quaternary}
+        value={query}
+        onChangeText={setQuery}
+        style={[
+          styles.webInput,
+          { borderBottomColor: theme.border.default, color: theme.text.default },
+        ]}
+      />
+      {list}
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  webContainer: {
+    flex: 1,
+  },
+  webInput: {
+    borderBottomWidth: 1,
+    fontSize: 16,
+    padding: 12,
+  },
+});
