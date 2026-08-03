@@ -2,7 +2,7 @@ import * as CommonActions from './CommonActions';
 
 export { CommonActions };
 
-export { BaseRouter, getStateForRouteNamesChange } from './BaseRouter';
+export { BaseRouter } from './BaseRouter';
 export type {
   DrawerActionHelpers,
   DrawerActionType,
@@ -17,7 +17,7 @@ export type {
   StackNavigationState,
   StackRouterOptions,
 } from './StackRouter';
-export { StackActions, StackRouter, getRoutesForRouteNames } from './StackRouter';
+export { StackActions, StackRouter } from './StackRouter';
 export type {
   TabActionHelpers,
   TabActionType,

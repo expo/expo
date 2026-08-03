@@ -6,6 +6,8 @@
 
 - Unify JS Tabs, TopTabs, Drawer, and headless tabs with NativeTabs - only screens declared in the layout become visible. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
 - Make `href: null` hide JS tabs and make their routes unreachable, redirecting navigation to the initial tab. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
+- Remove `getStateForRouteNamesChange` from the `Router` interface on `expo-router/react-navigation`. Custom routers must handle the `ROUTE_NAMES_CHANGED` action in `getStateForAction` instead. ([#48479](https://github.com/expo/expo/pull/48479) by [@Ubax](https://github.com/Ubax))
+- `Descriptor.render()` on `expo-router/react-navigation` can now return `null` when the route is no longer declared on the navigator. Custom navigators must handle a `null` element. ([#48479](https://github.com/expo/expo/pull/48479) by [@Ubax](https://github.com/Ubax))
 - Migrate the JS `TopTabs` navigator to the `standard-navigation` integration. ([#48498](https://github.com/expo/expo/pull/48498) by [@Ubax](https://github.com/Ubax))
 - Make `beforeRemove` non-preventable and add `removePrevented` event. ([#48347](https://github.com/expo/expo/pull/48347) by [@Ubax](https://github.com/Ubax))
 - Remove the `navigationKey` prop from layout `<Screen>` and `<Group>` components. ([#48502](https://github.com/expo/expo/pull/48502) by [@Ubax](https://github.com/Ubax))

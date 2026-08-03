@@ -180,41 +180,6 @@ export const StackActions = {
   },
 };
 
-export function getRoutesForRouteNames(
-  state: StackNavigationState<ParamListBase>,
-  routeNames: string[],
-  {
-    routeParamList,
-    initialRouteName,
-  }: {
-    routeParamList: ParamListBase;
-    initialRouteName?: string;
-  }
-): Pick<StackNavigationState<ParamListBase>, 'routes' | 'index'> {
-  const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
-  const routes = activeRoutes.filter((route) => routeNames.includes(route.name));
-  const filteredPreloadedRoutes = preloadedRoutes.filter((route) =>
-    routeNames.includes(route.name)
-  );
-
-  if (routes.length === 0) {
-    const fallbackName =
-      initialRouteName !== undefined && routeNames.includes(initialRouteName)
-        ? initialRouteName
-        : routeNames[0]!;
-
-    routes.push({
-      key: `${fallbackName}-${nanoid()}`,
-      name: fallbackName,
-      params: routeParamList[fallbackName],
-    });
-  }
-
-  const result = reconcileStackRoutes(state, routes, filteredPreloadedRoutes);
-
-  return { routes: result.routes, index: result.index };
-}
-
 /**
  * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
@@ -311,17 +276,6 @@ export function StackRouter(options: StackRouterOptions) {
         index: routes.length - 1,
         routeNames,
         routes: routes.concat(preloadedRoutes),
-      };
-    },
-
-    getStateForRouteNamesChange(state, { routeNames, routeParamList }) {
-      return {
-        ...state,
-        routeNames,
-        ...getRoutesForRouteNames(state, routeNames, {
-          routeParamList,
-          initialRouteName: options.initialRouteName,
-        }),
       };
     },
 

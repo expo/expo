@@ -311,59 +311,6 @@ export function TabRouter({
       );
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList }) {
-      const routes = state.routes.filter((route) => routeNames.includes(route.name));
-
-      for (const name of routeNames) {
-        if (!routes.some((route) => route.name === name)) {
-          routes.push({
-            name,
-            key: `${name}-${nanoid()}`,
-            params: routeParamList[name],
-          });
-        }
-      }
-
-      const focusedName = state.routes[state.index]!.name;
-      const index = Math.max(
-        0,
-        routes.findIndex((route) => route.name === focusedName)
-      );
-
-      let history = state.history.filter(
-        // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
-        (it) => it.type !== 'route' || routes.find((r) => r.key === it.key)
-      );
-
-      // Static back behaviors follow display order, while history behaviors retain valid visits.
-      // Preserve non-route entries added by extending routers such as `DrawerRouter`.
-      if (
-        backBehavior === 'firstRoute' ||
-        backBehavior === 'initialRoute' ||
-        backBehavior === 'order'
-      ) {
-        const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
-        const orderedIndex = orderedRoutes.findIndex((route) => route.key === routes[index]!.key);
-        history = [
-          ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
-          ...history.filter((item) => item.type !== 'route'),
-        ];
-      } else if (!history.some((item) => item.type === 'route')) {
-        history = [
-          ...getRouteHistory(routes, index, backBehavior, initialRouteName),
-          ...history.filter((item) => item.type !== 'route'),
-        ];
-      }
-
-      return {
-        ...state,
-        history,
-        routeNames,
-        routes,
-        index,
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 

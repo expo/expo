@@ -169,15 +169,6 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   ): State;
 
   /**
-   * Take the current state and updated list of route names, and return a new state.
-   *
-   * @param state State object to update.
-   * @param options.routeNames New list of route names.
-   * @param options.routeParamsList Object containing params for each route.
-   */
-  getStateForRouteNamesChange(state: State, options: RouterConfigOptions): State;
-
-  /**
    * Take the current state and key of a route, and return a new state with the route focused
    *
    * @param state State object to apply the action on.
@@ -187,7 +178,8 @@ export type Router<State extends NavigationState, Action extends NavigationActio
 
   /**
    * Take the current state and action, and return a new state.
-   * If the action cannot be handled, return `null`.
+   * If the action cannot be handled, return `null`. Custom routers must explicitly handle
+   * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
    * @param state State object to apply the action on.
    * @param action Action object to apply.
