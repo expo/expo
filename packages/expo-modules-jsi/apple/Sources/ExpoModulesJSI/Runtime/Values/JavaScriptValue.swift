@@ -32,7 +32,9 @@ public final class JavaScriptValue: JavaScriptType, Equatable, Escapable {
   public init(_ runtime: JavaScriptRuntime, _ string: String) {
     self.runtime = runtime
     self.pointee = facebook.jsi.Value(
-      runtime.pointee, facebook.jsi.String.createFromUtf8(runtime.pointee, std.string(string)))
+      runtime.pointee,
+      facebook.jsi.String.createFromUtf8(runtime.pointee, std.string(string))
+    )
   }
 
   /// Creates a BigInt JS value from an Int64.

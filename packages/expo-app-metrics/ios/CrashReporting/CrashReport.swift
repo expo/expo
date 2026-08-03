@@ -176,7 +176,8 @@ extension CrashReport: CustomStringConvertible {
 
     if let exceptionType {
       lines.append(
-        "  Exception: type=\(exceptionName(for: exceptionType)) code=\(exceptionCode.map(String.init) ?? "unknown")")
+        "  Exception: type=\(exceptionName(for: exceptionType)) code=\(exceptionCode.map(String.init) ?? "unknown")"
+      )
     }
     if let signal {
       lines.append("  Signal: \(signalName(for: signal)) (\(signal))")

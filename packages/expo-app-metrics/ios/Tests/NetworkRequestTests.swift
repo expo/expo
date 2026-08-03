@@ -80,7 +80,11 @@ struct NetworkRequestMonitorTests {
       id: UUID(),
       request: URLRequest(url: URL(string: "https://expo.dev/x")!),
       response: HTTPURLResponse(
-        url: URL(string: "https://expo.dev/x")!, statusCode: 200, httpVersion: nil, headerFields: nil),
+        url: URL(string: "https://expo.dev/x")!,
+        statusCode: 200,
+        httpVersion: nil,
+        headerFields: nil
+      ),
       taskBytesSent: nil,
       taskBytesReceived: nil,
       metrics: nil,
@@ -324,13 +328,37 @@ struct NetworkRequestSummaryTests {
     // typically follows but if one surfaces here it's still a successful response from the
     // origin's perspective. Only 4xx/5xx (and explicit errors) belong in the failed count.
     let cacheHit = makeRequest(
-      host: "expo.dev", duration: 0.05, status: 304, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+      host: "expo.dev",
+      duration: 0.05,
+      status: 304,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
     let redirect = makeRequest(
-      host: "expo.dev", duration: 0.1, status: 301, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+      host: "expo.dev",
+      duration: 0.1,
+      status: 301,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
     let clientError = makeRequest(
-      host: "expo.dev", duration: 0.1, status: 404, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+      host: "expo.dev",
+      duration: 0.1,
+      status: 404,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
     let serverError = makeRequest(
-      host: "expo.dev", duration: 0.1, status: 500, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+      host: "expo.dev",
+      duration: 0.1,
+      status: 500,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
 
     let summary = NetworkRequestSummary.from([cacheHit, redirect, clientError, serverError])
     #expect(summary.count == 4)
