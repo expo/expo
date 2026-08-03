@@ -1,0 +1,20 @@
+diff --git a/android/build.gradle b/android/build.gradle
+index 989c2c4c35ab4501af88127056f52d78f872f56e..236f25f231eaad6960698cd5235052b5a5f46d0d 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -36,7 +36,14 @@ def reactNativeArchitectures() {
+ }
+ 
+ apply plugin: 'com.android.library'
+-apply plugin: 'kotlin-android'
++// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
++// Only apply it when built-in Kotlin is unavailable or explicitly disabled with
++// android.builtInKotlin=false.
++def expoAgpBuiltInKotlin = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger() >= 9 &&
++    (findProperty('android.builtInKotlin')?.toString()?.toBoolean() ?: true)
++if (!expoAgpBuiltInKotlin) {
++  apply plugin: 'kotlin-android'
++}
+ apply from: "$projectDir/react-native-helpers.gradle"
+ 
+ if (isNewArchitectureEnabled()) {
