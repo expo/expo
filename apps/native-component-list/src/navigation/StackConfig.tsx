@@ -1,8 +1,12 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { ThemeType } from 'ThemeProvider';
-import { type NativeStackNavigationOptions, useRouter } from 'expo-router';
+import { Stack, router, type NativeStackNavigationOptions, useRouter } from 'expo-router';
 import * as React from 'react';
 import { View, Platform, TouchableOpacity } from 'react-native';
+
+// iOS takes an SF Symbol name, Android needs an xml drawable.
+const searchIcon =
+  process.env.EXPO_OS === 'ios' ? 'magnifyingglass' : require('@expo/material-symbols/search.xml');
 
 export function getStackScreenOptions(theme: ThemeType): NativeStackNavigationOptions {
   return {
@@ -10,9 +14,24 @@ export function getStackScreenOptions(theme: ThemeType): NativeStackNavigationOp
     headerStyle: { backgroundColor: theme.background.default },
     headerTintColor: theme.icon.info,
     headerTitleStyle: { color: theme.text.default },
-    // TODO(kudo,20260802): Convert this into a `Stack.Toolbar.Right` once we adopt the native toolbar API.
-    headerRight: () => <HeaderRightComponent theme={theme} />,
+    // `Stack.Toolbar` renders nothing on web, so web keeps the JS header button.
+    ...(Platform.OS === 'web' && { headerRight: () => <HeaderRightComponent theme={theme} /> }),
   };
+}
+
+// Returns the element instead of a component, because `Stack.Screen` reads its children by
+// element type and ignores anything else.
+export function getSearchToolbar(theme: ThemeType) {
+  return (
+    <Stack.Toolbar placement="right">
+      <Stack.Toolbar.Button
+        accessibilityLabel="Search"
+        icon={searchIcon}
+        tintColor={theme.icon.info}
+        onPress={() => router.push('/search')}
+      />
+    </Stack.Toolbar>
+  );
 }
 
 const HeaderRightComponent = ({ theme }: { theme: ThemeType }) => {
