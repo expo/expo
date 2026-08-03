@@ -16,9 +16,6 @@ import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
 import com.facebook.imagepipeline.producers.HttpUrlConnectionNetworkFetcher
 import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
-import com.raizlabs.android.dbflow.config.DatabaseConfig
-import com.raizlabs.android.dbflow.config.FlowConfig
-import com.raizlabs.android.dbflow.config.FlowManager
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor
@@ -421,25 +418,9 @@ class Exponent private constructor(val context: Context, val application: Applic
     }
 
     // TODO: profile this
-    FlowManager.init(
-      FlowConfig.builder(context)
-        .addDatabaseConfig(
-          DatabaseConfig.builder(SchedulersDatabase::class.java)
-            .databaseName(SchedulersDatabase.NAME)
-            .build()
-        )
-        .addDatabaseConfig(
-          DatabaseConfig.builder(ActionDatabase::class.java)
-            .databaseName(ActionDatabase.NAME)
-            .build()
-        )
-        .addDatabaseConfig(
-          DatabaseConfig.builder(ExponentDB::class.java)
-            .databaseName(ExponentDB.NAME)
-            .build()
-        )
-        .build()
-    )
+    SchedulersDatabase.init(context)
+    ActionDatabase.init(context)
+    ExponentDB.init(context)
 
     if (!ExpoViewBuildConfig.DEBUG) {
       // There are a few places in RN code that throw NetworkOnMainThreadException.

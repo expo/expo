@@ -7,8 +7,6 @@ import android.os.Build
 import android.os.Looper
 import androidx.core.app.NotificationCompat
 import androidx.core.app.RemoteInput
-import com.raizlabs.android.dbflow.sql.language.SQLite
-import com.raizlabs.android.dbflow.sql.language.Select
 import host.exp.exponent.kernel.KernelConstants
 import java.util.*
 
@@ -23,19 +21,13 @@ object NotificationActionCenter {
       val action = actions[i].apply {
         this["categoryId"] = categoryId
       }
-      ActionObject(action, i).save()
+      ActionDatabase.dao.insert(ActionObject(action, i))
     }
   }
 
   @Synchronized
   @JvmStatic fun removeCategory(categoryId: String?) {
-    val actions = SQLite.select().from(ActionObject::class.java)
-      .where(ActionObject_Table.categoryId.eq(categoryId))
-      .queryList()
-
-    for (actionObject in actions) {
-      actionObject.delete()
-    }
+    ActionDatabase.dao.deleteByCategory(categoryId)
   }
 
   @Synchronized
@@ -50,10 +42,7 @@ object NotificationActionCenter {
     // Expo Go has a permanent notification, so we have to set max priority in order to show up buttons
     builder.priority = Notification.PRIORITY_MAX
 
-    val actions = Select().from(ActionObject::class.java)
-      .where(ActionObject_Table.categoryId.eq(categoryId))
-      .orderBy(ActionObject_Table.position, true)
-      .queryList()
+    val actions = ActionDatabase.dao.findByCategory(categoryId)
 
     for (actionObject in actions) {
       addAction(builder, actionObject, intentProvider, context)
