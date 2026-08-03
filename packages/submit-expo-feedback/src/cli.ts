@@ -17,7 +17,7 @@ const GENERATED_FEEDBACK_ID_BYTES = 6;
 const MIN_FEEDBACK_ID_LENGTH = 6;
 const MAX_FEEDBACK_ID_LENGTH = 64;
 const FEEDBACK_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
-const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'unknown'] as const;
+const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'evals', 'unknown'] as const;
 
 type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
 
@@ -186,7 +186,12 @@ export async function resolveFeedbackAsync(
         name: 'category',
         message: 'What is your feedback about?',
         choices: FEEDBACK_CATEGORIES.map((value) => ({
-          title: value === 'unknown' ? 'Other / unknown' : value,
+          title:
+            value === 'unknown'
+              ? 'Other / unknown'
+              : value === 'evals'
+                ? 'evals (a task an AI agent failed at)'
+                : value,
           value,
         })),
       },
@@ -521,6 +526,7 @@ function printHelp(): void {
     | mcp        | Exact MCP tool name used                                          |
     | expo-cli   | Full Expo CLI command, such as npx expo install                   |
     | eas-cli    | Full EAS CLI command, such as eas build                           |
+    | evals      | Expo package, command, or capability the task involves            |
     | unknown    | Concise Expo product, package, feature, or topic, or leave empty  |
 `);
 }

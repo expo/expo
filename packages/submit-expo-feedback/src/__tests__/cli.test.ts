@@ -73,6 +73,9 @@ describe('help output', () => {
       );
       expect(helpOutput).toContain('| eas-cli    | Full EAS CLI command, such as eas build');
       expect(helpOutput).toContain(
+        '| evals      | Expo package, command, or capability the task involves'
+      );
+      expect(helpOutput).toContain(
         '| unknown    | Concise Expo product, package, feature, or topic, or leave empty'
       );
       expect(helpOutput).toContain('--resume <feedbackId>');
