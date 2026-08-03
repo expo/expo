@@ -27,6 +27,7 @@
 - Migrate the `Drawer` navigator to the `standard-navigation` integration. ([#47839](https://github.com/expo/expo/pull/47839) by [@Ubax](https://github.com/Ubax))
 - Remove `StackNavigationState.preloadedRoutes` property and append preloaded routes to `state.routes` ([#47961](https://github.com/expo/expo/pull/47961) by [@Ubax](https://github.com/Ubax))
 - Migrate the JS `Tabs` navigator to the `standard-navigation` integration. ([#48292](https://github.com/expo/expo/pull/48292) by [@Ubax](https://github.com/Ubax))
+- Stop decoding route params a second time in `useLocalSearchParams()` and `getRouteInfoFromState()`. Params are already decoded while the navigation state is built, so a value that must stay percent-encoded (for example `%2F` in an AWS SigV4 token) is no longer corrupted. Params that are passed in already encoded are now returned verbatim instead of being decoded. ([#48423](https://github.com/expo/expo/pull/48423) by [@kdelay](https://github.com/kdelay))
 
 ### 🎉 New features
 

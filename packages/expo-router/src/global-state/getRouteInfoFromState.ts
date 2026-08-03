@@ -1,7 +1,6 @@
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import type { NavigationState, PartialState } from '../react-navigation/native';
-import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
@@ -70,7 +69,7 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
   state = route.state;
 
   const segments: string[] = [];
-  let params: UrlObject['params'] = Object.create(null);
+  const params: UrlObject['params'] = Object.create(null);
 
   while (state) {
     route = state.routes['index' in state && state.index ? state.index : 0]!;
@@ -85,18 +84,6 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     segments.push(...routeName.split('/'));
     state = route.state;
   }
-
-  params = Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
-      if (typeof value === 'string') {
-        return [key, safeDecodeURIComponent(value)];
-      } else if (Array.isArray(value)) {
-        return [key, value.map((v) => safeDecodeURIComponent(v))];
-      } else {
-        return [key, value];
-      }
-    })
-  );
 
   /**
    * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
