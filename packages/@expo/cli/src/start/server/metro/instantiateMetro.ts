@@ -256,6 +256,12 @@ export async function loadMetroConfigAsync(
     },
   };
 
+  // TODO(@kitten): Add type once we stabilise this
+  const enableNativeTransformWorker: boolean = !!(exp.experiments as any)
+    ?.noxcturnalTransformWorker;
+  asWritable(config.transformer as any).unstable_noxcturnalTransformWorker =
+    enableNativeTransformWorker;
+
   // On-Demand Filesystem is enabled by default
   // TODO(@kitten): Add to config-types JSON schema
   const onDemandFilesystem = exp.experiments?.onDemandFilesystem ?? true;
