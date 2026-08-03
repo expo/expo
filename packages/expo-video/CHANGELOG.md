@@ -13,6 +13,9 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix races between overlapping source loads and player release. ([#47967](https://github.com/expo/expo/pull/47967) by [@behenate](https://github.com/behenate))
+- [iOS] Fix a race when registering video player observer delegates. ([#47976](https://github.com/expo/expo/pull/47976) by [@behenate](https://github.com/behenate))
+- [iOS] Update the way the VideoPlayer releases to comply with the modified SharedObject lifecycle. ([#47828](https://github.com/expo/expo/pull/47828) by [@behenate](https://github.com/behenate))
+- Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Set the default `audioMixingMode` to `auto`, [as documented](https://docs.expo.dev/versions/latest/sdk/video/#audiomixingmode); was `doNotMix`. ([#47363](https://github.com/expo/expo/issues/47363) by [@andymatuschak](https://github.com/andymatuschak))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
 - [iOS] Fixed a thread-safety crash caused by mutating the internal player registries while they were being iterated on another thread (e.g. during audio session and now playing updates). ([#46930](https://github.com/expo/expo/pull/46930) by [@jiunshinn](https://github.com/jiunshinn))

@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 ### 💡 Others
 
 ## 57.0.2 - 2026-07-29

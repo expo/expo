@@ -53,7 +53,14 @@ apply plugin: 'com.android.library'
 if (isNewArchitectureEnabled()) {
     apply plugin: 'com.facebook.react'
 }
-apply plugin: 'kotlin-android'
+// AGP 9's built-in Kotlin replaces the kotlin-android plugin (applying both fails).
+// Only apply it when built-in Kotlin is unavailable or explicitly disabled with
+// android.builtInKotlin=false.
+def expoAgpBuiltInKotlin = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger() >= 9 &&
+    (findProperty('android.builtInKotlin')?.toString()?.toBoolean() ?: true)
+if (!expoAgpBuiltInKotlin) {
+  apply plugin: 'kotlin-android'
+}
 
 android {
     if (supportsNamespace()) {

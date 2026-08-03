@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add support for React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 57.0.8 - 2026-07-29
