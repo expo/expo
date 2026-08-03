@@ -47,9 +47,7 @@ function processEnvReplacement(
     case 'EXPO_ROUTER_APP_ROOT':
       return path.relative(path.dirname(filename), routerRoot(state));
     case 'EXPO_ROUTER_IMPORT_MODE':
-      return String(options.customTransformOptions?.asyncRoutes) === 'true' && options.dev
-        ? 'lazy'
-        : 'sync';
+      return String(options.customTransformOptions?.asyncRoutes) === 'true' ? 'lazy' : 'sync';
     default:
       return !options.dev && usesPublicEnvPlugin(state.input) && name.startsWith('EXPO_PUBLIC_')
         ? process.env[name]

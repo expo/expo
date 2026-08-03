@@ -1822,6 +1822,23 @@ it('references EXPO_PUBLIC environment variables through the virtual module in d
   expect(full.dependencies.map((dependency) => dependency.name)).toContain('expo/virtual/env');
 });
 
+it('preserves lazy Expo Router imports in production web bundles', async () => {
+  const result = await transformNodeModuleWithNoxcturnal({
+    filename: workspaceFilename,
+    projectRoot: '/app',
+    source: `module.exports = process.env.EXPO_ROUTER_IMPORT_MODE;`,
+    options: options({
+      dev: false,
+      platform: 'web',
+      customTransformOptions: { engine: 'hermes', asyncRoutes: 'true' },
+    }),
+    isDefaultExpoTransformer: true,
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain('module.exports = "lazy"');
+});
+
 it('matches the non-Hermes dependency recipe without Babel', async () => {
   const source = `
 const input = { kept: 2, extra: 3 };

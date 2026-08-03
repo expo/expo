@@ -1,4 +1,5 @@
 import type { DefinedNativePlugin } from 'noxcturnal';
+import path from 'path';
 
 import {
   expoPluginInput,
@@ -78,7 +79,9 @@ export function createExpoRouterServerExportsPlugin(
                 'FunctionDeclaration route omitted its parsed declaration name'
               );
             }
-            if (name === 'loader') state.loaderReference = state.input.filename;
+            if (name === 'loader') {
+              state.loaderReference = path.resolve(state.input.projectRoot, state.input.filename);
+            }
             const remove = state.isLoaderBundle
               ? name !== 'loader'
               : name === 'loader' || (!state.isServer && name === 'generateMetadata');
@@ -93,7 +96,9 @@ export function createExpoRouterServerExportsPlugin(
           const retained = declarators.filter((declarator) => {
             const id = declarator.getChild('id');
             const name = id?.node.type === 'Identifier' ? id.node.name : undefined;
-            if (name === 'loader') state.loaderReference = state.input.filename;
+            if (name === 'loader') {
+              state.loaderReference = path.resolve(state.input.projectRoot, state.input.filename);
+            }
             return state.isLoaderBundle
               ? name === 'loader'
               : name !== 'loader' && (state.isServer || name !== 'generateMetadata');

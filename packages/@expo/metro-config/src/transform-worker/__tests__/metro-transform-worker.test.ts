@@ -875,6 +875,27 @@ it('propagates native Expo Router loader metadata through the worker result', as
   expect(result.output[0]!.data.loaderReference).toBe(filename);
 });
 
+it('propagates native Expo Router loader metadata for optimized non-Hermes web bundles', async () => {
+  const filename = '/root/routes/route.js';
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    filename,
+    Buffer.from('export async function loader() { return null; } export const value = 1;', 'utf8'),
+    {
+      ...baseTransformOptions,
+      dev: false,
+      platform: 'web',
+      experimentalImportSupport: true,
+      customTransformOptions: { routerRoot: 'routes', optimize: true },
+    }
+  );
+
+  expect(result.output[0]!.data.code).not.toContain('loader');
+  expect(result.output[0]!.data.code).toContain('value');
+  expect(result.output[0]!.data.loaderReference).toBe(filename);
+});
+
 it('runs the configured minifier after a complete native dependency transform', async () => {
   const result = await Transformer.transform(
     baseConfig,

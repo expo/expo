@@ -28,7 +28,9 @@ import {
   importLocationsPlugin,
   locToKey,
 } from '@expo/metro/metro/ModuleGraph/worker/importLocationsPlugin';
+import fs from 'fs';
 import assert from 'node:assert';
+import path from 'path';
 
 import type { ExpoJsOutput, ReconcileTransformSettings } from '../serializer/jsOutput';
 import {
@@ -805,6 +807,22 @@ async function completeFullNoxcturnalTransform(
           typeof fullNoxcturnal.result.metadata.hasCjsExports === 'boolean'
             ? fullNoxcturnal.result.metadata.hasCjsExports
             : file.hasCjsExports,
+        reactServerReference:
+          typeof fullNoxcturnal.result.metadata.reactServerReference === 'string'
+            ? fullNoxcturnal.result.metadata.reactServerReference
+            : file.reactServerReference,
+        reactClientReference:
+          typeof fullNoxcturnal.result.metadata.reactClientReference === 'string'
+            ? fullNoxcturnal.result.metadata.reactClientReference
+            : file.reactClientReference,
+        expoDomComponentReference:
+          typeof fullNoxcturnal.result.metadata.expoDomComponentReference === 'string'
+            ? fullNoxcturnal.result.metadata.expoDomComponentReference
+            : file.expoDomComponentReference,
+        loaderReference:
+          typeof fullNoxcturnal.result.metadata.loaderReference === 'string'
+            ? fullNoxcturnal.result.metadata.loaderReference
+            : file.loaderReference,
         functionMap: fullNoxcturnal.result.functionMap ?? file.functionMap,
       },
       context
@@ -1048,6 +1066,17 @@ export async function transform(
 // 1. Added new packed source map format
 const CACHE_VERSION = '2';
 
+function getNoxcturnalPluginCacheKeyFiles(): string[] {
+  const directory = path.join(__dirname, 'noxcturnal/plugins');
+  return fs
+    .readdirSync(directory, { withFileTypes: true })
+    .filter(
+      (entry) =>
+        entry.isFile() && /\.(?:[cm]?js|ts)$/.test(entry.name) && !entry.name.endsWith('.d.ts')
+    )
+    .map((entry) => path.join(directory, entry.name));
+}
+
 export function getCacheKey(
   config: JsTransformerConfig,
   opts?: Readonly<{ projectRoot: string }>
@@ -1068,6 +1097,7 @@ export function getCacheKey(
     require.resolve('./collect-dependencies'),
     require.resolve('./noxcturnal/metro-transform-worker'),
     require.resolve('./noxcturnal/noxcturnal-transformer'),
+    ...getNoxcturnalPluginCacheKeyFiles(),
     require.resolve('noxcturnal'),
     require.resolve('./asset-transformer'),
     require.resolve('./resolveOptions'),
