@@ -8,12 +8,12 @@ import type {
   ViewStyle,
 } from 'react-native';
 import type { EdgeInsets } from 'react-native-safe-area-context';
+import type { NavigatorArgs } from 'standard-navigation';
 
 import type { HeaderOptions, PlatformPressable } from '../elements';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
-  NavigationHelpers,
   NavigationProp,
   ParamListBase,
   RouteProp,
@@ -35,24 +35,37 @@ export type BottomTabNavigationEventMap = {
   /**
    * Event which fires on long press on the tab in the tab bar.
    */
-  tabLongPress: { data: undefined };
+  tabLongPress: { data: undefined; canPreventDefault: false };
   /**
    * Event which fires when a transition animation starts.
    */
-  transitionStart: { data: undefined };
+  transitionStart: { data: undefined; canPreventDefault: false };
   /**
    * Event which fires when a transition animation ends.
    */
-  transitionEnd: { data: undefined };
+  transitionEnd: { data: undefined; canPreventDefault: false };
 };
 
 export type LabelPosition = 'beside-icon' | 'below-icon';
 
-export type BottomTabNavigationHelpers = NavigationHelpers<
-  ParamListBase,
+export type BottomTabViewRoute = {
+  key: string;
+  name: string;
+  params?: object;
+};
+
+/**
+ * The navigator state consumed by `BottomTabView` and the tab bar.
+ */
+export type BottomTabViewState = {
+  index: number;
+  routes: BottomTabViewRoute[];
+};
+
+export type BottomTabEmitter = NavigatorArgs<
+  Record<string, never>,
   BottomTabNavigationEventMap
-> &
-  TabActionHelpers<ParamListBase>;
+>['emitter'];
 
 export type BottomTabNavigationProp<
   ParamList extends ParamListBase,
@@ -408,10 +421,12 @@ export type BottomTabHeaderProps = {
   navigation: BottomTabNavigationProp<ParamListBase>;
 };
 
+// TODO(@ubax): update docs — https://linear.app/expo/issue/ENG-25579/update-documentation-after-the-refactor
 export type BottomTabBarProps = {
-  state: TabNavigationState<ParamListBase>;
+  state: BottomTabViewState;
   descriptors: BottomTabDescriptorMap;
-  navigation: NavigationHelpers<ParamListBase, BottomTabNavigationEventMap>;
+  emitter: BottomTabEmitter;
+  navigateToTab: (routeKey: string) => void;
   insets: EdgeInsets;
 };
 

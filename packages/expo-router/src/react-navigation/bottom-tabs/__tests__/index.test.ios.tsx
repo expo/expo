@@ -1,5 +1,6 @@
 import { afterEach, expect, jest, test } from '@jest/globals';
-import { act, fireEvent, render } from '@testing-library/react-native';
+import { act, fireEvent, render, userEvent } from '@testing-library/react-native';
+import * as React from 'react';
 import {
   type EmitterSubscription,
   Keyboard,
@@ -12,6 +13,7 @@ import {
 import { NavigationContainer } from '../../../fork/NavigationContainer';
 import { Text } from '../../elements';
 import { createNavigationContainerRef } from '../../native';
+import { createStackNavigator } from '../../stack';
 import { type BottomTabScreenProps, createBottomTabNavigator } from '../index';
 
 type BottomTabParamList = {
@@ -133,6 +135,81 @@ test('tab bar cannot be tapped when hidden', async () => {
   expect(queryByText('Screen B')).not.toBeNull();
 
   spy.mockRestore();
+});
+
+test('keeps the params and does not remount the tab on re-press with getId', async () => {
+  type ParamList = {
+    A: undefined;
+    B: { user: string } | undefined;
+  };
+
+  const Tab = createBottomTabNavigator<ParamList>();
+  const navigation = createNavigationContainerRef<ParamList>();
+  const onMountB = jest.fn();
+
+  const B = ({ route }: BottomTabScreenProps<ParamList, 'B'>) => {
+    React.useEffect(() => {
+      onMountB();
+    }, []);
+    return <Text>B user: {route.params?.user ?? 'none'}</Text>;
+  };
+
+  const { queryByText, getByRole } = render(
+    <NavigationContainer ref={navigation}>
+      <Tab.Navigator>
+        <Tab.Screen name="A">{() => <Text>Screen A</Text>}</Tab.Screen>
+        <Tab.Screen name="B" component={B} getId={({ params }) => params?.user} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+
+  act(() => navigation.navigate('B', { user: 'jane' }));
+
+  expect(queryByText('B user: jane')).not.toBeNull();
+  expect(onMountB).toHaveBeenCalledTimes(1);
+
+  await userEvent.press(getByRole('button', { name: 'A, tab, 1 of 2' }));
+  await userEvent.press(getByRole('button', { name: 'B, tab, 2 of 2' }));
+
+  expect(queryByText('B user: jane')).not.toBeNull();
+  expect(onMountB).toHaveBeenCalledTimes(1);
+});
+
+test('resets a nested stack when its tab loses focus with popToTopOnBlur', async () => {
+  const Tab = createBottomTabNavigator<BottomTabParamList>();
+  const Stack = createStackNavigator<{ Home: undefined; Details: undefined }>();
+  const navigation = createNavigationContainerRef<BottomTabParamList>();
+
+  const StackA = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Home">{() => <Text>Home</Text>}</Stack.Screen>
+      <Stack.Screen name="Details">{() => <Text>Details</Text>}</Stack.Screen>
+    </Stack.Navigator>
+  );
+
+  const { queryByText, getByRole } = render(
+    <NavigationContainer ref={navigation}>
+      <Tab.Navigator>
+        <Tab.Screen name="A" component={StackA} options={{ popToTopOnBlur: true }} />
+        <Tab.Screen name="B">{() => <Text>Screen B</Text>}</Tab.Screen>
+      </Tab.Navigator>
+    </NavigationContainer>
+  );
+
+  act(() => navigation.navigate('A', { screen: 'Details' } as never));
+  act(() => jest.runAllTimers());
+
+  expect(queryByText('Details')).not.toBeNull();
+
+  await userEvent.press(getByRole('button', { name: 'B, tab, 2 of 2' }));
+  act(() => jest.runAllTimers());
+
+  await userEvent.press(getByRole('button', { name: 'A, tab, 1 of 2' }));
+  act(() => jest.runAllTimers());
+
+  // Without `popToTopOnBlur`, the details screen would still be active.
+  expect(queryByText('Home')).not.toBeNull();
+  expect(queryByText('Details')).toBeNull();
 });
 
 test('tab bars render appropriate hrefs on web', () => {
