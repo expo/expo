@@ -110,7 +110,7 @@ describe(useLocalSearchParams, () => {
     act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
 
     expect(result.current).toEqual({
-      test: '/hello/world/again',
+      test: '%2Fhello%2Fworld%2Fagain',
     });
 
     act(() =>
@@ -123,7 +123,40 @@ describe(useLocalSearchParams, () => {
     );
 
     expect(result.current).toEqual({
-      test: '/foo/bar/',
+      test: '%2Ffoo%2Fbar%2F',
     });
+  });
+
+  it(`decodes an encoded path segment exactly once`, () => {
+    const { result } = renderHook(() => useLocalSearchParams(), ['[name]'], {
+      initialUrl: '/hello%20world',
+    });
+
+    expect(result.current).toEqual({
+      name: 'hello world',
+    });
+  });
+
+  it(`returns a pushed param unchanged when it contains percent-encoded characters`, () => {
+    // A value that has to stay percent-encoded to remain valid, such as an AWS SigV4 token.
+    const token = 'IQoJb3JpZ2luX2Vj%2FPB94qm%2Bx%2B4Ts';
+
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/',
+    });
+
+    act(() => router.push({ pathname: '/', params: { token } }));
+
+    expect(result.current).toEqual({ token });
+  });
+
+  it(`returns a param from the URL unchanged when it contains percent-encoded characters`, () => {
+    const token = 'IQoJb3JpZ2luX2Vj%2FPB94qm%2Bx%2B4Ts';
+
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: `/?token=${encodeURIComponent(token)}`,
+    });
+
+    expect(result.current).toEqual({ token });
   });
 });

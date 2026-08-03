@@ -48,33 +48,9 @@ export function useLocalSearchParams<
 export function useLocalSearchParams() {
   const params = React.use(LocalRouteParamsContext) ?? {};
   const { params: previewParams } = usePreviewInfo();
-  return Object.fromEntries(
-    Object.entries(previewParams ?? params).map(([key, value]) => {
-      // React Navigation doesn't remove `undefined` values from the params object, and you cannot remove them via
-      // `navigation.setParams()` as it shallow merges. Hence, we hide them here. We also pass `null` through unchanged
-      // for the same reason; running it through `decodeURIComponent()` would otherwise stringify it to `null`.
-      if (value == null) {
-        return [key, value];
-      }
-
-      if (Array.isArray(value)) {
-        return [
-          key,
-          value.map((v) => {
-            try {
-              return decodeURIComponent(v);
-            } catch {
-              return v;
-            }
-          }),
-        ];
-      } else {
-        try {
-          return [key, decodeURIComponent(value as string)];
-        } catch {
-          return [key, value];
-        }
-      }
-    })
-  ) as any;
+  // Params are already decoded once while the navigation state is built: path segments go through
+  // `safelyDecodeURIComponent()` in `getStateFromPath()`, and search params are read through
+  // `URLSearchParams`, which decodes on access. Decoding them a second time here would turn an
+  // encoded value such as `%2F` into `/` and corrupt values that have to stay percent-encoded.
+  return { ...(previewParams ?? params) } as any;
 }
