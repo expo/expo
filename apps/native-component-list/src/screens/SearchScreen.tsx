@@ -1,6 +1,12 @@
-import { type NativeStackNavigationOptions, useNavigation } from 'expo-router';
+import {
+  type NativeStackNavigationOptions,
+  type NativeStackNavigationProp,
+  useNavigation,
+} from 'expo-router';
 import Fuse from 'fuse.js';
 import React from 'react';
+import { Platform } from 'react-native';
+import type { SearchBarCommands } from 'react-native-screens';
 
 import { ThemeType, useTheme } from '../../../common/ThemeProvider';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
@@ -23,15 +29,20 @@ export function getSearchScreenOptions(theme: ThemeType): NativeStackNavigationO
 }
 
 export default function SearchScreen() {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NativeStackNavigationProp<Record<string, object | undefined>>>();
   const { theme } = useTheme();
   const [query, setQuery] = React.useState('');
+  const searchBarRef = React.useRef<SearchBarCommands>(null);
 
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerSearchBarOptions: {
+        ref: searchBarRef,
         placeholder: 'Search',
         autoFocus: true,
+        // Without this iOS hides the navigation bar while searching, which slides the results
+        // under the search field and swallows taps on the first row.
+        hideNavigationBar: false,
         textColor: theme.text.default,
         tintColor: theme.icon.info,
         headerIconColor: theme.icon.secondary,
@@ -42,6 +53,18 @@ export default function SearchScreen() {
       },
     });
   }, [navigation, theme]);
+
+  // `autoFocus` is Android-only, so focus the iOS search bar once the screen finishes opening.
+  React.useEffect(() => {
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+    return navigation.addListener('transitionEnd', ({ data }) => {
+      if (!data.closing) {
+        searchBarRef.current?.focus();
+      }
+    });
+  }, [navigation]);
 
   const apis = React.useMemo(() => {
     if (!query) return [];
