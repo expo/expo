@@ -1,4 +1,4 @@
-name: Publish Canaries
+name: Publish Packages
 
 on:
   workflow_dispatch:
@@ -9,7 +9,7 @@ on:
         default: false
   pull_request:
     paths:
-      - .github/workflows/publish-canaries.yml
+      - .github/workflows/publish-packages.yml
   schedule:
     - cron: 0 1 * * * # Nightly at 1:00 AM UTC
 
@@ -18,7 +18,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish-canaries:
+  publish-packages:
     if: github.repository == 'expo/expo'
     runs-on: macos-26
     timeout-minutes: 120
@@ -60,5 +60,5 @@ jobs:
         if: failure() && github.event_name == 'schedule'
         with:
           webhook: ${{ secrets.slack_webhook_api }}
-          author_name: Publish Canaries
+          author_name: Publish Packages
           fields: job,message,author,took
