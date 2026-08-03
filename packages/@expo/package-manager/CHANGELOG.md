@@ -6,11 +6,23 @@
 
 ### 🎉 New features
 
-- Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.13.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 1.13.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 1.12.1 - 2026-05-29
+
+### 🎉 New features
+
+- Support Bundler-managed CocoaPods installations ([#43605](https://github.com/expo/expo/pull/43605) by [@tiwari91](https://github.com/tiwari91), [@kitten](https://github.com/kitten))
 
 ## 1.12.0 — 2026-05-20
 

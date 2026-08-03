@@ -1,5 +1,11 @@
 import { darkTheme, lightTheme } from '@expo/styleguide-base';
-import React, { createContext, useContext, type PropsWithChildren } from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  type PropsWithChildren,
+} from 'react';
 import { useColorScheme, Appearance } from 'react-native';
 
 export type ThemeName = 'light' | 'dark';
@@ -19,15 +25,26 @@ export const ThemeContext = createContext<ThemeContextType>({
 
 export function ThemeProvider({ children }: PropsWithChildren) {
   const systemColorScheme = useColorScheme();
-  const currentThemeName = systemColorScheme !== 'unspecified' ? systemColorScheme : 'light';
+  // react-native-web's Appearance has no setColorScheme, so keep an override in state.
+  const [themeOverride, setThemeOverride] = useState<ThemeName | null>(null);
+  const currentThemeName =
+    themeOverride ?? (systemColorScheme !== 'unspecified' ? systemColorScheme : 'light');
   const currentTheme = currentThemeName === 'dark' ? darkTheme : lightTheme;
+
+  const setTheme = useCallback((themeName: ThemeName) => {
+    if (typeof Appearance.setColorScheme === 'function') {
+      Appearance.setColorScheme(themeName);
+    } else {
+      setThemeOverride(themeName);
+    }
+  }, []);
 
   return (
     <ThemeContext.Provider
       value={{
         name: currentThemeName,
         theme: currentTheme,
-        setTheme: Appearance.setColorScheme,
+        setTheme,
       }}>
       {children}
     </ThemeContext.Provider>

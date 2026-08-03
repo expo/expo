@@ -15,7 +15,6 @@ describe(useRootNavigationState, () => {
     expect(result.current).toEqual({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -56,7 +55,6 @@ describe(useRootNavigationState, () => {
     expect(fn).toHaveBeenCalledWith({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -101,7 +99,6 @@ describe(useRootNavigationState, () => {
     expect(fn).toHaveBeenCalledWith({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {
@@ -139,7 +136,6 @@ describe(useRootNavigationState, () => {
     expect(fn).toHaveBeenCalledWith({
       index: 0,
       key: expect.any(String),
-      preloadedRoutes: [],
       routeNames: ['__root', '+not-found', '_sitemap'],
       routes: [
         {

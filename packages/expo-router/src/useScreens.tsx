@@ -9,7 +9,7 @@ import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
 import { useCurrentRouteInfo } from './hooks/useCurrentRouteInfo';
 import EXPO_ROUTER_IMPORT_MODE from './import-mode';
-import { useGuardRedirect } from './layouts/GuardContext';
+import { isRouteGuarded, useGuardRedirect, type GuardedRedirects } from './layouts/GuardContext';
 import { Redirect } from './link/Redirect';
 import { ZoomTransitionEnabler } from './link/zoom/ZoomTransitionEnabler';
 import { ZoomTransitionTargetContextProvider } from './link/zoom/zoom-transition-context-providers';
@@ -29,10 +29,11 @@ import {
   type NavigationState,
   type ParamListBase,
   type RouteProp,
+  type RouteSource,
   type ScreenListeners,
 } from './react-navigation/native';
 import type { NativeStackNavigationEventMap } from './react-navigation/native-stack';
-import type { Href, UnknownOutputParams } from './types';
+import type { UnknownOutputParams } from './types';
 import { EmptyRoute } from './views/EmptyRoute';
 import {
   SuspenseFallback as DefaultSuspenseFallback,
@@ -79,15 +80,23 @@ export type SingularOptions =
   | boolean
   | ((name: string, params: UnknownOutputParams) => string | undefined);
 
-function getSortedChildren(
+function getSortedChildren<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
   children: RouteNode[],
-  order: ScreenProps[] = [],
+  order: ScreenProps<TOptions, TState, TEventMap>[] = [],
   initialRouteName?: string
-): { route: RouteNode; props: Partial<ScreenProps> }[] {
+): {
+  route: RouteNode;
+  props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
+  routeSource: RouteSource;
+}[] {
   if (!order?.length) {
     return children
       .sort(sortRoutesWithInitial(initialRouteName))
-      .map((route) => ({ route, props: {} }));
+      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }));
   }
   const entries = [...children];
 
@@ -153,18 +162,22 @@ function getSortedChildren(
           return {
             route: match,
             props: { initialParams, listeners, options, getId },
+            routeSource: 'layout' as const,
           };
         }
       }
     )
     .filter(Boolean) as {
     route: RouteNode;
-    props: Partial<ScreenProps>;
+    props: Partial<ScreenProps<TOptions, TState, TEventMap>>;
+    routeSource: RouteSource;
   }[];
 
   // Add any remaining children
   ordered.push(
-    ...entries.sort(sortRoutesWithInitial(initialRouteName)).map((route) => ({ route, props: {} }))
+    ...entries
+      .sort(sortRoutesWithInitial(initialRouteName))
+      .map((route) => ({ route, props: {}, routeSource: 'filesystem' as const }))
   );
 
   return ordered;
@@ -173,41 +186,25 @@ function getSortedChildren(
 /**
  * @returns React Navigation screens sorted by the `route` property.
  */
-export function useSortedScreens(
-  order: ScreenProps[],
-  guardedRedirects: Map<string, Href | undefined> = new Map(),
-  useOnlyUserDefinedScreens: boolean = false
+export function useSortedScreens<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
+  order: ScreenProps<TOptions, TState, TEventMap>[],
+  guardedRedirects: GuardedRedirects = new Map()
 ): React.ReactNode[] {
   const node = useRouteNode();
 
-  const nodeChildren = node?.children ?? [];
-  const children = useOnlyUserDefinedScreens
-    ? nodeChildren.filter((child) =>
-        order.some(
-          (userDefinedScreen) =>
-            userDefinedScreen.name === child.route ||
-            `${userDefinedScreen.name}/index` === child.route
-        )
-      )
-    : nodeChildren;
-
+  const children = node?.children ?? [];
   const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
   return React.useMemo(() => {
     const screensWithGuarded = sorted.map((value) => {
       const route = value.route.route;
-      const isGuarded =
-        guardedRedirects.has(route) || guardedRedirects.has(route.replace(/\/index$/, ''));
-      return { ...value, isGuarded };
+      return { ...value, isGuarded: isRouteGuarded(route, guardedRedirects) };
     });
-    const allScreensGuarded =
-      screensWithGuarded.length > 0 && screensWithGuarded.every((item) => item.isGuarded);
-
-    if (allScreensGuarded) {
-      return [];
-    }
-
     return screensWithGuarded.map((value) => {
-      return routeToScreen(value.route, value.props, value.isGuarded);
+      return routeToScreen(value.route, value.props, value.isGuarded, value.routeSource);
     });
   }, [sorted, guardedRedirects]);
 }
@@ -325,7 +322,8 @@ export function getQualifiedRouteComponent(value: RouteNode) {
     const isFocused = navigation.isFocused();
     const store = useExpoRouterStore();
     const InheritedSuspenseFallback = use(SuspenseFallbackContext);
-    const guardRedirect = useGuardRedirect(value.route);
+    const redirectHref = useGuardRedirect(value.route);
+    const isGuarded = redirectHref !== undefined;
 
     const ResolvedSuspenseFallback =
       EXPO_ROUTER_IMPORT_MODE === 'lazy'
@@ -336,7 +334,7 @@ export function getQualifiedRouteComponent(value: RouteNode) {
         ? (LayoutSuspenseFallback ?? InheritedSuspenseFallback)
         : InheritedSuspenseFallback;
 
-    if (isFocused && !guardRedirect) {
+    if (isFocused && !isGuarded) {
       const state = navigation.getState();
       const isLeaf = !(state && 'state' in state.routes[state.index]!);
       if (isLeaf && stateForPath) store.setFocusedState(stateForPath);
@@ -351,9 +349,9 @@ export function getQualifiedRouteComponent(value: RouteNode) {
           // if the component itself didn’t rerender and the route info changed.
           // Otherwise, the update from the `if` above will handle it,
           // and this won’t cause a redundant second update.
-          if (isLeaf && stateForPath && !guardRedirect) store.setFocusedState(stateForPath);
+          if (isLeaf && stateForPath && !isGuarded) store.setFocusedState(stateForPath);
         }),
-      [navigation, guardRedirect]
+      [navigation, isGuarded]
     );
 
     useEffect(() => {
@@ -370,13 +368,24 @@ export function getQualifiedRouteComponent(value: RouteNode) {
       });
     }, [navigation]);
 
+    useEffect(() => {
+      if (__DEV__ && isFocused && isGuarded && redirectHref == null) {
+        console.warn(
+          'All routes in this navigator are protected. Ensure at least one route is accessible.'
+        );
+      }
+    }, [isFocused, isGuarded, redirectHref]);
+
     const isRouteType = value.type === 'route';
     const hasRouteKey = !!route?.key;
 
-    if (guardRedirect) {
+    if (isGuarded) {
+      // A `null` href means guarded with no destination to redirect to (every
+      // candidate is also guarded): render nothing but keep the screen registered
+      // so the navigator and its state stay mounted.
       return (
         <Route node={value} params={route?.params}>
-          <Redirect href={guardRedirect} />
+          {redirectHref != null ? <Redirect href={redirectHref} /> : null}
         </Route>
       );
     }
@@ -536,10 +545,16 @@ export function screenOptionsFactory(
   };
 }
 
-export function routeToScreen(
+// TODO: Refactor to take a single named-args object instead of positional params.
+export function routeToScreen<
+  TOptions extends object,
+  TState extends NavigationState,
+  TEventMap extends EventMapBase,
+>(
   route: RouteNode,
-  { options, getId, ...props }: Partial<ScreenProps> = {},
-  isGuarded?: boolean
+  { options, getId, ...props }: Partial<ScreenProps<TOptions, TState, TEventMap>> = {},
+  isGuarded?: boolean,
+  routeSource?: RouteSource
 ) {
   return (
     <Screen
@@ -547,6 +562,7 @@ export function routeToScreen(
       name={route.route}
       key={route.route}
       getId={getId}
+      routeSource={routeSource}
       options={screenOptionsFactory(route, options, isGuarded)}
       getComponent={() => getQualifiedRouteComponent(route)}
     />

@@ -1,4 +1,4 @@
-import { StackNavigationProp } from '@react-navigation/stack';
+import { type NativeStackNavigationProp } from 'expo-router';
 import * as React from 'react';
 import { Button, Platform, ScrollView, View } from 'react-native';
 import {
@@ -13,7 +13,7 @@ import HeadingText from '../components/HeadingText';
 export default function SafeAreaContextScreen({
   navigation,
 }: {
-  navigation: StackNavigationProp<any>;
+  navigation: NativeStackNavigationProp<any>;
 }) {
   React.useLayoutEffect(() => {
     navigation.setOptions({

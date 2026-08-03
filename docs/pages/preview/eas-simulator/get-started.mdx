@@ -1,0 +1,171 @@
+---
+title: Get started with EAS Simulator
+sidebar_title: Get started
+description: Check whether EAS Simulator is available, start a remote device session, and connect to it.
+---
+
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
+import { Step } from '~/ui/components/Step';
+import { Terminal } from '~/ui/components/Snippet';
+import { Tab, Tabs } from '~/ui/components/Tabs';
+
+> **important** **EAS Simulator is a limited-access preview.** It is not included with paid or free plans and is currently available only to select partners. [Join the waitlist](https://expo.dev/services/simulator) if you are interested in trying it.
+
+<Prerequisites>
+  <Requirement title="An Expo account with EAS Simulator access">
+    EAS Simulator access is granted directly to select partners. Check the current project's account
+    before starting a session.
+  </Requirement>
+  <Requirement title="A linked Expo project">
+    Run these commands from the project directory. If the project does not have an EAS project ID,
+    run `eas init` first.
+  </Requirement>
+  <Requirement title="A recent EAS CLI">
+    The `simulator:*` commands are experimental and hidden. [Install or update EAS CLI](/eas/cli/)
+    before using them.
+  </Requirement>
+</Prerequisites>
+
+## Expo Skills for AI agents
+
+If you use an AI agent, install [Expo Skills](/skills/) and ask it to use the EAS Simulator skill. The skill can perform the session workflow below, drive the app, and collect evidence for you. Use this page when you want to understand or run the commands manually.
+
+<RelatedSkills names={['eas-simulator']} />
+
+## Start a session manually
+
+<Step label="1">
+
+### Authenticate and verify the project
+
+On an interactive machine, log in and confirm the current user:
+
+<Terminal cmd={['$ eas login', '$ eas whoami']} />
+
+In CI or a headless agent environment, provide an [Expo access token](/accounts/programmatic-access/) in `EXPO_TOKEN` instead of starting an interactive login.
+
+If the project is not linked to EAS, initialize it:
+
+<Terminal cmd={['$ eas init']} />
+
+</Step>
+
+<Step label="2">
+
+### Check account availability
+
+The availability check is read-only. It does not start a device or consume simulator usage. The `--json` flag is optional, but it makes the result easy for an agent or script to inspect:
+
+<Terminal cmd={['$ eas simulator:availability --json']} />
+
+An enabled account returns:
+
+```json
+{
+  "available": true,
+  "accountName": "my-account"
+}
+```
+
+If `available` is `false`, do not call `simulator:start`. Use a local simulator or emulator, or [join the waitlist](https://expo.dev/services/simulator) for access.
+
+</Step>
+
+<Step label="3">
+
+### Protect the session configuration
+
+EAS CLI writes the current session ID and controller credentials to **.env.eas-simulator**. Add the file to **.gitignore** before starting:
+
+```sh .gitignore
+.env.eas-simulator
+```
+
+Do not commit or share this file. It includes the token that lets a controller reach the remote device.
+
+</Step>
+
+<Step label="4">
+
+### Choose a controller and start a remote device
+
+Choose the controller you plan to use for installation and device actions. Pass its type explicitly when you start the session.
+
+<Tabs>
+
+<Tab label="agent-device">
+
+See [agent-device and Expo](/agents/agent-device/) for controller setup and commands.
+
+<Terminal cmd={['$ eas simulator:start --platform ios --type agent-device --non-interactive']} />
+
+</Tab>
+
+<Tab label="Argent">
+
+See [Argent and Expo](/agents/argent/) for controller setup and commands.
+
+<Terminal cmd={['$ eas simulator:start --platform ios --type argent --non-interactive']} />
+
+</Tab>
+
+</Tabs>
+
+Use `--platform android` for an Android Emulator. Android sessions do not currently include a live browser preview.
+
+When `--platform` is omitted in an interactive terminal, EAS CLI asks which platform to use. Non-interactive runs require the flag.
+
+The start command waits for the selected controller to become ready, then writes **.env.eas-simulator**. It also prints:
+
+- A direct simulator session page on expo.dev
+- A temporary `webPreviewUrl` for supported iOS sessions
+- The command pattern for controlling the device
+
+> **warning** `--non-interactive` does not automatically stop the session. The command returns when the session is ready, and the remote device remains active.
+
+</Step>
+
+<Step label="5">
+
+### Confirm that the session is active
+
+Use the session ID from **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:get --json --non-interactive']} />
+
+Continue when `status` is `IN_PROGRESS` and `remoteConfig` is present. A stopped session can still have old connection configuration, so the dotenv file alone is not proof that the device is live.
+
+</Step>
+
+<Step label="6">
+
+### Open the web surfaces
+
+The start command links to a session page with this shape:
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions/<session-id>
+```
+
+The project-level session list is:
+
+```text
+https://expo.dev/accounts/<account>/projects/<project>/simulator-sessions
+```
+
+For supported iOS sessions, open `webPreviewUrl` in a desktop browser to view and interact with the live simulator. The preview URL is not an application deep link. Do not pass it to a controller command that opens apps or URLs.
+
+</Step>
+
+<Step label="7">
+
+### Stop the session
+
+When you finish, stop the current session:
+
+<Terminal cmd={['$ eas simulator:stop']} />
+
+If you started EAS CLI without `--non-interactive`, it remains attached. Press Ctrl+C once to stop the session and let EAS CLI reset **.env.eas-simulator**.
+
+</Step>

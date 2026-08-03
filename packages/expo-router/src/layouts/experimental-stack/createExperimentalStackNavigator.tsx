@@ -19,7 +19,6 @@ import {
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
-  type StaticConfig,
   type TypedNavigator,
   useNavigationBuilder,
 } from '../../react-navigation/native';
@@ -34,7 +33,6 @@ import type {
 function ExperimentalStackNavigator({
   id,
   initialRouteName,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -43,7 +41,7 @@ function ExperimentalStackNavigator({
   UNSTABLE_router,
   ...rest
 }: ExperimentalStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -52,7 +50,6 @@ function ExperimentalStackNavigator({
   >(StackRouter, {
     id,
     initialRouteName,
-    UNSTABLE_routeNamesChangeBehavior,
     children,
     layout,
     screenListeners,
@@ -100,7 +97,6 @@ function ExperimentalStackNavigator({
           state={state}
           navigation={navigation}
           descriptors={mergedDescriptors}
-          describe={describe}
         />
       </CompositionContext>
     </NavigationContent>
@@ -125,7 +121,6 @@ export function createExperimentalStackNavigator<
     };
     Navigator: typeof ExperimentalStackNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(ExperimentalStackNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(ExperimentalStackNavigator)();
 }

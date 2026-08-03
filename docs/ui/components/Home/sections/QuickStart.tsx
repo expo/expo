@@ -63,7 +63,7 @@ export function QuickStart() {
             className="border-palette-blue11 bg-palette-blue11 text-palette-white dark:text-palette-blue2 hocus:bg-palette-blue10"
             href="/tutorial/introduction/"
             rightSlot={<ArrowRightIcon aria-hidden="true" className="icon-md" />}>
-            Start Tutorial
+            Start tutorial
           </HomeButton>
         </GridCell>
         <GridCell

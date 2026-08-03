@@ -56,7 +56,7 @@ Your users will get the most recent compatible release that was pushed to a [rel
 The following flowchart shows how we determine which release to return to a user:
 
 <ContentSpotlight
-  alt="Serving Flowchart"
+  alt="Serving flowchart"
   src="/static/images/release-channels-flowchart.png"
   className="max-w-[600px]"
 />
@@ -71,7 +71,7 @@ The standalone app knows to look for updates at your app's published
 url, and if you publish an update then the next time a user opens your
 app they will automatically download the new version.
 
-## Uploading Assets to the CDN
+## Uploading assets to the CDN
 
 In order for assets to be uploaded to the CDN, they must be explicitly required somewhere in your application's code. Conditionally requiring assets will result in the Metro bundler being unable to detect them and therefore they will not be uploaded when you publish your project.
 

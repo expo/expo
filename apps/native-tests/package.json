@@ -15,6 +15,7 @@
     "expo-dev-client": "workspace:*",
     "expo-router": "workspace:*",
     "expo-image": "workspace:*",
+    "expo-image-manipulator": "workspace:*",
     "expo-media-library": "workspace:*",
     "expo-notifications": "workspace:*",
     "expo-observe": "workspace:*",

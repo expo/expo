@@ -12,10 +12,7 @@ describe('jsx-runtime-stub children flattening', () => {
   it('flattens a .map() array mixed with sibling elements into a flat children list', () => {
     const items = ['Hello', 'World'];
     const tree = jsxs('HStackView', {
-      children: [
-        items.map((item) => jsx('TextView', { text: item }, item)),
-        jsx('SpacerView', {}),
-      ],
+      children: [items.map((item) => jsx('TextView', { text: item }, item)), jsx('SpacerView', {})],
     });
 
     expect(tree.props.children).toHaveLength(3);

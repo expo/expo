@@ -7,7 +7,6 @@
 ### 🎉 New features
 
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
-- [iOS] Allow `launchCameraAsync` to be invoked on the simulator. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
@@ -15,12 +14,66 @@
 - [Android] Grant the camera app explicit access to the output URI, so image capture keeps working as Android removes the implicit URI grant for `ACTION_IMAGE_CAPTURE`. ([#46954](https://github.com/expo/expo/pull/46954) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix `videoMaxDuration` option ([#47504](https://github.com/expo/expo/pull/47504) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fix `base64` returning original (non-JPEG) image data when `allowsEditing` is `false`. ([#48005](https://github.com/expo/expo/pull/48005) by [@barthap](https://github.com/barthap))
+- [iOS] Fixed crop square detection using the main screen's scale instead of the scale of the view being measured. ([#48172](https://github.com/expo/expo/pull/48172) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [Android] Migrate `ExpoCropImageActivity` away from `CropImageActivity` ([#47141](https://github.com/expo/expo/pull/47141) by [@Wenszel](https://github.com/Wenszel))
+
+## 57.0.7 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.18 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.17 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-06-05
+
+### 🎉 New features
+
+- [iOS] Allow `launchCameraAsync` to be invoked on the simulator. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
 - [Web] Drop dependency on `expo-modules-core` `Platform` in favor of inline `window`/`document` checks. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
 - Switch package entry to TypeScript source and emit declarations only. ([#45923](https://github.com/expo/expo/pull/45923) by [@EvanBacon](https://github.com/EvanBacon))
-- [Android] Migrate `ExpoCropImageActivity` away from `CropImageActivity` ([#47141](https://github.com/expo/expo/pull/47141) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.15 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.14 — 2026-05-26
 

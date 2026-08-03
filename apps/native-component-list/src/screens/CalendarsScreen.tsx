@@ -1,5 +1,5 @@
-import type { StackNavigationProp } from '@react-navigation/stack';
 import * as Calendar from 'expo-calendar/legacy';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -20,13 +20,7 @@ export const CalendarsScreens = [
   },
 ];
 
-type StackNavigation = StackNavigationProp<{
-  Reminders: { calendar: any };
-  Events: { calendar: any };
-}>;
-
 const CalendarRow = (props: {
-  navigation: StackNavigation;
   calendar: Calendar.Calendar;
   updateCalendar: (calendarId: string) => void;
   deleteCalendar: (calendar: any) => void;
@@ -34,12 +28,16 @@ const CalendarRow = (props: {
   const { calendar } = props;
   const calendarTypeName =
     calendar.entityType === Calendar.EntityTypes.REMINDER ? 'Reminders' : 'Events';
+  const calendarRoute =
+    calendar.entityType === Calendar.EntityTypes.REMINDER ? '/apis/reminders' : '/apis/events';
   return (
     <View style={styles.calendarRow}>
       <HeadingText>{calendar.title}</HeadingText>
       <MonoText>{JSON.stringify(calendar, null, 2)}</MonoText>
       <ListButton
-        onPress={() => props.navigation.navigate(calendarTypeName, { calendar })}
+        onPress={() =>
+          router.push({ pathname: calendarRoute, params: { calendarId: calendar.id } })
+        }
         title={`View ${calendarTypeName}`}
       />
       <ListButton
@@ -56,7 +54,7 @@ const CalendarRow = (props: {
   );
 };
 
-export default function CalendarsScreen({ navigation }: { navigation: StackNavigation }) {
+export default function CalendarsScreen() {
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
   const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
 
@@ -147,7 +145,6 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
           <CalendarRow
             calendar={calendar}
             key={calendar.id}
-            navigation={navigation}
             updateCalendar={updateCalendar}
             deleteCalendar={deleteCalendar}
           />

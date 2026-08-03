@@ -101,7 +101,12 @@ internal struct DynamicConvertibleType: AnyDynamicType {
       return result
     }
     if let result = value as? AnyArgument {
-      return try type(of: result).getDynamicType().castToJS(result, appContext: appContext)
+      let dynamicType = type(of: result).getDynamicType()
+      // A `Convertible` that keeps the default `convertResult` returns the value unchanged,
+      // so redispatching it into the same dynamic type would recurse until the stack overflows.
+      if !dynamicType.equals(self) {
+        return try dynamicType.castToJS(result, appContext: appContext)
+      }
     }
     return try Conversions.unknownToJavaScriptValue(value, appContext: appContext)
   }

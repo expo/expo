@@ -11,7 +11,32 @@
 ### 💡 Others
 
 - Add experimental `tvos` and `macos` platforms gated by `expriments.outOfTreePlatforms` in config ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+### 💡 Others
+
 - Update for `experiments.outOfTreePlatforms` typing ([#46497](https://github.com/expo/expo/pull/46497) by [@kitten](https://github.com/kitten))
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.9 — 2026-05-23
 

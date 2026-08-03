@@ -8,9 +8,23 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the GL surface using a cached main-screen scale instead of the scale of the scene the view is in. ([#48169](https://github.com/expo/expo/pull/48169) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 57.0.2 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
 ### 💡 Others
 
 - Update docs to `createContextAsync` and `destroyContextAsync` methods which purpose wasn't documented and [was confusing](https://github.com/expo/expo/issues/40037). ([#47200](https://github.com/expo/expo/pull/47200) by [@HubertBer](https://github.com/HubertBer))
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.5 — 2026-05-19
 
