@@ -22,6 +22,7 @@ export function getSearchScreenOptions(theme: ThemeType): NativeStackNavigationO
   return {
     title: 'Search',
     headerShown: true,
+    headerBackButtonDisplayMode: 'minimal',
     headerStyle: { backgroundColor: theme.background.default },
     headerTintColor: theme.icon.info,
     headerTitleStyle: { color: theme.text.default },
