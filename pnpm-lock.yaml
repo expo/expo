@@ -2628,8 +2628,8 @@ importers:
         specifier: ^1.30.1
         version: 1.32.0
       noxcturnal:
-        specifier: 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
-        version: 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+        specifier: 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
+        version: 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
       picomatch:
         specifier: ^4.0.4
         version: 4.0.4
@@ -8063,54 +8063,54 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@noxcturnal/noxcturnal-darwin-arm64@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
-    resolution: {integrity: sha512-TfKHSo+iKtfYhWghdcnZNRxRJXWAWC9TWQAar52Pxw69V7sYEI1lE8tVXzG/ObHS9knF3uhY9Angp0NLKpcCLQ==}
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
+    resolution: {integrity: sha512-/j9u0yzoFGYGzcS3Sos6VFV/3H0Xxj1EauSt9cQ+VG3M4RvCxisWTKGeYX0rJcFoDvDol1ao+geNNZnVZv7N2Q==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [darwin]
 
-  '@noxcturnal/noxcturnal-darwin-x64@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
-    resolution: {integrity: sha512-D5ams0PQjgurhAveyp/G4hJyPkkMUtfIOK9brricld/SBUvBVCBd92TqozohCQUsTLyf58akg7p2NqrvpmtOrw==}
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
+    resolution: {integrity: sha512-IMBrse+eklE4a4aIRW67y+0oeQApvcVw5pXjej5VBB0AxDB0lz0GvUg7Fvpeg8jOuZuMObSQO0h9MW/OoB+dJw==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [darwin]
 
-  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
-    resolution: {integrity: sha512-agtzFFPS5fatqHt5kd3VafmzYr2r8hkf6vqKN++z7uN46iap+smO6UMTvOQIoRozBA/e639u8lb2IP2W6J7mlg==}
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
+    resolution: {integrity: sha512-a3uxc2s8/Bl6HXzY7VVqdgTR7WWNhJnaU+QribQQIrai6QhqdXD3jxLIp4HIT75pxqg90oWD19u/+6f0g0Q+dw==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
     libc: [glibc]
 
-  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
-    resolution: {integrity: sha512-1tCx0adrkSIXg4D6zcY2y0BDA+1w1xk7RsGWiiMb9/Gj1h9087mycEMjx+GUeLU2Lkj21frLI1TLGY0ptNtUnw==}
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
+    resolution: {integrity: sha512-NugXCAm/M17zI7skJzNCMLQkcWHrixv0+ILhceEoOqs03FuHJPSN0JKNR4WUgcbBUORHW5cke2ktEjFH8d09uw==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [linux]
     libc: [musl]
 
-  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
-    resolution: {integrity: sha512-jjloDuXvCoRB8k91j6XSy7oQiXffkMTBmMlVWpIQ3WbN8EOIX4cSkKVSuzB0QkFlUPK8IntRDnpasM83rSkQ0A==}
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
+    resolution: {integrity: sha512-O+l0yRFLAyci5YQAZUc1jIc2WYkVFgCK6jxsyCJjX/v620Mt2dAN4q9YeSd34siE53E2h3BZpujSlgCGBMzvCA==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
     libc: [glibc]
 
-  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
-    resolution: {integrity: sha512-XOfNmS/hGsxdoG58wYSwvXMsQ+kjDXKnzrgtG/B/D7cEZwyKfxYrWNtnVQGawWp1e2/xNBj/IoAlZUaHWhVPNA==}
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
+    resolution: {integrity: sha512-wig6L3CmO4CVw4oD9dWHpqHWC5e7cjIyFn7yegRHc4ZT27SBoxKk77SOHwII0reg/UCJeU8dRmbiXEaDQ7TT7Q==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [linux]
     libc: [musl]
 
-  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
-    resolution: {integrity: sha512-cwzgnYqCps0r01YOuCnx9E5aw9UezLW70qXbUAatGcvJbf+kfKudPZvZIhD6Imwl2tjrKf9ZUBAVpol6jZ57MA==}
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
+    resolution: {integrity: sha512-lBMutklbYUiH2uQt5Tp4CyptahjHH60iyotD7e73gFQS32sj14pEIb0yE6wnnYqbS+7kiJbpZRRhFTehxUL6+g==}
     engines: {node: '>=18'}
     cpu: [arm64]
     os: [win32]
 
-  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
-    resolution: {integrity: sha512-GNO6mLEDka5j+IR7rsgL3YYd3AbtdkiwgLw4ip8HJLMFuqunEb01UKFepJ4WR3zmI/JCSSfy8SibnKAZSrUl0A==}
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
+    resolution: {integrity: sha512-KySTHEE2A+EpKHV8Uih7Ymc7nASv+pwGygABH2xYurkrFNzmEH0jlswYbY7TzV2aBKBgjFK+MayNbvultBcBOA==}
     engines: {node: '>=18'}
     cpu: [x64]
     os: [win32]
@@ -12929,8 +12929,8 @@ packages:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
     engines: {node: '>=10'}
 
-  noxcturnal@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b:
-    resolution: {integrity: sha512-8xn94ohGX6D7JwKZfBHxdSn+/5yIWXGaEmGRDP8mpBXe/pl6A1AqqBVsBCBcICe2os7dBVH2yq3GoSH1MtHR2g==}
+  noxcturnal@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e:
+    resolution: {integrity: sha512-7ZWziY5k3fdguZWErcMPsamf7ZgD9CmPZILfBFvlI/1augysnmtqcjs2ZmmwxmsFnqll/+ALI9ddOTJp9d6+bA==}
     engines: {node: '>=18'}
 
   npm-bundled@2.0.1:
@@ -16912,28 +16912,28 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@noxcturnal/noxcturnal-darwin-arm64@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
     optional: true
 
-  '@noxcturnal/noxcturnal-darwin-x64@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
     optional: true
 
-  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
     optional: true
 
-  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
     optional: true
 
-  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e':
     optional: true
 
   '@octokit/auth-token@3.0.4': {}
@@ -22266,19 +22266,19 @@ snapshots:
 
   normalize-url@6.1.0: {}
 
-  noxcturnal@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b:
+  noxcturnal@0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e:
     dependencies:
       '@babel/code-frame': 7.29.7
       '@oxc-project/types': 0.141.0
     optionalDependencies:
-      '@noxcturnal/noxcturnal-darwin-arm64': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
-      '@noxcturnal/noxcturnal-darwin-x64': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
-      '@noxcturnal/noxcturnal-linux-arm64-gnu': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
-      '@noxcturnal/noxcturnal-linux-arm64-musl': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
-      '@noxcturnal/noxcturnal-linux-x64-gnu': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
-      '@noxcturnal/noxcturnal-linux-x64-musl': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
-      '@noxcturnal/noxcturnal-win32-arm64-msvc': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
-      '@noxcturnal/noxcturnal-win32-x64-msvc': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+      '@noxcturnal/noxcturnal-darwin-arm64': 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
+      '@noxcturnal/noxcturnal-darwin-x64': 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
+      '@noxcturnal/noxcturnal-linux-arm64-gnu': 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
+      '@noxcturnal/noxcturnal-linux-arm64-musl': 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
+      '@noxcturnal/noxcturnal-linux-x64-gnu': 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
+      '@noxcturnal/noxcturnal-linux-x64-musl': 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
+      '@noxcturnal/noxcturnal-win32-arm64-msvc': 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
+      '@noxcturnal/noxcturnal-win32-x64-msvc': 0.1.1-canary-ba092d76ccaa86a84d274614f6ae4814259ad11e
 
   npm-bundled@2.0.1:
     dependencies:
