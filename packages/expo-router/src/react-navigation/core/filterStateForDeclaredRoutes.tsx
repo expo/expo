@@ -11,18 +11,11 @@ export function filterStateForDeclaredRoutes<State extends NavigationState>(
     return state;
   }
 
-  const index =
-    state.type === 'stack'
-      ? Math.max(
-          0,
-          state.routes
-            .slice(0, state.index + 1)
-            .filter((route) => declaredRouteNames.has(route.name)).length - 1
-        )
-      : Math.max(
-          0,
-          routes.findIndex((route) => route.key === state.routes[state.index]?.key)
-        );
+  const removedBefore = state.routes
+    .slice(0, state.index + 1)
+    .filter((route) => !declaredRouteNames.has(route.name)).length;
+  // Reconciliation replaces this state before paint, so the interim index only needs to be valid.
+  const index = routes.length === 0 ? -1 : Math.max(0, state.index - removedBefore);
 
   return { ...state, routes, index };
 }

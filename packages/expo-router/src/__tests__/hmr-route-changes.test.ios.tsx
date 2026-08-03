@@ -8,9 +8,11 @@ import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import TopTabs from '../layouts/TopTabs';
 import { usePreventRemove } from '../react-navigation/native';
 import { getMockContext, renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../ui';
+import { Slot } from '../views/Navigator';
 
 it('does not crash when a route file is removed and the app re-renders', () => {
   const routes: Record<string, () => ReactElement | null> = {
@@ -142,6 +144,61 @@ it('repairs state when all screen files are replaced', () => {
   const state = result.getRouterState()!.routes[0]!.state!;
   expect(state.routeNames).toStrictEqual(['third', 'fourth']);
   expect(state.routes.map((route) => route.name)).toStrictEqual(['third']);
+});
+
+it('repairs Slot state when all screen files are replaced', () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Slot />,
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/second' });
+  expect(screen.getByTestId('second')).toBeVisible();
+
+  delete routes.index;
+  delete routes.second;
+  routes.third = () => <Text testID="third">Third</Text>;
+  routes.fourth = () => <Text testID="fourth">Fourth</Text>;
+
+  expect(() =>
+    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
+  ).not.toThrow();
+
+  const state = result.getRouterState()!.routes[0]!.state!;
+  expect(state.routeNames).toStrictEqual(['third', 'fourth']);
+  expect(state.routes.map((route) => route.name)).toStrictEqual(['third']);
+});
+
+it('repairs top tabs state when all screen files are replaced', () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => {
+      const screens = [];
+      if (routes.index) screens.push(<TopTabs.Screen key="index" name="index" />);
+      if (routes.second) screens.push(<TopTabs.Screen key="second" name="second" />);
+      if (routes.third) screens.push(<TopTabs.Screen key="third" name="third" />);
+      if (routes.fourth) screens.push(<TopTabs.Screen key="fourth" name="fourth" />);
+      return <TopTabs>{screens}</TopTabs>;
+    },
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/second' });
+  expect(screen.getByTestId('second')).toBeVisible();
+
+  delete routes.index;
+  delete routes.second;
+  routes.third = () => <Text testID="third">Third</Text>;
+  routes.fourth = () => <Text testID="fourth">Fourth</Text>;
+
+  expect(() =>
+    result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
+  ).not.toThrow();
+
+  const state = result.getRouterState()!.routes[0]!.state!;
+  expect(state.routeNames).toStrictEqual(['third', 'fourth']);
+  expect(state.routes.map((route) => route.name)).toStrictEqual(['third', 'fourth']);
 });
 
 it('preserves surviving stack history when a route file is renamed', () => {

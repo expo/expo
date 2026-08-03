@@ -358,12 +358,25 @@ export function TabRouter({
             focusedIndex === -1 &&
             (backBehavior === 'history' || backBehavior === 'fullHistory')
           ) {
-            history = changeIndex(
-              { ...state, routeNames, routes, index, history },
-              index,
-              backBehavior,
-              initialRouteName
-            ).history;
+            const currentRoute = routes[index]!;
+            const nonRouteHistory = history.filter((item) => item.type !== 'route');
+            let routeHistory = history.filter((item) => item.type === 'route');
+
+            if (backBehavior === 'history') {
+              routeHistory = routeHistory.filter((item) => item.key !== currentRoute.key);
+            } else if (routeHistory[routeHistory.length - 1]?.key === currentRoute.key) {
+              routeHistory = routeHistory.slice(0, -1);
+            }
+
+            history = [
+              ...routeHistory,
+              {
+                type: TYPE_ROUTE,
+                key: currentRoute.key,
+                params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
+              },
+              ...nonRouteHistory,
+            ];
           }
 
           if (

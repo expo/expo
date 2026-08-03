@@ -5,7 +5,7 @@ import { filterStateForDeclaredRoutes } from '../filterStateForDeclaredRoutes';
 
 const state: NavigationState = {
   stale: false,
-  type: 'test',
+  type: 'tab',
   key: 'test',
   index: 2,
   routeNames: ['first', 'removed', 'focused', 'last'],
@@ -25,7 +25,7 @@ test('returns the same state when every route is declared', () => {
 test('returns an empty state when no route is declared', () => {
   expect(filterStateForDeclaredRoutes(state, ['replacement'])).toEqual({
     ...state,
-    index: 0,
+    index: -1,
     routes: [],
   });
 });
@@ -42,11 +42,11 @@ test('filters routes without reordering or changing unrelated state', () => {
   expect(result.routeNames).toBe(state.routeNames);
 });
 
-test('focuses the last survivor before a removed focused route', () => {
-  const result = filterStateForDeclaredRoutes(state, ['first', 'last']);
+test('focuses the nearest survivor at or before the old focused index', () => {
+  const result = filterStateForDeclaredRoutes(state, ['first', 'removed', 'last']);
 
-  expect(result.index).toBe(0);
-  expect(result.routes[result.index]).toBe(state.routes[0]);
+  expect(result.index).toBe(1);
+  expect(result.routes[result.index]).toBe(state.routes[1]);
 });
 
 test('falls back to the first survivor when no earlier route survives', () => {
@@ -54,15 +54,4 @@ test('falls back to the first survivor when no earlier route survives', () => {
 
   expect(result.index).toBe(0);
   expect(result.routes[result.index]).toBe(state.routes[2]);
-});
-
-test('falls back to the first survivor for a tab state when the focused route is removed', () => {
-  const result = filterStateForDeclaredRoutes({ ...state, type: 'tab' }, [
-    'first',
-    'removed',
-    'last',
-  ]);
-
-  expect(result.index).toBe(0);
-  expect(result.routes[result.index]).toBe(state.routes[0]);
 });
