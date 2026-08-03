@@ -345,6 +345,52 @@ test('handles navigate action with open drawer', () => {
   });
 });
 
+test('closes open drawer on replace with backBehavior: fullHistory', () => {
+  const router = DrawerRouter({ backBehavior: 'fullHistory' });
+  const options: RouterConfigOptions = {
+    routeNames: ['baz', 'bar'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+
+  expect(
+    router.getStateForAction(
+      {
+        stale: false,
+        type: 'drawer',
+        preloadedRouteKeys: [],
+        key: 'root',
+        index: 1,
+        routeNames: ['baz', 'bar'],
+        routes: [
+          { key: 'baz', name: 'baz' },
+          { key: 'bar', name: 'bar' },
+        ],
+        history: [
+          { type: 'route', key: 'bar' },
+          { type: 'drawer', status: 'open' },
+        ],
+        default: 'closed',
+      },
+      DrawerActions.replace('baz'),
+      options
+    )
+  ).toEqual({
+    stale: false,
+    type: 'drawer',
+    key: 'root',
+    index: 0,
+    routeNames: ['baz', 'bar'],
+    preloadedRouteKeys: [],
+    routes: [
+      { key: 'baz', name: 'baz' },
+      { key: 'bar', name: 'bar' },
+    ],
+    history: [{ type: 'route', key: 'baz' }],
+    default: 'closed',
+  });
+});
+
 test('handles open drawer action', () => {
   const router = DrawerRouter({});
   const options: RouterConfigOptions = {
