@@ -1005,6 +1005,35 @@ struct JavaScriptRuntimeTests {
     wrapper = nil
     _ = wrapper
   }
+
+  // MARK: - Garbage collection
+
+  @Test
+  func `collecting garbage releases an unreachable object`() {
+    var weakObject: JavaScriptWeakObject? = nil
+
+    do {
+      let object = runtime.createObject()
+      weakObject = JavaScriptWeakObject(runtime, object)
+      #expect((weakObject?.lock() != nil) == true)
+    }
+
+    runtime.collectGarbage()
+
+    #expect((weakObject?.lock() == nil) == true)
+  }
+
+  @Test
+  func `collecting garbage keeps a reachable object alive`() {
+    let object = runtime.createObject()
+    object.setProperty("survives", value: true)
+    let weakObject = JavaScriptWeakObject(runtime, object)
+
+    runtime.collectGarbage(cause: "test")
+
+    let survives = weakObject.lock()?.getProperty("survives").getBool()
+    #expect(survives == true)
+  }
 }
 
 private final class TestRuntimeScheduler: @unchecked Sendable {
