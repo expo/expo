@@ -216,7 +216,7 @@ test('gets state on route names change', () => {
   const router = StackRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 2,
         key: 'stack-test',
@@ -229,6 +229,7 @@ test('gets state on route names change', () => {
         stale: false,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
         routeParamList: {
@@ -251,7 +252,7 @@ test('gets state on route names change', () => {
   });
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
         key: 'stack-test',
@@ -263,6 +264,7 @@ test('gets state on route names change', () => {
         stale: false,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
       {
         routeNames: ['baz', 'qux'],
         routeParamList: {
@@ -285,7 +287,7 @@ test('gets state on route names change with initialRouteName', () => {
   const router = StackRouter({ initialRouteName: 'qux' });
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
         key: 'stack-test',
@@ -297,6 +299,7 @@ test('gets state on route names change with initialRouteName', () => {
         stale: false,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
       {
         routeNames: ['baz', 'qux'],
         routeParamList: {
@@ -313,6 +316,23 @@ test('gets state on route names change with initialRouteName', () => {
     stale: false,
     type: 'stack',
   });
+});
+
+test('returns the same stack state when route names already match', () => {
+  const router = StackRouter({});
+  const state = router.getInitialState({
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  });
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
+      { routeNames: ['bar', 'baz'], routeParamList: {}, routeGetIdList: {} }
+    )
+  ).toBe(state);
 });
 
 test('handles navigate action', () => {

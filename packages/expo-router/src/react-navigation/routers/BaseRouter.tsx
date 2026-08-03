@@ -2,6 +2,20 @@ import { nanoid } from 'nanoid/non-secure';
 
 import type { CommonNavigationAction, NavigationState, PartialState } from './types';
 
+export function getStateForRouteNamesChange<State extends NavigationState>(
+  state: State,
+  routeNames: string[]
+): State {
+  const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+  return {
+    ...state,
+    routeNames,
+    routes,
+    index: Math.min(state.index, routes.length - 1),
+  };
+}
+
 /**
  * Base router object that can be used when writing custom routers.
  * This provides few helper methods to handle common actions such as `RESET`.

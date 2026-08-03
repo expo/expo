@@ -2,7 +2,7 @@ import * as CommonActions from './CommonActions';
 
 export { CommonActions };
 
-export { BaseRouter } from './BaseRouter';
+export { BaseRouter, getStateForRouteNamesChange } from './BaseRouter';
 export type {
   DrawerActionHelpers,
   DrawerActionType,

@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 
+import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import { createRouteFromAction } from './createRouteFromAction';
@@ -218,6 +219,7 @@ export function getRoutesForRouteNames(
  * StackRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
  */
 export function StackRouter(options: StackRouterOptions) {
+  const { initialRouteName } = options;
   const router: Router<
     StackNavigationState<ParamListBase>,
     CommonNavigationAction | StackActionType
@@ -343,6 +345,37 @@ export function StackRouter(options: StackRouterOptions) {
       const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
 
       switch (action.type) {
+        case 'ROUTE_NAMES_CHANGED': {
+          const routeNames = action.payload.routeNames;
+
+          if (isArrayEqual(state.routeNames, routeNames)) {
+            return state;
+          }
+
+          const routes = activeRoutes.filter((route) => routeNames.includes(route.name));
+          const filteredPreloadedRoutes = preloadedRoutes.filter((route) =>
+            routeNames.includes(route.name)
+          );
+
+          if (routes.length === 0) {
+            const fallbackName =
+              initialRouteName !== undefined && routeNames.includes(initialRouteName)
+                ? initialRouteName
+                : routeNames[0]!;
+
+            routes.push({
+              key: `${fallbackName}-${nanoid()}`,
+              name: fallbackName,
+              params: routeParamList[fallbackName],
+            });
+          }
+
+          return {
+            ...reconcileStackRoutes(state, routes, filteredPreloadedRoutes),
+            routeNames,
+          };
+        }
+
         case 'REPLACE': {
           const currentIndex =
             action.target === state.key && action.source

@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid/non-secure';
 
 import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
+import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import type {
@@ -379,6 +380,65 @@ export function TabRouter({
       }
 
       switch (action.type) {
+        case 'ROUTE_NAMES_CHANGED': {
+          const routeNames = action.payload.routeNames;
+
+          if (isArrayEqual(state.routeNames, routeNames)) {
+            return state;
+          }
+
+          const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+          for (const name of routeNames) {
+            if (!routes.some((route) => route.name === name)) {
+              routes.push({
+                name,
+                key: `${name}-${nanoid()}`,
+                params: routeParamList[name],
+              });
+            }
+          }
+
+          const focusedKey = state.routes[state.index]!.key;
+          const index = Math.max(
+            0,
+            routes.findIndex((route) => route.key === focusedKey)
+          );
+          const routeKeys = routes.map((route) => route.key);
+          let history = state.history.filter(
+            (item) => item.type !== 'route' || routeKeys.includes(item.key)
+          );
+
+          if (
+            backBehavior === 'firstRoute' ||
+            backBehavior === 'initialRoute' ||
+            backBehavior === 'order'
+          ) {
+            const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
+            const orderedIndex = orderedRoutes.findIndex(
+              (route) => route.key === routes[index]!.key
+            );
+            history = [
+              ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
+              ...history.filter((item) => item.type !== 'route'),
+            ];
+          } else if (!history.some((item) => item.type === 'route')) {
+            history = [
+              ...getRouteHistory(routes, index, backBehavior, initialRouteName),
+              ...history.filter((item) => item.type !== 'route'),
+            ];
+          }
+
+          return {
+            ...state,
+            history,
+            routeNames,
+            routes,
+            index,
+            preloadedRouteKeys: state.preloadedRouteKeys.filter((key) => routeKeys.includes(key)),
+          };
+        }
+
         case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE':

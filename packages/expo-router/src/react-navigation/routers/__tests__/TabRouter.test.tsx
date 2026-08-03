@@ -542,7 +542,7 @@ test('gets state on route names change', () => {
   const router = TabRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 0,
         key: 'tab-test',
@@ -557,6 +557,7 @@ test('gets state on route names change', () => {
         type: 'tab',
         preloadedRouteKeys: [],
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
         routeParamList: {
@@ -586,7 +587,7 @@ test('gets state on route names change', () => {
   });
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 0,
         key: 'tab-test',
@@ -600,6 +601,7 @@ test('gets state on route names change', () => {
         type: 'tab',
         preloadedRouteKeys: [],
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['foo', 'fiz'] } },
       {
         routeNames: ['foo', 'fiz'],
         routeParamList: {},
@@ -625,7 +627,7 @@ test('preserves focused route on route names change', () => {
   const router = TabRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
         key: 'tab-test',
@@ -640,6 +642,7 @@ test('preserves focused route on route names change', () => {
         type: 'tab',
         preloadedRouteKeys: [],
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz', 'baz'] } },
       {
         routeNames: ['qux', 'foo', 'fiz', 'baz'],
         routeParamList: {
@@ -673,7 +676,7 @@ test('falls back to first route if route is removed on route names change', () =
   const router = TabRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
         key: 'tab-test',
@@ -688,6 +691,7 @@ test('falls back to first route if route is removed on route names change', () =
         type: 'tab',
         preloadedRouteKeys: [],
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'foo', 'fiz'],
         routeParamList: {
@@ -711,6 +715,78 @@ test('falls back to first route if route is removed on route names change', () =
     type: 'tab',
     preloadedRouteKeys: [],
   });
+});
+
+test('returns the same tab state when route names already match', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = router.getInitialState(options);
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
+      options
+    )
+  ).toBe(state);
+});
+
+test('keeps route order and focus while rebuilding ordered history', () => {
+  const router = TabRouter({ backBehavior: 'order' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = {
+    ...router.getInitialState(options),
+    index: 1,
+    history: [
+      { type: 'route' as const, key: 'bar-test' },
+      { type: 'route' as const, key: 'baz-test' },
+    ],
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'bar'] } },
+      { ...options, routeNames: ['qux', 'baz', 'bar'] }
+    )
+  ).toMatchObject({
+    index: 1,
+    routeNames: ['qux', 'baz', 'bar'],
+    routes: state.routes,
+    history: [
+      { type: 'route', key: 'qux-test' },
+      { type: 'route', key: 'baz-test' },
+    ],
+  });
+});
+
+test('prunes preloaded keys when route names change', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = {
+    ...router.getInitialState(options),
+    preloadedRouteKeys: ['bar-test', 'baz-test'],
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz'] } },
+      { ...options, routeNames: ['baz'] }
+    )
+  ).toMatchObject({ preloadedRouteKeys: ['baz-test'] });
 });
 
 test('handles navigate action', () => {
