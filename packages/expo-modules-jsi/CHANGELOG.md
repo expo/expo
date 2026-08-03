@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Add `JavaScriptRuntime.collectGarbage(cause:)` that requests a full garbage collection through the runtime's JSI instrumentation. It is a no-op on engines whose runtime doesn't implement GC instrumentation, unlike the Hermes-only `gc()` global that the tests used to evaluate. ([#48446](https://github.com/expo/expo/pull/48446) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fixed the prebuilt `ExpoModulesJSI.xcframework` shipping with code coverage instrumentation: building through the auto-generated SwiftPM scheme made Xcode pass `-profile-generate -profile-coverage-mapping` to swiftc even for a plain Release `build`, adding a counter increment to every function on the host function call path and about 40% to the binary size. The benchmark target had the same instrumentation and now runs without it. ([#49637](https://github.com/expo/expo/pull/49637) by [@tsapeta](https://github.com/tsapeta))

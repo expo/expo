@@ -172,7 +172,7 @@ struct JavaScriptTypedArrayTests {
     let typedArray = try runtime.eval("(() => new Uint8Array([1, 2, 3, 4]))()").getTypedArray()
 
     // The backing ArrayBuffer should remain alive because `JavaScriptTypedArray` holds it.
-    try runtime.eval("gc() && gc() && gc()")
+    runtime.collectGarbage()
 
     typedArray.withUnsafeBytes { bytes in
       #expect(bytes[0] == 1)
