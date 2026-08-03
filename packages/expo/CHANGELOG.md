@@ -21,6 +21,7 @@
 
 ### 💡 Others
 
+- [iOS] Fix `expo/fetch` streaming race between URLSession delegate callbacks and `startStreaming()` that could deliver an empty body on a 200 response, drop chunks, or leave the body stream open. ([#47796](https://github.com/expo/expo/pull/47796) by [@idoyana](https://github.com/idoyana))
 - [Android] `ExpoReactHostFactory` now passes host handlers' `DevSupportManagerFactory` to `ReactHostImpl`. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
 - Restore RCTHostRuntimeDelegate conformance for react-native-macos ([#46420](https://github.com/expo/expo/pull/46420) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add explicit `react-native/Libraries/Core/InitializeCore` import to native runtime entrypoint ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
