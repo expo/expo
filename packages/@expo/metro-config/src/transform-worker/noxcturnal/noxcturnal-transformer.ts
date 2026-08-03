@@ -1040,7 +1040,8 @@ function getMetroEsmGlobalsPhase(nox: Noxcturnal): PipelinePhase {
 function getMetroModulePhase(nox: Noxcturnal, input: NoxcturnalMetroTransformInput): PipelinePhase {
   const baseProfile = getBaseProfile(input);
   const supportsModernSyntax = baseProfile === 'hermes-v1' || baseProfile === 'web';
-  const key = `${supportsModernSyntax}:${input.options.experimentalImportSupport === true}`;
+  const liveBindings = input.options.customTransformOptions?.liveBindings !== 'false';
+  const key = `${supportsModernSyntax}:${input.options.experimentalImportSupport === true}:${liveBindings}`;
   const cached = metroModulePhases.get(key);
   if (cached) return cached;
   const phase = nox.definePipelinePhase({
@@ -1054,7 +1055,7 @@ function getMetroModulePhase(nox: Noxcturnal, input: NoxcturnalMetroTransformInp
       ),
       stableSourcePlugin('cjs-detection', () => createCjsDetectionPlugin(nox)),
       createMetroDependencyPlugin(nox),
-      createMetroLiveBindingsPlugin(nox),
+      createMetroLiveBindingsPlugin(nox, liveBindings),
     ],
   });
   metroModulePhases.set(key, phase);

@@ -2018,6 +2018,30 @@ it.each([
   expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
 });
 
+it('uses static export values when live bindings are disabled', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `import { value } from './source';
+      export function read() { return value; }
+      export { other } from './other';`,
+    options: options({
+      dev: false,
+      experimentalImportSupport: true,
+      customTransformOptions: { liveBindings: 'false' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toMatch(/var value = .*\.value/);
+  expect(result.result.code).toContain('exports.read = read');
+  expect(result.result.code).toMatch(/exports\.other = .*\.other/);
+  expect(result.result.code).not.toContain('Object.defineProperty(exports, "read"');
+});
+
 it('lowers static ESM imports and exports through the full native path', async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename,

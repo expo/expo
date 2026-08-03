@@ -8,7 +8,8 @@ import {
 import { registerNativeEsmDependency } from './metro-dependency';
 
 export function createMetroLiveBindingsPlugin(
-  nox: Noxcturnal
+  nox: Noxcturnal,
+  liveBindings = true
 ): DefinedNativePlugin<MetroLiveBindingsState> {
   const generateUid = (scope: { generateUid(name: string): string }, input: string) => {
     let name = input.replace(/[^$0-9A-Z_a-z]/g, '-').replace(/^[-0-9]+/, '');
@@ -24,6 +25,8 @@ export function createMetroLiveBindingsPlugin(
     metroPluginData(context).normalizePseudoGlobals ? 'e' : 'exports';
   const liveExport = (name: string, expression: string, target = 'exports') =>
     `Object.defineProperty(${target}, ${JSON.stringify(name)}, { enumerable: true, get: function () { return ${expression}; } });`;
+  const exportValue = (name: string, expression: string, target = 'exports') =>
+    liveBindings ? liveExport(name, expression, target) : `${target}.${name} = ${expression};`;
   const defaultInterop = `function _interopDefault(e) {
   return e && e.__esModule ? e : { default: e };
 }`;
@@ -55,13 +58,14 @@ export function createMetroLiveBindingsPlugin(
       const { collectOnly } = metroPluginData(context);
       if (collectOnly || !state.sawEsm) return;
       const target = exportsName(context);
+      const trailingExports: string[] = [];
 
       for (const deferred of state.deferredExports) {
         if (deferred.kind === 'declaration') {
           state.exportStatements.push(
-            deferred.assign && deferred.name !== '__proto__'
+            (!liveBindings || deferred.assign) && deferred.name !== '__proto__'
               ? `${target}.${deferred.name} = ${deferred.name};`
-              : liveExport(deferred.name, deferred.name, target)
+              : exportValue(deferred.name, deferred.name, target)
           );
           continue;
         }
@@ -87,7 +91,9 @@ export function createMetroLiveBindingsPlugin(
             }
           }
         }
-        state.exportStatements.push(liveExport(deferred.exported, expression, target));
+        const statement = exportValue(deferred.exported, expression, target);
+        if (liveBindings) state.exportStatements.push(statement);
+        else trailingExports.push(statement);
       }
       const preamble: string[] = [];
       if (
@@ -117,7 +123,7 @@ export function createMetroLiveBindingsPlugin(
           }
         }
       }
-      preamble.push(...state.exportStatements);
+      if (liveBindings) preamble.push(...state.exportStatements);
       for (const module of state.moduleOrder) {
         if (!module.referenced) {
           if (module.sideEffect) preamble.push(`${module.requireCall};`);
@@ -134,8 +140,12 @@ export function createMetroLiveBindingsPlugin(
           }
         }
       }
+      if (!liveBindings) preamble.push(...state.exportStatements);
       if (preamble.length > 0) {
         context.prependToProgram(preamble.join('\n'));
+      }
+      if (trailingExports.length > 0) {
+        context.appendToProgram(trailingExports.join('\n'));
       }
     },
     visitors: [
@@ -258,7 +268,15 @@ export function createMetroLiveBindingsPlugin(
                 }
                 expression = property(module.defaultLocal, 'default');
               } else {
-                expression = property(requiredLocal, imported);
+                if (liveBindings) {
+                  expression = property(requiredLocal, imported);
+                } else {
+                  expression = local;
+                  module.afterImport.push({
+                    kind: 'statement',
+                    code: `var ${local} = ${property(requiredLocal, imported)};`,
+                  });
+                }
               }
             }
             state.importedBindings.set(local, expression);
@@ -411,7 +429,7 @@ export function createMetroLiveBindingsPlugin(
                 expression = property(requiredLocal, imported);
               }
               state.exportStatements.push(
-                liveExport(
+                exportValue(
                   String(specifier.node.exported),
                   expression,
                   exportsName(exportPath.context)
@@ -442,6 +460,17 @@ export function createMetroLiveBindingsPlugin(
                   }
                 ),
               ]);
+            }
+            if (!liveBindings) {
+              const target = exportsName(exportPath.context);
+              exportPath.replaceWith({
+                kind: 'composite',
+                parts: [
+                  declaration.getSource(),
+                  ...[...names].map((name) => `\n${target}.${name} = ${name};`),
+                ],
+              });
+              return;
             }
             exportPath.replaceWith(declaration.getSource());
             for (const name of names) {
@@ -482,10 +511,20 @@ export function createMetroLiveBindingsPlugin(
           if (collectOnly) return;
           const declaration = exportPath.getChild('declaration');
           if (!declaration) exportPath.unsupported('missing-default-export-declaration');
-          let local =
-            typeof exportPath.node.declaredName === 'string' ? exportPath.node.declaredName : null;
+          const hasDeclaredName = typeof exportPath.node.declaredName === 'string';
+          let local = hasDeclaredName ? exportPath.node.declaredName! : null;
           if (local) {
-            exportPath.replaceWith(declaration!.getSource());
+            exportPath.replaceWith(
+              liveBindings
+                ? declaration!.getSource()
+                : {
+                    kind: 'composite',
+                    parts: [
+                      declaration!.getSource(),
+                      `\n${exportsName(exportPath.context)}.default = ${local};`,
+                    ],
+                  }
+            );
           } else {
             if (declaration!.node.type === 'Class' || declaration!.node.type === 'Function') {
               local = exportPath.scope.generateUid('ref');
@@ -497,9 +536,13 @@ export function createMetroLiveBindingsPlugin(
               );
             }
           }
-          state.exportStatements.push(
-            liveExport('default', local, exportsName(exportPath.context))
-          );
+          if (liveBindings) {
+            state.exportStatements.push(
+              exportValue('default', local, exportsName(exportPath.context))
+            );
+          } else if (!hasDeclaredName) {
+            state.deferredExports.push({ kind: 'specifier', local, exported: 'default' });
+          }
         }
       ),
       nox.defineVisitor(
@@ -556,7 +599,7 @@ export function createMetroLiveBindingsPlugin(
             }
             module.namespaceReferenced = true;
             state.exportStatements.push(
-              liveExport(
+              exportValue(
                 exportPath.node.exported,
                 module.namespaceLocal,
                 exportsName(exportPath.context)
@@ -568,12 +611,18 @@ export function createMetroLiveBindingsPlugin(
               const target = exportsName(exportPath.context);
               module.afterImport.push({
                 kind: 'statement',
-                code: `Object.keys(${requiredLocal}).forEach(function (k) {
+                code: liveBindings
+                  ? `Object.keys(${requiredLocal}).forEach(function (k) {
   if (k !== 'default' && !Object.prototype.hasOwnProperty.call(${target}, k)) {
     Object.defineProperty(${target}, k, {
       enumerable: true,
       get: function () { return ${requiredLocal}[k]; }
     });
+  }
+});`
+                  : `Object.keys(${requiredLocal}).forEach(function (k) {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(${target}, k)) {
+    ${target}[k] = ${requiredLocal}[k];
   }
 });`,
               });
