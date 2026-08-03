@@ -1,38 +1,35 @@
 package host.exp.exponent.notifications
 
-import com.raizlabs.android.dbflow.annotation.Column
-import com.raizlabs.android.dbflow.annotation.PrimaryKey
-import com.raizlabs.android.dbflow.annotation.Table
-import com.raizlabs.android.dbflow.structure.BaseModel
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Ignore
+import androidx.room.PrimaryKey
 
-@Table(database = ActionDatabase::class)
-class ActionObject : BaseModel {
-  @Column var categoryId: String? = null
+@Entity(tableName = "ActionObject")
+class ActionObject() {
+  @ColumnInfo var categoryId: String? = null
 
-  @PrimaryKey @Column
-  var actionId: String? = null
+  @PrimaryKey @ColumnInfo
+  var actionId: String = ""
 
-  @Column var buttonTitle: String? = null
+  @ColumnInfo var buttonTitle: String? = null
 
-  @Column var isDestructive: Boolean? = null
+  @ColumnInfo var isDestructive: Boolean? = null
 
-  @Column var isAuthenticationRequired: Boolean? = null
+  @ColumnInfo var isAuthenticationRequired: Boolean? = null
 
-  @Column var submitButtonTitle: String? = null
+  @ColumnInfo var submitButtonTitle: String? = null
 
-  @Column var placeholder: String? = null
+  @ColumnInfo var placeholder: String? = null
 
-  @Column var isShouldShowTextInput: Boolean = false
+  @ColumnInfo var isShouldShowTextInput: Boolean = false
 
-  @Column var position: Int
+  @ColumnInfo var position: Int = 0
 
-  constructor() {
-    position = 0
-  }
-
-  constructor(map: Map<String?, Any?>, position: Int) {
+  @Ignore
+  constructor(map: Map<String?, Any?>, position: Int) : this() {
     categoryId = map["categoryId"] as String?
-    actionId = map["actionId"] as String?
+    actionId = map["actionId"] as String? ?: ""
     buttonTitle = map["buttonTitle"] as String?
     isDestructive = map["isDestructive"] as Boolean?
     isAuthenticationRequired = map["isAuthenticationRequired"] as Boolean?
