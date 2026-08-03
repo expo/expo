@@ -89,3 +89,9 @@ internal final class FailedToExtractUri: GenericException<String> {
     "Failed to extract an uri: \(param)"
   }
 }
+
+internal final class UnsupportedAlbumTypeException: GenericException<String> {
+  override var reason: String {
+    "Unsupported album collection type: \(param)"
+  }
+}
