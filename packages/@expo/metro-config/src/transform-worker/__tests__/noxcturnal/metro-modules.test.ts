@@ -2117,6 +2117,37 @@ it.each([
     expect(new (exported as new (value: string) => { value: string })('value').value).toBe('value');
 });
 
+it('writes ESM exports through the normalized Metro exports parameter', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `export const ctx = require.context('./routes');`,
+    options: options({ dev: false, minify: true, experimentalImportSupport: true }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), unstable_allowRequireContext: true },
+  });
+  if (result.status === 'fallback') throw new Error(result.reason);
+
+  let factory: Function | undefined;
+  new Function('__d', result.result.code)((value: Function) => {
+    factory = value;
+  });
+  const context = Object.assign(() => undefined, { keys: () => ['./route.tsx'] });
+  const moduleExports: { ctx?: typeof context } = {};
+  factory?.(
+    globalThis,
+    () => context,
+    () => undefined,
+    () => undefined,
+    {},
+    moduleExports,
+    []
+  );
+
+  expect(moduleExports.ctx).toBe(context);
+  expect(moduleExports.ctx?.keys()).toEqual(['./route.tsx']);
+});
+
 it('collects graph-optimization metadata without rewriting or wrapping modules', async () => {
   const source = `import 'side-effect';
 import primary, { alpha as local } from 'pkg';

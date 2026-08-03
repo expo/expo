@@ -20,8 +20,10 @@ export function createMetroLiveBindingsPlugin(
     return scope.generateUid(name);
   };
   const property = (object: string, name: string) => `${object}.${name}`;
-  const liveExport = (name: string, expression: string) =>
-    `Object.defineProperty(exports, ${JSON.stringify(name)}, { enumerable: true, get: function () { return ${expression}; } });`;
+  const exportsName = (context: { pluginData: unknown }) =>
+    metroPluginData(context).normalizePseudoGlobals ? 'e' : 'exports';
+  const liveExport = (name: string, expression: string, target = 'exports') =>
+    `Object.defineProperty(${target}, ${JSON.stringify(name)}, { enumerable: true, get: function () { return ${expression}; } });`;
   const defaultInterop = `function _interopDefault(e) {
   return e && e.__esModule ? e : { default: e };
 }`;
@@ -52,13 +54,14 @@ export function createMetroLiveBindingsPlugin(
     post(context, state) {
       const { collectOnly } = metroPluginData(context);
       if (collectOnly || !state.sawEsm) return;
+      const target = exportsName(context);
 
       for (const deferred of state.deferredExports) {
         if (deferred.kind === 'declaration') {
           state.exportStatements.push(
             deferred.assign && deferred.name !== '__proto__'
-              ? `exports.${deferred.name} = ${deferred.name};`
-              : liveExport(deferred.name, deferred.name)
+              ? `${target}.${deferred.name} = ${deferred.name};`
+              : liveExport(deferred.name, deferred.name, target)
           );
           continue;
         }
@@ -84,7 +87,7 @@ export function createMetroLiveBindingsPlugin(
             }
           }
         }
-        state.exportStatements.push(liveExport(deferred.exported, expression));
+        state.exportStatements.push(liveExport(deferred.exported, expression, target));
       }
       const preamble: string[] = [];
       if (
@@ -93,7 +96,7 @@ export function createMetroLiveBindingsPlugin(
           module.afterImport.some((operation) => operation.kind === 'statement')
         )
       ) {
-        preamble.push(`Object.defineProperty(exports, '__esModule', { value: true });`);
+        preamble.push(`Object.defineProperty(${target}, '__esModule', { value: true });`);
       }
       const emittedInterops = new Set<'default' | 'namespace'>();
       for (const module of state.moduleOrder) {
@@ -407,7 +410,13 @@ export function createMetroLiveBindingsPlugin(
               } else {
                 expression = property(requiredLocal, imported);
               }
-              state.exportStatements.push(liveExport(String(specifier.node.exported), expression));
+              state.exportStatements.push(
+                liveExport(
+                  String(specifier.node.exported),
+                  expression,
+                  exportsName(exportPath.context)
+                )
+              );
             }
             exportPath.remove();
             return;
@@ -488,7 +497,9 @@ export function createMetroLiveBindingsPlugin(
               );
             }
           }
-          state.exportStatements.push(liveExport('default', local));
+          state.exportStatements.push(
+            liveExport('default', local, exportsName(exportPath.context))
+          );
         }
       ),
       nox.defineVisitor(
@@ -545,16 +556,21 @@ export function createMetroLiveBindingsPlugin(
             }
             module.namespaceReferenced = true;
             state.exportStatements.push(
-              liveExport(exportPath.node.exported, module.namespaceLocal)
+              liveExport(
+                exportPath.node.exported,
+                module.namespaceLocal,
+                exportsName(exportPath.context)
+              )
             );
           } else {
             if (!module.exportAll) {
               module.exportAll = true;
+              const target = exportsName(exportPath.context);
               module.afterImport.push({
                 kind: 'statement',
                 code: `Object.keys(${requiredLocal}).forEach(function (k) {
-  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(exports, k)) {
-    Object.defineProperty(exports, k, {
+  if (k !== 'default' && !Object.prototype.hasOwnProperty.call(${target}, k)) {
+    Object.defineProperty(${target}, k, {
       enumerable: true,
       get: function () { return ${requiredLocal}[k]; }
     });
