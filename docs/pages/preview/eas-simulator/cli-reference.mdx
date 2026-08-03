@@ -1,7 +1,7 @@
 ---
 title: EAS Simulator CLI reference
 sidebar_title: CLI reference
-description: Reference for the experimental EAS CLI commands that create, inspect, control, list, and stop remote simulator sessions.
+description: Reference for the experimental EAS CLI commands that create, inspect, monitor, control, list, and stop remote simulator sessions.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -21,6 +21,7 @@ The `--help` flag displays the available options for `simulator:start`.
 | [`simulator:start`](#simulatorstart)               | Create a session and wait for its controller configuration               |
 | [`simulator`](#simulatorstart)                     | Alias for `simulator:start`                                              |
 | [`simulator:exec`](#simulatorexec)                 | Run another command with **.env.eas-simulator** loaded                   |
+| [`simulator:events`](#simulatorevents)             | Show recorded activity or follow activity from a running session         |
 | [`simulator:get`](#simulatorget)                   | Get status, connection details, dashboard URL, timestamps, and artifacts |
 | [`simulator:list`](#simulatorlist)                 | List and filter sessions for the current project                         |
 | [`simulator:stop`](#simulatorstop)                 | Stop a session                                                           |
@@ -113,6 +114,30 @@ Use the command pattern for the controller selected when the session started:
 </Tabs>
 
 `simulator:exec` does not implement device actions. It only supplies the active session's connection environment and runs the command that follows. The available actions and argument syntax come from [agent-device](/agents/agent-device/) or [Argent](/agents/argent/).
+
+## `simulator:events`
+
+Show a snapshot of the activity recorded for the session referenced by **.env.eas-simulator**:
+
+<Terminal cmd={['$ eas simulator:events']} />
+
+Pass a session ID to inspect another session:
+
+<Terminal cmd={['$ eas simulator:events --id <session-id>']} />
+
+The default text output condenses related operations into a readable timeline. It includes the timestamp, controller, summary, and duration when available. This command shows session and controller activity from agent-device or Argent, not application runtime logs.
+
+Follow new activity while a session is running:
+
+<Terminal cmd={['$ eas simulator:events --follow']} />
+
+The `-f` short flag is equivalent to `--follow`. The command stops following when the session ends. Press <kbd>Ctrl</kbd> + <kbd>C</kbd> to stop following earlier.
+
+For agents and automation, request the raw event records as JSON:
+
+<Terminal cmd={['$ eas simulator:events --json']} />
+
+The JSON object contains `deviceRunSessionId` and an `events` array. Common event fields include `eventId`, `ts`, `producer`, `type`, and `summary`, with operation ID, outcome, duration, and controller-specific data when available. `--json` cannot be combined with `--follow`.
 
 ## `simulator:get`
 

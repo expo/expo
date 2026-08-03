@@ -47,7 +47,8 @@ public struct JavaScriptUnownedValue: ~Copyable {
   public func copied(in runtime: JavaScriptRuntime) -> JavaScriptValue {
     assert(
       Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
-      "`copied(in:)` must be passed the runtime that owns the borrowed value")
+      "`copied(in:)` must be passed the runtime that owns the borrowed value"
+    )
     return JavaScriptValue(runtime, pointer.pointee)
   }
 
@@ -124,7 +125,8 @@ public struct JavaScriptUnownedValue: ~Copyable {
     assert(isObject(), "Value is not an object")
     assert(
       Unmanaged.passUnretained(runtime.pointee).toOpaque() == Unmanaged.passUnretained(self.runtime).toOpaque(),
-      "`getObject(in:)` must be passed the runtime that owns the borrowed value")
+      "`getObject(in:)` must be passed the runtime that owns the borrowed value"
+    )
     return JavaScriptObject(runtime, pointer.pointee.getObject(self.runtime))
   }
 

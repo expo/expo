@@ -60,6 +60,7 @@ import UIKit
       MainActor.assumeIsolated {
         SnackEditingSession.shared.clearSession()
         DevMenuManager.shared.isLessonLikeSession = false
+        ProjectSourceSession.begin()
       }
       EXKernel.sharedInstance().createNewApp(with: appUrl, initialProps: nil)
       completion(true, nil)
@@ -114,11 +115,11 @@ import UIKit
 
       if let code = params["code"] as? [String: [String: Any]] {
         // Lesson/playground: code provided directly
-        var snackFiles: [String: SnackSessionClient.SnackFile] = [:]
+        var snackFiles: [String: SnackFile] = [:]
         for (path, fileData) in code {
           let contents = fileData["contents"] as? String ?? ""
           let isAsset = fileData["type"] as? String == "ASSET"
-          snackFiles[path] = SnackSessionClient.SnackFile(path: path, contents: contents, isAsset: isAsset)
+          snackFiles[path] = SnackFile(path: path, contents: contents, isAsset: isAsset)
         }
 
         let dependencies = params["dependencies"] as? [String: [String: Any]] ?? [:]
@@ -148,6 +149,7 @@ import UIKit
 
       // 3. Create the new app directly (not through linkingManager to avoid circular call)
       // The linking manager now routes through this bridge, so we call createNewApp directly.
+      ProjectSourceSession.begin()
       EXKernel.sharedInstance().createNewApp(with: appUrl, initialProps: nil)
       completion(true, nil)
     }

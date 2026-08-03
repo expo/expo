@@ -241,6 +241,20 @@ Use these commands with a session started with `--type argent`. `simulator:exec`
 
 Argent uses its own tools and app installation commands. An Argent session does not also provision an agent-device daemon, so do not run agent-device commands against it.
 
+## Inspect session activity
+
+Sessions that use agent-device or Argent record controller activity. Show the activity recorded so far for the current session:
+
+<Terminal cmd={['$ eas simulator:events']} />
+
+In another terminal, follow new activity while you or an agent drives the device:
+
+<Terminal cmd={['$ eas simulator:events --follow']} />
+
+The follow command exits when the session ends. Use `--id <session-id>` to inspect another session, or `--json` to return raw event records for an agent or script. `--json` and `--follow` cannot be used together.
+
+Session activity describes controller operations and interactions. It does not replace application runtime logs.
+
 ## Use the iOS browser preview
 
 Supported iOS sessions return a `webPreviewUrl`. Open it in a desktop browser while the session is active.

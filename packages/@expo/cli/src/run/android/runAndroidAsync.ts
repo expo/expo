@@ -2,9 +2,6 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import { resolveInstallApkNameAsync } from './resolveInstallApkName';
-import type { Options, ResolvedOptions } from './resolveOptions';
-import { resolveOptionsAsync } from './resolveOptions';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import { Log } from '../../log';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
@@ -17,6 +14,9 @@ import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
+import { resolveInstallApkNameAsync } from './resolveInstallApkName';
+import type { Options, ResolvedOptions } from './resolveOptions';
+import { resolveOptionsAsync } from './resolveOptions';
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
   // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.

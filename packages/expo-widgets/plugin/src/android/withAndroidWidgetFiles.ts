@@ -2,13 +2,13 @@ import { AndroidConfig, ConfigPlugin, withDangerousMod } from 'expo/config-plugi
 import * as fs from 'fs';
 import * as path from 'path';
 
+import { WidgetConfig } from '../types/WidgetConfig.type';
 import {
   getProviderClassName,
   getWidgetDescriptionResourceName,
   getWidgetDisplayNameResourceName,
   getWidgetInfoResourceName,
 } from './resourceNames';
-import { WidgetConfig } from '../types/WidgetConfig.type';
 
 const withAndroidWidgetFiles: ConfigPlugin<WidgetConfig[]> = (config, widgets) => {
   return withDangerousMod(config, [

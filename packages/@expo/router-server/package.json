@@ -1,6 +1,6 @@
 {
   "name": "@expo/router-server",
-  "version": "56.0.12",
+  "version": "57.0.4",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "keywords": [
     "expo",

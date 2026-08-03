@@ -219,10 +219,21 @@ export async function getTeamMembersAsync(teamName: string): Promise<string[]> {
   return await spawnJSONCommandAsync('npm', ['team', 'ls', teamName, '--json']);
 }
 
+type OrgMembersRecord = Record<string, string>;
+
+/**
+ * Resolves to a dictionary that maps members of the organization to their role.
+ * Note that npm resolves to an empty dictionary when the request is not authenticated.
+ */
+export async function getOrgMembersAsync(orgName: string): Promise<OrgMembersRecord> {
+  return await spawnJSONCommandAsync<OrgMembersRecord>('npm', ['org', 'ls', orgName, '--json']);
+}
+
 type TeamPackagesRecord = Record<string, 'read-only' | 'read-write'>;
 
 /**
  * Resolves to a dictionary of packages and their access level added to the team.
+ * Also accepts an organization or user name to list all packages they have access to.
  */
 export async function getTeamPackagesAsync(
   teamName: string = EXPO_DEVELOPERS_TEAM_NAME
@@ -251,6 +262,23 @@ export async function grantReadWriteAccessAsync(
     packageName,
     ...maybeNpmOtpFlag(),
   ]);
+}
+
+/**
+ * Resolves to the raw output of `npm owner ls` with the current owners of the
+ * package, one `name <email>` entry per line. Unlike the maintainers field
+ * from `npm view`, it is not a snapshot from the time of the last publish.
+ */
+export async function listOwnersAsync(packageName: string): Promise<string> {
+  const { stdout } = await spawnAsync('npm', ['owner', 'ls', packageName]);
+  return stdout;
+}
+
+/**
+ * Removes a user from the owners of the package.
+ */
+export async function removeOwnerAsync(packageName: string, owner: string): Promise<void> {
+  await spawnAsync('npm', ['owner', 'rm', owner, packageName, ...maybeNpmOtpFlag()]);
 }
 
 /**

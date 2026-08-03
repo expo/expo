@@ -1,6 +1,6 @@
 {
   "name": "expo-document-picker",
-  "version": "56.0.4",
+  "version": "57.0.1",
   "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "keywords": [
     "document-picker",

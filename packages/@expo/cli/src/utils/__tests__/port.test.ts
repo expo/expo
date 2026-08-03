@@ -141,6 +141,14 @@ describe(choosePortAsync, () => {
 });
 
 describe(_resolvePortAsync, () => {
+  it.each([NaN, -1, 8081.5, Infinity, 65_536])(
+    `uses the preferred port when the requested port is invalid: %s`,
+    async (defaultPort) => {
+      const port = await _resolvePortAsync('/', { defaultPort, preferredPort: 8081 });
+      expect(port).toBe(8081);
+      expect(freePortAsync).toHaveBeenCalledWith(8081, [null]);
+    }
+  );
   it(`finds the first available port from the preferred port when port is 0`, async () => {
     jest.mocked(freePortAsync).mockResolvedValueOnce(8081);
     const port = await _resolvePortAsync('/', { defaultPort: 0, preferredPort: 8081 });
@@ -168,6 +176,13 @@ describe(_resolvePortAsync, () => {
     await expect(
       _resolvePortAsync('/', { defaultPort: 8081, preferredPort: 8081 })
     ).rejects.toThrow(/Port 8081 is unavailable/);
+    expect(confirmAsync).not.toHaveBeenCalled();
+  });
+  it(`rolls over instead of hard-failing when an invalid --port is busy in non-interactive mode`, async () => {
+    jest.mocked(isInteractive).mockReturnValueOnce(false);
+    jest.mocked(freePortAsync).mockResolvedValueOnce(8082);
+    const port = await _resolvePortAsync('/', { defaultPort: NaN, preferredPort: 8081 });
+    expect(port).toBe(8082);
     expect(confirmAsync).not.toHaveBeenCalled();
   });
   it(`hard-fails when an explicitly requested preferred port is busy in non-interactive mode`, async () => {
@@ -207,6 +222,17 @@ describe(resolveMetroPortAsync, () => {
     const port = await resolveMetroPortAsync('/', { defaultPort: 3000, fallbackPort: 8081 });
     expect(port).toBe(3000);
     expect(process.env.RCT_METRO_PORT).toBe('3000');
+  });
+  it(`uses and writes back the fallback when --port parsing returns NaN`, async () => {
+    const port = await resolveMetroPortAsync('/', { defaultPort: NaN, fallbackPort: 8081 });
+    expect(port).toBe(8081);
+    expect(process.env.RCT_METRO_PORT).toBe('8081');
+  });
+  it(`uses the fallback when RCT_METRO_PORT is out of range`, async () => {
+    process.env.RCT_METRO_PORT = '65536';
+    const port = await resolveMetroPortAsync('/', { fallbackPort: 8081 });
+    expect(port).toBe(8081);
+    expect(freePortAsync).toHaveBeenCalledWith(8081, [null]);
   });
   it(`falls back to 8081 when nothing requests a port`, async () => {
     const port = await resolveMetroPortAsync('/');

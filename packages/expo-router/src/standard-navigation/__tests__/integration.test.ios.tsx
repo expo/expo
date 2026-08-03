@@ -382,6 +382,178 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
   });
 });
 
+describe('processScreens', () => {
+  const optionsByName = () =>
+    Object.fromEntries(
+      lastArgs().state.routes.map(
+        (route) => [route.name, lastArgs().descriptors[route.key]!.options] as const
+      )
+    );
+
+  it('transforms declared screen options before they are rendered', () => {
+    const Prefixed = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) =>
+        screens.map((screen) => ({
+          ...screen,
+          options: { ...screen.options, title: `processed-${screen.name}` },
+        })),
+    });
+
+    renderRouter({
+      _layout: () => (
+        <Prefixed>
+          <Prefixed.Screen name="index" options={{ title: 'Home' }} />
+          <Prefixed.Screen name="second" />
+        </Prefixed>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(optionsByName()).toMatchObject({
+      index: { title: 'processed-index' },
+      second: { title: 'processed-second' },
+    });
+  });
+
+  it('receives only the declared screens', () => {
+    const names: string[] = [];
+    const Recording = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) => {
+        names.length = 0;
+        names.push(...screens.map((screen) => screen.name));
+        return screens;
+      },
+    });
+
+    renderRouter({
+      _layout: () => (
+        <Recording>
+          <Recording.Screen name="index" />
+        </Recording>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(names).toEqual(['index']);
+    // The undeclared route is still registered, it just never reaches the processor.
+    expect(lastArgs().state.routes.map((route) => route.name)).toContain('second');
+  });
+
+  it('rejects dropped screens', () => {
+    const Filtered = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) => screens.filter((screen) => screen.name !== 'second'),
+    });
+
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          <Filtered>
+            <Filtered.Screen name="index" options={{ title: 'Home' }} />
+            <Filtered.Screen name="second" options={{ title: 'Declared title' }} />
+          </Filtered>
+        ),
+        index: () => <View testID="index" />,
+        second: () => <View testID="second" />,
+      })
+    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+  });
+
+  it('rejects renamed screens', () => {
+    const Renamed = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) =>
+        screens.map((screen) => ({ ...screen, name: `renamed-${screen.name}` })),
+    });
+
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          <Renamed>
+            <Renamed.Screen name="index" />
+          </Renamed>
+        ),
+        index: () => <View testID="index" />,
+      })
+    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+  });
+
+  it('rejects screens renamed in place', () => {
+    const Renamed = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) => {
+        screens[0] = { ...screens[0]!, name: 'renamed-index' };
+        return screens;
+      },
+    });
+
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          <Renamed>
+            <Renamed.Screen name="index" />
+          </Renamed>
+        ),
+        index: () => <View testID="index" />,
+      })
+    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+  });
+
+  it('rejects duplicate screens returned by the processor', () => {
+    const Duplicated = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) => [screens[0]!, { ...screens[0]! }],
+    });
+
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          <Duplicated>
+            <Duplicated.Screen name="index" />
+            <Duplicated.Screen name="second" />
+          </Duplicated>
+        ),
+        index: () => <View testID="index" />,
+        second: () => <View testID="second" />,
+      })
+    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+  });
+});
+
 describe('preloaded routes projected through the integration (StackRouter)', () => {
   const StandardStack = unstable_createStandardRouterNavigator<
     TestOptions,

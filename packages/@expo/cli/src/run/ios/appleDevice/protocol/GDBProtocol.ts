@@ -7,9 +7,9 @@
  */
 import type { Socket } from 'net';
 
+import { CommandError } from '../../../../utils/errors';
 import type { ProtocolReaderCallback, ProtocolWriter } from './AbstractProtocol';
 import { ProtocolClient, ProtocolReader, ProtocolReaderFactory } from './AbstractProtocol';
-import { CommandError } from '../../../../utils/errors';
 
 const ACK_SUCCESS = '+'.charCodeAt(0);
 

@@ -1,12 +1,12 @@
 import chalk from 'chalk';
 import os from 'os';
 
-import { ADBServer } from './ADBServer';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { learnMore } from '../../../utils/link';
 import { event } from '../events';
+import { ADBServer } from './ADBServer';
 
 export enum DeviceABI {
   // The arch specific android target platforms are soft-deprecated.

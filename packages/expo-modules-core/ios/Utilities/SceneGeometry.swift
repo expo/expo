@@ -14,15 +14,19 @@ public enum SceneGeometry {
     if let scene = view?.window?.windowScene {
       return scene
     }
-    let scenes = windowScenes()
-    return scenes.first { $0.activationState == .foregroundActive }
-      ?? scenes.first { $0.activationState == .foregroundInactive }
-      ?? scenes.first
+    return foregroundScene() ?? windowScenes().first
   }
 
   /// Deliberately strict, for callers deciding whether to attach a window to a scene at all.
   public static func foregroundActiveScene() -> UIWindowScene? {
     return windowScenes().first { $0.activationState == .foregroundActive }
+  }
+
+  /// Nil when no scene is on screen, so callers don't present UI into a background scene.
+  public static func foregroundScene() -> UIWindowScene? {
+    let scenes = windowScenes()
+    return scenes.first { $0.activationState == .foregroundActive }
+      ?? scenes.first { $0.activationState == .foregroundInactive }
   }
 
   private static func windowScenes() -> [UIWindowScene] {
@@ -74,17 +78,6 @@ public extension SceneGeometry {
   /// Reads `effectiveGeometry` because `UIWindowScene.interfaceOrientation` is deprecated as of iOS 26.
   static func interfaceOrientation(for view: UIView? = nil) -> UIInterfaceOrientation {
     return windowScene(for: view)?.effectiveGeometry.interfaceOrientation ?? .unknown
-  }
-
-  /// Returns `nil` when the system won't say. A requested lock is only a preference on iOS 27.
-  static func isInterfaceOrientationLocked(for view: UIView? = nil) -> Bool? {
-    guard let scene = windowScene(for: view) else {
-      return nil
-    }
-    if #available(iOS 26.0, *) {
-      return scene.effectiveGeometry.isInterfaceOrientationLocked
-    }
-    return nil
   }
 }
 #endif
