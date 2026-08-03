@@ -786,7 +786,7 @@ export function useNavigationBuilder<
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
           <NavigationStateListenerProvider state={state}>
-            <FocusedRouteKeyContext.Provider value={state.routes[state.index]!.key}>
+            <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
               <PreventRemoveContext.Provider value={preventRemoveContextValue}>
                 {element}
               </PreventRemoveContext.Provider>

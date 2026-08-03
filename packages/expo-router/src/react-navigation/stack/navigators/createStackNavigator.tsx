@@ -79,6 +79,10 @@ function StackNavigator({
     [navigation, state.index, state.key]
   );
 
+  if (state.routes.length === 0) {
+    return <NavigationContent>{null}</NavigationContent>;
+  }
+
   return (
     <NavigationContent>
       <StackView
