@@ -61,6 +61,7 @@ declare module '2g' {
       host: string | null;
       port: number | null;
     };
+    'metro:prewarm': { workers: number };
   }
 }
 
@@ -534,6 +535,11 @@ export async function instantiateMetroAsync(
   patchTransformFileForPackedMaps(metro.getBundler().getBundler());
   patchMetroSourceMapStringForPackedMaps();
 
+  // Warm the transform worker pool during the idle window before the first bundle request
+  if (!isExporting) {
+    void prewarmTransformPool(metro.getBundler().getBundler(), metroConfig.maxWorkers ?? 1);
+  }
+
   setEventReporter(eventsSocket.reportMetroEvent);
 
   // This function ensures that modules in source maps are sorted in the same
@@ -647,6 +653,30 @@ export async function instantiateMetroAsync(
     messageSocket: messagesSocket,
     address,
   };
+}
+
+async function prewarmTransformPool(bundler: Bundler, workers: number): Promise<void> {
+  const warmOptions: TransformOptions = {
+    customTransformOptions: {},
+    dev: true,
+    experimentalImportSupport: true,
+    inlinePlatform: true,
+    inlineRequires: false,
+    minify: false,
+    platform: 'ios',
+    type: 'module',
+    unstable_transformProfile: 'default',
+  };
+  const noxSource = Buffer.from('export const a = 1; export function b(x) { return x + a; }');
+  const babelSource = Buffer.from(`'worklet';\nexport const c = (x) => x * 2;`);
+  const done = event.span();
+  await Promise.allSettled(
+    Array.from({ length: workers }, (_, i) => [
+      bundler.transformFile(`/__prewarm__/nox${i}.js`, warmOptions, noxSource),
+      bundler.transformFile(`/__prewarm__/babel${i}.js`, warmOptions, babelSource),
+    ]).flat()
+  );
+  done('prewarm', { workers });
 }
 
 // TODO: Fork the entire transform function so we can simply regex the file contents for keywords instead.
