@@ -32,7 +32,7 @@ struct UpdatesLogReaderTests {
     await purgeEntriesAsync(olderThan: date1)
 
     await logErrorAsync(message: "Test message", code: .noUpdatesAvailable)
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+    try await Task.sleep(for: .seconds(1))
 
     let date2 = Date()
     await logWarnAsync(message: "Test message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
@@ -62,10 +62,13 @@ struct UpdatesLogReaderTests {
   @Test
   @MainActor
   func `BasicLoggingWorks`() async throws {
-    // Mark the date
-    let epoch = Date()
+    try await Task.sleep(for: .seconds(1.1))
 
-    try await Task.sleep(nanoseconds: 1_100_000_000)
+    // Mark the date immediately before writing, so the tolerance below measures the gap between
+    // writing an entry and reading it back rather than the preceding sleep. Under CI load the
+    // suite can be descheduled for tens of seconds, which used to push the entry timestamp
+    // outside the window and fail the test spuriously.
+    let epoch = Date()
 
     // Write a log message
     logger.error(cause: UpdatesError.appLoaderFailedToLoadAllAssets, code: .noUpdatesAvailable)
@@ -73,7 +76,7 @@ struct UpdatesLogReaderTests {
     // Write another log message
     logger.warn(message: "Warning message", code: .assetsFailedToLoad, updateId: "myUpdateId", assetId: "myAssetId")
 
-    try await Task.sleep(nanoseconds: 100_000_000)
+    try await Task.sleep(for: .seconds(0.1))
 
     let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
 
@@ -86,7 +89,7 @@ struct UpdatesLogReaderTests {
 
     let logEntry = UpdatesLogEntry.create(from: logEntryText)
     let timestamp = Double(logEntry!.timestamp / 1_000)
-    #expect(abs(timestamp - epoch.timeIntervalSince1970) < 10)
+    #expect(abs(timestamp - epoch.timeIntervalSince1970) < 120)
     #expect(logEntry?.message == "Failed to load all assets")
     #expect(logEntry?.code == "NoUpdatesAvailable")
     #expect(logEntry?.level == "error")
@@ -97,7 +100,7 @@ struct UpdatesLogReaderTests {
     let logEntryText2: String = logEntries[logEntries.count - 1] as String
     let logEntry2 = UpdatesLogEntry.create(from: logEntryText2)
     let timestamp2 = Double(logEntry2!.timestamp / 1_000)
-    #expect(abs(timestamp2 - epoch.timeIntervalSince1970) < 10)
+    #expect(abs(timestamp2 - epoch.timeIntervalSince1970) < 120)
     #expect(logEntry2?.message == "Warning message")
     #expect(logEntry2?.code == "AssetsFailedToLoad")
     #expect(logEntry2?.level == "warn")
@@ -113,11 +116,11 @@ struct UpdatesLogReaderTests {
     let epoch = Date()
 
     let timer = logger.startTimer(label: "testlabel")
-    try await Task.sleep(nanoseconds: 1_000_000_000)
+    try await Task.sleep(for: .seconds(1))
     let result = timer.stop()
     #expect(result > 0)
 
-    try await Task.sleep(nanoseconds: 100_000_000)
+    try await Task.sleep(for: .seconds(0.1))
 
     let logEntries: [String] = logReader.getLogEntries(newerThan: epoch)
 
@@ -198,8 +201,12 @@ struct UpdatesLogReaderTests {
       let logEntryString =
         "xx"
         + logger.logEntryString(
-          message: message, code: code, level: .error,
-          duration: nil, updateId: nil, assetId: nil
+          message: message,
+          code: code,
+          level: .error,
+          duration: nil,
+          updateId: nil,
+          assetId: nil
         )
       persistentLog.appendEntry(entry: logEntryString) { _ in
         continuation.resume()
@@ -218,8 +225,12 @@ struct UpdatesLogReaderTests {
       let logEntryString =
         "xx"
         + logger.logEntryString(
-          message: message, code: code, level: .warn,
-          duration: nil, updateId: updateId, assetId: assetId
+          message: message,
+          code: code,
+          level: .warn,
+          duration: nil,
+          updateId: updateId,
+          assetId: assetId
         )
       persistentLog.appendEntry(entry: logEntryString) { _ in
         continuation.resume()
