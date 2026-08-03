@@ -866,6 +866,25 @@ internal struct AnyViewModifier: ViewModifier {
   }
 }
 
+/**
+ * Prunability-stable wrapper for `AnyViewModifier`
+ */
+internal struct StableViewModifier: ViewModifier {
+  let params: [String: Any]
+  let appContext: AppContext
+  let dispatcher: EventDispatcher
+
+  func body(content: Content) -> some View {
+    if let type = params["$type"] as? String,
+      let factory = ViewModifierRegistry.shared.modifierFactories[type],
+      let modifier = try? factory(params, appContext, dispatcher) {
+      AnyView(content.modifier(AnyViewModifier(modifier)))
+    } else {
+      AnyView(content)
+    }
+  }
+}
+
 internal struct AnimationModifier: ViewModifier, Record {
   @Field var animation: AnimationConfig
   @Field var animatedValue: Either<Double, Bool>?
@@ -1474,10 +1493,11 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
-    guard let viewModifier = try? modifierFactories[type]?(params, appContext, globalEventDispatcher) else {
-      return view
-    }
-    return AnyView(view.modifier(AnyViewModifier(viewModifier)))
+    return AnyView(view.modifier(StableViewModifier(
+      params: params,
+      appContext: appContext,
+      dispatcher: globalEventDispatcher
+    )))
   }
 
   /**
