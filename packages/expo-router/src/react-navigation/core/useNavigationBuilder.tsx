@@ -26,6 +26,7 @@ import { PreventRemoveContext } from './PreventRemoveContext';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
+import { filterStateForDeclaredRoutes } from './filterStateForDeclaredRoutes';
 import { isArrayEqual } from './isArrayEqual';
 import {
   type DefaultNavigatorOptions,
@@ -495,14 +496,6 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
-  if (!isArrayEqual(state.routeNames, routeNames)) {
-    // When the list of route names change, the router should handle it to remove invalid routes
-    nextState = router.getStateForRouteNamesChange(state, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-    });
-  }
 
   let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
 
@@ -577,6 +570,9 @@ export function useNavigationBuilder<
   // We can't use the outdated state since the screens have changed, which will cause error due to mismatched config
   // So we override the state object we return to use the latest state as soon as possible
   state = nextState;
+
+  // Keep render consumers safe without committing a state outside the action pipeline.
+  state = filterStateForDeclaredRoutes(state, routeNames);
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
@@ -714,6 +710,18 @@ export function useNavigationBuilder<
       routeGetIdList,
     },
     emitter,
+  });
+
+  useClientLayoutEffect(() => {
+    const committed = getState();
+
+    if (!isArrayEqual(committed.routeNames, routeNames)) {
+      onAction({
+        type: 'ROUTE_NAMES_CHANGED',
+        payload: { routeNames },
+        target: committed.key,
+      });
+    }
   });
 
   const onRouteFocus = useOnRouteFocus({
