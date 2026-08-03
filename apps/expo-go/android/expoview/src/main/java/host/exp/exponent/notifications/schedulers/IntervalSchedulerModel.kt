@@ -5,43 +5,42 @@ import host.exp.exponent.notifications.managers.SchedulersManagerProxy
 import host.exp.exponent.kernel.ExperienceKey
 import android.content.Intent
 import android.os.SystemClock
-import com.raizlabs.android.dbflow.annotation.Column
-import com.raizlabs.android.dbflow.annotation.PrimaryKey
-import com.raizlabs.android.dbflow.annotation.Table
-import com.raizlabs.android.dbflow.structure.BaseModel
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import org.joda.time.DateTime
 import org.json.JSONException
 import java.util.*
 
-@Table(database = SchedulersDatabase::class)
-class IntervalSchedulerModel : BaseModel(), SchedulerModel {
-  @Column
-  @PrimaryKey(autoincrement = true)
+@Entity(tableName = "IntervalSchedulerModel")
+class IntervalSchedulerModel : SchedulerModel {
+  @ColumnInfo
+  @PrimaryKey(autoGenerate = true)
   var id = 0
 
-  @Column override var notificationId = 0
+  @ColumnInfo override var notificationId = 0
 
-  @Column(name = "experienceId")
+  @ColumnInfo(name = "experienceId")
   var experienceScopeKey: String? = null
 
-  @Column var isRepeat = false
+  @ColumnInfo var isRepeat = false
 
-  @Column var serializedDetails: String? = null
+  @ColumnInfo var serializedDetails: String? = null
 
-  @Column var scheduledTime: Long = 0
+  @ColumnInfo var scheduledTime: Long = 0
 
-  @Column var interval: Long = 0
+  @ColumnInfo var interval: Long = 0
 
   override fun canBeRescheduled(): Boolean {
     return isRepeat || DateTime.now().toDate().time < scheduledTime
   }
 
   override fun saveAndGetId(): String {
-    save() // get id from database
+    id = SchedulersDatabase.dao.insertInterval(this).toInt() // get id from database
     val details = getDetailsMap()
     details!![SchedulersManagerProxy.SCHEDULER_ID] = idAsString
     setDetailsFromMap(details)
-    save()
+    SchedulersDatabase.dao.updateInterval(this)
     return idAsString
   }
 
@@ -51,7 +50,7 @@ class IntervalSchedulerModel : BaseModel(), SchedulerModel {
     get() = Integer.valueOf(id).toString() + this.javaClass.simpleName
 
   override fun remove() {
-    delete()
+    SchedulersDatabase.dao.deleteInterval(this)
   }
 
   // elapsedTime

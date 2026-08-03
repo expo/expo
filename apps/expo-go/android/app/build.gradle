@@ -22,7 +22,6 @@ buildscript {
   }
 }
 apply plugin: 'com.android.application'
-apply plugin: 'org.jetbrains.kotlin.android'
 apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: 'com.facebook.react'
 
@@ -111,13 +110,8 @@ android {
       def shouldUploadCrashlytics = System.getenv("EAS_BUILD") != null
       firebaseCrashlytics {
         nativeSymbolUploadEnabled shouldUploadCrashlytics
+        unstrippedNativeLibsDir = file("${buildDir}/intermediates/merged_native_libs/release/mergeReleaseNativeLibs/out/lib")
       }
-    }
-  }
-
-  applicationVariants.all { variant ->
-    if (variant.buildType.name == 'release') {
-      variant.buildType.firebaseCrashlytics.unstrippedNativeLibsDir = file("${buildDir}/intermediates/merged_native_libs/${variant.name}/merge${variant.name.capitalize()}NativeLibs/out/lib")
     }
   }
 
@@ -140,7 +134,6 @@ android {
 import com.android.build.api.variant.AndroidComponentsExtension
 import org.xmlpull.v1.XmlPullParser
 import org.xmlpull.v1.XmlPullParserFactory
-import com.android.build.gradle.LibraryExtension
 import org.w3c.dom.Element
 
 // Based on RNGP's AgpConfiguratorPlugin
@@ -170,7 +163,10 @@ class AgpConfiguratorPlugin implements Plugin<Project> {
         AndroidComponentsExtension ext = subproject.extensions.getByType(AndroidComponentsExtension)
         ext.finalizeDsl { androidComponentProperties ->
           if (androidComponentProperties.namespace == null) {
-            LibraryExtension android = subproject.extensions.getByType(LibraryExtension)
+            // Looked up by name: AGP 9's new DSL no longer registers the legacy
+            // com.android.build.gradle.LibraryExtension type. Groovy duck-typing
+            // resolves sourceSets/manifest on both the old and new extension.
+            def android = subproject.extensions.getByName("android")
             def manifestFile = android.sourceSets.getByName("main").manifest.srcFile
 
              if (manifestFile.exists()) {
