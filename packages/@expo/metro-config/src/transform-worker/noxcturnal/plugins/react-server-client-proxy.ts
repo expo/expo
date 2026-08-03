@@ -14,6 +14,7 @@ interface ReactClientProxyState {
   input: NoxcturnalTransformInput;
   boundary: ServerBoundaryShared;
   enabled: boolean;
+  mockConsolePolyfill: boolean;
   server: boolean;
   exports: Set<string>;
 }
@@ -36,6 +37,7 @@ export function createReactServerClientProxyPlugin(
         input: expoPluginInput(context),
         boundary,
         enabled: false,
+        mockConsolePolyfill: false,
         server: false,
         exports: new Set(),
       };
@@ -53,6 +55,10 @@ export function createReactServerClientProxyPlugin(
             program.getChildList('directives').map((directive) => String(directive.node.value))
           );
           state.enabled = directives.has('use client') || directives.has('use dom');
+          state.mockConsolePolyfill =
+            state.enabled &&
+            (state.input.filename.endsWith('@react-native/js-polyfills/console.js') ||
+              state.input.filename.endsWith('@react-native\\js-polyfills\\console.js'));
           state.server = directives.has('use server');
           state.boundary.clientProxy = state.enabled;
           if (state.enabled && state.server) {
@@ -123,6 +129,11 @@ export function createReactServerClientProxyPlugin(
     ],
     post(context, state) {
       if (!state.enabled) return;
+      if (state.mockConsolePolyfill) {
+        const shebang = context.source.match(/^#![^\r\n]*(?:\r?\n|$)/)?.[0] ?? '';
+        context.editor.overwrite(0, context.source.length, shebang);
+        return;
+      }
       const outputKey =
         './' +
         path.relative(state.input.projectRoot, state.input.filename).split(path.sep).join('/');

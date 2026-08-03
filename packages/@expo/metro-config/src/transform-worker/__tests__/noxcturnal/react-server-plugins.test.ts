@@ -483,11 +483,33 @@ it('creates React Server client proxies natively', async () => {
   expect(result.result.code).toContain('registerClientReference');
   expect(result.result.code).toContain('m.exports = proxy');
   expect(result.result.code).not.toContain('module.exports = proxy');
+  expect(result.result.code).not.toContain('require("react-server-dom-webpack/server")');
+  expect(result.dependencies.map((dependency) => dependency.name)).toContain(
+    'react-server-dom-webpack/server'
+  );
   expect(result.result.code).not.toContain('function Component');
   expect(result.result.metadata.proxyExports).toEqual(['value', 'default']);
   expect(result.result.metadata.reactClientReference).toBe(
     'file:///repo/packages/expo-router/build/value.js'
   );
+});
+
+it('mocks the React Native console polyfill in unwrapped React Server bundles', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/node_modules/@react-native/js-polyfills/console.js',
+    projectRoot: '/app',
+    source: `'use client'; throw new Error('must not execute');`,
+    options: options({
+      minify: true,
+      customTransformOptions: { engine: 'hermes', environment: 'react-server' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: { ...fullConfig(), unstable_disableModuleWrapping: true },
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toBe('');
+  expect(result.dependencies).toEqual([]);
 });
 
 it.each(['use client', 'use dom'])(
