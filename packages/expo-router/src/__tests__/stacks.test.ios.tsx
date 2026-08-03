@@ -8,6 +8,7 @@ import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import type { StackScreenProps } from '../layouts/stack-utils';
 import { renderRouter, testRouter } from '../testing-library';
+import type { ScreenProps } from '../useScreens';
 
 jest.mock('react-native-screens', () => {
   const actualScreens = jest.requireActual(
@@ -720,7 +721,8 @@ describe('singular', () => {
 
 describe('Stack.Screen types', () => {
   it('accepts layout navigation props', () => {
-    expectTypeOf({ name: 'home', redirect: true }).toExtend<StackScreenProps>();
+    expectTypeOf<ScreenProps>().not.toHaveProperty('redirect');
+    expectTypeOf<StackScreenProps>().not.toHaveProperty('redirect');
     expectTypeOf({ name: 'profile', initialParams: { id: '123' } }).toExtend<StackScreenProps>();
     expectTypeOf({ name: 'settings', dangerouslySingular: true }).toExtend<StackScreenProps>();
     expectTypeOf({
@@ -752,6 +754,23 @@ describe('Stack.Screen types', () => {
       }),
     } satisfies StackScreenProps).toExtend<StackScreenProps>();
   });
+});
+
+it('does not deregister screens when passed the removed redirect prop', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="a" {...({ redirect: true } as Record<string, unknown>)} />
+        </Stack>
+      ),
+      a: () => <Text testID="a">A</Text>,
+      b: () => <Text>B</Text>,
+    },
+    { initialUrl: '/a' }
+  );
+
+  expect(screen.getByTestId('a')).toBeVisible();
 });
 
 describe('function-form options', () => {
