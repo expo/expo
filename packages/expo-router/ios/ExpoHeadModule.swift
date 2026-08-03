@@ -100,7 +100,7 @@ public class ExpoHeadModule: Module {
     }
 
     AsyncFunction("clearActivitiesAsync") { (ids: [String], promise: Promise) in
-      ids.forEach { id in
+      for id in ids {
         self.revokeActivity(id: id)
       }
 

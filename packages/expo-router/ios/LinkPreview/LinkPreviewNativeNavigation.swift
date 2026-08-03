@@ -62,7 +62,7 @@ internal class LinkPreviewNativeNavigation {
   }
 
   private func performTabChanges() {
-    self.tabChangeCommands.forEach { command in
+    for command in self.tabChangeCommands {
       command.tabBarController?.selectedIndex = command.tabIndex
     }
   }
