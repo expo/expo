@@ -1118,6 +1118,33 @@ it('collects and rewrites worker resolution through the Metro async runtime', as
   ]);
 });
 
+it('collects and rewrites Worker URL constructors through the Metro async runtime', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source: `const worker = new Worker(new URL('./worker', window.location.href));`,
+    options: options({ dev: true }),
+    isDefaultExpoTransformer: true,
+    config: {
+      allowOptionalDependencies: false,
+      asyncRequireModulePath: 'metro-runtime',
+      globalPrefix: '',
+      unstable_compactOutput: false,
+    },
+  });
+
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain('.unstable_createWorker)');
+  expect(result.result.code).toContain(
+    '.unstable_resolve(_dependencyMap[0], _dependencyMap.paths)'
+  );
+  expect(result.dependencies.map(({ name, data }) => [name, data.asyncType])).toEqual([
+    ['./worker', 'worker'],
+    ['metro-runtime', null],
+  ]);
+});
+
 it('collects require.context parameters and keeps distinct contexts separate', async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename,
@@ -2018,12 +2045,13 @@ it.each([
   expect(canonicalModuleBody(native.result.code, true)).toBe(canonicalModuleBody(expected.code));
 });
 
-it('uses static export values when live bindings are disabled', async () => {
+it('uses static import and export values when live bindings are disabled', async () => {
   const result = await transformFileFullyWithNoxcturnal({
     filename,
     projectRoot: '/app',
-    source: `import { value } from './source';
+    source: `import { value, other as importedOther } from './source';
       export function read() { return value; }
+      export { importedOther };
       export { other } from './other';`,
     options: options({
       dev: false,
@@ -2037,9 +2065,31 @@ it('uses static export values when live bindings are disabled', async () => {
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toMatch(/var value = .*\.value/);
+  expect(result.result.code).toMatch(/var importedOther = .*\.other/);
+  expect(result.result.code).toContain('exports.importedOther = importedOther');
   expect(result.result.code).toContain('exports.read = read');
-  expect(result.result.code).toMatch(/exports\.other = .*\.other/);
+  expect(result.result.code).toMatch(/var \w+ = .*\.other/);
   expect(result.result.code).not.toContain('Object.defineProperty(exports, "read"');
+});
+
+it('keeps browser globals unreachable in static server modules', async () => {
+  const result = await transformFileFullyWithNoxcturnal({
+    filename: '/app/node_modules/react-native-web/dist/modules/canUseDom/index.js',
+    projectRoot: '/app',
+    source: `var canUseDOM = !!(typeof window !== 'undefined' && window.document); export default canUseDOM;`,
+    options: options({
+      dev: false,
+      experimentalImportSupport: true,
+      customTransformOptions: { environment: 'node', liveBindings: 'false' },
+    }),
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  expect(result.result.code).toContain('var canUseDOM = false');
+  expect(result.result.code).toContain("Object.defineProperty(exports, '__esModule'");
+  expect(result.result.code).toContain('exports.default = _default');
 });
 
 it('lowers static ESM imports and exports through the full native path', async () => {

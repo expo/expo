@@ -62,11 +62,12 @@ export function createMetroLiveBindingsPlugin(
 
       for (const deferred of state.deferredExports) {
         if (deferred.kind === 'declaration') {
-          state.exportStatements.push(
+          const statement =
             (!liveBindings || deferred.assign) && deferred.name !== '__proto__'
               ? `${target}.${deferred.name} = ${deferred.name};`
-              : exportValue(deferred.name, deferred.name, target)
-          );
+              : exportValue(deferred.name, deferred.name, target);
+          if (liveBindings) state.exportStatements.push(statement);
+          else trailingExports.push(statement);
           continue;
         }
         const expression = state.importedBindings.get(deferred.local) ?? deferred.local;
@@ -98,6 +99,7 @@ export function createMetroLiveBindingsPlugin(
       const preamble: string[] = [];
       if (
         state.exportStatements.length > 0 ||
+        trailingExports.length > 0 ||
         state.moduleOrder.some((module) =>
           module.afterImport.some((operation) => operation.kind === 'statement')
         )
@@ -140,7 +142,7 @@ export function createMetroLiveBindingsPlugin(
           }
         }
       }
-      if (!liveBindings) preamble.push(...state.exportStatements);
+      if (!liveBindings) trailingExports.unshift(...state.exportStatements);
       if (preamble.length > 0) {
         context.prependToProgram(preamble.join('\n'));
       }
@@ -283,7 +285,6 @@ export function createMetroLiveBindingsPlugin(
             const binding = bindings.get(local);
             if (!binding) importPath.unsupported(`missing-import-binding:${local}`);
             for (const reference of binding?.references ?? []) {
-              if (reference.parentType === 'ExportSpecifier') continue;
               module.referenced = true;
               if (specifier.node.type === 'ImportNamespaceSpecifier') {
                 module.namespaceReferenced = true;
@@ -293,6 +294,7 @@ export function createMetroLiveBindingsPlugin(
               ) {
                 module.defaultReferenced = true;
               }
+              if (reference.parentType === 'ExportSpecifier') continue;
               if (expression === local) continue;
               if (reference.start == null || reference.end == null) {
                 importPath.unsupported(`missing-import-reference-range:${local}`);
@@ -428,6 +430,14 @@ export function createMetroLiveBindingsPlugin(
               } else {
                 expression = property(requiredLocal, imported);
               }
+              if (!liveBindings) {
+                const snapshot = generateUid(exportPath.scope.getProgramParent(), imported);
+                module.afterImport.push({
+                  kind: 'statement',
+                  code: `var ${snapshot} = ${expression};`,
+                });
+                expression = snapshot;
+              }
               state.exportStatements.push(
                 exportValue(
                   String(specifier.node.exported),
@@ -460,17 +470,6 @@ export function createMetroLiveBindingsPlugin(
                   }
                 ),
               ]);
-            }
-            if (!liveBindings) {
-              const target = exportsName(exportPath.context);
-              exportPath.replaceWith({
-                kind: 'composite',
-                parts: [
-                  declaration.getSource(),
-                  ...[...names].map((name) => `\n${target}.${name} = ${name};`),
-                ],
-              });
-              return;
             }
             exportPath.replaceWith(declaration.getSource());
             for (const name of names) {
@@ -514,17 +513,7 @@ export function createMetroLiveBindingsPlugin(
           const hasDeclaredName = typeof exportPath.node.declaredName === 'string';
           let local = hasDeclaredName ? exportPath.node.declaredName! : null;
           if (local) {
-            exportPath.replaceWith(
-              liveBindings
-                ? declaration!.getSource()
-                : {
-                    kind: 'composite',
-                    parts: [
-                      declaration!.getSource(),
-                      `\n${exportsName(exportPath.context)}.default = ${local};`,
-                    ],
-                  }
-            );
+            exportPath.replaceWith(declaration!.getSource());
           } else {
             if (declaration!.node.type === 'Class' || declaration!.node.type === 'Function') {
               local = exportPath.scope.generateUid('ref');
@@ -536,13 +525,11 @@ export function createMetroLiveBindingsPlugin(
               );
             }
           }
-          if (liveBindings) {
+          if (liveBindings)
             state.exportStatements.push(
               exportValue('default', local, exportsName(exportPath.context))
             );
-          } else if (!hasDeclaredName) {
-            state.deferredExports.push({ kind: 'specifier', local, exported: 'default' });
-          }
+          else state.deferredExports.push({ kind: 'specifier', local, exported: 'default' });
         }
       ),
       nox.defineVisitor(
@@ -609,10 +596,8 @@ export function createMetroLiveBindingsPlugin(
             if (!module.exportAll) {
               module.exportAll = true;
               const target = exportsName(exportPath.context);
-              module.afterImport.push({
-                kind: 'statement',
-                code: liveBindings
-                  ? `Object.keys(${requiredLocal}).forEach(function (k) {
+              const code = liveBindings
+                ? `Object.keys(${requiredLocal}).forEach(function (k) {
   if (k !== 'default' && !Object.prototype.hasOwnProperty.call(${target}, k)) {
     Object.defineProperty(${target}, k, {
       enumerable: true,
@@ -620,12 +605,13 @@ export function createMetroLiveBindingsPlugin(
     });
   }
 });`
-                  : `Object.keys(${requiredLocal}).forEach(function (k) {
+                : `Object.keys(${requiredLocal}).forEach(function (k) {
   if (k !== 'default' && !Object.prototype.hasOwnProperty.call(${target}, k)) {
     ${target}[k] = ${requiredLocal}[k];
   }
-});`,
-              });
+});`;
+              if (liveBindings) module.afterImport.push({ kind: 'statement', code });
+              else state.exportStatements.push(code);
             }
           }
           exportPath.remove();

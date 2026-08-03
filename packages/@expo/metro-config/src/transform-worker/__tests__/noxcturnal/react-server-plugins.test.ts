@@ -464,21 +464,25 @@ it('keeps compiled Expo workspace client directives on the Babel path', async ()
 });
 
 it('creates React Server client proxies natively', async () => {
-  const result = await transformNodeModuleWithNoxcturnal({
+  const result = await transformFileFullyWithNoxcturnal({
     filename: '/repo/packages/expo-router/build/value.js',
     projectRoot: '/repo/apps/example',
     source: `'use client';
       export const value = 1;
       export default function Component() { return null; }`,
     options: options({
+      minify: true,
       customTransformOptions: { engine: 'hermes', environment: 'react-server' },
     }),
     isDefaultExpoTransformer: true,
+    config: fullConfig(),
   });
   expect(result.status).toBe('complete');
   if (result.status !== 'complete') return;
   expect(result.result.code).toContain('createClientModuleProxy');
   expect(result.result.code).toContain('registerClientReference');
+  expect(result.result.code).toContain('m.exports = proxy');
+  expect(result.result.code).not.toContain('module.exports = proxy');
   expect(result.result.code).not.toContain('function Component');
   expect(result.result.metadata.proxyExports).toEqual(['value', 'default']);
   expect(result.result.metadata.reactClientReference).toBe(

@@ -394,6 +394,78 @@ export function createMetroDependencyPlugin(
         }
       ),
       nox.defineVisitor(
+        'NewExpression',
+        {
+          fields: ['calleeName', 'argumentCount'],
+        },
+        (worker, state: MetroDependencyState) => {
+          const callee = worker.node.calleeName;
+          if (callee !== 'Worker' && callee !== 'SharedWorker') return;
+          const source = worker.getSource().text();
+          const match = source.match(
+            /^(new\s+(?:Worker|SharedWorker)\s*\(\s*new\s+URL\s*\(\s*)(['"])([^'"]+)\2/
+          );
+          if (!match) return;
+          const name = match[3]!;
+
+          const { input, collectOnly } = metroPluginData(worker.context);
+          const targetKey = `${name}\0require\0worker`;
+          let target = state.dependencies.get(targetKey);
+          if (!target) {
+            target = {
+              name,
+              index: state.dependencies.size,
+              imports: 0,
+              data: {
+                key: dependencyKeyHash(targetKey),
+                asyncType: 'worker',
+                isESMImport: false,
+                locs: [],
+                exportNames: ['*'],
+              },
+            };
+            state.dependencies.set(targetKey, target);
+          }
+          target.imports++;
+          (target.data.locs as any[]).push(worker.getLocation());
+
+          const runtimeName = input.config.asyncRequireModulePath;
+          const runtimeKey = `${runtimeName}\0require`;
+          let runtime = state.dependencies.get(runtimeKey);
+          if (!runtime) {
+            runtime = {
+              name: runtimeName,
+              index: state.dependencies.size,
+              imports: 0,
+              data: {
+                key: dependencyKeyHash(runtimeKey),
+                asyncType: null,
+                isESMImport: false,
+                locs: [],
+                exportNames: ['*'],
+              },
+            };
+            state.dependencies.set(runtimeKey, runtime);
+          }
+          runtime.imports++;
+          (runtime.data.locs as any[]).push(worker.getLocation());
+          if (collectOnly) return;
+
+          const requireRuntime = nativeRequire(worker.context, state, runtime.index, runtimeName);
+          const resolved = `${requireRuntime}.unstable_resolve(${state.dependencyMapName}[${target.index}], ${state.dependencyMapName}.paths)`;
+          const rewritten = source
+            .replace(
+              /^new\s+(?:Worker|SharedWorker)/,
+              `new (${requireRuntime}.unstable_createWorker)`
+            )
+            .replace(`${match[2]}${name}${match[2]}`, resolved);
+          worker.replaceWith({
+            code: rewritten,
+            mapping: 'anchor-boundaries',
+          });
+        }
+      ),
+      nox.defineVisitor(
         'CallExpression',
         {
           fields: ['calleeName', 'calleePath', 'calleeGlobal', 'staticArgument', 'argumentCount'],

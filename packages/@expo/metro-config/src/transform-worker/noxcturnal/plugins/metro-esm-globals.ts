@@ -1,6 +1,6 @@
 import type { DefinedNativePlugin } from 'noxcturnal';
 
-import type { Noxcturnal } from '../noxcturnal-transformer';
+import { metroPluginData, type Noxcturnal } from '../noxcturnal-transformer';
 
 export function createMetroEsmGlobalsPlugin(nox: Noxcturnal): DefinedNativePlugin {
   return nox.defineNativePlugin({
@@ -13,6 +13,25 @@ export function createMetroEsmGlobalsPlugin(nox: Noxcturnal): DefinedNativePlugi
           }
         }
       }),
+      nox.defineVisitor(
+        'Identifier',
+        {
+          fields: ['name', 'global'],
+          where: { name: { oneOf: ['global', 'module', 'exports'] } },
+        },
+        (identifier) => {
+          if (
+            identifier.node.global !== true ||
+            !metroPluginData(identifier.context).normalizePseudoGlobals
+          ) {
+            return;
+          }
+          const replacement = { global: 'g', module: 'm', exports: 'e' }[
+            String(identifier.node.name)
+          ];
+          if (replacement) identifier.replaceWith(replacement);
+        }
+      ),
     ],
   });
 }
