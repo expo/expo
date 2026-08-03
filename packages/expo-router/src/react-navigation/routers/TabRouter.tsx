@@ -347,14 +347,24 @@ export function TabRouter({
           }
 
           const focusedKey = state.routes[state.index]!.key;
-          const index = Math.max(
-            0,
-            routes.findIndex((route) => route.key === focusedKey)
-          );
+          const focusedIndex = routes.findIndex((route) => route.key === focusedKey);
+          const index = Math.max(0, focusedIndex);
           const routeKeys = routes.map((route) => route.key);
           let history = state.history.filter(
             (item) => item.type !== 'route' || routeKeys.includes(item.key)
           );
+
+          if (
+            focusedIndex === -1 &&
+            (backBehavior === 'history' || backBehavior === 'fullHistory')
+          ) {
+            history = changeIndex(
+              { ...state, routeNames, routes, index, history },
+              index,
+              backBehavior,
+              initialRouteName
+            ).history;
+          }
 
           if (
             backBehavior === 'firstRoute' ||

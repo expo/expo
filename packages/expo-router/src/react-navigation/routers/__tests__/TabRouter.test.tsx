@@ -796,6 +796,41 @@ test('prunes preloaded keys when route names change', () => {
   ).toMatchObject({ preloadedRouteKeys: ['baz-test'] });
 });
 
+test.each<['history' | 'fullHistory', string[]]>([
+  ['history', ['qux-test', 'bar-test']],
+  ['fullHistory', ['bar-test', 'qux-test', 'bar-test']],
+])(
+  'keeps visit history aligned when the focused route is removed with backBehavior: %s',
+  (backBehavior, expectedHistory) => {
+    const router = TabRouter({ backBehavior });
+    const options: RouterConfigOptions = {
+      routeNames: ['bar', 'baz', 'qux'],
+      routeParamList: {},
+      routeGetIdList: {},
+    };
+    const state = {
+      ...router.getInitialState(options),
+      index: 1,
+      history: [
+        { type: 'route' as const, key: 'bar-test' },
+        { type: 'route' as const, key: 'qux-test' },
+        { type: 'route' as const, key: 'baz-test' },
+      ],
+    };
+
+    expect(
+      router.getStateForAction(
+        state,
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'qux'] } },
+        { ...options, routeNames: ['bar', 'qux'] }
+      )
+    ).toMatchObject({
+      index: 0,
+      history: expectedHistory.map((key) => ({ type: 'route', key })),
+    });
+  }
+);
+
 test('handles navigate action', () => {
   const router = TabRouter({});
   const options: RouterConfigOptions = {
