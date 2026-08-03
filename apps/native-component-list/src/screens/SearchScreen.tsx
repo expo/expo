@@ -36,6 +36,8 @@ export default function SearchScreen() {
   const searchBarRef = React.useRef<SearchBarCommands>(null);
 
   React.useLayoutEffect(() => {
+    // The web header turns these options into a button that expands its own search field.
+    // Web renders a plain input below instead, so setting them would show both.
     if (Platform.OS === 'web') {
       return;
     }
