@@ -24,25 +24,21 @@ public final class FontLoaderModule: Module {
     AsyncFunction("loadAsync") { (fontFamilyAlias: String, localUri: URL) in
       let fontUrl = localUri as CFURL
       // If the font was already registered, unregister it first. Otherwise CTFontManagerRegisterFontsForURL
-      // would fail because of a duplicated font name when the app reloads or someone wants to override a font.
-      if FontFamilyAliasManager.familyName(forAlias: fontFamilyAlias) != nil {
+      // would fail because of a duplicated font name when the app reloads or someone wants to override a font. Note that re-registering under an existing alias is skipped in the JS layer.
+      if FontFamilyAliasManager.hasAlias(fontFamilyAlias) {
         guard try unregisterFont(url: fontUrl) else {
           return
         }
       }
 
-      // Register the font
       try registerFont(fontUrl: fontUrl, fontFamilyAlias: fontFamilyAlias)
 
-      // Create a font object from the given URL
-      let font = try loadFont(fromUrl: fontUrl, alias: fontFamilyAlias)
+      // Alias every name the file provides to `fontFamilyAlias` — one per named instance for a variable font — that makes its weights reachable through `fontWeight` style prop.
+      let aliasedNames = try postScriptNames(inFileAt: fontUrl, alias: fontFamilyAlias)
 
-      if let postScriptName = font.postScriptName as? String {
-        FontFamilyAliasManager.setAlias(fontFamilyAlias, forFont: postScriptName)
-        registeredFonts = Array(Set(registeredFonts).union([postScriptName, fontFamilyAlias]))
-      } else {
-        throw FontNoPostScriptException(fontFamilyAlias)
-      }
+      FontFamilyAliasManager.setAlias(fontFamilyAlias, forPostScriptNames: aliasedNames)
+
+      registeredFonts = Array(Set(registeredFonts).union([aliasedNames[0], fontFamilyAlias]))
     }
   }
 }
