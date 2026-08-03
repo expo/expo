@@ -46,6 +46,19 @@ function createNavigationTheme(themeName: ThemeName, theme: ThemeType): Navigati
   };
 }
 
+// `NativeTabs` styles its web tab bar from CSS variables that fall back to a dark palette, and it
+// never reads the navigation theme, so web has to be given the colors.
+export function getWebNativeTabsTheme(theme: ThemeType) {
+  return {
+    backgroundColor: theme.background.element,
+    indicatorColor: theme.background.selected,
+    labelStyle: {
+      default: { color: theme.text.secondary },
+      selected: { color: theme.text.default },
+    },
+  };
+}
+
 export function ThemeProvider({ children }: PropsWithChildren) {
   const systemColorScheme = useColorScheme();
   // react-native-web's Appearance has no setColorScheme, so keep an override in state.

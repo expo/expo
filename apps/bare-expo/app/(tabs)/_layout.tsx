@@ -1,3 +1,4 @@
+import { getWebNativeTabsTheme, useTheme } from 'ThemeProvider';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import * as React from 'react';
 
@@ -10,8 +11,9 @@ const hasNativeComponentList = !!optionalRequire(() =>
 );
 
 export default function TabsLayout() {
+  const { theme } = useTheme();
   return (
-    <NativeTabs>
+    <NativeTabs {...(process.env.EXPO_OS === 'web' && getWebNativeTabsTheme(theme))}>
       <NativeTabs.Trigger name="test-suite">
         <NativeTabs.Trigger.Icon sf="checklist" md="checklist" />
         <NativeTabs.Trigger.Label>Tests</NativeTabs.Trigger.Label>
