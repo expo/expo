@@ -735,38 +735,45 @@ test('returns the same tab state when route names already match', () => {
   ).toBe(state);
 });
 
-test('keeps route order and focus while rebuilding ordered history', () => {
-  const router = TabRouter({ backBehavior: 'order' });
-  const options: RouterConfigOptions = {
-    routeNames: ['bar', 'baz', 'qux'],
-    routeParamList: {},
-    routeGetIdList: {},
-  };
-  const state = {
-    ...router.getInitialState(options),
-    index: 1,
-    history: [
-      { type: 'route' as const, key: 'bar-test' },
-      { type: 'route' as const, key: 'baz-test' },
-    ],
-  };
+test.each<[Parameters<typeof TabRouter>[0]['backBehavior'], string[]]>([
+  ['firstRoute', ['qux-test', 'baz-test']],
+  ['initialRoute', ['bar-test', 'baz-test']],
+  ['order', ['qux-test', 'baz-test']],
+  ['history', ['bar-test', 'baz-test']],
+  ['fullHistory', ['bar-test', 'baz-test']],
+  ['none', ['bar-test', 'baz-test']],
+])(
+  'keeps route order and focus on an order-only change with backBehavior: %s',
+  (backBehavior, expectedHistory) => {
+    const router = TabRouter({ backBehavior, initialRouteName: 'bar' });
+    const options: RouterConfigOptions = {
+      routeNames: ['bar', 'baz', 'qux'],
+      routeParamList: {},
+      routeGetIdList: {},
+    };
+    const state = {
+      ...router.getInitialState(options),
+      index: 1,
+      history: [
+        { type: 'route' as const, key: 'bar-test' },
+        { type: 'route' as const, key: 'baz-test' },
+      ],
+    };
 
-  expect(
-    router.getStateForAction(
-      state,
-      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'bar'] } },
-      { ...options, routeNames: ['qux', 'baz', 'bar'] }
-    )
-  ).toMatchObject({
-    index: 1,
-    routeNames: ['qux', 'baz', 'bar'],
-    routes: state.routes,
-    history: [
-      { type: 'route', key: 'qux-test' },
-      { type: 'route', key: 'baz-test' },
-    ],
-  });
-});
+    expect(
+      router.getStateForAction(
+        state,
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'bar'] } },
+        { ...options, routeNames: ['qux', 'baz', 'bar'] }
+      )
+    ).toMatchObject({
+      index: 1,
+      routeNames: ['qux', 'baz', 'bar'],
+      routes: state.routes,
+      history: expectedHistory.map((key) => ({ type: 'route', key })),
+    });
+  }
+);
 
 test('prunes preloaded keys when route names change', () => {
   const router = TabRouter({});

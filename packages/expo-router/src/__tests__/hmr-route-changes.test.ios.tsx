@@ -8,6 +8,7 @@ import { store } from '../global-state/router-store';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
+import { usePreventRemove } from '../react-navigation/native';
 import { getMockContext, renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../ui';
 
@@ -70,6 +71,27 @@ it('does not crash when the currently focused route file is removed', () => {
     result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />)
   ).not.toThrow();
 
+  expect(result.getRouterState()!.routes[0]!.state!.routeNames).toStrictEqual(['index']);
+});
+
+it('does not allow removal prevention to block route file changes', () => {
+  const beforeRemove = jest.fn();
+  const Second = () => {
+    usePreventRemove(true, beforeRemove);
+    return <Text testID="second">Second</Text>;
+  };
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Stack />,
+    index: () => <Text testID="index">Index</Text>,
+    second: Second,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/second' });
+  delete routes.second;
+
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/second" />);
+
+  expect(beforeRemove).not.toHaveBeenCalled();
   expect(result.getRouterState()!.routes[0]!.state!.routeNames).toStrictEqual(['index']);
 });
 
@@ -153,7 +175,12 @@ it('preserves surviving stack history when a route file is renamed', () => {
 
 it('does not crash when a tab route file is renamed after navigation', () => {
   const routes: Record<string, () => ReactElement | null> = {
-    _layout: () => <Tabs />,
+    _layout: () => {
+      const screens = [<Tabs.Screen key="index" name="index" />];
+      if (routes.second) screens.push(<Tabs.Screen key="second" name="second" />);
+      if (routes.third) screens.push(<Tabs.Screen key="third" name="third" />);
+      return <Tabs>{screens}</Tabs>;
+    },
     index: () => <Text testID="index">Index</Text>,
     second: () => <Text testID="second">Second</Text>,
   };
@@ -177,6 +204,34 @@ it('does not crash when a tab route file is renamed after navigation', () => {
   ]);
   expect(replace).not.toHaveBeenCalled();
   replace.mockRestore();
+});
+
+it('focuses the first tab when the focused third tab is removed', () => {
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => {
+      const screens = [
+        <Tabs.Screen key="index" name="index" />,
+        <Tabs.Screen key="second" name="second" />,
+      ];
+      if (routes.third) screens.push(<Tabs.Screen key="third" name="third" />);
+      return <Tabs>{screens}</Tabs>;
+    },
+    index: () => <Text testID="index">Index</Text>,
+    second: () => <Text testID="second">Second</Text>,
+    third: () => <Text testID="third">Third</Text>,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/' });
+  act(() => router.push('/third'));
+  expect(screen.getByTestId('third')).toBeVisible();
+
+  delete routes.third;
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+
+  const state = result.getRouterState()!.routes[0]!.state!;
+  expect(state.index).toBe(0);
+  expect(state.routeNames).toStrictEqual(['index', 'second']);
+  expect(screen.getByTestId('index')).toBeVisible();
 });
 
 it('does not redirect when the focused headless tab trigger is removed', () => {

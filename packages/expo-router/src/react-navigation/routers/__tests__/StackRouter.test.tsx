@@ -335,6 +335,35 @@ test('returns the same stack state when route names already match', () => {
   ).toBe(state);
 });
 
+test('promotes a surviving preloaded route when every active route is removed', () => {
+  const router = StackRouter({});
+  const state = {
+    stale: false as const,
+    type: 'stack' as const,
+    key: 'stack-test',
+    index: 0,
+    routeNames: ['active', 'preloaded', 'removed'],
+    routes: [
+      { key: 'active-test', name: 'active' },
+      { key: 'preloaded-existing', name: 'preloaded' },
+      { key: 'removed-test', name: 'removed' },
+    ],
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['preloaded', 'new'] } },
+      { routeNames: ['preloaded', 'new'], routeParamList: {}, routeGetIdList: {} }
+    )
+  ).toEqual({
+    ...state,
+    index: 0,
+    routeNames: ['preloaded', 'new'],
+    routes: [{ key: 'preloaded-existing', name: 'preloaded' }],
+  });
+});
+
 test('handles navigate action', () => {
   const router = StackRouter({});
   const options: RouterConfigOptions = {

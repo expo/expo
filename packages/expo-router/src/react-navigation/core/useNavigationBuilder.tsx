@@ -576,7 +576,7 @@ export function useNavigationBuilder<
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
-    lastStateRef.current = state;
+    lastStateRef.current = nextState;
   });
 
   const lastNotifiedStateRef = React.useRef<State | null>(null);
@@ -594,8 +594,8 @@ export function useNavigationBuilder<
       // This is necessary for proper screen tracking, URL updates etc.
       // We only notify if the state is different what we already notified
       // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(state);
-      lastNotifiedStateRef.current = state;
+      setState(nextState);
+      lastNotifiedStateRef.current = nextState;
     }
 
     return () => {

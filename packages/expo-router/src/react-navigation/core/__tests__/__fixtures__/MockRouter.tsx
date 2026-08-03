@@ -109,8 +109,24 @@ export function MockRouter(options: DefaultRouterOptions) {
 
     getStateForAction(state, action, { routeParamList }) {
       switch (action.type) {
-        case 'ROUTE_NAMES_CHANGED':
-          return getStateForRouteNamesChange(state, action.payload.routeNames);
+        case 'ROUTE_NAMES_CHANGED': {
+          const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
+
+          if (nextState.routes.length !== 0) {
+            return nextState;
+          }
+
+          return {
+            ...nextState,
+            index: 0,
+            routes: [
+              {
+                name: action.payload.routeNames[0]!,
+                key: `${action.payload.routeNames[0]}-${MockRouterKey.current++}`,
+              },
+            ],
+          };
+        }
 
         case 'UPDATE':
           return { ...state };

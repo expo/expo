@@ -317,11 +317,19 @@ export function StackRouter(options: StackRouterOptions) {
                 ? initialRouteName
                 : routeNames[0]!;
 
-            routes.push({
-              key: `${fallbackName}-${nanoid()}`,
-              name: fallbackName,
-              params: routeParamList[fallbackName],
-            });
+            const preloadedIndex = filteredPreloadedRoutes.findIndex(
+              (route) => route.name === fallbackName
+            );
+            const fallbackRoute =
+              preloadedIndex === -1
+                ? {
+                    key: `${fallbackName}-${nanoid()}`,
+                    name: fallbackName,
+                    params: routeParamList[fallbackName],
+                  }
+                : filteredPreloadedRoutes[preloadedIndex]!;
+
+            routes.push(fallbackRoute);
           }
 
           return {
