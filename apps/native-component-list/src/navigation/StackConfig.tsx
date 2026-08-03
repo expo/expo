@@ -1,5 +1,5 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { ThemeType } from 'ThemeProvider';
+import { ThemeType, useTheme } from 'ThemeProvider';
 import { Stack, router, type NativeStackNavigationOptions, useRouter } from 'expo-router';
 import * as React from 'react';
 import { View, Platform, TouchableOpacity } from 'react-native';
@@ -19,9 +19,9 @@ export function getStackScreenOptions(theme: ThemeType): NativeStackNavigationOp
   };
 }
 
-// Returns the element instead of a component, because `Stack.Screen` reads its children by
-// element type and ignores anything else.
-export function getSearchToolbar(theme: ThemeType) {
+/** Header search button, rendered by the screens that browse the API and component lists. */
+export function SearchToolbar() {
+  const { theme } = useTheme();
   return (
     <Stack.Toolbar placement="right">
       <Stack.Toolbar.Button

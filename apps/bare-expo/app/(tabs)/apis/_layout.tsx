@@ -4,18 +4,15 @@ import * as React from 'react';
 
 import { optionalRequire } from '../../../optionalRequire';
 
-const stackConfig = optionalRequire(() =>
+const getStackScreenOptions = optionalRequire(() =>
   require('native-component-list/src/navigation/StackConfig')
-);
+)?.getStackScreenOptions;
 
 export default function ApisLayout() {
   const { theme } = useTheme();
   return (
-    <Stack screenOptions={stackConfig?.getStackScreenOptions(theme)}>
-      <Stack.Screen name="index" options={{ title: 'APIs in Expo SDK' }}>
-        {stackConfig?.getSearchToolbar(theme)}
-      </Stack.Screen>
-      <Stack.Screen name="[...id]">{stackConfig?.getSearchToolbar(theme)}</Stack.Screen>
+    <Stack screenOptions={getStackScreenOptions?.(theme)}>
+      <Stack.Screen name="index" options={{ title: 'APIs in Expo SDK' }} />
     </Stack>
   );
 }
