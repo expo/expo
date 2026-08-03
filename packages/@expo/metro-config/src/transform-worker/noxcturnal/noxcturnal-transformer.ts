@@ -13,7 +13,7 @@ import type {
 } from 'noxcturnal';
 
 import type { Dependency } from '../collect-dependencies';
-import { isReactNativeCodegenCandidate } from './codegen';
+import { mayContainReactNativeCodegen } from './codegen';
 import { getHermesV0PreflightConfig } from './configs/hermes-v0';
 import { getHermesV1PreflightConfig } from './configs/hermes-v1';
 import type { ProfilePreflightFacts } from './configs/types';
@@ -46,6 +46,7 @@ import { createNativeEsmEligibilityPlugin } from './plugins/native-esm-eligibili
 import { createPlatformSelectPlugin } from './plugins/platform-select';
 import { createProcessEnvPlugin } from './plugins/process-env';
 import { createReactDisplayNamePlugin } from './plugins/react-display-name';
+import { createReactNativeCodegenEligibilityPlugin } from './plugins/react-native-codegen';
 import { createReactNativeWebPlugin } from './plugins/react-native-web';
 import { createReactServerClientProxyPlugin } from './plugins/react-server-client-proxy';
 import { createReactServerDirectiveBoundaryPlugin } from './plugins/react-server-directive-boundary';
@@ -229,7 +230,6 @@ export interface NoxcturnalSourceFacts {
   directive?: 'client' | 'server' | 'dom';
   hasActionableClientDirective: boolean;
   hasFlowPragma: boolean;
-  hasCodegenNames: boolean;
   hasExport: boolean;
   hasRouterServerExport: boolean;
   hasPseudoGlobals: boolean;
@@ -256,11 +256,10 @@ export interface NoxcturnalSourceFacts {
   hasSlash: boolean;
   hasJsxCandidate: boolean;
   hasComments: boolean;
-  reactNativeCodegen?: boolean;
 }
 
 const SOURCE_SIGNAL =
-  /["']use (?:server|dom)["']|@flow\b|codegenNativeComponent|codegenNativeCommands|TurboModule|\bexport\b|\b(?:loader|generateMetadata)\b|\b(?:global|module|exports)\b|\b(?:process|Platform|__DEV__)\b|\btypeof\s+window\b|EXPO_PUBLIC_|select|\bclass\b|\bfinally\b|\bsuper\b|\basync(?:\s+function)?\s*\*|\basync\b|\bstatic\s*\{|#[A-Za-z_$][\w$]*/g;
+  /["']use (?:server|dom)["']|@flow\b|\bexport\b|\b(?:loader|generateMetadata)\b|\b(?:global|module|exports)\b|\b(?:process|Platform|__DEV__)\b|\btypeof\s+window\b|EXPO_PUBLIC_|select|\bclass\b|\bfinally\b|\bsuper\b|\basync(?:\s+function)?\s*\*|\basync\b|\bstatic\s*\{|#[A-Za-z_$][\w$]*/g;
 
 export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFacts {
   const facts: NoxcturnalSourceFacts = {
@@ -269,7 +268,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
       | undefined,
     hasActionableClientDirective: false,
     hasFlowPragma: false,
-    hasCodegenNames: false,
     hasExport: false,
     hasRouterServerExport: false,
     hasPseudoGlobals: false,
@@ -306,12 +304,6 @@ export function createNoxcturnalSourceFacts(source: string): NoxcturnalSourceFac
     if (signal.includes('use server') || signal.includes('use dom'))
       facts.hasActionableClientDirective = true;
     else if (signal === '@flow') facts.hasFlowPragma = true;
-    else if (
-      signal === 'codegenNativeComponent' ||
-      signal === 'codegenNativeCommands' ||
-      signal === 'TurboModule'
-    )
-      facts.hasCodegenNames = true;
     else if (signal === 'export') facts.hasExport = true;
     else if (signal === 'loader' || signal === 'generateMetadata')
       facts.hasRouterServerExport = true;
@@ -493,17 +485,6 @@ function isSupportedJavaScriptSource(filename: string): boolean {
   );
 }
 
-/** Whether Expo must preserve this source for React Native Codegen and Babel. */
-function isReactNativeCodegenSource(
-  input: NoxcturnalTransformInput,
-  sourceFacts: NoxcturnalSourceFacts
-): boolean {
-  return (
-    sourceFacts.hasCodegenNames &&
-    (sourceFacts.reactNativeCodegen ??= isReactNativeCodegenCandidate(input.source, input.filename))
-  );
-}
-
 function getEarlyFallbackReason(
   input: NoxcturnalTransformInput,
   allowProductionAppSource = false,
@@ -540,9 +521,6 @@ function getEarlyFallbackReason(
   if (input.hasNonDefaultBabelConfig) return 'non-default-babel-config';
   if (options.type === 'asset') return 'asset';
   if (!isSupportedJavaScriptSource(filename)) return 'unsupported-source-extension';
-  if (getBaseProfile(input) !== 'web' && isReactNativeCodegenSource(input, sourceFacts)) {
-    return 'react-native-codegen';
-  }
   const directive = sourceFacts.directive;
   if (
     directive &&
@@ -791,17 +769,22 @@ function createReactCompilerPreflight(input: NoxcturnalTransformInput): Prefligh
 function parserMode(
   input: NoxcturnalTransformInput,
   sourceFacts = input.sourceFacts ?? createNoxcturnalSourceFacts(input.source)
-): 'auto' | 'jsx' {
+): 'auto' | 'jsx' | 'tsx' {
   // Flow must first reach Noxcturnal's native Flow erasure. For otherwise plain
   // JavaScript files, Babel accepts JSX regardless of whether the extension
   // spells `.jsx`. JSX parsing is therefore an extension policy, not a
   // source-text guess. TypeScript keeps Babel's `.ts`/`.tsx` distinction.
-  return !sourceFacts.hasFlowPragma &&
-    (/\.(?:[cm]?js|jsx)$/.test(input.filename) ||
-      input.filename.startsWith('\0polyfill:') ||
-      /(?:^|[/\\])[^/\\?]+\?ctx=[^/\\]+$/.test(input.filename))
+  if (sourceFacts.hasFlowPragma) return 'auto';
+  if (mayContainReactNativeCodegen(input.source)) return 'tsx';
+  return /\.(?:[cm]?js|jsx)$/.test(input.filename) ||
+    input.filename.startsWith('\0polyfill:') ||
+    /(?:^|[/\\])[^/\\?]+\?ctx=[^/\\]+$/.test(input.filename)
     ? 'jsx'
     : 'auto';
+}
+
+function fallbackReason(reason: string): string {
+  return reason.endsWith(':react-native-codegen') ? 'react-native-codegen' : reason;
 }
 
 const stableSourcePlugins = new Map<string, DefinedNativePlugin<any>>();
@@ -946,6 +929,12 @@ function createPipeline(
   }
   const native = createProfilePreflight(input, sourceFacts);
   const reactCompiler = createReactCompilerPreflight(input);
+  const reactNativeCodegenEligibility =
+    baseProfile !== 'web' && mayContainReactNativeCodegen(input.source)
+      ? stableSourcePlugin('react-native-codegen-eligibility', () =>
+          createReactNativeCodegenEligibilityPlugin(nox)
+        )
+      : null;
   // This phase handles directive-based server boundaries and a very small set
   // of Expo Router exports. Most dependencies contain neither. Omitting it
   // avoids an otherwise wasted JS dispatch and, when a native language phase
@@ -993,6 +982,14 @@ function createPipeline(
       ];
   return nox.defineNativePipeline({
     phases: [
+      ...(reactNativeCodegenEligibility == null
+        ? []
+        : [
+            {
+              name: 'react-native-codegen-eligibility',
+              plugins: [reactNativeCodegenEligibility],
+            },
+          ]),
       ...(reactCompiler == null ? [] : [{ name: 'react-compiler', native: reactCompiler }]),
       ...(includeServerExportsPhase
         ? [
@@ -1169,7 +1166,9 @@ export function transformFileFullyWithNoxcturnalSync(
     functionMap: true,
     pluginData,
   });
-  if (result.status !== 'complete') return { status: 'fallback', reason: result.reason };
+  if (result.status !== 'complete') {
+    return { status: 'fallback', reason: fallbackReason(result.reason) };
+  }
   const dependencies = result.metadata.dependencies;
   const dependencyMapName = result.metadata.dependencyMapName;
   if (!Array.isArray(dependencies) || typeof dependencyMapName !== 'string') {
@@ -1226,7 +1225,7 @@ export function transformNodeModuleWithNoxcturnalSync(
   );
   return result.status === 'complete'
     ? { status: 'complete', result }
-    : { status: 'fallback', reason: result.reason };
+    : { status: 'fallback', reason: fallbackReason(result.reason) };
 }
 
 export async function transformNodeModuleWithNoxcturnal(
