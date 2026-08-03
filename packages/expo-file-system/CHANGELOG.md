@@ -25,6 +25,18 @@
 - Improve read/write performance on Android by applying `withContext(Dispatchers.IO)` when possible. ([#46376](https://github.com/expo/expo/pull/46376), [#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
 - Improved `FileHandle` docs. ([#46849](https://github.com/expo/expo/pull/46849) by [@barthap](https://github.com/barthap))
 
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
 ## 56.0.7 — 2026-05-20
 
 ### 🛠 Breaking changes

@@ -1,13 +1,13 @@
 import { getConfig, modifyConfigAsync } from '@expo/config';
 import chalk from 'chalk';
 
-import * as Security from './Security';
-import { getLastDeveloperCodeSigningIdAsync, setLastDeveloperCodeSigningIdAsync } from './settings';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { isInteractive } from '../../../utils/interactive';
 import { learnMore } from '../../../utils/link';
 import { selectAsync } from '../../../utils/prompts';
+import * as Security from './Security';
+import { getLastDeveloperCodeSigningIdAsync, setLastDeveloperCodeSigningIdAsync } from './settings';
 
 /**
  * Sort the code signing items so the last selected item (user's default) is the first suggested.

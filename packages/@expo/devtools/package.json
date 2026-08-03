@@ -1,6 +1,6 @@
 {
   "name": "@expo/devtools",
-  "version": "56.0.2",
+  "version": "57.0.1",
   "description": "DevTools plugin helpers for Expo",
   "keywords": [
     "cli-extensions",

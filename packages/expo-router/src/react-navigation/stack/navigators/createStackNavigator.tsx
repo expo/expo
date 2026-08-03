@@ -11,7 +11,6 @@ import {
   type StackNavigationState,
   StackRouter,
   type StackRouterOptions,
-  type StaticConfig,
   type TypedNavigator,
   useLocale,
   useNavigationBuilder,
@@ -27,7 +26,6 @@ import { StackView } from '../views/Stack/StackView';
 function StackNavigator({
   id,
   initialRouteName,
-  UNSTABLE_routeNamesChangeBehavior,
   children,
   layout,
   screenListeners,
@@ -38,7 +36,7 @@ function StackNavigator({
 }: StackNavigatorProps) {
   const { direction } = useLocale();
 
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -47,7 +45,6 @@ function StackNavigator({
   >(StackRouter, {
     id,
     initialRouteName,
-    UNSTABLE_routeNamesChangeBehavior,
     children,
     layout,
     screenListeners,
@@ -88,7 +85,6 @@ function StackNavigator({
         {...rest}
         direction={direction}
         state={state}
-        describe={describe}
         descriptors={descriptors}
         navigation={navigation}
       />
@@ -110,7 +106,6 @@ export function createStackNavigator<
     };
     Navigator: typeof StackNavigator;
   },
-  const Config extends StaticConfig<TypeBag> = StaticConfig<TypeBag>,
->(config?: Config): TypedNavigator<TypeBag, Config> {
-  return createNavigatorFactory(StackNavigator)(config);
+>(): TypedNavigator<TypeBag> {
+  return createNavigatorFactory(StackNavigator)();
 }

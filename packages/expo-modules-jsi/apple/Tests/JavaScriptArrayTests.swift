@@ -139,7 +139,7 @@ struct JavaScriptArrayTests {
     #expect(try array.getValue(at: 1).getBool() == true)
     #expect(try array.getValue(at: 2).isNull() == true)
     #expect(try array.getValue(at: 3).isUndefined() == true)
-    #expect(try array.getValue(at: 4).getInt() == 5)  // Unchanged
+    #expect(try array.getValue(at: 4).getInt() == 5) // Unchanged
   }
 
   @Test

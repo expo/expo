@@ -1,6 +1,6 @@
 {
   "name": "@expo/config",
-  "version": "56.0.9",
+  "version": "57.0.6",
   "description": "A library for interacting with the app.json",
   "keywords": [
     "expo",

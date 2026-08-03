@@ -1,6 +1,6 @@
 {
   "name": "expo-router",
-  "version": "56.2.7",
+  "version": "57.0.9",
   "description": "Expo Router is a file-based router for React Native and web applications.",
   "keywords": [
     "expo",
@@ -173,6 +173,14 @@
       },
       "expo-source": "./src/layouts/TopTabs.tsx",
       "default": "./build/layouts/TopTabs.js"
+    },
+    "./react-navigation": {
+      "types": {
+        "expo-source": "./src/react-navigation/index.ts",
+        "default": "./build/react-navigation/index.d.ts"
+      },
+      "expo-source": "./src/react-navigation/index.ts",
+      "default": "./build/react-navigation/index.js"
     },
     "./server": {
       "types": {

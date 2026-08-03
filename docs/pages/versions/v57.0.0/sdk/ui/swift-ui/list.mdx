@@ -14,6 +14,8 @@ import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI List matches the official SwiftUI [List API](https://developer.apple.com/documentation/swiftui/list) and supports styling via the [`listStyle`](modifiers/#liststylestyle) modifier, various row/section modifiers, as well as selection, reordering, and editing capabilities.
 
+> **info** `List` does not lazily render rows yet: React creates every row up front, so large lists can be slow to mount. We are working on improving this. For large lists, we recommend [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list).
+
 <ContentSpotlight
   variant="component"
   aspect="landscape"
@@ -120,7 +122,7 @@ export default function ListStylesExample() {
 
 Enable selection, deletion, and reordering of list items using the [`List.ForEach`](#listforeach) compound component with `onDelete` and `onMove` props.
 
-- Use the [`environment`](modifiers/#environment) modifier to enable edit mode
+- Use the [`environment`](modifiers/#environmentkey-value) modifier to enable edit mode
 - Use the [`tag`](modifiers/#tagtag) modifier to identify items
 - Use the [`selection`](#selection) prop to control selected items
 - Use [`moveDisabled`](modifiers/#movedisableddisabled) and [`deleteDisabled`](modifiers/#deletedisableddisabled) modifiers to disable these actions on individual items
@@ -165,7 +167,7 @@ export default function EditableListExample() {
         onSelectionChange={ids => setSelectedIds(ids.map(String))}
         modifiers={[environment('editMode', editMode ? 'active' : 'inactive')]}>
         <Section title="Settings">
-          <Toggle label="Edit Mode" isOn={editMode} onIsOnChange={setEditMode} />
+          <Toggle label="Edit mode" isOn={editMode} onIsOnChange={setEditMode} />
         </Section>
         <Section title="Tasks">
           <List.ForEach onDelete={handleDelete} onMove={handleMove}>

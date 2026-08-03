@@ -97,7 +97,15 @@ android {
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
       consumerProguardFiles 'proguard-rules.pro'
       if (!System.getenv("ANDROID_UNSIGNED")) {
-        signingConfig signingConfigs.release
+        // EAS and CI supply the release keystore. Local release builds fall back to the debug key so
+        // the release variant can be built and installed for testing.
+        def releaseKeystore = file(System.getenv("ANDROID_KEYSTORE_PATH") ?: "release-key.jks")
+        if (releaseKeystore.exists()) {
+          signingConfig signingConfigs.release
+        } else {
+          project.logger.lifecycle("Expo Go: no release keystore at ${releaseKeystore}, signing the release build with the debug key.")
+          signingConfig signingConfigs.debug
+        }
       }
       def shouldUploadCrashlytics = System.getenv("EAS_BUILD") != null
       firebaseCrashlytics {

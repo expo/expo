@@ -17,12 +17,10 @@
 - [iOS] Update the way the VideoPlayer releases to comply with the modified SharedObject lifecycle. ([#47828](https://github.com/expo/expo/pull/47828) by [@behenate](https://github.com/behenate))
 - Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Set the default `audioMixingMode` to `auto`, [as documented](https://docs.expo.dev/versions/latest/sdk/video/#audiomixingmode); was `doNotMix`. ([#47363](https://github.com/expo/expo/issues/47363) by [@andymatuschak](https://github.com/andymatuschak))
-- [iOS] Re-enable the shared remote command center commands so lock screen controls keep working after expo-audio playback. ([#46753](https://github.com/expo/expo/pull/46753) by [@zoontek](https://github.com/zoontek))
-- Deduplicate `availableVideoTracks` for HLS sources with multiple audio renditions. ([#46691](https://github.com/expo/expo/pull/46691) by [@zoontek](https://github.com/zoontek))
-- Recover failed players to fix broken playback placeholder ([#46681](https://github.com/expo/expo/pull/46681) by [@zoontek](https://github.com/zoontek))
 - When caching take into account Authorization / auth-related request headers. ([#45995](https://github.com/expo/expo/pull/45995) by [@behenate](https://github.com/behenate))
 - [iOS] Fixed a thread-safety crash caused by mutating the internal player registries while they were being iterated on another thread (e.g. during audio session and now playing updates). ([#46930](https://github.com/expo/expo/pull/46930) by [@jiunshinn](https://github.com/jiunshinn))
 - Fix VideoView holding a strong reference to VideoPlayer even after the player has been detached. ([#46453](https://github.com/expo/expo/pull/46453) by [@behenate](https://github.com/behenate))
+- [iOS] Fixed fullscreen rotation requesting geometry from an arbitrary scene rather than the one the player is in. ([#48316](https://github.com/expo/expo/pull/48316) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
@@ -30,6 +28,34 @@
 - [Android] Removed outdated ExoPlayer changelog references and aligned Android media dependencies with AndroidX Media3 (`1.9.1`). ([#45368](https://github.com/expo/expo/pull/45368) by [@saisreelasyaappali](https://github.com/saisreelasyaappali))
 - Replace `TimeoutID` typing on `_timeUpdateLoop` ([#46730](https://github.com/expo/expo/pull/46730) by [@kitten](https://github.com/kitten))
 - When `source` of `useVideoPlayer` changes use `replaceAsync` instead of re-creating the player. ([#46495](https://github.com/expo/expo/pull/46495) by [@behenate](https://github.com/behenate))
+
+## 57.0.2 - 2026-07-22
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a race when registering video player observer delegates. ([#47976](https://github.com/expo/expo/pull/47976) by [@behenate](https://github.com/behenate))
+- [iOS] Update the way the VideoPlayer releases to comply with the modified SharedObject lifecycle. ([#47828](https://github.com/expo/expo/pull/47828) by [@behenate](https://github.com/behenate))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.1.4 - 2026-06-15
+
+### 🐛 Bug fixes
+
+- [iOS] Re-enable the shared remote command center commands so lock screen controls keep working after expo-audio playback. ([#46753](https://github.com/expo/expo/pull/46753) by [@zoontek](https://github.com/zoontek))
+
+## 56.1.3 - 2026-06-10
+
+### 🐛 Bug fixes
+
+- Deduplicate `availableVideoTracks` for HLS sources with multiple audio renditions. ([#46691](https://github.com/expo/expo/pull/46691) by [@zoontek](https://github.com/zoontek))
+- Recover failed players to fix broken playback placeholder ([#46681](https://github.com/expo/expo/pull/46681) by [@zoontek](https://github.com/zoontek))
 
 ## 56.1.2 — 2026-05-21
 

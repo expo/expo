@@ -127,6 +127,23 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   getIntegrations(): ObserveIntegrationsConfig;
   /**
+   * Invokes a callback once when the named integration configuration becomes available.
+   *
+   * @param name Integration name.
+   * @param callback Function called with the integration configuration.
+   *
+   * @example
+   * ```ts
+   * Observe.registerIntegration('expo-router', config => {
+   *   console.log(config);
+   * });
+   * ```
+   */
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void;
+  /**
    * Records a log event against the current main session. The event is
    * persisted locally and dispatched on the next `dispatchEvents()` flush.
    *

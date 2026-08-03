@@ -1566,7 +1566,7 @@ This job outputs the following properties:
 
 #### `apple-device-registration-request`
 
-Pauses the workflow until an iOS device enrolls for an Apple Team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
+Pauses the workflow until an iOS device enrolls for an Apple team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1837,6 +1837,29 @@ jobs:
       - uses: eas/checkout
         # @end #
 ```
+
+For jobs with Git-based project sources, the step uses the job's recorded commit by default. Use `ref` to check out a different branch, tag, or commit:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/checkout
+        with:
+          ref: feature/add-icon
+        # @end #
+```
+
+`ref` accepts:
+
+- A branch, as a bare name such as `feature/add-icon` or a qualified ref such as `refs/heads/feature/add-icon`. The repository ends up on that branch.
+- A tag, as a qualified ref such as `refs/tags/v1.2.3`. The repository ends up on a detached `HEAD`.
+- A full commit SHA. The repository ends up on a detached `HEAD`.
+
+The step runs a shallow fetch (`--depth 1`) from the source repository's `origin`, so the ref must be reachable there.
+
+`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Set `ref` on the job's first `eas/checkout` step. Setting it on a later step fails, because the project is already checked out.
 
 <EASFunctionDescription name="checkout" />
 

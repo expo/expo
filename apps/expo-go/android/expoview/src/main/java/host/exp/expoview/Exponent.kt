@@ -5,7 +5,6 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
@@ -15,7 +14,6 @@ import com.facebook.common.internal.ByteStreams
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.imagepipeline.backends.okhttp3.OkHttpImagePipelineConfigFactory
 import com.facebook.imagepipeline.producers.HttpUrlConnectionNetworkFetcher
-import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.kotlin.devtools.ExpoNetworkInspectOkHttpAppInterceptor
@@ -339,55 +337,18 @@ class Exponent private constructor(val context: Context, val application: Applic
       return URLEncoder.encode("experience-$manifestId", "UTF-8")
     }
 
-    private fun getPort(urlArg: String): Int {
-      var url = urlArg
-      if (!url.contains("://")) {
-        url = "http://$url"
-      }
-      val uri = Uri.parse(url)
-      val port = uri.port
-      return if (port == -1) {
-        80
-      } else {
-        port
-      }
-    }
-
-    private fun getHostname(urlArg: String): String? {
-      var url = urlArg
-      if (!url.contains("://")) {
-        url = "http://$url"
-      }
-      val uri = Uri.parse(url)
-      return uri.host
-    }
-
+    // The dev server itself is set on the DevSupportManager once the React host exists, see
+    // ExpoBridgelessDevSupportManager.setDevServer.
     @JvmStatic fun enableDeveloperSupport(
-      debuggerHost: String,
       mainModuleName: String,
       host: ExpoNativeHost
     ) {
-      if (debuggerHost.isEmpty() || mainModuleName.isEmpty()) {
+      if (mainModuleName.isEmpty()) {
         return
       }
 
-      try {
-        val debuggerHostHostname = getHostname(debuggerHost)
-        val debuggerHostPort = getPort(debuggerHost)
-
-        AndroidInfoHelpers.DEVICE_LOCALHOST = debuggerHostHostname ?: ""
-        AndroidInfoHelpers.GENYMOTION_LOCALHOST = debuggerHostHostname ?: ""
-        AndroidInfoHelpers.EMULATOR_LOCALHOST = debuggerHostHostname ?: ""
-        AndroidInfoHelpers.setDevServerPort(debuggerHostPort)
-        AndroidInfoHelpers.setInspectorProxyPort(debuggerHostPort)
-
-        host.devSupportEnabled = true
-        host.mainModuleName = mainModuleName
-      } catch (e: IllegalAccessException) {
-        e.printStackTrace()
-      } catch (e: NoSuchFieldException) {
-        e.printStackTrace()
-      }
+      host.devSupportEnabled = true
+      host.mainModuleName = mainModuleName
     }
   }
 

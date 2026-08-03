@@ -87,6 +87,30 @@ allprojects {
   }
 }
 
+project(":packages:react-native:ReactAndroid").afterEvaluate { reactAndroid ->
+  reactAndroid.tasks.named("buildCodegenCLI").configure { it.enabled = false }
+}
+
+// Expo Go ships a release build that keeps the JS debugger. React Native gates those native defines
+// behind REACT_NATIVE_DEBUG_OPTIMIZED, and its CMake guard only passes automatically when
+// CMAKE_BUILD_TYPE is Debug. Release maps to RelWithDebInfo, which does not match, so set the flag
+// for every variant. Debug builds already satisfy the guard, so this only changes release.
+def reactAndroidProject = project(":packages:react-native:ReactAndroid")
+reactAndroidProject.plugins.withId("com.android.library") {
+  reactAndroidProject.android.defaultConfig.externalNativeBuild.cmake.arguments.add(
+    "-DREACT_NATIVE_DEBUG_OPTIMIZED=True"
+  )
+}
+
+// Hermes itself also has to keep its debugger in release, which React Native turns off explicitly
+// rather than behind a guard. This runs after the hermes-engine build script so the value it sets can
+// be swapped, and before AGP reads the arguments to create variants.
+project(":packages:react-native:ReactAndroid:hermes-engine").afterEvaluate { hermesEngine ->
+  def releaseCmake = hermesEngine.android.buildTypes.release.externalNativeBuild.cmake
+  releaseCmake.arguments.removeAll { it == "-DHERMES_ENABLE_DEBUGGER=False" }
+  releaseCmake.arguments.add("-DHERMES_ENABLE_DEBUGGER=True")
+}
+
 // This var needs to be defined outside any "remove_from_here" comment blocks
 // because the "*/" in there could affect the resulted code by closing the comment to early.
 def ktlintTarget = '**/*.kt'

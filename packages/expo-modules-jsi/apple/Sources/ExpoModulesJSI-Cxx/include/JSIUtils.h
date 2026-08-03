@@ -136,25 +136,25 @@ inline void destroyRuntime(jsi::Runtime &runtime) {
 }
 
 inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_ptr<const jsi::Buffer>& buffer, const std::string& sourceURL) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return runtime.evaluateJavaScript(buffer, sourceURL);
   });
 }
 
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.call(runtime, args, count);
   });
 }
 
 inline jsi::Value callFunctionWithThis(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Object &jsThis, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.callWithThis(runtime, jsThis, args, count);
   });
 }
 
 inline jsi::Value callAsConstructor(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {
-  return expo::CppError::tryCatch(runtime, ^{
+  return expo::CppError::tryCatch(runtime, [&] {
     return function.callAsConstructor(runtime, args, count);
   });
 }

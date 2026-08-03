@@ -6,16 +6,40 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.3 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🎉 New features
+
 - [iOS] Add `cancelButtonTitle` and `showsCancelButton` options to contact forms. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Add `preventAnimation` option to `presentCreateForm`. ([#46960](https://github.com/expo/expo/pull/46960) by [@Wenszel](https://github.com/Wenszel))
+
+## 56.0.9 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 - 2026-06-05
 
 ### 🐛 Bug fixes
 
 - [iOS] Fix `ContactField.THUMBNAIL` crash in bulk `getAllDetails` by reading `thumbnailImageData` instead of `imageData`. ([#47779](https://github.com/expo/expo/pull/47779) by [@hryhoriiK97](https://github.com/hryhoriiK97))
 - Fix `getDetails` throwing NPE on malformed label ([#46405](https://github.com/expo/expo/pull/46405) by [@Wenszel](https://github.com/Wenszel))
 - [iOS] Fix contacts fetch failing for the whole batch when a contact identifier contains a slash, by sanitizing the identifier used as an image cache filename. ([#48201](https://github.com/expo/expo/pull/48201) by [@martintreurnicht](https://github.com/martintreurnicht))
-
-### 💡 Others
 
 ## 56.0.7 — 2026-05-21
 

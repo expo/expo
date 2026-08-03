@@ -20,7 +20,6 @@ import androidx.core.view.contains
 import com.facebook.react.ReactHost
 import com.facebook.react.bridge.ReactContext.RCTDeviceEventEmitter
 import com.facebook.react.devsupport.DefaultDevLoadingViewImplementation
-import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.devsupport.DevSupportManagerBase
 import com.facebook.react.devsupport.DoubleTapReloadRecognizer
 import com.facebook.react.devsupport.interfaces.DevSupportManager
@@ -28,7 +27,6 @@ import com.facebook.react.interfaces.fabric.ReactSurface
 import com.facebook.react.modules.core.DefaultHardwareBackBtnHandler
 import com.facebook.react.modules.core.PermissionAwareActivity
 import com.facebook.react.modules.core.PermissionListener
-import com.facebook.react.runtime.ReactSurfaceImpl
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.manifests.core.Manifest
@@ -38,10 +36,12 @@ import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.exceptions.ManifestException
 import host.exp.exponent.experience.BaseExperienceActivity.ExperienceContentLoaded
 import host.exp.exponent.experience.splashscreen.LoadingView
+import host.exp.exponent.factories.ExpoGoDevSupportManager
 import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.ExponentError
 import host.exp.exponent.kernel.ExponentErrorMessage
+import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.kernel.KernelConstants.AddedExperienceEventEvent
 import host.exp.exponent.kernel.KernelProvider
@@ -381,8 +381,7 @@ abstract class ReactNativeActivity :
     )
 
     if (delegate.isDebugModeEnabled) {
-      val debuggerHost = manifest!!.getDebuggerHost()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName!!, nativeHost)
+      Exponent.enableDeveloperSupport(mainModuleName!!, nativeHost)
       DefaultDevLoadingViewImplementation.setDevLoadingEnabled(true)
     } else {
       waitForReactAndFinishLoading()
@@ -394,7 +393,8 @@ abstract class ReactNativeActivity :
       jsMainModulePath = nativeHost.jsMainModuleName,
       jsBundleFilePath = nativeHost.jsBundleFile,
       useDevSupport = nativeHost.useDeveloperSupport,
-      devBundleDownloadListener = devBundleDownloadListener
+      devBundleDownloadListener = devBundleDownloadListener,
+      devServerBundleUrl = ExponentUrls.toHttp(manifest!!.getBundleURL())
     )
     devSupportManager = reactHost.devSupportManager
 
@@ -445,16 +445,14 @@ abstract class ReactNativeActivity :
       return reactHost
     }
 
-    val devSettings = reactHost.devSupportManager?.devSettings as? DevInternalSettings
-    devSettings?.setExponentActivityId(activityId)
+    (reactHost.devSupportManager as? ExpoGoDevSupportManager)?.exponentActivityId = activityId
 
     val appKey = manifest!!.getAppKey()
-    val surface = ReactSurfaceImpl.createWithView(
+    val surface = reactHost.createSurface(
       this,
       appKey ?: KernelConstants.DEFAULT_APPLICATION_KEY,
       initialProps(bundle)
     )
-    surface.attach(reactHost)
     surface.start()
     reactSurface = surface
     reactHost.onHostResume(this, this)

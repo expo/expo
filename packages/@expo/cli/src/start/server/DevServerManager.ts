@@ -54,7 +54,9 @@ export class DevServerManager {
   constructor(
     public projectRoot: string,
     /** Keep track of the original CLI options for bundlers that are started interactively. */
-    public options: BundlerStartOptions
+    public options: BundlerStartOptions,
+    /** Port for the web dev server, resolved up front even when web starts interactively. */
+    private webPort?: number
   ) {
     if (!options.isExporting) {
       this.notifier = this.watchBabelConfig();
@@ -140,7 +142,7 @@ export class DevServerManager {
     return this.startAsync([
       {
         type: bundler,
-        options: this.options,
+        options: { ...this.options, port: this.webPort ?? this.options.port },
       },
     ]);
   }

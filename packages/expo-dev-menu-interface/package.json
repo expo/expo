@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu-interface",
-  "version": "56.0.1",
+  "version": "57.0.0",
   "description": "Interface for expo-dev-menu",
   "main": "index.js",
   "keywords": [

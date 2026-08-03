@@ -45,7 +45,7 @@ export default function BasicBottomSheetExample() {
         <BottomSheet
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <Text>Hello, world!</Text>
         </BottomSheet>
       </VStack>
@@ -83,7 +83,7 @@ export default function BottomSheetRNAnchorExample() {
                   borderRadius: 8,
                   alignSelf: 'flex-start',
                 }}>
-                <RNText style={{ color: 'white', fontWeight: '600' }}>Open Sheet</RNText>
+                <RNText style={{ color: 'white', fontWeight: '600' }}>Open sheet</RNText>
               </Pressable>
             </RNHostView>
           }>
@@ -116,7 +116,7 @@ export default function BottomSheetFitsContentExample() {
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
           fitToContents
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <VStack>
             <Text>This sheet automatically sizes to fit its content.</Text>
             <Button label="Close" onPress={() => setIsPresented(false)} />
@@ -153,7 +153,7 @@ export default function BottomSheetBackgroundColorExample() {
         <BottomSheet
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large']),
@@ -194,7 +194,7 @@ export default function BottomSheetWithDetentsExample() {
         <BottomSheet
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large', { fraction: 0.3 }, { height: 200 }]),
@@ -239,7 +239,7 @@ export default function BottomSheetWithDetentSelectionExample() {
         <BottomSheet
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
-          anchor={<Button label="Show Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Show sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(detents, {
@@ -249,7 +249,7 @@ export default function BottomSheetWithDetentSelectionExample() {
               presentationDragIndicator('visible'),
             ]}>
             <List>
-              <Section title="Change Detent">
+              <Section title="Change detent">
                 <Button label="Height 300" onPress={() => setSelectedDetent({ height: 300 })} />
                 <Button label="Fraction 0.3" onPress={() => setSelectedDetent({ fraction: 0.3 })} />
                 <Button label="Medium" onPress={() => setSelectedDetent('medium')} />
@@ -290,7 +290,7 @@ export default function BottomSheetWithBackgroundInteractionExample() {
         <BottomSheet
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large']),
@@ -323,7 +323,7 @@ export default function NonDismissibleBottomSheetExample() {
         <BottomSheet
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <Group modifiers={[interactiveDismissDisabled()]}>
             <VStack>
               <Text>This sheet cannot be dismissed by swiping.</Text>
@@ -358,7 +358,7 @@ export default function BottomSheetWithRNContentExample() {
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
           fitToContents
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <Group modifiers={[presentationDragIndicator('visible')]}>
             <RNHostView matchContents>
               <View style={{ padding: 24 }}>
@@ -416,7 +416,7 @@ export default function BottomSheetWithFlexRNContentExample() {
         <BottomSheet
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large']),
@@ -461,7 +461,7 @@ export default function BottomSheetWithScrollableContentExample() {
         <BottomSheet
           isPresented={isPresented}
           onIsPresentedChange={setIsPresented}
-          anchor={<Button label="Open Sheet" onPress={() => setIsPresented(true)} />}>
+          anchor={<Button label="Open sheet" onPress={() => setIsPresented(true)} />}>
           <Group
             modifiers={[
               presentationDetents(['medium', 'large']),

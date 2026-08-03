@@ -9,10 +9,27 @@
 ### 🐛 Bug fixes
 
 - [Android] Explicitly enable `buildFeatures.buildConfig`, required by AGP 9. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Add missing `expo` peer dependency. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
-- Preserve Error call stacks when capturing component stacks. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-
 ### 💡 Others
+
+## 57.0.2 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- Add missing `expo` peer dependency. ([#46950](https://github.com/expo/expo/pull/46950) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.13 - 2026-06-10
+
+### 🐛 Bug fixes
+
+- Preserve Error call stacks when capturing component stacks. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 
 ## 56.0.12 — 2026-05-20
 

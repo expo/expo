@@ -6,10 +6,28 @@
 
 ### 🎉 New features
 
-- Added `Image.writeToCacheAsync` and `Image.readFromCacheAsync` to seed and read the image cache by cache key. ([#46620](https://github.com/expo/expo/pull/46620) by [@tsapeta](https://github.com/tsapeta))
 - Added an `imageLoaded` module event emitted with the decoded pixel size from every load path. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
-- [web] Improved `static` image source selection on web to be based on the rendered layout size by leading the generated `sizes` with `auto`, and default `static` images to `loading="lazy"` (opt out with `loading="eager"`). ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
 - add expo-observe integration ([#47145](https://github.com/expo/expo/pull/47145) by [@Ubax](https://github.com/Ubax))
+- [iOS][Android] Added a `skipOnCacheHit` field to `transition` that skips the fade the first time a cached image appears (`'memory'` for memory-cache hits, `'all'` for any cache hit), so already-loaded images don't re-animate on mount, tab change, or when scrolling back into view. A transition from a `source` change still plays. ([#48181](https://github.com/expo/expo/pull/48181) by [@janicduplessis](https://github.com/janicduplessis))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
+
+### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🎉 New features
+
+- Added `Image.writeToCacheAsync` and `Image.readFromCacheAsync` to seed and read the image cache by cache key. ([#46620](https://github.com/expo/expo/pull/46620) by [@tsapeta](https://github.com/tsapeta))
+
+## 56.0.11 - 2026-06-10
 
 ### 🐛 Bug fixes
 
@@ -17,8 +35,12 @@
 - Import the asset registry from `react-native/asset-registry` on web, replacing the `@react-native/assets-registry` package that no longer ships with React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 - [Android] Fixed image staying blank when its `source` changes while a `transition` cross-fade is still running. ([#46752](https://github.com/expo/expo/pull/46752) by [@zoontek](https://github.com/zoontek))
-- [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
+
+## 56.0.10 - 2026-06-05
+
+### 🎉 New features
+
+- [web] Improved `static` image source selection on web to be based on the rendered layout size by leading the generated `sizes` with `auto`, and default `static` images to `loading="lazy"` (opt out with `loading="eager"`). ([#46425](https://github.com/expo/expo/pull/46425) by [@sebholl](https://github.com/sebholl))
 
 ### 💡 Others
 

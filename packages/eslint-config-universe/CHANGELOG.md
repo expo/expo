@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+- Disable the `prettier/prettier` ESLint rule, since the repo now formats with `oxfmt`. ([#48264](https://github.com/expo/expo/pull/48264) by [@zoontek](https://github.com/zoontek))
+
+## 16.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
 ## 15.2.0 — 2026-05-20
 
 _This version does not introduce any user-facing changes._

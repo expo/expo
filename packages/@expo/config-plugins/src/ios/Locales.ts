@@ -4,10 +4,10 @@ import path from 'path';
 import type { XcodeProject } from 'xcode';
 
 import type { ConfigPlugin } from '../Plugin.types';
-import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import type { LocaleJson, ResolvedLocalesJson } from '../utils/locales';
 import { getResolvedLocalesAsync } from '../utils/locales';
+import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 
 export const withLocales: ConfigPlugin = (config) => {
   return withXcodeProject(config, async (config) => {
