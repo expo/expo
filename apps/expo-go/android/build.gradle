@@ -9,8 +9,8 @@ buildscript {
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '37.0.0'
-    kotlinVersion = "2.2.0"
-    kspVersion = "2.1.20-2.0.1"
+    kotlinVersion = "2.2.21"
+    kspVersion = "2.3.10"
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
