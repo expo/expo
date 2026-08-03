@@ -9,6 +9,7 @@ jest.mock(
 );
 
 test('throws an error when react-native-tab-view is not installed', () => {
+  jest.resetModules();
   jest.doMock('react-native-tab-view', () => {
     throw new Error();
   });
