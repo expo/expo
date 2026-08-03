@@ -78,5 +78,12 @@ export default function SearchScreen() {
     []
   );
 
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
+  return (
+    <ComponentListScreen
+      contentInsetAdjustmentBehavior="automatic"
+      renderItemRight={renderItemRight}
+      apis={apis}
+      sort={false}
+    />
+  );
 }
