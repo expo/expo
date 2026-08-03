@@ -38,7 +38,12 @@ import {
   packRawMappings,
   type SerializableSourceMap,
 } from '../serializer/packedMap';
-import { rawMappingsToEncodedMap, type BabelSourceMapSegment } from '../serializer/sourceMap';
+import {
+  composeSourceMaps,
+  rawMappingsToEncodedMap,
+  type BabelSourceMapSegment,
+  type EncodedTransformerSourceMap,
+} from '../serializer/sourceMap';
 import { importExportPlugin, importExportLiveBindingsPlugin } from '../transform-plugins';
 import * as assetTransformer from './asset-transformer';
 import type {
@@ -53,6 +58,11 @@ import collectDependencies, {
   InvalidRequireCallError as InternalInvalidRequireCallError,
 } from './collect-dependencies';
 import { debugEvent } from './events';
+import {
+  isNoxcturnalTransformWorkerEnabled,
+  tryTransformJSWithNoxcturnal,
+} from './noxcturnal/metro-transform-worker';
+import { type NoxcturnalMetroTransformAttempt } from './noxcturnal/noxcturnal-transformer';
 import { shouldMinify } from './resolveOptions';
 import { getMinifier, resolveMinifier } from './utils/getMinifier';
 
@@ -81,6 +91,11 @@ interface JSFile extends BaseFile {
   readonly loaderReference?: string;
   readonly hasCjsExports?: boolean;
   readonly performConstantFolding?: boolean;
+  readonly inputSourceMap?: {
+    readonly mappings: string;
+    readonly names: string[];
+    readonly originalCode: string;
+  };
 }
 
 interface JSONFile extends BaseFile {
@@ -118,6 +133,30 @@ function nullthrows<T extends object>(x: T | null | undefined, message?: string)
   return x;
 }
 
+function isDefaultExpoBabelTransformer(
+  transformerPath: string,
+  transformer: BabelTransformer
+): boolean {
+  const defaultTransformer: BabelTransformer = require('../babel-transformer');
+  if (transformer.transform === defaultTransformer.transform) return true;
+  // Jest resolves the package export to build/ while this source-relative import resolves src/.
+  // Both are canonical @expo/metro-config entry points; arbitrary transformer paths stay excluded.
+  return /[/\\]@expo[/\\]metro-config[/\\](?:build|src)[/\\]babel-transformer\.[cm]?js$/.test(
+    transformerPath
+  );
+}
+
+type ExpoBabelTransformer = BabelTransformer & {
+  isDefaultConfig?: (args: BabelTransformerArgs) => boolean;
+};
+
+function hasNonDefaultProjectBabelConfig(
+  transformer: ExpoBabelTransformer,
+  args: BabelTransformerArgs
+): boolean {
+  return transformer.isDefaultConfig?.(args) === false;
+}
+
 function getDynamicDepsBehavior(
   inPackages: DynamicRequiresBehavior,
   filename: string
@@ -138,12 +177,13 @@ export const minifyCode = async (
   code: string,
   source: string,
   rawMappings: readonly BabelSourceMapSegment[],
-  reserved: string[] = []
+  reserved: string[] = [],
+  inputSourceMap?: EncodedTransformerSourceMap
 ): Promise<{
   code: string;
   sourceMap: SerializableSourceMap;
 }> => {
-  const sourceMap = rawMappingsToEncodedMap({ filename, source, rawMappings });
+  const sourceMap = inputSourceMap ?? rawMappingsToEncodedMap({ filename, source, rawMappings });
 
   const minify = getMinifier(config.minifierPath);
 
@@ -161,7 +201,10 @@ export const minifyCode = async (
     return {
       code: minified.code,
       sourceMap: minified.map
-        ? packDecodedMappings({ mappings: minified.map.mappings, names: minified.map.names })
+        ? packDecodedMappings({
+            mappings: minified.map.mappings,
+            names: minified.map.names,
+          })
         : emptySourceMap(),
     };
   } catch (error: any) {
@@ -525,6 +568,22 @@ async function transformJS(
   // `GeneratorResult`, but Babel emits it whenever `sourceMaps: true`.
   const rawMappings =
     (result as { rawMappings?: BabelSourceMapSegment[] } | null)?.rawMappings ?? [];
+  const generatedSourceMap = file.inputSourceMap
+    ? composeSourceMaps([
+        {
+          version: 3,
+          mappings: file.inputSourceMap.mappings,
+          names: file.inputSourceMap.names,
+          sources: [file.filename],
+          sourcesContent: [file.inputSourceMap.originalCode],
+        },
+        rawMappingsToEncodedMap({
+          filename: file.filename,
+          source: file.code,
+          rawMappings,
+        }),
+      ])
+    : null;
   let code = result.code;
   let sourceMap: SerializableSourceMap;
 
@@ -536,10 +595,22 @@ async function transformJS(
       result.code,
       file.code,
       rawMappings,
-      reserved
+      reserved,
+      generatedSourceMap
+        ? {
+            ...generatedSourceMap,
+            version: 3,
+            sources: generatedSourceMap.sources.map((source) => source ?? file.filename),
+          }
+        : undefined
     ));
   } else {
-    sourceMap = packRawMappings(rawMappings);
+    sourceMap = generatedSourceMap
+      ? packDecodedMappings({
+          mappings: generatedSourceMap.mappings,
+          names: generatedSourceMap.names,
+        })
+      : packRawMappings(rawMappings);
   }
 
   const possibleReconcile: ReconcileTransformSettings | undefined =
@@ -660,8 +731,46 @@ async function transformJSWithBabel(
   context: TransformationContext
 ): Promise<TransformResponse> {
   const { babelTransformerPath } = context.config;
-  const transformer: BabelTransformer = require(babelTransformerPath);
+  const transformer: ExpoBabelTransformer = require(babelTransformerPath);
+  const sourceDefaultTransformer: ExpoBabelTransformer = require('../babel-transformer');
+  const babelConfigArgs = getBabelTransformArgs(file, context);
+  const isDefaultExpoTransformer = isDefaultExpoBabelTransformer(babelTransformerPath, transformer);
+  const hasNonDefaultBabelConfig =
+    isDefaultExpoTransformer &&
+    hasNonDefaultProjectBabelConfig(
+      transformer.isDefaultConfig ? transformer : sourceDefaultTransformer,
+      babelConfigArgs
+    );
 
+  if (!isNoxcturnalTransformWorkerEnabled(context.config)) {
+    enableExperimentalImportSupportForReactCompiler(context);
+    return transformJSWithBabelFallback(file, context, transformer);
+  }
+
+  const noxcturnal = await tryTransformJSWithNoxcturnal<
+    JSFile,
+    TransformationContext,
+    TransformResponse
+  >(
+    file,
+    context,
+    {
+      hasNonDefaultBabelConfig,
+      isDefaultExpoTransformer,
+    },
+    {
+      completeFullTransform: completeFullNoxcturnalTransform,
+    }
+  );
+  if (noxcturnal.status === 'complete') {
+    return noxcturnal.response;
+  }
+
+  enableExperimentalImportSupportForReactCompiler(context);
+  return transformJSWithBabelFallback(file, context, transformer);
+}
+
+function enableExperimentalImportSupportForReactCompiler(context: TransformationContext): void {
   // HACK: React Compiler injects import statements and exits the Babel process which leaves the code in
   // a malformed state. For now, we'll enable the experimental import support which compiles import statements
   // outside of the standard Babel process.
@@ -675,7 +784,105 @@ async function transformJSWithBabel(
       asWritable(context.options).experimentalImportSupport = true;
     }
   }
+}
 
+async function completeFullNoxcturnalTransform(
+  file: JSFile,
+  context: TransformationContext,
+  fullNoxcturnal: Extract<NoxcturnalMetroTransformAttempt, { status: 'complete' }>
+): Promise<TransformResponse> {
+  if (String(context.options.customTransformOptions?.optimize) === 'true') {
+    return transformJS(
+      {
+        ...file,
+        code: fullNoxcturnal.result.code,
+        ast: null,
+        inputSourceMap: {
+          ...fullNoxcturnal.result.map,
+          originalCode: file.code,
+        },
+        hasCjsExports:
+          typeof fullNoxcturnal.result.metadata.hasCjsExports === 'boolean'
+            ? fullNoxcturnal.result.metadata.hasCjsExports
+            : file.hasCjsExports,
+        functionMap: fullNoxcturnal.result.functionMap ?? file.functionMap,
+      },
+      context
+    );
+  }
+
+  let code = fullNoxcturnal.result.code;
+  let sourceMap: SerializableSourceMap;
+  if (shouldMinify(context.options)) {
+    const reserved =
+      context.config.unstable_dependencyMapReservedName == null
+        ? []
+        : [context.config.unstable_dependencyMapReservedName];
+    ({ code, sourceMap } = await minifyCode(
+      context.config,
+      file.filename,
+      code,
+      file.code,
+      [],
+      reserved,
+      {
+        version: 3,
+        sources: [file.filename],
+        sourcesContent: [file.code],
+        names: fullNoxcturnal.result.map.names,
+        mappings: fullNoxcturnal.result.map.mappings,
+      }
+    ));
+  } else {
+    sourceMap = packDecodedMappings({
+      mappings: fullNoxcturnal.result.map.mappings,
+      names: fullNoxcturnal.result.map.names,
+    });
+  }
+  let lineCount: number;
+  ({ lineCount, sourceMap } = countLinesAndTerminateSourceMap(code, sourceMap));
+
+  return {
+    dependencies: fullNoxcturnal.dependencies,
+    output: [
+      {
+        type: file.type,
+        data: {
+          code,
+          lineCount,
+          map: sourceMap,
+          functionMap: fullNoxcturnal.result.functionMap ?? file.functionMap,
+          hasCjsExports:
+            typeof fullNoxcturnal.result.metadata.hasCjsExports === 'boolean'
+              ? fullNoxcturnal.result.metadata.hasCjsExports
+              : file.hasCjsExports,
+          reactServerReference:
+            typeof fullNoxcturnal.result.metadata.reactServerReference === 'string'
+              ? fullNoxcturnal.result.metadata.reactServerReference
+              : file.reactServerReference,
+          reactClientReference:
+            typeof fullNoxcturnal.result.metadata.reactClientReference === 'string'
+              ? fullNoxcturnal.result.metadata.reactClientReference
+              : file.reactClientReference,
+          expoDomComponentReference:
+            typeof fullNoxcturnal.result.metadata.expoDomComponentReference === 'string'
+              ? fullNoxcturnal.result.metadata.expoDomComponentReference
+              : file.expoDomComponentReference,
+          loaderReference:
+            typeof fullNoxcturnal.result.metadata.loaderReference === 'string'
+              ? fullNoxcturnal.result.metadata.loaderReference
+              : file.loaderReference,
+        },
+      },
+    ],
+  };
+}
+
+async function transformJSWithBabelFallback(
+  file: JSFile,
+  context: TransformationContext,
+  transformer: ExpoBabelTransformer
+): Promise<TransformResponse> {
   // TODO: Add a babel plugin which returns if the module has commonjs, and if so, disable all tree shaking optimizations early.
   const transformResult = await transformer.transform(
     getBabelTransformArgs(file, context, [
@@ -839,7 +1046,7 @@ export async function transform(
 
 // NOTE: Increment if cache becomes incompatible (original value would be '')
 // 1. Added new packed source map format
-const CACHE_VERSION = '1';
+const CACHE_VERSION = '2';
 
 export function getCacheKey(
   config: JsTransformerConfig,
@@ -859,6 +1066,9 @@ export function getCacheKey(
     resolveMinifier(minifierPath),
     require.resolve('@expo/metro/metro-transform-worker/utils/getMinifier'),
     require.resolve('./collect-dependencies'),
+    require.resolve('./noxcturnal/metro-transform-worker'),
+    require.resolve('./noxcturnal/noxcturnal-transformer'),
+    require.resolve('noxcturnal'),
     require.resolve('./asset-transformer'),
     require.resolve('./resolveOptions'),
     require.resolve('@expo/metro/metro/ModuleGraph/worker/generateImportNames'),

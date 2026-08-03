@@ -2627,6 +2627,9 @@ importers:
       lightningcss:
         specifier: ^1.30.1
         version: 1.32.0
+      noxcturnal:
+        specifier: 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+        version: 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
       picomatch:
         specifier: ^4.0.4
         version: 4.0.4
@@ -2637,6 +2640,15 @@ importers:
         specifier: ^5.0.0
         version: 5.0.0
     devDependencies:
+      '@babel/plugin-transform-explicit-resource-management':
+        specifier: ^7.28.6
+        version: 7.29.7(@babel/core@7.29.7)
+      '@babel/plugin-transform-exponentiation-operator':
+        specifier: ^7.28.6
+        version: 7.29.7(@babel/core@7.29.7)
+      '@babel/plugin-transform-sticky-regex':
+        specifier: ^7.27.1
+        version: 7.29.7(@babel/core@7.29.7)
       '@jridgewell/trace-mapping':
         specifier: ^0.3.31
         version: 0.3.31
@@ -8051,6 +8063,58 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    resolution: {integrity: sha512-TfKHSo+iKtfYhWghdcnZNRxRJXWAWC9TWQAar52Pxw69V7sYEI1lE8tVXzG/ObHS9knF3uhY9Angp0NLKpcCLQ==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    resolution: {integrity: sha512-D5ams0PQjgurhAveyp/G4hJyPkkMUtfIOK9brricld/SBUvBVCBd92TqozohCQUsTLyf58akg7p2NqrvpmtOrw==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [darwin]
+
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    resolution: {integrity: sha512-agtzFFPS5fatqHt5kd3VafmzYr2r8hkf6vqKN++z7uN46iap+smO6UMTvOQIoRozBA/e639u8lb2IP2W6J7mlg==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [glibc]
+
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    resolution: {integrity: sha512-1tCx0adrkSIXg4D6zcY2y0BDA+1w1xk7RsGWiiMb9/Gj1h9087mycEMjx+GUeLU2Lkj21frLI1TLGY0ptNtUnw==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [linux]
+    libc: [musl]
+
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    resolution: {integrity: sha512-jjloDuXvCoRB8k91j6XSy7oQiXffkMTBmMlVWpIQ3WbN8EOIX4cSkKVSuzB0QkFlUPK8IntRDnpasM83rSkQ0A==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [linux]
+    libc: [glibc]
+
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    resolution: {integrity: sha512-XOfNmS/hGsxdoG58wYSwvXMsQ+kjDXKnzrgtG/B/D7cEZwyKfxYrWNtnVQGawWp1e2/xNBj/IoAlZUaHWhVPNA==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [linux]
+    libc: [musl]
+
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    resolution: {integrity: sha512-cwzgnYqCps0r01YOuCnx9E5aw9UezLW70qXbUAatGcvJbf+kfKudPZvZIhD6Imwl2tjrKf9ZUBAVpol6jZ57MA==}
+    engines: {node: '>=18'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    resolution: {integrity: sha512-GNO6mLEDka5j+IR7rsgL3YYd3AbtdkiwgLw4ip8HJLMFuqunEb01UKFepJ4WR3zmI/JCSSfy8SibnKAZSrUl0A==}
+    engines: {node: '>=18'}
+    cpu: [x64]
+    os: [win32]
+
   '@octokit/auth-token@3.0.4':
     resolution: {integrity: sha512-TWFX7cZF2LXoCvdmJWY7XVPi74aSY0+FfBZNSXEXFkMpjcqsQwDSYVv5FhRFaI0V1ECnwbz4j59T/G+rXNWaIQ==}
     engines: {node: '>= 14'}
@@ -8128,6 +8192,9 @@ packages:
 
   '@open-draft/until@2.1.0':
     resolution: {integrity: sha512-U69T3ItWHvLwGg5eJ0n3I62nWuE6ilHlmz7zM0npLBRvPRd7e6NYmg54vvRtP5mZG7kZqZCFVdsTWo7BPtBujg==}
+
+  '@oxc-project/types@0.141.0':
+    resolution: {integrity: sha512-S4as7z0j0xQkXcJlyY5ehntwK8/wRkQb9Cyqw+J/N2rkWGQGK0SxD6X6DhQTc7qsxVTBxXbxZtBJh3mr3PtIzQ==}
 
   '@oxfmt/binding-android-arm-eabi@0.55.0':
     resolution: {integrity: sha512-+rFDOqQe5LOWgxrAJaZgLRudr6GQm0wGI6gtu7vVkrdLGjNMUSGbAlaCr8j7F2H2Er97vYQCU8WDb30onqMM1g==}
@@ -12862,6 +12929,10 @@ packages:
     resolution: {integrity: sha512-DlL+XwOy3NxAQ8xuC0okPgK46iuVNAK01YN7RueYBqqFeGsBjV9XmCAzAdgt+667bCl5kPh9EqKKDwnaPG1I7A==}
     engines: {node: '>=10'}
 
+  noxcturnal@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b:
+    resolution: {integrity: sha512-8xn94ohGX6D7JwKZfBHxdSn+/5yIWXGaEmGRDP8mpBXe/pl6A1AqqBVsBCBcICe2os7dBVH2yq3GoSH1MtHR2g==}
+    engines: {node: '>=18'}
+
   npm-bundled@2.0.1:
     resolution: {integrity: sha512-gZLxXdjEzE/+mOstGDqR6b0EkhJ+kM6fxM6vUuckuctuVPh80Q6pw/rSZj9s4Gex9GxWtIicO1pc8DB9KZWudw==}
     engines: {node: ^12.13.0 || ^14.15.0 || >=16.0.0}
@@ -15551,13 +15622,11 @@ snapshots:
       '@babel/plugin-transform-destructuring': 7.29.7(@babel/core@7.29.7)
     transitivePeerDependencies:
       - supports-color
-    optional: true
 
   '@babel/plugin-transform-exponentiation-operator@7.29.7(@babel/core@7.29.7)':
     dependencies:
       '@babel/core': 7.29.7
       '@babel/helper-plugin-utils': 7.29.7
-    optional: true
 
   '@babel/plugin-transform-export-namespace-from@7.29.7(@babel/core@7.29.7)':
     dependencies:
@@ -15819,7 +15888,6 @@ snapshots:
     dependencies:
       '@babel/core': 7.29.7
       '@babel/helper-plugin-utils': 7.29.7
-    optional: true
 
   '@babel/plugin-transform-template-literals@7.29.7(@babel/core@7.29.7)':
     dependencies:
@@ -16844,6 +16912,30 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
+  '@noxcturnal/noxcturnal-darwin-arm64@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    optional: true
+
+  '@noxcturnal/noxcturnal-darwin-x64@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    optional: true
+
+  '@noxcturnal/noxcturnal-linux-arm64-gnu@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    optional: true
+
+  '@noxcturnal/noxcturnal-linux-arm64-musl@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    optional: true
+
+  '@noxcturnal/noxcturnal-linux-x64-gnu@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    optional: true
+
+  '@noxcturnal/noxcturnal-linux-x64-musl@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    optional: true
+
+  '@noxcturnal/noxcturnal-win32-arm64-msvc@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    optional: true
+
+  '@noxcturnal/noxcturnal-win32-x64-msvc@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b':
+    optional: true
+
   '@octokit/auth-token@3.0.4': {}
 
   '@octokit/core@4.2.4(encoding@0.1.13)':
@@ -16945,6 +17037,8 @@ snapshots:
       outvariant: 1.4.3
 
   '@open-draft/until@2.1.0': {}
+
+  '@oxc-project/types@0.141.0': {}
 
   '@oxfmt/binding-android-arm-eabi@0.55.0':
     optional: true
@@ -17511,9 +17605,7 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 
@@ -22173,6 +22265,20 @@ snapshots:
   normalize-path@3.0.0: {}
 
   normalize-url@6.1.0: {}
+
+  noxcturnal@0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b:
+    dependencies:
+      '@babel/code-frame': 7.29.7
+      '@oxc-project/types': 0.141.0
+    optionalDependencies:
+      '@noxcturnal/noxcturnal-darwin-arm64': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+      '@noxcturnal/noxcturnal-darwin-x64': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+      '@noxcturnal/noxcturnal-linux-arm64-gnu': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+      '@noxcturnal/noxcturnal-linux-arm64-musl': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+      '@noxcturnal/noxcturnal-linux-x64-gnu': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+      '@noxcturnal/noxcturnal-linux-x64-musl': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+      '@noxcturnal/noxcturnal-win32-arm64-msvc': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
+      '@noxcturnal/noxcturnal-win32-x64-msvc': 0.1.1-canary-aa5ca0ea22de419620f4c66420ff4150ad1bdd3b
 
   npm-bundled@2.0.1:
     dependencies:
