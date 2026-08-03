@@ -22,6 +22,7 @@
 
 - [Android] Change modifiers type and provide appContext. ([#47616](https://github.com/expo/expo/pull/47616) by [@jakex7](https://github.com/jakex7))
 - [Android] Change `Text` color props to `ColorValue`. ([#47739](https://github.com/expo/expo/pull/47739) by [@jakex7](https://github.com/jakex7))
+- [Android] Expose `getMaterialColorTokens` for `expo-widgets`. ([48453](https://github.com/expo/expo/pull/48453) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.8 - 2026-07-29
 
