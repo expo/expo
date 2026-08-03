@@ -4,9 +4,12 @@
 
 ### 🛠 Breaking changes
 
+- [ios] `getLoadedFonts()` no longer reports the PostScript name read out of a font loaded with `loadAsync`, only the name (the alias) it was loaded under. ([#48432](https://github.com/expo/expo/pull/48432) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 - [android] Support variable fonts in the config plugin ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
+- [ios] Apply `fontWeight` to variable fonts loaded with `useFonts`. ([#48432](https://github.com/expo/expo/pull/48432) by [@vonovak](https://github.com/vonovak))
 
 ### 🐛 Bug fixes
 
