@@ -89,7 +89,6 @@ test('preserves drawer status when route names change', () => {
   const state = router.getStateForRouteNamesChange(openState, {
     ...options,
     routeNames: ['baz', 'bar'],
-    routeKeyChanges: [],
   });
 
   expect(state.history).toContainEqual({ type: 'drawer', status: 'open' });
@@ -112,7 +111,6 @@ test('restores route history without dropping drawer status when the active rout
   const state = router.getStateForRouteNamesChange(openState, {
     ...options,
     routeNames: ['baz'],
-    routeKeyChanges: [],
   });
 
   expect(state.history).toEqual([

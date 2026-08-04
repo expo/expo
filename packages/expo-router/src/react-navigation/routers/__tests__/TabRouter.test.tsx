@@ -567,7 +567,6 @@ test('gets state on route names change', () => {
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -608,7 +607,6 @@ test('gets state on route names change', () => {
         routeNames: ['foo', 'fiz'],
         routeParamList: {},
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -652,7 +650,6 @@ test('preserves focused route on route names change', () => {
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -735,7 +732,6 @@ test('falls back to first route if route is removed on route names change', () =
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
