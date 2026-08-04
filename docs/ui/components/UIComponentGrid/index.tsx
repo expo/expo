@@ -4,7 +4,7 @@ import { AppleIcon } from '@expo/styleguide-icons/custom/AppleIcon';
 import { ReactLogoIcon } from '@expo/styleguide-icons/custom/ReactLogoIcon';
 import { ArrowRightIcon } from '@expo/styleguide-icons/outline/ArrowRightIcon';
 import { useRouter } from 'next/compat/router';
-import type { PropsWithChildren } from 'react';
+import { createContext, useContext, type PropsWithChildren } from 'react';
 
 import { A, LABEL } from '~/ui/components/Text';
 
@@ -21,37 +21,52 @@ const PLACEHOLDER_ICON = {
 
 type PlaceholderKind = keyof typeof PLACEHOLDER_ICON;
 
-function useResolvedHref(href: string) {
+const SectionContext = createContext<string | null>(null);
+
+/**
+ * One grid is rendered by two pages at different depths (the section index and the Expo UI
+ * overview), so a page-relative href would resolve differently on each. Links are built from
+ * the grid's own section plus the version in the URL, which is correct from either page and
+ * keeps the build-time `latest` copy pointing inside `latest`.
+ */
+function useComponentHref(slug: string) {
   const router = useRouter();
-  if (href.startsWith('/') || href.includes('://')) {
-    return href;
+  const section = useContext(SectionContext);
+  const path = (router?.asPath ?? '').split(/[#?]/)[0];
+  const version = path.match(/^\/versions\/([^/]+)\//)?.[1];
+  if (!section || !version) {
+    return slug;
   }
-  const base = (router?.asPath ?? '').split(/[#?]/)[0].replace(/\/$/, '');
-  return base ? `${base}/${href}` : href;
+  return `/versions/${version}/sdk/ui/${section}/${slug}/`;
 }
 
 type UIComponentGridProps = PropsWithChildren<{
+  /** Section directory the cards belong to, for example `swift-ui`. */
+  section: string;
   className?: string;
 }>;
 
-export function UIComponentGrid({ children, className }: UIComponentGridProps) {
+export function UIComponentGrid({ children, section, className }: UIComponentGridProps) {
   return (
-    <div
-      data-md="ui-component-grid"
-      className={mergeClasses(
-        'my-5 grid grid-cols-3 gap-4',
-        'max-lg:grid-cols-2',
-        'max-md:grid-cols-1',
-        className
-      )}>
-      {children}
-    </div>
+    <SectionContext.Provider value={section}>
+      <div
+        data-md="ui-component-grid"
+        className={mergeClasses(
+          'my-5 grid grid-cols-3 gap-4',
+          'max-lg:grid-cols-2',
+          'max-md:grid-cols-1',
+          className
+        )}>
+        {children}
+      </div>
+    </SectionContext.Provider>
   );
 }
 
 type UIComponentCardProps = {
   title: string;
-  href: string;
+  /** Page slug within the grid's section, for example `alert`. */
+  slug: string;
   description?: string;
   src?: string;
   darkSrc?: string;
@@ -60,13 +75,13 @@ type UIComponentCardProps = {
 
 export function UIComponentCard({
   title,
-  href,
+  slug,
   description,
   src,
   darkSrc,
   placeholder = 'android',
 }: UIComponentCardProps) {
-  const resolvedHref = useResolvedHref(href);
+  const resolvedHref = useComponentHref(slug);
   const PlaceholderIcon = PLACEHOLDER_ICON[placeholder];
   return (
     <A

@@ -537,6 +537,11 @@ export function cleanHtml($: CheerioAPI, main: Cheerio<AnyNode>): void {
   // elements (span, p, li, blockquote, code, pre). It's core infrastructure, not fragile.
   main.find('[data-md="card-link"], a:has(div)').each((_, el) => {
     const $a = $(el);
+    // @expo/ui component cards match `a:has(div)` too, but the grid has a dedicated rule
+    // that rebuilds it as a table and needs each card's data attributes intact.
+    if ($a.closest('[data-md="ui-component-grid"]').length > 0) {
+      return;
+    }
     const href = $a.attr('href');
     if (!href) {
       return;

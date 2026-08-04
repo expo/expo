@@ -981,6 +981,7 @@ function pagesFromDir(dir) {
       const metaJsonPath = path.join(dirPath, folder.name, 'metadata.json');
       let sidebarTitle = folder.name.toUpperCase();
       let expanded = true;
+      let sidebarOrder;
 
       if (fs.existsSync(metaJsonPath)) {
         try {
@@ -992,13 +993,16 @@ function pagesFromDir(dir) {
           if (typeof meta.expanded === 'boolean') {
             expanded = meta.expanded;
           }
+          if (typeof meta.order === 'number') {
+            sidebarOrder = meta.order;
+          }
         } catch (error) {
           // fallback to default behavior
           console.warn(`Invalid metadata.json in ${metaJsonPath}:`, error.message);
         }
       }
 
-      return makeGroup(sidebarTitle, sortedFolderPages, { expanded });
+      return makeGroup(sidebarTitle, sortedFolderPages, { expanded, sidebarOrder });
     })
     .filter(Boolean);
 
@@ -1009,6 +1013,13 @@ function pagesFromDir(dir) {
     }
     if (!a.isIndex && b.isIndex) {
       return 1;
+    }
+
+    // an explicit `order` in metadata.json wins; anything without one stays alphabetical
+    if (a.sidebarOrder !== undefined || b.sidebarOrder !== undefined) {
+      return (
+        (a.sidebarOrder ?? Number.MAX_SAFE_INTEGER) - (b.sidebarOrder ?? Number.MAX_SAFE_INTEGER)
+      );
     }
 
     // otherwise sort by name (title)
