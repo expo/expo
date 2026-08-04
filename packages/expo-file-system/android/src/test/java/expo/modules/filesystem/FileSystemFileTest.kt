@@ -180,6 +180,48 @@ class FileSystemFileTest {
     assertTrue(source.exists())
   }
 
+  @Test
+  fun renameEncodesNameSoTheFileStaysReadableThroughItsUri() {
+    val parent = temporaryFolder.newFolder("rename-parent-with-space")
+    val source = File(parent, "source.pdf").apply {
+      writeText("content")
+    }
+    val file = FileSystemFile(Uri.fromFile(source))
+      .withAppContext(
+        permissionServiceReturning(
+          EnumSet.of(FilePermissionService.Permission.READ, FilePermissionService.Permission.WRITE)
+        )
+      )
+
+    file.rename("My Report.pdf")
+
+    val renamed = File(parent, "My Report.pdf")
+    assertTrue(renamed.exists())
+    assertEquals(Uri.fromFile(renamed).toString(), file.uri.toString())
+    assertTrue(file.exists)
+  }
+
+  @Test
+  fun renameEncodesDirectoryNameAndKeepsTheTrailingSlash() {
+    val parent = temporaryFolder.newFolder("rename-dir-parent-with-space")
+    val source = File(parent, "source-dir").apply {
+      mkdir()
+    }
+    val directory = FileSystemDirectory(Uri.fromFile(source))
+      .withAppContext(
+        permissionServiceReturning(
+          EnumSet.of(FilePermissionService.Permission.READ, FilePermissionService.Permission.WRITE)
+        )
+      )
+
+    directory.rename("My Folder")
+
+    val renamed = File(parent, "My Folder")
+    assertTrue(renamed.isDirectory)
+    assertEquals("${Uri.fromFile(renamed)}/", directory.uri.toString())
+    assertTrue(directory.exists)
+  }
+
   private fun createSymbolicLink(link: File, target: File) {
     Files.createSymbolicLink(link.toPath(), target.toPath())
   }
