@@ -215,6 +215,48 @@ describe(useLoaderData, () => {
     }>();
   });
 
+  it('does not re-render readers of other paths when a loader settles', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockResolvedValue({ tab: 'home', fresh: true });
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { tab: 'home' },
+      '/profile': { tab: 'profile' },
+    };
+
+    let indexRenders = 0;
+    let profileRenders = 0;
+    renderRouter(
+      {
+        _layout: () => <Tabs />,
+        index: function Home() {
+          indexRenders++;
+          useLoaderData();
+          return <Text>Home</Text>;
+        },
+        profile: function Profile() {
+          profileRenders++;
+          useLoaderData();
+          return <Text>Profile</Text>;
+        },
+      },
+      { initialUrl: '/' }
+    );
+    jest.useRealTimers();
+
+    act(() => router.push('/profile'));
+    const indexBefore = indexRenders;
+    const profileBefore = profileRenders;
+    expect(profileBefore).toBeGreaterThan(0);
+
+    // An in-place refetch of `/index` alone (the HMR delivery path).
+    await act(async () => {
+      defaultLoaderClient.execute('/index');
+    });
+
+    expect(indexRenders).toBeGreaterThan(indexBefore);
+    expect(profileRenders).toBe(profileBefore);
+  });
+
   it('resolves loader data for non-focused tab route', () => {
     globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
       '/index': { tab: 'home' },

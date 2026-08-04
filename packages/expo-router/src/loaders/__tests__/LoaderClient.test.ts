@@ -7,20 +7,6 @@ describe(LoaderClient, () => {
     delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
   });
 
-  describe('notify', () => {
-    it('bumps the version and wakes subscribers', () => {
-      const client = new LoaderClient();
-      const listener = jest.fn();
-      client.subscribe(listener);
-
-      const before = client.getSnapshot();
-      client.notify();
-
-      expect(client.getSnapshot()).toBe(before + 1);
-      expect(listener).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('subscribeLoader + execute', () => {
     it('fetches once and settles the result into the store', async () => {
       const client = new LoaderClient();
@@ -203,18 +189,6 @@ describe(LoaderClient, () => {
       client.invalidateAll();
 
       expect(client.suspense.get('/p')).toBeUndefined();
-    });
-
-    it('wakes subscribers', () => {
-      const client = new LoaderClient();
-      const listener = jest.fn();
-      client.subscribe(listener);
-      const before = client.getSnapshot();
-
-      client.invalidateAll();
-
-      expect(client.getSnapshot()).toBe(before + 1);
-      expect(listener).toHaveBeenCalledTimes(1);
     });
   });
 
