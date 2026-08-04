@@ -11,6 +11,15 @@ on:
         description: 'Enter the SDK version'
         required: true
         type: string
+      reactNative:
+        description: 'React Native version for the compatibility row, for example 0.87'
+        required: false
+        default: ''
+        type: string
+      dryRun:
+        description: 'Validate and print the plan without writing anything'
+        type: boolean
+        default: false
   workflow_dispatch:
     inputs:
       sdkVersion:
@@ -34,6 +43,7 @@ env:
   SKIP_SKIA_DOWNLOAD: '1'
   SDK_VERSION: ${{ inputs.sdkVersion }}
   DRY_RUN: ${{ inputs.dryRun }}
+  REACT_NATIVE: ${{ inputs.reactNative }}
 
 jobs:
   beta:
@@ -84,8 +94,8 @@ jobs:
           if [[ "$DRY_RUN" == 'true' ]]; then
             args+=(--dry-run)
           fi
-          if [[ -n "${{ inputs.reactNative }}" ]]; then
-            args+=(--set "react-native=${{ inputs.reactNative }}")
+          if [[ -n "$REACT_NATIVE" ]]; then
+            args+=(--set "react-native=$REACT_NATIVE")
           fi
           result="$(pnpm --silent sdk-beta "${args[@]}" | tail -n1)"
           echo "result=$result" >> "$GITHUB_OUTPUT"

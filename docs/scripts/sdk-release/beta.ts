@@ -9,8 +9,9 @@ import { fileURLToPath } from 'node:url';
 const SDK_INPUT = /^(\d{2})(?:\.0\.0)?$/;
 const LLMS_SOURCE_URL = 'https://docs.expo.dev/llms-sdk.txt';
 const LLMS_MIN_BYTES = 500_000;
-const EXPO_REGISTRY_URL = 'https://registry.npmjs.org/expo';
+const EXPO_DIST_TAGS_URL = 'https://registry.npmjs.org/-/package/expo/dist-tags';
 const CANARY_EXAMPLE = /`\d+\.\d+\.\d+-canary-\d{8}-[\da-f]+`/;
+const EXPOTOOLS_MAX_BUFFER = 64 * 1024 * 1024;
 
 const docsDir = process.cwd();
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
@@ -182,7 +183,7 @@ function expotools(args: string[]) {
   })();
 
   if (hasEt) {
-    execFileSync('et', args, { cwd: root, stdio: 'pipe' });
+    execFileSync('et', args, { cwd: root, stdio: 'pipe', maxBuffer: EXPOTOOLS_MAX_BUFFER });
     return;
   }
 
@@ -193,7 +194,11 @@ function expotools(args: string[]) {
         'root, or build expotools with pnpm turbo build --filter expotools...'
     );
   }
-  execFileSync(process.execPath, [bin, ...args], { cwd: root, stdio: 'pipe' });
+  execFileSync(process.execPath, [bin, ...args], {
+    cwd: root,
+    stdio: 'pipe',
+    maxBuffer: EXPOTOOLS_MAX_BUFFER,
+  });
 }
 
 const notes: string[] = [];
@@ -210,20 +215,20 @@ async function updateCanaryExampleAsync() {
     );
   }
 
-  const response = await fetch(EXPO_REGISTRY_URL);
+  const response = await fetch(EXPO_DIST_TAGS_URL);
   if (!response.ok) {
     throw new Error(
-      `Could not read the expo package from ${EXPO_REGISTRY_URL} (HTTP ${response.status}), so the ` +
+      `Could not read the expo dist-tags from ${EXPO_DIST_TAGS_URL} (HTTP ${response.status}), so the ` +
         'canary example could not be refreshed.'
     );
   }
 
-  const registry = (await response.json()) as Record<string, Record<string, string> | undefined>;
-  const canary = registry['dist-tags']?.canary;
+  const distTags = (await response.json()) as Record<string, string | undefined>;
+  const canary = distTags.canary;
 
   if (!canary) {
     throw new Error(
-      `${EXPO_REGISTRY_URL} has no canary dist-tag, so there is no published version to copy.`
+      `${EXPO_DIST_TAGS_URL} has no canary dist-tag, so there is no published version to copy.`
     );
   }
 
