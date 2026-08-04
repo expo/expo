@@ -75,7 +75,7 @@ export async function fetch(
   };
 
   if (signal && signal.aborted) {
-    throw signal.reason ?? new FetchError('The operation was aborted.');
+    throw new FetchError('The operation was aborted.', { cause: signal.reason });
   }
   abortSubscription = addAbortSignalListener(signal, () => {
     // Propagate the abort into the JS body stream (reject the in-flight read
