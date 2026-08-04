@@ -10,7 +10,24 @@ declare const stateKey: unique symbol;
 export declare class FetchResponse extends ConcreteNativeResponse implements Response {
     private readonly abortCleanupFunction;
     private [stateKey];
+    private bodyStreamClosed;
+    private bodyStreamController;
+    private abortReason;
     constructor(abortCleanupFunction: AbortSubscriptionCleanupFunction);
+    /**
+     * Rejects the pending body read with the abort reason and closes the
+     * teardown guard so late native events are dropped (#34804). Idempotent,
+     * and safe to call before the body stream exists.
+     */
+    abort(reason?: unknown): void;
+    /**
+     * These helpers run on the native emitter's stack, where a throw reaches the
+     * global handler. The guard can be stale (internal stream errors bypass
+     * `controller.error()`), so check `desiredSize` (null = errored) and catch.
+     */
+    private closeBodyStream;
+    private errorBodyStream;
+    private enqueueBodyChunk;
     get _rawHeaders(): NativeHeadersType;
     get status(): number;
     get statusText(): string;
