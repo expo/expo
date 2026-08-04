@@ -53,6 +53,7 @@ onlyBuiltDependencies:
   - workerd
 
 patchedDependencies:
+  '@react-native-community/datetimepicker': patches/@react-native-community__datetimepicker.patch
   '@react-native-community/netinfo': patches/@react-native-community+netinfo.patch
   '@shopify/react-native-skia@2.6.2': patches/@shopify__react-native-skia@2.6.2.patch
   '@stripe/stripe-react-native': patches/@stripe__stripe-react-native.patch
