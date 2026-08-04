@@ -21,7 +21,7 @@ class MainActivity : ReactActivity() {
    * (aka React 18) with two boolean flags.
    */
   override fun createReactActivityDelegate(): ReactActivityDelegate {
-    return ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, DefaultReactActivityDelegate(
+    return ReactActivityDelegateWrapper(this, DefaultReactActivityDelegate(
             this,
             mainComponentName!!,  // If you opted-in for the New Architecture, we enable the Fabric Renderer.
             fabricEnabled,  // fabricEnabled
