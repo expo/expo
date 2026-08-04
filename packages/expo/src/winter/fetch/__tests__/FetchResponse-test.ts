@@ -16,6 +16,14 @@ jest.mock('../ExpoFetchModule', () => {
     private listeners = new Map<string, Set<(...args: any[]) => void>>();
     private _bodyUsed = false;
 
+    // Set by tests to fail a buffered read the way native does once the request
+    // errors after the response was delivered.
+    bodyReadError: Error | null = null;
+
+    // Set by tests to keep the body streaming instead of completing at once, so
+    // didFailWithError can arrive while a reader is waiting.
+    liveStream = false;
+
     // Getters on the prototype, like the real native binding, so super.x works.
     get _rawHeaders(): [string, string][] {
       return [['content-type', 'text/plain']];
@@ -65,6 +73,9 @@ jest.mock('../ExpoFetchModule', () => {
 
     async arrayBuffer(): Promise<ArrayBuffer> {
       this._bodyUsed = true;
+      if (this.bodyReadError) {
+        throw this.bodyReadError;
+      }
       return helloWorld.buffer.slice(
         helloWorld.byteOffset,
         helloWorld.byteOffset + helloWorld.byteLength
@@ -73,11 +84,14 @@ jest.mock('../ExpoFetchModule', () => {
 
     async text(): Promise<string> {
       this._bodyUsed = true;
+      if (this.bodyReadError) {
+        throw this.bodyReadError;
+      }
       return new TextDecoder().decode(helloWorld);
     }
 
     async startStreaming(): Promise<Uint8Array | null> {
-      return helloWorld;
+      return this.liveStream ? null : helloWorld;
     }
 
     cancelStreaming() {}
@@ -94,8 +108,14 @@ jest.mock('../ExpoFetchModule', () => {
   };
 });
 
-function makeResponse(): FetchResponse {
-  return new FetchResponse(() => {});
+function makeResponse(signal?: AbortSignal): FetchResponse {
+  return new FetchResponse(() => {}, signal);
+}
+
+// Waits for the body stream's pull to run, so an event emitted afterwards
+// reaches a reader that is genuinely waiting for data.
+function flush(): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, 0));
 }
 
 describe('FetchResponse', () => {
@@ -315,6 +335,72 @@ describe('FetchResponse', () => {
       const cloned = response.clone();
       await cloned.arrayBuffer();
       expect(response.bodyUsed).toBe(false);
+    });
+
+    it('rejects text() with a named FetchError when the read fails', async () => {
+      const response = makeResponse();
+      (response as any).bodyReadError = new Error('The network connection was lost.');
+
+      await expect(response.text()).rejects.toMatchObject({
+        name: 'FetchError',
+        message: 'fetch failed: The network connection was lost.',
+      });
+    });
+
+    it('rejects arrayBuffer() with a named FetchError when the read fails', async () => {
+      const response = makeResponse();
+      (response as any).bodyReadError = new Error('The network connection was lost.');
+
+      await expect(response.arrayBuffer()).rejects.toMatchObject({
+        name: 'FetchError',
+        message: 'fetch failed: The network connection was lost.',
+      });
+    });
+
+    it('rejects text() with an AbortError when the caller aborted', async () => {
+      const controller = new AbortController();
+      const response = makeResponse(controller.signal);
+      (response as any).bodyReadError = new Error('Fetch request has been canceled');
+      controller.abort();
+
+      await expect(response.text()).rejects.toMatchObject({ name: 'AbortError' });
+    });
+
+    it('rejects arrayBuffer() with the reason the caller aborted with', async () => {
+      const controller = new AbortController();
+      const reason = new Error('replaced by a newer request');
+      const response = makeResponse(controller.signal);
+      (response as any).bodyReadError = new Error('Fetch request has been canceled');
+      controller.abort(reason);
+
+      await expect(response.arrayBuffer()).rejects.toBe(reason);
+    });
+
+    it('errors the body stream with a named FetchError', async () => {
+      const response = makeResponse();
+      (response as any).liveStream = true;
+      const read = response.body!.getReader().read();
+      await flush();
+
+      (response as any).emit('didFailWithError', 'The network connection was lost.');
+
+      await expect(read).rejects.toMatchObject({
+        name: 'FetchError',
+        message: 'fetch failed: The network connection was lost.',
+      });
+    });
+
+    it('errors the body stream with an AbortError when the caller aborted', async () => {
+      const controller = new AbortController();
+      const response = makeResponse(controller.signal);
+      (response as any).liveStream = true;
+      const read = response.body!.getReader().read();
+      await flush();
+
+      controller.abort();
+      (response as any).emit('didFailWithError', 'Fetch request has been canceled');
+
+      await expect(read).rejects.toMatchObject({ name: 'AbortError' });
     });
 
     it('lets both tee() branches read the body and flips bodyUsed', async () => {
