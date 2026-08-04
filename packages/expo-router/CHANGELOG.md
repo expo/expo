@@ -29,6 +29,7 @@
 - Improve standard-navigation types for `createProps`. ([#47825](https://github.com/expo/expo/pull/47825) by [@Ubax](https://github.com/Ubax))
 - Add a `processScreens` option to the `standard-navigation` integration. ([#48290](https://github.com/expo/expo/pull/48290) by [@Ubax](https://github.com/Ubax))
 - Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
+- Honor loader `Cache-Control` headers via the platform HTTP cache instead of caching loader data in memory ([#48087](https://github.com/expo/expo/pull/48087) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
