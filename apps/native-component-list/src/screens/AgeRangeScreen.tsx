@@ -21,7 +21,9 @@ export default function AgeRangeScreen() {
       // part of requestAgeRangeAsync, so there is nothing separate to call and this resolves null.
       const status = await AgeRange.requestAgeSignalsAccessAsync();
       setResult(
-        status === null ? 'null (unsupported on this platform)' : `ageSignalsStatus: ${status}`
+        status === null
+          ? 'null (unsupported on this platform, or no status reported)'
+          : `ageSignalsStatus: ${status}`
       );
     } catch (err: any) {
       setError(err.message || 'Unknown error occurred');
@@ -129,9 +131,10 @@ export default function AgeRangeScreen() {
       </BodyText>
 
       <BodyText color="secondary" style={styles.description}>
-        On Android, request age signals access first so the user can consent to sharing. The age
-        range result below reports ageRangeSource, significantChangeStatus and
-        significantChangeApprovalDate on Android, and ageRangeDeclaration on iOS.
+        On Android, request age signals access first and continue only when the status is SHARED.
+        Play reports every field as null until then. The age range result below reports
+        ageRangeSource, significantChangeStatus and significantChangeApprovalDate on Android, and
+        ageRangeDeclaration on iOS.
       </BodyText>
 
       <Button

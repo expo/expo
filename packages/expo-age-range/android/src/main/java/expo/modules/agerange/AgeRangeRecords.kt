@@ -25,9 +25,6 @@ data class AgeRangeResult(
   val significantChangeStatus: String?,
   @Field
   val significantChangeApprovalDate: Long?,
-  // Deprecated, kept for backwards compatibility. See `deriveUserStatus`.
-  @Field
-  val userStatus: String?,
   // Deprecated, kept for backwards compatibility. 0.0.4 renamed this to
   // `significantChangeApprovalDate` for clarity; both report the same value.
   @Field
@@ -40,20 +37,8 @@ data class AgeRangeResult(
     ageRangeSource = ageRangeSourceToString(result.ageRangeSource()),
     significantChangeStatus = significantChangeStatusToString(result.significantChangeStatus()),
     significantChangeApprovalDate = result.significantChangeApprovalDate()?.time,
-    userStatus = deriveUserStatus(result.ageRangeSource(), result.significantChangeStatus()),
     mostRecentApprovalDate = result.significantChangeApprovalDate()?.time
   )
-}
-
-internal fun deriveUserStatus(source: Int?, significantChange: Int?): String = when (source) {
-  AgeRangeSource.TIER_A -> "DECLARED"
-  AgeRangeSource.TIER_B -> when (significantChange) {
-    SignificantChangeStatus.PENDING -> "SUPERVISED_APPROVAL_PENDING"
-    SignificantChangeStatus.DECLINED -> "SUPERVISED_APPROVAL_DENIED"
-    else -> "SUPERVISED"
-  }
-  AgeRangeSource.TIER_D -> "VERIFIED"
-  else -> "UNKNOWN"
 }
 
 internal fun ageRangeSourceToString(source: Int?): String? = when (source) {

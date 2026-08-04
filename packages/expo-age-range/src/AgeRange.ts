@@ -14,6 +14,9 @@ import type {
  * The user needs to be signed in on the device to get a valid response.
  * When not supported (earlier than iOS 26 and web), the call returns `lowerBound: 18`, which is equivalent to the response of an adult user.
  *
+ * On Android, call [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync) first and
+ * only call this function when it resolves with `'SHARED'`. Play Age Signals reports every field as
+ * `null` otherwise.
  *
  * @platform android
  * @platform ios 26.0+
@@ -105,12 +108,15 @@ export async function getRequiredRegulatoryFeaturesAsync(): Promise<
 
 /**
  * Asks the user to consent to sharing their age signals, showing the Play Age Signals in-app age sharing consent
- * screen. Call this before [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) so the
- * user has had a chance to opt in.
+ * screen. Play Age Signals requires this before [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions):
+ * age signals are only reported while the status is `'SHARED'`.
  *
- * - Resolves with `'SHARED'` when the user agrees to share their age signals.
- * - Resolves with `'NOT_SHARED'` when the user does not agree.
- * - Resolves with `'VERIFICATION_REQUIRED'` when the user must verify their age before sharing.
+ * - Resolves with `'SHARED'` when the user agrees to share their age signals. Only then does
+ *   `requestAgeRangeAsync` report an age range.
+ * - Resolves with `'NOT_SHARED'` when the user does not agree. `requestAgeRangeAsync` reports every
+ *   field as `null` until the user consents.
+ * - Resolves with `'VERIFICATION_REQUIRED'` when the user's age is unknown and they are in a region
+ *   where age verification is mandatory. Ask the user to visit the Play Store to resolve their status.
  * - Resolves with `null` when Play Age Signals reports no status, and on iOS and web. On iOS the consent prompt
  *   is part of `requestAgeRangeAsync` itself, so there is nothing separate to call.
  * - Rejects when the request fails.

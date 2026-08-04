@@ -49,12 +49,13 @@ export type AgeRangeResponse = {
   installId?: string | null;
   /**
    * The methodology Play Age Signals used to determine the user's age range:
-   * - `'TIER_A'` — unsupervised, self declared.
-   * - `'TIER_B'` — supervised user, meaning the guardian attests to the user's age range.
-   * - `'TIER_C'` — unsupervised, estimated.
-   * - `'TIER_D'` — unsupervised, verified, for example through an ID check.
+   * - `'TIER_A'` — the user self-declared their age.
+   * - `'TIER_B'` — a parent or guardian manages the user's age.
+   * - `'TIER_C'` — the age was assessed using a credit card, email address, selfie assessment, government ID, or tax ID.
+   * - `'TIER_D'` — the age was checked using a combination of government ID and selfie assessment, or a digital ID.
    *
-   * `null` when Play Age Signals reports no source.
+   * `null` when the sharing status reported by [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync)
+   * is `'NOT_SHARED'` or `'VERIFICATION_REQUIRED'`.
    *
    * @platform android
    */
@@ -71,31 +72,13 @@ export type AgeRangeResponse = {
    */
   significantChangeStatus?: 'APPROVED' | 'PENDING' | 'DECLINED' | null;
   /**
-   * The effective date (timestamp) of the most recent significant change that was approved.
+   * The effective date (timestamp) of the most recently approved significant change.
    *
-   * `null` when no significant change has been approved.
+   * `null` when no changes have been recorded for your app.
    *
    * @platform android
    */
   significantChangeApprovalDate?: number | null;
-  /**
-   * The user's age verification or supervision status.
-   *
-   * Play Age Signals removed this signal and replaced it with `ageRangeSource`.
-   *
-   * @deprecated Use `ageRangeSource` and `significantChangeStatus` instead. This field
-   * will be removed in a future release.
-   *
-   * @platform android
-   */
-  userStatus?:
-    | 'VERIFIED'
-    | 'SUPERVISED'
-    | 'SUPERVISED_APPROVAL_PENDING'
-    | 'SUPERVISED_APPROVAL_DENIED'
-    | 'DECLARED'
-    | 'UNKNOWN'
-    | null;
   /**
    * The effective date (timestamp) of the most recent significant change that was approved.
    *

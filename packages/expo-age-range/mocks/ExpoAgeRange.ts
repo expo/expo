@@ -16,7 +16,6 @@ export async function requestAgeRangeAsync(opts: AgeRangeRequest): Promise<AgeRa
     installId: 'some-id',
     ageRangeSource: 'TIER_D',
     significantChangeStatus: null,
-    userStatus: 'VERIFIED',
     significantChangeApprovalDate: null,
     mostRecentApprovalDate: null,
     lowerBound: 18,

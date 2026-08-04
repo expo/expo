@@ -10,6 +10,7 @@ import com.google.android.play.agesignals.model.AgeSignalsErrorCode
 import com.google.android.play.agesignals.model.AgeSignalsStatus
 import com.google.android.play.agesignals.model.SignificantChangeStatus
 import com.google.android.play.agesignals.testing.FakeAgeSignalsManager
+import expo.modules.kotlin.exception.CodedException
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Test
@@ -57,7 +58,7 @@ class AgeSignalsManagerTest {
     }
 
     var ageRangeResult: AgeRangeResult? = null
-    var errorResult: expo.modules.kotlin.exception.CodedException? = null
+    var errorResult: CodedException? = null
 
     requestAgeRange(
       ageSignalsManager = fakeManager,
@@ -77,10 +78,45 @@ class AgeSignalsManagerTest {
   @Test
   fun `requestAgeSignalsAccess reports the sharing status`() {
     // The consent screen needs a real Play Age Signals consent state to appear, so the callback
-    // path can't practically be driven on a device or simulator.
+    // path can't practically be driven on a device or simulator in CI.
     assertEquals("SHARED", requestAccessAndAwait(AgeSignalsStatus.SHARED))
-    // UNSPECIFIED is Play's "no status" value and must not leak to JS as a string.
+    assertEquals("NOT_SHARED", requestAccessAndAwait(AgeSignalsStatus.NOT_SHARED))
+    assertEquals(
+      "VERIFICATION_REQUIRED",
+      requestAccessAndAwait(AgeSignalsStatus.VERIFICATION_REQUIRED)
+    )
+    // Play documents neither UNSPECIFIED nor its meaning — the documented values are the named
+    // ones and null. Whatever it means, we don't leak it to JS, so it
+    // maps to null like an absent or unrecognised value does, in every mapping.
     assertEquals(null, requestAccessAndAwait(AgeSignalsStatus.UNSPECIFIED))
+    assertEquals(null, ageSignalsStatusToString(null))
+    assertEquals(null, ageRangeSourceToString(AgeRangeSource.UNSPECIFIED))
+    assertEquals(null, significantChangeStatusToString(99))
+  }
+
+  @Test
+  fun `requestAgeSignalsAccess reports errors`() {
+    // FakeAgeSignalsManager has no hook to cancel the task, so only the failure path is driven
+    // here. It shares `processAgeSignalsError` with `requestAgeRange`.
+    val fakeManager = FakeAgeSignalsManager().apply {
+      setNextRequestAgeSignalsAccessException(
+        AgeSignalsException(AgeSignalsErrorCode.PLAY_SERVICES_VERSION_OUTDATED)
+      )
+    }
+
+    var errorResult: CodedException? = null
+    requestAgeSignalsAccess(
+      ageSignalsManager = fakeManager,
+      activity = Robolectric.buildActivity(Activity::class.java).setup().get(),
+      onSuccess = { throw AssertionError("Unexpected success: $it") },
+      onError = { errorResult = it },
+      onCancelled = { throw AssertionError("Unexpected cancellation") }
+    )
+    shadowOf(Looper.getMainLooper()).idle()
+
+    assertNotNull("Expected error callback to be called", errorResult)
+    assertEquals("Age Signals Error: -7", errorResult!!.message)
+    assertEquals(AgeSignalsErrorCode.PLAY_SERVICES_VERSION_OUTDATED.toString(), errorResult.code)
   }
 
   private fun requestAccessAndAwait(status: Int?): String? {
@@ -95,7 +131,10 @@ class AgeSignalsManagerTest {
     requestAgeSignalsAccess(
       ageSignalsManager = fakeManager,
       activity = Robolectric.buildActivity(Activity::class.java).setup().get(),
-      onSuccess = { called = true; accessStatus = it },
+      onSuccess = {
+        called = true
+        accessStatus = it
+      },
       onError = { throw AssertionError("Unexpected error: $it") },
       onCancelled = { throw AssertionError("Unexpected cancellation") }
     )
