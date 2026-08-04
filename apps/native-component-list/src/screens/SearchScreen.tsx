@@ -1,4 +1,5 @@
 import {
+  Stack,
   type NativeStackNavigationOptions,
   type NativeStackNavigationProp,
   useNavigation,
@@ -16,8 +17,8 @@ import ComponentListScreen from './ComponentListScreen';
 
 const fuse = new Fuse(ApiScreenApiItems.concat(ComponentScreenApiItems), { keys: ['name'] });
 
-// The header (with the native search bar) comes from the stack that renders this screen,
-// so hosts must apply `getSearchScreenOptions` to that stack screen.
+// The header comes from the stack that renders this screen, so hosts must apply
+// `getSearchScreenOptions` to that stack screen.
 export function getSearchScreenOptions(theme: ThemeType): NativeStackNavigationOptions {
   return {
     title: 'Search',
@@ -34,31 +35,6 @@ export default function SearchScreen() {
   const { theme } = useTheme();
   const [query, setQuery] = React.useState('');
   const searchBarRef = React.useRef<SearchBarCommands>(null);
-
-  React.useLayoutEffect(() => {
-    // The web header turns these options into a button that expands its own search field.
-    // Web renders a plain input below instead, so setting them would show both.
-    if (Platform.OS === 'web') {
-      return;
-    }
-    navigation.setOptions({
-      headerSearchBarOptions: {
-        ref: searchBarRef,
-        placeholder: 'Search',
-        autoFocus: true,
-        // Without this iOS hides the navigation bar while searching, which slides the results
-        // under the search field and swallows taps on the first row.
-        hideNavigationBar: false,
-        textColor: theme.text.default,
-        tintColor: theme.icon.info,
-        headerIconColor: theme.icon.secondary,
-        hintTextColor: theme.text.quaternary,
-        onChangeText: (event: { nativeEvent: { text: string } }) =>
-          setQuery(event.nativeEvent.text),
-        onCancelButtonPress: () => navigation.goBack(),
-      },
-    });
-  }, [navigation, theme]);
 
   // `autoFocus` is Android-only, so focus the iOS search bar once the screen finishes opening.
   React.useEffect(() => {
@@ -87,10 +63,29 @@ export default function SearchScreen() {
   const list = <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
 
   if (Platform.OS !== 'web') {
-    return list;
+    return (
+      <>
+        <Stack.SearchBar
+          ref={searchBarRef}
+          autoFocus
+          placeholder="Search"
+          // Without this iOS hides the navigation bar while searching, which slides the results
+          // under the search field and swallows taps on the first row.
+          hideNavigationBar={false}
+          textColor={theme.text.default}
+          tintColor={theme.icon.info}
+          headerIconColor={theme.icon.secondary}
+          hintTextColor={theme.text.quaternary}
+          onChangeText={(event) => setQuery(event.nativeEvent.text)}
+          onCancelButtonPress={() => navigation.goBack()}
+        />
+        {list}
+      </>
+    );
   }
 
-  // The web header only renders a button that expands the search field, so web gets its own input.
+  // On web the search bar turns into a header button that expands its own field, so web gets a
+  // plain input above the results instead.
   return (
     <View style={[styles.webContainer, { backgroundColor: theme.background.default }]}>
       <TextInput
