@@ -24,9 +24,9 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 Expo Router は React Native と web アプリ向けのファイルベースのルーティングフレームワークです。画面間のナビゲーションを管理し、複数のプラットフォームで同じコンポーネントを使用できます。始めるにあたって、次の規約を理解しておく必要があります。
 
-- **app ディレクトリ：** ルートとそのレイアウトのみを含む特別なディレクトリです。このディレクトリに追加したファイルは、ネイティブアプリでは画面として、web ではページとして扱われます。
-- **ルートレイアウト：** **app/\_layout.tsx** ファイルです。ヘッダーやタブバーなど、複数のルート間で一貫させたい共有 UI 要素を定義します。
-- **ファイル名の規約：** **index.tsx** などの _Index_ ファイル名は、親ディレクトリと一致し、パスセグメントを追加しません。たとえば、**app** ディレクトリ内の **index.tsx** は `/` ルートと一致します。
+- **app ディレクトリ：** ルートとそのレイアウトのみを含む特別なディレクトリです。このディレクトリに追加したファイルは、ネイティブアプリでは画面として、web ではページとして扱われます。デフォルトテンプレートでは **src/app** に配置されています。
+- **ルートレイアウト：** **src/app/\_layout.tsx** ファイルです。ヘッダーやタブバーなど、複数のルート間で一貫させたい共有 UI 要素を定義します。
+- **ファイル名の規約：** **index.tsx** などの _Index_ ファイル名は、親ディレクトリと一致し、パスセグメントを追加しません。たとえば、**src/app** ディレクトリ内の **index.tsx** は `/` ルートと一致します。
 - **ルート** ファイルは React コンポーネントをデフォルト値としてエクスポートします。拡張子は `.js`、`.jsx`、`.ts`、`.tsx` のいずれかを使用できます。
 - Android、iOS、web は統一されたナビゲーション構造を共有します。
 
@@ -36,9 +36,9 @@ Expo Router は React Native と web アプリ向けのファイルベースの�
 
 ## スタックに新しい画面を追加する
 
-**app** ディレクトリ内に **about.tsx** という名前の新しいファイルを作成しましょう。ユーザーが `/about` ルートに移動したときに、画面名を表示します。
+**src/app** ディレクトリ内に **about.tsx** という名前の新しいファイルを作成しましょう。ユーザーが `/about` ルートに移動したときに、画面名を表示します。
 
-```tsx app/about.tsx|collapseHeight=300
+```tsx src/app/about.tsx|collapseHeight=300
 import { Text, View, StyleSheet } from 'react-native';
 
 export default function AboutScreen() {
@@ -62,13 +62,13 @@ const styles = StyleSheet.create({
 });
 ```
 
-**app/\_layout.tsx** 内で:
+**src/app/\_layout.tsx** 内で:
 
 1. `<Stack.Screen />` コンポーネントと `options` プロパティを追加して、`/about` ルートのタイトルを更新します。
 2. `options` プロパティを追加して、`/index` ルートのタイトルを `Home` に更新します。
 
 {/* prettier-ignore */}
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function RootLayout() {
@@ -97,12 +97,12 @@ export default function RootLayout() {
 
 Expo Router の `Link` コンポーネントを使用して、`/index` ルートから `/about` ルートに移動します。これは、指定された `href` プロパティを持つ `<Text>` をレンダリングする React コンポーネントです。
 
-1. **index.tsx** 内で、`expo-router` から `Link` コンポーネントをインポートします。
+1. **src/app/index.tsx** 内で、`expo-router` から `Link` コンポーネントをインポートします。
 2. `<Text>` コンポーネントの後に `Link` コンポーネントを追加し、`href` プロパティに `/about` ルートを渡します。
 3. `Link` コンポーネントに `fontSize`、`textDecorationLine`、`color` のスタイルを追加します。`<Text>` コンポーネントと同じプロパティを受け取ります。
 
 {/* prettier-ignore */}
-```tsx app/index.tsx|collapseHeight=300
+```tsx src/app/index.tsx|collapseHeight=300
 import { Text, View, StyleSheet } from 'react-native';
 /* @tutinfo `expo-router` から `Link` コンポーネントをインポートします。 */ import { Link } from 'expo-router'; /* @end */
 
@@ -151,12 +151,12 @@ const styles = StyleSheet.create({
 
 ルートが存在しない場合、`+not-found` ルートを使用してフォールバック画面を表示できます。これは、モバイルで無効なルートに移動した際にアプリをクラッシュさせず、web で _404_ エラーを表示する代わりにカスタム画面を表示したい場合に役立ちます。Expo Router は、このケースを処理するために特別な **+not-found.tsx** ファイルを使用します。
 
-1. app ディレクトリ内に **+not-found.tsx** という名前の新しいファイルを作成し、`NotFoundScreen` コンポーネントを追加します。
+1. **src/app** ディレクトリ内に **+not-found.tsx** という名前の新しいファイルを作成し、`NotFoundScreen` コンポーネントを追加します。
 2. `Stack.Screen` の `options` プロパティを追加して、このルートのカスタム画面タイトルを表示します。
 3. `Link` コンポーネントを追加して、フォールバックルートである `/` ルートに移動します。
 
 {/* prettier-ignore */}
-```tsx app/+not-found.tsx
+```tsx src/app/+not-found.tsx
 import { View, StyleSheet } from 'react-native';
 import { Link, Stack } from 'expo-router';
 
@@ -203,37 +203,37 @@ const styles = StyleSheet.create({
 
 ## ボトムタブナビゲーターを追加する
 
-この時点で、**app** ディレクトリのファイル構造は次のようになっています。
+この時点で、**src/app** ディレクトリのファイル構造は次のようになっています。
 
 <FileTree
   files={[
-    ['app/_layout.tsx', 'ルートレイアウト'],
-    ['app/index.tsx', "ルート '/' に一致"],
-    ['app/about.tsx', "ルート '/about' に一致"],
-    ['app/+not-found.tsx', 'すべての 404 ルートに一致'],
+    ['src/app/_layout.tsx', 'ルートレイアウト'],
+    ['src/app/index.tsx', "ルート '/' に一致"],
+    ['src/app/about.tsx', "ルート '/about' に一致"],
+    ['src/app/+not-found.tsx', 'すべての 404 ルートに一致'],
   ]}
 />
 
 アプリにボトムタブナビゲーターを追加し、既存の Home と About 画面を再利用してタブレイアウトを作成します (X や BlueSky など、多くのソーシャルメディアアプリで一般的なナビゲーションパターンです)。また、ルートレイアウトでスタックナビゲーターを使用することで、`+not-found` ルートが他のネストされたナビゲーターの上に表示されるようにします。
 
-1. **app** ディレクトリ内に **(tabs)** サブディレクトリを追加します。この特別なディレクトリは、ルートをグループ化してボトムタブバーに表示するために使われます。
+1. **src/app** ディレクトリ内に **(tabs)** サブディレクトリを追加します。この特別なディレクトリは、ルートをグループ化してボトムタブバーに表示するために使われます。
 2. ディレクトリ内に **(tabs)/\_layout.tsx** ファイルを作成します。これは、ルートレイアウトとは別のタブレイアウトを定義するために使用されます。
-3. 既存の **index.tsx** と **about.tsx** ファイルを **(tabs)** ディレクトリ内に移動します。**app** ディレクトリの構造は次のようになります。
+3. 既存の **index.tsx** と **about.tsx** ファイルを **(tabs)** ディレクトリ内に移動します。**src/app** ディレクトリの構造は次のようになります。
 
 <FileTree
   files={[
-    ['app/_layout.tsx', 'ルートレイアウト'],
-    ['app/+not-found.tsx', 'すべての 404 ルートに一致'],
-    ['app/(tabs)/_layout.tsx', 'タブレイアウト'],
-    ['app/(tabs)/index.tsx', "ルート '/' に一致"],
-    ['app/(tabs)/about.tsx', "ルート '/about' に一致"],
+    ['src/app/_layout.tsx', 'ルートレイアウト'],
+    ['src/app/+not-found.tsx', 'すべての 404 ルートに一致'],
+    ['src/app/(tabs)/_layout.tsx', 'タブレイアウト'],
+    ['src/app/(tabs)/index.tsx', "ルート '/' に一致"],
+    ['src/app/(tabs)/about.tsx', "ルート '/about' に一致"],
   ]}
 />
 
 ルートレイアウトファイルを更新して、`(tabs)` ルートを追加します。
 
 {/* prettier-ignore */}
-```tsx app/_layout.tsx
+```tsx src/app/_layout.tsx
 import { Stack } from 'expo-router';
 
 export default function RootLayout() {
@@ -250,7 +250,7 @@ export default function RootLayout() {
 **(tabs)/\_layout.tsx** 内に `Tabs` コンポーネントを追加して、ボトムタブレイアウトを定義します。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/_layout.tsx
+```tsx src/app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 
 export default function TabLayout() {
@@ -281,14 +281,14 @@ export default function TabLayout() {
 
 現時点では、ボトムタブナビゲーターはすべてのプラットフォームで同じ見た目ですが、アプリのスタイルとは合っていません。たとえば、タブバーやヘッダーにカスタムアイコンが表示されず、ボトムタブの背景色がアプリの背景色と一致していません。
 
-**(tabs)/\_layout.tsx** ファイルを修正して、タブバーアイコンを追加します。
+**src/app/(tabs)/\_layout.tsx** ファイルを修正して、タブバーアイコンを追加します。
 
 1. [`@expo/vector-icons`](/guides/icons/#expovector-icons) &mdash; 人気のアイコンセットを含むライブラリ &mdash; から `Ionicons` アイコンセットをインポートします。
 2. `tabBarIcon` を `index` と `about` の両方のルートに追加します。この関数は `focused` と `color` を引数として受け取り、アイコンコンポーネントをレンダリングします。アイコンセットから、カスタムアイコン名を指定できます。
 3. `Tabs` コンポーネントに `screenOptions.tabBarActiveTintColor` を追加し、値を `#ffd33d` に設定します。これにより、アクティブ時のタブバーのアイコンとラベルの色が変わります。
 
 {/* prettier-ignore */}
-```tsx app/(tabs)/_layout.tsx
+```tsx src/app/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 /* @tutinfo `Ionicons` アイコンセットをインポートします。*/
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -332,7 +332,7 @@ export default function TabLayout() {
 
 `screenOptions` プロパティを使って、タブバーとヘッダーの背景色も変更しましょう。
 
-```tsx app/(tabs)/_layout.tsx
+```tsx src/app/(tabs)/_layout.tsx
 <Tabs
   screenOptions={{
     tabBarActiveTintColor: '#ffd33d',

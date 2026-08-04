@@ -37,7 +37,8 @@ In this chapter, let's learn how to create a new Expo project and how to get it 
     Install [VS Code](https://code.visualstudio.com/) or any other preferred code editor or IDE.
   </Requirement>
   <Requirement title="A developer machine with a terminal">
-    A macOS, Linux, or Windows (PowerShell and WSL2) with a terminal window open.
+    A macOS, Linux, or Windows (PowerShell and [WSL2](https://expo.fyi/wsl)) with a terminal window
+    open.
   </Requirement>
 </Prerequisites>
 
@@ -55,8 +56,8 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
       '# Create a project named StickerSmash',
       '$ npx create-expo-app@latest StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 54.',
-      '$ Select an Expo SDK version > SDK 54',
+      '# CLI will prompt you to choose a template. Select SDK 57.',
+      '$ Select an Expo SDK version > SDK 57',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -65,8 +66,8 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
       '# Create a project named StickerSmash',
       '$ yarn create expo-app StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 54.',
-      '$ Select an Expo SDK version > SDK 54',
+      '# CLI will prompt you to choose a template. Select SDK 57.',
+      '$ Select an Expo SDK version > SDK 57',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -75,8 +76,8 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
       '# Create a project named StickerSmash',
       '$ pnpm create expo-app StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 54.',
-      '$ Select an Expo SDK version > SDK 54',
+      '# CLI will prompt you to choose a template. Select SDK 57.',
+      '$ Select an Expo SDK version > SDK 57',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -85,8 +86,8 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
       '# Create a project named StickerSmash',
       '$ bun create expo StickerSmash',
       '',
-      '# CLI will prompt you to choose a template. Select SDK 54.',
-      '$ Select an Expo SDK version > SDK 54',
+      '# CLI will prompt you to choose a template. Select SDK 57.',
+      '$ Select an Expo SDK version > SDK 57',
       '',
       '# Navigate to the project directory',
       '$ cd StickerSmash',
@@ -94,9 +95,7 @@ We'll use [`create-expo-app`](/more/create-expo/) to initialize a new Expo app. 
   }}
 />
 
-> **info** `create-expo-app@latest` currently asks to select an Expo SDK template. This tutorial is designed for SDK 54, so make sure to select the SDK 54 template.
-
-This command will create a new project directory named StickerSmash, using the [SDK 54's default](/more/create-expo/#--template) template. This template has essential boilerplate code and libraries needed to build our app, including Expo Router and allows us to test our app with Expo Go installed on our devices. We'll continue to add more libraries throughout this tutorial as needed.
+This command will create a new project directory named StickerSmash, using the [default template](/more/create-expo/#--template). This template has essential boilerplate code and libraries needed to build our app, including Expo Router and allows us to test our app with Expo Go installed on our devices. We'll continue to add more libraries throughout this tutorial as needed.
 
 <Collapsible summary="Benefits of using the default template">
 
@@ -143,11 +142,11 @@ In this tutorial, we'll build our app from scratch and understand the fundamenta
   }}
 />
 
-After running the above command, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **app** directory. The previous files from **app** and other directories (**components**, **constants**, and **hooks** — containing boilerplate code) are moved inside the **app-example** directory by the script. We'll create our own directories and component files as we go along.
+After running the above command, there are two files (**index.tsx** and **\_layout.tsx**) left inside the **src/app** directory. The previous files from **src** and other directories (**components**, **constants**, and **hooks** — containing boilerplate code) are moved inside the **example** directory by the script. We'll create our own directories and component files as we go along.
 
 <Collapsible summary={<>What does the <CODE>reset-project</CODE> script do?</>}>
 
-`reset-project` script resets the **app** directory structure in a project and copies the previous boilerplate files from the project's root directory to another sub-directory called **app-example**. We can delete it since it is not part of our main app's structure.
+`reset-project` script resets the **src/app** directory structure in a project and moves the previous boilerplate files from the project's **src** directory to another sub-directory called **example**. We can delete it since it is not part of our main app's structure.
 
 </Collapsible>
 
@@ -188,11 +187,11 @@ Once it is running on all platforms, the app should look like this:
 
 ## Edit the index screen
 
-The **app/index.tsx** file defines the text displayed on the app's screen. It is the entry point of our app and executes when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display background and text.
+The **src/app/index.tsx** file defines the text displayed on the app's screen. It is the entry point of our app and executes when the development server starts. It uses core React Native components such as `<View>` and `<Text>` to display background and text.
 
 Styles applied to these components use JavaScript objects rather than CSS, which is used on web. However, a lot of the properties will look familiar if you've previously used CSS on web. Most React Native components accept a `style` prop that accepts a JavaScript object as its value. For more details, see [Styling in React Native](https://reactnative.dev/docs/style).
 
-Let's modify **app/index.tsx** screen:
+Let's modify **src/app/index.tsx** screen:
 
 1. Import `StyleSheet` from `react-native` and create a `styles` object to define our custom styles.
 2. Add a `styles.container.backgroundColor` property to `<View>` with the value of `#25292e`. This changes the background color.
@@ -200,13 +199,13 @@ Let's modify **app/index.tsx** screen:
 4. Add a `styles.text.color` property to `<Text>` with the value of `#fff` (white) to change the text color.
 
 {/* prettier-ignore */}
-```tsx app/index.tsx|collapseHeight=340
+```tsx src/app/index.tsx|collapseHeight=340
 import { Text, View, /* @tutinfo Import `StyleSheet` to define styles. */ StyleSheet/* @end */ } from 'react-native';
 
 export default function Index() {
   return (
     <View style={styles.container}>
-      /* @tutinfo This used to say "Edit app/index.tsx to edit this screen". Now it says, "Home screen". */
+      /* @tutinfo This used to say "Edit src/app/index.tsx to edit this screen". Now it says, "Home screen". */
       <Text style={styles.text}>Home screen</Text>
       /* @end */
     </View>
@@ -237,6 +236,19 @@ Once you save your changes, they're sent and applied to the running apps connect
   src="/static/images/tutorial/02-index-screen-changes.webp"
   className="max-w-[720px]"
 />
+
+<Collapsible summary="What is the blue gear icon?">
+
+The blue gear icon is the **Tools button** for Android and iOS platforms. It's a floating shortcut that opens the [Developer menu](/debugging/tools/#developer-menu), which provides access to debugging functions such as reloading the app and toggling Fast Refresh. It appears only while developing and is never included in a production build.
+
+The remaining screenshots in this tutorial will have it hidden. To hide it:
+
+1. Open the Developer menu. Shake your device, or press <kbd>M</kbd> in the terminal running the development server if you're using an emulator, a simulator, or a device connected with USB.
+2. Find the **Tools button** option and toggle it off.
+
+Hiding it doesn't disable the Developer menu. You can still open it the way described in Step 1 whenever you need it.
+
+</Collapsible>
 
 </Step>
 
