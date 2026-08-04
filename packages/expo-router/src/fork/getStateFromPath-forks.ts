@@ -55,7 +55,7 @@ export function getUrlWithReactNavigationConcessions(
   path: string,
   baseUrl: string | undefined = process.env.EXPO_BASE_URL
 ): UrlWithReactNavigationConcessions {
-  const pathWithoutGroups = stripGroupSegmentsFromPath(stripBaseUrl(path, baseUrl));
+  const pathWithoutGroups = stripGroupSegmentsFromPath(stripBaseUrl(path, baseUrl).split('?')[0]!);
 
   let pathname = '';
   let hash = '';
