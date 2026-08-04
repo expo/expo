@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Upgraded `com.google.android.play:age-signals` to `0.0.4`. Adds `ageRangeSource`, `significantChangeStatus`, `significantChangeApprovalDate` and `requestAgeSignalsAccessAsync`, which shows the Play Age Signals in-app age sharing consent screen. `userStatus` and `mostRecentApprovalDate` are deprecated but still reported — `userStatus` is now derived from the new fields, so its values can differ: an estimated age (`'TIER_C'`) has no equivalent in the old vocabulary and reports `'UNKNOWN'`. ([#48487](https://github.com/expo/expo/pull/48487) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

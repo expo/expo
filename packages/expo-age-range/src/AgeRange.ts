@@ -5,6 +5,7 @@ import type {
   AgeRangeRequest,
   AgeRangeResponse,
   AgeRangeRegulatoryFeature,
+  AgeSignalsStatus,
 } from './ExpoAgeRange.types';
 
 /**
@@ -98,6 +99,27 @@ export async function getRequiredRegulatoryFeaturesAsync(): Promise<
 > {
   if (Platform.OS === 'ios') {
     return ExpoAgeRange.getRequiredRegulatoryFeaturesAsync();
+  }
+  return null;
+}
+
+/**
+ * Asks the user to consent to sharing their age signals, showing the Play Age Signals in-app age sharing consent
+ * screen. Call this before [`requestAgeRangeAsync`](#agerangerequestagerangeasyncoptions) so the
+ * user has had a chance to opt in.
+ *
+ * - Resolves with `'SHARED'` when the user agrees to share their age signals.
+ * - Resolves with `'NOT_SHARED'` when the user does not agree.
+ * - Resolves with `'VERIFICATION_REQUIRED'` when the user must verify their age before sharing.
+ * - Resolves with `null` when Play Age Signals reports no status, and on iOS and web. On iOS the consent prompt
+ *   is part of `requestAgeRangeAsync` itself, so there is nothing separate to call.
+ * - Rejects when the request fails.
+ *
+ * @platform android
+ */
+export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus | null> {
+  if (Platform.OS === 'android') {
+    return ExpoAgeRange.requestAgeSignalsAccessAsync();
   }
   return null;
 }
