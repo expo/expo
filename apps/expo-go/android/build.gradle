@@ -88,7 +88,9 @@ allprojects {
 }
 
 project(":packages:react-native:ReactAndroid").afterEvaluate { reactAndroid ->
-  reactAndroid.tasks.named("buildCodegenCLI").configure { it.enabled = false }
+  // react-native 0.87 no longer registers buildCodegenCLI; keep disabling it while the
+  // fork is on an older release. `matching` tolerates the task being absent.
+  reactAndroid.tasks.matching { it.name == "buildCodegenCLI" }.configureEach { it.enabled = false }
 }
 
 // Expo Go ships a release build that keeps the JS debugger. React Native gates those native defines

@@ -1,8 +1,7 @@
 diff --git a/RNWorklets.podspec b/RNWorklets.podspec
-index 11e10b7a731f754b524c9e8ccd8126334b6adb68..1d0b6ede2e7278398eaa8557b91ea27a3605d9b3 100644
 --- a/RNWorklets.podspec
 +++ b/RNWorklets.podspec
-@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
+@@ -56,6 +56,7 @@
    install_modules_dependencies(s)
  
    s.dependency 'React-jsi'
@@ -10,7 +9,7 @@ index 11e10b7a731f754b524c9e8ccd8126334b6adb68..1d0b6ede2e7278398eaa8557b91ea27a
    s.dependency 'React-hermes'
    
    s.pod_target_xcconfig = {
-@@ -70,6 +71,7 @@ Pod::Spec.new do |s|
+@@ -70,6 +71,7 @@
        '"$(PODS_ROOT)/DoubleConversion"',
        '"$(PODS_ROOT)/Headers/Private/React-Core"',
        '"$(PODS_ROOT)/Headers/Private/Yoga"',
@@ -19,10 +18,9 @@ index 11e10b7a731f754b524c9e8ccd8126334b6adb68..1d0b6ede2e7278398eaa8557b91ea27a
      "FRAMEWORK_SEARCH_PATHS" => '"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes"',
      "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
 diff --git a/android/build.gradle.kts b/android/build.gradle.kts
-index 2e01292a695638f4b82d27531d82c0670c149075..126d8883ca1738b1a963e3590d8e70180f90f7b9 100644
 --- a/android/build.gradle.kts
 +++ b/android/build.gradle.kts
-@@ -8,7 +8,18 @@ plugins {
+@@ -8,7 +8,18 @@
      id("com.android.library")
      id("maven-publish")
      id("com.diffplug.spotless") version "8.1.0"
@@ -42,7 +40,7 @@ index 2e01292a695638f4b82d27531d82c0670c149075..126d8883ca1738b1a963e3590d8e7018
  }
  
  fun safeExtGet(prop: String, fallback: Any?): Any? =
-@@ -283,10 +294,11 @@ android {
+@@ -283,10 +294,22 @@
  }
  
  if (project != rootProject) {
@@ -50,11 +48,22 @@ index 2e01292a695638f4b82d27531d82c0670c149075..126d8883ca1738b1a963e3590d8e7018
 -        compilerOptions {
 -            jvmTarget = JvmTarget.fromTarget("17")
 -        }
-+    // Configured by type instead of the `kotlin {}` accessor so the script compiles
-+    // both with the kotlin-android plugin and with AGP 9's built-in Kotlin (which
-+    // registers the same extension type but generates no accessor here).
-+    extensions.configure(org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension::class.java) { ext ->
-+        ext.compilerOptions.jvmTarget.set(JvmTarget.fromTarget("17"))
++    // Configured reflectively: depending on the host app this script compiles against
++    // different KGP versions (or, with AGP 9's built-in Kotlin, no usable KGP on the
++    // script classpath at all), so typed references to KGP classes here break script
++    // compilation in some host apps. The extension instance and JvmTarget value must
++    // come from the same class loader, hence Class.forName on the extension's loader.
++    project.extensions.findByName("kotlin")?.let { kotlinExt ->
++        val compilerOptions = kotlinExt.javaClass.getMethod("getCompilerOptions").invoke(kotlinExt)
++        @Suppress("UNCHECKED_CAST")
++        val jvmTargetProperty = compilerOptions.javaClass.getMethod("getJvmTarget").invoke(compilerOptions)
++            as org.gradle.api.provider.Property<Any>
++        val jvmTarget17 = Class.forName(
++            "org.jetbrains.kotlin.gradle.dsl.JvmTarget",
++            true,
++            kotlinExt.javaClass.classLoader,
++        ).getMethod("fromTarget", String::class.java).invoke(null, "17")
++        jvmTargetProperty.set(jvmTarget17)
      }
  }
  
