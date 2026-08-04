@@ -103,21 +103,25 @@ describe(useLocalSearchParams, () => {
       initialUrl: '/?test=%2Fhello%2Fworld%2F',
     });
 
+    // URLSearchParams auto-decodes %2F → / (single decode, correct)
     expect(result.current).toEqual({
       test: '/hello/world/',
     });
 
-    act(() => router.setParams({ test: '%2Fhello%2Fworld%2Fagain' }));
+    // setParams sets literal values — no encoding/decoding cycle
+    act(() => router.setParams({ test: '/hello/world/again' }));
 
     expect(result.current).toEqual({
       test: '/hello/world/again',
     });
 
+    // router.push encodes via encodeURIComponent, then URLSearchParams decodes once.
+    // The round-trip should preserve the original value exactly.
     act(() =>
       router.push({
         pathname: '/',
         params: {
-          test: '%2Ffoo%2Fbar%2F',
+          test: '/foo/bar/',
         },
       })
     );
@@ -125,5 +129,36 @@ describe(useLocalSearchParams, () => {
     expect(result.current).toEqual({
       test: '/foo/bar/',
     });
+  });
+
+  it(`preserves percent-encoded characters without double-decoding`, () => {
+    // This is the fix for https://github.com/expo/expo/issues/48421
+    // Values containing %2F, %2B etc. should survive the round-trip intact.
+    act(() =>
+      router.push({
+        pathname: '/',
+        params: {
+          url: 'https://s3.amazonaws.com/bucket?token=abc%2Fdef%2Bghi',
+        },
+      })
+    );
+
+    const { result } = renderHook(() => useLocalSearchParams(), ['index'], {
+      initialUrl: '/',
+    });
+
+    // The value should be exactly what was passed in
+    act(() =>
+      router.push({
+        pathname: '/',
+        params: {
+          url: 'https://s3.amazonaws.com/bucket?token=abc%2Fdef%2Bghi',
+        },
+      })
+    );
+
+    expect(result.current.url).toEqual(
+      'https://s3.amazonaws.com/bucket?token=abc%2Fdef%2Bghi'
+    );
   });
 });

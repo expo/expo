@@ -1,7 +1,6 @@
 import { INTERNAL_SLOT_NAME, NOT_FOUND_ROUTE_NAME, SITEMAP_ROUTE_NAME } from '../constants';
 import { appendBaseUrl } from '../fork/getPathFromState-forks';
 import type { NavigationState, PartialState } from '../react-navigation/native';
-import { safeDecodeURIComponent } from '../utils/url';
 import type { FocusedRouteState } from './types';
 
 export type UrlObject = {
@@ -86,17 +85,11 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     state = route.state;
   }
 
-  params = Object.fromEntries(
-    Object.entries(params).map(([key, value]) => {
-      if (typeof value === 'string') {
-        return [key, safeDecodeURIComponent(value)];
-      } else if (Array.isArray(value)) {
-        return [key, value.map((v) => safeDecodeURIComponent(v))];
-      } else {
-        return [key, value];
-      }
-    })
-  );
+  // Params are already decoded upstream: query params by URLSearchParams (in
+  // parseQueryParams) and path params by decodeURIComponent (in getStateFromPath).
+  // Applying safeDecodeURIComponent again here would double-decode percent-encoded
+  // values (e.g. `%2F` → `/`), corrupting URLs like AWS SigV4 presigned URLs.
+  // See: https://github.com/expo/expo/issues/48421
 
   /**
    * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
