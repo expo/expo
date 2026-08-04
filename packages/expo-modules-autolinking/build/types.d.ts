@@ -30,7 +30,10 @@ export interface ModuleAndroidModuleInfo {
 }
 export interface ModuleAndroidPluginInfo {
     id: string;
-    sourceDir: string;
+    group: string;
+    sourceDir?: string;
+    version?: string;
+    applyToRootProject?: boolean;
 }
 export interface ModuleAndroidAarProjectInfo extends AndroidGradleAarProjectDescriptor {
     projectDir: string;
@@ -98,7 +101,12 @@ export interface AndroidGradlePluginDescriptor {
     /**
      * Relative path to the gradle plugin directory
      */
-    sourceDir: string;
+    sourceDir?: string;
+    /**
+     * Version of a published gradle plugin.
+     * Ignored when `sourceDir` is declared.
+     */
+    version?: string;
     /**
      * Whether to apply the plugin to the root project
      * Defaults to true

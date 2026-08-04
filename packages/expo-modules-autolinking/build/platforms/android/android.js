@@ -30,7 +30,10 @@ async function resolveModuleAsync(packageName, revision) {
     if (packageName === '@unimodules/react-native-adapter') {
         return null;
     }
-    const plugins = await (0, concurrency_1.taskAll)(revision.config?.androidGradlePlugins() ?? [], async ({ id, group, sourceDir, applyToRootProject }) => {
+    const plugins = await (0, concurrency_1.taskAll)(revision.config?.androidGradlePlugins() ?? [], async ({ id, group, sourceDir, version, applyToRootProject }) => {
+        if (!sourceDir) {
+            return { id, group, version, applyToRootProject };
+        }
         const pluginPath = path_1.default.join(revision.path, sourceDir);
         return {
             id,
@@ -39,7 +42,7 @@ async function resolveModuleAsync(packageName, revision) {
             // symlink - Android Studio's Tooling API fails to import symlinked included builds.
             // See: https://youtrack.jetbrains.com/issue/IDEA-329756.
             sourceDir: (await (0, utils_1.maybeRealpath)(pluginPath)) ?? pluginPath,
-            applyToRootProject: applyToRootProject ?? true,
+            applyToRootProject,
         };
     });
     const defaultProjectName = convertPackageToProjectName(packageName);

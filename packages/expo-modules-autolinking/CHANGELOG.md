@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Pull a 3rd-party pod's prebuilt XCFramework to source when a dependent 3rd-party pod builds from source, fixing `'worklets/Compat/StableApi.h' file not found`. ([#49147](https://github.com/expo/expo/pull/49147) by [@chrfalch](https://github.com/chrfalch))
+- [Android] Support linking published Gradle plugins. ([#48334](https://github.com/expo/expo/pull/48334) by [@jakex7](https://github.com/jakex7))
 
 ### 💡 Others
 

@@ -8,7 +8,6 @@ import { maybeRealpath, scanFilesRecursively } from '../../utils';
 
 const ANDROID_PROPERTIES_FILE = 'gradle.properties';
 const ANDROID_EXTRA_BUILD_DEPS_KEY = 'android.extraMavenRepos';
-
 interface AndroidConfigurationOutput {
   buildFromSource: string[];
 }
@@ -39,7 +38,10 @@ export async function resolveModuleAsync(
 
   const plugins = await taskAll(
     revision.config?.androidGradlePlugins() ?? [],
-    async ({ id, group, sourceDir, applyToRootProject }) => {
+    async ({ id, group, sourceDir, version, applyToRootProject }) => {
+      if (!sourceDir) {
+        return { id, group, version, applyToRootProject };
+      }
       const pluginPath = path.join(revision.path, sourceDir);
       return {
         id,
@@ -48,7 +50,7 @@ export async function resolveModuleAsync(
         // symlink - Android Studio's Tooling API fails to import symlinked included builds.
         // See: https://youtrack.jetbrains.com/issue/IDEA-329756.
         sourceDir: (await maybeRealpath(pluginPath)) ?? pluginPath,
-        applyToRootProject: applyToRootProject ?? true,
+        applyToRootProject,
       };
     }
   );
