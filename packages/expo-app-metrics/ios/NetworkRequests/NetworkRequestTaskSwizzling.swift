@@ -471,7 +471,21 @@ enum NetworkRequestTaskSwizzling {
         // Apple's docs say a nil delegate puts the session in "completion handler" mode; in that
         // mode the metrics callback never fires anyway, but wrapping nil is still safe — the
         // proxy responds only to the two selectors it handles.
-        let wrapped = DelegateProxy(wrapping: delegate)
+        //
+        // Skip wrapping delegates whose class belongs to GTMSessionFetcher (used by Firebase
+        // Auth, Google Sign-In, etc.). GTMSessionFetcher calls -setFetcher:forTask: on
+        // session.delegate assuming it is its own dispatcher; the proxy doesn't implement that
+        // selector and forwarding can't reach the wrapped object when the ObjC runtime
+        // short-circuits through a direct cast. These sessions are still observed via the
+        // resume/setState: hooks — they just won't carry per-phase URLSessionTaskMetrics.
+        let shouldSkipWrapping: Bool = {
+          guard let delegate else { return false }
+          let className = String(describing: type(of: delegate))
+          return className.contains("GTMSessionFetcher")
+        }()
+        let effectiveDelegate: AnyObject? = shouldSkipWrapping
+          ? (delegate as AnyObject?)
+          : DelegateProxy(wrapping: delegate)
         guard let imp = originalSessionInitImp.withLock({ $0 }) else {
           return nil
         }
@@ -484,7 +498,7 @@ enum NetworkRequestTaskSwizzling {
           to: (@convention(c) (AnyObject, Selector, URLSessionConfiguration, AnyObject?, OperationQueue?) -> URLSession?)
             .self
         )
-        return fn(cls, selector, config, wrapped, queue)
+        return fn(cls, selector, config, effectiveDelegate, queue)
       }
     let newImp = imp_implementationWithBlock(block as Any)
     let original = method_setImplementation(method, newImp)
