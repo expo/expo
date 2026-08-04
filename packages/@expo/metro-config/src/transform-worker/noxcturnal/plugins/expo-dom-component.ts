@@ -112,7 +112,7 @@ const filePath = ${filePath};
 const _Expo_DOMProxyComponent = React.forwardRef((props, ref) => React.createElement(WebView, { ref, ...props, filePath }));
 if (__DEV__) _Expo_DOMProxyComponent.displayName = ${JSON.stringify(`DOM(${state.displayName})`)};
 export default _Expo_DOMProxyComponent;`;
-      context.editor.overwrite(0, context.source.length, proxy);
+      context.editor.overwrite(0, context.source.length, proxy, 'sourceless');
       context.metadata.set('expoDomComponentReference', outputKey);
     },
   });

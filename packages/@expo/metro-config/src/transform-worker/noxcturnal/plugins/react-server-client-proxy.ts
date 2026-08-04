@@ -131,7 +131,8 @@ export function createReactServerClientProxyPlugin(
       if (!state.enabled) return;
       if (state.mockConsolePolyfill) {
         const shebang = context.source.match(/^#![^\r\n]*(?:\r?\n|$)/)?.[0] ?? '';
-        context.editor.overwrite(0, context.source.length, shebang);
+        // Emptying the module leaves nothing that traces back to it.
+        context.editor.overwrite(0, context.source.length, shebang, 'sourceless');
         return;
       }
       const outputKey =
@@ -156,7 +157,7 @@ export function createReactServerClientProxyPlugin(
         );
       }
       const shebang = context.source.match(/^#![^\r\n]*(?:\r?\n|$)/)?.[0] ?? '';
-      context.editor.overwrite(0, context.source.length, shebang + proxy.join('\n'));
+      context.editor.overwrite(0, context.source.length, shebang + proxy.join('\n'), 'sourceless');
       context.metadata.set('proxyExports', exports);
       context.metadata.set('reactClientReference', pathToFileURL(state.input.filename).href);
     },

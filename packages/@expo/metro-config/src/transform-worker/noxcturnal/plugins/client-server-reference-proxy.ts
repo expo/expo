@@ -167,7 +167,7 @@ export function createClientServerReferenceProxyPlugin(
             : `export const ${exportName} = ${reference};`
         );
       }
-      context.editor.overwrite(0, context.source.length, proxy.join('\n'));
+      context.editor.overwrite(0, context.source.length, proxy.join('\n'), 'sourceless');
       context.metadata.set('proxyExports', exports);
       context.metadata.set('reactServerReference', pathToFileURL(state.input.filename).href);
     },
