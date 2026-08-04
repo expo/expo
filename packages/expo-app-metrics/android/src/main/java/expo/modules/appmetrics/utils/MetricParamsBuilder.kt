@@ -36,15 +36,33 @@ object MetricParamsBuilder {
     if (networkState != null) {
       params["expo.network.connected"] = networkState.connected
       params["expo.network.type"] = networkTransportString(networkState.transport)
+      networkState.isExpensive?.let { params["expo.network.isExpensive"] = it }
+      // Not `expo.network.isConstrained`: that key carries iOS Low Data Mode, which is per-path,
+      // while Data Saver is a process-wide setting. See `NetworkState.dataSaverEnabled`.
+      networkState.dataSaverEnabled?.let { params["expo.network.dataSaverEnabled"] = it }
     }
     if (networkRequests != null && !networkRequests.isEmpty) {
       params["expo.network.requests.count"] = networkRequests.count
       params["expo.network.requests.failed"] = networkRequests.failed
+      // Emitted even at zero, unlike the optional latency fields below: we saw requests and none of
+      // them timed out, which is a real measurement rather than a missing one.
+      params["expo.network.requests.timedOut"] = networkRequests.timedOut
       params["expo.network.requests.bytesReceived"] = networkRequests.bytesReceived
       params["expo.network.requests.bytesSent"] = networkRequests.bytesSent
       params["expo.network.requests.totalDuration"] = networkRequests.totalDuration
       networkRequests.slowestDuration?.let { params["expo.network.requests.slowestDuration"] = it }
       networkRequests.slowestHost?.let { params["expo.network.requests.slowestHost"] = it }
+      // Omitted rather than zeroed when unavailable: a reused connection or a window of cache hits
+      // never measured these, and a 0 would read as "instant" on a dashboard.
+      networkRequests.slowestTimeToFirstByte?.let {
+        params["expo.network.requests.slowestTimeToFirstByte"] = it
+      }
+      networkRequests.throughputBytesPerSecond?.let {
+        params["expo.network.requests.throughputBytesPerSecond"] = it
+      }
+      networkRequests.fastestTcpHandshake?.let {
+        params["expo.network.requests.fastestTcpHandshake"] = it
+      }
     }
     return params
   }

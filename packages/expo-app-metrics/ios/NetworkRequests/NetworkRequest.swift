@@ -42,6 +42,15 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// string rather than carrying `NSError` so the type stays `Sendable` and serializable.
   public let errorDescription: String?
 
+  /// Whether the request failed because the network stalled or went away, as opposed to reaching
+  /// the server and getting an error back.
+  ///
+  /// Classified at capture time from the underlying error, because `errorDescription` is a
+  /// localized string and can't be matched on afterwards. A 5xx response is a failure but not a
+  /// timeout: the server answered. Deliberate cancellation isn't one either, since the app
+  /// abandoned the request and that says nothing about the connection.
+  public var isTimeout: Bool = false
+
   /// Ordered list of redirect hops that preceded the final response. Empty when the task returned
   /// directly. Each entry describes one hop: `fromUrl` is the URL that returned the redirect,
   /// `statusCode` is the 3xx code it returned, and `toUrl` is where the redirect pointed. For a
@@ -86,6 +95,45 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
     /// `fetchStart` from `responseEnd` themselves, and we can populate this even when the
     /// individual phases are `nil` (cache hits, errors before headers).
     public let totalDuration: TimeInterval
+
+    /// Time from the start of the fetch until the first response byte arrived.
+    ///
+    /// This is not a measurement of network latency: it also covers DNS, the TCP and TLS
+    /// handshakes, sending the request, and the server's own processing time. A slow backend
+    /// inflates it the same way a slow network does. On a reused connection (the common case under
+    /// keep-alive) the handshakes are already done, so it sits much closer to one round trip plus
+    /// server time.
+    ///
+    /// `nil` when the response never produced headers, so callers can tell "not measured" from a
+    /// genuinely fast response.
+    public var timeToFirstByte: TimeInterval? {
+      return positiveInterval(from: fetchStart, to: responseStart)
+    }
+
+    /// Duration of the TCP handshake, which is roughly one network round trip and therefore the
+    /// closest thing here to pure network latency.
+    ///
+    /// Ends at `secureConnectionStart` when TLS ran, so the value covers only the TCP handshake and
+    /// not the TLS exchange layered on top of it. `connectEnd` lands *after* the TLS handshake, so
+    /// using it for an HTTPS request would overstate the round trip. Falls back to `connectEnd` for
+    /// cleartext connections, where no TLS phase exists.
+    ///
+    /// `nil` when the connection was reused, which means "no new connection was opened", not "zero
+    /// latency". Under keep-alive most requests report nothing here.
+    public var tcpHandshakeDuration: TimeInterval? {
+      return positiveInterval(from: connectStart, to: secureConnectionStart ?? connectEnd)
+    }
+
+    /// Returns the interval between two optional timestamps, or `nil` if either is missing or the
+    /// result is negative. These are wall-clock dates, so a clock adjustment mid-request can invert
+    /// them; a negative duration is meaningless and would poison a min/max fold.
+    private func positiveInterval(from start: Date?, to end: Date?) -> TimeInterval? {
+      guard let start, let end else {
+        return nil
+      }
+      let interval = end.timeIntervalSince(start)
+      return interval >= 0 ? interval : nil
+    }
   }
 }
 
@@ -205,7 +253,30 @@ extension NetworkRequest {
       responseBytesReceived: responseBytesReceived,
       timings: timings,
       errorDescription: error.map { ($0 as NSError).localizedDescription },
+      isTimeout: isNetworkTimeout(error),
       redirects: redirects
     )
+  }
+}
+
+/// Whether a `URLSession` error means the network stalled or went away, rather than the server
+/// answering with something we didn't like.
+///
+/// `NSURLErrorNetworkConnectionLost` counts because the radio dropping mid-request is the same
+/// condition from the user's point of view, and it's what walking into an elevator actually
+/// produces. `NSURLErrorCancelled` does not: the app abandoned the request.
+private func isNetworkTimeout(_ error: Error?) -> Bool {
+  guard let error else {
+    return false
+  }
+  let nsError = error as NSError
+  guard nsError.domain == NSURLErrorDomain else {
+    return false
+  }
+  switch nsError.code {
+  case NSURLErrorTimedOut, NSURLErrorNetworkConnectionLost:
+    return true
+  default:
+    return false
   }
 }

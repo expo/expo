@@ -20,6 +20,8 @@ import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.Date
 import java.util.UUID
 import java.util.WeakHashMap
@@ -248,9 +250,26 @@ internal fun buildSnapshot(
     responseBytesReceived = responseBytesReceived,
     timings = timings,
     errorDescription = error?.localizedMessage ?: error?.message,
-    redirects = redirects
+    redirects = redirects,
+    isTimeout = error.isNetworkTimeout
   )
 }
+
+/**
+ * Whether an OkHttp failure means the network stalled or went away, rather than the server
+ * answering with something we didn't like.
+ *
+ * `SocketTimeoutException` covers OkHttp's connect/read/write timeouts. `UnknownHostException` is
+ * included because DNS failing is what losing connectivity looks like from here, though it's an
+ * imperfect signal: a typo'd endpoint, a dead CDN domain, or a removed DNS record produce the same
+ * exception, and a misconfigured host recurs on every launch rather than averaging out. A
+ * persistently high timeout count can therefore mean a broken hostname rather than a bad connection.
+ *
+ * A deliberate `Call.cancel()` surfaces as a plain `IOException` and is not counted: the app
+ * abandoned the request, which says nothing about the connection.
+ */
+private val IOException?.isNetworkTimeout: Boolean
+  get() = this is SocketTimeoutException || this is UnknownHostException
 
 /**
  * Walks `Response.priorResponse()` chronologically and emits one `Redirect` per hop. The chain

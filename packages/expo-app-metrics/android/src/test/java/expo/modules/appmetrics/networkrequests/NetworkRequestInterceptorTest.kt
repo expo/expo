@@ -5,14 +5,17 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.SocketPolicy
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import java.time.Duration
 
 /**
  * End-to-end interceptor tests driven through OkHttp's `MockWebServer`. Each test installs a
@@ -89,6 +92,35 @@ class NetworkRequestInterceptorTest {
 
     // Re-create the server so the @After teardown's shutdown call doesn't trip on a closed socket.
     server = MockWebServer().apply { start() }
+  }
+
+  @Test
+  fun `flags a read timeout as a timeout`() {
+    // A response the server never finishes sending, against a client with a short read timeout,
+    // produces a real SocketTimeoutException rather than a simulated one.
+    server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
+    val timingOutClient = client.newBuilder()
+      .readTimeout(Duration.ofMillis(200))
+      .build()
+
+    var thrown = false
+    try {
+      timingOutClient.newCall(Request.Builder().url(server.url("/stall")).build()).execute()
+    } catch (_: IOException) {
+      thrown = true
+    }
+    assertTrue("the network call should time out", thrown)
+    assertEquals(1, monitor.recent.size)
+    assertTrue(monitor.recent.first().isTimeout)
+  }
+
+  @Test
+  fun `does not flag a server error as a timeout`() {
+    server.enqueue(MockResponse().setResponseCode(503))
+    client.newCall(Request.Builder().url(server.url("/boom")).build()).execute().close()
+    val snapshot = monitor.recent.first()
+    assertEquals(503, snapshot.statusCode)
+    assertFalse(snapshot.isTimeout)
   }
 
   @Test

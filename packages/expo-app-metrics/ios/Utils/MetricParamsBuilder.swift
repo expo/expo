@@ -44,10 +44,15 @@ enum MetricParamsBuilder {
     if let networkPath {
       params["expo.network.connected"] = networkPath.status == .satisfied
       params["expo.network.type"] = networkTypeString(networkPath)
+      params["expo.network.isExpensive"] = networkPath.isExpensive
+      params["expo.network.isConstrained"] = networkPath.isConstrained
     }
     if let networkRequests, !networkRequests.isEmpty {
       params["expo.network.requests.count"] = networkRequests.count
       params["expo.network.requests.failed"] = networkRequests.failed
+      // Emitted even at zero, unlike the optional latency fields below: we saw requests and none of
+      // them timed out, which is a real measurement rather than a missing one.
+      params["expo.network.requests.timedOut"] = networkRequests.timedOut
       params["expo.network.requests.bytesReceived"] = networkRequests.bytesReceived
       params["expo.network.requests.bytesSent"] = networkRequests.bytesSent
       params["expo.network.requests.totalDuration"] = networkRequests.totalDuration
@@ -56,6 +61,17 @@ enum MetricParamsBuilder {
       }
       if let slowestHost = networkRequests.slowestHost {
         params["expo.network.requests.slowestHost"] = slowestHost
+      }
+      // Omitted rather than zeroed when unavailable: a reused connection or a window of cache hits
+      // never measured these, and a 0 would read as "instant" on a dashboard.
+      if let slowestTimeToFirstByte = networkRequests.slowestTimeToFirstByte {
+        params["expo.network.requests.slowestTimeToFirstByte"] = slowestTimeToFirstByte
+      }
+      if let throughputBytesPerSecond = networkRequests.throughputBytesPerSecond {
+        params["expo.network.requests.throughputBytesPerSecond"] = throughputBytesPerSecond
+      }
+      if let fastestTcpHandshake = networkRequests.fastestTcpHandshake {
+        params["expo.network.requests.fastestTcpHandshake"] = fastestTcpHandshake
       }
     }
     return params

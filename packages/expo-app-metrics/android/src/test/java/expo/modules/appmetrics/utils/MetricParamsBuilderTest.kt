@@ -155,6 +155,119 @@ class MetricParamsBuilderTest {
   }
 
   @Test
+  fun `emits path cost flags alongside the connection type`() {
+    val params = MetricParamsBuilder.build(
+      networkState = NetworkState(
+        connected = true,
+        transport = NetworkTransport.CELLULAR,
+        isExpensive = true,
+        dataSaverEnabled = true
+      )
+    )
+    assertEquals(true, params["expo.network.isExpensive"])
+    assertEquals(true, params["expo.network.dataSaverEnabled"])
+  }
+
+  @Test
+  fun `does not report Data Saver under the iOS isConstrained key`() {
+    // Low Data Mode is per-path; Data Saver is process-wide. Same column would mix two questions.
+    val params = MetricParamsBuilder.build(
+      networkState = NetworkState(
+        connected = true,
+        transport = NetworkTransport.CELLULAR,
+        dataSaverEnabled = true
+      )
+    )
+    assertNull(params["expo.network.isConstrained"])
+  }
+
+  @Test
+  fun `omits path cost flags when the OS did not report them`() {
+    val params = MetricParamsBuilder.build(
+      networkState = NetworkState(connected = true, transport = NetworkTransport.WIFI)
+    )
+    assertEquals(true, params["expo.network.connected"])
+    assertNull(params["expo.network.isExpensive"])
+    assertNull(params["expo.network.dataSaverEnabled"])
+  }
+
+  @Test
+  fun `emits the timeout count alongside the failure count`() {
+    val summary = NetworkRequestSummary(
+      count = 3,
+      failed = 2,
+      timedOut = 1,
+      bytesReceived = 0,
+      bytesSent = 0,
+      totalDuration = 30.2,
+      slowestDuration = 30.0,
+      slowestHost = "slow.expo.dev"
+    )
+    val params = MetricParamsBuilder.build(networkRequests = summary)
+    assertEquals(2, params["expo.network.requests.failed"])
+    assertEquals(1, params["expo.network.requests.timedOut"])
+  }
+
+  @Test
+  fun `emits a zero timeout count so its absence is not ambiguous`() {
+    // Unlike the optional latency fields, a count of zero is a real measurement: we saw requests
+    // and none of them timed out. Omitting it would make "no timeouts" and "not measured" look
+    // the same.
+    val summary = NetworkRequestSummary(
+      count = 1,
+      failed = 0,
+      timedOut = 0,
+      bytesReceived = 10,
+      bytesSent = 10,
+      totalDuration = 0.1,
+      slowestDuration = 0.1,
+      slowestHost = "expo.dev"
+    )
+    val params = MetricParamsBuilder.build(networkRequests = summary)
+    assertEquals(0, params["expo.network.requests.timedOut"])
+  }
+
+  @Test
+  fun `emits the derived latency and throughput keys when the summary has them`() {
+    val summary = NetworkRequestSummary(
+      count = 4,
+      failed = 1,
+      bytesReceived = 12000,
+      bytesSent = 800,
+      totalDuration = 1.4,
+      slowestDuration = 0.6,
+      slowestHost = "api.expo.dev",
+      slowestTimeToFirstByte = 0.35,
+      throughputBytesPerSecond = 8571.4,
+      fastestTcpHandshake = 0.04
+    )
+    val params = MetricParamsBuilder.build(networkRequests = summary)
+    assertEquals(0.35, params["expo.network.requests.slowestTimeToFirstByte"])
+    assertEquals(8571.4, params["expo.network.requests.throughputBytesPerSecond"])
+    assertEquals(0.04, params["expo.network.requests.fastestTcpHandshake"])
+  }
+
+  @Test
+  fun `omits the derived keys rather than emitting zero when they are unavailable`() {
+    // Every connection reused and nothing received: emitting 0 would read as "instant, no data"
+    // instead of "not measured" on a dashboard.
+    val summary = NetworkRequestSummary(
+      count = 2,
+      failed = 0,
+      bytesReceived = 0,
+      bytesSent = 40,
+      totalDuration = 0.2,
+      slowestDuration = 0.1,
+      slowestHost = "api.expo.dev"
+    )
+    val params = MetricParamsBuilder.build(networkRequests = summary)
+    assertEquals(2, params["expo.network.requests.count"])
+    assertNull(params["expo.network.requests.slowestTimeToFirstByte"])
+    assertNull(params["expo.network.requests.throughputBytesPerSecond"])
+    assertNull(params["expo.network.requests.fastestTcpHandshake"])
+  }
+
+  @Test
   fun `omits slowest keys when the summary has counts but missing slowest fields`() {
     val summary = NetworkRequestSummary(
       count = 1,
