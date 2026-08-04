@@ -38,6 +38,13 @@ export type DrawerNavigationConfig = {
 
 export type DrawerNavigationOptions = HeaderOptions & {
   /**
+   * Hides the drawer item. If the screen is focused, the navigator redirects to its initial
+   * visible screen.
+   * @default false
+   */
+  hidden?: boolean;
+
+  /**
    * Title text for the screen.
    */
   title?: string;

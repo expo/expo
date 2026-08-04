@@ -91,6 +91,13 @@ export type MaterialTopTabOptionsArgs<
 
 export type MaterialTopTabNavigationOptions = {
   /**
+   * Hides the tab item. If the screen is focused, the navigator redirects to its initial visible
+   * screen.
+   * @default false
+   */
+  hidden?: boolean;
+
+  /**
    * Title text for the screen.
    */
   title?: string;

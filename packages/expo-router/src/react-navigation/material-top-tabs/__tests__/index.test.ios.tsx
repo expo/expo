@@ -21,6 +21,12 @@ const getTabViewProps = () => {
   return mockTabView.mock.calls.at(-1)![0];
 };
 
+let warnSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
 jest.mock('react-native-pager-view', () => {
   const React = require('react') as typeof import('react');
   const { View } = require('react-native') as typeof import('react-native');
@@ -107,6 +113,7 @@ jest.mock(
 );
 
 afterEach(() => {
+  warnSpy.mockRestore();
   jest.restoreAllMocks();
 });
 
@@ -131,7 +138,7 @@ test('renders a material top tab navigator and navigates between screens on tab 
   expect(screen).toHavePathname('/second');
 });
 
-test('renders filesystem routes not declared in the layout', async () => {
+test('renders only declared tabs and redirects from undeclared routes', () => {
   renderRouter({
     _layout: () => (
       <TopTabs>
@@ -142,10 +149,44 @@ test('renders filesystem routes not declared in the layout', async () => {
     second: () => <View testID="second" />,
   });
 
-  await userEvent.press(screen.getByRole('tab', { name: 'second' }));
+  expect(screen.queryByRole('tab', { name: 'second' })).toBeNull();
 
-  expect(screen.getByTestId('second')).toBeVisible();
-  expect(screen).toHavePathname('/second');
+  act(() => router.push('/second'));
+
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('second')).toBeNull();
+  expect(screen).toHavePathname('/');
+});
+
+test('removes and redirects from a hidden tab', () => {
+  renderRouter({
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="index" />
+        <TopTabs.Screen name="second" options={{ hidden: true }} />
+      </TopTabs>
+    ),
+    index: () => <View testID="index" />,
+    second: () => <View testID="second" />,
+  });
+
+  expect(screen.queryByRole('tab', { name: 'second' })).toBeNull();
+
+  act(() => router.push('/second'));
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
+test('renders no top tab UI when no screens are declared in the layout', () => {
+  renderRouter({
+    _layout: () => <TopTabs />,
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.queryByTestId('index')).toBeNull();
+  expect(screen.queryAllByRole('tab')).toHaveLength(0);
+  expect(warnSpy.mock.calls).toMatchSnapshot();
 });
 
 test('does not navigate when a tabPress listener prevents the default action', async () => {
@@ -275,22 +316,21 @@ test('handles screens preloading', () => {
 });
 
 test('warns when navigateToTab receives an unknown route key', () => {
-  const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
   renderRouter({
     _layout: () => (
       <TopTabs
         tabBar={({ navigateToTab }: MaterialTopTabBarProps) => (
           <Text testID="unknown-tab" onPress={() => navigateToTab('unknown-key')} />
-        )}
-      />
+        )}>
+        <TopTabs.Screen name="index" />
+      </TopTabs>
     ),
     index: () => null,
   });
 
   act(() => screen.getByTestId('unknown-tab').props.onPress());
 
-  expect(warn).toHaveBeenCalledWith(expect.stringContaining('Top tabs could not switch'));
+  expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Top tabs could not switch'));
 });
 
 test('emits swipeStart and swipeEnd events', async () => {
@@ -311,7 +351,11 @@ test('emits swipeStart and swipeEnd events', async () => {
   }
 
   renderRouter({
-    _layout: () => <TopTabs />,
+    _layout: () => (
+      <TopTabs>
+        <TopTabs.Screen name="index" />
+      </TopTabs>
+    ),
     index: Index,
   });
 

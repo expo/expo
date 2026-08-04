@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Unify JS Tabs, TopTabs, Drawer, and headless tabs with NativeTabs - only screens declared in the layout become visible. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
 - Migrate the JS `TopTabs` navigator to the `standard-navigation` integration. ([#48498](https://github.com/expo/expo/pull/48498) by [@Ubax](https://github.com/Ubax))
 - Make `beforeRemove` non-preventable and add `removePrevented` event. ([#48347](https://github.com/expo/expo/pull/48347) by [@Ubax](https://github.com/Ubax))
 - Remove the `redirect` prop from layout `<Screen>` components. ([#48369](https://github.com/expo/expo/pull/48369) by [@Ubax](https://github.com/Ubax))

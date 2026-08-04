@@ -31,6 +31,7 @@ export type _DetachInactiveScreensIsPublic = Expect<
 >;
 
 export const _hiddenTab: TabsScreenOptions = { href: null };
+export const _explicitlyHiddenTab: TabsScreenOptions = { hidden: true };
 export const _linkedTab: TabsScreenOptions = { href: '/settings', title: 'Settings' };
 
 describe('bottom tabs types', () => {
