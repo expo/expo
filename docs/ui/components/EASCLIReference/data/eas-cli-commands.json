@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-07-29T09:00:29.284Z",
-    "cliVersion": "21.4.0"
+    "fetchedAt": "2026-08-04T08:58:57.995Z",
+    "cliVersion": "21.5.0"
   },
-  "totalCommands": 129,
+  "totalCommands": 134,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -475,6 +475,31 @@
       "command": "eas submit",
       "description": "submit app binary to App Store and/or Play Store",
       "usage": "USAGE\n  $ eas submit [-p android|ios|all] [-e <value>] [--latest | --id <value> | --path <value> | --url <value>]\n    [--what-to-test <value>] [--verbose] [--wait] [--verbose-fastlane] [-g <value>...] [--non-interactive]\n\nFLAGS\n  -e, --profile=<value>       Name of the submit profile from eas.json. Defaults to \"production\" if defined in eas.json.\n  -g, --groups=<value>...     Internal TestFlight testing groups to add the build to (iOS only). Learn more: https://developer.apple.com/help/app-store-connect/test-a-beta-version/add-internal-testers\n  -p, --platform=<option>     <options: android|ios|all>\n      --id=<value>            ID of the build to submit\n      --latest                Submit the latest build for specified platform\n      --non-interactive       Run command in non-interactive mode\n      --path=<value>          Path to the .apk/.aab/.ipa file\n      --url=<value>           App archive url\n      --verbose               Always print logs from EAS Submit\n      --verbose-fastlane      Enable verbose logging for the submission process\n      --[no-]wait             Wait for submission to complete\n      --what-to-test=<value>  Sets the \"What to test\" information in TestFlight (iOS only).\n\nDESCRIPTION\n  submit app binary to App Store and/or Play Store\n\nALIASES\n  $ eas build:submit"
+    },
+    {
+      "command": "eas submit:cancel [SUBMISSION_ID]",
+      "description": "cancel a submission",
+      "usage": "USAGE\n  $ eas submit:cancel [SUBMISSION_ID] [--non-interactive] [-p android|ios|all]\n\nFLAGS\n  -p, --platform=<option>  Filter submissions by the platform if submission ID is not provided\n                           <options: android|ios|all>\n      --non-interactive    Run the command in non-interactive mode.\n\nDESCRIPTION\n  cancel a submission"
+    },
+    {
+      "command": "eas submit:list",
+      "description": "list submissions for your project",
+      "usage": "USAGE\n  $ eas submit:list [-p android|ios|all] [--status awaiting-build|in-queue|in-progress|finished|errored|canceled]\n    [--offset <value>] [--limit <value>] [--json] [--non-interactive]\n\nFLAGS\n  -p, --platform=<option>  <options: android|ios|all>\n      --json               Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --limit=<value>      The number of items to fetch each query. Defaults to 10 and is capped at 50.\n      --non-interactive    Run the command in non-interactive mode.\n      --offset=<value>     Start queries from specified index. Use for paginating results. Defaults to 0.\n      --status=<option>    Filter only submissions with the specified status\n                           <options: awaiting-build|in-queue|in-progress|finished|errored|canceled>\n\nDESCRIPTION\n  list submissions for your project"
+    },
+    {
+      "command": "eas submit:retry [SUBMISSION_ID]",
+      "description": "retry a failed submission",
+      "usage": "USAGE\n  $ eas submit:retry [SUBMISSION_ID] [-p android|ios|all] [--json] [--non-interactive]\n\nFLAGS\n  -p, --platform=<option>  Filter submissions by the platform if submission ID is not provided\n                           <options: android|ios|all>\n      --json               Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --non-interactive    Run the command in non-interactive mode.\n\nDESCRIPTION\n  retry a failed submission"
+    },
+    {
+      "command": "eas submit:status",
+      "description": "show the status of your app on the App Store: the live version and TestFlight builds",
+      "usage": "USAGE\n  $ eas submit:status [-p android|ios|all] [-e <value>] [--json] [--non-interactive]\n\nFLAGS\n  -e, --profile=<value>    Name of the submit profile from eas.json used to resolve the App Store Connect API key.\n                           Defaults to \"production\".\n  -p, --platform=<option>  <options: android|ios|all>\n      --json               Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --non-interactive    Run the command in non-interactive mode.\n\nDESCRIPTION\n  show the status of your app on the App Store: the live version and TestFlight builds\n\n  This command reads from App Store Connect and requires an ASC API key. Provide one via:\n  - Environment variables: EXPO_ASC_API_KEY_PATH, EXPO_ASC_KEY_ID, EXPO_ASC_ISSUER_ID\n  - eas.json submit profile: ascApiKeyPath, ascApiKeyId, ascApiKeyIssuerId\n  - EAS credentials service: run `eas credentials` to set up an API key\n  Without a key, the command offers an interactive Apple login; in non-interactive mode it fails.\n\n  Google Play app status is not available through EAS yet. Run `eas submit:list -p android` to see recent Android\n  submissions.\n\nEXAMPLES\n  $ eas submit:status  \t # live App Store version and TestFlight builds\n\n  $ eas submit:status --json --non-interactive  \t # machine-readable output"
+    },
+    {
+      "command": "eas submit:view [SUBMISSION_ID]",
+      "description": "view a submission for your project",
+      "usage": "USAGE\n  $ eas submit:view [SUBMISSION_ID] [-p android|ios|all] [--json]\n\nFLAGS\n  -p, --platform=<option>  Show the most recent submission for the platform when submission ID is not provided\n                           <options: android|ios|all>\n      --json               Enable JSON output, non-JSON messages will be printed to stderr.\n\nDESCRIPTION\n  view a submission for your project"
     },
     {
       "command": "eas testflight:crashes [ID]",
