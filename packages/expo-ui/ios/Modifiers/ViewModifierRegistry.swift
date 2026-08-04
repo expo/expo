@@ -880,7 +880,9 @@ internal struct StableViewModifier: ViewModifier {
       let modifier = try? factory(params, appContext, dispatcher) {
       AnyView(content.modifier(AnyViewModifier(modifier)))
     } else {
-      AnyView(content)
+      content.modifier(AnyViewModifier(modifier)))
+    } else {
+      content
     }
   }
 }
@@ -1476,6 +1478,9 @@ public class ViewModifierRegistry {
     globalEventDispatcher: EventDispatcher,
     params: [String: Any]
   ) -> AnyView {
+    guard modifierFactories[type] != nil else {
+      return view
+    }
     return AnyView(view.modifier(StableViewModifier(
       params: params,
       appContext: appContext,
