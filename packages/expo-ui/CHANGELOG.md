@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - [iOS] Fix `<Host>` centering its content instead of top-aligning it, so a `flex: 1` host matches Android's top-leading layout. ([#47561](https://github.com/expo/expo/pull/47561) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `HStack`, `VStack` and `GlassEffectContainer` collapsing an unset `spacing` to `0` instead of forwarding `nil` to SwiftUI, so they now use the system default spacing like `Grid`, `LazyHStack` and `LazyVStack` already do. Pass `spacing={0}` explicitly to keep the previous layout. (by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🎉 New features
 
