@@ -878,9 +878,7 @@ internal struct StableViewModifier: ViewModifier {
     if let type = params["$type"] as? String,
       let factory = ViewModifierRegistry.shared.modifierFactories[type],
       let modifier = try? factory(params, appContext, dispatcher) {
-      AnyView(content.modifier(AnyViewModifier(modifier)))
-    } else {
-      content.modifier(AnyViewModifier(modifier)))
+      content.modifier(AnyViewModifier(modifier))
     } else {
       content
     }
