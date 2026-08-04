@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fixed `rename()` storing an unencoded URI, so reading `.uri` afterwards threw for names containing a space. ([#48496](https://github.com/expo/expo/issues/48496) by [@yagiz2000](https://github.com/yagiz2000), [#48510](https://github.com/expo/expo/pull/48510) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 57.0.1 — 2026-07-15

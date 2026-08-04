@@ -212,7 +212,7 @@ abstract class FileSystemPath(var uri: Uri) : SharedObject() {
     val currentUri = uri.toString()
     val currentPath = currentUri.trimEnd('/')
     val parentUri = currentUri.substring(0, currentPath.lastIndexOf('/') + 1)
-    val renamedUri = Uri.withAppendedPath(Uri.parse(parentUri), newName).toString()
+    val renamedUri = Uri.parse(parentUri).buildUpon().appendPath(newName).build().toString()
     return Uri.parse(if (this is FileSystemDirectory) "$renamedUri/" else renamedUri)
   }
 
