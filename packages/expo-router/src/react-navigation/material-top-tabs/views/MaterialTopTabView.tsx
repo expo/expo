@@ -1,3 +1,5 @@
+import type { TabViewProps } from 'react-native-tab-view';
+
 import { type Route, useLocale, useTheme } from '../../native';
 import type {
   MaterialTopTabBarProps,
@@ -43,20 +45,22 @@ export function MaterialTopTabView({
   const { colors } = useTheme();
   const { direction } = useLocale();
 
-  const renderTabBar: React.ComponentProps<any>['renderTabBar'] = ({
+  const renderTabBar: NonNullable<TabViewProps<Route<string>>['renderTabBar']> = ({
     /* eslint-disable @typescript-eslint/no-unused-vars */
     navigationState,
     options,
     /* eslint-enable @typescript-eslint/no-unused-vars */
     ...rest
-  }: any) => {
-    return tabBar({
+  }) => {
+    const tabBarProps = {
       ...rest,
       state,
       descriptors,
       emitter,
       navigateToTab,
-    });
+    } satisfies MaterialTopTabBarProps;
+
+    return tabBar(tabBarProps);
   };
 
   const focusedOptions = descriptors[state.routes[state.index]!.key]!.options;
@@ -65,17 +69,17 @@ export function MaterialTopTabView({
     <TabView<Route<string>>
       {...rest}
       onIndexChange={(index: number) => navigateToTab(state.routes[index]!.key)}
-      renderScene={({ route, position }: any) => (
+      renderScene={({ route, position }) => (
         <TabAnimationContext.Provider value={{ position }}>
           {descriptors[route.key]!.render()}
         </TabAnimationContext.Provider>
       )}
       navigationState={state}
       renderTabBar={renderTabBar}
-      renderLazyPlaceholder={({ route }: any) =>
+      renderLazyPlaceholder={({ route }) =>
         descriptors[route.key]!.options.lazyPlaceholder?.() ?? null
       }
-      lazy={({ route }: any) =>
+      lazy={({ route }) =>
         descriptors[route.key]!.options.lazy === true && !preloadedRouteKeys.includes(route.key)
       }
       lazyPreloadDistance={focusedOptions.lazyPreloadDistance}

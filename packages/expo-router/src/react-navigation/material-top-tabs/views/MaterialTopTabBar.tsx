@@ -1,10 +1,11 @@
 import type { ColorValue } from 'react-native';
 import { StyleSheet } from 'react-native';
+import type { TabDescriptor } from 'react-native-tab-view';
 
 import { Color } from '../../../utils/color';
 import { Text } from '../../elements';
 import { useLinkBuilder, useLocale, useTheme } from '../../native';
-import type { MaterialTopTabBarProps } from '../types';
+import type { MaterialTopTabBarProps, MaterialTopTabViewRoute } from '../types';
 
 // Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabBar, TabBarIndicator } from 'react-native-tab-view';
@@ -20,7 +21,12 @@ try {
   );
 }
 
-const renderLabelDefault = ({ color, labelText, style, allowFontScaling }: any) => {
+const renderLabelDefault: NonNullable<TabDescriptor<MaterialTopTabViewRoute>['label']> = ({
+  color,
+  labelText,
+  style,
+  allowFontScaling,
+}) => {
   return (
     <Text style={[{ color }, styles.label, style]} allowFontScaling={allowFontScaling}>
       {labelText}
@@ -50,7 +56,7 @@ export function MaterialTopTabBar({
     colors.text;
 
   const tabBarOptions = Object.fromEntries(
-    state.routes.map((route: any) => {
+    state.routes.map((route) => {
       const { options } = descriptors[route.key]!;
 
       const {
@@ -66,37 +72,36 @@ export function MaterialTopTabBar({
         tabBarLabelStyle,
       } = options;
 
-      return [
-        route.key,
-        {
-          href: buildHref(route.name, route.params),
-          testID: tabBarButtonTestID,
-          accessibilityLabel: tabBarAccessibilityLabel,
-          badge: tabBarBadge,
-          icon: tabBarShowIcon === false ? undefined : tabBarIcon,
-          label:
-            tabBarShowLabel === false
-              ? undefined
-              : typeof tabBarLabel === 'function'
-                ? ({ labelText, color }: any) =>
-                    tabBarLabel({
-                      focused: focusedRoute.key === route.key,
-                      color,
-                      children: labelText ?? route.name,
-                    })
-                : renderLabelDefault,
-          labelAllowFontScaling: tabBarAllowFontScaling,
-          labelStyle: tabBarLabelStyle,
-          labelText:
-            options.tabBarShowLabel === false
-              ? undefined
-              : typeof tabBarLabel === 'string'
-                ? tabBarLabel
-                : title !== undefined
-                  ? title
-                  : route.name,
-        },
-      ];
+      const tabBarOption: TabDescriptor<MaterialTopTabViewRoute> = {
+        href: buildHref(route.name, route.params),
+        testID: tabBarButtonTestID,
+        accessibilityLabel: tabBarAccessibilityLabel,
+        badge: tabBarBadge,
+        icon: tabBarShowIcon === false ? undefined : tabBarIcon,
+        label:
+          tabBarShowLabel === false
+            ? undefined
+            : typeof tabBarLabel === 'function'
+              ? ({ labelText, color }) =>
+                  tabBarLabel({
+                    focused: focusedRoute.key === route.key,
+                    color,
+                    children: labelText ?? route.name,
+                  })
+              : renderLabelDefault,
+        labelAllowFontScaling: tabBarAllowFontScaling,
+        labelStyle: tabBarLabelStyle,
+        labelText:
+          options.tabBarShowLabel === false
+            ? undefined
+            : typeof tabBarLabel === 'string'
+              ? tabBarLabel
+              : title !== undefined
+                ? title
+                : route.name,
+      };
+
+      return [route.key, tabBarOption];
     })
   );
 
@@ -108,6 +113,7 @@ export function MaterialTopTabBar({
       direction={direction}
       scrollEnabled={focusedOptions.tabBarScrollEnabled}
       bounces={focusedOptions.tabBarBounces}
+      // TabBar declares strings, but Expo callbacks, style color, and android_ripple accept OpaqueColorValue at runtime, so PlatformColor works.
       activeColor={activeColor as string}
       inactiveColor={inactiveColor as string}
       pressColor={focusedOptions.tabBarPressColor as string | undefined}
@@ -119,7 +125,7 @@ export function MaterialTopTabBar({
       indicatorContainerStyle={focusedOptions.tabBarIndicatorContainerStyle}
       contentContainerStyle={focusedOptions.tabBarContentContainerStyle}
       style={[{ backgroundColor: colors.card }, focusedOptions.tabBarStyle]}
-      onTabPress={({ route, preventDefault }: any) => {
+      onTabPress={({ route, preventDefault }) => {
         const event = emitter.emit({
           type: 'tabPress',
           target: route.key,
@@ -130,13 +136,13 @@ export function MaterialTopTabBar({
           preventDefault();
         }
       }}
-      onTabLongPress={({ route }: any) =>
+      onTabLongPress={({ route }) =>
         emitter.emit({
           type: 'tabLongPress',
           target: route.key,
         })
       }
-      renderIndicator={({ navigationState: state, ...rest }: any) => {
+      renderIndicator={({ navigationState: state, ...rest }) => {
         return focusedOptions.tabBarIndicator ? (
           focusedOptions.tabBarIndicator({
             state,

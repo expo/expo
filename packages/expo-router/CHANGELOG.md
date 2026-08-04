@@ -4,8 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Migrate the JS `TopTabs` navigator to the `standard-navigation` integration. ([#48498](https://github.com/expo/expo/pull/48498) by [@Ubax](https://github.com/Ubax))
 - Make `beforeRemove` non-preventable and add `removePrevented` event. ([#48347](https://github.com/expo/expo/pull/48347) by [@Ubax](https://github.com/Ubax))
-- Migrate the JS `TopTabs` navigator to the `standard-navigation` integration. (by [@Ubax](https://github.com/Ubax))
 - Remove the `redirect` prop from layout `<Screen>` components. ([#48369](https://github.com/expo/expo/pull/48369) by [@Ubax](https://github.com/Ubax))
 - Add `redirectTo` to protected routes and render guarded screens as redirects instead of removing them from navigators. ([#47744](https://github.com/expo/expo/pull/47744) by [@Ubax](https://github.com/Ubax))
 - Migrate the `Drawer` navigator to the `standard-navigation` integration. ([#47839](https://github.com/expo/expo/pull/47839) by [@Ubax](https://github.com/Ubax))

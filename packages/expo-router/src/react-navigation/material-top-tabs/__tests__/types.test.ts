@@ -15,12 +15,14 @@ type IsAny<T> = 0 extends 1 & T ? true : false;
 type IndicatorProps = Parameters<
   NonNullable<MaterialTopTabNavigationOptions['tabBarIndicator']>
 >[0];
+type TabBarCallbackProps = Parameters<NonNullable<MaterialTopTabNavigationConfig['tabBar']>>[0];
 
 export type _PublicPropsIncludeTabBar = Expect<
   'tabBar' extends keyof JSTopTabsProps ? true : false
 >;
 export type _NavigationConfigIsNotAny = Expect<Equal<IsAny<MaterialTopTabNavigationConfig>, false>>;
 export type _TabBarPropsAreNotAny = Expect<Equal<IsAny<MaterialTopTabBarProps>, false>>;
+export type _TabBarCallbackPropsAreNotAny = Expect<Equal<IsAny<TabBarCallbackProps>, false>>;
 export type _TabBarPropsExcludeNavigation = Expect<
   'navigation' extends keyof MaterialTopTabBarProps ? false : true
 >;
