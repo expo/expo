@@ -7,6 +7,7 @@ import { join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SDK_INPUT = /^(\d{2})(?:\.0\.0)?$/;
+const EXPOTOOLS_MAX_BUFFER = 64 * 1024 * 1024;
 
 const docsDir = process.cwd();
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
@@ -136,7 +137,7 @@ function expotools(args: string[]) {
   })();
 
   if (hasEt) {
-    execFileSync('et', args, { cwd: root, stdio: 'pipe' });
+    execFileSync('et', args, { cwd: root, stdio: 'pipe', maxBuffer: EXPOTOOLS_MAX_BUFFER });
     return;
   }
 
@@ -147,7 +148,11 @@ function expotools(args: string[]) {
         'root, or build expotools with pnpm turbo build --filter expotools...'
     );
   }
-  execFileSync(process.execPath, [bin, ...args], { cwd: root, stdio: 'pipe' });
+  execFileSync(process.execPath, [bin, ...args], {
+    cwd: root,
+    stdio: 'pipe',
+    maxBuffer: EXPOTOOLS_MAX_BUFFER,
+  });
 }
 
 function promoteDocsVersion() {
