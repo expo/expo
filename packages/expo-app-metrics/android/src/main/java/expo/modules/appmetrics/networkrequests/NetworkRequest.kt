@@ -49,7 +49,17 @@ data class NetworkRequest(
    * directly. Each entry's `fromUrl` is the URL that returned the redirect, `toUrl` is where the
    * redirect pointed, and `statusCode` is the 3xx code that caused the hop.
    */
-  val redirects: List<Redirect>
+  val redirects: List<Redirect>,
+
+  /**
+   * Whether the request failed because the network stalled or went away, as opposed to reaching
+   * the server and getting an error back.
+   *
+   * Classified at capture time from the thrown exception, because `errorDescription` is a localized
+   * string and can't be matched on afterwards. A 5xx response is a failure but not a timeout: the
+   * server answered.
+   */
+  val isTimeout: Boolean = false
 ) {
   data class Redirect(
     /** The URL that returned the redirect. */
@@ -90,7 +100,49 @@ data class NetworkRequest(
      * individual phases are `null` (cache hits, errors before headers).
      */
     val totalDuration: Double
-  )
+  ) {
+    /**
+     * Time from the start of the fetch until the first response byte arrived, in seconds.
+     *
+     * This is not a measurement of network latency: it also covers DNS, the TCP and TLS handshakes,
+     * sending the request, and the server's own processing time. A slow backend inflates it the same
+     * way a slow network does. On a reused connection (the common case under keep-alive) the
+     * handshakes are already done, so it sits much closer to one round trip plus server time.
+     *
+     * `null` when the response never produced headers, so callers can tell "not measured" from a
+     * genuinely fast response.
+     */
+    val timeToFirstByte: Double?
+      get() = positiveInterval(fetchStart, responseStart)
+
+    /**
+     * Duration of the TCP handshake in seconds, which is roughly one network round trip and
+     * therefore the closest thing here to pure network latency.
+     *
+     * Ends at `secureConnectionStart` when TLS ran, so the value covers only the TCP handshake and
+     * not the TLS exchange layered on top of it. Falls back to `connectEnd` for cleartext
+     * connections, where no TLS phase exists.
+     *
+     * `null` when the connection was reused, which means "no new connection was opened", not "zero
+     * latency". Under keep-alive most requests report nothing here.
+     */
+    val tcpHandshakeDuration: Double?
+      get() = positiveInterval(connectStart, secureConnectionStart ?: connectEnd)
+
+    /**
+     * Returns the interval between two nullable timestamps in seconds, or `null` if either is
+     * missing or the result is negative. These are wall-clock dates, so a clock adjustment
+     * mid-request can invert them; a negative duration is meaningless and would poison a min/max
+     * fold.
+     */
+    private fun positiveInterval(start: Date?, end: Date?): Double? {
+      if (start == null || end == null) {
+        return null
+      }
+      val seconds = (end.time - start.time) / 1000.0
+      return if (seconds >= 0) seconds else null
+    }
+  }
 }
 
 /**

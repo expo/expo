@@ -65,6 +65,89 @@ struct NetworkRequestTests {
     #expect(snapshot.statusCode == nil)
     #expect(snapshot.errorDescription != nil)
   }
+
+  @Test
+  func `flags a timed-out request as a timeout`() {
+    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
+    let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorTimedOut, userInfo: nil)
+    let now = Date()
+    let snapshot = NetworkRequest.from(
+      id: UUID(),
+      request: request,
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: now,
+      fallbackEnd: now,
+      error: error
+    )
+    #expect(snapshot.isTimeout)
+  }
+
+  @Test
+  func `flags a lost connection as a timeout`() {
+    // The radio dropping mid-request is the same "network went away" condition as a timeout, and
+    // is what an elevator actually produces.
+    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
+    let error = NSError(
+      domain: NSURLErrorDomain,
+      code: NSURLErrorNetworkConnectionLost,
+      userInfo: nil
+    )
+    let now = Date()
+    let snapshot = NetworkRequest.from(
+      id: UUID(),
+      request: request,
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: now,
+      fallbackEnd: now,
+      error: error
+    )
+    #expect(snapshot.isTimeout)
+  }
+
+  @Test
+  func `does not flag a cancelled request as a timeout`() {
+    // The app abandoned the request; that says nothing about the network.
+    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
+    let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCancelled, userInfo: nil)
+    let now = Date()
+    let snapshot = NetworkRequest.from(
+      id: UUID(),
+      request: request,
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: now,
+      fallbackEnd: now,
+      error: error
+    )
+    #expect(!snapshot.isTimeout)
+    #expect(snapshot.errorDescription != nil)
+  }
+
+  @Test
+  func `does not flag a successful request as a timeout`() {
+    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
+    let now = Date()
+    let snapshot = NetworkRequest.from(
+      id: UUID(),
+      request: request,
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: now,
+      fallbackEnd: now,
+      error: nil
+    )
+    #expect(!snapshot.isTimeout)
+  }
 }
 
 @AppMetricsActor
@@ -308,6 +391,301 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
+  func `counts timeouts separately from other failures`() {
+    let now = Date()
+    let timedOut = makeRequest(
+      host: "slow.expo.dev",
+      duration: 30,
+      status: nil,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      error: "timed out",
+      isTimeout: true
+    )
+    // A 5xx is the backend failing, not the network.
+    let serverError = makeRequest(
+      host: "broken.expo.dev",
+      duration: 0.2,
+      status: 503,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now
+    )
+    let ok = makeRequest(
+      host: "api.expo.dev",
+      duration: 0.1,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 100,
+      fetchStart: now
+    )
+    let summary = NetworkRequestSummary.from([timedOut, serverError, ok])
+    #expect(summary.failed == 2)
+    #expect(summary.timedOut == 1)
+  }
+
+  @Test
+  func `reports no timeouts when every request reached the server`() {
+    let summary = NetworkRequestSummary.from([
+      makeRequest(
+        host: "expo.dev",
+        duration: 0.1,
+        status: 500,
+        bytesSent: 0,
+        bytesReceived: 0,
+        fetchStart: Date()
+      )
+    ])
+    #expect(summary.failed == 1)
+    #expect(summary.timedOut == 0)
+  }
+
+  @Test
+  func `aggregates slowest time to first byte and ignores requests without one`() {
+    let now = Date()
+    let quick = makeRequest(
+      host: "api.expo.dev",
+      duration: 0.4,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.05)
+    )
+    let stalled = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 0.5,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.3)
+    )
+    // No `responseStart` at all (failed before headers arrived), so it contributes nothing.
+    let headerless = makeRequest(
+      host: "broken.expo.dev",
+      duration: 2.0,
+      status: nil,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      error: "timed out"
+    )
+    let summary = NetworkRequestSummary.from([quick, stalled, headerless])
+    #expect(abs((summary.slowestTimeToFirstByte ?? 0) - 0.3) < 0.0001)
+  }
+
+  @Test
+  func `leaves slowest time to first byte nil when no request reported one`() {
+    let request = makeRequest(
+      host: "expo.dev",
+      duration: 0.2,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
+    let summary = NetworkRequestSummary.from([request])
+    #expect(summary.slowestTimeToFirstByte == nil)
+  }
+
+  @Test
+  func `computes throughput over the time the network was actually busy`() {
+    let now = Date()
+    // Two requests running back to back: 1s each, no overlap, so 2s of busy time.
+    let first = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 8000,
+      fetchStart: now,
+      responseEnd: now.addingTimeInterval(1)
+    )
+    let second = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 2000,
+      fetchStart: now.addingTimeInterval(1),
+      responseEnd: now.addingTimeInterval(2)
+    )
+    let summary = NetworkRequestSummary.from([first, second])
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 5000) < 0.0001)
+  }
+
+  @Test
+  func `does not deflate throughput when requests run concurrently`() {
+    let now = Date()
+    // Four parallel requests, each 1s and 10 kB. Summed request-seconds would be 4s and report
+    // 10 kB/s; the network actually moved 40 kB in one second of wall-clock.
+    let requests = (0..<4).map { index in
+      makeRequest(
+        host: "cdn\(index).expo.dev",
+        duration: 1.0,
+        status: 200,
+        bytesSent: 0,
+        bytesReceived: 10_000,
+        fetchStart: now,
+        responseEnd: now.addingTimeInterval(1)
+      )
+    }
+    let summary = NetworkRequestSummary.from(requests)
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 40_000) < 0.0001)
+  }
+
+  @Test
+  func `excludes idle gaps between requests from throughput`() {
+    let now = Date()
+    // 1s of transfer, a 10s idle gap, then another 1s. Only the 2s of busy time counts, so the
+    // value reflects the connection rather than how long the app sat idle.
+    let first = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 5000,
+      fetchStart: now,
+      responseEnd: now.addingTimeInterval(1)
+    )
+    let second = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 5000,
+      fetchStart: now.addingTimeInterval(11),
+      responseEnd: now.addingTimeInterval(12)
+    )
+    let summary = NetworkRequestSummary.from([first, second])
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 5000) < 0.0001)
+  }
+
+  @Test
+  func `merges partially overlapping requests into one busy span`() {
+    let now = Date()
+    // 0-2s and 1-3s overlap, so busy time is 3s rather than the 4s of summed duration.
+    let first = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 2.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 3000,
+      fetchStart: now,
+      responseEnd: now.addingTimeInterval(2)
+    )
+    let second = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 2.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 3000,
+      fetchStart: now.addingTimeInterval(1),
+      responseEnd: now.addingTimeInterval(3)
+    )
+    let summary = NetworkRequestSummary.from([first, second])
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 2000) < 0.0001)
+  }
+
+  @Test
+  func `leaves throughput nil when no request reported a usable interval`() {
+    // Without timestamps there's no busy span to divide by, so the rate is unknown rather than 0.
+    let request = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 5000,
+      fetchStart: nil
+    )
+    let summary = NetworkRequestSummary.from([request])
+    #expect(summary.throughputBytesPerSecond == nil)
+  }
+
+  @Test
+  func `leaves throughput nil when nothing was received`() {
+    // A cache hit moves no bytes; dividing would report a fake 0 B/s rather than "unknown".
+    let cacheHit = makeRequest(
+      host: "expo.dev",
+      duration: 0.01,
+      status: 304,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
+    let summary = NetworkRequestSummary.from([cacheHit])
+    #expect(summary.throughputBytesPerSecond == nil)
+  }
+
+  @Test
+  func `takes the fastest tcp handshake and excludes the tls portion`() {
+    let now = Date()
+    // TLS ran, so the handshake window ends at `secureConnectionStart`: 0.2s, not the 0.5s that
+    // `connectEnd` would report (it lands after the TLS exchange).
+    let secure = makeRequest(
+      host: "api.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      connectStart: now,
+      connectEnd: now.addingTimeInterval(0.5),
+      secureConnectionStart: now.addingTimeInterval(0.2)
+    )
+    // Cleartext, so it falls back to `connectEnd`: 0.3s.
+    let cleartext = makeRequest(
+      host: "plain.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      connectStart: now,
+      connectEnd: now.addingTimeInterval(0.3)
+    )
+    let summary = NetworkRequestSummary.from([secure, cleartext])
+    #expect(abs((summary.fastestTcpHandshake ?? 0) - 0.2) < 0.0001)
+  }
+
+  @Test
+  func `leaves fastest tcp handshake nil when every connection was reused`() {
+    // Under keep-alive `connectStart` is nil, which means "no new connection", not "zero latency".
+    let reused = makeRequest(
+      host: "api.expo.dev",
+      duration: 0.2,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
+    let summary = NetworkRequestSummary.from([reused, reused])
+    #expect(summary.fastestTcpHandshake == nil)
+  }
+
+  @Test
+  func `ignores negative handshake and first-byte durations`() {
+    let now = Date()
+    // A clock adjustment mid-request can invert these wall-clock dates.
+    let skewed = makeRequest(
+      host: "expo.dev",
+      duration: 0.2,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      connectStart: now,
+      connectEnd: now.addingTimeInterval(-0.1),
+      responseStart: now.addingTimeInterval(-0.2)
+    )
+    let summary = NetworkRequestSummary.from([skewed])
+    #expect(summary.fastestTcpHandshake == nil)
+    #expect(summary.slowestTimeToFirstByte == nil)
+  }
+
+  @Test
   func `counts errored requests without a status as failed`() {
     let request = makeRequest(
       host: "expo.dev",
@@ -371,8 +749,14 @@ struct NetworkRequestSummaryTests {
     status: Int?,
     bytesSent: Int64,
     bytesReceived: Int64,
-    fetchStart: Date,
-    error: String? = nil
+    fetchStart: Date?,
+    error: String? = nil,
+    isTimeout: Bool = false,
+    connectStart: Date? = nil,
+    connectEnd: Date? = nil,
+    secureConnectionStart: Date? = nil,
+    responseStart: Date? = nil,
+    responseEnd: Date? = nil
   ) -> NetworkRequest {
     return NetworkRequest(
       id: UUID(),
@@ -386,17 +770,18 @@ struct NetworkRequestSummaryTests {
         fetchStart: fetchStart,
         domainLookupStart: nil,
         domainLookupEnd: nil,
-        connectStart: nil,
-        connectEnd: nil,
-        secureConnectionStart: nil,
+        connectStart: connectStart,
+        connectEnd: connectEnd,
+        secureConnectionStart: secureConnectionStart,
         secureConnectionEnd: nil,
         requestStart: nil,
         requestEnd: nil,
-        responseStart: nil,
-        responseEnd: nil,
+        responseStart: responseStart,
+        responseEnd: responseEnd,
         totalDuration: duration
       ),
       errorDescription: error,
+      isTimeout: isTimeout,
       redirects: []
     )
   }

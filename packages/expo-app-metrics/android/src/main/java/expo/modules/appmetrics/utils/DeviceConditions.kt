@@ -45,7 +45,28 @@ data class DeviceState(
  */
 data class NetworkState(
   val connected: Boolean,
-  val transport: NetworkTransport
+  val transport: NetworkTransport,
+  /**
+   * Whether using this network may cost the user money (a metered connection: cellular or a
+   * tethered hotspot). Mirrors iOS `NWPath.isExpensive`, so it's the inverse of
+   * `NET_CAPABILITY_NOT_METERED`.
+   *
+   * `null` when there's no usable network to describe. Absence of `NET_CAPABILITY_NOT_METERED` on a
+   * capability-poor network is absence of information, not evidence of metering, so this is only
+   * populated when the network also reports internet capability.
+   */
+  val isExpensive: Boolean? = null,
+  /**
+   * Whether Data Saver is restricting this app's background traffic.
+   *
+   * Deliberately *not* reported as `isConstrained`: iOS Low Data Mode is a per-path user setting
+   * that changes as the user moves between networks, while this is a process-wide Android setting
+   * that reads the same on Wi-Fi and cellular. Folding both onto one key would mix two different
+   * questions in the same column.
+   *
+   * `null` when no `ConnectivityManager` is available.
+   */
+  val dataSaverEnabled: Boolean? = null
 )
 
 /**
@@ -96,7 +117,12 @@ object DeviceConditions {
 
   fun networkState(context: Context): NetworkState {
     val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
-      ?: return NetworkState(connected = false, transport = NetworkTransport.NONE)
+      ?: return NetworkState(
+        connected = false,
+        transport = NetworkTransport.NONE,
+        isExpensive = null,
+        dataSaverEnabled = null
+      )
 
     // Read capabilities once: `cm.activeNetwork` and `getNetworkCapabilities`
     // can drift if the connection changes between calls, and a single read
@@ -105,7 +131,15 @@ object DeviceConditions {
     val connected = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true
     return NetworkState(
       connected = connected,
-      transport = mapTransport(capabilities)
+      transport = mapTransport(capabilities),
+      // Gated on the same capability `connected` uses, so a network that can't carry traffic reports
+      // nothing here instead of asserting it's metered. Inverted: the capability says "not metered",
+      // the field says "expensive".
+      isExpensive = capabilities
+        ?.takeIf { it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) }
+        ?.let { !it.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED) },
+      dataSaverEnabled = cm.restrictBackgroundStatus ==
+        ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
     )
   }
 

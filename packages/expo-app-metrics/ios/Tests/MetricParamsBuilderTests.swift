@@ -131,11 +131,15 @@ struct MetricParamsBuilderTests {
     let summary = NetworkRequestSummary(
       count: 4,
       failed: 1,
+      timedOut: 0,
       bytesReceived: 12_000,
       bytesSent: 800,
       totalDuration: 1.4,
       slowestDuration: 0.6,
-      slowestHost: "api.expo.dev"
+      slowestHost: "api.expo.dev",
+      slowestTimeToFirstByte: nil,
+      throughputBytesPerSecond: nil,
+      fastestTcpHandshake: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
     #expect(params["expo.network.requests.count"] as? Int == 4)
@@ -145,6 +149,115 @@ struct MetricParamsBuilderTests {
     #expect(params["expo.network.requests.totalDuration"] as? TimeInterval == 1.4)
     #expect(params["expo.network.requests.slowestDuration"] as? TimeInterval == 0.6)
     #expect(params["expo.network.requests.slowestHost"] as? String == "api.expo.dev")
+  }
+
+  @Test
+  func `emits path cost flags alongside the connection type`() {
+    let constrainedCellular = NetworkPath(
+      status: .satisfied,
+      interfaceType: .cellular,
+      isExpensive: true,
+      isConstrained: true,
+      unsatisfiedReason: nil,
+      timestamp: 0
+    )
+    let params = MetricParamsBuilder.build(networkPath: constrainedCellular)
+    #expect(params["expo.network.isExpensive"] as? Bool == true)
+    #expect(params["expo.network.isConstrained"] as? Bool == true)
+  }
+
+  @Test
+  func `emits path cost flags as false on an unmetered path`() {
+    let params = MetricParamsBuilder.build(networkPath: satisfiedWifi)
+    #expect(params["expo.network.isExpensive"] as? Bool == false)
+    #expect(params["expo.network.isConstrained"] as? Bool == false)
+  }
+
+  @Test
+  func `emits the timeout count alongside the failure count`() {
+    let summary = NetworkRequestSummary(
+      count: 3,
+      failed: 2,
+      timedOut: 1,
+      bytesReceived: 0,
+      bytesSent: 0,
+      totalDuration: 30.2,
+      slowestDuration: 30,
+      slowestHost: "slow.expo.dev",
+      slowestTimeToFirstByte: nil,
+      throughputBytesPerSecond: nil,
+      fastestTcpHandshake: nil
+    )
+    let params = MetricParamsBuilder.build(networkRequests: summary)
+    #expect(params["expo.network.requests.failed"] as? Int == 2)
+    #expect(params["expo.network.requests.timedOut"] as? Int == 1)
+  }
+
+  @Test
+  func `emits a zero timeout count so its absence is not ambiguous`() {
+    // Unlike the optional latency fields, a count of zero is a real measurement: we saw requests
+    // and none of them timed out. Omitting it would make "no timeouts" and "not measured" look
+    // the same.
+    let summary = NetworkRequestSummary(
+      count: 1,
+      failed: 0,
+      timedOut: 0,
+      bytesReceived: 10,
+      bytesSent: 10,
+      totalDuration: 0.1,
+      slowestDuration: 0.1,
+      slowestHost: "expo.dev",
+      slowestTimeToFirstByte: nil,
+      throughputBytesPerSecond: nil,
+      fastestTcpHandshake: nil
+    )
+    let params = MetricParamsBuilder.build(networkRequests: summary)
+    #expect(params["expo.network.requests.timedOut"] as? Int == 0)
+  }
+
+  @Test
+  func `emits the derived latency and throughput keys when the summary has them`() {
+    let summary = NetworkRequestSummary(
+      count: 4,
+      failed: 1,
+      timedOut: 0,
+      bytesReceived: 12_000,
+      bytesSent: 800,
+      totalDuration: 1.4,
+      slowestDuration: 0.6,
+      slowestHost: "api.expo.dev",
+      slowestTimeToFirstByte: 0.35,
+      throughputBytesPerSecond: 8571.4,
+      fastestTcpHandshake: 0.04
+    )
+    let params = MetricParamsBuilder.build(networkRequests: summary)
+    #expect(params["expo.network.requests.slowestTimeToFirstByte"] as? TimeInterval == 0.35)
+    #expect(params["expo.network.requests.throughputBytesPerSecond"] as? Double == 8571.4)
+    #expect(params["expo.network.requests.fastestTcpHandshake"] as? TimeInterval == 0.04)
+  }
+
+  @Test
+  func `omits the derived keys rather than emitting zero when they are unavailable`() {
+    // Every connection reused and nothing received: emitting 0 would read as "instant, no data"
+    // instead of "not measured" on a dashboard.
+    let summary = NetworkRequestSummary(
+      count: 2,
+      failed: 0,
+      timedOut: 0,
+      bytesReceived: 0,
+      bytesSent: 40,
+      totalDuration: 0.2,
+      slowestDuration: 0.1,
+      slowestHost: "api.expo.dev",
+      slowestTimeToFirstByte: nil,
+      throughputBytesPerSecond: nil,
+      fastestTcpHandshake: nil
+    )
+    let params = MetricParamsBuilder.build(networkRequests: summary)
+    #expect(params["expo.network.requests.count"] as? Int == 2)
+    #expect(params["expo.network.requests.slowestTimeToFirstByte"] == nil)
+    #expect(params["expo.network.requests.throughputBytesPerSecond"] == nil)
+    #expect(params["expo.network.requests.fastestTcpHandshake"] == nil)
   }
 
   @Test
