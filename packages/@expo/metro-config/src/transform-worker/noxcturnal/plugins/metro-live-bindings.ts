@@ -331,7 +331,12 @@ export function createMetroLiveBindingsPlugin(
                         reference.parentStart === reference.start
                       ? `${local}: ${expression}`
                       : expression;
-                importPath.context.editor.overwrite(reference.start!, reference.end!, replacement);
+                importPath.context.editor.overwrite(
+                  reference.start!,
+                  reference.end!,
+                  replacement,
+                  'anchor-start'
+                );
               }
             }
           }

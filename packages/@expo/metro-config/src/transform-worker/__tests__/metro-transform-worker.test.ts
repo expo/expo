@@ -197,6 +197,40 @@ export function Component(props: Props) {
   expect(original.line).toBe(2);
 });
 
+it('maps errors inside JSX callbacks to the throwing expression', async () => {
+  const contents = `export default function App() {
+  return <BigButton
+    title="throw new Error()"
+    onPress={() => {
+      throw new Error('unhandled-throw');
+    }}
+  />;
+}`;
+  const result = await Transformer.transform(
+    baseConfig,
+    '/root',
+    'local/App.tsx',
+    Buffer.from(contents, 'utf8'),
+    {
+      ...baseTransformOptions,
+      platform: 'web',
+      customTransformOptions: { __proto__: null, engine: 'hermes' },
+    }
+  );
+  const output = result.output[0]!;
+  const messageOffset = output.data.code.indexOf('unhandled-throw');
+  const generatedOffset = output.data.code.lastIndexOf('new Error', messageOffset);
+  expect(generatedOffset).not.toBe(-1);
+  const generatedPrefix = output.data.code.slice(0, generatedOffset);
+  const generatedLines = generatedPrefix.split('\n');
+  expect(
+    originalPositionFor(toTraceMap(output, contents), {
+      line: generatedLines.length,
+      column: generatedLines.at(-1)!.length,
+    })
+  ).toMatchObject({ line: 5, column: 12 });
+});
+
 it('transforms a simple script', async () => {
   const contents = 'someReallyArbitrary(code)';
 
