@@ -9,9 +9,9 @@ import {
   NavigationBuilderContext,
 } from './NavigationBuilderContext';
 import { NavigationRouteContext } from './NavigationProvider';
-import type { IsRoutePrevented } from './PreventRemoveProvider';
 import type { EventMapCore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
+import type { IsRoutePrevented } from './usePreventRemoveState';
 
 type Options = {
   getState: () => NavigationState;

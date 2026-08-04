@@ -23,7 +23,6 @@ import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
 import { PreventRemoveContext } from './PreventRemoveContext';
-import { usePreventRemoveState } from './PreventRemoveProvider';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
@@ -53,6 +52,7 @@ import { NavigationStateListenerProvider } from './useNavigationState';
 import { useOnAction } from './useOnAction';
 import { useOnGetState } from './useOnGetState';
 import { useOnRouteFocus } from './useOnRouteFocus';
+import { usePreventRemoveState } from './usePreventRemoveState';
 import { useRegisterNavigator } from './useRegisterNavigator';
 import { useScheduleUpdate } from './useScheduleUpdate';
 
