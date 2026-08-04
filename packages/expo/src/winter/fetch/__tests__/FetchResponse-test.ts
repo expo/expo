@@ -138,6 +138,100 @@ describe('FetchResponse', () => {
     await readPromise;
   });
 
+  describe('abort()', () => {
+    // The existing guards above cover cancellation via the JS stream
+    // (reader.cancel()). abort() covers cancellation via an AbortSignal, which
+    // fetch() routes to a native request.cancel() that never reaches the JS
+    // controller — leaving the in-flight read hung and any late
+    // didReceiveResponseData enqueued onto an abandoned controller
+    // (expo/expo#34804 / #33549 / #33553).
+
+    it('rejects the in-flight body read with an AbortError', async () => {
+      const response = makeResponse();
+      const reader = response.body!.getReader();
+      const pending = reader.read();
+
+      response.abort();
+
+      await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    });
+
+    it('rejects a read started after abort with an AbortError', async () => {
+      const response = makeResponse();
+      const body = response.body!; // create the stream, then abort before reading
+      response.abort();
+
+      await expect(body.getReader().read()).rejects.toMatchObject({ name: 'AbortError' });
+    });
+
+    it('does not deliver or throw on native data that arrives after abort', async () => {
+      const response = makeResponse();
+      const reader = response.body!.getReader();
+      const pending = reader.read();
+
+      response.abort();
+      // The teardown race: native delivers one more data event after cancel.
+      const chunk = new TextEncoder().encode('late');
+      expect(() => (response as any).emit('didReceiveResponseData', chunk)).not.toThrow();
+      expect(() => (response as any).emit('didComplete')).not.toThrow();
+
+      await expect(pending).rejects.toMatchObject({ name: 'AbortError' });
+    });
+
+    it('preserves a provided abort reason', async () => {
+      const response = makeResponse();
+      const reader = response.body!.getReader();
+      const pending = reader.read();
+
+      const reason = new DOMException('user navigated away', 'AbortError');
+      response.abort(reason);
+
+      await expect(pending).rejects.toBe(reason);
+    });
+
+    it('is idempotent and safe to call twice', async () => {
+      const response = makeResponse();
+      response.body!.getReader();
+      response.abort();
+      expect(() => response.abort()).not.toThrow();
+    });
+  });
+
+  describe('internally errored stream (rejected pull)', () => {
+    // When pull() rejects (a failed native startStreaming call), the streams
+    // implementation errors the stream through its internal error routine —
+    // controller.error() is never called, so bodyStreamClosed is never set
+    // and the guard goes stale. Native events landing after that used to call
+    // close()/enqueue() on an errored stream and throw ("The stream is not in
+    // a state that permits close") out of the event listener, where no
+    // consumer try/catch can reach.
+
+    it('surfaces the underlying error to the reader', async () => {
+      const response = makeResponse();
+      (response as any).startStreaming = async () => {
+        throw new Error('native module call failed');
+      };
+      const reader = response.body!.getReader();
+
+      await expect(reader.read()).rejects.toThrow('native module call failed');
+    });
+
+    it('does not throw on native events that arrive after pull() rejected', async () => {
+      const response = makeResponse();
+      (response as any).startStreaming = async () => {
+        throw new Error('native module call failed');
+      };
+      const reader = response.body!.getReader();
+      await expect(reader.read()).rejects.toThrow('native module call failed');
+
+      // The teardown race: native still delivers a chunk, then completion.
+      const chunk = new TextEncoder().encode('late');
+      expect(() => (response as any).emit('didReceiveResponseData', chunk)).not.toThrow();
+      expect(() => (response as any).emit('didComplete')).not.toThrow();
+      expect(() => (response as any).emit('didFailWithError', 'late error')).not.toThrow();
+    });
+  });
+
   describe('clone()', () => {
     it('returns a Response that exposes the same metadata', () => {
       const response = makeResponse();
