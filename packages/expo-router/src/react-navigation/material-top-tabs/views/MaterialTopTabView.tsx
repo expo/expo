@@ -1,23 +1,17 @@
-import {
-  CommonActions,
-  type ParamListBase,
-  type Route,
-  type TabNavigationState,
-  useLocale,
-  useTheme,
-} from '../../native';
+import { type Route, useLocale, useTheme } from '../../native';
 import type {
   MaterialTopTabBarProps,
   MaterialTopTabDescriptorMap,
+  MaterialTopTabEmitter,
   MaterialTopTabNavigationConfig,
-  MaterialTopTabNavigationHelpers,
+  MaterialTopTabViewState,
 } from '../types';
 import { TabAnimationContext } from '../utils/TabAnimationContext';
 import { MaterialTopTabBar } from './MaterialTopTabBar';
 
 // Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabView } from 'react-native-tab-view';
-let TabView: any;
+let TabView: typeof import('react-native-tab-view').TabView;
 try {
   const tabViewModule = require('react-native-tab-view');
   TabView = tabViewModule.TabView;
@@ -28,9 +22,11 @@ try {
 }
 
 type Props = MaterialTopTabNavigationConfig & {
-  state: TabNavigationState<ParamListBase>;
-  navigation: MaterialTopTabNavigationHelpers;
+  state: MaterialTopTabViewState;
   descriptors: MaterialTopTabDescriptorMap;
+  emitter: MaterialTopTabEmitter;
+  navigateToTab: (routeKey: string) => void;
+  preloadedRouteKeys: string[];
 };
 
 const renderTabBarDefault = (props: MaterialTopTabBarProps) => <MaterialTopTabBar {...props} />;
@@ -38,8 +34,10 @@ const renderTabBarDefault = (props: MaterialTopTabBarProps) => <MaterialTopTabBa
 export function MaterialTopTabView({
   tabBar = renderTabBarDefault,
   state,
-  navigation,
   descriptors,
+  emitter,
+  navigateToTab,
+  preloadedRouteKeys,
   ...rest
 }: Props) {
   const { colors } = useTheme();
@@ -55,8 +53,9 @@ export function MaterialTopTabView({
     return tabBar({
       ...rest,
       state,
-      navigation,
       descriptors,
+      emitter,
+      navigateToTab,
     });
   };
 
@@ -65,12 +64,7 @@ export function MaterialTopTabView({
   return (
     <TabView<Route<string>>
       {...rest}
-      onIndexChange={(index: number) => {
-        navigation.dispatch({
-          ...CommonActions.navigate(state.routes[index]!),
-          target: state.key,
-        });
-      }}
+      onIndexChange={(index: number) => navigateToTab(state.routes[index]!.key)}
       renderScene={({ route, position }: any) => (
         <TabAnimationContext.Provider value={{ position }}>
           {descriptors[route.key]!.render()}
@@ -82,14 +76,13 @@ export function MaterialTopTabView({
         descriptors[route.key]!.options.lazyPlaceholder?.() ?? null
       }
       lazy={({ route }: any) =>
-        descriptors[route.key]!.options.lazy === true &&
-        !state.preloadedRouteKeys.includes(route.key)
+        descriptors[route.key]!.options.lazy === true && !preloadedRouteKeys.includes(route.key)
       }
       lazyPreloadDistance={focusedOptions.lazyPreloadDistance}
       swipeEnabled={focusedOptions.swipeEnabled}
       animationEnabled={focusedOptions.animationEnabled}
-      onSwipeStart={() => navigation.emit({ type: 'swipeStart' })}
-      onSwipeEnd={() => navigation.emit({ type: 'swipeEnd' })}
+      onSwipeStart={() => emitter.emit({ type: 'swipeStart' })}
+      onSwipeEnd={() => emitter.emit({ type: 'swipeEnd' })}
       direction={direction}
       options={Object.fromEntries(
         state.routes.map((route) => {

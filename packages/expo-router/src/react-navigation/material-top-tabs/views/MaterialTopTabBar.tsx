@@ -3,19 +3,13 @@ import { StyleSheet } from 'react-native';
 
 import { Color } from '../../../utils/color';
 import { Text } from '../../elements';
-import {
-  type ParamListBase,
-  type TabNavigationState,
-  useLinkBuilder,
-  useLocale,
-  useTheme,
-} from '../../native';
+import { useLinkBuilder, useLocale, useTheme } from '../../native';
 import type { MaterialTopTabBarProps } from '../types';
 
 // Use dynamic import to avoid having direct dependency on react-native-tab-view.
 // import { TabBar, TabBarIndicator } from 'react-native-tab-view';
-let TabBar: any;
-let TabBarIndicator: any;
+let TabBar: typeof import('react-native-tab-view').TabBar;
+let TabBarIndicator: typeof import('react-native-tab-view').TabBarIndicator;
 try {
   const tabViewModule = require('react-native-tab-view');
   TabBar = tabViewModule.TabBar;
@@ -36,15 +30,18 @@ const renderLabelDefault = ({ color, labelText, style, allowFontScaling }: any) 
 
 export function MaterialTopTabBar({
   state,
-  navigation,
   descriptors,
+  emitter,
+  // The built-in bar switches through `jumpTo`; only strip the custom callback from forwarded props.
+  navigateToTab: _navigateToTab,
   ...rest
 }: MaterialTopTabBarProps) {
   const { colors } = useTheme();
   const { direction } = useLocale();
   const { buildHref } = useLinkBuilder();
 
-  const focusedOptions = descriptors[state.routes[state.index].key].options;
+  const focusedRoute = state.routes[state.index]!;
+  const focusedOptions = descriptors[focusedRoute.key]!.options;
 
   const activeColor: ColorValue = focusedOptions.tabBarActiveTintColor ?? colors.primary;
   const inactiveColor: ColorValue =
@@ -54,7 +51,7 @@ export function MaterialTopTabBar({
 
   const tabBarOptions = Object.fromEntries(
     state.routes.map((route: any) => {
-      const { options } = descriptors[route.key];
+      const { options } = descriptors[route.key]!;
 
       const {
         title,
@@ -83,7 +80,7 @@ export function MaterialTopTabBar({
               : typeof tabBarLabel === 'function'
                 ? ({ labelText, color }: any) =>
                     tabBarLabel({
-                      focused: state.routes[state.index].key === route.key,
+                      focused: focusedRoute.key === route.key,
                       color,
                       children: labelText ?? route.name,
                     })
@@ -111,9 +108,9 @@ export function MaterialTopTabBar({
       direction={direction}
       scrollEnabled={focusedOptions.tabBarScrollEnabled}
       bounces={focusedOptions.tabBarBounces}
-      activeColor={activeColor}
-      inactiveColor={inactiveColor}
-      pressColor={focusedOptions.tabBarPressColor}
+      activeColor={activeColor as string}
+      inactiveColor={inactiveColor as string}
+      pressColor={focusedOptions.tabBarPressColor as string | undefined}
       pressOpacity={focusedOptions.tabBarPressOpacity}
       tabStyle={focusedOptions.tabBarItemStyle}
       indicatorStyle={[{ backgroundColor: colors.primary }, focusedOptions.tabBarIndicatorStyle]}
@@ -123,7 +120,7 @@ export function MaterialTopTabBar({
       contentContainerStyle={focusedOptions.tabBarContentContainerStyle}
       style={[{ backgroundColor: colors.card }, focusedOptions.tabBarStyle]}
       onTabPress={({ route, preventDefault }: any) => {
-        const event = navigation.emit({
+        const event = emitter.emit({
           type: 'tabPress',
           target: route.key,
           canPreventDefault: true,
@@ -134,7 +131,7 @@ export function MaterialTopTabBar({
         }
       }}
       onTabLongPress={({ route }: any) =>
-        navigation.emit({
+        emitter.emit({
           type: 'tabLongPress',
           target: route.key,
         })
@@ -142,7 +139,7 @@ export function MaterialTopTabBar({
       renderIndicator={({ navigationState: state, ...rest }: any) => {
         return focusedOptions.tabBarIndicator ? (
           focusedOptions.tabBarIndicator({
-            state: state as TabNavigationState<ParamListBase>,
+            state,
             ...rest,
           })
         ) : (
