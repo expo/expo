@@ -95,6 +95,30 @@ function createTurndownService(): TurndownService {
     replacement: () => '',
   });
 
+  // The @expo/ui component index renders as a card grid on the web. Its thumbnails are
+  // dropped by the images rule above, which would leave a bare list of links, so rebuild
+  // the equivalent markdown table and keep the descriptions in .md and the llms bundles.
+  turndown.addRule('uiComponentGrid', {
+    filter: (node: HTMLElement) =>
+      node.nodeName === 'DIV' && node.getAttribute('data-md') === 'ui-component-grid',
+    replacement: (_content: string, node: HTMLElement) => {
+      const rows = Array.from(node.querySelectorAll('a'))
+        .map(card => {
+          const title = (card.textContent ?? '').trim();
+          const href = card.getAttribute('href') ?? '';
+          const description = card.getAttribute('data-md-description') ?? '';
+          return title ? `| [\`${title}\`](${href}) | ${description} |` : '';
+        })
+        .filter(Boolean);
+
+      if (rows.length === 0) {
+        return '';
+      }
+
+      return `\n\n${['| Component | Description |', '| --- | --- |', ...rows].join('\n')}\n\n`;
+    },
+  });
+
   return turndown;
 }
 
