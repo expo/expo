@@ -38,7 +38,11 @@ public final class FontLoaderModule: Module {
 
       FontFamilyAliasManager.setAlias(fontFamilyAlias, forPostScriptNames: aliasedNames)
 
-      registeredFonts = Array(Set(registeredFonts).union([aliasedNames[0], fontFamilyAlias]))
+      // Report the alias and nothing else. Every name read out of the file stays in the alias
+      // registry above, which is where `fontWeight` resolution reads it from. Reporting one here
+      // would claim it: `Font.isLoaded` would be true for a name the app never chose, so a later
+      // `loadAsync` under that name would silently do nothing.
+      registeredFonts = Array(Set(registeredFonts).union([fontFamilyAlias]))
     }
   }
 }

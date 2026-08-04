@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [ios] `getLoadedFonts()` now returns font family names and the names passed to `loadAsync`, no longer the PostScript names read out of font files. ([#48481](https://github.com/expo/expo/pull/48481) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 - [android] Support variable fonts in the config plugin ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))

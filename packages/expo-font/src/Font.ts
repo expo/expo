@@ -36,7 +36,8 @@ export function isLoaded(fontFamily: string): boolean {
  * Synchronously get all the fonts that have been loaded.
  * This includes fonts that were bundled at build time using the config plugin, as well as those loaded at runtime using `loadAsync`.
  *
- * @returns Returns array of strings which you can use as `fontFamily` [style prop](https://reactnative.dev/docs/text#style).
+ * @returns Returns array of strings which you can use as `fontFamily` [style prop](https://reactnative.dev/docs/text#style):
+ * the family names of the fonts embedded at build time, and the names passed to `loadAsync`.
  */
 export function getLoadedFonts(): string[] {
   return ExpoFontLoader.getLoadedFonts();

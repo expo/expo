@@ -1,7 +1,7 @@
 import CoreGraphics
 
 /**
- * Queries custom native font names from the Info.plist `UIAppFonts`.
+ * Queries the family names of the fonts the app embeds through the Info.plist `UIAppFonts`.
  */
 internal func queryCustomNativeFonts() -> [String] {
   // [0] Read from main bundle's Info.plist
@@ -9,9 +9,9 @@ internal func queryCustomNativeFonts() -> [String] {
     return []
   }
 
-  // [1] Get font family names for each font file. A variable font file has one descriptor per named
-  // instance of its variation axes, and they all share a family name, so the family names are
-  // deduplicated to avoid looking up — and returning — the same family once per instance.
+  // [1] Collect the family name of every font file, deduplicated. One file can contribute several
+  // descriptors (a variable font has one per named instance) and they share a family name,
+  // so the same family would otherwise be reported several times.
   var fontFamilyNames = [String]()
 
   for fontFilePath in fontFilePaths {
@@ -29,14 +29,7 @@ internal func queryCustomNativeFonts() -> [String] {
     }
   }
 
-  // [2] Retrieve font names by family names
-  return fontFamilyNames.flatMap { fontFamilyName in
-  #if os(iOS) || os(tvOS)
-    return UIFont.fontNames(forFamilyName: fontFamilyName)
-  #elseif os(macOS)
-    return NSFontManager.shared.availableMembers(ofFontFamily: fontFamilyName)?.compactMap { $0[0] as? String } ?? []
-  #endif
-  }
+  return fontFamilyNames
 }
 
 /**
