@@ -46,11 +46,7 @@ export async function resolveModuleAsync(
             sourceDir: path.join(revision.path, sourceDir),
             applyToRootProject,
           }
-        : { id,
-            group,
-            version,
-            applyToRootProject,
-          }
+        : { id, group, version, applyToRootProject }
   );
 
   const defaultProjectName = convertPackageToProjectName(packageName);
