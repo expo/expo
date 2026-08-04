@@ -31,6 +31,22 @@ struct AccountSelectorView: View {
               }
             }
             .cornerRadius(12)
+          } else if viewModel.user == nil, let username = viewModel.displayUsername {
+            VStack(alignment: .leading, spacing: 2) {
+              Text(username)
+                .font(.headline)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.leading)
+              Text("Signed in from your project host")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .multilineTextAlignment(.leading)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.expoSystemBackground)
+            .cornerRadius(12)
           }
         }
         .padding(.top, 8)

@@ -35,6 +35,13 @@ import UIKit
       return
     }
 
+    if let expiredMessage = expiredPartnerSessionMessage() {
+      AuthenticationService.clearSession()
+      showError(expiredMessage)
+      completion(false, nil)
+      return
+    }
+
     // Determine status text based on what we're opening
     let isLesson = (snackParams?["isLesson"] as? Bool) == true
     let isPlayground = (snackParams?["isPlayground"] as? Bool) == true
@@ -200,15 +207,34 @@ import UIKit
     return String(snackId[snackId.index(after: snackId.startIndex)..<slashIndex])
   }
 
+  static let expiredSessionMessage =
+    "Your Expo Go session has expired. Reload your project's preview and scan the new QR code to continue."
+
+  /// Non-nil when a stored partner session has expired. Partner users have no password, so the
+  /// generic "sign in to Expo Go" advice does not apply to them.
+  @objc public func expiredPartnerSessionMessage() -> String? {
+    return AuthenticationService.isPartnerSessionExpired() ? Self.expiredSessionMessage : nil
+  }
+
   @objc public func isAuthenticated() -> Bool {
-    return UserDefaults.standard.string(forKey: "expo-session-secret") != nil
+    guard !AuthenticationService.isPartnerSessionExpired() else {
+      return false
+    }
+    return UserDefaults.standard.string(forKey: AuthenticationService.sessionKey) != nil
   }
 
   @objc public func authenticatedUsername() -> String? {
-    guard UserDefaults.standard.string(forKey: "expo-session-secret") != nil else {
+    guard !AuthenticationService.isPartnerSessionExpired(),
+          UserDefaults.standard.string(forKey: AuthenticationService.sessionKey) != nil else {
       return nil
     }
-    return UserDefaults.standard.string(forKey: "expo-username")
+    return UserDefaults.standard.string(forKey: AuthenticationService.usernameKey)
+  }
+
+  @objc public func showError(_ message: String) {
+    DispatchQueue.main.async { [weak self] in
+      self?.homeViewModel?.showError(message)
+    }
   }
 
   @objc public func addHistoryItem(withUrl url: String, name: String, iconUrl: String?) {
