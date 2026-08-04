@@ -10,6 +10,7 @@
 
 ### 🐛 Bug fixes
 
+- Bump the recommended `react` and `react-dom` versions to `19.2.8` so they satisfy the peer requirements of the recommended `react-server-dom-webpack` range (`~19.2.4`, which requires `react@^19.2.4`). Fixes `npm install` failing with an `ERESOLVE` conflict on npm 11+ in projects that use `expo-router` with `react-server-dom-webpack` installed. ([#48483](https://github.com/expo/expo/pull/48483) by [@huextrat](https://github.com/huextrat))
 - [iOS] Fix `expo/fetch` `Response.text()` and `.arrayBuffer()` never settling when the request fails (network drop, `abort()`) after the response was already delivered. ([#48230](https://github.com/expo/expo/pull/48230) by [@zoontek](https://github.com/zoontek))
 - Fix iOS build against React Native 0.87+ by dropping the legacy architecture (bridge) `RCTRootViewFactoryConfiguration` setup. ([#46641](https://github.com/expo/expo/pull/46641) by [@zoontek](https://github.com/zoontek))
 - Adopted the UIKit scene-based life cycle on iOS so apps built with the iOS 27 SDK launch correctly. ([#46733](https://github.com/expo/expo/pull/46733) by [@alanjhughes](https://github.com/alanjhughes))

@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Align the `react-server-dom-webpack` optional peer dependency range with `expo-router` and `jest-expo` (`~19.0.4 || ~19.1.5 || ~19.2.4`), excluding versions that predate the React Server Components security patches. ([#48483](https://github.com/expo/expo/pull/48483) by [@huextrat](https://github.com/huextrat))
+
 ### 💡 Others
 
 ## 57.0.4 - 2026-07-22

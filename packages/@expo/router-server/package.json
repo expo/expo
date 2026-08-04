@@ -61,7 +61,7 @@
     "expo-server": "workspace:^56.0.4",
     "react": "*",
     "react-dom": "*",
-    "react-server-dom-webpack": "~19.0.1 || ~19.1.2 || ~19.2.1"
+    "react-server-dom-webpack": "~19.0.4 || ~19.1.5 || ~19.2.4"
   },
   "peerDependenciesMeta": {
     "@expo/metro-runtime": {
