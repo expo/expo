@@ -163,13 +163,8 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     metadata: null,
   };
 
-  // Body-stream teardown state, hoisted to the instance so `abort()` (invoked
-  // from fetch()'s AbortSignal listener, outside the `body` getter closure) can
-  // reach the live controller. `bodyStreamClosed` short-circuits late native
-  // events, but it is only a fast path — the stream can leave `readable`
-  // without it being set (see the helpers below), so every controller call
-  // must also ask the controller itself. `abortReason` handles an abort that
-  // lands before the body stream is created.
+  // `bodyStreamClosed` is only a fast path — the stream can leave `readable`
+  // without it being set, so every controller call must also ask the controller.
   private bodyStreamClosed = false;
   private bodyStreamController: ReadableStreamDefaultController<Uint8Array<ArrayBuffer>> | null =
     null;
@@ -181,14 +176,9 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
   }
 
   /**
-   * Propagate an `AbortSignal` cancellation into the JS body stream. Without
-   * this, fetch() cancels only the native request — the JS ReadableStream
-   * controller is left open, so the in-flight read hangs forever and any late
-   * native `didReceiveResponseData` is enqueued onto an abandoned controller
-   * (the enqueue-after-teardown race behind #34804 / #33549 / #33553).
-   * Erroring the controller rejects the pending read with the abort reason
-   * (a spec `AbortError`) and closes the guard so subsequent native events are
-   * dropped. Idempotent, and safe to call before the body stream exists.
+   * Rejects the pending body read with the abort reason and closes the
+   * teardown guard so late native events are dropped (#34804). Idempotent,
+   * and safe to call before the body stream exists.
    */
   abort(reason?: unknown): void {
     const abortError =
@@ -210,15 +200,9 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
   }
 
   /**
-   * The three helpers below run from native event listeners, i.e. on the
-   * emitter's stack — outside any consumer's try/catch — so a throw here would
-   * reach the global error handler instead of the awaiting code. And
-   * `bodyStreamClosed` alone cannot prevent that: when a `pull` rejects, the
-   * streams implementation errors the stream through its internal error
-   * routine, which never calls `controller.error()` and so never updates the
-   * flag. `desiredSize == null` is the one stale-guard state the spec lets us
-   * read back (it means errored); `closed`/`closeRequested` are observable
-   * only by trying, hence the catch.
+   * These helpers run on the native emitter's stack, where a throw reaches the
+   * global handler. The guard can be stale (internal stream errors bypass
+   * `controller.error()`), so check `desiredSize` (null = errored) and catch.
    */
   private closeBodyStream(
     controller: ReadableStreamDefaultController<Uint8Array<ArrayBuffer>>
@@ -233,7 +217,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     try {
       controller.close();
     } catch {
-      // Closed by another path — the consumer has every byte it will get.
+      // Closed by another path.
     }
   }
 
@@ -248,7 +232,7 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     try {
       controller.error(error);
     } catch {
-      // Already closed or errored — a reason cannot be delivered twice.
+      // Already closed or errored.
     }
   }
 
@@ -262,11 +246,8 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     try {
       controller.enqueue(data);
     } catch {
-      // The stream left `readable` between the check and the enqueue. Dropping
-      // the chunk is correct — nothing can read it. Throwing instead would
-      // reject the in-flight pull(), which errors the stream behind
-      // `bodyStreamClosed`'s back and leaves the trailing `didComplete`
-      // closing a dead stream.
+      // The stream left `readable` between the check and the enqueue — drop
+      // the chunk; throwing would error the stream behind the guard's back.
     }
   }
 
@@ -301,17 +282,15 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
     const body = this[stateKey].body;
 
     if (body.stream == null) {
-      // `bodyStreamClosed` (instance field) prevents enqueuing/closing after
-      // the stream is closed, canceled, or ABORTED. Because it might be too
-      // late for the multithreaded native code to stop enqueuing data, we
-      // cannot rely on the native code to stop sending `didReceiveResponseData`.
+      // `bodyStreamClosed` prevents enqueuing/closing after the stream is
+      // closed, canceled, or aborted — native code may keep sending
+      // `didReceiveResponseData` past that point.
       body.stream = new ReadableStream(
         {
           start: (controller) => {
             this.bodyStreamController = controller;
 
-            // The request was aborted before the body stream was read: error
-            // the controller immediately so the first read rejects.
+            // Aborted before the first read — reject immediately.
             if (this.abortReason !== undefined) {
               this.bodyStreamClosed = true;
               controller.error(this.abortReason);
@@ -352,9 +331,8 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
           },
 
           cancel: (reason) => {
-            // Flag first: ReadableStreamCancel moves the stream to `closed`
-            // BEFORE invoking this callback, so the guard must not be left
-            // stale if cancelStreaming throws.
+            // Flag first — the stream is already `closed` when this callback
+            // runs, so the guard must not go stale if cancelStreaming throws.
             this.bodyStreamClosed = true;
             this.cancelStreaming(String(reason));
           },

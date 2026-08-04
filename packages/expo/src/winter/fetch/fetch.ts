@@ -78,10 +78,8 @@ export async function fetch(
     throw new FetchError('The operation was aborted.', { cause: signal.reason });
   }
   abortSubscription = addAbortSignalListener(signal, () => {
-    // Propagate the abort into the JS body stream (reject the in-flight read
-    // with the signal's AbortError and close the teardown guard) BEFORE
-    // canceling the native request, so a late native `didReceiveResponseData`
-    // can't reach an abandoned controller.
+    // Abort the body stream before canceling the native request, so late
+    // native events can't reach an abandoned controller.
     response.abort(signal?.reason);
     request.cancel();
   });
