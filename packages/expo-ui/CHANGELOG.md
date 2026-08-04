@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] Fix `HStack`, `VStack` and `GlassEffectContainer` collapsing an unset `spacing` to `0` instead of forwarding `nil` to SwiftUI, so they now use the system default spacing like `Grid`, `LazyHStack` and `LazyVStack` already do. Pass `spacing={0}` explicitly to keep the previous layout. (by [@Den1Marshall](https://github.com/Den1Marshall))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
