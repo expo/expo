@@ -3,6 +3,23 @@ import type { ErrorHandlerCallback } from 'react-native';
 import AppMetrics from './module';
 
 let installed = false;
+let enabled = true;
+
+/**
+ * Enables or disables reporting from the unhandled-JS-error handler.
+ *
+ * The handler itself is installed once at import time, before any configuration call can run, so
+ * this toggles whether it records anything rather than whether it is installed. When disabled, the
+ * handler still chains to the previously-installed handler, leaving React Native's behavior (red box
+ * in development, fatal termination in production) unchanged.
+ *
+ * Meant for the packages that wrap this one, not for host apps to call directly.
+ *
+ * @internal
+ */
+export function setErrorHandlerEnabled(value: boolean): void {
+  enabled = value;
+}
 
 /**
  * Installs a handler for unhandled JavaScript errors by wrapping React Native's
@@ -13,6 +30,8 @@ let installed = false;
  *
  * Idempotent: only the first call installs. Called automatically when `expo-app-metrics` is
  * imported, so capture is live as early as the app pulls the module in.
+ *
+ * Reporting can be turned off afterwards with `setErrorHandlerEnabled(false)`.
  */
 export function installErrorHandler(): void {
   if (installed) {
@@ -27,13 +46,17 @@ export function installErrorHandler(): void {
   const previousHandler = ErrorUtils.getGlobalHandler();
   const handler: ErrorHandlerCallback = (error, isFatal) => {
     try {
-      AppMetrics.reportError({
-        source: 'global',
-        type: error?.name,
-        message: error?.message ?? String(error),
-        stacktrace: error?.stack,
-        isFatal: isFatal ?? false,
-      });
+      // Checked per error, not at install time: the handler is installed on import, before
+      // anything has had a chance to disable it.
+      if (enabled) {
+        AppMetrics.reportError({
+          source: 'global',
+          type: error?.name,
+          message: error?.message ?? String(error),
+          stacktrace: error?.stack,
+          isFatal: isFatal ?? false,
+        });
+      }
     } finally {
       // Always chain to the previous handler so React Native's behavior (red box in development,
       // fatal termination in production) is preserved even if recording the error throws.

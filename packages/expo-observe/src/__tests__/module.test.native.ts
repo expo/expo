@@ -21,6 +21,8 @@ const mockAppMetrics = {
   reportError: jest.fn(),
 };
 
+const mockSetErrorHandlerEnabled = jest.fn();
+
 jest.mock('expo', () => ({
   requireNativeModule: jest.fn(() => mockNative),
 }));
@@ -28,6 +30,7 @@ jest.mock('expo', () => ({
 jest.mock('expo-app-metrics', () => ({
   __esModule: true,
   default: mockAppMetrics,
+  setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
 }));
 
 jest.mock('../integrations/expo-router/router', () => ({
@@ -60,7 +63,11 @@ beforeEach(() => {
   jest.resetModules();
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   jest.doMock('expo', () => ({ requireNativeModule: jest.fn(() => mockNative) }));
-  jest.doMock('expo-app-metrics', () => ({ __esModule: true, default: mockAppMetrics }));
+  jest.doMock('expo-app-metrics', () => ({
+    __esModule: true,
+    default: mockAppMetrics,
+    setErrorHandlerEnabled: mockSetErrorHandlerEnabled,
+  }));
   jest.doMock('../integrations/expo-router/router', () => ({
     isRouterInstalled: true,
     optionalRouter: undefined,
@@ -146,6 +153,38 @@ describe('module Proxy', () => {
     expect(initRouterIntegration).toHaveBeenCalledTimes(1);
     expect(initRouterIntegration).toHaveBeenCalledWith(true);
     expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('leaves unhandled-error reporting enabled when errorHandlingEnabled is unset', () => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test' });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(true);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it.each([true, false])('applies errorHandlingEnabled: %s to the error handler', (enabled) => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', errorHandlingEnabled: enabled });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledTimes(1);
+    expect(mockSetErrorHandlerEnabled).toHaveBeenCalledWith(enabled);
+    expect(warnSpy).not.toHaveBeenCalled();
+  });
+
+  it('forwards errorHandlingEnabled to native along with the rest of the config', () => {
+    const Observe = loadModule();
+    Observe.configure({ environment: 'test', errorHandlingEnabled: false });
+    expect(mockNative.configure).toHaveBeenCalledWith({
+      environment: 'test',
+      errorHandlingEnabled: false,
+    });
+  });
+
+  it('applies the latest errorHandlingEnabled on a repeat configure call', () => {
+    const Observe = loadModule();
+    Observe.configure({ errorHandlingEnabled: false });
+    Observe.configure({ errorHandlingEnabled: true });
+    expect(mockSetErrorHandlerEnabled).toHaveBeenNthCalledWith(1, false);
+    expect(mockSetErrorHandlerEnabled).toHaveBeenNthCalledWith(2, true);
   });
 
   it('skips initRouterIntegration by default', () => {
