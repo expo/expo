@@ -40,10 +40,12 @@ final class LiveActivityFactory: SharedObject {
   }
 
   func getInstances() throws -> [LiveActivity] {
-    guard #available(iOS 16.1, *) else { throw LiveActivitiesNotSupportedException() }
+    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
 
-    return Activity<LiveActivityAttributes>.activities.map { activity in
-      LiveActivity(id: activity.id, name: name)
-    }
+    return Activity<LiveActivityAttributes>.activities
+      .filter { $0.content.state.name == name }
+      // A stale activity is still visible and updatable; only ended/dismissed ones are gone.
+      .filter { $0.activityState == .active || $0.activityState == .stale }
+      .map { LiveActivity(id: $0.id, name: name) }
   }
 }
