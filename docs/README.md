@@ -164,16 +164,19 @@ Every published page is served in two formats: HTML for browsers, and markdown f
 curl -H "Accept: text/markdown" https://docs.expo.dev/get-started/set-up-your-environment/
 ```
 
-The generated markdown includes an `<AgentInstructions>` block by default. To omit it from a
-content-negotiated response, set `includeAgentInstructions=false`:
+The generated markdown includes an `<AgentInstructions>` block by default. To omit it, set
+`includeAgentInstructions=false` on either a content-negotiated request or a direct `.md` URL:
 
 ```sh
 curl -H "Accept: text/markdown" "https://docs.expo.dev/get-started/set-up-your-environment/?includeAgentInstructions=false"
+curl "https://docs.expo.dev/get-started/set-up-your-environment/index.md?includeAgentInstructions=false"
 ```
 
-### 3. Sibling `.md` URLs via `_redirects`
+### 3. Direct `.md` URLs
 
-Some agents prefer to append `.md` to a URL rather than negotiate via headers. Three rules at the bottom of `public/_redirects` handle that:
+Some agents prefer to append `.md` to a URL rather than negotiate via headers. The worker resolves
+these requests to the generated `index.md` asset. Three equivalent fallback rules at the bottom of
+`public/_redirects` preserve this behavior in contexts where the worker is bypassed:
 
 ```
 /index.md /index.md 200
@@ -197,12 +200,12 @@ Every page renders a discovery link in `<head>`:
 
 A single page (for example, `/get-started/set-up-your-environment/`) is reachable as markdown four ways:
 
-| Request                                          | Served by                     |
-| ------------------------------------------------ | ----------------------------- |
-| `Accept: text/markdown` on the canonical URL     | `_worker.js`                  |
-| `/get-started/set-up-your-environment.md`        | `_redirects` sibling rule     |
-| `/get-started/set-up-your-environment/index.md`  | static asset (canonical path) |
-| Following `<link rel="alternate">` from the HTML | discovery hint                |
+| Request                                          | Served by      |
+| ------------------------------------------------ | -------------- |
+| `Accept: text/markdown` on the canonical URL     | `_worker.js`   |
+| `/get-started/set-up-your-environment.md`        | `_worker.js`   |
+| `/get-started/set-up-your-environment/index.md`  | `_worker.js`   |
+| Following `<link rel="alternate">` from the HTML | discovery hint |
 
 ## Search
 

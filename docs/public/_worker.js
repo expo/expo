@@ -18,10 +18,47 @@ function stripAgentInstructions(markdown) {
   return markdown.replace(AGENT_INSTRUCTIONS_BLOCK_REGEX, "");
 }
 
+function directMarkdownAssetPath(pathname) {
+  if (pathname === "/index.md" || pathname.endsWith("/index.md")) {
+    return pathname;
+  }
+  return pathname.replace(/\.md$/, "/index.md");
+}
+
+async function markdownResponse(mdResponse, excludeAgentInstructions) {
+  const body = excludeAgentInstructions
+    ? stripAgentInstructions(await mdResponse.text())
+    : mdResponse.body;
+
+  return new Response(body, {
+    status: mdResponse.status,
+    headers: {
+      "Content-Type": "text/markdown; charset=utf-8",
+    },
+  });
+}
+
 export default {
   async fetch(request, env) {
     const accept = request.headers.get("Accept") || "";
     const url = new URL(request.url);
+    const excludeAgentInstructions =
+      url.searchParams.get("includeAgentInstructions") === "false";
+
+    if (url.pathname.endsWith(".md")) {
+      url.pathname = directMarkdownAssetPath(url.pathname);
+      const mdResponse = await env.ASSETS.fetch(new Request(url, request));
+      const contentType = mdResponse.headers.get("Content-Type") || "";
+
+      if (mdResponse.ok && contentType.includes("text/markdown")) {
+        if (!excludeAgentInstructions) {
+          return mdResponse;
+        }
+        return markdownResponse(mdResponse, excludeAgentInstructions);
+      }
+      return mdResponse;
+    }
+
     const pairPath = upgradeHelperPairPath(url);
 
     const wantsMarkdown =
@@ -43,17 +80,7 @@ export default {
 
         const contentType = mdResponse.headers.get("Content-Type") || "";
         if (mdResponse.ok && contentType.includes("text/markdown")) {
-          const body =
-            url.searchParams.get("includeAgentInstructions") === "false"
-              ? stripAgentInstructions(await mdResponse.text())
-              : mdResponse.body;
-
-          return new Response(body, {
-            status: 200,
-            headers: {
-              "Content-Type": "text/markdown; charset=utf-8",
-            },
-          });
+          return markdownResponse(mdResponse, excludeAgentInstructions);
         }
       }
 

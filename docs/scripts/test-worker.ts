@@ -58,8 +58,7 @@ function setupTestDirectory(): void {
   fs.mkdirSync(`${TEST_DIR}/html-only-page`, { recursive: true });
   fs.mkdirSync(`${TEST_DIR}/bare/upgrade/52-to-57`, { recursive: true });
 
-  // Copy worker files, including the real _redirects: its /*.md wildcard
-  // rewrite shapes how .md URLs resolve, so tests must run against it
+  // Copy worker files and the real redirects so routing behavior matches deployment.
   const routesContent = fs.readFileSync('public/_routes.json', 'utf8');
   const workerContent = fs.readFileSync('public/_worker.js', 'utf8');
   const redirectsContent = fs.readFileSync('public/_redirects', 'utf8');
@@ -128,7 +127,7 @@ async function testHttpResponseAsync(): Promise<void> {
 }
 
 async function testDirectMarkdownAccessAsync(): Promise<void> {
-  console.log('\n--- Testing direct .md file access (bypasses worker) ---');
+  console.log('\n--- Testing direct .md file access ---');
 
   const response = await fetch(`${BASE_URL}/test-page/index.md`);
 
@@ -141,7 +140,34 @@ async function testDirectMarkdownAccessAsync(): Promise<void> {
   if (!body.includes('Test Markdown Content')) {
     throw new Error('Direct .md request did not return markdown content');
   }
+  if (!body.includes('<AgentInstructions>')) {
+    throw new Error('Direct .md request did not include agent instructions by default');
+  }
   console.log('✓ Direct .md file request serves content correctly');
+
+  const excludedResponse = await fetch(
+    `${BASE_URL}/test-page/index.md?includeAgentInstructions=false`
+  );
+  const excludedBody = await excludedResponse.text();
+
+  if (excludedBody.includes('<AgentInstructions>')) {
+    throw new Error('Direct index.md request did not omit agent instructions');
+  }
+  if (!excludedBody.includes('Test Markdown Content')) {
+    throw new Error('Direct index.md request did not preserve markdown content');
+  }
+  console.log('✓ Direct index.md request can omit agent instructions');
+
+  const siblingResponse = await fetch(`${BASE_URL}/test-page.md?includeAgentInstructions=false`);
+  const siblingBody = await siblingResponse.text();
+
+  if (siblingBody.includes('<AgentInstructions>')) {
+    throw new Error('Sibling .md request did not omit agent instructions');
+  }
+  if (!siblingBody.includes('Test Markdown Content')) {
+    throw new Error('Sibling .md request did not preserve markdown content');
+  }
+  console.log('✓ Sibling .md request can omit agent instructions');
 }
 
 async function testMarkdownContentNegotiationAsync(): Promise<void> {
@@ -279,7 +305,7 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Invalid version params fall back to default markdown');
 
-  // The /<slug>.md convention resolves pair pages via the _redirects wildcard
+  // The /<slug>.md convention resolves pair pages through the worker
   const slugUrl = await fetch(`${BASE_URL}/bare/upgrade/52-to-57.md`);
   const slugBody = await slugUrl.text();
 
@@ -288,9 +314,9 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Pair page resolves at the /<slug>.md convention');
 
-  // Known limit: .md paths bypass the worker (excluded in _routes.json) and
-  // _redirects cannot read query strings, so a pair query on the .md page
-  // path serves the default markdown, whose top note points at pair URLs.
+  // Known limit: a direct .md page path resolves to its default index.md asset,
+  // so version-pair query parameters do not select a pair-specific asset. The
+  // default markdown's top note points at pair URLs.
   const mdPathWithQuery = await fetch(`${BASE_URL}/bare/upgrade.md?fromSdk=52&toSdk=57`);
   const mdPathWithQueryBody = await mdPathWithQuery.text();
 
@@ -326,7 +352,7 @@ async function testUpgradePairNegotiationAsync(): Promise<void> {
   }
   console.log('✓ Regular /<slug>.md path serves markdown through the worker');
 
-  // The canonical index.md file path serves directly (bypassing the worker)
+  // The canonical index.md file path resolves through the worker
   const direct = await fetch(`${BASE_URL}/bare/upgrade/52-to-57/index.md`);
   const directBody = await direct.text();
 
