@@ -4,9 +4,17 @@ import ExpoModulesCore
 import ActivityKit
 
 struct LiveActivityAttributes: ActivityAttributes {
+  // The deep link URL passed to start(). Stored in the static attributes so it is
+  // scoped to this activity and survives content updates, unlike ContentState.
+  var url: String?
+
   public struct ContentState: Codable, Hashable {
     var name: String
     var props: String?
+  }
+
+  init(url: String? = nil) {
+    self.url = url
   }
 }
 
@@ -30,6 +38,7 @@ public struct WidgetLiveActivity: Widget {
         environment: environment
       )
       LiveActivityBannerView(context: context, nodes: nodes)
+        .widgetURL(context.attributes.url.flatMap(URL.init(string:)))
     } dynamicIsland: { context in
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
@@ -56,7 +65,7 @@ public struct WidgetLiveActivity: Widget {
       } minimal: {
         LiveActivitySectionView(context: context, nodes: nodes, sectionName: "minimal")
       }
-      .widgetURL(getLiveActivityUrl(forName: context.state.name))
+      .widgetURL(context.attributes.url.flatMap(URL.init(string:)))
     }
     .supplementalActivityFamiliesIfAvailable()
   }

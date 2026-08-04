@@ -19,14 +19,10 @@ final class LiveActivityFactory: SharedObject {
       throw LiveActivitiesNotSupportedException()
     }
 
-    if let url {
-      WidgetsStorage.set(url.absoluteString, forKey: "__expo_widgets_live_activity_\(name)_url")
-    }
-
     do {
       let initialState = LiveActivityAttributes.ContentState(name: name, props: props)
       let activity = try Activity.request(
-        attributes: LiveActivityAttributes(),
+        attributes: LiveActivityAttributes(url: url?.absoluteString),
         content: .init(state: initialState, staleDate: staleDate),
         pushType: LiveActivityFactory.pushNotificationsEnabled ? .token : nil
       )
