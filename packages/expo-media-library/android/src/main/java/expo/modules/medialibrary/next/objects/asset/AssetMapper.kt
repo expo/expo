@@ -1,14 +1,10 @@
 package expo.modules.medialibrary.next.objects.asset
 
-import android.content.ContentResolver
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.provider.MediaStore
 import androidx.core.net.toUri
-import expo.modules.medialibrary.assets.maybeRotateAssetSize
 import expo.modules.medialibrary.next.exceptions.AssetPropertyNotFoundException
 import expo.modules.medialibrary.next.extensions.resolver.extractAssetContentUri
-import expo.modules.medialibrary.next.extensions.resolver.queryAssetData
 import expo.modules.medialibrary.next.objects.asset.domain.AssetMediaStoreItem
 import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreAudio
 import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreFile
@@ -17,31 +13,30 @@ import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreVideo
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.records.AssetInfo
 import expo.modules.medialibrary.next.records.AssetMetadata
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import expo.modules.medialibrary.next.records.Shape
 import java.io.File
+import kotlin.math.abs
 import kotlin.time.DurationUnit
 import kotlin.time.toDuration
 
-class AssetMapper(private val contentResolver: ContentResolver) {
-  suspend fun toDto(mediaStoreItem: AssetMediaStoreItem): AssetInfo =
+class AssetMapper {
+  fun toDto(mediaStoreItem: AssetMediaStoreItem): AssetInfo =
     when (mediaStoreItem) {
       is AssetMediaStoreItem.Image -> toDto(mediaStoreItem.asset)
       is AssetMediaStoreItem.Video -> toDto(mediaStoreItem.asset)
       is AssetMediaStoreItem.Audio -> toDto(mediaStoreItem.asset)
     }
 
-  private suspend fun toDto(imageAsset: MediaStoreImage): AssetInfo {
+  private fun toDto(imageAsset: MediaStoreImage): AssetInfo {
     val contentUri = extractAssetContentUri(
       imageAsset.id,
       MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE
     )
 
     val (width, height) = mapDisplaySize(
-      imageAsset.width,
-      imageAsset.height,
-      imageAsset.orientation,
-      contentUri
+      mediaStoreWidth = imageAsset.width,
+      mediaStoreHeight = imageAsset.height,
+      mediaStoreOrientation = imageAsset.orientation
     )
 
     return AssetInfo(
@@ -60,17 +55,16 @@ class AssetMapper(private val contentResolver: ContentResolver) {
     )
   }
 
-  private suspend fun toDto(videoAsset: MediaStoreVideo): AssetInfo {
+  private fun toDto(videoAsset: MediaStoreVideo): AssetInfo {
     val contentUri = extractAssetContentUri(
       videoAsset.id,
       MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO
     )
 
     val (width, height) = mapDisplaySize(
-      videoAsset.width,
-      videoAsset.height,
-      videoAsset.orientation,
-      contentUri
+      mediaStoreWidth = videoAsset.width,
+      mediaStoreHeight = videoAsset.height,
+      mediaStoreOrientation = videoAsset.orientation
     )
 
     return AssetInfo(
@@ -112,13 +106,13 @@ class AssetMapper(private val contentResolver: ContentResolver) {
   }
 
   fun toMetadata(fileAsset: MediaStoreFile): AssetMetadata {
-    val (width, height) = mapSize(fileAsset.width, fileAsset.height, fileAsset.orientation)
+    val shape = mapShape(fileAsset.width, fileAsset.height, fileAsset.orientation)
     return AssetMetadata(
       id = extractAssetContentUri(fileAsset.id, fileAsset.mediaType),
       mediaType = fileAsset.mediaType?.let { MediaType.fromMediaStoreValue(it) }
         ?: MediaType.UNKNOWN,
-      width = width,
-      height = height,
+      width = shape?.width ?: fileAsset.width,
+      height = shape?.height ?: fileAsset.height,
       creationTime = mapCreationTime(fileAsset.dateTaken),
       modificationTime = mapModificationTime(fileAsset.dateModified),
       duration = mapDuration(fileAsset.duration),
@@ -127,62 +121,50 @@ class AssetMapper(private val contentResolver: ContentResolver) {
     )
   }
 
-  suspend fun mapHeight(mediaStoreHeight: Int?, contentUri: Uri): Int? {
-    return transformDimension(mediaStoreHeight, contentUri) {
-      downloadBitmapAndGet(contentUri) { it.outHeight }
-    }
-  }
-
-  suspend fun mapWidth(mediaStoreWidth: Int?, contentUri: Uri): Int? {
-    return transformDimension(mediaStoreWidth, contentUri) {
-      downloadBitmapAndGet(contentUri) { it.outWidth }
-    }
-  }
-
-  // MediaStore's WIDTH/HEIGHT columns hold the raw pixel-buffer size; assets
-  // with ORIENTATION 90 or 270 are displayed with the two swapped.
-  fun mapSize(mediaStoreWidth: Int?, mediaStoreHeight: Int?, mediaStoreOrientation: Int?): Pair<Int?, Int?> =
-    if (mediaStoreWidth != null && mediaStoreHeight != null) {
-      maybeRotateAssetSize(mediaStoreWidth, mediaStoreHeight, mediaStoreOrientation ?: 0)
-    } else {
-      mediaStoreWidth to mediaStoreHeight
+  fun mapShape(mediaStoreItem: AssetMediaStoreItem): Shape? =
+    when (mediaStoreItem) {
+      is AssetMediaStoreItem.Image -> with(mediaStoreItem.asset) {
+        mapShape(width, height, orientation)
+      }
+      is AssetMediaStoreItem.Video -> with(mediaStoreItem.asset) {
+        mapShape(width, height, orientation)
+      }
+      is AssetMediaStoreItem.Audio -> null
     }
 
-  private suspend fun mapDisplaySize(
+  private fun mapShape(
     mediaStoreWidth: Int?,
     mediaStoreHeight: Int?,
-    mediaStoreOrientation: Int?,
-    contentUri: Uri
-  ): Pair<Int, Int> {
-    val width = mapWidth(mediaStoreWidth, contentUri)
+    mediaStoreOrientation: Int?
+  ): Shape? {
+    val width = mediaStoreWidth?.takeIf { it > 0 } ?: return null
+    val height = mediaStoreHeight?.takeIf { it > 0 } ?: return null
+    return orientToDisplay(width, height, mediaStoreOrientation)
+  }
+
+  private fun mapDisplaySize(
+    mediaStoreWidth: Int?,
+    mediaStoreHeight: Int?,
+    mediaStoreOrientation: Int?
+  ): Shape {
+    val width = mediaStoreWidth?.takeIf { it > 0 }
       ?: throw AssetPropertyNotFoundException("Width")
-    val height = mapHeight(mediaStoreHeight, contentUri)
+    val height = mediaStoreHeight?.takeIf { it > 0 }
       ?: throw AssetPropertyNotFoundException("Height")
-    return maybeRotateAssetSize(width, height, mediaStoreOrientation ?: 0)
+    return orientToDisplay(width, height, mediaStoreOrientation)
   }
 
-  private suspend fun transformDimension(
-    mediaStoreDimension: Int?,
-    contentUri: Uri,
-    fallback: suspend () -> Int?
-  ): Int? {
-    val isImage = MediaType.fromContentUri(contentUri) == MediaType.IMAGE
-    return when {
-      isImage && (mediaStoreDimension == null || mediaStoreDimension <= 0) -> fallback()
-      mediaStoreDimension != null && mediaStoreDimension > 0 -> mediaStoreDimension
-      else -> null
+  private fun orientToDisplay(width: Int, height: Int, mediaStoreOrientation: Int?): Shape =
+    if (isQuarterTurn(mediaStoreOrientation)) {
+      Shape(width = height, height = width)
+    } else {
+      Shape(width = width, height = height)
     }
-  }
 
-  private suspend fun downloadBitmapAndGet(
-    contentUri: Uri,
-    extract: (BitmapFactory.Options) -> Int
-  ): Int = withContext(Dispatchers.IO) {
-    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    val path = contentResolver.queryAssetData(contentUri)
-    BitmapFactory.decodeFile(path, options)
-    return@withContext extract(options)
-  }
+  // abs is a defensive programming; MediaStore orientation should always be one of 0/90/180/270,
+  // but the column doesn't ensure it
+  private fun isQuarterTurn(mediaStoreOrientation: Int?) =
+    abs(mediaStoreOrientation ?: 0) % 180 == 90
 
   fun mapCreationTime(mediaStoreDateTaken: Long?): Long? =
     mediaStoreDateTaken.takeIf { it != 0L }

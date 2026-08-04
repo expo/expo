@@ -46,8 +46,6 @@ data class MediaStoreFile(
       add(MediaStore.Files.FileColumns.DATE_MODIFIED)
       add(MediaStore.Files.FileColumns.WIDTH)
       add(MediaStore.Files.FileColumns.HEIGHT)
-      // The files table has always had the images ORIENTATION column - the
-      // legacy API includes it in ASSET_PROJECTION on every API level.
       add(MediaStore.Images.Media.ORIENTATION)
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         add(MediaStore.Files.FileColumns.DURATION)

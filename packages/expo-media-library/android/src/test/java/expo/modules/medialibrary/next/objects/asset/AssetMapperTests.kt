@@ -1,12 +1,10 @@
 package expo.modules.medialibrary.next.objects.asset
 
-import android.content.ContentResolver
 import android.provider.MediaStore
 import expo.modules.medialibrary.next.objects.asset.domain.AssetMediaStoreItem
 import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreFile
 import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreImage
 import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreVideo
-import io.mockk.mockk
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNull
@@ -16,7 +14,7 @@ import org.robolectric.RobolectricTestRunner
 
 @RunWith(RobolectricTestRunner::class)
 internal class AssetMapperTests {
-  private val mapper = AssetMapper(mockk<ContentResolver>())
+  private val mapper = AssetMapper()
 
   private fun mediaStoreImage(orientation: Int?) = MediaStoreImage(
     id = 1L,

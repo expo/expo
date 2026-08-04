@@ -12,7 +12,6 @@ import expo.modules.medialibrary.next.exceptions.AssetCouldNotBeCreated
 import expo.modules.medialibrary.next.extensions.getNullableInt
 import expo.modules.medialibrary.next.extensions.getNullableLong
 import expo.modules.medialibrary.next.extensions.getNullableString
-import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.domain.AssetMediaStoreItem
 import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreAudio
 import expo.modules.medialibrary.next.objects.asset.domain.MediaStoreImage
@@ -34,35 +33,6 @@ suspend fun ContentResolver.queryAssetDateModified(contentUri: Uri): Long? =
 
 suspend fun ContentResolver.queryAssetDuration(contentUri: Uri): Long? =
   queryOne(contentUri, MediaStore.MediaColumns.DURATION, Cursor::getNullableLong)
-
-suspend fun ContentResolver.queryAssetWidth(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.WIDTH, Cursor::getNullableInt)
-
-suspend fun ContentResolver.queryAssetHeight(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.HEIGHT, Cursor::getNullableInt)
-
-suspend fun ContentResolver.queryAssetOrientation(contentUri: Uri): Int? =
-  when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ->
-      queryOne(contentUri, MediaStore.MediaColumns.ORIENTATION, Cursor::getNullableInt)
-    // Pre-Q only the images table has an ORIENTATION column.
-    MediaType.fromContentUri(contentUri) == MediaType.IMAGE ->
-      queryOne(contentUri, MediaStore.Images.ImageColumns.ORIENTATION, Cursor::getNullableInt)
-    else -> null
-  }
-
-// MediaStore's WIDTH/HEIGHT columns hold the raw pixel-buffer size. Assets
-// with ORIENTATION 90 or 270 are displayed with the two swapped, so both
-// columns are needed to resolve either display dimension.
-suspend fun ContentResolver.queryAssetDisplaySize(contentUri: Uri, assetMapper: AssetMapper): Pair<Int?, Int?> {
-  val width = assetMapper.mapWidth(queryAssetWidth(contentUri), contentUri)
-  val height = assetMapper.mapHeight(queryAssetHeight(contentUri), contentUri)
-  if (width == null || height == null) {
-    return width to height
-  }
-  val orientation = queryAssetOrientation(contentUri)
-  return assetMapper.mapSize(width, height, orientation)
-}
 
 suspend fun ContentResolver.queryAssetData(contentUri: Uri): String? =
   queryOne(contentUri, MediaStore.MediaColumns.DATA, Cursor::getNullableString)

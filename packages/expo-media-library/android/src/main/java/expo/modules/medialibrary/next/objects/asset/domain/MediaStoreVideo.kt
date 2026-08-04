@@ -47,7 +47,6 @@ data class MediaStoreVideo(
       add(HEIGHT)
       add(DATA)
       add(DURATION)
-      // The video table only has an ORIENTATION column on API 29+.
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         add(ORIENTATION)
       }
