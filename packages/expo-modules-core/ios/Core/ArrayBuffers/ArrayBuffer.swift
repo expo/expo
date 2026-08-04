@@ -157,8 +157,9 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// JavaScript runtime without materializing a native copy, so reads observe the current
   /// JavaScript `ArrayBuffer` contents. The pointer is valid only while `body` runs; do not retain
   /// it or detach, transfer, or resize the JavaScript backing while it is live. This method throws
-  /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable or the captured
-  /// byte range is invalid.
+  /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable, the captured
+  /// byte range is invalid, or the JavaScript thread does not service the access within an internal
+  /// timeout — for example when it is blocked on a lock held by the calling thread.
   @available(*, noasync)
   public func withJSBytes<R: Sendable>(
     _ body: (UnsafeRawBufferPointer) throws -> R
@@ -200,8 +201,9 @@ public final class ArrayBuffer: AnyArrayBuffer, Sendable {
   /// detach, transfer, or resize the JavaScript backing while it is live. Callers must externally
   /// serialize this access with `copy()`, `data`, `withUnsafeBytes(_:)`, and
   /// `withUnsafeMutableBytes(_:)` on the same buffer. This method throws
-  /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable or the captured
-  /// byte range is invalid.
+  /// `ArrayBufferJSBytesAccessException` if the JavaScript runtime is unavailable, the captured
+  /// byte range is invalid, or the JavaScript thread does not service the access within an internal
+  /// timeout — for example when it is blocked on a lock held by the calling thread.
   @available(*, noasync)
   public func withMutableJSBytes<R: Sendable>(
     _ body: (UnsafeMutableRawBufferPointer) throws -> R

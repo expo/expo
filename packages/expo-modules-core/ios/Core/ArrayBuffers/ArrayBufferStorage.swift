@@ -160,15 +160,17 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     }
   }
 
+  /// How long a synchronous off-thread access waits for the JavaScript thread before it is
+  /// cancelled. Matches the Android `JSHeapAccessExecutor` sync timeout.
+  static let defaultSyncAccessTimeout: TimeInterval = 5
+
   @available(*, noasync)
   func withUnsafeBytes<R: Sendable>(
+    timeout: TimeInterval = JavaScriptBackedArrayBufferView.defaultSyncAccessTimeout,
     _ body: @escaping (UnsafeRawBufferPointer) throws -> R
   ) throws -> R {
     let body = NonisolatedUnsafeVar(body)
-    guard let runtime else {
-      throw ArrayBufferJSBytesAccessException("JavaScript runtime is no longer available")
-    }
-    return try runtime.execute {
+    return try executeSyncOnJavaScriptThread(timeout: timeout) {
       return try self.withUnsafeBytesOnJavaScriptThread(body.value)
     }
   }
@@ -187,13 +189,11 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
 
   @available(*, noasync)
   func withUnsafeMutableBytes<R: Sendable>(
+    timeout: TimeInterval = JavaScriptBackedArrayBufferView.defaultSyncAccessTimeout,
     _ body: @escaping (UnsafeMutableRawBufferPointer) throws -> R
   ) throws -> R {
     let body = NonisolatedUnsafeVar(body)
-    guard let runtime else {
-      throw ArrayBufferJSBytesAccessException("JavaScript runtime is no longer available")
-    }
-    return try runtime.execute {
+    return try executeSyncOnJavaScriptThread(timeout: timeout) {
       return try self.withUnsafeMutableBytesOnJavaScriptThread(body.value)
     }
   }
@@ -214,6 +214,37 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     return try withUnsafeBytes { bytes in
       return ArrayBufferStorage.makeOwnedNativeStorageCopy(of: bytes.baseAddress, count: bytes.count)
     }
+  }
+
+  /// Runs `work` synchronously on the JavaScript thread. Off-thread callers on a scheduler-backed
+  /// runtime go through `JavaScriptThreadSyncAccess`, which bounds the wait so a blocked
+  /// JavaScript thread surfaces as an error instead of deadlocking the caller.
+  @available(*, noasync)
+  private func executeSyncOnJavaScriptThread<R: Sendable>(
+    timeout: TimeInterval,
+    _ work: @escaping @JavaScriptActor () throws -> R
+  ) throws -> R {
+    guard let runtime else {
+      throw ArrayBufferJSBytesAccessException("JavaScript runtime is no longer available")
+    }
+    guard !runtime.isOnJavaScriptThread(), runtime.supportsAsyncScheduling else {
+      // On the JavaScript thread the work runs inline, and schedulerless runtimes execute
+      // scheduled work synchronously — neither can wait on another thread, so no timeout applies.
+      return try runtime.execute(work)
+    }
+    let access = JavaScriptThreadSyncAccess<R>()
+    runtime.schedule(priority: .immediate) { [access] in
+      guard access.begin() else {
+        // A timed-out waiter cancelled this access before the JavaScript thread drained it.
+        return
+      }
+      do {
+        access.finish(.success(try work()))
+      } catch {
+        access.finish(.failure(error))
+      }
+    }
+    return try access.awaitResult(timeout: timeout)
   }
 
   @JavaScriptActor
@@ -267,6 +298,81 @@ final class JavaScriptBackedArrayBufferView: @unchecked Sendable {
     guard byteOffset >= 0, byteLength >= 0, byteOffset <= size, byteLength <= size - byteOffset else {
       throw ArrayBufferJSBytesAccessException("JavaScript-backed ArrayBuffer view is out of bounds")
     }
+  }
+}
+
+/// Coordinates one off-thread synchronous access to the JavaScript thread and bounds the wait,
+/// mirroring the Android `JSHeapAccessExecutor.runOnQueueSync` contract: when the timeout expires,
+/// the access is cancelled and throws only if the scheduled body has not started; a body that
+/// already started only touches the backing bytes, so it is awaited without a bound. Without the
+/// bound, a JavaScript thread that blocks on native state (for example a lock held by the thread
+/// making this access) would deadlock both threads permanently.
+final class JavaScriptThreadSyncAccess<R>: @unchecked Sendable {
+  private enum Phase {
+    case queued
+    case running
+    case finished
+    case cancelled
+  }
+
+  private let condition = NSCondition()
+  private var phase: Phase = .queued
+  private var result: Result<R, any Error>?
+
+  /// Marks the scheduled body as running. Returns `false` when a timed-out waiter already
+  /// cancelled the access, in which case the body must not run.
+  func begin() -> Bool {
+    condition.lock()
+    defer {
+      condition.unlock()
+    }
+    guard phase == .queued else {
+      return false
+    }
+    phase = .running
+    return true
+  }
+
+  /// Publishes the body result and wakes the waiter.
+  func finish(_ result: Result<R, any Error>) {
+    condition.lock()
+    self.result = result
+    phase = .finished
+    condition.broadcast()
+    condition.unlock()
+  }
+
+  /// Blocks until the body finishes. When `timeout` expires before the body started, the access
+  /// is cancelled and this throws `ArrayBufferJSBytesAccessException`.
+  func awaitResult(timeout: TimeInterval) throws -> R {
+    condition.lock()
+    defer {
+      condition.unlock()
+    }
+    let deadline = Date(timeIntervalSinceNow: timeout)
+    while result == nil {
+      if condition.wait(until: deadline) {
+        continue
+      }
+      if phase == .queued {
+        phase = .cancelled
+        throw ArrayBufferJSBytesAccessException(
+          "Timed out waiting for the JavaScript thread to run a synchronous access to a "
+            + "JavaScript-backed ArrayBuffer. The JavaScript thread is likely blocked (for example "
+            + "on a lock held by the thread making this access) or shutting down. Use the async "
+            + "`withJSBytes(_:)`/`withMutableJSBytes(_:)` variants off the JavaScript thread, or "
+            + "avoid blocking the JavaScript thread while native code accesses the buffer")
+      }
+      // The body already started on the JavaScript thread and holds a live pointer into the
+      // JavaScript heap, so it cannot be cancelled — keep waiting for it to finish.
+      while result == nil {
+        condition.wait()
+      }
+    }
+    guard let result else {
+      preconditionFailure("Finished synchronous JavaScript-thread access must have a result")
+    }
+    return try result.get()
   }
 }
 

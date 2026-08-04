@@ -994,6 +994,72 @@ private func runOffThreadWithTimeout<R: Sendable>(
   }
 }
 
+// MARK: - Synchronous JS-thread access gate
+
+@Suite("synchronous JS-thread access gate")
+struct JavaScriptThreadSyncAccessTests {
+  @Test
+  func `returns the result when the body finishes in time`() throws {
+    let access = JavaScriptThreadSyncAccess<Int>()
+    Thread.detachNewThread {
+      guard access.begin() else {
+        return
+      }
+      access.finish(.success(42))
+    }
+
+    #expect(try access.awaitResult(timeout: 5) == 42)
+  }
+
+  @Test
+  func `rethrows the body error`() {
+    struct SentinelError: Error {}
+    let access = JavaScriptThreadSyncAccess<Int>()
+    Thread.detachNewThread {
+      guard access.begin() else {
+        return
+      }
+      access.finish(.failure(SentinelError()))
+    }
+
+    #expect(throws: SentinelError.self) {
+      _ = try access.awaitResult(timeout: 5)
+    }
+  }
+
+  @Test
+  func `times out and cancels when the body never starts`() {
+    // A JavaScript thread blocked on a lock never drains its queue. The waiter must give up
+    // with an error instead of deadlocking, and the late-drained job must not run the body.
+    let access = JavaScriptThreadSyncAccess<Int>()
+
+    #expect(throws: ArrayBufferJSBytesAccessException.self) {
+      _ = try access.awaitResult(timeout: 0.05)
+    }
+    #expect(access.begin() == false)
+  }
+
+  @Test
+  func `waits for a body that already started instead of cancelling it`() throws {
+    // A started body holds a live pointer into the JavaScript heap; cancelling it mid-flight
+    // is unsafe. It only touches the backing bytes, so completion is imminent — the waiter
+    // must keep waiting past the timeout and return the result.
+    let access = JavaScriptThreadSyncAccess<Int>()
+    let started = DispatchSemaphore(value: 0)
+    Thread.detachNewThread {
+      guard access.begin() else {
+        return
+      }
+      started.signal()
+      Thread.sleep(forTimeInterval: 0.3)
+      access.finish(.success(7))
+    }
+    started.wait()
+
+    #expect(try access.awaitResult(timeout: 0.05) == 7)
+  }
+}
+
 private final class ArrayBufferTestModule: Module {
   func definition() -> ModuleDefinition {
     Name("ArrayBufferTests")
