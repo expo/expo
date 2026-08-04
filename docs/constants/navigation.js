@@ -759,27 +759,6 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Classic Updates', [
-    makePage('archive/classic-updates/introduction.mdx'),
-    makeSection('Guides', [
-      makePage('archive/classic-updates/configuring-updates.mdx'),
-      makePage('archive/classic-updates/preloading-and-caching-assets.mdx'),
-    ]),
-    makeSection('Distribution', [
-      makePage('archive/classic-updates/release-channels.mdx'),
-      makePage('archive/classic-updates/advanced-release-channels.mdx'),
-      makePage('archive/classic-updates/hosting-your-app.mdx'),
-      makePage('archive/classic-updates/offline-support.mdx'),
-      makePage('archive/classic-updates/optimizing-updates.mdx'),
-    ]),
-    makeSection('Workflow', [makePage('archive/classic-updates/publishing.mdx')]),
-    makeSection('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.mdx')]),
-  ]),
-  makeSection('Technical specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
-  makeSection('Push notifications', [
-    makePage('archive/push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
-    makePage('archive/push-notifications/notification-channels.mdx'),
-  ]),
   makeSection('More', [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
