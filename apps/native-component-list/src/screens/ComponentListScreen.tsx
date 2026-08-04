@@ -16,7 +16,6 @@ import {
   Platform,
   Pressable,
   useWindowDimensions,
-  type ScrollViewProps,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getScreenIdForLinking } from 'test-suite/screens/getScreenIdForLinking';
@@ -59,11 +58,6 @@ interface Props {
   apis: ListElement[];
   renderItemRight?: (props: ListElement) => React.ReactNode;
   sort?: boolean;
-  /**
-   * Set to `automatic` on screens whose header grows at runtime, such as one with a native
-   * search bar, so iOS insets the list instead of letting the header cover the first rows.
-   */
-  contentInsetAdjustmentBehavior?: ScrollViewProps['contentInsetAdjustmentBehavior'];
 }
 
 function LinkButton({
@@ -172,7 +166,9 @@ export default function ComponentListScreen(props: Props) {
     <FlatList<ListElement>
       initialNumToRender={25}
       removeClippedSubviews={false}
-      contentInsetAdjustmentBehavior={props.contentInsetAdjustmentBehavior}
+      // Screens with a native search bar or large title grow their header at runtime, so let iOS
+      // inset the list instead of letting the header cover the first rows.
+      contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       style={{ backgroundColor: theme.background.screen }}

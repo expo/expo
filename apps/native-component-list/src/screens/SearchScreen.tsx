@@ -84,14 +84,7 @@ export default function SearchScreen() {
     []
   );
 
-  const list = (
-    <ComponentListScreen
-      contentInsetAdjustmentBehavior="automatic"
-      renderItemRight={renderItemRight}
-      apis={apis}
-      sort={false}
-    />
-  );
+  const list = <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
 
   if (Platform.OS !== 'web') {
     return list;
