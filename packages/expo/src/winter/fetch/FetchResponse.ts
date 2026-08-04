@@ -171,7 +171,8 @@ export class FetchResponse extends ConcreteNativeResponse implements Response {
   // must also ask the controller itself. `abortReason` handles an abort that
   // lands before the body stream is created.
   private bodyStreamClosed = false;
-  private bodyStreamController: ReadableStreamDefaultController<Uint8Array<ArrayBuffer>> | null = null;
+  private bodyStreamController: ReadableStreamDefaultController<Uint8Array<ArrayBuffer>> | null =
+    null;
   private abortReason: unknown = undefined;
 
   constructor(private readonly abortCleanupFunction: AbortSubscriptionCleanupFunction) {
