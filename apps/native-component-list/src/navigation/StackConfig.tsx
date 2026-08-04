@@ -14,14 +14,22 @@ export function getStackScreenOptions(theme: ThemeType): NativeStackNavigationOp
     headerStyle: { backgroundColor: theme.background.default },
     headerTintColor: theme.icon.info,
     headerTitleStyle: { color: theme.text.default },
-    // `Stack.Toolbar` renders nothing on web, so web keeps the JS header button.
-    ...(Platform.OS === 'web' && { headerRight: () => <HeaderRightComponent theme={theme} /> }),
   };
 }
 
 /** Header search button, rendered by the screens that browse the API and component lists. */
 export function SearchToolbar() {
   const { theme } = useTheme();
+
+  // Toolbar items have no native counterpart on web, so `asChild` renders a JS button instead.
+  if (Platform.OS === 'web') {
+    return (
+      <Stack.Toolbar placement="right" asChild>
+        <HeaderRightComponent theme={theme} />
+      </Stack.Toolbar>
+    );
+  }
+
   return (
     <Stack.Toolbar placement="right">
       <Stack.Toolbar.Button
