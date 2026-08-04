@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.9 — 2026-08-04
+
+### 🎉 New features
+
 - [iOS] Added module lifecycle hooks that replace the `OnCreate`, `OnDestroy`, `OnStartObserving` and `OnStopObserving` DSL components: `didCreate`, `willDestroy`, `didStartListening` and `didStopListening`. ([#47542](https://github.com/expo/expo/pull/47542) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Turn `getModule(implementing:)` into a public function. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
 
@@ -14,8 +22,6 @@
 - [Android] Fixed hosted Compose views missing layout after reattachment or in-place configuration changes. ([#48370](https://github.com/expo/expo/issues/48370) by [@lujjjh](https://github.com/lujjjh))
 - [iOS] Fixed infinite recursion and `EXC_BAD_ACCESS` when encoding native `Date` values to JavaScript. ([#48239](https://github.com/expo/expo/issues/48239), [#48240](https://github.com/expo/expo/pull/48240) by [@samuelcorsan](https://github.com/samuelcorsan))
 - [iOS] Fixed a stack overflow crash when converting to JavaScript a `Convertible` value that keeps the default `convertResult` implementation, such as `CMTime`. The value now converts to `undefined` and logs a warning. ([#48266](https://github.com/expo/expo/pull/48266) by [@tsapeta](https://github.com/tsapeta))
-
-### 💡 Others
 
 ## 57.0.8 — 2026-07-29
 

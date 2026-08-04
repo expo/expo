@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 57.0.10 — 2026-08-04
+
+### 🎉 New features
+
 - Add `Observe.registerIntegration` to register an integration ([#48245](https://github.com/expo/expo/pull/48245), [#48268](https://github.com/expo/expo/pull/48268) by [@Ubax](https://github.com/Ubax))
 - Expose `ObserveErrorBoundary`, a React error boundary that records render-phase errors. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
 - Add `reportError` to report caught, non-fatal errors from your own `try`/`catch` blocks. ([#47871](https://github.com/expo/expo/pull/47871) by [@tsapeta](https://github.com/tsapeta))
@@ -13,8 +21,6 @@
 ### 🐛 Bug fixes
 
 - Fix OTel date conversion ([#48161](https://github.com/expo/expo/pull/48161) by [@Ubax](https://github.com/Ubax))
-
-### 💡 Others
 
 ## 57.0.9 — 2026-07-29
 

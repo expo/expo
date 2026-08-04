@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.12 — 2026-08-04
+
+### 🐛 Bug fixes
+
 - [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Fix SIGABRT during log purge when the persistent log contains a truncated line: `UpdatesLogReader` guarded on UTF-8 byte length but advanced the string index by Characters, so a line holding only the multi-byte emoji log prefix trapped with "String index is out of bounds". ([#48222](https://github.com/expo/expo/pull/48222) by [@valinagacevschi](https://github.com/valinagacevschi))
-
-### 💡 Others
 
 ## 57.0.11 — 2026-07-29
 
