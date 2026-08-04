@@ -17,7 +17,15 @@ const GENERATED_FEEDBACK_ID_BYTES = 6;
 const MIN_FEEDBACK_ID_LENGTH = 6;
 const MAX_FEEDBACK_ID_LENGTH = 64;
 const FEEDBACK_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
-const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'evals', 'unknown'] as const;
+const FEEDBACK_CATEGORIES = [
+  'skills',
+  'expo-cli',
+  'eas-cli',
+  'mcp',
+  'docs',
+  'evals',
+  'unknown',
+] as const;
 
 type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
 
