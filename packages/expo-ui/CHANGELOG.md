@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
+- [Android] Added `RangeSlider`, a Jetpack Compose component for selecting two values from a bounded range, with `StartThumb`, `EndThumb` and `Track` slots. (by [@nishan](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 

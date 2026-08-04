@@ -140,6 +140,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'expo-ui',
   ],
   'expo-ui/jetpack-compose/radiobutton': ['jetpack-compose/RadioButton/index.tsx', 'expo-ui'],
+  'expo-ui/jetpack-compose/rangeslider': ['jetpack-compose/RangeSlider/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/rnhostview': ['jetpack-compose/RNHostView/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/searchbar': ['jetpack-compose/SearchBar/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/shape': ['jetpack-compose/Shape/index.tsx', 'expo-ui'],

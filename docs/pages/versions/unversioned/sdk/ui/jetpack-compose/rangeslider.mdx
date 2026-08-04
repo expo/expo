@@ -1,0 +1,163 @@
+---
+title: RangeSlider
+description: A Jetpack Compose RangeSlider component for selecting two values from a range.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI RangeSlider matches the official Jetpack Compose [RangeSlider API](https://developer.android.com/develop/ui/compose/components/slider) and allows selecting two values from a bounded range. The two values are bounded by `min` and `max` and cannot cross each other.
+
+To select a single value, use [`Slider`](slider).
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic range slider
+
+```tsx BasicRangeSliderExample.tsx
+import { useState } from 'react';
+import { Host, RangeSlider } from '@expo/ui/jetpack-compose';
+
+export default function BasicRangeSliderExample() {
+  const [value, setValue] = useState({ start: 0.25, end: 0.75 });
+
+  return (
+    <Host matchContents>
+      <RangeSlider value={value} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Range slider with custom range
+
+Use the `min` and `max` props to define the bounds the two values can take.
+
+```tsx PriceRangeSliderExample.tsx
+import { useState } from 'react';
+import { Host, RangeSlider } from '@expo/ui/jetpack-compose';
+
+export default function PriceRangeSliderExample() {
+  const [value, setValue] = useState({ start: 20, end: 80 });
+
+  return (
+    <Host matchContents>
+      <RangeSlider value={value} min={0} max={100} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Range slider with steps
+
+Use the `steps` prop to define discrete increments. Set `steps` to `0` for continuous values.
+
+```tsx SteppedRangeSliderExample.tsx
+import { useState } from 'react';
+import { Host, RangeSlider } from '@expo/ui/jetpack-compose';
+
+export default function SteppedRangeSliderExample() {
+  const [value, setValue] = useState({ start: 20, end: 80 });
+
+  return (
+    <Host matchContents>
+      <RangeSlider value={value} min={0} max={100} steps={9} onValueChange={setValue} />
+    </Host>
+  );
+}
+```
+
+### Custom colors
+
+Use the `colors` prop to override the default Material3 colors for the range slider's thumbs, track, and tick marks.
+
+```tsx CustomColorsRangeSliderExample.tsx
+import { useState } from 'react';
+import { Host, RangeSlider } from '@expo/ui/jetpack-compose';
+
+export default function CustomColorsRangeSliderExample() {
+  const [value, setValue] = useState({ start: 0.25, end: 0.75 });
+
+  return (
+    <Host matchContents>
+      <RangeSlider
+        value={value}
+        colors={{
+          thumbColor: '#6200EE',
+          activeTrackColor: '#6200EE',
+          inactiveTrackColor: '#E0E0E0',
+        }}
+        onValueChange={setValue}
+      />
+    </Host>
+  );
+}
+```
+
+### Custom thumbs and track
+
+Use the `RangeSlider.StartThumb`, `RangeSlider.EndThumb`, and `RangeSlider.Track` slots for a fully custom appearance. The track is drawn across the full width, so lay out its segments from the current value.
+
+```tsx FullyCustomRangeSliderExample.tsx
+import { useState } from 'react';
+import { Host, RangeSlider, Shape, Row, Box } from '@expo/ui/jetpack-compose';
+import {
+  fillMaxWidth,
+  height,
+  weight,
+  size,
+  clip,
+  background,
+  Shapes,
+} from '@expo/ui/jetpack-compose/modifiers';
+
+export default function FullyCustomRangeSliderExample() {
+  const [value, setValue] = useState({ start: 0.3, end: 0.7 });
+
+  return (
+    <Host matchContents>
+      <RangeSlider value={value} onValueChange={setValue}>
+        <RangeSlider.StartThumb>
+          <Box modifiers={[size(24, 24), clip(Shapes.Circle), background('#03DAC6')]} />
+        </RangeSlider.StartThumb>
+        <RangeSlider.EndThumb>
+          <Box modifiers={[size(24, 24), clip(Shapes.Circle), background('#6200EE')]} />
+        </RangeSlider.EndThumb>
+        <RangeSlider.Track>
+          <Row modifiers={[fillMaxWidth(), height(8)]}>
+            <Shape.RoundedCorner
+              color="#BDBDBD"
+              cornerRadii={{ topStart: 4, bottomStart: 4 }}
+              modifiers={[weight(Math.max(value.start, 0.01)), height(8)]}
+            />
+            <Shape.Rectangle
+              color="#6200EE"
+              modifiers={[weight(Math.max(value.end - value.start, 0.01)), height(8)]}
+            />
+            <Shape.RoundedCorner
+              color="#BDBDBD"
+              cornerRadii={{ topEnd: 4, bottomEnd: 4 }}
+              modifiers={[weight(Math.max(1 - value.end, 0.01)), height(8)]}
+            />
+          </Row>
+        </RangeSlider.Track>
+      </RangeSlider>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { RangeSlider } from '@expo/ui/jetpack-compose';
+```
+
+<APISection packageName="expo-ui/jetpack-compose/rangeslider" apiName="RangeSlider" />

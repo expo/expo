@@ -23,6 +23,7 @@ export * from './DatePicker';
 export * from './SegmentedButton';
 export * from './Progress';
 export * from './Slider';
+export * from './RangeSlider';
 export * from './Spacer';
 export * from './Switch';
 export * from './SyncSwitch';
