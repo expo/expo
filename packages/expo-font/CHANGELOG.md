@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - [ios] `getLoadedFonts()` no longer reports the PostScript name read out of a font loaded with `loadAsync`, only the name (the alias) it was loaded under. ([#48432](https://github.com/expo/expo/pull/48432) by [@vonovak](https://github.com/vonovak))
+- [ios] `getLoadedFonts()` now also returns font family names. ([#48481](https://github.com/expo/expo/pull/48481) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
 

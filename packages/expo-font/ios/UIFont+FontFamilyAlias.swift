@@ -7,7 +7,7 @@ public extension UIFont {
    Returns an array of font names for the specified family name or its alias.
 
    "Font names" is UIKit's term for what the rest of this module calls PostScript names — one per
-   face. An alias resolves to the names registered under it; see ``FontFamilyAliasManager.postScriptNames(inFileAt:alias:)``.
+   face. An alias resolves to the names registered under it; see ``postScriptNames(inFileAt:alias:)``.
    */
   @objc
   static dynamic func _expo_fontNames(forFamilyName familyName: String) -> [String] {
