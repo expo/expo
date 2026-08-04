@@ -288,8 +288,8 @@ it('uses Noxcturnal instead of the Babel preset for eligible node_modules', asyn
   );
   expect(result.output[0]!.data.hasCjsExports).toBe(true);
   expect(result.output[0]!.data.functionMap).toEqual({
-    mappings: 'AAA,IC;CDQ',
-    names: ['<global>', '__d$argument_0'],
+    mappings: 'AAA',
+    names: ['<global>'],
   });
   expect(result.dependencies.map((dependency) => dependency.name)).toEqual(['dep']);
 
@@ -975,9 +975,9 @@ it('transforms a module with dependencies', async () => {
     column: 0,
     name: null,
   });
-  expect(originalPositionFor(trace, { line: 6, column: 4 })).toMatchObject({
+  expect(originalPositionFor(trace, { line: 6, column: 6 })).toMatchObject({
     line: 4,
-    column: 0,
+    column: 6,
     name: null,
   });
 
@@ -1013,7 +1013,7 @@ it('transforms an es module with asyncToGenerator', async () => {
 
   expect(originalPositionFor(trace, { line: 10, column: 9 })).toMatchObject({
     line: 1,
-    column: 7,
+    column: 22,
     name: null,
   });
 
@@ -1077,7 +1077,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
 
   expect(originalPositionFor(trace, { line: 8, column: 5 })).toMatchObject({
     line: 1,
-    column: 21,
+    column: 26,
     name: null,
   });
 

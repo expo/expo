@@ -29,30 +29,27 @@ exports[`reports filename when encountering unsupported dynamic dependency 1`] =
 
 exports[`transforms a module with dependencies 1`] = `
 {
-  "mappings": "AAA,IC;CDQ",
+  "mappings": "AAA",
   "names": [
     "<global>",
-    "__d$argument_0",
   ],
 }
 `;
 
 exports[`transforms a simple module 1`] = `
 {
-  "mappings": "AAA,IC;CDG",
+  "mappings": "AAA",
   "names": [
     "<global>",
-    "__d$argument_0",
   ],
 }
 `;
 
 exports[`transforms a simple script 1`] = `
 {
-  "mappings": "AAA,CC;CDE",
+  "mappings": "AAA",
   "names": [
     "<global>",
-    "<anonymous>",
   ],
 }
 `;
@@ -80,14 +77,10 @@ function _test() {
 
 exports[`transforms an es module with asyncToGenerator 2`] = `
 {
-  "mappings": "AAA,IC;ACE;CDE;AEK;CFE;AGC;wCCC,eD;CHE;CDE",
+  "mappings": "AAA,OC",
   "names": [
     "<global>",
-    "__d$argument_0",
-    "_interopDefault",
     "test",
-    "_test",
-    "(0, _asyncToGenerator.default)$argument_0",
   ],
 }
 `;
@@ -117,11 +110,9 @@ function _test() {
 
 exports[`transforms import/export syntax when experimental flag is on 1`] = `
 {
-  "mappings": "AAA,IC;ACC;CDE;CDM",
+  "mappings": "AAA",
   "names": [
     "<global>",
-    "__d$argument_0",
-    "_interopDefault",
   ],
 }
 `;

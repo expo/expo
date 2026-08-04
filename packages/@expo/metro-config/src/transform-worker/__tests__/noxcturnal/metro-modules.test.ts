@@ -444,6 +444,38 @@ it.each(nativeCorpus)(
   }
 );
 
+it('preserves JSX callback mappings through Metro module wrapping', async () => {
+  const source = [
+    'export function App() {',
+    '  return <BigButton',
+    '    title="throw"',
+    '    onPress={() => {',
+    "      throw new Error('failure');",
+    '    }}',
+    '  />;',
+    '}',
+  ].join('\n');
+  const filename = '/app/src/App.tsx';
+  const result = await transformFileFullyWithNoxcturnal({
+    filename,
+    projectRoot: '/app',
+    source,
+    options: { ...options({ dev: true, platform: 'web' }), hot: true } as JsTransformOptions,
+    isDefaultExpoTransformer: true,
+    config: fullConfig(),
+  });
+  expect(result.status).toBe('complete');
+  if (result.status !== 'complete') return;
+  const original = originalPositionFor(
+    new TraceMap({ version: 3, sources: [filename], ...result.result.map } as any),
+    generatedPositionOf(result.result.code, 'new Error')
+  );
+  expect(original).toMatchObject({ source: filename, line: 5, column: 12 });
+  expect(result.result.functionMap?.names).toEqual(
+    expect.arrayContaining(['BigButton.props.onPress'])
+  );
+});
+
 it.each([
   ['variable', 'const Widget = createReactClass({ render() {} });', '"Widget"'],
   ['assignment member', 'exports.Widget = React.createClass({});', '"Widget"'],
