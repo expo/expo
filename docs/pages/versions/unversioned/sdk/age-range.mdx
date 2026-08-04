@@ -4,7 +4,6 @@ description: A library that provides access to age range information using Play 
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-age-range'
 packageName: 'expo-age-range'
 platforms: ['android', 'ios', 'expo-go']
-isAlpha: true
 ---
 
 import APISection from '~/components/plugins/APISection';
@@ -13,15 +12,16 @@ import { ConfigReactNative } from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
-> **important** **This library is currently in [alpha](/more/release-statuses/#alpha) and will frequently experience breaking changes.**
 
 `expo-age-range` provides access to user age range information. It uses Google's [Play Age Signals API](https://developer.android.com/google/play/age-signals/use-age-signals-api) on Android and Apple's [Declared Age Range framework](https://developer.apple.com/documentation/declaredagerange/) on iOS.
 
 This library allows you to request age range information from your app users to help you comply with age-appropriate content regulations (such as in [Texas, USA](https://developer.apple.com/news/?id=btkirlj8)) and provide age-appropriate experiences in your app.
 
+> **important** **The underlying native APIs provided by Google and Apple are under active development. While this library is stable, it may require increased number of breaking changes to accomodate for that.**
+
 ### Limitations
 
-We strongly recommend testing the functionality on a real device, as simulator runtimes may not work as expected.
+We recommend testing the functionality on a real device, as simulator runtimes may not work as expected.
 
 ## Installation
 
@@ -29,7 +29,7 @@ We strongly recommend testing the functionality on a real device, as simulator r
 
 ## Configuration in app config
 
-### Setup iOS project
+### Set up the iOS project
 
 To use the age range API on iOS, you need to build your project with Xcode 26.0 or later. The `com.apple.developer.declared-age-range` entitlement is required. Add it to your [app config](../config/app/) file:
 
@@ -123,7 +123,7 @@ import * as AgeRange from 'expo-age-range';
 
 ## Error codes
 
-Available in the `code` property of any error thrown by the native module. For Android-specific error codes, see "Handle API error codes" in [Use Play Age Signals API docs](https://developer.android.com/google/play/age-signals/use-age-signals-api#handle-api-errors).
+Available in the `code` property of any error thrown by the native module. For Android-specific error codes, see the "Error code reference" in [Use Play Age Signals API docs](https://developer.android.com/google/play/age-signals/handle-errors).
 
 | Code                            | Platform                             | Description                                                                                                        |
 | ------------------------------- | ------------------------------------ | ------------------------------------------------------------------------------------------------------------------ |
