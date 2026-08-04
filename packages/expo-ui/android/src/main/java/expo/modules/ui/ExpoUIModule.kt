@@ -29,6 +29,7 @@ import expo.modules.ui.button.FilledIconButtonContent
 import expo.modules.ui.button.FilledTonalIconButtonContent
 import expo.modules.ui.button.OutlinedIconButtonContent
 import expo.modules.ui.icon.IconView
+import expo.modules.ui.image.ImageView
 import expo.modules.ui.menu.DropdownMenuContent
 import expo.modules.ui.menu.DropdownMenuProps
 import expo.modules.ui.menu.DropdownMenuItemContent
@@ -174,6 +175,7 @@ class ExpoUIModule : Module() {
     View(InnerTextFieldView::class)
     View(PlaceholderView::class)
     View(IconView::class)
+    View(ImageView::class)
     View(LazyColumnView::class)
     View(LazyRowView::class)
 
