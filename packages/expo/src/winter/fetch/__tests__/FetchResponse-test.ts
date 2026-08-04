@@ -139,12 +139,9 @@ describe('FetchResponse', () => {
   });
 
   describe('abort()', () => {
-    // The existing guards above cover cancellation via the JS stream
-    // (reader.cancel()). abort() covers cancellation via an AbortSignal, which
-    // fetch() routes to a native request.cancel() that never reaches the JS
-    // controller — leaving the in-flight read hung and any late
-    // didReceiveResponseData enqueued onto an abandoned controller
-    // (expo/expo#34804 / #33549 / #33553).
+    // abort() covers cancellation via an AbortSignal: fetch() routes it to a native
+    // request.cancel() that never reaches the JS controller, leaving the in-flight
+    // read hung (expo/expo#34804 / #33549 / #33553).
 
     it('rejects the in-flight body read with an AbortError', async () => {
       const response = makeResponse();
@@ -198,29 +195,28 @@ describe('FetchResponse', () => {
   });
 
   describe('internally errored stream (rejected pull)', () => {
-    // When pull() rejects (a failed native startStreaming call), the streams
-    // implementation errors the stream through its internal error routine —
-    // controller.error() is never called, so bodyStreamClosed is never set
-    // and the guard goes stale. Native events landing after that used to call
-    // close()/enqueue() on an errored stream and throw ("The stream is not in
-    // a state that permits close") out of the event listener, where no
-    // consumer try/catch can reach.
+    // When pull() rejects, the streams implementation errors the stream internally
+    // without calling controller.error(), so the bodyStreamClosed guard goes stale.
+    // Native events landing after that used to throw on the errored stream.
 
     it('surfaces the underlying error to the reader', async () => {
       const response = makeResponse();
+
       (response as any).startStreaming = async () => {
         throw new Error('native module call failed');
       };
-      const reader = response.body!.getReader();
 
+      const reader = response.body!.getReader();
       await expect(reader.read()).rejects.toThrow('native module call failed');
     });
 
     it('does not throw on native events that arrive after pull() rejected', async () => {
       const response = makeResponse();
+
       (response as any).startStreaming = async () => {
         throw new Error('native module call failed');
       };
+
       const reader = response.body!.getReader();
       await expect(reader.read()).rejects.toThrow('native module call failed');
 
