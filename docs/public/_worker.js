@@ -11,6 +11,13 @@ function upgradeHelperPairPath(url) {
   return `/bare/upgrade/${from}-to-${to}/index.md`;
 }
 
+const AGENT_INSTRUCTIONS_BLOCK_REGEX =
+  /<AgentInstructions>[\S\s]*?<\/AgentInstructions>\n*/g;
+
+function stripAgentInstructions(markdown) {
+  return markdown.replace(AGENT_INSTRUCTIONS_BLOCK_REGEX, "");
+}
+
 export default {
   async fetch(request, env) {
     const accept = request.headers.get("Accept") || "";
@@ -36,7 +43,12 @@ export default {
 
         const contentType = mdResponse.headers.get("Content-Type") || "";
         if (mdResponse.ok && contentType.includes("text/markdown")) {
-          return new Response(mdResponse.body, {
+          const body =
+            url.searchParams.get("includeAgentInstructions") === "false"
+              ? stripAgentInstructions(await mdResponse.text())
+              : mdResponse.body;
+
+          return new Response(body, {
             status: 200,
             headers: {
               "Content-Type": "text/markdown; charset=utf-8",

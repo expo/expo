@@ -164,6 +164,13 @@ Every published page is served in two formats: HTML for browsers, and markdown f
 curl -H "Accept: text/markdown" https://docs.expo.dev/get-started/set-up-your-environment/
 ```
 
+The generated markdown includes an `<AgentInstructions>` block by default. To omit it from a
+content-negotiated response, set `includeAgentInstructions=false`:
+
+```sh
+curl -H "Accept: text/markdown" "https://docs.expo.dev/get-started/set-up-your-environment/?includeAgentInstructions=false"
+```
+
 ### 3. Sibling `.md` URLs via `_redirects`
 
 Some agents prefer to append `.md` to a URL rather than negotiate via headers. Three rules at the bottom of `public/_redirects` handle that:

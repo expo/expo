@@ -74,7 +74,19 @@ function setupTestDirectory(): void {
   );
   fs.writeFileSync(
     `${TEST_DIR}/test-page/index.md`,
-    '# Test Markdown Content\n\nThis is test content.'
+    [
+      '<AgentInstructions>',
+      '',
+      '## Test agent instructions',
+      '',
+      'These instructions are included by default.',
+      '',
+      '</AgentInstructions>',
+      '',
+      '# Test Markdown Content',
+      '',
+      'This is test content.',
+    ].join('\n')
   );
   // Page with HTML but no .md — for fallback testing
   fs.writeFileSync(
@@ -161,6 +173,33 @@ async function testMarkdownContentNegotiationAsync(): Promise<void> {
     throw new Error(`Expected Content-Type text/markdown, got: ${mdContentType}`);
   }
   console.log('✓ Accept: text/markdown request returns correct Content-Type');
+}
+
+async function testAgentInstructionsParameterAsync(): Promise<void> {
+  console.log('\n--- Testing agent instructions query parameter ---');
+
+  const defaultResponse = await fetch(`${BASE_URL}/test-page`, {
+    headers: { Accept: 'text/markdown' },
+  });
+  const defaultBody = await defaultResponse.text();
+
+  if (!defaultBody.includes('<AgentInstructions>')) {
+    throw new Error('Expected agent instructions to be included by default');
+  }
+  console.log('✓ Agent instructions are included by default');
+
+  const excludedResponse = await fetch(`${BASE_URL}/test-page?includeAgentInstructions=false`, {
+    headers: { Accept: 'text/markdown' },
+  });
+  const excludedBody = await excludedResponse.text();
+
+  if (excludedBody.includes('<AgentInstructions>')) {
+    throw new Error('Expected includeAgentInstructions=false to remove agent instructions');
+  }
+  if (!excludedBody.includes('Test Markdown Content')) {
+    throw new Error('Expected markdown content to remain after removing agent instructions');
+  }
+  console.log('✓ includeAgentInstructions=false removes only the agent instructions');
 }
 
 async function testMarkdownNotFoundAsync(): Promise<void> {
@@ -351,6 +390,7 @@ async function mainAsync(): Promise<void> {
     await testHttpResponseAsync();
     await testDirectMarkdownAccessAsync();
     await testMarkdownContentNegotiationAsync();
+    await testAgentInstructionsParameterAsync();
     await testMarkdownNotFoundAsync();
     await testUpgradePairNegotiationAsync();
     await testDeletedPageRedirectsAsync();
