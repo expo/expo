@@ -72,32 +72,26 @@ jobs:
           node-version: 24
           cache: 'pnpm'
       - name: ♻️ Restore caches
-        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           pnpm-docs: 'true'
       - name: 📦 Install workspace deps
-        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: 📦 Install tools deps
-        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         working-directory: tools
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: 📦 Install docs deps
-        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         working-directory: docs
         run: pnpm install --frozen-lockfile
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🛠 Build expotools
-        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         run: pnpm turbo build --filter expotools...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
       - name: 🛠 Build packages required by docs API data generation
-        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         run: pnpm turbo build --filter expo-task-manager
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -111,10 +105,6 @@ jobs:
         working-directory: docs
         run: |
           args=(--sdk "$SDK_VERSION" --commit-per-step)
-          # TEMP(demo): pull_request runs dry-run the real steps as a self-test.
-          if [[ "$GITHUB_EVENT_NAME" == 'pull_request' ]]; then
-            args+=(--dry-run)
-          fi
           if [[ "$DRY_RUN" == 'true' ]]; then
             args+=(--dry-run)
           fi
