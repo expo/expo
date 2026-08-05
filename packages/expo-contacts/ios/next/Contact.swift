@@ -116,7 +116,7 @@ class ContactNext: SharedObject {
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
       },
-      unifyResults: !(queryOptions?.rawContacts ?? false)
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { contactFactory.create(id: $0.identifier) }
   }
@@ -137,10 +137,7 @@ class ContactNext: SharedObject {
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
       },
-      // `CNContactFetchRequest.unifyResults` defaults to true in the Contacts framework, and the
-      // legacy API sets it as `!rawContacts`. Without this a contact linked across accounts (iCloud
-      // + Google + Exchange) is returned once per account record, i.e. duplicated.
-      unifyResults: !(queryOptions?.rawContacts ?? false)
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { try getContactDetailsMapper.map(contact: $0) }
   }
