@@ -15,6 +15,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix iOS asset catalog scale-to-file pairing for assets with non-standard scales. ([#48525](https://github.com/expo/expo/pull/48525) by [@janicduplessis](https://github.com/janicduplessis))
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
 - In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
 - Ignore a whitespace-only `REACT_NATIVE_PACKAGER_HOSTNAME` instead of failing to start the dev server ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
