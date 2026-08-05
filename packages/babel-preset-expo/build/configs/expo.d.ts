@@ -1,4 +1,5 @@
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
+import { type LazyDecoratorsOptions } from '../plugins/lazy-decorators-plugin';
 export interface ExpoConfigOptions {
     platform: string | null;
     engine: string;
@@ -13,10 +14,7 @@ export interface ExpoConfigOptions {
     baseUrl: string;
     bundler: 'metro' | 'webpack' | null;
     inlineEnvironmentVariables?: boolean;
-    decorators: {
-        legacy?: boolean;
-        version?: number;
-    } | false | undefined;
+    lazyDecorators: LazyDecoratorsOptions;
     reanimated: boolean | undefined;
     worklets: boolean | undefined;
     expoUi: boolean | undefined;

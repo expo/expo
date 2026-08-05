@@ -102,10 +102,8 @@ module.exports = function (api, options) {
     }
     const polyfillImportMeta = options.transformImportMeta !== false;
     plugins.push((0, import_meta_transform_plugin_1.expoImportMetaTransformPluginFactory)(polyfillImportMeta === true));
-    // TODO: Remove
-    if (options.decorators !== false) {
-        plugins.push([lazy_decorators_plugin_1.lazyDecoratorsPlugin, options.decorators ?? { legacy: true }]);
-    }
+    // TODO(@kitten): Remove / deprecated
+    plugins.push(...(0, lazy_decorators_plugin_1.lazyDecoratorsPlugins)(options.lazyDecorators));
     // Automatically add worklets or reanimated plugin when package is installed.
     if (options.worklets !== false && options.reanimated !== false) {
         const workletsPluginPath = (0, resolveModule_1.resolveModule)(api, 'react-native-worklets/plugin');
