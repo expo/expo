@@ -13,6 +13,7 @@ import type {
 import { BottomTabView } from '../views/BottomTabView';
 
 export interface BottomTabNavigatorCreateProps {
+  routeNames: string[];
   preloadedRouteKeys: string[];
   popNestedStackToTop: (routeKey: string) => void;
 }
@@ -32,12 +33,14 @@ function BottomTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  routeNames,
   preloadedRouteKeys,
   popNestedStackToTop,
   ...rest
 }: ContentArgs) {
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: state.routes,
+    routeNames,
     focusedRouteKey: state.routes[state.index]!.key,
     descriptors,
   });

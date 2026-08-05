@@ -35,9 +35,9 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
     ExpoTabActionType | CommonNavigationAction
   > = {
     ...rnTabRouter,
-    getStateForAction(state, action, options) {
+    getStateForAction(state, action, routerConfigOptions) {
       if (action.type !== 'JUMP_TO') {
-        return rnTabRouter.getStateForAction(state, action, options);
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
       const route = state.routes.find((route) => route.name === action.payload.name);
@@ -55,8 +55,8 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       }
 
       if (shouldReset) {
-        options.routeParamList[route.name] = {
-          ...options.routeParamList[route.name],
+        routerConfigOptions.routeParamList[route.name] = {
+          ...routerConfigOptions.routeParamList[route.name],
         };
         state = {
           ...state,
@@ -67,9 +67,14 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
             return { ...r, state: undefined };
           }),
         };
-        return rnTabRouter.getStateForAction(state, action, options);
-      } else {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
+      } else if (route.state !== undefined) {
+        // TODO(@ubax): Remove this branch together with nested trigger href support. Refocusing
+        // a tab that hosts a navigator must not re-apply the trigger's nested payload
+        // (`params.screen`), which would reset the preserved child state.
         return rnTabRouter.getStateForRouteFocus(state, route.key);
+      } else {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
     },
   };

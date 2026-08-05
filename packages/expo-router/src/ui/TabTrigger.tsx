@@ -125,7 +125,7 @@ export type Trigger = TriggerMap[string] & {
   hidden: boolean;
   isFocused: boolean;
   resolvedHref: string;
-  route: TabNavigationState<any>['routes'][number];
+  route?: TabNavigationState<any>['routes'][number];
 };
 
 export type UseTabTriggerResult = {
@@ -145,7 +145,7 @@ export type TriggerProps = {
  * Utility hook creating custom `TabTrigger`.
  */
 export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
-  const { state, navigation, descriptors } = useNavigatorContext();
+  const { state, navigation, contextKey, descriptors } = useNavigatorContext();
   const { name, resetOnFocus, onPress, onLongPress } = options;
   const triggerMap = use(TabTriggerMapContext);
 
@@ -165,15 +165,25 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
       const hidden =
         routeOptions != null && 'hidden' in routeOptions && routeOptions.hidden === true;
 
+      // Parent triggers are inherited, so read the state of the navigator that registered them.
+      const owningState =
+        config.type === 'internal' && config.contextKey !== contextKey
+          ? navigation?.getParent(config.contextKey)?.getState()
+          : state;
+      const routeIndex =
+        config.type === 'internal'
+          ? (owningState?.routes.findIndex((route) => route.name === config.routeNode.route) ?? -1)
+          : -1;
+
       return {
         hidden,
-        isFocused: state.index === config.index,
-        route: state.routes[config.index]!,
+        isFocused: owningState?.index === routeIndex,
+        route: owningState?.routes[routeIndex],
         resolvedHref: stripGroupSegmentsFromPath(appendBaseUrl(config.href)),
         ...config,
       };
     },
-    [descriptors, state, triggerMap]
+    [contextKey, descriptors, navigation, state, triggerMap]
   );
 
   const trigger = name !== undefined ? getTrigger(name) : undefined;
@@ -215,7 +225,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       navigation?.emit({
         type: 'tabPress',
-        target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
+        target: trigger.route?.key ?? trigger.href,
         canPreventDefault: true,
       });
 
@@ -236,7 +246,7 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
 
       navigation?.emit({
         type: 'tabLongPress',
-        target: trigger.type === 'internal' ? trigger.route.key : trigger?.href,
+        target: trigger.route?.key ?? trigger.href,
       });
 
       if (!shouldHandleMouseEvent(event)) return;

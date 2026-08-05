@@ -13,6 +13,7 @@ import type {
 import { MaterialTopTabView } from '../views/MaterialTopTabView';
 
 export interface MaterialTopTabNavigatorCreateProps {
+  routeNames: string[];
   preloadedRouteKeys: string[];
 }
 
@@ -31,11 +32,13 @@ function MaterialTopTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  routeNames,
   preloadedRouteKeys,
   ...rest
 }: ContentArgs) {
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: state.routes,
+    routeNames,
     focusedRouteKey: state.routes[state.index]!.key,
     descriptors,
   });

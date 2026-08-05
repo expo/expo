@@ -45,6 +45,7 @@ const Tabs = unstable_integrateWithRouter<
   BottomTabNavigatorCreateProps
 >(createStandardBottomTabNavigator, TabRouter, {
   createProps: ({ state, dispatch }) => ({
+    routeNames: state.routeNames,
     preloadedRouteKeys: state.preloadedRouteKeys,
     popNestedStackToTop: (routeKey) => {
       const nestedState = state.routes.find((route) => route.key === routeKey)?.state;

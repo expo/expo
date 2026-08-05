@@ -32,6 +32,9 @@ export type _IndicatorUsesTopTabViewState = Expect<
 export type _ContentRequiresPreloadedRouteKeys = Expect<
   Equal<MaterialTopTabNavigatorContentProps['preloadedRouteKeys'], string[]>
 >;
+export type _ContentRequiresRouteNames = Expect<
+  Equal<MaterialTopTabNavigatorContentProps['routeNames'], string[]>
+>;
 
 describe('material top tabs types', () => {
   it('type-checks', () => {
