@@ -24,7 +24,9 @@ version = "${{version}}"
 
 androidFusedLibrary {
   namespace = "${{packageId}}.fused.${{fusedVariant}}"
-  minSdk = 24
+  // AGP 9 turned `minSdk` into a function on this extension; `minSdk = 24` no longer compiles.
+  // Unlike the `android {}` block, `androidFusedLibrary` is unaffected by `android.newDsl=false`.
+  minSdk(24)
   aarMetadata { minCompileSdk = 36 }
 }
 

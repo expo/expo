@@ -493,10 +493,13 @@ export const getVersionsInfoAsync = async (options: {
     // Matches hermes-engine.podspec polarity: V1 is the default, classic is
     // selected only when the consuming app explicitly sets the env var to "0".
     const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED !== '0';
+    // React Native only publishes both keys while it ships two Hermes flavors — 0.87 exposes
+    // HERMES_VERSION_NAME alone. Fall back to whichever key exists so a single-flavor release
+    // resolves instead of failing; the polarity above still wins whenever both are present.
     const version = isHermesV1Enabled
-      ? properties.HERMES_V1_VERSION_NAME
-      : properties.HERMES_VERSION_NAME;
-    const tag = isHermesV1Enabled ? v1Tag : classicTag;
+      ? (properties.HERMES_V1_VERSION_NAME ?? properties.HERMES_VERSION_NAME)
+      : (properties.HERMES_VERSION_NAME ?? properties.HERMES_V1_VERSION_NAME);
+    const tag = (isHermesV1Enabled ? v1Tag : classicTag) ?? v1Tag ?? classicTag;
 
     if (!version) {
       throw new Error(
