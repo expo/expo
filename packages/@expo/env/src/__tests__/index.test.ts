@@ -13,6 +13,7 @@ import {
   logLoadedEnv,
   parseEnvFiles,
   parseProjectEnv,
+  setNodeEnv,
 } from '../';
 
 jest.mock('node:console', () => {
@@ -36,6 +37,51 @@ beforeEach(() => {
 afterAll(() => {
   // Clear the mocked environment, reusing the original object instance
   process.env = originalEnv;
+});
+
+describe(setNodeEnv, () => {
+  const devGlobal = globalThis as typeof globalThis & { __DEV__?: boolean };
+  const originalDev = devGlobal.__DEV__;
+
+  afterAll(() => {
+    devGlobal.__DEV__ = originalDev;
+  });
+
+  it('overwrites inherited NODE_ENV and BABEL_ENV values', () => {
+    process.env.NODE_ENV = 'test';
+    process.env.BABEL_ENV = 'staging';
+
+    expect(setNodeEnv('production')).toBe(process.env);
+    expect(process.env.NODE_ENV).toBe('production');
+    expect(process.env.BABEL_ENV).toBe('production');
+    expect(devGlobal.__DEV__).toBe(false);
+  });
+
+  it('sets __DEV__ in development mode', () => {
+    setNodeEnv('development');
+
+    expect(process.env.NODE_ENV).toBe('development');
+    expect(process.env.BABEL_ENV).toBe('development');
+    expect(devGlobal.__DEV__).toBe(true);
+  });
+
+  it('updates a custom environment without changing process.env', () => {
+    process.env.NODE_ENV = 'development';
+    process.env.BABEL_ENV = 'development';
+    devGlobal.__DEV__ = true;
+    const systemEnv = { NODE_ENV: 'test', BABEL_ENV: 'staging', EXAMPLE: 'value' };
+
+    expect(setNodeEnv('production', { systemEnv })).toBe(systemEnv);
+
+    expect(systemEnv).toEqual({
+      NODE_ENV: 'production',
+      BABEL_ENV: 'production',
+      EXAMPLE: 'value',
+    });
+    expect(process.env.NODE_ENV).toBe('development');
+    expect(process.env.BABEL_ENV).toBe('development');
+    expect(devGlobal.__DEV__).toBe(true);
+  });
 });
 
 describe(getEnvFiles, () => {
