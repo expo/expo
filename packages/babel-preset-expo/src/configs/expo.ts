@@ -8,10 +8,8 @@ import { expoRouterBabelPlugin } from '../plugins/expo-router-plugin';
 import { expoImportMetaTransformPluginFactory } from '../plugins/import-meta-transform-plugin';
 import { expoInlineEnvVars } from '../plugins/inline-env-vars';
 import {
-  lazyClassPropertiesPlugin,
-  lazyDecoratorsPlugin,
-  lazyPrivateMethodsPlugin,
-  lazyPrivatePropertyInObjectPlugin,
+  lazyDecoratorsPlugins,
+  type LazyDecoratorsOptions,
 } from '../plugins/lazy-decorators-plugin';
 import { environmentRestrictedReactAPIsPlugin } from '../plugins/restricted-react-api-plugin';
 import { reactServerActionsPlugin } from '../plugins/server-actions-plugin';
@@ -38,8 +36,7 @@ export interface ExpoConfigOptions {
   baseUrl: string;
   bundler: 'metro' | 'webpack' | null;
   inlineEnvironmentVariables?: boolean;
-  decorators: { legacy?: boolean; version?: number } | false | undefined;
-  needsClassTransformsForDecorators: boolean | undefined;
+  lazyDecorators: LazyDecoratorsOptions;
   reanimated: boolean | undefined;
   worklets: boolean | undefined;
   expoUi: boolean | undefined;
@@ -155,20 +152,8 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   const polyfillImportMeta = options.transformImportMeta !== false;
   plugins.push(expoImportMetaTransformPluginFactory(polyfillImportMeta === true));
 
-  // TODO: Remove
-  if (options.decorators !== false) {
-    plugins.push([lazyDecoratorsPlugin, options.decorators ?? { legacy: true }]);
-    // See `lazy-decorators-plugin.ts` for why the class-feature transforms must follow.
-    if (options.needsClassTransformsForDecorators) {
-      // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
-      const loose = true;
-      plugins.push(
-        [lazyClassPropertiesPlugin, { loose }],
-        [lazyPrivateMethodsPlugin, { loose }],
-        [lazyPrivatePropertyInObjectPlugin, { loose }]
-      );
-    }
-  }
+  // TODO(@kitten): Remove / deprecated
+  plugins.push(...lazyDecoratorsPlugins(options.lazyDecorators));
 
   // Automatically add worklets or reanimated plugin when package is installed.
   if (options.worklets !== false && options.reanimated !== false) {

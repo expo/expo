@@ -28,6 +28,7 @@ import { syntaxPlugins } from './configs/syntax';
 import { getConfig as getTypeScriptConfig } from './configs/typescript';
 import { WebConfigOptions } from './configs/web';
 import { WebviewConfigOptions } from './configs/webview';
+import { LazyDecoratorsOptions } from './plugins/lazy-decorators-plugin';
 
 interface BabelPresetExpoPlatformOptions {
   /** Disable or configure the `@babel/plugin-proposal-decorators` plugin. */
@@ -166,26 +167,34 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       ? api.caller(getBabelRuntimeVersion)
       : platformOptions.enableBabelRuntime;
 
-  let needsClassTransformsForDecorators: boolean;
-  let enginePreset: PluginItem;
+  const lazyDecoratorsOptions: LazyDecoratorsOptions = {
+    presetOptions: platformOptions.decorators,
+    transformClassProperties: false,
+    transformPrivateMethods: false,
+    transformPrivateProperties: false,
+  };
 
+  let enginePreset: PluginItem;
   {
     const presetOpts = { dev: isDev };
     if (isDomComponent) {
       enginePreset = [require('./configs/webview'), presetOpts satisfies WebviewConfigOptions];
-      needsClassTransformsForDecorators = false;
     } else if (isModernEngine) {
+      // web preset already contains private method/property transforms
+      lazyDecoratorsOptions.transformClassProperties = true;
       enginePreset = [require('./configs/web'), presetOpts satisfies WebConfigOptions];
-      needsClassTransformsForDecorators = true;
     } else {
       switch (platformOptions.unstable_transformProfile) {
         case 'hermes-stable':
         case 'hermes-canary':
+          // hermes-v1 does not contain any of these three transforms
+          lazyDecoratorsOptions.transformClassProperties = true;
+          lazyDecoratorsOptions.transformPrivateMethods = true;
+          lazyDecoratorsOptions.transformPrivateProperties = true;
           enginePreset = [
             require('./configs/hermes-v1'),
             presetOpts satisfies HermesV1ConfigOptions,
           ];
-          needsClassTransformsForDecorators = true;
           break;
         case 'hermes-v0':
         default:
@@ -193,7 +202,6 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
             require('./configs/hermes-v0'),
             presetOpts satisfies HermesV0ConfigOptions,
           ];
-          needsClassTransformsForDecorators = false;
           break;
       }
     }
@@ -237,8 +245,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           bundler,
           inlineEnvironmentVariables,
           disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
-          decorators: platformOptions.decorators,
-          needsClassTransformsForDecorators,
+          lazyDecorators: lazyDecoratorsOptions,
           reanimated: platformOptions.reanimated,
           worklets: platformOptions.worklets,
           expoUi: platformOptions.expoUi,
