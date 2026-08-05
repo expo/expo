@@ -129,9 +129,7 @@ jobs:
         with:
           token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           branch: bot/docs-sdk-${{ fromJSON(steps.beta.outputs.result).sdkVersion }}-beta
-          # TEMP(demo): revert to plain `base: main`. Targeting the feature branch
-          # keeps the demo PR limited to the demo commits.
-          base: ${{ github.head_ref || 'main' }}
+          base: main
           commit-message: ${{ fromJSON(steps.beta.outputs.result).commitMessage }}
           title: ${{ fromJSON(steps.beta.outputs.result).title }}
           body: ${{ fromJSON(steps.beta.outputs.result).body }}
@@ -149,7 +147,7 @@ jobs:
           echo "::error::Some beta cutoff steps failed. Check the 'Cut beta docs' step log for details."
           exit 1
       - name: 🔔 Notify on Slack
-        if: failure()
+        if: ${{ failure() && github.event_name != 'pull_request' }} # TEMP(demo): revert to plain failure()
         uses: ./.github/actions/slack-notify
         with:
           webhook: ${{ secrets.slack_webhook_docs }}
