@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix a crash in `getNetworkStateAsync` caused by a data race on the network path captured from `NWPathMonitor`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ignigena](https://github.com/Ignigena))
+- [iOS] Fix a crash in `getNetworkStateAsync` caused by a data race on the network path captured from `NWPathMonitor`. ([#48557](https://github.com/expo/expo/pull/48557) by [@Ignigena](https://github.com/Ignigena))
 
 ### 💡 Others
 
