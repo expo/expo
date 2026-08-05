@@ -17,11 +17,14 @@ __rsc_tests__
 /ios/sqlite3.c
 /ios/sqlite3.h
 
-# Scripts are only for sqlite3 source code prebuilding
+# Scripts only prebuild sqlite3 sources and the devtools plugin web UI
 /scripts/
+
+# This flag file triggers on-demand bundling during native builds in the Expo monorepo
+/.bundle-on-demand
 
 # Exclude source of dev-plugin-webui to reduce package size
 /dev-plugin-webui/
 
-# Include all files in the bundled dev-plugin-dist
+# Include all files in dev-plugin-dist, which `prepublishOnly` generates
 !/dev-plugin-dist/**/*

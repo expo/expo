@@ -50,7 +50,7 @@
     "build": "pnpm run build:lib && pnpm run build:plugin",
     "build:lib": "expo-build src",
     "build:plugin": "expo-build --base plugin cjs:src",
-    "bundle:webui": "pnpm run build:lib && pnpm --filter sqlite-inspector-webui run export:webui && rm -rf dev-plugin-dist && mv dev-plugin-webui/dist dev-plugin-dist",
+    "bundle:webui": "pnpm run build:lib && node ./scripts/bundle_webui.mjs --force",
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
