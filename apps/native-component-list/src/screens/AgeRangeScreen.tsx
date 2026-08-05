@@ -12,6 +12,25 @@ export default function AgeRangeScreen() {
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
+  const requestAgeSignalsAccess = async () => {
+    setError(null);
+    setResult(null);
+
+    try {
+      // Android shows Play Age Signals' in-app consent screen here. On iOS the consent prompt is
+      // part of requestAgeRangeAsync, so there is nothing separate to call and this resolves null.
+      const status = await AgeRange.requestAgeSignalsAccessAsync();
+      setResult(
+        status === null
+          ? 'null (unsupported on this platform, or no status reported)'
+          : `ageSignalsStatus: ${status}`
+      );
+    } catch (err: any) {
+      setError(err.message || 'Unknown error occurred');
+      Alert.alert('Error', err.message || 'Unknown error occurred');
+    }
+  };
+
   const requestAgeRange = async () => {
     setError(null);
     setResult(null);
@@ -111,6 +130,18 @@ export default function AgeRangeScreen() {
         thresholds at 13, 16, and 18 years old.
       </BodyText>
 
+      <BodyText color="secondary" style={styles.description}>
+        On Android, request age signals access first and continue only when the status is SHARED.
+        Play reports every field as null until then. The age range result below reports
+        ageRangeSource, significantChangeStatus and significantChangeApprovalDate on Android, and
+        ageRangeDeclaration on iOS.
+      </BodyText>
+
+      <Button
+        onPress={requestAgeSignalsAccess}
+        title="Request Age Signals Access (Android)"
+        style={styles.button}
+      />
       <Button
         onPress={checkEligibility}
         title="Check Age Features Eligibility (iOS 26.2+)"
