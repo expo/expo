@@ -36,8 +36,7 @@ open class NotificationChannelManagerModule : Module(), NotificationsChannelProv
 
     AsyncFunction("getNotificationChannelAsync") { channelId: String ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val notificationChannel = channelManager.getNotificationChannel(channelId)
-        channelSerializer.toBundle(notificationChannel)
+        channelManager.getNotificationChannel(channelId)?.let { channelSerializer.toBundle(it) }
       } else {
         null
       }
@@ -45,6 +44,12 @@ open class NotificationChannelManagerModule : Module(), NotificationsChannelProv
 
     AsyncFunction("setNotificationChannelAsync") { channelId: String, channelOptions: ReadableArguments ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        if (!channelManager.customSoundExists(channelOptions)) {
+          appContext.jsLogger?.error(
+            "expo-notifications: Custom sound '${channelOptions.getString("sound", null)}' not found in native app. " +
+              "Make sure the sound file (e.g. 'custom_sound.wav') is included in the expo-notifications config plugin sounds array in app config."
+          )
+        }
         val channel = channelManager.createNotificationChannel(
           channelId,
           getNameFromOptions(channelOptions),

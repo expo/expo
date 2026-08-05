@@ -3,20 +3,81 @@ import { withAndroidManifest } from 'expo/config-plugins';
 import path from 'node:path';
 
 import type { PluginConfig, PluginProps, Publication } from '../types';
+import { validateGradleField } from './validation';
 
 export const getPluginConfig = (props: PluginProps, config: ExpoConfig): PluginConfig => {
-  const libraryName = props?.libraryName || 'brownfield';
-  const packageId = getPackage(config, props);
+  const libraryName = validateGradleField(
+    'gradleProjectName',
+    props?.libraryName || 'brownfield',
+    'android.libraryName'
+  );
+  const packageId = validateGradleField(
+    'javaPackage',
+    getPackage(config, props),
+    'android.package'
+  );
+  const group = validateGradleField('javaPackage', getGroup(props, packageId), 'android.group');
+  const version = validateGradleField('mavenVersion', getVersion(props), 'android.version');
 
   return {
-    group: getGroup(props, packageId),
+    group,
     libraryName,
     package: packageId,
     packagePath: getPackagePath(packageId),
     projectRoot: getProjectRoot(config),
-    publishing: getPublishing(props),
-    version: getVersion(props),
+    publishing: validatePublishing(getPublishing(props)),
+    version,
   };
+};
+
+const validatePublishing = (publications: Publication[]): Publication[] => {
+  return publications.map((publication, index) => {
+    if (publication.type === 'localMaven') {
+      return publication;
+    }
+
+    if (publication.name !== undefined) {
+      validateGradleField(
+        'groovyIdentifier',
+        publication.name,
+        `android.publishing[${index}].name`
+      );
+    }
+
+    if (publication.type === 'localDirectory') {
+      return publication;
+    }
+
+    if (typeof publication.url !== 'string') {
+      validateGradleField(
+        'envVarName',
+        publication.url.variable,
+        `android.publishing[${index}].url.variable`
+      );
+    }
+
+    if (publication.type === 'remotePrivate') {
+      if (typeof publication.username !== 'string') {
+        validateGradleField(
+          'envVarName',
+          publication.username.variable,
+          `android.publishing[${index}].username.variable`
+        );
+      }
+      if (typeof publication.password !== 'string') {
+        validateGradleField(
+          'envVarName',
+          publication.password.variable,
+          `android.publishing[${index}].password.variable`
+        );
+      }
+    }
+
+    return {
+      ...publication,
+      allowInsecure: Boolean(publication.allowInsecure),
+    };
+  });
 };
 
 const getGroup = (props: PluginProps, packageId: string): string => {

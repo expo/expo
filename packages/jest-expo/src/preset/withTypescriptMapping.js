@@ -1,4 +1,5 @@
-const JsonFile = require('@expo/json-file');
+const fs = require('fs');
+const JSON5 = require('json5');
 const path = require('path');
 
 const { toPosixPath } = require('../filePath');
@@ -52,13 +53,12 @@ function convertTypescriptTargetToJestTarget(target, prefix = '<rootDir>') {
 }
 
 function mutateJestMappingFromConfig(jestConfig, configFile) {
-  const readJsonFile = JsonFile.default?.read || JsonFile.read;
-
   try {
     // The path to jsconfig.json or tsconfig.json is resolved relative to cwd
     // See: _createTypeScriptConfiguration() in `createJestPreset`
     const configPath = path.resolve(configFile);
-    const config = readJsonFile(configPath, { json5: true });
+    const configText = fs.readFileSync(configPath, 'utf8');
+    const config = JSON5.parse(configText);
     let pathPrefix = '<rootDir>';
 
     if (config?.compilerOptions?.baseUrl) {

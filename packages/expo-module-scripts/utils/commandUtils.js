@@ -23,13 +23,35 @@ export async function packageManagerExecAsync(params, { cwd } = {}) {
     args.push(...params);
   } else if (npmConfigUserAgent?.includes('pnpm')) {
     command = 'pnpm';
-    args.push('exec', ...params);
+    args.push(...params);
   } else if (npmConfigUserAgent?.includes('bun')) {
     command = 'bunx';
     args.push(...params);
   } else {
     command = 'npx';
     args.push(...params);
+  }
+
+  return commandRunner(command, args, { cwd });
+}
+
+export async function packageManagerRunAsync(params, { cwd } = {}) {
+  let command = '';
+  const args = [];
+
+  const npmConfigUserAgent = process.env.npm_config_user_agent;
+  if (npmConfigUserAgent?.includes('yarn')) {
+    command = 'yarn';
+    args.push(...params);
+  } else if (npmConfigUserAgent?.includes('pnpm')) {
+    command = 'pnpm';
+    args.push('run', ...params);
+  } else if (npmConfigUserAgent?.includes('bun')) {
+    command = 'bun';
+    args.push('run', ...params);
+  } else {
+    command = 'npm';
+    args.push('run', ...params);
   }
 
   return commandRunner(command, args, { cwd });
@@ -44,6 +66,9 @@ export function getArgs({ maybeAddWatchFlag = false } = {}) {
 }
 
 function shouldAddWatchFlag() {
+  if (process.env.TURBO_HASH && process.env.TURBO_IS_TUI !== 'true') {
+    return false;
+  }
   return process.stdout.isTTY && !process.env.CI && !process.env.EXPO_NONINTERACTIVE;
 }
 

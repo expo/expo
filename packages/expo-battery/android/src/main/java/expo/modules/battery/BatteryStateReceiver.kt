@@ -18,7 +18,8 @@ class BatteryStateReceiver(private val sendEvent: (name: String, body: Bundle) -
 
   override fun onReceive(context: Context, intent: Intent) {
     val status = intent.getIntExtra(BatteryManager.EXTRA_STATUS, -1)
-    val bs = batteryStatusNativeToJS(status)
+    val plugged = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0)
+    val bs = batteryStatusNativeToJS(status, plugged)
     onBatteryStateChange(bs)
   }
 }

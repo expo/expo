@@ -192,11 +192,11 @@ export type DownloadPauseState = {
 
 export type FileInfo =
   /**
-   * Object returned when file exist.
+   * Object returned when file exists.
    */
   | {
       /**
-       * Signifies that the requested file exist.
+       * Signifies that the requested file exists.
        */
       exists: true;
       /**
@@ -222,7 +222,7 @@ export type FileInfo =
       md5?: string;
     }
   /**
-   * Object returned when file do not exist.
+   * Object returned when file does not exist.
    */
   | {
       exists: false;
@@ -269,6 +269,11 @@ export type WritingOptions = {
    * @default FileSystem.EncodingType.UTF8
    */
   encoding?: EncodingType | 'utf8' | 'base64';
+  /**
+   * Whether to append the contents to the end of the file or overwrite the existing file.
+   * @default false
+   */
+  append?: boolean;
 };
 
 export type DeletingOptions = {

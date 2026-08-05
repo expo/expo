@@ -8,9 +8,11 @@ import { useSQLiteDatabase } from '../useSQLiteDatabase';
 import * as sqliteDump from '@/lib/sqliteDump';
 
 // Mock expo-sqlite
-jest.mock('../../../node_modules/expo-sqlite/build/ExpoSQLite.js', () =>
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  require('../../../../src/__mocks__/ExpoSQLite')
+jest.mock(
+  '../../../../src/ExpoSQLite',
+  () =>
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    require('../../../../src/__mocks__/ExpoSQLite')
 );
 
 // Mock sqliteDump
@@ -308,9 +310,12 @@ describe('useSQLiteDatabase - SQL Query Building', () => {
 
     // Test updateRow
     await act(async () => {
-      const changes = await result.current.updateRow('users', { name: 'Bob', age: 31 }, 'id = ?', [
-        5,
-      ]);
+      const changes = await result.current.updateRow(
+        'users',
+        { name: 'Bob', age: 31 },
+        'id = ?',
+        [5]
+      );
 
       expect(changes).toBe(1);
     });

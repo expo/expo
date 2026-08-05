@@ -1,20 +1,23 @@
-import JsonFile, { JSONObject, JSONValue } from '@expo/json-file';
+import type { JSONObject, JSONValue } from '@expo/json-file';
+import JsonFile from '@expo/json-file';
 import plist from '@expo/plist';
 import assert from 'assert';
 import fs, { promises } from 'fs';
 import path from 'path';
-import xcode, { XcodeProject } from 'xcode';
+import type { XcodeProject } from 'xcode';
+import xcode from 'xcode';
 
-import { ForwardedBaseModOptions, provider, withGeneratedBaseMods } from './createBaseMod';
-import { ExportedConfig, ModConfig } from '../Plugin.types';
+import type { ExportedConfig, ModConfig } from '../Plugin.types';
 import { Entitlements, Paths } from '../ios';
 import { ensureApplicationTargetEntitlementsFileConfigured } from '../ios/Entitlements';
-import { InfoPlist } from '../ios/IosConfig.types';
+import type { InfoPlist } from '../ios/IosConfig.types';
 import { getPbxproj } from '../ios/utils/Xcodeproj';
 import { getInfoPlistPathFromPbxproj } from '../ios/utils/getInfoPlistPath';
 import { fileExists } from '../utils/modules';
 import { sortObject } from '../utils/sortObject';
 import { addWarningIOS } from '../utils/warnings';
+import type { ForwardedBaseModOptions } from './createBaseMod';
+import { provider, withGeneratedBaseMods } from './createBaseMod';
 
 const { readFile, writeFile } = promises;
 

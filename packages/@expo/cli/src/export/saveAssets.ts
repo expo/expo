@@ -4,21 +4,49 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { AssetData } from '@expo/metro/metro';
+import type { Platform } from '@expo/config';
 import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { AssetData } from '@expo/metro/metro';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import prettyBytes from 'pretty-bytes';
 
 import { Log } from '../log';
 import { env } from '../utils/env';
+
+let bytesFormatter: Intl.NumberFormat | undefined | null;
+
+const prettyBytes = (bytes: number): string => {
+  try {
+    if (bytesFormatter === undefined && typeof Intl === 'object') {
+      bytesFormatter = new Intl.NumberFormat('en', {
+        notation: 'compact',
+        style: 'unit',
+        unit: 'byte',
+        unitDisplay: 'narrow',
+      });
+    }
+    if (bytesFormatter != null) {
+      return bytesFormatter.format(bytes);
+    }
+  } catch {
+    bytesFormatter = null;
+  }
+  // Fall back if ICU is unavailable, which is rare but possible with custom Node.js builds
+  if (bytes >= 900_000) {
+    return `${(bytes / 1_000_000).toFixed(1)}MB`;
+  } else if (bytes >= 900) {
+    return `${(bytes / 1_000).toFixed(1)}KB`;
+  } else {
+    return `${bytes}B`;
+  }
+};
 
 const BLT = '\u203A';
 
 export type BundleOptions = {
   entryPoint: string;
-  platform: 'android' | 'ios' | 'web';
+  platform: Platform;
   dev?: boolean;
   minify?: boolean;
   bytecode: boolean;
@@ -174,7 +202,7 @@ export async function persistMetroFilesAsync(files: ExportAssetMap, outputDir: s
         // Get source map
         const sourceMapIndex = allAssets.findIndex(([fp]) => fp === filePath + '.map');
         if (sourceMapIndex !== -1) {
-          const [sourceMapFilePath, sourceMapAsset] = allAssets.splice(sourceMapIndex, 1)[0];
+          const [sourceMapFilePath, sourceMapAsset] = allAssets.splice(sourceMapIndex, 1)[0]!;
           Log.log(chalk.gray(sourceMapFilePath), sizeStr(sourceMapAsset.contents));
         }
       }

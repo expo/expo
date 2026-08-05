@@ -1,1 +1,0 @@
-{"version":3,"file":"TokenEmitter.d.ts","sourceRoot":"","sources":["../src/TokenEmitter.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,KAAK,iBAAiB,EAAY,MAAM,mBAAmB,CAAC;AAGrE,OAAO,EAAE,eAAe,EAAE,MAAM,gBAAgB,CAAC;AAGjD;;;;GAIG;AACH,MAAM,MAAM,iBAAiB,GAAG,CAAC,KAAK,EAAE,eAAe,KAAK,IAAI,CAAC;AAKjE;;;;;;;;;;;;;;;;;;;;;;;;;GAyBG;AACH,wBAAgB,oBAAoB,CAAC,QAAQ,EAAE,iBAAiB,GAAG,iBAAiB,CAKnF"}

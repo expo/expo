@@ -1,5 +1,5 @@
-import type { StackNavigationProp } from '@react-navigation/stack';
-import * as Calendar from 'expo-calendar';
+import * as Calendar from 'expo-calendar/legacy';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { Alert, Platform, ScrollView, StyleSheet, View } from 'react-native';
 
@@ -7,7 +7,6 @@ import Button from '../components/Button';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
-import Colors from '../constants/Colors';
 import { optionalRequire } from '../navigation/routeBuilder';
 
 export const CalendarsScreens = [
@@ -21,13 +20,7 @@ export const CalendarsScreens = [
   },
 ];
 
-type StackNavigation = StackNavigationProp<{
-  Reminders: { calendar: any };
-  Events: { calendar: any };
-}>;
-
 const CalendarRow = (props: {
-  navigation: StackNavigation;
   calendar: Calendar.Calendar;
   updateCalendar: (calendarId: string) => void;
   deleteCalendar: (calendar: any) => void;
@@ -35,12 +28,16 @@ const CalendarRow = (props: {
   const { calendar } = props;
   const calendarTypeName =
     calendar.entityType === Calendar.EntityTypes.REMINDER ? 'Reminders' : 'Events';
+  const calendarRoute =
+    calendar.entityType === Calendar.EntityTypes.REMINDER ? '/apis/reminders' : '/apis/events';
   return (
     <View style={styles.calendarRow}>
       <HeadingText>{calendar.title}</HeadingText>
       <MonoText>{JSON.stringify(calendar, null, 2)}</MonoText>
       <ListButton
-        onPress={() => props.navigation.navigate(calendarTypeName, { calendar })}
+        onPress={() =>
+          router.push({ pathname: calendarRoute, params: { calendarId: calendar.id } })
+        }
         title={`View ${calendarTypeName}`}
       />
       <ListButton
@@ -57,7 +54,7 @@ const CalendarRow = (props: {
   );
 };
 
-export default function CalendarsScreen({ navigation }: { navigation: StackNavigation }) {
+export default function CalendarsScreen() {
   const [, askForCalendarPermissions] = Calendar.useCalendarPermissions();
   const [, askForReminderPermissions] = Calendar.useRemindersPermissions();
 
@@ -101,7 +98,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       await Calendar.createCalendarAsync(newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -114,7 +111,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
       await Calendar.updateCalendarAsync(calendarId, newCalendar);
       Alert.alert('Calendar saved successfully');
       findCalendars();
-    } catch (e) {
+    } catch (e: any) {
       Alert.alert('Calendar not saved successfully', e.message);
     }
   };
@@ -132,7 +129,7 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
             await Calendar.deleteCalendarAsync(calendar.id);
             Alert.alert('Calendar deleted successfully');
             findCalendars();
-          } catch (e) {
+          } catch (e: any) {
             Alert.alert('Calendar not deleted successfully', e.message);
           }
         },
@@ -148,7 +145,6 @@ export default function CalendarsScreen({ navigation }: { navigation: StackNavig
           <CalendarRow
             calendar={calendar}
             key={calendar.id}
-            navigation={navigation}
             updateCalendar={updateCalendar}
             deleteCalendar={deleteCalendar}
           />
@@ -174,7 +170,6 @@ CalendarsScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.greyBackground,
     paddingHorizontal: 10,
     paddingVertical: 16,
     flex: 1,

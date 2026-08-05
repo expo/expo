@@ -13,6 +13,21 @@ struct DownloadOptions: Record {
   @Field var idempotent: Bool = false
 }
 
+struct RelocationOptions: Record {
+  @Field var overwrite: Bool = false
+}
+
+struct FilePreviewOptions: Record {
+  @Field var title: String?
+  @Field var mimeType: String?
+}
+
+struct FilePickingOptions: Record {
+  @Field var initialUri: URL?
+  @Field var mimeTypes: [String]?
+  @Field var multipleFiles: Bool?
+}
+
 struct FileInfo: Record {
   @Field var exists: Bool
   @Field var uri: String?
@@ -43,4 +58,5 @@ enum WriteEncoding: String, Enumerable {
 
 struct WriteOptions: Record {
   @Field var encoding: WriteEncoding?
+  @Field var append: Bool = false
 }

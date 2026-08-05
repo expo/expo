@@ -1,5 +1,5 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 
-import { PushTokenManagerModule } from './PushTokenManager.types';
+import type { PushTokenManagerModule } from './PushTokenManager.types';
 
 export default requireNativeModule<PushTokenManagerModule>('ExpoPushTokenManager');

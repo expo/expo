@@ -13,5 +13,7 @@ class EASClientModule : Module() {
     Name("EASClient")
 
     Constant("clientID") { EASClientID(context).uuid.toString() }
+
+    Constant("deterministicUniformValue") { EASClientID.deterministicUniformValue(EASClientID(context).uuid) }
   }
 }

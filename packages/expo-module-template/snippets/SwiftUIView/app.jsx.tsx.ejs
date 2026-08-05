@@ -1,0 +1,11 @@
+        {process.env.EXPO_OS === 'ios' && (
+          <Group name="SwiftUI View">
+            <SwiftUIHost style={styles.view}>
+              <<%- project.swiftUIViewName %>
+                title="Hello from <%- project.name %>"
+                modifiers={[padding({ all: 16 }), cornerRadius(12), background('#f0f0f0')]}>
+                <SwiftUIText>Child content</SwiftUIText>
+              </<%- project.swiftUIViewName %>>
+            </SwiftUIHost>
+          </Group>
+        )}

@@ -1,0 +1,52 @@
+#!/usr/bin/env node
+// @ts-check
+import fs from 'node:fs';
+import path from 'node:path';
+
+import { checkDependenciesAsync } from '../utils/depscheck/check.js';
+
+/** Sub-targets that live in their own directory and are checked independently. */
+const SUB_TARGETS = ['plugin', 'cli', 'utils'];
+
+async function runAsync() {
+  const packagePath = process.cwd();
+  const packageJsonPath = path.join(packagePath, 'package.json');
+  if (!fs.existsSync(packageJsonPath)) {
+    console.error("The current working directory is not a package's root directory");
+    process.exit(1);
+  }
+
+  const packageJson = JSON.parse(await fs.promises.readFile(packageJsonPath, 'utf8'));
+  const pkg = { packageName: packageJson.name, packagePath, packageJson };
+
+  const args = process.argv.slice(2).filter((arg) => !arg.startsWith('-'));
+
+  // Allow checking a single explicit target, e.g. `expo-module depscheck plugin`.
+  // Otherwise check the package itself plus every sub-target directory that exists.
+  let targets;
+  if (args.length && SUB_TARGETS.includes(args[0])) {
+    targets = [args[0]];
+  } else {
+    targets = ['package', ...SUB_TARGETS.filter((dir) => fs.existsSync(path.join(packagePath, dir)))];
+  }
+
+  const logger = {
+    /** @param {string} message */
+    warn: (message) => console.warn(message),
+    /** @param {string} message */
+    verbose: (message) => console.warn(message),
+  };
+
+  for (const target of targets) {
+    await checkDependenciesAsync(pkg, /** @type {any} */ (target), logger);
+  }
+}
+
+(async () => {
+  try {
+    await runAsync();
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+    process.exit(1);
+  }
+})();

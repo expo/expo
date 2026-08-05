@@ -1,4 +1,4 @@
-import { ConfigContext, ExpoConfig } from '@expo/config';
+import type { ConfigContext, ExpoConfig } from '@expo/config';
 
 // Added to test supported language features.
 export class Foo {
@@ -12,8 +12,9 @@ export class Foo {
 const foo = { bar: { foo: 'value' } };
 
 export default function ({ config }: ConfigContext): ExpoConfig {
-  config.name = 'rewrote+' + config.name;
+  const mutableConfig = config as ExpoConfig & { foo?: string };
+  mutableConfig.name = 'rewrote+' + config.name;
   // Supports optionals and nullish
-  config.foo = 'bar+' + (foo.bar?.foo ?? 'invalid');
-  return config;
+  mutableConfig.foo = 'bar+' + (foo.bar?.foo ?? 'invalid');
+  return mutableConfig;
 }

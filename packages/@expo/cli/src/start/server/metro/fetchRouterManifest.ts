@@ -5,13 +5,12 @@
  * LICENSE file in the root directory of this source tree.
  */
 import type { Options as RoutesManifestOptions } from '@expo/router-server/build/routes-manifest';
-import { type MiddlewareInfo, type RouteInfo, type RoutesManifest } from 'expo-server/private';
-import resolveFrom from 'resolve-from';
+import type { RoutesManifest } from 'expo-server/private';
 
 import { getRoutePaths } from './router';
 
 function getExpoRouteManifestBuilderAsync(projectRoot: string) {
-  return require(resolveFrom(projectRoot, '@expo/router-server/build/routes-manifest'))
+  return require('@expo/router-server/build/routes-manifest')
     .createRoutesManifest as typeof import('@expo/router-server/build/routes-manifest').createRoutesManifest;
 }
 
@@ -54,6 +53,8 @@ async function fetchManifest(
 
 export { fetchManifest };
 
+// TODO(@hassankhan): This should be a re-export of `initManifestRegExp()` from
+// `expo-server`
 // Convert the serialized manifest to a usable format
 export function inflateManifest(json: RoutesManifest<string>): RoutesManifest<RegExp> {
   return {
@@ -84,6 +85,12 @@ export function inflateManifest(json: RoutesManifest<string>): RoutesManifest<Re
       };
     }),
     rewrites: json.rewrites?.map((value: any) => {
+      return {
+        ...value,
+        namedRegex: new RegExp(value.namedRegex),
+      };
+    }),
+    pageHeaders: json.pageHeaders?.map((value) => {
       return {
         ...value,
         namedRegex: new RegExp(value.namedRegex),

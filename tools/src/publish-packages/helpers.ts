@@ -215,7 +215,7 @@ export function resolveSuggestedVersion(
   return semver.inc(
     highestSatisfyingVersion ?? versionToBump,
     releaseType,
-    targetPrereleaseIdentifier ?? undefined
+    (targetPrereleaseIdentifier ?? undefined)!
   ) as string;
 }
 

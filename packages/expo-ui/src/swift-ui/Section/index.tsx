@@ -1,9 +1,10 @@
 import { requireNativeView } from 'expo';
 
+import { Slot } from '../SlotView';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type SectionProps = {
+export interface SectionProps extends CommonViewModifierProps {
   /**
    * The title of the section.
    */
@@ -34,7 +35,7 @@ export type SectionProps = {
    * @platform tvos 17.0+
    */
   onIsExpandedChange?: (isExpanded: boolean) => void;
-} & CommonViewModifierProps;
+}
 
 type SectionNativeProps = Omit<SectionProps, 'onIsExpandedChange'> & {
   onIsExpandedChange?: (e: { nativeEvent: { isExpanded: boolean } }) => void;
@@ -44,12 +45,6 @@ const SectionNativeView: React.ComponentType<SectionNativeProps> = requireNative
   'ExpoUI',
   'SectionView'
 );
-
-const SectionHeader: React.ComponentType<object> = requireNativeView('ExpoUI', 'SectionHeader');
-
-const SectionFooter: React.ComponentType<object> = requireNativeView('ExpoUI', 'SectionFooter');
-
-const SectionContent: React.ComponentType<object> = requireNativeView('ExpoUI', 'SectionContent');
 
 /**
  * Section component uses the native [Section](https://developer.apple.com/documentation/swiftui/section) component.
@@ -65,9 +60,9 @@ export function Section(props: SectionProps) {
           onIsExpandedChange(e.nativeEvent.isExpanded),
       })}
       {...restProps}>
-      {header && <SectionHeader>{header}</SectionHeader>}
-      {footer && <SectionFooter>{footer}</SectionFooter>}
-      <SectionContent>{children}</SectionContent>
+      {header && <Slot name="header">{header}</Slot>}
+      {footer && <Slot name="footer">{footer}</Slot>}
+      <Slot name="content">{children}</Slot>
     </SectionNativeView>
   );
 }

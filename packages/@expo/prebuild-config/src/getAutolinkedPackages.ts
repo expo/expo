@@ -1,9 +1,9 @@
-import { ModPlatform, StaticPlugin } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import type { ModPlatform, StaticPlugin } from '@expo/config-plugins';
+import type { ExpoConfig } from '@expo/config-types';
 import {
   makeCachedDependenciesLinker,
   scanExpoModuleResolutionsForPlatform,
-} from 'expo/internal/unstable-autolinking-exports';
+} from 'expo-modules-autolinking/exports';
 
 /**
  * Returns a list of packages that are autolinked to a project.

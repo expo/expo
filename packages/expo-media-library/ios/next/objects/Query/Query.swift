@@ -2,13 +2,18 @@ import Photos
 import ExpoModulesCore
 
 class Query: SharedObject {
+  private let assetMapper: AssetMapper
   private var predicates: [NSPredicate] = []
   private var sortDescriptors: [NSSortDescriptor] = []
   private var album: Album?
   private var limit: Int?
   private var offset: Int?
 
-  func eq(_ assetField: AssetField, _ value: Either<MediaTypeNext, Int>) throws -> Query {
+  init(assetMapper: AssetMapper) {
+    self.assetMapper = assetMapper
+  }
+
+  func eq(_ assetField: AssetField, _ value: EitherOfThree<MediaTypeNext, Int, Bool>) throws -> Query {
     let predicate = try AssetFieldPredicateBuilder.buildPredicate(
       assetField: assetField,
       value: value,
@@ -18,7 +23,7 @@ class Query: SharedObject {
     return self
   }
 
-  func within(_ assetField: AssetField, _ values: Either<[MediaTypeNext], [Int]>) throws -> Query {
+  func within(_ assetField: AssetField, _ values: EitherOfThree<[MediaTypeNext], [Int], [Bool]>) throws -> Query {
     let predicate = try AssetFieldPredicateBuilder.buildPredicate(
       assetField: assetField,
       values: values,
@@ -68,12 +73,18 @@ class Query: SharedObject {
     return self
   }
 
-  func limit(_ limit: Int) -> Query {
+  func limit(_ limit: Int) throws -> Query {
+    guard limit >= 0 else {
+      throw InvalidQueryArgumentException("limit must be greater than or equal to 0")
+    }
     self.limit = limit
     return self
   }
 
-  func offset(_ offset: Int) -> Query {
+  func offset(_ offset: Int) throws -> Query {
+    guard offset >= 0 else {
+      throw InvalidQueryArgumentException("offset must be greater than or equal to 0")
+    }
     self.offset = offset
     return self
   }
@@ -89,13 +100,24 @@ class Query: SharedObject {
   }
 
   func exe() async throws -> [Asset] {
+    return try await fetchMatchingPHAssets().map {
+      Asset(localIdentifier: $0.localIdentifier, assetMapper: assetMapper)
+    }
+  }
+
+  func exeForMetadata() async throws -> [AssetMetadata] {
+    return try await fetchMatchingPHAssets().map {
+      assetMapper.toMetadata($0)
+    }
+  }
+
+  private func fetchMatchingPHAssets() async throws -> [PHAsset] {
+    if try await shouldReturnEmpty() {
+      return []
+    }
     let fetchOptions = constructFetchOptions()
     let phFetchResult = try await fetch(fetchOptions)
-    let phAssets = getExactNumberOfPHAssets(
-      from: phFetchResult,
-      fetchLimit: fetchOptions.fetchLimit
-    )
-    return phAssets.map { Asset(localIdentifier: $0.localIdentifier) }
+    return sliceFetchedAssets(from: phFetchResult)
   }
 
   private func constructFetchOptions() -> PHFetchOptions {
@@ -116,17 +138,24 @@ class Query: SharedObject {
     return PHAsset.fetchAssets(with: fetchOptions)
   }
 
-  private func getExactNumberOfPHAssets(
+  // fetchLimit set to 0 in the Photo Library returns all assets.
+  // The API should return empty array in this scenario.
+  private func shouldReturnEmpty() async throws -> Bool {
+    guard limit == 0 else {
+      return false
+    }
+    // Validates the album and throws if it doesn't exist.
+    if let album {
+      _ = try await album.getCollection()
+    }
+    return true
+  }
+
+  private func sliceFetchedAssets(
     from phFetchResult: PHFetchResult<PHAsset>,
-    fetchLimit: Int
   ) -> [PHAsset] {
     let start = offset ?? 0
-    let end: Int
-    if fetchLimit > 0 {
-      end = min(start + fetchLimit - 1, phFetchResult.count - 1)
-    } else {
-      end = phFetchResult.count - 1
-    }
+    let end = phFetchResult.count - 1
     guard start <= end else {
       return []
     }

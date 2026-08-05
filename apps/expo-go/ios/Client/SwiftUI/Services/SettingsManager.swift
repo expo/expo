@@ -2,7 +2,7 @@
 
 import Foundation
 import UIKit
-import EXDevMenu
+import ExpoModulesCore
 
 @MainActor
 class SettingsManager: ObservableObject {
@@ -10,11 +10,30 @@ class SettingsManager: ObservableObject {
   @Published var threeFingerLongPressEnabled = true
   @Published var selectedTheme = 0
   @Published var buildInfo: [String: Any] = [:]
+  @Published var completedLessons: Set<Int> = []
+
+  private static let completedLessonsKey = "ExpoGoCompletedLessons"
 
   init() {
     loadDevSettings()
     loadThemeSettings()
     loadBuildInfo()
+    loadCompletedLessons()
+  }
+
+  // MARK: - Lesson Completion
+
+  func isLessonCompleted(_ lessonId: Int) -> Bool {
+    completedLessons.contains(lessonId)
+  }
+
+  func refreshCompletedLessons() {
+    loadCompletedLessons()
+  }
+
+  private func loadCompletedLessons() {
+    let ids = UserDefaults.standard.array(forKey: Self.completedLessonsKey) as? [Int] ?? []
+    completedLessons = Set(ids)
   }
 
   func updateShakeGesture(_ enabled: Bool) {
@@ -47,13 +66,13 @@ class SettingsManager: ObservableObject {
   }
 
   private func loadBuildInfo() {
-    let buildConstants = EXBuildConstants.sharedInstance()
-    let versions = EXVersions.sharedInstance()
+    let buildConstants = BuildConstants.sharedInstance
+    let versions = Versions.sharedInstance
 
     buildInfo = [
       "appName": Bundle.main.infoDictionary?["CFBundleDisplayName"] ?? "Expo Go",
       "appVersion": getFormattedAppVersion(),
-      "expoRuntimeVersion": buildConstants?.expoRuntimeVersion ?? "Unknown",
+      "expoRuntimeVersion": buildConstants.expoRuntimeVersion,
       "supportedExpoSdks": versions.sdkVersion,
       "appIcon": getAppIcon()
     ]
@@ -88,21 +107,25 @@ class SettingsManager: ObservableObject {
   }
 
   private func applyThemeChange(_ themeIndex: Int) {
-    DispatchQueue.main.async {
-      guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
+    guard let window = SceneGeometry.keyWindow() else {
+      return
+    }
 
-      UIView.transition(with: windowScene.windows.first ?? UIView(), duration: 0.3, options: .transitionCrossDissolve) {
-        switch themeIndex {
-        case 0: // Automatic
-          windowScene.windows.first?.overrideUserInterfaceStyle = .unspecified
-        case 1: // Light
-          windowScene.windows.first?.overrideUserInterfaceStyle = .light
-        case 2: // Dark
-          windowScene.windows.first?.overrideUserInterfaceStyle = .dark
-        default:
-          windowScene.windows.first?.overrideUserInterfaceStyle = .unspecified
-        }
-      }
+    let style: UIUserInterfaceStyle
+    switch themeIndex {
+    case 0: // Automatic
+      style = .unspecified
+    case 1: // Light
+      style = .light
+    case 2: // Dark
+      style = .dark
+    default:
+      style = .unspecified
+    }
+
+    UIView.transition(with: window, duration: 0.3, options: .transitionCrossDissolve) {
+      window.overrideUserInterfaceStyle = style
+      window.rootViewController?.setNeedsStatusBarAppearanceUpdate()
     }
   }
 }

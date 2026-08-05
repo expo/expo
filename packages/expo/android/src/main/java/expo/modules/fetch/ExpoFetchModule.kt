@@ -4,6 +4,7 @@ package expo.modules.fetch
 
 import android.util.Log
 import com.facebook.react.bridge.ReactContext
+import com.facebook.react.modules.blob.BlobModule
 import com.facebook.react.modules.network.CookieJarContainer
 import com.facebook.react.modules.network.ForwardingCookieHandler
 import com.facebook.react.modules.network.OkHttpClientProvider
@@ -11,6 +12,7 @@ import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.toCodedException
+import expo.modules.kotlin.jni.NativeArrayBuffer
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.CoroutineName
@@ -25,6 +27,7 @@ class ExpoFetchModule : Module() {
     OkHttpClientProvider.createClient(reactContext)
       .newBuilder()
       .addInterceptor(OkHttpFileUrlInterceptor(reactContext))
+      .addInterceptor(TransparentCompressionInterceptor)
       .build()
   }
   private val cookieHandler by lazy { ForwardingCookieHandler(reactContext) }
@@ -45,6 +48,13 @@ class ExpoFetchModule : Module() {
 
     OnCreate {
       cookieJarContainer.setCookieJar(JavaNetCookieJar(cookieHandler))
+    }
+
+    // TODO(kudo,20260706): remove this when we install expo-blob as globalThis.Blob
+    AsyncFunction("unstable_createBlobData") { data: ByteArray ->
+      val blobModule = reactContext.getNativeModule(BlobModule::class.java)
+        ?: throw FetchBlobModuleUnavailableException()
+      return@AsyncFunction blobModule.store(data)
     }
 
     OnDestroy {
@@ -97,14 +107,14 @@ class ExpoFetchModule : Module() {
 
       AsyncFunction("arrayBuffer") { response: NativeResponse, promise: Promise ->
         response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
-          val data = response.sink.finalize()
-          promise.resolve(data)
+          val data = response.sink.finalize(directBuffer = true)
+          promise.resolve(NativeArrayBuffer(data))
         }
       }
 
       AsyncFunction("text") { response: NativeResponse, promise: Promise ->
         response.waitForStates(listOf(ResponseState.BODY_COMPLETED)) {
-          val data = response.sink.finalize()
+          val data = response.sink.finalize(directBuffer = false).array()
           val text = data.toString(Charsets.UTF_8)
           promise.resolve(text)
         }

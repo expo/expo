@@ -1,16 +1,12 @@
-import { Text, View, StyleSheet, Platform } from "react-native";
-import { ReactNode } from "react";
+import { ReactNode } from 'react';
+import { Text, View, StyleSheet, Platform } from 'react-native';
 
 interface TableProps {
   children: ReactNode;
 }
 
 export function Table({ children }: TableProps) {
-  return (
-    <View style={styles.tableContainer}>
-      {children}
-    </View>
-  );
+  return <View style={styles.tableContainer}>{children}</View>;
 }
 
 interface TableRowProps {
@@ -25,7 +21,7 @@ export function TableRow({ label, value, testID }: TableRowProps) {
       <Text style={styles.tableLabel}>{label}</Text>
       <View style={{ flex: 1 }} />
       <Text testID={testID} style={styles.tableValue}>
-        {JSON.stringify(value)}
+        {JSON.stringify(value, null, 2)}
       </Text>
     </View>
   );
@@ -65,5 +61,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     letterSpacing: 0.5,
     flexShrink: 1,
+    maxWidth: 800,
   },
 });

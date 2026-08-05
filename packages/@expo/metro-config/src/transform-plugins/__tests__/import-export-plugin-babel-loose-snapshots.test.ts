@@ -10,7 +10,7 @@ const opts = {
 
 const test =
   (name: string) =>
-  ([code]: readonly string[]) => [name, code];
+  ([code]: readonly string[]): [string, string] => [name, code!];
 
 const cases = [
   test('interop-loose export-default-10')`

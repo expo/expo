@@ -1,12 +1,21 @@
 import chalk from 'chalk';
 import type { Application } from 'express';
+import assert from 'node:assert';
 import fs from 'node:fs';
-import http from 'node:http';
+import type http from 'node:http';
 import path from 'node:path';
 import resolveFrom from 'resolve-from';
 import type webpack from 'webpack';
 import type WebpackDevServer from 'webpack-dev-server';
 
+import * as Log from '../../../log';
+import { env } from '../../../utils/env';
+import { CommandError } from '../../../utils/errors';
+import { setNodeEnv, loadEnvFiles } from '../../../utils/nodeEnv';
+import { createProgressBar } from '../../../utils/progress';
+import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
+import type { BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { BundlerDevServer } from '../BundlerDevServer';
 import { compileAsync } from './compile';
 import {
   importExpoWebpackConfigFromProject,
@@ -14,17 +23,6 @@ import {
   importWebpackFromProject,
 } from './resolveFromProject';
 import { ensureEnvironmentSupportsTLSAsync } from './tls';
-import * as Log from '../../../log';
-import { env } from '../../../utils/env';
-import { CommandError } from '../../../utils/errors';
-import { getIpAddress } from '../../../utils/ip';
-import { setNodeEnv } from '../../../utils/nodeEnv';
-import { choosePortAsync } from '../../../utils/port';
-import { createProgressBar } from '../../../utils/progress';
-import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
-import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-
-const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
 
 export type WebpackConfiguration = webpack.Configuration & {
   devServer?: {
@@ -80,22 +78,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
   isTargetingNative(): boolean {
     return false;
-  }
-
-  private async getAvailablePortAsync(options: { defaultPort?: number }): Promise<number> {
-    try {
-      const defaultPort = options?.defaultPort ?? 19006;
-      const port = await choosePortAsync(this.projectRoot, {
-        defaultPort,
-        host: env.WEB_HOST,
-      });
-      if (!port) {
-        throw new CommandError('NO_PORT_FOUND', `Port ${defaultPort} not available.`);
-      }
-      return port;
-    } catch (error: any) {
-      throw new CommandError('NO_PORT_FOUND', error.message);
-    }
   }
 
   async bundleAsync({ mode, clear }: { mode: 'development' | 'production'; clear: boolean }) {
@@ -157,26 +139,23 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     await this.stopAsync();
 
-    options.port = await this.getAvailablePortAsync({
-      defaultPort: options.port,
-    });
+    // The port is resolved by the caller before the dev server is started.
+    assert(options.port, 'Expected a port to be defined before starting the Webpack dev server');
+
     const { resetDevServer, https, port, mode } = options;
 
-    this.urlCreator = this.getUrlCreator({
+    const urlCreator = await this.initUrlCreator({
       port,
       location: {
         scheme: https ? 'https' : 'http',
       },
     });
 
-    debug('Starting webpack on port: ' + port);
-
     if (resetDevServer) {
       await this.clearWebProjectCacheAsync(this.projectRoot, mode);
     }
 
     if (https) {
-      debug('Configuring TLS to enable HTTPS support');
       await ensureEnvironmentSupportsTLSAsync(this.projectRoot).catch((error) => {
         Log.error(`Error creating TLS certificates: ${error}`);
       });
@@ -184,14 +163,17 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const config = await this.loadConfigAsync(options);
 
-    Log.log(chalk`Starting Webpack on port ${port} in {underline ${mode}} mode.`);
+    Log.log(chalk`Starting Webpack on port ${this.getPort()} in {underline ${mode}} mode.`);
 
     // Create a webpack compiler that is configured with custom messages.
     const compiler = webpack(config);
 
     const server = new WebpackDevServer(compiler, config.devServer);
+    const host =
+      env.WEB_HOST ?? (options.location.hostType === 'localhost' ? 'localhost' : undefined);
+
     // Launch WebpackDevServer.
-    server.listen(port, env.WEB_HOST, function (this: http.Server, error) {
+    server.listen(this.getPort(), host, function (this: http.Server, error) {
       if (error) {
         Log.error(error.message);
       }
@@ -207,16 +189,17 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       });
     };
 
-    const _host = getIpAddress();
+    const _host = urlCreator.getDefaultRouteAddress();
     const protocol = https ? 'https' : 'http';
 
     return {
       // Server instance
       server,
       // URL Info
+      // TODO(@kitten): Why is this not using the URL creator?
       location: {
-        url: `${protocol}://${_host}:${port}`,
-        port,
+        url: `${protocol}://${_host}:${this.getPort()}`,
+        port: this.getPort(),
         protocol,
         host: _host,
       },
@@ -255,8 +238,10 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       mode: options.mode,
       https: options.https,
     };
+
     setNodeEnv(env.mode ?? 'development');
-    require('@expo/env').load(env.projectRoot);
+    loadEnvFiles(env.projectRoot);
+
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
     let config: WebpackConfiguration;

@@ -1,17 +1,15 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
-import expo.modules.kotlin.AppContext
-import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.jni.ExpectedType
-import kotlin.reflect.KType
+import expo.modules.kotlin.types.descriptors.TypeDescriptor
 
 private fun createDeferredValue(
   value: Any,
   wasConverted: Boolean,
   typeConverter: TypeConverter<*>,
   expectedType: ExpectedType,
-  context: AppContext?
+  context: ConverterContext
 ): DeferredValue {
   for (type in expectedType.getPossibleTypes()) {
     if (wasConverted) {
@@ -27,7 +25,7 @@ private fun createDeferredValue(
   return IncompatibleValue
 }
 
-private fun tryToConvert(typeConverter: TypeConverter<*>, value: Any, context: AppContext?): Any? {
+private fun tryToConvert(typeConverter: TypeConverter<*>, value: Any, context: ConverterContext): Any? {
   return try {
     if (typeConverter.isTrivial() && value !is Dynamic) {
       value
@@ -45,9 +43,9 @@ private fun tryToConvert(typeConverter: TypeConverter<*>, value: Any, context: A
 
 private fun createDeferredValues(
   value: Any,
-  context: AppContext?,
+  context: ConverterContext,
   list: List<Pair<ExpectedType, TypeConverter<*>>>,
-  typeList: List<KType>
+  typeList: List<TypeDescriptor>
 ): List<DeferredValue> {
   var wasConverted = false
   val result = list.map { (expectedType, converter) ->
@@ -66,13 +64,12 @@ private fun createDeferredValues(
   return result
 }
 
-@EitherType
 class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType
+  eitherTypeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<Either<FirstType, SecondType>>() {
-  private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
-  private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
+  private val firstJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(0))
+  private val secondJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(1))
   private val firstTypeConverter = converterProvider.obtainTypeConverter(
     firstJavaType
   )
@@ -83,7 +80,7 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   private val secondType = secondTypeConverter.getCppRequiredTypes()
 
   // This converter it's always forcing the conversion of children converters - the `forceConversion` is ignored.
-  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): Either<FirstType, SecondType> {
+  override fun convertNonNullable(value: Any, context: ConverterContext, forceConversion: Boolean): Either<FirstType, SecondType> {
     val typeList = listOf(firstJavaType, secondJavaType)
 
     val deferredValues = createDeferredValues(
@@ -108,14 +105,13 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   override fun isTrivial(): Boolean = false
 }
 
-@EitherType
 class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType
+  eitherTypeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<EitherOfThree<FirstType, SecondType, ThirdType>>() {
-  private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
-  private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
-  private val thirdJavaType = requireNotNull(eitherType.arguments.getOrNull(2)?.type)
+  private val firstJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(0))
+  private val secondJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(1))
+  private val thirdJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(2))
   private val firstTypeConverter = converterProvider.obtainTypeConverter(
     firstJavaType
   )
@@ -131,7 +127,7 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
 
   override fun isTrivial(): Boolean = false
 
-  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): EitherOfThree<FirstType, SecondType, ThirdType> {
+  override fun convertNonNullable(value: Any, context: ConverterContext, forceConversion: Boolean): EitherOfThree<FirstType, SecondType, ThirdType> {
     val typeList = listOf(firstJavaType, secondJavaType, thirdJavaType)
     val deferredValues = createDeferredValues(
       value,
@@ -155,15 +151,14 @@ class EitherOfThreeTypeConverter<FirstType : Any, SecondType : Any, ThirdType : 
     ExpectedType.merge(firstType, secondType, thirdType)
 }
 
-@EitherType
 class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : Any, FourthType : Any>(
   converterProvider: TypeConverterProvider,
-  eitherType: KType
+  eitherTypeDescriptor: TypeDescriptor
 ) : NonNullableTypeConverter<EitherOfFour<FirstType, SecondType, ThirdType, FourthType>>() {
-  private val firstJavaType = requireNotNull(eitherType.arguments.getOrNull(0)?.type)
-  private val secondJavaType = requireNotNull(eitherType.arguments.getOrNull(1)?.type)
-  private val thirdJavaType = requireNotNull(eitherType.arguments.getOrNull(2)?.type)
-  private val fourthJavaType = requireNotNull(eitherType.arguments.getOrNull(3)?.type)
+  private val firstJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(0))
+  private val secondJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(1))
+  private val thirdJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(2))
+  private val fourthJavaType = requireNotNull(eitherTypeDescriptor.params.getOrNull(3))
   private val firstTypeConverter = converterProvider.obtainTypeConverter(
     firstJavaType
   )
@@ -183,7 +178,7 @@ class EitherOfFourTypeConverter<FirstType : Any, SecondType : Any, ThirdType : A
 
   override fun isTrivial(): Boolean = false
 
-  override fun convertNonNullable(value: Any, context: AppContext?, forceConversion: Boolean): EitherOfFour<FirstType, SecondType, ThirdType, FourthType> {
+  override fun convertNonNullable(value: Any, context: ConverterContext, forceConversion: Boolean): EitherOfFour<FirstType, SecondType, ThirdType, FourthType> {
     val typeList = listOf(firstJavaType, secondJavaType, thirdJavaType, fourthJavaType)
     val deferredValues = createDeferredValues(
       value,

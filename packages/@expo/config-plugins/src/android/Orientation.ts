@@ -1,7 +1,8 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
-import { AndroidManifest, getMainActivityOrThrow } from './Manifest';
 import { createAndroidManifestPlugin } from '../plugins/android-plugins';
+import type { AndroidManifest } from './Manifest';
+import { getMainActivityOrThrow } from './Manifest';
 
 export const SCREEN_ORIENTATION_ATTRIBUTE = 'android:screenOrientation';
 

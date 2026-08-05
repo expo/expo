@@ -173,6 +173,10 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
     )
   }
 
+  func appLoaderTask(_: AppLoaderTask, didUpdateProgress progress: Double) {
+    self.procedureContext.processStateEvent(.downloadProgress(progress: progress))
+  }
+
   func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
     logger.error(cause: UpdatesError.startupProcedureDidFinishWithError(cause: error), code: .updateFailedToLoad)
     self.procedureContext.processStateEvent(.downloadError(errorMessage: error.localizedDescription))
@@ -226,7 +230,7 @@ final class StartupProcedure: StateMachineProcedure, AppLoaderTaskDelegate, AppL
       )
       // TODO: handle rollbacks properly, but this works for now
       if self.procedureContext.getCurrentState() == .downloading {
-        self.procedureContext.processStateEvent(.downloadComplete)
+        self.procedureContext.processStateEvent(.downloadCompleteUnavailable)
       }
       // Otherwise, we don't need to call the state machine here, it already transitioned to .checkCompleteUnavailable
     }

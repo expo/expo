@@ -2,13 +2,16 @@ package expo.modules.devlauncher.react
 
 import android.content.Context
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
+import com.facebook.react.ReactHost
 import com.facebook.react.bridge.JavaScriptExecutorFactory
+import com.facebook.react.devsupport.DevMenuConfiguration
 import com.facebook.react.devsupport.DevSupportManagerFactory
 import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.devlauncher.DevLauncherController
 import java.lang.ref.WeakReference
 import expo.modules.updatesinterface.UpdatesControllerRegistry
+import expo.modules.updatesinterface.UpdatesDevLauncherInterface
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -36,6 +39,16 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
     return HermesExecutorFactory()
   }
 
+  override fun onDidCreateReactHost(context: Context, reactNativeHost: ReactHost) {
+    reactNativeHost.setDevMenuConfiguration(
+      DevMenuConfiguration(
+        devMenuEnabled = true,
+        shakeGestureEnabled = false,
+        keyboardShortcutsEnabled = true
+      )
+    )
+  }
+
   override fun onWillCreateReactInstance(useDeveloperSupport: Boolean) {
     super.onWillCreateReactInstance(useDeveloperSupport)
     // On New Architecture mode, `onWillCreateReactInstance()` would be called
@@ -45,7 +58,7 @@ class DevLauncherReactNativeHostHandler(context: Context) : ReactNativeHostHandl
     CoroutineScope(Dispatchers.Main).launch {
       UpdatesControllerRegistry.controller?.get()?.let {
         DevLauncherController.instance.updatesInterface = it
-        it.updatesInterfaceCallbacks = WeakReference(DevLauncherController.instance)
+        (it as UpdatesDevLauncherInterface).updatesInterfaceCallbacks = WeakReference(DevLauncherController.instance)
       }
     }
   }

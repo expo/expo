@@ -1,20 +1,18 @@
+import type { Terminal } from '@expo/metro/metro-core';
+import type { WatcherStatus } from '@expo/metro/metro-file-map';
 // This file represents an abstraction on the metro TerminalReporter.
 // We use this abstraction to safely extend the TerminalReporter for our own custom logging.
 import UpstreamTerminalReporter from '@expo/metro/metro/lib/TerminalReporter';
-import type { Terminal } from '@expo/metro/metro-core';
-import type { WatcherStatus } from '@expo/metro/metro-file-map';
 import chalk from 'chalk';
 import util from 'util';
 
-import {
+import { stripAnsi } from '../../../utils/ansi';
+import type {
   BundleDetails,
   BundleProgressUpdate,
   TerminalReportableEvent,
   TerminalReporterInterface,
 } from './TerminalReporter.types';
-import { stripAnsi } from '../../../utils/ansi';
-
-const debug = require('debug')('expo:metro:logger') as typeof console.log;
 
 /**
  * A standard way to log a warning to the terminal. This should not be called
@@ -58,6 +56,29 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
 
   /** Keep track of bundle processes that should not be logged. */
   _hiddenBundleEvents: Set<string> = new Set();
+
+  /**
+   * Override Metro's update() to clear the status before _log() runs.
+   *
+   * Metro's Terminal.#update() is async and snapshots #nextStatusStr at the start.
+   * When _log() calls terminal.log(), Terminal starts #update() which captures
+   * whatever status is currently set — often a stale progress bar. This progress bar
+   * gets written as permanent output between log lines because the next #update()
+   * cycle (which would clear it) runs 33ms later.
+   *
+   * By clearing the status to empty before _log(), Terminal's #update() captures
+   * an empty status and doesn't write any progress bars alongside log lines.
+   * The correct status is then restored by terminal.status() at the end.
+   */
+  update(event: TerminalReportableEvent): void {
+    if (
+      event.type !== 'bundle_transform_progressed' &&
+      event.type !== ('bundle_transform_progressed_throttled' as string)
+    ) {
+      this.terminal.status('');
+    }
+    super.update(event);
+  }
 
   _log(event: TerminalReportableEvent): void {
     switch (event.type) {
@@ -137,7 +158,6 @@ export class TerminalReporter extends XTerminalReporter implements TerminalRepor
 
     if (buildID && !this._hiddenBundleEvents.has(buildID)) {
       if (this.shouldFilterBundleEvent(event)) {
-        debug('skipping bundle events for', buildID, event);
         this._hiddenBundleEvents.add(buildID);
       } else {
         super._updateState(event);

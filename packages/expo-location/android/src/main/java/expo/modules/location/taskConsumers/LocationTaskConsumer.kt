@@ -17,10 +17,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
-import expo.modules.core.MapHelper
 import expo.modules.core.arguments.MapArguments
 import expo.modules.core.arguments.ReadableArguments
-import expo.modules.core.interfaces.Arguments
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.interfaces.taskManager.TaskConsumer
 import expo.modules.interfaces.taskManager.TaskConsumerInterface
@@ -197,7 +195,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       return
     }
 
-    // Service is not running and the user don't want to start foreground service.
+    // Service is not running and the user doesn't want to start foreground service.
     if (!useForegroundService) {
       return
     }
@@ -256,7 +254,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       // Some devices may broadcast the same location multiple times (mostly twice)
       // so we're filtering out these locations.
       if (timestamp > sLastTimestamp) {
-        val bundle = LocationResponse(location).toBundle(PersistableBundle::class.java)
+        val bundle = LocationResponse(location).toPersistableBundle()
         data.add(bundle)
         sLastTimestamp = timestamp
         lastReported = location
@@ -292,12 +290,12 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
       // Some devices may broadcast the same location multiple times (mostly twice) so we're filtering out these locations,
       // so only one location at the specific timestamp can schedule a job.
       if (timestamp > sLastTimestamp) {
-        val bundle = LocationResponse(location).toBundle(PersistableBundle::class.java)
+        val bundle = LocationResponse(location).toPersistableBundle()
         data.add(bundle)
         sLastTimestamp = timestamp
       }
     }
-    if (data.size > 0) {
+    if (data.isNotEmpty()) {
       // Save last reported location, reset the distance and clear a list of locations.
       mLastReportedLocation = mDeferredLocations[mDeferredLocations.size - 1]
       mDeferredDistance = 0.0
@@ -310,7 +308,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
 
   private fun shouldReportDeferredLocations(): Boolean {
     val task = mTask ?: return false
-    if (mDeferredLocations.size == 0) {
+    if (mDeferredLocations.isEmpty()) {
       return false
     }
     if (!mIsHostPaused) {
@@ -319,9 +317,8 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
     }
     val oldestLocation = mLastReportedLocation ?: mDeferredLocations[0]
     val newestLocation = mDeferredLocations[mDeferredLocations.size - 1]
-    val options: Arguments = MapHelper(task.options)
-    val distance = options.getDouble("deferredUpdatesDistance")
-    val interval = options.getLong("deferredUpdatesInterval")
+    val distance = (task.options["deferredUpdatesDistance"] as? Number)?.toDouble() ?: 0.0
+    val interval = (task.options["deferredUpdatesInterval"] as? Number)?.toLong() ?: 0L
     return newestLocation.time - oldestLocation.time >= interval && mDeferredDistance >= distance
   }
 
@@ -330,7 +327,7 @@ class LocationTaskConsumer(context: Context, taskManagerUtils: TaskManagerUtilsI
   }
 
   private fun executeTaskWithLocationBundles(locationBundles: ArrayList<Bundle>, callback: TaskExecutionCallback) {
-    if (locationBundles.size > 0 && mTask != null) {
+    if (locationBundles.isNotEmpty() && mTask != null) {
       val data = Bundle()
       data.putParcelableArrayList("locations", locationBundles)
       mTask?.execute(data, null, callback)

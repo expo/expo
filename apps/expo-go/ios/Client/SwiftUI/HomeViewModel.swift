@@ -24,7 +24,10 @@ class HomeViewModel: ObservableObject {
   @Published var developmentServers: [DevelopmentServer] = []
   @Published var projects: [ExpoProject] = []
   @Published var snacks: [Snack] = []
+  @Published var totalProjectCount: Int = 0
   @Published var isLoadingData = false
+  @Published var isLoadingApp = false
+  @Published var pendingLessonId: Int?
   @Published var dataError: APIError?
 
   private var cancellables = Set<AnyCancellable>()
@@ -64,11 +67,14 @@ class HomeViewModel: ObservableObject {
   }
 
   func onViewWillAppear() {
-    serverService.startDiscovery()
     serverService.setSessionSecret(authService.sessionSecret)
 
     if isAuthenticated, let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
+    }
+
+    if serverService.hasGrantedNetworkPermission || DevelopmentServerService.isSimulator {
+      serverService.startDiscovery()
     }
 
     Task {
@@ -103,14 +109,27 @@ class HomeViewModel: ObservableObject {
     }
   }
 
+  func ssoLogin() async {
+    do {
+      try await authService.ssoLogin()
+      if let account = selectedAccount {
+        dataService.startPolling(accountName: account.name)
+      }
+    } catch {
+      showError("Failed to sign in with SSO")
+    }
+  }
+
   func signOut() {
     authService.signOut()
+    clearRecentlyOpenedApps()
     dataService.clearData()
     dataService.stopPolling()
   }
 
   func selectAccount(accountId: String) {
     authService.selectAccount(accountId: accountId)
+    clearRecentlyOpenedApps()
     if let account = selectedAccount {
       dataService.startPolling(accountName: account.name)
     }
@@ -119,11 +138,10 @@ class HomeViewModel: ObservableObject {
   func refreshData() async {
     guard let account = selectedAccount else { return }
 
-    async let task = dataService.fetchProjectsAndData(accountName: account.name)
-    serverService.discoverDevelopmentServers()
-    serverService.refreshRemoteSessions()
+    async let fetchTask: Void = dataService.fetchProjectsAndData(accountName: account.name)
+    async let remoteTask: Void = serverService.refreshRemoteSessions()
 
-    await task
+    _ = await (fetchTask, remoteTask)
   }
 
   func addToRecentlyOpened(url: String, name: String, iconUrl: String? = nil) {
@@ -176,6 +194,10 @@ class HomeViewModel: ObservableObject {
     openAppViaBridge(url: url)
   }
 
+  func openApp(url: String, snackParams: NSDictionary) {
+    openAppViaBridge(url: url, snackParams: snackParams)
+  }
+
   func updateShakeGesture(_ enabled: Bool) {
     settingsManager.updateShakeGesture(enabled)
   }
@@ -222,6 +244,10 @@ class HomeViewModel: ObservableObject {
 
     dataService.$snacks
       .sink { [weak self] in self?.snacks = $0 }
+      .store(in: &cancellables)
+
+    dataService.$totalProjectCount
+      .sink { [weak self] in self?.totalProjectCount = $0 }
       .store(in: &cancellables)
 
     dataService.$isLoadingData
@@ -275,7 +301,7 @@ struct RecentlyOpenedApp: Identifiable, Codable {
   var iconUrl: String?
 }
 
-struct DevelopmentServer: Identifiable {
+struct DevelopmentServer: Identifiable, Equatable {
   var id: String { url }
   let url: String
   let description: String
@@ -284,7 +310,7 @@ struct DevelopmentServer: Identifiable {
   var iconUrl: String?
 }
 
-struct ExpoProject: Identifiable, Codable {
+struct ExpoProject: Identifiable, Codable, Equatable {
   let id: String
   let name: String
   let fullName: String

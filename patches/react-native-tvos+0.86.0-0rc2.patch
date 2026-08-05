@@ -1,0 +1,211 @@
+diff --git a/node_modules/react-native-tvos/React/Base/RCTConstants.m b/node_modules/react-native-tvos/React/Base/RCTConstants.m
+index eb90640..fbeb63b 100644
+--- a/node_modules/react-native-tvos/React/Base/RCTConstants.m
++++ b/node_modules/react-native-tvos/React/Base/RCTConstants.m
+@@ -7,7 +7,7 @@
+ 
+ #import "RCTConstants.h"
+ 
+-NSString *const RCTPlatformName = @"ios";
++NSString *const RCTPlatformName = @"tvos";
+ 
+ NSString *const RCTUserInterfaceStyleDidChangeNotification = @"RCTUserInterfaceStyleDidChangeNotification";
+ NSString *const RCTUserInterfaceStyleDidChangeNotificationTraitCollectionKey = @"traitCollection";
+diff --git a/node_modules/react-native-tvos/react-native.config.js b/node_modules/react-native-tvos/react-native.config.js
+index 6d70ec0..714fea5 100644
+--- a/node_modules/react-native-tvos/react-native.config.js
++++ b/node_modules/react-native-tvos/react-native.config.js
+@@ -120,14 +120,6 @@ const config = {
+     }>} */,
+ };
+ 
+-if (ios != null) {
+-  config.commands.push(...ios.commands);
+-  config.platforms.ios = {
+-    projectConfig: ios.projectConfig,
+-    dependencyConfig: ios.dependencyConfig,
+-  };
+-}
+-
+ if (android != null) {
+   config.commands.push(...android.commands);
+   config.platforms.android = {
+@@ -144,6 +136,7 @@ try {
+   config.platforms.tvos = {
+     projectConfig: apple.getProjectConfig({platformName: 'tvos'}),
+     dependencyConfig: apple.getDependencyConfig({platformName: 'tvos'}),
++    npmPackageName: 'react-native-macos',
+   };
+ } catch {
+   if (verbose) {
+diff --git a/node_modules/react-native-tvos/scripts/cocoapods/autolinking.rb b/node_modules/react-native-tvos/scripts/cocoapods/autolinking.rb
+index d8e9c7c..ac23875 100644
+--- a/node_modules/react-native-tvos/scripts/cocoapods/autolinking.rb
++++ b/node_modules/react-native-tvos/scripts/cocoapods/autolinking.rb
+@@ -38,7 +38,8 @@ def list_native_modules!(config_command)
+   config = JSON.parse(json)
+ 
+   packages = config["dependencies"]
+-  ios_project_root = Pathname.new(config["project"]["ios"]["sourceDir"])
++  project_config = config["project"]["tvos"] || config["project"]["ios"]
++  ios_project_root = Pathname.new(project_config["sourceDir"])
+   react_native_path = Pathname.new(config["reactNativePath"])
+   codegen_output_path = ios_project_root.join("build/generated/autolinking/autolinking.json")
+ 
+@@ -49,7 +50,7 @@ def list_native_modules!(config_command)
+   found_pods = []
+ 
+   packages.each do |package_name, package|
+-    next unless package_config = package["platforms"]["ios"]
++    next unless package_config = package["platforms"]["tvos"] || package["platforms"]["ios"]
+ 
+     name = package["name"]
+     podspec_path = package_config["podspecPath"]
+@@ -109,6 +110,8 @@ end
+ def link_native_modules!(config)
+   Pod::UI.puts "link_native_modules! #{config}"
+ 
++  Pod::UI.warn("react_native_path = #{config[:react_native_path]}")
++
+   if !(
+     config[:ios_packages].is_a? Array and
+     config[:ios_project_root_path].is_a? String and
+diff --git a/node_modules/react-native-tvos/scripts/cocoapods/codegen.rb b/node_modules/react-native-tvos/scripts/cocoapods/codegen.rb
+index a5cf266..d9b952d 100644
+--- a/node_modules/react-native-tvos/scripts/cocoapods/codegen.rb
++++ b/node_modules/react-native-tvos/scripts/cocoapods/codegen.rb
+@@ -11,7 +11,7 @@ def run_codegen!(
+   config_file_dir,
+   new_arch_enabled: true,
+   disable_codegen: false,
+-  react_native_path: "../node_modules/react-native",
++  react_native_path: "../node_modules/react-native-tvos",
+   fabric_enabled: false,
+   hermes_enabled: true,
+   codegen_output_dir: 'build/generated/ios',
+diff --git a/node_modules/react-native-tvos/scripts/cocoapods/codegen_utils.rb b/node_modules/react-native-tvos/scripts/cocoapods/codegen_utils.rb
+index 3c51ad5..d4d762b 100644
+--- a/node_modules/react-native-tvos/scripts/cocoapods/codegen_utils.rb
++++ b/node_modules/react-native-tvos/scripts/cocoapods/codegen_utils.rb
+@@ -26,7 +26,7 @@ class CodegenUtils
+     def use_react_native_codegen_discovery!(
+       codegen_disabled,
+       app_path,
+-      react_native_path: "../node_modules/react-native",
++      react_native_path: "../node_modules/react-native-tvos",
+       fabric_enabled: false,
+       hermes_enabled: true,
+       config_file_dir: '',
+diff --git a/node_modules/react-native-tvos/scripts/cocoapods/fabric.rb b/node_modules/react-native-tvos/scripts/cocoapods/fabric.rb
+index b6c8264..72fa064 100644
+--- a/node_modules/react-native-tvos/scripts/cocoapods/fabric.rb
++++ b/node_modules/react-native-tvos/scripts/cocoapods/fabric.rb
+@@ -7,7 +7,7 @@
+ # It sets up the Fabric dependencies.
+ #
+ # @parameter react_native_path: relative path to react-native
+-def setup_fabric!(react_native_path: "../node_modules/react-native")
++def setup_fabric!(react_native_path: "../node_modules/react-native-tvos")
+     pod 'React-Fabric', :path => "#{react_native_path}/ReactCommon"
+     pod 'React-FabricComponents', :path => "#{react_native_path}/ReactCommon"
+     pod 'React-graphics', :path => "#{react_native_path}/ReactCommon/react/renderer/graphics"
+diff --git a/node_modules/react-native-tvos/scripts/cocoapods/jsengine.rb b/node_modules/react-native-tvos/scripts/cocoapods/jsengine.rb
+index a15c928..be7909d 100644
+--- a/node_modules/react-native-tvos/scripts/cocoapods/jsengine.rb
++++ b/node_modules/react-native-tvos/scripts/cocoapods/jsengine.rb
+@@ -9,7 +9,7 @@ require_relative './utils.rb'
+ #
+ # @parameter react_native_path: relative path to react-native
+ # @parameter fabric_enabled: whether Fabirc is enabled
+-def setup_hermes!(react_native_path: "../node_modules/react-native")
++def setup_hermes!(react_native_path: "../node_modules/react-native-tvos")
+     react_native_dir = Pod::Config.instance.installation_root.join(react_native_path)
+     # This `:tag => hermestag` below is only to tell CocoaPods to update hermes-engine when React Native version changes.
+     # We have custom logic to compute the source for hermes-engine. See sdks/hermes-engine/*
+diff --git a/node_modules/react-native-tvos/scripts/cocoapods/local_podspec_patch.rb b/node_modules/react-native-tvos/scripts/cocoapods/local_podspec_patch.rb
+index 1f7fea8..f3ad9ed 100644
+--- a/node_modules/react-native-tvos/scripts/cocoapods/local_podspec_patch.rb
++++ b/node_modules/react-native-tvos/scripts/cocoapods/local_podspec_patch.rb
+@@ -7,7 +7,7 @@
+ # This is necessary because local podspec dependencies must be otherwise manually updated.
+ module LocalPodspecPatch
+     # Returns local podspecs whose versions differ from the one in the `react-native` package.
+-    def self.pods_to_update(react_native_path: "../node_modules/react-native", dir_manager: Dir, file_manager: File)
++    def self.pods_to_update(react_native_path: "../node_modules/react-native-tvos", dir_manager: Dir, file_manager: File)
+         @@local_podspecs = dir_manager.glob("#{react_native_path}/third-party-podspecs/*").map { |file| file_manager.basename(file, ".podspec") }
+         @@local_podspecs = @@local_podspecs.select do |podspec_name|
+ 
+diff --git a/node_modules/react-native-tvos/scripts/cocoapods/runtime.rb b/node_modules/react-native-tvos/scripts/cocoapods/runtime.rb
+index c2833d8..9d00361 100644
+--- a/node_modules/react-native-tvos/scripts/cocoapods/runtime.rb
++++ b/node_modules/react-native-tvos/scripts/cocoapods/runtime.rb
+@@ -7,7 +7,7 @@
+ # Set up Bridgeless dependencies
+ #
+ # @parameter react_native_path: relative path to react-native
+-def setup_bridgeless!(react_native_path: "../node_modules/react-native", use_hermes: true)
++def setup_bridgeless!(react_native_path: "../node_modules/react-native-tvos", use_hermes: true)
+     pod "React-jsitracing", :path => "#{react_native_path}/ReactCommon/hermes/executor/"
+     pod "React-runtimescheduler", :path => "#{react_native_path}/ReactCommon/react/renderer/runtimescheduler"
+     pod 'React-RuntimeCore', :path => "#{react_native_path}/ReactCommon/react/runtime"
+diff --git a/node_modules/react-native-tvos/scripts/codegen/generate-artifacts-executor/utils.js b/node_modules/react-native-tvos/scripts/codegen/generate-artifacts-executor/utils.js
+index 3ffba68..59ca6c7 100644
+--- a/node_modules/react-native-tvos/scripts/codegen/generate-artifacts-executor/utils.js
++++ b/node_modules/react-native-tvos/scripts/codegen/generate-artifacts-executor/utils.js
+@@ -479,7 +479,7 @@ function findReactNativeRootPath(projectRoot /* : string */) /* : string */ {
+   let reactNativePackageJsonPath;
+   try {
+     reactNativePackageJsonPath = require.resolve(
+-      path.join('react-native', 'package.json'),
++      path.join('react-native-tvos', 'package.json'),
+       {
+         paths: [projectRoot],
+       },
+diff --git a/node_modules/react-native-tvos/scripts/react_native_pods.rb b/node_modules/react-native-tvos/scripts/react_native_pods.rb
+index f2525de..a560e41 100644
+--- a/node_modules/react-native-tvos/scripts/react_native_pods.rb
++++ b/node_modules/react-native-tvos/scripts/react_native_pods.rb
+@@ -63,7 +63,7 @@ end
+ # - app_path: path to the React Native app. Required by the New Architecture.
+ # - config_file_dir: directory of the `package.json` file, required by the New Architecture.
+ def use_react_native! (
+-  path: "../node_modules/react-native",
++  path: "../node_modules/react-native-tvos",
+   fabric_enabled: false,
+   new_arch_enabled: NewArchitectureHelper.new_arch_enabled,
+   production: false, # deprecated
+@@ -514,7 +514,7 @@ end
+ # - enable_hermes_profiler: whether the hermes profiler should be turned on in Release mode
+ def react_native_post_install(
+   installer,
+-  react_native_path = "../node_modules/react-native",
++  react_native_path = "../node_modules/react-native-tvos",
+   mac_catalyst_enabled: false,
+   ccache_enabled: ENV['USE_CCACHE'] == '1'
+ )
+diff --git a/node_modules/react-native-tvos/sdks/hermes-engine/hermes-engine.podspec b/node_modules/react-native-tvos/sdks/hermes-engine/hermes-engine.podspec
+index cacef72..e81a035 100644
+--- a/node_modules/react-native-tvos/sdks/hermes-engine/hermes-engine.podspec
++++ b/node_modules/react-native-tvos/sdks/hermes-engine/hermes-engine.podspec
+@@ -9,7 +9,7 @@ require_relative "./hermes-utils.rb"
+ begin
+   react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
+     'require.resolve(
+-    "react-native",
++    "react-native-tvos",
+     {paths: [process.argv[1]]},
+     )', __dir__]).strip
+   )
+diff --git a/node_modules/react-native-tvos/third-party-podspecs/ReactNativeDependencies.podspec b/node_modules/react-native-tvos/third-party-podspecs/ReactNativeDependencies.podspec
+index 0c41590..a158850 100644
+--- a/node_modules/react-native-tvos/third-party-podspecs/ReactNativeDependencies.podspec
++++ b/node_modules/react-native-tvos/third-party-podspecs/ReactNativeDependencies.podspec
+@@ -9,7 +9,7 @@ require_relative "../scripts/cocoapods/utils.rb"
+ begin
+   react_native_path = File.dirname(Pod::Executable.execute_command('node', ['-p',
+     'require.resolve(
+-    "react-native",
++    "react-native-tvos",
+     {paths: [process.argv[1]]},
+     )', __dir__]).strip
+   )

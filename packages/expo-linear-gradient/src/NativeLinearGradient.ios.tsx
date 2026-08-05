@@ -1,11 +1,11 @@
 'use client';
 
-import { requireNativeViewManager } from 'expo-modules-core';
-import * as React from 'react';
+import { requireNativeView } from 'expo';
+import type * as React from 'react';
 
-import { NativeLinearGradientProps } from './NativeLinearGradient.types';
+import type { NativeLinearGradientProps } from './NativeLinearGradient.types';
 
-const NativeLinearGradient = requireNativeViewManager(
+const NativeLinearGradient = requireNativeView(
   'ExpoLinearGradient'
 ) as React.FC<NativeLinearGradientProps>;
 

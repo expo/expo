@@ -1,4 +1,5 @@
 import Foundation
+internal import React
 import ExpoModulesCore
 
 public protocol ScreenOrientationController: AnyObject {
@@ -22,13 +23,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
-    let keyWindow = UIApplication
-      .shared
-      .connectedScenes
-      .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
-      .last { $0.isKeyWindow }
-
-    return keyWindow?.rootViewController
+    return SceneGeometry.keyWindow()?.rootViewController
   }
 
   public var currentOrientationMask: UIInterfaceOrientationMask {
@@ -57,7 +52,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
    Called by ScreenOrientationAppDelegate in order to set initial interface orientation.
    */
   public func updateCurrentScreenOrientation() {
-      self.currentScreenOrientation = rootViewController?.view.window?.windowScene?.interfaceOrientation ?? .unknown
+    self.currentScreenOrientation = SceneGeometry.interfaceOrientation(for: rootViewController?.view)
   }
 
   deinit {
@@ -88,14 +83,22 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         return
       }
 
-      if #available(iOS 16.0, *) {
-        let windowScene = self.rootViewController?.view.window?.windowScene
-        windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
-        self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
-      } else {
-        UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
-        UIViewController.attemptRotationToDeviceOrientation()
+      let windowScene = SceneGeometry.windowScene(for: self.rootViewController?.view)
+      windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask)) { error in
+        #if DEBUG
+        log.warn(
+          "Couldn't lock the screen orientation because the system refused the request. This happens "
+          + "when your app is resizable, such as iPad multitasking, iPhone Mirroring, or any app on "
+          + "iOS 27 and later, where a supported orientation is only a preference. Design your screens "
+          + "to adapt to the available space, or on iPad set `ios.requireFullScreen` to `true` in your "
+          + "app config. See https://docs.expo.dev/versions/latest/sdk/screen-orientation/ "
+          + "Underlying error: \(error.localizedDescription)"
+        )
+        #endif
       }
+      self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
+      UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
+      UIViewController.attemptRotationToDeviceOrientation()
 
       if self.currentScreenOrientation == .unknown {
         // CurrentScreenOrientation might be unknown (especially just after launch), but at this point we already know it.
@@ -150,7 +153,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
     var newScreenOrientation = UIInterfaceOrientation.unknown
 
-    // We need to deduce what is the new screen orientaiton based on currentOrientationMask and new dimensions of the view
+    // We need to deduce what is the new screen orientation based on currentOrientationMask and new dimensions of the view
     if orientation.isPortrait {
       // From trait collection, we know that screen is in portrait or upside down orientation.
       let portraitMask = currentOrientationMask.intersection([.portrait, .portraitUpsideDown])

@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXKernelServiceRegistry.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXKernelAppRegistry.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXKernelLinkingManager.h"
 #import "EXSensorManager.h"
 #import "EXUpdatesDatabaseManager.h"

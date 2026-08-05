@@ -4,31 +4,38 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import type { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
+import type { GetStaticContentOptions } from '@expo/router-server/build/static/renderStaticContent';
 import chalk from 'chalk';
-import { RouteNode } from 'expo-router/build/Route';
-import { getLoaderModulePath } from 'expo-router/build/loaders/utils';
-import { stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
+import type { RouteNode } from 'expo-router/build/Route';
+import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
-import { type RoutesManifest } from 'expo-server/private';
+import type { PageHeaderInfo, RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
 
-import { getVirtualFaviconAssetsAsync } from './favicon';
-import { persistMetroAssetsAsync } from './persistMetroAssets';
-import { ExportAssetMap, getFilesFromSerialAssets } from './saveAssets';
 import { Log } from '../log';
-import {
+import type {
   ExpoRouterRuntimeManifest,
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
+import { SSG_LOADER_HEADER_ALLOWLIST } from '../start/server/metro/resolveLoader';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
-import { serializeHtmlWithAssets } from '../start/server/metro/serializeHtml';
+import {
+  assetsRequiresSort,
+  serializeHtmlWithAssets,
+  sortMatchedAssetsByEntryPoints,
+} from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
-
-const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
+import { event, debugEvent } from './events';
+import { generateFaviconAssetAsync } from './favicon';
+import { persistMetroAssetsAsync } from './persistMetroAssets';
+import type { ExportAssetMap } from './saveAssets';
+import { getFilesFromSerialAssets } from './saveAssets';
+import type { StaticManifest } from './static';
 
 type ExtraScriptTag = {
   platform: string;
@@ -84,7 +91,6 @@ export async function getFilesToExportFromServerAsync(
   projectRoot: string,
   {
     manifest,
-    serverManifest,
     renderAsync,
     // Servers can handle group routes automatically and therefore
     // don't require the build-time generation of every possible group
@@ -95,7 +101,6 @@ export async function getFilesToExportFromServerAsync(
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
-    serverManifest: RoutesManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
     /**
@@ -108,19 +113,6 @@ export async function getFilesToExportFromServerAsync(
     files?: ExportAssetMap;
   }
 ): Promise<ExportAssetMap> {
-  if (!exportServer && serverManifest) {
-    // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
-    // EAS Hosting to recognize the `headers` and `redirects` configs
-    const subsetServerManifest = {
-      headers: serverManifest.headers,
-      redirects: serverManifest.redirects,
-    };
-    files.set('_expo/.routes.json', {
-      contents: JSON.stringify(subsetServerManifest, null, 2),
-      targetDomain: 'client',
-    });
-  }
-
   // Skip HTML pre-rendering in SSR mode since HTML will be rendered at runtime.
   if (skipHtmlPrerendering) {
     return files;
@@ -206,18 +198,20 @@ export async function exportFromServerAsync(
     scriptTags,
   }: Options
 ): Promise<ExportAssetMap> {
-  Log.log(
-    `Static rendering is enabled. ` +
-      learnMore('https://docs.expo.dev/router/reference/static-rendering/')
-  );
+  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
+
+  const logOutput =
+    exp?.web?.output === 'server' && useServerRendering
+      ? `Server rendering is enabled. ${learnMore('https://docs.expo.dev/router/web/server-rendering/')}`
+      : `Static rendering is enabled. ${learnMore('https://docs.expo.dev/router/web/static-rendering/')}`;
+  Log.log(logOutput);
 
   const platform = 'web';
   const isExporting = true;
-  const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
   const isExportingWithSSR =
     exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
-  const injectFaviconTag = await getVirtualFaviconAssetsAsync(projectRoot, {
+  const faviconAsset = await generateFaviconAssetAsync(projectRoot, {
     outputDir,
     baseUrl,
     files,
@@ -234,12 +228,26 @@ export async function exportFromServerAsync(
 
   makeRuntimeEntryPointsAbsolute(manifest, appDir);
 
-  debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
+  debugEvent('static:routes_manifest', {
+    routes: inspect(manifest, { colors: true, depth: null }),
+  });
+
+  const loaderReferenceCount = new Set(
+    resources.artifacts?.flatMap((artifact) => artifact.metadata?.loaderReferences ?? [])
+  ).size;
+  event('static:routes', {
+    total: getHtmlFiles({ manifest, includeGroupVariations: false }).length,
+    withLoaders: loaderReferenceCount,
+  });
+
+  // Group variations prerender several pathnames from one loader file, so these maps can differ
+  // in size.
+  const loaderHeadersByPage = new Map<string, Record<string, string>>();
+  const loaderHeadersByFile = new Map<string, Record<string, string>>();
 
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
     manifest,
-    serverManifest,
     exportServer,
     skipHtmlPrerendering: isExportingWithSSR,
     async renderAsync({ pathname, route }) {
@@ -247,22 +255,44 @@ export async function exportFromServerAsync(
         pathname === '' ? '/' : pathname.startsWith('/') ? pathname : `/${pathname}`;
 
       const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
-      let renderOpts;
+      const renderOpts: GetStaticContentOptions = {};
 
       if (useServerLoaders) {
-        const loaderResult = await executeLoaderAsync(normalizedPathname, route);
+        const loaderResponse = await executeLoaderAsync(normalizedPathname, route);
 
-        if (loaderResult !== undefined) {
-          const loaderPath = getLoaderModulePath(normalizedPathname);
-          const fileSystemPath = loaderPath.startsWith('/') ? loaderPath.slice(1) : loaderPath;
+        if (loaderResponse !== undefined) {
+          const data = await loaderResponse.json();
+          // Transforms a `route.contextKey` into a normalized path. For example,
+          // `./nested/[id]/index.tsx` becomes `/nested/[id]/index`
+          const loaderKey = getContextKey(route.contextKey);
+          const fileSystemPath = `_expo/loaders${loaderKey}`;
           files.set(fileSystemPath, {
-            contents: JSON.stringify(loaderResult.data, null, 2),
+            contents: JSON.stringify(data, null, 2),
             targetDomain: 'client',
-            loaderId: normalizedPathname,
+            loaderId: loaderKey,
           });
 
-          renderOpts = { loader: { data: loaderResult.data } };
+          const declaredHeaders: Record<string, string> = {};
+          for (const name of SSG_LOADER_HEADER_ALLOWLIST) {
+            const value = loaderResponse.headers.get(name);
+            if (value) {
+              declaredHeaders[name] = value;
+            }
+          }
+          if (Object.keys(declaredHeaders).length) {
+            loaderHeadersByPage.set(normalizedPathname, declaredHeaders);
+            // NOTE(@hassankhan): Last-write-wins when concurrent group
+            // variations share a loader file; fine for SSG as loaders don't get
+            // a `request` and will produce identical headers.
+            loaderHeadersByFile.set(`/${fileSystemPath}`, declaredHeaders);
+          }
+
+          renderOpts.loader = { data, key: loaderKey };
         }
+      }
+
+      if (faviconAsset) {
+        renderOpts.assets = { css: [], js: [], favicon: faviconAsset.href };
       }
 
       const template = await renderAsync(normalizedPathname, route, renderOpts);
@@ -275,10 +305,6 @@ export async function exportFromServerAsync(
         hydrate: true,
       });
 
-      if (injectFaviconTag) {
-        html = injectFaviconTag(html);
-      }
-
       if (scriptTags) {
         // Inject script tags into the HTML.
         // <script type="type/expo" data-platform="ios" src="..." />
@@ -288,6 +314,30 @@ export async function exportFromServerAsync(
       return html;
     },
   });
+
+  const loaderHeaderRules = [
+    ...toLoaderRules(loaderHeadersByPage),
+    ...toLoaderRules(loaderHeadersByFile),
+  ];
+
+  // Appended after any pre-existing rules so the loader-declared values win.
+  if (loaderHeaderRules.length) {
+    serverManifest.pageHeaders = [...(serverManifest.pageHeaders ?? []), ...loaderHeaderRules];
+  }
+
+  if (!exportServer) {
+    // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
+    // EAS Hosting to recognize the `headers`, `pageHeaders`, and `redirects` configs
+    const subsetServerManifest: StaticManifest = {
+      headers: serverManifest.headers,
+      pageHeaders: serverManifest.pageHeaders,
+      redirects: serverManifest.redirects,
+    };
+    files.set('_expo/.routes.json', {
+      contents: JSON.stringify(subsetServerManifest, null, 2),
+      targetDomain: 'client',
+    });
+  }
 
   getFilesFromSerialAssets(resources.artifacts, {
     platform,
@@ -321,6 +371,16 @@ export async function exportFromServerAsync(
       files.set(route, contents);
     }
 
+    // Add any loader-declared headers
+    if (loaderHeaderRules.length) {
+      updateExportManifestInFiles({
+        files,
+        callback: (manifest) => {
+          manifest.pageHeaders = [...(manifest.pageHeaders ?? []), ...loaderHeaderRules];
+        },
+      });
+    }
+
     // Export SSR render module and add SSR configuration to routes manifest
     if (isExportingWithSSR) {
       await devServer.exportExpoRouterRenderModuleAsync({
@@ -347,22 +407,80 @@ export async function exportFromServerAsync(
         });
       }
 
+      const toAssetUrl = (filename: string) =>
+        baseUrl ? `${baseUrl}/${filename}` : `/${filename}`;
+
       const cssAssets = resources.artifacts
         .filter((asset) => asset.type === 'css')
-        .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
-      const jsAssets = resources.artifacts
-        .filter((asset) => asset.type === 'js')
-        .map((asset) => (baseUrl ? `${baseUrl}/${asset.filename}` : `/${asset.filename}`));
+        .map((asset) => toAssetUrl(asset.filename));
+
+      // External stylesheets (`@import url(https://...)`) are extracted out of the bundled CSS.
+      const externalCssAssets = resources.artifacts
+        .filter((asset) => asset.type === 'css-external')
+        .map((asset) => ({
+          href: asset.filename,
+          media: asset.metadata.media,
+        }));
+
+      const jsArtifacts = resources.artifacts.filter((asset) => asset.type === 'js');
+      const orderedJsAssets = assetsRequiresSort(jsArtifacts);
+      const syncJs = orderedJsAssets.filter((asset) => !asset.metadata.isAsync);
+      const asyncJs = orderedJsAssets.filter((asset) => asset.metadata.isAsync);
+
+      const syncJsAssets = syncJs.map((asset) => toAssetUrl(asset.filename));
+
+      const htmlRoutes = getHtmlFiles({ manifest, includeGroupVariations: false });
+
+      // Build per-route async chunk assignments
+      const routeAssets = new Map<string, string[]>();
+      for (const { route } of htmlRoutes) {
+        if (!route.entryPoints || !Array.isArray(route.entryPoints)) {
+          continue;
+        }
+
+        const matchedChunks: SerialAsset[] = [];
+        for (const asyncChunk of asyncJs) {
+          if (!asyncChunk.metadata.modulePaths || !Array.isArray(asyncChunk.metadata.modulePaths)) {
+            continue;
+          }
+          const hasRouteEntryPoint = route.entryPoints.some((entryPoint) =>
+            (asyncChunk.metadata.modulePaths as string[]).includes(entryPoint)
+          );
+          if (hasRouteEntryPoint) {
+            matchedChunks.push(asyncChunk);
+          }
+        }
+
+        if (matchedChunks.length > 0) {
+          const sorted = sortMatchedAssetsByEntryPoints(matchedChunks, route.entryPoints);
+          routeAssets.set(
+            route.contextKey,
+            sorted.map((chunk) => toAssetUrl(chunk.filename))
+          );
+        }
+      }
 
       // Add assets and rendering config to the routes manifest
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
-          manifest.assets = { css: cssAssets, js: jsAssets };
+          manifest.assets = {
+            css: cssAssets,
+            externalCss: externalCssAssets,
+            js: syncJsAssets,
+            favicon: faviconAsset?.href,
+          };
           manifest.rendering = {
             mode: 'ssr',
             file: '_expo/server/render.js',
           };
+
+          for (const route of manifest.htmlRoutes) {
+            const asyncChunks = routeAssets.get(route.file);
+            if (asyncChunks) {
+              route.assets = { css: [], js: asyncChunks };
+            }
+          }
         },
       });
     }
@@ -502,7 +620,7 @@ export function getPathVariations(routePath: string): string[] {
 
     const [head, ...rest] = segments;
 
-    if (matchGroupName(head)) {
+    if (head && matchGroupName(head)) {
       const groups = head.slice(1, -1).split(',');
 
       if (groups.length > 1) {
@@ -516,10 +634,10 @@ export function getPathVariations(routePath: string): string[] {
         generateVariations(rest, current ? `${current}/(${groups[0]})` : `(${groups[0]})`);
         // This code will continue and add paths without this group included`
       }
-    } else if (current) {
+    } else if (head && current) {
       current = `${current}/${head}`;
     } else {
-      current = head;
+      current = head ?? current;
     }
 
     generateVariations(rest, current);
@@ -564,7 +682,6 @@ export async function exportApiRoutesStandaloneAsync(
     // TODO: Export an HTML entry for each file. This is a temporary solution until we have SSR/SSG for RSC.
     await getFilesToExportFromServerAsync(devServer.projectRoot, {
       manifest: htmlManifest,
-      serverManifest,
       exportServer: true,
       files,
       renderAsync: async ({ pathname, filePath }) => {
@@ -672,12 +789,11 @@ async function exportLoadersAsync({
   }
 
   if (entryPoints.length === 0) {
-    debug('No routes with loaders to bundle');
     return;
   }
 
   const entryPointModules = entryPoints.map((e) => e.page);
-  debug('Bundling loaders for routes:', entryPointModules);
+  debugEvent('static:bundling_loaders', { modules: entryPointModules });
 
   await devServer.exportExpoRouterLoadersAsync({
     platform,
@@ -699,8 +815,6 @@ async function exportLoadersAsync({
       }
     },
   });
-
-  debug('Exported loaders for routes:', entryPointModules);
 }
 
 // NOTE(@hassankhan): We should ideally persist the manifest to `files` only once instead of
@@ -722,4 +836,28 @@ function updateExportManifestInFiles({
       contents: JSON.stringify(manifest, null, 2),
     });
   }
+}
+
+/**
+ * Compiles a concrete pathname into an exact-match `namedRegex`. Exported pathnames are literal,
+ * so route syntax like `[param]` or `(group)` is escaped rather than parameterized.
+ *
+ * @see @expo/router-server/src/getNamedParametrizedRoute.ts
+ */
+export function getExactPathNamedRegex(pathname: string): string {
+  const escaped = pathname.replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
+  return `^${escaped}(?:/)?$`;
+}
+
+/**
+ * Converts headers keyed by pathname into exact-match `pageHeaders` rules, sorted for
+ * deterministic manifest output.
+ */
+function toLoaderRules(rulesByPath: Map<string, Record<string, string>>): PageHeaderInfo<string>[] {
+  return [...rulesByPath.entries()]
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([pathname, headers]) => ({
+      namedRegex: getExactPathNamedRegex(pathname),
+      headers,
+    }));
 }

@@ -2,7 +2,9 @@
 
 package expo.modules.sqlite
 
+import expo.modules.kotlin.jni.ArrayBuffer
 import expo.modules.kotlin.sharedobjects.SharedRef
+import java.nio.ByteBuffer
 
 internal class NativeStatement : SharedRef<NativeStatementBinding>(NativeStatementBinding()) {
   var isFinalized = false
@@ -18,5 +20,15 @@ internal class NativeStatement : SharedRef<NativeStatementBinding>(NativeStateme
 
   override fun hashCode(): Int {
     return ref.hashCode()
+  }
+
+  fun getTransformedColumnValues(): SQLiteColumnValues {
+    val columnValueList = ref.getColumnValues().map {
+      when (it) {
+        is ByteBuffer -> ArrayBuffer(it)
+        else -> it
+      }
+    }
+    return ArrayList(columnValueList)
   }
 }

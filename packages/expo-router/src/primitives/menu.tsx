@@ -2,14 +2,12 @@
 
 import { use } from 'react';
 
-import type { MenuActionProps, MenuProps } from './types';
 import { InternalLinkPreviewContext } from '../link/InternalLinkPreviewContext';
+import type { MenuActionProps, MenuProps } from './types';
 
 /**
  * This component renders a context menu action for a link.
  * It should only be used as a child of `Link.Menu` or `LinkMenu`.
- *
- * > **Note**: You can use the alias `Link.MenuAction` for this component.
  *
  * @platform ios
  */

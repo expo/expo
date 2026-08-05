@@ -48,6 +48,12 @@ internal class LocationsStreamer: BaseStreamer {
   }
 
   func locationManager(_ manager: CLLocationManager, didFailWithError error: any Error) {
+    // Ignore `locationUnknown` (code 0) as it might be a temporary issue.
+    // The location manager will keep trying to obtain the location.
+    // It's a common error on simulator when there is no default location set in the scheme.
+    guard let clError = error as? CLError, clError.code != .locationUnknown else {
+      return
+    }
     continuation?.finish(throwing: Exceptions.LocationUnavailable().causedBy(error))
     locationsStream = nil
     continuation = nil

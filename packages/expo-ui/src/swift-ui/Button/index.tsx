@@ -13,7 +13,7 @@ import { type CommonViewModifierProps } from '../types';
  */
 export type ButtonRole = 'default' | 'cancel' | 'destructive';
 
-export type ButtonProps = {
+export interface ButtonProps extends CommonViewModifierProps {
   /**
    * A callback that is called when the button is pressed.
    */
@@ -36,7 +36,11 @@ export type ButtonProps = {
    * Only nested elements are supported, not plain strings.
    */
   children?: React.ReactElement | React.ReactElement[];
-} & CommonViewModifierProps;
+  /**
+   * Target identifier for the button, used for identifying which button was pressed in widgets and live activities.
+   */
+  target?: string;
+}
 
 type NativeButtonProps = Omit<ButtonProps, 'onPress'> & ViewEvent<'onButtonPress', void>;
 

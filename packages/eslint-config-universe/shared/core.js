@@ -20,7 +20,7 @@ module.exports = {
     'arrow-spacing': ['warn', { before: true, after: true }],
     curly: ['warn', 'all'],
     'block-spacing': ['warn', 'always'],
-    'comma-dangle': ['warn', 'always-multiline'],
+    'comma-dangle': 'off',
     'comma-spacing': ['warn', { before: false, after: true }],
     'comma-style': ['warn', 'last'],
     'computed-property-spacing': ['warn', 'never'],
@@ -141,6 +141,7 @@ module.exports = {
     yoda: ['warn', 'never', { exceptRange: true }],
 
     'import/default': 'off',
+    'import/no-named-as-default': 'off',
     'import/export': 'error',
     'import/first': 'warn',
     'import/namespace': ['error', { allowComputed: true }],

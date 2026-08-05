@@ -1,0 +1,20 @@
+diff --git a/RNWorklets.podspec b/RNWorklets.podspec
+index 73cf28f2ac05d4c4b0b0f2649fdcf7e0ad5817e4..385558f99bf6c61a32fb85bbf6ed1ad527ef832f 100644
+--- a/RNWorklets.podspec
++++ b/RNWorklets.podspec
+@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
+   install_modules_dependencies(s)
+ 
+   s.dependency 'React-jsi'
++  s.dependency 'React-jsitooling'
+   s.dependency 'React-hermes'
+   
+   s.pod_target_xcconfig = {
+@@ -70,6 +71,7 @@ Pod::Spec.new do |s|
+       '"$(PODS_ROOT)/DoubleConversion"',
+       '"$(PODS_ROOT)/Headers/Private/React-Core"',
+       '"$(PODS_ROOT)/Headers/Private/Yoga"',
++      '"${PODS_CONFIGURATION_BUILD_DIR}/React-jsitooling/JSITooling.framework/Headers"',
+     ].join(' '),
+     "FRAMEWORK_SEARCH_PATHS" => '"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes"',
+     "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",

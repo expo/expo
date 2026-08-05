@@ -1,7 +1,7 @@
-import { DeviceEventEmitter } from 'react-native';
+import { AppRegistry, DeviceEventEmitter } from 'react-native';
 
 import ExpoDevMenu from './ExpoDevMenu';
-import { ExpoDevMenuItem } from './ExpoDevMenu.types';
+import type { ExpoDevMenuItem } from './ExpoDevMenu.types';
 
 /**
  * A method that opens development client menu when called.
@@ -59,4 +59,18 @@ export async function registerDevMenuItems(items: ExpoDevMenuItem[]): Promise<vo
   return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);
 }
 
-export { ExpoDevMenuItem } from './ExpoDevMenu.types';
+function syncAvailableAppKeys() {
+  if (ExpoDevMenu?.setAvailableAppKeys == null) {
+    return;
+  }
+
+  // Filter out LogBox, which is registered but isn't really an app key
+  const appKeys = AppRegistry.getAppKeys().filter((key) => key !== 'LogBox');
+  ExpoDevMenu.setAvailableAppKeys(appKeys);
+}
+
+setTimeout(syncAvailableAppKeys, 0);
+// Re-sync after a component switch and fast refresh
+DeviceEventEmitter.addListener('componentSwitched', syncAvailableAppKeys);
+
+export type { ExpoDevMenuItem } from './ExpoDevMenu.types';

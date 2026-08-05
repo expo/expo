@@ -3,18 +3,31 @@
 import ExpoModulesCore
 import Foundation
 import AuthenticationServices
+import Network
+import EXDevMenu
 
 private let selectedAccountKey = "expo-selected-account-id"
 private let sessionKey = "expo-session-secret"
 
 private let DEV_LAUNCHER_DEFAULT_SCHEME = "expo-dev-launcher"
+private let BONJOUR_TYPE = "_expo._tcp"
+private let networkPermissionGrantedKey = "expo.devlauncher.hasGrantedNetworkPermission"
+
+enum LocalNetworkPermissionStatus: Equatable, Sendable {
+  case unknown
+  case checking
+  case granted
+  case denied
+  case misconfigured
+}
 
 @MainActor
 class DevLauncherViewModel: ObservableObject {
+  /// Safe area inset for when VC hierarchy doesn't propagate it (e.g., SwiftUI/brownfield apps)
+  @Published var topSafeAreaInset: CGFloat = 0
   @Published var recentlyOpenedApps: [RecentlyOpenedApp] = []
   @Published var buildInfo: [AnyHashable: Any] = [:]
   @Published var updatesConfig: [AnyHashable: Any] = [:]
-  @Published var devServers: [DevServer] = []
   @Published var currentError: EXDevLauncherAppError?
   @Published var showingCrashReport = false
   @Published var showingErrorAlert = false
@@ -23,17 +36,24 @@ class DevLauncherViewModel: ObservableObject {
   @Published var hasStoredCrash = false
   @Published var shakeDevice = true {
     didSet {
-      saveMenuPreference(key: "EXDevMenuMotionGestureEnabled", value: shakeDevice)
+      DevMenuManager.shared.setMotionGestureEnabled(shakeDevice)
     }
   }
   @Published var threeFingerLongPress = false {
     didSet {
-      saveMenuPreference(key: "EXDevMenuTouchGestureEnabled", value: threeFingerLongPress)
+      // Route through DevMenuManager so the recognizer is installed/uninstalled immediately
+      DevMenuManager.shared.setTouchGestureEnabled(threeFingerLongPress)
     }
   }
   @Published var showOnLaunch = false {
     didSet {
-      saveMenuPreference(key: "EXDevMenuShowsAtLaunch", value: showOnLaunch)
+      // Route through DevMenuManager so the auto-launch observer is refreshed immediately
+      DevMenuManager.shared.setShowsAtLaunch(showOnLaunch)
+    }
+  }
+  @Published var autoLaunchMostRecent = true {
+    didSet {
+      UserDefaults.standard.set(autoLaunchMostRecent, forKey: "EXDevLauncherTryToLaunchLastBundle")
     }
   }
   @Published var isAuthenticated = false
@@ -41,7 +61,16 @@ class DevLauncherViewModel: ObservableObject {
   @Published var user: User?
   @Published var selectedAccountId: String?
   @Published var isLoadingServer: Bool = false
-  private var discoveryTask: Task<Void, Never>?
+  @Published var isLoadingLocalBundle: Bool = false
+  @Published var permissionStatus: LocalNetworkPermissionStatus = .unknown
+
+  @Published var devServers: [DevServer] = []
+
+  private var browser: NWBrowser?
+  private var pingTask: Task<Void, Never>?
+  private var periodicRefreshTask: Task<Void, Never>?
+  private var pendingEmptyVerification = false
+  private static let refreshInterval: UInt64 = 10_000_000_000
 
   #if !os(tvOS)
   private let presentationContext = DevLauncherAuthPresentationContext()
@@ -63,10 +92,39 @@ class DevLauncherViewModel: ObservableObject {
     return isAuthenticated && user != nil
   }
 
+  var hasEmbeddedBundle: Bool {
+    guard let enabled = Bundle.main.object(forInfoDictionaryKey: "EXDevClientEmbeddedBundle") as? Bool, enabled else {
+      return false
+    }
+    return Bundle.main.url(forResource: "main", withExtension: "jsbundle") != nil
+  }
+
   init() {
     loadData()
     checkAuthenticationStatus()
     checkForStoredCrashes()
+  }
+
+  private func updateDevServers(_ servers: [DevServer]) {
+    if servers.isEmpty && !devServers.isEmpty && !pendingEmptyVerification {
+      pendingEmptyVerification = true
+      stopServerDiscovery()
+      startServerDiscovery()
+      return
+    }
+    pendingEmptyVerification = false
+    if !servers.isEmpty {
+      markNetworkPermissionGranted()
+    }
+    devServers = servers.sorted(by: <)
+  }
+
+  private func extractPort(from url: String) -> String? {
+    guard let urlComponents = URLComponents(string: url),
+          let port = urlComponents.port else {
+      return nil
+    }
+    return String(port)
   }
 
   private func loadData() {
@@ -78,20 +136,36 @@ class DevLauncherViewModel: ObservableObject {
     loadMenuPreferences()
   }
 
-  private func loadRecentlyOpenedApps() {
+  func loadRecentlyOpenedApps() {
     let apps = EXDevLauncherController.sharedInstance().recentlyOpenedAppsRegistry.recentlyOpenedApps()
 
-    self.recentlyOpenedApps = apps.compactMap { app in
-      guard let name = app["name"] as? String,
-      let url = app["url"] as? String,
-      let timestampInt64 = app["timestamp"] as? Int64,
-      let isEasUpdate = app["isEasUpdate"] as? Bool? else {
+    let allApps = apps.compactMap { app -> RecentlyOpenedApp? in
+      guard let url = app["url"] as? String,
+            let timestampInt64 = app["timestamp"] as? Int64 else {
         return nil
       }
 
+      let name = app["name"] as? String ?? url
+      let isEasUpdate = app["isEasUpdate"] as? Bool
       let timestamp = Date(timeIntervalSince1970: TimeInterval(timestampInt64))
       return RecentlyOpenedApp(name: name, url: url, timestamp: timestamp, isEasUpdate: isEasUpdate)
     }
+
+    var appsByKey: [String: RecentlyOpenedApp] = [:]
+    for app in allApps {
+      let port = extractPort(from: app.url) ?? ""
+      let key = "\(app.name):\(port)"
+
+      if let existing = appsByKey[key] {
+        if app.timestamp > existing.timestamp {
+          appsByKey[key] = app
+        }
+      } else {
+        appsByKey[key] = app
+      }
+    }
+
+    self.recentlyOpenedApps = appsByKey.values.sorted { $0.timestamp > $1.timestamp }
   }
 
   func openApp(url: String) {
@@ -108,8 +182,8 @@ class DevLauncherViewModel: ObservableObject {
           self?.isLoadingServer = false
         }
       },
-      onError: { [weak self] _ in
-        let message = "Failed to connect to \(url)"
+      onError: { [weak self] error in
+        let message = DevLauncherLoadErrorMessage.message(for: error as NSError, url: url)
         DispatchQueue.main.async {
           self?.isLoadingServer = false
           self?.showErrorAlert(message)
@@ -122,48 +196,264 @@ class DevLauncherViewModel: ObservableObject {
     self.recentlyOpenedApps = []
   }
 
+  func loadLocalBundle() {
+    guard !isLoadingLocalBundle else { return }
+    isLoadingLocalBundle = true
+
+    EXDevLauncherController.sharedInstance().loadLocalBundle(onSuccess: { [weak self] in
+      DispatchQueue.main.async {
+        self?.isLoadingLocalBundle = false
+      }
+    }, onError: { [weak self] error in
+      DispatchQueue.main.async {
+        self?.isLoadingLocalBundle = false
+        self?.showErrorAlert(error.localizedDescription)
+      }
+    })
+  }
+
   func isCompatibleRuntime(_ runtimeVersion: String) -> Bool {
     return runtimeVersion == structuredBuildInfo.runtimeVersion
   }
 
   func startServerDiscovery() {
-    discoveryTask?.cancel()
-    discoveryTask = Task {
-      await discoverDevServers()
+    if browser != nil {
+      return
+    }
+
+    stopServerDiscovery()
+    startDevServerBrowser()
+    startPeriodicRefresh()
+  }
+
+  func refreshDevServers() async {
+    await restartBrowser()
+  }
+
+  private func restartBrowser() async {
+    pingTask?.cancel()
+    browser?.cancel()
+    pingTask = nil
+    browser = nil
+    startDevServerBrowser()
+    try? await Task.sleep(nanoseconds: 3_000_000_000)
+    await pingCurrentBrowseResults()
+  }
+
+  private func pingCurrentBrowseResults() async {
+    guard let browser, !browser.browseResults.isEmpty else {
+      return
+    }
+    await pingDiscoveryResults(browser.browseResults.map { result in
+      DiscoveryResult(
+        name: NetworkUtilities.getNWBrowserResultName(result),
+        endpoint: result.endpoint
+      )
+    })
+  }
+
+  private func startPeriodicRefresh() {
+    periodicRefreshTask?.cancel()
+    periodicRefreshTask = Task { [weak self] in
       while !Task.isCancelled {
-        try? await Task.sleep(nanoseconds: 2_000_000_000)
-        if Task.isCancelled {
+        try? await Task.sleep(nanoseconds: Self.refreshInterval)
+        guard !Task.isCancelled else {
+          return
+        }
+        await self?.refreshIfNeeded()
+      }
+    }
+  }
+
+  private func refreshIfNeeded() async {
+    guard let browser else {
+      return
+    }
+    if devServers.isEmpty {
+      await restartBrowser()
+    } else if browser.browseResults.isEmpty {
+      updateDevServers([])
+    } else {
+      await pingCurrentBrowseResults()
+    }
+  }
+
+  func markNetworkPermissionGranted() {
+    guard permissionStatus != .granted else {
+      return
+    }
+    UserDefaults.standard.set(true, forKey: networkPermissionGrantedKey)
+    permissionStatus = .granted
+  }
+
+  var hasGrantedNetworkPermission: Bool {
+    UserDefaults.standard.bool(forKey: networkPermissionGrantedKey)
+  }
+
+  func refreshPermissionStatus() {
+    permissionStatus = .checking
+    Task {
+      let verdict = await checkLocalNetworkAccess()
+      switch verdict {
+      case .granted:
+        markNetworkPermissionGranted()
+      case .denied:
+        permissionStatus = .denied
+      case .misconfigured:
+        permissionStatus = .misconfigured
+      case .undetermined:
+        permissionStatus = .unknown
+      }
+    }
+  }
+
+  func checkLocalNetworkAccess() async -> LocalNetworkVerdict {
+    if !LocalNetworkConfig.isConfigured(in: Bundle.main.infoDictionary) {
+      return .misconfigured
+    }
+
+    let serviceType = BONJOUR_TYPE
+    let queue = DispatchQueue(label: "expo.devlauncher.permissioncheck")
+
+    return await withCheckedContinuation { continuation in
+      var done = false
+
+      func finish(_ verdict: LocalNetworkVerdict, _ browser: NWBrowser, _ listener: NWListener?) {
+        guard !done else { return }
+        done = true
+        continuation.resume(returning: verdict)
+        browser.cancel()
+        listener?.cancel()
+      }
+
+      let listener = try? NWListener(using: .tcp, on: .any)
+      listener?.service = NWListener.Service(type: serviceType)
+      listener?.stateUpdateHandler = { _ in }
+      listener?.newConnectionHandler = { $0.cancel() }
+      listener?.start(queue: queue)
+
+      let browser = NWBrowser(for: .bonjour(type: serviceType, domain: nil), using: .tcp)
+      browser.browseResultsChangedHandler = { results, _ in
+        if !results.isEmpty {
+          finish(.granted, browser, listener)
+        }
+      }
+
+      browser.stateUpdateHandler = { state in
+        switch state {
+        case .waiting(let error), .failed(let error):
+          if case .dns(let dnsError) = error {
+            let verdict = LocalNetworkClassifier.verdict(forDNSError: Int(dnsError))
+            // Leave `.undetermined` for the timeout: the system prompt may still be pending.
+            if verdict != .undetermined {
+              finish(verdict, browser, listener)
+            }
+          }
+        default:
           break
         }
-        await discoverDevServers()
+      }
+
+      browser.start(queue: queue)
+
+      queue.asyncAfter(deadline: .now() + 4) {
+        finish(.undetermined, browser, listener)
+      }
+    }
+  }
+
+  func hasSatisfiedNetworkPath() async -> Bool {
+    return await withCheckedContinuation { continuation in
+      let monitor = NWPathMonitor()
+      let queue = DispatchQueue(label: "expo.devlauncher.pathcheck")
+      var resumed = false
+      monitor.pathUpdateHandler = { path in
+        guard !resumed else { return }
+        resumed = true
+        continuation.resume(returning: path.status == .satisfied)
+        monitor.cancel()
+      }
+      monitor.start(queue: queue)
+      queue.asyncAfter(deadline: .now() + 1) {
+        guard !resumed else { return }
+        resumed = true
+        continuation.resume(returning: false)
+        monitor.cancel()
       }
     }
   }
 
   func stopServerDiscovery() {
-    discoveryTask?.cancel()
-    discoveryTask = nil
+    periodicRefreshTask?.cancel()
+    pingTask?.cancel()
+    browser?.cancel()
+    periodicRefreshTask = nil
+    pingTask = nil
+    browser = nil
   }
 
-  private func discoverDevServers() async {
+  private func startDevServerBrowser() {
+    pingTask?.cancel()
+    browser?.cancel()
+
+    let params = NWParameters()
+    params.includePeerToPeer = true
+    params.allowLocalEndpointReuse = true
+
+    browser = NWBrowser(
+      for: NWBrowser.Descriptor.bonjourWithTXTRecord(type: BONJOUR_TYPE, domain: nil),
+      using: params
+    )
+
+    browser?.stateUpdateHandler = { [weak self] state in
+      Task { @MainActor [weak self] in
+        guard let self else { return }
+        switch state {
+        case .waiting(let error):
+          if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
+            self.permissionStatus = .denied
+          }
+        case .failed(let error):
+          if case .dns(let dnsError) = error, dnsError == kDNSServiceErr_PolicyDenied {
+            self.permissionStatus = .denied
+          }
+        default:
+          break
+        }
+      }
+    }
+
+    browser?.browseResultsChangedHandler = { [weak self] results, _ in
+      guard let self else { return }
+      Task { @MainActor [weak self, results] in
+        guard let self else { return }
+        self.markNetworkPermissionGranted()
+        self.pingTask?.cancel()
+        self.pingTask = Task {
+          defer { self.pingTask = nil }
+          await self.pingDiscoveryResults(results.map { result in
+            DiscoveryResult(
+              name: NetworkUtilities.getNWBrowserResultName(result),
+              endpoint: result.endpoint
+            )
+          })
+        }
+      }
+    }
+
+    browser?.start(queue: DispatchQueue(label: "expo.devlauncher.discovery"))
+  }
+
+  private func pingDiscoveryResults(_ results: [DiscoveryResult]) async {
     guard !Task.isCancelled else {
       return
     }
 
     var discoveredServers: [DevServer] = []
-
-    // swiftlint:disable number_separator
-    let portsToCheck = [8081, 8082, 8_083, 8084, 8085, 19000, 19001, 19002]
-    // swiftlint:enable number_separator
-
-    let ipsToScan = NetworkUtilities.getIPAddressesToScan()
     await withTaskGroup(of: DevServer?.self) { group in
-      for ip in ipsToScan {
-        for port in portsToCheck {
-          group.addTask {
-            let baseAddress = ip == "localhost" ? "http://localhost" : "http://\(ip)"
-            return await self.checkDevServer(url: "\(baseAddress):\(port)")
-          }
+      for result in results {
+        group.addTask {
+          return await self.resolveDevServer(result)
         }
       }
 
@@ -179,31 +469,24 @@ class DevLauncherViewModel: ObservableObject {
     }
 
     await MainActor.run {
-      self.devServers = discoveredServers.sorted { $0.url < $1.url }
+      self.updateDevServers(discoveredServers)
     }
   }
 
-  private func checkDevServer(url: String) async -> DevServer? {
-    guard let statusURL = URL(string: "\(url)/status") else {
-      return nil
-    }
-
+  private func resolveDevServer(_ result: DiscoveryResult) async -> DevServer? {
     do {
-      let (data, response) = try await URLSession.shared.data(from: statusURL)
-
-      if let httpResponse = response as? HTTPURLResponse,
-        httpResponse.statusCode == 200 {
-        if let statusString = String(data: data, encoding: .utf8),
-          statusString.contains("packager-status:running") {
-          return DevServer(
-            url: url,
-            description: url,
-            source: "local"
-          )
-        }
+      if let host = try await NetworkUtilities.resolveBundlerEndpoint(
+        endpoint: result.endpoint,
+        queue: DispatchQueue.main
+      ) {
+        return DevServer(
+          url: host,
+          description: result.name ?? host,
+          source: "local"
+        )
       }
     } catch {
-      // Server not running or not reachable
+      NSLog("DevLauncher discovered a dev server but couldn't resolve its endpoint: %@", error.localizedDescription)
     }
 
     return nil
@@ -241,13 +524,10 @@ class DevLauncherViewModel: ObservableObject {
   private func loadMenuPreferences() {
     let defaults = UserDefaults.standard
 
-    shakeDevice = defaults.object(forKey: "EXDevMenuMotionGestureEnabled") as? Bool ?? true
-    threeFingerLongPress = defaults.object(forKey: "EXDevMenuTouchGestureEnabled") as? Bool ?? true
-    showOnLaunch = defaults.object(forKey: "EXDevMenuShowsAtLaunch") as? Bool ?? false
-  }
-
-  private func saveMenuPreference(key: String, value: Bool) {
-    UserDefaults.standard.set(value, forKey: key)
+    shakeDevice = defaults.bool(forKey: "EXDevMenuMotionGestureEnabled")
+    threeFingerLongPress = defaults.bool(forKey: "EXDevMenuTouchGestureEnabled")
+    showOnLaunch = defaults.bool(forKey: "EXDevMenuShowsAtLaunch")
+    autoLaunchMostRecent = defaults.bool(forKey: "EXDevLauncherTryToLaunchLastBundle")
   }
 
   private func checkAuthenticationStatus() {
@@ -263,22 +543,6 @@ class DevLauncherViewModel: ObservableObject {
     }
   }
 
-  private func validateSession() {
-    Task {
-      do {
-        let user = try await Queries.getUserProfile()
-        await MainActor.run {
-          self.isAuthenticated = true
-          self.user = user
-        }
-      } catch {
-        await MainActor.run {
-          self.clearInvalidSession()
-        }
-      }
-    }
-  }
-
   private func clearInvalidSession() {
     UserDefaults.standard.removeObject(forKey: sessionKey)
     APIClient.shared.setSession(nil)
@@ -287,28 +551,27 @@ class DevLauncherViewModel: ObservableObject {
   }
 
   private func loadUserInfo() {
-    if isAuthenticated {
-      Task {
-        do {
-          let user = try await Queries.getUserProfile()
-          await MainActor.run {
-            self.user = user
-            let savedAccountId = UserDefaults.standard.string(forKey: selectedAccountKey)
-            if let savedAccountId,
-            user.accounts.contains(where: { $0.id == savedAccountId }) {
-              self.selectedAccountId = savedAccountId
-            } else if let firstAccount = user.accounts.first {
-              self.selectedAccountId = firstAccount.id
-              UserDefaults.standard.set(firstAccount.id, forKey: selectedAccountKey)
-            }
-          }
-        } catch {
-          await MainActor.run {
-            self.clearInvalidSession()
+    guard isAuthenticated else { return }
+
+    Task {
+      do {
+        let user = try await Queries.getUserProfile()
+        await MainActor.run {
+          self.user = user
+          let savedAccountId = UserDefaults.standard.string(forKey: selectedAccountKey)
+          if let savedAccountId,
+             user.accounts.contains(where: { $0.id == savedAccountId }) {
+            self.selectedAccountId = savedAccountId
+          } else if let firstAccount = user.accounts.first {
+            self.selectedAccountId = firstAccount.id
+            UserDefaults.standard.set(firstAccount.id, forKey: selectedAccountKey)
           }
         }
+      } catch {
+        await MainActor.run {
+          self.clearInvalidSession()
+        }
       }
-    } else {
     }
   }
 
@@ -354,6 +617,7 @@ class DevLauncherViewModel: ObservableObject {
     UserDefaults.standard.removeObject(forKey: sessionKey)
     UserDefaults.standard.removeObject(forKey: selectedAccountKey)
     APIClient.shared.setSession(nil)
+    clearRecentlyOpenedApps()
     isAuthenticated = false
     user = nil
     selectedAccountId = nil
@@ -362,6 +626,7 @@ class DevLauncherViewModel: ObservableObject {
   func selectAccount(accountId: String) {
     selectedAccountId = accountId
     UserDefaults.standard.set(accountId, forKey: selectedAccountKey)
+    clearRecentlyOpenedApps()
   }
 
   private func performAuthentication(isSignUp: Bool) async throws -> Bool {

@@ -1,11 +1,11 @@
 import crypto from 'crypto';
+import type { Response, RequestInfo, RequestInit } from 'fetch-nodeshim';
 import { ReadStream } from 'fs';
-import type { Response, RequestInfo, RequestInit } from 'undici';
 
 const GLOBAL_CACHE_VERSION = 4;
 
 export type ResponseCacheEntry = {
-  body: import('stream/web').ReadableStream;
+  body: ReadableStream;
   info: ReturnType<typeof getResponseInfo>;
 };
 

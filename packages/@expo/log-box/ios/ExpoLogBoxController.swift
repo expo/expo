@@ -63,7 +63,7 @@ class ExpoLogBoxController: UIViewController, ExpoLogBoxNativeActionsProtocol {
         ])
 
 #if EXPO_DEVELOP_LOG_BOX
-        // TODO: In the @expo/log-box add `yarn dev` which will return the same as
+        // TODO: In the @expo/log-box add `pnpm dev` which will return the same as
         // http://localhost:8081/_expo/@dom/logbox-polyfill-dom.tsx?file=file:///user/repos/expo/expo/packages/@expo/log-box/src/logbox-polyfill-dom.tsx
         // let myURL = URL(string:"http://localhost:8082/_expo/@dom/logbox-polyfill-dom.tsx?file=file:///Users/krystofwoldrich/repos/expo/expo/packages/@expo/log-box/src/logbox-polyfill-dom.tsx")
         let myURL = URL(string:"http://localhost:8090")

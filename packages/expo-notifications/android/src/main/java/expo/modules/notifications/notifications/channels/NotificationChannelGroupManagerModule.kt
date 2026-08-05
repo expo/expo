@@ -23,8 +23,7 @@ open class NotificationChannelGroupManagerModule : Module(), NotificationsChanne
 
     AsyncFunction("getNotificationChannelGroupAsync") { groupId: String ->
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-        val group = groupManager.getNotificationChannelGroup(groupId)
-        groupSerializer.toBundle(group)
+        groupManager.getNotificationChannelGroup(groupId)?.let { groupSerializer.toBundle(it) }
       } else {
         null
       }

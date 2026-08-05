@@ -6,10 +6,12 @@ export {
   getRoutes as getRoutesCore,
   type Options as GetRoutesCoreOptions,
   type RewriteConfig,
+  type PageHeadersConfig,
 } from '../getRoutesCore';
 export {
   getContextKey,
   isTypedRoute,
+  matchDynamicName,
   matchGroupName,
   removeSupportedExtensions,
   stripGroupSegmentsFromPath,

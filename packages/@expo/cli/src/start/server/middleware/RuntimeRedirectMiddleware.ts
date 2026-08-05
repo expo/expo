@@ -1,19 +1,17 @@
 import { parse } from 'url';
 
+import * as Log from '../../../log';
 import { disableResponseCache, ExpoMiddleware } from './ExpoMiddleware';
+import type { RuntimePlatform } from './resolvePlatform';
 import {
   assertMissingRuntimePlatform,
   assertRuntimePlatform,
   parsePlatformHeader,
   resolvePlatformFromUserAgentHeader,
-  RuntimePlatform,
 } from './resolvePlatform';
-import { ServerRequest, ServerResponse } from './server.types';
-import * as Log from '../../../log';
+import type { ServerRequest, ServerResponse } from './server.types';
 
-const debug = require('debug')(
-  'expo:start:server:middleware:runtimeRedirect'
-) as typeof console.log;
+export const LinkEndpoint = '/_expo/link';
 
 /** Runtime to target: expo = Expo Go, custom = Dev Client. */
 type RuntimeTarget = 'expo' | 'custom';
@@ -31,7 +29,7 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
       getLocation: (props: { runtime: RuntimeTarget }) => string | null | undefined;
     }
   ) {
-    super(projectRoot, ['/_expo/link']);
+    super(projectRoot, [LinkEndpoint]);
   }
 
   async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
@@ -41,8 +39,6 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
     assertMissingRuntimePlatform(platform);
     assertRuntimePlatform(platform);
     const runtime = isDevClient ? 'custom' : 'expo';
-
-    debug(`props:`, { platform, runtime });
 
     this.options.onDeepLink?.({ runtime, platform });
 
@@ -55,7 +51,6 @@ export class RuntimeRedirectMiddleware extends ExpoMiddleware {
       res.end();
       return;
     }
-    debug('Redirect ->', redirect);
     res.setHeader('Location', redirect);
 
     // Disable caching

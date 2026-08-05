@@ -10,6 +10,159 @@
 
 ### 💡 Others
 
+- Add experimental `tvos` and `macos` platforms gated by `expriments.outOfTreePlatforms` in config ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+### 💡 Others
+
+- Update for `experiments.outOfTreePlatforms` typing ([#46497](https://github.com/expo/expo/pull/46497) by [@kitten](https://github.com/kitten))
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-23
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-20
+
+### 💡 Others
+
+- [Internal] Switch app config resolution to `@expo/require-utils` ([#45989](https://github.com/expo/expo/pull/45989) by [@kitten](https://github.com/kitten))
+
+## 56.0.7 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 💡 Others
+
+- Removed unused `ExpoConfigSplash` re-export. ([#44598](https://github.com/expo/expo/pull/44598) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.16 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-13
+
+### 🐛 Bug fixes
+
+- Fix `convertEntryPointToRelative` implementation not resolving from real server root to entrypoint ([#44699](https://github.com/expo/expo/pull/44699) by [@kitten](https://github.com/kitten))
+
+## 55.0.14 - 2026-04-09
+
+### 🐛 Bug fixes
+
+- Switch to `@expo/require-utils`'s `resolveFrom` to resolve unresolved entrypoint ([#44114](https://github.com/expo/expo/pull/44114) by [@kitten](https://github.com/kitten))
+- Align `convertEntryPointToRelative` implementation with `@expo/cli`'s `mainModuleName` expectations, but mark as deprecated, since it shouldn't be reused in the future ([#44414](https://github.com/expo/expo/pull/44414) by [@kitten](https://github.com/kitten))
+
+## 55.0.13 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-03-27
+
+### 💡 Others
+
+- Memoize server root detection ([#44101](https://github.com/expo/expo/pull/44101) by [@kitten](https://github.com/kitten))
+
+## 55.0.10 - 2026-03-18
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+### 💡 Others
+
+- Support loading configs from `app.config.{mts,cts,mjs,cjs}` ([#43243](https://github.com/expo/expo/pull/43242))
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-16
+
+### 💡 Others
+
+- Replace `require-from-string` and `sucrase` with `@expo/require-utils` ([#42884](https://github.com/expo/expo/pull/42884) by [@kitten](https://github.com/kitten))
+
+## 55.0.4 — 2026-02-03
+
+### 💡 Others
+
+- Loosen `@babel/code-frame` dependency range ([#42485](https://github.com/expo/expo/pull/42485) by [@kitten](https://github.com/kitten))
+
+## 55.0.3 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-23
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 💡 Others
+
 - Export sub-types from `@expo/config-types` ([#41453](https://github.com/expo/expo/pull/41453) by [@kitten](https://github.com/kitten))
 
 ## 12.0.11 - 2025-12-04
@@ -181,7 +334,7 @@ _This version does not introduce any user-facing changes._
 
 ### 💡 Others
 
-- Bump `sucrase@3.34.0` to `sucrase@3.35.0` to to remove transitive dependency on `glob@7` ([#32274](https://github.com/expo/expo/pull/32274) by [@kitten](https://github.com/kitten))
+- Bump `sucrase@3.34.0` to `sucrase@3.35.0` to remove transitive dependency on `glob@7` ([#32274](https://github.com/expo/expo/pull/32274) by [@kitten](https://github.com/kitten))
 
 ## 10.0.0 — 2024-10-22
 

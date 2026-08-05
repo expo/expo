@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { resolveWorkspaceRoot } from 'resolve-workspace-root';
 
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class LockfileCheck implements DoctorCheck {
   description = 'Check for lock file';
@@ -29,7 +29,7 @@ export class LockfileCheck implements DoctorCheck {
     if (lockfiles.length === 0) {
       issues.push(`No lock file detected.`);
       advice.push(
-        `Install dependencies using the package manager of your choice to a generate a lock file.`
+        `Install dependencies using the package manager of your choice to generate a lock file.`
       );
     }
 

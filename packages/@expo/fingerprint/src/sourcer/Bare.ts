@@ -1,3 +1,4 @@
+import { getOriginalEnv } from '@expo/env';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import chalk from 'chalk';
@@ -6,10 +7,14 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { resolveExpoAutolinkingCliPath } from '../ExpoResolver';
-import { SourceSkips } from './SourceSkips';
-import { getFileBasedHashSourceAsync } from './Utils';
 import type { HashSource, NormalizedOptions } from '../Fingerprint.types';
 import { toPosixPath } from '../utils/Path';
+import { SourceSkips } from './SourceSkips';
+import {
+  createAutolinkingHashSourceAsync,
+  getFileBasedHashSourceAsync,
+  maybeGetRealPathAsync,
+} from './Utils';
 
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 
@@ -90,12 +95,16 @@ export async function getCoreAutolinkingSourcesFromRncCliAsync(
     return [];
   }
   try {
-    const { stdout } = await spawnAsync('npx', ['react-native', 'config'], { cwd: projectRoot });
+    const { stdout } = await spawnAsync('npx', ['react-native', 'config'], {
+      cwd: projectRoot,
+      env: getOriginalEnv(),
+    });
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
       contentsId: 'rncoreAutolinkingConfig',
       reasons: ['rncoreAutolinking'],
+      nativeModuleSourceType: options.nativeModuleSourceType,
     });
     return results;
   } catch (e) {
@@ -120,12 +129,16 @@ export async function getCoreAutolinkingSourcesFromExpoAndroid(
     'android',
   ];
   try {
-    const { stdout } = await spawnAsync('node', args, { cwd: projectRoot });
+    const { stdout } = await spawnAsync('node', args, {
+      cwd: projectRoot,
+      env: getOriginalEnv(),
+    });
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
       contentsId: 'rncoreAutolinkingConfig:android',
       reasons: ['rncoreAutolinkingAndroid'],
+      nativeModuleSourceType: options.nativeModuleSourceType,
       platform: 'android',
     });
     return results;
@@ -153,13 +166,14 @@ export async function getCoreAutolinkingSourcesFromExpoIos(
         '--platform',
         'ios',
       ],
-      { cwd: projectRoot }
+      { cwd: projectRoot, env: getOriginalEnv() }
     );
     const config = JSON.parse(stdout);
     const results: HashSource[] = await parseCoreAutolinkingSourcesAsync({
       config,
       contentsId: 'rncoreAutolinkingConfig:ios',
       reasons: ['rncoreAutolinkingIos'],
+      nativeModuleSourceType: options.nativeModuleSourceType,
       platform: 'ios',
     });
     return results;
@@ -174,24 +188,28 @@ async function parseCoreAutolinkingSourcesAsync({
   reasons,
   contentsId,
   platform,
+  nativeModuleSourceType,
 }: {
   config: any;
   reasons: string[];
   contentsId: string;
   platform?: string;
+  nativeModuleSourceType: 'files' | 'package';
 }): Promise<HashSource[]> {
   const logTag = platform
     ? `react-native core autolinking dir for ${platform}`
     : 'react-native core autolinking dir';
   const results: HashSource[] = [];
-  const { root } = config;
+  const root = await maybeGetRealPathAsync(config.root);
   const autolinkingConfig: Record<string, any> = {};
   for (const [depName, depData] of Object.entries<any>(config.dependencies)) {
     try {
       stripRncoreAutolinkingAbsolutePaths(depData, root);
       const filePath = toPosixPath(depData.root);
       debug(`Adding ${logTag} - ${chalk.dim(filePath)}`);
-      results.push({ type: 'dir', filePath, reasons });
+      results.push(
+        await createAutolinkingHashSourceAsync(root, filePath, reasons, nativeModuleSourceType)
+      );
 
       autolinkingConfig[depName] = depData;
     } catch (e) {

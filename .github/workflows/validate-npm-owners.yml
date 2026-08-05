@@ -4,27 +4,59 @@ on:
   workflow_dispatch: {}
   schedule:
     - cron: '0 8 * * *' # 8:00 AM UTC time every day
+  push:
+    branches: [main, 'sdk-*']
+    paths:
+      - .github/workflows/validate-npm-owners.yml
+      - tools/src/commands/ValidateNpmOwnersCommand.ts
+  pull_request:
+    paths:
+      - .github/workflows/validate-npm-owners.yml
+      - tools/src/commands/ValidateNpmOwnersCommand.ts
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   validate-npm-owners:
+    # Fork PRs have no access to `NPM_TOKEN_READ_ONLY`, so the command could
+    # not authenticate and would always fail. Skip them.
+    if: github.repository == 'expo/expo' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == 'expo/expo')
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: 🔨 Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
-        with:
-          yarn-tools: 'true'
+      - name: 🛠 Build expotools
+        run: pnpm turbo build --filter expotools...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🔎 Validate
-        run: expotools validate-npm-owners
+        run: pnpm expotools validate-npm-owners
         env:
           NPM_TOKEN_READ_ONLY: ${{ secrets.NPM_TOKEN_READ_ONLY }}
       - name: 🔔 Notify on Slack
         uses: ./.github/actions/slack-notify
-        if: failure()
+        # Only the scheduled run guards the organization; a failure on a PR or
+        # push belongs to its author, not to the Slack channel.
+        if: failure() && github.event_name == 'schedule'
         with:
           webhook: ${{ secrets.slack_webhook_api }}
           author_name: Validate npm owners

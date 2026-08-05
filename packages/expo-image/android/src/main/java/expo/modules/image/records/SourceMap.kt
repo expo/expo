@@ -21,6 +21,7 @@ import expo.modules.image.customize
 import expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 
 sealed interface Source {
   val width: Int
@@ -58,6 +59,7 @@ class DecodedSource(
   }
 }
 
+@OptimizedRecord
 data class SourceMap(
   @Field val uri: String? = null,
   @Field override val width: Int = 0,
@@ -146,7 +148,7 @@ data class SourceMap(
       // Override the size for local assets (apart from SVGs). This ensures that
       // resizeMode "center" displays the image in the correct size.
       override((width * scale).toInt(), (height * scale).toInt())
-    }.customize(`when` = isResourceUri()) {
+    }.customize(`when` = isResourceUri() || isLocalResourceUri()) {
       // Every local resource (drawable) in Android has its own unique numeric id, which are
       // generated at build time. Although these ids are unique, they are not guaranteed unique
       // across builds. The underlying glide implementation caches these resources. To make

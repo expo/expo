@@ -1,12 +1,21 @@
 // Copyright 2024-present 650 Industries. All rights reserved.
 
 import ExpoModulesCore
+#if os(iOS)
+import QuickLook
+#endif
 
 @available(iOS 14, tvOS 14, *)
 public final class FileSystemModule: Module {
   #if os(iOS)
   private lazy var filePickingHandler = FilePickingHandler(module: self)
+  private var previewSession: FileSystemPreviewSession?
+  private var isPresentingPreview = false
+  private weak var previewController: QLPreviewController?
+  private var deferredPreview: (file: FileSystemFile, options: FilePreviewOptions?, promise: Promise)?
   #endif
+
+  private let downloadStore = DownloadTaskStore()
 
   var documentDirectory: URL? {
     return appContext?.config.documentDirectory
@@ -21,7 +30,7 @@ public final class FileSystemModule: Module {
       let attributes = try? FileManager.default.attributesOfFileSystem(forPath: path) else {
       return nil
     }
-    return attributes[.systemFreeSize] as? Int64
+    return attributes[.systemSize] as? Int64
   }
 
   var availableDiskSpace: Int64? {
@@ -32,8 +41,119 @@ public final class FileSystemModule: Module {
     return attributes[.systemFreeSize] as? Int64
   }
 
+  private func writeToFile(
+    _ file: FileSystemFile,
+    content: Either<String, NativeArrayBuffer>,
+    options: WriteOptions?
+  ) throws {
+    let append = options?.append ?? false
+    if let content: String = content.get() {
+      if options?.encoding == WriteEncoding.base64 {
+        guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
+          throw UnableToWriteBase64DataException(file.url.absoluteString)
+        }
+        try file.write(data, append: append)
+      } else {
+        try file.write(content, append: append)
+      }
+    } else if let content: NativeArrayBuffer = content.get() {
+      try file.write(content, append: append)
+    }
+  }
+
+  #if os(iOS)
+  private func presentPreview(file: FileSystemFile, options: FilePreviewOptions?, promise: Promise) throws {
+    guard let currentViewController = appContext?.utilities?.currentViewController() else {
+      throw FilePreviewMissingViewControllerException()
+    }
+
+    let scopedAccess = try makeScopedAccess(for: file, permission: .read)
+    guard file.exists else {
+      throw FilePreviewFileNotFoundException(file.url)
+    }
+    let item = FileSystemPreviewItem(url: file.url, title: options?.title)
+    guard QLPreviewController.canPreview(item) else {
+      throw FilePreviewUnsupportedException(file.url)
+    }
+
+    let previewController = QLPreviewController()
+    let session = FileSystemPreviewSession(item: item, scopedAccess: scopedAccess) { [weak self] in
+      guard let self else {
+        return
+      }
+      self.previewSession = nil
+      self.isPresentingPreview = false
+      self.previewController = nil
+
+      guard let deferredPreview = self.deferredPreview else {
+        return
+      }
+      self.deferredPreview = nil
+      do {
+        try self.presentPreview(
+          file: deferredPreview.file,
+          options: deferredPreview.options,
+          promise: deferredPreview.promise
+        )
+      } catch {
+        deferredPreview.promise.reject(error)
+      }
+    }
+    previewSession = session
+    isPresentingPreview = true
+    self.previewController = previewController
+    previewController.dataSource = session
+    previewController.delegate = session
+
+    currentViewController.present(previewController, animated: true) {
+      promise.resolve()
+    }
+  }
+
+  private func deferPreviewUntilDismissal(
+    file: FileSystemFile,
+    options: FilePreviewOptions?,
+    promise: Promise
+  ) -> Bool {
+    guard deferredPreview == nil,
+      let previewController,
+      previewController.isBeingDismissed,
+      let transitionCoordinator = previewController.transitionCoordinator else {
+      return false
+    }
+
+    deferredPreview = (file, options, promise)
+
+    if transitionCoordinator.isInteractive {
+      transitionCoordinator.notifyWhenInteractionChanges { [weak self] context in
+        guard context.isCancelled else {
+          return
+        }
+        self?.rejectDeferredPreview()
+      }
+    }
+    return true
+  }
+
+  private func rejectDeferredPreview() {
+    guard let deferredPreview else {
+      return
+    }
+    self.deferredPreview = nil
+    deferredPreview.promise.reject(FilePreviewInProgressException())
+  }
+  #endif
+
   public func definition() -> ModuleDefinition {
     Name("FileSystem")
+
+    Events("downloadProgress")
+
+    #if os(iOS)
+    OnDestroy {
+      rejectDeferredPreview()
+    }
+    #endif
 
     Constant("documentDirectory") {
       return documentDirectory?.absoluteString
@@ -59,55 +179,22 @@ public final class FileSystemModule: Module {
       return availableDiskSpace
     }
 
-    // swiftlint:disable:next closure_body_length
-    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptions?, promise: Promise) in
-      try to.validatePermission(.write)
+    AsyncFunction("downloadFileAsync") { (url: URL, to: FileSystemPath, options: DownloadOptions?, downloadUuid: String?, promise: Promise) in
+      try downloadFileWithStore(
+        url: url,
+        to: to,
+        options: options,
+        downloadUuid: downloadUuid,
+        downloadStore: self.downloadStore,
+        promise: promise,
+        sendEvent: { [weak self] name, body in
+          self?.sendEvent(name, body)
+        }
+      )
+    }
 
-      var request = URLRequest(url: url)
-
-      if let headers = options?.headers {
-        headers.forEach { key, value in
-          request.addValue(value, forHTTPHeaderField: key)
-        }
-      }
-
-      let downloadTask = URLSession.shared.downloadTask(with: request) { urlOrNil, responseOrNil, errorOrNil in
-        guard errorOrNil == nil else {
-          return promise.reject(UnableToDownloadException(errorOrNil?.localizedDescription ?? "unspecified error"))
-        }
-        guard let httpResponse = responseOrNil as? HTTPURLResponse else {
-          return promise.reject(UnableToDownloadException("no response"))
-        }
-        guard httpResponse.statusCode >= 200 && httpResponse.statusCode < 300 else {
-          return promise.reject(UnableToDownloadException("response has status \(httpResponse.statusCode)"))
-        }
-        guard let fileURL = urlOrNil else {
-          return promise.reject(UnableToDownloadException("no file url"))
-        }
-
-        do {
-          let destination: URL
-          if let to = to as? FileSystemDirectory {
-            let filename = httpResponse.suggestedFilename ?? url.lastPathComponent
-            destination = to.url.appendingPathComponent(filename)
-          } else {
-            destination = to.url
-          }
-          if FileManager.default.fileExists(atPath: destination.path) {
-            if options?.idempotent == true {
-              try FileManager.default.removeItem(at: destination)
-            } else {
-              throw DestinationAlreadyExistsException()
-            }
-          }
-          try FileManager.default.moveItem(at: fileURL, to: destination)
-          // TODO: Remove .url.absoluteString once returning shared objects works
-          promise.resolve(destination.absoluteString)
-        } catch {
-          promise.reject(error)
-        }
-      }
-      downloadTask.resume()
+    Function("cancelDownloadAsync") { (downloadUuid: String) in
+      self.downloadStore.cancel(uuid: downloadUuid)
     }
 
     AsyncFunction("pickDirectoryAsync") { (initialUri: URL?, promise: Promise) in
@@ -116,7 +203,8 @@ public final class FileSystemModule: Module {
         picker: createDirectoryPicker(initialUri: initialUri),
         isDirectory: true,
         initialUri: initialUri,
-        mimeType: nil,
+        mimeTypes: [],
+        multipleDocuments: false,
         promise: promise
       )
       #else
@@ -124,20 +212,20 @@ public final class FileSystemModule: Module {
       #endif
     }.runOnQueue(.main)
 
-    AsyncFunction("pickFileAsync") { (initialUri: URL?, mimeType: String?, promise: Promise) in
+    AsyncFunction("pickFileAsync") { (options: FilePickingOptions?, promise: Promise) in
       #if os(iOS)
       filePickingHandler.presentDocumentPicker(
-        picker: createFilePicker(initialUri: initialUri, mimeType: mimeType),
+        picker: createFilePicker(initialUri: options?.initialUri, mimeTypes: options?.mimeTypes ?? []),
         isDirectory: false,
-        initialUri: initialUri,
-        mimeType: mimeType,
+        initialUri: options?.initialUri,
+        mimeTypes: options?.mimeTypes ?? [],
+        multipleDocuments: options?.multipleFiles ?? false,
         promise: promise
       )
       #else
       promise.reject(FeatureNotAvailableOnPlatformException())
       #endif
     }.runOnQueue(.main)
-
     Function("info") { (url: URL) in
       let output = PathInfo()
       output.exists = false
@@ -194,28 +282,57 @@ public final class FileSystemModule: Module {
         return try file.bytes()
       }
 
-      Function("open") { file in
-        return try FileSystemFileHandle(file: file)
+      Function("open") { (file: FileSystemFile, mode: FileMode?) in
+        return try FileSystemFileHandle(file: file, mode: mode)
       }
+
+      AsyncFunction("canPreview") { (file: FileSystemFile, _: FilePreviewOptions?) -> Bool in
+        #if os(iOS)
+        return try file.withCorrectTypeAndScopedAccess(permission: .read) {
+          guard file.exists else {
+            return false
+          }
+          return QLPreviewController.canPreview(FileSystemPreviewItem(url: file.url, title: nil))
+        }
+        #else
+        throw FeatureNotAvailableOnPlatformException()
+        #endif
+      }
+      .runOnQueue(.main)
+
+      AsyncFunction("preview") { (file: FileSystemFile, options: FilePreviewOptions?, promise: Promise) in
+        #if os(iOS)
+        do {
+          if isPresentingPreview {
+            guard deferPreviewUntilDismissal(file: file, options: options, promise: promise) else {
+              throw FilePreviewInProgressException()
+            }
+          } else {
+            try presentPreview(file: file, options: options, promise: promise)
+          }
+        } catch {
+          promise.reject(error)
+        }
+        #else
+        promise.reject(FeatureNotAvailableOnPlatformException())
+        #endif
+      }
+      .runOnQueue(.main)
 
       Function("info") { (file: FileSystemFile, options: InfoOptions?) in
         return try file.info(options: options ?? InfoOptions())
       }
 
-      Function("write") { (file: FileSystemFile, content: Either<String, TypedArray>, options: WriteOptions?) in
-        if let content: String = content.get() {
-          if options?.encoding == WriteEncoding.base64 {
-            guard let data = Data(base64Encoded: content, options: .ignoreUnknownCharacters) else {
-              throw UnableToWriteBase64DataException(file.url.absoluteString)
-            }
-            try file.write(data)
-          } else {
-            try file.write(content)
-          }
-        }
-        if let content: TypedArray = content.get() {
-          try file.write(content)
-        }
+      AsyncFunction("digest") { (file: FileSystemFile, algorithm: String) in
+        return try file.digest(algorithm: algorithm)
+      }
+
+      AsyncFunction("write") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
+        try writeToFile(file, content: content, options: options)
+      }
+
+      Function("writeSync") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
+        try writeToFile(file, content: content, options: options)
       }
 
       Property("size") { file in
@@ -227,6 +344,10 @@ public final class FileSystemModule: Module {
       }
 
       Property("modificationTime") { file in
+        try? file.modificationTime
+      }
+
+      Property("lastModified") { file in
         try? file.modificationTime
       }
 
@@ -250,12 +371,20 @@ public final class FileSystemModule: Module {
         try file.create(options ?? CreateOptions())
       }
 
-      Function("copy") { (file, to: FileSystemPath) in
-        try file.copy(to: to)
+      AsyncFunction("copy") { (file, to: FileSystemPath, options: RelocationOptions?) in
+        try file.copy(to: to, options: options ?? RelocationOptions())
       }
 
-      Function("move") { (file, to: FileSystemPath) in
-        try file.move(to: to)
+      Function("copySync") { (file, to: FileSystemPath, options: RelocationOptions?) in
+        try file.copy(to: to, options: options ?? RelocationOptions())
+      }
+
+      AsyncFunction("move") { (file, to: FileSystemPath, options: RelocationOptions?) in
+        try file.move(to: to, options: options ?? RelocationOptions())
+      }
+
+      Function("moveSync") { (file, to: FileSystemPath, options: RelocationOptions?) in
+        try file.move(to: to, options: options ?? RelocationOptions())
       }
 
       Function("rename") { (file, newName: String) in
@@ -268,11 +397,19 @@ public final class FileSystemModule: Module {
     }
 
     Class(FileSystemFileHandle.self) {
-      Function("readBytes") { (fileHandle, bytes: Int) in
+      AsyncFunction("readBytes") { (fileHandle, bytes: Int) in
         try fileHandle.read(bytes)
       }
 
-      Function("writeBytes") { (fileHandle, bytes: Data) in
+      Function("readBytesSync") { (fileHandle, bytes: Int) in
+        try fileHandle.read(bytes)
+      }
+
+      AsyncFunction("writeBytes") { (fileHandle, bytes: Data) in
+        try fileHandle.write(bytes)
+      }
+
+      Function("writeBytesSync") { (fileHandle, bytes: Data) in
         try fileHandle.write(bytes)
       }
 
@@ -318,12 +455,20 @@ public final class FileSystemModule: Module {
         try directory.create(options ?? CreateOptions())
       }
 
-      Function("copy") { (directory, to: FileSystemPath) in
-        try directory.copy(to: to)
+      AsyncFunction("copy") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+        try directory.copy(to: to, options: options ?? RelocationOptions())
       }
 
-      Function("move") { (directory, to: FileSystemPath) in
-        try directory.move(to: to)
+      Function("copySync") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+        try directory.copy(to: to, options: options ?? RelocationOptions())
+      }
+
+      AsyncFunction("move") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+        try directory.move(to: to, options: options ?? RelocationOptions())
+      }
+
+      Function("moveSync") { (directory, to: FileSystemPath, options: RelocationOptions?) in
+        try directory.move(to: to, options: options ?? RelocationOptions())
       }
 
       Function("rename") { (directory, newName: String) in
@@ -353,6 +498,58 @@ public final class FileSystemModule: Module {
 
       Property("size") { directory in
         return try? directory.size
+      }
+    }
+
+    Class(FileSystemUploadTask.self) {
+      Constructor {
+        return FileSystemUploadTask()
+      }
+
+      AsyncFunction("start") { (task: FileSystemUploadTask, url: URL, file: FileSystemFile, options: UploadTaskOptions, promise: Promise) in
+        task.start(url: url, file: file, options: options, promise: promise)
+      }
+
+      Function("cancel") { (task: FileSystemUploadTask) in
+        task.cancel()
+      }
+    }
+
+    Class(FileSystemDownloadTask.self) {
+      Constructor {
+        return FileSystemDownloadTask()
+      }
+
+      AsyncFunction("start") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, options: DownloadTaskOptions?, promise: Promise) in
+        try to.validatePermission(.write)
+        task.start(url: url, to: to, options: options, promise: promise)
+      }
+
+      AsyncFunction("pause") { (task: FileSystemDownloadTask) -> [String: String?] in
+        return await task.pause()
+      }
+
+      AsyncFunction("resume") { (task: FileSystemDownloadTask, url: URL, to: FileSystemPath, resumeData: String, options: DownloadTaskOptions?, promise: Promise) in
+        try to.validatePermission(.write)
+        task.resume(url: url, to: to, resumeData: resumeData, options: options, promise: promise)
+      }
+
+      Function("cancel") { (task: FileSystemDownloadTask) in
+        task.cancel()
+      }
+    }
+
+    Class(FileSystemWatcher.self) {
+      Constructor { (path: URL, options: WatchOptions?) in
+        try FileSystemWatcher(path: path, options: options)
+      }
+
+      Function("start") { watcher in
+        watcher.start()
+      }
+
+      Function("stop") { watcher in
+        watcher.stop()
       }
     }
   }

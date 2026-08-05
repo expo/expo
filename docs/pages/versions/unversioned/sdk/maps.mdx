@@ -3,6 +3,7 @@ title: Maps
 description: A library that provides access to Google Maps on Android and Apple Maps on iOS.
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-maps'
 packageName: 'expo-maps'
+exampleName: 'with-maps'
 platforms: ['ios', 'android']
 iconUrl: '/static/images/packages/expo-maps.png'
 isAlpha: true
@@ -19,14 +20,18 @@ import { Tabs, Tab } from '~/ui/components/Tabs';
 import { PlatformTag } from '~/ui/components/Tag/PlatformTag';
 import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
-> **important** **This library is currently in alpha and will frequently experience breaking changes.** It is not available in the Expo Go app &ndash; use [development builds](/develop/development-builds/introduction/) to try it out.
+> **important** **This library is currently in [alpha](/more/release-statuses/#alpha) and will frequently experience breaking changes.** It is not available in the Expo Go app &ndash; use [development builds](/develop/development-builds/introduction/) to try it out.
 
 ## Installation
 
 <APIInstallSection />
 
 <br />
-<VideoBoxLink videoId="jDCuaIQ9vd0" title="Watch: Expo Maps Deep Dive" />
+<VideoBoxLink
+  videoId="jDCuaIQ9vd0"
+  title="Watch: Expo Maps Deep Dive"
+  description="Add Google Maps and Apple Maps to your Expo app with the expo-maps library."
+/>
 
 ## Configuration
 
@@ -46,7 +51,7 @@ Expo Maps provides access to the platform native map APIs on Android and iOS.
 <Step label="1">
 **Register a Google Cloud API project and enable the Maps SDK for Android**
 
-- Open your browser to the [Google API Manager](https://console.developers.google.com/apis) and create a project.
+- Open your browser to the [Google API Manager](https://console.cloud.google.com/apis) and create a project.
 - Once it's created, go to the project and enable the **Maps SDK for Android**.
 
 </Step>
@@ -156,12 +161,78 @@ export default function App() {
 }
 ```
 
+### Custom marker icons
+
+You can use the [`useImage`](/versions/latest/sdk/image/#useimagesource-options-dependencies) hook from `expo-image` to load custom marker and annotation icons.
+
+<Tabs>
+<Tab label="Google Maps">
+
+The following example shows how to display a custom marker icon with Google Maps on Android.
+
+```tsx
+import { useImage } from 'expo-image';
+import { GoogleMaps } from 'expo-maps';
+
+export default function Map() {
+  const icon = useImage('https://example.com/marker.svg', { maxWidth: 48, maxHeight: 48 });
+
+  return (
+    <GoogleMaps.View
+      style={{ flex: 1 }}
+      markers={[
+        {
+          coordinates: { latitude: 37.78825, longitude: -122.4324 },
+          icon: icon ?? undefined,
+          anchor: { x: 0.5, y: 0.5 },
+        },
+      ]}
+    />
+  );
+}
+```
+
+`GoogleMaps.Marker.icon` expects an image reference, such as the value returned by the `useImage` hook from the `expo-image` package. It does not accept an image source directly.
+
+The loaded image dimensions determine the marker size, not a marker style prop. For SVG icons, set `width`, `height`, and `viewBox` in the SVG, or pass `maxWidth` and `maxHeight` to the `useImage` hook. You can use `anchor` to align custom icons with their coordinates.
+
+</Tab>
+<Tab label="Apple Maps">
+
+The following example shows how to display a custom annotation icon with Apple Maps on iOS.
+
+```tsx
+import { useImage } from 'expo-image';
+import { AppleMaps } from 'expo-maps';
+
+export default function Map() {
+  const icon = useImage('https://example.com/marker.svg');
+
+  return (
+    <AppleMaps.View
+      style={{ flex: 1 }}
+      annotations={[
+        {
+          coordinates: { latitude: 37.78825, longitude: -122.4324 },
+          icon: icon ?? undefined,
+        },
+      ]}
+    />
+  );
+}
+```
+
+`AppleMaps.Annotation.icon` expects an image reference, such as the value returned by the `useImage` hook from the `expo-image` library. You can use `AppleMaps.Annotation` for custom image icons. `AppleMaps.Marker` supports marker-specific options such as `systemImage`, `monogram`, and `tintColor`.
+
+</Tab>
+</Tabs>
+
 ## API
 
 ```js
 import { AppleMaps, GoogleMaps } from 'expo-maps';
 
-// ApplesMaps.View and GoogleMaps.View are the React components
+// AppleMaps.View and GoogleMaps.View are the React components
 ```
 
 <APISection packageName="expo-maps" apiName="Maps" />

@@ -123,6 +123,13 @@ open class SchedulerModule: Module {
     guard let appContext = appContext else {
       return nil
     }
+    if !content.customSoundExists() {
+      let soundName = (try? content.sound?.as(String.self)) ?? "unknown"
+      appContext.jsLogger.error(
+        "expo-notifications: Custom sound '\(soundName)' not found in native app. " +
+        "Make sure the sound file (e.g. 'custom_sound.wav') is included in the expo-notifications config plugin sounds array in app config."
+      )
+    }
     return try UNNotificationRequest(
       identifier: identifier,
       content: content.toUNMutableNotificationContent(),

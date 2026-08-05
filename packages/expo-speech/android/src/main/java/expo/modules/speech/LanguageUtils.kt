@@ -6,29 +6,34 @@ import java.util.*
 object LanguageUtils {
   private val countryISOCodes: Map<String, Locale> by lazy {
     Locale.getISOCountries().associate { country ->
-      val locale = Locale("", country)
+      val locale = Locale.Builder().setRegion(country).build()
       locale.isO3Country.uppercase(locale) to locale
     }
   }
   private val languageISOCodes: Map<String, Locale> by lazy {
     Locale.getISOLanguages().associate { language ->
-      val locale = Locale(language)
+      val locale = Locale.Builder().setLanguage(language).build()
       locale.isO3Language to locale
     }
   }
 
-  // NOTE: These helpers are null-unsafe and should be called ONLY with codes
-  // returned by Locale.getISO3Country() and Locale.getISO3Language() respectively
-  private fun transformCountryISO(code: String) = countryISOCodes[code]!!.country
-  private fun transformLanguageISO(code: String) = languageISOCodes[code]!!.language
+  private fun getLanguageISO(locale: Locale) =
+    try {
+      languageISOCodes[locale.isO3Language]?.language
+    } catch (_: MissingResourceException) {
+      null
+    } ?: locale.language
+
+  private fun getCountryISO(locale: Locale) =
+    try {
+      locale.isO3Country.takeIf { it.isNotEmpty() }?.let { countryISOCodes[it]?.country }
+    } catch (_: MissingResourceException) {
+      null
+    } ?: locale.country
 
   fun getISOCode(locale: Locale): String {
-    var language = transformLanguageISO(locale.isO3Language)
-    val country = locale.isO3Country
-    if (country != "") {
-      val countryCode = transformCountryISO(country)
-      language += "-$countryCode"
-    }
-    return language
+    val language = getLanguageISO(locale)
+    val country = getCountryISO(locale)
+    return if (country.isNotEmpty()) "$language-$country" else language
   }
 }

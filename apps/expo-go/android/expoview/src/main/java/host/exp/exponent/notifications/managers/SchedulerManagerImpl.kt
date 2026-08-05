@@ -2,7 +2,6 @@ package host.exp.exponent.notifications.managers
 
 import android.content.Context
 import com.raizlabs.android.dbflow.sql.language.SQLite
-import expo.modules.core.interfaces.Function
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.notifications.exceptions.UnableToScheduleException
 import host.exp.exponent.notifications.schedulers.*
@@ -82,7 +81,7 @@ internal class SchedulerManagerImpl(private val applicationContext: Context) : S
     }
   }
 
-  override fun addScheduler(scheduler: Scheduler, handler: Function<String, Boolean>) {
+  override fun addScheduler(scheduler: Scheduler, handler: (String?) -> Boolean) {
     fetchSchedulersMap()
 
     scheduler.setApplicationContext(applicationContext)
@@ -97,7 +96,7 @@ internal class SchedulerManagerImpl(private val applicationContext: Context) : S
       null
     }
 
-    handler.apply(idToApply)
+    handler.invoke(idToApply)
   }
 
   private fun fetchSchedulersMap() {

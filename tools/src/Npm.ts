@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import { glob } from 'glob';
+import path from 'path';
 
 import { spawnAsync, spawnJSONCommandAsync, SpawnOptions } from './Utils';
 
@@ -41,23 +42,13 @@ export type ProfileType = null | {
 };
 
 /**
- * Represents an object returned by `npm pack --json`.
+ * Represents an object returned by `pnpm pack --json`.
  */
 export type PackResult = {
-  id: string;
   name: string;
   version: string;
-  size: number;
-  unpackedSize: number;
-  shasum: string;
-  integrity: string;
   filename: string;
-  files: {
-    path: string;
-    size: number;
-    mode: number;
-  }[];
-  entryCount: number;
+  files: { path: string }[];
 };
 
 /**
@@ -111,16 +102,28 @@ export async function downloadPackageTarballAsync(
 
 /**
  * Creates a tarball from a package.
+ *
+ * We deliberately don't use `pnpm pack --json` here: pnpm prefixes the JSON
+ * output with `prepack`/`prepare` lifecycle script stdout, which breaks
+ * `JSON.parse` for packages that define those scripts. Instead we let `pnpm pack` write the
+ * tarball to the package directory and discover the produced file via glob,
+ * matching what is done by `downloadPackageTarballAsync` above.
  */
 export async function packToTarballAsync(packageDir: string): Promise<PackResult> {
-  const [result] = await spawnJSONCommandAsync<PackResult[]>(
-    'npm',
-    ['pack', '--json', '--foreground-scripts=false'],
-    {
-      cwd: packageDir,
-    }
-  );
-  return result;
+  await spawnAsync('pnpm', ['pack'], {
+    cwd: packageDir,
+    stdio: 'ignore',
+    // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+    env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
+  });
+
+  const tarballs = await glob('*.tgz', { cwd: packageDir });
+  if (tarballs.length === 0) {
+    throw new Error(`pnpm pack did not produce a tarball in ${packageDir}`);
+  }
+
+  const { name, version } = require(path.join(packageDir, 'package.json'));
+  return { name, version, filename: tarballs[0], files: [] };
 }
 
 type PublishOptions = {
@@ -140,17 +143,22 @@ export async function publishPackageAsync(
   const args = [
     'publish',
     options.source ?? '.',
+    // omitting the tag parameter, will make pnpm publish and mark the as "latest"
     '--tag',
     options.tagName ?? 'latest',
     '--access',
     'public',
+    '--no-git-checks',
   ];
 
   if (options.dryRun) {
     args.push('--dry-run');
   }
-  await spawnAsync('npm', args, {
+  args.push(...maybeNpmOtpFlag());
+  await spawnAsync('pnpm', args, {
     cwd: packageDir,
+    // Prevent expo-module-scripts from auto-adding --watch during lifecycle scripts
+    env: { ...process.env, EXPO_NONINTERACTIVE: '1' },
     ...options.spawnOptions,
   });
 }
@@ -174,25 +182,34 @@ export async function addTagAsync(
   spawnOptions?: SpawnOptions
 ): Promise<void> {
   await spawnAsync(
-    'npm',
+    'pnpm',
     ['dist-tag', 'add', `${packageName}@${version}`, tagName, ...maybeNpmOtpFlag()],
     spawnOptions
   );
 }
 
 /**
- * Removes package's tag with given name.
+ * Removes package's tag with given name. Silently ignores errors when the tag doesn't exist.
  */
 export async function removeTagAsync(
   packageName: string,
   tagName: string,
   spawnOptions?: SpawnOptions
 ): Promise<void> {
-  await spawnAsync(
-    'npm',
-    ['dist-tag', 'rm', packageName, tagName, ...maybeNpmOtpFlag()],
-    spawnOptions
-  );
+  try {
+    await spawnAsync(
+      'pnpm',
+      ['dist-tag', 'rm', packageName, tagName, ...maybeNpmOtpFlag()],
+      spawnOptions
+    );
+  } catch (error: any) {
+    const stderr = String(error?.stderr ?? '');
+    if (/is not a dist-tag on/i.test(stderr)) {
+      // Tag doesn't exist, nothing to remove.
+      return;
+    }
+    throw error;
+  }
 }
 
 /**
@@ -202,10 +219,21 @@ export async function getTeamMembersAsync(teamName: string): Promise<string[]> {
   return await spawnJSONCommandAsync('npm', ['team', 'ls', teamName, '--json']);
 }
 
+type OrgMembersRecord = Record<string, string>;
+
+/**
+ * Resolves to a dictionary that maps members of the organization to their role.
+ * Note that npm resolves to an empty dictionary when the request is not authenticated.
+ */
+export async function getOrgMembersAsync(orgName: string): Promise<OrgMembersRecord> {
+  return await spawnJSONCommandAsync<OrgMembersRecord>('npm', ['org', 'ls', orgName, '--json']);
+}
+
 type TeamPackagesRecord = Record<string, 'read-only' | 'read-write'>;
 
 /**
  * Resolves to a dictionary of packages and their access level added to the team.
+ * Also accepts an organization or user name to list all packages they have access to.
  */
 export async function getTeamPackagesAsync(
   teamName: string = EXPO_DEVELOPERS_TEAM_NAME
@@ -226,7 +254,31 @@ export async function grantReadWriteAccessAsync(
   packageName: string,
   teamName: string
 ): Promise<void> {
-  await spawnAsync('npm', ['access', 'grant', 'read-write', teamName, packageName]);
+  await spawnAsync('npm', [
+    'access',
+    'grant',
+    'read-write',
+    teamName,
+    packageName,
+    ...maybeNpmOtpFlag(),
+  ]);
+}
+
+/**
+ * Resolves to the raw output of `npm owner ls` with the current owners of the
+ * package, one `name <email>` entry per line. Unlike the maintainers field
+ * from `npm view`, it is not a snapshot from the time of the last publish.
+ */
+export async function listOwnersAsync(packageName: string): Promise<string> {
+  const { stdout } = await spawnAsync('npm', ['owner', 'ls', packageName]);
+  return stdout;
+}
+
+/**
+ * Removes a user from the owners of the package.
+ */
+export async function removeOwnerAsync(packageName: string, owner: string): Promise<void> {
+  await spawnAsync('npm', ['owner', 'rm', owner, packageName, ...maybeNpmOtpFlag()]);
 }
 
 /**

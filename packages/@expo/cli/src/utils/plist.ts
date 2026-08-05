@@ -2,8 +2,8 @@ import plist from '@expo/plist';
 import binaryPlist from 'bplist-parser';
 import fs from 'fs/promises';
 
-import { CommandError } from './errors';
 import * as Log from '../log';
+import { CommandError } from './errors';
 
 const CHAR_CHEVRON_OPEN = 60;
 const CHAR_B_LOWER = 98;
@@ -30,9 +30,7 @@ export function parsePlistBuffer(contents: Buffer) {
     if (Array.isArray(info)) return info[0];
     return info;
   } else {
-    throw new CommandError(
-      'PLIST',
-      `Cannot parse plist of type byte (0x${contents[0].toString(16)})`
-    );
+    const hex = contents[0] ? `0x${contents[0].toString(16) ?? '00'}` : '<EOF>';
+    throw new CommandError('PLIST', `Cannot parse plist of type byte (${hex})`);
   }
 }

@@ -1,1 +1,1 @@
-module.exports = require('../build/file-store');
+module.exports = require('../build/binary-file-store');

@@ -48,9 +48,13 @@ describe('codesigning:generate', () => {
     expect(certificatePEM).toBeTruthy();
     expect(privateKeyPEM).toBeTruthy();
     expect(publicKeyPEM).toBeTruthy();
+    expect((await fs.stat(`${keysDir}/private-key.pem`)).mode & 0o777).toBe(0o600);
 
-    const certificate = convertCertificatePEMToCertificate(certificatePEM);
-    const keyPair = convertKeyPairPEMToKeyPair({ privateKeyPEM, publicKeyPEM });
+    const certificate = convertCertificatePEMToCertificate(certificatePEM!);
+    const keyPair = convertKeyPairPEMToKeyPair({
+      privateKeyPEM: privateKeyPEM!,
+      publicKeyPEM: publicKeyPEM!,
+    });
 
     expect(() => validateSelfSignedCertificate(certificate, keyPair)).not.toThrow();
   });

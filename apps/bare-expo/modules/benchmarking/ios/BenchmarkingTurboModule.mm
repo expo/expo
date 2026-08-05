@@ -14,6 +14,11 @@ RCT_EXPORT_MODULE()
   return 0;
 }
 
+- (void)nothingAsync:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject
+{
+  resolve(nil);
+}
+
 - (NSNumber *)addNumbers:(double)a b:(double)b
 {
   NSNumber* number = [[NSNumber alloc] initWithDouble:a + b];
@@ -27,13 +32,18 @@ RCT_EXPORT_MODULE()
   return result;
 }
 
-- (NSNumber *)foldArray:(NSArray *)array 
+- (NSNumber *)foldArray:(NSArray *)array
 {
   double sum = 0.0;
   for (NSNumber *num in array) {
     sum += [num doubleValue];
   }
   return @(sum);
+}
+
+- (NSDictionary *)passthroughDict:(NSDictionary *)point
+{
+  return point;
 }
 
 @end

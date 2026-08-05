@@ -1,5 +1,6 @@
 import bytesToUuid from './lib/bytesToUuid';
-import { UUID, Uuidv5Namespace } from './uuid.types';
+import type { UUID } from './uuid.types';
+import { Uuidv5Namespace } from './uuid.types';
 
 function uuidv4(): string {
   const nativeUuidv4 = globalThis?.expo?.uuidv4;

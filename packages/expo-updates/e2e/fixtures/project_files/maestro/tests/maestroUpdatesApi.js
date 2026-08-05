@@ -18,6 +18,12 @@ function lastRequestHeaders() {
   return JSON.parse(response.body);
 }
 
+function lastAssetRequestHeaders() {
+  var requestString = `${serverBaseUrl}/last-asset-request-headers`;
+  const response = http.get(requestString);
+  return JSON.parse(response.body);
+}
+
 function stopUpdatesServer() {
   http.get(`${serverBaseUrl}/stop-server`);
 }
@@ -69,6 +75,7 @@ output.api = {
   installClient: installClient,
   uninstallClient: uninstallClient,
   lastRequestHeaders: lastRequestHeaders,
+  lastAssetRequestHeaders: lastAssetRequestHeaders,
   logEntries: logEntries,
   restartUpdatesServer: restartUpdatesServer,
   serveManifest: serveManifest,

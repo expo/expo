@@ -7,4 +7,7 @@ struct AudioSource: Record {
 
   @Field
   var headers: [String: String]?
+
+  @Field
+  var name: String?
 }

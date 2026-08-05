@@ -1,7 +1,8 @@
 import * as Location from 'expo-location';
 import React from 'react';
-import { Platform, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, View } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import SimpleActionDemo from '../../components/SimpleActionDemo';
 import usePermissions from '../../utilities/usePermissions';
 
@@ -27,7 +28,7 @@ export default function GeocodingScreen() {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Forward-Geocoding</Text>
+        <BodyText style={styles.headerText}>Forward-Geocoding</BodyText>
       </View>
       {forwardGeocodingAddresses.map((address, index) => (
         <SimpleActionDemo
@@ -38,7 +39,7 @@ export default function GeocodingScreen() {
       ))}
 
       <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>Reverse-Geocoding</Text>
+        <BodyText style={styles.headerText}>Reverse-Geocoding</BodyText>
       </View>
       {reverseGeocodingCoords.map((coords, index) => (
         <SimpleActionDemo

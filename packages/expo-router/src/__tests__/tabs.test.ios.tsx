@@ -1,5 +1,4 @@
 import { fireEvent, act, screen } from '@testing-library/react-native';
-import React from 'react';
 import { Text, View } from 'react-native';
 
 import { router } from '../exports';
@@ -351,7 +350,6 @@ it('can use replace navigation', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {

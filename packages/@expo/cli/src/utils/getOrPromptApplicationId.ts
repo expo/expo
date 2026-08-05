@@ -1,8 +1,12 @@
-import { GraphQLError } from '@0no-co/graphql.web';
-import { ExpoConfig, getConfig } from '@expo/config';
-import { CombinedError } from '@urql/core';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
+import { UnexpectedServerError, UnexpectedServerData } from '../api/graphql/client';
+import { AppQuery } from '../api/graphql/queries/AppQuery';
+import { getSettings } from '../api/user/UserSettings';
+import * as Log from '../log';
+import { event } from './events';
 import { memoize } from './fn';
 import { learnMore } from './link';
 import { attemptModification } from './modifyConfigAsync';
@@ -18,11 +22,6 @@ import {
   validatePackage,
   validatePackageWithWarning,
 } from './validateApplicationId';
-import { AppQuery } from '../api/graphql/queries/AppQuery';
-import { getSettings } from '../api/user/UserSettings';
-import * as Log from '../log';
-
-const debug = require('debug')('expo:app-id') as typeof console.log;
 
 const ANONYMOUS_USERNAME = 'anonymous';
 
@@ -43,7 +42,7 @@ async function getRecommendedReverseDomainNameSecondPartAsync(
     const app = await AppQuery.byIdAsync(easProjectId);
     return app.ownerAccount.name;
   } catch (e) {
-    if (e instanceof GraphQLError || e instanceof CombinedError) {
+    if (e instanceof UnexpectedServerData || e instanceof UnexpectedServerError) {
       return null;
     }
     throw e;
@@ -80,6 +79,7 @@ const memoLog = memoize(Log.log);
 
 async function promptForBundleIdWithInitialAsync(
   projectRoot: string,
+  // oxlint-disable-next-line oxc/only-used-in-recursion
   exp: ExpoConfig,
   bundleIdentifier?: string
 ): Promise<string> {
@@ -121,9 +121,7 @@ async function promptForBundleIdWithInitialAsync(
   if (
     await attemptModification(
       projectRoot,
-      {
-        ios: { ...(exp.ios || {}), bundleIdentifier },
-      },
+      { ios: { bundleIdentifier } },
       { ios: { bundleIdentifier } }
     )
   ) {
@@ -189,9 +187,11 @@ async function getRecommendedPackageNameAsync(exp: ExpoConfig): Promise<string |
     if (validatePackage(possibleId)) {
       return possibleId;
     } else {
-      debug(
-        `Recommended package name is invalid: "${possibleId}" (owner: ${recommendedReverseDomainNameSecondPart}, slug: ${exp.slug})`
-      );
+      event('invalid_package_name', {
+        name: possibleId,
+        owner: recommendedReverseDomainNameSecondPart,
+        slug: exp.slug,
+      });
     }
   }
   return undefined;
@@ -225,6 +225,7 @@ async function promptForPackageAsync(projectRoot: string, exp: ExpoConfig): Prom
 
 async function promptForPackageWithInitialAsync(
   projectRoot: string,
+  // oxlint-disable-next-line oxc/only-used-in-recursion
   exp: ExpoConfig,
   packageName?: string
 ): Promise<string> {
@@ -262,12 +263,8 @@ async function promptForPackageWithInitialAsync(
   if (
     await attemptModification(
       projectRoot,
-      {
-        android: { ...(exp.android || {}), package: packageName },
-      },
-      {
-        android: { package: packageName },
-      }
+      { android: { package: packageName } },
+      { android: { package: packageName } }
     )
   ) {
     Log.log(chalk.gray`\u203A Android package name: ${packageName}`);

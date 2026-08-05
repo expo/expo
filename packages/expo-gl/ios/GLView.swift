@@ -4,10 +4,10 @@ import ExpoModulesCore
 
 internal final class GLView: ExpoView, EXGLContextDelegate {
   lazy var glContext: EXGLContext = {
-    guard let legacyModuleRegistry = appContext?.legacyModuleRegistry else {
-      fatalError("Legacy module registry is not available")
+    guard let fileSystem = appContext?.fileSystem else {
+      fatalError("[expo-gl] Unable to get the file system manager")
     }
-    return EXGLContext(delegate: self, andModuleRegistry: legacyModuleRegistry)
+    return EXGLContext(delegate: self, fileSystem: fileSystem)
   }()
 
   lazy var eaglContext: EAGLContext = glContext.createSharedEAGLContext()
@@ -44,8 +44,6 @@ internal final class GLView: ExpoView, EXGLContextDelegate {
     displayLink = CADisplayLink(target: self, selector: #selector(drawGL))
     displayLink?.add(to: RunLoop.main, forMode: .common)
 
-    contentScaleFactor = EXUtilities.screenScale()
-
     // Initialize properties of our backing CAEAGLLayer
     if let eaglLayer = layer as? CAEAGLLayer {
       eaglLayer.isOpaque = false
@@ -64,12 +62,42 @@ internal final class GLView: ExpoView, EXGLContextDelegate {
 
   // MARK: - UIView
 
+  override func didMoveToWindow() {
+    super.didMoveToWindow()
+    updateContentScaleFactor()
+  }
+
+  override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+    super.traitCollectionDidChange(previousTraitCollection)
+    updateContentScaleFactor()
+  }
+
+  private func updateContentScaleFactor() {
+    let scale = SceneGeometry.displayScale(for: self)
+    if contentScaleFactor != scale {
+      contentScaleFactor = scale
+      setNeedsLayout()
+    }
+  }
+
   override func layoutSubviews() {
     resizeViewBuffersToWidth(width: contentScaleFactor * frame.size.width, height: contentScaleFactor * frame.size.height)
 
     isAfterLayout = true
-    glContext.prepare(nil, andEnableExperimentalWorkletSupport: enableExperimentalWorkletSupport)
-    maybeCallSurfaceCreated()
+
+    guard let runtime = try? appContext?.runtime else {
+      log.error("[expo-gl] GLView.layoutSubviews: no JS runtime; GL context will not initialize")
+      return
+    }
+    runtime.schedule(priority: .immediate) { [self] in
+      runtime.withUnsafePointee { runtimePtr in
+        glContext.prepare(
+          withRuntimePointer: runtimePtr,
+          callback: { _ in self.maybeCallSurfaceCreated() },
+          enableExperimentalWorkletSupport: enableExperimentalWorkletSupport
+        )
+      }
+    }
   }
 
   override func removeFromSuperview() {

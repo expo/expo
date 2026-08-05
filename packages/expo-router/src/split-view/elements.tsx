@@ -1,5 +1,5 @@
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { SplitViewScreen } from 'react-native-screens/experimental';
+import { Split } from 'react-native-screens/experimental';
 
 export interface SplitViewColumnProps {
   children?: React.ReactNode;
@@ -7,9 +7,9 @@ export interface SplitViewColumnProps {
 
 export function SplitViewColumn(props: SplitViewColumnProps) {
   return (
-    <SplitViewScreen.Column>
+    <Split.Column>
       <SafeAreaProvider>{props.children}</SafeAreaProvider>
-    </SplitViewScreen.Column>
+    </Split.Column>
   );
 }
 
@@ -17,5 +17,5 @@ export function SplitViewColumn(props: SplitViewColumnProps) {
  * @platform iOS 26+
  */
 export function SplitViewInspector(props: SplitViewColumnProps) {
-  return <SplitViewScreen.Inspector>{props.children}</SplitViewScreen.Inspector>;
+  return <Split.Inspector>{props.children}</Split.Inspector>;
 }

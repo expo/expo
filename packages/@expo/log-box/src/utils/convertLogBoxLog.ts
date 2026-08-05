@@ -1,5 +1,5 @@
 import { LogBoxLog } from '../Data/LogBoxLog';
-import { CodeFrame, StackType } from '../Data/Types';
+import type { CodeFrame, StackType } from '../Data/Types';
 import { parseLogBoxException } from '../Data/parseLogBoxLog';
 
 export function convertToExpoLogBoxLog({

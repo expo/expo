@@ -145,7 +145,7 @@ public final class UpdatesConfig: NSObject {
   }
 
   private static func configDictionaryWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> [String: Any] {
-    guard let configPlistPath = Bundle.main.path(forResource: PlistName, ofType: "plist") else {
+    guard let configPlistPath = updatesBundle.path(forResource: PlistName, ofType: "plist") else {
       throw UpdatesConfigError.ExpoUpdatesConfigPlistError
     }
 

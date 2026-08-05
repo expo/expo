@@ -1,27 +1,21 @@
 import {
-  CommonNavigationAction,
-  ParamListBase,
+  type CommonNavigationAction,
+  type ParamListBase,
+  type Router,
+  type TabActionType as RNTabActionType,
+  type TabNavigationState,
+  type TabRouterOptions as RNTabRouterOptions,
   TabRouter as RNTabRouter,
-  Router,
-  TabActionType as RNTabActionType,
-  TabNavigationState,
-  TabRouterOptions as RNTabRouterOptions,
-  type StackActionType,
-  type NavigationAction,
-} from '@react-navigation/native';
-
-import { TriggerMap } from './common';
+} from '../react-navigation/native';
+import type { TriggerMap } from './common';
 
 export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
 };
 
-type ReplaceAction = Extract<StackActionType, { type: 'REPLACE' }>;
-
 export type ExpoTabActionType =
   | RNTabActionType
   | CommonNavigationAction
-  | ReplaceAction
   | {
       type: 'JUMP_TO';
       source?: string;
@@ -42,37 +36,7 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
   > = {
     ...rnTabRouter,
     getStateForAction(state, action, options) {
-      if (isReplaceAction(action)) {
-        action = {
-          ...action,
-          type: 'JUMP_TO',
-        };
-        // Generate the state as if we were using JUMP_TO
-        const nextState = rnTabRouter.getStateForAction(state, action, options);
-
-        if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
-          return null;
-        }
-
-        // We can assert that nextState is TabNavigationState here, because we checked for index and history above
-        state = nextState as TabNavigationState<ParamListBase>;
-
-        // If the state is valid and we didn't JUMP_TO a single history state,
-        // then remove the previous state.
-        if (state.index !== 0) {
-          const previousIndex = state.index - 1;
-
-          state = {
-            ...state,
-            key: `${state.key}-replace`,
-            // Omit the previous history entry that we are replacing
-            history: [
-              ...state.history.slice(0, previousIndex),
-              ...state.history.splice(state.index),
-            ],
-          };
-        }
-      } else if (action.type !== 'JUMP_TO') {
+      if (action.type !== 'JUMP_TO') {
         return rnTabRouter.getStateForAction(state, action, options);
       }
 
@@ -87,7 +51,7 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       let shouldReset = !state.history?.some((item) => item.key === route?.key) && !route.state;
 
       if (!shouldReset && 'resetOnFocus' in action.payload && action.payload.resetOnFocus) {
-        shouldReset = state.routes[state.index ?? 0].key !== route.key;
+        shouldReset = state.routes[state.index ?? 0]!.key !== route.key;
       }
 
       if (shouldReset) {
@@ -111,8 +75,4 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
   };
 
   return router;
-}
-
-function isReplaceAction(action: NavigationAction): action is ReplaceAction {
-  return action.type === 'REPLACE';
 }

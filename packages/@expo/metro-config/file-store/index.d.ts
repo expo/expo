@@ -1,1 +1,1 @@
-export * from '../build/file-store';
+export * from '../build/binary-file-store';

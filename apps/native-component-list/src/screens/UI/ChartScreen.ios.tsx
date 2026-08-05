@@ -520,7 +520,6 @@ export default function ChartScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
   },
   contentContainer: {
     padding: 16,

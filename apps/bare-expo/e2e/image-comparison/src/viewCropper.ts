@@ -1,9 +1,9 @@
 import spawnAsync from '@expo/spawn-async';
 import Jimp from 'jimp-compact';
-import fs from 'node:fs';
 
 import { MAESTRO_ENV_VARS } from '../../../scripts/lib/e2e-common';
 import { ScreenInspectorIOS } from '../inspector/ScreenInspectorIOS';
+import { resizeImage } from './resizeImage';
 
 interface Bounds {
   x: number;
@@ -31,13 +31,22 @@ interface ViewNode {
 
 async function dumpViewHierarchy(platform: 'ios' | 'android'): Promise<ViewNode> {
   const startTime = Date.now();
-  const result = await spawnAsync('maestro', [`--platform=${platform}`, 'hierarchy'], {
-    stdio: 'pipe',
-    env: {
-      ...process.env,
-      ...MAESTRO_ENV_VARS,
-    },
-  });
+  let result;
+  try {
+    result = await spawnAsync('maestro', [`--platform=${platform}`, 'hierarchy'], {
+      stdio: 'pipe',
+      env: {
+        ...process.env,
+        ...MAESTRO_ENV_VARS,
+      },
+    });
+  } catch (e: any) {
+    throw new Error(
+      `maestro --platform=${platform} hierarchy failed (exit ${e?.status}, signal ${e?.signal}):\n` +
+        `--- stderr ---\n${e?.stderr ?? '(empty)'}\n` +
+        `--- stdout ---\n${e?.stdout ?? '(empty)'}`
+    );
+  }
   const duration = Date.now() - startTime;
 
   console.log(`Maestro took ${duration}ms to capture the ${platform} view hierarchy`);
@@ -110,7 +119,10 @@ function searchJsonNodes(
 async function getCoordinatesViaDylib(
   testID: string,
   displayScaleFactor: number,
-  timeoutMs: number = 3000
+  // The lookup walks the view hierarchy on the app's main thread, which can be busy for a
+  // few seconds on animation-heavy screens; a too-tight timeout abandons requests that would
+  // have succeeded.
+  timeoutMs: number = 10000
 ): Promise<Bounds | null> {
   const screenInspectorIOS = new ScreenInspectorIOS();
 
@@ -143,7 +155,6 @@ async function findElementByTestID(
   platform: 'ios' | 'android',
   displayScaleFactor: number
 ): Promise<ElementProperties> {
-  // For iOS, try dylib first (fast path)
   if (platform === 'ios') {
     const dylibBounds = await getCoordinatesViaDylib(testID, displayScaleFactor);
     if (dylibBounds) {
@@ -151,8 +162,11 @@ async function findElementByTestID(
         resource_id: testID,
         bounds: dylibBounds,
       };
+    } else {
+      throw new Error(
+        `Failed to get coordinates for testID "${testID}" using dylib method on iOS.`
+      );
     }
-    console.log('⚠️  Falling back to maestro for iOS coordinate lookup');
   }
 
   // Fallback to maestro (or primary method for Android)
@@ -193,12 +207,39 @@ async function cropImageAsync({
     croppedImage = croppedImage.resize(newWidth, newHeight);
   }
 
-  await croppedImage.write(outputPath);
-
-  // Ensure file is fully written to disk before returning
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  await fs.promises.access(outputPath, fs.constants.F_OK);
+  // write() resolves before the file hits the disk (it awaits the image, not the write);
+  // writeAsync() is the promise-returning variant.
+  await croppedImage.writeAsync(outputPath);
   console.log('wrote cropped image to', outputPath);
+}
+
+export async function captureViewShotInProcess({
+  testID,
+  viewShotPath,
+  resizingFactor,
+  // The capture renders the view on the app's main thread, which can be busy for a few
+  // seconds on animation-heavy screens; a too-tight timeout abandons requests that would
+  // have succeeded.
+  timeoutMs = 10000,
+}: {
+  testID: string;
+  viewShotPath: string;
+  resizingFactor: number;
+  timeoutMs?: number;
+}): Promise<{ viewShotPath: string }> {
+  const screenInspectorIOS = new ScreenInspectorIOS();
+
+  const label = `Duration of capturing "${testID}" testID in-process via dylib`;
+  console.time(label);
+  await screenInspectorIOS.captureView(testID, viewShotPath, timeoutMs);
+  console.timeEnd(label);
+
+  // The dylib writes the view at its exact bounds, so only resizing is left to do here.
+  await resizeImage(viewShotPath, resizingFactor);
+
+  return {
+    viewShotPath,
+  };
 }
 
 export async function cropViewByTestID({

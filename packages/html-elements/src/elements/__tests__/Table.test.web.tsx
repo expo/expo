@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react';
-import * as React from 'react';
 
 import { Table, THead, TBody, TFoot, TR, TH, TD, Caption } from '../Table';
 

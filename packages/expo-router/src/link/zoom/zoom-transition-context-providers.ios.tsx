@@ -2,7 +2,14 @@
 
 import { useCallback, useId, useMemo, useRef, useState } from 'react';
 
-import { isZoomTransitionEnabled } from './ZoomTransitionEnabler.ios';
+import {
+  getInternalExpoRouterParams,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
+  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
+} from '../../navigationParams';
+import { shouldLinkExternally } from '../../utils/url';
+import { useIsPreview } from '../preview/PreviewRouteContext';
+import { isZoomTransitionEnabled } from './ZoomTransitionEnabler';
 import {
   ZoomTransitionSourceContext,
   ZoomTransitionTargetContext,
@@ -13,13 +20,6 @@ import type {
   ZoomTransitionSourceContextProviderProps,
   ZoomTransitionTargetContextProviderProps,
 } from './zoom-transition-context-providers.types';
-import {
-  getInternalExpoRouterParams,
-  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
-  INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
-} from '../../navigationParams';
-import { shouldLinkExternally } from '../../utils/url';
-import { useIsPreview } from '../preview/PreviewRouteContext';
 
 export function ZoomTransitionSourceContextProvider({
   children,
@@ -79,6 +79,16 @@ export function ZoomTransitionTargetContextProvider({
   children,
 }: ZoomTransitionTargetContextProviderProps) {
   const [dismissalBoundsRect, setDismissalBoundsRect] = useState<DismissalBoundsRect | null>(null);
+  // TODO(@ubax): Move this logic to within NativeStackView
+  // https://linear.app/expo/issue/ENG-19580/remove-hasenabler-logic-from-zoomtransitiontargetcontext
+  // This is a temporary solution to detect if zoom transition was enabled for the screen
+  // In theory we could do all the checks here and only mount the enabler when all conditions are met
+  // However this would require using use(DescriptorsContext) here,
+  // which would cause unnecessary re-renders of the entire screen whenever descriptors change
+  const [numberOfEnablers, setNumberOfEnablers] = useState(0);
+  const addEnabler = useCallback(() => setNumberOfEnablers((prev) => prev + 1), []);
+  const removeEnabler = useCallback(() => setNumberOfEnablers((prev) => prev - 1), []);
+  const hasEnabler = numberOfEnablers > 0;
   const isPreview = useIsPreview();
   if (
     isZoomTransitionEnabled() &&
@@ -104,6 +114,9 @@ export function ZoomTransitionTargetContextProvider({
             identifier: zoomTransitionId,
             dismissalBoundsRect,
             setDismissalBoundsRect,
+            addEnabler,
+            removeEnabler,
+            hasEnabler,
           }}>
           {children}
         </ZoomTransitionTargetContext>

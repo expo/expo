@@ -1,4 +1,3 @@
-import { useIsFocused } from '@react-navigation/core';
 import { useEffect, useState } from 'react';
 import { Text } from 'react-native';
 
@@ -7,6 +6,7 @@ import { router } from '../imperative-api';
 import { Stack } from '../layouts/Stack';
 import { Tabs } from '../layouts/Tabs';
 import { renderRouter, fireEvent, act, waitFor, screen } from '../testing-library';
+import { useIsFocused } from '../useIsFocused';
 
 it('should return correct pathname for nested stack with initialRouteName', async () => {
   const indexRenderCount = jest.fn();

@@ -23,7 +23,7 @@ class ReloadTest {
 
     val promiseResult = callAsync("f2")
     Truth.assertThat(promiseResult.isNumber()).isTrue()
-    Truth.assertThat(getLastPromiseResult().getInt()).isEqualTo(20)
+    Truth.assertThat(promiseResult.getInt()).isEqualTo(20)
   }
 
   @Test

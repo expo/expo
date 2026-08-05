@@ -1,16 +1,17 @@
 // Copyright © 2024 650 Industries.
 'use client';
 
-import { RouterFactory, useNavigationBuilder } from '@react-navigation/native';
 import * as React from 'react';
-import { isEdgeToEdge } from 'react-native-is-edge-to-edge';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { Screen } from './Screen';
-import { useContextKey } from '../Route';
+import { useContextKey, useRouteNode } from '../Route';
+import { GuardContextProvider } from '../layouts/GuardContext';
 import { StackRouter } from '../layouts/StackClient';
 import { useFilterScreenChildren } from '../layouts/withLayoutContext';
+import type { RouterFactory } from '../react-navigation/native';
+import { useNavigationBuilder } from '../react-navigation/native';
 import { useSortedScreens } from '../useScreens';
+import { Screen } from './Screen';
 
 export type NavigatorContextValue = ReturnType<typeof useNavigationBuilder> & {
   contextKey: string;
@@ -47,18 +48,19 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
   routerOptions,
 }: NavigatorProps<T>) {
   const contextKey = useContextKey();
+  const node = useRouteNode();
 
   // A custom navigator can have a mix of Screen and other components (like a Slot inside a View)
   const {
     screens,
     children: nonScreenChildren,
-    protectedScreens,
+    guardedRedirects,
   } = useFilterScreenChildren(children, {
     isCustomNavigator: true,
     contextKey,
   });
 
-  const sortedScreens = useSortedScreens(screens ?? [], protectedScreens);
+  const sortedScreens = useSortedScreens(screens ?? [], guardedRedirects);
 
   router ||= StackRouter as unknown as T;
 
@@ -84,7 +86,9 @@ export function Navigator<T extends UseNavigationBuilderRouter = typeof StackRou
         contextKey,
         router,
       }}>
-      {nonScreenChildren}
+      <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+        {nonScreenChildren}
+      </GuardContextProvider>
     </NavigatorContext.Provider>
   );
 }
@@ -102,20 +106,23 @@ export function useNavigatorContext() {
 
 function SlotNavigator(props: NavigatorProps<any>) {
   const contextKey = useContextKey();
+  const node = useRouteNode();
 
   // Allows adding Screen components as children to configure routes.
-  const { screens, protectedScreens } = useFilterScreenChildren([], {
+  const { screens, guardedRedirects } = useFilterScreenChildren([], {
     contextKey,
   });
 
   const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, {
     ...props,
     id: contextKey,
-    children: useSortedScreens(screens ?? [], protectedScreens),
+    children: useSortedScreens(screens ?? [], guardedRedirects),
   });
 
   return (
-    <NavigationContent>{descriptors[state.routes[state.index].key].render()}</NavigationContent>
+    <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    </GuardContextProvider>
   );
 }
 
@@ -154,14 +161,14 @@ function NavigatorSlot() {
 
   const { state, descriptors } = context;
 
-  return descriptors[state.routes[state.index].key]?.render() ?? null;
+  return descriptors[state.routes[state.index]!.key]?.render() ?? null;
 }
 
 /**
  * The default navigator for the app when no root _layout is provided.
  */
 export function DefaultNavigator() {
-  if (process.env.EXPO_OS === 'android' && isEdgeToEdge()) {
+  if (process.env.EXPO_OS === 'android') {
     return <SlotNavigator />;
   }
   return (

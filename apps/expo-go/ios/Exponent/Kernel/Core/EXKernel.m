@@ -2,13 +2,13 @@
 
 #import "EXAppState.h"
 #import "EXAppViewController.h"
-#import "EXBuildConstants.h"
 #import "EXKernel.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXAbstractLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"
-#import "EXVersions.h"
 #import "EXKernelDevKeyCommands.h"
 
 #import <EXConstants/EXConstantsService.h>
@@ -16,10 +16,7 @@
 #import <React/RCTEventDispatcher.h>
 #import <React/RCTModuleData.h>
 #import <React/RCTUtils.h>
-#import "EXDevMenu-Swift.h"
-#import "EXDevMenuInterface-Swift.h"
-
-@interface EXKernel () <DevMenuHostDelegate>
+@interface EXKernel ()
 @end
 
 NS_ASSUME_NONNULL_BEGIN
@@ -61,7 +58,8 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
     // init service registry: classes which manage shared resources among all hosts
     _serviceRegistry = [[EXKernelServiceRegistry alloc] init];
 
-    [DevMenuManager.shared setDelegate:self];
+    // Initialize the Expo Go dev menu manager (triggers lazy singleton init)
+    (void)[DevMenuManager shared];
 
     // Register keyboard commands (e.g., Cmd+D) for simulator
     [[EXKernelDevKeyCommands sharedInstance] registerDevCommands];
@@ -111,33 +109,22 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (id)nativeModuleForAppManager:(EXReactAppManager *)appManager named:(NSString *)moduleName
 {
-  id host = appManager.reactHost;
-  
-  if (host) {
-    id module = [[host moduleRegistry] moduleForName:[moduleName UTF8String]];
+  if (appManager.reactHost) {
+    id module = [appManager.reactModuleRegistry moduleForName:[moduleName UTF8String]];
     if (module) {
       return module;
     }
   } else {
     // Host can be null if the record is in an error state and never created a host.
-    if (host) {
-      DDLogError(@"Host does not support the API");
-    }
+    DDLogError(@"Host does not support the API");
   }
-  
+
   return nil;
 }
 
 - (void)_postNotificationName: (NSNotificationName)name
 {
   [[NSNotificationCenter defaultCenter] postNotificationName:name object:nil];
-}
-
-#pragma mark - App props
-
-- (nullable NSDictionary *)initialAppPropsFromLaunchOptions:(NSDictionary *)launchOptions
-{
-  return nil;
 }
 
 #pragma mark - App State
@@ -153,6 +140,9 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 
 - (void)reloadVisibleApp
 {
+  // Hide FAB immediately to avoid jank during reload
+  [[DevMenuManager shared] hideFAB];
+
   if (_browserController) {
     [EXUtil performSynchronouslyOnMainThread:^{
       [self->_browserController reloadVisibleApp];
@@ -214,12 +204,12 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
+      [self _unregisterUnusedAppRecords];
     } else {
       _visibleApp = nil;
-    }
-    
-    if (_visibleApp != nil) {
-      [self _unregisterUnusedAppRecords];
+      if (appRecordPreviouslyVisible) {
+        [_appRegistry unregisterAppWithRecord:appRecordPreviouslyVisible];
+      }
     }
   }
 }
@@ -292,20 +282,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
       [self->_browserController moveAppToVisible:appRecord];
     }];
   }
-}
-
-#pragma mark - DevMenuHostDelegate
-
-- (void)devMenuNavigateHome {
-  [self switchTasks];
-}
-
-- (void)devMenuTogglePerformanceMonitor {
-  [[self visibleApp].appManager togglePerformanceMonitor];
-}
-
-- (void)devMenuToggleElementInspector {
-  [[self visibleApp].appManager toggleElementInspector];
 }
 
 @end

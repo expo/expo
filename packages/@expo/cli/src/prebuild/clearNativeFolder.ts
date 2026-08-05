@@ -1,5 +1,7 @@
-import { AndroidConfig, IOSConfig, ModPlatform } from '@expo/config-plugins';
+import type { ModPlatform } from '@expo/config-plugins';
+import { AndroidConfig, IOSConfig } from '@expo/config-plugins';
 import chalk from 'chalk';
+import { isNativeModuleAsync } from 'expo/internal/unstable-autolinking-exports';
 import fs from 'fs';
 import path from 'path';
 
@@ -66,13 +68,12 @@ export async function hasRequiredIOSFilesAsync(projectRoot: string) {
 }
 
 /**
- * Filter out platforms that do not have an existing platform folder.
- * If the user wants to validate that neither of ['ios', 'android'] are malformed then we should
- * first check that both `ios` and `android` folders exist.
+ * Returns the subset of `platforms` that have an existing native folder on disk.
  *
- * This optimization prevents us from prompting to clear a "malformed" project that doesn't exist yet.
+ * Used to avoid prompting to clear a "malformed" project that doesn't exist yet, and to gate the
+ * clean-by-default guards so a first-ever prebuild doesn't run the git status check.
  */
-async function filterPlatformsThatDoNotExistAsync(
+export async function getExistingNativePlatformsAsync(
   projectRoot: string,
   platforms: ArbitraryPlatform[]
 ): Promise<ArbitraryPlatform[]> {
@@ -98,7 +99,7 @@ export async function getMalformedNativeProjectsAsync(
   };
 
   const checkablePlatforms = platforms.filter((platform) => platform in VERIFIERS);
-  const checkPlatforms = await filterPlatformsThatDoNotExistAsync(projectRoot, checkablePlatforms);
+  const checkPlatforms = await getExistingNativePlatformsAsync(projectRoot, checkablePlatforms);
   return (
     await Promise.all(
       checkPlatforms.map(async (platform) => {
@@ -121,6 +122,8 @@ export async function promptToClearMalformedNativeProjectsAsync(
   const platforms = await getMalformedNativeProjectsAsync(projectRoot, checkPlatforms);
 
   if (!platforms.length) {
+    return;
+  } else if (await maybeBailOnNativeModuleAsync(projectRoot)) {
     return;
   }
 
@@ -149,4 +152,36 @@ export async function promptToClearMalformedNativeProjectsAsync(
     // Warn the user that the process may fail.
     Log.warn('Continuing with malformed native projects');
   }
+}
+
+export async function maybeBailOnNativeModuleAsync(projectRoot: string) {
+  let isNativeModule = false;
+  try {
+    isNativeModule = await isNativeModuleAsync(projectRoot);
+  } catch {
+    // We don't care too much about a failure here
+    // TODO(@kitten): Remove try/catch; this is only to protect against version misalignment
+    // Remove this when we're bumping to SDK 56
+  }
+  if (isNativeModule) {
+    if (!isInteractive()) {
+      Log.warn(
+        `Current project was detected as a native module, but the command will continue because the terminal is not interactive.`
+      );
+      return false;
+    } else {
+      Log.warn('Current project was detected as a native module and not an Expo app.');
+    }
+
+    const answer = await confirmAsync({
+      message: `Continue anyway?`,
+    });
+    if (!answer) {
+      return true;
+    }
+
+    Log.log();
+  }
+
+  return false;
 }

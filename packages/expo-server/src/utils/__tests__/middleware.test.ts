@@ -268,6 +268,50 @@ describe(shouldRunMiddleware, () => {
           )
         ).toBe(false);
       });
+
+      it('should not carry state across requests for stateful regex flags', () => {
+        const middleware = createMiddlewareModule({
+          patterns: [/\/admin/g],
+        });
+        const request = createMockRequest('https://expo.dev/admin');
+        expect(shouldRunMiddleware(request, middleware)).toBe(true);
+        expect(shouldRunMiddleware(request, middleware)).toBe(true);
+        expect(shouldRunMiddleware(request, middleware)).toBe(true);
+      });
+    });
+  });
+
+  describe('effective pathname matching', () => {
+    it('should match patterns against an effective pathname when supplied', () => {
+      const middleware = createMiddlewareModule({
+        patterns: ['/admin/secret'],
+      });
+      const request = createMockRequest('https://expo.dev/_expo/loaders/admin/secret');
+      expect(shouldRunMiddleware(request, middleware, '/admin/secret')).toBe(true);
+    });
+
+    it('should still match patterns against the raw pathname when an effective pathname is supplied', () => {
+      const middleware = createMiddlewareModule({
+        patterns: ['/_expo/loaders/admin/secret'],
+      });
+      const request = createMockRequest('https://expo.dev/_expo/loaders/admin/secret');
+      expect(shouldRunMiddleware(request, middleware, '/admin/secret')).toBe(true);
+    });
+
+    it('should not match when neither raw nor effective pathname match', () => {
+      const middleware = createMiddlewareModule({
+        patterns: ['/something-else'],
+      });
+      const request = createMockRequest('https://expo.dev/_expo/loaders/admin/secret');
+      expect(shouldRunMiddleware(request, middleware, '/admin/secret')).toBe(false);
+    });
+
+    it('should match the effective pathname for named-parameter patterns', () => {
+      const middleware = createMiddlewareModule({
+        patterns: ['/admin/[...path]'],
+      });
+      const request = createMockRequest('https://expo.dev/_expo/loaders/admin/secret');
+      expect(shouldRunMiddleware(request, middleware, '/admin/secret')).toBe(true);
     });
   });
 

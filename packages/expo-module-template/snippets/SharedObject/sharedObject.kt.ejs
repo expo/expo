@@ -1,0 +1,12 @@
+package <%- project.package %>
+
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.sharedobjects.SharedObject
+
+class <%- project.sharedObjectName %>(appContext: AppContext) : SharedObject(appContext) {
+  var count: Int = 0
+
+  override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
+  }
+}

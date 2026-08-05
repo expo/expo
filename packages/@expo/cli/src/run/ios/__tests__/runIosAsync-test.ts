@@ -30,6 +30,7 @@ jest.mock('../../../utils/env', () => ({
   env: {
     CI: false,
   },
+  envIsHeadless: () => false,
 }));
 
 jest.mock('../../startBundler', () => ({
@@ -94,9 +95,12 @@ describe(resolveOptionsAsync, () => {
 
     expect(buildAsync).toHaveBeenCalledWith({
       buildCache: true,
+      buildCacheProvider: undefined,
       configuration: 'Debug',
       device: { name: 'mock', udid: '123' },
+      eagerBundleOptions: undefined,
       isSimulator: true,
+      osType: 'iOS',
       port: 8081,
       projectRoot: '/',
       scheme: 'ReactNativeProject',
@@ -127,6 +131,7 @@ describe(resolveOptionsAsync, () => {
       deviceType: 'device',
       udid: '00008101-001964A22629003A',
       connectionType: 'USB',
+      osType: 'iOS',
     });
     jest.mocked(isSimulatorDevice).mockReturnValueOnce(false);
     mockPlatform('darwin');
@@ -145,6 +150,7 @@ describe(resolveOptionsAsync, () => {
 
     expect(buildAsync).toHaveBeenCalledWith({
       buildCache: true,
+      buildCacheProvider: undefined,
       configuration: 'Debug',
       device: {
         deviceType: 'device',
@@ -153,8 +159,11 @@ describe(resolveOptionsAsync, () => {
         osVersion: '15.4.1',
         udid: '00008101-001964A22629003A',
         connectionType: 'USB',
+        osType: 'iOS',
       },
+      eagerBundleOptions: undefined,
       isSimulator: false,
+      osType: 'iOS',
       port: 8081,
       projectRoot: '/',
       scheme: 'ReactNativeProject',
@@ -174,6 +183,7 @@ describe(resolveOptionsAsync, () => {
           osVersion: '15.4.1',
           udid: '00008101-001964A22629003A',
           connectionType: 'USB',
+          osType: 'iOS',
         },
         isSimulator: false,
         shouldStartBundler: true,

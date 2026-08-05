@@ -1,6 +1,6 @@
-import { type NativeHeadersType } from './NativeRequest';
-import { convertFormDataAsync } from './convertFormData';
 import { blobToArrayBufferAsync } from '../../utils/blobUtils';
+import type { NativeHeadersType } from './NativeRequest';
+import { convertFormDataAsync } from './convertFormData';
 
 /**
  * convert a ReadableStream to a Uint8Array
@@ -135,4 +135,20 @@ export function overrideHeaders(
     result.push([key, value]);
   }
   return result;
+}
+
+/** Normalizes known HTTP methods to uppercase */
+export function normalizeMethod(method: string): string {
+  const normalized = method.toUpperCase();
+  switch (method.toUpperCase()) {
+    case 'DELETE':
+    case 'GET':
+    case 'HEAD':
+    case 'OPTIONS':
+    case 'POST':
+    case 'PUT':
+      return normalized;
+    default:
+      return method;
+  }
 }

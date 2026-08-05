@@ -1,7 +1,8 @@
 package expo.modules.filesystem
 
 import android.net.Uri
-import expo.modules.interfaces.filesystem.Permission
+import expo.modules.kotlin.services.FilePermissionService
+import java.io.File
 
 class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   fun validatePath() {
@@ -15,7 +16,7 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   val exists: Boolean get() {
-    return if (checkPermission(Permission.READ)) {
+    return if (checkPermission(FilePermissionService.Permission.READ)) {
       file.isDirectory()
     } else {
       false
@@ -23,14 +24,14 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   val size: Long get() {
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     validateType()
     return file.walkTopDown().filter { it.isFile() }.map { it.length() }.sum()
   }
 
   fun info(): DirectoryInfo {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     if (!file.exists()) {
       val directoryInfo = DirectoryInfo(
         exists = false,
@@ -51,13 +52,13 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
   }
 
   fun create(options: CreateOptions = CreateOptions()) {
+    if (uri.isContentUri) {
+      throw UnableToCreateException("Directory.create function does not work with SAF content:// uris, use `Directory.createDirectory` instead")
+    }
     validateType()
-    validatePermission(Permission.WRITE)
+    validatePermission(FilePermissionService.Permission.WRITE)
     if (!needsCreation(options)) {
       return
-    }
-    if (uri.isContentUri) {
-      throw UnableToCreateException("create function does not work with SAF Uris, use `createDirectory` and `createFile` instead")
     }
     validateCanCreate(options)
     if (options.overwrite && file.exists()) {
@@ -75,27 +76,48 @@ class FileSystemDirectory(uri: Uri) : FileSystemPath(uri) {
 
   fun createFile(mimeType: String?, fileName: String): FileSystemFile {
     validateType()
-    validatePermission(Permission.WRITE)
-    val newFile = file.createFile(mimeType ?: "text/plain", fileName) ?: throw UnableToCreateException("file could not be created")
+    validatePermission(FilePermissionService.Permission.WRITE)
+    validateChildTarget(fileName)
+    val newFile = file.createFile(mimeType ?: "text/plain", fileName)
+      ?: throw UnableToCreateException("file could not be created")
     return FileSystemFile(newFile.uri)
   }
 
   fun createDirectory(fileName: String): FileSystemDirectory {
     validateType()
-    validatePermission(Permission.WRITE)
-    val newDirectory = file.createDirectory(fileName) ?: throw UnableToCreateException("directory could not be created")
+    validatePermission(FilePermissionService.Permission.WRITE)
+    validateChildTarget(fileName)
+    val newDirectory = file.createDirectory(fileName)
+      ?: throw UnableToCreateException("directory could not be created")
     return FileSystemDirectory(newDirectory.uri)
+  }
+
+  private fun validateChildTarget(fileName: String) {
+    validateFileSystemChildName(fileName)
+    if (uri.isContentUri || uri.isAssetUri) {
+      return
+    }
+    val parent = javaFile.canonicalFile
+    val child = File(parent, fileName).canonicalFile
+    if (child.parentFile?.canonicalPath != parent.canonicalPath) {
+      throw UnableToCreateException("child path escapes parent directory")
+    }
   }
 
   // this function is internal and will be removed in the future (when returning arrays of shared objects is supported)
   fun listAsRecords(): List<Map<String, Any>> {
     validateType()
-    validatePermission(Permission.READ)
+    validatePermission(FilePermissionService.Permission.READ)
     return file.listFilesAsUnified().map {
       val uriString = it.uri.toString()
+      val isDir = it.isDirectory()
       mapOf(
-        "isDirectory" to it.isDirectory(),
-        "uri" to if (uriString.endsWith("/")) uriString else "$uriString/"
+        "isDirectory" to isDir,
+        "uri" to if (isDir) {
+          if (uriString.endsWith("/")) uriString else "$uriString/"
+        } else {
+          uriString
+        }
       )
     }
   }

@@ -1,0 +1,23 @@
+import { SharedObject, useReleasingSharedObject } from 'expo-modules-core';
+
+import <%- project.moduleName %> from './<%- project.moduleName %>';
+
+export declare class <%- project.sharedObjectName %> extends SharedObject {
+  count: number;
+}
+
+/**
+ * Creates a new <%- project.sharedObjectName %> instance.
+ * You are responsible for releasing it from memory by calling `release()` when done.
+ */
+export function create<%- project.sharedObjectName %>(): <%- project.sharedObjectName %> {
+  return new <%- project.moduleName %>.<%- project.sharedObjectName %>();
+}
+
+/**
+ * A hook that creates a <%- project.sharedObjectName %> instance and automatically
+ * releases it when the component unmounts.
+ */
+export function use<%- project.sharedObjectName %>(): <%- project.sharedObjectName %> {
+  return useReleasingSharedObject(() => new <%- project.moduleName %>.<%- project.sharedObjectName %>(), []);
+}

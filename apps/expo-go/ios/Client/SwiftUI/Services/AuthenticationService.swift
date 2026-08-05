@@ -3,6 +3,7 @@
 import Foundation
 import AuthenticationServices
 import Combine
+import ExpoModulesCore
 
 @MainActor
 class AuthenticationService: ObservableObject {
@@ -12,6 +13,7 @@ class AuthenticationService: ObservableObject {
   @Published var isAuthenticated = false
 
   private let sessionKey = "expo-session-secret"
+  private let usernameKey = "expo-username"
   private let selectedAccountKey = "expo-selected-account-id"
   private let presentationContext = AuthPresentationContextProvider()
 
@@ -42,12 +44,16 @@ class AuthenticationService: ObservableObject {
 
     if isAuthenticated {
       if let sessionSecret {
-        APIClient.shared.setSession(sessionSecret)
+        synchronizeNativeSession(sessionSecret)
       }
       Task {
+        if let sessionSecret {
+          await APIClient.shared.setSession(sessionSecret)
+        }
         await loadUserInfo()
       }
     } else {
+      clearNativeSession()
       user = nil
       selectedAccountId = nil
     }
@@ -55,10 +61,17 @@ class AuthenticationService: ObservableObject {
 
   func loadUserInfo() async {
     guard isAuthenticated else { return }
+    await fetchUserInfo()
+  }
 
+  private func fetchUserInfo() async {
     do {
       let response: MeUserActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
       user = response.data.meUserActor
+
+      if let username = user?.username {
+        UserDefaults.standard.set(username, forKey: usernameKey)
+      }
 
       if selectedAccountId == nil, let firstAccount = user?.accounts.first {
         selectAccount(accountId: firstAccount.id)
@@ -68,33 +81,72 @@ class AuthenticationService: ObservableObject {
     }
   }
 
-  func signIn() async throws {
-    isAuthenticating = true
-    defer { isAuthenticating = false }
-
-    let success = try await performAuthentication(isSignUp: false)
-    if success {
-      await loadUserInfo()
-    }
-  }
-
   func signUp() async throws {
     isAuthenticating = true
     defer { isAuthenticating = false }
 
-    let success = try await performAuthentication(isSignUp: true)
-    if success {
-      await loadUserInfo()
+    if let sessionSecret = try await performAuthentication(path: "signup") {
+      await completeLogin(with: sessionSecret)
     }
+  }
+
+  func signIn() async throws {
+    isAuthenticating = true
+    defer { isAuthenticating = false }
+
+    if let sessionSecret = try await performAuthentication(path: "login") {
+      await completeLogin(with: sessionSecret)
+    }
+  }
+
+  func ssoLogin() async throws {
+    isAuthenticating = true
+    defer { isAuthenticating = false }
+
+    if let sessionSecret = try await performAuthentication(path: "sso-login") {
+      await completeLogin(with: sessionSecret)
+    }
+  }
+
+  func completeLogin(with sessionSecret: String) async {
+    UserDefaults.standard.set(sessionSecret, forKey: sessionKey)
+    synchronizeNativeSession(sessionSecret)
+    await APIClient.shared.setSession(sessionSecret)
+    // Fetch user info before setting isAuthenticated so account data is ready
+    // when the UI switches to the account selector
+    await fetchUserInfo()
+    isAuthenticated = true
   }
 
   func signOut() {
     UserDefaults.standard.removeObject(forKey: sessionKey)
+    UserDefaults.standard.removeObject(forKey: usernameKey)
     UserDefaults.standard.removeObject(forKey: selectedAccountKey)
-    APIClient.shared.setSession(nil)
+    clearNativeSession()
+    Task {
+      await APIClient.shared.setSession(nil)
+    }
     user = nil
     selectedAccountId = nil
     isAuthenticated = false
+  }
+
+  private func synchronizeNativeSession(_ sessionSecret: String) {
+    do {
+      try Session.sharedInstance.saveSession(
+        toKeychain: ["sessionSecret": sessionSecret] as NSDictionary
+      )
+    } catch {
+      print("[AuthenticationService] Failed to save native session: \(error.localizedDescription)")
+    }
+  }
+
+  private func clearNativeSession() {
+    do {
+      try Session.sharedInstance.deleteSessionFromKeychain()
+    } catch {
+      print("[AuthenticationService] Failed to clear native session: \(error.localizedDescription)")
+    }
   }
 
   func selectAccount(accountId: String) {
@@ -102,16 +154,15 @@ class AuthenticationService: ObservableObject {
     UserDefaults.standard.set(accountId, forKey: selectedAccountKey)
   }
 
-  private func performAuthentication(isSignUp: Bool) async throws -> Bool {
+  private func performAuthentication(path: String) async throws -> String? {
     let scheme = try getURLScheme()
+    let websiteOrigin = APIClient.shared.websiteOrigin
 
     return try await withCheckedThrowingContinuation { continuation in
-      let websiteOrigin = APIClient.shared.websiteOrigin
-      let authType = isSignUp ? "signup" : "login"
       let redirectBase = "\(scheme)://auth"
 
       guard let encodedRedirectURI = redirectBase.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed),
-            let url = URL(string: "\(websiteOrigin)/\(authType)?confirm_account=1&app_redirect_uri=\(encodedRedirectURI)") else {
+            let url = URL(string: "\(websiteOrigin)/\(path)?confirm_account=1&app_redirect_uri=\(encodedRedirectURI)") else {
         continuation.resume(throwing: ExpoGoError.invalidURL)
         return
       }
@@ -132,16 +183,11 @@ class AuthenticationService: ObservableObject {
           return
         }
 
-        UserDefaults.standard.set(sessionSecret, forKey: self.sessionKey)
-        APIClient.shared.setSession(sessionSecret)
-        Task { @MainActor in
-          self.isAuthenticated = true
-        }
-        continuation.resume(returning: true)
+        continuation.resume(returning: sessionSecret)
       }
 
       session.presentationContextProvider = presentationContext
-      session.prefersEphemeralWebBrowserSession = true
+      session.prefersEphemeralWebBrowserSession = false
       session.start()
     }
   }
@@ -163,10 +209,6 @@ class AuthenticationService: ObservableObject {
 
 private class AuthPresentationContextProvider: NSObject, ASWebAuthenticationPresentationContextProviding {
   func presentationAnchor(for session: ASWebAuthenticationSession) -> ASPresentationAnchor {
-    let window = UIApplication.shared.connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }
-    return window ?? ASPresentationAnchor()
+    return SceneGeometry.keyWindow() ?? ASPresentationAnchor()
   }
 }

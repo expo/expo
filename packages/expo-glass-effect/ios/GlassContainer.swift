@@ -27,7 +27,7 @@ public final class GlassContainer: ExpoView {
     return false
   }
 
-  public func setSpacing(_ spacing: CGFloat?) {
+  func setSpacing(_ spacing: CGFloat?) {
     if containerSpacing != spacing {
       containerSpacing = spacing
       guard isGlassContainerEffectAvailable() else {

@@ -1,7 +1,9 @@
 import { render } from '@testing-library/react';
 
-import { APICommentTextBlock } from './APICommentTextBlock';
+import { axe } from '~/common/test-utilities';
+
 import type { CommentData } from '../APIDataTypes';
+import { APICommentTextBlock } from './APICommentTextBlock';
 
 describe(APICommentTextBlock, () => {
   test('no comment', () => {
@@ -16,6 +18,15 @@ describe(APICommentTextBlock, () => {
 
     const { container } = render(<APICommentTextBlock comment={comment} />);
     expect(container).toMatchSnapshot();
+  });
+
+  test('has no axe violations', async () => {
+    const comment: CommentData = {
+      summary: [{ kind: 'text', text: 'This is the basic comment.' }],
+    };
+
+    const { container } = render(<APICommentTextBlock comment={comment} />);
+    expect(await axe(container)).toHaveNoViolations();
   });
 
   test('comment with example', () => {

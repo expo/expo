@@ -4,9 +4,125 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Default allowDynamicLocaleChangesAndroid to true when supportedLocales is configured ([#41813](https://github.com/expo/expo/pull/41813) by [@Ubax](https://github.com/Ubax))
+- [iOS] RTL layout is no longer force-enabled from the current device locale when `supportsRTL` is `true`. RTL now follows React Native's `I18nManager`. ([#48086](https://github.com/expo/expo/pull/48086) by [@zoontek](https://github.com/zoontek))
 
 ### 🎉 New features
+
+- Set `android:supportsRtl` in the `AndroidManifest.xml` from the `supportsRTL` config plugin prop. ([#48080](https://github.com/expo/expo/pull/48080) by [@zoontek](https://github.com/zoontek))
+
+### 🐛 Bug fixes
+
+- Prevent the `supportedLocales` config plugin from duplicating `resourceConfigurations` in `app/build.gradle` on repeated `expo prebuild --no-clean` runs. ([#48092](https://github.com/expo/expo/pull/48092) by [@zoontek](https://github.com/zoontek))
+
+### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-21
+
+### 🐛 Bug fixes
+
+- Fix an ES module import error in the typed config plugin. ([#46089](https://github.com/expo/expo/pull/46089) by [@zoontek](https://github.com/zoontek))
+
+## 56.0.5 — 2026-05-19
+
+### 🐛 Bug fixes
+
+- Prevalidate locale strings in config-plugin ([#45888](https://github.com/expo/expo/pull/45888) by [@kitten](https://github.com/kitten))
+
+## 56.0.4 — 2026-05-13
+
+### 💡 Others
+
+- Use ReactI18nUtil dependency for enabling RTL support. ([#40575](https://github.com/expo/expo/pull/40575) by [@nishan](https://github.com/intergalacticspacehighway))
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Expose a typed config plugin function ([#44098](https://github.com/expo/expo/pull/44098) by [@zoontek](https://github.com/zoontek))
+
+## 55.0.13 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.11 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.9 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+### 🐛 Bug fixes
+
+- [android] fix: convert BCP-47 locales to Android resource qualifiers ([#40901](https://github.com/expo/expo/pull/40901) by [@kosmydel](https://github.com/kosmydel))
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🛠 Breaking changes
+
+- [Android] Default allowDynamicLocaleChangesAndroid to true when supportedLocales is configured ([#41813](https://github.com/expo/expo/pull/41813) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
@@ -14,6 +130,7 @@
 
 ### 💡 Others
 
+- mark `removeSubscription` calls as deprecated ([#42098](https://github.com/expo/expo/pull/42098) by [@vonovak](https://github.com/vonovak))
 - [Web] Add `getTextInfo()` fallback for deprecated `textInfo` in `getLocales()` ([#39255](https://github.com/expo/expo/pull/39255) by [@desii101](https://github.com/desii101))
 
 ## 17.0.8 - 2025-12-05

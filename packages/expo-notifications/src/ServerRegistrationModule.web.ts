@@ -1,6 +1,6 @@
-import { CodedError, uuid } from 'expo-modules-core';
+import { CodedError, uuid } from 'expo';
 
-import { ServerRegistrationModule } from './ServerRegistrationModule.types';
+import type { ServerRegistrationModule } from './ServerRegistrationModule.types';
 
 const INSTALLATION_ID_KEY = 'EXPO_NOTIFICATIONS_INSTALLATION_ID';
 const REGISTRATION_INFO_KEY = 'EXPO_NOTIFICATIONS_REGISTRATION_INFO';
@@ -31,7 +31,11 @@ export default {
     if (typeof localStorage === 'undefined') {
       return null;
     }
-    return localStorage.getItem(REGISTRATION_INFO_KEY);
+    try {
+      return localStorage.getItem(REGISTRATION_INFO_KEY);
+    } catch {
+      return null;
+    }
   },
   setRegistrationInfoAsync: async (registrationInfo: string | null) => {
     if (typeof localStorage === 'undefined') {

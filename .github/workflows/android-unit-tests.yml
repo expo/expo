@@ -6,21 +6,21 @@ on:
     branches: [main]
     paths:
       - .github/workflows/android-unit-tests.yml
-      - apps/expo-go/android/**
       - fastlane/**
       - packages/**/android/**
       - tools/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
+      - '!tools/src/commands/GenerateDocsAPIData.ts'
   pull_request:
     paths:
       - .github/workflows/android-unit-tests.yml
-      - apps/expo-go/android/**
       - fastlane/**
       - packages/**/android/**
       - tools/**
-      - yarn.lock
+      - pnpm-lock.yaml
       - '!packages/@expo/cli/**'
+      - '!tools/src/commands/GenerateDocsAPIData.ts'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -34,18 +34,21 @@ jobs:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1024m
     steps:
-      - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
       - name: 👀 Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          submodules: true
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
       - name: 🧹 Cleanup GitHub Linux runner disk space
         uses: ./.github/actions/cleanup-linux-disk-space
       - name: 🔨 Use JDK 17
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -53,25 +56,25 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
           react-native-gradle-downloads: 'true'
           gradle: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: 🧶 Install node modules in root dir
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+      - name: 📦 Install node modules
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 💅 Run Spotless lint check
-        working-directory: apps/expo-go/android
-        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/expo-go/android` to automatically fix formatting.' && exit 1; }
+        working-directory: apps/bare-expo/android
+        run: ./gradlew spotlessCheck || { echo '::error Spotless lint failed. Run `./gradlew spotlessApply` from `apps/bare-expo/android` to automatically fix formatting.' && exit 1; }
       - name: 🎸 Run native Android unit tests
         if: always()
         timeout-minutes: 30
-        run: expotools native-unit-tests --platform android
+        run: pnpm expotools native-unit-tests --platform android
       - name: 💾 Save test results
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: test-results
-          path: packages/**/build/test-results/**/*xml
+          path: packages/*/android/build/test-results/**/*xml

@@ -1,9 +1,10 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { StackNavigationProp } from '@react-navigation/stack';
-import { FlatList, PixelRatio, StyleSheet, Text, TouchableHighlight, View } from 'react-native';
+import { router } from 'expo-router';
+import { FlatList, PixelRatio, StyleSheet, TouchableHighlight, View } from 'react-native';
 
-import examples from './examples';
+import { BodyText } from '../../components/BodyText';
 import { optionalRequire } from '../../navigation/routeBuilder';
+import examples from './examples';
 
 export const SVGScreens = [
   {
@@ -16,15 +17,7 @@ export const SVGScreens = [
   },
 ];
 
-type StackParams = {
-  SVGExample: { title: string; key: string };
-};
-
-export default function SVGScreen({
-  navigation,
-}: {
-  navigation: StackNavigationProp<StackParams>;
-}) {
+export default function SVGScreen() {
   return (
     <FlatList<string>
       style={styles.container}
@@ -33,13 +26,15 @@ export default function SVGScreen({
         <TouchableHighlight
           underlayColor="#dddddd"
           style={styles.rowTouchable}
-          onPress={() => navigation.navigate('SVGExample', { title: exampleKey, key: exampleKey })}>
+          onPress={() =>
+            router.push({ pathname: '/components/svg/example', params: { exampleKey } })
+          }>
           <View style={styles.row}>
             <View style={styles.rowIcon}>{examples[exampleKey].icon}</View>
-            <Text style={styles.rowLabel}>{exampleKey}</Text>
-            <Text style={styles.rowDecorator}>
+            <BodyText style={styles.rowLabel}>{exampleKey}</BodyText>
+            <BodyText style={styles.rowDecorator}>
               <Ionicons name="chevron-forward" size={18} color="#595959" />
-            </Text>
+            </BodyText>
           </View>
         </TouchableHighlight>
       )}
@@ -53,8 +48,7 @@ SVGScreen.navigationOptions = {
 
 const styles = StyleSheet.create({
   container: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'white',
+    ...StyleSheet.absoluteFill,
   },
   row: {
     flexDirection: 'row',

@@ -1,14 +1,8 @@
 #pragma once
 
-#if WORKLETS_ENABLED
-
-#include "../JSIContext.h"
-#include "../JNIDeallocator.h"
+#include "../ExpoHeader.pch"
 #include "WorkletNativeRuntime.h"
 #include "Serializable.h"
-
-#include <fbjni/fbjni.h>
-#include <worklets/SharedItems/Serializable.h>
 
 namespace jni = facebook::jni;
 
@@ -33,8 +27,20 @@ public:
     jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder,
     jni::alias_ref<Serializable::javaobject> synchronizable
   );
+
+  static void scheduleWithArgs(
+    jni::alias_ref<Worklet::javaobject> self,
+    jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder,
+    jni::alias_ref<Serializable::javaobject> synchronizable,
+    jni::alias_ref<jni::JArrayClass<jobject>> args
+  );
+
+  static void executeWithArgs(
+    jni::alias_ref<Worklet::javaobject> self,
+    jni::alias_ref<WorkletNativeRuntime::javaobject> workletRuntimeHolder,
+    jni::alias_ref<Serializable::javaobject> synchronizable,
+    jni::alias_ref<jni::JArrayClass<jobject>> args
+  );
 };
 
 } // namespace expo
-
-#endif

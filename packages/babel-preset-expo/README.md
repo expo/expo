@@ -73,7 +73,7 @@ Defaults to `true` for server environments, and `false` for client environments 
 ];
 ```
 
-This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx). This flag does nothing when `useTransformReactJSXExperimental` is set to `true` because `@babel/plugin-transform-react-jsx` is omitted.
+This property is passed down to [`@babel/plugin-transform-react-jsx`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx).
 
 ### [`jsxImportSource`](https://babeljs.io/docs/en/babel-plugin-transform-react-jsx#importsource)
 
@@ -152,17 +152,13 @@ If `undefined` (default), this will be set automatically via `caller.supportsSta
 
 Changes the engine preset in `@react-native/babel-preset` based on the JavaScript engine that is being targeted. In Expo SDK 50 and greater, this is automatically set based on the [`jsEngine`](https://docs.expo.dev/versions/latest/config/app/#jsengine) option in your `app.json`.
 
-### `unstable_transformImportMeta`
+### `transformImportMeta`
 
-Enable that transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`, defaults to `false` in client bundles and `true` for server bundles.
+Enable transform that converts `import.meta` to `globalThis.__ExpoImportMetaRegistry`. Defaults to `true`.
 
-> **Note:** Use this option at your own risk. If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
+> **Note:** If the JavaScript engine supports `import.meta` natively, this transformation may interfere with the native implementation.
 
 ### `enableBabelRuntime`
-
-Passed to `@react-native/babel-preset`.
-
-### `disableFlowStripTypesTransform`
 
 Passed to `@react-native/babel-preset`.
 

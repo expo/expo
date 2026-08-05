@@ -30,8 +30,8 @@ import type {
 import collectDependencies, { InvalidRequireCallError } from '../collect-dependencies';
 
 const generateOptions = { concise: true, sourceType: 'module' };
-const codeFromAst = (ast) => generate(ast, generateOptions).code;
-const comparableCode = (code) => code.trim().replace(/\s+/g, ' ');
+const codeFromAst = (ast: t.Node) => generate(ast, generateOptions).code;
+const comparableCode = (code: string) => code.trim().replace(/\s+/g, ' ');
 const { any, objectContaining } = expect;
 
 const opts: Options = {
@@ -777,7 +777,7 @@ describe(`Worker`, () => {
     ]);
     expect(codeFromAst(ast)).toEqual(
       comparableCode(`
-      const a = new Worker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), window.location.href));
+      const a = new (require(_dependencyMap[1], "asyncRequire").unstable_createWorker)(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), window.location.href));
     `)
     );
   });
@@ -793,7 +793,7 @@ describe(`Worker`, () => {
     ]);
     expect(codeFromAst(ast)).toEqual(
       comparableCode(`
-      const a = new SharedWorker(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), import.meta.url));
+      const a = new (require(_dependencyMap[1], "asyncRequire").unstable_createWorker)(new URL(require(_dependencyMap[1], "asyncRequire").unstable_resolve(_dependencyMap[0], _dependencyMap.paths), import.meta.url));
     `)
     );
   });
@@ -1110,7 +1110,7 @@ describe('import() prefetching', () => {
     );
   });
 
-  it('distinguishes between import and prefetch dependncies on the same module', () => {
+  it('distinguishes between import and prefetch dependencies on the same module', () => {
     const ast = astFromCode(`
       __prefetchImport("some/async/module");
       import("some/async/module").then(() => {});
@@ -1215,7 +1215,7 @@ describe('Evaluating static arguments', () => {
     );
   });
 
-  it('throws template literals with dyncamic interpolations', () => {
+  it('throws template literals with dynamic interpolations', () => {
     const ast = astFromCode('let foo;require(`left${foo}pad`)');
     try {
       collectDependencies(ast, opts);
@@ -1252,7 +1252,7 @@ describe('Evaluating static arguments', () => {
     );
   });
 
-  it('supports concatenating strings and template literasl', () => {
+  it('supports concatenating strings and template literals', () => {
     const ast = astFromCode('require("foo_" + "bar" + `_baz`)');
     const { dependencies, dependencyMapName } = collectDependencies(ast, opts);
     expect(dependencies).toEqual([
@@ -1534,7 +1534,7 @@ it('integration: records locations of inlined dependencies (Metro ESM)', () => {
   `);
 
   // Verify that dependencies have been inlined into the console.log call.
-  expect(codeFromAst(transformedAst)).toMatch(/^console\.log/);
+  expect(codeFromAst(nullthrows(transformedAst))).toMatch(/^console\.log/);
 });
 
 it('integration: records locations of inlined dependencies (Babel ESM)', () => {
@@ -1648,6 +1648,91 @@ describe('optional dependencies', () => {
 
     const { dependencies } = collectDependencies(ast, opts);
     validateDependencies(dependencies, 4);
+  });
+
+  describe('dynamic import with rejection handler', () => {
+    it('import().catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a').catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler, onReject) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a').then(() => {}, () => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(...).then(...).catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        import('optional-async-a')
+          .then(x => x)
+          .then(x => x)
+          .catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('await import().catch(handler) is optional', () => {
+      const ast = astFromCode(`
+        async function f() {
+          await import('optional-async-a').catch(() => {});
+        }
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('try { await import() } catch {} is optional', () => {
+      const ast = astFromCode(`
+        async function f() {
+          try {
+            await import('optional-async-a');
+          } catch (e) {}
+        }
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler) without onReject is not optional', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').then(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().catch() with no handler argument is not optional', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').catch();
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
+
+    it('import().then(handler, null) is not optional (null/undefined onReject)', () => {
+      const ast = astFromCode(`
+        import('not-optional-async-a').then(() => {}, null);
+        import('not-optional-async-b').then(() => {}, undefined);
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 3);
+    });
+
+    it('import() detached from chain is not optional', () => {
+      const ast = astFromCode(`
+        const p = import('not-optional-async-a');
+        p.catch(() => {});
+      `);
+      const { dependencies } = collectDependencies(ast, opts);
+      validateDependencies(dependencies, 2);
+    });
   });
 
   describe('isESMImport', () => {
@@ -1926,8 +2011,8 @@ function astFromCode(code: string) {
 
 // Mock transformer for dependencies. Uses a "readable" format
 // require() -> require(id, module name)
-// import() -> require(async moudle name).async(id, module name)
-// prefetch -> require(async moudle name).prefetch(id, module name)
+// import() -> require(async module name).async(id, module name)
+// prefetch -> require(async module name).prefetch(id, module name)
 const MockDependencyTransformer: DependencyTransformer = {
   transformSyncRequire(path: NodePath, dependency: InternalDependency, state: State): void {
     path.replaceWith(

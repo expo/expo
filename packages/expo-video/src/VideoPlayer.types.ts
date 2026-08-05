@@ -1,7 +1,7 @@
 import { SharedObject } from 'expo';
 
-import { VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
+import type { VideoThumbnail } from './VideoThumbnail';
 
 /**
  * A class that represents an instance of the video player.
@@ -225,6 +225,25 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
   readonly availableVideoTracks: VideoTrack[];
 
   /**
+   * Specifies the maximum resolution that the player will select when choosing between the video tracks of an adaptive stream.
+   * The player picks the highest-quality track that does not exceed this resolution.
+   *
+   * Set this property to `null` to remove the limit and allow all available resolutions. Dimensions
+   * which are not greater than zero are treated the same as `null`.
+   *
+   * The cap is enforced differently per platform:
+   * - On Android it is a hard constraint, unless no track satisfies it, in which case the lowest-resolution track is used.
+   * - On iOS it is a preferred maximum, which the player treats as a soft hint when selecting a track.
+   *
+   * > **Note:** On iOS this property only applies to HTTP Live Streaming (HLS) sources.
+   *
+   * @default null
+   * @platform android
+   * @platform ios
+   */
+  maxResolution: VideoSize | null;
+
+  /**
    * Indicates whether the player is currently playing back the media to an external device via AirPlay.
    *
    * @platform ios
@@ -255,9 +274,14 @@ export declare class VideoPlayer extends SharedObject<VideoPlayerEvents> {
    *
    * @param source The source of the video to be played.
    * @param useSynchronousReplace Optional parameter, when `true` `source` from the first parameter will be loaded on the main thread.
+   * @param playerBuilderOptions Options to apply to the player builder before the native constructor is invoked.
    * @hidden
    */
-  constructor(source: VideoSource, useSynchronousReplace?: boolean);
+  constructor(
+    source: VideoSource,
+    useSynchronousReplace?: boolean,
+    playerBuilderOptions?: PlayerBuilderOptions
+  );
 
   /**
    * Resumes the player.
@@ -580,6 +604,27 @@ export type SubtitleTrack = {
    * Label of the subtitle track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the subtitle track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default subtitle track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
@@ -592,6 +637,11 @@ export type VideoTrack = {
    * > This field is platform-specific and may return different depending on the operating system.
    */
   id: string;
+
+  /**
+   * The URL of the `VideoTrack` for HLS video sources. `null` for other source types.
+   */
+  url: string | null;
 
   /**
    * Size of the video track.
@@ -632,6 +682,11 @@ export type VideoTrack = {
    * Specifies the frame rate of the video track in frames per second.
    */
   frameRate: number | null;
+
+  /**
+   * Specifies the video range of the video track.
+   */
+  videoRange: VideoRange;
 };
 
 /**
@@ -664,6 +719,27 @@ export type AudioTrack = {
    * Label of the audio track in the language of the device.
    */
   label: string;
+
+  /**
+   * Name of the audio track as specified in the media source.
+   * @platform android
+   * @platform ios
+   */
+  name?: string;
+
+  /**
+   * Indicates whether this is the default audio track.
+   * @platform android
+   * @platform ios
+   */
+  isDefault?: boolean;
+
+  /**
+   * Indicates whether this track should be auto-selected based on user preferences.
+   * @platform android
+   * @platform ios
+   */
+  autoSelect?: boolean;
 };
 
 /**
@@ -747,3 +823,52 @@ export type ScrubbingModeOptions = {
    */
   allowSkippingMediaCodecFlush?: boolean;
 };
+
+/**
+ * Determines whether the player is allowed to call [`Surface.setFrameRate`](https://developer.android.com/reference/android/view/Surface#setFrameRate(float,%20int))
+ * to match the display refresh rate to the frame rate of the video being played.
+ * - `'onlyIfSeamless'`: the display refresh rate is changed only when the switch is seamless (no visual interruption). This is the ExoPlayer default.
+ * - `'off'`: the player never calls `Surface.setFrameRate`.
+ *
+ * > On devices with adaptive refresh rate displays (for example, Pixel 9 and 10 series), the platform can respond to a 30 fps video
+ * > by lowering the display render rate and capping the rendering of the entire app, including scrolling and animations, at 30 Hz
+ * > for as long as the video is visible. Set this option to `'off'` to keep the UI running at the full refresh rate, for example
+ * > in a vertical video feed. Frame rate matching mainly benefits TV-class displays, where mismatched rates cause judder.
+ * @platform android
+ */
+export type VideoChangeFrameRateStrategy = 'off' | 'onlyIfSeamless';
+
+/**
+ * Options to apply to the player builder before the native constructor is invoked
+ * @platform android
+ */
+export type PlayerBuilderOptions = {
+  /**
+   * Seek backward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekBackwardIncrement?: number;
+
+  /**
+   * Seek forward increment in seconds.
+   * Values will be clamped between 0.001 and 999 seconds.
+   * @platform android
+   */
+  seekForwardIncrement?: number;
+
+  /**
+   * Determines whether the player is allowed to change the display refresh rate to match the frame rate of the video.
+   * @default 'onlyIfSeamless'
+   * @platform android
+   */
+  videoChangeFrameRateStrategy?: VideoChangeFrameRateStrategy;
+};
+
+/**
+ * Specifies the dynamic range of the video content.
+ * - `sdr`: Standard Dynamic Range video.
+ * - `hlg`: Hybrid Log-Gamma - HDR backward-compatible with SDR displays
+ * - `pq`: Perceptual Quantizer - Formats like HDR10 and Dolby Vision
+ */
+export type VideoRange = 'sdr' | 'hlg' | 'pq';

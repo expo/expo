@@ -11,8 +11,9 @@ import {
 import { writeFileSync, unlinkSync, existsSync, mkdirSync } from 'fs';
 import { resolve } from 'path';
 
-const pkg = require('expo-location/package.json');
+const pkg = require('../../package.json');
 const LOCATION_USAGE = 'Allow $(PRODUCT_NAME) to access your location';
+const MOTION_USAGE = 'Allow $(PRODUCT_NAME) to detect your current motion activity';
 
 type DPIString = 'mdpi' | 'hdpi' | 'xhdpi' | 'xxhdpi' | 'xxxhdpi';
 type dpiMap = Record<DPIString, { folderName: string; scale: number }>;
@@ -138,25 +139,78 @@ function removeForegroundServiceIconImageFiles(projectRoot: string) {
   });
 }
 
-const withLocation: ConfigPlugin<
-  {
-    locationAlwaysAndWhenInUsePermission?: string | false;
-    locationAlwaysPermission?: string | false;
-    locationWhenInUsePermission?: string | false;
-    isIosBackgroundLocationEnabled?: boolean;
-    isAndroidBackgroundLocationEnabled?: boolean;
-    isAndroidForegroundServiceEnabled?: boolean;
-    androidForegroundServiceIcon?: string;
-  } | void
-> = (
+export type Props = {
+  /**
+   * A string to set the `NSLocationAlwaysAndWhenInUseUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to use your location"
+   * @platform ios
+   */
+  locationAlwaysAndWhenInUsePermission?: string | false;
+  /**
+   * A string to set the `NSLocationAlwaysUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to use your location"
+   * @platform ios
+   */
+  locationAlwaysPermission?: string | false;
+  /**
+   * A string to set the `NSLocationWhenInUseUsageDescription` permission message.
+   * @default "Allow $(PRODUCT_NAME) to use your location"
+   * @platform ios
+   */
+  locationWhenInUsePermission?: string | false;
+  /**
+   * A string to set the `NSMotionUsageDescription` permission message shown when
+   * `getMotionActivityAsync` or `watchMotionActivityAsync` is called for the first time.
+   * Set to `false` to omit the key. In that case, the app must add `NSMotionUsageDescription`
+   * manually to its `Info.plist`, for example via the `infoPlist` key in `app.json`.
+   * Without this key, calling motion activity APIs on iOS will throw an exception.
+   * @default "Allow $(PRODUCT_NAME) to detect your current motion activity"
+   * @platform ios
+   */
+  motionUsagePermission?: string | false;
+  /**
+   * Whether to enable location in `UIBackgroundModes`.
+   * @default false
+   * @platform ios
+   */
+  isIosBackgroundLocationEnabled?: boolean;
+  /**
+   * Whether to enable the `ACCESS_BACKGROUND_LOCATION` permission.
+   * @default false
+   * @platform android
+   */
+  isAndroidBackgroundLocationEnabled?: boolean;
+  /**
+   * Whether to enable the `FOREGROUND_SERVICE` and `FOREGROUND_SERVICE_LOCATION` permissions.
+   * @default false
+   * @platform android
+   */
+  isAndroidForegroundServiceEnabled?: boolean;
+  /**
+   * Whether to enable the `ACTIVITY_RECOGNITION` and `com.google.android.gms.permission.ACTIVITY_RECOGNITION`
+   * permissions required for motion activity tracking via `getMotionActivityAsync` and `watchMotionActivityAsync`.
+   * @default false
+   * @platform android
+   */
+  isAndroidMotionActivityEnabled?: boolean;
+  /**
+   * Local path to an image for the foreground service icon. Should be a 96x96 all-white PNG with transparency.
+   * @platform android
+   */
+  androidForegroundServiceIcon?: string;
+};
+
+const withLocation: ConfigPlugin<Props | void> = (
   config,
   {
     locationAlwaysAndWhenInUsePermission,
     locationAlwaysPermission,
     locationWhenInUsePermission,
+    motionUsagePermission,
     isIosBackgroundLocationEnabled,
     isAndroidBackgroundLocationEnabled,
     isAndroidForegroundServiceEnabled,
+    isAndroidMotionActivityEnabled,
     androidForegroundServiceIcon,
   } = {}
 ) => {
@@ -170,10 +224,12 @@ const withLocation: ConfigPlugin<
     NSLocationAlwaysAndWhenInUseUsageDescription: LOCATION_USAGE,
     NSLocationAlwaysUsageDescription: LOCATION_USAGE,
     NSLocationWhenInUseUsageDescription: LOCATION_USAGE,
+    NSMotionUsageDescription: MOTION_USAGE,
   })(config, {
     NSLocationAlwaysAndWhenInUseUsageDescription: locationAlwaysAndWhenInUsePermission,
     NSLocationAlwaysUsageDescription: locationAlwaysPermission,
     NSLocationWhenInUseUsageDescription: locationWhenInUsePermission,
+    NSMotionUsageDescription: motionUsagePermission,
   });
 
   // If the user has not specified a value for isAndroidForegroundServiceEnabled,
@@ -195,6 +251,8 @@ const withLocation: ConfigPlugin<
       isAndroidBackgroundLocationEnabled && 'android.permission.ACCESS_BACKGROUND_LOCATION',
       enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE',
       enableAndroidForegroundService && 'android.permission.FOREGROUND_SERVICE_LOCATION',
+      isAndroidMotionActivityEnabled && 'android.permission.ACTIVITY_RECOGNITION',
+      isAndroidMotionActivityEnabled && 'com.google.android.gms.permission.ACTIVITY_RECOGNITION',
     ].filter(Boolean) as string[]
   );
 };

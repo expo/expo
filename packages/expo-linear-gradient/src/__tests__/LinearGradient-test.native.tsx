@@ -1,5 +1,4 @@
 import { render, screen } from '@testing-library/react-native';
-import React from 'react';
 import { PlatformColor } from 'react-native';
 
 import { LinearGradient } from '../LinearGradient';

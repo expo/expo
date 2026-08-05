@@ -1,5 +1,4 @@
 import { generateImageAsync } from '@expo/image-utils';
-import { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
   ConfigPlugin,

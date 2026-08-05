@@ -93,6 +93,43 @@ describe('getTemplateFilesToRenameAsync', () => {
   });
 });
 
+describe('getTemplateFilesToRenameAsync — nested patterns via custom rename config', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('lets a template-supplied config reach app.json files inside apps/*', async () => {
+    const monorepoFixture = path.resolve(__dirname, 'fixtures/monorepo-template');
+    jest
+      .spyOn(Glob, 'glob')
+      .mockImplementation(async (source, options) =>
+        ActualGlob.glob(source, { ...options, fs: ActualFs })
+      );
+
+    // Fixture is created on-demand below if it doesn't already exist.
+    await ActualFs.promises.mkdir(path.join(monorepoFixture, 'apps/mobile'), { recursive: true });
+    await ActualFs.promises.mkdir(path.join(monorepoFixture, 'apps/tv'), { recursive: true });
+    await ActualFs.promises.writeFile(
+      path.join(monorepoFixture, 'apps/mobile/app.json'),
+      '{ "name": "HelloWorld" }'
+    );
+    await ActualFs.promises.writeFile(
+      path.join(monorepoFixture, 'apps/tv/app.json'),
+      '{ "name": "HelloWorld" }'
+    );
+
+    try {
+      const files = await getTemplateFilesToRenameAsync({
+        cwd: monorepoFixture,
+        renameConfig: ['apps/*/app.json'],
+      });
+      expect(files.sort()).toEqual(['apps/mobile/app.json', 'apps/tv/app.json']);
+    } finally {
+      await ActualFs.promises.rm(monorepoFixture, { recursive: true, force: true });
+    }
+  });
+});
+
 describe('renameTemplateAppNameAsync', () => {
   // All templates start as "HelloWorld" by convention and, through this
   // function, can be renamed to the user's preference (e.g. to ByeWorld).

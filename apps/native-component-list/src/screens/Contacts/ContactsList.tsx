@@ -1,4 +1,4 @@
-import * as Contacts from 'expo-contacts';
+import * as Contacts from 'expo-contacts/legacy';
 import * as React from 'react';
 import { FlatList, FlatListProps, ListRenderItem, StyleProp, ViewStyle } from 'react-native';
 

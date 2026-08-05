@@ -1,4 +1,4 @@
-import { NativeModule } from 'expo-modules-core/types';
+import type { NativeModule } from 'expo-modules-core/types';
 
 /**
  * Options for requesting age range information from the user.
@@ -21,15 +21,18 @@ export type AgeRangeRequest = {
  */
 export type AgeRangeResponse = {
   /** The lower limit of the person’s age range. */
-  lowerBound?: number;
+  lowerBound: number | null;
   /** The upper limit of the person’s age range. */
-  upperBound?: number;
+  upperBound: number | null;
   /**
-   * Indicates whether the age range was declared by the user themselves or someone else (parent, guardian, or Family Organizer in a Family Sharing group).
+   * Indicates how the age range was declared:
+   * - `'selfDeclared'` — declared by the user themselves.
+   * - `'guardianDeclared'` — declared by someone else (parent, guardian, or Family Organizer in a Family Sharing group).
+   * - `'confirmed'` — confirmed by the system (for example, verified against a government ID or payment method). Only reported on iOS 26.5+.
    *
    * @platform ios
    */
-  ageRangeDeclaration?: 'selfDeclared' | 'guardianDeclared';
+  ageRangeDeclaration?: 'selfDeclared' | 'guardianDeclared' | 'confirmed' | null;
   /**
    * List of parental controls enabled and shared as a part of age range declaration.
    *
@@ -41,7 +44,7 @@ export type AgeRangeResponse = {
    *
    * @platform android
    */
-  installId?: string;
+  installId?: string | null;
   /**
    * The user's age verification or supervision status.
    *
@@ -52,15 +55,32 @@ export type AgeRangeResponse = {
     | 'SUPERVISED'
     | 'SUPERVISED_APPROVAL_PENDING'
     | 'SUPERVISED_APPROVAL_DENIED'
-    | 'UNKNOWN';
+    | 'DECLARED'
+    | 'UNKNOWN'
+    | null;
   /**
    * The effective date (timestamp) of the most recent significant change that was approved.
    *
    * @platform android
    */
-  mostRecentApprovalDate?: number;
+  mostRecentApprovalDate?: number | null;
 };
+
+/**
+ * A regulatory feature that your app may need to support for the current user.
+ *
+ * Mirrors [`AgeRangeService.RegulatoryFeature`](https://developer.apple.com/documentation/declaredagerange/agerangeservice/regulatoryfeature).
+ *
+ * @platform ios 26.4+
+ */
+export type AgeRangeRegulatoryFeature =
+  | 'declaredAgeRangeRequired'
+  | 'significantAppChangeRequiresAdultNotification'
+  | 'significantAppChangeRequiresParentalConsent';
 
 export interface ExpoAgeRangeModule extends NativeModule {
   requestAgeRangeAsync(options: AgeRangeRequest): Promise<AgeRangeResponse>;
+  isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
+  showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
+  getRequiredRegulatoryFeaturesAsync(): Promise<AgeRangeRegulatoryFeature[] | null>;
 }

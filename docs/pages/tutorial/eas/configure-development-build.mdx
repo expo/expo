@@ -15,7 +15,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 In this chapter, we'll set up and configure a development build with EAS for our example app.
 
-<VideoBoxLink videoId="uQCE9zl3dXU" title="Watch: How to configure a development build" />
+<VideoBoxLink
+  videoId="uQCE9zl3dXU"
+  title="Watch: How to configure a development build"
+  description="Learn how to install expo-dev-client, configure build profiles in eas.json, and create your first development build with EAS Build."
+/>
 
 ---
 
@@ -27,9 +31,9 @@ A [development build](/develop/development-builds/introduction/) is a debug vers
 
 ### Key highlights
 
-> **Note:** If you are familiar with [Expo Go](/get-started/expo-go/), think of a development build as a customizable version of Expo Go that is unique to the requirements of a project.
+> **Note:** If you are familiar with [Expo Go](/get-started/set-up-your-environment/), think of a development build as a customizable version of Expo Go that is unique to the requirements of a project.
 
-| Feature                           | Development Builds                                                                                                                             | Expo Go                                                                                              |
+| Feature                           | Development builds                                                                                                                             | Expo Go                                                                                              |
 | --------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
 | **Development phase**             | Offers web-like iteration speed for mobile app development.                                                                                    | Allows for quick iteration and testing of Expo SDK projects using the client app.                    |
 | **Collaboration**                 | Facilitates team testing with shared native runtime.                                                                                           | Easy project sharing via QR codes on a device.                                                       |
@@ -43,19 +47,33 @@ A [development build](/develop/development-builds/introduction/) is a debug vers
 
 To initialize our project for a development build, let's [`cd`](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Understanding_client-side_tools/Command_line#basic_built-in_terminal_commands) inside our project directory and run the following command to install the library:
 
-<Terminal cmd={['$ npx expo install expo-dev-client']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install expo-dev-client'],
+    yarn: ['$ yarn expo install expo-dev-client'],
+    pnpm: ['$ pnpm expo install expo-dev-client'],
+    bun: ['$ bun expo install expo-dev-client'],
+  }}
+/>
 
 ### Start the development server
 
 Run the `npx expo start` to start the [development server](/get-started/start-developing/#start-a-development-server):
 
-<Terminal cmd={['$ npx expo start']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
 
 This command starts the metro bundler. In the terminal window, we see the QR code followed by the `Metro waiting on...` and a manifest URL:
 
 <ContentSpotlight
   alt="Running development server"
-  src="/static/images/tutorial/eas/development-server.png"
+  src="/static/images/tutorial/eas/development-server.webp"
   className="max-w-[600px]"
 />
 
@@ -74,9 +92,16 @@ Since we do not have a development build installed on one of our devices or an e
 
 ### Install EAS CLI
 
-We need to install the EAS Command Line Interface (CLI) tool as a global dependency on our local machine. Run the following command:
+We need to install the EAS command-line interface (CLI) tool as a global dependency on our local machine. Run the following command:
 
-<Terminal cmd={['$ npm install -g eas-cli']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --global eas-cli'],
+    yarn: ['$ yarn global add eas-cli'],
+    pnpm: ['$ pnpm add --global eas-cli'],
+    bun: ['$ bun add --global eas-cli'],
+  }}
+/>
 
 ### Log in or sign up for an Expo account
 
@@ -196,11 +221,6 @@ Currently, our focus is on the `development` profile, which includes the followi
 ## Summary
 
 <ProgressTracker
-  currentChapterIndex={0}
   name="EAS_TUTORIAL"
-  summary="
-We successfully used the EAS CLI to initialize, and configure our project, link it to EAS servers, and prepare a development build."
-  nextChapterDescription="In the next chapter, let's create a development build for Android, install it on a device and an emulator, and get it running with the development server."
-  nextChapterTitle="Create and run a cloud build for Android"
-  nextChapterLink="/tutorial/eas/android-development-build/"
+  currentChapterSlug="/tutorial/eas/configure-development-build"
 />

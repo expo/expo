@@ -1,5 +1,6 @@
 'use strict';
 
+import { Asset } from 'expo-asset';
 import { Image } from 'expo-image';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -68,6 +69,29 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
         t.expect(image.height).toBeGreaterThan(0);
         t.expect(image.scale).toBe(1);
         t.expect(image.isAnimated).toBe(false);
+      });
+
+      t.it('loads a local SVG asset without crashing', async () => {
+        const image = await Image.loadAsync(require('../assets/expo.svg'));
+
+        t.expect(image).toBeDefined();
+        t.expect(image instanceof Image.Image).toBe(true);
+        t.expect(image.width).toBeGreaterThan(0);
+        t.expect(image.height).toBeGreaterThan(0);
+      });
+
+      t.it('preserves the SVG aspect ratio when maxWidth/maxHeight are provided', async () => {
+        const image = await Image.loadAsync(require('../assets/expo.svg'), {
+          maxWidth: 64,
+          maxHeight: 64,
+        });
+
+        t.expect(image.width).toBe(64);
+        t.expect(image.height).toBeLessThan(64);
+        t.expect(image.height).toBeGreaterThan(0);
+        // Aspect ratio should match the viewBox within a small rounding tolerance.
+        const aspect = image.width / image.height;
+        t.expect(Math.abs(aspect - 24 / 22)).toBeLessThan(0.05);
       });
     });
   }
@@ -173,7 +197,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('getCachePathAsync', async () => {
+    t.describe('getCachePathAsync', () => {
       t.it('returns path to cached image when it does exist in the cache', async () => {
         await mountAndWaitFor(
           <Image source={REMOTE_SOURCE} style={{ height: 100, width: 100 }} />,
@@ -216,7 +240,7 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
-    t.describe('prefetch', async () => {
+    t.describe('prefetch', () => {
       t.it('prefetches an image and resolves promise to true', async () => {
         await Image.clearDiskCache();
         const result = await Image.prefetch(REMOTE_SOURCE.uri);
@@ -255,8 +279,61 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
       });
     });
 
+    if (Platform.OS === 'android' || Platform.OS === 'ios') {
+      t.describe('writeToCacheAsync / readFromCacheAsync', () => {
+        const CACHE_KEY = 'test-suite-seeded-image';
+
+        t.it('seeds the cache from an ImageRef and reads it back', async () => {
+          await Image.clearDiskCache();
+          await Image.clearMemoryCache();
+          const image = await Image.loadAsync(REMOTE_SOURCE);
+
+          await Image.writeToCacheAsync(image, CACHE_KEY);
+
+          const path = await Image.getCachePathAsync(CACHE_KEY);
+          t.expect(typeof path).toBe('string');
+
+          const cached = await Image.readFromCacheAsync(CACHE_KEY);
+          t.expect(cached).toBeDefined();
+          t.expect(cached instanceof Image.Image).toBe(true);
+          t.expect(cached.width).toBeGreaterThan(0);
+          t.expect(cached.height).toBeGreaterThan(0);
+        });
+
+        t.it('seeds the cache from a local file URI', async () => {
+          await Image.clearDiskCache();
+          await Image.clearMemoryCache();
+
+          // A bundled asset gives us a guaranteed local file URI on device.
+          const asset = await Asset.fromModule(require('../assets/icons/app.png')).downloadAsync();
+          t.expect(typeof asset.localUri).toBe('string');
+
+          await Image.writeToCacheAsync(asset.localUri, CACHE_KEY);
+
+          const path = await Image.getCachePathAsync(CACHE_KEY);
+          t.expect(typeof path).toBe('string');
+
+          const cached = await Image.readFromCacheAsync(CACHE_KEY);
+          t.expect(cached).toBeDefined();
+          t.expect(cached instanceof Image.Image).toBe(true);
+        });
+
+        t.it('resolves to null when reading a key that was never seeded', async () => {
+          await Image.clearDiskCache();
+          await Image.clearMemoryCache();
+
+          const cached = await Image.readFromCacheAsync('test-suite-never-seeded-key');
+          t.expect(cached).toBe(null);
+        });
+
+        t.it('rejects when given a remote URL', async () => {
+          await throws(() => Image.writeToCacheAsync(REMOTE_SOURCE.uri, CACHE_KEY));
+        });
+      });
+    }
+
     if (Platform.OS === 'ios') {
-      t.describe('generateBlurhashAsync', async () => {
+      t.describe('generateBlurhashAsync', () => {
         t.it('returns a correct blurhash for url', async () => {
           const result = await Image.generateBlurhashAsync(REMOTE_SOURCE.uri, [4, 3]);
           t.expect(result).toBe(REMOTE_SOURCE.blurhash);

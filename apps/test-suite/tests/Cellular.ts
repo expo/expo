@@ -12,15 +12,6 @@ export async function test({ describe, it, expect, jasmine }) {
   };
 
   describe('Cellular', () => {
-    describe('Cellular.allowsVoipAsync', () => {
-      it('returns a boolean', async () => {
-        const allowsVoip = await Cellular.allowsVoipAsync();
-        if (Constants.isDevice) {
-          expect(typeof allowsVoip === 'boolean').toBe(true);
-        }
-        expect(allowsVoip === null).toBe(true);
-      });
-    });
     describe('Cellular.getCarrierNameAsync()', () => {
       it('returns a string or null', async () => {
         const carrier = await Cellular.getCarrierNameAsync();

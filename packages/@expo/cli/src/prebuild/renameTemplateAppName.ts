@@ -3,9 +3,7 @@ import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
-import { ExtractProps } from '../utils/npm';
-
-const debug = require('debug')('expo:prebuild:copyTemplateFiles') as typeof console.log;
+import { debugEvent } from './events';
 
 function escapeXMLCharacters(original: string): string {
   const noAmps = original.replace('&', '&amp;');
@@ -81,19 +79,25 @@ export const defaultRenameConfig = [
  * The rename config is resolved in the order of preference:
  * Config provided as function param > defaultRenameConfig
  */
-export async function getTemplateFilesToRenameAsync({
-  cwd,
-  /**
-   * An array of patterns following the rename config format. If omitted, then
-   * we fall back to defaultRenameConfig.
-   * @see defaultRenameConfig
-   */
-  renameConfig: userConfig,
-}: Pick<ExtractProps, 'cwd'> & { renameConfig?: string[] }) {
+export async function getTemplateFilesToRenameAsync(
+  cwd: string,
+  {
+    renameConfig: userConfig,
+  }: {
+    /**
+     * An array of patterns following the rename config format. If omitted, then
+     * we fall back to defaultRenameConfig.
+     * @see defaultRenameConfig
+     */
+    renameConfig?: string[];
+  } = {}
+) {
   let config = userConfig ?? defaultRenameConfig;
 
   // Strip comments, trim whitespace, and remove empty lines.
-  config = config.map((line) => line.split(/(?<!\\)#/, 2)[0].trim()).filter((line) => line !== '');
+  config = config
+    .map((line) => line.split(/(?<!\\)#/, 3)[0]?.trim())
+    .filter((line): line is string => !!line);
 
   return await glob(config, {
     cwd,
@@ -110,19 +114,22 @@ export async function getTemplateFilesToRenameAsync({
   });
 }
 
-export async function renameTemplateAppNameAsync({
-  cwd,
-  name,
-  files,
-}: Pick<ExtractProps, 'cwd' | 'name'> & {
-  /**
-   * An array of files to transform. Usually provided by calling
-   * getTemplateFilesToRenameAsync().
-   * @see getTemplateFilesToRenameAsync
-   */
-  files: string[];
-}) {
-  debug(`Got files to transform: ${JSON.stringify(files)}`);
+export async function renameTemplateAppNameAsync(
+  cwd: string,
+  {
+    expName: name,
+    files,
+  }: {
+    expName: string;
+    /**
+     * An array of files to transform. Usually provided by calling
+     * getTemplateFilesToRenameAsync().
+     * @see getTemplateFilesToRenameAsync
+     */
+    files: string[];
+  }
+) {
+  debugEvent('rename_files', { count: files.length });
 
   await Promise.all(
     files.map(async (file) => {
@@ -138,7 +145,7 @@ export async function renameTemplateAppNameAsync({
         );
       }
 
-      debug(`Renaming app name in file: ${absoluteFilePath}`);
+      debugEvent('rename_file', { path: debugEvent.path(absoluteFilePath) });
 
       const safeName = ['.xml', '.plist'].includes(path.extname(file))
         ? escapeXMLCharacters(name)

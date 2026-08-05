@@ -1,4 +1,4 @@
-import { Platform } from 'expo-modules-core';
+import { Platform } from 'expo';
 
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { componentScreensToListElements } from '../ComponentListScreen';
@@ -10,6 +10,14 @@ export const ImageScreens = [
     options: {},
     getComponent() {
       return optionalRequire(() => require('./ImageComparisonScreen'));
+    },
+  },
+  {
+    name: 'Comparison with original image (e2e)',
+    route: 'image/comparison-e2e',
+    options: {},
+    getComponent() {
+      return optionalRequire(() => require('./ImageComparisonE2EScreen'));
     },
   },
   {
@@ -127,6 +135,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'SVG sizing (maxWidth/maxHeight)',
+    route: 'image/svg-sizing',
+    getComponent() {
+      return optionalRequire(() => require('./ImageSvgSizingScreen'));
+    },
+  },
+  {
     name: 'Hash Placeholders',
     route: 'image/hash-placeholders',
     getComponent() {
@@ -165,6 +180,13 @@ export const ImageScreens = [
 
 if (Platform.OS === 'ios') {
   ImageScreens.push(
+    {
+      name: 'SF Symbols',
+      route: 'image/sf-symbols',
+      getComponent() {
+        return optionalRequire(() => require('./ImageSFSymbolScreen'));
+      },
+    },
     {
       name: 'Live Text Interaction',
       route: 'image/live-text-interaction',

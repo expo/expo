@@ -1,17 +1,17 @@
-import type { Module, MixedOutput } from '@expo/metro/metro/DeltaBundler';
+import type { Module, MixedOutput, ReadOnlyGraph } from '@expo/metro/metro/DeltaBundler';
 import CountingSet from '@expo/metro/metro/lib/CountingSet';
 import countLines from '@expo/metro/metro/lib/countLines';
 import assert from 'assert';
 
-import { microBundle, projectRoot } from './mini-metro';
 import { reconcileTransformSerializerPlugin } from '../../reconcileTransformSerializerPlugin';
 import { treeShakeSerializer } from '../../treeShakeSerializerPlugin';
-import {
+import type {
   SerialAsset,
   SerializerConfigOptions,
   SerializerPlugin,
-  createSerializerFromSerialProcessors,
 } from '../../withExpoSerializers';
+import { createSerializerFromSerialProcessors } from '../../withExpoSerializers';
+import { microBundle, projectRoot } from './mini-metro';
 
 // General helper to reduce boilerplate
 export async function serializeToWithGraph(
@@ -87,6 +87,7 @@ export async function serializeShakingAsync(
     splitChunks?: boolean;
     mockRuntime?: boolean;
     minify?: boolean;
+    reactCompiler?: boolean;
   } = {}
 ) {
   return serializeOptimizeAsync(fs, { treeshake: true, ...options });
@@ -102,6 +103,7 @@ export async function serializeOptimizeAsync(
     minify?: boolean;
     dev?: boolean;
     mockRuntime?: boolean;
+    reactCompiler?: boolean;
   } = {}
 ) {
   return await serializeToWithGraph(
@@ -116,6 +118,7 @@ export async function serializeOptimizeAsync(
         splitChunks: true,
         minify: false,
         inlineRequires: true,
+        reactCompiler: options.reactCompiler,
         ...options,
       },
       preModulesFs: options.mockRuntime
@@ -128,9 +131,9 @@ export async function serializeOptimizeAsync(
   );
 }
 
-export function expectImports(graph, name: string) {
+export function expectImports(graph: ReadOnlyGraph<MixedOutput>, name: string) {
   if (!graph.dependencies.has(name)) throw new Error(`Module not found: ${name}`);
-  return expect([...graph.dependencies.get(name).dependencies.values()]);
+  return expect([...graph.dependencies.get(name)!.dependencies.values()]);
 }
 
 export function createJSVirtualModule(path: string, code: string): Module<MixedOutput> {

@@ -74,6 +74,7 @@ import org.json.JSONException
 import org.json.JSONObject
 import versioned.host.exp.exponent.ExponentPackageDelegate
 import versioned.host.exp.exponent.ReactUnthemedRootView
+import versioned.host.exp.exponent.VersionedUtils
 import java.lang.ref.WeakReference
 
 open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDelegate {
@@ -108,12 +109,13 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
 
   private val devBundleDownloadProgressListener: DevBundleDownloadProgressListener =
     object : DevBundleDownloadProgressListener {
-      override fun onProgress(status: String?, done: Int?, total: Int?) {
+      override fun onProgress(status: String?, done: Int?, total: Int?, percent: Int?) {
         lifecycleScope.launch {
           loadingProgressPopupController.updateProgress(
             status,
             done,
-            total
+            total,
+            percent
           )
         }
       }
@@ -330,6 +332,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
           goToHomeAction = {
             kernel.openHomeActivity()
           },
+          reloadAction = {
+            VersionedUtils.reloadExpoApp()
+          },
           appInfoProvider = { _, _ ->
             DevMenuState.AppInfo(
               appName = manifest?.getName() ?: "Unknown",
@@ -403,7 +408,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
         ReactSurfaceView::class.java,
         splashScreenView
       )
-      SplashScreen.show(this, managedAppSplashScreenViewController!!, true)
+      SplashScreen.show(this, managedAppSplashScreenViewController!!)
     } else {
       managedAppSplashScreenViewProvider!!.updateSplashScreenViewWithManifest(
         manifest!!

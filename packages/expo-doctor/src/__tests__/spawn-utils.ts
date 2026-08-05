@@ -1,4 +1,4 @@
-import { SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import type { SpawnPromise, SpawnResult } from '@expo/spawn-async';
 
 /** The shared spawn child object, used to assert resolve values in tests */
 export const STUB_SPAWN_CHILD = { type: 'child' };
@@ -14,7 +14,7 @@ export function mockSpawnPromise(
   promise: Promise<any> = Promise.resolve(STUB_SPAWN_RESULT),
   child: any = STUB_SPAWN_CHILD
 ): SpawnPromise<SpawnResult> {
-  // @ts-expect-error We are modifying the promise, typescript doesnt know how to type it
+  // @ts-expect-error We are modifying the promise, typescript doesn't know how to type it
   promise.child = child;
   return promise as SpawnPromise<SpawnResult>;
 }

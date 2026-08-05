@@ -58,7 +58,7 @@ export async function updateTSConfigAsync({
   Log.log();
 }
 
-function logModifications(modifications: string[][]) {
+function logModifications(modifications: [string, string][]) {
   Log.log();
 
   Log.log(chalk`\u203A {bold Required} modifications made to the {cyan tsconfig.json}:`);
@@ -71,7 +71,7 @@ function logModifications(modifications: string[][]) {
   Log.log();
 }
 
-function printTable(items: string[][]) {
+function printTable(items: [string, string][]) {
   const tableFormat = (name: string, msg: string) =>
     `  ${chalk.bold`${name}`} is now ${chalk.cyan(msg)}`;
   for (const [key, value] of items) {

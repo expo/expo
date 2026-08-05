@@ -1,57 +1,58 @@
 {
   "name": "@expo/prebuild-config",
-  "version": "54.0.3",
+  "version": "57.0.10",
   "description": "Get the prebuild config",
-  "main": "build/index.js",
-  "scripts": {
-    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
-    "clean": "expo-module clean",
-    "lint": "expo-module lint",
-    "prepare": "expo-module clean && yarn run build",
-    "prepublishOnly": "expo-module prepublishOnly",
-    "test": "expo-module test",
-    "typecheck": "expo-module typecheck"
+  "keywords": [
+    "expo",
+    "json",
+    "react",
+    "react-native"
+  ],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/prebuild-config#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
   },
+  "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/@expo/prebuild-config"
   },
-  "keywords": [
-    "json",
-    "react-native",
-    "expo",
-    "react"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/expo/expo/issues"
-  },
-  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/prebuild-config#readme",
   "files": [
     "build"
   ],
-  "peerDependencies": {
-    "expo": "*"
-  },
-  "devDependencies": {
-    "@types/debug": "^4.1.5",
-    "@types/xml2js": "~0.4.11",
-    "expo-module-scripts": "^5.0.7"
-  },
-  "dependencies": {
-    "@expo/config": "~12.0.9",
-    "@expo/config-plugins": "~54.0.1",
-    "@expo/config-types": "^54.0.8",
-    "@expo/image-utils": "^0.8.7",
-    "@expo/json-file": "^10.0.7",
-    "@react-native/normalize-colors": "0.83.1",
-    "debug": "^4.3.1",
-    "resolve-from": "^5.0.0",
-    "semver": "^7.6.0",
-    "xml2js": "0.6.0"
-  },
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "publishConfig": {
     "access": "public"
+  },
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "prepublishOnly": "pnpm run clean && pnpm run build",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@expo/config": "workspace:~56.0.9",
+    "@expo/config-plugins": "workspace:~56.0.8",
+    "@expo/config-types": "workspace:^56.0.5",
+    "@expo/image-utils": "workspace:^0.10.1",
+    "@expo/json-file": "workspace:^10.2.0",
+    "@react-native/normalize-colors": "0.86.0",
+    "debug": "^4.3.1",
+    "expo-modules-autolinking": "workspace:~56.0.13",
+    "resolve-from": "^5.0.0",
+    "semver": "^7.6.0"
+  },
+  "devDependencies": {
+    "@expo/plist": "workspace:*",
+    "@types/debug": "^4.1.5",
+    "@types/semver": "^7.5.8",
+    "expo-module-scripts": "workspace:*",
+    "memfs": "^3.2.0"
   }
 }

@@ -6,7 +6,8 @@ export function getDirFromFS(fsJSON: Record<string, string | null>, rootDir: str
         ...acc,
         [path.substring(rootDir.length).startsWith('/')
           ? path.substring(rootDir.length + 1)
-          : path.substring(rootDir.length)]: fileContent,
+          : // The preceding filter removes null values, so this is always a string.
+            path.substring(rootDir.length)]: fileContent as string,
       }),
       {}
     );

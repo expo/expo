@@ -1,5 +1,4 @@
 import { screen, act } from '@testing-library/react-native';
-import React from 'react';
 import { Text } from 'react-native';
 
 import { store } from '../global-state/router-store';
@@ -123,7 +122,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -133,7 +131,6 @@ it('push should include (group)/index as an anchor route when using withAnchor',
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
@@ -145,11 +142,11 @@ it('push should include (group)/index as an anchor route when using withAnchor',
             {
               key: expect.any(String),
               name: '(group)',
+              params: { initial: false, params: { initial: false }, screen: 'orange' },
               path: undefined,
               state: {
                 index: 1,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['test', 'orange'],
                 routes: [
                   {
@@ -160,7 +157,7 @@ it('push should include (group)/index as an anchor route when using withAnchor',
                   {
                     key: expect.any(String),
                     name: 'orange',
-                    params: {},
+                    params: { initial: false },
                     path: undefined,
                   },
                 ],
@@ -211,7 +208,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -221,7 +217,6 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', '(group)'],
           routes: [
             {
@@ -233,15 +228,11 @@ it('push should ignore (group)/index as an initial route if no anchor is specifi
             {
               key: expect.any(String),
               name: '(group)',
-              params: {
-                params: {},
-                screen: 'orange',
-              },
+              params: { params: {}, screen: 'orange' },
               path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),
-                preloadedRoutes: [],
                 routeNames: ['test', 'orange'],
                 routes: [
                   {

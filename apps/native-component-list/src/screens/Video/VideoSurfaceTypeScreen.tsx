@@ -1,10 +1,11 @@
+import { useEvent } from 'expo';
 import { useVideoPlayer, VideoPlayer, VideoView } from 'expo-video';
 import { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 
-import { bigBuckBunnySource } from './videoSources';
-import { styles } from './videoStyles';
 import { E2EViewShotContainer } from '../../components/E2EViewShotContainer';
+import { starVideoSource } from './videoSources';
+import { styles } from './videoStyles';
 
 function ProblematicOverlap({
   player1,
@@ -47,11 +48,19 @@ export default function VideoSurfaceTypeScreen() {
     player.loop = true;
     player.play();
   };
-  const player1 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
-  const player2 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
-  const player3 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
-  const player4 = useVideoPlayer(bigBuckBunnySource, initializePlayer);
+  const player1 = useVideoPlayer(starVideoSource, initializePlayer);
+  const player2 = useVideoPlayer(starVideoSource, initializePlayer);
+  const player3 = useVideoPlayer(starVideoSource, initializePlayer);
+  const player4 = useVideoPlayer(starVideoSource, initializePlayer);
   const [nativeControls, setNativeControls] = useState(true);
+  const [e2eSetupDone, setE2eSetupDone] = useState(false);
+
+  const { status: s1 } = useEvent(player1, 'statusChange', { status: player1.status });
+  const { status: s2 } = useEvent(player2, 'statusChange', { status: player2.status });
+  const { status: s3 } = useEvent(player3, 'statusChange', { status: player3.status });
+  const { status: s4 } = useEvent(player4, 'statusChange', { status: player4.status });
+  const allReady =
+    s1 === 'readyToPlay' && s2 === 'readyToPlay' && s3 === 'readyToPlay' && s4 === 'readyToPlay';
 
   return (
     <View style={styles.contentContainer}>
@@ -84,8 +93,10 @@ export default function VideoSurfaceTypeScreen() {
             setNativeControls(false);
             player.currentTime = 10;
           });
+          setE2eSetupDone(true);
         }}
       />
+      {e2eSetupDone && allReady && <Text>Players ready</Text>}
     </View>
   );
 }

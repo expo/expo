@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.Data
 import androidx.work.WorkerParameters
+import kotlinx.coroutines.CancellationException
 
 class BackgroundTaskWork(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
   companion object {
@@ -24,6 +25,9 @@ class BackgroundTaskWork(context: Context, params: WorkerParameters) : Coroutine
       // Run tasks async using the task service. This call will return when the task has finished
       // ie. When JS task executor has notified the task manager that it is done.
       BackgroundTaskScheduler.runTasks(applicationContext, appScopeKey)
+    } catch (e: CancellationException) {
+      Log.i(TAG, "doWork: Worker was cancelled")
+      throw e
     } catch (e: Exception) {
       // Wrap exception in Data:
       val outputData = Data.Builder()

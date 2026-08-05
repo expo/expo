@@ -6,8 +6,203 @@
 
 ### 🎉 New features
 
+- Added `maxWidth`/`maxHeight` options to `ImageManipulator.manipulate` and `useImageManipulator` that downsample large images while decoding, significantly reducing the peak memory usage and avoiding out-of-memory crashes. ([#47877](https://github.com/expo/expo/pull/47877) by [@jiunshinn](https://github.com/jiunshinn))
+
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 57.0.7 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.19 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.18 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.17 - 2026-06-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.15 — 2026-05-26
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.14 — 2026-05-23
+
+### 🐛 Bug fixes
+
+- [Web] Throw an error when requested mime type is not supported. ([#46165](https://github.com/expo/expo/pull/46165) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 56.0.13 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 — 2026-05-21
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.11 — 2026-05-20
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 — 2026-05-19
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 — 2026-05-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 — 2026-05-13
+
+### 🐛 Bug fixes
+
+- [Android] Save manipulated images in the scoped cache directory. ([#45708](https://github.com/expo/expo/pull/45708) by [@mvincentong](https://github.com/mvincentong))
+
+## 56.0.7 — 2026-05-13
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 — 2026-05-11
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.5 — 2026-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.4 — 2026-05-07
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.3 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.2 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.1 — 2026-05-06
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.0 — 2026-05-05
+
+### 🛠 Breaking changes
+
+- Bumped minimum iOS/tvOS version to 16.4, macOS to 13.4. ([#43296](https://github.com/expo/expo/pull/43296) by [@tsapeta](https://github.com/tsapeta))
+
+## 55.0.16 - 2026-05-05
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.15 - 2026-04-09
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.14 - 2026-04-07
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.13 - 2026-04-02
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.12 - 2026-04-02
+
+### 💡 Others
+
+- [iOS] Use `internal import SDWebImageWebPCoder` to hide third-party dependency from public module interface. ([#44248](https://github.com/expo/expo/pull/44248) by [@chrfalch](https://github.com/chrfalch))
+
+## 55.0.11 - 2026-03-17
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.10 - 2026-03-11
+
+### 🐛 Bug fixes
+
+- [iOS] Preserve HEIC orientation when loading local files for image manipulation. ([#43725](https://github.com/expo/expo/pull/43725) by [@maxsz](https://github.com/maxsz))
+
+## 55.0.9 — 2026-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.8 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.7 — 2026-02-20
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.6 — 2026-02-16
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.5 — 2026-02-08
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.4 — 2026-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.3 — 2026-01-27
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.2 — 2026-01-26
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.1 — 2026-01-22
+
+_This version does not introduce any user-facing changes._
+
+## 55.0.0 — 2026-01-21
+
+### 🐛 Bug fixes
+
+- Fix image manipulator in Expo Go. ([#42347](https://github.com/expo/expo/pull/42347) by [@aleqsio](https://github.com/aleqsio))
 - fix TS build issue ([#41448](https://github.com/expo/expo/pull/41448) by [@vonovak](https://github.com/vonovak))
 
 ### 💡 Others

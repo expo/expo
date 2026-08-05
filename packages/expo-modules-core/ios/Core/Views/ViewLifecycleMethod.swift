@@ -19,6 +19,7 @@ internal protocol AnyViewLifecycleMethod: AnyDefinition {
   /**
    Calls the lifecycle method for the given view.
    */
+  @MainActor
   func callAsFunction(_ view: AppleView)
 }
 
@@ -26,18 +27,21 @@ internal protocol AnyViewLifecycleMethod: AnyDefinition {
  Element of the view definition that represents a lifecycle method, such as `OnViewDidUpdateProps`.
  */
 public final class ViewLifecycleMethod<ViewType>: AnyViewLifecycleMethod {
+  public typealias Closure = @MainActor (ViewType) -> Void
+
   /**
    The actual closure that gets called when the view signals an event in view's lifecycle.
    */
-  let closure: (ViewType) -> Void
+  let closure: Closure
 
   let type: ViewLifecycleMethodType
 
-  init(type: ViewLifecycleMethodType, closure: @escaping (ViewType) -> Void) {
+  init(type: ViewLifecycleMethodType, closure: @escaping Closure) {
     self.type = type
     self.closure = closure
   }
 
+  @MainActor
   func callAsFunction(_ view: AppleView) {
     switch view {
     case .uikit(let view):

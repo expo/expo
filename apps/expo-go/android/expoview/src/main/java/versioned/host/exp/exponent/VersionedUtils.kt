@@ -6,6 +6,7 @@ import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import com.facebook.common.logging.FLog
+import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.react.common.ReactConstants
 import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
@@ -28,21 +29,23 @@ object VersionedUtils {
     }
   }
 
-  private fun reloadExpoApp() = synchronized(this) {
-    val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to reload the app because the current activity could not be found."
-      )
-    }
-    val devSupportManager = currentActivity.devSupportManager ?: return run {
-      FLog.e(
-        ReactConstants.TAG,
-        "Unable to get the DevSupportManager from current activity."
-      )
-    }
+  // The packager sends its reload command on a WebSocket thread and handleReloadJS has to run on the
+  // UI thread. Hopping threads here also serialises repeated reloads, such as holding "r" in the CLI.
+  fun reloadExpoApp() {
+    UiThreadUtil.runOnUiThread {
+      val currentActivity = Exponent.instance.currentActivity as? ReactNativeActivity
+        ?: return@runOnUiThread FLog.e(
+          ReactConstants.TAG,
+          "Unable to reload the app because the current activity could not be found."
+        )
+      val devSupportManager = currentActivity.devSupportManager
+        ?: return@runOnUiThread FLog.e(
+          ReactConstants.TAG,
+          "Unable to get the DevSupportManager from current activity."
+        )
 
-    devSupportManager.reloadExpoApp()
+      devSupportManager.handleReloadJS()
+    }
   }
 
   private fun toggleElementInspector() {

@@ -1,8 +1,8 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 
+import { getSession } from '../../api/user/UserSettings';
 import { env } from '../../utils/env';
-
-const debug = require('debug')('expo:start:server:bonjour') as typeof console.log;
 
 export class Bonjour {
   private stopAdvertising?: () => Promise<void>;
@@ -16,9 +16,11 @@ export class Bonjour {
 
   public async announceAsync({
     exp = getConfig(this.projectRoot).exp,
+    username = getSession()?.username,
   }: {
-    exp?: Pick<ExpoConfig, 'name' | 'description' | 'slug' | 'primaryColor'>;
-  }) {
+    exp?: ExpoConfig;
+    username?: string;
+  }): Promise<void> {
     if (env.CI || !env.EXPO_UNSTABLE_BONJOUR) {
       return;
     } else if (!this.port) {
@@ -30,15 +32,19 @@ export class Bonjour {
       await this.stopAdvertising();
     }
 
-    debug('Started Bonjour service');
     this.stopAdvertising = dnssd.advertise({
       name: `${exp.name}`,
       type: 'expo',
       protocol: 'tcp',
       hostname: exp.slug,
       port: this.port,
+      stack: 'IPv4',
       txt: {
-        slug: exp.slug,
+        name: exp.name?.slice(0, 255),
+        slug: exp.slug?.slice(0, 255),
+        androidPackage: exp.android?.package?.slice(0, 255),
+        iosBundleIdentifier: exp.ios?.bundleIdentifier?.slice(0, 255),
+        username: username?.slice(0, 255),
       },
     });
   }
@@ -47,7 +53,6 @@ export class Bonjour {
     if (!this.stopAdvertising) {
       return false;
     } else {
-      debug('Stopped Bonjour service');
       await this.stopAdvertising?.();
       this.stopAdvertising = undefined;
       return true;

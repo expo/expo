@@ -25,9 +25,10 @@ export function EASHostingShoutoutBanner() {
     <div
       className={mergeClasses(
         'relative mb-6 flex items-center justify-between gap-3 overflow-hidden rounded-lg border border-success bg-palette-green2 px-6 py-4 shadow-xs',
-        'max-md-gutters:flex-wrap'
+        'max-md:flex-wrap'
       )}>
       <svg
+        aria-hidden="true"
         className="absolute left-[37.5%] -mt-1 rotate-45 opacity-35 dark:opacity-25"
         fill="none"
         height="675"
@@ -64,14 +65,14 @@ export function EASHostingShoutoutBanner() {
         />
       </svg>
       <div className="flex items-center gap-4">
-        <div className="relative z-10 p-2 max-sm-gutters:hidden">
+        <div className="relative z-10 p-2 max-sm:hidden">
           <div
             className={mergeClasses(
-              'asset-sm-shadow absolute inset-0 rounded-md bg-palette-green10',
+              'absolute inset-0 rounded-md bg-palette-green10 asset-sm-shadow',
               'dark:bg-palette-green6'
             )}
           />
-          <Cloud01Icon className="icon-lg relative z-10 text-palette-white" />
+          <Cloud01Icon aria-hidden="true" className="relative z-10 icon-lg text-palette-white" />
         </div>
         <div className="relative grid grid-cols-1">
           <p className="text-base font-medium text-success">EAS Hosting</p>
@@ -86,21 +87,22 @@ export function EASHostingShoutoutBanner() {
           openInNewTab
           href="https://expo.dev/blog/expo-announces-eas-hosting-service"
           theme="secondary"
-          rightSlot={<ArrowUpRightIcon className="icon-xs text-icon-success" />}
+          rightSlot={<ArrowUpRightIcon aria-hidden="true" className="icon-xs text-icon-success" />}
           className={mergeClasses(
             'gap-1.5 border-success text-icon-success hocus:bg-palette-green2',
             'dark:border-palette-green8 dark:bg-palette-green4 dark:text-default dark:hocus:bg-palette-green5'
           )}>
-          Learn More
+          Learn more
         </Button>
         <Button
           size="xs"
           onClick={() => {
             setLastDismissDate(new Date().toDateString());
           }}
+          aria-label="Dismiss banner"
           theme="tertiary"
           className="hocus:bg-palette-green4"
-          leftSlot={<XIcon className="text-icon-success" />}
+          leftSlot={<XIcon aria-hidden="true" className="text-icon-success" />}
         />
       </div>
     </div>

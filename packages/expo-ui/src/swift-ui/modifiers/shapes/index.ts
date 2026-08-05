@@ -1,3 +1,29 @@
+/**
+ * Shape builders for modifiers that accept shapes, such as `background` and `containerShape`.
+ *
+ * Shapes: `roundedRectangle`, `capsule`, `rectangle`, `ellipse`, `circle`, `containerRelativeShape`.
+ *
+ * @example
+ * ```tsx
+ * import { background, shapes } from '@expo/ui/swift-ui/modifiers';
+ * import { Text, Host } from '@expo/ui/swift-ui';
+ *
+ * function Example() {
+ *   return (
+ *     <Host>
+ *     <Text
+ *       modifiers={[
+ *         background('#000', shapes.roundedRectangle({ cornerRadius: 12 })),
+ *       ]}
+ *     >
+ *       Hello, world!
+ *     </Text>
+ *   </Host>
+ *   );
+ * }
+ * ```
+ * @hideType
+ */
 export const shapes = {
   roundedRectangle: (params: {
     cornerRadius?: number;
@@ -22,6 +48,9 @@ export const shapes = {
   circle: () => ({
     shape: 'circle',
   }),
+  containerRelativeShape: () => ({
+    shape: 'containerRelativeShape',
+  }),
 };
 
 export type Shape =
@@ -29,4 +58,5 @@ export type Shape =
   | ReturnType<typeof shapes.capsule>
   | ReturnType<typeof shapes.rectangle>
   | ReturnType<typeof shapes.ellipse>
-  | ReturnType<typeof shapes.circle>;
+  | ReturnType<typeof shapes.circle>
+  | ReturnType<typeof shapes.containerRelativeShape>;

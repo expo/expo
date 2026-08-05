@@ -4,7 +4,7 @@ import { useCallback, useRef } from 'react';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type ShareLinkProps = {
+export interface ShareLinkProps extends CommonViewModifierProps {
   /**
    * The URL or item to be shared.
    * This can be a web URL, a file path, or any other shareable item.
@@ -35,7 +35,7 @@ export type ShareLinkProps = {
    * Optional children to be rendered inside the share link.
    */
   children?: React.ReactNode;
-} & CommonViewModifierProps;
+}
 
 type ShareLinkNativeRef = {
   setItem: (url: string | null) => Promise<void>;

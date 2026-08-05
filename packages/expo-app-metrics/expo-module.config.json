@@ -1,0 +1,10 @@
+{
+  "platforms": ["apple", "android"],
+  "apple": {
+    "modules": ["AppMetricsModule"],
+    "appDelegateSubscribers": ["AppMetricsAppDelegateSubscriber"]
+  },
+  "android": {
+    "modules": ["expo.modules.appmetrics.AppMetricsModule"]
+  }
+}

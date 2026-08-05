@@ -1,4 +1,4 @@
-import { ExpoConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
 import chalk from 'chalk';
 import type { MiddlewareMatcher } from 'expo-server';
 import { sync as globSync } from 'glob';
@@ -6,11 +6,11 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
-import { directoryExistsSync } from '../../../utils/dir';
+import { directoryExistsSync, isPathInside } from '../../../utils/dir';
+import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { learnMore } from '../../../utils/link';
-
-const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
+import { event } from './routerEvents';
 
 /**
  * Get the relative path for requiring the `/app` folder relative to the `expo-router/entry` file.
@@ -29,7 +29,11 @@ export function getAppRouterRelativeEntryPath(
   // It doesn't matter if the app folder exists.
   const appFolder = path.join(projectRoot, routerDirectory);
   const appRoot = path.relative(path.dirname(routerEntry), appFolder);
-  debug('expo-router entry', routerEntry, appFolder, appRoot);
+  event('entry_resolved', {
+    routerEntry: event.path(routerEntry),
+    appFolder: event.path(appFolder),
+    appRoot,
+  });
   return appRoot;
 }
 
@@ -46,7 +50,18 @@ export function getRouterDirectoryModuleIdWithManifest(
   projectRoot: string,
   exp: ExpoConfig
 ): string {
-  return toPosixPath(exp.extra?.router?.root ?? getRouterDirectory(projectRoot));
+  const configured = exp.extra?.router?.root;
+  if (configured == null) {
+    return toPosixPath(getRouterDirectory(projectRoot));
+  }
+  const absolute = path.isAbsolute(configured) ? configured : path.resolve(projectRoot, configured);
+  if (!isPathInside(absolute, projectRoot)) {
+    throw new CommandError(
+      'INVALID_ROUTER_ROOT',
+      `The expo-router \`root\` (${configured}) resolves outside the project root. Set it to a path inside the project, or remove it to use the default.`
+    );
+  }
+  return toPosixPath(configured);
 }
 
 let hasWarnedAboutSrcDir = false;
@@ -63,7 +78,6 @@ export function getRouterDirectory(projectRoot: string): string {
     return path.join('src', 'app');
   }
 
-  debug('Using app as the root directory for Expo Router.');
   return 'app';
 }
 
@@ -80,7 +94,7 @@ export function getApiRoutesForDirectory(cwd: string) {
 }
 
 /**
- * Gets the +middleware file for a given directory. In
+ * Gets the +middleware file for a given directory.
  * @param cwd
  */
 export function getMiddlewareForDirectory(cwd: string): string | null {
@@ -102,7 +116,7 @@ export function getMiddlewareForDirectory(cwd: string): string | null {
     }
   }
 
-  return files[0];
+  return files[0]!;
 }
 
 // Used to emulate a context module, but way faster. TODO: May need to adjust the extensions to stay in sync with Metro.

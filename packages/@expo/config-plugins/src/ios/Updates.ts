@@ -1,12 +1,10 @@
-import { ExpoConfig } from '@expo/config-types';
+import type { ExpoConfig } from '@expo/config-types';
 
-import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
-import { ExpoPlist } from './IosConfig.types';
-import { ConfigPlugin } from '../Plugin.types';
+import type { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
 import { withPlugins } from '../plugins/withPlugins';
+import type { ExpoConfigUpdates } from '../utils/Updates';
 import {
-  ExpoConfigUpdates,
   getDisableAntiBrickingMeasures,
   getExpoUpdatesPackageVersion,
   getRuntimeVersionNullableAsync,
@@ -21,6 +19,8 @@ import {
   getUpdateUrl,
 } from '../utils/Updates';
 import { addWarningIOS } from '../utils/warnings';
+import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
+import type { ExpoPlist } from './IosConfig.types';
 
 export enum Config {
   ENABLED = 'EXUpdatesEnabled',
@@ -140,12 +140,7 @@ export async function setUpdatesConfigAsync(
     delete newExpoPlist[Config.DISABLE_ANTI_BRICKING_MEASURES];
   }
 
-  const bsPatchSupport = getUpdatesBsdiffPatchSupportEnabled(config);
-  if (!bsPatchSupport) {
-    newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = bsPatchSupport;
-  } else {
-    delete newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT];
-  }
+  newExpoPlist[Config.ENABLE_BSDIFF_PATCH_SUPPORT] = getUpdatesBsdiffPatchSupportEnabled(config);
 
   return await setVersionsConfigAsync(projectRoot, config, newExpoPlist);
 }

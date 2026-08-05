@@ -4,6 +4,8 @@ import fs from 'fs/promises';
 import path from 'path';
 import semver from 'semver';
 
+import { executeExpoAsync } from '../utils/expo';
+import { createPackageTarball } from '../utils/package';
 import {
   projectRoot,
   getRoot,
@@ -11,8 +13,6 @@ import {
   getLoadedModulesAsync,
   findProjectFiles,
 } from './utils';
-import { executeExpoAsync } from '../utils/expo';
-import { createPackageTarball } from '../utils/package';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -53,7 +53,7 @@ it('runs `npx expo prebuild --help`', async () => {
       Options
         <dir>                                    Directory of the Expo project. Default: Current working directory
         --no-install                             Skip installing npm packages and CocoaPods
-        --clean                                  Delete the native folders and regenerate them before applying changes
+        --no-clean                               Apply changes to the existing native folders instead of recreating them
         --npm                                    Use npm to install dependencies. Default when package-lock.json exists
         --yarn                                   Use Yarn to install dependencies. Default when yarn.lock exists
         --bun                                    Use bun to install dependencies. Default when bun.lock or bun.lockb exists
@@ -71,12 +71,21 @@ it('runs `npx expo prebuild` asserts when expo is not installed', async () => {
 
   // Create the project root aot
   await fs.mkdir(projectRoot, { recursive: true });
+
   // Create a fake package.json -- this is a terminal file that cannot be overwritten.
-  await fs.writeFile(path.join(projectRoot, 'package.json'), '{ "version": "1.0.0" }');
+  await fs.writeFile(path.join(projectRoot, 'package.json'), JSON.stringify({ version: '1.0.0' }));
+
   await fs.writeFile(path.join(projectRoot, 'app.json'), '{ "expo": { "name": "foobar" } }');
 
   await expect(
-    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], { verbose: false })
+    executeExpoAsync(projectRoot, ['prebuild', '--no-install'], {
+      verbose: false,
+      env: {
+        ...process.env,
+        // TODO(@kitten): remove once hoist=false in pnpm; Prevent node_modules/.pnpm/node_modules hoist path from being passed
+        NODE_PATH: '',
+      },
+    })
   ).rejects.toThrow(
     /Cannot determine the project's Expo SDK version because the module `expo` is not installed\. Install it with `npm install expo` and try again./
   );
@@ -179,12 +188,6 @@ itNotWindows('runs `npx expo prebuild`', async () => {
     'react-native',
   ]);
 
-  // Updated scripts
-  expect(pkg.scripts).toStrictEqual({
-    android: 'expo run:android',
-    ios: 'expo run:ios',
-  });
-
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
@@ -213,12 +216,6 @@ itNotWindows('runs `npx expo prebuild --template expo-template-bare-minimum@50.0
     'react-native': expect.any(String),
   });
 
-  // Updated scripts
-  expect(pkg.read().scripts).toMatchObject({
-    android: 'expo run:android',
-    ios: 'expo run:ios',
-  });
-
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
@@ -231,8 +228,12 @@ itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
     { reuseExisting: false }
   );
 
-  const expoPackage = require(path.join(projectRoot, 'package.json')).dependencies.expo;
-  const expoSdkVersion = semver.minVersion(expoPackage)?.major;
+  const expoPackage = require(
+    require.resolve('expo/package.json', {
+      paths: [path.join(projectRoot, 'package.json')],
+    })
+  );
+  const expoSdkVersion = semver.minVersion(expoPackage.version)?.major;
   if (!expoSdkVersion) {
     throw new Error('Could not determine Expo SDK major version from template');
   }
@@ -264,6 +265,7 @@ itNotWindows('runs `npx expo prebuild --template <invalid-url>`', async () => {
   );
 });
 
+/*
 itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync(
     'github-template-prebuild',
@@ -289,15 +291,10 @@ itNotWindows('runs `npx expo prebuild --template <github-url>`', async () => {
     'react-native': expect.any(String),
   });
 
-  // Updated scripts
-  expect(pkg.read().scripts).toMatchObject({
-    android: 'expo run:android',
-    ios: 'expo run:ios',
-  });
-
   // If this changes then everything else probably changed as well.
   expect(findProjectFiles(projectRoot)).toMatchSnapshot();
 });
+*/
 
 // Regression test for https://github.com/expo/expo/issues/36289
 // This tests contains assertions related to ios files, making it incompatible with Windows

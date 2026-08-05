@@ -37,7 +37,7 @@ public func View<Props: ExpoSwiftUI.ViewProps, ViewType: ExpoSwiftUI.View>(
  */
 public func Prop<ViewType: UIView, PropType: AnyArgument>(
   _ name: String,
-  @_implicitSelfCapture _ setter: @escaping (ViewType, PropType) -> Void
+  @_implicitSelfCapture _ setter: @escaping @MainActor (ViewType, PropType) -> Void
 ) -> ConcreteViewProp<ViewType, PropType> {
   return ConcreteViewProp(
     name: name,
@@ -52,7 +52,7 @@ public func Prop<ViewType: UIView, PropType: AnyArgument>(
 public func Prop<ViewType: UIView, PropType: AnyArgument>(
   _ name: String,
   _ defaultValue: PropType,
-  @_implicitSelfCapture _ setter: @escaping (ViewType, PropType) -> Void
+  @_implicitSelfCapture _ setter: @escaping @MainActor (ViewType, PropType) -> Void
 ) -> ConcreteViewProp<ViewType, PropType> {
   return ConcreteViewProp(
     name: name,
@@ -68,7 +68,7 @@ public func Prop<ViewType: UIView, PropType: AnyArgument>(
  Defines the view lifecycle method that is called when the view finished updating all props.
  */
 public func OnViewDidUpdateProps<ViewType: UIView>(
-  @_implicitSelfCapture _ closure: @escaping (_ view: ViewType) -> Void
+  @_implicitSelfCapture _ closure: @escaping @MainActor (_ view: ViewType) -> Void
 ) -> ViewLifecycleMethod<ViewType> {
   return ViewLifecycleMethod(type: .didUpdateProps, closure: closure)
 }

@@ -1,11 +1,33 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import React
+import ExpoModulesCore
 import EXDevMenuInterface
 import EXManifests
 import CoreGraphics
 import CoreMedia
 import Combine
+
+/**
+ Configuration options for customizing the dev menu appearance.
+ Host apps (e.g., Expo Go) can set these to tailor the menu for their context.
+ The defaults match the standard dev menu behavior.
+ */
+@objc
+public class DevMenuConfiguration: NSObject {
+  /// Whether to show the debugging tip (e.g., "Debugging not working? Try manually reloading first.")
+  @objc public var showDebuggingTip: Bool = true
+
+  /// Whether to show the "Connected to:" host URL section
+  @objc public var showHostUrl: Bool = true
+
+  /// Whether to show the Fast Refresh toggle
+  @objc public var showFastRefresh: Bool = true
+
+  /// Custom title for the onboarding text. Use to replace "development builds" with e.g. "Expo Go".
+  /// When nil, the default "development builds" text is used.
+  @objc public var onboardingAppName: String?
+}
 
 class Dispatch {
   static func mainSync<T>(_ closure: () -> T) -> T {
@@ -50,6 +72,14 @@ open class DevMenuManager: NSObject {
 
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   var canLaunchDevMenuOnStart = true
+  @objc public var isReactAppRunning = false
+
+  /**
+   The AppContext for the currently running React app. Set by DevMenuModule.OnCreate.
+   */
+  public private(set) weak var currentAppContext: AppContext?
+
+  @objc public var configuration = DevMenuConfiguration()
 
   static public var wasInitilized = false
 
@@ -67,26 +97,30 @@ open class DevMenuManager: NSObject {
    */
   var window: DevMenuWindow?
 
+  #if !os(macOS) && !os(tvOS)
+  /**
+   The window that hosts the floating action button.
+   */
+  var fabWindow: DevMenuFABWindow?
+  #endif
+
   var currentScreen: String?
 
+  private var isNavigatingHome = false
+
+  private var isReloading = false
+  private var lastReloadEventAt: Date?
+
   weak var hostDelegate: DevMenuHostDelegate?
-
-  @objc
-  public private(set) var currentBridge: RCTBridge? {
-    didSet {
-      updateAutoLaunchObserver()
-
-      if let currentBridge {
-        DispatchQueue.main.async {
-          self.disableRNDevMenuHoykeys(for: currentBridge)
-        }
-      }
-    }
-  }
 
   private let manifestSubject = PassthroughSubject<Void, Never>()
   public var manifestPublisher: AnyPublisher<Void, Never> {
     manifestSubject.eraseToAnyPublisher()
+  }
+
+  private let menuWillShowSubject = PassthroughSubject<Void, Never>()
+  public var menuWillShowPublisher: AnyPublisher<Void, Never> {
+    menuWillShowSubject.eraseToAnyPublisher()
   }
 
   @objc
@@ -129,8 +163,49 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
-  public func updateCurrentBridge(_ bridge: RCTBridge?) {
-    currentBridge = bridge
+  public func setShowsAtLaunch(_ enabled: Bool) {
+    DevMenuPreferences.showsAtLaunch = enabled
+  }
+
+  @objc
+  public func getShowsAtLaunch() -> Bool {
+    return DevMenuPreferences.showsAtLaunch
+  }
+
+  @objc
+  public func setShowFloatingActionButton(_ enabled: Bool) {
+    DevMenuPreferences.showFloatingActionButton = enabled
+  }
+
+  @objc
+  public func setAppContext(_ appContext: AppContext?) {
+    currentAppContext = appContext
+    if appContext != nil {
+      isReloading = false
+      lastReloadEventAt = Date()
+      isNavigatingHome = false
+      isReactAppRunning = true
+      // Re-run packager connection setup now that the app context (and devSettings) is available.
+      packagerConnectionHandler?.setup()
+      updateFABVisibility()
+    } else {
+      isReactAppRunning = false
+    }
+    updateAutoLaunchObserver()
+  }
+
+  /**
+   Clears the app context, but only if `context` is still the active one.
+   On reload the incoming context's `OnCreate` can run before the outgoing context's
+   `OnDestroy`, so an unconditional reset would wipe the new context and leave the dev
+   menu unable to open.
+   */
+  @objc
+  public func clearAppContext(current context: AppContext?) {
+    if currentAppContext != nil && currentAppContext !== context {
+      return
+    }
+    setAppContext(nil)
   }
 
   @objc
@@ -147,6 +222,7 @@ open class DevMenuManager: NSObject {
 
     DispatchQueue.main.async {
       self.openMenu()
+      UserDefaults.standard.set(false, forKey: showsAtLaunchKey)
     }
   }
 
@@ -156,32 +232,15 @@ open class DevMenuManager: NSObject {
     // swiftlint:enable notification_center_detachment
 
     // swiftlint:disable legacy_objc_type
-    if canLaunchDevMenuOnStart && currentBridge != nil && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
+    if canLaunchDevMenuOnStart && isReactAppRunning && (DevMenuPreferences.showsAtLaunch || shouldShowOnboarding()) {
       NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: NSNotification.Name.RCTContentDidAppear, object: nil)
     }
     // swiftlint:enable legacy_objc_type
   }
 
-  private func disableRNDevMenuHoykeys(for bridge: RCTBridge) {
-    if let devMenu = bridge.devMenu {
-      devMenu.hotkeysEnabled = false
-
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        if DevMenuPreferences.keyCommandsEnabled {
-          DevMenuKeyCommandsInterceptor.isInstalled = false
-          DevMenuKeyCommandsInterceptor.isInstalled = true
-        }
-      }
-    } else {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        self.disableRNDevMenuHoykeys(for: bridge)
-      }
-    }
-  }
-
   override init() {
     super.init()
-    self.window = DevMenuWindow(manager: self)
+    self.window = Dispatch.mainSync { DevMenuWindow(manager: self) }
     self.packagerConnectionHandler = DevMenuPackagerConnectionHandler(manager: self)
     self.packagerConnectionHandler?.setup()
     DevMenuPreferences.setup()
@@ -266,11 +325,26 @@ open class DevMenuManager: NSObject {
   }
 
   @objc
+  public var shouldShowReactNativeDevMenu: Bool {
+    guard let delegate = hostDelegate,
+      delegate.responds(to: #selector(DevMenuHostDelegate.devMenuShouldShowReactNativeDevMenu)) else {
+      return true
+    }
+    return delegate.devMenuShouldShowReactNativeDevMenu?() ?? true
+  }
+
+  @objc
   public func navigateHome() {
     guard let delegate = hostDelegate,
       delegate.responds(to: #selector(DevMenuHostDelegate.devMenuNavigateHome)) else {
       return
     }
+
+    isNavigatingHome = true
+
+    #if !os(macOS) && !os(tvOS)
+    fabWindow?.setVisible(false, animated: false)
+    #endif
 
     let action: () -> Void = {
       delegate.devMenuNavigateHome?()
@@ -290,11 +364,7 @@ open class DevMenuManager: NSObject {
 
   @objc
   public func sendEventToDelegateBridge(_ eventName: String, data: Any?) {
-    guard let bridge = currentBridge else {
-      return
-    }
-
-    if let eventDispatcher = bridge.moduleRegistry.module(forName: "EventDispatcher") as? NSObject {
+    if let eventDispatcher: NSObject = currentAppContext?.nativeModule(named: "EventDispatcher") {
       let selector = NSSelectorFromString("sendDeviceEventWithName:body:")
       if eventDispatcher.responds(to: selector) {
         eventDispatcher.perform(selector, with: eventName, with: data)
@@ -311,9 +381,9 @@ open class DevMenuManager: NSObject {
       return false
     }
 
-    // Don't allow dev menu to open when there's no active React Native bridge
-    // This prevents the menu from appearing when the dev-launcher UI is visible
-    if visible && currentBridge == nil {
+    // Don't allow dev menu to open before the React app is running.
+    // This prevents the menu from appearing when the dev-launcher UI is visible.
+    if visible && !isReactAppRunning {
       return false
     }
 
@@ -358,22 +428,26 @@ open class DevMenuManager: NSObject {
       return false
     }
     if visible {
+      menuWillShowSubject.send()
       setCurrentScreen(screen)
       DispatchQueue.main.async {
 #if os(macOS)
         self.window?.makeKeyAndOrderFront(nil)
+#elseif os(tvOS)
+        self.window?.makeKeyAndVisible()
 #else
+        self.updateFABVisibility()
+
         if self.window?.windowScene == nil {
-          let keyWindowScene = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene
-          let windowScene = keyWindowScene ?? UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-          self.window?.windowScene = windowScene
+          self.window?.windowScene = SceneGeometry.foregroundActiveScene()
         }
         self.window?.makeKeyAndVisible()
 #endif
       }
     } else {
-      DispatchQueue.main.async { self.window?.closeBottomSheet(nil) }
+      DispatchQueue.main.async {
+        self.window?.closeBottomSheet(nil)
+      }
     }
     return true
   }
@@ -402,22 +476,59 @@ open class DevMenuManager: NSObject {
     }
   }
 
+  // The list of AppRegistry component names pushed by JS. Drives the
+  // "Components" section of the dev menu when the app registers more than
+  // one root component.
+  private let availableAppKeysSubject = PassthroughSubject<[String], Never>()
+  public var availableAppKeysPublisher: AnyPublisher<[String], Never> {
+    availableAppKeysSubject.eraseToAnyPublisher()
+  }
+
+  public var availableAppKeys: [String] = [] {
+    didSet {
+      availableAppKeysSubject.send(availableAppKeys)
+    }
+  }
+
+  /**
+   Swaps the currently mounted React root view to the AppRegistry component
+   registered under `moduleName`. Notifies JS via the `componentSwitched`
+   event so any teardown listeners can run.
+   */
+  @objc
+  public func switchToComponent(_ moduleName: String) {
+    if DevMenuComponentSwitcher.shared.switchToComponent(moduleName) {
+      sendEventToDelegateBridge("componentSwitched", data: moduleName)
+    }
+  }
+
   func getDevToolsDelegate() -> DevMenuDevOptionsDelegate? {
-    guard let currentBridge else {
-      return nil
+    if let appContext = currentAppContext {
+      let devDelegate = DevMenuDevOptionsDelegate(forAppContext: appContext)
+      guard devDelegate.devSettings != nil else {
+        return nil
+      }
+      return devDelegate
     }
-
-    let devDelegate = DevMenuDevOptionsDelegate(forBridge: currentBridge)
-    guard devDelegate.devSettings != nil else {
-      return nil
-    }
-
-    return devDelegate
+    return nil
   }
 
   func reload() {
-    let devToolsDelegate = getDevToolsDelegate()
-    devToolsDelegate?.reload()
+    let now = Date()
+    if isReloading || (lastReloadEventAt.map { now.timeIntervalSince($0) < 0.5 } ?? false) {
+      lastReloadEventAt = now
+      return
+    }
+    guard let devToolsDelegate = getDevToolsDelegate() else {
+      return
+    }
+    isReloading = true
+    lastReloadEventAt = now
+    // Clear the guard even if a new app context never registers, for example a failed reload.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
+      self?.isReloading = false
+    }
+    devToolsDelegate.reload()
   }
 
   func togglePerformanceMonitor() {
@@ -451,4 +562,34 @@ open class DevMenuManager: NSObject {
     let devToolsDelegate = getDevToolsDelegate()
     devToolsDelegate?.toggleFastRefresh()
   }
+
+  #if !os(macOS) && !os(tvOS)
+  private func setupFABWindowIfNeeded(for windowScene: UIWindowScene) {
+    guard fabWindow == nil else { return }
+    fabWindow = DevMenuFABWindow(manager: self, windowScene: windowScene)
+  }
+
+  public func updateFABVisibility() {
+    DispatchQueue.main.async { [weak self] in
+      guard let self else { return }
+
+      if self.fabWindow == nil {
+        if let windowScene = SceneGeometry.foregroundActiveScene() {
+          self.setupFABWindowIfNeeded(for: windowScene)
+        }
+      }
+
+      let shouldShow = DevMenuPreferences.showFloatingActionButton
+        && !self.isVisible
+        && self.isReactAppRunning
+        && !self.isNavigatingHome
+        && DevMenuPreferences.isOnboardingFinished
+      self.fabWindow?.setVisible(shouldShow, animated: true)
+    }
+  }
+  #else
+  public func updateFABVisibility() {
+    // FAB not available on macOS/tvOS
+  }
+  #endif
 }

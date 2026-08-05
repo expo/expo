@@ -298,7 +298,7 @@ class PictureInPictureManager(appContext: AppContext) : PictureInPictureFragment
   }
 
   private fun paramChangeInfluencesAutoEnter(previous: PiPParams, new: PiPParams): Boolean {
-    return previous.autoEnter != new.autoEnter || previous.canEnter != new.autoEnter || previous.blocksAppFromEntering != new.blocksAppFromEntering
+    return previous.autoEnter != new.autoEnter || previous.canEnter != new.canEnter || previous.blocksAppFromEntering != new.blocksAppFromEntering
   }
 
   private fun shouldPauseOnBackground(videoView: VideoView): Boolean {

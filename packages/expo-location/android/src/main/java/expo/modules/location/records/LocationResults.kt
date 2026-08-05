@@ -9,10 +9,34 @@ import android.os.PersistableBundle
 import android.util.Log
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import expo.modules.kotlin.types.OptimizedRecord
 import expo.modules.location.ConversionException
 import expo.modules.location.LocationModule
 import java.io.Serializable
 
+@OptimizedRecord
+internal class MotionActivityStateRecord(
+  @Field var detected: Boolean,
+  @Field var confidence: MotionActivityConfidence
+) : Record, Serializable
+
+@OptimizedRecord
+internal class MotionActivitiesRecord(
+  @Field var automotive: MotionActivityStateRecord,
+  @Field var cycling: MotionActivityStateRecord,
+  @Field var running: MotionActivityStateRecord,
+  @Field var walking: MotionActivityStateRecord,
+  @Field var stationary: MotionActivityStateRecord,
+  @Field var unknown: MotionActivityStateRecord
+) : Record, Serializable
+
+@OptimizedRecord
+internal class MotionActivityObjectRecord(
+  @Field var activities: MotionActivitiesRecord,
+  @Field var timestamp: Double
+) : Record, Serializable
+
+@OptimizedRecord
 internal class PermissionRequestResponse(
   @Field var canAskAgain: Boolean?,
   @Field var expires: String?,
@@ -31,6 +55,7 @@ internal class PermissionRequestResponse(
   )
 }
 
+@OptimizedRecord
 internal class PermissionDetailsLocationAndroid(
   @Field var accuracy: String
 ) : Record, Serializable {
@@ -39,6 +64,7 @@ internal class PermissionDetailsLocationAndroid(
   )
 }
 
+@OptimizedRecord
 internal class LocationProviderStatus(
   @Field var backgroundModeEnabled: Boolean? = null,
   @Field var gpsAvailable: Boolean? = false,
@@ -61,6 +87,7 @@ internal class Heading(
   }
 }
 
+@OptimizedRecord
 internal class HeadingEventResponse(
   @Field var watchId: Int? = null,
   @Field var heading: Heading? = null
@@ -73,6 +100,7 @@ internal class HeadingEventResponse(
   }
 }
 
+@OptimizedRecord
 internal class LocationResponse(
   @Field var coords: LocationObjectCoords? = null,
   @Field var timestamp: Double? = null,
@@ -81,28 +109,31 @@ internal class LocationResponse(
   constructor(location: Location) : this(
     coords = LocationObjectCoords(location),
     timestamp = location.time.toDouble(),
-    mocked = location.isFromMockProvider
+    mocked = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+      location.isMock
+    } else {
+      @Suppress("DEPRECATION") // When minSdkVersion is 31, this code will be removed and the above code will be used instead.
+      location.isFromMockProvider
+    }
   )
 
-  internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
-    val bundle: BundleType = when (bundleTypeClass) {
-      PersistableBundle::class.java -> PersistableBundle()
-      else -> Bundle()
-    } as? BundleType
-      ?: throw ConversionException(LocationResponse::class.java, bundleTypeClass, "Unsupported bundleTypeClass")
+  internal fun toBundle() = Bundle().apply {
+    putLocationResponseFields()
+    putBundle("coords", coords?.toBundle())
+  }
 
-    return bundle.apply {
-      timestamp?.let { putDouble("timestamp", it) }
-      mocked?.let { putBoolean("mocked", it) }
-      if (bundle is PersistableBundle) {
-        (this as PersistableBundle).putPersistableBundle("coords", coords?.toBundle(PersistableBundle::class.java))
-      } else if (bundle is Bundle) {
-        (this as Bundle).putBundle("coords", coords?.toBundle(Bundle::class.java))
-      }
-    }
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putLocationResponseFields()
+    putPersistableBundle("coords", coords?.toPersistableBundle())
+  }
+
+  private fun BaseBundle.putLocationResponseFields() {
+    timestamp?.let { putDouble("timestamp", it) }
+    mocked?.let { putBoolean("mocked", it) }
   }
 }
 
+@OptimizedRecord
 internal class LocationObjectCoords(
   @Field var latitude: Double? = null,
   @Field var longitude: Double? = null,
@@ -126,26 +157,26 @@ internal class LocationObjectCoords(
     speed = location.speed.toDouble()
   )
 
-  internal fun <BundleType : BaseBundle> toBundle(bundleTypeClass: Class<BundleType>): BundleType {
-    val bundle: BundleType = when (bundleTypeClass) {
-      PersistableBundle::class.java -> PersistableBundle()
-      else -> Bundle()
-    } as? BundleType
-      ?: throw ConversionException(LocationObjectCoords::class.java, bundleTypeClass, "Requested an unsupported bundle type")
+  internal fun toBundle() = Bundle().apply {
+    putLocationObjectCoordsFields()
+  }
 
-    bundle.apply {
-      latitude?.let { putDouble("latitude", it) }
-      longitude?.let { putDouble("longitude", it) }
-      altitude?.let { putDouble("altitude", it) }
-      accuracy?.let { putDouble("accuracy", it) }
-      altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) }
-      heading?.let { putDouble("heading", it) }
-      speed?.let { putDouble("speed", it) }
-    }
-    return bundle
+  internal fun toPersistableBundle() = PersistableBundle().apply {
+    putLocationObjectCoordsFields()
+  }
+
+  private fun BaseBundle.putLocationObjectCoordsFields() {
+    latitude?.let { putDouble("latitude", it) }
+    longitude?.let { putDouble("longitude", it) }
+    altitude?.let { putDouble("altitude", it) }
+    accuracy?.let { putDouble("accuracy", it) }
+    altitudeAccuracy?.let { putDouble("altitudeAccuracy", it) }
+    heading?.let { putDouble("heading", it) }
+    speed?.let { putDouble("speed", it) }
   }
 }
 
+@OptimizedRecord
 internal class GeocodeResponse(
   @Field var latitude: Double,
   @Field var longitude: Double,
@@ -171,6 +202,7 @@ internal class GeocodeResponse(
   }
 }
 
+@OptimizedRecord
 internal class ReverseGeocodeResponse(
   @Field var city: String?,
   @Field var district: String?,

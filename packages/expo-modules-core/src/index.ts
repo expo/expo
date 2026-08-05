@@ -1,3 +1,4 @@
+import './ts-declarations/global';
 import './sweet/setUpJsLogger.fx';
 import './polyfill';
 
@@ -24,6 +25,7 @@ export * from './PermissionsHook';
 export * from './Refs';
 
 export * from './hooks/useReleasingSharedObject';
+export * from './hooks/useReleasingSharedObjectWithLifecycle';
 export * from './reload';
 
 // Errors

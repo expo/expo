@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.OnBackPressedCallback
 import com.facebook.react.PackageList
 import com.facebook.react.ReactHost
+import com.facebook.react.ReactPackage
 import com.facebook.react.ReactNativeApplicationEntryPoint.loadReactNative
 import com.facebook.react.common.ReleaseLevel
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
@@ -23,9 +24,29 @@ class ReactNativeHostManager {
     return reactHost
   }
 
-  fun initialize(application: Application) {
+  fun initialize(application: Application, additionalPackages: List<ReactPackage> = emptyList()) {
     if (reactHost != null) {
       return
+    }
+
+    // Ensure that `index.android.bundle` is available in the assets
+    // for release builds
+    if (!BuildConfig.DEBUG) {
+      val assets = application.applicationContext.assets.list("")?.toList()
+        ?: emptyList<String>()
+      if (!assets.contains("index.android.bundle")) {
+        val bundleList = assets
+          .filter { it.endsWith(".bundle") }
+          .map { "- $it" }.joinToString("\n")
+          ?: "None"
+
+          throw IllegalStateException("""
+          Cannot find `index.android.bundle` in the assets
+          Available JS bundles:
+          $bundleList
+          """.trimIndent()
+        )
+      }
     }
 
     DefaultNewArchitectureEntryPoint.releaseLevel =
@@ -37,16 +58,22 @@ class ReactNativeHostManager {
     loadReactNative(application)
     BrownfieldLifecycleDispatcher.onApplicationCreate(application)
 
+    // Pass `useDevSupport` explicitly (default is `ReactBuildConfig.DEBUG`). The
+    // brownfield's own `BuildConfig.DEBUG` follows the fused sibling's variant
+    // (true in `-fused-debug`, false in `-fused-release`) — using it ensures
+    // dev support fires correctly regardless of which RN variant the consumer
+    // resolves.
     reactHost = ExpoReactHostFactory.getDefaultReactHost(
       context = application.applicationContext,
-      packageList = PackageList(application).packages
+      packageList = PackageList(application).packages + additionalPackages,
+      useDevSupport = BuildConfig.DEBUG
     )
   }
 }
 
-fun Activity.showReactNativeFragment() {
-  ReactNativeHostManager.shared.initialize(this.application)
-  val fragment = ReactNativeFragment.createFragmentHost(this)
+fun Activity.showReactNativeFragment(rootComponent: String = "main", additionalPackages: List<ReactPackage> = emptyList()) {
+  ReactNativeHostManager.shared.initialize(this.application, additionalPackages)
+  val fragment = ReactNativeFragment.createFragmentHost(this, rootComponent)
   setContentView(fragment)
   setUpNativeBackHandling()
 }

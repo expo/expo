@@ -4,6 +4,7 @@ import SwiftUI
 
 struct RecentlyOpenedAppRow: View {
   let app: RecentlyOpenedApp
+  var isLoading: Bool = false
   let onTap: () -> Void
 
   var body: some View {
@@ -11,9 +12,7 @@ struct RecentlyOpenedAppRow: View {
       onTap()
     } label: {
       HStack(spacing: 12) {
-        if let iconUrl = app.iconUrl, let url = URL(string: iconUrl) {
-          RecentlyOpenedIconView(url: url)
-        }
+        RecentlyOpenedIconView(iconUrl: app.iconUrl)
 
         Text(app.name)
           .font(.body)
@@ -22,9 +21,13 @@ struct RecentlyOpenedAppRow: View {
 
         Spacer()
 
-        Image(systemName: "chevron.right")
-          .font(.caption)
-          .foregroundColor(.secondary)
+        if isLoading {
+          ProgressView()
+        } else {
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundColor(.secondary)
+        }
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)
@@ -35,10 +38,11 @@ struct RecentlyOpenedAppRow: View {
 }
 
 private struct RecentlyOpenedIconView: View {
-  let url: URL
+  let iconUrl: String?
   private let size: CGFloat = 40
   @State private var image: UIImage?
   @State private var isLoading = false
+  @Environment(\.colorScheme) private var colorScheme
 
   var body: some View {
     Group {
@@ -50,7 +54,7 @@ private struct RecentlyOpenedIconView: View {
           .clipShape(RoundedRectangle(cornerRadius: BorderRadius.medium))
       } else {
         RoundedRectangle(cornerRadius: BorderRadius.medium)
-          .fill(Color.expoSecondarySystemGroupedBackground)
+          .fill(colorScheme == .dark ? Color(white: 0.3) : Color(white: 0.7))
           .frame(width: size, height: size)
       }
     }
@@ -60,7 +64,7 @@ private struct RecentlyOpenedIconView: View {
   }
 
   private func loadImage() async {
-    guard !isLoading else { return }
+    guard let iconUrl, let url = URL(string: iconUrl), !isLoading else { return }
     isLoading = true
 
     do {

@@ -15,6 +15,7 @@ export default function IndexPage() {
         onPress={() => router.push('/ncl-notification-screen')}
       />
       <Button title="Go to playground" onPress={() => router.push('/playground')} />
+      <Button title="See Expo ui" onPress={() => router.push('/expo-ui')} />
       <Button title="Go to test scenarios" onPress={() => router.push('/scenarios')} />
       <Button
         title="Get Notification permissions"

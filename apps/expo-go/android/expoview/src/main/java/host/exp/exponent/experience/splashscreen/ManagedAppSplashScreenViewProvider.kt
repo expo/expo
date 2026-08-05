@@ -33,7 +33,7 @@ class ManagedAppSplashScreenViewProvider(
   ) {
     if (previousConfig == null ||
       config.appName != previousConfig.appName ||
-      !config.imageUrl.equals(previousConfig.imageUrl)
+      config.imageUrl != previousConfig.imageUrl
     ) {
       splashScreenView.appName = config.appName ?: ""
       splashScreenView.imageUrl = config.imageUrl ?: ""

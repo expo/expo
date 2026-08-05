@@ -1,0 +1,30 @@
+'use client';
+import { use } from 'react';
+
+import type { NavigationState } from '../routers';
+import { NavigationContainerRefContext } from './NavigationContainerRefContext';
+import { NavigationContext } from './NavigationContext';
+import type { NavigationProp } from './types';
+
+/**
+ * Hook to access the navigation prop of the parent screen anywhere.
+ *
+ * @returns Navigation prop of the parent screen.
+ */
+export function useNavigation<
+  T = Omit<NavigationProp<ReactNavigation.RootParamList>, 'getState'> & {
+    getState(): NavigationState | undefined;
+  },
+>(): T {
+  const root = use(NavigationContainerRefContext);
+  const navigation = use(NavigationContext);
+
+  if (navigation === undefined && root === undefined) {
+    throw new Error(
+      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+    );
+  }
+
+  // FIXME: Figure out a better way to do this
+  return (navigation ?? root) as unknown as T;
+}

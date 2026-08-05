@@ -16,7 +16,11 @@ import { VideoBoxLink } from '~/ui/components/VideoBoxLink';
 
 `expo-background-task` provides an API to run deferrable background tasks in a way that optimizes battery and power consumption on the end user's device. This module uses the [`WorkManager`](https://developer.android.com/topic/libraries/architecture/workmanager) API on Android and the [`BGTaskScheduler`](https://developer.apple.com/documentation/backgroundtasks/bgtaskscheduler) API on iOS to schedule tasks. It also uses the [`expo-task-manager`](task-manager.mdx) Native API to run JavaScript tasks.
 
-<VideoBoxLink videoId="4lFus7TvayI" title="Watch: Expo Background Task Deep Dive" />
+<VideoBoxLink
+  videoId="4lFus7TvayI"
+  title="Watch: Expo Background Task Deep Dive"
+  description="Sync data, prefetch content, and run deferred work in the background with expo-background-task."
+/>
 
 ## Background tasks
 
@@ -61,22 +65,28 @@ The [`Background Tasks`](https://developer.apple.com/documentation/backgroundtas
 
 <APIInstallSection />
 
-## Configuration&ensp;<PlatformTags platforms={['ios']} />
+## Configuration in app config&ensp;<PlatformTags platforms={['ios']} />
 
-To be able to run background tasks on iOS, you need to add the `processing` value to the `UIBackgroundModes` array in your app's **Info.plist** file. This is required for background fetch to work properly.
+To be able to run background tasks on iOS, you need to add the following to your app's **Info.plist** file:
 
-**If you're using [CNG](/workflow/continuous-native-generation/)**, the required `UIBackgroundModes` configuration will be applied automatically by prebuild.
+- The `processing` value to the `UIBackgroundModes` array. This enables the background processing capability.
+- The `BGTaskSchedulerPermittedIdentifiers` array with the `com.expo.modules.backgroundtask.processing` identifier. This registers the permitted background task identifier.
 
-<Collapsible summary="Configure UIBackgroundModes manually on iOS">
+**If you're using [CNG](/workflow/continuous-native-generation/)**, both the required `UIBackgroundModes` and `BGTaskSchedulerPermittedIdentifiers` configurations will be applied automatically by prebuild.
+
+<Collapsible summary="Configure Info.plist manually on iOS">
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)), then you'll need to add the following to your **Info.plist** file:
 
 ```xml ios/project-name/Supporting/Info.plist
 <key>UIBackgroundModes</key>
-  <array>
-    <string>processing</string>
-  </array>
-</key>
+<array>
+  <string>processing</string>
+</array>
+<key>BGTaskSchedulerPermittedIdentifiers</key>
+<array>
+  <string>com.expo.modules.backgroundtask.processing</string>
+</array>
 ```
 
 </Collapsible>
@@ -156,10 +166,10 @@ export default function BackgroundTaskScreen() {
       </View>
       <Button
         disabled={status === BackgroundTask.BackgroundTaskStatus.Restricted}
-        title={isRegistered ? 'Cancel Background Task' : 'Schedule Background Task'}
+        title={isRegistered ? 'Cancel background task' : 'Schedule background task'}
         onPress={toggle}
       />
-      <Button title="Check Background Task Status" onPress={updateAsync} />
+      <Button title="Check background task status" onPress={updateAsync} />
     </View>
   );
 }
@@ -200,13 +210,13 @@ function App() {
     await BackgroundTask.triggerTaskWorkerForTestingAsync();
   };
 
-  return <Button title="Trigger Background Task" onPress={triggerTask} />;
+  return <Button title="Trigger background task" onPress={triggerTask} />;
 }
 ```
 
 ## Inspecting background tasks&ensp;<PlatformTags platforms={['android']} />
 
-To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks:
+To troubleshoot or debug issues with background tasks on Android, use the `adb` tool included with the Android SDK to inspect scheduled tasks and replace `<package-name>` with your app's [Android package name](/versions/latest/config/app/#package) in app config:
 
 <Terminal
   cmd={['$ adb shell dumpsys jobscheduler | grep -A 40 -m 1 -E "JOB #.* <package-name>"']}

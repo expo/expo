@@ -5,6 +5,18 @@ open class DevMenuModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoDevMenu")
 
+    OnCreate {
+      DevMenuManager.shared.setAppContext(self.appContext)
+    }
+
+    OnDestroy {
+      DevMenuManager.shared.clearAppContext(current: self.appContext)
+      // Cleanup registered callbacks when the module is destroyed to prevent leaking into other bridges.
+      if DevMenuManager.wasInitilized {
+        DevMenuManager.shared.registeredCallbacks = []
+      }
+    }
+
     // MARK: JavaScript API
     AsyncFunction("openMenu") {
       DevMenuManager.shared.openMenu()
@@ -32,12 +44,9 @@ open class DevMenuModule: Module {
         )
       }
     }
-  }
 
-  deinit {
-    // cleanup registered callbacks when the bridge is deallocated to prevent these leaking into other (potentially unrelated) bridges
-    if DevMenuManager.wasInitilized {
-      DevMenuManager.shared.registeredCallbacks = []
+    AsyncFunction("setAvailableAppKeys") { (keys: [String]) in
+      DevMenuManager.shared.availableAppKeys = keys
     }
   }
 }

@@ -1,10 +1,13 @@
 import fs from 'node:fs';
 
 import {
+  applyPatchToFile as applyPatchToFileCommon,
   createFileFromTemplate as createFileFromTemplateCommon,
   createFileFromTemplateAs as createFileFromTemplateAsCommon,
   readFromTemplate as readFromTemplateCommon,
 } from '../../common/filesystem';
+
+export { applyPatchToFileCommon as applyPatchToFile };
 
 export const mkdir = (path: string, recursive: boolean = false) => {
   fs.mkdirSync(path, {

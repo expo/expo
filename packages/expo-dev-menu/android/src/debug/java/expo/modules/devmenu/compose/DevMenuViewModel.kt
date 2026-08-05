@@ -3,18 +3,23 @@ package expo.modules.devmenu.compose
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.facebook.react.ReactHost
 import expo.modules.devmenu.DevMenuDevSettings
 import expo.modules.devmenu.DevMenuPreferences
 import expo.modules.devmenu.DevToolsSettings
+import expo.modules.devmenu.SwitchToComponentAction
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
 import expo.modules.kotlin.weak
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
 
 class DevMenuViewModel(
   val reactHostHolder: WeakReference<ReactHost>,
   val menuPreferences: DevMenuPreferences,
-  val goHomeAction: (() -> Unit)? = null
+  val goHomeAction: (() -> Unit)? = null,
+  val reloadAction: (() -> Unit)? = null,
+  private val switchToComponentAction: SwitchToComponentAction? = null
 ) : ViewModel() {
   private val reactHost
     get() = reactHostHolder.get()
@@ -61,14 +66,23 @@ class DevMenuViewModel(
   }
 
   fun updateAppInfo(appInfo: DevMenuState.AppInfo) {
+    // Seed the active app key from the host the first time we receive app info.
+    // After that we trust state.currentAppKey, which is kept in sync by successful
+    // SwitchComponent actions.
+    val currentAppKey = _state.value.currentAppKey ?: appInfo.currentComponentName
     _state.value = _state.value.copy(
       appInfo = appInfo,
-      isOnboardingFinished = menuPreferences.isOnboardingFinished
+      isOnboardingFinished = menuPreferences.isOnboardingFinished,
+      currentAppKey = currentAppKey
     )
   }
 
   fun updateCustomItems(items: List<DevMenuState.CustomItem>) {
     _state.value = _state.value.copy(customItems = items)
+  }
+
+  fun updateAvailableAppKeys(keys: List<String>) {
+    _state.value = _state.value.copy(availableAppKeys = keys)
   }
 
   fun setInPictureInPictureMode(isInPictureInPictureMode: Boolean) {
@@ -79,7 +93,7 @@ class DevMenuViewModel(
   }
 
   private fun closeMenu() {
-    _state.value = _state.value.copy(isOpen = false)
+    _state.value = _state.value.copy(isOpen = false, openSubScreen = null)
   }
 
   private fun openMenu() {
@@ -123,20 +137,36 @@ class DevMenuViewModel(
       is DevMenuAction.ToggleFab -> toggleFab()
       DevMenuAction.FinishOnboarding -> finishOnboarding()
       is DevMenuAction.TriggerCustomCallback -> action.item.fn.invoke()
+      is DevMenuAction.SwitchComponent -> {
+        val switch = switchToComponentAction
+        if (switch != null) {
+          viewModelScope.launch {
+            if (switch(action.name)) {
+              _state.value = _state.value.copy(currentAppKey = action.name)
+            }
+          }
+        }
+      }
+      is DevMenuAction.OpenSubScreen -> _state.value = _state.value.copy(openSubScreen = action.screen)
+      is DevMenuAction.CloseSubScreen -> _state.value = _state.value.copy(openSubScreen = null)
     }
   }
 
   class Factory(
     private val reactHostHolder: WeakReference<ReactHost>,
     private val menuPreferences: DevMenuPreferences,
-    private val goHomeAction: (() -> Unit)?
+    private val goHomeAction: (() -> Unit)?,
+    private val reloadAction: (() -> Unit)?,
+    private val switchToComponentAction: SwitchToComponentAction? = null
   ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
       @Suppress("UNCHECKED_CAST")
       return DevMenuViewModel(
         reactHostHolder,
         menuPreferences,
-        goHomeAction
+        goHomeAction,
+        reloadAction,
+        switchToComponentAction
       ) as T
     }
   }

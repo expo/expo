@@ -3,7 +3,7 @@
 import ExpoModulesCore
 import ExpoNotifications
 
-public final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
+final class ExpoGoNotificationsCategoriesModule: CategoriesModule {
   private let scopeKey: String
   // swiftlint:disable:next unavailable_function
   required init(appContext: AppContext) {

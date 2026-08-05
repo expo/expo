@@ -4,7 +4,7 @@ import ExpoModulesCore
 import ExpoNotifications
 
 // swiftlint:disable:next type_name
-public final class ExpoGoNotificationsServerRegistrationModule: ServerRegistrationModule {
+final class ExpoGoNotificationsServerRegistrationModule: ServerRegistrationModule {
   private let scopeKey: String
   // swiftlint:disable:next unavailable_function
   required init(appContext: AppContext) {

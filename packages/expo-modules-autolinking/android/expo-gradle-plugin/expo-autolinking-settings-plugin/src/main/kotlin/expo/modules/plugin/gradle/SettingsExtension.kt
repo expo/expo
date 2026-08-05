@@ -20,7 +20,9 @@ internal fun Settings.linkProject(project: GradleProject) {
 }
 
 internal fun Settings.linkPlugin(plugin: GradlePlugin) {
-  includeBuild(File(plugin.sourceDir))
+  // Published plugins are resolved from a maven repository instead of an included build.
+  val sourceDir = plugin.sourceDir ?: return
+  includeBuild(File(sourceDir))
 }
 
 internal fun Settings.linkAarProject(aarProject: GradleAarProject) {

@@ -3,13 +3,12 @@ import fs from 'node:fs';
 import path from 'node:path';
 import semver from 'semver';
 
-import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
-import type { Options } from './resolveOptions';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
-import { setNodeEnv } from '../utils/nodeEnv';
-
-const debug = require('debug')('expo:lint');
+import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
+import { ESLintProjectPrerequisite } from './ESlintPrerequisite';
+import { event } from './events';
+import type { Options } from './resolveOptions';
 
 const DEFAULT_INPUTS = ['src', 'app', 'components'];
 
@@ -22,7 +21,7 @@ export const lintAsync = async (
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
   const projectRoot = options?.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
-  require('@expo/env').load(projectRoot);
+  loadEnvFiles(projectRoot);
 
   // TODO: Perhaps we should assert that TypeScript is required.
 
@@ -104,7 +103,7 @@ export const lintAsync = async (
     eslintArgs.push(arg);
   });
 
-  debug('Running ESLint with args: %O', eslintArgs);
+  event('eslint_args', { args: eslintArgs });
 
   const manager = createForProject(projectRoot, { silent: true });
 

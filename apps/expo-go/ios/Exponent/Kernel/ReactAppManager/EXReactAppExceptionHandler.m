@@ -1,8 +1,9 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppViewController.h"
-#import "EXErrorRecoveryManager.h"
 #import "EXKernel.h"
+
+#import "Expo_Go-Swift.h"
 #import "EXKernelAppRecord.h"
 #import "EXReactAppManager.h"
 #import "EXReactAppExceptionHandler.h"
@@ -64,25 +65,18 @@ RCT_NOT_IMPLEMENTED(- (instancetype)init)
 
   [[EXKernel sharedInstance].serviceRegistry.errorRecoveryManager setError:error forScopeKey:_appRecord.scopeKey];
 
-  if ([self _isProdHome]) {
-    RCTFatal(error);
-  }
+  [_appRecord.viewController maybeShowError:error];
 }
 
 - (void)updateJSExceptionWithMessage:(nullable NSString *)message
                                stack:(nullable NSArray *)stack
                          exceptionId:(NSNumber *)exceptionId
 {
-  RCTRedBox *redbox = (RCTRedBox *)[[[self _hostForRecord] moduleRegistry] moduleForName:"RedBox"];
+  RCTRedBox *redbox = (RCTRedBox *)[_appRecord.appManager.reactModuleRegistry moduleForName:"RedBox"];
   [redbox updateErrorMessage:message withStack:stack];
 }
 
 #pragma mark - internal
-
-- (id)_hostForRecord
-{
-  return _appRecord.appManager.reactHost;
-}
 
 - (BOOL)_isProdHome
 {

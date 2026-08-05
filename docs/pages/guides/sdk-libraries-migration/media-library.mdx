@@ -1,0 +1,287 @@
+---
+title: Migrate to the new expo-media-library API
+sidebar_title: expo-media-library/legacy
+description: Migrate from the legacy expo-media-library API to the new class-based expo-media-library API with Asset, Album, and Query.
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Terminal } from '~/ui/components/Snippet';
+
+The new class-based `expo-media-library` API is now stable. The legacy API is available from `expo-media-library/legacy`. Migrate to the root `expo-media-library` import to benefit from the new API and future fixes.
+
+The new API replaces the function-based `MediaLibrary.getAssetsAsync({ ... })` style with `Asset`, `Album`, and `Query` classes. Albums and assets are now represented as class instances that hold only the ID of the native asset. Asset properties are async getters instead of pre-fetched fields. `Query` replaces the `getAssetsAsync` function with a chainable builder pattern.
+
+## Installation
+
+Install the SDK-compatible package:
+
+<Terminal cmd={['$ npx expo install expo-media-library']} />
+
+## Importing the new API
+
+Import from `expo-media-library`:
+
+```ts
+import { Asset, Album, Query } from 'expo-media-library';
+```
+
+## Assets
+
+### Create an asset from a file
+
+```ts
+// Before
+await MediaLibrary.saveToLibraryAsync(localUri);
+// or, to get a reference back:
+const asset = await MediaLibrary.createAssetAsync(localUri);
+
+// After
+const asset = await Asset.create(localUri);
+```
+
+`saveToLibraryAsync` is not available in the new API. Use `Asset.create`, which saves the file to the library and returns an `Asset` instance.
+
+### Query assets
+
+```ts
+// Before
+const { assets } = await MediaLibrary.getAssetsAsync({
+  mediaType: MediaLibrary.MediaType.photo,
+  first: 20,
+  sortBy: [['creationTime', false]],
+});
+
+// After
+const assets = await new Query()
+  .eq(AssetField.MEDIA_TYPE, MediaType.IMAGE)
+  .limit(20)
+  .orderBy({ key: AssetField.CREATION_TIME, ascending: false })
+  .exe();
+```
+
+`Query` returns an array of `Asset` instances directly. There is no `assets` wrapper or `endCursor`. Pagination is handled by chaining `.limit()` and `.offset()`.
+
+### Read asset properties
+
+```ts
+// Before
+const info = await MediaLibrary.getAssetInfoAsync(asset);
+console.log(info.filename, info.width, info.height);
+
+// After, individual getters
+const filename = await asset.getFilename();
+const width = await asset.getWidth();
+const height = await asset.getHeight();
+const mediaType = await asset.getMediaType();
+
+// After, all properties at once
+const info = await asset.getInfo();
+```
+
+Properties are accessed through async getters instead of pre-fetched fields. Use `getInfo()` to retrieve all properties at once as an `AssetInfo` object.
+
+### Read EXIF data
+
+```ts
+// Before
+const info = await MediaLibrary.getAssetInfoAsync(asset);
+const exif = info.exif;
+
+// After
+const exif = await asset.getExif();
+```
+
+### Delete assets
+
+```ts
+// Before
+await MediaLibrary.deleteAssetsAsync([asset]);
+
+// After, single asset
+await asset.delete();
+
+// After, multiple assets
+await Asset.delete([asset1, asset2]);
+```
+
+### Use legacy assets alongside the new API
+
+> If possible, migrate your app to use the new API end-to-end. The helpers below are intended for gradual migrations where both APIs are used at the same time.
+
+If you have a legacy `Asset` object in memory and need a new `Asset` instance, use `asset.uri` on iOS (it is already a `ph://` URI accepted by the new API) and `getAssetContentUriAsync` on Android to convert the numeric MediaStore ID to a `content://` URI.
+
+```ts
+import { Asset } from 'expo-media-library';
+import * as LegacyMediaLibrary from 'expo-media-library/legacy';
+import { Platform } from 'react-native';
+
+async function toNewAsset(legacyAsset: LegacyMediaLibrary.Asset): Promise<Asset> {
+  switch (Platform.OS) {
+    case 'ios':
+      return new Asset(legacyAsset.uri);
+    case 'android': {
+      const contentUri = await LegacyMediaLibrary.getAssetContentUriAsync(legacyAsset);
+      return new Asset(contentUri);
+    }
+    default:
+      throw new Error(`Unsupported platform: ${Platform.OS}`);
+  }
+}
+```
+
+If your app stores asset IDs returned by the legacy API (for example, in a database), convert them before creating `Asset` instances. On iOS, prefix the legacy ID with `ph://`. On Android, use `getAssetContentUriAsync` to resolve the numeric MediaStore ID to a `content://` URI.
+
+```ts
+async function convertStoredId(legacyId: string): Promise<Asset> {
+  switch (Platform.OS) {
+    case 'ios':
+      return new Asset(`ph://${legacyId}`);
+    case 'android': {
+      const contentUri = await LegacyMediaLibrary.getAssetContentUriAsync(legacyId);
+      return new Asset(contentUri);
+    }
+    default:
+      throw new Error(`Unsupported platform: ${Platform.OS}`);
+  }
+}
+```
+
+## Albums
+
+### Get an album by name
+
+```ts
+// Before
+const album = await MediaLibrary.getAlbumAsync('MyAlbum');
+
+// After
+const album = await Album.get('MyAlbum');
+if (album) {
+  // album found
+}
+```
+
+### Get all albums
+
+```ts
+// Before
+const albums = await MediaLibrary.getAlbumsAsync();
+
+// After
+const albums = await Album.getAll();
+```
+
+### Create an album
+
+```ts
+// Before
+const album = await MediaLibrary.createAlbumAsync('MyNewAlbum', asset, false);
+
+// After
+const album = await Album.create('MyNewAlbum', [asset]);
+```
+
+### Get all assets in an album
+
+```ts
+// Before
+const { assets } = await MediaLibrary.getAssetsAsync({ album: album.id });
+
+// After
+const assets = await album.getAssets();
+```
+
+### Get album title
+
+```ts
+// Before, title was a synchronous property but required fetching the full album object first
+const album = await MediaLibrary.getAlbumAsync('MyAlbum');
+console.log(album.title);
+
+// After
+const title = await album.getTitle();
+```
+
+### Add assets to an album
+
+```ts
+// Before
+await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+
+// After
+await album.add([asset]);
+```
+
+### Remove assets from an album (iOS only)
+
+```ts
+// Before
+await MediaLibrary.removeAssetsFromAlbumAsync(assets, album);
+
+// After
+await album.removeAssets(assets);
+```
+
+### Delete an album
+
+```ts
+// Before
+await MediaLibrary.deleteAlbumsAsync([album], false);
+
+// After, single album
+await album.delete();
+
+// After, multiple albums
+await Album.delete([album1, album2]);
+```
+
+## Permissions
+
+The permission hooks and functions are available under the same names. The only change is that `presentPermissionsPickerAsync` was renamed to `presentPermissionsPicker`.
+
+```ts
+// Before
+await MediaLibrary.presentPermissionsPickerAsync(mediaTypes);
+
+// After
+await presentPermissionsPicker(mediaTypes);
+```
+
+`requestPermissionsAsync`, `getPermissionsAsync`, and `usePermissions` are unchanged.
+
+## Listening for changes
+
+```ts
+// Before
+const subscription = MediaLibrary.addListener(event => { ... });
+subscription.remove();
+
+// After
+const subscription = addListener(event => { ... });
+subscription.remove();
+
+// Remove all listeners at once
+removeAllListeners();
+```
+
+The listener event shape is unchanged.
+
+## Breaking semantic changes
+
+- Asset properties are now async getters (`getFilename()`, `getWidth()`, ...) instead of synchronous fields on a result object. Use `asset.getInfo()` to retrieve all properties at once.
+- The `Async` suffix is dropped. The entire library is asynchronous.
+- `Query` replaces the `getAssetsAsync` options bag. There is no `endCursor`/`hasNextPage`. Use `.limit()` and `.offset()` for pagination.
+- Operations on albums and assets are now methods on `Album` and `Asset` instances instead of free functions that accept an ID or reference.
+- `saveToLibraryAsync` is replaced by `Asset.create`, which returns an `Asset` instance.
+- `getMomentsAsync`, `albumNeedsMigrationAsync`, and `migrateAlbumIfNeededAsync` are removed with no replacement. You can safely delete any calls to these functions.
+
+## Reference
+
+<BoxLink
+  title="MediaLibrary"
+  description="See the full API reference for expo-media-library."
+  href="/versions/latest/sdk/media-library/"
+  Icon={BookOpen02Icon}
+/>

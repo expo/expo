@@ -23,7 +23,7 @@ index 57ed10f..cb9cbc6 100644
      debugImplementation libs.androidx.ui.test.manifest
  }
 
-+def projectRoot = rootDir.getAbsoluteFile().getAbsolutePath()
++def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
 +react {
 +    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
 +    reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()

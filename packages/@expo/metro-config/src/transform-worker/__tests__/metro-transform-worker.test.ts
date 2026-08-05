@@ -13,7 +13,7 @@ import { fromRawMappings } from '@expo/metro/metro-source-map';
 import type {
   JsTransformerConfig,
   JsTransformOptions,
-  JsOutput,
+  MinifierOptions,
 } from '@expo/metro/metro-transform-worker';
 import { TraceMap, originalPositionFor, generatedPositionFor } from '@jridgewell/trace-mapping';
 import { Buffer } from 'buffer';
@@ -21,15 +21,28 @@ import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
+import type { ExpoJsOutput } from '../../serializer/jsOutput';
+import { materializeMap } from '../../serializer/packedMap';
+
 /** Converts source mappings from Metro to a “TraceMap”, which is similar to source-map’s SourceMapConsumer */
-const toTraceMap = (output: JsOutput, contents: string) => {
-  const map = fromRawMappings([output.data]).toMap();
+const toTraceMap = (output: ExpoJsOutput, contents: string) => {
+  // `fromRawMappings` needs plain tuples; the worker emits the packed
+  // wire shape, so materialize at the boundary.
+  const map = fromRawMappings([
+    {
+      ...output.data,
+      map: materializeMap(output.data.map),
+      path: '',
+      source: contents,
+      isIgnored: false,
+    },
+  ]).toMap();
   return new TraceMap({
     ...map,
     file: output.data.code,
     sources: [null],
     sourcesContent: [contents || null],
-  });
+  } as ConstructorParameters<typeof TraceMap>[0]);
 };
 
 const originalWarn = console.warn;
@@ -47,8 +60,9 @@ jest
     '@expo/metro/metro-transform-worker/utils/getMinifier',
     () =>
       () =>
-      ({ code, map, config }) => {
-        const trimmed = config.output.comments ? code : code.replace('/*#__PURE__*/', '');
+      ({ code, map, config }: MinifierOptions) => {
+        const output = config.output as { comments?: boolean };
+        const trimmed = output.comments ? code : code.replace('/*#__PURE__*/', '');
         return {
           code: trimmed.replace('arbitrary(code)', 'minified(code)'),
           map,
@@ -136,8 +150,8 @@ it('transforms a simple script', async () => {
     { ...baseTransformOptions, type: 'script' }
   );
 
-  expect(result.output[0].type).toBe('js/script');
-  expect(result.output[0].data.code).toBe(
+  expect(result.output[0]!.type).toBe('js/script');
+  expect(result.output[0]!.data.code).toBe(
     [
       '(function (global) {',
       '  someReallyArbitrary(code);',
@@ -145,7 +159,7 @@ it('transforms a simple script', async () => {
     ].join('\n')
   );
 
-  const trace = toTraceMap(result.output[0], contents);
+  const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
     line: 2,
@@ -175,7 +189,7 @@ it('transforms a simple script', async () => {
     name: 'window',
   });
 
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+  expect(result.output[0]!.data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
 });
 
@@ -190,7 +204,7 @@ it('transforms a simple module', async () => {
     baseTransformOptions
   );
 
-  const trace = toTraceMap(result.output[0], contents);
+  const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 0 })).toMatchObject({
     line: 2,
@@ -212,9 +226,9 @@ it('transforms a simple module', async () => {
     name: 'code',
   });
 
-  expect(result.output[0].type).toBe('js/module');
-  expect(result.output[0].data.code).toBe([HEADER_DEV, '  arbitrary(code);', '});'].join('\n'));
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+  expect(result.output[0]!.type).toBe('js/module');
+  expect(result.output[0]!.data.code).toBe([HEADER_DEV, '  arbitrary(code);', '});'].join('\n'));
+  expect(result.output[0]!.data.functionMap).toMatchSnapshot();
   expect(result.dependencies).toEqual([]);
 });
 
@@ -235,8 +249,8 @@ it('transforms a module with dependencies', async () => {
     baseTransformOptions
   );
 
-  expect(result.output[0].type).toBe('js/module');
-  expect(result.output[0].data.code).toBe(
+  expect(result.output[0]!.type).toBe('js/module');
+  expect(result.output[0]!.data.code).toBe(
     [
       HEADER_DEV,
       '  "use strict";',
@@ -250,7 +264,7 @@ it('transforms a module with dependencies', async () => {
     ].join('\n')
   );
 
-  const trace = toTraceMap(result.output[0], contents);
+  const trace = toTraceMap(result.output[0]!, contents);
 
   expect(
     generatedPositionFor(trace, { source: '', line: 2, column: 0 } /* require("./a") */)
@@ -294,7 +308,7 @@ it('transforms a module with dependencies', async () => {
     name: '_dependencyMap',
   });
 
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+  expect(result.output[0]!.data.functionMap).toMatchSnapshot();
 
   expect(result.dependencies).toEqual([
     {
@@ -318,10 +332,10 @@ it('transforms an es module with asyncToGenerator', async () => {
     baseTransformOptions
   );
 
-  expect(result.output[0].type).toBe('js/module');
-  expect(result.output[0].data.code).toMatchSnapshot();
+  expect(result.output[0]!.type).toBe('js/module');
+  expect(result.output[0]!.data.code).toMatchSnapshot();
 
-  const trace = toTraceMap(result.output[0], contents);
+  const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 12 })).toMatchObject({
     line: 12,
@@ -334,7 +348,7 @@ it('transforms an es module with asyncToGenerator', async () => {
     name: 'test',
   });
 
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+  expect(result.output[0]!.data.functionMap).toMatchSnapshot();
 
   expect(result.dependencies).toEqual([
     {
@@ -357,7 +371,7 @@ it('transforms async generators', async () => {
     baseTransformOptions
   );
 
-  expect(result.output[0].data.code).toMatchSnapshot();
+  expect(result.output[0]!.data.code).toMatchSnapshot();
   expect(result.dependencies).toEqual([
     {
       data: expect.objectContaining({ asyncType: null }),
@@ -386,8 +400,8 @@ it('transforms import/export syntax when experimental flag is on', async () => {
     { ...baseTransformOptions, experimentalImportSupport: true }
   );
 
-  expect(result.output[0].type).toBe('js/module');
-  expect(result.output[0].data.code).toBe(
+  expect(result.output[0]!.type).toBe('js/module');
+  expect(result.output[0]!.data.code).toBe(
     [
       HEADER_DEV,
       '  "use strict";',
@@ -404,7 +418,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
     ].join('\n')
   );
 
-  const trace = toTraceMap(result.output[0], contents);
+  const trace = toTraceMap(result.output[0]!, contents);
 
   expect(generatedPositionFor(trace, { source: '', line: 1, column: 7 })).toMatchObject({
     line: 10,
@@ -423,7 +437,7 @@ it('transforms import/export syntax when experimental flag is on', async () => {
     name: '_dependencyMap',
   });
 
-  expect(result.output[0].data.functionMap).toMatchSnapshot();
+  expect(result.output[0]!.data.functionMap).toMatchSnapshot();
 
   expect(result.dependencies).toEqual([
     {
@@ -444,8 +458,10 @@ it('does not add "use strict" on non-modules', async () => {
     { ...baseTransformOptions, experimentalImportSupport: true }
   );
 
-  expect(result.output[0].type).toBe('js/module');
-  expect(result.output[0].data.code).toBe([HEADER_DEV, '  module.exports = {};', '});'].join('\n'));
+  expect(result.output[0]!.type).toBe('js/module');
+  expect(result.output[0]!.data.code).toBe(
+    [HEADER_DEV, '  module.exports = {};', '});'].join('\n')
+  );
 });
 
 it('preserves require() calls when module wrapping is disabled', async () => {
@@ -462,8 +478,8 @@ it('preserves require() calls when module wrapping is disabled', async () => {
     baseTransformOptions
   );
 
-  expect(result.output[0].type).toBe('js/module');
-  expect(result.output[0].data.code).toBe('require("./c");');
+  expect(result.output[0]!.type).toBe('js/module');
+  expect(result.output[0]!.data.code).toBe('require("./c");');
 });
 
 it('reports filename when encountering unsupported dynamic dependency', async () => {
@@ -481,7 +497,7 @@ it('reports filename when encountering unsupported dynamic dependency', async ()
     );
     throw new Error('should not reach this');
   } catch (error) {
-    expect(error.message).toMatchSnapshot();
+    expect((error as Error).message).toMatchSnapshot();
   }
 });
 
@@ -498,7 +514,7 @@ it('supports dynamic dependencies from within `node_modules`', async () => {
         Buffer.from('require(foo.bar);', 'utf8'),
         baseTransformOptions
       )
-    ).output[0].data.code
+    ).output[0]!.data.code
   ).toBe(
     [
       HEADER_DEV,
@@ -520,7 +536,7 @@ it('minifies the code correctly', async () => {
         Buffer.from('arbitrary(code);', 'utf8'),
         { ...baseTransformOptions, minify: true }
       )
-    ).output[0].data.code
+    ).output[0]!.data.code
   ).toBe([HEADER_PROD, '  minified(code);', '});'].join('\n'));
 });
 
@@ -534,7 +550,7 @@ it('minifies a JSON file', async () => {
         Buffer.from('arbitrary(code);', 'utf8'),
         { ...baseTransformOptions, minify: true }
       )
-    ).output[0].data.code
+    ).output[0]!.data.code
   ).toBe(
     [
       '__d(function(global, require, _importDefaultUnused, _importAllUnused, module, exports, _dependencyMapUnused) {',
@@ -557,7 +573,7 @@ it('does not wrap a JSON file when disableModuleWrapping is enabled', async () =
         Buffer.from('arbitrary(code);', 'utf8'),
         baseTransformOptions
       )
-    ).output[0].data.code
+    ).output[0]!.data.code
   ).toBe('module.exports = arbitrary(code);;');
 });
 
@@ -569,7 +585,7 @@ it('uses a reserved dependency map name and prevents it from being minified', as
     Buffer.from('arbitrary(code);', 'utf8'),
     { ...baseTransformOptions, dev: false, minify: true }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, THE_DEP_MAP) {
       minified(code);
     });"
@@ -601,7 +617,7 @@ it('allows disabling the normalizePseudoGlobals pass when minifying', async () =
     Buffer.from('arbitrary(code);', 'utf8'),
     { ...baseTransformOptions, dev: false, minify: true }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       minified(code);
     });"
@@ -616,7 +632,7 @@ it('allows emitting compact code when not minifying', async () => {
     Buffer.from('arbitrary(code);', 'utf8'),
     { ...baseTransformOptions, dev: false, minify: false }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(
     `"__d(function(global,_$$_REQUIRE,_$$_IMPORT_DEFAULT,_$$_IMPORT_ALL,module,exports,_dependencyMap){arbitrary(code);});"`
   );
 });
@@ -635,7 +651,7 @@ it('skips minification in Hermes stable transform profile', async () => {
       customTransformOptions: { __proto__: null, bytecode: '1' },
     }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       arbitrary(code);
     });"
@@ -656,7 +672,7 @@ it('skips minification in Hermes canary transform profile', async () => {
       customTransformOptions: { __proto__: null, bytecode: '1' },
     }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       arbitrary(code);
     });"
@@ -676,7 +692,7 @@ it('minifies with Hermes transform profile if bytecode is disabled', async () =>
       unstable_transformProfile: 'hermes-canary',
     }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, d) {
       minified(code);
     });"
@@ -695,8 +711,8 @@ it('counts all line endings correctly', async () => {
 
   const standardEndingsResult = await transformStr('one\ntwo\nthree\nfour\nfive\nsix');
 
-  expect(differentEndingsResult.output[0].data.lineCount).toEqual(
-    standardEndingsResult.output[0].data.lineCount
+  expect(differentEndingsResult.output[0]!.data.lineCount).toEqual(
+    standardEndingsResult.output[0]!.data.lineCount
   );
 });
 
@@ -708,7 +724,7 @@ it('outputs comments when `minify: false`', async () => {
     Buffer.from('/*#__PURE__*/arbitrary(code);', 'utf8'),
     { ...baseTransformOptions, dev: false, minify: false }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (global, _$$_REQUIRE, _$$_IMPORT_DEFAULT, _$$_IMPORT_ALL, module, exports, _dependencyMap) {
       /*#__PURE__*/arbitrary(code);
     });"
@@ -723,7 +739,7 @@ it('omits comments when `minify: true`', async () => {
     Buffer.from('/*#__PURE__*/arbitrary(code);', 'utf8'),
     { ...baseTransformOptions, dev: false, minify: true }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, d) {
       minified(code);
     });"
@@ -738,7 +754,7 @@ it('allows outputting comments when `minify: true`', async () => {
     Buffer.from('/*#__PURE__*/arbitrary(code);', 'utf8'),
     { ...baseTransformOptions, dev: false, minify: true }
   );
-  expect(result.output[0].data.code).toMatchInlineSnapshot(`
+  expect(result.output[0]!.data.code).toMatchInlineSnapshot(`
     "__d(function (g, r, i, a, m, e, d) {
       /*#__PURE__*/minified(code);
     });"
@@ -766,5 +782,69 @@ it('allows the constantFoldingPlugin to not remove used helpers when `dev: false
     Buffer.from(contents, 'utf8'),
     { ...baseTransformOptions, dev: false }
   );
-  expect(result.output[0].data.code).toMatchSnapshot();
+  expect(result.output[0]!.data.code).toMatchSnapshot();
+});
+
+describe('tree shaking AST cleaning', () => {
+  it('strips non-serializable values from AST when optimize is enabled', async () => {
+    // This test verifies that the transformer cleans the AST of non-serializable values
+    // (like Symbols that React Compiler may add) before returning it for tree shaking.
+    const contents = `
+      export function Component({ controller, onSubmit }) {
+        const usingProvider = !!controller;
+        const files = usingProvider ? controller.files : [];
+        const text = usingProvider ? controller.value : 'default';
+
+        const handleSubmit = (event) => {
+          event.preventDefault();
+          Promise.all(files.map(async (item) => {
+            if (item.url) {
+              return { id: item.id, url: item.url };
+            }
+            return item;
+          })).then((converted) => {
+            const result = onSubmit({ text, files: converted }, event);
+            if (result instanceof Promise) {
+              result.then(() => {
+                if (usingProvider) controller.clear();
+              });
+            }
+          });
+        };
+
+        return handleSubmit;
+      }
+    `;
+
+    const result = await Transformer.transform(
+      {
+        ...baseConfig,
+        unstable_disableModuleWrapping: true,
+      },
+      '/root',
+      'local/file.js',
+      Buffer.from(contents, 'utf8'),
+      {
+        ...baseTransformOptions,
+        dev: false,
+        experimentalImportSupport: true,
+        customTransformOptions: {
+          __proto__: null,
+          optimize: true,
+          reactCompiler: 'true',
+        },
+      }
+    );
+
+    // Verify the AST is present (tree shaking stores it)
+    const ast = result.output[0]!.data.ast;
+    expect(ast).toBeDefined();
+
+    // The key assertion: AST must be JSON-serializable (no Symbols, functions, etc.)
+    expect(() => JSON.stringify(ast)).not.toThrow();
+
+    // Verify the serialized AST can be parsed back
+    const serialized = JSON.stringify(ast);
+    expect(() => JSON.parse(serialized)).not.toThrow();
+  });
 });

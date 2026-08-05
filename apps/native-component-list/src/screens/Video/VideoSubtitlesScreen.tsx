@@ -1,6 +1,5 @@
 import { Picker } from '@react-native-picker/picker';
-import { useEvent } from 'expo';
-import { Platform } from 'expo-modules-core';
+import { Platform, useEvent } from 'expo';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import React, { useEffect, useState } from 'react';
 import { View, Text } from 'react-native';
@@ -50,6 +49,10 @@ export default function VideoDRMScreen() {
         ))}
       </Picker>
       <Text style={styles.switchTitle}>Subtitles:</Text>
+      <Text style={{ fontSize: 11, paddingHorizontal: 10, color: 'gray' }}>
+        Note: Track titled "English" on Android and "English (US) Forced" on iOS contains no
+        subtitles, use other english tracks"
+      </Text>
       <Picker
         itemStyle={Platform.OS === 'ios' && { height: 150 }}
         style={styles.picker}

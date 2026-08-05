@@ -27,7 +27,11 @@ export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchReq
   if (fetchRequest.headers) {
     for (const i in fetchRequest.headers) {
       if (i in fetchRequest.headers) {
-        headers[i] = fetchRequest.headers[i];
+        const header = fetchRequest.headers[i];
+
+        if (header != null) {
+          headers[i] = header;
+        }
       }
     }
   }
@@ -36,8 +40,8 @@ export async function requestAsync<T>(requestUrl: string, fetchRequest: FetchReq
     if (fetchRequest.method?.toUpperCase() === 'POST') {
       request.body = new URLSearchParams(fetchRequest.body).toString();
     } else {
-      for (const key of Object.keys(fetchRequest.body)) {
-        url.searchParams.append(key, fetchRequest.body[key]);
+      for (const [key, value] of Object.entries(fetchRequest.body)) {
+        url.searchParams.append(key, value);
       }
     }
   }

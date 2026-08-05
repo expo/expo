@@ -27,6 +27,7 @@ jest.mock('../../../utils/env', () => ({
   env: {
     CI: false,
   },
+  envIsHeadless: () => false,
 }));
 
 jest.mock('../../startBundler', () => ({

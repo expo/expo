@@ -4,9 +4,9 @@ import SwiftUI
 import ExpoModulesCore
 
 public final class ImageViewProps: UIBaseViewProps {
-  @Field var systemName: String = ""
-  @Field var size: Double?
-  @Field var color: Color?
+  @Field var uiImage: String?
+  @Field var systemName: String?
+  @Field var assetName: String?
   @Field var variableValue: Double?
   @Field var useTapGesture: Bool?
   var onTap = EventDispatcher()
@@ -19,18 +19,35 @@ public struct ImageView: ExpoSwiftUI.View {
     self.props = props
   }
 
-  public var body: some View {
-    let image: Image
-
-    if #available(iOS 16.0, tvOS 16.0, *) {
-      image = Image(systemName: props.systemName, variableValue: props.variableValue)
-    } else {
-      image = Image(systemName: props.systemName)
+  private var symbolImage: Image? {
+    if let systemName = props.systemName {
+      if #available(iOS 16.0, tvOS 16.0, *) {
+        return Image(systemName: systemName, variableValue: props.variableValue)
+      }
+      return Image(systemName: systemName)
     }
+    if let assetName = props.assetName {
+      if #available(iOS 16.0, tvOS 16.0, *) {
+        return Image(assetName, variableValue: props.variableValue)
+      }
+      return Image(assetName)
+    }
+    return nil
+  }
 
-    return image
-      .font(.system(size: CGFloat(props.size ?? 24)))
-      .foregroundColor(props.color)
-      .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+  @ViewBuilder
+  public var body: some View {
+    if let symbolImage {
+      symbolImage
+        .applyImageModifiers(props.modifiers, appContext: props.appContext)
+        .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+    } else if let url = props.uiImage,
+              let url = URL(string: url),
+              let data = try? Data(contentsOf: url),
+              let uiImage = UIImage(data: data) {
+      Image(uiImage: uiImage)
+        .applyImageModifiers(props.modifiers, appContext: props.appContext)
+        .applyOnTapGesture(useTapGesture: props.useTapGesture, eventDispatcher: props.onTap)
+    }
   }
 }

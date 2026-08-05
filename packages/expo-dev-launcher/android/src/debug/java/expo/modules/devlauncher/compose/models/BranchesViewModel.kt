@@ -5,9 +5,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import expo.modules.devlauncher.compose.Branch
 import expo.modules.devlauncher.compose.Update
-import expo.modules.devlauncher.services.ApolloClientService
 import expo.modules.devlauncher.services.AppService
 import expo.modules.devlauncher.services.ApplicationInfo
+import expo.modules.devlauncher.services.GraphQLService
 import expo.modules.devlauncher.services.SessionService
 import expo.modules.devlauncher.services.UserState
 import expo.modules.devlauncher.services.inject
@@ -30,7 +30,7 @@ data class BranchesState(
 )
 
 class BranchesViewModel : ViewModel() {
-  private val apolloClientService = inject<ApolloClientService>()
+  private val graphQLService = inject<GraphQLService>()
   private val appService = inject<AppService>()
   private val sessionService = inject<SessionService>()
 
@@ -59,7 +59,10 @@ class BranchesViewModel : ViewModel() {
       is UserState.LoggedIn -> {
         if (areUpdatesConfigured) {
           hasMore.value = true
-          _state.value.copy(branches = emptyList(), isLoading = true)
+          _state.value = _state.value.copy(
+            branches = emptyList(),
+            isLoading = true
+          )
           viewModelScope.launch {
             loadMoreBranches()
           }
@@ -109,36 +112,47 @@ class BranchesViewModel : ViewModel() {
     val limit = 50
 
     val branches = if (runtimeVersion != null) {
-      apolloClientService.fetchBranches(
-        appId = appId,
-        runtimeVersion = runtimeVersion,
-        offset = _state.value.branches.size,
-        limit = limit
-      ).data?.app?.byId?.updateBranches?.map { updateBranch ->
-        Branch(
-          name = updateBranch.name,
-          compatibleUpdate = updateBranch.compatibleUpdates.firstOrNull()?.let { update ->
-            Update(
-              id = update.id,
-              name = update.message ?: "No message",
-              createdAt = update.createdAt as? String,
-              isCompatible = true,
-              permalink = update.manifestPermalink
-            )
-          }
+      graphQLService
+        .fetchBranches(
+          appId = appId,
+          runtimeVersion = runtimeVersion,
+          offset = _state.value.branches.size,
+          limit = limit
         )
-      }
+        .data
+        ?.updateBranches
+        ?.map { updateBranch ->
+          Branch(
+            name = updateBranch.name,
+            compatibleUpdate = updateBranch
+              .compatibleUpdates
+              .firstOrNull()
+              ?.let { update ->
+                Update(
+                  id = update.id,
+                  name = update.message ?: "No message",
+                  createdAt = update.createdAt,
+                  isCompatible = true,
+                  permalink = update.manifestPermalink
+                )
+              }
+          )
+        }
     } else {
-      apolloClientService.fetchBranches(
-        appId = appId,
-        offset = _state.value.branches.size,
-        limit = limit
-      ).data?.app?.byId?.updateBranches?.map { updateBranch ->
-        Branch(
-          name = updateBranch.name,
-          compatibleUpdate = null
+      graphQLService
+        .fetchBranches(
+          appId = appId,
+          offset = _state.value.branches.size,
+          limit = limit
         )
-      }
+        .data
+        ?.updateBranches
+        ?.map { updateBranch ->
+          Branch(
+            name = updateBranch.name,
+            compatibleUpdate = null
+          )
+        }
     } ?: emptyList()
 
     hasMore.value = branches.size == limit

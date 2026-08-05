@@ -104,7 +104,7 @@ export function installFormDataPatch(formData: typeof FormData): typeof ExpoForm
     let replaced = false;
 
     for (let i = 0; i < this._parts.length; i++) {
-      if (this._parts[i][0] === args[0]) {
+      if (this._parts[i]?.[0] === args[0]) {
         if (!replaced) {
           this._parts[i] = args;
           replaced = true;
@@ -126,7 +126,7 @@ export function installFormDataPatch(formData: typeof FormData): typeof ExpoForm
     let [name] = props;
     name = String(name);
     for (let i = 0; i < this._parts.length; i++) {
-      if (this._parts[i][0] === name) {
+      if (this._parts[i]?.[0] === name) {
         this._parts.splice(i, 1);
         i--;
       }

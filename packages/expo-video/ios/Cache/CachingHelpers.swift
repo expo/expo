@@ -20,7 +20,7 @@ internal func getRangeFromResponse(response: HTTPURLResponse) -> (Int?, Int?) {
 }
 
 internal func getRangeFromRequest(request: URLRequest) -> (Int?, Int?) {
-  guard let fullString = request.allHTTPHeaderFields?["Range"] else {
+  guard let fullString = request.allHTTPHeaderFields?["Range"] ?? request.allHTTPHeaderFields?["range"] else {
     return (nil, nil)
   }
   let rangeString = fullString.replacingOccurrences(of: "bytes=", with: "")
@@ -28,7 +28,14 @@ internal func getRangeFromRequest(request: URLRequest) -> (Int?, Int?) {
   let first = rangeStringComponents.first ?? ""
   let second = rangeStringComponents.count > 1 ? rangeStringComponents[1] : ""
 
-  return (Int(first), Int(second))
+  // Range formats:
+  // "1000-2000" -> (1000, 2000)
+  // "1000-" -> (1000, nil) - open-ended
+  // "-500" -> (nil, 500) - suffix range (last 500 bytes)
+  let firstInt = first.isEmpty ? nil : Int(first)
+  let secondInt = second.isEmpty ? nil : Int(second)
+
+  return (firstInt, secondInt)
 }
 
 internal func mimeTypeToExtension(mimeType: String?) -> String? {
@@ -60,22 +67,30 @@ internal extension Data {
     guard let responseStart, let responseEnd, let requestStart else {
       return nil
     }
-    // Error handling checks would actually occur here, similar to Objective-C version
-    guard requestStart >= responseStart, requestStart < responseEnd else {
+
+    guard responseStart <= responseEnd, (responseStart...responseEnd).contains(requestStart) else {
       return nil
     }
 
-    let startIndex = requestStart - responseStart // Corrected start index calculation
-    var endIndex: Int // Define endIndex outside of conditional logic
+    let startIndex = requestStart - responseStart
+
+    guard startIndex >= 0 && startIndex < self.count else {
+      return nil
+    }
+
+    var endIndex: Int
 
     if let requestEnd = requestEnd {
-      endIndex = startIndex + (requestEnd - requestStart) + 1 // Use safely unwrapped requestEnd
+      let requestedLength = requestEnd - requestStart + 1
+      endIndex = startIndex + requestedLength
     } else {
-      // If requestEnd is nil, assume data to the end of resource is needed
+      // If requestEnd is nil, return data to the end
       endIndex = self.count
     }
 
-    if endIndex > self.count {
+    endIndex = Swift.min(endIndex, self.count)
+
+    guard startIndex <= endIndex else {
       return nil
     }
 

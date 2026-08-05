@@ -3,7 +3,7 @@ import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 import { withNotificationsAndroid } from './withNotificationsAndroid';
 import { withNotificationsIOS } from './withNotificationsIOS';
 
-const pkg = require('expo-notifications/package.json');
+const pkg = require('../../package.json');
 
 export type NotificationsPluginProps = {
   /**

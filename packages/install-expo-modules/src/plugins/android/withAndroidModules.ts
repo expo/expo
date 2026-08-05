@@ -1,4 +1,5 @@
-import { ConfigPlugin, withPlugins } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { withPlugins } from '@expo/config-plugins';
 
 import { withAndroidModulesProjectBuildGradle } from './withAndroidGradles';
 import { withAndroidModulesMainActivity } from './withAndroidModulesMainActivity';

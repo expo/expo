@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include <fbjni/fbjni.h>
+#include "ExpoHeader.pch"
 #include <android/log.h>
 
 namespace jni = facebook::jni;

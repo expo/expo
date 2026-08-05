@@ -1,5 +1,6 @@
 ---
-title: Reference
+title: Expo SDK reference
+description: Access device and system functionality in your Expo and React Native apps using Expo SDK packages.
 hideTOC: true
 ---
 
@@ -20,7 +21,9 @@ import { CODE } from '~/ui/components/Text';
   added to a newer SDK version.
 </RedirectNotification>
 
-The Expo SDK provides access to device and system functionality such as contacts, camera, gyroscope, GPS location, and so on, in the form of packages. You can install any Expo SDK package using the `npx expo install` command. For example, three different packages are installed using the following command:
+The Expo SDK is a collection of packages that provide access to device and system functionality such as camera, contacts, location, sensors, haptics, and more. Each package targets a specific feature and can be used independently. All packages work in any React Native app with the `expo` package installed.
+
+You can install any Expo SDK package using the [`npx expo install`](/more/expo-cli/#install) command. For example, three different packages are installed using the following command:
 
 <Terminal cmd={['$ npx expo install expo-camera expo-contacts expo-sensors']} />
 

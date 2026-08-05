@@ -1,7 +1,7 @@
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import { CameraCapturedPicture } from 'expo-camera';
 import * as FileSystem from 'expo-file-system/legacy';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
 import React from 'react';
 import {
   ScrollView,
@@ -33,18 +33,38 @@ function useLoadedPhotos() {
       isMounted = false;
     };
   }, []);
-  return photos;
+  return [photos, setPhotos] as const;
 }
 
 export default function GalleryScreen(
   props: TouchableOpacityProps & { photos?: CameraCapturedPicture[] }
 ) {
-  const photos = useLoadedPhotos();
+  const [photos, setPhotos] = useLoadedPhotos();
   const uris = props.photos?.map((photo) => photo.uri) ?? [];
-  return <LoadedGalleryScreen {...props} photos={photos.length ? photos : uris} />;
+  return (
+    <LoadedGalleryScreen
+      {...props}
+      photos={photos.length ? photos : uris}
+      onPhotosDeleted={(deleted) => {
+        setPhotos((prev) => prev.filter((p) => !deleted.has(`${PHOTOS_DIR}/${p}`)));
+        if (props.photos) {
+          props.photos.splice(
+            0,
+            props.photos.length,
+            ...props.photos.filter((p) => !deleted.has(p.uri))
+          );
+        }
+      }}
+    />
+  );
 }
 
-function LoadedGalleryScreen(props: TouchableOpacityProps & { photos: string[] }) {
+function LoadedGalleryScreen(
+  props: TouchableOpacityProps & {
+    photos: string[];
+    onPhotosDeleted: (deleted: Set<string>) => void;
+  }
+) {
   const [selectedPhotos, setSelectedPhotos] = React.useState<string[]>([]);
 
   const toggleSelection = (uri: string, isSelected: boolean) => {
@@ -91,6 +111,7 @@ function LoadedGalleryScreen(props: TouchableOpacityProps & { photos: string[] }
       });
 
       await Promise.all(promises);
+      props.onPhotosDeleted(new Set(selectedPhotos));
       setSelectedPhotos([]);
     } else {
       alert('No photos to delete!');

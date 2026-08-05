@@ -1,10 +1,10 @@
+import { Platform, CodedError, UnavailabilityError } from 'expo';
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
-import { DevicePushToken, ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
+import type { DevicePushToken, ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
 import { getDevicePushTokenAsync } from './getDevicePushTokenAsync';
 
 const productionBaseUrl = 'https://exp.host/--/api/v2/';

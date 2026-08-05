@@ -1,5 +1,6 @@
 import ExpoModulesCore
 
+#if !os(macOS)
 enum CornerStyle: String, Enumerable {
   case dynamic
   case fixed
@@ -44,6 +45,7 @@ enum DisplayMode: String, Enumerable {
     }
   }
 }
+#endif
 
 enum AcceptedTypes: String, Enumerable {
   case plainText = "plain-text"

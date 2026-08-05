@@ -18,7 +18,14 @@ You can customize the Metro bundler by creating a **metro.config.js** file at th
 
 Run the following command to generate the template file:
 
-<Terminal cmd={['$ npx expo customize metro.config.js']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo customize metro.config.js'],
+    yarn: ['$ yarn expo customize metro.config.js'],
+    pnpm: ['$ pnpm expo customize metro.config.js'],
+    bun: ['$ bun expo customize metro.config.js'],
+  }}
+/>
 
 The **metro.config.js** file looks as below:
 
@@ -30,7 +37,9 @@ const config = getDefaultConfig(__dirname);
 module.exports = config;
 ```
 
-See [**metro.config.js** documentation](https://metrobundler.dev/docs/configuration/) for more information.
+See [**metro.config.js** documentation](/versions/latest/config/metro) for more information.
+
+> **info** Expo locks down some Metro configuration options to prevent projects from breaking. Not every option upstream Metro accepts can be customized or is supported. Expo also doesn't support loading Metro configs from YAML files (deprecated upstream) or any Metro configs located outside your repository.
 
 ## Assets
 
@@ -109,6 +118,19 @@ You will see the changes the next time you restart the dev server. Resolutions a
   Icon={BookOpen02Icon}
 />
 
+## File watching and crawling
+
+From **SDK 56**, Expo's file map supports on-demand filesystem access. In practice, this means your `watchFolders` no longer need to include every module your app bundles, and projects that symlink to dependencies outside of the project root will now resolve correctly.
+
+The on-demand filesystem is controlled by the [`experiments.onDemandFilesystem`](/versions/v56.0.0/config/app/#ondemandfilesystem) flag in your [app config](/workflow/configuration/) and is enabled by default.
+
+<BoxLink
+  title="On-demand filesystem"
+  description="Learn how Expo's file map discovers, watches, and lazily resolves source files."
+  href="/versions/v56.0.0/config/metro/#on-demand-filesystem"
+  Icon={BookOpen02Icon}
+/>
+
 ## Bundle splitting
 
 Expo CLI automatically splits bundles based on async imports (web-only).
@@ -141,7 +163,7 @@ Expo CLI has support for bundling websites using Metro. This is the same bundler
 
 If you previously wrote your website using the deprecated `@expo/webpack-adapter`, see the [migration guide](/router/migrate/from-expo-webpack) and [comparison chart](/router/migrate/from-expo-webpack#expo-cli).
 
-### Adding Web support to Metro
+### Adding web support to Metro
 
 Modify your [app config](/workflow/configuration) to enable the feature using the `expo.web.bundler` field:
 
@@ -159,7 +181,14 @@ Modify your [app config](/workflow/configuration) to enable the feature using th
 
 To start the development server run the following command:
 
-<Terminal cmd={['$ npx expo start --web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
 
 Alternatively, press <kbd>W</kbd> in the Expo CLI terminal UI.
 
@@ -173,11 +202,13 @@ You can overwrite the default **index.html** in Metro web by creating a **public
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
 
+> **warning** Some paths such as `/assets` are reserved by Metro. Avoid placing files in **public/assets/** or other reserved paths. See [Reserved paths](/router/reference/reserved-paths/) for the complete list.
+
 ## TypeScript
 
 Expo's Metro config supports the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's **tsconfig.json** (or **jsconfig.json**) file. This enables absolute imports and aliases in the project. See [TypeScript](/guides/typescript) guide for more information.
 
-This feature requires additional setup in bare projects. See the [Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
+This feature requires additional setup in [existing React Native projects](/bare/overview/). See the [Metro setup guide](/versions/latest/config/metro#existing-react-native-apps) for more information.
 
 ## CSS
 

@@ -14,6 +14,7 @@ import expo.modules.kotlin.types.Enumerable
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Assert
 import org.junit.Test
+import expo.modules.kotlin.types.OptimizedRecord
 
 class JSISuspendableFunctionsTest {
   enum class SimpleEnumClass : Enumerable {
@@ -142,6 +143,7 @@ class JSISuspendableFunctionsTest {
 
   @Test
   fun records_should_be_obtainable_as_function_argument() {
+    @OptimizedRecord
     class MyRecord : Record {
       @Field
       var x: Int = 0

@@ -1,4 +1,4 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 
 import { DeviceType } from './Device.types';
 import ExpoDevice from './ExpoDevice';
@@ -131,8 +131,15 @@ export const supportedCpuArchitectures: string[] | null = ExpoDevice
  *
  * @example
  * ```js
- * Device.osName; // Android: "Android"; iOS: "iOS" or "iPadOS"; web: "iOS", "Android", "Windows"
+ * Device.osName; // Android: "Android" or fingerprint string; iOS: "iOS" or "iPadOS"; web: "iOS", "Android", "Windows"
  * ```
+ *
+ * On Android this option maps directly to [`android.os.Build.VERSION.BASE_OS`](https://developer.android.com/reference/android/os/Build.VERSION#BASE_OS) which on some devices is set to "Android"
+ * and on others is a build fingerprint.
+ *
+ * For example on Xiaomi Poco X3 Pro the `Device.osName` is set to `POCO/vayu_eea/vayu:11/RKQ1.200826.002/V12.5.4.0.RJUEUXM:user/release-keys`
+ *
+ * If you want to differentiate between Android and iOS consider using [`Platform.OS`](https://reactnative.dev/docs/platform#os) from `react-native`.
  */
 export const osName: string | null = ExpoDevice ? ExpoDevice.osName : null;
 
@@ -148,7 +155,7 @@ export const osVersion: string | null = ExpoDevice ? ExpoDevice.osVersion : null
 
 /**
  * The build ID of the OS that more precisely identifies the version of the OS. On Android, this corresponds to `Build.DISPLAY` (not `Build.ID`)
- * and currently is a string as described [here](https://source.android.com/setup/start/build-numbers). On iOS, this corresponds to `kern.osversion`
+ * and currently is a string as described in [Android's build numbers documentation](https://source.android.com/setup/start/build-numbers). On iOS, this corresponds to `kern.osversion`
  * and is the detailed OS version sometimes displayed next to the more human-readable version. On web, this value is always `null`.
  *
  * @example
@@ -188,8 +195,8 @@ export const osBuildFingerprint: string | null = ExpoDevice
 
 /**
  * The Android SDK version of the software currently running on this hardware device. This value never changes while a device is booted,
- * but it may increase when the hardware manufacturer provides an OS update. See [here](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html)
- * to see all possible version codes and corresponding versions. On iOS and web, this value is always `null`.
+ * but it may increase when the hardware manufacturer provides an OS update. See [`Build.VERSION_CODES`](https://developer.android.com/reference/android/os/Build.VERSION_CODES.html)
+ * for all possible version codes and corresponding versions. On iOS and web, this value is always `null`.
  *
  * @example
  * ```js

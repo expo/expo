@@ -1,9 +1,7 @@
-/* eslint-env jest */
 import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import {
   prepareServers,
   setupServer,
@@ -12,6 +10,7 @@ import {
   RUNTIME_WORKERD,
 } from '../../utils/runtime';
 import { findProjectFiles } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -245,7 +244,7 @@ describe('server-output', () => {
     (server.isWorkerd ? it.skip : it)('supports runtime API', async () => {
       await expect(server.fetchAsync('/api/runtime').then((r) => r.json())).resolves.toEqual({
         environment: expect.stringMatching(/production|development/),
-        origin: 'null',
+        origin: expect.stringMatching(/^http/),
       });
     });
 

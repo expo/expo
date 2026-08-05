@@ -57,7 +57,7 @@ void NativeSessionBinding::sqlite3session_delete() {
   ::exsqlite3session_delete(session);
 }
 
-jni::local_ref<jni::JArrayByte>
+jni::local_ref<jni::JByteBuffer>
 NativeSessionBinding::sqlite3session_changeset() {
   int size = 0;
   void *buffer = nullptr;
@@ -66,15 +66,15 @@ NativeSessionBinding::sqlite3session_changeset() {
     return nullptr;
   }
   if (!buffer) {
-    return jni::JArrayByte::newArray(0);
+    return jni::JByteBuffer::allocateDirect(0);
   }
-  auto byteArray = jni::JArrayByte::newArray(size);
-  byteArray->setRegion(0, size, reinterpret_cast<const signed char *>(buffer));
+  auto byteArray = jni::JByteBuffer::allocateDirect(size);
+  memcpy(byteArray->getDirectAddress(), buffer, size);
   ::exsqlite3_free(buffer);
   return byteArray;
 }
 
-jni::local_ref<jni::JArrayByte>
+jni::local_ref<jni::JByteBuffer>
 NativeSessionBinding::sqlite3session_changeset_inverted() {
   int inSize = 0;
   void *inBuffer = nullptr;
@@ -83,7 +83,7 @@ NativeSessionBinding::sqlite3session_changeset_inverted() {
     return nullptr;
   }
   if (!inBuffer) {
-    return jni::JArrayByte::newArray(0);
+    return jni::JByteBuffer::allocateDirect(0);
   }
 
   int outSize = 0;
@@ -95,47 +95,45 @@ NativeSessionBinding::sqlite3session_changeset_inverted() {
   }
   if (!outBuffer) {
     ::exsqlite3_free(inBuffer);
-    return jni::JArrayByte::newArray(0);
+    return jni::JByteBuffer::allocateDirect(0);
   }
-  auto byteArray = jni::JArrayByte::newArray(outSize);
-  byteArray->setRegion(0, outSize,
-                       reinterpret_cast<const signed char *>(outBuffer));
+  auto byteArray = jni::JByteBuffer::allocateDirect(outSize);
+  memcpy(byteArray->getDirectAddress(), outBuffer, outSize);
   ::exsqlite3_free(outBuffer);
   return byteArray;
 }
 
 int NativeSessionBinding::sqlite3changeset_apply(
     jni::alias_ref<NativeDatabaseBinding::javaobject> db,
-    jni::alias_ref<jni::JArrayByte> changeset) {
-  int size = static_cast<int>(changeset->size());
-  auto buffer = changeset->getRegion(0, size);
+    jni::alias_ref<jni::JByteBuffer> changeset) {
+  int size = static_cast<int>(changeset->getDirectSize());
+  auto buffer = changeset->getDirectAddress();
   auto onConflict = [](void *pCtx, int eConflict,
                        ::exsqlite3_changeset_iter *pIter) -> int {
     return SQLITE_CHANGESET_REPLACE;
   };
-  return ::exsqlite3changeset_apply(db->cthis()->rawdb(), size, buffer.get(),
+  return ::exsqlite3changeset_apply(db->cthis()->rawdb(), size, buffer,
                                     nullptr, onConflict, nullptr);
 }
 
-jni::local_ref<jni::JArrayByte> NativeSessionBinding::sqlite3changeset_invert(
-    jni::alias_ref<jni::JArrayByte> changeset) {
-  int inSize = static_cast<int>(changeset->size());
-  auto inBuffer = changeset->getRegion(0, inSize);
+jni::local_ref<jni::JByteBuffer> NativeSessionBinding::sqlite3changeset_invert(
+    jni::alias_ref<jni::JByteBuffer> changeset) {
+  int inSize = static_cast<int>(changeset->getDirectSize());
+  auto inBuffer = changeset->getDirectAddress();
 
   int outSize = 0;
   void *outBuffer = nullptr;
 
   int result =
-      ::exsqlite3changeset_invert(inSize, inBuffer.get(), &outSize, &outBuffer);
+      ::exsqlite3changeset_invert(inSize, inBuffer, &outSize, &outBuffer);
   if (result != SQLITE_OK) {
     return nullptr;
   }
   if (!outBuffer) {
-    return jni::JArrayByte::newArray(0);
+    return jni::JByteBuffer::allocateDirect(0);
   }
-  auto byteArray = jni::JArrayByte::newArray(outSize);
-  byteArray->setRegion(0, outSize,
-                       reinterpret_cast<const signed char *>(outBuffer));
+  auto byteArray = jni::JByteBuffer::allocateDirect(outSize);
+  memcpy(byteArray->getDirectAddress(), outBuffer, outSize);
   ::exsqlite3_free(outBuffer);
   return byteArray;
 }

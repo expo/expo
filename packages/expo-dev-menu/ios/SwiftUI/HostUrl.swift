@@ -24,7 +24,10 @@ struct HostUrl: View {
         Spacer()
 
         Image(systemName: "doc.on.clipboard")
-          .foregroundColor(.secondary.opacity(0.7))
+          .resizable()
+          .scaledToFit()
+          .frame(width: 16, height: 16)
+          .foregroundColor(.secondary)
       }
       .padding()
       .background(Color.expoSecondarySystemBackground)

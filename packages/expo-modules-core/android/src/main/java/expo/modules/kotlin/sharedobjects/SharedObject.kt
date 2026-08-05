@@ -6,13 +6,13 @@ import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.jni.JavaScriptWeakObject
 import expo.modules.kotlin.logger
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.weak
 import kotlin.reflect.KClass
 
 @DoNotStrip
 open class SharedObject(runtime: Runtime? = null) {
-  constructor(appContext: AppContext) : this(appContext.hostingRuntimeContext)
+  constructor(appContext: AppContext) : this(appContext.runtime)
 
   /**
    * An identifier of the native shared object that maps to the JavaScript object.
@@ -41,20 +41,42 @@ open class SharedObject(runtime: Runtime? = null) {
       )
   }
 
-  fun emit(eventName: String, vararg args: Any?) {
+  /**
+   * Emits an event with no payload to the associated JavaScript object.
+   */
+  fun emit(event: String) {
+    emitInternal(event, emptyArray())
+  }
+
+  /**
+   * Emits an event with a single payload to the associated JavaScript object.
+   */
+  fun emit(event: String, payload: Any?) {
+    emitInternal(event, arrayOf(payload))
+  }
+
+  @Deprecated(
+    "Multi-argument event emission is deprecated. Use `emit(event)` or `emit(event, payload)` and pass a single payload (typically a Map/Bundle) instead.",
+    ReplaceWith("emit(event, args)")
+  )
+  fun emit(event: String, vararg args: Any?) {
+    emitInternal(event, args)
+  }
+
+  private fun emitInternal(event: String, payload: Array<out Any?>) {
     val jsObject = getJavaScriptObject() ?: return
     val jniInterop = runtime?.jsiContext ?: return
     try {
       JNIUtils.emitEvent(
         jsObject,
         jniInterop,
-        eventName,
-        args
-          .map { JSTypeConverter.convertToJSValue(it) }
+        event,
+        payload
+          .map { JSTypeConverterProvider.convertToJSValue(it, useExperimentalConverter = true) }
           .toTypedArray()
       )
     } catch (e: Throwable) {
-      logger.error("Unable to send event '$eventName' by shared object of type ${this::class.java.simpleName}", e)
+      logger.error("Unable to send event '$event' by shared object of type ${this::class.java.simpleName}", e)
     }
   }
 

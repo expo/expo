@@ -1,2 +1,12 @@
-export * from './Contacts';
-export { default as ContactAccessButton, ContactAccessButtonProps } from './ContactAccessButton';
+export * from './ContactsModule';
+
+export * from './types/Contact.types';
+export * from './types/Contact.props';
+export * from './types/Permissions';
+
+export {
+  default as ContactAccessButton,
+  type ContactAccessButtonProps,
+} from './ContactAccessButton';
+
+export * from './legacyWarnings';

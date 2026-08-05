@@ -1,13 +1,15 @@
 import chalk from 'chalk';
-import { ChildProcessWithoutNullStreams, spawn } from 'child_process';
+import type { ChildProcessWithoutNullStreams } from 'child_process';
+import { spawn } from 'child_process';
 import { EOL } from 'os';
 import path from 'path';
 import wrapAnsi from 'wrap-ansi';
 
-import { Device, getContainerPathAsync } from './simctl';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
+import type { Device } from './simctl';
+import { getContainerPathAsync } from './simctl';
 
 export type SimControlLog = {
   /**
@@ -296,5 +298,5 @@ async function getImageNameFromBundleIdentifierAsync(
 }
 
 function getImageNameFromContainerPath(binaryPath: string): string {
-  return path.basename(binaryPath).split('.')[0];
+  return path.basename(binaryPath).split('.')[0]!;
 }

@@ -31,35 +31,7 @@ struct HomeTabView: View {
           }
 
           if viewModel.isLoggedIn {
-            if viewModel.isLoadingData && viewModel.projects.isEmpty {
-              ProjectsLoadingSection()
-            } else if !viewModel.projects.isEmpty {
-              ProjectsSection()
-            } else if !viewModel.isLoadingData {
-              VStack(alignment: .leading, spacing: 12) {
-                SectionHeader(title: "projects".uppercased())
-                EmptyStateView(
-                  icon: "folder",
-                  message: "No projects yet",
-                  description: "Create your first project on expo.dev"
-                )
-              }
-            }
-
-            if viewModel.isLoadingData && viewModel.snacks.isEmpty {
-              SnacksLoadingSection()
-            } else if !viewModel.snacks.isEmpty {
-              SnacksSection()
-            } else if !viewModel.isLoadingData {
-              VStack(alignment: .leading, spacing: 12) {
-                SectionHeader(title: "snacks".uppercased())
-                EmptyStateView(
-                  icon: "play.rectangle",
-                  message: "No snacks yet",
-                  description: "Try Snack to experiment with Expo"
-                )
-              }
-            }
+            ProjectsAndSnacksSection()
           }
         }
         .padding()
@@ -70,12 +42,8 @@ struct HomeTabView: View {
       }
     }
     .onAppear {
-      viewModel.onViewWillAppear()
       reviewManager.recordHomeAppear()
       reviewManager.updateCounts(apps: viewModel.projects.count, snacks: viewModel.snacks.count)
-    }
-    .onDisappear {
-      viewModel.onViewDidDisappear()
     }
     .onChange(of: viewModel.projects.count) { _ in
       reviewManager.updateCounts(apps: viewModel.projects.count, snacks: viewModel.snacks.count)

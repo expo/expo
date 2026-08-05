@@ -10,6 +10,14 @@ runs:
         echo 'Disk space before cleanup'
         df -aH
 
+        # There are two runners with different disk sizes used in CI. If the job is running on a large disk runner, skip the cleanup.
+        TOTAL_DISK_GB=$(df -BG / | tail -1 | awk '{print $2}' | sed 's/G//')
+        echo "Detected Disk Size: ${TOTAL_DISK_GB} GB"
+        if [ "$TOTAL_DISK_GB" -ge 100 ]; then
+          echo "Large disk size detected, skipping cleanup."
+          exit 0
+        fi
+
         # Regular package cleanup
         sudo apt-get remove -y --purge '^mysql-.*' '^mongodb-.*' '^mssql-.*' '^postgresql-.*' '^aspnetcore-*' '^dotnet-.*' '^php.*-.*' 'mono-complete' '^llvm-.*' 'powershell' 'google-chrome-*' 'microsoft-edge-*' 'firefox' 'nginx' 'apache2' 'ghc' '^ghc-*'
         sudo apt-get autoremove -y

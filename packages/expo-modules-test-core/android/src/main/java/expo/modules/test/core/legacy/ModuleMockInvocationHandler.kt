@@ -3,7 +3,7 @@ package expo.modules.test.core.legacy
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import java.lang.reflect.InvocationHandler
 import java.lang.reflect.Method
 import kotlin.reflect.KClass
@@ -115,6 +115,6 @@ class ModuleMockInvocationHandler<T : Any>(
   }
 
   private fun convertArgs(args: Array<Any?>): Array<Any?> {
-    return (JSTypeConverter.convertToJSValue(args, TestJSContainerProvider) as ReadableArray).toArrayList().toArray()
+    return (JSTypeConverterProvider.convertToJSValue(args, TestJSContainerProvider) as ReadableArray).toArrayList().toArray()
   }
 }

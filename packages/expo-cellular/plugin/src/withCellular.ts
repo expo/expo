@@ -1,6 +1,6 @@
 import { AndroidConfig, ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
-const pkg = require('expo-cellular/package.json');
+const pkg = require('../../package.json');
 
 const withCellular: ConfigPlugin = (config) => {
   config = AndroidConfig.Permissions.withPermissions(config, [

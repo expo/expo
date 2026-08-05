@@ -4,16 +4,23 @@ plugins {
 }
 
 group = 'host.exp.exponent'
-version = '14.0.8'
+version = '56.0.5'
 
 android {
   namespace "expo.modules.font"
   defaultConfig {
     versionCode 29
-    versionName "14.0.8"
+    versionName "56.0.5"
+    testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
   }
 }
 
 dependencies {
   implementation 'com.facebook.react:react-android'
+
+  testImplementation 'junit:junit:4.13.2'
+
+  androidTestImplementation 'androidx.test:runner:1.7.0'
+  androidTestImplementation 'androidx.test:core:1.7.0'
+  androidTestImplementation 'androidx.test.ext:junit:1.3.0'
 }

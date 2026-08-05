@@ -3,6 +3,7 @@
 import Foundation
 import StoreKit
 import UIKit
+import ExpoModulesCore
 
 @MainActor
 final class UserReviewManager: ObservableObject {
@@ -70,17 +71,19 @@ final class UserReviewManager: ObservableObject {
     let hasFeedbackForm = info.showFeedbackFormDate != nil
     let meetsUsageThreshold = info.appOpenedCounter >= 50 || appsCount >= 5 || snacksCount >= 5
 
+    #if targetEnvironment(simulator)
+    shouldShowReviewSection = false
+    #else
     shouldShowReviewSection = noRecentDismisses
       && !hasAskedForReview
       && !hasFeedbackForm
       && noRecentCrashes
       && meetsUsageThreshold
+    #endif
   }
 
   private func requestStoreReview() {
-    if let scene = UIApplication.shared.connectedScenes
-      .compactMap({ $0 as? UIWindowScene })
-      .first(where: { $0.activationState == .foregroundActive }) {
+    if let scene = SceneGeometry.foregroundActiveScene() {
       SKStoreReviewController.requestReview(in: scene)
     } else {
       SKStoreReviewController.requestReview()

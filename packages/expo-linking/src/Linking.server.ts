@@ -1,6 +1,6 @@
 import { UnavailabilityError } from 'expo-modules-core';
 
-import { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
+import type { ParsedURL, SendIntentExtras, URLListener } from './Linking.types';
 
 export function addEventListener(type: 'url', handler: URLListener) {
   return { remove() {} };
@@ -30,6 +30,8 @@ export async function getInitialURL(): Promise<string | null> {
 export function getLinkingURL() {
   return '';
 }
+
+export function clearInitialURL(): void {}
 
 export async function openURL(url: string): Promise<true> {
   return true;

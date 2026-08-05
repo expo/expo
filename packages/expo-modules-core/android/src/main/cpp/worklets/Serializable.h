@@ -1,12 +1,9 @@
 #pragma once
 
-#if WORKLETS_ENABLED
-
+#include "../ExpoHeader.pch"
 #include "../JSIContext.h"
 #include "../JNIDeallocator.h"
-#include "WorkletNativeRuntime.h"
 
-#include <fbjni/fbjni.h>
 #include <worklets/SharedItems/Serializable.h>
 
 namespace jni = facebook::jni;
@@ -42,5 +39,3 @@ private:
 };
 
 } // namespace expo
-
-#endif

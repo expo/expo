@@ -1,1 +1,0 @@
-{"version":3,"file":"index.js","sourceRoot":"","sources":["../../../src/platforms/android/index.ts"],"names":[],"mappings":";;;AAAA,qCAImB;AAHjB,2GAAA,gBAAgB,OAAA;AAChB,6GAAA,kBAAkB,OAAA;AAClB,6HAAA,kCAAkC,OAAA","sourcesContent":["export {\n  getConfiguration,\n  resolveModuleAsync,\n  resolveExtraBuildDependenciesAsync,\n} from './android';\n"]}

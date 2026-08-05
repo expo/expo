@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { useReleasingSharedObjectWithLifecycle } from 'expo-modules-core';
+import { useState } from 'react';
 
 import type {
   BufferOptions,
   PlayerError,
+  PlayerBuilderOptions,
   VideoPlayerStatus,
   VideoSource,
   VideoPlayer,
@@ -12,22 +14,40 @@ import type {
   AudioTrack,
   ScrubbingModeOptions,
   SeekTolerance,
+  VideoSize,
 } from './VideoPlayer.types';
 import type { VideoPlayerEvents } from './VideoPlayerEvents.types';
-import { VideoThumbnail } from './VideoThumbnail';
+import type { VideoThumbnail } from './VideoThumbnail';
 import resolveAssetSource from './resolveAssetSource';
 
 export function useVideoPlayer(
   source: VideoSource,
-  setup?: (player: VideoPlayer) => void
+  setup?: (player: VideoPlayer) => void,
+  _playerBuilderOptions?: PlayerBuilderOptions
 ): VideoPlayer {
   const parsedSource = typeof source === 'string' ? { uri: source } : source;
+  const [forceRecreateCount, setForceRecreateCount] = useState(0);
 
-  return useMemo(() => {
-    const player = new VideoPlayerWeb(parsedSource);
-    setup?.(player);
-    return player;
-  }, [JSON.stringify(source)]);
+  return useReleasingSharedObjectWithLifecycle(
+    {
+      factory: () => {
+        const player = new VideoPlayerWeb(parsedSource);
+        setup?.(player);
+        return player;
+      },
+      shouldRecreate: (_player, { previousDependencies, dependencies }) => {
+        // Recreate if replaceAsync failed ([1]).
+        return previousDependencies[1] !== dependencies[1];
+      },
+      update: (player) => {
+        // Source ([0]) changed — use replaceAsync; fall back to recreate on failure.
+        player.replaceAsync(parsedSource).catch(() => {
+          setForceRecreateCount((c) => c + 1);
+        });
+      },
+    },
+    [JSON.stringify(source), forceRecreateCount] // [0] source, [1] recreate counter
+  );
 }
 
 export function getSourceUri(source?: VideoSource): string | null {
@@ -71,7 +91,7 @@ export default class VideoPlayerWeb
   _preservesPitch: boolean = true;
   _status: VideoPlayerStatus = 'idle';
   _error: PlayerError | null = null;
-  _timeUpdateLoop: number | null = null;
+  _timeUpdateLoop: ReturnType<typeof setTimeout> | null = null;
   _timeUpdateEventInterval: number = 0;
   audioMixingMode: AudioMixingMode = 'auto'; // Not supported on web. Dummy to match the interface.
   allowsExternalPlayback: boolean = false; // Not supported on web. Dummy to match the interface.
@@ -87,6 +107,7 @@ export default class VideoPlayerWeb
   availableAudioTracks: AudioTrack[] = []; // Not supported on web. Dummy to match the interface.
   videoTrack: VideoTrack | null = null; // Not supported on web. Dummy to match the interface.
   availableVideoTracks: VideoTrack[] = []; // Not supported on web. Dummy to match the interface.
+  maxResolution: VideoSize | null = null; // Not supported on web. Dummy to match the interface.
   isExternalPlaybackActive: boolean = false; // Not supported on web. Dummy to match the interface.
   keepScreenOnWhilePlaying: boolean = false; // Not supported on web. Dummy to match the interface
   seekTolerance: SeekTolerance = {} as SeekTolerance; // Not supported on web. Dummy to match the interface.
@@ -204,9 +225,11 @@ export default class VideoPlayerWeb
       return -1;
     }
     const buffered = [...this._mountedVideos][0]?.buffered;
-    for (let i = 0; i < buffered.length; i++) {
-      if (buffered.start(i) <= this.currentTime && buffered.end(i) >= this.currentTime) {
-        return buffered.end(i);
+    if (buffered != null) {
+      for (let i = 0; i < buffered.length; i++) {
+        if (buffered.start(i) <= this.currentTime && buffered.end(i) >= this.currentTime) {
+          return buffered.end(i);
+        }
       }
     }
     return 0;
@@ -278,8 +301,11 @@ export default class VideoPlayerWeb
     // If video playing audio has been removed, select a new video to be the audio player by disconnecting it from the mute node.
     if (videoPlayingAudio === video && this._audioNodes.size > 0 && audioContext) {
       const newMainAudioSource = [...this._audioNodes][0];
-      newMainAudioSource.disconnect();
-      newMainAudioSource.connect(audioContext.destination);
+
+      if (newMainAudioSource != null) {
+        newMainAudioSource.disconnect();
+        newMainAudioSource.connect(audioContext.destination);
+      }
     }
   }
 

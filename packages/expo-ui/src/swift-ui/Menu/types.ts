@@ -1,11 +1,11 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-import { type CommonViewModifierProps } from '../types';
+import type { CommonViewModifierProps } from '../types';
 
 /**
  * Props for the `Menu` component.
  */
-export type MenuProps = {
+export interface MenuProps extends CommonViewModifierProps {
   /**
    * The label for the menu trigger. Can be a string for simple text labels,
    * or a ReactNode for custom label content.
@@ -24,7 +24,7 @@ export type MenuProps = {
   onPrimaryAction?: () => void;
   /**
    * The menu's content items, which are shown when the menu is opened.
-   * Can contain `Button`, `Switch`, `Picker`, `Section`, `Divider`, or nested `Menu` components.
+   * Can contain `Button`, `Toggle`, `Picker`, `Section`, `Divider` or nested `Menu` components.
    */
   children: ReactNode;
-} & CommonViewModifierProps;
+}

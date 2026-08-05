@@ -11,7 +11,7 @@ import generate from '@babel/generator';
 import assert from 'node:assert';
 import * as crypto from 'node:crypto';
 
-const debug = require('debug')('expo:metro:collect-dependencies') as typeof console.log;
+import { debugEvent } from './events';
 
 const MAGIC_IMPORT_COMMENTS = [
   '@metro-ignore',
@@ -190,14 +190,23 @@ function collectDependencies<TAst extends t.File>(
             firstArg.callee.type === 'Identifier' &&
             firstArg.callee.name === 'URL' &&
             firstArg.arguments.length > 0 &&
-            firstArg.arguments[0].type === 'StringLiteral'
+            firstArg.arguments[0]?.type === 'StringLiteral'
           ) {
             const moduleName = firstArg.arguments[0].value;
 
             // Get the NodePath of the first argument of `new Worker(new URL())`
-            const urlArgPath = (path.get('arguments')[0].get('arguments') as NodePath[])[0];
+            const urlArgPath = (path.get('arguments')[0]?.get('arguments') as NodePath[])[0];
 
-            processResolveWorkerCallWithName(moduleName, urlArgPath, state);
+            processResolveWorkerCallWithName(moduleName, urlArgPath!, state);
+
+            // Replace `new Worker` invocation with `asyncRequire.unstable_createWorker` helper call,
+            // creating an Object URL with a shim script that remaps `importScripts` and `fetch`, while calling the entrypoint with `importScripts`.
+            // This works around COEP/CORP issues, since worker entrypoint scripts aren't necessarily expected to match these headers
+            path.get('callee').replaceWith(
+              makeCreateWorkerTemplate({
+                ASYNC_REQUIRE_MODULE_PATH: nullthrows(state.asyncRequireModulePathStringLiteral),
+              })
+            );
           }
         }
       },
@@ -359,7 +368,7 @@ function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, Requi
   if (!Array.isArray(args) || args.length < 1) {
     throw new InvalidRequireCallError(path);
   } else {
-    const result = args[0].evaluate() as { confident: boolean; value: any; deopt?: any };
+    const result = args[0]?.evaluate() as { confident: boolean; value: any; deopt?: any };
     if (result.confident && typeof result.value === 'string') {
       directory = result.value;
     } else {
@@ -373,7 +382,7 @@ function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, Requi
   // Default to requiring through all directories.
   let recursive: boolean = true;
   if (args.length > 1) {
-    const result = args[1].evaluate() as { confident: boolean; value: any; deopt?: any };
+    const result = args[1]?.evaluate() as { confident: boolean; value: any; deopt?: any };
     if (result.confident && typeof result.value === 'boolean') {
       recursive = result.value;
     } else if (!(result.confident && typeof result.value === 'undefined')) {
@@ -389,18 +398,18 @@ function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, Requi
   if (args.length > 2) {
     // evaluate() to check for undefined (because it's technically a scope lookup)
     // but check the AST for the regex literal, since evaluate() doesn't do regex.
-    const result = args[2].evaluate();
-    const argNode = args[2].node;
-    if (argNode.type === 'RegExpLiteral') {
+    const result = args[2]?.evaluate();
+    const argNode = args[2]?.node;
+    if (argNode?.type === 'RegExpLiteral') {
       // TODO: Handle `new RegExp(...)` -- `argNode.type === 'NewExpression'`
       filter = {
         pattern: argNode.pattern,
         flags: argNode.flags || '',
       };
-    } else if (!(result.confident && typeof result.value === 'undefined')) {
+    } else if (!(result?.confident && typeof result.value === 'undefined')) {
       throw new InvalidRequireCallError(
-        args[2],
-        `Third argument of \`require.context\` should be an optional RegExp pattern matching all of the files to import, instead found node of type: ${argNode.type}.`
+        args[2]!,
+        `Third argument of \`require.context\` should be an optional RegExp pattern matching all of the files to import, instead found node of type: ${argNode?.type}.`
       );
     }
   }
@@ -408,9 +417,9 @@ function getRequireContextArgs(path: NodePath<t.CallExpression>): [string, Requi
   // Default to `sync`.
   let mode: ContextMode = 'sync';
   if (args.length > 3) {
-    const result = args[3].evaluate() as { confident: boolean; value: any; deopt?: any };
+    const result = args[3]?.evaluate() as { confident: boolean; value: any; deopt?: any };
     if (result.confident && typeof result.value === 'string') {
-      mode = getContextMode(args[3], result.value);
+      mode = getContextMode(args[3]!, result.value);
     } else if (!(result.confident && typeof result.value === 'undefined')) {
       throw new InvalidRequireCallError(
         result.deopt ?? args[3],
@@ -619,9 +628,10 @@ function processImportCall(
   // Check both leading and inner comments
   if (hasMagicImportComment(path)) {
     const line = path.node.loc && path.node.loc.start && path.node.loc.start.line;
-    debug(
-      `Magic comment at line ${line || '<unknown>'}: Ignoring import: ${generate(path.node).code}`
-    );
+    debugEvent('collect_deps:magic_comment_ignored', {
+      line: line || '<unknown>',
+      code: generate(path.node).code,
+    });
     return;
   }
 
@@ -760,6 +770,15 @@ function isOptionalDependency(name: string, path: NodePath<any>, state: State): 
     return false;
   }
 
+  // Treat dynamic imports as optional when a rejection handler is attached
+  // close to the import call, e.g.
+  //   import('x').catch(handler)
+  //   import('x').then(handler, onReject)
+  //   import('x').then(...).catch(handler)
+  if (isInPromiseChainWithRejectionHandler(path)) {
+    return true;
+  }
+
   // Valid statement stack for single-level try-block: expressionStatement -> blockStatement -> tryStatement
   let sCount = 0;
   let p: NodePath<any> | NodePath<t.Node> | null = path;
@@ -778,15 +797,64 @@ function isOptionalDependency(name: string, path: NodePath<any>, state: State): 
   return false;
 }
 
+// Walk up a chain of `.then(...)` / `.catch(...)` member calls starting from
+// `path` (typically an `import()` CallExpression) and return true if any
+// chained call provides a rejection handler — either `.catch(handler)` or
+// `.then(_, handler)`. The chain must be unbroken: as soon as the parent is
+// not a member call applied to the previous expression, we stop. This keeps
+// the heuristic local to the import, matching the behaviour of the
+// try/catch heuristic above.
+function isInPromiseChainWithRejectionHandler(path: NodePath<any>): boolean {
+  let current: NodePath<any> = path;
+  while (current.parentPath != null) {
+    const member = current.parentPath;
+    if (
+      member.node.type !== 'MemberExpression' ||
+      member.node.object !== current.node ||
+      member.node.computed ||
+      member.node.property.type !== 'Identifier' ||
+      member.parentPath == null
+    ) {
+      return false;
+    }
+    const call = member.parentPath;
+    if (call.node.type !== 'CallExpression' || call.node.callee !== member.node) {
+      return false;
+    }
+    const propertyName = member.node.property.name;
+    const args = call.node.arguments;
+    if (propertyName === 'catch' && args.length >= 1 && isNonNullishCallbackArg(args[0])) {
+      return true;
+    }
+    if (propertyName === 'then' && args.length >= 2 && isNonNullishCallbackArg(args[1])) {
+      return true;
+    }
+    current = call;
+  }
+  return false;
+}
+
+function isNonNullishCallbackArg(arg: t.CallExpression['arguments'][number] | undefined): boolean {
+  if (arg == null) {
+    return false;
+  } else if (arg.type === 'NullLiteral') {
+    return false;
+  } else if (arg.type === 'Identifier' && arg.name === 'undefined') {
+    return false;
+  } else {
+    return true;
+  }
+}
+
 function getModuleNameFromCallArgs(path: NodePath<t.CallExpression>): string | null {
   const args = path.get('arguments');
   if (!Array.isArray(args) || args.length !== 1) {
     throw new InvalidRequireCallError(path);
   }
 
-  const result = args[0].evaluate();
+  const result = args[0]?.evaluate();
 
-  if (result.confident && typeof result.value === 'string') {
+  if (result?.confident && typeof result.value === 'string') {
     return result.value;
   }
 
@@ -844,6 +912,10 @@ const makeAsyncImportMaybeSyncTemplate = template.expression(`
 
 const makeResolveTemplate = template.expression(`
   require(ASYNC_REQUIRE_MODULE_PATH).unstable_resolve(MODULE_ID, DEPENDENCY_MAP.paths)
+`);
+
+const makeCreateWorkerTemplate = template.expression(`
+  require(ASYNC_REQUIRE_MODULE_PATH).unstable_createWorker
 `);
 
 const makeAsyncImportMaybeSyncTemplateWithName = template.expression(`

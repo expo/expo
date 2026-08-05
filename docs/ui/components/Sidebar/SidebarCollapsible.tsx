@@ -76,7 +76,7 @@ export function SidebarCollapsible({ info, children }: Props) {
       <ButtonBase
         ref={ref}
         className={mergeClasses(
-          'relative flex w-full cursor-pointer select-none items-center gap-2 rounded-md px-3 py-1.5 transition duration-150',
+          'relative flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-1.5 transition duration-150 select-none',
           'hocus:bg-element'
         )}
         aria-expanded={isOpen ? 'true' : 'false'}
@@ -84,6 +84,7 @@ export function SidebarCollapsible({ info, children }: Props) {
         {...customDataAttributes}>
         <div className="flex size-4 items-center justify-center rounded-sm border border-default bg-default shadow-xs">
           <ChevronDownIcon
+            aria-hidden="true"
             className={mergeClasses(
               'icon-xs text-icon-secondary transition-transform duration-150',
               !isOpen && 'translate-x-[0.5px] -rotate-90'

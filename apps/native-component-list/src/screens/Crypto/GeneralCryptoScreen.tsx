@@ -1,6 +1,6 @@
 import * as Crypto from 'expo-crypto';
 import { CryptoDigestAlgorithm, CryptoEncoding } from 'expo-crypto';
-import { ScrollView, StyleSheet, Text } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text } from 'react-native';
 
 import FunctionDemo, { FunctionDescription } from '../../components/FunctionDemo';
 
@@ -58,19 +58,25 @@ const RANDOM_UUID: FunctionDescription = {
   actions: Crypto.randomUUID,
 };
 
+const DIGEST_ALGORITHMS = [
+  CryptoDigestAlgorithm.MD5,
+  CryptoDigestAlgorithm.SHA1,
+  CryptoDigestAlgorithm.SHA256,
+  CryptoDigestAlgorithm.SHA384,
+  CryptoDigestAlgorithm.SHA512,
+];
+
+if (Platform.OS === 'ios') {
+  DIGEST_ALGORITHMS.push(CryptoDigestAlgorithm.MD2, CryptoDigestAlgorithm.MD4);
+}
+
 const DIGEST_STRING: FunctionDescription = {
   name: 'digestString',
   parameters: [
     {
       name: 'algorithm',
       type: 'string',
-      values: [
-        CryptoDigestAlgorithm.MD5,
-        CryptoDigestAlgorithm.SHA1,
-        CryptoDigestAlgorithm.SHA256,
-        CryptoDigestAlgorithm.SHA384,
-        CryptoDigestAlgorithm.SHA512,
-      ],
+      values: DIGEST_ALGORITHMS,
     },
     {
       name: 'data',
@@ -98,15 +104,7 @@ const DIGEST: FunctionDescription = {
     {
       name: 'algorithm',
       type: 'string',
-      values: [
-        CryptoDigestAlgorithm.SHA1,
-        CryptoDigestAlgorithm.SHA256,
-        CryptoDigestAlgorithm.SHA384,
-        CryptoDigestAlgorithm.SHA512,
-        CryptoDigestAlgorithm.MD2,
-        CryptoDigestAlgorithm.MD5,
-        CryptoDigestAlgorithm.MD4,
-      ],
+      values: DIGEST_ALGORITHMS,
     },
     {
       name: 'data',

@@ -8,7 +8,7 @@ export type DocumentPickerOptions = {
    */
   type?: string | string[];
   /**
-   * If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](./filesystem#filesystemcachedirectory),
+   * If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](./filesystem#cache),
    * which allows other Expo APIs to read the file immediately. This may impact performance for
    * large files, so you should consider setting this to `false` if you expect users to pick
    * particularly large files and your app does not need immediate read access.
@@ -42,7 +42,7 @@ export type DocumentPickerAsset = {
    */
   size?: number;
   /**
-   * An URI to the local document file.
+   * A URI to the local document file.
    */
   uri: string;
   /**

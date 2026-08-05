@@ -4,6 +4,7 @@ import { NpmIcon } from '@expo/styleguide-icons/custom/NpmIcon';
 import { ClockRefreshIcon } from '@expo/styleguide-icons/outline/ClockRefreshIcon';
 import { Edit05Icon } from '@expo/styleguide-icons/outline/Edit05Icon';
 import { useRouter } from 'next/compat/router';
+import { useIntl } from 'react-intl';
 
 import { githubUrl } from '~/ui/components/Footer/utils';
 import { FOOTNOTE } from '~/ui/components/Text';
@@ -17,6 +18,7 @@ type Props = {
 
 export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
   const router = useRouter();
+  const intl = useIntl();
   const showEditButton = !sourceCodeUrl && !packageName && router?.pathname;
 
   return (
@@ -24,14 +26,14 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
       {showEditButton && (
         <Button
           theme="quaternary"
-          className="justify-center pl-2.5 pr-2"
+          className="justify-center pr-2 pl-2.5"
           openInNewTab
           href={githubUrl(router.pathname)}
           aria-label="Edit content of this page on GitHub">
           <div className="flex flex-row items-center gap-2">
-            <Edit05Icon className="icon-sm text-icon-secondary" />
+            <Edit05Icon aria-hidden="true" className="icon-sm text-icon-secondary" />
             <FOOTNOTE crawlable={false} theme="secondary">
-              Edit page
+              {intl.formatMessage({ id: 'editPage' })}
             </FOOTNOTE>
           </div>
         </Button>
@@ -48,9 +50,6 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
                 href={sourceCodeUrl}
                 tooltip="View source code on GitHub"
               />
-              {(packageName || sourceCodeUrl?.startsWith('https://github.com/expo/expo')) && (
-                <div className="max-sm:hidden bg-secondary h-5 w-px" />
-              )}
             </>
           )}
           {packageName && (
@@ -61,9 +60,6 @@ export function PageTitleButtons({ packageName, sourceCodeUrl }: Props) {
                 href={`https://www.npmjs.com/package/${packageName}`}
                 tooltip="View library in npm registry"
               />
-              {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (
-                <div className="max-sm:hidden bg-secondary h-5 w-px" />
-              )}
             </>
           )}
           {sourceCodeUrl?.startsWith('https://github.com/expo/expo') && (

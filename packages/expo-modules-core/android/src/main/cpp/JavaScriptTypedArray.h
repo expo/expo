@@ -1,14 +1,10 @@
 #pragma once
 
+#include "ExpoHeader.pch"
 #include "TypedArray.h"
 #include "JavaScriptObject.h"
-#include "WeakRuntimeHolder.h"
 
-#include <fbjni/fbjni.h>
 #include <fbjni/ByteBuffer.h>
-#include <jsi/jsi.h>
-
-#include <memory>
 
 namespace expo {
 
@@ -33,11 +29,6 @@ public:
 
   JavaScriptTypedArray(
     std::weak_ptr<JavaScriptRuntime> runtime,
-    std::shared_ptr<jsi::Object> jsObject
-  );
-
-  JavaScriptTypedArray(
-    WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Object> jsObject
   );
 

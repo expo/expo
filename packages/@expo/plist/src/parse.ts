@@ -108,7 +108,7 @@ function parsePlistXML(node: Record<string, any>): any {
     }
     return new_arr;
   } else if (node.nodeName === 'dict') {
-    new_obj = {};
+    new_obj = Object.create(null);
     key = null;
     counter = 0;
     if (isEmptyNode(node)) {
@@ -120,10 +120,11 @@ function parsePlistXML(node: Record<string, any>): any {
         assert(node.childNodes[i].nodeName === 'key', 'Missing key while parsing <dict/>.');
         key = parsePlistXML(node.childNodes[i]);
       } else {
-        assert(
-          node.childNodes[i].nodeName !== 'key',
-          'Unexpected key "' + parsePlistXML(node.childNodes[i]) + '" while parsing <dict/>.'
-        );
+        if (node.childNodes[i].nodeName === 'key') {
+          throw new Error(
+            'Unexpected key "' + parsePlistXML(node.childNodes[i]) + '" while parsing <dict/>.'
+          );
+        }
         new_obj[key] = parsePlistXML(node.childNodes[i]);
       }
       counter += 1;

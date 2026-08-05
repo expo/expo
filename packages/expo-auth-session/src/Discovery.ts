@@ -1,6 +1,6 @@
 import invariant from 'invariant';
 
-import { CodeChallengeMethod } from './AuthRequest.types';
+import type { CodeChallengeMethod } from './AuthRequest.types';
 import { requestAsync } from './Fetch';
 
 // @needsAudit

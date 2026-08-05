@@ -3,7 +3,7 @@ package expo.modules.notifications
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
@@ -76,7 +76,7 @@ internal fun filteredBundleForJSTypeConverter(bundle: Bundle, testBundle: Bundle
 
 internal val isBundleConvertibleToJSValue: BundleConversionTester = { bundle: Bundle ->
   try {
-    JSTypeConverter.convertToJSValue(bundle)
+    JSTypeConverterProvider.convertToJSValue(bundle)
     true
   } catch (e: Throwable) {
     false

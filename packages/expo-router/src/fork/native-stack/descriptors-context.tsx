@@ -1,9 +1,10 @@
-import type { Descriptor, ParamListBase, RouteProp } from '@react-navigation/native';
+import { createContext } from 'react';
+
+import type { Descriptor, ParamListBase, RouteProp } from '../../react-navigation/native';
 import type {
   NativeStackNavigationOptions,
   NativeStackNavigationProp,
-} from '@react-navigation/native-stack';
-import { createContext } from 'react';
+} from '../../react-navigation/native-stack';
 
 // Copied from @react-navigation/native
 export type NativeStackDescriptor = Descriptor<

@@ -1,0 +1,147 @@
+---
+title: BottomSheet
+description: A modal sheet that slides up from the bottom of the screen.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android', 'ios', 'web', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+A modal sheet that slides up from the bottom of the screen. The sheet's visibility is controlled — toggle [`isPresented`](#ispresented) from React state and dismiss it from [`onDismiss`](#ondismiss) (called when the user swipes down or taps the overlay).
+
+> **info** On iOS, to show a bottom sheet on top of another, nest the second `BottomSheet` inside the first sheet's content rather than beside it. This is a limitation of the underlying SwiftUI [`sheet`](<https://developer.apple.com/documentation/swiftui/view/sheet(ispresented:ondismiss:content:)>) modifier. See [how to present multiple sheets](https://www.hackingwithswift.com/quick-start/swiftui/how-to-present-multiple-sheets) for more information.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic bottom sheet
+
+```tsx BottomSheetExample.tsx
+import { useState } from 'react';
+import { Host, Column, Button, BottomSheet, Text } from '@expo/ui';
+
+export default function BottomSheetExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Button label="Open sheet" onPress={() => setIsPresented(true)} />
+      <BottomSheet isPresented={isPresented} onDismiss={() => setIsPresented(false)}>
+        <Column spacing={12}>
+          <Text textStyle={{ fontSize: 18, fontWeight: '700' }}>Sheet contents</Text>
+          <Text>Drag down or tap the overlay to dismiss.</Text>
+          <Button label="Close" onPress={() => setIsPresented(false)} />
+        </Column>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
+### Hiding the drag indicator
+
+Pass [`showDragIndicator={false}`](#showdragindicator) for sheets without a handle.
+
+```tsx BottomSheetNoIndicatorExample.tsx
+import { useState } from 'react';
+import { Host, Button, BottomSheet, Text } from '@expo/ui';
+
+export default function BottomSheetNoIndicatorExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Button label="Open" onPress={() => setIsPresented(true)} />
+      <BottomSheet
+        isPresented={isPresented}
+        onDismiss={() => setIsPresented(false)}
+        showDragIndicator={false}>
+        <Text>No drag handle.</Text>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
+### Snap points
+
+Pass [`snapPoints`](#snappoints) to let the user drag the sheet between multiple resting heights. You can use the semantic values `'half'` and `'full'` for cross-platform parity. The `{ fraction }` and `{ height }` forms are honored precisely on iOS and web.
+
+When sheet content can be taller than the smallest snap point, wrap it in a `ScrollView` so the overflow scrolls correctly.
+
+```tsx BottomSheetSnapPointsExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Column, ScrollView, Text } from '@expo/ui';
+
+export default function BottomSheetSnapPointsExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <Button label="Open" onPress={() => setIsPresented(true)} />
+      <BottomSheet
+        isPresented={isPresented}
+        onDismiss={() => setIsPresented(false)}
+        snapPoints={['half', 'full']}>
+        <ScrollView>
+          <Column spacing={12}>
+            <Text textStyle={{ fontSize: 20, fontWeight: '700' }}>Half / full sheet</Text>
+            <Text>Drag the sheet between half and full screen height.</Text>
+          </Column>
+        </ScrollView>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
+> On Android, `{ fraction }` and `{ height }` snap to the nearest of `'half'` / `'full'` — the underlying `ModalBottomSheet` only supports two resting states. The partial state is only visible when content is tall enough to exceed Material's partial threshold; give the content an explicit height or fill the available space if you need the half state on short content.
+
+### Scrollable React Native content
+
+The bottom sheet supports a React Native list such as `FlatList` (or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list)) as a child when wrapped in [`RNHostView`](rnhostview). [`snapPoints`](#snappoints) sizes the sheet, and the list scrolls within that height. With `nestedScrollEnabled`, the list scrolls its own content first; once it reaches the top edge, the remaining drag moves the sheet.
+
+```tsx BottomSheetScrollableExample.tsx
+import { useState } from 'react';
+import { FlatList, Text } from 'react-native';
+import { Host, BottomSheet, Button, RNHostView } from '@expo/ui';
+
+const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
+
+export default function BottomSheetScrollableExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host matchContents>
+      <Button label="Open" onPress={() => setIsPresented(true)} />
+      <BottomSheet
+        isPresented={isPresented}
+        onDismiss={() => setIsPresented(false)}
+        snapPoints={['half', 'full']}>
+        <RNHostView>
+          <FlatList
+            nestedScrollEnabled
+            style={{ flex: 1 }}
+            data={DATA}
+            keyExtractor={item => item}
+            renderItem={({ item }) => <Text style={{ padding: 16 }}>{item}</Text>}
+          />
+        </RNHostView>
+      </BottomSheet>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { BottomSheet } from '@expo/ui';
+```
+
+<APISection packageName="expo-ui/universal/bottomsheet" apiName="BottomSheet" />

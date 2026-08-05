@@ -1,14 +1,18 @@
-import { LinkingOptions, ParamListBase, PartialRoute, Route } from '@react-navigation/native';
-
-import type { ExpoTabActionType } from './TabRouter';
-import { UrlObject } from '../LocationProvider';
-import { RouteNode } from '../Route';
+import type { UrlObject } from '../LocationProvider';
+import type { RouteNode } from '../Route';
+import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
+import type {
+  LinkingOptions,
+  ParamListBase,
+  PartialRoute,
+  Route,
+} from '../react-navigation/native';
 import { sortRoutesWithInitial } from '../sortRoutes';
-import { Href } from '../types';
+import type { Href } from '../types';
 import { routeToScreen } from '../useScreens';
 import { Slot } from './Slot';
-import { NOT_FOUND_ROUTE_NAME } from '../constants';
+import type { ExpoTabActionType } from './TabRouter';
 
 export const ViewSlot = Slot;
 
@@ -50,7 +54,7 @@ export function triggersToScreens(
 
   for (const trigger of triggers) {
     if (trigger.name in parentTriggerMap) {
-      const parentTrigger = parentTriggerMap[trigger.name];
+      const parentTrigger = parentTriggerMap[trigger.name]!;
       throw new Error(
         `Trigger ${JSON.stringify({
           name: trigger.name,
@@ -113,9 +117,10 @@ export function triggersToScreens(
     // We need to work out the state for just this trigger
     while (state?.state) {
       if (state.name === targetStateName) break;
-      state = state.state.routes[state.state.index ?? state.state.routes.length - 1];
+      state = state.state.routes[state.state.index ?? state.state.routes.length - 1]!;
     }
-    routeState = state.state?.routes[state.state.index ?? state.state.routes.length - 1] || state;
+    routeState =
+      state!.state?.routes[state!.state.index ?? state!.state.routes.length - 1] || state;
 
     const routeNode = layoutRouteNode.children.find((child) => child.route === routeState?.name);
 
@@ -174,7 +179,8 @@ export function triggersToScreens(
     triggerMap[config.name] = { ...config, index };
 
     if (config.type === 'internal') {
-      children.push(routeToScreen(config.routeNode));
+      // Trigger-declared screens are layout-declared, same as `<Screen>` children.
+      children.push(routeToScreen(config.routeNode, undefined, undefined, 'layout'));
     }
   }
   return {
@@ -203,7 +209,7 @@ export function stateToAction(
       }
       payload.params = state.params ? { ...state.params } : {};
 
-      state = state.state?.routes[state.state?.routes.length - 1];
+      state = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
 
       if (state) {
         payload.params ??= {};
@@ -213,7 +219,7 @@ export function stateToAction(
       if (state.name === startAtRoute) {
         foundStartingPoint = true;
       }
-      const nextState = state.state?.routes[state.state?.routes.length - 1];
+      const nextState = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
       if (nextState) {
         state = nextState;
       }

@@ -17,10 +17,16 @@ export const getInjectEventScript = <T extends BridgeMessage<any>>(detail: T) =>
 
 export function getInjectBodySizeObserverScript() {
   return `;(function observeDocumentBodySize() {
-  window.addEventListener('DOMContentLoaded', () => {
+  if (window.ReactNativeWebView == null) {
+    throw new Error(
+      'window.ReactNativeWebView is not defined. This script should only be injected in a WebView environment.'
+    );
+  }
+
+  function registerObserver() {
     new ResizeObserver(entries => {
       const { width, height } = entries[0].contentRect;
-      window.ReactNativeWebView?.postMessage(JSON.stringify({
+      window.ReactNativeWebView.postMessage(JSON.stringify({
         type: '${MATCH_CONTENTS_EVENT}',
         data: {
           width,
@@ -29,13 +35,21 @@ export function getInjectBodySizeObserverScript() {
       }));
     })
     .observe(document.body);
-    window.ReactNativeWebView?.postMessage(JSON.stringify({
+    window.ReactNativeWebView.postMessage(JSON.stringify({
       type: '${MATCH_CONTENTS_EVENT}',
       data: {
         width: document.body.clientWidth,
         height: document.body.clientHeight,
       },
     }));
+  }
+
+  if (document.readyState !== 'loading') {
+    registerObserver();
+    return;
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+    registerObserver();
   });
   })();
   true;`;

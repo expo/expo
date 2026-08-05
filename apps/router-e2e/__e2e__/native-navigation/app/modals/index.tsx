@@ -1,4 +1,4 @@
-import { Link, usePathname, type Href } from 'expo-router';
+import { Link, Stack, usePathname, type Href } from 'expo-router';
 import React from 'react';
 import { Text, Pressable, ScrollView, View } from 'react-native';
 import { featureFlags } from 'react-native-screens';
@@ -11,6 +11,16 @@ const HomeIndex = () => {
       style={{ flex: 1, backgroundColor: '#fff' }}
       contentContainerStyle={{ alignItems: 'center', gap: 16 }}
       contentInsetAdjustmentBehavior="automatic">
+      <Stack.Header style={{ backgroundColor: 'transparent' }} />
+      <Stack.Toolbar placement="right">
+        <Stack.Toolbar.Button
+          icon="checkmark"
+          onPress={() => console.log('Index Checkmark pressed')}
+        />
+      </Stack.Toolbar>
+      <Stack.Toolbar placement="left">
+        <Stack.Toolbar.Button icon="xmark" onPress={() => console.log('Index Xmark pressed')} />
+      </Stack.Toolbar>
       <View>
         <Text>Modals</Text>
         <Text>Current Path: {pathname}</Text>
@@ -19,6 +29,8 @@ const HomeIndex = () => {
           {featureFlags.experiment.synchronousScreenUpdatesEnabled ? 'Enabled' : 'Disabled'}
         </Text>
       </View>
+      <CaseLink href="/modals/form-sheet-nested" text="Form Sheet Modal - nested Stack" />
+      <CaseLink href="/modals/form-sheet-single" text="Form Sheet Modal - no nested Stack" />
       <CaseLink href="/modals/form-sheet" text="Form Sheet Modal" />
       <CaseLink href="/modals/form-sheet-content" text="Form Sheet Modal - fitToContent" />
       <CaseLink href="/modals/page-sheet" text="Page Sheet Modal" />

@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
 
-import { BasePackageManager } from './BasePackageManager';
 import { resolveWorkspaceRoot, BUN_LOCK_FILE, BUN_TEXT_LOCK_FILE } from '../utils/nodeManagers';
+import { BasePackageManager } from './BasePackageManager';
 
 export class BunPackageManager extends BasePackageManager {
   readonly name = 'bun';

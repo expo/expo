@@ -1,3 +1,4 @@
+import { applyPatch } from 'diff';
 import { accessSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
 
@@ -14,6 +15,11 @@ const interpolateVariables = (str: string, variables: Record<string, unknown>): 
   let match = variableRegex.exec(str);
   while (match) {
     const variable = match[0].slice(3, -2);
+    if (!(variable in variables)) {
+      throw new Error(
+        `The expo-brownfield template variable "${variable}" has no value, so the generated file would contain the literal string "undefined" and fail to build. This usually means the plugin passed an incomplete variable set for this template — report this at https://github.com/expo/expo/issues.`
+      );
+    }
     str = str.replace(match[0], String(variables[variable]));
     match = variableRegex.exec(str);
   }
@@ -103,4 +109,32 @@ export const readFromTemplate = (
   }
 
   return templateContents;
+};
+
+/**
+ * Applies a unified diff patch to a file.
+ * @param patchFile - The name of the patch file in the patches directory
+ * @param targetFilePath - The absolute path to the file to patch
+ */
+export const applyPatchToFile = (patchFile: string, targetFilePath: string) => {
+  const patchPath = path.join(__filename, '../../..', 'templates', 'patches', patchFile);
+
+  if (!existsSync(patchPath)) {
+    throw new Error(`Patch file ${patchFile} doesn't exist at ${patchPath}`);
+  }
+
+  if (!existsSync(targetFilePath)) {
+    throw new Error(`Target file doesn't exist at ${targetFilePath}`);
+  }
+
+  const patchContent = readFileSync(patchPath, 'utf-8');
+  const originalContent = readFileSync(targetFilePath, 'utf-8');
+
+  const patchedContent = applyPatch(originalContent, patchContent);
+
+  if (patchedContent === false) {
+    throw new Error(`Failed to apply patch ${patchFile} to ${targetFilePath}`);
+  }
+
+  writeFileSync(targetFilePath, patchedContent);
 };

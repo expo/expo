@@ -87,27 +87,60 @@ class SharedObjectTest {
       "sharedObject = new $moduleRef.SharedObjectExampleClass()"
     ).getObject()
 
-    // Add a listener that adds three arguments
     evaluateScript(
       "total = 0",
-      "sharedObject.addListener('test event', (a, b, c) => { total = a + b + c })"
+      "sharedObject.addListener('test event', (payload) => { total = payload.a + payload.b + payload.c })"
     )
 
-    // Get the native instance
     val nativeObject = jsiInterop
       .runtimeHolder
       .get()
       ?.sharedObjectRegistry
       ?.toNativeObjectOrNull(jsObject)
 
-    // Send an event from the native object to JS
-    nativeObject?.emit("test event", 1, 2, 3)
+    nativeObject?.emit("test event", mapOf("a" to 1, "b" to 2, "c" to 3))
 
-    // Check the value that is set by the listener
     val total = evaluateScript("total")
 
     Truth.assertThat(total.isNumber()).isTrue()
     Truth.assertThat(total.getInt()).isEqualTo(6)
+  }
+
+  @Test
+  fun sends_events_with_primitive_payloads() = withExampleSharedClass {
+    val jsObject = evaluateScript(
+      "sharedObject = new $moduleRef.SharedObjectExampleClass()"
+    ).getObject()
+
+    evaluateScript(
+      "results = []",
+      "sharedObject.addListener('primitive', (payload) => { results.push(payload) })"
+    )
+
+    val nativeObject = jsiInterop
+      .runtimeHolder
+      .get()
+      ?.sharedObjectRegistry
+      ?.toNativeObjectOrNull(jsObject)
+
+    nativeObject?.emit("primitive", 42)
+    nativeObject?.emit("primitive", "hello")
+    nativeObject?.emit("primitive", true)
+
+    Truth.assertThat(evaluateScript("results.length").getInt()).isEqualTo(3)
+    Truth.assertThat(evaluateScript("results[0]").getInt()).isEqualTo(42)
+    Truth.assertThat(evaluateScript("results[1]").getString()).isEqualTo("hello")
+    Truth.assertThat(evaluateScript("results[2]").getBool()).isTrue()
+  }
+
+  @Test
+  fun does_not_crash_when_emitting_from_a_shared_object_not_associated_with_a_js_object() {
+    // No runtime/JS object backing this instance, so the defensive branches in `emit` should
+    // log and return cleanly without touching JSI.
+    val detached = SharedObjectExampleClass()
+    detached.emit("ignored")
+    detached.emit("ignored", mapOf("key" to "value"))
+    detached.emit("ignored", 42)
   }
 
   @Test

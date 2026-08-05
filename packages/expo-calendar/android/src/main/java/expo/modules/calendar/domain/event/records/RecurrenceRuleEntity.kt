@@ -5,7 +5,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import java.util.Date
 import java.util.Locale
+import expo.modules.kotlin.types.OptimizedRecord
 
+@OptimizedRecord
 data class RecurrenceRuleEntity(
   @Field val frequency: String,
   @Field val interval: Int?,

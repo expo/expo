@@ -3,6 +3,7 @@ package host.exp.exponent.home
 import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
 import androidx.core.content.edit
 import androidx.lifecycle.AndroidViewModel
@@ -10,6 +11,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.CreationExtras
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.play.core.review.ReviewManagerFactory
 import com.google.gson.Gson
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -26,6 +29,9 @@ import host.exp.exponent.graphql.ProjectsQuery
 import host.exp.exponent.graphql.fragment.CurrentUserActorData
 import host.exp.exponent.home.auth.AuthRequestType
 import host.exp.exponent.kernel.ExpoViewKernel
+import host.exp.exponent.nsd.NsdDiscovery
+import host.exp.exponent.nsd.NsdPreferences
+import host.exp.exponent.nsd.PackagerInfo
 import host.exp.exponent.services.ApolloClientService
 import host.exp.exponent.services.ExponentHistoryService
 import host.exp.exponent.services.RESTApiClient
@@ -73,10 +79,11 @@ enum class DevSessionSource {
 data class DevSession(
   val description: String,
   val url: String,
-  val source: DevSessionSource,
+  val source: DevSessionSource?,
   val hostname: String? = null,
   val config: Map<String, Any>? = null,
-  val platform: DevSessionPlatform? = null
+  val platform: DevSessionPlatform? = null,
+  val iconUrl: String? = null
 )
 
 data class DevSessionResponse(
@@ -169,8 +176,24 @@ class HomeAppViewModel(
 
   val expoVersion = expoViewKernel.versionName
 
-  val isDevice =
-    !(android.os.Build.MODEL.contains("google_sdk") || android.os.Build.MODEL.contains("Emulator"))
+  val isDevice = !(
+    (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic")) ||
+      Build.FINGERPRINT.startsWith("generic") ||
+      Build.FINGERPRINT.startsWith("unknown") ||
+      Build.HARDWARE.contains("goldfish") ||
+      Build.HARDWARE.contains("ranchu") ||
+      Build.MODEL.contains("google_sdk") ||
+      Build.MODEL.contains("Emulator") ||
+      Build.MODEL.contains("Android SDK built for x86") ||
+      Build.MANUFACTURER.contains("Genymotion") ||
+      Build.PRODUCT.contains("sdk_google") ||
+      Build.PRODUCT.contains("google_sdk") ||
+      Build.PRODUCT.contains("sdk") ||
+      Build.PRODUCT.contains("sdk_x86") ||
+      Build.PRODUCT.contains("vbox86p") ||
+      Build.PRODUCT.contains("emulator") ||
+      Build.PRODUCT.contains("simulator")
+    )
 
   val service = ApolloClientService(client, sessionRepository)
   private val restClient =
@@ -204,14 +227,52 @@ class HomeAppViewModel(
 
   val feedbackState = MutableStateFlow(FeedbackState())
 
-  val developmentServers: StateFlow<List<DevSession>> = flow {
+  private val nsdDiscovery = NsdDiscovery(application, client)
+  val nsdPreferences = NsdPreferences(application)
+
+  // Reactive trigger that re-emits whenever NSD preferences change
+  private val _nsdPreferencesTrigger = MutableStateFlow(0)
+
+  private val _isNsdRefreshing = MutableStateFlow(false)
+  val isNsdRefreshing: StateFlow<Boolean> = _isNsdRefreshing
+
+  private fun PackagerInfo.toDevSession(): DevSession {
+    val newUrl = url
+      .replace("https", "exps")
+      .replace("http", "exp")
+    return DevSession(
+      url = newUrl,
+      description = description,
+      source = DevSessionSource.Desktop,
+      hostname = newUrl,
+      platform = DevSessionPlatform.Native,
+      config = null,
+      iconUrl = null
+    )
+  }
+
+  private val remoteSnackSessions: StateFlow<List<DevSession>> = flow {
     while (true) {
       try {
         val sessions = restClient.sendAuthenticatedApiV2Request<DevSessionResponse>(
           "development-sessions",
           typeOf<DevSessionResponse>()
         )
-        emit(sessions.data)
+        emit(
+          sessions
+            .data
+            .map { session ->
+              session.copy(
+                // The `development-sessions` not always contains source, but we can infer it based on the URL
+                source = session.source ?: if (session.url.startsWith("exp://u.expo.dev")) {
+                  DevSessionSource.Snack
+                } else {
+                  DevSessionSource.Desktop
+                }
+              )
+            }
+            .filter { session -> session.source == DevSessionSource.Snack }
+        )
       } catch (_: Exception) {
         emit(emptyList())
       }
@@ -222,6 +283,32 @@ class HomeAppViewModel(
     started = SharingStarted.WhileSubscribed(5000),
     initialValue = emptyList()
   )
+
+  private fun filterPackagers(packagers: Set<PackagerInfo>): Set<PackagerInfo> {
+    val slugFilter = nsdPreferences.filterBySlug
+    if (slugFilter.isNotBlank()) {
+      return packagers.filter { it.slug == slugFilter }.toSet()
+    }
+
+    return packagers
+  }
+
+  val developmentServers: StateFlow<List<DevSession>> =
+    combine(
+      nsdDiscovery.discoveredPackagers,
+      remoteSnackSessions,
+      _nsdPreferencesTrigger
+    ) { nsdPackagers, snackSessions, _ ->
+      val nsdSessions = filterPackagers(nsdPackagers)
+        .map { it.toDevSession() }
+
+      (nsdSessions + snackSessions).sortedBy { it.url }
+    }
+      .stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = emptyList()
+      )
 
   fun branch(branchName: String, appId: String): RefreshableFlow<BranchDetailsQuery.ById?> {
     return refreshableFlow(scope = viewModelScope, fetcher = {
@@ -308,6 +395,10 @@ class HomeAppViewModel(
     account.refresh()
   }
 
+  private val nsdPreferencesListener: () -> Unit = {
+    _nsdPreferencesTrigger.value++
+  }
+
   init {
     homeActivityEvents
       .onEach { event ->
@@ -326,6 +417,28 @@ class HomeAppViewModel(
     ) { appsList, snacksList ->
       updateUserReviewState(appsList.size, snacksList.size)
     }.launchIn(viewModelScope)
+
+    // Start NSD discovery and enable health checks
+    nsdDiscovery.start()
+    nsdDiscovery.resumeHealthCheck()
+
+    // Re-filter when NSD preferences change
+    nsdPreferences.addOnChangeListener(nsdPreferencesListener)
+  }
+
+  fun refreshNsd() {
+    viewModelScope.launch {
+      _isNsdRefreshing.value = true
+      nsdDiscovery.restart()
+      delay(2000) // Brief delay for UX so the refresh indicator is visible
+      _isNsdRefreshing.value = false
+    }
+  }
+
+  override fun onCleared() {
+    super.onCleared()
+    nsdPreferences.removeOnChangeListener(nsdPreferencesListener)
+    nsdDiscovery.stop()
   }
 
   val snacksPaginatorRefreshableFlow =
@@ -366,8 +479,8 @@ class HomeAppViewModel(
         }
 
         val metadata = mapOf(
-          "os" to "${android.os.Build.VERSION.RELEASE}",
-          "model" to android.os.Build.MODEL,
+          "os" to "${Build.VERSION.RELEASE}",
+          "model" to Build.MODEL,
           "expoGoVersion" to expoVersion
         )
 
@@ -392,29 +505,34 @@ class HomeAppViewModel(
   fun scanQR(
     context: Context,
     onSuccess: (String) -> Unit,
-    onError: (String) -> Unit = {}
+    onError: (String) -> Unit = {},
+    onNoPlayServices: () -> Unit
   ) {
-    val options = GmsBarcodeScannerOptions
-      .Builder()
-      .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-      .build()
+    if (isPlayServicesAvailable(context)) {
+      val options = GmsBarcodeScannerOptions
+        .Builder()
+        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+        .build()
 
-    val scanner = GmsBarcodeScanning.getClient(context, options)
+      val scanner = GmsBarcodeScanning.getClient(context, options)
 
-    scanner.startScan()
-      .addOnSuccessListener { barcode ->
-        val url = barcode.rawValue ?: run {
-          onError("No QR code data found")
-          return@addOnSuccessListener
+      scanner.startScan()
+        .addOnSuccessListener { barcode ->
+          val url = barcode.rawValue ?: run {
+            onError("No QR code data found")
+            return@addOnSuccessListener
+          }
+          onSuccess(url)
         }
-        onSuccess(url)
-      }
-      .addOnCanceledListener {
-        onError("QR code scan cancelled")
-      }
-      .addOnFailureListener { exception ->
-        onError("QR code scan failed: ${exception.message ?: "Unknown error"}")
-      }
+        .addOnCanceledListener {
+          onError("QR code scan cancelled")
+        }
+        .addOnFailureListener { exception ->
+          onError("QR code scan failed: ${exception.message ?: "Unknown error"}")
+        }
+    } else {
+      onNoPlayServices()
+    }
   }
 
   /**
@@ -494,6 +612,12 @@ class HomeAppViewModel(
       }
       updateUserReviewState(apps.dataFlow.value.size, snacks.dataFlow.value.size)
     }
+  }
+
+  private fun isPlayServicesAvailable(context: Context): Boolean {
+    val googleApiAvailability = GoogleApiAvailability.getInstance()
+    val resultCode = googleApiAvailability.isGooglePlayServicesAvailable(context)
+    return resultCode == ConnectionResult.SUCCESS
   }
 }
 

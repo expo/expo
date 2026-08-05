@@ -12,7 +12,7 @@ exports[`lints with the Node config: fixtures/all-00.js 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 4,
+  "fixableWarningCount": 1,
   "messages": [
     {
       "column": 14,
@@ -41,60 +41,6 @@ exports[`lints with the Node config: fixtures/all-00.js 1`] = `
       "messageId": "useConst",
       "nodeType": "Identifier",
       "ruleId": "prefer-const",
-      "severity": 1,
-    },
-    {
-      "column": 1,
-      "endColumn": 1,
-      "endLine": 48,
-      "fix": {
-        "range": [
-          574,
-          575,
-        ],
-        "text": "",
-      },
-      "line": 47,
-      "message": "Delete \`⏎\`",
-      "messageId": "delete",
-      "nodeType": null,
-      "ruleId": "prettier/prettier",
-      "severity": 1,
-    },
-    {
-      "column": 1,
-      "endColumn": 5,
-      "endLine": 49,
-      "fix": {
-        "range": [
-          598,
-          602,
-        ],
-        "text": "",
-      },
-      "line": 49,
-      "message": "Delete \`····\`",
-      "messageId": "delete",
-      "nodeType": null,
-      "ruleId": "prettier/prettier",
-      "severity": 1,
-    },
-    {
-      "column": 9,
-      "endColumn": 11,
-      "endLine": 60,
-      "fix": {
-        "range": [
-          715,
-          717,
-        ],
-        "text": "* ",
-      },
-      "line": 60,
-      "message": "Replace \`·*\` with \`*·\`",
-      "messageId": "replace",
-      "nodeType": null,
-      "ruleId": "prettier/prettier",
       "severity": 1,
     },
   ],
@@ -166,7 +112,7 @@ function *gen() {}
       "ruleId": "no-buffer-constructor",
     },
   ],
-  "warningCount": 5,
+  "warningCount": 2,
 }
 `;
 
@@ -179,12 +125,12 @@ exports[`lints with the Node config: fixtures/all-01.ts 1`] = `
   "messages": [
     {
       "column": 3,
-      "endColumn": 18,
+      "endColumn": 4,
       "endLine": 18,
       "line": 18,
       "message": "Duplicate name 'm'.",
       "messageId": "unexpected",
-      "nodeType": "PropertyDefinition",
+      "nodeType": null,
       "ruleId": "@typescript-eslint/no-dupe-class-members",
       "severity": 1,
     },
@@ -195,7 +141,7 @@ exports[`lints with the Node config: fixtures/all-01.ts 1`] = `
       "line": 25,
       "message": "'_notIgnored' is defined but never used.",
       "messageId": "unusedVar",
-      "nodeType": null,
+      "nodeType": "Identifier",
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -319,7 +265,7 @@ exports[`lints with the Node config: fixtures/all-03.ts 1`] = `
       "line": 1,
       "message": "'tsUnused1' is assigned a value but never used.",
       "messageId": "unusedVar",
-      "nodeType": null,
+      "nodeType": "Identifier",
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -330,7 +276,7 @@ exports[`lints with the Node config: fixtures/all-03.ts 1`] = `
       "line": 3,
       "message": "'tsUnused2' is defined but never used.",
       "messageId": "unusedVar",
-      "nodeType": null,
+      "nodeType": "Identifier",
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -341,7 +287,7 @@ exports[`lints with the Node config: fixtures/all-03.ts 1`] = `
       "line": 5,
       "message": "'asCast' is assigned a value but never used.",
       "messageId": "unusedVar",
-      "nodeType": null,
+      "nodeType": "Identifier",
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -352,7 +298,7 @@ exports[`lints with the Node config: fixtures/all-03.ts 1`] = `
       "line": 6,
       "message": "'angleBracketCast' is assigned a value but never used.",
       "messageId": "unusedVar",
-      "nodeType": null,
+      "nodeType": "Identifier",
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
@@ -440,7 +386,7 @@ exports[`lints with the Node config: fixtures/all-05.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 2,
+  "fixableWarningCount": 1,
   "messages": [
     {
       "column": 21,
@@ -460,25 +406,6 @@ exports[`lints with the Node config: fixtures/all-05.ts 1`] = `
       "ruleId": "@typescript-eslint/no-extra-non-null-assertion",
       "severity": 1,
     },
-    {
-      "column": 25,
-      "endColumn": 25,
-      "endLine": 1,
-      "fix": {
-        "range": [
-          24,
-          24,
-        ],
-        "text": "
-",
-      },
-      "line": 1,
-      "message": "Insert \`⏎\`",
-      "messageId": "insert",
-      "nodeType": null,
-      "ruleId": "prettier/prettier",
-      "severity": 1,
-    },
   ],
   "source": "export const blah = 3!!;",
   "suppressedMessages": [],
@@ -488,7 +415,7 @@ exports[`lints with the Node config: fixtures/all-05.ts 1`] = `
       "ruleId": "no-buffer-constructor",
     },
   ],
-  "warningCount": 2,
+  "warningCount": 1,
 }
 `;
 
@@ -497,7 +424,7 @@ exports[`lints with the Node config: fixtures/all-06.ts 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 6,
+  "fixableWarningCount": 5,
   "messages": [
     {
       "column": 26,
@@ -633,25 +560,6 @@ exports[`lints with the Node config: fixtures/all-06.ts 1`] = `
         },
       ],
     },
-    {
-      "column": 52,
-      "endColumn": 52,
-      "endLine": 6,
-      "fix": {
-        "range": [
-          288,
-          288,
-        ],
-        "text": "
-",
-      },
-      "line": 6,
-      "message": "Insert \`⏎\`",
-      "messageId": "insert",
-      "nodeType": null,
-      "ruleId": "prettier/prettier",
-      "severity": 1,
-    },
   ],
   "source": "export const numberTest: Number | null = null;
 export const booleanTest: Boolean | null = null;
@@ -666,7 +574,7 @@ export const objectShorthandTest: {} | null = null;",
       "ruleId": "no-buffer-constructor",
     },
   ],
-  "warningCount": 7,
+  "warningCount": 6,
 }
 `;
 
@@ -675,7 +583,7 @@ exports[`lints with the Node config: fixtures/all-07.js 1`] = `
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
-  "fixableWarningCount": 10,
+  "fixableWarningCount": 9,
   "messages": [
     {
       "column": 11,
@@ -848,25 +756,6 @@ import c from 'c';
       "ruleId": "import/order",
       "severity": 1,
     },
-    {
-      "column": 34,
-      "endColumn": 34,
-      "endLine": 7,
-      "fix": {
-        "range": [
-          141,
-          141,
-        ],
-        "text": "
-",
-      },
-      "line": 7,
-      "message": "Insert \`⏎\`",
-      "messageId": "insert",
-      "nodeType": null,
-      "ruleId": "prettier/prettier",
-      "severity": 1,
-    },
   ],
   "source": "const a = require('a');
 import d from './d';
@@ -882,7 +771,7 @@ export default a + b + c + d + e;",
       "ruleId": "no-buffer-constructor",
     },
   ],
-  "warningCount": 10,
+  "warningCount": 9,
 }
 `;
 

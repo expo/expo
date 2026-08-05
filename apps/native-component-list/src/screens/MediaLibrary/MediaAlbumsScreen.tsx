@@ -1,5 +1,5 @@
-import { StackNavigationProp } from '@react-navigation/stack';
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from 'expo-media-library/legacy';
+import { router } from 'expo-router';
 import React from 'react';
 import {
   FlatList,
@@ -7,11 +7,11 @@ import {
   Platform,
   StyleSheet,
   Switch,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 
+import { BodyText } from '../../components/BodyText';
 import MonoText from '../../components/MonoText';
 
 interface State {
@@ -19,11 +19,7 @@ interface State {
   albums: MediaLibrary.Album[];
 }
 
-type Props = {
-  navigation: StackNavigationProp<{ MediaLibrary: { album: MediaLibrary.Album } }>;
-};
-
-export default class MediaAlbumsScreen extends React.Component<Props, State> {
+export default class MediaAlbumsScreen extends React.Component<object, State> {
   static navigationOptions = {
     title: 'MediaLibrary Albums',
   };
@@ -37,7 +33,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
     this.fetchAlbums(this.state.includeSmartAlbums).then((albums) => this.setState({ albums }));
   }
 
-  componentDidUpdate(_: Props, lastState: State) {
+  componentDidUpdate(_: object, lastState: State) {
     if (lastState.includeSmartAlbums !== this.state.includeSmartAlbums) {
       this.fetchAlbums(this.state.includeSmartAlbums).then((albums) => this.setState({ albums }));
     }
@@ -48,7 +44,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
       return await MediaLibrary.getAlbumsAsync({
         includeSmartAlbums,
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ERR_NO_ENOUGH_PERMISSIONS') {
         return [];
       } else {
@@ -60,15 +56,18 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
   keyExtractor = (item: MediaLibrary.Album) => item.id;
 
   openAlbum = (album: MediaLibrary.Album) => {
-    this.props.navigation.navigate('MediaLibrary', { album });
+    router.push({
+      pathname: '/apis/medialibrary',
+      params: { albumId: album.id, albumTitle: album.title },
+    });
   };
 
   renderItem: ListRenderItem<MediaLibrary.Album> = ({ item }) => {
     return (
       <TouchableOpacity style={styles.album} onPress={() => this.openAlbum(item)}>
         <View style={styles.albumHeader}>
-          <Text>{item.title}</Text>
-          <Text>{item.assetCount}</Text>
+          <BodyText>{item.title}</BodyText>
+          <BodyText>{item.assetCount}</BodyText>
         </View>
         <MonoText>{JSON.stringify(item, null, 2)}</MonoText>
       </TouchableOpacity>
@@ -81,9 +80,9 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
     if (albums.length === 0) {
       return (
         <View style={styles.noAlbums}>
-          <Text>
+          <BodyText>
             You don't have any media albums! You can create one from asset details screen.
-          </Text>
+          </BodyText>
         </View>
       );
     }
@@ -101,7 +100,7 @@ export default class MediaAlbumsScreen extends React.Component<Props, State> {
   renderSmartAlbumsToggle() {
     return (
       <View style={styles.includeSmartAlbumsRow}>
-        <Text style={styles.includeSmartAlbumsTitle}>Include smart albums</Text>
+        <BodyText style={styles.includeSmartAlbumsTitle}>Include smart albums</BodyText>
         <Switch
           value={this.state.includeSmartAlbums}
           onValueChange={() =>

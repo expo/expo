@@ -7,12 +7,16 @@ import { webviewStyles } from './styles';
 
 const { resolveAssetSource } = Image;
 
+type NativeWebViewProps = Omit<DomWebViewProps, 'containerStyle' | 'injectedJavaScriptObject'> & {
+  injectedJavaScriptObject: string;
+};
+
 const NativeWebView: React.ComponentType<
-  React.PropsWithoutRef<DomWebViewProps> & React.RefAttributes<DomWebViewRef>
+  React.PropsWithoutRef<NativeWebViewProps> & React.RefAttributes<DomWebViewRef>
 > = requireNativeViewManager('ExpoDomWebViewModule');
 
 const WebView = React.forwardRef<DomWebViewRef, DomWebViewProps>(
-  ({ containerStyle, style, ...props }, ref) => {
+  ({ containerStyle, style, injectedJavaScriptObject, ...props }, ref) => {
     const viewRef = React.useRef<DomWebViewRef>(null);
 
     React.useImperativeHandle(
@@ -20,6 +24,7 @@ const WebView = React.forwardRef<DomWebViewRef, DomWebViewProps>(
       () => ({
         scrollTo: (params) => viewRef.current?.scrollTo(params),
         injectJavaScript: (script: string) => viewRef.current?.injectJavaScript(script),
+        reload: () => viewRef.current?.reload(),
       }),
       []
     );
@@ -31,7 +36,13 @@ const WebView = React.forwardRef<DomWebViewRef, DomWebViewProps>(
 
     return (
       <View style={webViewContainerStyle}>
-        <NativeWebView {...props} ref={viewRef} source={resolvedSource} style={webViewStyles} />
+        <NativeWebView
+          {...props}
+          ref={viewRef}
+          source={resolvedSource}
+          style={webViewStyles}
+          injectedJavaScriptObject={JSON.stringify(injectedJavaScriptObject ?? {})}
+        />
       </View>
     );
   }

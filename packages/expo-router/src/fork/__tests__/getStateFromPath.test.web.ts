@@ -12,22 +12,24 @@ afterAll(() => {
 });
 
 describe(stripBaseUrl, () => {
-  [
+  (
     [
-      // Input
-      '/',
-      // Base Path
-      '',
-      // Result
-      '/',
-    ],
-    ['/one/two', '/one', '/two'],
-    ['/one/two', '/one/two', ''],
-    ['/one/two/', '/one/two', '/'],
-    ['///one/', '/one', '/'],
-    ['one/', '/one', 'one/'],
-    ['/a/b', '/one', '/a/b'],
-  ].forEach(([path, baseUrl, result]) => {
+      [
+        // Input
+        '/',
+        // Base Path
+        '',
+        // Result
+        '/',
+      ],
+      ['/one/two', '/one', '/two'],
+      ['/one/two', '/one/two', ''],
+      ['/one/two/', '/one/two', '/'],
+      ['///one/', '/one', '/'],
+      ['one/', '/one', 'one/'],
+      ['/a/b', '/one', '/a/b'],
+    ] as const
+  ).forEach(([path, baseUrl, result]) => {
     it(`strips baseUrl "${path}"`, () => {
       expect(stripBaseUrl(path, baseUrl)).toBe(result);
     });
@@ -101,11 +103,13 @@ describe(getUrlWithReactNavigationConcessions, () => {
     });
   });
 
-  [
-    ['', '/'],
-    ['https://acme.com/hello/world?foo=bar#123', 'hello/world/'],
-    ['https://acme.com/hello/world/?foo=bar#123', 'hello/world/'],
-  ].forEach(([url, expected]) => {
+  (
+    [
+      ['', '/'],
+      ['https://acme.com/hello/world?foo=bar#123', 'hello/world/'],
+      ['https://acme.com/hello/world/?foo=bar#123', 'hello/world/'],
+    ] as const
+  ).forEach(([url, expected]) => {
     it(`returns the pathname for ${url}`, () => {
       expect(getUrlWithReactNavigationConcessions(url).nonstandardPathname).toBe(expected);
     });
@@ -117,7 +121,7 @@ describe(getUrlWithReactNavigationConcessions, () => {
     ['https://acme.com/gh-pages/hello/world/?foo=bar#123', 'hello/world/'],
   ].forEach(([url, expected]) => {
     it(`returns the pathname for ${url}`, () => {
-      expect(getUrlWithReactNavigationConcessions(url, 'gh-pages').nonstandardPathname).toBe(
+      expect(getUrlWithReactNavigationConcessions(url!, 'gh-pages').nonstandardPathname).toBe(
         expected
       );
     });
@@ -440,6 +444,23 @@ it(`handles query params`, () => {
             },
           ],
         },
+      },
+    ],
+  });
+});
+
+it(`matches routes with multiple spaces in path`, () => {
+  expect(
+    getStateFromPath('/hello%20beautiful%20world', {
+      screens: {
+        'hello beautiful world': 'hello beautiful world',
+      },
+    } as any)
+  ).toEqual({
+    routes: [
+      {
+        name: 'hello beautiful world',
+        path: '/hello%20beautiful%20world',
       },
     ],
   });

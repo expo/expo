@@ -33,7 +33,7 @@ export function Item({
     <DropdownMenu.Item
       aria-disabled={disabled}
       className={mergeClasses(
-        'group relative z-40 flex cursor-pointer select-none items-center justify-between rounded-sm px-2 py-1 transition-colors',
+        'group relative z-40 flex cursor-pointer items-center justify-between rounded-sm px-2 py-1 transition-colors select-none',
         'hover:outline-0 hocus:bg-hover',
         disabled && 'cursor-default opacity-60 hocus:bg-default'
       )}
@@ -64,6 +64,7 @@ export function Item({
           <div className="flex items-center gap-2">
             {Icon && (
               <Icon
+                aria-hidden="true"
                 className={mergeClasses(
                   'icon-sm text-icon-default transition-colors',
                   destructive
@@ -90,7 +91,7 @@ export function Item({
           )}
         </div>
         {description && typeof description === 'string' ? (
-          <FOOTNOTE theme="tertiary" className="!leading-[18px]">
+          <FOOTNOTE theme="tertiary" className="leading-4.5!">
             {description}
           </FOOTNOTE>
         ) : null}

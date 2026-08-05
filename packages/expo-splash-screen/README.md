@@ -74,7 +74,7 @@ https://user-images.githubusercontent.com/379606/120575890-b7437080-c3d6-11eb-9c
 
 > **Android only.**
 
-By using this resize mode your app will will leverage Android's ability to present a static bitmap while the application is starting up.
+By using this resize mode your app will leverage Android's ability to present a static bitmap while the application is starting up.
 Android (unlike iOS) does not support stretching of the provided image during launch, so the application will present the given image centered on the screen at its original dimensions.
 
 <table>
@@ -492,7 +492,7 @@ To achieve fully-native splash screen behavior, `expo-splash-screen` needs to be
 3. [Configure `res/drawable/splashscreen.xml`](#-configure-resdrawablesplashscreenxml)
 4. [Configure `res/values/styles.xml`](#-configure-resvaluesstylesxml)
 5. [Configure `AndroidManifest.xml`](#-configure-androidmanifestxml)
-6. [(<em>optional</em>) Customzine `resizeMode`](#-optional-customize-resizemode)
+6. [(<em>optional</em>) Customize `resizeMode`](#-optional-customize-resizemode)
 7. [(<em>optional</em>) Enable dark mode](#-optional-enable-dark-mode-1)
 8. [(<em>optional</em>) Customize StatusBar](#-customize-statusbar-1)
 
@@ -668,50 +668,6 @@ Read more about `android:windowLightStatusBar` flag in [official Android documen
 
 To read more about Android multi-API-level support see [this official documentation](https://developer.android.com/guide/topics/resources/providing-resources).
 
-3. Customize `StatusBar color` option (a.k.a. `background color` of the StatusBar component)
-
-To achieve custom background color you need to create a new color resource and provide it to the SplashScreen `style` description.
-
-Create new color resource in your `res/values/colors.xml` (if your application supports dark mode, consider adding different color in `res/values-night/colors.xml` file):
-
-```diff
-  <resources>
-    <color name="splashscreen_background">#D0D0C0</color>
-+   <color name="splashscreen_statusbar_color">#(AA)RRGGBB</color> <!-- #AARRGGBB or #RRGGBB format -->
-  </resources>
-```
-
-Update your `res/values/styles.xml` file with the following entry:
-
-```diff
-  <!-- Main/SplashScreen activity theme. -->
-  <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-    <item name="android:windowBackground">@drawable/splashscreen</item>
-+   <item name="android:statusBarColor">@color/splashscreen_statusbar_color</item>
-    <!-- Other style properties -->
-  </style>
-```
-
-If you have multiple `styles.xml` files located in different directories containing exactly the same `style` entry (e.g. in `res/values-night`, `res/values-night-v23`, etc.), be sure to update these files accordingly.
-
-Read more about `android:statusBarColor` option in [official Android documentation](https://developer.android.com/reference/android/R.attr#statusBarColor).
-
-4. Customize `StatusBar translucent` flag
-
-When the StatusBar is translucent, the app will be able to draw under the StatusBar component area.
-
-To make the StatusBar translucent update your `res/values/strings.xml` file with the following content:
-
-```diff
---- a/android/app/src/main/res/values/strings.xml
-+++ b/android/app/src/main/res/values/strings.xml
- <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
- <resources>
-   <string name="app_name">sdk42</string>
-+  <string name="expo_splash_screen_status_bar_translucent">true</string>
-</resources>
-```
-
 ## 👏 Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
@@ -757,7 +713,7 @@ We try to keep changes backward compatible, the code for `expo-splash-screen` wi
    }
 ```
 
-3. Override default `resizeMode` and `statusBarTranslucent` in stings.xml
+3. Override default `resizeMode` in strings.xml
 
 ```diff
 --- a/android/app/src/main/res/values/strings.xml
@@ -766,7 +722,6 @@ We try to keep changes backward compatible, the code for `expo-splash-screen` wi
  <resources>
    <string name="app_name">sdk42</string>
 +  <string name="expo_splash_screen_resize_mode">contain</string>
-+  <string name="expo_splash_screen_status_bar_translucent">false</string>
 </resources>
 ```
 

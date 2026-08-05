@@ -7,6 +7,7 @@ final class BottomSheetProps: UIBaseViewProps {
   @Field var isPresented: Bool = false
   @Field var fitToContents: Bool = false
   var onIsPresentedChange = EventDispatcher()
+  var onDismiss = EventDispatcher()
 }
 
 struct SizePreferenceKey: PreferenceKey {
@@ -59,13 +60,8 @@ private struct BottomSheetSizeReader<Content: View>: View {
 
 struct BottomSheetView: ExpoSwiftUI.View {
   @ObservedObject var props: BottomSheetProps
-  @State private var isPresented: Bool
+  @State private var isPresented: Bool = false
   @State private var childrenSize: CGSize = .zero
-
-  init(props: BottomSheetProps) {
-    self.props = props
-    self._isPresented = State(initialValue: props.isPresented)
-  }
 
   private func handleSizeChange(_ size: CGSize) {
     guard childrenSize != size else { return }
@@ -73,25 +69,44 @@ struct BottomSheetView: ExpoSwiftUI.View {
   }
 
   @ViewBuilder
+  private func contentChildren() -> some View {
+    ForEach(props.children?.withoutSlot("anchor") ?? [], id: \.id) { child in
+      let view: any View = child.childView
+      AnyView(view)
+    }
+  }
+
+  @ViewBuilder
   private var sheetContent: some View {
     if props.fitToContents {
       let content = BottomSheetSizeReader(
-        content: Children(),
+        content: contentChildren(),
         onSizeChange: handleSizeChange
       )
       if #available(iOS 16.0, tvOS 16.0, *) {
-        content.presentationDetents([.height(childrenSize.height)])
+        content.presentationDetents(childrenSize.height > 0 ? [.height(childrenSize.height)] : [.medium])
       } else {
         content
       }
     } else {
-      Children()
+      contentChildren()
+    }
+  }
+
+  @ViewBuilder
+  private var anchor: some View {
+    if let anchorView = props.children?.slot("anchor") {
+      anchorView
+    } else {
+      Color.clear.frame(width: 0, height: 0)
     }
   }
 
   var body: some View {
-    Rectangle().hidden()
-      .sheet(isPresented: $isPresented) {
+    anchor
+      .sheet(isPresented: $isPresented, onDismiss: {
+        props.onDismiss()
+      }) {
         sheetContent
       }
       .onChange(of: isPresented, perform: { newIsPresented in

@@ -13,7 +13,17 @@ onFlowStart:
     label: Assert update string is from embedded bundle
 - assertTrue:
     condition:  ${output.api.lastRequestHeaders().host == 'localhost:' + MAESTRO_UPDATES_SERVER_PORT}
-    label: Check that request contains correct headers
+    label: Check that request contains correct host header
+    env:
+      MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
+- assertTrue:
+    condition:  ${output.api.lastRequestHeaders()['expo-channel-name'] == 'default'}
+    label: Check that request contains correct channel name header 
+    env:
+      MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
+- assertTrue:
+    condition:  ${output.api.lastRequestHeaders()['expo-runtime-version'] == '1.0.0'}
+    label: Check that request contains correct runtime version header
     env:
       MAESTRO_UPDATES_SERVER_PORT: ${MAESTRO_UPDATES_SERVER_PORT}
 - stopApp

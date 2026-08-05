@@ -1,4 +1,4 @@
-import { AuthRequestConfig } from '../AuthRequest.types';
+import type { AuthRequestConfig } from '../AuthRequest.types';
 
 export type ProviderAuthRequestConfig = AuthRequestConfig & {
   /**

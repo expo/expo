@@ -1,10 +1,11 @@
-import spawnAsync, { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import type { SpawnOptions, SpawnPromise, SpawnResult } from '@expo/spawn-async';
+import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 
-import { PackageManager, PackageManagerOptions } from '../PackageManager';
-import { PendingSpawnPromise } from '../utils/spawn';
+import type { PackageManager, PackageManagerOptions } from '../PackageManager';
+import type { PendingSpawnPromise } from '../utils/spawn';
 
 export abstract class BasePackageManager implements PackageManager {
   readonly silent: boolean;

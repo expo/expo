@@ -1,66 +1,57 @@
-import { HeaderBackButton } from '@react-navigation/elements';
-import { createNativeStackNavigator, NativeStackScreenProps } from '@react-navigation/native-stack';
-import { useTheme } from 'ThemeProvider';
+import {
+  Stack,
+  type NativeStackNavigationOptions,
+  type NativeStackNavigationProp,
+  useNavigation,
+} from 'expo-router';
 import Fuse from 'fuse.js';
 import React from 'react';
-import { Animated, Platform, StyleSheet, View } from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform, StyleSheet, TextInput, View } from 'react-native';
+import type { SearchBarCommands } from 'react-native-screens';
 
-import ComponentListScreen from './ComponentListScreen';
+import { ThemeType, useTheme } from '../../../common/ThemeProvider';
 import ExpoAPIIcon from '../components/ExpoAPIIcon';
-import SearchBar from '../components/SearchBar';
-import { screenApiItems as ApiScreenApiItems } from '../navigation/ExpoApisStackNavigator';
-import { screenApiItems as ComponentScreenApiItems } from '../navigation/ExpoComponentsStackNavigator';
+import { screenApiItems as ApiScreenApiItems } from '../navigation/apiScreens';
+import { screenApiItems as ComponentScreenApiItems } from '../navigation/componentScreens';
+import ComponentListScreen from './ComponentListScreen';
 
 const fuse = new Fuse(ApiScreenApiItems.concat(ComponentScreenApiItems), { keys: ['name'] });
 
-const APPBAR_HEIGHT = Platform.OS === 'ios' ? 50 : 56;
-const TITLE_OFFSET = Platform.OS === 'ios' ? 70 : 56;
-
-function Header({
-  children,
-  backButton,
-  tintColor,
-  navigation,
-}: {
-  children?: React.ReactNode;
-  backButton?: boolean;
-  tintColor?: string;
-  navigation: any;
-}) {
-  const { top } = useSafeAreaInsets();
-  // @todo: this is static and we don't know if it's visible or not on iOS.
-  // need to use a more reliable and cross-platform API when one exists, like
-  // LayoutContext. We also don't know if it's translucent or not on Android
-  // and depend on react-native-safe-area-context to tell us.
-  const STATUSBAR_HEIGHT = top || 8;
-
-  return (
-    <Animated.View
-      style={[
-        styles.container,
-        { paddingTop: STATUSBAR_HEIGHT, height: STATUSBAR_HEIGHT + APPBAR_HEIGHT },
-      ]}>
-      <View style={styles.appBar}>
-        <View style={[StyleSheet.absoluteFill, { flexDirection: 'row' }]}>
-          {backButton && (
-            <HeaderBackButton
-              onPress={() => navigation.goBack()}
-              pressColor={tintColor || '#fff'}
-              tintColor={tintColor}
-            />
-          )}
-          {children}
-        </View>
-      </View>
-    </Animated.View>
-  );
+// The header comes from the stack that renders this screen, so hosts must apply
+// `getSearchScreenOptions` to that stack screen.
+export function getSearchScreenOptions(theme: ThemeType): NativeStackNavigationOptions {
+  return {
+    title: 'Search',
+    headerShown: true,
+    headerBackButtonDisplayMode: 'minimal',
+    headerStyle: { backgroundColor: theme.background.default },
+    headerTintColor: theme.icon.info,
+    headerTitleStyle: { color: theme.text.default },
+  };
 }
 
-function SearchScreen({ route }: NativeStackScreenProps<SearchStack, 'search'>) {
-  const query = route?.params?.q ?? '';
+export default function SearchScreen() {
+  const navigation = useNavigation<NativeStackNavigationProp<Record<string, object | undefined>>>();
+  const { theme } = useTheme();
+  const [query, setQuery] = React.useState('');
+  const searchBarRef = React.useRef<SearchBarCommands>(null);
 
-  const apis = React.useMemo(() => fuse.search(query).map(({ item }) => item), [query]);
+  // `autoFocus` is Android-only, so focus the iOS search bar once the screen finishes opening.
+  React.useEffect(() => {
+    if (Platform.OS !== 'ios') {
+      return;
+    }
+    return navigation.addListener('transitionEnd', ({ data }) => {
+      if (!data.closing) {
+        searchBarRef.current?.focus();
+      }
+    });
+  }, [navigation]);
+
+  const apis = React.useMemo(() => {
+    if (!query) return [];
+    return fuse.search(query).map(({ item }) => item);
+  }, [query]);
 
   const renderItemRight = React.useCallback(
     ({ name }: { name: string }) => (
@@ -69,92 +60,57 @@ function SearchScreen({ route }: NativeStackScreenProps<SearchStack, 'search'>) 
     []
   );
 
-  return <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
-}
+  const list = <ComponentListScreen renderItemRight={renderItemRight} apis={apis} sort={false} />;
 
-type SearchStack = {
-  search: { q?: string };
-};
+  if (Platform.OS !== 'web') {
+    return (
+      <>
+        <Stack.SearchBar
+          ref={searchBarRef}
+          autoFocus
+          placeholder="Search"
+          // Without this iOS hides the navigation bar while searching, which slides the results
+          // under the search field and swallows taps on the first row.
+          hideNavigationBar={false}
+          textColor={theme.text.default}
+          tintColor={theme.icon.info}
+          headerIconColor={theme.icon.secondary}
+          hintTextColor={theme.text.quaternary}
+          onChangeText={(event) => setQuery(event.nativeEvent.text)}
+          onCancelButtonPress={() => navigation.goBack()}
+        />
+        {list}
+      </>
+    );
+  }
 
-const Stack = createNativeStackNavigator<SearchStack>();
-
-export default function SearchScreenStack() {
-  const { theme } = useTheme();
+  // On web the search bar turns into a header button that expands its own field, so web gets a
+  // plain input above the results instead.
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="search"
-        component={SearchScreen}
-        options={({ navigation, route }) => ({
-          header: () => (
-            <Header
-              navigation={navigation}
-              tintColor={theme.icon.info}
-              backButton={Platform.OS === 'android'}>
-              <SearchBar
-                initialValue={route?.params?.q ?? ''}
-                onChangeQuery={(q) => navigation.setParams({ q })}
-                underlineColorAndroid="#fff"
-                tintColor={theme.text.info}
-              />
-            </Header>
-          ),
-        })}
+    <View style={[styles.webContainer, { backgroundColor: theme.background.default }]}>
+      <TextInput
+        autoFocus
+        placeholder="Search"
+        placeholderTextColor={theme.text.quaternary}
+        value={query}
+        onChangeText={setQuery}
+        style={[
+          styles.webInput,
+          { borderBottomColor: theme.border.default, color: theme.text.default },
+        ]}
       />
-    </Stack.Navigator>
+      {list}
+    </View>
   );
 }
 
-const styles = {
-  container: {
-    backgroundColor: '#fff',
-
-    ...Platform.select({
-      ios: {
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: '#A7A7AA',
-      },
-      default: {
-        shadowColor: 'black',
-        shadowOpacity: 0.1,
-        shadowRadius: StyleSheet.hairlineWidth,
-        shadowOffset: {
-          width: 0,
-          height: StyleSheet.hairlineWidth,
-        },
-        elevation: 4,
-      },
-    }),
-  },
-  appBar: {
+const styles = StyleSheet.create({
+  webContainer: {
     flex: 1,
   },
-  header: {
-    flexDirection: 'row',
+  webInput: {
+    borderBottomWidth: 1,
+    fontSize: 16,
+    padding: 12,
   },
-  item: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'transparent',
-  },
-  title: {
-    bottom: 0,
-    left: TITLE_OFFSET,
-    right: TITLE_OFFSET,
-    top: 0,
-    position: 'absolute',
-    alignItems: Platform.OS === 'ios' ? 'center' : 'flex-start',
-  },
-  left: {
-    left: 0,
-    bottom: 0,
-    top: 0,
-    position: 'absolute',
-  },
-  right: {
-    right: 0,
-    bottom: 0,
-    top: 0,
-    position: 'absolute',
-  },
-};
+});

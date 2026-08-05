@@ -18,7 +18,7 @@ internal final class ConstantsProvider: EXConstantsInterface {
     let isDebugXcodeScheme = false
     #endif
 
-    return [
+    var result: [AnyHashable: Any] = [
       "sessionId": UUID().uuidString,
       "executionEnvironment": "bare",
       "statusBarHeight": statusBarHeight,
@@ -26,13 +26,18 @@ internal final class ConstantsProvider: EXConstantsInterface {
       "systemFonts": systemFonts,
       "debugMode": isDebugXcodeScheme,
       "isHeadless": false,
-      "manifest": getManifest(), // Deprecated, but still used internally.
       "platform": [
         "ios": [
-          "buildNumber": getBuildVersion()
+          "buildNumber": getBuildVersion() ?? ""
         ]
       ]
     ]
+    // Deprecated, but still used internally. We need to check if the manifest is set, otherwise it will result in
+    // an error where the whole manifest is null since we cannot wrap an Optional null in JS correctly.
+    if let manifest = getManifest() {
+      result["manifest"] = manifest
+    }
+    return result
   }
 }
 
@@ -82,11 +87,37 @@ private func getDeviceName() -> String {
   #endif
 }
 
-private func getManifest() -> [String: Any]? {
-  let frameworkBundle = Bundle(for: ConstantsProvider.self)
+private func findEXConstantsBundle() -> Bundle? {
+  let bundleName = "EXConstants.bundle"
 
-  guard let bundleUrl = frameworkBundle.resourceURL?.appendingPathComponent("EXConstants.bundle"),
-        let bundle = Bundle(url: bundleUrl),
+  // Check the main app bundle first (standard CocoaPods setup)
+  if let bundleUrl = Bundle.main.resourceURL?.appendingPathComponent(bundleName),
+     let bundle = Bundle(url: bundleUrl) {
+    return bundle
+  }
+
+  // Fall back to the bundle containing this code, which handles the case where
+  // EXConstants.bundle is embedded inside a dynamic framework (e.g. expo-brownfield xcframework)
+  if let bundleUrl = Bundle(for: ConstantsProvider.self).resourceURL?.appendingPathComponent(bundleName),
+     let bundle = Bundle(url: bundleUrl) {
+    return bundle
+  }
+
+  // When using expo precompiled modules and brownfield, EXConstants.bundle may be in different frameworks.
+  // Scan all loaded frameworks as a fallback to find EXConstants.bundle regardless of location.
+  for framework in Bundle.allFrameworks {
+    guard let bundleUrl = framework.resourceURL?.appendingPathComponent(bundleName),
+          let bundle = Bundle(url: bundleUrl) else {
+      continue
+    }
+    return bundle
+  }
+
+  return nil
+}
+
+private func getManifest() -> [String: Any]? {
+  guard let bundle = findEXConstantsBundle(),
         let url = bundle.url(forResource: "app", withExtension: "config") else {
     log.error("Unable to find the embedded app config")
     return nil

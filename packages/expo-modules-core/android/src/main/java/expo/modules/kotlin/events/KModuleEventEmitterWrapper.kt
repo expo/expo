@@ -10,7 +10,7 @@ import com.facebook.react.uimanager.UIManagerHelper
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.jni.JNIUtils
 import expo.modules.kotlin.records.Record
-import expo.modules.kotlin.types.JSTypeConverter
+import expo.modules.kotlin.types.JSTypeConverterProvider
 import expo.modules.kotlin.types.toJSValueExperimental
 import java.lang.ref.WeakReference
 
@@ -85,18 +85,18 @@ open class KEventEmitterWrapper(
 
   override fun emit(eventName: String, eventBody: Record?) {
     deviceEventEmitter
-      ?.emit(eventName, JSTypeConverter.legacyConvertToJSValue(eventBody))
+      ?.emit(eventName, JSTypeConverterProvider.legacyConvertToJSValue(eventBody))
   }
 
   override fun emit(eventName: String, eventBody: Map<*, *>?) {
     deviceEventEmitter
-      ?.emit(eventName, JSTypeConverter.legacyConvertToJSValue(eventBody))
+      ?.emit(eventName, JSTypeConverterProvider.legacyConvertToJSValue(eventBody))
   }
 
   override fun emit(viewId: Int, eventName: String, eventBody: WritableMap?, coalescingKey: Short?) {
     val context = reactContextHolder.get() ?: return
     val uiEvent = UIEvent(surfaceId = -1, viewId, eventName, eventBody, coalescingKey)
-    UIManagerHelper.getEventDispatcherForReactTag(context, viewId)
+    UIManagerHelper.getEventDispatcher(context)
       ?.dispatchEvent(uiEvent)
   }
 
@@ -105,7 +105,7 @@ open class KEventEmitterWrapper(
     val surfaceId = UIManagerHelper.getSurfaceId(view)
     val viewId = view.id
     val uiEvent = UIEvent(surfaceId, viewId, eventName, eventBody, coalescingKey)
-    UIManagerHelper.getEventDispatcherForReactTag(context, view.id)
+    UIManagerHelper.getEventDispatcher(context)
       ?.dispatchEvent(uiEvent)
   }
 

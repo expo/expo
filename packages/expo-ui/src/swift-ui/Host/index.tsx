@@ -1,10 +1,10 @@
 import { requireNativeView } from 'expo';
-import { I18nManager, StyleProp, ViewStyle } from 'react-native';
+import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
-export type HostProps = {
+export interface HostProps extends CommonViewModifierProps {
   /**
    * When true, the host view will update its size in the React Native view tree to match the content's layout from SwiftUI.
    * Can be only set once on mount.
@@ -31,21 +31,30 @@ export type HostProps = {
   colorScheme?: 'light' | 'dark';
 
   /**
+   * Seed color applied to the SwiftUI content as its tint. It propagates
+   * through the SwiftUI environment to theme interactive elements (buttons,
+   * switches, sliders, and similar controls) rendered by the children.
+   */
+  seedColor?: ColorValue;
+
+  /**
    * The layout direction for the SwiftUI content.
    * Defaults to the current locale direction from I18nManager.
    */
   layoutDirection?: 'leftToRight' | 'rightToLeft';
 
   /**
-   * When `true`, the SwiftUI content will not perform keyboard avoidance behaviour when keyboard is shown.
-   * Can be only set once on mount.
-   * @default false
+   * Controls which safe area regions the SwiftUI hosting view should ignore.
+   * - `'all'` - ignores all safe area insets, including the keyboard.
+   * - `'container'` - ignores only the container safe area (notch, home indicator, status and navigation bars). The keyboard safe area still applies.
+   * - `'keyboard'` - ignores only the keyboard safe area.
    */
-  ignoreSafeAreaKeyboardInsets?: boolean;
+  ignoreSafeArea?: 'all' | 'container' | 'keyboard';
 
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
-} & CommonViewModifierProps;
+  pointerEvents?: 'box-none' | 'none' | 'box-only' | 'auto';
+}
 
 const HostNativeView: React.ComponentType<
   HostProps & { matchContentsVertical?: boolean; matchContentsHorizontal?: boolean }
@@ -58,9 +67,10 @@ export function Host(props: HostProps) {
   const {
     matchContents,
     onLayoutContent,
-    ignoreSafeAreaKeyboardInsets,
+    ignoreSafeArea,
     modifiers,
     layoutDirection,
+    seedColor,
     ...restProps
   } = props;
 
@@ -78,7 +88,8 @@ export function Host(props: HostProps) {
       layoutDirection={
         layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
       }
-      ignoreSafeAreaKeyboardInsets={ignoreSafeAreaKeyboardInsets}
+      ignoreSafeArea={ignoreSafeArea}
+      seedColor={seedColor}
       {...restProps}
     />
   );

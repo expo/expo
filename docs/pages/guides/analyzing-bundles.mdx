@@ -22,10 +22,15 @@ The libraries used in a project influence the size of the production JavaScript 
 
 You can use Expo Atlas with the local development server. This method allows Atlas to update whenever you change any code in your project.
 
-Once your app is running using the local development server on Android, iOS, and/or web, you can open Atlas through the [dev tools plugin menu](/debugging/devtools-plugins/#using-a-dev-tools-plugin) using <kbd>shift</kbd> + <kbd>m</kbd>.
+Once your app is running using the local development server on Android, iOS, and/or web, you can open Atlas through the [dev tools plugin menu](/debugging/devtools-plugins/#using-a-dev-tools-plugin) using <kbd>Shift</kbd> + <kbd>M</kbd>.
 
 <Terminal
-  cmd={['# Start the local development server with Atlas', '$ EXPO_ATLAS=true npx expo start']}
+  cmd={{
+    npm: ['# Start the local development server with Atlas', '$ EXPO_ATLAS=true npx expo start'],
+    yarn: ['# Start the local development server with Atlas', '$ EXPO_ATLAS=true yarn expo start'],
+    pnpm: ['# Start the local development server with Atlas', '$ EXPO_ATLAS=true pnpm expo start'],
+    bun: ['# Start the local development server with Atlas', '$ EXPO_ATLAS=true bun expo start'],
+  }}
 />
 
 #### Changing development mode to production
@@ -33,10 +38,24 @@ Once your app is running using the local development server on Android, iOS, and
 By default, Expo starts the local development server in [development mode](/workflow/development-mode/#development-mode). Development mode disables some optimizations that are enabled in [production mode](/workflow/development-mode/#production-mode). You can also start the local development server in production mode to get a more accurate representation of the production bundle size:
 
 <Terminal
-  cmd={[
-    '# Run the local development server in production mode',
-    '$ EXPO_ATLAS=true npx expo start --no-dev',
-  ]}
+  cmd={{
+    npm: [
+      '# Run the local development server in production mode',
+      '$ EXPO_ATLAS=true npx expo start --no-dev',
+    ],
+    yarn: [
+      '# Run the local development server in production mode',
+      '$ EXPO_ATLAS=true yarn expo start --no-dev',
+    ],
+    pnpm: [
+      '# Run the local development server in production mode',
+      '$ EXPO_ATLAS=true pnpm expo start --no-dev',
+    ],
+    bun: [
+      '# Run the local development server in production mode',
+      '$ EXPO_ATLAS=true bun expo start --no-dev',
+    ],
+  }}
 />
 
 ### Using Expo Atlas with `npx expo export`
@@ -44,13 +63,36 @@ By default, Expo starts the local development server in [development mode](/work
 You can also use Expo Atlas when generating a production bundle for your app or EAS Update. Atlas generates a **.expo/atlas.jsonl** file during export, which you can share and open without having access to the project.
 
 <Terminal
-  cmd={[
-    '# Export your app for all platforms',
-    '$ EXPO_ATLAS=true npx expo export',
-    '',
-    '# Open the generated Expo Atlas file',
-    '$ npx expo-atlas .expo/atlas.jsonl',
-  ]}
+  cmd={{
+    npm: [
+      '# Export your app for all platforms',
+      '$ EXPO_ATLAS=true npx expo export',
+      '',
+      '# Open the generated Expo Atlas file',
+      '$ npx expo-atlas .expo/atlas.jsonl',
+    ],
+    yarn: [
+      '# Export your app for all platforms',
+      '$ EXPO_ATLAS=true yarn expo export',
+      '',
+      '# Open the generated Expo Atlas file',
+      '$ yarn dlx expo-atlas .expo/atlas.jsonl',
+    ],
+    pnpm: [
+      '# Export your app for all platforms',
+      '$ EXPO_ATLAS=true pnpm expo export',
+      '',
+      '# Open the generated Expo Atlas file',
+      '$ pnpm dlx expo-atlas .expo/atlas.jsonl',
+    ],
+    bun: [
+      '# Export your app for all platforms',
+      '$ EXPO_ATLAS=true bun expo export',
+      '',
+      '# Open the generated Expo Atlas file',
+      '$ bunx expo-atlas .expo/atlas.jsonl',
+    ],
+  }}
 />
 
 You can also specify the platforms you want to analyze using the `--platform` option. Expo Atlas will gather the data for the exported platforms only.
@@ -71,7 +113,14 @@ If you are using SDK 50 or below, you can use the [`source-map-explorer`](https:
 
 To use source map explorer, run the following command to install it:
 
-<Terminal cmd={['$ npm i --save-dev source-map-explorer']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install --save-dev source-map-explorer'],
+    yarn: ['$ yarn add --dev source-map-explorer'],
+    pnpm: ['$ pnpm add --save-dev source-map-explorer'],
+    bun: ['$ bun add --dev source-map-explorer'],
+  }}
+/>
 
 </Step>
 
@@ -92,9 +141,20 @@ Add a script to **package.json** to run it. You might have to adjust the input p
 If you are using the SDK 50 `server` output for web, then use the following to map web bundles:
 
 <Terminal
-  cmd={[
-    "$ npx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
-  ]}
+  cmd={{
+    npm: [
+      "$ npx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
+    ],
+    yarn: [
+      "$ yarn dlx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
+    ],
+    pnpm: [
+      "$ pnpm dlx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
+    ],
+    bun: [
+      "$ bunx source-map-explorer 'dist/client/_expo/static/js/web/*.js' 'dist/client/_expo/static/js/web/*.js.map'",
+    ],
+  }}
 />
 
 Web bundles are output to the **dist/client** subdirectory to prevent exposing server code to the client.
@@ -106,12 +166,32 @@ Web bundles are output to the **dist/client** subdirectory to prevent exposing s
 Export your production JavaScript bundle and include the `--source-maps` flag so that the source map explorer can read the source maps. For native apps using Hermes, you can use the `--no-bytecode` option to disable bytecode generation.
 
 <Terminal
-  cmd={[
-    '$ npx expo export --source-maps --platform web',
-    '',
-    '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
-    '$ npx expo export --source-maps --platform ios --no-bytecode',
-  ]}
+  cmd={{
+    npm: [
+      '$ npx expo export --source-maps --platform web',
+      '',
+      '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+      '$ npx expo export --source-maps --platform ios --no-bytecode',
+    ],
+    yarn: [
+      '$ yarn expo export --source-maps --platform web',
+      '',
+      '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+      '$ yarn expo export --source-maps --platform ios --no-bytecode',
+    ],
+    pnpm: [
+      '$ pnpm expo export --source-maps --platform web',
+      '',
+      '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+      '$ pnpm expo export --source-maps --platform ios --no-bytecode',
+    ],
+    bun: [
+      '$ bun expo export --source-maps --platform web',
+      '',
+      '# Native apps using Hermes can disable bytecode for analyzing the JavaScript bundle.',
+      '$ bun expo export --source-maps --platform ios --no-bytecode',
+    ],
+  }}
 />
 
 This command shows the JavaScript bundle and source map paths in the output. In the next step, you will pass these paths to the source map explorer.
@@ -124,7 +204,14 @@ This command shows the JavaScript bundle and source map paths in the output. In 
 
 Run the script to analyze your bundle:
 
-<Terminal cmd={['$ npm run analyze:web']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm run analyze:web'],
+    yarn: ['$ yarn run analyze:web'],
+    pnpm: ['$ pnpm run analyze:web'],
+    bun: ['$ bun run analyze:web'],
+  }}
+/>
 
 On running this command, you might see the following error:
 
@@ -145,11 +232,34 @@ Lighthouse is a great way to see how fast, accessible, and performant your websi
 After creating a production build with `npx expo export -p web` and serving it (using either `npx serve dist`, or production deployment, or custom server), run Lighthouse with the URL your site is hosted at.
 
 <Terminal
-  cmd={[
-    '# Install the lighthouse CLI',
-    '$ npm install -g lighthouse',
-    '',
-    '# Run the lighthouse CLI for your site',
-    '$ npx lighthouse <url> --view',
-  ]}
+  cmd={{
+    npm: [
+      '# Install the lighthouse CLI',
+      '$ npm install --global lighthouse',
+      '',
+      '# Run the lighthouse CLI for your site',
+      '$ npx lighthouse <url> --view',
+    ],
+    yarn: [
+      '# Install the lighthouse CLI',
+      '$ yarn global add lighthouse',
+      '',
+      '# Run the lighthouse CLI for your site',
+      '$ yarn dlx lighthouse <url> --view',
+    ],
+    pnpm: [
+      '# Install the lighthouse CLI',
+      '$ pnpm add --global lighthouse',
+      '',
+      '# Run the lighthouse CLI for your site',
+      '$ pnpm dlx lighthouse <url> --view',
+    ],
+    bun: [
+      '# Install the lighthouse CLI',
+      '$ bun add --global lighthouse',
+      '',
+      '# Run the lighthouse CLI for your site',
+      '$ bunx lighthouse <url> --view',
+    ],
+  }}
 />

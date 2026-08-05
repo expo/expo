@@ -1,7 +1,7 @@
 import React from 'react';
 
-import styles from './Header.module.css';
 import type { LogLevel } from '../Data/Types';
+import styles from './Header.module.css';
 
 export function ErrorOverlayHeader({
   selectedIndex,

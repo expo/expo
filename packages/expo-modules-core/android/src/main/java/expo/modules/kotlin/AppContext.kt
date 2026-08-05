@@ -5,20 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
-import android.view.View
-import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
-import com.facebook.react.uimanager.UIManagerHelper
-import com.facebook.react.uimanager.UIManagerModule
-import com.facebook.react.uimanager.common.UIManagerType
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.adapters.react.NativeModulesProxy
 import expo.modules.core.errors.ContextDestroyedException
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.activityresult.ActivityResultsManager
 import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
-import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.JSLoggerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
@@ -30,19 +25,20 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.providers.CurrentActivityProvider
 import expo.modules.kotlin.runtime.MainRuntime
-import expo.modules.kotlin.runtime.Runtime
 import expo.modules.kotlin.runtime.WorkletRuntime
 import expo.modules.kotlin.services.AppDirectoriesService
 import expo.modules.kotlin.services.FilePermissionService
 import expo.modules.kotlin.services.Service
 import expo.modules.kotlin.services.ServicesRegistry
 import expo.modules.kotlin.tracing.trace
+import expo.modules.kotlin.types.ConverterContext
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
+import okhttp3.OkHttpClient
 import java.io.File
 import java.lang.ref.WeakReference
 
@@ -50,14 +46,17 @@ class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   reactContextHolder: WeakReference<ReactApplicationContext>
-) : CurrentActivityProvider {
+) : CurrentActivityProvider, ConverterContext {
   // The main context used in the app.
   // Modules attached to this context will be available on the main js context.
-  @Deprecated("Use AppContext.runtimeContext instead", ReplaceWith("runtime"))
-  val hostingRuntimeContext = MainRuntime(this, reactContextHolder)
+  override val runtime = MainRuntime(this, reactContextHolder)
 
-  val runtime: Runtime
-    get() = hostingRuntimeContext
+  override val applicationContext: Context
+    get() {
+      return requireNotNull(reactContext) {
+        "The app context should be created with valid react context."
+      }.applicationContext
+    }
 
   private val uiRuntimeHolder = lazy { WorkletRuntime(this, reactContextHolder) }
   val uiRuntime
@@ -129,6 +128,8 @@ class AppContext(
 
       registry.register(modulesProvider)
 
+      registerInlineModulesList()
+
       logger.info("✅ AppContext was initialized")
     }
   }
@@ -137,12 +138,21 @@ class AppContext(
     registry.postOnCreate()
   }
 
+  private fun registerInlineModulesList() {
+    try {
+      val inlineModulesList = Class.forName("inline.modules.ExpoInlineModulesList").getConstructor()
+        .newInstance() as ModulesProvider
+      registry.register(inlineModulesList)
+    } catch (_: ClassNotFoundException) {
+    }
+  }
+
   /**
    * Initializes a JSI part of the module registry.
    * It will be a NOOP if the remote debugging was activated.
    */
   fun installJSIInterop() {
-    hostingRuntimeContext.install()
+    runtime.install()
   }
 
   /**
@@ -213,13 +223,24 @@ class AppContext(
    * Provides access to the react application context
    */
   val reactContext: Context?
-    get() = hostingRuntimeContext.reactContext
+    get() = runtime.reactContext
 
   /**
    * @return true if there is an non-null, alive react native instance
    */
   val hasActiveReactInstance: Boolean
-    get() = hostingRuntimeContext.reactContext?.hasActiveReactInstance() == true
+    get() = runtime.reactContext?.hasActiveReactInstance() == true
+
+  /**
+   * @returns an OkHttpClient instance that can be used to perform network requests
+   * with the same configuration as React Native's networking module. See [com.facebook.react.modules.network.OkHttpClientProvider].
+   * This client will share the same cookie jar and has no timeouts by default.
+   */
+  val okHttpClient: OkHttpClient
+    get() = OkHttpClientProvider.getOkHttpClient()
+
+  fun createOkHttpClientBuilder(): OkHttpClient.Builder =
+    OkHttpClientProvider.createClientBuilder()
 
   /**
    * Provides access to the event emitter
@@ -233,7 +254,7 @@ class AppContext(
         "Cannot create an event emitter for module ${module.javaClass} that isn't present in the module registry. Available modules: [$availableModulesNames]."
       },
       legacyEventEmitter,
-      hostingRuntimeContext.reactContextHolder
+      runtime.reactContextHolder
     )
   }
 
@@ -241,29 +262,33 @@ class AppContext(
     get() {
       val legacyEventEmitter = legacyModule<expo.modules.core.interfaces.services.EventEmitter>()
         ?: return null
-      return KEventEmitterWrapper(legacyEventEmitter, hostingRuntimeContext.reactContextHolder)
+      return KEventEmitterWrapper(legacyEventEmitter, runtime.reactContextHolder)
     }
-
-  @Deprecated("Use AppContext.jsLogger instead")
-  val errorManager: ErrorManagerModule? by lazy {
-    registry.getModule()
-  }
 
   val jsLogger by lazy {
     registry.getModule<JSLoggerModule>()?.logger
   }
 
   internal fun onDestroy() = trace("AppContext.onDestroy") {
-    hostingRuntimeContext.reactContext?.removeLifecycleEventListener(reactLifecycleDelegate)
-    registry.post(EventName.MODULE_DESTROY)
-    registry.cleanUp()
+    runtime.reactContext?.run {
+      removeLifecycleEventListener(reactLifecycleDelegate)
+      removeActivityEventListener(reactLifecycleDelegate)
+    }
+
+    with(registry) {
+      post(EventName.MODULE_DESTROY)
+      cleanUp()
+    }
+
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
-    hostingRuntimeContext.deallocate()
+
+    runtime.deallocate()
     if (uiRuntimeHolder.isInitialized()) {
       uiRuntime.deallocate()
     }
+
     logger.info("✅ AppContext was destroyed")
   }
 
@@ -332,37 +357,12 @@ class AppContext(
     )
   }
 
-  @Suppress("UNCHECKED_CAST")
-  @UiThread
-  fun <T : View> findView(viewTag: Int): T? {
-    val reactContext = hostingRuntimeContext.reactContext ?: return null
-    return UIManagerHelper
-      .getUIManagerForReactTag(reactContext, viewTag)
-      ?.resolveView(viewTag) as? T
-  }
-
-  internal fun dispatchOnMainUsingUIManager(block: () -> Unit) {
-    val reactContext = hostingRuntimeContext.reactContext ?: throw Exceptions.ReactContextLost()
-    val uiManager = UIManagerHelper.getUIManagerForReactTag(
-      reactContext,
-      UIManagerType.DEFAULT
-    ) as UIManagerModule
-
-    uiManager.addUIBlock {
-      block()
-    }
-  }
-
-  internal fun assertMainThread() {
-    Utils.assertMainThread()
-  }
-
   /**
    * Runs a code block on the JavaScript thread.
    */
   @Deprecated("Use RuntimeContext.schedule instead", ReplaceWith("runtime.schedule(runnable)"))
   fun executeOnJavaScriptThread(runnable: Runnable) {
-    hostingRuntimeContext.reactContext?.runOnJSQueueThread(runnable)
+    runtime.reactContext?.runOnJSQueueThread(runnable)
   }
 
 // region CurrentActivityProvider

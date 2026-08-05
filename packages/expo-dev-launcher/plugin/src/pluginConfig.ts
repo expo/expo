@@ -1,4 +1,4 @@
-import Ajv, { JSONSchemaType } from 'ajv';
+import { validate, type JSONSchema } from '@expo/schema-utils';
 
 /**
  * Type representing base dev launcher configuration.
@@ -37,12 +37,47 @@ export type PluginConfigOptions = {
    */
   launchMode?: 'most-recent' | 'launcher';
   /**
+   * Instead of navigating to launcher screen launch directly into this URL.
+   * If `launchMode` is set to `most-recent` then launcher will use the defaultLaunchURL if launching previously opened project fails.
+   */
+  defaultLaunchURL?: string;
+  /**
    * @deprecated use the `launchMode` property instead
    */
   launchModeExperimental?: 'most-recent' | 'launcher';
+  /**
+   * Whether to show the tools button by default.
+   *
+   * @default true
+   */
+  toolsButton?: boolean;
+  /**
+   * Whether to enable loading an embedded JS bundle from the dev launcher.
+   * When enabled and a bundle file is present in the app, a "Load embedded bundle"
+   * option appears in the dev launcher UI.
+   *
+   * @default false
+   */
+  embeddedBundle?: boolean;
+  /**
+   * Skip the dev menu onboarding popup on first launch. Useful for E2E tests and CI
+   * builds where the onboarding overlay would block automated input.
+   *
+   * @default false
+   */
+  skipOnboarding?: boolean;
+  /**
+   * Automatically open the dev menu when the app launches. Set to `false` to suppress
+   * the auto-launch in development builds where the dev menu would interfere (E2E tests,
+   * automated UI runs).
+   *
+   * @default true
+   */
+  showMenuAtLaunch?: boolean;
 };
 
-const schema: JSONSchemaType<PluginConfigType> = {
+const schema: JSONSchema<PluginConfigType> = {
+  title: 'expo-dev-launcher',
   type: 'object',
   properties: {
     launchMode: {
@@ -50,9 +85,29 @@ const schema: JSONSchemaType<PluginConfigType> = {
       enum: ['most-recent', 'launcher'],
       nullable: true,
     },
+    defaultLaunchURL: {
+      type: ['string'],
+      nullable: true,
+    },
     launchModeExperimental: {
       type: 'string',
       enum: ['most-recent', 'launcher'],
+      nullable: true,
+    },
+    toolsButton: {
+      type: 'boolean',
+      nullable: true,
+    },
+    embeddedBundle: {
+      type: 'boolean',
+      nullable: true,
+    },
+    skipOnboarding: {
+      type: 'boolean',
+      nullable: true,
+    },
+    showMenuAtLaunch: {
+      type: 'boolean',
       nullable: true,
     },
     android: {
@@ -66,6 +121,26 @@ const schema: JSONSchemaType<PluginConfigType> = {
         launchModeExperimental: {
           type: 'string',
           enum: ['most-recent', 'launcher'],
+          nullable: true,
+        },
+        toolsButton: {
+          type: 'boolean',
+          nullable: true,
+        },
+        embeddedBundle: {
+          type: 'boolean',
+          nullable: true,
+        },
+        defaultLaunchURL: {
+          type: 'string',
+          nullable: true,
+        },
+        skipOnboarding: {
+          type: 'boolean',
+          nullable: true,
+        },
+        showMenuAtLaunch: {
+          type: 'boolean',
           nullable: true,
         },
       },
@@ -84,6 +159,26 @@ const schema: JSONSchemaType<PluginConfigType> = {
           enum: ['most-recent', 'launcher'],
           nullable: true,
         },
+        toolsButton: {
+          type: 'boolean',
+          nullable: true,
+        },
+        embeddedBundle: {
+          type: 'boolean',
+          nullable: true,
+        },
+        defaultLaunchURL: {
+          type: 'string',
+          nullable: true,
+        },
+        skipOnboarding: {
+          type: 'boolean',
+          nullable: true,
+        },
+        showMenuAtLaunch: {
+          type: 'boolean',
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -94,10 +189,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
  * @ignore
  */
 export function validateConfig<T>(config: T): PluginConfigType {
-  const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
-  if (!validate(config)) {
-    throw new Error('Invalid expo-dev-launcher config: ' + JSON.stringify(validate.errors));
-  }
+  validate(schema, config);
 
   if (
     config.launchModeExperimental ||

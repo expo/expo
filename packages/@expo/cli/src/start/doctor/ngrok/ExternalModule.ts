@@ -1,6 +1,5 @@
 import * as PackageManager from '@expo/package-manager';
-import requireGlobal from 'requireg';
-import resolveFrom from 'resolve-from';
+import { resolveFrom, resolveGlobal } from '@expo/require-utils';
 import semver from 'semver';
 
 import * as Log from '../../../log';
@@ -8,8 +7,7 @@ import { delayAsync } from '../../../utils/delay';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { confirmAsync } from '../../../utils/prompts';
-
-const debug = require('debug')('expo:doctor:externalModule') as typeof console.log;
+import { debugEvent } from '../events';
 
 /** An error that is thrown when a package is installed but doesn't meet the version criteria. */
 export class ExternalModuleVersionError extends CommandError {
@@ -158,12 +156,18 @@ export class ExternalModule<TModule> {
 
   /** Resolve a copy that's installed in the project. Exposed for testing. */
   _resolveLocal(moduleId: string): string {
-    return resolveFrom(this.projectRoot, moduleId);
+    const target = resolveFrom(this.projectRoot, moduleId);
+    if (!target) {
+      throw Object.assign(new Error(`Module "${moduleId}" could not be resolved in the project.`), {
+        code: 'MODULE_NOT_FOUND',
+      });
+    }
+    return target;
   }
 
   /** Resolve a copy that's installed globally. Exposed for testing. */
   _resolveGlobal(moduleId: string): string {
-    return requireGlobal.resolve(moduleId);
+    return resolveGlobal(moduleId);
   }
 
   /** Resolve the module and verify the version. Exposed for testing. */
@@ -193,7 +197,7 @@ export class ExternalModule<TModule> {
       if (error instanceof CommandError) {
         throw error;
       } else if (error.code !== 'MODULE_NOT_FOUND') {
-        debug('Failed to resolve module', error.message);
+        debugEvent('external_module_resolve_failed', { message: error.message });
       }
     }
     return null;

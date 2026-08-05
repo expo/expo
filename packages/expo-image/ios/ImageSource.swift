@@ -37,6 +37,10 @@ struct ImageSource: Record {
     return isPhotoLibraryAssetUrl(uri)
   }
 
+  var isSFSymbol: Bool {
+    return uri?.scheme == "sf"
+  }
+
   var cacheOriginalImage: Bool {
     return !isPhotoLibraryAsset
   }

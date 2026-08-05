@@ -21,6 +21,8 @@ add_library(
     ${COMMON_DIR}/EXGLContextManager.cpp
     ${COMMON_DIR}/EXGLContextManager.h
     ${COMMON_DIR}/EXWebGLMethods.cpp
+    ${COMMON_DIR}/EXWebGLMethodsTextures.cpp
+    ${COMMON_DIR}/EXWebGLMethodsDraw.cpp
     ${COMMON_DIR}/EXWebGLMethods.h
     ${COMMON_DIR}/EXWebGLRenderer.cpp
     ${COMMON_DIR}/EXWebGLRenderer.h
@@ -46,4 +48,5 @@ target_compile_options(
             -Wno-unused-parameter
             -Wshorten-64-to-32
             -Wstrict-prototypes)
+target_precompile_headers(${PACKAGE_NAME} PRIVATE ${COMMON_DIR}/pch.h)
 target_link_libraries(${PACKAGE_NAME} ReactAndroid::jsi ${LOG_LIB} ${GLES_LIB} android)

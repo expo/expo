@@ -1,14 +1,13 @@
-import {
+import type {
   Action,
   ActionCrop,
   ActionExtent,
   ActionFlip,
   ActionResize,
   ActionRotate,
-  FlipType,
-  SaveFormat,
   SaveOptions,
 } from './ImageManipulator.types';
+import { FlipType, SaveFormat } from './ImageManipulator.types';
 
 export function validateArguments(uri: string, actions: Action[], saveOptions: SaveOptions) {
   validateUri(uri);
@@ -38,7 +37,7 @@ export function validateActions(actions: Action[]): void {
       );
     }
     const actionType = actionKeys[0];
-    if (!supportedActionTypes.includes(actionType)) {
+    if (actionType != null && !supportedActionTypes.includes(actionType)) {
       throw new TypeError(`Unsupported action type: ${actionType}`);
     }
 

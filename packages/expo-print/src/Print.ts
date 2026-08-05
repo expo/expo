@@ -1,8 +1,16 @@
-import { UnavailabilityError } from 'expo-modules-core';
+import { UnavailabilityError } from 'expo';
 import { Platform } from 'react-native';
 
 import ExponentPrint from './ExponentPrint';
-import {
+import type {
+  FilePrintOptions,
+  FilePrintResult,
+  OrientationType,
+  PrintOptions,
+  Printer,
+} from './Print.types';
+
+export type {
   FilePrintOptions,
   FilePrintResult,
   OrientationType,
@@ -10,8 +18,6 @@ import {
   PrintOptions,
   Printer,
 } from './Print.types';
-
-export { FilePrintOptions, FilePrintResult, OrientationType, PageMargins, PrintOptions, Printer };
 
 let isPrinting = false;
 // @needsAudit @docsMissing
@@ -75,7 +81,7 @@ export async function selectPrinterAsync(): Promise<Printer> {
 
 // @needsAudit
 /**
- * Prints HTML to PDF file and saves it to [app's cache directory](./filesystem/#filesystemcachedirectory).
+ * Prints HTML to PDF file and saves it to [app's cache directory](./filesystem/#cache).
  * On Web this method opens the print dialog.
  * @param options A map of print options.
  */

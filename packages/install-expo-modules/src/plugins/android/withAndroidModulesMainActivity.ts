@@ -1,4 +1,5 @@
-import { ConfigPlugin, withMainActivity } from '@expo/config-plugins';
+import type { ConfigPlugin } from '@expo/config-plugins';
+import { withMainActivity } from '@expo/config-plugins';
 import {
   addImports,
   appendContentsInsideDeclarationBlock,

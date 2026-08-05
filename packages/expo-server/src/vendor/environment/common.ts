@@ -1,29 +1,45 @@
-import type { Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
-import type { LoaderModule, RenderOptions, ServerRenderModule, SsrRenderFn } from '../../rendering';
-import { parseParams } from '../../utils/matchers';
+import { ImmutableRequest } from '../../ImmutableRequest';
+import type { AssetInfo, Manifest, MiddlewareInfo, RawManifest, Route } from '../../manifest';
+import {
+  isStreamingRenderer,
+  type LoaderModule,
+  type MaybeLegacyServerRenderModule,
+  type RenderOptions,
+  type SsrRenderFn,
+} from '../../rendering';
+import { isResponse, parseParams, resolveLoaderContextKey } from '../../utils/matchers';
 
 function initManifestRegExp(manifest: RawManifest): Manifest {
   return {
     ...manifest,
-    htmlRoutes: manifest.htmlRoutes.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
-    apiRoutes: manifest.apiRoutes.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
-    notFoundRoutes: manifest.notFoundRoutes.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
-    redirects: manifest.redirects?.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
-    })),
-    rewrites: manifest.rewrites?.map((route) => ({
-      ...route,
-      namedRegex: new RegExp(route.namedRegex),
+    htmlRoutes:
+      manifest.htmlRoutes?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    apiRoutes:
+      manifest.apiRoutes?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    notFoundRoutes:
+      manifest.notFoundRoutes?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    redirects:
+      manifest.redirects?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    rewrites:
+      manifest.rewrites?.map((route) => ({
+        ...route,
+        namedRegex: new RegExp(route.namedRegex),
+      })) ?? [],
+    pageHeaders: manifest.pageHeaders?.map((rule) => ({
+      ...rule,
+      namedRegex: new RegExp(rule.namedRegex),
     })),
   };
 }
@@ -32,85 +48,140 @@ interface EnvironmentInput {
   readText(request: string): Promise<string | null>;
   readJson(request: string): Promise<unknown>;
   loadModule(request: string): Promise<unknown>;
+  isDevelopment: boolean;
 }
 
-export function createEnvironment(input: EnvironmentInput) {
+export interface CommonEnvironment {
+  getRoutesManifest(): Promise<Manifest | null>;
+  getHtml(request: Request, route: Route): Promise<string | ReadableStream | Response | null>;
+  getApiRoute(route: Route): Promise<unknown>;
+  getMiddleware(middleware: MiddlewareInfo): Promise<any>;
+  getLoaderData(request: Request, route: Route): Promise<Response>;
+  preload(): Promise<void>;
+}
+
+export function createEnvironment(input: EnvironmentInput): CommonEnvironment {
   // Cached manifest and SSR renderer, initialized on first request
-  let cachedManifest: Manifest | null = null;
+  let cachedManifest: Manifest | null | undefined;
+  let cachedSsrModule: MaybeLegacyServerRenderModule | null = null;
   let ssrRenderer: SsrRenderFn | null = null;
 
-  async function getCachedRoutesManifest(): Promise<Manifest> {
-    if (!cachedManifest) {
+  async function getRoutesManifest(): Promise<Manifest | null> {
+    if (cachedManifest === undefined || input.isDevelopment) {
       const json = await input.readJson('_expo/routes.json');
-      cachedManifest = initManifestRegExp(json as RawManifest);
+      cachedManifest = json ? initManifestRegExp(json as RawManifest) : null;
     }
     return cachedManifest;
   }
 
-  async function getServerRenderer(): Promise<SsrRenderFn | null> {
-    if (ssrRenderer) {
-      return ssrRenderer;
+  async function getServerRenderer(): Promise<{
+    renderer: SsrRenderFn | null;
+    module: MaybeLegacyServerRenderModule | null;
+  }> {
+    if (ssrRenderer && !input.isDevelopment) {
+      return {
+        renderer: ssrRenderer,
+        module: cachedSsrModule,
+      };
     }
 
-    const manifest = await getCachedRoutesManifest();
-    if (manifest.rendering?.mode !== 'ssr') {
-      return null;
+    const manifest = await getRoutesManifest();
+    if (manifest?.rendering?.mode !== 'ssr') {
+      return {
+        renderer: null,
+        module: null,
+      };
     }
 
     // If `manifest.rendering.mode === 'ssr'`, we always expect the SSR rendering module to be
     // available
     const ssrModule = (await input.loadModule(
       manifest.rendering.file
-    )) as ServerRenderModule | null;
+    )) as MaybeLegacyServerRenderModule | null;
 
     if (!ssrModule) {
       throw new Error(`SSR module not found at: ${manifest.rendering.file}`);
     }
 
-    const assets = manifest.assets;
+    const topLevelAssets = manifest.assets;
+    cachedSsrModule = ssrModule;
     ssrRenderer = async (request, options) => {
       const url = new URL(request.url);
       const location = new URL(url.pathname + url.search, url.origin);
-      return ssrModule.getStaticContent(location, {
+      const assets = mergeAssets(topLevelAssets, options?.assets);
+
+      // NOTE(@hassankhan): We still need to support SDK 55 deployments which
+      // use the "legacy" server export
+      if (!isStreamingRenderer(ssrModule)) {
+        return ssrModule.getStaticContent(location, {
+          loader: options?.loader,
+          request,
+          assets,
+        });
+      }
+
+      return ssrModule.getStreamingContent(location, {
         loader: options?.loader,
+        metadata: options?.metadata,
         request,
         assets,
       });
     };
-    return ssrRenderer;
+    return {
+      renderer: ssrRenderer,
+      module: ssrModule,
+    };
   }
 
   async function executeLoader(
     request: Request,
-    route: Route
-  ): Promise<{ data: unknown } | undefined> {
+    route: Route,
+    params: Record<string, string>
+  ): Promise<unknown> {
     if (!route.loader) {
       return undefined;
     }
+
     const loaderModule = (await input.loadModule(route.loader)) as LoaderModule | null;
-    if (!loaderModule?.loader) {
-      return undefined;
+    if (!loaderModule) {
+      throw new Error(`Loader module not found at: ${route.loader}`);
     }
-    const params = parseParams(request, route);
-    const data = await loaderModule.loader({ params, request });
-    return { data: data === undefined ? {} : data };
+
+    return loaderModule.loader(new ImmutableRequest(request), params);
   }
 
   return {
-    async getRoutesManifest(): Promise<Manifest> {
-      return getCachedRoutesManifest();
-    },
+    getRoutesManifest,
 
-    async getHtml(request: Request, route: Route): Promise<string | Response | null> {
+    async getHtml(request, route) {
       // SSR path: Render at runtime if SSR module is available
-      const renderer = await getServerRenderer();
+      const { renderer, module: ssrModule } = await getServerRenderer();
       if (renderer) {
-        let renderOptions: RenderOptions | undefined;
+        let renderOptions: RenderOptions = { assets: route.assets };
+        const params = parseParams(request, route);
 
         try {
-          const loaderResult = await executeLoader(request, route);
-          if (loaderResult) {
-            renderOptions = { loader: { data: loaderResult.data } };
+          if (ssrModule && isStreamingRenderer(ssrModule) && ssrModule.resolveMetadata) {
+            renderOptions.metadata = await ssrModule.resolveMetadata({
+              route: {
+                file: route.file,
+                page: route.page,
+              },
+              request: new ImmutableRequest(request),
+              params,
+            });
+          }
+
+          if (route.loader) {
+            const result = await executeLoader(request, route, params);
+            const data = isResponse(result) ? await result.json() : result;
+            renderOptions = {
+              ...renderOptions,
+              loader: {
+                data: data ?? null,
+                key: resolveLoaderContextKey(route.page, params),
+              },
+            };
           }
           return await renderer(request, renderOptions);
         } catch (error) {
@@ -136,11 +207,11 @@ export function createEnvironment(input: EnvironmentInput) {
       return null;
     },
 
-    async getApiRoute(route: Route): Promise<unknown> {
+    async getApiRoute(route) {
       return input.loadModule(route.file);
     },
 
-    async getMiddleware(middleware: MiddlewareInfo): Promise<any> {
+    async getMiddleware(middleware) {
       const mod = (await input.loadModule(middleware.file)) as any;
       if (typeof mod?.default !== 'function') {
         return null;
@@ -148,8 +219,44 @@ export function createEnvironment(input: EnvironmentInput) {
       return mod;
     },
 
-    async getLoaderData(request: Request, route: Route): Promise<{ data: unknown } | undefined> {
-      return executeLoader(request, route);
+    async getLoaderData(request, route) {
+      const params = parseParams(request, route);
+      const result = await executeLoader(request, route, params);
+
+      if (isResponse(result)) {
+        return result;
+      }
+
+      return Response.json(result ?? null);
     },
+
+    async preload() {
+      if (input.isDevelopment) {
+        return;
+      }
+      const manifest = await getRoutesManifest();
+      if (manifest) {
+        const requests: string[] = [];
+        if (manifest.middleware) requests.push(manifest.middleware.file);
+        if (manifest.rendering) requests.push(manifest.rendering.file);
+        for (const apiRoute of manifest.apiRoutes) requests.push(apiRoute.file);
+        for (const htmlRoute of manifest.htmlRoutes) {
+          if (htmlRoute.loader) requests.push(htmlRoute.loader);
+        }
+        await Promise.all(requests.map((request) => input.loadModule(request)));
+      }
+    },
+  };
+}
+
+/**
+ * Merges top-level assets with per-route async chunk assets. Top-level assets come first
+ */
+function mergeAssets(topLevel?: AssetInfo, routeLevel?: AssetInfo): AssetInfo {
+  return {
+    css: [...(topLevel?.css ?? []), ...(routeLevel?.css ?? [])],
+    externalCss: [...(topLevel?.externalCss ?? []), ...(routeLevel?.externalCss ?? [])],
+    js: [...(topLevel?.js ?? []), ...(routeLevel?.js ?? [])],
+    favicon: topLevel?.favicon,
   };
 }

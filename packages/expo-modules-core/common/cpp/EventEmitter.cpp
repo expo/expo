@@ -1,9 +1,4 @@
-#ifdef __APPLE__
-#include <ExpoModulesJSI/JSIUtils.h>
-#else
 #include "JSIUtils.h"
-#endif
-
 #include "EventEmitter.h"
 #include "LazyObject.h"
 
@@ -69,7 +64,7 @@ void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const 
     }
     return;
   }
-  // When there are more than one listener, we copy the list to a vector as the list may be modified during the loop.
+  // When there is more than one listener, we copy the list to a vector as the list may be modified during the loop.
   std::vector<jsi::Function> listenersVector;
   listenersVector.reserve(listSize);
 
@@ -95,7 +90,12 @@ void Listeners::call(jsi::Runtime &runtime, const std::string& eventName, const 
 
 #pragma mark - NativeState
 
-NativeState::NativeState() : jsi::NativeState() {}
+NativeState::NativeState(void *context, void (*contextDeallocator)(void *))
+#if __has_include(<ExpoModulesJSI/NativeState.h>)
+  : NativeStateBase(context, contextDeallocator) {}
+#else
+  : NativeStateBase() {}
+#endif
 
 NativeState::~NativeState() {
   listeners.clear();
@@ -202,7 +202,7 @@ jsi::Value createEventSubscription(jsi::Runtime &runtime, const std::string &eve
 
 #pragma mark - Public API
 
-void emitEvent(jsi::Runtime &runtime, jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments) {
+void emitEvent(jsi::Runtime &runtime, const jsi::Object &emitter, const std::string &eventName, const std::vector<jsi::Value> &arguments) {
   emitEvent(runtime, emitter, eventName, arguments.data(), arguments.size());
 }
 

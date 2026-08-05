@@ -49,7 +49,14 @@ To ensure that the **public/.well-known/apple-app-site-association** file is con
 
 You can use the following command to generate the **apple-app-site-association** file based on your [app config](/versions/latest/config/app/):
 
-<Terminal cmd={['$ npx setup-safari']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx setup-safari'],
+    yarn: ['$ yarn dlx setup-safari'],
+    pnpm: ['$ pnpm dlx setup-safari'],
+    bun: ['$ bunx setup-safari'],
+  }}
+/>
 
 See [Test the deep link](/linking/into-your-app/#test-the-deep-link) guide to test handoff in development.
 
@@ -97,7 +104,14 @@ module.exports = {
 
 After configuring the app config, regenerate your native project with the following command:
 
-<Terminal cmd={['$ npx expo prebuild -p ios']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo prebuild -p ios'],
+    yarn: ['$ yarn expo prebuild -p ios'],
+    pnpm: ['$ pnpm expo prebuild -p ios'],
+    bun: ['$ bun expo prebuild -p ios'],
+  }}
+/>
 
 In development, you must start the website **before installing the app on your device**. This is because when you install the app, the OS will trigger Apple's servers to ping your website for the **.well-known/apple-app-site-association** file. If the website is not running, the OS will not be able to find the file and handoff will not work. If this happens, rebuild the native app with `npx expo run:ios -d`.
 
@@ -105,7 +119,7 @@ In development, you must start the website **before installing the app on your d
 
 In any route that you want to support handoff, use the `Head` component from `expo-router/head`:
 
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import Head from 'expo-router/head';
 import { Text } from 'react-native';
 
@@ -135,7 +149,7 @@ The `expo-router/head` component supports the following meta tags:
 You may want to switch the values between platforms, for that you can use **Platform.select**:
 
 {/* prettier-ignore */}
-```tsx app/index.tsx
+```tsx src/app/index.tsx
 import Head from 'expo-router/head';
 
 export default function App() {
@@ -185,7 +199,7 @@ If you're having issues, the best thing you can do is enable the most aggressive
 }
 ```
 
-In the application, ensure you are not rendering the `<Head />` element conditionally (for example, in an `if/else` block), it must be rendered on every page that you want to support handoff. We recommend adding it to the [Root Layout](/router/basics/layout/#root-layout) component to ensure every route is linkable while debugging.
+In the application, ensure you are not rendering the `<Head />` element conditionally (for example, in an `if/else` block), it must be rendered on every page that you want to support handoff. We recommend adding it to the [Root Layout](/router/basics/navigation-layouts/#root-layout) component to ensure every route is linkable while debugging.
 
 Ensure you can access the Ngrok URL (for example, via the browser), before installing the app on your device. If you can't access the URL, the OS will not be able to find the file and handoff will not work.
 

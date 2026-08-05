@@ -1,4 +1,5 @@
-import { CodeBlock, insertContentsAtOffset, searchFromOffset } from '../utils/commonCodeMod';
+import type { CodeBlock } from '../utils/commonCodeMod';
+import { insertContentsAtOffset, searchFromOffset } from '../utils/commonCodeMod';
 import { findMatchingBracketPosition } from '../utils/matchBrackets';
 
 interface SwiftFunctionParam {
@@ -194,7 +195,7 @@ export function findSwiftFunctionCodeBlock(contents: string, selector: string): 
       continue;
     }
     for (let i = 0; i < argLabels.length; ++i) {
-      if (argLabels[i] !== params[i].argumentLabel) {
+      if (argLabels[i] !== params[i]?.argumentLabel) {
         continue;
       }
     }
@@ -215,7 +216,7 @@ export function findSwiftFunctionCodeBlock(contents: string, selector: string): 
 
 function parseSwiftFunctionParam(paramTuple: string): SwiftFunctionParam {
   const semiIndex = paramTuple.indexOf(':');
-  const [argumentLabel, parameterName] = paramTuple.substring(0, semiIndex).split(/\s+/);
+  const [argumentLabel = '', parameterName = ''] = paramTuple.substring(0, semiIndex).split(/\s+/);
   const typeString = paramTuple.substring(semiIndex + 1).trim();
   return {
     argumentLabel,

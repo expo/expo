@@ -1,6 +1,5 @@
 import { CommandError } from '../utils/errors';
-
-const debug = require('debug')('expo:utils:variadic') as typeof console.log;
+import { event } from './events';
 
 /** Given a list of CLI args, return a sorted set of args based on categories used in a complex command. */
 export function parseVariadicArguments(
@@ -16,17 +15,17 @@ export function parseVariadicArguments(
 
   let i = 0;
   while (i < argv.length) {
-    const arg = argv[i];
+    const arg = argv[i]!;
 
     if (!arg.startsWith('-')) {
       variadic.push(arg);
     } else if (arg === '--') {
       break;
     } else {
-      const flagIndex = strFlags.indexOf(arg.split('=')[0]);
+      const flagIndex = strFlags.indexOf(arg.split('=')[0]!);
       if (flagIndex !== -1) {
         // Handle flags that expect a value
-        const [flag, value] = arg.split('=');
+        const [flag, value] = arg.split('=') as [string, ...string[]];
         if (value !== undefined) {
           // If the flag has a value inline (e.g., --flag=value)
           if (parsedFlags[flag] === undefined) {
@@ -79,10 +78,10 @@ export function parseVariadicArguments(
       throw new CommandError('BAD_ARGS', 'Unexpected multiple --');
     }
     extras.push(...extraArgs);
-    debug('Extra arguments: ' + extras.join(', '));
+    event('variadic_extras', { extras });
   }
 
-  debug(`Parsed arguments (variadic: %O, flags: %O, extra: %O)`, variadic, parsedFlags, extras);
+  event('variadic_parsed', { variadic, flags: parsedFlags, extras });
 
   return {
     variadic,

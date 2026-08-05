@@ -9,6 +9,7 @@ __tests__
 __rsc_tests__
 
 /babel.config.js
+/oxlint.config.mjs
 /android/src/androidTest/
 /android/src/test/
 
@@ -21,3 +22,4 @@ __rsc_tests__
 
 # This flag file trigger on-demand bundling during native builds in the Expo monorepo
 /.bundle-on-demand
+/CLAUDE.md

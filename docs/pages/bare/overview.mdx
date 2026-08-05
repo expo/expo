@@ -14,6 +14,7 @@ import { Rocket02Icon } from '@expo/styleguide-icons/outline/Rocket02Icon';
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
+import { FAQ } from '~/ui/components/FAQ';
 import { CODE } from '~/ui/components/Text';
 
 If you have a React Native app that doesn't use any Expo tools, you might be wondering what Expo can provide for you, why you might want to use Expo tools and services, and how to get started.
@@ -30,7 +31,9 @@ There's so much more to explore, and the links below will help you to explore th
 
 Below are four suggested phases of incremental adoption. These phases generally progress from quick changes to improve developer experience, to more significant workflow and codebase optimizations.
 
-Only the first phase &mdash; prerequisites &mdash; is required by other phases. After following its instructions, you can skip to the tools and services that are most relevant to your goals in adopting Expo.
+Only the first phase — prerequisites — is required by other phases. After following its instructions, you can skip to the tools and services that are most relevant to your goals in adopting Expo.
+
+{/* Note: This "Prerequisites" heading intentionally does not use the <Prerequisites> component. It is a phase label in the "Incremental adoption steps" sequence (alongside "Quick wins", "New workflows", "New mindsets") and its body is navigational BoxLinks, not a checklist of requirements to complete before reading the page. */}
 
 ### Prerequisites
 
@@ -144,6 +147,8 @@ The following helps with your project's long term maintainability, native code m
 
 ## Common questions
 
+<FAQ>
+
 <Collapsible summary="How long will it take to adopt Expo in my existing React Native project?">
 
 Adopting Expo doesn't have to be done in one step. You can start with the _quick wins_ and then move on to more complex parts. You can also pick and choose which features you want to adopt based on what is most helpful for your project.
@@ -170,7 +175,7 @@ The `expo` package has a small footprint since it only includes a minimal set of
 
 <Collapsible summary="Why did React Native recommend using Expo?">
 
-Most React Native developers solve common problems when building an app, such as implementing navigation, accessing Native APIs, upgrading to new versions, and more. This requires using a specific set of tools and libraries to build and maintain your app &mdash; which means you are creating your own framework.
+Most React Native developers solve common problems when building an app, such as implementing navigation, accessing Native APIs, upgrading to new versions, and more. This requires using a specific set of tools and libraries to build and maintain your app — which means you are creating your own framework.
 
 Expo solves these problems by providing a set of primitives and helping you (the developer) to focus on building your app. It also offers tools to iterate faster in development. For more information, see [Why React Native recommends using a framework](https://reactnative.dev/blog/2024/06/25/use-a-framework-to-build-react-native-apps).
 
@@ -207,3 +212,5 @@ Yes, you can install and use third-party libraries that require native projects 
 You can continue using any navigation library in your project. However, we recommend using Expo Router for all the benefits [described here](/router/introduction).
 
 </Collapsible>
+
+</FAQ>

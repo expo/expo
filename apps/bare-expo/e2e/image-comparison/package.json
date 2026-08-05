@@ -6,7 +6,7 @@
   "type": "module",
   "main": "src/server.ts",
   "scripts": {
-		"buildInspector": "./inspector/scripts/build.sh",
+    "buildInspector": "./inspector/scripts/build.sh",
     "dev": "bun --watch --no-clear-screen ./src/server.ts",
     "start": "bun run src/server.ts",
     "test": "bun test",
@@ -15,6 +15,7 @@
     "debug-inspector": "bun run inspector/ScreenInspectorIOS.ts"
   },
   "dependencies": {
+    "@expo/spawn-async": "^1.7.2",
     "jimp-compact": "^0.16.1-2",
     "pixelmatch": "^7.1.0",
     "pngjs": "^7.0.0",

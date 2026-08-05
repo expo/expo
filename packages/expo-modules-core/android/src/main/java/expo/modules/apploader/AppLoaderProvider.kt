@@ -31,10 +31,11 @@ object AppLoaderProvider {
         "org.unimodules.core.AppLoader#$name"
       ) ?: throw IllegalStateException("Unable to instantiate AppLoader!")
 
+      @Suppress("UNCHECKED_CAST")
       loaderClass = Class.forName(loaderClassName) as Class<out HeadlessAppLoader>
       loaders[name] = loaderClass
-        .getDeclaredConstructor(Context::class.java)
-        .newInstance(context) as HeadlessAppLoader
+        .getDeclaredConstructor()
+        .newInstance() as HeadlessAppLoader
     } catch (e: PackageManager.NameNotFoundException) {
       throw IllegalStateException("Unable to instantiate AppLoader!", e)
     }

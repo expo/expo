@@ -2,7 +2,7 @@ import { requireNativeView } from 'expo';
 
 const RNHostNativeView: React.ComponentType<any> = requireNativeView('ExpoUI', 'RNHostView');
 
-export type RNHostViewProps = {
+export interface RNHostViewProps {
   /**
    * When `true`, the RNHost will update its size in the React Native view tree to match the children's size.
    * When `false`, the RNHost will use the size of the parent SwiftUI View.
@@ -14,7 +14,7 @@ export type RNHostViewProps = {
    * The RN View to be hosted.
    */
   children: React.ReactElement;
-};
+}
 
 export function RNHostView(props: RNHostViewProps) {
   return (

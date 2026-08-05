@@ -1,20 +1,20 @@
-import { ExpoConfig, getConfig } from '@expo/config';
+import type { ExpoConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 
-import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
-import DevToolsPluginManager from './DevToolsPluginManager';
-import { getPlatformBundlers } from './platformBundlers';
 import { Log } from '../../log';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { env } from '../../utils/env';
-import { ProjectPrerequisite } from '../doctor/Prerequisite';
+import type { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import { printItem } from '../interface/commandsTable';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { resolveSchemeAsync } from '../resolveOptions';
-
-const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
+import type { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
+import DevToolsPluginManager from './DevToolsPluginManager';
+import { debugEvent } from './events';
+import { getPlatformBundlers } from './platformBundlers';
 
 export type MultiBundlerStartOptions = {
   type: keyof typeof BUNDLERS;
@@ -54,7 +54,9 @@ export class DevServerManager {
   constructor(
     public projectRoot: string,
     /** Keep track of the original CLI options for bundlers that are started interactively. */
-    public options: BundlerStartOptions
+    public options: BundlerStartOptions,
+    /** Port for the web dev server, resolved up front even when web starts interactively. */
+    private webPort?: number
   ) {
     if (!options.isExporting) {
       this.notifier = this.watchBabelConfig();
@@ -137,11 +139,10 @@ export class DevServerManager {
       skipSDKVersionRequirement: true,
     });
     const bundler = getPlatformBundlers(this.projectRoot, exp).web;
-    debug(`Starting ${bundler} dev server for web`);
     return this.startAsync([
       {
         type: bundler,
-        options: this.options,
+        options: { ...this.options, port: this.webPort ?? this.options.port },
       },
     ]);
   }
@@ -149,7 +150,8 @@ export class DevServerManager {
   /** Switch between Expo Go and Expo Dev Clients. */
   async toggleRuntimeMode(isUsingDevClient: boolean = !this.options.devClient): Promise<boolean> {
     const nextMode = isUsingDevClient ? '--dev-client' : '--go';
-    Log.log(printItem(chalk`Switching to {bold ${nextMode}}`));
+    Log.log(printItem(`Switching to ${chalk`{bold ${nextMode}}`}`, { dim: true }));
+    Log.log();
 
     const nextScheme = await resolveSchemeAsync(this.projectRoot, {
       devClient: isUsingDevClient,
@@ -160,12 +162,13 @@ export class DevServerManager {
     this.options.devClient = isUsingDevClient;
     for (const devServer of this.devServers) {
       devServer.isDevClient = isUsingDevClient;
+      // TODO(@kitten): Clean up mode switching better
       const urlCreator = devServer.getUrlCreator();
       urlCreator.defaults ??= {};
       urlCreator.defaults.scheme = nextScheme;
     }
 
-    debug(`New runtime options (runtime: ${nextMode}):`, this.options);
+    debugEvent('runtime_mode_switched', { mode: nextMode });
     return true;
   }
 

@@ -1,6 +1,6 @@
-import { requireNativeModule } from 'expo-modules-core';
+import { requireNativeModule } from 'expo';
 
-import { ExpoAgeRangeModule } from './ExpoAgeRange.types';
+import type { ExpoAgeRangeModule } from './ExpoAgeRange.types';
 
 /**
  * @hidden

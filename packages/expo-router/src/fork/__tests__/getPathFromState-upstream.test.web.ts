@@ -1,6 +1,6 @@
 import { expect, test } from '@jest/globals';
-import type { NavigationState, PartialState } from '@react-navigation/routers';
 
+import type { NavigationState, PartialState } from '../../react-navigation/routers';
 import { getPathFromState } from '../getPathFromState';
 import { getStateFromPath } from '../getStateFromPath';
 

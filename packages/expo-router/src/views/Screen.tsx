@@ -1,10 +1,9 @@
 'use client';
-import { useRoute } from '@react-navigation/native';
-import { isValidElement, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
+import { isValidElement } from 'react';
 
 import { useNavigation } from '../useNavigation';
 import { useSafeLayoutEffect } from './useSafeLayoutEffect';
-import { isRoutePreloadedInStack } from '../utils/stack';
 
 export type ScreenProps<TOptions extends Record<string, any> = Record<string, any>> = {
   /**
@@ -26,20 +25,15 @@ export function Screen<TOptions extends object = object>({ name, options }: Scre
       `The name prop on the Screen component may only be used when it is inside a Layout route`
     );
   }
-  const route = useRoute();
   const navigation = useNavigation();
-  const isFocused = navigation.isFocused();
-  const isPreloaded = isRoutePreloadedInStack(navigation.getState(), route);
 
   useSafeLayoutEffect(() => {
     if (options && Object.keys(options).length) {
       // React Navigation will infinitely loop in some cases if an empty object is passed to setOptions.
       // https://github.com/expo/router/issues/452
-      if (!isPreloaded || (isPreloaded && isFocused)) {
-        navigation.setOptions(options);
-      }
+      navigation.setOptions(options);
     }
-  }, [isFocused, isPreloaded, navigation, options]);
+  }, [navigation, options]);
 
   return null;
 }

@@ -1,1 +1,0 @@
-{"version":3,"file":"ExpoStoreReview.js","sourceRoot":"","sources":["../src/ExpoStoreReview.ts"],"names":[],"mappings":"AAAA,uBAAuB;AACvB,eAAe,EAGb,CAAC","sourcesContent":["// Unimplemented on web\nexport default {} as Partial<{\n  isAvailableAsync: () => Promise<boolean>;\n  requestReview: () => Promise<void>;\n}>;\n"]}

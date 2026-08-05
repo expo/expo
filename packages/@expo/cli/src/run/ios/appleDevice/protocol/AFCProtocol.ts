@@ -5,14 +5,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import Debug from 'debug';
-import { Socket } from 'net';
+import type { Socket } from 'net';
 
+import { CommandError } from '../../../../utils/errors';
 import type { ProtocolReaderCallback, ProtocolWriter } from './AbstractProtocol';
 import { ProtocolClient, ProtocolReader, ProtocolReaderFactory } from './AbstractProtocol';
-import { CommandError } from '../../../../utils/errors';
-
-const debug = Debug('expo:apple-device:protocol:afc');
 
 export const AFC_MAGIC = 'CFA6LPAA';
 export const AFC_HEADER_SIZE = 40;
@@ -363,11 +360,14 @@ export class AFCProtocolClient extends ProtocolClient {
 
     const reader = this.readerFactory.create((resp, err) => {
       if (err && err instanceof AFCInternalError) {
-        this.requestCallbacks[err.requestId](resp, err);
+        this.requestCallbacks[err.requestId]?.(resp, err);
       } else if (isErrorStatusResponse(resp)) {
-        this.requestCallbacks[resp.id](resp, new AFCError(AFC_STATUS[resp.data], resp.data));
+        this.requestCallbacks[resp.id]?.(
+          resp,
+          new AFCError(AFC_STATUS?.[resp.data] ?? 'UNKNOWN_ERROR', resp.data)
+        );
       } else {
-        this.requestCallbacks[resp.id](resp);
+        this.requestCallbacks[resp.id]?.(resp);
       }
     });
     socket.on('data', reader.onData);
@@ -416,7 +416,6 @@ export class AFCProtocolReader extends ProtocolReader {
       operation: data.readUInt32LE(32),
     };
 
-    debug(`parse header: ${JSON.stringify(this.header)}`);
     if (this.header.headerLength < AFC_HEADER_SIZE) {
       throw new AFCInternalError('Invalid AFC header', this.header.requestId);
     }
@@ -431,12 +430,7 @@ export class AFCProtocolReader extends ProtocolReader {
     };
     if (isStatusResponse(body)) {
       const status = data.readUInt32LE(0);
-      debug(`${AFC_OPS[this.header.operation]} response: ${AFC_STATUS[status]}`);
       body.data = status;
-    } else if (data.length <= 8) {
-      debug(`${AFC_OPS[this.header.operation]} response: ${Array.prototype.toString.call(body)}`);
-    } else {
-      debug(`${AFC_OPS[this.header.operation]} response length: ${data.length} bytes`);
     }
     return body;
   }
@@ -458,19 +452,6 @@ export class AFCProtocolWriter implements ProtocolWriter {
     header.writeUInt32LE(operation, 32);
     socket.write(header);
     socket.write(data);
-    if (data.length <= 8) {
-      debug(
-        `socket write, header: { requestId: ${requestId}, operation: ${
-          AFC_OPS[operation]
-        }}, body: ${Array.prototype.toString.call(data)}`
-      );
-    } else {
-      debug(
-        `socket write, header: { requestId: ${requestId}, operation: ${AFC_OPS[operation]}}, body: ${data.length} bytes`
-      );
-    }
-
-    debug(`socket write, bytes written ${header.length} (header), ${data.length} (body)`);
     if (payload) {
       socket.write(payload);
     }

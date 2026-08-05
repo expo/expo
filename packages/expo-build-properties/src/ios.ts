@@ -1,13 +1,8 @@
-import {
-  ConfigPlugin,
-  IOSConfig,
-  WarningAggregator,
-  XcodeProject,
-  withInfoPlist,
-  withXcodeProject,
-} from 'expo/config-plugins';
+import type { ConfigPlugin, XcodeProject } from 'expo/config-plugins';
+import { IOSConfig, withInfoPlist, withXcodeProject } from 'expo/config-plugins';
 
 import type { PluginConfigType } from './pluginConfig';
+import { resolveConfigValue } from './pluginConfig';
 
 const { createBuildPodfilePropsConfigPlugin } = IOSConfig.BuildProperties;
 
@@ -43,24 +38,22 @@ export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<Plugin
     },
     {
       propName: 'ios.buildReactNativeFromSource',
-      propValueGetter: (config) => config.ios?.buildReactNativeFromSource?.toString(),
+      propValueGetter: (config) =>
+        resolveConfigValue(config, 'ios', 'buildReactNativeFromSource')?.toString(),
     },
     {
       propName: 'expo.useHermesV1',
-      propValueGetter: (config) => {
-        if (config.ios?.useHermesV1 && config.ios?.buildReactNativeFromSource !== true) {
-          WarningAggregator.addWarningIOS(
-            'withIosBuildProperties',
-            'Hermes V1 requires building React Native from source. Set `buildReactNativeFromSource` to `true` to enable it.'
-          );
-        }
-        return config.ios?.useHermesV1?.toString();
-      },
+      propValueGetter: (config) => resolveConfigValue(config, 'ios', 'useHermesV1')?.toString(),
+    },
+    {
+      propName: 'EXPO_USE_PRECOMPILED_MODULES',
+      propValueGetter: (config) => (config.ios?.usePrecompiledModules ?? true).toString(),
     },
   ],
   'withIosBuildProperties'
 );
 
+/** @deprecated use built-in `ios.deploymentTarget` property instead. */
 export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, props) => {
   const deploymentTarget = props.ios?.deploymentTarget;
   if (!deploymentTarget) {
@@ -70,14 +63,14 @@ export const withIosDeploymentTarget: ConfigPlugin<PluginConfigType> = (config, 
   // Updates deployment target in app xcodeproj
   config = withIosDeploymentTargetXcodeProject(config, { deploymentTarget });
 
-  // Updates deployement target in Podfile (Pods project)
+  // Updates deployment target in Podfile (Pods project)
   config = withIosDeploymentTargetPodfile(config, props);
 
   return config;
 };
 
 export const withIosInfoPlist: ConfigPlugin<PluginConfigType> = (config, props) => {
-  const reactNativeReleaseLevel = props.ios?.reactNativeReleaseLevel;
+  const reactNativeReleaseLevel = resolveConfigValue(props, 'ios', 'reactNativeReleaseLevel');
   if (reactNativeReleaseLevel) {
     config = withIosReactNativeReleaseLevel(config, { reactNativeReleaseLevel });
   }

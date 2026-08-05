@@ -1,10 +1,10 @@
 import { jest } from '@jest/globals';
-import { act, fireEvent } from '@testing-library/react';
+import { act, fireEvent, screen } from '@testing-library/react';
 import GithubSlugger from 'github-slugger';
 import { createRef, type RefObject } from 'react';
 
 import { BASE_HEADING_LEVEL, HeadingType, createHeadingManager } from '~/common/headingManager';
-import { renderWithHeadings } from '~/common/test-utilities';
+import { axe, renderWithHeadings } from '~/common/test-utilities';
 import { HeadingsContext } from '~/common/withHeadingManager';
 import { type ScrollContainerHandle } from '~/components/ScrollContainer';
 
@@ -87,12 +87,23 @@ describe('TableOfContents', () => {
     expect(container).toMatchSnapshot();
   });
 
+  test('has no axe violations', async () => {
+    const headingManager = prepareHeadingManager();
+
+    const { container } = renderWithHeadings(
+      <HeadingsContext.Provider value={headingManager}>
+        <TableOfContents headingManager={headingManager} />
+      </HeadingsContext.Provider>
+    );
+    expect(await axe(container)).toHaveNoViolations();
+  });
+
   test('activates headings near top, middle, and bottom positions', () => {
     const headingManager = createHeadingManagerWithOffsets();
     const { contentRef } = createContentRef();
     const tocRef = createRef<TableOfContentsHandles>();
 
-    const { getByText } = renderWithHeadings(
+    renderWithHeadings(
       <HeadingsContext.Provider value={headingManager}>
         <TableOfContents ref={tocRef} headingManager={headingManager} contentRef={contentRef} />
       </HeadingsContext.Provider>
@@ -100,16 +111,13 @@ describe('TableOfContents', () => {
 
     act(() => tocRef.current?.handleContentScroll?.(0));
     expect(tocRef.current).not.toBeNull();
-    const introText = getByText('Intro');
-    expect(introText).toHaveClass('!text-link');
+    expect(screen.getByText('Intro')).toHaveClass('text-link!');
 
     act(() => tocRef.current?.handleContentScroll?.(950));
-    const middleText = getByText('Middle');
-    expect(middleText).toHaveClass('!text-link');
+    expect(screen.getByText('Middle')).toHaveClass('text-link!');
 
     act(() => tocRef.current?.handleContentScroll?.(1500));
-    const endText = getByText('End');
-    expect(endText).toHaveClass('!text-link');
+    expect(screen.getByText('End')).toHaveClass('text-link!');
   });
 
   test('scrolls to align heading with activation line on click', () => {
@@ -124,15 +132,13 @@ describe('TableOfContents', () => {
     const { contentRef, scrollTo, scrollRef } = createContentRef(800, 1600);
     const tocRef = createRef<TableOfContentsHandles>();
 
-    const { getByText } = renderWithHeadings(
+    renderWithHeadings(
       <HeadingsContext.Provider value={headingManager}>
         <TableOfContents ref={tocRef} headingManager={headingManager} contentRef={contentRef} />
       </HeadingsContext.Provider>
     );
 
-    act(() => {
-      fireEvent.click(getByText('Middle'));
-    });
+    fireEvent.click(screen.getByText('Middle'));
 
     expect(scrollTo).toHaveBeenCalledWith(
       expect.objectContaining({

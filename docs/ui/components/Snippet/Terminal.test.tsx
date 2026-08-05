@@ -2,6 +2,8 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { axe } from '~/common/test-utilities';
+
 import { Terminal } from '.';
 
 describe(Terminal, () => {
@@ -105,6 +107,25 @@ describe(Terminal, () => {
     expect(screen.getByRole<HTMLTextAreaElement>('textbox').value).toBe('yarn add expo');
   });
 
+  it('adds data-md-commands only for package-manager command maps', () => {
+    render(
+      <>
+        <Terminal
+          cmd={{
+            npm: ['$ npm install expo'],
+            bun: ['$ bun add expo'],
+          }}
+        />
+        <Terminal cmd={['$ npx expo start']} />
+      </>
+    );
+
+    const terminals = screen.getAllByRole('generic').filter(el => el.dataset.md === 'terminal');
+    expect(terminals.length).toBe(2);
+    expect(terminals[0].getAttribute('data-md-commands')).not.toBeNull();
+    expect(terminals[1].getAttribute('data-md-commands')).toBeNull();
+  });
+
   it('renders browser action when provided', async () => {
     const originalWindowOpen = window.open;
     const openMock = jest.fn();
@@ -129,5 +150,20 @@ describe(Terminal, () => {
     );
 
     window.open = originalWindowOpen;
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <>
+        <Terminal cmd={['$ expo install expo-updates']} />
+        <Terminal
+          cmd={{
+            npm: ['$ npm install expo'],
+            yarn: ['$ yarn add expo'],
+          }}
+        />
+      </>
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

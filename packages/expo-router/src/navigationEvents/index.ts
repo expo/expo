@@ -1,40 +1,35 @@
-interface BasePageEvent {
-  pathname: string;
-  screenId: string;
-}
+/// <reference path="../ts-declarations/expo-global.d.ts" />
 
-/**
- * The rendering of the page started
- *
- * This can happen if screen is to be focused for the first time or when the screen is preloaded
- */
-export interface PageWillRender extends BasePageEvent {
-  type: 'pageWillRender';
-}
+import type {
+  PagePreloadedEvent,
+  PageFocusedEvent,
+  PageBlurredEvent,
+  PageRemoved,
+  ActionDispatchedEvent,
+} from './types';
 
-export interface PageFocusedEvent extends BasePageEvent {
-  type: 'pageFocused';
-}
+export type {
+  PagePreloadedEvent,
+  PageFocusedEvent,
+  PageBlurredEvent,
+  PageRemoved,
+  ActionDispatchedEvent,
+} from './types';
 
-export interface PageBlurredEvent extends BasePageEvent {
-  type: 'pageBlurred';
-}
-
-export interface PageRemoved extends BasePageEvent {
-  type: 'pageRemoved';
-}
-
-export type AnalyticsEvent = PageWillRender | PageFocusedEvent | PageBlurredEvent | PageRemoved;
+export type AnalyticsEvent =
+  | PagePreloadedEvent
+  | PageFocusedEvent
+  | PageBlurredEvent
+  | PageRemoved
+  | ActionDispatchedEvent;
 
 const availableEvents: AnalyticsEvent['type'][] = [
-  'pageWillRender',
+  'pagePreloaded',
   'pageFocused',
   'pageBlurred',
   'pageRemoved',
+  'actionDispatched',
 ];
-
-let isAfterInitialRender = false;
-let hasListener = false;
 
 type EventTypeName = AnalyticsEvent['type'];
 type Payload<T extends EventTypeName> = Omit<Extract<AnalyticsEvent, { type: T }>, 'type'>;
@@ -47,16 +42,9 @@ function addListener<EventType extends EventTypeName>(
   eventType: EventType,
   callback: (event: Payload<EventType>) => void
 ) {
-  if (isAfterInitialRender) {
-    console.warn(
-      '[expo-router] unstable_analytics.addListener was called after the initial render. Analytics listeners should be added in the global scope before first render of your app, preferably in a root _layout.tsx'
-    );
-    return () => {};
-  }
   if (!availableEvents.includes(eventType)) {
     throw new Error(`Unsupported event type: ${eventType}`);
   }
-  hasListener = true;
   if (!subscribers[eventType]) {
     subscribers[eventType] = new Set() as (typeof subscribers)[EventType];
   }
@@ -66,7 +54,6 @@ function addListener<EventType extends EventTypeName>(
     if (subscribers[eventType]!.size === 0) {
       delete subscribers[eventType];
     }
-    hasListener = Object.keys(subscribers).length > 0;
   };
 }
 
@@ -79,13 +66,15 @@ export function emit<EventType extends EventTypeName>(type: EventType, event: Pa
   }
 }
 
+let enabled = false;
+
 export const unstable_navigationEvents = {
   addListener,
   emit,
-  hasAnyListener() {
-    return hasListener;
+  enable: () => {
+    enabled = true;
   },
-  markInitialRender() {
-    isAfterInitialRender = true;
+  isEnabled: () => {
+    return enabled;
   },
 };

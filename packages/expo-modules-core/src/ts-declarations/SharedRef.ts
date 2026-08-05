@@ -11,9 +11,9 @@ import type { SharedObject } from './SharedObject';
  * directly to the image view from `expo-image` without any additional writes and reads from the file system.
  */
 export declare class SharedRef<
-    TNativeRefType extends string = 'unknown',
-    TEventsMap extends EventsMap = Record<never, never>,
-  >
+  TNativeRefType extends string = 'unknown',
+  TEventsMap extends EventsMap = Record<never, never>,
+>
   extends SharedObject<TEventsMap>
   implements SharedObject<TEventsMap>
 {

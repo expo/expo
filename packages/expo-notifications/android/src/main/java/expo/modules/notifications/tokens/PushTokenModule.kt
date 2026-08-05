@@ -90,7 +90,7 @@ class PushTokenModule : Module(), FirebaseTokenListener {
     } catch (e: IllegalStateException) {
       promise.reject(
         REGISTRATION_FAIL_CODE,
-        "Make sure to complete the guide at https://docs.expo.dev/push-notifications/fcm-credentials/ : ${e.message}",
+        "Unable to get Firebase Messaging instance. Did you configure `googleServicesFile` path in app config? Make sure to complete the guide at https://docs.expo.dev/push-notifications/fcm-credentials/ : ${e.message}",
         e
       )
       null

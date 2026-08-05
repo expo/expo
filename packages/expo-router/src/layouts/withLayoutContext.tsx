@@ -1,25 +1,29 @@
-import { EventMapBase, NavigationState } from '@react-navigation/native';
-import React, {
-  Children,
-  forwardRef,
+import type {
   ComponentProps,
   ComponentType,
   ForwardRefExoticComponent,
   PropsWithoutRef,
   ReactNode,
   RefAttributes,
-  useMemo,
 } from 'react';
+import { Children, forwardRef, useMemo } from 'react';
 
-import { useContextKey } from '../Route';
+import { useContextKey, useRouteNode } from '../Route';
 import { isNativeTabTrigger, convertTabPropsToOptions } from '../native-tabs/NativeTabTrigger';
-import { PickPartial } from '../types';
-import { useSortedScreens, ScreenProps } from '../useScreens';
-import { IsWithinLayoutContext } from './IsWithinLayoutContext';
+import type { EventMapBase, NavigationState } from '../react-navigation/native';
+import type { Href, PickPartial } from '../types';
+import type { ScreenProps } from '../useScreens';
+import { useSortedScreens } from '../useScreens';
 import { isProtectedReactElement, Protected } from '../views/Protected';
 import { isScreen, Screen } from '../views/Screen';
+import { GuardContextProvider, normalizeRouteName, type GuardedRedirects } from './GuardContext';
+import { IsWithinLayoutContext } from './IsWithinLayoutContext';
 
-export function useFilterScreenChildren(
+export function useFilterScreenChildren<
+  TOptions extends object = Record<string, any>,
+  TState extends NavigationState = NavigationState,
+  TEventMap extends EventMapBase = EventMapBase,
+>(
   children: ReactNode,
   {
     isCustomNavigator,
@@ -33,43 +37,36 @@ export function useFilterScreenChildren(
   return useMemo(() => {
     const customChildren: any[] = [];
 
-    const screens: (ScreenProps & { name: string })[] = [];
-    const protectedScreens = new Set<string>();
+    const screens: (ScreenProps<TOptions, TState, TEventMap> & { name: string })[] = [];
+    const guardedRedirects: GuardedRedirects = new Map();
 
-    function flattenChild(child: ReactNode, exclude = false) {
+    function flattenChild(child: ReactNode, exclude = false, redirectTo?: Href) {
       if (isScreen(child, contextKey)) {
+        screens.push(child.props as ScreenProps<TOptions, TState, TEventMap> & { name: string });
         if (exclude) {
-          protectedScreens.add(child.props.name);
-        } else {
-          screens.push(child.props);
+          guardedRedirects.set(child.props.name, redirectTo);
         }
         return;
       }
 
       if (isNativeTabTrigger(child, contextKey)) {
+        const options = convertTabPropsToOptions(child.props);
+        screens.push({
+          ...child.props,
+          options: exclude ? { ...options, hidden: true } : options,
+        } as ScreenProps<TOptions, TState, TEventMap> & { name: string });
         if (exclude) {
-          protectedScreens.add(child.props.name);
-        } else {
-          const options = convertTabPropsToOptions(child.props);
-          if (options.hidden === false) {
-            screens.push({
-              ...child.props,
-              options,
-            });
-          } else {
-            // - hidden = undefined -> then the route was not specified in navigator
-            // - hidden = true -> then the route is hidden
-            // In this cases we should treat the tab as protected
-            protectedScreens.add(child.props.name);
-          }
+          guardedRedirects.set(child.props.name, redirectTo);
         }
         return;
       }
 
       if (isProtectedReactElement(child)) {
-        const excludeChildren = exclude || !child.props.guard;
+        const guardFails = !child.props.guard;
+        const excludeChildren = exclude || guardFails;
+        const childRedirectTo = guardFails ? child.props.redirectTo : redirectTo;
         Children.forEach(child.props.children, (protectedChild) => {
-          flattenChild(protectedChild, excludeChildren);
+          flattenChild(protectedChild, excludeChildren, childRedirectTo);
         });
         return;
       }
@@ -91,18 +88,22 @@ export function useFilterScreenChildren(
     // Add an assertion for development
     if (process.env.NODE_ENV !== 'production') {
       // Assert if names are not unique
-      const names = screens?.map(
-        (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
+      const screenNames =
+        screens?.map(
+          (screen) => screen && typeof screen === 'object' && 'name' in screen && screen.name
+        ) ?? [];
+      const allNames = screenNames.map((name) =>
+        typeof name === 'string' ? normalizeRouteName(name) : name
       );
-      if (names && new Set(names).size !== names.length) {
-        throw new Error('Screen names must be unique: ' + names);
+      if (new Set(allNames).size !== allNames.length) {
+        throw new Error('Screen names must be unique: ' + allNames);
       }
     }
 
     return {
       screens,
       children: customChildren,
-      protectedScreens,
+      guardedRedirects,
     };
   }, [children]);
 }
@@ -114,8 +115,9 @@ export function useFilterScreenChildren(
  * Enables use of other built-in React Navigation navigators and other navigators built with the React Navigation custom navigator API.
  *
  * @param Nav - The navigator component to wrap.
- * @param processor - A function that processes the screens before passing them to the navigator.
- * @param useOnlyUserDefinedScreens - If true, all screens not specified as navigator's children will be ignored.
+ * @param processScreens - A function that processes the screens before passing them to the navigator.
+ * It must preserve every screen name exactly once because guards are associated with the original
+ * screen names.
  *
  *  @example
  * ```tsx app/_layout.tsx
@@ -142,26 +144,49 @@ export function useFilterScreenChildren(
  * ```
  */
 export function withLayoutContext<
-  TOptions extends object,
-  T extends ComponentType<any>,
-  TState extends NavigationState,
-  TEventMap extends EventMapBase,
+  TOptions extends object = Record<string, any>,
+  T extends ComponentType<any> = ComponentType<any>,
+  TState extends NavigationState = NavigationState,
+  TEventMap extends EventMapBase = EventMapBase,
 >(
   Nav: T,
-  processor?: (options: ScreenProps[]) => ScreenProps[],
-  useOnlyUserDefinedScreens: boolean = false
+  processScreens?: (
+    screens: (ScreenProps<TOptions, TState, TEventMap> & { name: string })[]
+  ) => (ScreenProps<TOptions, TState, TEventMap> & { name: string })[]
 ) {
   return Object.assign(
     forwardRef(({ children: userDefinedChildren, ...props }: any, ref) => {
       const contextKey = useContextKey();
+      const node = useRouteNode();
 
-      const { screens, protectedScreens } = useFilterScreenChildren(userDefinedChildren, {
-        contextKey,
-      });
+      const { screens, guardedRedirects } = useFilterScreenChildren<TOptions, TState, TEventMap>(
+        userDefinedChildren,
+        { contextKey }
+      );
 
-      const processed = processor ? processor(screens ?? []) : screens;
+      const screenNames =
+        processScreens && process.env.NODE_ENV !== 'production'
+          ? new Set(screens.map(({ name }) => name))
+          : undefined;
 
-      const sorted = useSortedScreens(processed ?? [], protectedScreens, useOnlyUserDefinedScreens);
+      const processed = processScreens ? processScreens(screens ?? []) : screens;
+
+      if (screenNames && processed) {
+        const processedNames = processed.map(({ name }) => name);
+        if (
+          processedNames.length !== screenNames.size ||
+          new Set(processedNames).size !== screenNames.size ||
+          !processedNames.every((name) => screenNames.has(name))
+        ) {
+          throw new Error(
+            '`processScreens` must not add, remove, rename, or duplicate screens. ' +
+              `Received: ${JSON.stringify(processedNames)}. ` +
+              `Expected: ${JSON.stringify([...screenNames])}.`
+          );
+        }
+      }
+
+      const sorted = useSortedScreens(processed ?? [], guardedRedirects);
 
       // Prevent throwing an error when there are no screens.
       if (!sorted.length) {
@@ -170,7 +195,9 @@ export function withLayoutContext<
 
       return (
         <IsWithinLayoutContext value>
-          <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+          <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
+            <Nav {...props} id={contextKey} ref={ref} children={sorted} />
+          </GuardContextProvider>
         </IsWithinLayoutContext>
       );
     }),

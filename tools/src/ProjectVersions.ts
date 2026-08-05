@@ -7,15 +7,15 @@ import semver from 'semver';
 import {
   EXPO_DIR,
   EXPO_GO_ANDROID_DIR,
-  PACKAGES_DIR,
-  EXPO_GO_IOS_DIR,
   EXPO_GO_DIR,
+  EXPO_GO_IOS_DIR,
+  PACKAGES_DIR,
 } from './Constants';
 
 export type Platform = 'ios' | 'android';
 
-export type SDKVersionsObject = {
-  sdkVersions: string[];
+type SDKVersionsObject = {
+  sdkVersion: string;
 };
 
 const BUNDLED_NATIVE_MODULES_PATH = path.join(PACKAGES_DIR, 'expo', 'bundledNativeModules.json');
@@ -54,45 +54,31 @@ export async function androidAppVersionAsync(): Promise<string> {
   return match[1];
 }
 
-export async function getExpoGoSDKVersionAsync(): Promise<string> {
-  const expoGoAppJsonPath = path.join(EXPO_GO_DIR, 'app.json');
-  const appJson = (await JsonFile.readAsync(expoGoAppJsonPath, { json5: true })) as any;
-
-  if (appJson?.expo?.sdkVersion) {
-    return appJson.expo.sdkVersion as string;
-  }
-  throw new Error(`Home's SDK version not found!`);
-}
-
-export async function getSDKVersionsAsync(platform: Platform): Promise<string[]> {
-  const appDir =
-    platform === 'ios' ? path.join(EXPO_GO_IOS_DIR, 'Exponent', 'Supporting') : EXPO_GO_ANDROID_DIR;
-  const sdkVersionsPath = path.join(appDir, 'sdkVersions.json');
+export async function getSDKVersionAsync(_platform?: Platform): Promise<string> {
+  const sdkVersionsPath = path.join(EXPO_GO_DIR, 'sdkVersions.json');
 
   if (!(await fs.pathExists(sdkVersionsPath))) {
     throw new Error(`File at path "${sdkVersionsPath}" not found.`);
   }
-  const { sdkVersions } = (await JsonFile.readAsync(sdkVersionsPath)) as SDKVersionsObject;
-  return sdkVersions;
+  const { sdkVersion } = (await JsonFile.readAsync(sdkVersionsPath)) as SDKVersionsObject;
+  return sdkVersion;
 }
 
-export async function getOldestSDKVersionAsync(platform: Platform): Promise<string | undefined> {
-  const sdkVersions = await getSDKVersionsAsync(platform);
-  return sdkVersions.sort(semver.compare)[0];
+export async function getSDKVersionsAsync(platform: Platform): Promise<string[]> {
+  return [await getSDKVersionAsync(platform)];
 }
 
-export async function getNewestSDKVersionAsync(platform: Platform): Promise<string | undefined> {
-  const sdkVersions = await getSDKVersionsAsync(platform);
-  return sdkVersions.sort(semver.rcompare)[0];
+export async function getOldestSDKVersionAsync(platform: Platform): Promise<string> {
+  return await getSDKVersionAsync(platform);
 }
 
-export async function getNextSDKVersionAsync(platform: Platform): Promise<string | undefined> {
-  const newestVersion = await getNewestSDKVersionAsync(platform);
+export async function getNewestSDKVersionAsync(platform: Platform): Promise<string> {
+  return await getSDKVersionAsync(platform);
+}
 
-  if (!newestVersion) {
-    return;
-  }
-  return `${semver.major(semver.inc(newestVersion, 'major')!)}.0.0`;
+export async function getNextSDKVersionAsync(platform: Platform): Promise<string> {
+  const currentVersion = await getSDKVersionAsync(platform);
+  return `${semver.major(semver.inc(currentVersion, 'major')!)}.0.0`;
 }
 
 /**
@@ -101,12 +87,9 @@ export async function getNextSDKVersionAsync(platform: Platform): Promise<string
 export async function resolveSDKVersionAsync(
   sdkVersion: string,
   platform: Platform
-): Promise<string | undefined> {
-  if (sdkVersion === 'latest') {
-    return await getNewestSDKVersionAsync(platform);
-  }
-  if (sdkVersion === 'oldest') {
-    return await getOldestSDKVersionAsync(platform);
+): Promise<string> {
+  if (sdkVersion === 'latest' || sdkVersion === 'oldest') {
+    return await getSDKVersionAsync(platform);
   }
   if (sdkVersion === 'next') {
     return await getNextSDKVersionAsync(platform);

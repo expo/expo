@@ -35,6 +35,10 @@ Add `com.apple.developer.declared-age-range` entitlement according to [app.json 
 }
 ```
 
+# Docs
+
+Learn more in the [reference docs](https://docs.expo.dev/versions/latest/sdk/age-range/).
+
 # Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

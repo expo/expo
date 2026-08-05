@@ -1,8 +1,4 @@
-import { ServerRequest, ServerResponse } from './server.types';
-
-const debug = require('debug')(
-  'expo:start:server:middleware:metro-context-modules'
-) as typeof console.log;
+import type { ServerRequest, ServerResponse } from './server.types';
 
 /**
  * Source maps for `require.context` modules aren't supported in the Metro dev server
@@ -17,7 +13,6 @@ export class ContextModuleSourceMapsMiddleware {
       }
 
       if (req.url.match(/%3Fctx=[\d\w\W]+\.map\?/)) {
-        debug('Skipping sourcemap request for context module %s', req.url);
         // Return a noop response for the sourcemap
         res.writeHead(200, {
           'Content-Type': 'application/json',

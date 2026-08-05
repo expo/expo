@@ -1,25 +1,25 @@
-import { type EventSubscription } from 'expo-modules-core';
+import type { EventSubscription } from 'expo';
 import { Platform } from 'react-native';
 
 import ExpoSQLite from './ExpoSQLite';
-import { flattenOpenOptions, NativeDatabase, SQLiteOpenOptions } from './NativeDatabase';
+import { type NativeDatabase, flattenOpenOptions, type SQLiteOpenOptions } from './NativeDatabase';
 import {
   registerDatabaseForDevToolsAsync,
   unregisterDatabaseForDevToolsAsync,
 } from './SQLiteDevToolsClient';
 import { SQLiteSession } from './SQLiteSession';
-import {
+import type {
   SQLiteBindParams,
   SQLiteExecuteAsyncResult,
   SQLiteExecuteSyncResult,
   SQLiteRunResult,
-  SQLiteStatement,
   SQLiteVariadicBindParams,
 } from './SQLiteStatement';
+import { SQLiteStatement } from './SQLiteStatement';
 import { SQLiteTaggedQuery } from './SQLiteTaggedQuery';
 import { createDatabasePath } from './pathUtils';
 
-export { SQLiteOpenOptions };
+export type { SQLiteOpenOptions } from './NativeDatabase';
 
 /**
  * A SQLite database.
@@ -697,7 +697,7 @@ export function deleteDatabaseSync(databaseName: string, directory?: string): vo
  * @param options.sourceDatabase - The source database to backup from
  * @param options.sourceDatabaseName - The name of the source database. The default value is `main`
  * @param options.destDatabase - The destination database to backup to
- * @param options.destDatabaseName - The name of the destination database. The default value is `m
+ * @param options.destDatabaseName - The name of the destination database. The default value is `main`
  */
 export function backupDatabaseAsync({
   sourceDatabase,
@@ -729,7 +729,7 @@ export function backupDatabaseAsync({
  * @param options.sourceDatabase - The source database to backup from
  * @param options.sourceDatabaseName - The name of the source database. The default value is `main`
  * @param options.destDatabase - The destination database to backup to
- * @param options.destDatabaseName - The name of the destination database. The default value is `m
+ * @param options.destDatabaseName - The name of the destination database. The default value is `main`
  */
 export function backupDatabaseSync({
   sourceDatabase,

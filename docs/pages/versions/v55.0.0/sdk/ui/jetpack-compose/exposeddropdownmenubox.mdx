@@ -1,0 +1,86 @@
+---
+title: ExposedDropdownMenuBox
+description: A Jetpack Compose ExposedDropdownMenuBox component for displaying a dropdown menu with a customizable anchor.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['android']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI `ExposedDropdownMenuBox` matches the official Jetpack Compose [`ExposedDropdownMenuBox`](https://kotlinlang.org/api/compose-multiplatform/material3/androidx.compose.material3/-exposed-dropdown-menu-box.html). Use the `menuAnchor()` modifier on the anchor content (typically a read-only `TextField`) and `ExposedDropdownMenu` to wrap `DropdownMenuItem` children.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic
+
+> When using an uncontrolled `TextField` as the anchor, pass `key={selected}` to force a remount when the selected value changes — `defaultValue` is only read on mount.
+
+```tsx BasicExposedDropdownMenuBoxExample.tsx
+import {
+  DropdownMenuItem,
+  ExposedDropdownMenuBox,
+  ExposedDropdownMenu,
+  Host,
+  Text,
+  TextField,
+} from '@expo/ui/jetpack-compose';
+import { menuAnchor } from '@expo/ui/jetpack-compose/modifiers';
+import { useState } from 'react';
+
+const LANGUAGES = [
+  { label: 'Java', value: 'java' },
+  { label: 'JavaScript', value: 'js' },
+  { label: 'TypeScript', value: 'ts' },
+];
+
+export default function BasicExposedDropdownMenuBoxExample() {
+  const [selected, setSelected] = useState('java');
+  const [expanded, setExpanded] = useState(false);
+
+  const selectedLabel = LANGUAGES.find(l => l.value === selected)?.label ?? '';
+
+  return (
+    <Host matchContents>
+      <ExposedDropdownMenuBox expanded={expanded} onExpandedChange={setExpanded}>
+        <TextField
+          defaultValue={selectedLabel}
+          key={selected}
+          readOnly
+          modifiers={[menuAnchor()]}
+        />
+        <ExposedDropdownMenu expanded={expanded} onDismissRequest={() => setExpanded(false)}>
+          {LANGUAGES.map(lang => (
+            <DropdownMenuItem
+              key={lang.value}
+              onClick={() => {
+                setSelected(lang.value);
+                setExpanded(false);
+              }}>
+              <DropdownMenuItem.Text>
+                <Text>{lang.label}</Text>
+              </DropdownMenuItem.Text>
+            </DropdownMenuItem>
+          ))}
+        </ExposedDropdownMenu>
+      </ExposedDropdownMenuBox>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { ExposedDropdownMenuBox } from '@expo/ui/jetpack-compose';
+```
+
+<APISection
+  packageName="expo-ui/jetpack-compose/exposeddropdownmenubox"
+  apiName="ExposedDropdownMenuBox"
+/>

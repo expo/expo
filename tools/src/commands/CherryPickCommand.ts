@@ -5,6 +5,7 @@ import path from 'path';
 
 import Git, { GitLog } from '../Git';
 import logger from '../Logger';
+import { sanitizeTerminalOutput } from '../Utils';
 
 type ActionOptions = {
   from?: string;
@@ -133,8 +134,8 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
         .map(
           (commit) =>
             ` ❌ ${chalk.red(commit.hash.slice(0, 10))} ${commit.authorDate} ${chalk.magenta(
-              commit.authorName
-            )} ${commit.title}`
+              sanitizeTerminalOutput(commit.authorName)
+            )} ${sanitizeTerminalOutput(commit.title)}`
         )
         .join('\n')
     );
@@ -157,8 +158,8 @@ async function main(packageNames: string[], options: ActionOptions): Promise<voi
         value: commit.hash,
         short: commit.hash,
         name: `${chalk.yellow(commit.hash.slice(0, 10))} ${commit.authorDate} ${chalk.magenta(
-          commit.authorName
-        )} ${commit.title}`,
+          sanitizeTerminalOutput(commit.authorName)
+        )} ${sanitizeTerminalOutput(commit.title)}`,
       })),
       default: candidateCommits.map((commit) => commit.hash),
       pageSize: Math.min(candidateCommits.length, (process.stdout.rows || 100) - 4),

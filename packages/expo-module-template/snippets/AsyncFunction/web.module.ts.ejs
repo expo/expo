@@ -1,0 +1,7 @@
+<% if (project.features.includes('Event')) { -%>
+  async setValueAsync(value: string): Promise<void> {
+    this.emit('onChange', { value });
+  }
+<% } else { -%>
+  async setValueAsync(value: string): Promise<void> {}
+<% } -%>

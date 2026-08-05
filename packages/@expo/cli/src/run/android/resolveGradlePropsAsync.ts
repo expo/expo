@@ -1,6 +1,7 @@
 import path from 'path';
 
-import { Device, getDeviceABIsAsync } from '../../start/platforms/android/adb';
+import type { Device } from '../../start/platforms/android/adb';
+import { getDeviceABIsAsync } from '../../start/platforms/android/adb';
 import { CommandError } from '../../utils/errors';
 
 // Supported ABIs for Android. see https://developer.android.com/ndk/guides/abis
@@ -37,37 +38,50 @@ export async function resolveGradlePropsAsync(
 
   const apkDirectory = path.join(projectRoot, 'android', appName, 'build', 'outputs', 'apk');
 
-  // buildDeveloperTrust -> buildtype: trust, flavors: build, developer
+  // buildDeveloperTrust -> buildtype: trust, flavors: buildDeveloper
   // developmentDebug -> buildType: debug, flavors: development
   // productionRelease -> buildType: release, flavors: production
-  // This won't work for non-standard flavor names like "myFlavor" would be treated as "my", "flavor".
-  const flavors = variant.split(/(?=[A-Z])/).map((v) => v.toLowerCase());
-  const buildType = flavors.pop() ?? 'debug';
+  // previewDebugOptimized -> buildType: debugOptimized, flavors: preview
+  const parts = variant.split(/(?=[A-Z])/);
 
-  const apkVariantDirectory = path.join(apkDirectory, ...flavors, buildType);
-  const architectures = await getConnectedDeviceABIS(buildType, device, options.allArch);
+  // Special case: merge 'Optimized' suffix with preceding part, e.g. into 'debugOptimized'
+  let buildType = parts.pop() ?? 'debug';
+  if (parts.length > 0 && buildType === 'Optimized') {
+    buildType = parts.pop()!.toLowerCase() + buildType;
+  } else {
+    buildType = buildType.toLowerCase();
+  }
+
+  let apkVariantDirectory: string;
+  if (parts.length > 0) {
+    const flavorPath = parts[0]!.toLowerCase() + parts.slice(1).join('');
+    apkVariantDirectory = path.join(apkDirectory, flavorPath, buildType);
+  } else {
+    apkVariantDirectory = path.join(apkDirectory, buildType);
+  }
 
   return {
     appName,
     buildType,
-    flavors,
+    flavors: parts.map((v) => v.toLowerCase()),
     apkVariantDirectory,
-    architectures,
+    architectures: await getConnectedDeviceABI(buildType, device, options.allArch),
   };
 }
 
-async function getConnectedDeviceABIS(
+async function getConnectedDeviceABI(
   buildType: string,
   device: Device,
   allArch?: boolean
 ): Promise<string> {
   // Follow the same behavior as iOS, only enable this for debug builds
-  if (allArch || buildType !== 'debug') {
+  // Support both 'debug' and 'debugOptimized' build types
+  const isDebugBuild = buildType === 'debug' || buildType === 'debugOptimized';
+  if (allArch || !isDebugBuild) {
     return '';
   }
 
   const abis = await getDeviceABIsAsync(device);
 
-  const validAbis = abis.filter((abi) => VALID_ARCHITECTURES.includes(abi));
-  return validAbis.filter((abi, i, arr) => arr.indexOf(abi) === i).join(',');
+  return abis.find((abi) => VALID_ARCHITECTURES.includes(abi)) ?? '';
 }

@@ -3,12 +3,12 @@
 import SwiftUI
 import ExpoModulesCore
 
-internal enum ButtonRole: String, Enumerable {
+public enum ButtonRole: String, Enumerable {
   case `default`
   case destructive
   case cancel
 
-  func toNativeRole() -> SwiftUI.ButtonRole? {
+  public func toNativeRole() -> SwiftUI.ButtonRole? {
     switch self {
     case .default:
       return nil
@@ -20,9 +20,9 @@ internal enum ButtonRole: String, Enumerable {
   }
 }
 
-public final class ButtonProps: UIBaseViewProps, Observable {
-  @Field var label: String?
-  @Field var systemImage: String?
-  @Field var role: ButtonRole?
+open class ButtonProps: UIBaseViewProps, Observable {
+  @Field public var label: String?
+  @Field public var systemImage: String?
+  @Field public var role: ButtonRole?
   var onButtonPress = EventDispatcher()
 }

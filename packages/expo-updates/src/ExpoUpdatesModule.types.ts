@@ -1,6 +1,6 @@
 import { NativeModule } from 'expo-modules-core';
 
-import {
+import type {
   Manifest,
   UpdateCheckResultAvailable,
   UpdateCheckResultNotAvailable,

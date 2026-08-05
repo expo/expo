@@ -1,7 +1,6 @@
-import React from 'react';
-import { NativeSyntheticEvent, StyleProp, ViewProps, ViewStyle } from 'react-native';
+import type { NativeSyntheticEvent, StyleProp, ViewProps, ViewStyle } from 'react-native';
 
-import {
+import type {
   AcceptedContentType,
   CornerStyleType,
   DisplayModeType,

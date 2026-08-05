@@ -2,7 +2,6 @@
 import fs from 'fs';
 import path from 'path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import {
   expectChunkPathMatching,
@@ -11,6 +10,7 @@ import {
   getPageHtml,
   getRouterE2ERoot,
 } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -62,14 +62,14 @@ describe('exports static with bundle splitting', () => {
   // Ensure the correct script tags are injected.
   it('has eager script tags in html', async () => {
     expect(await getScriptTagsAsync('index.html')).toEqual(
-      ['__expo-metro-runtime', '__common', 'entry', '_layout', 'index'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '_layout', 'index', '__common', 'entry'].map(expectChunkPathMatching)
     );
   });
   it('has eager script tags in dynamic html', async () => {
     const staticParamsPage = await getScriptTagsAsync('welcome-to-the-universe.html');
 
     expect(staticParamsPage).toEqual(
-      ['__expo-metro-runtime', '__common', 'entry', '[post]', '_layout'].map(
+      ['__expo-metro-runtime', '_layout', '[post]', '__common', 'entry'].map(
         expectChunkPathMatching
       )
     );
@@ -79,7 +79,7 @@ describe('exports static with bundle splitting', () => {
   it('has (fewer) eager script tags in generated routes', async () => {
     // Less chunks because the not-found route is not an async import.
     expect(await getScriptTagsAsync('+not-found.html')).toEqual(
-      ['__expo-metro-runtime', '__common', 'entry', '_layout'].map(expectChunkPathMatching)
+      ['__expo-metro-runtime', '_layout', '__common', 'entry'].map(expectChunkPathMatching)
     );
   });
 
@@ -96,10 +96,13 @@ describe('exports static with bundle splitting', () => {
         '_layout',
         'index',
         '\\[post\\]',
+        '\\[...post\\]',
         'about',
         'asset',
         'links',
         'styled',
+        'metadata',
+        '\\[id\\]',
       ]
         .sort()
         .map((file) =>
@@ -113,8 +116,14 @@ describe('exports static with bundle splitting', () => {
       expect(sourceMap.version).toBe(3);
 
       // Common chunk
-      if (file!.match(/head/)) {
-        expect(sourceMap.sources.length).toEqual(29);
+      if (file!.match(/__common/)) {
+        const sources: string[] = sourceMap.sources;
+        expect(
+          sources.every(
+            (source) => source.startsWith('/packages/') || source.startsWith('/node_modules/')
+          )
+        ).toBe(true);
+        expect(sources.some((source) => source.includes('router-e2e/__e2e__/'))).toBe(false);
       } else {
         // expect(sourceMap.sources).toEqual(
         //   expect.arrayContaining([
@@ -154,10 +163,8 @@ describe('exports static with bundle splitting', () => {
     // non-public env vars are injected during SSG
     expect(queryMeta('expo-e2e-private-env-var-client')).toEqual('not-public-value');
 
-    const script = indexHtml
-      .querySelectorAll('script')
-      .filter((script) => !!script.attributes.src)[0];
-    const jsBundle = fs.readFileSync(path.join(outputDir, script.attributes.src), 'utf8');
+    const script = indexHtml.querySelectorAll('script').find((script) => !!script.attributes.src);
+    const jsBundle = fs.readFileSync(path.join(outputDir, script?.attributes.src ?? ''), 'utf8');
 
     // Ensure the bundle is valid
     expect(jsBundle).toMatch('__BUNDLE_START_TIME__');
@@ -221,13 +228,13 @@ describe('exports static with bundle splitting', () => {
     expect(globalPreload).toBeDefined();
     if (globalPreload) {
       expect(
-        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href), 'utf-8')
+        fs.readFileSync(path.join(outputDir, globalPreload.attributes.href!), 'utf-8')
       ).toMatchInlineSnapshot(`"div{background:#0ff}"`);
     }
 
     // CSS Module
     expect(
-      fs.readFileSync(path.join(outputDir, links[2].attributes.href), 'utf-8')
+      fs.readFileSync(path.join(outputDir, links[2]?.attributes.href ?? ''), 'utf-8')
     ).toMatchInlineSnapshot(`".HPV33q_text{color:#1e90ff}"`);
 
     const styledHtml = await getPageHtml(outputDir, 'styled.html');
@@ -245,16 +252,19 @@ describe('exports static with bundle splitting', () => {
 
     const links = indexHtml.querySelectorAll('html > head > link[as="font"]');
     expect(links.length).toBe(1);
-    expect(links[0].attributes.href).toBe(
+    expect(links[0]?.attributes.href).toBe(
       '/assets/__e2e__/static-rendering/sweet.7c9263d3cffcda46ff7a4d9c00472c07.ttf'
     );
 
-    expect(links[0].toString()).toMatch(
+    expect(links[0]?.toString()).toMatch(
       /<link rel="preload" href="\/assets\/__e2e__\/static-rendering\/sweet\.[a-zA-Z0-9]{32}\.ttf" as="font" crossorigin="" >/
     );
 
     expect(
-      fs.readFileSync(path.join(outputDir, links[0].attributes.href.replace(/\?.*$/, '')), 'utf-8')
+      fs.readFileSync(
+        path.join(outputDir, links[0]?.attributes.href?.replace(/\?.*$/, '') ?? ''),
+        'utf-8'
+      )
     ).toBeDefined();
 
     // Ensure the font is used

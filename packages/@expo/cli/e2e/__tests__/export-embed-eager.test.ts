@@ -1,9 +1,8 @@
-/* eslint-env jest */
 import fs from 'fs';
 import path from 'path';
 
-import { projectRoot, findProjectFiles } from './utils';
 import { executeExpoAsync } from '../utils/expo';
+import { projectRoot, findProjectFiles } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -83,6 +82,19 @@ it('runs `npx expo export:embed --platform ios --eager`', async () => {
       'assets/__packages/expo-router/assets/forward.png',
       'assets/__packages/expo-router/assets/logotype.png',
       'assets/__packages/expo-router/assets/pkg.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/back-icon-mask.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/back-icon.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/back-icon@2x.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/back-icon@3x.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/clear-icon.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/clear-icon@2x.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/clear-icon@3x.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/close-icon.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/close-icon@2x.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/close-icon@3x.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/search-icon.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/search-icon@2x.png',
+      'assets/__packages/expo-router/assets/react-navigation/elements/search-icon@3x.png',
       'assets/__packages/expo-router/assets/sitemap.png',
       'assets/__packages/expo-router/assets/unmatched.png',
       'assets/assets/icon.png',

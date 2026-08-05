@@ -5,21 +5,17 @@ import android.icu.util.LocaleData
 import android.icu.util.ULocale
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-import android.os.Bundle
 import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
 import android.util.Log
 import androidx.core.os.LocaleListCompat
+import com.facebook.react.modules.i18nmanager.I18nUtil
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-// must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
-private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
-private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
-private const val KEY_FOR_PREFS_FORCERTL = "RCTI18nUtil_forceRTL"
 private const val LOCALE_SETTINGS_CHANGED = "onLocaleSettingsChanged"
 private const val CALENDAR_SETTINGS_CHANGED = "onCalendarSettingsChanged"
 
@@ -56,34 +52,14 @@ class LocalizationModule : Module() {
   }
 
   private fun setRTLFromStringResources(context: Context) {
-    // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
-    // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
-    val supportsRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_supportsRTL)
-    val forcesRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_forcesRTL)
+    val supportsRTL =
+      context.getString(R.string.ExpoLocalization_supportsRTL).toBooleanStrictOrNull() ?: true
+    val forcesRTL =
+      context.getString(R.string.ExpoLocalization_forcesRTL).toBooleanStrictOrNull() ?: false
 
-    if (forcesRTL == "true") {
-      context
-        .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-        .edit()
-        .also {
-          it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, true)
-          it.putBoolean(KEY_FOR_PREFS_FORCERTL, true)
-          it.apply()
-        }
-    } else {
-      if (supportsRTL == "true" || supportsRTL == "false") {
-        context
-          .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
-          .edit()
-          .also {
-            it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
-            if (forcesRTL == "false") {
-              it.putBoolean(KEY_FOR_PREFS_FORCERTL, false)
-            }
-            it.apply()
-          }
-      }
-    }
+    // We call these methods before React loads to ensure it gets rendered correctly the first time the app is opened.
+    I18nUtil.instance.allowRTL(context, supportsRTL)
+    I18nUtil.instance.forceRTL(context, forcesRTL)
   }
 
   private fun getMeasurementSystem(locale: Locale): String? {
@@ -180,15 +156,4 @@ class LocalizationModule : Module() {
       )
     )
   }
-}
-
-/**
- * Creates a shallow [Map] from the [Bundle]. Does not traverse nested arrays and bundles.
- */
-private fun Bundle.toShallowMap(): Map<String, Any?> {
-  val map = HashMap<String, Any?>()
-  for (key in this.keySet()) {
-    map[key] = this[key]
-  }
-  return map
 }

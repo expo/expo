@@ -2,14 +2,10 @@
 
 #pragma once
 
+#include "../ExpoHeader.pch"
 #include "CppType.h"
 #include "FrontendConverter.h"
 #include "ExpectedType.h"
-
-#include <fbjni/fbjni.h>
-
-#include <memory>
-#include <unordered_map>
 
 namespace jni = facebook::jni;
 
@@ -28,6 +24,14 @@ public:
    * Creates converters.
    */
   void createConverters();
+
+  /**
+   * Registers an additional converter for the given type.
+   */
+  void registerConverter(
+    CppType type,
+    std::shared_ptr<FrontendConverter> converter
+  );
 
   /**
    * Obtains a converter for an expected type.

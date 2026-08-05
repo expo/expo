@@ -34,10 +34,12 @@ internal enum ExpoLayoutDirection: String, Enumerable {
 internal final class HostViewProps: ExpoSwiftUI.ViewProps, ExpoSwiftUI.SafeAreaControllable {
   @Field var useViewportSizeMeasurement: Bool = false
   @Field var colorScheme: ExpoColorScheme?
+  @Field var seedColor: Color?
   @Field var layoutDirection: ExpoLayoutDirection = .leftToRight
   @Field var matchContentsHorizontal = false
   @Field var matchContentsVertical = false
-  @Field var ignoreSafeAreaKeyboardInsets: Bool = false
+  @Field var ignoreSafeArea: ExpoSwiftUI.IgnoreSafeArea?
+  @Field var modifiers: ModifierArray?
   var onLayoutContent = EventDispatcher()
 }
 
@@ -45,59 +47,53 @@ struct HostView: ExpoSwiftUI.View, ExpoSwiftUI.WithHostingView {
   @ObservedObject var props: HostViewProps
 
   var body: some View {
-    var useViewportSizeMeasurement: Bool = props.useViewportSizeMeasurement
-    if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
-      useViewportSizeMeasurement = props.useViewportSizeMeasurement
-    } else {
-      log.warn("useViewportSizeMeasurement is not supported on iOS/tvOS < 16.0")
-      useViewportSizeMeasurement = false
-    }
-
     let layoutDirection = props.layoutDirection.toLayoutDirection()
     let alignment: Alignment = layoutDirection == .rightToLeft ? .topTrailing : .topLeading
+    let fillHorizontal = !props.useViewportSizeMeasurement && !props.matchContentsHorizontal
+    let fillVertical = !props.useViewportSizeMeasurement && !props.matchContentsVertical
 
     if #available(iOS 16.0, tvOS 16.0, macOS 13.0, *) {
       // swiftlint:disable:next identifier_name
-      let HostLayout = useViewportSizeMeasurement
+      let HostLayout = props.useViewportSizeMeasurement
         ? AnyLayout(ViewportSizeMeasurementLayout(layoutDirection: layoutDirection))
         : AnyLayout(ZStackLayout(alignment: alignment))
-      return HostLayout {
+      HostLayout {
         Children()
       }
+      .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
       .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
       .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .modifier(SeedColorModifier(seedColor: props.seedColor))
+      .applyModifiers(
+        props.modifiers,
+        appContext: props.appContext,
+        globalEventDispatcher: props.globalEventDispatcher
+      )
       .modifier(GeometryChangeModifier(props: props))
+      .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
+    } else {
+      ZStack(alignment: alignment) {
+        Children()
+      }
+      .fixedSize(horizontal: props.matchContentsHorizontal, vertical: props.matchContentsVertical)
+      .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
+      .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
+      .modifier(SeedColorModifier(seedColor: props.seedColor))
+      .applyModifiers(
+        props.modifiers,
+        appContext: props.appContext,
+        globalEventDispatcher: props.globalEventDispatcher
+      )
+      .modifier(GeometryChangeModifier(props: props))
+      .modifier(FillAlignmentModifier(alignment: alignment, fillHorizontal: fillHorizontal, fillVertical: fillVertical))
     }
-
-    return ZStack(alignment: alignment) {
-      Children()
-    }
-    .modifier(LayoutDirectionModifier(layoutDirection: layoutDirection))
-    .modifier(ColorSchemeModifier(colorScheme: props.colorScheme?.toColorScheme()))
-    .modifier(GeometryChangeModifier(props: props))
   }
 
-  private func safeAreaSize() -> CGSize {
-    let safeSize = UIApplication
-      .shared
-      .connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }?
-      .safeAreaLayoutGuide
-      .layoutFrame
-      .size
-      ?? UIScreen.main.bounds.size
-
-    let width = safeSize.width > 0 ? safeSize.width : UIScreen.main.bounds.width
-    let height = safeSize.height > 0 ? safeSize.height : UIScreen.main.bounds.height
-    return CGSize(width: width, height: height)
-  }
 }
 
 /**
  A Layout designed for the `useViewportSizeMeasurement` behavior.
- If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand it's children size.
+ If parent's proposedViewSize is zero or nil, it will try to use the viewport size to expand its children size.
  */
 @available(iOS 16.0, tvOS 16.0, macOS 13.0, *)
 private struct ViewportSizeMeasurementLayout: Layout {
@@ -138,36 +134,21 @@ private struct ViewportSizeMeasurementLayout: Layout {
   }
 
   private func safeAreaSize() -> CGSize {
-    let screenSize = UIScreen.main.bounds.size
-    let safeSize = UIApplication
-      .shared
-      .connectedScenes
-      .compactMap { $0 as? UIWindowScene }
-      .flatMap { $0.windows }
-      .first { $0.isKeyWindow }?
-      .safeAreaLayoutGuide
-      .layoutFrame
-      .size
-      ?? screenSize
-
-    let width = safeSize.width > 0 ? safeSize.width : screenSize.width
-    let height = safeSize.height > 0 ? safeSize.height : screenSize.height
-    return CGSize(width: width, height: height)
+    return SceneGeometry.safeAreaSize()
   }
 }
 
 /**
- A ViewModifier that listens for view size change the dispatch the `onLayoutContent` event
+ A ViewModifier that listens for view size changes and dispatches the `onLayoutContent` event
  */
 private struct GeometryChangeModifier: ViewModifier {
   let props: HostViewProps
-  @EnvironmentObject var shadowNodeProxy: ExpoSwiftUI.ShadowNodeProxy
 
   private func dispatchOnLayoutContent(_ size: CGSize) {
     if props.matchContentsHorizontal || props.matchContentsVertical {
       let styleWidth = props.matchContentsHorizontal ? NSNumber(value: Float(size.width)) : nil
       let styleHeight = props.matchContentsVertical ? NSNumber(value: Float(size.height)) : nil
-      shadowNodeProxy.setStyleSize?(styleWidth, styleHeight)
+      props.shadowNodeProxy.setStyleSize?(styleWidth, styleHeight)
     }
 
     props.onLayoutContent([
@@ -196,12 +177,44 @@ private struct GeometryChangeModifier: ViewModifier {
   }
 }
 
+private struct FillAlignmentModifier: ViewModifier {
+  let alignment: Alignment
+  let fillHorizontal: Bool
+  let fillVertical: Bool
+
+  func body(content: Content) -> some View {
+    if fillHorizontal || fillVertical {
+      content.frame(
+        maxWidth: fillHorizontal ? .infinity : nil,
+        maxHeight: fillVertical ? .infinity : nil,
+        alignment: alignment
+      )
+    } else {
+      // Leave the view untouched (e.g. useViewportSizeMeasurement / full matchContents) so the
+      // layout proposal reaches the content's own layout unmodified.
+      content
+    }
+  }
+}
+
 private struct ColorSchemeModifier: ViewModifier {
   let colorScheme: ColorScheme?
 
   func body(content: Content) -> some View {
     if let colorScheme {
       content.environment(\.colorScheme, colorScheme)
+    } else {
+      content
+    }
+  }
+}
+
+private struct SeedColorModifier: ViewModifier {
+  let seedColor: Color?
+
+  func body(content: Content) -> some View {
+    if let seedColor {
+      content.tint(seedColor)
     } else {
       content
     }

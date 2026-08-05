@@ -91,10 +91,15 @@ internal struct MediaHandler {
       }
       let fileSize = getFileSize(from: targetUrl)
 
-      let base64 =
-        options.base64
-        ? try ImageUtils.readBase64From(
-          imageData: imageData, orImageFileUrl: targetUrl, tryReadingFile: fileWasCopied) : nil
+      let base64: String?
+      if options.base64 {
+        base64 = try ImageUtils.readJpegBase64From(image: image,
+                                                   compressionQuality: options.quality,
+                                                   orFileUrl: targetUrl,
+                                                   tryReadingFile: fileWasCopied)
+      } else {
+        base64 = nil
+      }
 
       let exif = options.exif ? await ImageUtils.readExifFrom(mediaInfo: mediaInfo) : nil
       let size = CGSize(width: image.size.width, height: image.size.height)
@@ -151,11 +156,15 @@ internal struct MediaHandler {
 
         // Conditionally read raw data only if needed to avoid unnecessary I/O
         var rawData: Data?
-        if options.base64 || options.exif {
+        if options.exif {
           rawData = try? Data(contentsOf: cachedUrl)
         }
 
-        let base64 = options.base64 ? rawData?.base64EncodedString() : nil
+        // Always export base64 as JPEG, matching the `allowsEditing` path, so callers get a
+        // consistent format regardless of the source file (e.g. HEIC).
+        let base64 = options.base64
+          ? try? ImageUtils.readJpegBase64From(fileUrl: cachedUrl, compressionQuality: options.quality)
+          : nil
         let exif = options.exif ? (rawData.flatMap { ImageUtils.readExifFrom(data: $0) }) : nil
 
         return AssetInfo(
@@ -195,7 +204,11 @@ internal struct MediaHandler {
 
     // We need to get EXIF from original image data, as it is being lost in UIImage
     let exif = options.exif ? ImageUtils.readExifFrom(data: rawData) : nil
-    let base64 = options.base64 ? imageData?.base64EncodedString() : nil
+    // Always export base64 as JPEG, matching the `allowsEditing` path, so callers get a
+    // consistent format regardless of the source file (e.g. HEIC).
+    let base64 = options.base64
+      ? try ImageUtils.readJpegBase64From(image: image, compressionQuality: options.quality)
+      : nil
 
     let size = CGSize(width: image.size.width, height: image.size.height)
 
@@ -214,7 +227,7 @@ internal struct MediaHandler {
 
   // Unlike the case of regular images, we have to operate on original data of the image in order to preserve the exif data,
   // otherwise it won't be possible to connect the image and video into a `PHLivePhoto` after reading it from the cache directory later.
-  // As a result a live photo photo cannot be compressed or edited.
+  // As a result a live photo cannot be compressed or edited.
   private func handleLivePhoto(from selectedImage: PHPickerResult) async throws -> AssetInfo {
     let itemProvider = selectedImage.itemProvider
     let livePhotoObject = try await itemProvider.loadObject(ofClass: PHLivePhoto.self)
@@ -245,7 +258,7 @@ internal struct MediaHandler {
       for: videoResource, toFile: pairedVideoUrl, options: nil)
 
     let fileSize = getFileSize(from: photoUrl)
-    let mimeType = getMimeType(from: photoUrl.pathExtension)
+    let mimeType = getMimeType(from: photoResource, fileExtension: photoUrl.pathExtension)
     let base64 = options.base64 ? imageData.base64EncodedString() : nil
     let exif = options.exif ? ImageUtils.readExifFrom(data: imageData) : nil
 
@@ -275,7 +288,7 @@ internal struct MediaHandler {
       throw FailedToReadVideoSizeException()
     }
     let duration = VideoUtils.readDurationFrom(url: fileUrl)
-    let mimeType = getMimeType(from: fileUrl.pathExtension)
+    let mimeType = getMimeType(from: videoResource, fileExtension: fileUrl.pathExtension)
     let fileSize = getFileSize(from: fileUrl)
 
     return AssetInfo(
@@ -293,6 +306,24 @@ internal struct MediaHandler {
 
   private func getMimeType(from pathExtension: String) -> String? {
     return UTType(filenameExtension: pathExtension)?.preferredMIMEType
+  }
+
+  private func getMimeType(from asset: PHAsset?, fileExtension: String) -> String? {
+    let utType: UTType? = if #available(iOS 26.0, *) {
+      asset?.contentType ?? UTType(filenameExtension: fileExtension)
+    } else {
+      UTType(filenameExtension: fileExtension)
+    }
+    return utType?.preferredMIMEType
+  }
+
+  private func getMimeType(from resource: PHAssetResource, fileExtension: String) -> String? {
+    let utType: UTType? = if #available(iOS 26.0, *) {
+      resource.contentType
+    } else {
+      UTType(resource.uniformTypeIdentifier) ?? UTType(filenameExtension: fileExtension)
+    }
+    return utType?.preferredMIMEType
   }
 
   // MARK: - Video
@@ -319,7 +350,7 @@ internal struct MediaHandler {
           options: resourceOptions
         )
 
-        let mimeType = getMimeType(from: destinationUrl.pathExtension)
+        let mimeType = getMimeType(from: resource, fileExtension: destinationUrl.pathExtension)
         return try buildVideoResult(
           for: destinationUrl,
           withName: originalFilename,
@@ -353,7 +384,7 @@ internal struct MediaHandler {
     let videoUrlToReadDurationFrom = self.options.allowsEditing ? pickedUrl : targetUrl
 
     let asset = mediaInfo[.phAsset] as? PHAsset
-    let mimeType = getMimeType(from: targetUrl.pathExtension)
+    let mimeType = getMimeType(from: asset, fileExtension: targetUrl.pathExtension)
     let fileName = asset?.value(forKey: "filename") as? String
     let fileSize = getFileSize(from: targetUrl)
 
@@ -397,8 +428,7 @@ internal struct MediaHandler {
 
           try await PHAssetResourceManager.default().writeData(for: resource, toFile: destinationUrl, options: resourceOptions)
 
-          // Build and return the result using the helper.
-          let mimeType = getMimeType(from: destinationUrl.pathExtension)
+          let mimeType = getMimeType(from: resource, fileExtension: destinationUrl.pathExtension)
           return try buildVideoResult(
             for: destinationUrl,
             withName: originalFilename,

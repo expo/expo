@@ -74,11 +74,13 @@ struct UserActor: Codable {
 struct Account: Codable {
   let id: String
   let name: String
+  let profileImageUrl: String?
   let ownerUserActor: UserActorSimple?
 
   enum CodingKeys: String, CodingKey {
     case id
     case name
+    case profileImageUrl
     case ownerUserActor
   }
 }
@@ -112,13 +114,13 @@ struct OwnerAccount: Codable {
   let name: String
 }
 
-struct Branch: Codable {
+struct Branch: Codable, Equatable {
   let id: String
   let name: String
   let updates: [AppUpdate]
 }
 
-struct AppUpdate: Identifiable, Codable {
+struct AppUpdate: Identifiable, Codable, Equatable {
   let id: String
   let group: String?
   let message: String?
@@ -129,7 +131,7 @@ struct AppUpdate: Identifiable, Codable {
   let manifestPermalink: String
 }
 
-struct Snack: Identifiable, Codable {
+struct Snack: Identifiable, Codable, Equatable {
   let id: String
   let name: String
   let description: String?

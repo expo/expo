@@ -1,3 +1,5 @@
+import { safeDecodeURI, safeDecodeURIComponent } from '../utils/url';
+
 export function parsePathAndParamsFromExpoGoLink(url: string): {
   pathname: string;
   queryString: string;
@@ -29,8 +31,8 @@ function extractExactPathFromURL(url: string): string {
     const { origin, href, hostname } = new URL(url);
 
     if (hostname === 'exp.host' || hostname === 'u.expo.dev') {
-      // These are QR code generate deep-link that always like to the '/' path
-      // TODO: In the future, QR code may link to a specific path and this logic will need to be udpated
+      // These are QR code generated deep-links that always link to the '/' path
+      // TODO: In the future, QR code may link to a specific path and this logic will need to be updated
       return '';
     }
 
@@ -99,7 +101,7 @@ function fromDeepLink(url: string): string {
       return '';
     }
     const incomingUrl = res.searchParams.get('url')!;
-    return extractExactPathFromURL(decodeURI(incomingUrl));
+    return extractExactPathFromURL(safeDecodeURI(incomingUrl));
   }
 
   let results = '';

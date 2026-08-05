@@ -1,4 +1,4 @@
-import { NativeModule } from 'expo-modules-core/types';
+import type { NativeModule } from 'expo-modules-core/types';
 
 /**
  * @hidden

@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
     height: 200,
   },
   blurImage: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
   },
   blurContainer: {
     flex: 1,

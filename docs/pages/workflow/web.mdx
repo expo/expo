@@ -61,7 +61,14 @@ Development features like Fast Refresh, debugging, environment variables, and [b
 
 ### Install web dependencies
 
-<Terminal cmd={['$ npx expo install react-dom react-native-web @expo/metro-runtime']} />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install react-dom react-native-web @expo/metro-runtime'],
+    yarn: ['$ yarn expo install react-dom react-native-web @expo/metro-runtime'],
+    pnpm: ['$ pnpm expo install react-dom react-native-web @expo/metro-runtime'],
+    bun: ['$ bun expo install react-dom react-native-web @expo/metro-runtime'],
+  }}
+/>
 
 <Collapsible summary={<>Not using the <CODE>expo</CODE> package in your app yet?</>}>
 
@@ -69,7 +76,14 @@ If you haven't added Expo to your React Native app yet, you can either [install 
 
 1. Install [Expo CLI](/more/expo-cli/) in your project:
 
-<Terminal cmd={['$ npm install expo']} />
+<Terminal
+  cmd={{
+    npm: ['$ npm install expo'],
+    yarn: ['$ yarn add expo'],
+    pnpm: ['$ pnpm add expo'],
+    bun: ['$ bun add expo'],
+  }}
+/>
 
 2. Modify the entry file to use [`registerRootComponent`](/versions/latest/sdk/expo/#registerrootcomponentcomponent) instead of `AppRegistry.registerComponent`:
 
@@ -93,11 +107,25 @@ import App from './App';
 
 You can now start the dev server and develop in the browser with:
 
-<Terminal cmd={['$ npx expo start --web']} cmdCopy="npx expo start --web" />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start --web'],
+    yarn: ['$ yarn expo start --web'],
+    pnpm: ['$ pnpm expo start --web'],
+    bun: ['$ bun expo start --web'],
+  }}
+/>
 
 The app can be exported as a production website with:
 
-<Terminal cmd={['$ npx expo export --platform web']} cmdCopy="npx expo export --platform web" />
+<Terminal
+  cmd={{
+    npm: ['$ npx expo export --platform web'],
+    yarn: ['$ yarn expo export --platform web'],
+    pnpm: ['$ pnpm expo export --platform web'],
+    bun: ['$ bun expo export --platform web'],
+  }}
+/>
 
 ## Next
 

@@ -38,12 +38,13 @@ import { ELEMENT_SPACING, STYLES_APIBOX, STYLES_SECONDARY, VERTICAL_SPACING } fr
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
   sdkVersion: string;
+  header?: string;
 };
 
 const COLLAPSED_LITERAL_MESSAGE = 'Acceptable values are: See description for available values.';
 
 const renderTypeDeclarationTable = (
-  { children, indexSignature, comment }: TypeDeclarationContentData,
+  { children, indexSignatures, comment }: TypeDeclarationContentData,
   sdkVersion: string,
   index?: number
 ) => (
@@ -59,7 +60,11 @@ const renderTypeDeclarationTable = (
       <APIParamsTableHeadRow mainCellLabel="Property" />
       <tbody>
         {children?.map(prop => renderTypePropertyRow(prop, sdkVersion))}
-        {indexSignature?.parameters?.map(param => renderTypePropertyRow(param, sdkVersion))}
+        {indexSignatures?.map(sig =>
+          sig.parameters?.map(param =>
+            renderTypePropertyRow({ ...param, type: sig.type ?? param.type }, sdkVersion)
+          )
+        )}
       </tbody>
     </Table>
   </Fragment>
@@ -78,7 +83,7 @@ const renderTypeMethodEntry = (
 
   const content = (
     <>
-      <RawH4 className="!mb-3">
+      <RawH4 className="mb-3!">
         <MONOSPACE>
           {`(${baseSignature.parameters ? listParams(baseSignature?.parameters) : ''})`}
           {` => `}
@@ -101,7 +106,7 @@ const renderTypeMethodEntry = (
     return (
       <APIBox
         key={`type-declaration-table-${children?.map(child => child.name).join('-')}`}
-        className="!mb-0">
+        className="mb-0!">
         {content}
       </APIBox>
     );
@@ -167,6 +172,16 @@ const renderType = (
 ) => {
   const resolvedType = type ?? ({} as TypeDefinitionData);
   const declaration = resolvedType.declaration ?? (children ? { children } : undefined);
+  const defaultTag = getTagData('default', comment);
+  const defaultValue = parseCommentContent(
+    defaultTag ? getCommentContent(defaultTag.content) : undefined
+  );
+  const defaultValueElement = defaultValue ? (
+    <CALLOUT className="flex items-start gap-1">
+      <span className={STYLES_SECONDARY}>Default:</span>
+      <CODE className="text-[90%]!">{defaultValue}</CODE>
+    </CALLOUT>
+  ) : undefined;
 
   if (declaration) {
     // Object Types
@@ -178,8 +193,13 @@ const renderType = (
           name={`${name}${signature ? `(${signature.parameters ? listParams(signature.parameters) : ''})` : ''}`}
           comment={comment}
         />
-        <APICommentTextBlock comment={comment} includePlatforms={false} />
-        {declaration.children && renderTypeDeclarationTable(declaration, sdkVersion)}
+        <APICommentTextBlock
+          comment={comment}
+          includePlatforms={false}
+          afterContent={defaultValueElement}
+        />
+        {(declaration.children || declaration.indexSignatures) &&
+          renderTypeDeclarationTable(declaration, sdkVersion)}
         {signature ? (
           <div key={`type-definition-signature-${signature.name}`}>
             <APICommentTextBlock comment={signature.comment} />
@@ -196,7 +216,10 @@ const renderType = (
               'mt-3.5 flex flex-row items-start gap-2'
             )}>
             <div className="flex flex-row items-center gap-2">
-              <CornerDownRightIcon className="icon-sm relative -mt-0.5 inline-block text-icon-tertiary" />
+              <CornerDownRightIcon
+                aria-hidden="true"
+                className="relative -mt-0.5 inline-block icon-sm text-icon-tertiary"
+              />
               <span className={STYLES_SECONDARY}>Returns:</span>
             </div>
             <CALLOUT>
@@ -211,7 +234,11 @@ const renderType = (
       <div key={`type-tuple-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={name} comment={comment} />
-        <APICommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock
+          comment={comment}
+          includePlatforms={false}
+          afterContent={defaultValueElement}
+        />
         <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING)}>
           Tuple: <CODE>{resolveTypeName(resolvedType, sdkVersion)}</CODE>
         </CALLOUT>
@@ -232,7 +259,11 @@ const renderType = (
         <div key={`prop-type-definition-${name}`} className={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} sticky />
           <APIBoxHeader name={name} comment={comment} />
-          <APICommentTextBlock comment={comment} includePlatforms={false} />
+          <APICommentTextBlock
+            comment={comment}
+            includePlatforms={false}
+            afterContent={defaultValueElement}
+          />
           {resolvedType.type === 'intersection' || resolvedType.type === 'union' ? (
             <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
               Type:{' '}
@@ -279,10 +310,14 @@ const renderType = (
           <APISectionDeprecationNote comment={comment} sticky />
           <APIBoxHeader name={name} comment={comment} />
           <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1.5')}>
-            <span className={STYLES_SECONDARY}>Literal Type: </span>
+            <span className={STYLES_SECONDARY}>Literal type: </span>
             {acceptedLiteralTypes ?? 'multiple types'}
           </CALLOUT>
-          <APICommentTextBlock comment={comment} includePlatforms={false} />
+          <APICommentTextBlock
+            comment={comment}
+            includePlatforms={false}
+            afterContent={defaultValueElement}
+          />
           <CALLOUT className={mergeClasses(STYLES_SECONDARY, VERTICAL_SPACING, ELEMENT_SPACING)}>
             {shouldCollapseLiteralTypes ? (
               <>{COLLAPSED_LITERAL_MESSAGE}</>
@@ -315,7 +350,11 @@ const renderType = (
           <span className={STYLES_SECONDARY}>Type: </span>
           <APIDataType typeDefinition={resolvedType} sdkVersion={sdkVersion} />
         </CALLOUT>
-        <APICommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock
+          comment={comment}
+          includePlatforms={false}
+          afterContent={defaultValueElement}
+        />
       </div>
     );
   } else if (resolvedType.type === 'intrinsic') {
@@ -323,7 +362,11 @@ const renderType = (
       <div key={`generic-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={name} comment={comment} />
-        <APICommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock
+          comment={comment}
+          includePlatforms={false}
+          afterContent={defaultValueElement}
+        />
         <CALLOUT className={mergeClasses(VERTICAL_SPACING, ELEMENT_SPACING)}>
           <span className={STYLES_SECONDARY}>Type: </span>
           <CODE>{resolvedType.name}</CODE>
@@ -335,7 +378,11 @@ const renderType = (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={`${name}<${resolvedType.checkType.name}>`} comment={comment} />
-        <APICommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock
+          comment={comment}
+          includePlatforms={false}
+          afterContent={defaultValueElement}
+        />
         <CALLOUT className={mergeClasses(VERTICAL_SPACING, 'mb-1')}>
           <span className={STYLES_SECONDARY}>Generic: </span>
           <CODE>
@@ -377,7 +424,11 @@ const renderType = (
       <div key={`conditional-type-definition-${name}`} className={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} sticky />
         <APIBoxHeader name={name} comment={comment} />
-        <APICommentTextBlock comment={comment} includePlatforms={false} />
+        <APICommentTextBlock
+          comment={comment}
+          includePlatforms={false}
+          afterContent={defaultValueElement}
+        />
         <CALLOUT className={VERTICAL_SPACING}>
           String union of <CODE>{resolveTypeName(possibleData[0], sdkVersion)}</CODE> values.
         </CALLOUT>
@@ -387,10 +438,10 @@ const renderType = (
   return undefined;
 };
 
-const APISectionTypes = ({ data, sdkVersion }: APISectionTypesProps) =>
+const APISectionTypes = ({ data, sdkVersion, header = 'Types' }: APISectionTypesProps) =>
   data?.length ? (
     <>
-      <H2 key="types-header">Types</H2>
+      <H2 key="types-header">{header}</H2>
       {data.map(d => renderType(d, sdkVersion))}
     </>
   ) : null;

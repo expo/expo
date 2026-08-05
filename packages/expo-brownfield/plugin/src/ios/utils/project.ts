@@ -2,7 +2,6 @@ import type { XcodeProject } from 'expo/config-plugins';
 import { readdirSync } from 'node:fs';
 
 import type { Group, PbxGroup, PbxNativeTarget, PbxNativeTargetSection, Target } from '../types';
-import { readFromTemplate } from '../utils';
 import { Constants } from './constants';
 
 export const createFramework = (
@@ -14,6 +13,7 @@ export const createFramework = (
     targetName,
     Constants.Target.Framework,
     targetName,
+    // @ts-expect-error: TODO(@kitten): This was untyped before, now this errors as an excessive argument
     bundleIdentifier
   ) as unknown as Target;
 };
@@ -63,15 +63,6 @@ export const configureBuildPhases = (
   );
   destTarget.buildPhases = [...destTarget.buildPhases, bundlePhase];
 
-  const script = readFromTemplate('patch-expo.sh', { targetName, projectName });
-  project.addBuildPhase(
-    [],
-    Constants.BuildPhase.Script,
-    Constants.BuildPhase.PatchExpoPhase,
-    target.uuid,
-    { shellPath: '/bin/sh', shellScript: script }
-  );
-
   project.addBuildPhase(
     files,
     Constants.BuildPhase.Sources,
@@ -86,12 +77,14 @@ export const configureBuildSettings = (
   project: XcodeProject,
   targetName: string,
   currentProjectVersion: string,
-  bundleIdentifier: string
+  bundleIdentifier: string,
+  version: string = '1.0'
 ) => {
   const commonBuildSettings = getCommonBuildSettings(
     targetName,
     currentProjectVersion,
-    bundleIdentifier
+    bundleIdentifier,
+    version
   );
 
   const buildConfigurationList = [
@@ -122,17 +115,19 @@ export const configureBuildSettings = (
   const destTargetKey = Object.keys(nativeTargetSection).find(
     (key) =>
       !key.endsWith('_comment') &&
-      nativeTargetSection[key].productType !== Constants.Target.ApplicationProductType
+      nativeTargetSection[key]!.productType !== Constants.Target.ApplicationProductType
   );
-  const destTarget = nativeTargetSection[destTargetKey];
-
-  destTarget.buildConfigurationList = configurationList.uuid;
+  // TODO(@kitten): This was untyped before, so didn't catch `destTargetKey === undefined`, fix the non-null here
+  const destTarget = nativeTargetSection[destTargetKey!]!;
+  // TODO(@kitten): The uuid is typed as unknown in the typings
+  destTarget.buildConfigurationList = configurationList.uuid as string;
 };
 
 const getCommonBuildSettings = (
   targetName: string,
   currentProjectVersion: string,
-  bundleIdentifier: string
+  bundleIdentifier: string,
+  version: string
 ): Record<string, string> => {
   return {
     /* ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
@@ -148,11 +143,8 @@ const getCommonBuildSettings = (
     DEBUG_INFORMATION_FORMAT = dwarf;
     DEVELOPMENT_TEAM = ;
     GCC_C_LANGUAGE_STANDARD = gnu11;
-    LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-    MARKETING_VERSION = 1.0;
     MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
     MTL_FAST_MATH = YES;
-    SKIP_INSTALL = YES;
     SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
     SWIFT_EMIT_LOC_STRINGS = YES;
     SWIFT_OPTIMIZATION_LEVEL = "-Onone"; */
@@ -161,19 +153,25 @@ const getCommonBuildSettings = (
     TARGETED_DEVICE_FAMILY: `"1,2"`,
     INFOPLIST_FILE: `${targetName}/Info.plist`,
     CURRENT_PROJECT_VERSION: `"${currentProjectVersion}"`,
+    LD_RUNPATH_SEARCH_PATHS:
+      '"$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks"',
+    DYLIB_INSTALL_NAME_BASE: '"@rpath"',
     // IPHONEOS_DEPLOYMENT_TARGET: `"${deploymentTarget}"`,
     PRODUCT_BUNDLE_IDENTIFIER: `"${bundleIdentifier}"`,
     GENERATE_INFOPLIST_FILE: `"YES"`,
     INFOPLIST_KEY_CFBundleDisplayName: targetName,
     INFOPLIST_KEY_NSHumanReadableCopyright: `""`,
-    // MARKETING_VERSION: `"${marketingVersion}"`,
+    INFOPLIST_KEY_CFBundleShortVersionString: `"${version}"`,
+    MARKETING_VERSION: `"${version}"`,
     SWIFT_OPTIMIZATION_LEVEL: `"-Onone"`,
     CODE_SIGN_ENTITLEMENTS: `"${targetName}/${targetName}.entitlements"`,
     // DEVELOPMENT_TEAM: `""`,
+    DEFINES_MODULE: '"YES"',
     BUILD_LIBRARY_FOR_DISTRIBUTION: '"YES"',
     USER_SCRIPT_SANDBOXING: '"NO"',
     SKIP_INSTALL: '"NO"',
     ENABLE_MODULE_VERIFIER: '"NO"',
+    GCC_SYMBOLS_PRIVATE_EXTERN: '"YES"',
   };
 };
 
@@ -205,7 +203,7 @@ const findNativeTargetSection = (
 
   if (!key) {
     throw new Error(
-      'Native target key mathching predicate cannot be found in native target section of PBXProj'
+      'Native target key matching predicate cannot be found in native target section of PBXProj'
     );
   }
 

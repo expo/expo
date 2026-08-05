@@ -1,4 +1,3 @@
-import { composeSourceMaps } from '@expo/metro/metro-source-map';
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -7,7 +6,8 @@ import path from 'path';
 import process from 'process';
 import resolveFrom from 'resolve-from';
 
-const debug = require('debug')('expo:metro:hermes') as typeof console.log;
+import { event } from './events';
+import { composeSourceMaps } from './sourceMap';
 
 function importHermesCommandFromProject(projectRoot: string): string {
   const platformExecutable = getHermesCommandPlatform();
@@ -76,7 +76,6 @@ export async function buildHermesBundleAsync(
   options: BuildHermesOptions
 ): Promise<HermesBundleOutput> {
   if (currentHermesBuild) {
-    debug(`Waiting for existing Hermes builds to finish`);
     await currentHermesBuild;
   }
   currentHermesBuild = directlyBuildHermesBundleAsync(options);
@@ -111,7 +110,7 @@ async function directlyBuildHermesBundleAsync({
       args.push('-output-source-map');
     }
 
-    debug(`Running hermesc: ${hermesCommand} ${args.join(' ')}`);
+    event('hermes:build_started', { command: hermesCommand, args: args.join(' ') });
     await spawnAsync(hermesCommand, args);
 
     let hbc: Buffer;

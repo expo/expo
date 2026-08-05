@@ -1,6 +1,6 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
-open class Exception: CodedError, ChainableException, CustomStringConvertible, CustomDebugStringConvertible, @unchecked Sendable {
+open class Exception: CodedError, ChainableException, CustomStringConvertible, CustomDebugStringConvertible, JavaScriptThrowable, @unchecked Sendable {
   open lazy var name: String = String(describing: Self.self)
 
   /**

@@ -23,9 +23,15 @@ import expo.modules.medialibrary.next.extensions.safeCopy
 import expo.modules.medialibrary.next.extensions.safeMove
 import expo.modules.medialibrary.next.extensions.scanFile
 import expo.modules.medialibrary.next.objects.wrappers.RelativePath
+import expo.modules.medialibrary.next.objects.album.Album
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.asset.EXIF_TAGS
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetDeleter
+import expo.modules.medialibrary.next.objects.asset.factories.AssetFactory
+import expo.modules.medialibrary.next.extensions.resolver.queryAlbumTitle
+import expo.modules.medialibrary.next.extensions.resolver.queryAssetBucketId
+import expo.modules.medialibrary.next.objects.asset.AssetMapper
+import expo.modules.medialibrary.next.objects.asset.movers.AssetMover
 import expo.modules.medialibrary.next.objects.wrappers.MediaType
 import expo.modules.medialibrary.next.objects.wrappers.MimeType
 import expo.modules.medialibrary.next.permissions.SystemPermissionsDelegate
@@ -44,7 +50,10 @@ import kotlin.collections.component2
 class AssetLegacyDelegate(
   contentUri: Uri,
   val assetDeleter: AssetDeleter,
+  val assetMapper: AssetMapper,
   val systemPermissionsDelegate: SystemPermissionsDelegate,
+  val assetFactory: AssetFactory,
+  val assetMover: AssetMover,
   context: Context
 ) : AssetDelegate {
   private val contextRef = WeakReference(context)
@@ -62,13 +71,9 @@ class AssetLegacyDelegate(
   override var contentUri: Uri = contentUri
     private set
 
-  private val mediaStoreToAssetAdapter by lazy {
-    MediaStoreToAssetAdapter(contextRef.getOrThrow())
-  }
-
   override suspend fun getCreationTime(): Long? {
     val mediaStoreDateTaken = contentResolver.queryAssetDateTaken(contentUri)
-    return mediaStoreToAssetAdapter.transformCreationTime(mediaStoreDateTaken)
+    return assetMapper.mapCreationTime(mediaStoreDateTaken)
   }
 
   override suspend fun getDuration(): Long? {
@@ -76,7 +81,7 @@ class AssetLegacyDelegate(
       return null
     }
     val mediaStoreDuration = contentResolver.queryAssetDuration(contentUri)
-    return mediaStoreToAssetAdapter.transformDuration(mediaStoreDuration)
+    return assetMapper.mapDuration(mediaStoreDuration)
   }
 
   override suspend fun getFilename(): String =
@@ -85,13 +90,13 @@ class AssetLegacyDelegate(
 
   override suspend fun getHeight(): Int {
     val mediaStoreHeight = contentResolver.queryAssetHeight(contentUri)
-    return mediaStoreToAssetAdapter.transformHeight(mediaStoreHeight, contentUri)
+    return assetMapper.mapHeight(mediaStoreHeight, contentUri)
       ?: throw AssetPropertyNotFoundException("Height")
   }
 
   override suspend fun getWidth(): Int {
     val mediaStoreWidth = contentResolver.queryAssetWidth(contentUri)
-    return mediaStoreToAssetAdapter.transformWidth(mediaStoreWidth, contentUri)
+    return assetMapper.mapWidth(mediaStoreWidth, contentUri)
       ?: throw AssetPropertyNotFoundException("Width")
   }
 
@@ -106,43 +111,37 @@ class AssetLegacyDelegate(
 
   override suspend fun getModificationTime(): Long? {
     val mediaStoreDateModified = contentResolver.queryAssetDateModified(contentUri)
-    return mediaStoreToAssetAdapter.transformModificationTime(mediaStoreDateModified)
+    return assetMapper.mapModificationTime(mediaStoreDateModified)
   }
 
   override suspend fun getUri(): Uri {
     // e.g. storage/emulated/0/Android/data/expo/files/[ROOT_ALBUM]/[ALBUM_NAME]
     val mediaStoreData = contentResolver.queryAssetData(contentUri)
     // e.g. file:///storage/emulated/0/Android/data/expo/files/[ROOT_ALBUM]/[ALBUM_NAME]
-    return mediaStoreToAssetAdapter.transformUri(mediaStoreData)
+    return assetMapper.mapUri(mediaStoreData)
       ?: throw AssetPropertyNotFoundException("Uri")
   }
 
   override suspend fun getInfo(): AssetInfo {
-    val mediaStoreItem = contentResolver.queryAssetMediaStoreItem(contentUri)
+    return contentResolver.queryAssetMediaStoreItem(contentUri)?.let { assetMapper.toDto(it) }
       ?: throw AssetPropertyNotFoundException("Info")
-    val mediaType = getMediaType()
-    val height = mediaStoreToAssetAdapter.transformHeight(mediaStoreItem.height, contentUri)
-    val width = mediaStoreToAssetAdapter.transformWidth(mediaStoreItem.width, contentUri)
-    return AssetInfo(
-      id = contentUri,
-      mediaType = mediaType,
-      creationTime = mediaStoreToAssetAdapter.transformCreationTime(mediaStoreItem.dateTaken),
-      modificationTime = mediaStoreToAssetAdapter.transformModificationTime(mediaStoreItem.dateModified),
-      duration = mediaStoreToAssetAdapter.transformDuration(mediaStoreItem.duration),
-      filename = mediaStoreItem.displayName
-        ?: throw AssetPropertyNotFoundException("Filename"),
-      height = height
-        ?: throw AssetPropertyNotFoundException("Height"),
-      width = width
-        ?: throw AssetPropertyNotFoundException("Width"),
-      uri = mediaStoreToAssetAdapter.transformUri(mediaStoreItem.data)
-        ?: throw AssetPropertyNotFoundException("Uri")
-    )
   }
+
+  override suspend fun getFavorite(): Boolean = false
+
+  override suspend fun setFavorite(isFavorite: Boolean) = Unit
 
   override suspend fun getMimeType(): MimeType {
     return contentResolver.getType(contentUri)?.let { MimeType(it) }
       ?: MimeType.from(getUri())
+  }
+
+  override suspend fun getAlbums(): List<Album> {
+    val albumId = contentResolver.queryAssetBucketId(contentUri)?.toString() ?: return emptyList()
+    if (contentResolver.queryAlbumTitle(albumId) == null) {
+      return emptyList()
+    }
+    return listOf(Album(albumId, assetDeleter, assetFactory, assetMover, contextRef.getOrThrow()))
   }
 
   override suspend fun getLocation(): Location? {
@@ -199,7 +198,6 @@ class AssetLegacyDelegate(
     if (uri == null) {
       throw AssetCouldNotBeCreated("Could not create a new asset while copying the old one")
     }
-    val newAssetDelegate = AssetLegacyDelegate(contentUri, assetDeleter, systemPermissionsDelegate, contextRef.getOrThrow())
-    return@withContext Asset(newAssetDelegate)
+    return@withContext assetFactory.create(uri)
   }
 }

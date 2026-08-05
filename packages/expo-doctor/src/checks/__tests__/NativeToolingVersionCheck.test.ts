@@ -184,4 +184,32 @@ describe('runAsync', () => {
     const result = await check.runAsync(additionalProjectProps);
     expect(result.isSuccessful).toBeTruthy();
   });
+
+  test('returns error if sdk version >= 55.0.0 and xcode version < 26', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '25.0.0' });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync({
+      ...additionalProjectProps,
+      exp: {
+        ...additionalProjectProps.exp,
+        sdkVersion: '55.0.0',
+      },
+    });
+    expect(result.isSuccessful).toBeFalsy();
+  });
+
+  test('returns success if sdk version >= 55.0.0 and xcode version >= 26', async () => {
+    jest.mocked(getXcodeVersionAsync).mockResolvedValueOnce({ xcodeVersion: '26.0.0' });
+
+    const check = new NativeToolingVersionCheck();
+    const result = await check.runAsync({
+      ...additionalProjectProps,
+      exp: {
+        ...additionalProjectProps.exp,
+        sdkVersion: '55.0.0',
+      },
+    });
+    expect(result.isSuccessful).toBeTruthy();
+  });
 });

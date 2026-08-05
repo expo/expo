@@ -19,24 +19,29 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
         with:
-          submodules: true
+          version: 10
       - name: ⬢ Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 22
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-      - name: 🧶 Install workspace node modules
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
+          node-version: 24
+          cache: 'pnpm'
+      - name: 📦 Install dependencies
+        run: pnpm install --ignore-scripts --frozen-lockfile
+      - name: 🛠 Build app dependencies
+        run: pnpm turbo build --filter test-suite...
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
       - name: 🚨 Lint test-suite files
-        run: yarn lint --max-warnings 0
+        run: pnpm lint --max-warnings 0
+        working-directory: apps/test-suite
+      - name: 💅 Check formatting
+        run: pnpm format --check
         working-directory: apps/test-suite
       - name: 🧪 Run unit tests
-        run: yarn test
+        run: pnpm test
         working-directory: apps/test-suite

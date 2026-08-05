@@ -2,10 +2,10 @@
 
 import Foundation
 
-class APIClient {
+actor APIClient {
   static let shared = APIClient()
 
-  private var useStaging: Bool {
+  private nonisolated var useStaging: Bool {
     return false
   }
 
@@ -27,13 +27,13 @@ class APIClient {
       : "https://exp.host/--/graphql"
   }
 
-  var apiOrigin: String {
+  nonisolated var apiOrigin: String {
     return useStaging
       ? "https://staging.exp.host"
       : "https://exp.host"
   }
 
-  var websiteOrigin: String {
+  nonisolated var websiteOrigin: String {
     return useStaging
       ? "https://staging.expo.dev"
       : "https://expo.dev"

@@ -1,0 +1,15 @@
+import { GithubIcon } from '@expo/styleguide-icons/custom/GithubIcon';
+
+import { BoxLink } from '~/ui/components/BoxLink';
+
+| Property        | Type      | Description                                                                                                                                 |
+| --------------- | --------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `clean`         | `boolean` | Optional property defining whether the function should use `--clean` flag when running the command. Defaults to false.                      |
+| `apple_team_id` | `string`  | Optional property defining Apple team ID which should be used when doing prebuild. It should be specified for iOS builds using credentials. |
+
+<BoxLink
+  title="eas/prebuild source code"
+  description="View the source code for the eas/prebuild function on GitHub."
+  Icon={GithubIcon}
+  href="https://github.com/expo/eas-cli/blob/main/packages/build-tools/src/steps/functions/prebuild.ts"
+/>

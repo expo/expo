@@ -1,42 +1,32 @@
-import {
+import type { ComponentProps, ReactElement, ReactNode, PropsWithChildren } from 'react';
+import { Children, Fragment, isValidElement, use, useMemo } from 'react';
+import type { ViewProps } from 'react-native';
+import { StyleSheet, View } from 'react-native';
+
+import { useRouteNode, useContextKey } from '../Route';
+import { useRouteInfo } from '../hooks';
+import { resolveHref } from '../link/href';
+import type {
   DefaultNavigatorOptions,
-  LinkingContext,
   ParamListBase,
   TabActionHelpers,
   TabNavigationState,
   TabRouterOptions,
-  useNavigationBuilder,
-} from '@react-navigation/native';
-import {
-  Children,
-  ComponentProps,
-  Fragment,
-  ReactElement,
-  ReactNode,
-  isValidElement,
-  use,
-  useMemo,
-  PropsWithChildren,
-} from 'react';
-import { StyleSheet, ViewProps, View } from 'react-native';
-
-import {
-  ExpoTabsScreenOptions,
-  TabNavigationEventMap,
-  TabTriggerMapContext,
-  TabsContextValue,
-} from './TabContext';
+} from '../react-navigation/native';
+import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import { shouldLinkExternally } from '../utils/url';
+import type { NavigatorContextValue } from '../views/Navigator';
+import { NavigatorContext } from '../views/Navigator';
+import type { ExpoTabsScreenOptions, TabNavigationEventMap, TabsContextValue } from './TabContext';
+import { TabTriggerMapContext } from './TabContext';
 import { isTabList } from './TabList';
-import { ExpoTabRouter, ExpoTabRouterOptions } from './TabRouter';
+import type { ExpoTabRouterOptions } from './TabRouter';
+import { ExpoTabRouter } from './TabRouter';
 import { isTabSlot } from './TabSlot';
 import { isTabTrigger } from './TabTrigger';
-import { ViewSlot, ScreenTrigger, triggersToScreens } from './common';
+import type { ScreenTrigger } from './common';
+import { ViewSlot, triggersToScreens } from './common';
 import { useComponent } from './useComponent';
-import { useRouteNode, useContextKey } from '../Route';
-import { useRouteInfo } from '../hooks';
-import { resolveHref } from '../link/href';
-import { shouldLinkExternally } from '../utils/url';
-import { NavigatorContext, NavigatorContextValue } from '../views/Navigator';
 
 export * from './TabContext';
 export * from './TabList';
@@ -191,7 +181,6 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     state,
     descriptors,
     navigation,
-    describe,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
 
@@ -212,7 +201,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     </TabTriggerMapContext.Provider>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent, describe };
+  return { state, descriptors, navigation, NavigationContent };
 }
 
 function parseTriggersFromChildren(

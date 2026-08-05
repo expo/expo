@@ -1,79 +1,93 @@
 'use client';
 
+import type { ComponentProps } from 'react';
+import { Platform, Pressable } from 'react-native';
+
+import { Link } from '../link/Link';
 import {
+  createStandardBottomTabNavigator,
+  type BottomTabNavigatorCreateProps,
+} from '../react-navigation/bottom-tabs/navigators/createBottomTabNavigator';
+import type {
+  BottomTabNavigationConfig,
   BottomTabNavigationEventMap,
   BottomTabNavigationOptions,
-  createBottomTabNavigator,
-} from '@react-navigation/bottom-tabs';
-import { ParamListBase, TabNavigationState } from '@react-navigation/native';
-import React, { ComponentProps } from 'react';
-import { Pressable, Platform } from 'react-native';
+} from '../react-navigation/bottom-tabs/types';
+import {
+  StackActions,
+  TabRouter,
+  type ParamListBase,
+  type TabNavigationState,
+  type TabRouterOptions,
+} from '../react-navigation/native';
+import { unstable_integrateWithRouter } from '../standard-navigation';
+import type { Href } from '../types';
 
-import { withLayoutContext } from './withLayoutContext';
-import { Link } from '../link/Link';
-import { Href } from '../types';
-import { tabRouterOverride } from './TabRouter';
-import { Protected } from '../views/Protected';
+// Keep React Navigation client-only so the entry evaluates in React Server Components.
+export * from '../react-navigation/bottom-tabs';
 
-// This is the only way to access the navigator.
-const BottomTabNavigator = createBottomTabNavigator().Navigator;
+export type TabsScreenOptions = BottomTabNavigationOptions & { href?: Href | null };
 
-export type BottomTabNavigator = typeof BottomTabNavigator;
-
-type TabsProps = BottomTabNavigationOptions & { href?: Href | null };
-
-const ExpoTabs = withLayoutContext<
-  TabsProps,
-  typeof BottomTabNavigator,
+/**
+ * Renders a tabs navigator.
+ *
+ * @hideType
+ */
+const Tabs = unstable_integrateWithRouter<
+  TabsScreenOptions,
   TabNavigationState<ParamListBase>,
-  BottomTabNavigationEventMap
->(BottomTabNavigator, (screens) => {
-  // Support the `href` shortcut prop.
-  return screens.map((screen) => {
-    if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
-      const { href, ...options } = screen.options;
-      if (options.tabBarButton) {
-        throw new Error('Cannot use `href` and `tabBarButton` together.');
+  BottomTabNavigationEventMap,
+  BottomTabNavigationConfig,
+  TabRouterOptions,
+  BottomTabNavigatorCreateProps
+>(createStandardBottomTabNavigator, TabRouter, {
+  createProps: ({ state, dispatch }) => ({
+    preloadedRouteKeys: state.preloadedRouteKeys,
+    popNestedStackToTop: (routeKey) => {
+      const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
+      if (nestedState?.type === 'stack' && nestedState.key) {
+        dispatch({ ...StackActions.popToTop(), target: nestedState.key });
       }
-      return {
-        ...screen,
-        options: {
-          ...options,
-          tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
-          // @ts-expect-error: TODO(@kitten): This isn't properly typed
-          tabBarButton: (props) => {
-            if (href == null) {
-              return null;
-            }
-            const children =
-              Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
-            // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
-            //       While Link expects a TextStyle. We need to reconcile these types.
-            return (
-              <Link
-                {...(props as any)}
-                style={[{ display: 'flex' }, props.style as any]}
-                href={href}
-                asChild={Platform.OS !== 'web'}
-                children={children}
-              />
-            );
+    },
+  }),
+  // Support the `href` shortcut prop.
+  processScreens: (screens) =>
+    screens.map((screen) => {
+      if (typeof screen.options !== 'function' && screen.options?.href !== undefined) {
+        const { href, ...options } = screen.options;
+        if (options.tabBarButton) {
+          throw new Error('Cannot use `href` and `tabBarButton` together.');
+        }
+        return {
+          ...screen,
+          options: {
+            ...options,
+            tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
+            tabBarButton: (props) => {
+              if (href == null) {
+                return null;
+              }
+              const children =
+                Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
+              // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>
+              //       While Link expects a TextStyle. We need to reconcile these types.
+              return (
+                <Link
+                  {...(props as any)}
+                  style={[{ display: 'flex' }, props.style as any]}
+                  href={href}
+                  asChild={Platform.OS !== 'web'}
+                  children={children}
+                />
+              );
+            },
           },
-        },
-      };
-    }
-    return screen;
-  });
+        };
+      }
+      return screen;
+    }),
 });
 
-const Tabs = Object.assign(
-  (props: ComponentProps<typeof ExpoTabs>) => {
-    return <ExpoTabs {...props} UNSTABLE_router={tabRouterOverride} />;
-  },
-  {
-    Screen: ExpoTabs.Screen,
-    Protected,
-  }
-);
+export type JSTabsProps = ComponentProps<typeof Tabs>;
 
 export default Tabs;

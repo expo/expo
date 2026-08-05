@@ -1,12 +1,12 @@
 import fs from 'fs';
 import path from 'path';
 
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { TEMPLATES_DIR } from '../../Constants';
 import { packToTarballAsync } from '../../Npm';
 import { Task } from '../../TasksRunner';
 import { runWithSpinner } from '../../Utils';
 import { Parcel, TaskArgs } from '../types';
-import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 /**
  * Add template tarball to Expo package.

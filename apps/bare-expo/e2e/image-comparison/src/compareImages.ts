@@ -34,7 +34,9 @@ function createSuccessResult(
   totalPixels: number,
   diffRatio: number,
   similarityThreshold: number,
-  diffImagePath?: string
+  diffImagePath?: string,
+  image1Path?: string,
+  image2Path?: string
 ): ComparisonResult {
   const success = diffRatio <= similarityThreshold;
   let message: string;
@@ -44,7 +46,7 @@ function createSuccessResult(
   } else if (success) {
     message = `✅ Images are similar (${(diffRatio * 100).toFixed(2)}% difference, threshold ${(similarityThreshold * 100).toFixed(2)}%)`;
   } else {
-    message = `❌ Images are significantly different (${(diffRatio * 100).toFixed(2)}% difference)`;
+    message = `❌ Images are significantly different (${(diffRatio * 100).toFixed(2)}% difference). image1: ${image1Path}, image2: ${image2Path}`;
   }
 
   return {
@@ -134,7 +136,10 @@ export async function compareImages({
 
     if (img2.width !== width || img2.height !== height) {
       return createErrorResult(
-        `Image dimensions don't match: ${width}x${height} vs ${img2.width}x${img2.height}`,
+        `Image dimensions don't match: ${width}x${height} vs ${img2.width}x${img2.height}. ` +
+          `The baseline was most likely captured on a device with a different resolution or ` +
+          `density than this run's device. To regenerate it, copy the viewshot that CI uploads ` +
+          `to its workflow artifacts over the .base file; don't use captures from a local device.`,
         width * height
       );
     }
@@ -158,7 +163,9 @@ export async function compareImages({
       totalPixels,
       diffPercentageFormatted,
       similarityThreshold,
-      outputPath
+      outputPath,
+      finalImage1Path,
+      finalImage2Path
     );
   } catch (error) {
     return createErrorResult(error instanceof Error ? error.message : 'Unknown error occurred');

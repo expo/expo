@@ -1,8 +1,12 @@
-import { DeviceEventEmitter } from 'react-native';
-
+import * as devLoadingViewEmitter from '../../devLoadingViewEmitter';
 import { fetchThenEvalAsync } from '../fetchThenEval';
 import HMRClient from '../hmr';
 import { loadBundleAsync } from '../loadBundle';
+
+jest.mock('../../devLoadingViewEmitter', () => ({
+  emit: jest.fn(),
+  addListener: jest.fn(() => ({ remove: jest.fn() })),
+}));
 
 jest.mock('../fetchThenEval', () => ({
   fetchThenEvalAsync: jest.fn(async () => {}),
@@ -20,12 +24,10 @@ afterEach(() => {
 });
 
 it('loads a bundle', async () => {
-  DeviceEventEmitter.emit = jest.fn();
   process.env.NODE_ENV = 'development';
   await loadBundleAsync('/Second.bundle?modulesOnly=true');
 
-  expect(DeviceEventEmitter.emit).not.toHaveBeenCalled();
-  expect(DeviceEventEmitter.emit).not.toHaveBeenCalled();
+  expect(devLoadingViewEmitter.emit).not.toHaveBeenCalled();
 
   expect(HMRClient.registerBundle).toHaveBeenCalledWith(
     expect.stringMatching(/Second.bundle\?modulesOnly=true$/)
@@ -35,11 +37,9 @@ it('loads a bundle', async () => {
   );
 });
 it('loads a bundle in production', async () => {
-  DeviceEventEmitter.emit = jest.fn();
   process.env.NODE_ENV = 'production';
   await loadBundleAsync('/Second.bundle?modulesOnly=true');
-  expect(DeviceEventEmitter.emit).not.toHaveBeenCalled();
-  expect(DeviceEventEmitter.emit).not.toHaveBeenCalled();
+  expect(devLoadingViewEmitter.emit).not.toHaveBeenCalled();
 
   expect(HMRClient.registerBundle).not.toHaveBeenCalled();
   expect(fetchThenEvalAsync).toHaveBeenCalledWith(

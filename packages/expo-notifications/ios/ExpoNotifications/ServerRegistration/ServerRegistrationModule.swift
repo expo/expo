@@ -111,7 +111,7 @@ open class ServerRegistrationModule: Module {
   private func registrationSetQuery(_ registration: String) -> CFDictionary {
     return registrationSearchQueryMerging([
       kSecValueData: dataFromString(registration),
-      kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
+      kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlockThisDeviceOnly
     ])
   }
 

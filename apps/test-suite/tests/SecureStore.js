@@ -1,6 +1,7 @@
 'use strict';
 
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 
 export const name = 'SecureStore';
 
@@ -162,23 +163,25 @@ export function test(t) {
         });
         t.expect(result).toBe(undefined);
       });
-      t.it('Set in non access group and validate get in access group is empty', async () => {
-        await SecureStore.setItemAsync(key, longValue, {});
-        const result = await SecureStore.getItemAsync(key, {
-          accessGroup: 'group.dev.expo.Payments',
-        });
-        t.expect(result).toBe(null);
-      });
-      t.it('Set for access group without entitlements, expect error', async () => {
-        try {
-          const result = await SecureStore.setItemAsync(key, emptyValue, {
-            accessGroup: 'group.no.entitlement',
+      if (Platform.OS === 'ios') {
+        t.it('Set in non access group and validate get in access group is empty', async () => {
+          await SecureStore.setItemAsync(key, longValue, {});
+          const result = await SecureStore.getItemAsync(key, {
+            accessGroup: 'group.dev.expo.Payments',
           });
-          t.fail(result);
-        } catch (e) {
-          t.expect(e).toBeTruthy();
-        }
-      });
+          t.expect(result).toBe(null);
+        });
+        t.it('Set for access group without entitlements, expect error', async () => {
+          try {
+            const result = await SecureStore.setItemAsync(key, emptyValue, {
+              accessGroup: 'group.no.entitlement',
+            });
+            t.fail(result);
+          } catch (e) {
+            t.expect(e).toBeTruthy();
+          }
+        });
+      }
     });
   });
 }

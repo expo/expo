@@ -41,7 +41,7 @@ export type NativeIntent = {
    * Note that throwing errors within this method may result in app crashes. It's recommended to
    * wrap your code inside a `try/catch` block and utilize `.catch()` when appropriate.
    *
-   * @see For usage information, see [Redirecting system paths](/router/advanced/native-intent/#redirectsystempath).
+   * @see For usage information, see [Redirecting system paths](/router/advanced/native-intent/#using-redirectsystempath).
    */
   redirectSystemPath?: (event: {
     path: string;
@@ -55,19 +55,10 @@ export type NativeIntent = {
    *
    * Using this API is not recommended for newer projects or integrations since it is
    * incompatible with Server Side Routing and
-   * [Static Rendering](/router/reference/static-rendering/), and can become challenging to manage while offline or in a low network environment.
+   * [Static Rendering](/router/web/static-rendering/), and can become challenging to manage while offline or in a low network environment.
    *
    */
   legacy_subscribe?: (listener: (url: string) => void) => undefined | void | (() => void);
 };
-
-/**
- * Function type for route loaders. Loaders are executed on the server during
- * SSR/SSG to fetch data required by a route.
- */
-export type LoaderFunction<T = any> = (args: {
-  params: Record<string, string | string[]>;
-  request?: Request;
-}) => Promise<T> | T;
 
 export type * from './typed-routes/types';

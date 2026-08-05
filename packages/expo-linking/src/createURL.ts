@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 
-import { CreateURLOptions, ParsedURL } from './Linking.types';
+import type { CreateURLOptions, ParsedURL } from './Linking.types';
 import { hasCustomScheme, resolveScheme } from './Schemes';
 import { validateURL } from './validateURL';
 
@@ -71,7 +71,7 @@ function ensureLeadingSlash(input: string, shouldAppend: boolean): string {
  * If a stable URL is needed, for example in authorization callbacks, a build (or development build)
  * of your application should be used and the scheme provided.
  *
- * @param path Addition path components to append to the base URL.
+ * @param path Additional path components to append to the base URL.
  * @param namedParameters Additional options object.
  * @return A URL string which points to your app with the given deep link information.
  */
@@ -103,8 +103,8 @@ export function createURL(
   let queryString = '';
   const queryStringMatchResult = hostUri.match(/(.*)\?(.+)/);
   if (queryStringMatchResult) {
-    hostUri = queryStringMatchResult[1];
-    queryString = queryStringMatchResult[2];
+    hostUri = queryStringMatchResult[1] ?? '';
+    queryString = queryStringMatchResult[2] ?? '';
     let paramsFromHostUri = {};
     try {
       paramsFromHostUri = Object.fromEntries(

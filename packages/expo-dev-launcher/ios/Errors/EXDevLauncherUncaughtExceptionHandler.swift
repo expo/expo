@@ -54,7 +54,7 @@ public class EXDevLauncherUncaughtExceptionHandler: NSObject {
     // URL structure replicates
     // https://github.com/facebook/react-native/blob/0.69-stable/Libraries/Utilities/HMRClient.js#L164
     // but URLSessionWebSocketTask will crash if the scheme is not `ws` or `wss`
-    guard let appUrl = controller.appBridge?.bundleURL else {
+    guard let appUrl = controller.sourceUrl() else {
       return nil
     }
     guard let socketUrl = URL.init(string: "hot", relativeTo: appUrl) else {

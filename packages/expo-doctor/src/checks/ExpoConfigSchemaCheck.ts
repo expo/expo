@@ -1,16 +1,18 @@
-import { getConfigFilePaths } from '@expo/config';
-
-import { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 import { getSchemaAsync } from '../api/getSchemaAsync';
 import { learnMore } from '../utils/TerminalLink';
 import { validateWithSchemaAsync } from '../utils/schema';
+import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks.types';
 
 export class ExpoConfigSchemaCheck implements DoctorCheck {
   description = 'Check Expo config (app.json/ app.config.js) schema';
 
   sdkVersionRange = '*';
 
-  async runAsync({ exp, projectRoot }: DoctorCheckParams): Promise<DoctorCheckResult> {
+  async runAsync({
+    exp,
+    projectRoot,
+    staticConfigPath,
+  }: DoctorCheckParams): Promise<DoctorCheckResult> {
     const issues: string[] = [];
 
     let schema = await getSchemaAsync(exp.sdkVersion!);
@@ -23,15 +25,13 @@ export class ExpoConfigSchemaCheck implements DoctorCheck {
       isUsingUnversionedSchema = true;
     }
 
-    const configPaths = getConfigFilePaths(projectRoot);
-
     // this check can only validate a static config
-    if (configPaths.staticConfigPath) {
+    if (staticConfigPath) {
       const { schemaErrorMessage, assetsErrorMessage } = await validateWithSchemaAsync(
         projectRoot,
         exp,
         schema,
-        configPaths.staticConfigPath,
+        staticConfigPath,
         true
       );
 

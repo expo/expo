@@ -1,8 +1,6 @@
-/* eslint-env jest */
 import fs from 'node:fs';
 import path from 'node:path';
 
-import { runExportSideEffects } from './export-side-effects';
 import { executeExpoAsync } from '../../utils/expo';
 import {
   prepareServers,
@@ -11,6 +9,7 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles, getHtml, getRouterE2ERoot } from '../utils';
+import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
 
@@ -82,6 +81,14 @@ describe('exports middleware', () => {
         .then(getHtml);
       const title = html.querySelector('[data-testid="title"]')?.textContent;
       expect(title).toBe('Custom response from middleware');
+    });
+
+    it('can use `setResponseHeaders()` with `Redirect.response()`', async () => {
+      const response = await server.fetchAsync('/?e2e=runtime-api', { redirect: 'manual' });
+      expect(response.status).toBe(302);
+      expect(response.headers.get('X-Foo')).toBe('bar');
+      const url = new URL(response.headers.get('location')!);
+      expect(url.pathname).toEqual('/second');
     });
 
     it('runs the middleware before redirects', async () => {

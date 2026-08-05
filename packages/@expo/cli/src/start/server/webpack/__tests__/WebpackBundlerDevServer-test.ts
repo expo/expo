@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 import webpack from 'webpack';
 
-import { BundlerStartOptions } from '../../BundlerDevServer';
+import type { BundlerStartOptions } from '../../BundlerDevServer';
 import { getPlatformBundlers } from '../../platformBundlers';
 import { WebpackBundlerDevServer } from '../WebpackBundlerDevServer';
 
@@ -27,10 +27,10 @@ async function getStartedDevServer(options: Partial<BundlerStartOptions> = {}) {
     '/',
     getPlatformBundlers('/', { web: { bundler: 'webpack' } })
   );
-  devServer['getAvailablePortAsync'] = jest.fn(() => Promise.resolve(3000));
   // Tested in the superclass
   devServer['postStartAsync'] = jest.fn(async () => {});
-  await devServer.startAsync({ location: {}, ...options });
+  // The port is resolved by the caller before the dev server starts.
+  await devServer.startAsync({ location: {}, port: 3000, ...options });
   return devServer;
 }
 
@@ -57,7 +57,6 @@ describe('startAsync', () => {
   it(`starts webpack`, async () => {
     const devServer = await getStartedDevServer();
 
-    expect(devServer['getAvailablePortAsync']).toHaveBeenCalled();
     expect(devServer['postStartAsync']).toHaveBeenCalled();
 
     expect(devServer.getInstance()).toEqual({

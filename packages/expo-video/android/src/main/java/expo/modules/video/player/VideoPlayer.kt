@@ -20,6 +20,7 @@ import androidx.media3.exoplayer.DecoderReuseEvaluation
 import androidx.media3.exoplayer.DefaultRenderersFactory
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.analytics.AnalyticsListener
+import androidx.media3.exoplayer.hls.HlsManifest
 import androidx.media3.exoplayer.trackselection.DefaultTrackSelector
 import androidx.media3.session.MediaSession
 import androidx.media3.ui.PlayerView
@@ -44,16 +45,21 @@ import expo.modules.video.records.ScrubbingModeOptions
 import expo.modules.video.records.SeekTolerance
 import expo.modules.video.records.TimeUpdate
 import expo.modules.video.records.VideoSource
-import expo.modules.video.utils.MutableWeakReference
+import expo.modules.video.records.VideoSize
 import expo.modules.video.records.VideoTrack
+import expo.modules.video.utils.MutableWeakReference
 import expo.modules.video.utils.buildBasicMediaSession
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.FileInputStream
 import java.lang.ref.WeakReference
+import kotlin.time.DurationUnit
 
 // https://developer.android.com/guide/topics/media/media3/getting-started/migration-guide#improvements_in_media3
 @UnstableApi
-class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
+class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSource?, playerBuilderOptions: expo.modules.video.records.PlayerBuilderOptions? = null) : AutoCloseable, SharedObject(appContext), IntervalUpdateEmitter {
   // This improves the performance of playing DRM-protected content
   private var renderersFactory = DefaultRenderersFactory(context)
     .forceEnableMediaCodecAsynchronousQueueing()
@@ -70,11 +76,23 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
   val player = ExoPlayer
     .Builder(context, renderersFactory)
-    .setLooper(context.mainLooper)
-    .setLoadControl(loadControl)
-    .build()
+    .apply {
+      setLooper(context.mainLooper)
+      setLoadControl(loadControl)
+      playerBuilderOptions?.seekBackwardIncrement?.let {
+        setSeekBackIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+      playerBuilderOptions?.seekForwardIncrement?.let {
+        setSeekForwardIncrementMs((it).toLong(DurationUnit.MILLISECONDS).coerceIn(1, 999_000))
+      }
+    }.build()
+    .apply {
+      playerBuilderOptions?.videoChangeFrameRateStrategy?.let {
+        videoChangeFrameRateStrategy = it.toMedia3Strategy()
+      }
+    }
 
-  internal lateinit var firstFrameEventGenerator: FirstFrameEventGenerator
+  internal val firstFrameEventGenerator: FirstFrameEventGenerator
   val serviceConnection = PlaybackServiceConnection(WeakReference(this), appContext)
   var mediaSession: MediaSession = buildBasicMediaSession(context, player)
   val intervalUpdateClock = IntervalUpdateClock(this)
@@ -218,6 +236,24 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   var availableVideoTracks: List<VideoTrack> = emptyList()
     private set
 
+  var maxResolution: VideoSize? = null
+    set(value) {
+      val normalized = value?.takeIf { it.width > 0 && it.height > 0 }
+      if (value != null && normalized == null) {
+        appContext?.jsLogger?.warn("[expo-video] Ignoring invalid `maxResolution` (${value.width}x${value.height}): `width` and `height` must both be greater than zero. Clearing the resolution limit.")
+      }
+      field = normalized
+      appContext?.mainQueue?.launch {
+        val parameters = player.trackSelectionParameters.buildUpon()
+        if (normalized != null) {
+          parameters.setMaxVideoSize(normalized.width, normalized.height)
+        } else {
+          parameters.clearVideoSizeConstraints()
+        }
+        player.trackSelectionParameters = parameters.build()
+      }
+    }
+
   var keepScreenOnWhilePlaying by VideoPlayerKeepAwake(this, appContext)
 
   private val playerListener = object : Player.Listener {
@@ -238,7 +274,8 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
       val newAudioTracks = audioTracks.availableAudioTracks
       val newCurrentSubtitleTrack = subtitles.currentSubtitleTrack
       val newCurrentAudioTrack = audioTracks.currentAudioTrack
-      availableVideoTracks = tracks.toVideoTracks()
+      val hlsManifest = player.currentManifest as? HlsManifest
+      availableVideoTracks = tracks.toVideoTracks(hlsManifest)
       refreshPlaybackInfo()
 
       if (isLoadingNewSource) {
@@ -339,15 +376,24 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
     player.addListener(playerListener)
     player.addAnalyticsListener(analyticsListener)
     VideoManager.registerVideoPlayer(this)
-
+    firstFrameEventGenerator = createFirstFrameEventGenerator()
     // ExoPlayer will enable subtitles automatically at the start, we want them disabled by default
     appContext.mainQueue.launch {
-      firstFrameEventGenerator = createFirstFrameEventGenerator()
       subtitles.setSubtitlesEnabled(false)
     }
   }
 
+  @kotlin.OptIn(DelicateCoroutinesApi::class)
   override fun close() {
+    // Releases the listeners from VideoPlayerKeepAwake
+    keepScreenOnWhilePlaying = false
+
+    intervalUpdateClock.interval = 0L
+
+    synchronized(listeners) {
+      listeners.clear()
+    }
+
     if (serviceConnection.isConnected) {
       appContext?.reactContext?.unbindService(serviceConnection)
     }
@@ -356,19 +402,20 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 
     VideoManager.unregisterVideoPlayer(this@VideoPlayer)
 
-    appContext?.mainQueue?.launch {
+    // Run on global scope (not appContext.mainQueue) so that reloading doesn't cancel the release process
+    // https://github.com/expo/expo/blob/cdf592a7fea56fc01b0149e9b2e5dbd294bcdc4c/packages/expo-modules-core/android/src/main/java/expo/modules/kotlin/AppContext.kt#L277-L279
+    GlobalScope.launch(Dispatchers.Main) {
       firstFrameEventGenerator.release()
       player.removeListener(playerListener)
+      player.removeAnalyticsListener(analyticsListener)
       player.release()
     }
     uncommittedSource = null
     commitedSource = null
-    // Releases the listeners from VideoPlayerKeepAwake
-    keepScreenOnWhilePlaying = false
   }
 
-  override fun deallocate() {
-    super.deallocate()
+  override fun sharedObjectDidRelease() {
+    super.sharedObjectDidRelease()
     close()
   }
 
@@ -509,7 +556,10 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
   }
 
   private fun createFirstFrameEventGenerator(): FirstFrameEventGenerator {
-    return FirstFrameEventGenerator(this, currentVideoViewRef) {
+    val appContext = appContext
+      ?: throw Exceptions.AppContextLost()
+
+    return FirstFrameEventGenerator(appContext, this, currentVideoViewRef) {
       sendEvent(PlayerEvent.RenderedFirstFrame())
     }
   }
@@ -546,18 +596,27 @@ class VideoPlayer(val context: Context, appContext: AppContext, source: VideoSou
 // Extension functions
 
 @OptIn(UnstableApi::class)
-private fun Tracks.toVideoTracks(): List<VideoTrack> {
+private fun Tracks.toVideoTracks(sourceManifest: HlsManifest?): List<VideoTrack> {
   val videoTracks = mutableListOf<VideoTrack?>()
   for (group in this.groups) {
     for (i in 0 until group.length) {
       val format = group.getTrackFormat(i)
       val isSupported = group.isTrackSupported(i)
+      val hlsVariant = sourceManifest?.multivariantPlaylist?.variants?.firstOrNull {
+        it.format.id == format.id
+      }
+
+      // We provide the variant url only for HLS sources
+      val variantUrl = hlsVariant?.url
 
       if (!MimeTypes.isVideo(format.sampleMimeType)) {
         continue
       }
-      videoTracks.add(VideoTrack.fromFormat(format, isSupported))
+      videoTracks.add(VideoTrack.fromFormat(format, isSupported, variantUrl))
     }
   }
-  return videoTracks.filterNotNull()
+  // For HLS sources with multiple audio renditions, ExoPlayer creates a separate video
+  // track group for each audio variant, which results in the same video formats being
+  // reported multiple times. Deduplicate by format id to expose each variant only once.
+  return videoTracks.filterNotNull().distinctBy { it.format?.id }
 }

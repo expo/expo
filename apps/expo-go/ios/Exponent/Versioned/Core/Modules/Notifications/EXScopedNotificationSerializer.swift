@@ -3,7 +3,7 @@
 import UserNotifications
 import ExpoNotifications
 
-public class EXScopedNotificationSerializer {
+class EXScopedNotificationSerializer {
 
     public static func serializedNotification(_ notification: UNNotification) -> NotificationRecord {
         let scopedSerializedNotification = NotificationRecord(from: notification)
@@ -16,7 +16,7 @@ public class EXScopedNotificationSerializer {
         let scopedSerializedContent = NotificationContentRecord(from: request)
 
         let categoryIdentifier = request.content.categoryIdentifier
-        if (!categoryIdentifier.isEmpty) {
+        if !categoryIdentifier.isEmpty {
             let unscopedCategoryId = EXScopedNotificationsUtils.getScopeAndIdentifierFromScopedIdentifier(categoryIdentifier).identifier
             scopedSerializedContent.categoryIdentifier = unscopedCategoryId
         } else {
