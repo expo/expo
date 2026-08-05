@@ -111,9 +111,9 @@ jobs:
         working-directory: docs
         run: |
           args=(--sdk "$SDK_VERSION" --commit-per-step)
-          # TEMP(demo): pull_request runs exercise the demo steps, not a real cut.
+          # TEMP(demo): pull_request runs dry-run the real steps as a self-test.
           if [[ "$GITHUB_EVENT_NAME" == 'pull_request' ]]; then
-            args+=(--demo)
+            args+=(--dry-run)
           fi
           if [[ "$DRY_RUN" == 'true' ]]; then
             args+=(--dry-run)
