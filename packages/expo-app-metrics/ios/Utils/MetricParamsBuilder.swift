@@ -44,8 +44,13 @@ enum MetricParamsBuilder {
     if let networkPath {
       params["expo.network.connected"] = networkPath.status == .satisfied
       params["expo.network.type"] = networkTypeString(networkPath)
-      params["expo.network.isExpensive"] = networkPath.isExpensive
-      params["expo.network.isConstrained"] = networkPath.isConstrained
+      // Only when there's a network to describe. `NWPath` reports both as `false` on an unsatisfied
+      // path, which would assert the connection wasn't metered rather than admit there wasn't one.
+      // Android withholds its equivalents in the same situation.
+      if networkPath.status == .satisfied {
+        params["expo.network.isExpensive"] = networkPath.isExpensive
+        params["expo.network.isConstrained"] = networkPath.isConstrained
+      }
     }
     if let networkRequests, !networkRequests.isEmpty {
       params["expo.network.requests.count"] = networkRequests.count
