@@ -1,13 +1,11 @@
-import { describe, expect, jest, test } from '@jest/globals';
+import { afterAll, beforeAll, describe, expect, jest, test } from '@jest/globals';
 import * as SQLite from 'expo-sqlite';
 
 import { dumpDatabase, importDatabase } from '../sqliteDump';
 
-jest.mock(
-  '../../../../src/ExpoSQLite',
-  () =>
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../../../../src/__mocks__/ExpoSQLite')
+jest.mock('../../../../src/ExpoSQLite', () =>
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('../../../../src/__mocks__/ExpoSQLite')
 );
 
 const originalConsoleError = console.error;
