@@ -22,8 +22,11 @@ jobs:
     if: github.repository == 'expo/expo'
     runs-on: macos-26
     timeout-minutes: 120
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.EXPO_BOT_NPM_TOKEN }}
+    permissions:
+      # Lets the runner mint an OIDC token so npm can authenticate the publish
+      # through trusted publishing instead of a long-lived token.
+      id-token: write
+      contents: read
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
