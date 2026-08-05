@@ -56,7 +56,7 @@ export function setNodeEnv(
   systemEnv.BABEL_ENV = mode;
 
   if (systemEnv === process.env) {
-    // @ts-expect-error: Add support for external React libraries being loaded in the same process.
+    // @ts-expect-error: __DEV__ is not declared in the Node.js types.
     globalThis.__DEV__ = mode === 'development';
   }
 
