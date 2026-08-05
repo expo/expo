@@ -26,7 +26,6 @@ import { PreventRemoveContext } from './PreventRemoveContext';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
-import { filterStateForDeclaredRoutes } from './filterStateForDeclaredRoutes';
 import { isArrayEqual } from './isArrayEqual';
 import {
   type DefaultNavigatorOptions,
@@ -571,8 +570,10 @@ export function useNavigationBuilder<
   // So we override the state object we return to use the latest state as soon as possible
   state = nextState;
 
-  // Keep render consumers safe without committing a state outside the action pipeline.
-  state = filterStateForDeclaredRoutes(state, routeNames);
+  // Keep render consumers safe without committing a state outside the action pipeline. The router
+  // decides which survivor takes focus, so the interim render agrees with the state that
+  // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
+  state = router.getStateForDeclaredRoutes(state, routeNames);
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {

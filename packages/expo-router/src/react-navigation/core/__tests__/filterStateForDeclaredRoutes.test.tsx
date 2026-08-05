@@ -42,11 +42,11 @@ test('filters routes without reordering or changing unrelated state', () => {
   expect(result.routeNames).toBe(state.routeNames);
 });
 
-test('focuses the nearest survivor at or before the old focused index', () => {
+test('falls back to the first survivor when the focused route is removed', () => {
   const result = filterStateForDeclaredRoutes(state, ['first', 'removed', 'last']);
 
-  expect(result.index).toBe(1);
-  expect(result.routes[result.index]).toBe(state.routes[1]);
+  expect(result.index).toBe(0);
+  expect(result.routes[result.index]).toBe(state.routes[0]);
 });
 
 test('falls back to the first survivor when no earlier route survives', () => {

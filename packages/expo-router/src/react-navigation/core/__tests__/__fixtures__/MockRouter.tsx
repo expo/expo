@@ -26,6 +26,8 @@ export function MockRouter(options: DefaultRouterOptions) {
   const router: Router<NavigationState, MockActions> = {
     type: 'test',
 
+    getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
+
     getInitialState({ routeNames, routeParamList }) {
       const index =
         options.initialRouteName === undefined ? 0 : routeNames.indexOf(options.initialRouteName);

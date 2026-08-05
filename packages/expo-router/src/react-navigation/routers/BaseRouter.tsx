@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 
+import { filterStateForDeclaredRoutes } from '../core/filterStateForDeclaredRoutes';
 import type { CommonNavigationAction, NavigationState, PartialState } from './types';
 
 /**
@@ -7,6 +8,13 @@ import type { CommonNavigationAction, NavigationState, PartialState } from './ty
  * This provides few helper methods to handle common actions such as `RESET`.
  */
 export const BaseRouter = {
+  getStateForDeclaredRoutes<State extends NavigationState>(
+    state: State,
+    routeNames: string[]
+  ): State {
+    return filterStateForDeclaredRoutes(state, routeNames);
+  },
+
   getStateForAction<State extends NavigationState>(
     state: State,
     action: CommonNavigationAction

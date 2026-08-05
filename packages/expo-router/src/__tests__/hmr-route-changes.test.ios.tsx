@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { act, screen } from '@testing-library/react-native';
-import type { ReactElement } from 'react';
+import { useCallback, type ReactElement } from 'react';
 import { Text } from 'react-native';
 
 import { ExpoRoot } from '../ExpoRoot';
@@ -9,6 +9,7 @@ import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import TopTabs from '../layouts/TopTabs';
+import { useFocusEffect } from '../react-navigation/core';
 import { usePreventRemove } from '../react-navigation/native';
 import { getMockContext, renderRouter } from '../testing-library';
 import { TabList, TabSlot, TabTrigger, Tabs as HeadlessTabs } from '../ui';
@@ -317,4 +318,71 @@ it('does not redirect when the focused headless tab trigger is removed', () => {
 
   expect(replace).not.toHaveBeenCalled();
   replace.mockRestore();
+});
+
+it('does not focus an unrelated tab while reconciling a removed focused tab', () => {
+  const focusEvents: string[] = [];
+  const Screen = ({ name }: { name: string }) => {
+    useFocusEffect(
+      useCallback(() => {
+        focusEvents.push(`focus:${name}`);
+        return () => focusEvents.push(`blur:${name}`);
+      }, [name])
+    );
+    return <Text testID={name}>{name}</Text>;
+  };
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => {
+      const screens = [
+        <Tabs.Screen key="index" name="index" />,
+        <Tabs.Screen key="second" name="second" />,
+      ];
+      if (routes.third) screens.push(<Tabs.Screen key="third" name="third" />);
+      return <Tabs>{screens}</Tabs>;
+    },
+    index: () => <Screen name="index" />,
+    second: () => <Screen name="second" />,
+    third: () => <Screen name="third" />,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/' });
+  act(() => router.push('/third'));
+  focusEvents.length = 0;
+
+  delete routes.third;
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+
+  // The interim render must not focus `second`: the router focuses `index`, and a stray focus
+  // there runs a screen's `useFocusEffect` for a tab the user never selected.
+  expect(focusEvents).toStrictEqual(['blur:third', 'focus:index']);
+});
+
+it('focuses the surviving top route when the focused stack route is removed', () => {
+  const focusEvents: string[] = [];
+  const Screen = ({ name }: { name: string }) => {
+    useFocusEffect(
+      useCallback(() => {
+        focusEvents.push(`focus:${name}`);
+        return () => focusEvents.push(`blur:${name}`);
+      }, [name])
+    );
+    return <Text testID={name}>{name}</Text>;
+  };
+  const routes: Record<string, () => ReactElement | null> = {
+    _layout: () => <Stack />,
+    index: () => <Screen name="index" />,
+    details: () => <Screen name="details" />,
+    third: () => <Screen name="third" />,
+  };
+
+  const result = renderRouter(routes, { initialUrl: '/' });
+  act(() => router.push('/details'));
+  act(() => router.push('/third'));
+  focusEvents.length = 0;
+
+  delete routes.third;
+  result.rerender(<ExpoRoot context={getMockContext(routes)} location="/" />);
+
+  // A stack focuses the survivor below the removed route, so `index` must never be focused.
+  expect(focusEvents).toStrictEqual(['blur:third', 'focus:details']);
 });

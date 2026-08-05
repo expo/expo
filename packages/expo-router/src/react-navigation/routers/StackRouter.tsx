@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 
+import { filterStateForDeclaredRoutes } from '../core/filterStateForDeclaredRoutes';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
@@ -277,6 +278,23 @@ export function StackRouter(options: StackRouterOptions) {
         routeNames,
         routes: routes.concat(preloadedRoutes),
       };
+    },
+
+    getStateForDeclaredRoutes(state, routeNames) {
+      const filteredState = filterStateForDeclaredRoutes(state, routeNames);
+
+      if (filteredState === state || filteredState.routes.length === 0) {
+        return filteredState;
+      }
+
+      // Routes after `index` are preloaded, so the surviving prefix is the new active stack and its
+      // last entry is the top. The default rule would focus the bottom of the stack instead.
+      const declaredRouteNames = new Set(routeNames);
+      const survivingActiveCount = getStackRoutes(state).activeRoutes.filter((route) =>
+        declaredRouteNames.has(route.name)
+      ).length;
+
+      return { ...filteredState, index: Math.max(0, survivingActiveCount - 1) };
     },
 
     getStateForRouteFocus(state, key) {
