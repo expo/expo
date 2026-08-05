@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix async imports (`import(...)`) via `asyncRequireModule` not a thenable instead of a full promise shape ([#48550](https://github.com/expo/expo/pull/48550) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 56.0.18 — 2026-07-29
