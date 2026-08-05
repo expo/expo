@@ -32,6 +32,16 @@ jest.mock('react-native-drawer-layout', () => {
 const drawerOpen = () =>
   (DrawerLayout as unknown as jest.Mock).mock.calls.at(-1)![0].open as boolean;
 
+let warnSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  warnSpy.mockRestore();
+});
+
 test('renders a drawer navigator and navigates between screens', () => {
   renderRouter({
     _layout: () => (
@@ -51,6 +61,40 @@ test('renders a drawer navigator and navigates between screens', () => {
 
   expect(screen.getByTestId('second')).toBeVisible();
   expect(screen).toHavePathname('/second');
+});
+
+test('renders only declared drawer items and redirects from unavailable routes', () => {
+  renderRouter({
+    _layout: () => (
+      <Drawer>
+        <Drawer.Screen name="index" />
+        <Drawer.Screen name="hidden" options={{ hidden: true }} />
+      </Drawer>
+    ),
+    index: () => <View testID="index" />,
+    hidden: () => <View testID="hidden" />,
+    undeclared: () => <View testID="undeclared" />,
+  });
+
+  expect(screen.getAllByText('index')).toHaveLength(2);
+  expect(screen.queryByText('hidden')).toBeNull();
+  expect(screen.queryByText('undeclared')).toBeNull();
+
+  act(() => router.push('/undeclared'));
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
+test('renders no drawer UI when no screens are declared in the layout', () => {
+  renderRouter({
+    _layout: () => <Drawer />,
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.queryByTestId('Drawer')).toBeNull();
+  expect(screen.queryByTestId('index')).toBeNull();
+  expect(warnSpy.mock.calls).toMatchSnapshot();
 });
 
 test('handles drawer actions and preventable item presses', async () => {

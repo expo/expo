@@ -1,17 +1,19 @@
 import { act, fireEvent, screen, userEvent } from '@testing-library/react-native';
 import type { Ref } from 'react';
-import React, { forwardRef, useState } from 'react';
+import React, { forwardRef, useEffect, useState } from 'react';
 import type { ViewProps } from 'react-native';
 import { View, Text, Button } from 'react-native';
 
 import { store } from '../global-state/router-store';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
+import { useGuardRedirect } from '../layouts/GuardContext';
 import { Stack } from '../layouts/Stack';
 import { Tabs as JSTabs } from '../layouts/Tabs';
 import { Link, Redirect } from '../link/Link';
 import { type RenderRouterOptions, renderRouter, waitFor } from '../testing-library';
-import { TabList, TabSlot, TabTrigger, Tabs } from '../ui';
+import { TabList, TabSlot, TabTrigger, Tabs, useTabTrigger } from '../ui';
+import { useNavigation } from '../useNavigation';
 import type { PressableProps } from '../views/Pressable';
 import { Pressable } from '../views/Pressable';
 
@@ -197,7 +199,7 @@ it('allows for custom elements', () => {
   expect(screen).toHaveSegments(['apple']);
 });
 
-it('can dynamically add tabs', () => {
+it('can dynamically add and remove tabs', () => {
   renderRouter(
     {
       _layout: function TabLayout() {
@@ -216,7 +218,7 @@ it('can dynamically add tabs', () => {
           <Tabs>
             <TabList>{tabs}</TabList>
             <TabSlot />
-            <Button testID="show-all" title="Show all" onPress={() => setShowAll(true)} />
+            <Button testID="toggle-all" title="Toggle all" onPress={() => setShowAll((v) => !v)} />
           </Tabs>
         );
       },
@@ -234,11 +236,14 @@ it('can dynamically add tabs', () => {
   act(() => router.push('/orange'));
   expect(screen).toHaveSegments(['apple']);
 
-  fireEvent.press(screen.getByTestId('show-all'));
+  fireEvent.press(screen.getByTestId('toggle-all'));
 
   // This now works because there is an orange tab
   act(() => router.push('/orange'));
   expect(screen).toHaveSegments(['orange']);
+
+  fireEvent.press(screen.getByTestId('toggle-all'));
+  expect(screen).toHaveSegments(['apple']);
 });
 
 it('does works with shared groups', () => {
@@ -638,7 +643,12 @@ it('JSTabs dispatches only one action when re-tapping active tab with nested sta
   const dispatchedActions: unknown[] = [];
 
   renderRouter({
-    _layout: () => <JSTabs />,
+    _layout: () => (
+      <JSTabs>
+        <JSTabs.Screen name="index" />
+        <JSTabs.Screen name="movies" />
+      </JSTabs>
+    ),
     index: () => <Text testID="index">Index</Text>,
     'movies/_layout': () => <Stack />,
     'movies/index': () => <Text testID="movies-index">Movies Index</Text>,
@@ -813,4 +823,170 @@ it('Link with replace works in headless tabs', async () => {
   await waitFor(() => expect(screen.getByTestId('index')).toBeVisible());
   // replace should not leave a back entry
   expect(router.canGoBack()).toBe(false);
+});
+
+it('hides a trigger when its screen sets hidden options', () => {
+  function Second() {
+    const navigation = useNavigation();
+    useEffect(() => navigation.setOptions({ hidden: true }), [navigation]);
+    return <Text testID="second">Second</Text>;
+  }
+
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/" testID="goto-index" />
+            <TabTrigger name="second" href="/second" testID="goto-second" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      index: () => <Text testID="index">Index</Text>,
+      second: Second,
+    },
+    { initialUrl: '/second' }
+  );
+
+  expect(screen.queryByTestId('goto-second')).toBeNull();
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
+it('does not hide an inherited trigger when a nested screen is hidden', () => {
+  function HiddenTab() {
+    const navigation = useNavigation();
+    useEffect(() => navigation.setOptions({ hidden: true }), [navigation]);
+    return <Text>Hidden</Text>;
+  }
+
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="a" href="/a" />
+            <TabTrigger name="b" href="/b" />
+          </TabList>
+          <TabSlot />
+        </Tabs>
+      ),
+      'a/_layout': () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/a" />
+            <TabTrigger name="y" href="/a/y" />
+          </TabList>
+          <TabTrigger name="b" testID="outer-b" />
+          <TabSlot />
+        </Tabs>
+      ),
+      'a/index': () => <Text>A</Text>,
+      'a/y': HiddenTab,
+      b: () => <Text>B</Text>,
+    },
+    { initialUrl: '/a/y' }
+  );
+
+  expect(screen.getByTestId('outer-b')).toBeVisible();
+});
+
+it('exposes hidden options from useTabTrigger', () => {
+  function Second() {
+    const navigation = useNavigation();
+    useEffect(() => navigation.setOptions({ hidden: true }), [navigation]);
+    return <Text>Second</Text>;
+  }
+
+  function CustomTrigger() {
+    const { trigger, getTrigger } = useTabTrigger({ name: 'second' });
+    return (
+      <Text testID="custom-trigger">
+        {String(trigger?.hidden)} {String(getTrigger('second')?.hidden)}
+      </Text>
+    );
+  }
+
+  renderRouter(
+    {
+      _layout: () => (
+        <Tabs>
+          <TabList>
+            <TabTrigger name="index" href="/" />
+            <TabTrigger name="second" href="/second" />
+          </TabList>
+          <CustomTrigger />
+          <TabSlot />
+        </Tabs>
+      ),
+      index: () => <Text>Index</Text>,
+      second: Second,
+    },
+    { initialUrl: '/second' }
+  );
+
+  expect(screen.getByTestId('custom-trigger')).toHaveTextContent('true true');
+});
+
+it('renders an external trigger without a navigator route', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" href="/" />
+          <TabTrigger name="external" href="https://expo.dev" testID="external" />
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    ),
+    index: () => <Text testID="index">Index</Text>,
+  });
+
+  expect(screen.getByTestId('external')).toBeVisible();
+});
+
+it('does not use a parent guard redirect for a tab with the same route name', () => {
+  let inheritedGuardRedirect: ReturnType<typeof useGuardRedirect>;
+  function TabsLayout() {
+    inheritedGuardRedirect = useGuardRedirect('settings');
+    return (
+      <Tabs>
+        <TabList>
+          <TabTrigger name="index" href="/" testID="goto-index" />
+        </TabList>
+        <TabSlot />
+      </Tabs>
+    );
+  }
+
+  renderRouter({
+    _layout: {
+      unstable_settings: { initialRouteName: '(tabs)' },
+      default: () => (
+        <Stack>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Protected guard={false} redirectTo="/login">
+            <Stack.Screen name="settings" />
+          </Stack.Protected>
+          <Stack.Screen name="login" />
+        </Stack>
+      ),
+    },
+    '(tabs)/_layout': {
+      unstable_settings: { initialRouteName: 'index' },
+      default: TabsLayout,
+    },
+    '(tabs)/index': () => <Text testID="tabs-index">Index</Text>,
+    '(tabs)/settings': () => <Text testID="tabs-settings">Settings</Text>,
+    settings: () => <Text testID="root-settings">Settings</Text>,
+    login: () => <Text testID="login">Login</Text>,
+  });
+
+  expect(inheritedGuardRedirect).toBe('/login');
+  act(() => router.push('/(tabs)/settings'));
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('tabs-index')).toBeVisible();
+  expect(screen.queryByTestId('login')).toBeNull();
 });

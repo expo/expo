@@ -75,6 +75,10 @@ export function TabTrigger({ asChild, name, href, resetOnFocus, ...props }: TabT
     ...props,
   });
 
+  if (trigger?.hidden) {
+    return null;
+  }
+
   // Pressable doesn't accept the extra props, so only pass them if we are using asChild
   if (asChild) {
     return (
@@ -118,6 +122,7 @@ export type SwitchToOptions = {
 };
 
 export type Trigger = TriggerMap[string] & {
+  hidden: boolean;
   isFocused: boolean;
   resolvedHref: string;
   route: TabNavigationState<any>['routes'][number];
@@ -140,7 +145,7 @@ export type TriggerProps = {
  * Utility hook creating custom `TabTrigger`.
  */
 export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
-  const { state, navigation } = useNavigatorContext();
+  const { state, navigation, descriptors } = useNavigatorContext();
   const { name, resetOnFocus, onPress, onLongPress } = options;
   const triggerMap = use(TabTriggerMapContext);
 
@@ -152,14 +157,23 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         return;
       }
 
+      const route =
+        config.type === 'internal'
+          ? state.routes.find((route) => route.name === config.routeNode.route)
+          : undefined;
+      const routeOptions = route != null ? descriptors[route.key]?.options : undefined;
+      const hidden =
+        routeOptions != null && 'hidden' in routeOptions && routeOptions.hidden === true;
+
       return {
+        hidden,
         isFocused: state.index === config.index,
         route: state.routes[config.index]!,
         resolvedHref: stripGroupSegmentsFromPath(appendBaseUrl(config.href)),
         ...config,
       };
     },
-    [triggerMap]
+    [descriptors, state, triggerMap]
   );
 
   const trigger = name !== undefined ? getTrigger(name) : undefined;

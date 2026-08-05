@@ -1,5 +1,6 @@
 import { renderHook } from '@testing-library/react-native';
 
+import { useRouteNode } from '../../Route';
 import { router } from '../../imperative-api';
 import { useIsFocused } from '../../react-navigation/native';
 import { useBuildHref } from '../useBuildHref';
@@ -12,9 +13,14 @@ jest.mock('../../react-navigation/native', () => {
   return { ...actualNavigation, useIsFocused: jest.fn() };
 });
 jest.mock('../useBuildHref');
+jest.mock('../../Route', () => ({
+  ...jest.requireActual('../../Route'),
+  useRouteNode: jest.fn(),
+}));
 
 const mockedUseIsFocused = useIsFocused as jest.MockedFunction<typeof useIsFocused>;
 const mockedUseBuildHref = useBuildHref as jest.MockedFunction<typeof useBuildHref>;
+const mockedUseRouteNode = useRouteNode as jest.MockedFunction<typeof useRouteNode>;
 
 const routes = [
   { key: 'home-key', name: 'home' },
@@ -28,20 +34,23 @@ const descriptors = {
   'hidden-key': { routeSource: 'layout' as const, options: { hidden: true } },
   'filesystem-key': { routeSource: 'filesystem' as const },
 };
-const isHidden = (options: { hidden?: boolean } | undefined) => options?.hidden === true;
-
 let replaceSpy: jest.SpyInstance;
+let warnSpy: jest.SpyInstance;
 let buildHref: jest.Mock;
 
 beforeEach(() => {
   buildHref = jest.fn((route) => `/href/${route.name}`);
   mockedUseBuildHref.mockReturnValue(buildHref);
   mockedUseIsFocused.mockReturnValue(true);
+  // Prevent route data from leaking between tests.
+  mockedUseRouteNode.mockReturnValue(null);
   replaceSpy = jest.spyOn(router, 'replace').mockImplementation(() => {});
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 });
 
 afterEach(() => {
   replaceSpy.mockRestore();
+  warnSpy.mockRestore();
 });
 
 describe('useVisibleTabsWithRedirect', () => {
@@ -51,32 +60,32 @@ describe('useVisibleTabsWithRedirect', () => {
         routes,
         focusedRouteKey: 'settings-key',
         descriptors,
-        isHidden,
       })
     );
 
     expect(result.current).toEqual({
       visibleRoutes: [routes[0], routes[1]],
-      visibleFocusedIndex: 1,
+      focusedIndex: 1,
     });
   });
 
-  it('returns -1 when the focused route is not visible', () => {
+  it('returns zero when the focused route is not visible', () => {
     const { result } = renderHook(() =>
-      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'hidden-key', descriptors, isHidden })
+      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'hidden-key', descriptors })
     );
 
-    expect(result.current.visibleFocusedIndex).toBe(-1);
+    expect(result.current.focusedIndex).toBe(0);
   });
 
   it('redirects an unavailable focused route to the configured visible route', () => {
+    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'settings' } as ReturnType<
+      typeof useRouteNode
+    >);
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         focusedRouteKey: 'hidden-key',
         descriptors,
-        redirectToRouteName: 'settings',
-        isHidden,
       })
     );
 
@@ -85,13 +94,14 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('builds the redirect href from the selected route', () => {
+    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'settings' } as ReturnType<
+      typeof useRouteNode
+    >);
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         focusedRouteKey: 'hidden-key',
         descriptors,
-        redirectToRouteName: 'settings',
-        isHidden,
       })
     );
 
@@ -99,13 +109,14 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('falls back to the first visible route when the configured route is unavailable', () => {
+    mockedUseRouteNode.mockReturnValue({ initialRouteName: 'missing' } as ReturnType<
+      typeof useRouteNode
+    >);
     renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         focusedRouteKey: 'hidden-key',
         descriptors,
-        redirectToRouteName: 'missing',
-        isHidden,
       })
     );
 
@@ -117,7 +128,7 @@ describe('useVisibleTabsWithRedirect', () => {
     mockedUseIsFocused.mockReturnValue(false);
 
     renderHook(() =>
-      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'hidden-key', descriptors, isHidden })
+      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'hidden-key', descriptors })
     );
 
     expect(replaceSpy).not.toHaveBeenCalled();
@@ -125,7 +136,7 @@ describe('useVisibleTabsWithRedirect', () => {
 
   it('does not redirect when the focused route is visible', () => {
     renderHook(() =>
-      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'home-key', descriptors, isHidden })
+      useVisibleTabsWithRedirect({ routes, focusedRouteKey: 'home-key', descriptors })
     );
 
     expect(buildHref).toHaveBeenCalledWith(routes[0]);
@@ -133,15 +144,18 @@ describe('useVisibleTabsWithRedirect', () => {
   });
 
   it('does not redirect when there are no visible routes', () => {
+    mockedUseRouteNode.mockReturnValue({ contextKey: './app/_layout.tsx' } as ReturnType<
+      typeof useRouteNode
+    >);
     renderHook(() =>
       useVisibleTabsWithRedirect({
-        routes: [routes[2]!],
-        focusedRouteKey: 'hidden-key',
+        routes: [routes[3]!],
+        focusedRouteKey: 'filesystem-key',
         descriptors,
-        isHidden,
       })
     );
 
     expect(replaceSpy).not.toHaveBeenCalled();
+    expect(warnSpy.mock.calls).toMatchSnapshot();
   });
 });

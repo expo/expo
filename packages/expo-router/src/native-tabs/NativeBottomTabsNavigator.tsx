@@ -28,7 +28,6 @@ import { convertIconColorPropToObject, convertLabelStylePropToObject } from './u
 
 // In Jetpack Compose, the default back behavior is to go back to the initial route.
 const defaultBackBehavior = 'initialRoute';
-const isNativeTabHidden = (options: NativeTabOptions | undefined) => options?.hidden === true;
 export const NativeTabsContext = React.createContext<boolean>(false);
 
 function NativeTabsContent({
@@ -49,7 +48,6 @@ function NativeTabsContent({
   rippleColor,
   disableIndicator,
   labelVisibilityMode,
-  redirectToRouteName,
   ...rest
 }: StandardNavigatorContentProps<
   NativeTabOptions,
@@ -64,12 +62,10 @@ function NativeTabsContent({
 
   const { routes } = state;
 
-  const { visibleRoutes, visibleFocusedIndex } = useVisibleTabsWithRedirect({
+  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes,
     focusedRouteKey: routes[state.index]!.key,
     descriptors,
-    redirectToRouteName,
-    isHidden: isNativeTabHidden,
   });
   const visibleTabs = useMemo(
     () =>
@@ -87,8 +83,6 @@ function NativeTabsContent({
     () => visibleTabs.map((tab) => tab.routeKey).join(';'),
     [visibleTabs]
   );
-
-  const focusedIndex = visibleFocusedIndex >= 0 ? visibleFocusedIndex : 0;
 
   const provenanceRef = useRef(0);
 
@@ -257,7 +251,6 @@ export function NativeTabsNavigatorWrapper(props: NativeTabsProps) {
       nonTriggerChildren={nonTriggerChildren}
       screenOptions={screenOptions}
       initialRouteName={routeNode?.initialRouteName}
-      redirectToRouteName={routeNode?.initialRouteName}
       // Passed to TabRouter
       backBehavior={backBehavior}
     />

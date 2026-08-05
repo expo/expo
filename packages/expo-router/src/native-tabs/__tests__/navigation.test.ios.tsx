@@ -174,6 +174,16 @@ describe('Native Bottom Tabs Navigation', () => {
 });
 
 describe('Native Bottom Tabs trigger changes', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
   it('renders only routes with visible triggers', () => {
     renderRouter({
       _layout: () => (
@@ -412,5 +422,6 @@ describe('Native Bottom Tabs trigger changes', () => {
 
     expect(screen.queryByTestId('index')).toBeNull();
     expect(TabsScreen).not.toHaveBeenCalled();
+    expect(warnSpy.mock.calls).toMatchSnapshot();
   });
 });

@@ -1,6 +1,8 @@
 import { useEffect, useMemo } from 'react';
 
+import { useRouteNode } from '../Route';
 import { router } from '../imperative-api';
+import { normalizeRouteName, useGuardRedirect } from '../layouts/GuardContext';
 import {
   type NavigationRoute,
   type ParamListBase,
@@ -18,24 +20,25 @@ type TabDescriptor<Options extends object> = {
 
 /**
  * Returns the visible layout tabs and their focused index. When the navigator is focused, redirects
- * an unavailable focused route to `redirectToRouteName` or the first visible tab.
+ * an unavailable focused route to the layout's initial route or the first visible tab.
  */
-export function useVisibleTabsWithRedirect<Route extends TabRoute, Options extends object>({
+export function useVisibleTabsWithRedirect<
+  Route extends TabRoute,
+  Options extends { hidden?: boolean },
+>({
   routes,
   focusedRouteKey,
   descriptors,
-  redirectToRouteName,
-  isHidden,
 }: {
   routes: Route[];
   focusedRouteKey: string;
   descriptors: Record<string, TabDescriptor<Options>>;
-  redirectToRouteName?: string;
-  // Keep this callback reference-stable to avoid recalculating the visible routes.
-  isHidden?: (options: Options | undefined) => boolean;
 }) {
   const buildHref = useBuildHref();
   const isFocused = useIsFocused();
+  const routeNode = useRouteNode();
+  const focusedRoute = routes.find((route) => route.key === focusedRouteKey);
+  const guardRedirect = useGuardRedirect(focusedRoute?.name ?? '');
 
   const visibleRoutes = useMemo(
     () =>
@@ -43,22 +46,44 @@ export function useVisibleTabsWithRedirect<Route extends TabRoute, Options exten
         // Every filesystem route is registered in state; only routes declared by a non-hidden
         // trigger become tab items.
         const descriptor = descriptors[route.key];
-        return isDeclaredInLayout(descriptor) && !isHidden?.(descriptor?.options);
+        return isDeclaredInLayout(descriptor) && descriptor?.options?.hidden !== true;
       }),
-    [routes, descriptors, isHidden]
+    [routes, descriptors]
   );
   const visibleFocusedIndex = useMemo(
     () => visibleRoutes.findIndex((route) => route.key === focusedRouteKey),
     [focusedRouteKey, visibleRoutes]
   );
+  const focusedIndex = visibleFocusedIndex >= 0 ? visibleFocusedIndex : 0;
 
   const redirectHref = useMemo(() => {
-    const redirectRoute = findRouteByName(visibleRoutes, redirectToRouteName) ?? visibleRoutes[0];
+    if (guardRedirect !== undefined) {
+      return guardRedirect;
+    }
+    const redirectRoute =
+      findRouteByName(visibleRoutes, routeNode?.initialRouteName) ?? visibleRoutes[0];
     if (redirectRoute) {
       return buildHref(redirectRoute);
     }
     return null;
-  }, [buildHref, redirectToRouteName, visibleRoutes]);
+  }, [buildHref, guardRedirect, routeNode?.initialRouteName, visibleRoutes]);
+
+  useEffect(() => {
+    // TODO(@ubax): Consider throwing in __DEV__ instead of warning.
+    if (__DEV__ && visibleRoutes.length === 0 && guardRedirect === undefined) {
+      const undeclaredRoutes = routes
+        .filter((route) => !isDeclaredInLayout(descriptors[route.key]))
+        .map((route) => route.name)
+        .join(', ');
+      console.warn(
+        `No screens are declared in ${routeNode?.contextKey ?? 'the layout'}, so the navigator renders nothing. ` +
+          'Only screens declared in the layout become visible. ' +
+          'Declare each screen you want to show, for example <Tabs.Screen name="index" /> or <NativeTabs.Trigger name="index" />. ' +
+          `Undeclared routes: ${undeclaredRoutes}.`
+      );
+    }
+    // Route names are diagnostic; only rerun when the warning's eligibility changes.
+  }, [guardRedirect, routeNode?.contextKey, visibleRoutes.length]);
 
   useEffect(() => {
     // The focused route can be hidden or have no trigger at all — for example a path pointing at a
@@ -70,7 +95,7 @@ export function useVisibleTabsWithRedirect<Route extends TabRoute, Options exten
     }
   }, [isFocused, redirectHref, visibleFocusedIndex]);
 
-  return { visibleRoutes, visibleFocusedIndex };
+  return { visibleRoutes, focusedIndex };
 }
 
 function isDeclaredInLayout<Options extends object>(
@@ -80,5 +105,5 @@ function isDeclaredInLayout<Options extends object>(
 }
 
 function findRouteByName<Route extends TabRoute>(routes: Route[], name: string | undefined) {
-  return routes.find((route) => route.name === name || route.name.replace(/\/index$/, '') === name);
+  return routes.find((route) => route.name === name || normalizeRouteName(route.name) === name);
 }
