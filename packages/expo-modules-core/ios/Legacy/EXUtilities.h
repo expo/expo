@@ -12,7 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface EXUtilities : NSObject <EXInternalModule, EXUtilitiesInterface, EXModuleRegistryConsumer>
 
 + (void)performSynchronouslyOnMainThread:(nonnull void (^)(void))block;
-+ (CGFloat)screenScale;
 + (nullable UIColor *)UIColor:(nullable id)json;
 + (nullable NSDate *)NSDate:(nullable id)json;
 + (nonnull NSString *)hexStringWithCGColor:(nonnull CGColorRef)color;
