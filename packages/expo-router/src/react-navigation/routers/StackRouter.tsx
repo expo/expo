@@ -1,6 +1,5 @@
 import { nanoid } from 'nanoid/non-secure';
 
-import { filterStateForDeclaredRoutes } from '../core/filterStateForDeclaredRoutes';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
@@ -281,7 +280,7 @@ export function StackRouter(options: StackRouterOptions) {
     },
 
     getStateForDeclaredRoutes(state, routeNames) {
-      const filteredState = filterStateForDeclaredRoutes(state, routeNames);
+      const filteredState = BaseRouter.getStateForDeclaredRoutes(state, routeNames);
 
       if (filteredState === state || filteredState.routes.length === 0) {
         return filteredState;

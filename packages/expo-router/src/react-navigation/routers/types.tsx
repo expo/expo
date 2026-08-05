@@ -170,13 +170,12 @@ export type Router<State extends NavigationState, Action extends NavigationActio
 
   /**
    * Take the current state and the route names the navigator declares, and return the state to
-   * render until `ROUTE_NAMES_CHANGED` has been reconciled. Which survivor takes focus is
-   * router-specific, so each router decides: a stack focuses the survivor below the removed route,
-   * while a tab focuses its first route. Reporting a route that the reconciliation won't focus
-   * fires that screen's focus effects for nothing.
+   * render until `ROUTE_NAMES_CHANGED` has been reconciled.
    *
    * This is a render-phase fallback, not a state change. Return `state` when nothing was removed,
    * and set `index` to `-1` when no declared route is left to focus.
+   *
+   * This function will only be called in development, when route file is removed.
    *
    * @param state State object to filter.
    * @param routeNames Route names currently declared by the navigator.

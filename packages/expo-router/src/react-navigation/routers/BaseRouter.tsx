@@ -1,6 +1,5 @@
 import { nanoid } from 'nanoid/non-secure';
 
-import { filterStateForDeclaredRoutes } from '../core/filterStateForDeclaredRoutes';
 import type { CommonNavigationAction, NavigationState, PartialState } from './types';
 
 /**
@@ -12,7 +11,24 @@ export const BaseRouter = {
     state: State,
     routeNames: string[]
   ): State {
-    return filterStateForDeclaredRoutes(state, routeNames);
+    const declaredRouteNames = new Set(routeNames);
+    const routes = state.routes.filter((route) => declaredRouteNames.has(route.name));
+
+    if (routes.length === state.routes.length) {
+      return state;
+    }
+
+    const focusedKey = state.routes[state.index]?.key;
+    // `-1` reports that nothing is focused; consumers of the focused route handle it.
+    const index =
+      routes.length === 0
+        ? -1
+        : Math.max(
+            0,
+            routes.findIndex((route) => route.key === focusedKey)
+          );
+
+    return { ...state, routes, index };
   },
 
   getStateForAction<State extends NavigationState>(
