@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Promote Expo Symbols from beta to stable.
+
 ## 57.0.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._
