@@ -11,9 +11,7 @@ public final class ScreenCaptureModule: Module {
   private var blurEffectView: AnimatedBlurEffectView?
   private var blurIntensity: CGFloat = 0.5
   private var keyWindow: UIWindow? {
-    return UIApplication.shared.connectedScenes
-      .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
-      .last { $0.isKeyWindow }
+    return SceneGeometry.keyWindow()
   }
 
   public func definition() -> ModuleDefinition {
@@ -48,6 +46,7 @@ public final class ScreenCaptureModule: Module {
 
     AsyncFunction("allowScreenCapture") {
       self.allowScreenshots()
+      self.blockView?.removeFromSuperview()
 
       NotificationCenter.default.removeObserver(
         self,

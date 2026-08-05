@@ -317,6 +317,15 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
     }
     return;
   }
+
+  NSString *scopeKey = _confirmedManifest.scopeKey;
+  NSData *interceptor = scopeKey ? [EXPatchedBundleRegistry interceptorForScopeKey:scopeKey] : nil;
+  if (interceptor && _bundle) {
+    NSMutableData *patched = [NSMutableData dataWithCapacity:interceptor.length + _bundle.length];
+    [patched appendData:interceptor];
+    [patched appendData:_bundle];
+    _bundle = patched;
+  }
   if (self.delegate) {
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
   }

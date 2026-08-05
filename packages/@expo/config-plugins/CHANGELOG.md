@@ -6,11 +6,45 @@
 
 ### 🎉 New features
 
+- [iOS] Add `IOSConfig.DevServer.withMetroPort` to write the `RCTMetroPort` Info.plist key from the `RCT_METRO_PORT` build setting. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 🐛 Bug fixes
+
+- Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
+
+### 💡 Others
+
+- [iOS] Documented that `UIRequiresFullScreen` no longer opts an app out of resizing as of iOS 27, and noted it in the iPad multitasking warning. ([#48175](https://github.com/expo/expo/pull/48175) by [@alanjhughes](https://github.com/alanjhughes))
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-07
+
 ### 🐛 Bug fixes
 
 - Honor `ios.version` and `android.version` in `Updates.getAppVersion`, `Updates.getNativeVersion`, and the `appVersion` runtime version policy. Previously the platform-specific overrides were ignored, so projects that used only `ios.version`/`android.version` (with no top-level `version` in `app.json`) received the `package.json` fallback (or `"1.0.0"`) wherever these helpers were consumed. `Updates.getAppVersion` gains an optional `platform` argument; passing it prefers the platform-specific override, and calls without a platform keep the previous behavior. Also fixes `Updates.getNativeVersion` on Android, which previously used the iOS version for the `${version}` component. ([#47416](https://github.com/expo/expo/pull/47416) by [@tlenahan](https://github.com/tlenahan))
 
-### 💡 Others
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.9 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.8 — 2026-05-23
 

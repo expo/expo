@@ -9,8 +9,8 @@ import * as fs from 'fs';
 import type { Socket } from 'net';
 import * as path from 'path';
 
-import { ServiceClient } from './ServiceClient';
 import { CommandError } from '../../../../utils/errors';
+import { debugEvent } from '../../../events';
 import type { AFCError, AFCResponse } from '../protocol/AFCProtocol';
 import {
   AFC_FILE_OPEN_FLAGS,
@@ -18,7 +18,7 @@ import {
   AFC_STATUS,
   AFCProtocolClient,
 } from '../protocol/AFCProtocol';
-import { debugEvent } from '../../../events';
+import { ServiceClient } from './ServiceClient';
 
 const MAX_OPEN_FILES = 240;
 
@@ -94,7 +94,6 @@ export class AFCClient extends ServiceClient<AFCProtocolClient> {
   }
 
   protected async uploadFile(srcPath: string, destPath: string): Promise<void> {
-
     const destFile = await this.openFile(destPath);
 
     try {

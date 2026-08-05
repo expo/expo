@@ -41,7 +41,9 @@ public struct JavaScriptFunction: JavaScriptType, ~Copyable {
     }
     return try capturingCppErrors {
       return JavaScriptValue(
-        runtime, expo.callFunction(runtime.pointee, pointee, arguments?.baseAddress, arguments?.count ?? 0))
+        runtime,
+        expo.callFunction(runtime.pointee, pointee, arguments?.baseAddress, arguments?.count ?? 0)
+      )
     }
   }
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-contacts",
-  "version": "56.0.7",
+  "version": "57.0.3",
   "description": "Provides access to the phone's system contacts.",
   "keywords": [
     "contacts",

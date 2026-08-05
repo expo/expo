@@ -4,6 +4,7 @@ import { detectAgent } from 'agent-cli-detector';
 import arg from 'arg';
 import chalk from 'chalk';
 import * as ciInfo from 'ci-info';
+import { randomBytes } from 'crypto';
 import { existsSync, readFileSync } from 'fs';
 import { homedir } from 'os';
 import path from 'path';
@@ -12,7 +13,19 @@ import { detectSandbox } from 'sandbox-cli-detector';
 
 const CLI_NAME = 'submit-expo-feedback';
 const FEEDBACK_TIMEOUT_MS = 15_000;
-const FEEDBACK_CATEGORIES = ['skills', 'expo-cli', 'eas-cli', 'mcp', 'docs', 'unknown'] as const;
+const GENERATED_FEEDBACK_ID_BYTES = 6;
+const MIN_FEEDBACK_ID_LENGTH = 6;
+const MAX_FEEDBACK_ID_LENGTH = 64;
+const FEEDBACK_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+const FEEDBACK_CATEGORIES = [
+  'skills',
+  'expo-cli',
+  'eas-cli',
+  'mcp',
+  'docs',
+  'evals',
+  'unknown',
+] as const;
 
 type FeedbackCategory = (typeof FEEDBACK_CATEGORIES)[number];
 
@@ -33,9 +46,13 @@ type ConfigFilePaths = {
   dynamicConfigPath: string | null;
 };
 
-type FeedbackMetadata = {
+type FeedbackContextMetadata = {
   category: FeedbackCategory;
+  feedbackId: string;
   subject?: string;
+};
+
+type FeedbackTelemetryMetadata = {
   cli: {
     name: typeof CLI_NAME;
     version: string;
@@ -71,6 +88,9 @@ type FeedbackMetadata = {
   };
 };
 
+type FeedbackMetadata = FeedbackContextMetadata & FeedbackTelemetryMetadata;
+type FeedbackPayloadMetadata = FeedbackContextMetadata | FeedbackMetadata;
+
 export async function runExpoFeedbackAsync(): Promise<void> {
   await runAsync();
 }
@@ -94,6 +114,7 @@ async function runAsync(): Promise<void> {
       '--version': Boolean,
       '--category': String,
       '--subject': String,
+      '--resume': String,
       '-h': '--help',
       '-v': '--version',
       '-c': '--category',
@@ -116,17 +137,28 @@ async function runAsync(): Promise<void> {
   }
 
   const { category, feedback } = await resolveFeedbackAsync(args._, args['--category']);
-  const session = getSession();
+  const telemetryDisabled = isTelemetryDisabled();
+  const session = telemetryDisabled ? null : getSession();
   const metadata = await createFeedbackMetadataAsync(
     process.cwd(),
     session,
     category,
-    args['--subject']
+    args['--subject'],
+    args['--resume']
   );
+  if (args['--resume'] !== undefined && metadata.feedbackId !== args['--resume']) {
+    console.log(
+      chalk.yellow(
+        `The provided feedback ID is invalid, so a new one was generated: ${metadata.feedbackId}`
+      )
+    );
+  }
 
   console.log(
     chalk.dim(
-      'Submitting feedback with available agent, sandbox, environment, project, and Expo account metadata.'
+      telemetryDisabled
+        ? 'Submitting feedback without telemetry data because telemetry collection is disabled.'
+        : 'Submitting feedback with available agent, sandbox, environment, project, and Expo account metadata.'
     )
   );
   await sendFeedbackAsync({
@@ -136,6 +168,9 @@ async function runAsync(): Promise<void> {
   });
 
   console.log(chalk.green('Thanks for the feedback!'));
+  console.log(
+    `To continue the feedback session use:\nnpx submit-expo-feedback@latest --resume ${metadata.feedbackId}`
+  );
 }
 
 export async function resolveFeedbackAsync(
@@ -159,7 +194,12 @@ export async function resolveFeedbackAsync(
         name: 'category',
         message: 'What is your feedback about?',
         choices: FEEDBACK_CATEGORIES.map((value) => ({
-          title: value === 'unknown' ? 'Other / unknown' : value,
+          title:
+            value === 'unknown'
+              ? 'Other / unknown'
+              : value === 'evals'
+                ? 'evals (a task an AI agent failed at)'
+                : value,
           value,
         })),
       },
@@ -189,15 +229,26 @@ export async function resolveFeedbackAsync(
 
 export async function createFeedbackMetadataAsync(
   projectRoot: string,
-  session = getSession(),
+  session?: UserSession | null,
   category: FeedbackCategory = 'unknown',
-  subjectValue?: string
-): Promise<FeedbackMetadata> {
+  subjectValue?: string,
+  feedbackIdValue?: string
+): Promise<FeedbackPayloadMetadata> {
   const subject = normalizeSubject(subjectValue);
+  const feedbackId = resolveFeedbackId(feedbackIdValue);
+  const context: FeedbackContextMetadata = {
+    category,
+    feedbackId,
+    ...(subject ? { subject } : {}),
+  };
+
+  if (isTelemetryDisabled()) {
+    return context;
+  }
+  const resolvedSession = session === undefined ? getSession() : session;
 
   return {
-    category,
-    ...(subject ? { subject } : {}),
+    ...context,
     cli: {
       name: CLI_NAME,
       version: getPackageVersion(),
@@ -219,7 +270,7 @@ export async function createFeedbackMetadataAsync(
     },
     packageManager: resolvePackageManager(projectRoot),
     project: getProjectMetadata(projectRoot),
-    user: await getUserMetadataAsync(session),
+    user: await getUserMetadataAsync(resolvedSession),
   };
 }
 
@@ -243,7 +294,7 @@ function getSandboxEnvironment() {
 
 export async function getUserMetadataAsync(
   session: UserSession | null
-): Promise<FeedbackMetadata['user']> {
+): Promise<FeedbackTelemetryMetadata['user']> {
   const authType = process.env.EXPO_TOKEN ? 'token' : session?.sessionSecret ? 'session' : null;
   if (!authType) {
     return undefined;
@@ -264,7 +315,7 @@ export async function getUserMetadataAsync(
   };
 }
 
-export function getProjectMetadata(projectRoot: string): FeedbackMetadata['project'] {
+export function getProjectMetadata(projectRoot: string): FeedbackTelemetryMetadata['project'] {
   const pkg = getPackageJson(projectRoot);
   const paths = getConfigFilePaths(projectRoot);
 
@@ -363,16 +414,21 @@ export async function sendFeedbackAsync({
   session,
 }: {
   feedback: string;
-  metadata: FeedbackMetadata;
+  metadata: FeedbackPayloadMetadata;
   session?: UserSession | null;
 }): Promise<void> {
+  const telemetryDisabled = isTelemetryDisabled();
   const response = await fetch(new URL('/v2/feedback/cli-send', getExpoApiBaseUrl()).toString(), {
     method: 'POST',
     signal: AbortSignal.timeout(FEEDBACK_TIMEOUT_MS),
     headers: {
-      ...getAuthHeaders(session),
       'Content-Type': 'application/json',
-      'User-Agent': `${CLI_NAME}/${getPackageVersion()}`,
+      ...(telemetryDisabled
+        ? {}
+        : {
+            ...getAuthHeaders(session),
+            'User-Agent': `${CLI_NAME}/${getPackageVersion()}`,
+          }),
     },
     body: JSON.stringify({
       feedback,
@@ -460,10 +516,13 @@ function printHelp(): void {
   {bold Data collection}
     Feedback includes available agent/session identifiers, sandbox and environment
     details, Expo project metadata, and Expo account identifiers.
+    Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected
+    metadata and authentication.
 
   {bold Options}
     --category, -c <category>  Feedback category (${FEEDBACK_CATEGORIES.join(', ')})
     --subject, -s <subject>    Exact item the feedback is about, based on the category
+    --resume <feedbackId>      Continue a feedback session using its ID
     --version, -v              Version number
     --help, -h                 Usage info
 
@@ -475,6 +534,7 @@ function printHelp(): void {
     | mcp        | Exact MCP tool name used                                          |
     | expo-cli   | Full Expo CLI command, such as npx expo install                   |
     | eas-cli    | Full EAS CLI command, such as eas build                           |
+    | evals      | Expo package, command, or capability the task involves            |
     | unknown    | Concise Expo product, package, feature, or topic, or leave empty  |
 `);
 }
@@ -492,6 +552,23 @@ function resolveFeedbackCategory(value?: string): FeedbackCategory {
 function normalizeSubject(value?: string): string | undefined {
   const subject = value?.trim();
   return subject || undefined;
+}
+
+function isTelemetryDisabled(): boolean {
+  return process.env.DO_NOT_TRACK === '1' || process.env.EXPO_NO_TELEMETRY === '1';
+}
+
+export function resolveFeedbackId(value?: string): string {
+  if (
+    value === undefined ||
+    value.length < MIN_FEEDBACK_ID_LENGTH ||
+    value.length > MAX_FEEDBACK_ID_LENGTH ||
+    !FEEDBACK_ID_PATTERN.test(value)
+  ) {
+    return randomBytes(GENERATED_FEEDBACK_ID_BYTES).toString('hex');
+  }
+
+  return value;
 }
 
 function getPackageVersion(): string {

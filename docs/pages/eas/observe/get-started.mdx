@@ -54,7 +54,7 @@ Make sure you are using the latest version of `expo`, then install `expo-observe
 
 ## Wrap your root layout
 
-Wrap your root layout with `AppMetricsRoot` (SDK 55) or `ObserveRoot` (SDK 56 and later). This higher-order component (HOC) automatically measures [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render) for you.
+Wrap your root layout with `AppMetricsRoot` (SDK 55) or `ObserveRoot` (SDK 56 and later). This higher-order component (HOC) automatically measures [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render-ttr) for you.
 
 <Tabs>
 
@@ -204,7 +204,7 @@ export default AppMetricsRoot.wrap(RootLayout);
 
 </Tabs>
 
-> **info** `markInteractive()` can safely be called multiple times per session, but only the first call records the measurement. If your app has multiple entry screens (for example, an onboarding flow, login flow, or deep link targets), call `markInteractive` on **every one of these screens**. If you only place it on one screen, [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive) will not be recorded when the app opens via a deep link to a different screen.
+> **info** `markInteractive()` can safely be called multiple times per session, but only the first call records the measurement. If your app has multiple entry screens (for example, an onboarding flow, login flow, or deep link targets), call `markInteractive` on **every one of these screens**. If you only place it on one screen, [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive-tti) will not be recorded when the app opens via a deep link to a different screen.
 
 </Step>
 

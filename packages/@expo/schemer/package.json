@@ -1,6 +1,6 @@
 {
   "name": "@expo/schemer",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "Centralized scheme validation library for Expo",
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/schemer#readme",
   "bugs": {

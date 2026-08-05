@@ -12,6 +12,9 @@ import { Protected } from '../views/Protected';
 import { Screen } from '../views/Screen';
 import { withLayoutContext } from './withLayoutContext';
 
+// Keep React Navigation client-only so the entry evaluates in React Server Components.
+export * from '../react-navigation/material-top-tabs';
+
 const MaterialTopTabNavigator = createMaterialTopTabNavigator().Navigator;
 
 const MaterialTopTabs = withLayoutContext<

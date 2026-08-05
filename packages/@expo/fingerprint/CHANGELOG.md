@@ -15,13 +15,47 @@
 
 ### 🐛 Bug fixes
 
-- Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
+### 💡 Others
+
+- Hoisted the ignore-path Minimatch build out of the per-module filter in `ExpoConfigLoader`, avoiding O(modules × patterns) Minimatch constructions during config load. Byte-identical fingerprint hash. ([#48367](https://github.com/expo/expo/pull/48367) by [@alfonsocj](https://github.com/alfonsocj))
+- Reworked config-plugin module capture with a `Module.prototype._compile` hook. ([#47666](https://github.com/expo/expo/pull/47666) by [@kudo](https://github.com/kudo))
+- Derived config-plugin modules by diffing a plugins-skipped config load, which drops most config-loading framework modules automatically and shrinks the hand-maintained allowlist. ([#47678](https://github.com/expo/expo/pull/47678) by [@kudo](https://github.com/kudo))
+
+## 0.20.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.5 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.3 - 2026-07-07
 
 ### 💡 Others
 
 - Added more default `getConfig` exclusion packages. ([#47503](https://github.com/expo/expo/pull/47503) by [@kudo](https://github.com/kudo))
-- Reworked config-plugin module capture with a `Module.prototype._compile` hook. ([#47666](https://github.com/expo/expo/pull/47666) by [@kudo](https://github.com/kudo))
-- Derived config-plugin modules by diffing a plugins-skipped config load, which drops most config-loading framework modules automatically and shrinks the hand-maintained allowlist. ([#47678](https://github.com/expo/expo/pull/47678) by [@kudo](https://github.com/kudo))
+
+## 0.20.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.1 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.20.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 0.19.4 - 2026-06-05
+
+### 🐛 Bug fixes
+
+- Fixed unstable fingerprint for iOS precompiled modules. ([#46466](https://github.com/expo/expo/pull/46466) by [@kudo](https://github.com/kudo))
 
 ## 0.19.3 — 2026-05-26
 

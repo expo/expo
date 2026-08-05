@@ -2,6 +2,7 @@ import { Command } from '@expo/commander';
 import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
+import { randomUUID } from 'crypto';
 import fs, { mkdirp } from 'fs-extra';
 import { glob } from 'glob';
 import inquirer from 'inquirer';
@@ -9,7 +10,6 @@ import ora from 'ora';
 import path from 'path';
 import semver from 'semver';
 import * as tar from 'tar';
-import { v4 as uuidv4 } from 'uuid';
 
 import {
   EAS_EXPO_GO_PROJECT_DIR,
@@ -212,7 +212,7 @@ async function iosBuildAndSubmitAsync() {
 
     const certPEMPath = path.join(credentialsDir, 'cert.pem');
     const p12KeystorePath = path.join(credentialsDir, 'dist.p12');
-    const p12KeystorePassword = uuidv4();
+    const p12KeystorePassword = randomUUID();
 
     await spawnAsync(
       'openssl',

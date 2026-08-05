@@ -2,7 +2,7 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-07-20T09:05:29.182Z"
+    "fetchedAt": "2026-07-23T08:55:14.245Z"
   },
   "totalSkills": 21,
   "skills": [
@@ -105,7 +105,7 @@
     {
       "name": "expo-skill-feedback",
       "category": "framework",
-      "description": "Submit feedback on an Expo skill — or on Expo itself — or turn the bundled anonymous usage telemetry on or off (off by default / opt-in; the user saying \"enable Expo skills telemetry\" in conversation is the switch). Use when an Expo skill was useful, confusing, broken, missing context, or worth improving; when something fell short because of Expo (an SDK bug or confusing framework behavior) rather than the skill; or when the user wants to enable, turn on, opt in to, disable, turn off, opt out of, check the status of, or understand the anonymous usage tracking these skills can send.",
+      "description": "Submit feedback on an Expo skill—or Expo itself—and control bundled anonymous usage telemetry (off by default / opt-in). Submit feedback with: npx --yes submit-expo-feedback@latest \"ACTIONABLE_FEEDBACK\". Optionally add either or both: --category \"CATEGORY\" and --subject \"SUBJECT\". Replace the uppercase placeholders before running. Use when a skill was useful, confusing, broken, missing context, or worth improving; when Expo, Expo CLI, EAS CLI, docs, or MCP worked well or fell short; or when the user explicitly asks to enable or disable telemetry, check its status, or understand what it collects.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-skill-feedback/SKILL.md"
     },
     {

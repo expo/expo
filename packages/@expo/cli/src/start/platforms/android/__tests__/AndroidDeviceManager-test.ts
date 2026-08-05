@@ -1,8 +1,8 @@
-import { shellDumpsysPackage } from './fixtures/adb-output';
 import { CommandError } from '../../../../utils/errors';
 import { AndroidDeviceManager } from '../AndroidDeviceManager';
 import type { Device } from '../adb';
 import { getPackageInfoAsync, launchActivityAsync, openUrlAsync } from '../adb';
+import { shellDumpsysPackage } from './fixtures/adb-output';
 
 jest.mock('../adbReverse', () => ({
   startAdbReverseAsync: jest.fn(),

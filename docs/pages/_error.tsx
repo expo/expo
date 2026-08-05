@@ -80,7 +80,7 @@ const Error = () => {
             </P>
           )}
           <Button theme="secondary" href="/">
-            Return Home
+            Return home
           </Button>
         </>
       )}

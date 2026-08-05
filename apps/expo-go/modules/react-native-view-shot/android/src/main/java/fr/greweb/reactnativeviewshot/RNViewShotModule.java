@@ -19,7 +19,6 @@ import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.UIManager;
 import com.facebook.react.fabric.FabricUIManager;
 import com.facebook.react.uimanager.UIManagerHelper;
-import com.facebook.react.uimanager.UIManagerModule;
 import com.facebook.react.uimanager.common.UIManagerType;
 
 import java.io.File;
@@ -100,13 +99,8 @@ public class RNViewShotModule extends NativeRNViewShotSpec {
                     snapshotContentContainer, reactContext, activity, handleGLSurfaceView, promise, executor
             );
 
-            if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
-                UIManager uiManager = UIManagerHelper.getUIManager(context, UIManagerType.FABRIC);
-                ((FabricUIManager)uiManager).addUIBlock(uiBlock);
-            } else {
-                final UIManagerModule uiManager = this.reactContext.getNativeModule(UIManagerModule.class);
-                uiManager.addUIBlock(uiBlock);
-            }
+            UIManager uiManager = UIManagerHelper.getUIManager(context, UIManagerType.FABRIC);
+            ((FabricUIManager) uiManager).addUIBlock(uiBlock);
         } catch (final Throwable ex) {
             Log.e(NAME, "Failed to snapshot view tag " + tag, ex);
             promise.reject(ViewShot.ERROR_UNABLE_TO_SNAPSHOT, "Failed to snapshot view tag " + tag);

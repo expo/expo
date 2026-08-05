@@ -1,15 +1,15 @@
 import type { BuildCacheProvider } from '@expo/config';
 import { getConfig } from '@expo/config';
 
+import type { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
+import { resolveBuildCacheProvider } from '../../utils/build-cache-providers';
+import type { BundlerProps } from '../resolveBundlerProps';
+import { resolveBundlerPropsAsync } from '../resolveBundlerProps';
 import { resolveDeviceAsync } from './resolveDevice';
 import type { GradleProps } from './resolveGradlePropsAsync';
 import { resolveGradlePropsAsync } from './resolveGradlePropsAsync';
 import type { LaunchProps } from './resolveLaunchProps';
 import { resolveLaunchPropsAsync } from './resolveLaunchProps';
-import type { AndroidDeviceManager } from '../../start/platforms/android/AndroidDeviceManager';
-import { resolveBuildCacheProvider } from '../../utils/build-cache-providers';
-import type { BundlerProps } from '../resolveBundlerProps';
-import { resolveBundlerPropsAsync } from '../resolveBundlerProps';
 
 export type Options = {
   variant?: string;

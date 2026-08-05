@@ -91,6 +91,7 @@ import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import {
   fromRuntimeManifestRoute,
   fromServerManifestRoute,
+  SSG_LOADER_HEADER_ALLOWLIST,
   type ResolvedLoaderRoute,
 } from './resolveLoader';
 import {
@@ -1303,7 +1304,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const parsedOptions = {
       host: options.location.hostType === 'localhost' ? 'localhost' : undefined,
-      port: options.port,
+      port: this.getPort(),
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
     };
@@ -1329,7 +1330,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     // Required for symbolication:
-    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${address?.port ?? options.port}`;
+    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${this.getPort()}`;
     process.env.EXPO_DEV_SERVER_ORIGIN = serverBaseUrl;
 
     if (!options.isExporting) {
@@ -1603,7 +1604,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       server,
       location: {
         // The port is the main thing we want to send back.
-        port: address?.port ?? options.port,
+        port: this.getPort(),
         // localhost isn't always correct.
         host: 'localhost',
         url: serverBaseUrl,
@@ -1906,19 +1907,27 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const maybeResponse = await routeModule.loader(request, route.params);
 
         let data: unknown;
+        let headers: Headers | undefined;
         if (maybeResponse instanceof Response) {
           // In SSR, preserve `Response` from the loader
           if (exp.web?.output === 'server' && unstable_useServerRendering) {
             return maybeResponse;
           }
 
-          // In SSG, extract body
+          // In SSG, extract the body and the allowlisted headers
           data = await maybeResponse.json();
+          headers = new Headers();
+          for (const name of SSG_LOADER_HEADER_ALLOWLIST) {
+            const value = maybeResponse.headers.get(name);
+            if (value) {
+              headers.set(name, value);
+            }
+          }
         } else {
           data = maybeResponse;
         }
 
-        return Response.json(data ?? null);
+        return Response.json(data ?? null, { headers });
       }
 
       return undefined;

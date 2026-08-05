@@ -107,9 +107,8 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/versions/latest/sdk/constants/#manifest) (or
- * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
- * object for the update that's currently running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) object for the update
+ * that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
@@ -320,7 +319,7 @@ export async function clearLogEntriesAsync(): Promise<void> {
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
  *
- > **Note:** [`reloadAsync()`](#updatesreloadasync) can be called after promise resolution to
+ > **Note:** [`reloadAsync()`](#updatesreloadasyncoptions) can be called after promise resolution to
  * reload the app using the most recently downloaded version. Otherwise, the update will be applied
  * on the next app cold start.
  *
