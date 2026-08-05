@@ -92,13 +92,25 @@ public final class NetworkModule: Module {
     // create a temporary monitor to avoid interfering with the module's monitor
     // since we want to wait for the result to be updated once:
     let tempMonitor = NWPathMonitor()
-    var tempPath: NWPath?
+    let tempPath = Mutex<NWPath?>(nil)
 
     let semaphore = DispatchSemaphore(value: 0)
 
     tempMonitor.pathUpdateHandler = { updatedPath in
-      tempPath = updatedPath
-      semaphore.signal() // Notify that we got the path
+      // The handler runs on `monitorQueue` for every path change and can still fire after
+      // `cancel()` returns, so only the first update is kept — a later write would race
+      // with the caller reading the path once the semaphore is signaled.
+      let isFirstUpdate = tempPath.withLock { path -> Bool in
+        guard path == nil else {
+          return false
+        }
+        path = updatedPath
+        return true
+      }
+
+      if isFirstUpdate {
+        semaphore.signal() // Notify that we got the path
+      }
     }
 
     tempMonitor.start(queue: monitorQueue)
@@ -114,7 +126,7 @@ public final class NetworkModule: Module {
       return nil
     }
 
-    return tempPath
+    return tempPath.withLock { $0 }
   }
 
   private func getNetworkStateAsync(path: NWPath? = nil) -> [String: Any] {

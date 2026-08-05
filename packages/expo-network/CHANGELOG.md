@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a crash in `getNetworkStateAsync` caused by a data race on the network path captured from `NWPathMonitor`. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ignigena](https://github.com/Ignigena))
+
 ### 💡 Others
 
 - [Android] Remove legacy `fetchNetworkState` path. ([#47007](https://github.com/expo/expo/pull/47007) by [@Wenszel](https://github.com/Wenszel))
