@@ -33,6 +33,15 @@ function startUpdatesServerIfNeeded() {
 
 function cleanup()
 {
+  local exit_code=$?
+  # Maestro only reports which element it could not find, which is indistinguishable between a
+  # missing test ID and an app that crashed on launch. Dump the device log on failure — to stdout,
+  # so it lands in the CI job log without needing artifact upload.
+  if [[ $exit_code -ne 0 && "$MAESTRO_PLATFORM" == "android" ]]; then
+    echo "===== adb logcat (last 500 lines, $MAESTRO_CONFIGURATION) ====="
+    adb logcat -d -t 500 || true
+    echo "===== end adb logcat ====="
+  fi
   echo 'Cleaning up...'
   killUpdatesServerIfNeeded
   pnpm maestro:$MAESTRO_PLATFORM:uninstall || true
