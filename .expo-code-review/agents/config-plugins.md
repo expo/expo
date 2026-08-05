@@ -32,8 +32,10 @@ the same file.
   or `addFramework` call with no preceding lookup for the existing phase, group or file.
 
 **Merge tags and anchors**
-- A `mergeContents({ tag })` value not scoped to the owning package — bare `fonts`,
-  `locales`, `xml-fonts-init`. Two packages sharing a tag overwrite each other's block.
+- A `mergeContents({ tag })` value not scoped to the owning package. Two packages sharing a
+  tag overwrite each other's block. `xml-fonts-init` is a real unscoped tag in this repo;
+  compare the correctly scoped `expo-localization-supported-locales` and
+  `expo-build-properties`. A bare `fonts` or `locales` would be the same mistake.
 - Any diff that renames an existing tag string. The old `@generated` block in already
   prebuilt projects then never gets replaced, so the content duplicates.
 - A new or changed `anchor` regex, or a `.replace()` against native template text, where

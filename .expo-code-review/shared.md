@@ -51,8 +51,9 @@ The layout you will meet in diffs:
   tests, prebuild and SPM generation.
 - `templates/` — 5 project scaffolds. `fastlane/` — Expo Go store lanes.
 
-Each package publishes to npm independently, so a change to an exported symbol is a
-change to a public API that thousands of apps consume.
+The 140 packages under `packages/` publish to npm independently, so a change to an exported
+symbol is a change to a public API that thousands of apps consume. The 14 apps under `apps/`
+and `tools` are private and never publish.
 
 Conventions that matter when judging a change:
 

@@ -22,9 +22,10 @@ These rules are checked against this repo's pinned toolchain: Swift language mod
   `SceneGeometry.keyWindow(...)`, unless the closure form ends in `.runOnQueue(.main)` or
   the `async` form hops explicitly (`await MainActor.run { … }`, a `@MainActor` helper).
   `AsyncFunctionDefinition` dispatches onto its own `userInitiated` queue, and
-  `Utilities.currentViewController()` is `nonisolated` with a body wrapped in
-  `MainActor.assumeIsolated`, which traps at runtime off the main actor. Neither Swift 5
-  nor Swift 6 mode emits a diagnostic, so the compiler will not catch this.
+  `currentViewController()` on `Utilities` is declared `nonisolated` with a body wrapped in
+  `MainActor.assumeIsolated`, which traps at runtime off the main actor. Because it is
+  `nonisolated`, neither Swift 5 nor Swift 6 mode emits a diagnostic — the failure is
+  runtime-only, which is why it needs a human reviewer.
 - An `AsyncFunction` inside a `View { … }` block that does **not** take the view instance
   as its first closure parameter but still touches UIKit, SwiftUI state, or the view
   hierarchy. It needs the view parameter or an explicit `.runOnQueue(.main)`.

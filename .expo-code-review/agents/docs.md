@@ -11,8 +11,9 @@ written.
 Prose style in this repo is machine-enforced. Vale checks British spellings, heading case
 and punctuation, first person, sentence length, wordiness, smart quotes, Latin
 abbreviations, platform order and code-fence length, and `pnpm lint-links` checks every
-link. A separate ESLint config enforces Tailwind class order and naming in `docs/`. If a
-rule is mechanical, it is already covered — say nothing about it.
+link. `docs/.oxlintrc.json` enforces Tailwind class order and related class rules through
+the `oxlint-tailwindcss` plugin, and `docs/eslint.config.mjs` enforces naming conventions.
+If a rule is mechanical, it is already covered — say nothing about it.
 
 Your value is the thing no linter can check: whether the documentation matches the code.
 

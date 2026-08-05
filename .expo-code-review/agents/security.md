@@ -21,13 +21,18 @@ one of these shapes is a regression of known-fixed work, so weigh it accordingly
 ## What to flag
 
 **Command and subprocess construction**
-- A new `execSync`, `exec`, `spawnSync`, or shell command built by string interpolation in
-  `packages/@expo/**` or `tools/**`, where any interpolated value is not a literal. The
-  preferred form is an argv array through `spawnAsync`, and the SPM tooling was converted
-  to it for this reason (#45819, #45837). Note that `execSync` still exists elsewhere in
-  `packages/@expo/cli/src` with fixed arguments, so its mere presence is not the finding —
-  the finding is an interpolated value reaching a shell. If a shell is truly required,
-  every interpolated value needs explicit quoting.
+- A new `execSync`, `exec`, `spawnSync`, or shell command in `packages/@expo/**` or
+  `tools/**` where an interpolated value reaches the shell. The preferred form is an argv
+  array through `spawnAsync`; the SPM tooling under `tools/**` was converted to it for
+  exactly this reason (#45819, #45837) and should not regress.
+  Be precise about what is new: `execSync` is still live in
+  `packages/@expo/cli/src` — 8 files, including interpolated calls such as
+  `execSync(\`open ${link}\`)` in `start/doctor/apple/XcodePrerequisite.ts` and
+  `execSync(\`command -v ${command}\`)` in `export/embed/exportServer.ts`. Its presence is
+  therefore not the finding, and neither is a pre-existing call the diff merely moved. The
+  finding is a **new or newly widened** interpolation whose value can come from app config,
+  a filename, device output, or user input. If a shell is genuinely required, every
+  interpolated value needs explicit quoting.
 - `adb shell <string>` where any token comes from app config, device output, or user
   arguments. `adb shell` re-parses the string on the device, so each token needs its own
   quoting. See `packages/@expo/cli/src/start/platforms/android/adb.ts`.
@@ -117,10 +122,10 @@ one of these shapes is a regression of known-fixed work, so weigh it accordingly
   non-fork (#45859).
 
 **Dependencies**
-- An addition or version-range widening for a package with CVE history in this tree —
-  `tar`/`tar-fs`, `node-forge`, `form-data`, `undici`, `axios`, `postcss`, `lodash`,
-  `libwebp`, `react-server-dom` — below the pinned floor already used elsewhere in the
-  workspace.
+- An addition or version-range widening for a package with known CVE history, below the
+  pinned floor already used elsewhere in the workspace. Present in this tree and previously
+  patched here: `tar`, `node-forge`, `form-data`, `undici`, `axios`, `postcss`, `lodash`,
+  `react-server-dom`. Treat any newly introduced package in that family the same way.
 
 ## What NOT to flag
 
