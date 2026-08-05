@@ -98,5 +98,4 @@ class ImageView(context: Context, appContext: AppContext) :
       )
     )
   }
-
 }

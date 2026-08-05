@@ -99,5 +99,4 @@ class IconView(context: Context, appContext: AppContext) :
       )
     }
   }
-
 }
