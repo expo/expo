@@ -81,9 +81,7 @@ export async function resolveDependencyConfigImplAndroidAsync(
     ? path.join(androidDir, reactNativeConfig?.cxxModuleCMakeListsPath)
     : null;
   if (process.platform === 'win32') {
-    if (cmakeListsPath) {
-      cmakeListsPath = cmakeListsPath.replace(/\\/g, '/');
-    }
+    cmakeListsPath = cmakeListsPath?.replace(/\\/g, '/');
     if (cxxModuleCMakeListsPath) {
       cxxModuleCMakeListsPath = cxxModuleCMakeListsPath.replace(/\\/g, '/');
     }
