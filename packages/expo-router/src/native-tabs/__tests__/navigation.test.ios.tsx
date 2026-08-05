@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 
 import { router } from '../../imperative-api';
+import Stack from '../../layouts/StackClient';
 import { Link } from '../../link/Link';
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -362,6 +363,41 @@ describe('Native Bottom Tabs trigger changes', () => {
     for (const call of TabsScreen.mock.calls) {
       expect(call[0].screenKey).toMatch(/^index-[-\w]+/);
     }
+  });
+
+  it('waits for a nested native tabs navigator to regain focus before redirecting', () => {
+    let setHidden!: (hidden: boolean) => void;
+    function TabsLayout() {
+      const [hidden, set] = useState(false);
+      setHidden = set;
+      return (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" hidden={hidden} />
+        </NativeTabs>
+      );
+    }
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        index: () => <View testID="outside" />,
+        'tabs/_layout': TabsLayout,
+        'tabs/index': () => <View testID="tabs-index" />,
+        'tabs/second': () => <View testID="tabs-second" />,
+      },
+      { initialUrl: '/tabs/second' }
+    );
+
+    act(() => router.push('/'));
+    act(() => setHidden(true));
+
+    expect(screen).toHavePathname('/');
+    expect(screen.getByTestId('outside')).toBeVisible();
+
+    act(() => router.back());
+
+    expect(screen).toHavePathname('/tabs');
+    expect(screen.getByTestId('tabs-index')).toBeVisible();
   });
 
   it('renders no tab UI when every trigger is hidden', () => {
