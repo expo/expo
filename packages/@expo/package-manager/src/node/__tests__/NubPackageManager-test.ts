@@ -1,6 +1,5 @@
 import spawnAsync from '@expo/spawn-async';
 import { vol } from 'memfs';
-import path from 'path';
 
 import { mockSpawnPromise } from '../../__tests__/spawn-utils';
 import { NubPackageManager } from '../NubPackageManager';
