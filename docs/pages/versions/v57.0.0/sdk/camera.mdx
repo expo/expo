@@ -83,7 +83,7 @@ You can configure `expo-camera` using its built-in [config plugin](/config-plugi
   ]}
 />
 
-To localize the iOS camera or microphone permission message, keep the matching config-plugin property as the default value and add `NSCameraUsageDescription` or `NSMicrophoneUsageDescription` to the `ios` object in each [locale file](/guides/localization/#translating-app-metadata). Expo writes the localized values to `InfoPlist.strings` during prebuild.
+To localize the iOS camera or microphone permission message, add `NSCameraUsageDescription` or `NSMicrophoneUsageDescription` to the `ios` object in each [locale file](/guides/localization/#translating-app-metadata). Keep `cameraPermission` and `microphonePermission` as the default values. Expo writes the localized values to **InfoPlist.strings** during prebuild.
 
 <ConfigReactNative>
 
