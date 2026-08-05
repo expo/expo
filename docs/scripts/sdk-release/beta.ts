@@ -1,5 +1,5 @@
 // Cuts beta docs for a new SDK version and prints a JSON summary the docs-sdk-beta
-// workflow uses to raise a PR. Run: pnpm sdk-beta --sdk 58 [--dry-run]
+// workflow uses to raise a PR. Run: pnpm sdk-beta --sdk 58 [--dry-run].
 
 import { execFileSync, execSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -50,6 +50,7 @@ function parseOptions() {
   let sdk = '';
   let dryRun = false;
   let skipLlms = false;
+  let commitPerStep = false;
 
   for (let index = 0; index < argv.length; index++) {
     const arg = argv[index];
@@ -59,6 +60,8 @@ function parseOptions() {
       dryRun = true;
     } else if (arg === '--skip-llms') {
       skipLlms = true;
+    } else if (arg === '--commit-per-step') {
+      commitPerStep = true;
     } else if (arg === '--set') {
       const pair = argv[++index] ?? '';
       const splitAt = pair.indexOf('=');
@@ -73,13 +76,13 @@ function parseOptions() {
     } else {
       fail(
         `Unknown argument "${arg}".`,
-        'Only --sdk, --dry-run, --skip-llms and --set are accepted.',
+        'Only --sdk, --dry-run, --skip-llms, --commit-per-step and --set are accepted.',
         'For example: pnpm sdk-beta --sdk 58 --dry-run'
       );
     }
   }
 
-  return { sdk, dryRun, skipLlms, overrides };
+  return { sdk, dryRun, skipLlms, commitPerStep, overrides };
 }
 
 const options = parseOptions();
@@ -513,6 +516,27 @@ const failures = new Map<string, string>();
 const completed: string[] = [];
 const skipped: string[] = [];
 
+const startSha = git('rev-parse', 'HEAD');
+
+function commitStep(label: string) {
+  const dirty = git('status', '--porcelain', '--untracked-files=all')
+    .split('\n')
+    .filter(Boolean)
+    .some(line => line.slice(3) !== self);
+
+  if (!dirty) {
+    return;
+  }
+
+  git('add', '--all', '--', '.', `:!${self}`);
+  git(
+    'commit',
+    '-m',
+    `[docs] SDK ${major} beta: ${label}${failures.has(label) ? ' (failed)' : ''}`
+  );
+  log(`  committed as ${git('rev-parse', '--short', 'HEAD')}`);
+}
+
 for (const { label, run, preview, skip } of steps) {
   if (skip) {
     log(`- skipped: ${label}`);
@@ -541,15 +565,26 @@ for (const { label, run, preview, skip } of steps) {
     log(`  failed: ${output}`);
     failures.set(label, output);
   }
+
+  if (options.commitPerStep) {
+    commitStep(label);
+  }
 }
 
 const changed = options.dryRun
   ? []
-  : git('status', '--porcelain', '--untracked-files=all')
-      .split('\n')
-      .filter(Boolean)
-      .map(line => line.slice(3))
-      .filter(file => file !== self);
+  : [
+      ...new Set([
+        ...(options.commitPerStep
+          ? git('diff', '--name-only', startSha, 'HEAD').split('\n').filter(Boolean)
+          : []),
+        ...git('status', '--porcelain', '--untracked-files=all')
+          .split('\n')
+          .filter(Boolean)
+          .map(line => line.slice(3))
+          .filter(file => file !== self),
+      ]),
+    ];
 
 const HUMAN_TASKS = [
   'Re-check [brownfield install instructions](https://docs.expo.dev/brownfield/installing-expo-modules/) against the new template diff',

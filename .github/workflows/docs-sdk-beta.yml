@@ -86,11 +86,15 @@ jobs:
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
+      - name: ✍️ Set git identity for per-step commits
+        run: |
+          git config user.name 'Expo Bot'
+          git config user.email 'expo-bot@users.noreply.github.com'
       - name: ✂️ Cut beta docs
         id: beta
         working-directory: docs
         run: |
-          args=(--sdk "$SDK_VERSION")
+          args=(--sdk "$SDK_VERSION" --commit-per-step)
           if [[ "$DRY_RUN" == 'true' ]]; then
             args+=(--dry-run)
           fi
