@@ -5,13 +5,13 @@ import { glob } from 'glob';
 import inquirer from 'inquirer';
 import path from 'path';
 
-import { ensureBareExpoDependencies } from './ensureBareExpoDependencies';
-import { updateAndroidProjects } from './updateAndroidProjects';
 import { EXPO_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { ExpoModuleConfig, Package } from '../../Packages';
 import { Task } from '../../TasksRunner';
 import type { CommandOptions, Parcel, TaskArgs } from '../types';
+import { ensureBareExpoDependencies } from './ensureBareExpoDependencies';
+import { updateAndroidProjects } from './updateAndroidProjects';
 
 const EXCLUDE = ['expo-module-template'];
 
@@ -199,10 +199,7 @@ async function removeExistingPublications(pkg: Package) {
 
   const stringifyConfig = JSON.stringify(pkg.expoModuleConfig, null, 2);
 
-  await fs.writeFile(pkg.expoModulesConfigPath, stringifyConfig, 'utf-8');
-  return spawnAsync('pnpm', ['prettier', '--write', pkg.expoModulesConfigPath], {
-    cwd: pkg.path,
-  });
+  await fs.writeFile(pkg.expoModulesConfigPath, stringifyConfig + '\n', 'utf-8');
 }
 
 /**
