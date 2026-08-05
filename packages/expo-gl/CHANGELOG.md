@@ -9,7 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed the GL surface using a cached main-screen scale instead of the scale of the scene the view is in. ([#48169](https://github.com/expo/expo/pull/48169) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fixed `takeSnapshotAsync` sizing the image from the main screen's scale rather than the scale the drawable was rendered at.
+- [iOS] Fixed `takeSnapshotAsync` sizing the image from the main screen's scale rather than the scale the drawable was rendered at. ([#48528](https://github.com/expo/expo/pull/48528) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
