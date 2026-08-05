@@ -90,20 +90,9 @@ describe('asyncRequireModule', () => {
 
       function asyncRequire(moduleID, paths, moduleName) {
         var ret = asyncRequireImpl(moduleID, paths, moduleName);
-        if (!(ret instanceof Promise)) {
-          return {
-            _result: ret,
-            then: function(resolve, reject) {
-              return Promise.resolve(ret).then(resolve, reject);
-            },
-          };
-        }
-        return {
-          _result: ret,
-          then: function(resolve, reject) {
-            return ret.then(resolve, reject);
-          },
-        };
+        var promise = Promise.resolve(ret);
+        promise._result = ret;
+        return promise;
       }
 
       asyncRequire.unstable_importMaybeSync = function(moduleID, paths) {
@@ -225,14 +214,20 @@ describe('asyncRequireModule', () => {
   });
 
   describe('thenable return value', () => {
-    it('exposes a synchronous _result when no bundle load was needed', () => {
+    it('returns a Promise with a synchronous _result when no bundle load was needed', async () => {
       const ret = asyncRequire(42, null, 'my-module');
 
-      expect(typeof ret.then).toBe('function');
+      const onFinally = jest.fn();
+
+      expect(ret).toBeInstanceOf(Promise);
+      expect(typeof ret.catch).toBe('function');
+      expect(typeof ret.finally).toBe('function');
       expect(ret._result).toEqual({ default: 'module-42' });
+      await expect(ret.finally(onFinally)).resolves.toEqual({ default: 'module-42' });
+      expect(onFinally).toHaveBeenCalledTimes(1);
     });
 
-    it('exposes a Promise _result when a bundle load was needed', async () => {
+    it('returns a Promise with a Promise _result when a bundle load was needed', async () => {
       process.env.EXPO_OS = 'web';
       mockImportAll
         .mockImplementationOnce(() => {
@@ -244,9 +239,21 @@ describe('asyncRequireModule', () => {
 
       const ret = asyncRequire(42, { '42': '/bundles/my-module.bundle' }, 'my-module');
 
-      expect(typeof ret.then).toBe('function');
+      expect(ret).toBeInstanceOf(Promise);
+      expect(typeof ret.catch).toBe('function');
+      expect(typeof ret.finally).toBe('function');
       expect(ret._result).toBeInstanceOf(Promise);
       await expect(ret._result).resolves.toEqual({ default: 'module-42' });
+    });
+
+    it('supports catching a rejected bundle load', async () => {
+      process.env.EXPO_OS = 'ios';
+      const error = new Error('Bundle load failed');
+      (globalThis as any).__loadBundleAsync = jest.fn(() => Promise.reject(error));
+
+      const ret = asyncRequire(42, { '42': '/bundles/my-module.bundle' }, 'my-module');
+
+      await expect(ret.catch((caughtError: Error) => caughtError)).resolves.toBe(error);
     });
   });
 
