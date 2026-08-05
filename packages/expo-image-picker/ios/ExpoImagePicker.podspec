@@ -24,4 +24,14 @@ Pod::Spec.new do |s|
     'DEFINES_MODULE' => 'YES',
     'SWIFT_COMPILATION_MODE' => 'wholemodule'
   }
+  
+  s.test_spec 'Tests' do |test_spec|
+    test_spec.dependency 'ExpoModulesTestCore'
+
+    test_spec.source_files = 'Tests/**/*.{m,swift}'
+
+    test_spec.pod_target_xcconfig = {
+      'OTHER_LDFLAGS' => '$(inherited) -lc++'
+    }
+  end
 end

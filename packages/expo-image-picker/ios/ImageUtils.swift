@@ -40,9 +40,11 @@ internal struct ImageUtils {
       return nil
     }
 
-    if shouldReadCroppedImage,
-      let cropRect = mediaInfo[.cropRect] as? CGRect,
-      let cropped = ImageUtils.crop(image: originalImage, to: cropRect) {
+    if shouldReadCroppedImage {
+      guard let cropRect = mediaInfo[.cropRect] as? CGRect,
+        let cropped = ImageUtils.crop(image: originalImage, to: cropRect) else {
+        return nil
+      }
       // Crop first (rect is defined in the original pixel space), then rotate.
       return cropped.fixOrientation()
     }

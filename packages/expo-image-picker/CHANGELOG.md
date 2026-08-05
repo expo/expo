@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix a failed crop resolving with the uncropped original image instead of rejecting when `allowsEditing` is `true`. ([#48524](https://github.com/expo/expo/issues/48524) by [@aashishshrestha5532](https://github.com/aashishshrestha5532), [#48541](https://github.com/expo/expo/pull/48541) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 💡 Others
 
 ## 56.0.22 — 2026-07-23
