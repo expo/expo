@@ -16,12 +16,7 @@
 ### 🐛 Bug fixes
 
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
-- Include external CSS imports in the production server manifest ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
-- Fall back to AGP's `output-metadata.json` when resolving APK filenames to support projects that override `outputFileName` in `applicationVariants` ([#47083](https://github.com/expo/expo/pull/47083) by [@NikhilVashistha](https://github.com/NikhilVashistha))
-- Surface the real `xcodebuild` error on `run:ios` failure instead of printing "0 error(s)" when the build formatter parsed none. ([#47748](https://github.com/expo/expo/pull/47748) by [@ramonclaudio](https://github.com/ramonclaudio))
-- Fix GraphQL `data` results with all-null fields being treated as failed, obscuring underlying failure states ([#47860](https://github.com/expo/expo/pull/47860) by [@kitten](https://github.com/kitten))
-- Ignore simulators reported by `devicectl` and support jsonVersion 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
-- Prevent `expo export` from corrupting server bundles that contain `//# sourceMappingURL=` inside a string literal ([#47981](https://github.com/expo/expo/pull/47981) by [@hassankhan](https://github.com/hassankhan))
+- Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
 - In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
 - Ignore a whitespace-only `REACT_NATIVE_PACKAGER_HOSTNAME` instead of failing to start the dev server ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fix opening web from the Terminal UI when the dev server was started without `--web` ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
