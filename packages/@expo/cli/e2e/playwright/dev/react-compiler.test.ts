@@ -60,7 +60,7 @@ test.describe(baseDir, () => {
 
       // The useBananas code which otherwise causes the app to crash uses live bindings.
       expect(bundleContent).toMatch(
-        /Object\.defineProperty\(e,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
+        /Object\.defineProperty\(\w+,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
       );
     });
 
@@ -127,9 +127,9 @@ test.describe(baseDir, () => {
 
       // The useBananas code which causes the application to crash uses static bindings.
       expect(bundleContent).not.toMatch(
-        /Object\.defineProperty\(e,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
+        /Object\.defineProperty\(\w+,"useBananas",\{enumerable:!0,get:function\(\)\{return\s+(\w+)\.useBananas\}\}\)/
       );
-      expect(bundleContent).toContain('e.useBananas=function()');
+      expect(bundleContent).toMatch(/\w+\.useBananas=function\(\)/);
     });
 
     // This test generally ensures no errors are thrown during an export loading.
