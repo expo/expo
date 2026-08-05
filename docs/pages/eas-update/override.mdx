@@ -18,6 +18,8 @@ For apps using EAS Update, the primary use case for this feature is [channel sur
 
 For example, if you have a `default` channel for production updates and a `preview` channel for preview updates, you can override the `expo-channel-name` request header to point to the `preview` channel. This enables you to test preview updates in your current production builds.
 
+> **warning** Switching channels can cause compatibility issues when updates use different migrations or data shapes. See [Risks and considerations when switching channels](/eas-update/channel-surfing/#risks-and-considerations-when-switching-channels).
+
 Another potential use case is to provide different updates to different users, for example, so that a group of internal users (such as employees) receive updates before end-users.
 
 ### How it works
@@ -42,8 +44,6 @@ await Updates.reloadAsync();
 ```
 
 > **info** You can only override a request header if the native build includes its name. When an EAS Build profile defines `channel`, EAS Build includes `expo-channel-name` automatically. If you build without EAS Build, add the header to [`updates.requestHeaders`](/eas-update/getting-started/#configure-update-channels-in-appjson) or the native project, then rebuild the app.
-
-> **warning** Switching channels can cause compatibility issues when updates use different migrations or data shapes. See [Risks and considerations when switching channels](/eas-update/channel-surfing/#risks-and-considerations-when-switching-channels).
 
 ## Override both update URL and request headers
 
