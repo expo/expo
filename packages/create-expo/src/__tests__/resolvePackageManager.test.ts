@@ -82,9 +82,12 @@ describe(resolvePackageManager, () => {
       })
       .mockImplementationOnce(() => {
         throw new Error('foobar');
+      })
+      .mockImplementationOnce(() => {
+        throw new Error('foobar');
       });
 
     expect(resolvePackageManager()).toBe('npm');
-    expect(execSync).toHaveBeenCalledTimes(3);
+    expect(execSync).toHaveBeenCalledTimes(4);
   });
 });
