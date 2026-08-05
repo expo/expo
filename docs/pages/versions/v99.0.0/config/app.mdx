@@ -1,0 +1,24 @@
+---
+title: app.json / app.config.js
+description: A reference of available properties in Expo app config.
+maxHeadingDepth: 5
+---
+
+import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
+
+import schema from '~/public/static/schemas/unversioned/app-config-schema.json';
+import AppConfigSchemaTable from '~/ui/components/AppConfigSchemaTable';
+import { BoxLink } from '~/ui/components/BoxLink';
+
+The following is a list of properties that are available for you under the `"expo"` key in **app.json** or **app.config.json**. These properties can be passed to the top level object of **app.config.js** or **app.config.ts**.
+
+<BoxLink
+  title="Configuration with app config"
+  description="For information on app configuration, the differences between various app config files, and how to use them dynamically."
+  href="/workflow/configuration/"
+  Icon={BookOpen02Icon}
+/>
+
+## Properties
+
+<AppConfigSchemaTable schema={schema} />
