@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `style` prop being ignored on `SymbolView`'s non-native fallback. ([#48553](https://github.com/expo/expo/pull/48553) by [@fallmo](https://github.com/fallmo))
+
 ### 💡 Others
 
 ## 56.0.6 — 2026-06-05
