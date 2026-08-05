@@ -1,4 +1,4 @@
-import type { ConfigAPI, TransformOptions } from '@babel/core';
+import type { ConfigAPI, PluginItem, TransformOptions } from '@babel/core';
 import type { PluginOptions as ReactCompilerOptions } from 'babel-plugin-react-compiler';
 
 import {
@@ -166,41 +166,38 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
       ? api.caller(getBabelRuntimeVersion)
       : platformOptions.enableBabelRuntime;
 
-  // Select the engine preset and record whether it compiles class features
-  // (class properties, private methods): the `hermes-v0` and webview presets
-  // do, while the `hermes-v1` and web presets preserve them natively.
-  const enginePreset = (() => {
+  let needsClassTransformsForDecorators: boolean;
+  let enginePreset: PluginItem;
+
+  {
     const presetOpts = { dev: isDev };
-
     if (isDomComponent) {
-      return {
-        preset: [require('./configs/webview'), presetOpts satisfies WebviewConfigOptions],
-        compilesClassFeatures: true,
-      };
+      enginePreset = [require('./configs/webview'), presetOpts satisfies WebviewConfigOptions];
+      needsClassTransformsForDecorators = false;
     } else if (isModernEngine) {
-      return {
-        preset: [require('./configs/web'), presetOpts satisfies WebConfigOptions],
-        compilesClassFeatures: false,
-      };
+      enginePreset = [require('./configs/web'), presetOpts satisfies WebConfigOptions];
+      needsClassTransformsForDecorators = true;
+    } else {
+      switch (platformOptions.unstable_transformProfile) {
+        case 'hermes-stable':
+        case 'hermes-canary':
+          enginePreset = [
+            require('./configs/hermes-v1'),
+            presetOpts satisfies HermesV1ConfigOptions,
+          ];
+          needsClassTransformsForDecorators = true;
+          break;
+        case 'hermes-v0':
+        default:
+          enginePreset = [
+            require('./configs/hermes-v0'),
+            presetOpts satisfies HermesV0ConfigOptions,
+          ];
+          needsClassTransformsForDecorators = false;
+          break;
+      }
     }
-
-    // Select the hermes config based on `unstable_transformProfile`, which is derived from
-    // the caller's `engine` property or overridden by the user.
-    switch (platformOptions.unstable_transformProfile) {
-      case 'hermes-stable':
-      case 'hermes-canary':
-        return {
-          preset: [require('./configs/hermes-v1'), presetOpts satisfies HermesV1ConfigOptions],
-          compilesClassFeatures: false,
-        };
-      case 'hermes-v0':
-      default:
-        return {
-          preset: [require('./configs/hermes-v0'), presetOpts satisfies HermesV0ConfigOptions],
-          compilesClassFeatures: true,
-        };
-    }
-  })();
+  }
 
   // Compute config fragments from helper modules to compose into the presets below.
   const flowFragment = getFlowConfig({ disableFlowStripTypesTransform: false });
@@ -221,9 +218,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           lazyImportExportTransform: platformOptions.lazyImports,
         } satisfies ModuleTransformOptions,
       ],
-
-      enginePreset.preset,
-
+      enginePreset,
       // Expo-specific plugins and React JSX/compiler/refresh support.
       [
         require('./configs/expo'),
@@ -243,7 +238,7 @@ function babelPresetExpo(api: ConfigAPI, options: BabelPresetExpoOptions = {}): 
           inlineEnvironmentVariables,
           disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
           decorators: platformOptions.decorators,
-          needsClassFeaturesForDecorators: !enginePreset.compilesClassFeatures,
+          needsClassTransformsForDecorators,
           reanimated: platformOptions.reanimated,
           worklets: platformOptions.worklets,
           expoUi: platformOptions.expoUi,

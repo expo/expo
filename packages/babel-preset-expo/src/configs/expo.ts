@@ -39,10 +39,7 @@ export interface ExpoConfigOptions {
   bundler: 'metro' | 'webpack' | null;
   inlineEnvironmentVariables?: boolean;
   decorators: { legacy?: boolean; version?: number } | false | undefined;
-  /** Whether the selected engine preset does not compile class features (class
-   * properties, private methods), so they must be compiled here for files that
-   * contain decorated class properties. */
-  needsClassFeaturesForDecorators: boolean | undefined;
+  needsClassTransformsForDecorators: boolean | undefined;
   reanimated: boolean | undefined;
   worklets: boolean | undefined;
   expoUi: boolean | undefined;
@@ -162,7 +159,7 @@ module.exports = function (api: ConfigAPI, options: ExpoConfigOptions) {
   if (options.decorators !== false) {
     plugins.push([lazyDecoratorsPlugin, options.decorators ?? { legacy: true }]);
     // See `lazy-decorators-plugin.ts` for why the class-feature transforms must follow.
-    if (options.needsClassFeaturesForDecorators) {
+    if (options.needsClassTransformsForDecorators) {
       // use `this.foo = bar` instead of `this.defineProperty('foo', ...)`
       const loose = true;
       plugins.push(
