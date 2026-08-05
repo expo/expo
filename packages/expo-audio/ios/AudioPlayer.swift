@@ -26,6 +26,12 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   var samplingEnabled = false
   var keepAudioSessionActive = false
 
+  // Supersedes a play deferred to AudioModule's sessionQueue: bumped inside
+  // pause()/replace/teardown so EVERY pausing path (module pause,
+  // pauseAllPlayers, interruptions) invalidates a queued play — the queued
+  // closure re-checks before starting cancelled audio.
+  let playGeneration = MonotonicGeneration()
+
   var isLooping = false {
     didSet {
       guard isLooping != oldValue else {
@@ -105,12 +111,27 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   func play(at rate: Float) {
+    prepareToPlay()
+    startPlayback(at: rate)
+  }
+
+  /// The calling-thread half of play(at:): observer registration and loop
+  /// bookkeeping mutate the player's internal state, so they stay on the
+  /// thread the rest of the player's mutations (pause/replace/teardown) run
+  /// on instead of racing them from the session queue.
+  func prepareToPlay() {
     ref.actionAtItemEnd = isLooping ? .advance : .pause
     if isLooping {
       enqueueNextLoopItem()
     }
     addPlaybackEndNotification()
     registerTimeObserver()
+  }
+
+  /// The queue-safe half of play(at:): touches only the AVPlayer ref and
+  /// MediaController, so AudioModule may defer it behind the blocking session
+  /// activation on sessionQueue.
+  func startPlayback(at rate: Float) {
     ref.playImmediately(atRate: rate)
 
     if isActiveForLockScreen {
@@ -247,6 +268,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   func replaceWithPreloadedItem(_ item: AVPlayerItem?) {
+    playGeneration.bump()
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
     removeQueuedLoopItems()
@@ -267,6 +289,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   func replaceCurrentSource(source: AudioSource?) {
+    playGeneration.bump()
     self.source = source
     let wasPlaying = ref.timeControlStatus == .playing
     let wasSamplingEnabled = samplingEnabled
@@ -502,6 +525,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   func pause() {
+    playGeneration.bump()
     ref.pause()
   }
 
@@ -510,6 +534,7 @@ public class AudioPlayer: SharedRef<AVPlayer>, Playable, LockScreenPlayable {
   }
 
   public override func sharedObjectWillRelease() {
+    playGeneration.bump()
     ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
 

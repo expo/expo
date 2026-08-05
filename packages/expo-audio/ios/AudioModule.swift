@@ -1,7 +1,6 @@
 import ExpoModulesCore
 
 public class AudioModule: Module {
-  private var sessionIsActive = true
   private let registry = AudioComponentRegistry()
 
   // MARK: Properties
@@ -14,6 +13,20 @@ public class AudioModule: Module {
   private var allowsBackgroundRecording = false
   private var sessionOptions: AVAudioSession.CategoryOptions = []
   private var lastConfiguredMode: AudioMode?
+
+  // AVAudioSession.setActive(_:) is a synchronous XPC round-trip to the audio
+  // daemon that can stall for seconds (or indefinitely) under system contention.
+  // This module's session transitions run on this serial queue so a stall can
+  // never block the calling thread — for the sync `play` Functions that caller
+  // is the JS thread, and a blocked JS thread freezes every JS timer and state
+  // update in the app. The interruption bookkeeping (interruptedPlayers /
+  // playerVolumes) also lives on this queue. sessionActivation lets a later
+  // activation supersede a pending deactivation so back-to-back playback isn't
+  // torn down by a stale setActive(false). (AudioRecorder/AudioStream still
+  // activate the session inline outside this queue — a known gap, tracked for
+  // a follow-up.)
+  private let sessionQueue = DispatchQueue(label: "expo.modules.audio.session")
+  private let sessionActivation = MonotonicGeneration()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoAudio")
@@ -32,8 +45,8 @@ public class AudioModule: Module {
       try setAudioMode(mode: mode)
     }
 
-    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool)  in
-      try setIsAudioActive(isActive)
+    AsyncFunction("setIsAudioActiveAsync") { (isActive: Bool, promise: Promise) in
+      setIsAudioActive(isActive, promise: promise)
     }
 
     AsyncFunction("requestRecordingPermissionsAsync") { (promise: Promise) in
@@ -211,9 +224,23 @@ public class AudioModule: Module {
       }
 
       Function("play") { player in
-        try activateSession()
+        // Sync Functions execute inline on the JS thread, so the blocking
+        // setActive(true) must not happen here. Observer registration runs now
+        // (on the JS thread, where the player's other mutations happen); only
+        // the AVPlayer start is deferred behind activation on sessionQueue,
+        // and the generation guard skips it if pause()/replace()/teardown
+        // superseded this play while it was queued.
         let rate = player.currentRate > 0 ? player.currentRate : 1.0
-        player.play(at: rate)
+        player.prepareToPlay()
+        let generation = player.playGeneration.current
+        withSessionActivatedOnQueue({
+          guard player.playGeneration.current == generation else {
+            return
+          }
+          player.startPlayback(at: rate)
+        }, onActivationError: { error in
+          player.updateStatus(with: ["error": "Audio session activation failed: \(error.localizedDescription)"])
+        })
       }
 
       Function("setPlaybackRate") { (player, rate: Double, pitchCorrectionQuality: PitchCorrectionQuality?) in
@@ -233,6 +260,8 @@ public class AudioModule: Module {
       }
 
       Function("replace") { (player, source: AudioSource?) in
+        // Generation bumps live inside the player's replace/pause/teardown
+        // methods so every superseding path invalidates a queued play.
         if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
           let cachedItem = cachedPlayer.currentItem
           cachedPlayer.replaceCurrentItem(with: nil)
@@ -243,13 +272,16 @@ public class AudioModule: Module {
       }
 
       Function("pause") { player in
-        player.ref.pause()
+        player.pause()
         if !player.keepAudioSessionActive {
           deactivateSession()
         }
       }
 
       Function("remove") { player in
+        // The player object may outlive registry removal; make sure a play
+        // still queued behind a slow activation doesn't start it afterwards.
+        player.playGeneration.bump()
         self.registry.remove(player)
       }
 
@@ -364,8 +396,18 @@ public class AudioModule: Module {
       }
 
       Function("play") { playlist in
-        try activateSession()
-        playlist.play(at: playlist.currentRate)
+        // Same JS-thread hazard and same split as AudioPlayer's play above.
+        let rate = playlist.currentRate
+        playlist.prepareToPlay()
+        let generation = playlist.playGeneration.current
+        withSessionActivatedOnQueue({
+          guard playlist.playGeneration.current == generation else {
+            return
+          }
+          playlist.startPlayback(at: rate)
+        }, onActivationError: { error in
+          playlist.updateStatus(with: ["error": "Audio session activation failed: \(error.localizedDescription)"])
+        })
       }
 
       Function("pause") { playlist in
@@ -637,6 +679,17 @@ public class AudioModule: Module {
   }
 
   private func handleInterruptionBegan() {
+    // Runs on sessionQueue: interruptedPlayers/playerVolumes are also read and
+    // mutated by resumeInterruptedPlayers, which executes there (queued behind
+    // the reactivation). Back-to-back interruptions would otherwise mutate
+    // these collections from the notification thread while a queued resume
+    // iterates them.
+    sessionQueue.async {
+      self.handleInterruptionBeganOnSessionQueue()
+    }
+  }
+
+  private func handleInterruptionBeganOnSessionQueue() {
     interruptedPlayers.removeAll()
     playerVolumes.removeAll()
 
@@ -663,13 +716,13 @@ public class AudioModule: Module {
   }
 
   private func handleInterruptionEnded(with options: AVAudioSession.InterruptionOptions) {
-    do {
-      try AVAudioSession.sharedInstance().setActive(true)
+    // Activation ordered on sessionQueue with resume kept after it. Resume is
+    // attempted even if activation throws — activation failures are frequently
+    // transient and dropping the resume silently is worse.
+    withSessionActivatedOnQueue { [weak self] in
       if options.contains(.shouldResume) {
-        resumeInterruptedPlayers()
+        self?.resumeInterruptedPlayers()
       }
-    } catch {
-      print("Failed to reactivate audio session: \(error)")
     }
   }
 
@@ -682,7 +735,11 @@ public class AudioModule: Module {
 
     switch reason {
     case .oldDeviceUnavailable:
-      pauseAllPlayers()
+      // On sessionQueue for ordering with queued plays/resumes; pause() bumps
+      // each player's generation so a queued play can't undo this pause.
+      sessionQueue.async {
+        self.pauseAllPlayers()
+      }
     default:
       break
     }
@@ -709,10 +766,10 @@ public class AudioModule: Module {
       if let mode = lastConfiguredMode {
         try setAudioMode(mode: mode)
       }
-      try AVAudioSession.sharedInstance().setActive(true)
     } catch {
       print("Failed to reconfigure audio session after media services reset: \(error)")
     }
+    withSessionActivatedOnQueue()
   }
   #endif
 
@@ -788,16 +845,25 @@ public class AudioModule: Module {
     return URL(fileURLWithPath: path)
   }
 
-  private func setIsAudioActive(_ isActive: Bool) throws {
-    if !isActive {
-      pauseAllPlayers()
+  private func setIsAudioActive(_ isActive: Bool, promise: Promise) {
+    // Bump on activation so a pending deactivateSession() doesn't tear down
+    // the session being explicitly activated here. The transition itself runs
+    // async on sessionQueue and settles the promise from there — a stalled
+    // setActive keeps the promise pending instead of blocking the process-wide
+    // AsyncFunction queue that all Expo modules share.
+    if isActive {
+      sessionActivation.bump()
     }
-
-    do {
-      try AVAudioSession.sharedInstance().setActive(isActive, options: isActive ? [] : [.notifyOthersOnDeactivation])
-      sessionIsActive = isActive
-    } catch {
-      throw AudioStateException(error.localizedDescription)
+    sessionQueue.async {
+      if !isActive {
+        self.pauseAllPlayers()
+      }
+      do {
+        try AVAudioSession.sharedInstance().setActive(isActive, options: isActive ? [] : [.notifyOthersOnDeactivation])
+        promise.resolve()
+      } catch {
+        promise.reject(AudioStateException(error.localizedDescription))
+      }
     }
   }
 
@@ -871,11 +937,36 @@ public class AudioModule: Module {
     }
   }
 
-  private func activateSession() throws {
-    try AVAudioSession.sharedInstance().setActive(true)
+  private func withSessionActivatedOnQueue(
+    _ then: @escaping () -> Void = {},
+    onActivationError: ((Error) -> Void)? = nil
+  ) {
+    // AudioModule's activation path: session transitions are ordered against
+    // deactivateSession on sessionQueue, and a stall can never wedge the
+    // calling thread. The bump happens at call time so this activation
+    // supersedes any pending deactivation.
+    sessionActivation.bump()
+    sessionQueue.async {
+      do {
+        try AVAudioSession.sharedInstance().setActive(true)
+      } catch {
+        // Run the continuation anyway: activation failures are frequently
+        // transient, and for playback this keeps the player advancing to
+        // didJustFinish so JS-side callers aren't left waiting forever on a
+        // completion event that can no longer arrive. The play paths surface
+        // the failure through the playbackStatusUpdate `error` field via
+        // onActivationError.
+        print("Failed to activate audio session: \(error)")
+        onActivationError?(error)
+      }
+      then()
+    }
   }
 
   private func deactivateSession() {
+    // Capture the token now so a session reactivated before the deferred
+    // deactivation runs skips this stale setActive(false).
+    let requestedToken = sessionActivation.current
     Task {
       // Give isPlaying time to update before deciding whether to deactivate.
       try? await Task.sleep(for: .milliseconds(100))
@@ -883,10 +974,17 @@ public class AudioModule: Module {
       guard !hasActivePlayables else {
         return
       }
-      do {
-        try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
-      } catch {
-        print("Failed to deactivate audio session: \(error)")
+      sessionQueue.async {
+        // The token re-check and setActive(false) aren't atomic, leaving a
+        // narrow TOCTOU window that iOS's session `isBusy` handling covers.
+        guard self.sessionActivation.current == requestedToken else {
+          return
+        }
+        do {
+          try AVAudioSession.sharedInstance().setActive(false, options: [.notifyOthersOnDeactivation])
+        } catch {
+          print("Failed to deactivate audio session: \(error)")
+        }
       }
     }
   }
