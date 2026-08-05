@@ -9,6 +9,7 @@
 - [Android] Added the `controllerAutoShow` prop to `VideoView` to control whether the native controls auto-show on play. ([#46665](https://github.com/expo/expo/pull/46665) by [@stevesouth](https://github.com/stevesouth))
 - [Android][iOS] Add `maxResolution` player option to cap adaptive video track selection. ([#46992](https://github.com/expo/expo/pull/46992) by [@vargajacint](https://github.com/vargajacint))
 - [Android] Added the `videoChangeFrameRateStrategy` player builder option to control whether ExoPlayer may change the display refresh rate to match the video frame rate. On adaptive refresh rate displays (Pixel 9/10) the default matching can cap the entire app UI at 30Hz while a 30 fps video is visible. ([#47873](https://github.com/expo/expo/pull/47873) by [@invivek26](https://github.com/invivek26))
+- Added a `setIsAudioActiveAsync` function that deactivates the audio session (iOS) or abandons the audio focus (Android), allowing background audio interrupted by video playback to resume. ([#48546](https://github.com/expo/expo/pull/48546) by [@huextrat](https://github.com/huextrat))
 
 ### 🐛 Bug fixes
 
@@ -18,6 +19,7 @@
 - [iOS] Fixed a thread-safety crash caused by mutating the internal player registries while they were being iterated on another thread (e.g. during audio session and now playing updates). ([#46930](https://github.com/expo/expo/pull/46930) by [@jiunshinn](https://github.com/jiunshinn))
 - Fix VideoView holding a strong reference to VideoPlayer even after the player has been detached. ([#46453](https://github.com/expo/expo/pull/46453) by [@behenate](https://github.com/behenate))
 - [iOS] Fixed fullscreen rotation requesting geometry from an arbitrary scene rather than the one the player is in. ([#48316](https://github.com/expo/expo/pull/48316) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Request transient audio focus for the `auto` audio mixing mode so that background audio from other apps resumes once video players stop playing sound. ([#48546](https://github.com/expo/expo/pull/48546) by [@huextrat](https://github.com/huextrat))
 
 ### 💡 Others
 

@@ -83,6 +83,10 @@ object VideoManager {
     }
   }
 
+  fun setIsAudioActive(active: Boolean) {
+    audioFocusManager.setIsAudioActive(active)
+  }
+
   fun registerVideoPlayer(videoPlayer: VideoPlayer) {
     videoPlayersToVideoViews[videoPlayer] = videoPlayersToVideoViews[videoPlayer] ?: mutableListOf()
     audioFocusManager.registerPlayer(videoPlayer)

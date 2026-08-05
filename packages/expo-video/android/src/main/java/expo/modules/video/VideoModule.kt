@@ -64,6 +64,10 @@ class VideoModule : Module() {
       VideoManager.cache.clear()
     }
 
+    AsyncFunction("setIsAudioActiveAsync") { active: Boolean ->
+      VideoManager.setIsAudioActive(active)
+    }
+
     View(SurfaceVideoView::class) {
       VideoViewComponent<SurfaceVideoView>()
     }
