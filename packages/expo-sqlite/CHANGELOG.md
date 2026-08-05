@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed libSQL support. `syncLibSQL()`, the `libSQLOptions` open option, and the `useLibSQL` config plugin prop are gone. ([#48543](https://github.com/expo/expo/pull/48543) by [@kudo](https://github.com/kudo))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
