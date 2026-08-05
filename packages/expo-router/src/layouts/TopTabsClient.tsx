@@ -2,42 +2,38 @@
 
 import type { ComponentProps } from 'react';
 
+import {
+  createStandardMaterialTopTabNavigator,
+  type MaterialTopTabNavigatorCreateProps,
+} from '../react-navigation/material-top-tabs/navigators/createMaterialTopTabNavigator';
 import type {
+  MaterialTopTabNavigationConfig,
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigationOptions,
-} from '../react-navigation/material-top-tabs';
-import { createMaterialTopTabNavigator } from '../react-navigation/material-top-tabs';
-import type { ParamListBase, TabNavigationState } from '../react-navigation/native';
-import { Protected } from '../views/Protected';
-import { Screen } from '../views/Screen';
-import { withLayoutContext } from './withLayoutContext';
+} from '../react-navigation/material-top-tabs/types';
+import {
+  type ParamListBase,
+  type TabNavigationState,
+  TabRouter,
+  type TabRouterOptions,
+} from '../react-navigation/native';
+import { unstable_integrateWithRouter } from '../standard-navigation';
 
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
 export * from '../react-navigation/material-top-tabs';
 
-const MaterialTopTabNavigator = createMaterialTopTabNavigator().Navigator;
-
-const MaterialTopTabs = withLayoutContext<
+const TopTabs = unstable_integrateWithRouter<
   MaterialTopTabNavigationOptions,
-  typeof MaterialTopTabNavigator,
   TabNavigationState<ParamListBase>,
-  MaterialTopTabNavigationEventMap
->(MaterialTopTabNavigator);
+  MaterialTopTabNavigationEventMap,
+  MaterialTopTabNavigationConfig,
+  TabRouterOptions,
+  MaterialTopTabNavigatorCreateProps
+>(createStandardMaterialTopTabNavigator, TabRouter, {
+  createProps: ({ state }) => ({ preloadedRouteKeys: state.preloadedRouteKeys }),
+});
 
-/**
- * Renders a material top tab navigator.
- *
- * @hideType
- */
-const TopTabs = Object.assign(
-  (props: ComponentProps<typeof MaterialTopTabs>) => {
-    return <MaterialTopTabs {...props} />;
-  },
-  {
-    Screen,
-    Protected,
-  }
-);
+export type JSTopTabsProps = ComponentProps<typeof TopTabs>;
 
 export { TopTabs };
 
