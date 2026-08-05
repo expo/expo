@@ -14,8 +14,6 @@ class ImageService {
   func url(from imageData: Data, filename: String) throws -> String {
     let imageFileURL = try prepareCacheFileURL(filename: filename)
     try imageData.write(to: imageFileURL, options: .atomic)
-    // The API contract is a URI (see the `file:///path/to/image.jpg` examples in the types, and
-    // Android returning `content://` URIs), so return one instead of a bare filesystem path.
     return imageFileURL.absoluteString
   }
 
