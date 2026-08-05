@@ -310,18 +310,8 @@ export function TabRouter({
       );
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const routes = state.routes
-        .filter((route) => routeNames.includes(route.name))
-        .map((route) =>
-          routeKeyChanges.includes(route.name)
-            ? {
-                name: route.name,
-                key: `${route.name}-${nanoid()}`,
-                params: routeParamList[route.name],
-              }
-            : route
-        );
+    getStateForRouteNamesChange(state, { routeNames, routeParamList }) {
+      const routes = state.routes.filter((route) => routeNames.includes(route.name));
 
       for (const name of routeNames) {
         if (!routes.some((route) => route.name === name)) {

@@ -1,6 +1,5 @@
 import { expect, jest, test } from '@jest/globals';
 import { expectTypeOf } from 'expect-type';
-import { nanoid } from 'nanoid/non-secure';
 
 import {
   CommonActions,
@@ -13,8 +12,6 @@ import {
 } from '../index';
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: jest.fn(() => 'test') }));
-
-const mockNanoid = jest.mocked(nanoid);
 
 test('types replace action helper params', () => {
   type Params = {
@@ -567,7 +564,6 @@ test('gets state on route names change', () => {
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -608,7 +604,6 @@ test('gets state on route names change', () => {
         routeNames: ['foo', 'fiz'],
         routeParamList: {},
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -652,7 +647,6 @@ test('preserves focused route on route names change', () => {
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -672,40 +666,6 @@ test('preserves focused route on route names change', () => {
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
-  });
-});
-
-test('preserves focused route when its key changes', () => {
-  const router = TabRouter({});
-  mockNanoid.mockReturnValueOnce('changed');
-
-  const state = router.getStateForRouteNamesChange(
-    {
-      index: 1,
-      key: 'tab-test',
-      routeNames: ['bar', 'baz', 'qux'],
-      routes: [
-        { key: 'bar-test', name: 'bar' },
-        { key: 'baz-test', name: 'baz' },
-        { key: 'qux-test', name: 'qux' },
-      ],
-      history: [{ type: 'route', key: 'baz-test' }],
-      stale: false,
-      type: 'tab',
-      preloadedRouteKeys: [],
-    },
-    {
-      routeNames: ['bar', 'baz', 'qux'],
-      routeParamList: {},
-      routeGetIdList: {},
-      routeKeyChanges: ['baz'],
-    }
-  );
-
-  expect(state.routes[state.index]).toEqual({
-    key: 'baz-changed',
-    name: 'baz',
-    params: undefined,
   });
 });
 
@@ -735,7 +695,6 @@ test('falls back to first route if route is removed on route names change', () =
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
