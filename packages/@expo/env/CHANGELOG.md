@@ -4,7 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Set `NODE_ENV` and `BABEL_ENV` when `loadProjectEnv` receives a development or production mode.
+
 ### 🎉 New features
+
+- Add `setNodeEnv` for Expo commands and tools.
 
 ### 🐛 Bug fixes
 
