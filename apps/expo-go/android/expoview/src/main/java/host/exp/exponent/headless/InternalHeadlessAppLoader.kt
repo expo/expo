@@ -86,7 +86,6 @@ class InternalHeadlessAppLoader(private val context: Context) :
               val bundleUrl = ExponentUrls.toHttp(
                 ExponentUrls.resolveManifestUrl(manifest.getBundleURL(), manifestUrl!!)
               )
-              activityIdToBundleUrl.put(activityId, bundleUrl)
               setManifest(manifestUrl!!, manifest, bundleUrl)
             } catch (e: JSONException) {
               this@InternalHeadlessAppLoader.callback!!.onComplete(false, Exception(e.message))

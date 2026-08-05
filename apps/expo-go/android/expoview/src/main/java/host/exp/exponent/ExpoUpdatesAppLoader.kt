@@ -2,6 +2,7 @@
 package host.exp.exponent
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.easclient.EASClientID

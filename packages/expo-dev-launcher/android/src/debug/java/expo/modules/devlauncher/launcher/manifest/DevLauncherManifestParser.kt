@@ -90,5 +90,4 @@ class DevLauncherManifestParser(
       "x-forwarded-proto" to scheme
     )
   }
-
 }
