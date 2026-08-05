@@ -60,6 +60,8 @@ You can configure `expo-tracking-transparency` using its built-in [config plugin
   ]}
 />
 
+To localize this iOS permission message, keep `userTrackingPermission` as the default value and add `NSUserTrackingUsageDescription` to the `ios` object in each [locale file](/guides/localization/#translating-app-metadata). Expo writes the localized values to **InfoPlist.strings** during prebuild.
+
 <ConfigReactNative>
 
 If you're not using Continuous Native Generation ([CNG](/workflow/continuous-native-generation/)) (you're using native **android** and **ios** projects manually), then you need to configure following permissions in your native projects:
