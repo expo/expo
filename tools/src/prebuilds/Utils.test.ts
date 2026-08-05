@@ -176,4 +176,22 @@ describe('getVersionsInfoAsync — Hermes V1 polarity', () => {
     const { hermesVersion } = await getVersionsInfoAsync({});
     assert.equal(hermesVersion, classicVersion);
   });
+
+  // React Native 0.87 ships only HERMES_VERSION_NAME. The tests above skip in that case, so
+  // guard the single-key layout explicitly: resolution must fall back to the key that is
+  // present rather than throwing "Hermes version could not be resolved from version.properties".
+  it('falls back to the available key when version.properties exposes only one', async () => {
+    for (const value of [undefined, '1', '0']) {
+      if (value === undefined) {
+        delete process.env.RCT_HERMES_V1_ENABLED;
+      } else {
+        process.env.RCT_HERMES_V1_ENABLED = value;
+      }
+      const { hermesVersion } = await getVersionsInfoAsync({});
+      assert.ok(
+        hermesVersion,
+        `expected a Hermes version for RCT_HERMES_V1_ENABLED=${String(value)}`
+      );
+    }
+  });
 });
