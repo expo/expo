@@ -103,6 +103,8 @@ describe('getParsedHeaders', () => {
       responseContentType: ResponseContentType.TEXT_PLAIN,
       hostname: null,
       platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -116,6 +118,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -132,6 +136,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
 
     expect(
@@ -146,6 +152,8 @@ describe('getParsedHeaders', () => {
       expectSignature: null,
       hostname: null,
       platform: 'android',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
@@ -168,10 +176,12 @@ describe('getParsedHeaders', () => {
       hostname: 'localhost',
       // We don't care much about the platform here since it's already tested.
       platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 
-  it('requests relative manifest URLs when forwarding headers are present', () => {
+  it('parses the forwarded address when forwarding headers are present', () => {
     expect(
       middleware.getParsedHeaders(
         asReq({
@@ -179,14 +189,31 @@ describe('getParsedHeaders', () => {
           headers: {
             host: 'localhost:8081',
             'expo-platform': 'ios',
-            forwarded: 'host=proxy.test;proto=https',
+            forwarded: 'host="proxy.test:4443";proto=https',
           },
         })
       )
     ).toMatchObject({
       hostname: 'localhost',
       platform: 'ios',
-      shouldUseRelativeManifestUrls: true,
+      protocol: 'https',
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+    });
+  });
+
+  it('returns a null forwarded address for direct requests', () => {
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: { host: 'localhost:8081', 'expo-platform': 'ios' },
+        })
+      )
+    ).toMatchObject({
+      hostname: 'localhost',
+      platform: 'ios',
+      protocol: undefined,
+      forwarded: null,
     });
   });
 });

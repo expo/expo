@@ -242,7 +242,7 @@ describe('_resolveProjectSettingsAsync', () => {
     // Limit this to a single call since it can get expensive.
     expect(getConfig).toHaveBeenCalledTimes(1);
   });
-  it(`returns relative bundle and asset URLs when requested`, async () => {
+  it(`returns relative bundle and asset URLs for forwarded requests`, async () => {
     const middleware = new MockManifestMiddleware('/', {
       constructUrl: jest.fn(() => 'http://fake.mock'),
       mode: 'development',
@@ -258,7 +258,7 @@ describe('_resolveProjectSettingsAsync', () => {
     const settings = await middleware._resolveProjectSettingsAsync({
       hostname: 'localhost',
       platform: 'android',
-      shouldUseRelativeManifestUrls: true,
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
     } as any);
 
     expect(settings.bundleUrl).toBe(
@@ -266,7 +266,82 @@ describe('_resolveProjectSettingsAsync', () => {
     );
 
     const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
-    await expect(resolver?.('./assets/icon.png')).resolves.toBe('assets/./assets/icon.png');
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+  });
+  it(`returns the forwarded authority as hostUri and debuggerHost`, async () => {
+    const constructUrl = jest.fn(() => 'http://fake.mock');
+    const middleware = new MockManifestMiddleware('/', { constructUrl, mode: 'development' });
+
+    middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
+
+    const settings = await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+    } as any);
+
+    expect(settings.hostUri).toBe('proxy.test:4443');
+    expect(settings.expoGoConfig.debuggerHost).toBe('proxy.test:4443');
+  });
+  it(`falls back to the dev server address when only the protocol was forwarded`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'fake.mock:8081'),
+      mode: 'development',
+    });
+
+    middleware._getBundleUrl = jest.fn(() => 'https://fake.mock:8081/index.bundle');
+
+    const settings = await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      protocol: 'https',
+      forwarded: { authority: undefined, protocol: 'https' },
+    });
+
+    expect(settings.hostUri).toBe('fake.mock:8081');
+    expect(settings.expoGoConfig.debuggerHost).toBe('fake.mock:8081');
+    // The bundle URL stays absolute, since no forwarded authority was reported.
+    expect(settings.bundleUrl).toBe('https://fake.mock:8081/index.bundle');
+  });
+  it(`normalizes relative asset paths`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+      mode: 'development',
+    });
+
+    jest.mocked(resolveManifestAssets).mockClear();
+    middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
+
+    await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+      forwarded: { authority: 'proxy.test' },
+    } as any);
+
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+    await expect(resolver?.('assets\\icon.png')).resolves.toBe('assets/assets/icon.png');
+    await expect(resolver?.('./nested/../assets/icon.png')).resolves.toBe('assets/assets/icon.png');
+  });
+  it(`normalizes absolute asset URLs the same way`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+      mode: 'development',
+    });
+
+    jest.mocked(resolveManifestAssets).mockClear();
+    middleware._getBundleUrl = jest.fn(() => 'http://fake.mock/index.bundle');
+
+    await middleware._resolveProjectSettingsAsync({
+      hostname: 'localhost',
+      platform: 'android',
+    } as any);
+
+    const resolver = jest.mocked(resolveManifestAssets).mock.calls?.[0]?.[1].resolver;
+    await expect(resolver?.('./assets/icon.png')).resolves.toBe(
+      'http://fake.mock/assets/assets/icon.png'
+    );
   });
   it(`returns the project settings for Webpack dev servers`, async () => {
     const middleware = new MockManifestMiddleware('/', {
