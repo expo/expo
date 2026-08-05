@@ -401,6 +401,48 @@ export const verifyAllPackagesAsync = async (
   );
 };
 
+const normalizeHermesVersion = (value: string) =>
+  value
+    .replace(/^hermes-?/i, '')
+    .replace(/^v/i, '')
+    .trim();
+
+/**
+ * Picks which Hermes engine's version to use, given the keys `version.properties` exposes.
+ *
+ * React Native 0.85.x shipped two engines side by side, keyed as HERMES_VERSION_NAME (classic)
+ * and HERMES_V1_VERSION_NAME (V1); the podspec defaulted to V1 unless RCT_HERMES_V1_ENABLED was
+ * set to "0". Newer RN (0.87+) collapsed back to a single HERMES_VERSION_NAME. So prefer the V1
+ * key only when it actually exists, and fall back to HERMES_VERSION_NAME otherwise — matching
+ * whatever hermes-engine.podspec reads. Getting the polarity wrong downloads classic Hermes
+ * headers while the app links V1, which crashes on struct-layout drift.
+ *
+ * Kept pure and exported so every combination is testable without a matching RN checkout.
+ *
+ * @param properties Parsed `sdks/hermes-engine/version.properties`.
+ * @param tags Contents of the `.hermesversion` / `.hermesv1version` tag files, if present.
+ * @param env Environment to read `RCT_HERMES_V1_ENABLED` from.
+ * @returns The normalized Hermes version, preferring the tag matching the selected engine.
+ */
+export const resolveHermesVersion = (
+  properties: Record<string, string | undefined>,
+  tags: { classic?: string | null; v1?: string | null },
+  env: Record<string, string | undefined>
+): string => {
+  const useV1 = env.RCT_HERMES_V1_ENABLED !== '0' && !!properties.HERMES_V1_VERSION_NAME;
+  const version = useV1 ? properties.HERMES_V1_VERSION_NAME : properties.HERMES_VERSION_NAME;
+
+  if (!version) {
+    throw new Error(
+      'Hermes version could not be resolved from version.properties. ' +
+        'Provide --hermes-version explicitly.'
+    );
+  }
+
+  const tag = useV1 ? tags.v1 : tags.classic;
+  return normalizeHermesVersion(tag ?? version);
+};
+
 /**
  * Tries to resolve versions for React Native and Hermes.
  * @param options Options containing optional versions if none is found.
@@ -472,40 +514,24 @@ export const getVersionsInfoAsync = async (options: {
     let classicTag: string | null = null;
     let v1Tag: string | null = null;
 
+    // The .hermesversion / .hermesv1version tag files only exist in the React Native
+    // monorepo source — they are not shipped in published npm tarballs, so a miss here
+    // is expected and harmless (we fall back to the version from version.properties).
     try {
       classicTag = await readHermesTag(reactNativePath);
     } catch (error) {
-      logger.warn(`Could not read .hermesversion: ${String((error as Error).message || error)}`);
+      logger.verbose(`Could not read .hermesversion: ${String((error as Error).message || error)}`);
     }
 
     try {
       v1Tag = await readHermesV1Tag(reactNativePath);
     } catch (error) {
-      logger.warn(`Could not read .hermesv1version: ${String((error as Error).message || error)}`);
-    }
-
-    const normalizeHermesVersion = (value: string) =>
-      value
-        .replace(/^hermes-?/i, '')
-        .replace(/^v/i, '')
-        .trim();
-
-    // Matches hermes-engine.podspec polarity: V1 is the default, classic is
-    // selected only when the consuming app explicitly sets the env var to "0".
-    const isHermesV1Enabled = process.env.RCT_HERMES_V1_ENABLED !== '0';
-    const version = isHermesV1Enabled
-      ? properties.HERMES_V1_VERSION_NAME
-      : properties.HERMES_VERSION_NAME;
-    const tag = isHermesV1Enabled ? v1Tag : classicTag;
-
-    if (!version) {
-      throw new Error(
-        'Hermes version could not be resolved from version.properties. ' +
-          'Provide --hermes-version explicitly.'
+      logger.verbose(
+        `Could not read .hermesv1version: ${String((error as Error).message || error)}`
       );
     }
 
-    return normalizeHermesVersion(tag ?? version);
+    return resolveHermesVersion(properties, { classic: classicTag, v1: v1Tag }, process.env);
   };
 
   const reactNativeVersion =
