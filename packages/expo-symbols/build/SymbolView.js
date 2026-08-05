@@ -27,14 +27,16 @@ export function SymbolView(props) {
     if (!name) {
         return _jsx(_Fragment, { children: props.fallback });
     }
+    const size = props.size ?? 24;
+    const style = [{ width: size, height: size }, props.style];
     if (!loaded) {
-        return _jsx(View, { style: { width: props.size ?? 24, height: props.size ?? 24 } });
+        return _jsx(View, { style: style });
     }
-    return (_jsx(View, { style: { width: props.size ?? 24, height: props.size ?? 24 }, children: _jsx(Text, { style: {
+    return (_jsx(View, { style: style, children: _jsx(Text, { style: {
                 fontFamily: font.name,
                 color: props.tintColor ?? DEFAULT_SYMBOL_COLOR,
-                fontSize: props.size ?? 24,
-                lineHeight: props.size ?? 24,
+                fontSize: size,
+                lineHeight: size,
             }, children: androidSymbolToString(name) }) }));
 }
 //# sourceMappingURL=SymbolView.js.map
