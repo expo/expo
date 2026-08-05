@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix the web overlay bundle printing a `Deep imports from the 'react-native' package are deprecated` warning on every load. ([#47772](https://github.com/expo/expo/pull/47772) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 ## 57.0.2 - 2026-07-29

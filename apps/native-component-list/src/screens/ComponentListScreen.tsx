@@ -166,6 +166,9 @@ export default function ComponentListScreen(props: Props) {
     <FlatList<ListElement>
       initialNumToRender={25}
       removeClippedSubviews={false}
+      // Screens with a native search bar or large title grow their header at runtime, so let iOS
+      // inset the list instead of letting the header cover the first rows.
+      contentInsetAdjustmentBehavior="automatic"
       keyboardShouldPersistTaps="handled"
       keyboardDismissMode="on-drag"
       style={{ backgroundColor: theme.background.screen }}
