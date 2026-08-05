@@ -4,10 +4,6 @@ require 'json'
 package = JSON.parse(File.read(File.join(__dir__, '..', 'package.json')))
 podfile_properties = JSON.parse(File.read("#{Pod::Config.instance.installation_root}/Podfile.properties.json")) rescue {}
 
-package_root = File.join(__dir__, '..')
-# Published tarballs ship `dev-plugin-dist`; in the monorepo it is generated on demand.
-should_bundle_webui = File.exist?(File.join(package_root, '.bundle-on-demand'))
-
 Pod::Spec.new do |s|
   s.name           = 'ExpoSQLite'
   s.version        = package['version']
@@ -91,17 +87,4 @@ Pod::Spec.new do |s|
   end
 
   s.ios.vendored_frameworks = vendored_frameworks
-
-  if should_bundle_webui
-    s.script_phases = [{
-      :name => 'Bundle SQLite DevTools Plugin Web UI',
-      :script => %Q{
-        "#{package_root}/scripts/with-node.sh" "#{package_root}/scripts/bundle_webui.mjs"
-      },
-      :execution_position => :before_compile,
-      # Xcode script phases do not accept glob patterns, so track the manifest only.
-      :input_files => ["#{package_root}/package.json"],
-      :output_files => ["#{package_root}/dev-plugin-dist"],
-    }]
-  end
 end

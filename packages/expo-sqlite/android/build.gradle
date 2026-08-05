@@ -99,34 +99,3 @@ dependencies {
   }
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 }
-
-def packageRootFile = project.projectDir.parentFile
-def packageRoot = packageRootFile.absolutePath
-def nodeExecutableAndArgs = (project.hasProperty("react") ? project.react : [:]).nodeExecutableAndArgs ?: ["node"]
-
-afterEvaluate {
-  // Published tarballs ship `dev-plugin-dist`; in the monorepo it is generated on demand.
-  if (file("${packageRoot}/.bundle-on-demand").exists()) {
-    def bundleWebuiTask = tasks.register('bundleSQLiteDevToolsWebui', Exec) {
-      description = 'expo-sqlite: Export the devtools plugin web UI.'
-
-      inputs.dir project.fileTree(packageRootFile) {
-        include 'dev-plugin-webui/**'
-        include 'src/**'
-        // Hashing the pnpm store for up-to-date checks exhausts memory. A dependency-only change
-        // therefore needs a clean build to be picked up.
-        exclude 'dev-plugin-webui/node_modules/**'
-        exclude 'dev-plugin-webui/dist/**'
-      }
-      outputs.dir file("${packageRoot}/dev-plugin-dist")
-
-      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$packageRoot/scripts/bundle_webui.mjs")
-      } else {
-        commandLine(*nodeExecutableAndArgs, "$packageRoot/scripts/bundle_webui.mjs")
-      }
-    }
-
-    tasks.getByName('preBuild').dependsOn(bundleWebuiTask)
-  }
-}

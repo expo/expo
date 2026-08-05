@@ -24,7 +24,7 @@
     "format": "turbo format",
     "test": "turbo test",
     "preprepare": "node scripts/prepare.js",
-    "prepare": "turbo build"
+    "prepare": "turbo build && turbo build:webui"
   },
   "dependencies": {
     "expo-asset": "workspace:*",

@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-// Export the SQLite inspector devtools plugin web UI into `dev-plugin-dist`.
-// Run it through `pnpm bundle:webui`, which builds the package's `build/` output first — Metro
-// resolves `expo-sqlite` to that output, not to `src`, so a stale `build/` silently ends up
-// in the bundle.
-// Native builds in this monorepo call this script directly, guarded by the `.bundle-on-demand`
-// flag file, and rely on `build/` already being current.
+// Export the SQLite inspector devtools plugin web UI into `dev-plugin-dist`, which the dev server
+// serves as the plugin page. `build:webui` runs this as the last step of the package's `build`, so
+// turbo caches the output and `prepublishOnly` picks it up for the published tarball.
+// Standalone, use `pnpm bundle:webui`: Metro resolves `expo-sqlite` to `build/`, not `src`, so a
+// stale `build/` would otherwise end up in the bundle.
 
-import spawn from '@expo/spawn-async';
+// Node builtins only, so the script never depends on its own package being installed.
+import { spawnSync } from 'node:child_process';
 import { existsSync } from 'node:fs';
 import { rename, rm } from 'node:fs/promises';
 import { createRequire } from 'node:module';
@@ -33,12 +33,15 @@ const expoCliJs = createRequire(join(webuiRoot, 'noop.js')).resolve('expo/bin/cl
 
 await rm(exportDir, { recursive: true, force: true });
 
-const result = await spawn(nodePath, [expoCliJs, 'export', '-p', 'web', '--output-dir', 'dist'], {
+const result = spawnSync(nodePath, [expoCliJs, 'export', '-p', 'web', '--output-dir', 'dist'], {
   stdio: 'inherit',
   cwd: webuiRoot,
 });
 if (result.error) {
-  process.exit(1);
+  throw result.error;
+}
+if (result.status !== 0) {
+  process.exit(result.status ?? 1);
 }
 
 await rm(outputDir, { recursive: true, force: true });
