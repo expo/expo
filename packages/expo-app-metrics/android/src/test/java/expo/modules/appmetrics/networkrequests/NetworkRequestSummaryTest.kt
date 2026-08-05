@@ -168,6 +168,25 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
+  fun `ignores requests that received no bytes when timing throughput`() {
+    // A slow API call that returns nothing spends real time in flight, but no bytes could have been
+    // flowing during it. Counting its span would describe time the payload wasn't moving; its
+    // latency is already covered by `slowestTimeToFirstByte`.
+    val requests = listOf(
+      makeRequest(responseBytesReceived = 10000, fetchStart = Date(0), responseEnd = Date(1000)),
+      makeRequest(
+        url = "https://httpbin.org/status/204",
+        statusCode = 204,
+        responseBytesReceived = 0,
+        fetchStart = Date(1000),
+        responseEnd = Date(4000)
+      )
+    )
+    val summary = NetworkRequestSummary.from(requests)
+    assertEquals(10000.0, summary.throughputBytesPerSecond!!, 0.0001)
+  }
+
+  @Test
   fun `leaves throughput null when nothing was received`() {
     // A cache hit moves no bytes; dividing would report a fake 0 B/s rather than "unknown".
     val summary = NetworkRequestSummary.from(
@@ -177,43 +196,11 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
-  fun `takes the fastest tcp handshake and excludes the tls portion`() {
-    val requests = listOf(
-      // TLS ran, so the window ends at secureConnectionStart: 0.2s, not the 0.5s connectEnd
-      // would report (it lands after the TLS exchange).
-      makeRequest(
-        connectStart = Date(0),
-        connectEnd = Date(500),
-        secureConnectionStart = Date(200)
-      ),
-      // Cleartext, so it falls back to connectEnd: 0.3s.
-      makeRequest(connectStart = Date(0), connectEnd = Date(300))
-    )
-    val summary = NetworkRequestSummary.from(requests)
-    assertEquals(0.2, summary.fastestTcpHandshake!!, 0.0001)
-  }
-
-  @Test
-  fun `leaves fastest tcp handshake null when every connection was reused`() {
-    // Under keep-alive connectStart is null, which means "no new connection", not "zero latency".
-    val summary = NetworkRequestSummary.from(listOf(makeRequest(), makeRequest()))
-    assertNull(summary.fastestTcpHandshake)
-  }
-
-  @Test
-  fun `ignores negative handshake and first-byte durations`() {
+  fun `ignores a negative first-byte duration`() {
     // A clock adjustment mid-request can invert these wall-clock dates.
     val summary = NetworkRequestSummary.from(
-      listOf(
-        makeRequest(
-          fetchStart = Date(500),
-          connectStart = Date(500),
-          connectEnd = Date(400),
-          responseStart = Date(300)
-        )
-      )
+      listOf(makeRequest(fetchStart = Date(500), responseStart = Date(300)))
     )
-    assertNull(summary.fastestTcpHandshake)
     assertNull(summary.slowestTimeToFirstByte)
   }
 
@@ -226,9 +213,6 @@ class NetworkRequestSummaryTest {
     totalDuration: Double = 0.1,
     isTimeout: Boolean = false,
     fetchStart: Date = Date(0),
-    connectStart: Date? = null,
-    connectEnd: Date? = null,
-    secureConnectionStart: Date? = null,
     responseStart: Date? = null,
     responseEnd: Date? = Date(100)
   ): NetworkRequest = NetworkRequest(
@@ -243,9 +227,9 @@ class NetworkRequestSummaryTest {
       fetchStart = fetchStart,
       domainLookupStart = null,
       domainLookupEnd = null,
-      connectStart = connectStart,
-      connectEnd = connectEnd,
-      secureConnectionStart = secureConnectionStart,
+      connectStart = null,
+      connectEnd = null,
+      secureConnectionStart = null,
       secureConnectionEnd = null,
       requestStart = null,
       requestEnd = null,

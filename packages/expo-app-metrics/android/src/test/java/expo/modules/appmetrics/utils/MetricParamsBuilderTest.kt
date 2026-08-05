@@ -238,13 +238,11 @@ class MetricParamsBuilderTest {
       slowestDuration = 0.6,
       slowestHost = "api.expo.dev",
       slowestTimeToFirstByte = 0.35,
-      throughputBytesPerSecond = 8571.4,
-      fastestTcpHandshake = 0.04
+      throughputBytesPerSecond = 8571.4
     )
     val params = MetricParamsBuilder.build(networkRequests = summary)
     assertEquals(0.35, params["expo.network.requests.slowestTimeToFirstByte"])
     assertEquals(8571.4, params["expo.network.requests.throughputBytesPerSecond"])
-    assertEquals(0.04, params["expo.network.requests.fastestTcpHandshake"])
   }
 
   @Test
@@ -264,7 +262,6 @@ class MetricParamsBuilderTest {
     assertEquals(2, params["expo.network.requests.count"])
     assertNull(params["expo.network.requests.slowestTimeToFirstByte"])
     assertNull(params["expo.network.requests.throughputBytesPerSecond"])
-    assertNull(params["expo.network.requests.fastestTcpHandshake"])
   }
 
   @Test

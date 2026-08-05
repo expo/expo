@@ -605,6 +605,34 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
+  func `ignores requests that received no bytes when timing throughput`() {
+    let now = Date()
+    // A slow API call that returns nothing spends real time in flight, but no bytes could have been
+    // flowing during it. Counting its span would describe time the payload wasn't moving and halve
+    // the reported rate; its latency is already covered by `slowestTimeToFirstByte`.
+    let download = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 10_000,
+      fetchStart: now,
+      responseEnd: now.addingTimeInterval(1)
+    )
+    let slowEmptyResponse = makeRequest(
+      host: "httpbin.org",
+      duration: 3.0,
+      status: 204,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now.addingTimeInterval(1),
+      responseEnd: now.addingTimeInterval(4)
+    )
+    let summary = NetworkRequestSummary.from([download, slowEmptyResponse])
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 10_000) < 0.0001)
+  }
+
+  @Test
   func `leaves throughput nil when nothing was received`() {
     // A cache hit moves no bytes; dividing would report a fake 0 B/s rather than "unknown".
     let cacheHit = makeRequest(
@@ -620,53 +648,7 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
-  func `takes the fastest tcp handshake and excludes the tls portion`() {
-    let now = Date()
-    // TLS ran, so the handshake window ends at `secureConnectionStart`: 0.2s, not the 0.5s that
-    // `connectEnd` would report (it lands after the TLS exchange).
-    let secure = makeRequest(
-      host: "api.expo.dev",
-      duration: 1.0,
-      status: 200,
-      bytesSent: 0,
-      bytesReceived: 0,
-      fetchStart: now,
-      connectStart: now,
-      connectEnd: now.addingTimeInterval(0.5),
-      secureConnectionStart: now.addingTimeInterval(0.2)
-    )
-    // Cleartext, so it falls back to `connectEnd`: 0.3s.
-    let cleartext = makeRequest(
-      host: "plain.expo.dev",
-      duration: 1.0,
-      status: 200,
-      bytesSent: 0,
-      bytesReceived: 0,
-      fetchStart: now,
-      connectStart: now,
-      connectEnd: now.addingTimeInterval(0.3)
-    )
-    let summary = NetworkRequestSummary.from([secure, cleartext])
-    #expect(abs((summary.fastestTcpHandshake ?? 0) - 0.2) < 0.0001)
-  }
-
-  @Test
-  func `leaves fastest tcp handshake nil when every connection was reused`() {
-    // Under keep-alive `connectStart` is nil, which means "no new connection", not "zero latency".
-    let reused = makeRequest(
-      host: "api.expo.dev",
-      duration: 0.2,
-      status: 200,
-      bytesSent: 0,
-      bytesReceived: 0,
-      fetchStart: Date()
-    )
-    let summary = NetworkRequestSummary.from([reused, reused])
-    #expect(summary.fastestTcpHandshake == nil)
-  }
-
-  @Test
-  func `ignores negative handshake and first-byte durations`() {
+  func `ignores a negative first-byte duration`() {
     let now = Date()
     // A clock adjustment mid-request can invert these wall-clock dates.
     let skewed = makeRequest(
@@ -676,12 +658,9 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 0,
       fetchStart: now,
-      connectStart: now,
-      connectEnd: now.addingTimeInterval(-0.1),
       responseStart: now.addingTimeInterval(-0.2)
     )
     let summary = NetworkRequestSummary.from([skewed])
-    #expect(summary.fastestTcpHandshake == nil)
     #expect(summary.slowestTimeToFirstByte == nil)
   }
 
@@ -752,9 +731,6 @@ struct NetworkRequestSummaryTests {
     fetchStart: Date?,
     error: String? = nil,
     isTimeout: Bool = false,
-    connectStart: Date? = nil,
-    connectEnd: Date? = nil,
-    secureConnectionStart: Date? = nil,
     responseStart: Date? = nil,
     responseEnd: Date? = nil
   ) -> NetworkRequest {
@@ -770,9 +746,9 @@ struct NetworkRequestSummaryTests {
         fetchStart: fetchStart,
         domainLookupStart: nil,
         domainLookupEnd: nil,
-        connectStart: connectStart,
-        connectEnd: connectEnd,
-        secureConnectionStart: secureConnectionStart,
+        connectStart: nil,
+        connectEnd: nil,
+        secureConnectionStart: nil,
         secureConnectionEnd: nil,
         requestStart: nil,
         requestEnd: nil,
