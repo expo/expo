@@ -41,7 +41,7 @@ class Group: SharedObject {
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
       },
-      unifyResults: !(queryOptions?.rawContacts ?? false)
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { contactFactory.create(id: $0.identifier) }
   }
