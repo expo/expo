@@ -26,6 +26,7 @@
 - [iOS] Remove legacy (old architecture) code paths and dead build configuration. ([#47639](https://github.com/expo/expo/pull/47639) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Replace swizzling and reflection into React Native internals (packager access, RedBox, instance teardown) with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Replace reflection into React Native internals with public 0.86 APIs. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
 
 ## 57.0.10 - 2026-07-29
 
