@@ -502,6 +502,27 @@ exports[`built-in plugins introspects mods 1`] = `
             "type": "empty",
           },
           {
+            "type": "comment",
+            "value": "Opt out of built-in kotlin and new DSL behavior that ships with AGP 9.",
+          },
+          {
+            "type": "comment",
+            "value": "Starting from AGP 10.x these opt outs will be removed.",
+          },
+          {
+            "key": "android.builtInKotlin",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "key": "android.newDsl",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
+          {
             "key": "expo.inlineModules.watchedDirectories",
             "type": "property",
             "value": "[]",
