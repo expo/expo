@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- [Android] Upgraded `com.google.android.play:age-signals` to `0.0.4`. Adds `ageRangeSource`, `significantChangeStatus`, `significantChangeApprovalDate` and `requestAgeSignalsAccessAsync`. Removed `userStatus`. ([#48487](https://github.com/expo/expo/pull/48487) by [@vonovak](https://github.com/vonovak))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
