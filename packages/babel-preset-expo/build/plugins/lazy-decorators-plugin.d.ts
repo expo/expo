@@ -1,13 +1,16 @@
-import type { ConfigAPI, PluginObj, PluginPass } from '@babel/core';
+import type { ConfigAPI, PluginItem, PluginObj, PluginPass } from '@babel/core';
 interface LazyDecoratorsState extends PluginPass {
     decoratorsDetected: boolean;
 }
-/**
- * Wraps `@babel/plugin-proposal-decorators` so that its transform visitors
- * only run when the source contains a potential decorator pattern (`@word`).
- *
- * The decorator syntax plugin is always inherited so that files parse
- * correctly regardless of the heuristic result.
- */
-export declare function lazyDecoratorsPlugin(api: ConfigAPI & typeof import('@babel/core'), options: Record<string, unknown>): PluginObj<LazyDecoratorsState>;
+export declare function _lazyDecoratorsPlugin(api: ConfigAPI & typeof import('@babel/core'), options: Record<string, unknown>): PluginObj<LazyDecoratorsState>;
+export interface LazyDecoratorsOptions {
+    presetOptions: {
+        legacy?: boolean;
+        version?: number;
+    } | false | undefined;
+    transformClassProperties: boolean;
+    transformPrivateMethods: boolean;
+    transformPrivateProperties: boolean;
+}
+export declare function lazyDecoratorsPlugins(options: LazyDecoratorsOptions): PluginItem[];
 export {};

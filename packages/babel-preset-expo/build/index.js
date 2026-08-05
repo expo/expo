@@ -59,6 +59,46 @@ function babelPresetExpo(api, options = {}) {
     const enableBabelRuntime = platformOptions.enableBabelRuntime == null || platformOptions.enableBabelRuntime === true
         ? api.caller(common_1.getBabelRuntimeVersion)
         : platformOptions.enableBabelRuntime;
+    const lazyDecoratorsOptions = {
+        presetOptions: platformOptions.decorators,
+        transformClassProperties: false,
+        transformPrivateMethods: false,
+        transformPrivateProperties: false,
+    };
+    let enginePreset;
+    {
+        const presetOpts = { dev: isDev };
+        if (isDomComponent) {
+            enginePreset = [require('./configs/webview'), presetOpts];
+        }
+        else if (isModernEngine) {
+            // web preset already contains private method/property transforms
+            lazyDecoratorsOptions.transformClassProperties = true;
+            enginePreset = [require('./configs/web'), presetOpts];
+        }
+        else {
+            switch (platformOptions.unstable_transformProfile) {
+                case 'hermes-stable':
+                case 'hermes-canary':
+                    // hermes-v1 does not contain any of these three transforms
+                    lazyDecoratorsOptions.transformClassProperties = true;
+                    lazyDecoratorsOptions.transformPrivateMethods = true;
+                    lazyDecoratorsOptions.transformPrivateProperties = true;
+                    enginePreset = [
+                        require('./configs/hermes-v1'),
+                        presetOpts,
+                    ];
+                    break;
+                case 'hermes-v0':
+                default:
+                    enginePreset = [
+                        require('./configs/hermes-v0'),
+                        presetOpts,
+                    ];
+                    break;
+            }
+        }
+    }
     // Compute config fragments from helper modules to compose into the presets below.
     const flowFragment = (0, flow_1.getConfig)({ disableFlowStripTypesTransform: false });
     const tsFragment = (0, typescript_1.getConfig)();
@@ -78,25 +118,7 @@ function babelPresetExpo(api, options = {}) {
                     lazyImportExportTransform: platformOptions.lazyImports,
                 },
             ],
-            (() => {
-                const presetOpts = { dev: isDev };
-                if (isDomComponent) {
-                    return [require('./configs/webview'), presetOpts];
-                }
-                else if (isModernEngine) {
-                    return [require('./configs/web'), presetOpts];
-                }
-                // Select the hermes config based on `unstable_transformProfile`, which is derived from
-                // the caller's `engine` property or overridden by the user.
-                switch (platformOptions.unstable_transformProfile) {
-                    case 'hermes-stable':
-                    case 'hermes-canary':
-                        return [require('./configs/hermes-v1'), presetOpts];
-                    case 'hermes-v0':
-                    default:
-                        return [require('./configs/hermes-v0'), presetOpts];
-                }
-            })(),
+            enginePreset,
             // Expo-specific plugins and React JSX/compiler/refresh support.
             [
                 require('./configs/expo'),
@@ -115,7 +137,7 @@ function babelPresetExpo(api, options = {}) {
                     bundler,
                     inlineEnvironmentVariables,
                     disableDeepImportWarnings: platformOptions.disableDeepImportWarnings,
-                    decorators: platformOptions.decorators,
+                    lazyDecorators: lazyDecoratorsOptions,
                     reanimated: platformOptions.reanimated,
                     worklets: platformOptions.worklets,
                     expoUi: platformOptions.expoUi,
