@@ -1,5 +1,5 @@
-import ExpoModulesCore
 import DeclaredAgeRange
+import ExpoModulesCore
 
 internal enum AgeRangeDeclaration: String, Enumerable {
   case selfDeclared
@@ -65,4 +65,3 @@ internal struct AgeRangeRequestParams: Record {
   @Field
   var threshold3: Int?
 }
-
