@@ -12,13 +12,11 @@ export interface Props {
   customBuildFlags?: string;
   enableFTS?: boolean;
   useSQLCipher?: boolean;
-  useLibSQL?: boolean;
   withSQLiteVecExtension?: boolean;
   android?: {
     customBuildFlags?: string;
     enableFTS?: boolean;
     useSQLCipher?: boolean;
-    useLibSQL?: boolean;
     useSQLiteVec?: boolean;
     withSQLiteVecExtension?: boolean;
   };
@@ -26,7 +24,6 @@ export interface Props {
     customBuildFlags?: string;
     enableFTS?: boolean;
     useSQLCipher?: boolean;
-    useLibSQL?: boolean;
     withSQLiteVecExtension?: boolean;
   };
 }
@@ -42,7 +39,6 @@ const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
     const customBuildFlags = props?.android?.customBuildFlags ?? props?.customBuildFlags;
     const enableFTS = props?.android?.enableFTS ?? props?.enableFTS;
     const useSQLCipher = props?.android?.useSQLCipher ?? props?.useSQLCipher;
-    const useLibSQL = props?.android?.useLibSQL ?? props?.useLibSQL;
     const withSQLiteVecExtension =
       props?.android?.withSQLiteVecExtension ?? props?.withSQLiteVecExtension;
 
@@ -63,11 +59,6 @@ const withSQLiteAndroidProps: ConfigPlugin<Props> = (config, props) => {
     );
     config.modResults = updateAndroidBuildPropertyIfNeeded(
       config.modResults,
-      'expo.sqlite.useLibSQL',
-      useLibSQL
-    );
-    config.modResults = updateAndroidBuildPropertyIfNeeded(
-      config.modResults,
       'expo.sqlite.withSQLiteVecExtension',
       withSQLiteVecExtension
     );
@@ -81,7 +72,6 @@ const withSQLiteIOSProps: ConfigPlugin<Props> = (config, props) => {
     const customBuildFlags = props?.ios?.customBuildFlags ?? props?.customBuildFlags;
     const enableFTS = props?.ios?.enableFTS ?? props?.enableFTS;
     const useSQLCipher = props?.ios?.useSQLCipher ?? props?.useSQLCipher;
-    const useLibSQL = props?.ios?.useLibSQL ?? props?.useLibSQL;
     const withSQLiteVecExtension =
       props?.ios?.withSQLiteVecExtension ?? props?.withSQLiteVecExtension;
 
@@ -99,11 +89,6 @@ const withSQLiteIOSProps: ConfigPlugin<Props> = (config, props) => {
       config.modResults,
       'expo.sqlite.useSQLCipher',
       useSQLCipher
-    );
-    config.modResults = updateIOSBuildPropertyIfNeeded(
-      config.modResults,
-      'expo.sqlite.useLibSQL',
-      useLibSQL
     );
     config.modResults = updateIOSBuildPropertyIfNeeded(
       config.modResults,
