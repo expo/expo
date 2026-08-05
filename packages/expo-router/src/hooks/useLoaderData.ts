@@ -1,7 +1,7 @@
 'use client';
 
 import type { LoaderFunction } from 'expo-server';
-import { use, useEffect, useMemo, useSyncExternalStore } from 'react';
+import { use, useEffect, useMemo, useReducer } from 'react';
 
 import { useContextKey } from '../Route';
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
@@ -37,12 +37,6 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   const serverDataLoaderContext = use(ServerDataLoaderContext);
   const loaderClient = use(LoaderClientContext);
 
-  // Subscribe before any early returns so a later `loader-invalidate` re-renders this hook even
-  // when the initial render was satisfied by `ServerDataLoaderContext` or `__EXPO_ROUTER_LOADER_DATA__`.
-  // Returning early before subscribing would also change hook order on the next render once
-  // invalidation deletes the injected global.
-  useSyncExternalStore(loaderClient.subscribe, loaderClient.getSnapshot, loaderClient.getSnapshot);
-
   const stateForPath = useStateForPath();
   const contextKey = useContextKey();
 
@@ -55,15 +49,28 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
     return searchString ? `${resolvedPathname}?${searchString}` : resolvedPathname;
   }, [contextKey, stateForPath]);
 
+  // The effect subscription delivers settles for this path straight to this component, so a
+  // reader re-renders only when its own path changes. Kept above the early returns for stable
+  // hook order.
+  const [, dispatch] = useReducer((version: number) => version + 1, 0);
+  // Captured per render (closures are per-render, and only the committed render's effect runs),
+  // so the effect can catch a settle that lands before its subscription attaches.
+  const entryAtRender = loaderClient.suspense.get(resolvedPath);
+
   useEffect(() => {
-    // Hydration-seeded routes never reach a read miss, so invalidation can't refetch them
-    // without a registered fetcher.
+    // Hydration-seeded routes never reach a read miss, so invalidation needs the fetcher here.
     loaderClient.registerFetcher(resolvedPath, fetchLoader);
-    const unsubscribe = loaderClient.subscribeLoader(resolvedPath);
+    const unsubscribe = loaderClient.subscribeLoader(resolvedPath, dispatch);
+    if (loaderClient.suspense.get(resolvedPath) !== entryAtRender) {
+      dispatch();
+    }
     return () => {
       loaderClient.suspense.dispose(resolvedPath);
       unsubscribe();
     };
+    // The catch-up check only matters for the first attach per [client, path]; the entry itself
+    // must not be a dependency or every settle would churn the subscription.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loaderClient, resolvedPath]);
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
