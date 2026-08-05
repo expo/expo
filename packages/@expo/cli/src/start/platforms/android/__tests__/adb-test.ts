@@ -257,6 +257,8 @@ describe(getAttachedDevicesAsync, () => {
           'adb-00000XXX000XXX-YzXxxx._adb-tls-connect._tcp. device product:cheetah model:Pixel_7_Pro device:cheetah transport_id:2',
           // authorized & offline
           'adb-00000XXX000XXX-YzZzzz._adb-tls-connect._tcp. offline product:cheetah model:Pixel_7_Pro device:cheetah transport_id:2',
+          // authorized with a duplicate mDNS service name
+          'adb-00000XXX000XXX-YzXxxx (2)._adb-tls-connect._tcp device product:cheetah model:Pixel_7_Pro device:cheetah transport_id:3',
           // Emulator
           'emulator-5554          device product:sdk_gphone_x86_arm model:sdk_gphone_x86_arm device:generic_x86_arm transport_id:1',
           '',
@@ -293,6 +295,14 @@ describe(getAttachedDevicesAsync, () => {
         pid: 'adb-00000XXX000XXX-YzZzzz._adb-tls-connect._tcp.',
         type: 'device',
         connectionType: 'Network',
+      },
+      {
+        connectionType: 'Network',
+        isAuthorized: true,
+        isBooted: true,
+        name: 'Pixel_7_Pro',
+        pid: 'adb-00000XXX000XXX-YzXxxx (2)._adb-tls-connect._tcp',
+        type: 'device',
       },
       {
         isAuthorized: true,
