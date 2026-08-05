@@ -51,6 +51,7 @@ function parseOptions() {
   let dryRun = false;
   let skipLlms = false;
   let commitPerStep = false;
+  let demo = false; // TEMP(demo)
 
   for (let index = 0; index < argv.length; index++) {
     const arg = argv[index];
@@ -62,6 +63,8 @@ function parseOptions() {
       skipLlms = true;
     } else if (arg === '--commit-per-step') {
       commitPerStep = true;
+    } else if (arg === '--demo') {
+      demo = true; // TEMP(demo)
     } else if (arg === '--set') {
       const pair = argv[++index] ?? '';
       const splitAt = pair.indexOf('=');
@@ -82,7 +85,7 @@ function parseOptions() {
     }
   }
 
-  return { sdk, dryRun, skipLlms, commitPerStep, overrides };
+  return { sdk, dryRun, skipLlms, commitPerStep, demo, overrides };
 }
 
 const options = parseOptions();
@@ -512,6 +515,32 @@ const steps: {
   { label: `Set betaVersion to ${version}`, run: setBetaVersion },
 ];
 
+// NOTE(@amandeepmittal): TEMP(demo) scaffolding so PR #48336 can verify the
+// per-step commit PR end to end in CI. Delete this block, the --demo flag,
+// and every line marked TEMP(demo) here and in docs-sdk-beta.yml once the
+// demo PR has been reviewed and closed.
+if (options.demo) {
+  const demoDir = join(docsDir, '.sdk-beta-demo');
+  steps.splice(
+    0,
+    steps.length,
+    {
+      label: 'Demo: write the first file',
+      run: () => {
+        mkdirSync(demoDir, { recursive: true });
+        writeFileSync(join(demoDir, 'one.txt'), 'demo step one\n');
+      },
+    },
+    {
+      label: 'Demo: write the second file',
+      run: () => {
+        writeFileSync(join(demoDir, 'two.txt'), 'demo step two\n');
+      },
+    },
+    { label: 'Demo: change nothing, expect no commit', run: () => {} }
+  );
+}
+
 const failures = new Map<string, string>();
 const completed: string[] = [];
 const skipped: string[] = [];
@@ -592,7 +621,10 @@ const HUMAN_TASKS = [
   `Run \`pnpm versions-schema-sync\` once the SDK ${version} packages are live on exp.host`,
 ];
 
-const title = `[docs] Cut off SDK ${major} beta docs`;
+// TEMP(demo): revert to the plain template literal with the scaffolding.
+const title = options.demo
+  ? '[docs] Demo: sdk-beta per-step commits (do not merge)'
+  : `[docs] Cut off SDK ${major} beta docs`;
 
 const statusOf = (label: string) =>
   failures.has(label)

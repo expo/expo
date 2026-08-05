@@ -5,6 +5,12 @@ defaults:
     shell: bash
 
 on:
+  # TEMP(demo): self-test trigger so PR #48336 can open a per-step-commit demo
+  # PR before this workflow exists on main. Remove with the other TEMP(demo) lines.
+  pull_request:
+    paths:
+      - .github/workflows/docs-sdk-beta.yml
+      - docs/scripts/sdk-release/**
   workflow_call:
     inputs:
       sdkVersion:
@@ -41,7 +47,7 @@ concurrency:
 env:
   # JS-only job, so skip the ~685 MB @shopify/react-native-skia prebuilt-binary download.
   SKIP_SKIA_DOWNLOAD: '1'
-  SDK_VERSION: ${{ inputs.sdkVersion }}
+  SDK_VERSION: ${{ inputs.sdkVersion || '99' }} # TEMP(demo): drop the || '99' fallback
   DRY_RUN: ${{ inputs.dryRun }}
   REACT_NATIVE: ${{ inputs.reactNative }}
 
@@ -52,6 +58,10 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          # TEMP(demo): pull_request checks out a detached merge commit, but
+          # create-pull-request only picks up our commits from a branch checkout.
+          ref: ${{ github.head_ref || github.ref }}
       - name: 🏗️ Setup pnpm
         uses: pnpm/action-setup@0e279bb959325dab635dd2c09392533439d90093 # v6.0.8
         with:
@@ -62,26 +72,32 @@ jobs:
           node-version: 24
           cache: 'pnpm'
       - name: ♻️ Restore caches
+        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
           pnpm-docs: 'true'
       - name: 📦 Install workspace deps
+        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: 📦 Install tools deps
+        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         working-directory: tools
         run: pnpm install --ignore-scripts --frozen-lockfile
       - name: 📦 Install docs deps
+        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         working-directory: docs
         run: pnpm install --frozen-lockfile
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🛠 Build expotools
+        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         run: pnpm turbo build --filter expotools...
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_TEAM: expo
       - name: 🛠 Build packages required by docs API data generation
+        if: github.event_name != 'pull_request' # TEMP(demo): drop the condition
         run: pnpm turbo build --filter expo-task-manager
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
@@ -95,6 +111,10 @@ jobs:
         working-directory: docs
         run: |
           args=(--sdk "$SDK_VERSION" --commit-per-step)
+          # TEMP(demo): pull_request runs exercise the demo steps, not a real cut.
+          if [[ "$GITHUB_EVENT_NAME" == 'pull_request' ]]; then
+            args+=(--demo)
+          fi
           if [[ "$DRY_RUN" == 'true' ]]; then
             args+=(--dry-run)
           fi
@@ -109,7 +129,9 @@ jobs:
         with:
           token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           branch: bot/docs-sdk-${{ fromJSON(steps.beta.outputs.result).sdkVersion }}-beta
-          base: main
+          # TEMP(demo): revert to plain `base: main`. Targeting the feature branch
+          # keeps the demo PR limited to the demo commits.
+          base: ${{ github.head_ref || 'main' }}
           commit-message: ${{ fromJSON(steps.beta.outputs.result).commitMessage }}
           title: ${{ fromJSON(steps.beta.outputs.result).title }}
           body: ${{ fromJSON(steps.beta.outputs.result).body }}
