@@ -11,6 +11,7 @@ type ExpoVideoModule = {
   setVideoCacheSizeAsync(sizeBytes: number): Promise<void>;
   clearVideoCacheAsync(): Promise<void>;
   getCurrentVideoCacheSize(): number;
+  setIsAudioActiveAsync(active: boolean): Promise<void>;
 };
 
 export default requireNativeModule<ExpoVideoModule>('ExpoVideo');

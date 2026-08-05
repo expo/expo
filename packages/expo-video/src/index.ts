@@ -3,6 +3,7 @@ export {
   clearVideoCacheAsync,
   setVideoCacheSizeAsync,
   getCurrentVideoCacheSize,
+  setIsAudioActiveAsync,
 } from './VideoModule';
 export { VideoView } from './VideoView';
 export { useVideoPlayer } from './VideoPlayer';
