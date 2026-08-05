@@ -39,6 +39,30 @@ export const KNOWN_MODES = ['development', 'test', 'production'];
 /** The environment variable name to use when marking the environment as loaded */
 export const LOADED_ENV_NAME = '__EXPO_ENV_LOADED';
 
+/** Modes used by Expo commands and tools. */
+export type EnvMode = 'development' | 'production';
+
+/**
+ * Set `NODE_ENV` and `BABEL_ENV` for an Expo command or tool.
+ * Existing values are replaced. This also sets `__DEV__` when `process.env` is used.
+ *
+ * Pass a custom `systemEnv` to set values for a child process without changing `process.env`.
+ */
+export function setNodeEnv(
+  mode: EnvMode,
+  { systemEnv = process.env }: { systemEnv?: EnvOutput } = {}
+) {
+  systemEnv.NODE_ENV = mode;
+  systemEnv.BABEL_ENV = mode;
+
+  if (systemEnv === process.env) {
+    // @ts-expect-error: Add support for external React libraries being loaded in the same process.
+    globalThis.__DEV__ = mode === 'development';
+  }
+
+  return systemEnv;
+}
+
 /**
  * Get a list of all `.env*` files based on the `NODE_ENV` mode.
  * This returns a list of files, in order of highest priority to lowest priority.
@@ -284,8 +308,8 @@ export function loadProjectEnv(
 }
 
 /**
- * Get a fresh clone of the system environment with all `@expo/env`-applied
- * mutations reverted to their pre-load values. The result is intended to be
+ * Get a fresh clone of the system environment with dotenv changes reverted to their pre-load
+ * values. Values set by `setNodeEnv` are not reverted. The result is intended to be
  * passed as the `env` option of `child_process.spawn` / `@expo/spawn-async`
  * when a subprocess should observe the environment as it was before any
  * `.env*` files were loaded — for example, when resolving SDK tooling paths
