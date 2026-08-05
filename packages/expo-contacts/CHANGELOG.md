@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `Contact.getAllDetails` always returning `null` for `thumbnail`, `birthday` and `nonGregorianBirthday`. ([#48384](https://github.com/expo/expo/pull/48384) by [@martintreurnicht](https://github.com/martintreurnicht))
+
 ### 💡 Others
 
 ## 57.0.3 — 2026-07-29
