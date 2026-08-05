@@ -102,6 +102,19 @@ describe(readLoaderData, () => {
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
 
+  it('does not clear an entry that was replaced before the deferred error expiry runs', async () => {
+    const client = new LoaderClient();
+    const fetcher = jest.fn<Promise<string>, [string]>().mockRejectedValueOnce(new Error('boom'));
+
+    await expect(readLoaderData(client, '/err', fetcher)).rejects.toThrow();
+    expect(() => readLoaderData(client, '/err', fetcher)).toThrow();
+
+    client.suspense.set('/err', { data: 'fresh' });
+    await tick();
+
+    expect(client.suspense.get('/err')).toEqual({ data: 'fresh' });
+  });
+
   it('keeps a settled entry from an abandoned in-flight load for the next mount to adopt', async () => {
     const client = new LoaderClient();
     let resolveFetch!: (value: string) => void;

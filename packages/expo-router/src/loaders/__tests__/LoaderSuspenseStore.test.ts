@@ -1,7 +1,5 @@
 import { LoaderSuspenseStore } from '../LoaderSuspenseStore';
 
-const tick = () => Promise.resolve();
-
 describe(LoaderSuspenseStore, () => {
   it('stores and returns data, error, and promise entries', () => {
     const store = new LoaderSuspenseStore();
@@ -71,28 +69,6 @@ describe(LoaderSuspenseStore, () => {
     store.teardown('/p');
 
     expect(store.get('/p')).toEqual({ data: 'v2' });
-  });
-
-  it('removes an error entry after the microtask on expireError', async () => {
-    const store = new LoaderSuspenseStore();
-    store.set('/p', { error: new Error('boom') });
-
-    store.expireError('/p');
-    expect(store.get('/p')).toEqual({ error: expect.any(Error) });
-
-    await tick();
-    expect(store.get('/p')).toBeUndefined();
-  });
-
-  it('does not expire an entry that was replaced before the deferred clear runs', async () => {
-    const store = new LoaderSuspenseStore();
-    store.set('/p', { error: new Error('boom') });
-
-    store.expireError('/p');
-    store.set('/p', { data: 'fresh' });
-    await tick();
-
-    expect(store.get('/p')).toEqual({ data: 'fresh' });
   });
 
   it('lists entry keys', () => {
