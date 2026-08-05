@@ -11,7 +11,7 @@
 ### 🐛 Bug fixes
 
 - Escape backslashes when serializing `'widget'` functions so escape sequences like `\n` in a widget layout survive the template-literal round-trip instead of corrupting the stored function and crashing the widget with `SyntaxError: Unexpected EOF`. ([#47626](https://github.com/expo/expo/pull/47626) by [@alecmolloy](https://github.com/alecmolloy))
-- Fix legacy decorators on class properties throwing `Decorating class property failed` at runtime on transform profiles that preserve class fields (`hermes-stable`, `hermes-canary` and web), which broke WatermelonDB models and MobX 5. The class-feature transforms are now applied to files that contain decorators. ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano))
+- Fix legacy decorators on class properties when corresponding class transforms are disabled, which the decorators plugin relies on ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano), [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
