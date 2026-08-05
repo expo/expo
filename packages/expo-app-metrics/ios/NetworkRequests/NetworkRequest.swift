@@ -110,29 +110,18 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
       return positiveInterval(from: fetchStart, to: responseStart)
     }
 
-    /// Duration of the TCP handshake, which is roughly one network round trip and therefore the
-    /// closest thing here to pure network latency.
-    ///
-    /// Ends at `secureConnectionStart` when TLS ran, so the value covers only the TCP handshake and
-    /// not the TLS exchange layered on top of it. `connectEnd` lands *after* the TLS handshake, so
-    /// using it for an HTTPS request would overstate the round trip. Falls back to `connectEnd` for
-    /// cleartext connections, where no TLS phase exists.
-    ///
-    /// `nil` when the connection was reused, which means "no new connection was opened", not "zero
-    /// latency". Under keep-alive most requests report nothing here.
-    public var tcpHandshakeDuration: TimeInterval? {
-      return positiveInterval(from: connectStart, to: secureConnectionStart ?? connectEnd)
-    }
-
     /// Returns the interval between two optional timestamps, or `nil` if either is missing or the
-    /// result is negative. These are wall-clock dates, so a clock adjustment mid-request can invert
-    /// them; a negative duration is meaningless and would poison a min/max fold.
+    /// result isn't strictly positive.
+    ///
+    /// Negative results are discarded because these are wall-clock dates and a clock adjustment
+    /// mid-request can invert them. Exactly zero is discarded too: a phase that completes inside one
+    /// clock tick was too fast to measure, and reporting `0` would claim it took no time at all.
     private func positiveInterval(from start: Date?, to end: Date?) -> TimeInterval? {
       guard let start, let end else {
         return nil
       }
       let interval = end.timeIntervalSince(start)
-      return interval >= 0 ? interval : nil
+      return interval > 0 ? interval : nil
     }
   }
 }

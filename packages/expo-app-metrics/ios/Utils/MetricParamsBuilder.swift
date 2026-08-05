@@ -70,9 +70,6 @@ enum MetricParamsBuilder {
       if let throughputBytesPerSecond = networkRequests.throughputBytesPerSecond {
         params["expo.network.requests.throughputBytesPerSecond"] = throughputBytesPerSecond
       }
-      if let fastestTcpHandshake = networkRequests.fastestTcpHandshake {
-        params["expo.network.requests.fastestTcpHandshake"] = fastestTcpHandshake
-      }
     }
     return params
   }

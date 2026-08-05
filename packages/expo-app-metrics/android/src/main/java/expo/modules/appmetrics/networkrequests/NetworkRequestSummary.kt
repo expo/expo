@@ -52,29 +52,24 @@ data class NetworkRequestSummary(
   val slowestTimeToFirstByte: Double? = null,
 
   /**
-   * Received bytes over the time the network was actually busy, in bytes per second, or `null` when
-   * nothing was received or no request reported a usable interval.
+   * Received bytes over the time those bytes were actually moving, in bytes per second, or `null`
+   * when nothing was received or no receiving request reported a usable interval.
    *
-   * The denominator is the union of the request intervals, not the sum of their durations and not
-   * the elapsed window. Summing durations would divide by the app's request concurrency, so four
-   * parallel one-second requests would report a quarter of the real rate. Using the whole window
-   * would charge idle time to the network, so a launch that fetches briefly and then sits idle would
-   * look slow. Measuring only the busy span leaves a value that moves when the connection changes
-   * and holds still when the app's fetch pattern does.
+   * The denominator is the union of the intervals of the requests that received bytes. Three choices
+   * are folded into that:
+   *
+   * - A union rather than a sum of durations, so request concurrency doesn't inflate it. Four
+   *   parallel one-second requests would otherwise report a quarter of the real rate.
+   * - The busy span rather than the whole window, so idle time isn't charged to the network. A
+   *   launch that fetches briefly and then sits idle would otherwise look slow.
+   * - Only requests that received bytes, so a slow request returning nothing can't stretch the
+   *   denominator across time when no payload was in flight. Its latency belongs to
+   *   `slowestTimeToFirstByte`, not here.
    *
    * This still can't see a stall between requests: if the radio dies while nothing is in flight, no
    * interval covers it. `timedOut` is the signal for that case.
    */
-  val throughputBytesPerSecond: Double? = null,
-
-  /**
-   * Shortest TCP handshake in the window in seconds, or `null` if every connection was reused.
-   *
-   * A minimum rather than an average: a handshake that loses its SYN retries after a timeout of a
-   * second or more, so a mean over a few handshakes mostly reports retransmits. The fastest one
-   * approximates the true path latency.
-   */
-  val fastestTcpHandshake: Double? = null
+  val throughputBytesPerSecond: Double? = null
 ) {
   val isEmpty: Boolean
     get() = count == 0
@@ -90,8 +85,7 @@ data class NetworkRequestSummary(
       slowestDuration = null,
       slowestHost = null,
       slowestTimeToFirstByte = null,
-      throughputBytesPerSecond = null,
-      fastestTcpHandshake = null
+      throughputBytesPerSecond = null
     )
 
     /**
@@ -109,7 +103,6 @@ data class NetworkRequestSummary(
       var totalDuration = 0.0
       var slowest: NetworkRequest? = null
       var slowestTimeToFirstByte: Double? = null
-      var fastestTcpHandshake: Double? = null
 
       for (request in requests) {
         if (request.isFailed) {
@@ -125,13 +118,10 @@ data class NetworkRequestSummary(
         if (current == null || request.timings.totalDuration > current.timings.totalDuration) {
           slowest = request
         }
-        // Both folds skip requests that didn't report the phase, so a reused connection or a
-        // header-less failure doesn't drag the result toward a value that was never measured.
+        // Skips requests that didn't report the phase, so a header-less failure doesn't drag the
+        // result toward a value that was never measured.
         request.timings.timeToFirstByte?.let {
           slowestTimeToFirstByte = maxOf(it, slowestTimeToFirstByte ?: it)
-        }
-        request.timings.tcpHandshakeDuration?.let {
-          fastestTcpHandshake = minOf(it, fastestTcpHandshake ?: it)
         }
       }
 
@@ -145,25 +135,29 @@ data class NetworkRequestSummary(
         slowestDuration = slowest?.timings?.totalDuration,
         slowestHost = slowest?.url?.toHttpUrlOrNull()?.host,
         slowestTimeToFirstByte = slowestTimeToFirstByte,
-        throughputBytesPerSecond = throughput(bytesReceived, requests),
-        fastestTcpHandshake = fastestTcpHandshake
+        throughputBytesPerSecond = throughput(requests)
       )
     }
 
     /**
-     * Received bytes over the time at least one request was in flight. Returns `null` when nothing
-     * was received or no request reported a usable interval, so the caller can tell "unknown" from
-     * a genuinely slow connection.
+     * Received bytes over the time those bytes were moving. Returns `null` when nothing was received
+     * or no receiving request reported a usable interval, so the caller can tell "unknown" from a
+     * genuinely slow connection.
+     *
+     * Both sides are computed from the same subset - the requests that actually received bytes - so
+     * the numerator and denominator always describe the same traffic.
      */
-    private fun throughput(bytesReceived: Long, requests: List<NetworkRequest>): Double? {
-      if (bytesReceived <= 0) {
+    private fun throughput(requests: List<NetworkRequest>): Double? {
+      val receiving = requests.filter { (it.responseBytesReceived ?: 0) > 0 }
+      val bytes = receiving.sumOf { it.responseBytesReceived ?: 0 }
+      if (bytes <= 0) {
         return null
       }
-      val busySeconds = busyDuration(requests)
+      val busySeconds = busyDuration(receiving)
       if (busySeconds <= 0) {
         return null
       }
-      return bytesReceived.toDouble() / busySeconds
+      return bytes.toDouble() / busySeconds
     }
 
     /**

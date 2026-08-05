@@ -60,9 +60,6 @@ object MetricParamsBuilder {
       networkRequests.throughputBytesPerSecond?.let {
         params["expo.network.requests.throughputBytesPerSecond"] = it
       }
-      networkRequests.fastestTcpHandshake?.let {
-        params["expo.network.requests.fastestTcpHandshake"] = it
-      }
     }
     return params
   }

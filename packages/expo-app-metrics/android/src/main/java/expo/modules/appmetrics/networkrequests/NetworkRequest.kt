@@ -116,31 +116,19 @@ data class NetworkRequest(
       get() = positiveInterval(fetchStart, responseStart)
 
     /**
-     * Duration of the TCP handshake in seconds, which is roughly one network round trip and
-     * therefore the closest thing here to pure network latency.
-     *
-     * Ends at `secureConnectionStart` when TLS ran, so the value covers only the TCP handshake and
-     * not the TLS exchange layered on top of it. Falls back to `connectEnd` for cleartext
-     * connections, where no TLS phase exists.
-     *
-     * `null` when the connection was reused, which means "no new connection was opened", not "zero
-     * latency". Under keep-alive most requests report nothing here.
-     */
-    val tcpHandshakeDuration: Double?
-      get() = positiveInterval(connectStart, secureConnectionStart ?: connectEnd)
-
-    /**
      * Returns the interval between two nullable timestamps in seconds, or `null` if either is
-     * missing or the result is negative. These are wall-clock dates, so a clock adjustment
-     * mid-request can invert them; a negative duration is meaningless and would poison a min/max
-     * fold.
+     * missing or the result isn't strictly positive.
+     *
+     * Negative results are discarded because these are wall-clock dates and a clock adjustment
+     * mid-request can invert them. Exactly zero is discarded too: a phase that completes inside one
+     * clock tick was too fast to measure, and reporting `0` would claim it took no time at all.
      */
     private fun positiveInterval(start: Date?, end: Date?): Double? {
       if (start == null || end == null) {
         return null
       }
       val seconds = (end.time - start.time) / 1000.0
-      return if (seconds >= 0) seconds else null
+      return if (seconds > 0) seconds else null
     }
   }
 }

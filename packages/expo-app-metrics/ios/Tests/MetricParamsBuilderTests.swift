@@ -138,8 +138,7 @@ struct MetricParamsBuilderTests {
       slowestDuration: 0.6,
       slowestHost: "api.expo.dev",
       slowestTimeToFirstByte: nil,
-      throughputBytesPerSecond: nil,
-      fastestTcpHandshake: nil
+      throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
     #expect(params["expo.network.requests.count"] as? Int == 4)
@@ -185,8 +184,7 @@ struct MetricParamsBuilderTests {
       slowestDuration: 30,
       slowestHost: "slow.expo.dev",
       slowestTimeToFirstByte: nil,
-      throughputBytesPerSecond: nil,
-      fastestTcpHandshake: nil
+      throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
     #expect(params["expo.network.requests.failed"] as? Int == 2)
@@ -208,8 +206,7 @@ struct MetricParamsBuilderTests {
       slowestDuration: 0.1,
       slowestHost: "expo.dev",
       slowestTimeToFirstByte: nil,
-      throughputBytesPerSecond: nil,
-      fastestTcpHandshake: nil
+      throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
     #expect(params["expo.network.requests.timedOut"] as? Int == 0)
@@ -227,13 +224,11 @@ struct MetricParamsBuilderTests {
       slowestDuration: 0.6,
       slowestHost: "api.expo.dev",
       slowestTimeToFirstByte: 0.35,
-      throughputBytesPerSecond: 8571.4,
-      fastestTcpHandshake: 0.04
+      throughputBytesPerSecond: 8571.4
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
     #expect(params["expo.network.requests.slowestTimeToFirstByte"] as? TimeInterval == 0.35)
     #expect(params["expo.network.requests.throughputBytesPerSecond"] as? Double == 8571.4)
-    #expect(params["expo.network.requests.fastestTcpHandshake"] as? TimeInterval == 0.04)
   }
 
   @Test
@@ -250,14 +245,12 @@ struct MetricParamsBuilderTests {
       slowestDuration: 0.1,
       slowestHost: "api.expo.dev",
       slowestTimeToFirstByte: nil,
-      throughputBytesPerSecond: nil,
-      fastestTcpHandshake: nil
+      throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
     #expect(params["expo.network.requests.count"] as? Int == 2)
     #expect(params["expo.network.requests.slowestTimeToFirstByte"] == nil)
     #expect(params["expo.network.requests.throughputBytesPerSecond"] == nil)
-    #expect(params["expo.network.requests.fastestTcpHandshake"] == nil)
   }
 
   @Test

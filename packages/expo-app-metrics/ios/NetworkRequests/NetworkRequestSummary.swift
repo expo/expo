@@ -43,26 +43,23 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// quality rather than a measurement of it — see `Timings.timeToFirstByte`.
   public let slowestTimeToFirstByte: TimeInterval?
 
-  /// Received bytes over the time the network was actually busy, in bytes per second, or `nil` when
-  /// nothing was received or no request reported a usable interval.
+  /// Received bytes over the time those bytes were actually moving, in bytes per second, or `nil`
+  /// when nothing was received or no receiving request reported a usable interval.
   ///
-  /// The denominator is the union of the request intervals, not the sum of their durations and not
-  /// the elapsed window. Summing durations would divide by the app's request concurrency, so four
-  /// parallel one-second requests would report a quarter of the real rate. Using the whole window
-  /// would charge idle time to the network, so a launch that fetches briefly and then sits idle
-  /// would look slow. Measuring only the busy span leaves a value that moves when the connection
-  /// changes and holds still when the app's fetch pattern does.
+  /// The denominator is the union of the intervals of the requests that received bytes. Three
+  /// choices are folded into that:
+  ///
+  /// - A union rather than a sum of durations, so request concurrency doesn't inflate it. Four
+  ///   parallel one-second requests would otherwise report a quarter of the real rate.
+  /// - The busy span rather than the whole window, so idle time isn't charged to the network. A
+  ///   launch that fetches briefly and then sits idle would otherwise look slow.
+  /// - Only requests that received bytes, so a slow request returning nothing can't stretch the
+  ///   denominator across time when no payload was in flight. Its latency belongs to
+  ///   `slowestTimeToFirstByte`, not here.
   ///
   /// This still can't see a stall between requests: if the radio dies while nothing is in flight,
   /// no interval covers it. `timedOut` is the signal for that case.
   public let throughputBytesPerSecond: Double?
-
-  /// Shortest TCP handshake in the window, or `nil` if every connection was reused.
-  ///
-  /// A minimum rather than an average: a handshake that loses its SYN retries after a timeout of a
-  /// second or more, so a mean over a few handshakes mostly reports retransmits. The fastest one
-  /// approximates the true path latency.
-  public let fastestTcpHandshake: TimeInterval?
 
   /// Convenience: returns `nil` when the summary is empty so callers can skip emitting fields.
   public var isEmpty: Bool {
@@ -79,8 +76,7 @@ public struct NetworkRequestSummary: Sendable, Equatable {
     slowestDuration: nil,
     slowestHost: nil,
     slowestTimeToFirstByte: nil,
-    throughputBytesPerSecond: nil,
-    fastestTcpHandshake: nil
+    throughputBytesPerSecond: nil
   )
 
   /// Folds a sequence of `NetworkRequest` into a summary. The caller is responsible for filtering
@@ -96,7 +92,6 @@ public struct NetworkRequestSummary: Sendable, Equatable {
     var totalDuration: TimeInterval = 0
     var slowest: NetworkRequest?
     var slowestTimeToFirstByte: TimeInterval?
-    var fastestTcpHandshake: TimeInterval?
 
     for request in requests {
       if request.isFailed {
@@ -115,13 +110,10 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       } else {
         slowest = request
       }
-      // Both folds skip requests that didn't report the phase, so a reused connection or a
-      // header-less failure doesn't drag the result toward a value that was never measured.
+      // Skips requests that didn't report the phase, so a header-less failure doesn't drag the
+      // result toward a value that was never measured.
       if let timeToFirstByte = request.timings.timeToFirstByte {
         slowestTimeToFirstByte = max(timeToFirstByte, slowestTimeToFirstByte ?? timeToFirstByte)
-      }
-      if let handshake = request.timings.tcpHandshakeDuration {
-        fastestTcpHandshake = min(handshake, fastestTcpHandshake ?? handshake)
       }
     }
 
@@ -135,23 +127,27 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       slowestDuration: slowest?.timings.totalDuration,
       slowestHost: slowest?.url.host,
       slowestTimeToFirstByte: slowestTimeToFirstByte,
-      throughputBytesPerSecond: throughput(bytesReceived: bytesReceived, of: requests),
-      fastestTcpHandshake: fastestTcpHandshake
+      throughputBytesPerSecond: throughput(of: requests)
     )
   }
 
-  /// Received bytes over the time at least one request was in flight. Returns `nil` when nothing was
-  /// received or no request reported a usable interval, so the caller can tell "unknown" from a
+  /// Received bytes over the time those bytes were moving. Returns `nil` when nothing was received
+  /// or no receiving request reported a usable interval, so the caller can tell "unknown" from a
   /// genuinely slow connection.
-  private static func throughput(bytesReceived: Int64, of requests: [NetworkRequest]) -> Double? {
-    guard bytesReceived > 0 else {
+  ///
+  /// Both sides are computed from the same subset — the requests that actually received bytes — so
+  /// the numerator and denominator always describe the same traffic.
+  private static func throughput(of requests: [NetworkRequest]) -> Double? {
+    let receiving = requests.filter { ($0.responseBytesReceived ?? 0) > 0 }
+    let bytes = receiving.reduce(Int64(0)) { $0 + ($1.responseBytesReceived ?? 0) }
+    guard bytes > 0 else {
       return nil
     }
-    let busySeconds = busyDuration(of: requests)
+    let busySeconds = busyDuration(of: receiving)
     guard busySeconds > 0 else {
       return nil
     }
-    return Double(bytesReceived) / busySeconds
+    return Double(bytes) / busySeconds
   }
 
   /// Total length of the union of the requests' in-flight intervals, in seconds.
