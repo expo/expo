@@ -59,6 +59,11 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   ///
   /// This still can't see a stall between requests: if the radio dies while nothing is in flight,
   /// no interval covers it. `timedOut` is the signal for that case.
+  ///
+  /// Being a ratio, it also degrades differently from the counts when the monitor's ring buffer
+  /// evicts the earliest requests in a window: both sides shrink together, so the value stays
+  /// plausible while describing only the requests that survived. Read it as the rate of a sample of
+  /// the window rather than of all of it.
   public let throughputBytesPerSecond: Double?
 
   /// Convenience: returns `nil` when the summary is empty so callers can skip emitting fields.

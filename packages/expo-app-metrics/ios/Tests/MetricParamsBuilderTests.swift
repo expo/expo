@@ -166,6 +166,17 @@ struct MetricParamsBuilderTests {
   }
 
   @Test
+  func `omits path cost flags when there is no network to describe`() {
+    // `NWPath` reports both as `false` on an unsatisfied path. Emitting that would assert the
+    // connection wasn't metered, about a connection that doesn't exist, and Android withholds its
+    // equivalents in the same situation.
+    let params = MetricParamsBuilder.build(networkPath: unsatisfied)
+    #expect(params["expo.network.connected"] as? Bool == false)
+    #expect(params["expo.network.isExpensive"] == nil)
+    #expect(params["expo.network.isConstrained"] == nil)
+  }
+
+  @Test
   func `emits path cost flags as false on an unmetered path`() {
     let params = MetricParamsBuilder.build(networkPath: satisfiedWifi)
     #expect(params["expo.network.isExpensive"] as? Bool == false)
