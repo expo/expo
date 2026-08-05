@@ -34,18 +34,6 @@ export class LoaderSuspenseStore {
     }
   }
 
-  expireError(key: string) {
-    const entry = this.entries.get(key);
-    if (!entry) {
-      return;
-    }
-    queueMicrotask(() => {
-      if (this.entries.get(key) === entry) {
-        this.clear(key);
-      }
-    });
-  }
-
   keys(): string[] {
     return [...this.entries.keys()];
   }
