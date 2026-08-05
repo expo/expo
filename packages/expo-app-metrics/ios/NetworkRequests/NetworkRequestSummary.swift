@@ -135,32 +135,52 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// or no receiving request reported a usable interval, so the caller can tell "unknown" from a
   /// genuinely slow connection.
   ///
-  /// Both sides are computed from the same subset — the requests that actually received bytes — so
-  /// the numerator and denominator always describe the same traffic.
+  /// Both sides are computed from the same subset, so the numerator and denominator always describe
+  /// the same traffic.
   private static func throughput(of requests: [NetworkRequest]) -> Double? {
-    let receiving = requests.filter { ($0.responseBytesReceived ?? 0) > 0 }
-    let bytes = receiving.reduce(Int64(0)) { $0 + ($1.responseBytesReceived ?? 0) }
+    let measurable = measurableReceiving(in: requests)
+    let bytes = measurable.reduce(Int64(0)) { $0 + ($1.responseBytesReceived ?? 0) }
     guard bytes > 0 else {
       return nil
     }
-    let busySeconds = busyDuration(of: receiving)
+    let busySeconds = busyDuration(of: measurable)
     guard busySeconds > 0 else {
       return nil
     }
     return Double(bytes) / busySeconds
   }
 
+  /// The requests that both received bytes and reported a measurable span, which is the subset the
+  /// throughput ratio is computed over.
+  ///
+  /// Deciding it once keeps the numerator and denominator describing the same traffic. Filtering
+  /// inside the busy-time fold instead would let a request contribute its bytes while adding no
+  /// time, which reads as a faster connection than actually happened. A cache hit is the case that
+  /// matters: it reports bytes from the task counters but is served from disk inside one clock tick.
+  private static func measurableReceiving(in requests: [NetworkRequest]) -> [NetworkRequest] {
+    return requests.filter { request in
+      guard (request.responseBytesReceived ?? 0) > 0 else {
+        return false
+      }
+      guard let start = request.timings.fetchStart, let end = request.timings.responseEnd else {
+        return false
+      }
+      return end > start
+    }
+  }
+
   /// Total length of the union of the requests' in-flight intervals, in seconds.
   ///
   /// Overlapping requests are merged so concurrency doesn't inflate the total, and gaps between
-  /// requests are excluded so idle time isn't charged to the network. Requests missing either
-  /// endpoint are skipped rather than treated as zero-length.
+  /// requests are excluded so idle time isn't charged to the network. Requests without a measurable
+  /// span are skipped; callers computing a rate should pass a list already narrowed by
+  /// `measurableReceiving(in:)` so the same requests feed both sides of the ratio.
   private static func busyDuration(of requests: [NetworkRequest]) -> TimeInterval {
     let intervals = requests.compactMap { request -> (start: Date, end: Date)? in
       guard let start = request.timings.fetchStart, let end = request.timings.responseEnd else {
         return nil
       }
-      return end >= start ? (start, end) : nil
+      return end > start ? (start, end) : nil
     }
     .sorted { $0.start < $1.start }
 

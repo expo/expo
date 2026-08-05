@@ -144,16 +144,16 @@ data class NetworkRequestSummary(
      * or no receiving request reported a usable interval, so the caller can tell "unknown" from a
      * genuinely slow connection.
      *
-     * Both sides are computed from the same subset - the requests that actually received bytes - so
-     * the numerator and denominator always describe the same traffic.
+     * Both sides are computed from the same subset, so the numerator and denominator always describe
+     * the same traffic.
      */
     private fun throughput(requests: List<NetworkRequest>): Double? {
-      val receiving = requests.filter { (it.responseBytesReceived ?: 0) > 0 }
-      val bytes = receiving.sumOf { it.responseBytesReceived ?: 0 }
+      val measurable = measurableReceiving(requests)
+      val bytes = measurable.sumOf { it.responseBytesReceived ?: 0 }
       if (bytes <= 0) {
         return null
       }
-      val busySeconds = busyDuration(receiving)
+      val busySeconds = busyDuration(measurable)
       if (busySeconds <= 0) {
         return null
       }
@@ -161,18 +161,41 @@ data class NetworkRequestSummary(
     }
 
     /**
+     * The requests that both received bytes and reported a measurable span, which is the subset the
+     * throughput ratio is computed over.
+     *
+     * Deciding it once keeps the numerator and denominator describing the same traffic. Filtering
+     * inside the busy-time fold instead would let a request contribute its bytes while adding no
+     * time, which reads as a faster connection than actually happened. A cache hit is the case that
+     * matters: it reports bytes from the task counters but is served from disk inside one clock tick.
+     */
+    private fun measurableReceiving(requests: List<NetworkRequest>): List<NetworkRequest> {
+      return requests.filter { request ->
+        val start = request.timings.fetchStart
+        val end = request.timings.responseEnd
+        (request.responseBytesReceived ?: 0) > 0 && start != null && end != null &&
+          end.time > start.time
+      }
+    }
+
+    /**
      * Total length of the union of the requests' in-flight intervals, in seconds.
      *
      * Overlapping requests are merged so concurrency doesn't inflate the total, and gaps between
-     * requests are excluded so idle time isn't charged to the network. Requests missing either
-     * endpoint are skipped rather than treated as zero-length.
+     * requests are excluded so idle time isn't charged to the network.
+     *
+     * Requests are skipped unless they report both endpoints and a strictly positive span. A
+     * collapsed interval would otherwise let a request contribute its bytes to the numerator while
+     * adding nothing to the denominator, which reads as a faster connection than actually happened.
+     * A cache hit is the case that matters: it reports bytes from the task counters but is served
+     * from disk inside one clock tick.
      */
     private fun busyDuration(requests: List<NetworkRequest>): Double {
       val intervals = requests
         .mapNotNull { request ->
           val start = request.timings.fetchStart ?: return@mapNotNull null
           val end = request.timings.responseEnd ?: return@mapNotNull null
-          if (end.time >= start.time) start.time to end.time else null
+          if (end.time > start.time) start.time to end.time else null
         }
         .sortedBy { it.first }
 

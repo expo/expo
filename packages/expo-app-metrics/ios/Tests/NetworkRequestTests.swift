@@ -633,6 +633,51 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
+  func `ignores a byte-carrying request whose interval collapsed to nothing`() {
+    let now = Date()
+    // A cache hit reports its bytes (the task counters are wall-clock accurate even when no wire
+    // traffic occurred) but is served from disk inside one clock tick, so its interval collapses.
+    // Counting those bytes against someone else's span would roughly double the reported rate.
+    let cacheHit = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 0.001,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 10_000,
+      fetchStart: now,
+      responseEnd: now
+    )
+    let download = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 10_000,
+      fetchStart: now.addingTimeInterval(5),
+      responseEnd: now.addingTimeInterval(6)
+    )
+    let summary = NetworkRequestSummary.from([cacheHit, download])
+    // Only the download's 10 kB over its own 1s span; the cache hit contributes neither.
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 10_000) < 0.0001)
+  }
+
+  @Test
+  func `leaves throughput nil when the only receiving request had no measurable span`() {
+    let now = Date()
+    let cacheHit = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 0.001,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 10_000,
+      fetchStart: now,
+      responseEnd: now
+    )
+    let summary = NetworkRequestSummary.from([cacheHit])
+    #expect(summary.throughputBytesPerSecond == nil)
+  }
+
+  @Test
   func `leaves throughput nil when nothing was received`() {
     // A cache hit moves no bytes; dividing would report a fake 0 B/s rather than "unknown".
     let cacheHit = makeRequest(

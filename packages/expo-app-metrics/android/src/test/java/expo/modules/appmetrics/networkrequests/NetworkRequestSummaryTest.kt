@@ -187,6 +187,27 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
+  fun `ignores a byte-carrying request whose interval collapsed to nothing`() {
+    // A cache hit reports its bytes but is served from disk inside one clock tick, so its interval
+    // collapses. Counting those bytes against another request's span would double the rate.
+    val requests = listOf(
+      makeRequest(responseBytesReceived = 10000, fetchStart = Date(0), responseEnd = Date(0)),
+      makeRequest(responseBytesReceived = 10000, fetchStart = Date(5000), responseEnd = Date(6000))
+    )
+    val summary = NetworkRequestSummary.from(requests)
+    // Only the download's 10 kB over its own 1s span.
+    assertEquals(10000.0, summary.throughputBytesPerSecond!!, 0.0001)
+  }
+
+  @Test
+  fun `leaves throughput null when the only receiving request had no measurable span`() {
+    val summary = NetworkRequestSummary.from(
+      listOf(makeRequest(responseBytesReceived = 10000, fetchStart = Date(0), responseEnd = Date(0)))
+    )
+    assertNull(summary.throughputBytesPerSecond)
+  }
+
+  @Test
   fun `leaves throughput null when nothing was received`() {
     // A cache hit moves no bytes; dividing would report a fake 0 B/s rather than "unknown".
     val summary = NetworkRequestSummary.from(
