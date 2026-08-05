@@ -348,6 +348,28 @@ describe(parseProjectEnv, () => {
 });
 
 describe(loadProjectEnv, () => {
+  it('sets NODE_ENV and BABEL_ENV before loading project env files', () => {
+    process.env.NODE_ENV = 'test';
+    process.env.BABEL_ENV = 'staging';
+    vol.fromJSON(
+      {
+        '.env.production': ['FOO=production', 'NODE_ENV=development', 'BABEL_ENV=development'].join(
+          '\n'
+        ),
+      },
+      '/'
+    );
+
+    expect(loadProjectEnv('/', { mode: 'production' })).toMatchObject({
+      result: 'loaded',
+      env: { FOO: 'production' },
+      files: ['/.env.production'],
+      loaded: ['FOO'],
+    });
+    expect(process.env.NODE_ENV).toBe('production');
+    expect(process.env.BABEL_ENV).toBe('production');
+  });
+
   it('parses .env file with mutating system environment variables', () => {
     delete process.env.FOO;
     vol.fromJSON({ '.env': 'FOO=bar' }, '/');
