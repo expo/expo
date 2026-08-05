@@ -1,7 +1,8 @@
 diff --git a/RNWorklets.podspec b/RNWorklets.podspec
+index 11e10b7a731f754b524c9e8ccd8126334b6adb68..1d0b6ede2e7278398eaa8557b91ea27a3605d9b3 100644
 --- a/RNWorklets.podspec
 +++ b/RNWorklets.podspec
-@@ -56,6 +56,7 @@
+@@ -56,6 +56,7 @@ Pod::Spec.new do |s|
    install_modules_dependencies(s)
  
    s.dependency 'React-jsi'
@@ -9,7 +10,7 @@ diff --git a/RNWorklets.podspec b/RNWorklets.podspec
    s.dependency 'React-hermes'
    
    s.pod_target_xcconfig = {
-@@ -70,6 +71,7 @@
+@@ -70,6 +71,7 @@ Pod::Spec.new do |s|
        '"$(PODS_ROOT)/DoubleConversion"',
        '"$(PODS_ROOT)/Headers/Private/React-Core"',
        '"$(PODS_ROOT)/Headers/Private/Yoga"',
@@ -18,9 +19,17 @@ diff --git a/RNWorklets.podspec b/RNWorklets.podspec
      "FRAMEWORK_SEARCH_PATHS" => '"${PODS_CONFIGURATION_BUILD_DIR}/React-hermes"',
      "CLANG_CXX_LANGUAGE_STANDARD" => "c++20",
 diff --git a/android/build.gradle.kts b/android/build.gradle.kts
+index 2e01292a695638f4b82d27531d82c0670c149075..26a1a5d9fe2da1345cd3d6f1cfda5054afe69710 100644
 --- a/android/build.gradle.kts
 +++ b/android/build.gradle.kts
-@@ -8,7 +8,18 @@
+@@ -1,6 +1,5 @@
+ import groovy.json.JsonSlurper
+ import org.apache.tools.ant.taskdefs.condition.Os
+-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+ import java.util.Properties
+ import javax.inject.Inject
+ 
+@@ -8,7 +7,18 @@ plugins {
      id("com.android.library")
      id("maven-publish")
      id("com.diffplug.spotless") version "8.1.0"
@@ -40,7 +49,7 @@ diff --git a/android/build.gradle.kts b/android/build.gradle.kts
  }
  
  fun safeExtGet(prop: String, fallback: Any?): Any? =
-@@ -283,10 +294,22 @@
+@@ -283,10 +293,22 @@ android {
  }
  
  if (project != rootProject) {

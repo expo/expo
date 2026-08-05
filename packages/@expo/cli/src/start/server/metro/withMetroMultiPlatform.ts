@@ -180,19 +180,20 @@ function withWebPolyfills(
 
     if (ctx.platform === 'web') {
       try {
-        const rnGetPolyfills: () => string[] = require('react-native/rn-get-polyfills');
+        // `react-native/rn-get-polyfills` used to be the public API for this, but React Native 0.87 dropped that
+        // subpath from its `exports`, so resolve `@react-native/js-polyfills` directly, matching `@expo/metro-config`.
+        // NOTE(@kitten): We should really just start vendoring these, but for now, this exclusion works
+        const rnGetPolyfills: () => string[] = require('@react-native/js-polyfills');
         return [
           ...virtualModulesPolyfills,
           // Ensure that the error-guard polyfill is included in the web polyfills to
           // make metro-runtime work correctly.
           // TODO: This module is pretty big for a function that simply re-throws an error that doesn't need to be caught.
-          // NOTE(@kitten): This is technically the public API to get polyfills rather than resolving directly into
-          // `@react-native/js-polyfills`. We should really just start vendoring these, but for now, this exclusion works
           ...rnGetPolyfills().filter((x: string) => !x.includes('/console')),
         ];
       } catch (error: any) {
         if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
-          // If react-native is not installed, because we're targeting web, we still continue
+          // If the polyfills aren't installed, because we're targeting web, we still continue
           // This should be rare, but we add it so we don't unnecessarily have a fixed peer dependency on react-native
           return virtualModulesPolyfills;
         } else {

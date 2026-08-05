@@ -22,6 +22,18 @@
 ### 🐛 Bug fixes
 
 - Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
+- Resolve the Metro asset registry to `react-native` core on native platforms so Metro-registered assets and React Native's own `<Image>` share one registry instance on React Native 0.87. Web keeps the virtual registry, and imports of the removed `@react-native/assets-registry` package are redirected. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Depend on `@react-native/js-polyfills` directly for the web polyfills instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.87. ([#47729](https://github.com/expo/expo/pull/47729) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+- Avoid writing a 500 response when a DevTools plugin server request has already started or aborted. ([#47192](https://github.com/expo/expo/pull/47192) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Pass a fetch API `Request` to DevTools plugin WebSocket handlers instead of `IncomingMessage`. ([#47410](https://github.com/expo/expo/pull/47410) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Use `loadModule` for MCP and DevTools plugin server module loading. ([#47139](https://github.com/expo/expo/pull/47139) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Focus the booted device in Device Hub using its `devices://` deep link instead of only bringing the app forward. ([#46809](https://github.com/expo/expo/pull/46809) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Symbolicate web error stacks in the dev server console. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+- Disable sextant QR code rendering for Windows Terminal ([#46455](https://github.com/expo/expo/pull/46455) by [@kitten](https://github.com/kitten))
+- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
+- Remove `@expo/metro-config` install from `expo customize metro.config.js` ([#46600](https://github.com/expo/expo/pull/46600) by [@kitten](https://github.com/kitten))
+- Place static entries last in serialized HTML output ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
 - Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
 - In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
