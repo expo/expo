@@ -61,21 +61,30 @@ describe('legacy decorators on class properties', () => {
     expect(new Model().greeting).toBe('decorated field works');
   });
 
-  it('compiles decorated properties in classes that also use private methods (hermes-v1)', () => {
-    const code = transform(
-      HERMES_V1_CALLER,
-      `
-      function watch(target, key, descriptor) { return descriptor; }
-      export class Model {
-        @watch greeting = 'decorated field works';
-        #suffix() { return '!'; }
-        shout() { return this.greeting + this.#suffix(); }
-      }
-      `
-    );
-    const { Model } = execute(code);
-    expect(new Model().shout()).toBe('decorated field works!');
-  });
+  it.each([
+    ['hermes-v1', HERMES_V1_CALLER],
+    ['web', WEB_CALLER],
+  ])(
+    'compiles decorated properties alongside private class features (%s)',
+    (_profile, caller) => {
+      const code = transform(
+        caller,
+        `
+        function watch(target, key, descriptor) { return descriptor; }
+        export class Model {
+          @watch greeting = 'decorated field works';
+          #suffix = '!';
+          #decorate(value) { return value + this.#suffix; }
+          shout() { return this.#decorate(this.greeting); }
+          static hasSuffix(instance) { return #suffix in instance; }
+        }
+        `
+      );
+      const { Model } = execute(code);
+      expect(new Model().shout()).toBe('decorated field works!');
+      expect(Model.hasSuffix(new Model())).toBe(true);
+    }
+  );
 
   it('preserves native class fields in files without decorators (hermes-v1)', () => {
     const code = transform(HERMES_V1_CALLER, PLAIN_CLASS);
