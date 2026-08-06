@@ -50,6 +50,7 @@ final class LiveActivityFactory: SharedObject {
 
     return activities.map { activity in
       if let instance = instances[activity.id] {
+        instance.observePushTokenUpdates(for: activity, pushNotificationsEnabled: Self.pushNotificationsEnabled)
         return instance
       }
 
