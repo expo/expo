@@ -32,8 +32,19 @@ jobs:
     # `ai-review:security` are not confused with `ai-review`.
     # This must stay in agreement with config.jsonc `review.trigger: "label"`, which is
     # the real policy — `ecr ci` re-checks it and honors `ai-review:skip` regardless.
+    #
+    # FORKS ARE EXCLUDED, and this is a platform limit, not a preference. GitHub withholds
+    # secrets from `pull_request` runs on a forked PR and downgrades GITHUB_TOKEN to
+    # read-only, so this job cannot reach the model credential AND cannot post a comment —
+    # not even to explain itself. Without this guard, labeling an external PR produced a
+    # failed run and total silence. `expo-code-review-fork-hint.yml` now posts the "use
+    # /review" pointer for that case, and the `/review` command path (issue_comment) is
+    # what actually reviews a fork PR: it runs in base-repo context with full secrets.
     # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — spin-up avoidance only; real policy is config.jsonc review.trigger
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'ai-review') && !contains(github.event.pull_request.labels.*.name, 'ai-review:skip') }}
+    if: >-
+      ${{ !github.event.pull_request.head.repo.fork
+      && contains(github.event.pull_request.labels.*.name, 'ai-review')
+      && !contains(github.event.pull_request.labels.*.name, 'ai-review:skip') }}
     # Backstop so a stalled review fails fast instead of hanging. This is the ONE cap
     # with no soft landing (GitHub hard-kills the job and nothing is posted), so keep
     # margin over the worst-case internal chain: the passes budget
