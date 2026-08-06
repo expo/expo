@@ -117,7 +117,7 @@ struct MetricParamsBuilderTests {
   func `omits network request keys when summary is nil`() {
     let params = MetricParamsBuilder.build(userParams: ["tenant": "acme"])
     #expect(params["expo.network.requests.count"] == nil)
-    #expect(params["expo.network.requests.slowestHost"] == nil)
+    #expect(params["expo.network.requests.slowest.host"] == nil)
   }
 
   @Test
@@ -135,9 +135,12 @@ struct MetricParamsBuilderTests {
       bytesReceived: 12_000,
       bytesSent: 800,
       totalDuration: 1.4,
-      slowestDuration: 0.6,
-      slowestHost: "api.expo.dev",
-      slowestTimeToFirstByte: nil,
+      slowest: NetworkRequestSummary.SlowestRequest(
+        host: "api.expo.dev",
+        duration: 0.6,
+        timeToFirstByte: nil,
+        bytesReceived: nil
+      ),
       throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
@@ -146,8 +149,8 @@ struct MetricParamsBuilderTests {
     #expect(params["expo.network.requests.bytesReceived"] as? Int64 == 12_000)
     #expect(params["expo.network.requests.bytesSent"] as? Int64 == 800)
     #expect(params["expo.network.requests.totalDuration"] as? TimeInterval == 1.4)
-    #expect(params["expo.network.requests.slowestDuration"] as? TimeInterval == 0.6)
-    #expect(params["expo.network.requests.slowestHost"] as? String == "api.expo.dev")
+    #expect(params["expo.network.requests.slowest.duration"] as? TimeInterval == 0.6)
+    #expect(params["expo.network.requests.slowest.host"] as? String == "api.expo.dev")
   }
 
   @Test
@@ -192,9 +195,12 @@ struct MetricParamsBuilderTests {
       bytesReceived: 0,
       bytesSent: 0,
       totalDuration: 30.2,
-      slowestDuration: 30,
-      slowestHost: "slow.expo.dev",
-      slowestTimeToFirstByte: nil,
+      slowest: NetworkRequestSummary.SlowestRequest(
+        host: "slow.expo.dev",
+        duration: 30,
+        timeToFirstByte: nil,
+        bytesReceived: nil
+      ),
       throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
@@ -214,9 +220,12 @@ struct MetricParamsBuilderTests {
       bytesReceived: 10,
       bytesSent: 10,
       totalDuration: 0.1,
-      slowestDuration: 0.1,
-      slowestHost: "expo.dev",
-      slowestTimeToFirstByte: nil,
+      slowest: NetworkRequestSummary.SlowestRequest(
+        host: "expo.dev",
+        duration: 0.1,
+        timeToFirstByte: nil,
+        bytesReceived: nil
+      ),
       throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
@@ -232,13 +241,16 @@ struct MetricParamsBuilderTests {
       bytesReceived: 12_000,
       bytesSent: 800,
       totalDuration: 1.4,
-      slowestDuration: 0.6,
-      slowestHost: "api.expo.dev",
-      slowestTimeToFirstByte: 0.35,
+      slowest: NetworkRequestSummary.SlowestRequest(
+        host: "api.expo.dev",
+        duration: 0.6,
+        timeToFirstByte: 0.35,
+        bytesReceived: nil
+      ),
       throughputBytesPerSecond: 8571.4
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
-    #expect(params["expo.network.requests.slowestTimeToFirstByte"] as? TimeInterval == 0.35)
+    #expect(params["expo.network.requests.slowest.timeToFirstByte"] as? TimeInterval == 0.35)
     #expect(params["expo.network.requests.throughputBytesPerSecond"] as? Double == 8571.4)
   }
 
@@ -253,14 +265,17 @@ struct MetricParamsBuilderTests {
       bytesReceived: 0,
       bytesSent: 40,
       totalDuration: 0.2,
-      slowestDuration: 0.1,
-      slowestHost: "api.expo.dev",
-      slowestTimeToFirstByte: nil,
+      slowest: NetworkRequestSummary.SlowestRequest(
+        host: "api.expo.dev",
+        duration: 0.1,
+        timeToFirstByte: nil,
+        bytesReceived: nil
+      ),
       throughputBytesPerSecond: nil
     )
     let params = MetricParamsBuilder.build(networkRequests: summary)
     #expect(params["expo.network.requests.count"] as? Int == 2)
-    #expect(params["expo.network.requests.slowestTimeToFirstByte"] == nil)
+    #expect(params["expo.network.requests.slowest.timeToFirstByte"] == nil)
     #expect(params["expo.network.requests.throughputBytesPerSecond"] == nil)
   }
 

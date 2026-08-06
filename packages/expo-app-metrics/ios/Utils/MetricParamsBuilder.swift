@@ -61,17 +61,20 @@ enum MetricParamsBuilder {
       params["expo.network.requests.bytesReceived"] = networkRequests.bytesReceived
       params["expo.network.requests.bytesSent"] = networkRequests.bytesSent
       params["expo.network.requests.totalDuration"] = networkRequests.totalDuration
-      if let slowestDuration = networkRequests.slowestDuration {
-        params["expo.network.requests.slowestDuration"] = slowestDuration
+      if let slowest = networkRequests.slowest {
+        params["expo.network.requests.slowest.duration"] = slowest.duration
+        if let host = slowest.host {
+          params["expo.network.requests.slowest.host"] = host
+        }
+        if let timeToFirstByte = slowest.timeToFirstByte {
+          params["expo.network.requests.slowest.timeToFirstByte"] = timeToFirstByte
+        }
+        if let bytesReceived = slowest.bytesReceived {
+          params["expo.network.requests.slowest.bytesReceived"] = bytesReceived
+        }
       }
-      if let slowestHost = networkRequests.slowestHost {
-        params["expo.network.requests.slowestHost"] = slowestHost
-      }
-      // Omitted rather than zeroed when unavailable: a reused connection or a window of cache hits
-      // never measured these, and a 0 would read as "instant" on a dashboard.
-      if let slowestTimeToFirstByte = networkRequests.slowestTimeToFirstByte {
-        params["expo.network.requests.slowestTimeToFirstByte"] = slowestTimeToFirstByte
-      }
+      // Omitted rather than zeroed when unavailable: a window of cache hits never measured this, and
+      // a 0 would read as "instant" on a dashboard.
       if let throughputBytesPerSecond = networkRequests.throughputBytesPerSecond {
         params["expo.network.requests.throughputBytesPerSecond"] = throughputBytesPerSecond
       }
