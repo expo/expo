@@ -274,4 +274,24 @@ describe('embedding', () => {
       })
     );
   });
+
+  it(`warns instead of silently resolving to an empty URI when missing from the local asset map`, () => {
+    const { Asset } = require('../index');
+
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    const asset = Asset.fromMetadata({
+      name: 'missing',
+      type: 'mp4',
+      hash: 'notinthelocalassetmap',
+      fileHashes: ['notinthelocalassetmap'],
+      scales: [1],
+      httpServerLocation: '/assets/assets/video',
+    });
+
+    expect(asset.uri).toBe('');
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('local asset map'));
+
+    warn.mockRestore();
+  });
 });
