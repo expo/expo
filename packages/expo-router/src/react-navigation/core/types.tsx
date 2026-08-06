@@ -584,9 +584,11 @@ export type Descriptor<
   route: DescriptorRoute<Route>;
 
   /**
-   * Navigation object for the screen
+   * Navigation object for the screen. `undefined` when the descriptor
+   * describes a route name declared in a layout that has no live route
+   * instance in navigation state.
    */
-  navigation: Navigation;
+  navigation: Navigation | undefined;
 
   /**
    * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
@@ -678,7 +680,7 @@ export type RouteConfigProps<
     | ScreenListeners<State, EventMap>
     | ((props: {
         route: RouteProp<ParamList, RouteName>;
-        navigation: Navigation;
+        navigation: Navigation | undefined;
       }) => ScreenListeners<State, EventMap>);
 
   /**

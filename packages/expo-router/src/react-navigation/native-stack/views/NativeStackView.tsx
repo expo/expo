@@ -121,7 +121,7 @@ export function NativeStackView({ state, descriptors }: Props) {
                                     )
                                   : undefined
                               }
-                              onPress={navigation.goBack}
+                              onPress={navigation?.goBack}
                             />
                           )
                         : headerLeft

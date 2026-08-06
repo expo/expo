@@ -425,7 +425,7 @@ export type BottomTabHeaderProps = {
   /**
    * Navigation prop for the header.
    */
-  navigation: BottomTabNavigationProp<ParamListBase>;
+  navigation: BottomTabNavigationProp<ParamListBase> | undefined;
 };
 
 // TODO(@ubax): update docs — https://linear.app/expo/issue/ENG-25579/update-documentation-after-the-refactor

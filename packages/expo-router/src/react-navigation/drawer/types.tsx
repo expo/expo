@@ -239,7 +239,7 @@ export type DrawerHeaderProps = {
   /**
    * Navigation prop for the header.
    */
-  navigation: DrawerNavigationProp<ParamListBase>;
+  navigation: DrawerNavigationProp<ParamListBase> | undefined;
 };
 
 export type DrawerNavigationEventMap = {

@@ -292,7 +292,9 @@ export function BottomTabView(props: Props) {
                   header={header({
                     layout: dimensions,
                     route,
-                    navigation: descriptor.navigation as BottomTabNavigationProp<ParamListBase>,
+                    navigation: descriptor.navigation as
+                      | BottomTabNavigationProp<ParamListBase>
+                      | undefined,
                     options: descriptor.options,
                   })}
                   style={[customSceneStyle, animationEnabled && sceneStyle]}>

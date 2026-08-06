@@ -246,7 +246,7 @@ export type StackHeaderProps = {
   /**
    * Navigation prop for the header.
    */
-  navigation: StackNavigationProp<ParamListBase>;
+  navigation: StackNavigationProp<ParamListBase> | undefined;
   /**
    * Interpolated styles for various elements in the header.
    */

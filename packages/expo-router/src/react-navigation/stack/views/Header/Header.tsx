@@ -34,7 +34,7 @@ export const Header = React.memo(function Header({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const goBack = React.useCallback(
     throttle(() => {
-      if (navigation.isFocused() && navigation.canGoBack()) {
+      if (navigation?.isFocused() && navigation.canGoBack()) {
         navigation.dispatch({
           ...StackActions.pop(),
           source: route.key,

@@ -137,7 +137,7 @@ export type NativeStackHeaderProps = {
   /**
    * Navigation prop for the header.
    */
-  navigation: NativeStackNavigationProp<ParamListBase>;
+  navigation: NativeStackNavigationProp<ParamListBase> | undefined;
 };
 
 export type NativeStackHeaderItemProps = {

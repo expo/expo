@@ -120,7 +120,7 @@ export function HeaderContainer({
           progress: scene.progress,
           options: scene.descriptor.options,
           route: scene.route,
-          navigation: scene.descriptor.navigation as StackNavigationProp<ParamListBase>,
+          navigation: scene.descriptor.navigation as StackNavigationProp<ParamListBase> | undefined,
           styleInterpolator:
             mode === 'float'
               ? isHeaderStatic

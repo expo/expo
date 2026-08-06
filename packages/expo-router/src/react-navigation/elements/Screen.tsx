@@ -19,7 +19,7 @@ import { useFrameSize } from './useFrameSize';
 type Props = {
   focused: boolean;
   modal?: boolean;
-  navigation: NavigationProp<ParamListBase>;
+  navigation: NavigationProp<ParamListBase> | undefined;
   route: RouteProp<ParamListBase>;
   header: React.ReactNode;
   headerShown?: boolean;

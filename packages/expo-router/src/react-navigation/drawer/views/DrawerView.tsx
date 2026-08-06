@@ -261,7 +261,9 @@ function DrawerViewBase({
                 header={header({
                   layout: dimensions,
                   route,
-                  navigation: descriptor.navigation as DrawerNavigationProp<ParamListBase>,
+                  navigation: descriptor.navigation as
+                    | DrawerNavigationProp<ParamListBase>
+                    | undefined,
                   options: descriptor.options,
                 })}
                 style={sceneStyle}>

@@ -14,7 +14,7 @@ export const NavigationRouteContext = React.createContext<Route<string> | undefi
 
 type Props = {
   route: Route<string>;
-  navigation: NavigationProp<ParamListBase>;
+  navigation: NavigationProp<ParamListBase> | undefined;
   children: React.ReactNode;
 };
 
