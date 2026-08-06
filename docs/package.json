@@ -18,6 +18,7 @@
     "test": "pnpm generate-static-resources && node --experimental-strip-types --experimental-vm-modules ./node_modules/jest/bin/jest.js",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "sdk-beta": "node --experimental-strip-types ./scripts/sdk-release/beta.ts",
+    "sdk-promote": "node --experimental-strip-types ./scripts/sdk-release/promote.ts",
     "copy-latest": "node ./scripts/copy-latest.js",
     "generate-llms": "node --experimental-strip-types ./scripts/generate-llms/index.js",
     "generate-markdown-pages": "node --experimental-strip-types ./scripts/generate-markdown-pages.ts",
