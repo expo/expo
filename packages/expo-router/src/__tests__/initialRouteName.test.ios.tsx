@@ -1,10 +1,12 @@
-import { screen, act } from '@testing-library/react-native';
+import { screen, act, fireEvent } from '@testing-library/react-native';
 import { Text } from 'react-native';
 
 import { store } from '../global-state/router-store';
 import { useLocalSearchParams } from '../hooks';
 import { router } from '../imperative-api';
 import Stack from '../layouts/Stack';
+import Tabs from '../layouts/Tabs';
+import { Link } from '../link/Link';
 import { renderRouter } from '../testing-library';
 
 /**
@@ -85,6 +87,46 @@ it('render the initial route with local params', async () => {
   expect(screen).toHavePathname('/apple');
   expect(screen).toHaveSearchParams({ fruit: 'apple', id: '1' });
   expect(screen.getByTestId('first')).toHaveTextContent('{"fruit":"apple","id":"1"}');
+});
+
+it('withAnchor does not add a param-less anchor for a nested stack with only a dynamic route', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/index': () => null,
+      '(tabs)/social/_layout': () => (
+        <Stack>
+          <Stack.Screen name="index" />
+          <Stack.Screen name="users" />
+        </Stack>
+      ),
+      '(tabs)/social/index': () => (
+        <Link testID="user-link" href="/social/users/1" withAnchor>
+          User
+        </Link>
+      ),
+      '(tabs)/social/users/_layout': () => (
+        <Stack>
+          <Stack.Screen name="[userId]" />
+        </Stack>
+      ),
+      '(tabs)/social/users/[userId]': function User() {
+        return <Text testID="user">{useLocalSearchParams().userId}</Text>;
+      },
+    },
+    { initialUrl: '/social' }
+  );
+
+  fireEvent.press(screen.getByTestId('user-link'));
+
+  expect(screen.getByTestId('user')).toHaveTextContent('1');
+
+  act(() => router.back());
+
+  expect(screen.getByTestId('user')).not.toHaveTextContent('1');
+  expect(screen).toHavePathname('/social');
+  expect(screen.getByTestId('user-link')).toBeVisible();
 });
 
 it('push should include (group)/index as an anchor route when using withAnchor', () => {
