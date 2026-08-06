@@ -33,13 +33,30 @@ const __expoWidgetHandlePress = function (
 ) {
   const { target, ...renderEnvironment } = environment;
 
-  function findAndCallOnPress(node?: Dictionary): Dictionary | undefined {
-    const props = node?.props as {
-      onButtonPress?: () => Dictionary;
-      onButtonPressed?: () => Dictionary;
-      target?: string;
-      children?: unknown;
-    };
+  function findAndCallOnPress(node?: unknown): Dictionary | undefined {
+    if (!node || typeof node !== 'object') {
+      return undefined;
+    }
+
+    if (Array.isArray(node)) {
+      for (const child of node) {
+        const result = findAndCallOnPress(child);
+        if (result) {
+          return result;
+        }
+      }
+      return undefined;
+    }
+
+    const dictionary = node as Dictionary;
+    const props = dictionary.props as
+      | {
+          onButtonPress?: () => Dictionary;
+          onButtonPressed?: () => Dictionary;
+          target?: string;
+          children?: unknown;
+        }
+      | undefined;
     // TODO(@jakex7): on iOS it's named `onButtonPress` while on Android it's named `onButtonPressed`. We should unify this in the future.
     const onPress = props?.onButtonPress ?? props?.onButtonPressed;
     if (onPress && props?.target === target) {
@@ -47,7 +64,20 @@ const __expoWidgetHandlePress = function (
     }
 
     for (const child of React.Children.toArray(props?.children)) {
-      const result = findAndCallOnPress(child as Dictionary);
+      const result = findAndCallOnPress(child);
+      if (result) {
+        return result;
+      }
+    }
+
+    // Live Activity layouts return a map of presentation sections instead of
+    // a single React root. Traverse those sections after regular children.
+    for (const [key, section] of Object.entries(dictionary)) {
+      if (key === 'props') {
+        continue;
+      }
+
+      const result = findAndCallOnPress(section);
       if (result) {
         return result;
       }
@@ -55,7 +85,7 @@ const __expoWidgetHandlePress = function (
   }
 
   const node = globalThis.__expoWidgetRender(props, renderEnvironment);
-  return findAndCallOnPress(node as Dictionary);
+  return findAndCallOnPress(node);
 };
 
 Object.assign(globalThis, {
