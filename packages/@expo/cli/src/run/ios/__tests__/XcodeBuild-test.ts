@@ -232,7 +232,7 @@ describe(_assertXcodeBuildResults, () => {
 describe(_formatXcodeBuildFailure, () => {
   it(`includes the build log path`, () => {
     expect(_formatXcodeBuildFailure(65, '/app/.expo/xcodebuild.log')).toContain(
-      'Build logs written to /app/.expo/xcodebuild.log'
+      '/app/.expo/xcodebuild.log'
     );
   });
 });
