@@ -26,7 +26,7 @@ Another potential use case is to provide different updates to different users, f
 
 You can override request headers by calling [`Updates.setUpdateRequestHeadersOverride`](/versions/latest/sdk/updates/#updatessetupdaterequestheadersoverriderequestheaders). With EAS Update, overriding the `expo-channel-name` request header makes the app request updates from the specified channel.
 
-The object you pass to `setUpdateRequestHeadersOverride()` replaces the custom request headers configured in the build. Include any other custom request headers that the app still needs while the override is active.
+To override the `expo-channel-name` header at runtime, the native build must include it. When a build profile in **eas.json** defines `channel`, EAS Build sets this header automatically to that value. Builds created outside EAS Build (for example, with `npx expo run:android`) do not set it automatically. For those builds, declare the header in [`updates.requestHeaders`](/eas-update/getting-started/#configure-update-channels-in-appjson) in your app config, then rebuild the app.
 
 Provide a way for users to trigger the request header change in your app. This may be a hidden menu that only trusted users can access or another mechanism that fits your use case. After changing the request headers, call [`fetchUpdateAsync()`](/versions/latest/sdk/updates/#updatesfetchupdateasync) to fetch the update and [`reloadAsync()`](/versions/latest/sdk/updates/#updatesreloadasyncoptions) to reload the app. You can also wait for the next launch to fetch and install the update automatically.
 
@@ -43,7 +43,11 @@ await Updates.fetchUpdateAsync();
 await Updates.reloadAsync();
 ```
 
-> **info** You can only override a request header if the native build includes its name. When a build profile in **eas.json** defines `channel`, EAS Build includes the `expo-channel-name` header and sets it to that `channel` value. For example, a build created with the `production` profile and `"channel": "production"` requests updates from the `production` channel. If you build without EAS Build, add the header to [`updates.requestHeaders`](/eas-update/getting-started/#configure-update-channels-in-appjson) or the native project, then rebuild the app.
+<Collapsible summary="Can I override other request headers?">
+
+Yes. Any other header you want to override at runtime must be declared in [`updates.requestHeaders`](/eas-update/getting-started/#configure-update-channels-in-appjson) in your app config. The object you pass to `setUpdateRequestHeadersOverride()` replaces all custom request headers from the build, so include every header the app still needs while the override is active.
+
+</Collapsible>
 
 ## Override both update URL and request headers
 
