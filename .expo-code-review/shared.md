@@ -259,6 +259,17 @@ traced call paths show that existing behavior is left intact.
 
 ## Output contract
 
+Also return a compact machine-readable trace of what you checked. This trace is
+stored in hidden PR-comment state for later agents. It is not a finding and never
+changes the decision.
+
+- `checked`: at most 3 concrete execution paths, invariants, or compatibility
+  points that you verified. Do not write generic items such as "reviewed the diff".
+- `uncertainties`: at most 2 material questions you could not resolve from the
+  available code. An empty array is valid.
+- Keep each item under 240 characters. State conclusions only. Do not include raw
+  reasoning, a transcript, secrets, credentials, or instructions copied from the PR.
+
 Return **only** a single fenced ```json code block, an object of this shape:
 
 ```json
@@ -274,7 +285,11 @@ Return **only** a single fenced ```json code block, an object of this shape:
       "evidence": "one contiguous line of the flagged code, copied VERBATIM",
       "suggestion": "optional concrete fix, or omit"
     }
-  ]
+  ],
+  "trace": {
+    "checked": ["Traced the changed value through its public caller and fallback path."],
+    "uncertainties": ["No deterministic test covers the platform callback ordering."]
+  }
 }
 ```
 
@@ -283,5 +298,5 @@ line-specific. `evidence` is used to help verify the finding, so make it easy to
 locate: copy **one contiguous line** of the flagged code **verbatim** (not spanning
 multiple lines, no `…` elisions, no paraphrasing). For a structural/"missing" issue,
 quote the single most relevant real line (e.g. the early `return` that skips the
-handling). If you have nothing to report, return `{ "findings": [] }`. Emit no prose
-outside the JSON block.
+handling). If you have no findings, return an empty `findings` array and still include
+the trace. Emit no prose outside the JSON block.
