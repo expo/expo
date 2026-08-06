@@ -86,7 +86,7 @@ type ListenersFn = Extract<Props['screenListeners'], (...args: any) => any>;
 type OptionsFn = Extract<Props['screenOptions'], (...args: any) => any>;
 
 export const _listeners: ListenersFn = ({ route, navigation }) => {
-  navigation.navigate();
+  navigation?.navigate();
   // @ts-expect-error the route passed to screenListeners must not expose `href`.
   route.href;
   return { focus: () => route.name };

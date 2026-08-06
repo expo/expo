@@ -45,7 +45,7 @@ export type ScreenConfigWithParent<
 type ScreenLayout<ScreenOptions extends {}> = (props: {
   route: RouteProp<ParamListBase, string>;
   options: ScreenOptions;
-  navigation: any;
+  navigation: any | undefined;
   theme: ReactNavigation.Theme;
   children: React.ReactElement;
 }) => React.ReactElement;
@@ -55,7 +55,7 @@ type ScreenOptionsOrCallback<ScreenOptions extends {}> =
   | ScreenOptions
   | ((props: {
       route: DescriptorRouteProp<ParamListBase, string>;
-      navigation: any;
+      navigation: any | undefined;
       theme: ReactNavigation.Theme;
     }) => ScreenOptions);
 
@@ -154,14 +154,9 @@ export function useDescriptors<
 
   const getOptions = (
     route: DescriptorRouteProp<ParamListBase, string>,
-    navigation: NavigationProp<
-      ParamListBase,
-      string,
-      string | undefined,
-      State,
-      ScreenOptions,
-      EventMap
-    >,
+    navigation:
+      | NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions, EventMap>
+      | undefined,
     overrides: Record<string, ScreenOptions>
   ) => {
     const config = screens[route.name]!;

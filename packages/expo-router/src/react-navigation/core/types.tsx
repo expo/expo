@@ -72,7 +72,7 @@ export type DefaultNavigatorOptions<
     | ScreenListeners<State, EventMap>
     | ((props: {
         route: RouteProp<ParamList>;
-        navigation: Navigation;
+        navigation: Navigation | undefined;
       }) => ScreenListeners<State, EventMap>);
 
   /**
@@ -82,7 +82,7 @@ export type DefaultNavigatorOptions<
     | ScreenOptions
     | ((props: {
         route: DescriptorRouteProp<ParamList>;
-        navigation: Navigation;
+        navigation: Navigation | undefined;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);
 
@@ -543,7 +543,7 @@ export type ScreenLayoutArgs<
 > = {
   route: RouteProp<ParamList, RouteName>;
   options: ScreenOptions;
-  navigation: Navigation;
+  navigation: Navigation | undefined;
   theme: ReactNavigation.Theme;
   children: React.ReactElement;
 };
@@ -586,7 +586,8 @@ export type Descriptor<
   /**
    * Navigation object for the screen. `undefined` when the descriptor
    * describes a route name declared in a layout that has no live route
-   * instance in navigation state.
+   * instance in navigation state. The property is intentionally required so
+   * descriptor producers must set `navigation: undefined` explicitly.
    */
   navigation: Navigation | undefined;
 
@@ -669,7 +670,7 @@ export type RouteConfigProps<
     | ScreenOptions
     | ((props: {
         route: DescriptorRouteProp<ParamList, RouteName>;
-        navigation: Navigation;
+        navigation: Navigation | undefined;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);
 
@@ -736,7 +737,7 @@ export type RouteGroupConfig<
     | ScreenOptions
     | ((props: {
         route: DescriptorRouteProp<ParamList, keyof ParamList>;
-        navigation: Navigation;
+        navigation: Navigation | undefined;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);
 
