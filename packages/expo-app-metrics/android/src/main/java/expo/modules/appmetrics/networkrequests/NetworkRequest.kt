@@ -32,7 +32,11 @@ data class NetworkRequest(
   /** Number of bytes sent on the wire for the request (headers + body). */
   val requestBytesSent: Long?,
 
-  /** Number of bytes received on the wire for the response (headers + body). */
+  /**
+   * Number of bytes received on the wire for the response (headers + body), or `null` when the
+   * size wasn't reported: the request failed before a response, or the caller abandoned the body
+   * of a response that declared no `Content-Length`. Zero means a genuinely empty body.
+   */
   val responseBytesReceived: Long?,
 
   /** Phase-by-phase timings, populated from OkHttp `EventListener` callbacks where available. */

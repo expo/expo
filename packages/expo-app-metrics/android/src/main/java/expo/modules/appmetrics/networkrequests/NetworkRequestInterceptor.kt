@@ -218,11 +218,14 @@ internal fun buildSnapshot(
   } else {
     null
   }
-  val responseBytesReceived: Long? = response?.let {
-    val body = phases?.responseBodyBytes?.takeIf { it > 0 }
-      ?: it.body?.contentLength()?.takeIf { it > 0 }
-      ?: 0L
-    responseHeaderBytes + body
+  val responseBytesReceived: Long? = response?.let { received ->
+    val body = received.responseBodyByteCount(phases)
+    // `null` means the body size is genuinely unknown, so the whole count is unknown rather than
+    // the header estimate alone. Reporting headers-only would look like a measured near-empty
+    // response: it understates byte totals, and it still passes the `> 0` filter that decides
+    // which requests form the throughput ratio, so an unmeasured body would drag the denominator
+    // out with no bytes to match.
+    body?.let { responseHeaderBytes + it }
   }
 
   val timings = NetworkRequest.Timings(
@@ -253,6 +256,28 @@ internal fun buildSnapshot(
     redirects = redirects,
     isTimeout = error.isNetworkTimeout
   )
+}
+
+/**
+ * On-the-wire size of the response body, or `null` when it can't be determined.
+ *
+ * `EventListener.responseBodyEnd` is the source of truth: it fires on the network layer, below
+ * `GzipSource`, so it reports compressed bytes. It only fires once the caller drains the body,
+ * which a caller that abandons the response never does. `Content-Length` is the fallback for that
+ * case, and it's absent on a chunked response, which is how image and other streamed payloads
+ * usually arrive.
+ *
+ * Zero is a real measurement (a 204, or a 304 revalidation) and is reported as such. `null` is
+ * reserved for "nobody told us", so callers can tell an empty body from an unmeasured one.
+ */
+private fun Response.responseBodyByteCount(
+  phases: NetworkRequestEventListener.PhaseTimings?
+): Long? {
+  phases?.responseBodyBytes?.let {
+    return it
+  }
+  // `contentLength()` returns -1 when the header is absent, which is not a measurement.
+  return body?.contentLength()?.takeIf { it >= 0 }
 }
 
 /**
