@@ -113,23 +113,22 @@ describe('jsx-runtime-stub', () => {
     globalThis.__expoWidgetLayout = () => ({
       banner: jsx('Button', {
         label: 'Banner',
-        target: 'banner-target',
         onButtonPress: bannerPress,
       }),
       expandedCenter: jsx('View', {
         children: jsx('Button', {
           label: 'Expanded',
-          target: 'expanded-target',
           onButtonPress: expandedPress,
         }),
       }),
     });
 
-    const result = globalThis.__expoWidgetHandlePress(
-      {},
-      { timestamp: 1, target: 'expanded-target' }
-    );
+    const tree = globalThis.__expoWidgetRender({}, { timestamp: 1 }) as any;
+    const expandedTarget = tree.expandedCenter.props.children.props.target;
+    const result = globalThis.__expoWidgetHandlePress({}, { timestamp: 1, target: expandedTarget });
 
+    expect(tree.banner.props.target).toBe('__expo_widgets_target_0');
+    expect(expandedTarget).toBe('__expo_widgets_target_1');
     expect(result).toEqual({ section: 'expandedCenter' });
     expect(bannerPress).not.toHaveBeenCalled();
     expect(expandedPress).toHaveBeenCalledTimes(1);
