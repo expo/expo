@@ -5,7 +5,7 @@ import { use, useEffect, useMemo, useSyncExternalStore } from 'react';
 
 import { useContextKey } from '../Route';
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
-import { LoaderClientContext } from '../loaders/LoaderClient';
+import { LoaderContext } from '../loaders/LoaderContext';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { readLoaderData } from '../loaders/readLoaderData';
 import { fetchLoader } from '../loaders/utils';
@@ -34,14 +34,16 @@ type LoaderFunctionResult<T extends LoaderFunction<any>> =
  * }
  */
 export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunctionResult<T> {
+  const ctx = use(LoaderContext);
   const serverDataLoaderContext = use(ServerDataLoaderContext);
-  const loaderClient = use(LoaderClientContext);
+
+  const { client, store } = ctx;
 
   // Subscribe before any early returns so a later `loader-invalidate` re-renders this hook even
   // when the initial render was satisfied by `ServerDataLoaderContext` or `__EXPO_ROUTER_LOADER_DATA__`.
   // Returning early before subscribing would also change hook order on the next render once
   // invalidation deletes the injected global.
-  useSyncExternalStore(loaderClient.subscribe, loaderClient.getSnapshot, loaderClient.getSnapshot);
+  useSyncExternalStore(client.subscribe, client.getSnapshot, client.getSnapshot);
 
   const stateForPath = useStateForPath();
   const contextKey = useContextKey();
@@ -58,13 +60,17 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   useEffect(() => {
     // Hydration-seeded routes never reach a read miss, so invalidation can't refetch them
     // without a registered fetcher.
-    loaderClient.registerFetcher(resolvedPath, fetchLoader);
-    const unsubscribe = loaderClient.subscribeLoader(resolvedPath);
+    client.registerFetcher(resolvedPath, fetchLoader);
+    const unsubscribe = client.subscribeLoader(resolvedPath, (result, isCurrentSource) => {
+      if (isCurrentSource) {
+        store.set(resolvedPath, result);
+      }
+    });
     return () => {
-      loaderClient.suspense.dispose(resolvedPath);
-      unsubscribe();
+      store.dispose(resolvedPath);
+      unsubscribe(() => store.teardown(resolvedPath));
     };
-  }, [loaderClient, resolvedPath]);
+  }, [client, resolvedPath, store]);
 
   // First invocation of this hook will happen server-side, so we look up the loaded data from context
   if (serverDataLoaderContext) {
@@ -73,8 +79,12 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
 
   // The second invocation happens after the client has hydrated, so we seed the suspense store
   // with the preloaded data from `globalThis.__EXPO_ROUTER_LOADER_DATA__`
-  loaderClient.consumeHydrationData(resolvedPath);
+  const hydrationData = globalThis.__EXPO_ROUTER_LOADER_DATA__;
+  if (hydrationData && resolvedPath in hydrationData) {
+    store.seed(resolvedPath, hydrationData[resolvedPath]);
+    delete hydrationData[resolvedPath];
+  }
 
-  const result = readLoaderData<LoaderFunctionResult<T>>(loaderClient, resolvedPath, fetchLoader);
+  const result = readLoaderData<LoaderFunctionResult<T>>(ctx, resolvedPath, fetchLoader);
   return result instanceof Promise ? use(result) : result;
 }

@@ -1,21 +1,21 @@
-import type { LoaderClient } from './LoaderClient';
+import type { LoaderContextValue } from './LoaderContext';
 
 type LoaderFetcher<T> = (path: string) => Promise<T>;
 
 export function readLoaderData<T>(
-  client: LoaderClient,
+  { client, store }: LoaderContextValue,
   resolvedPath: string,
   fetcher: LoaderFetcher<T>
 ): T | Promise<T> {
-  const suspended = client.suspense.get<T>(resolvedPath);
+  const suspended = store.get<T>(resolvedPath);
   if (suspended instanceof Promise) {
     return suspended;
   }
   if (suspended) {
     if ('error' in suspended) {
       queueMicrotask(() => {
-        if (client.suspense.get(resolvedPath) === suspended) {
-          client.suspense.clear(resolvedPath);
+        if (store.get(resolvedPath) === suspended) {
+          store.clear(resolvedPath);
         }
       });
       throw suspended.error;
@@ -24,7 +24,10 @@ export function readLoaderData<T>(
   }
 
   const promise = new Promise<T>((resolve, reject) => {
-    const unsubscribe = client.subscribeLoader(resolvedPath, (result) => {
+    const unsubscribe = client.subscribeLoader(resolvedPath, (result, isCurrentSource) => {
+      if (isCurrentSource && store.get(resolvedPath) === promise) {
+        store.set(resolvedPath, result);
+      }
       unsubscribe();
       if ('error' in result) {
         reject(result.error);
@@ -34,6 +37,6 @@ export function readLoaderData<T>(
     });
     client.execute(resolvedPath, fetcher);
   });
-  client.suspense.set(resolvedPath, promise);
+  store.set(resolvedPath, promise);
   return promise;
 }
