@@ -28,6 +28,12 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   public let bytesSent: Int64
 
   /// Sum of `timings.totalDuration` across all requests. Can exceed wall-clock when requests overlap.
+  ///
+  /// Deliberately includes failures, unlike `slowest` and `throughputBytesPerSecond`, which describe
+  /// only requests that completed. That makes it the one field that still accounts for time the app
+  /// spent waiting on a request that never arrived: a window of timeouts reports the seconds they
+  /// burned here even though nothing else measures them. The cost is that it can dwarf the other
+  /// timings, since a single timeout contributes the client's whole timeout interval.
   public let totalDuration: TimeInterval
 
   /// The single longest-running request that completed, or `nil` when the window held none.
