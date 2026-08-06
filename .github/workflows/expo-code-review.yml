@@ -24,7 +24,7 @@ jobs:
       # need to change the reviewer version, prefer
       # editing this line over setting an ECR_VERSION repo variable: a variable silently
       # overrides this file and is invisible in code review.
-      ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.0' }}
+      ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.1' }}
     # OPT-IN ONLY. This repo takes far too many PRs to spin a runner for each one, so the
     # `ai-review` label is required here, not just inside `ecr ci`. Because the workflow
     # triggers on `labeled`, adding the label to an open PR starts the review immediately.
@@ -37,9 +37,10 @@ jobs:
     # secrets from `pull_request` runs on a forked PR and downgrades GITHUB_TOKEN to
     # read-only, so this job cannot reach the model credential AND cannot post a comment —
     # not even to explain itself. Without this guard, labeling an external PR produced a
-    # failed run and total silence. `expo-code-review-fork-hint.yml` now posts the "use
-    # /review" pointer for that case, and the `/review` command path (issue_comment) is
-    # what actually reviews a fork PR: it runs in base-repo context with full secrets.
+    # failed run and total silence. `expo-code-review-fork-hint.yml` now posts the
+    # review-command pointer for that case, and the `/review` or `/expo-review`
+    # command path (issue_comment) is what actually reviews a fork PR: it runs in
+    # base-repo context with full secrets.
     # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — spin-up avoidance only; real policy is config.jsonc review.trigger
     if: >-
       ${{ !github.event.pull_request.head.repo.fork

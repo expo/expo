@@ -2,9 +2,9 @@
 name: AI code review (command)
 
 # On-demand, ONE-SHOT reviewer triggered by a PR comment (maintainers only):
-#   /review                        run once now; the router picks the agents
-#   /review all                    run once with every agent
-#   /review correctness security   run once with just those agents
+#   /review (or /expo-review)                       run once; router picks agents
+#   /review all (or /expo-review all)               run once with every agent
+#   /review correctness security (either command)  run with just those agents
 # This never changes configuration. CONTINUOUS review is configured in
 # expo-code-review.yml (the `pull_request` workflow) via the `review.trigger`
 # policy in .expo-code-review/config.jsonc and the `ai-review:skip` label.
@@ -23,7 +23,7 @@ env:
   # Published reviewer run via npx (override with repo variable ECR_VERSION; pin to
   # a specific version to freeze it). Used for the guard AND the review so the engine
   # that clears a config is the same engine that then reads it.
-  ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.0' }}
+  ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.1' }}
 
 concurrency:
   group: ai-code-review-cmd-${{ github.event.issue.number }}
@@ -31,11 +31,11 @@ concurrency:
 
 jobs:
   command:
-    # Only PR comments starting with /review, from a maintainer.
+    # Only PR comments starting with /review or /expo-review, from a maintainer.
     # @ref LLP 0009#workflow-security-posture [implements] — gate controls who triggers, not what code runs
     if: >-
       github.event.issue.pull_request != null &&
-      startsWith(github.event.comment.body, '/review') &&
+      (startsWith(github.event.comment.body, '/review') || startsWith(github.event.comment.body, '/expo-review')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     # Bound the run so a slow/stalled review fails fast rather than hanging. Keep it
@@ -55,12 +55,13 @@ jobs:
           line=$(printf '%s' "$COMMENT" | head -n1 | tr -d '\r')
           verb=$(printf '%s' "$line" | awk '{print $1}')
           rest=$(printf '%s' "$line" | cut -s -d' ' -f2-)
-          # Only /review (one-shot). Continuous review is policy/label-driven, not a
-          # comment; /review no longer changes any configuration.
-          if [ "$verb" != "/review" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"; exit 0
-          fi
-          # Bare "/review" -> router picks; "all" -> every agent; names -> subset.
+          # Only /review or /expo-review (one-shot). Continuous review is
+          # policy/label-driven; neither command changes configuration.
+          case "$verb" in
+            /review|/expo-review) ;;
+            *) echo "run=false" >> "$GITHUB_OUTPUT"; exit 0 ;;
+          esac
+          # A bare command -> router picks; "all" -> every agent; names -> subset.
           # Sanitize agent ids to [a-zA-Z0-9,_-] to keep the value shell-safe.
           agents=""
           route=false
@@ -150,8 +151,8 @@ jobs:
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
           AGENTS: ${{ steps.cmd.outputs.agents }}
           ROUTE: ${{ steps.cmd.outputs.route }}
-        # NOTE: running via `issue_comment` makes this a manual /review, which the CLI
-        # detects (GITHUB_EVENT_NAME=issue_comment) and treats as a trigger-gate bypass
+        # NOTE: running via `issue_comment` makes this a manual review command, which
+        # the CLI detects (GITHUB_EVENT_NAME=issue_comment) and treats as a trigger-gate bypass
         # — it reviews even when the config trigger policy or an `ai-review:skip` label
         # would skip the auto workflow. The bypass affects ONLY the trigger gate; the
         # config guard above, break-glass, and the auth lock still apply.
@@ -167,10 +168,10 @@ jobs:
           fi
           npx --yes -p "@expo/code-review-cli@$ECR_VERSION" ecr ci "${ARGS[@]}"
 
-      # Same ephemeral per-run log as the pull_request workflow — a /review command
+      # Same ephemeral per-run log as the pull_request workflow — a review command
       # runs the full `ecr ci`, whose .expo-code-review/.runs/ log is gone when the
       # runner tears down. always() captures it even on error, gated on run=='true'
-      # (a non-/review comment writes no log); issue.number IS the PR number here
+      # (an unrelated comment writes no log); issue.number IS the PR number here
       # (issue_comment context has no pull_request.number).
       - name: Upload review run log
         if: always() && steps.cmd.outputs.run == 'true'

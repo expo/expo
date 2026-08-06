@@ -58,8 +58,9 @@ jobs:
           request, so the reviewer cannot reach its model credential there. This is a
           platform rule, not a setting we can change.
 
-          **A maintainer can comment `/review` on this PR instead.** That path runs in
-          the base repository's context, so it has the credential and works normally.
+          **A maintainer can comment `/review` or `/expo-review` on this PR instead.**
+          That path runs in the base repository's context, so it has the credential
+          and works normally.
           MARKDOWN
           gh pr comment "$PR" --repo "$REPO" --body-file /tmp/fork-hint.md
           echo "Posted the fork hint on #$PR."
