@@ -3,27 +3,60 @@
 import ExpoModulesCore
 import SwiftUI
 
+internal enum ContentShapeKind: String, Enumerable {
+  case interaction
+  case dragPreview
+  case contextMenuPreview
+  case hoverEffect
+  case accessibility
+
+  func toContentShapeKinds() -> ContentShapeKinds {
+    switch self {
+    case .interaction:
+      return .interaction
+    case .dragPreview:
+      return .dragPreview
+    case .contextMenuPreview:
+      return .contextMenuPreview
+    case .hoverEffect:
+      return .hoverEffect
+    case .accessibility:
+      return .accessibility
+    }
+  }
+}
+
 internal struct ContentShapeModifier: ViewModifier, Record {
   @Field var shape: ShapeType = .rectangle
   @Field var cornerRadius: CGFloat = 0
   @Field var roundedCornerStyle: RoundedCornerStyle?
   @Field var cornerSize: CornerSize?
+  @Field var kind: [ContentShapeKind]?
 
   @ViewBuilder
   func body(content: Content) -> some View {
     switch shape {
     case .capsule:
-      content.contentShape(makeCapsule(style: roundedCornerStyle))
+      applyContentShape(content, makeCapsule(style: roundedCornerStyle))
     case .circle:
-      content.contentShape(Circle())
+      applyContentShape(content, Circle())
     case .containerRelativeShape:
-      content.contentShape(ContainerRelativeShape())
+      applyContentShape(content, ContainerRelativeShape())
     case .ellipse:
-      content.contentShape(Ellipse())
+      applyContentShape(content, Ellipse())
     case .rectangle:
-      content.contentShape(Rectangle())
+      applyContentShape(content, Rectangle())
     case .roundedRectangle:
-      content.contentShape(makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
+      applyContentShape(content, makeRoundedRectangle(cornerRadius: cornerRadius, cornerSize: cornerSize, style: roundedCornerStyle))
+    }
+  }
+
+  @ViewBuilder
+  private func applyContentShape(_ content: Content, _ shape: some Shape) -> some View {
+    if let kind, !kind.isEmpty {
+      content.contentShape(ContentShapeKinds(kind.map { $0.toContentShapeKinds() }), shape)
+    } else {
+      content.contentShape(shape)
     }
   }
 }
