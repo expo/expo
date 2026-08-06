@@ -3,7 +3,14 @@ import { Checkbox } from 'expo-checkbox';
 import { isLiquidGlassAvailable } from 'expo-glass-effect';
 import { useObserve } from 'expo-observe';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {
+  FlatList,
+  type LayoutChangeEvent,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { useTheme } from '../../common/ThemeProvider';
 import { getTestModules, Module } from '../TestModules';
@@ -49,7 +56,7 @@ export default function SelectScreen({ onRunTests }: { onRunTests: (tests: strin
   const [modules, setModules] = useState<Module[]>([]);
   const [footerHeight, setFooterHeight] = useState(0);
 
-  const onFooterLayout = useCallback((e) => {
+  const onFooterLayout = useCallback((e: LayoutChangeEvent) => {
     setFooterHeight(e.nativeEvent.layout.height);
   }, []);
 
@@ -86,7 +93,7 @@ export default function SelectScreen({ onRunTests }: { onRunTests: (tests: strin
     setModules(getTestModules());
   }, []);
 
-  const keyExtractor = useCallback(({ name }) => name, []);
+  const keyExtractor = useCallback(({ name }: Module) => name, []);
 
   const onPressItem = useCallback((id: string) => {
     setSelected((prev) => {
