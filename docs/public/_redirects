@@ -635,3 +635,14 @@
 /index.md /index.md 200
 /*/index.md /:splat/index.md 200
 /*.md /:splat/index.md 200
+
+# Retired llms full-context bundles; only the /llms.txt index remains
+/llms-full.txt /llms.txt 301
+/llms-eas.txt /llms.txt 301
+/llms-sdk.txt /llms.txt 301
+/llms-sdk-v51.0.0.txt /llms.txt 301
+/llms-sdk-v52.0.0.txt /llms.txt 301
+/llms-sdk-v53.0.0.txt /llms.txt 301
+/llms-sdk-v54.0.0.txt /llms.txt 301
+/llms-sdk-v55.0.0.txt /llms.txt 301
+/llms-sdk-v56.0.0.txt /llms.txt 301
