@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Expose stable ActivityKit identifiers on Live Activity instances.
 - [Android] Create a JS bundle for widgets. ([#46286](https://github.com/expo/expo/pull/46286) by [@jakex7](https://github.com/jakex7))
 - [iOS] Expose ActivityKit's `staleDate` on `LiveActivity.start()` and `LiveActivity.update()`. ([#46343](https://github.com/expo/expo/pull/46343) by [@KyleAsaff](https://github.com/KyleAsaff))
 - Add an initial layout registry for widgets. ([#46501](https://github.com/expo/expo/pull/46501) by [@jakex7](https://github.com/jakex7))
@@ -22,6 +23,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Restore push token observation when retrieving existing Live Activities.
 - [Android] Add 16KB page size support. ([#47135](https://github.com/expo/expo/pull/47135) by [@jakex7](https://github.com/jakex7))
 - [iOS][plugin] Only add the `aps-environment` entitlement when `enablePushNotifications` is enabled, and keep a pre-existing value. ([#47645](https://github.com/expo/expo/pull/47645) by [@kadikraman](https://github.com/kadikraman))
 - [Android] Fix modifiers type cast. ([#47616](https://github.com/expo/expo/pull/47721) by [@jakex7](https://github.com/jakex7))
