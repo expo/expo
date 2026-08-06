@@ -63,10 +63,24 @@ class DevLauncherManifestParser(
 
   private fun resolveUrl(rawUrl: String): String {
     return try {
-      URI(url.toString()).resolve(rawUrl).toString()
+      URI(url.toString()).withRootPath().resolve(rawUrl).toString()
     } catch (e: Exception) {
       rawUrl
     }
+  }
+
+  /**
+   * Works around Android's [URI.resolve] dropping the separator between the authority and a
+   * path-relative reference when the base path is empty, which splices the reference's first
+   * segment onto the port. Only the base is adjusted, so non-HTTP bases such as `exp://` still
+   * resolve.
+   */
+  private fun URI.withRootPath(): URI {
+    if (rawAuthority == null || !rawPath.isNullOrEmpty()) {
+      return this
+    }
+    // A base query or fragment is dropped during resolution anyway, so it doesn't need carrying.
+    return URI("$scheme://$rawAuthority/")
   }
 
   private fun getHeaders(): Headers {
