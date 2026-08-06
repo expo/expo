@@ -4,20 +4,21 @@ import { useRouteNode } from '../Route';
 import { router } from '../imperative-api';
 import { normalizeRouteName, useGuardRedirect } from '../layouts/GuardContext';
 import {
-  type NavigationRoute,
+  type Descriptor,
   type ParamListBase,
-  type RouteSource,
+  type RouteProp,
   useIsFocused,
 } from '../react-navigation/native';
 import { orderRoutesByRouteNames } from '../utils/orderRoutesByRouteNames';
+import type { StandardNavigatorDescriptor } from './types';
 import { useBuildHref } from './useBuildHref';
 
-type TabRoute = NavigationRoute<ParamListBase, string>;
+export type TabRoute = RouteProp<ParamListBase, string>;
 
-type TabDescriptor<Options extends object> = {
-  routeSource?: RouteSource;
-  options?: Options;
-};
+export type TabDescriptor<Options extends object> = Partial<
+  Pick<StandardNavigatorDescriptor<Options>, 'routeSource' | 'options' | 'render'> &
+    Pick<Descriptor<Options, never, RouteProp<ParamListBase, string>>, 'route'>
+>;
 
 /**
  * Returns the visible layout tabs and their focused index. When the navigator is focused, redirects
@@ -57,7 +58,7 @@ export function useVisibleTabsWithRedirect<
     () => visibleRoutes.findIndex((route) => route.key === focusedRouteKey),
     [focusedRouteKey, visibleRoutes]
   );
-  const focusedIndex = visibleFocusedIndex >= 0 ? visibleFocusedIndex : 0;
+  const focusedIndex = visibleFocusedIndex;
 
   const redirectHref = useMemo(() => {
     if (guardRedirect !== undefined) {

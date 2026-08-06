@@ -361,7 +361,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                     key: expect.any(String),
                     name: 'b',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -370,7 +369,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                       params: {},
                       screen: 'one',
                     },
-                    path: undefined,
                     state: {
                       index: 2,
                       key: expect.any(String),
