@@ -8,6 +8,11 @@ module.exports = {
   rootDir: path.resolve(__dirname),
   displayName: require('./package').name,
   roots,
+  moduleNameMapper: {
+    // Relative dynamic imports in `src` are written with the `.js` extension of the built output,
+    // so strip it to resolve the `.ts` source.
+    '^(\\.{1,2}/.*)\\.js$': '$1',
+  },
   setupFiles: ['<rootDir>/jest.setup.ts'],
   clearMocks: true,
 };
