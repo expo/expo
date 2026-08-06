@@ -281,14 +281,14 @@ export function BottomTabView(props: Props) {
                 value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
                 <Screen
                   focused={isFocused}
-                  route={descriptor.route}
+                  route={route}
                   navigation={descriptor.navigation}
                   headerShown={headerShown}
                   headerStatusBarHeight={headerStatusBarHeight}
                   headerTransparent={headerTransparent}
                   header={header({
                     layout: dimensions,
-                    route: descriptor.route,
+                    route,
                     navigation: descriptor.navigation as BottomTabNavigationProp<ParamListBase>,
                     options: descriptor.options,
                   })}

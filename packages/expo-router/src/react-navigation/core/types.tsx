@@ -549,6 +549,15 @@ export type ScreenLayoutArgs<
  */
 export type RouteSource = 'layout' | 'filesystem';
 
+/**
+ * Route carried by a descriptor. `key` is `undefined` when the descriptor
+ * describes a route name declared in a layout that has no live route
+ * instance in navigation state.
+ */
+export type DescriptorRoute<Route extends RouteProp<any, any>> = Route extends unknown
+  ? Omit<Route, 'key'> & Readonly<{ key: string | undefined }>
+  : never;
+
 export type Descriptor<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
@@ -568,7 +577,7 @@ export type Descriptor<
   /**
    * Route object for the screen
    */
-  route: Route;
+  route: DescriptorRoute<Route>;
 
   /**
    * Navigation object for the screen

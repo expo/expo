@@ -250,14 +250,14 @@ function DrawerViewBase({
               shouldFreeze={!isFocused && !isPreloaded}>
               <Screen
                 focused={isFocused}
-                route={descriptor.route}
+                route={route}
                 navigation={descriptor.navigation}
                 headerShown={headerShown}
                 headerStatusBarHeight={headerStatusBarHeight}
                 headerTransparent={headerTransparent}
                 header={header({
                   layout: dimensions,
-                  route: descriptor.route,
+                  route,
                   navigation: descriptor.navigation as DrawerNavigationProp<ParamListBase>,
                   options: descriptor.options,
                 })}
