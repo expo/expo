@@ -233,7 +233,7 @@ If you need to link from one MDX file to another, use the static/full path to th
 - From: **tutorial/button.mdx**, to: **introduction/expo.mdx** -> `/introduction/expo`
 - From: **index.mdx**, to: **guides/errors.mdx#tracking-js-errors** -> `/guides/errors/#tracking-javascript-errors`
 
-Validate all current links by running `pnpm lint-links` script.
+Validate all current links by running the `pnpm check-internal-links` script after a build (it scans the exported site in **out**).
 
 ### Update latest version of API reference docs
 

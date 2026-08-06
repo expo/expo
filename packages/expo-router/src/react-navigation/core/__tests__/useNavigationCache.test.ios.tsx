@@ -120,7 +120,12 @@ test('returns correct value for isFocused after changing screens', () => {
     return {
       ...router,
 
-      getStateForRouteNamesChange(state, { routeNames }) {
+      getStateForAction(state, action, options) {
+        if (action.type !== 'ROUTE_NAMES_CHANGED') {
+          return router.getStateForAction(state, action, options);
+        }
+
+        const { routeNames } = action.payload;
         const routes = routeNames.map(
           (name) =>
             state.routes.find((r) => r.name === name) || {

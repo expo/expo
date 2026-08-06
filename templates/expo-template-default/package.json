@@ -2,6 +2,11 @@
   "name": "expo-template-default",
   "version": "57.0.11",
   "license": "0BSD",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "templates/expo-template-default"
+  },
   "main": "expo-router/entry",
   "scripts": {
     "start": "expo start",
