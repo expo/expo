@@ -20,6 +20,11 @@ async function loadAssetsAsync() {
     Font.loadAsync({
       'space-mono': require('../../assets/fonts/SpaceMono-Regular.ttf'),
     }),
+    // A variable font: one file holding `wght` and `slnt` axes, with a named instance per weight
+    // and an italic counterpart for each.
+    Font.loadAsync({
+      'RobotoFlex-variable': require('../../assets/fonts/RobotoFlex.ttf'),
+    }),
     Font.loadAsync({
       'Inter-Black': require('../../assets/fonts/Inter/Inter-Black.otf'),
       'Inter-BlackItalic': require('../../assets/fonts/Inter/Inter-BlackItalic.otf'),
