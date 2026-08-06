@@ -49,6 +49,39 @@ right answer.
   `InvalidTypeFileException`. Compare against the siblings in the same file.
 - **String and byte handling that assumes single-byte characters or a fixed width.**
 
+### Researching a platform API claim
+
+**Research the API before you assert anything about it.** You have `Read`, `Grep`
+and `Glob` over this repository and nothing else — no network, no web search, no
+androidx or Play Services sources, no `Bash`, no Gradle cache. Never state a
+platform guarantee, an API level, or an SDK behavior from memory as though you
+verified it. Before reporting, look for corroboration in this order:
+
+1. **React Native's own Android source, vendored in-tree.** It is here, not
+   external:
+   `react-native-lab/react-native/packages/react-native/ReactAndroid/src/main/java/com/facebook/react/`
+   (currently 0.86.2). If a diff's comment claims RN behaves a certain way, open
+   the file and check.
+2. **A sibling Expo package that already calls the same API.** This is the
+   strongest evidence available to you, and it is what this repo's reviewers
+   actually cite — a package that already uses `Target.SIZE_ORIGINAL`, already
+   guards an API level, or already routes through the shared `OkHttpClient`
+   establishes the pattern the diff should match.
+3. **`expo-modules-core`'s own definitions.** Read the DSL you believe is violated
+   rather than assuming its behavior.
+4. **The package's `android/build.gradle` and `AndroidManifest.xml`** for
+   dependency versions and declared permissions before reasoning about
+   availability, and the module's `proguard-rules.pro` before claiming an R8 gap.
+
+You cannot read androidx, Play Services, Media3, or Glide sources — they are not
+in the tree. So for any claim about *their* behavior, either point at an in-repo
+call site that demonstrates it, or say you could not verify it. If none of those
+settle it, **do not upgrade a guess into a finding.** Report it at lower
+confidence with the specific question named, or put it in `uncertainties` and say
+exactly what would resolve it — "a device run on API 28", "the published AAR",
+"a release build with minification". A precise uncertainty is more useful to the
+author than a confident wrong claim.
+
 ### SDK level gating
 
 `minSdk` is 24 and `targetSdk` is 36, so twelve API levels of behavior change sit

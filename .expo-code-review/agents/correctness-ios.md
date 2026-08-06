@@ -60,8 +60,39 @@ right answer.
 
 ### Apple framework semantics
 
-Defects that need knowledge of what the framework actually guarantees. Verify
-against documentation or a real device before reporting, and say which.
+Defects that need knowledge of what the framework actually guarantees.
+
+**Research the API before you assert anything about it.** You have `Read`, `Grep`
+and `Glob` over this repository and nothing else — no network, no web search, no
+Apple SDK headers, no `Bash`. Never state a framework guarantee from memory as
+though you verified it. Before reporting a semantics-based finding, look for
+corroboration in this order:
+
+1. **React Native's own source, vendored in-tree.** It is here, not external:
+   `react-native-lab/react-native/packages/react-native/` (currently 0.86.2) —
+   `ReactCommon/react/renderer/…` for the C++/Objective-C++ renderer,
+   `Libraries/` for the JavaScript side. If a diff's comment claims RN behaves a
+   certain way (trait matching, font fallback, view flattening), open the file and
+   check. A previous reviewer wrongly recorded `RCTFontUtils.mm` as unverifiable
+   "outside this repo" when it sits at
+   `ReactCommon/react/renderer/textlayoutmanager/platform/ios/react/renderer/textlayoutmanager/RCTFontUtils.mm`.
+2. **A sibling Expo package that already calls the same API.** This is the
+   strongest evidence available to you, and it is what this repo's reviewers
+   actually cite. If three packages set `isNetworkAccessAllowed = true` on PhotoKit
+   paths, the pattern is established; if one package uses a sentinel and the diff
+   invents another, that asymmetry is the finding.
+3. **`expo-modules-core`'s own definitions.** Read the DSL you believe is violated
+   — `AsyncFunctionDefinition`, `SharedObject`, `Convertible`, `SceneGeometry` —
+   rather than assuming its behavior.
+4. **The package's `.podspec`** for deployment targets and platform availability
+   before reasoning about an `#available` guard or a dead branch.
+
+If none of those settle it, **do not upgrade a guess into a finding.** Either
+report it at lower confidence with the specific question named, or put it in
+`uncertainties` and say exactly what would resolve it — "a device run", "an Xcode
+build", "Apple's `@available` annotation for `ContentShapeKinds.hoverEffect`".
+A precise uncertainty is more useful to the author than a confident wrong claim,
+and the shared rules already rank confidence separately from impact.
 
 - `AVQueuePlayer` advances forward only. An item played to its end will not replay
   if re-inserted, so an edit at or before the current index requires rebuilding the
