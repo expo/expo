@@ -9,6 +9,7 @@ import {
   Dimensions,
   FlatList,
   ListRenderItem,
+  Platform,
   RefreshControl,
   StyleSheet,
   View,
@@ -17,6 +18,7 @@ import {
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
+import TitledSwitch from '../../components/TitledSwitch';
 import Colors from '../../constants/Colors';
 import MediaLibraryCell from './MediaLibraryCell';
 
@@ -191,10 +193,14 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
 
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
+  const [resolveWithFullInfo, setResolveWithFullInfo] = React.useState(false);
+  const [fetchTimingPreview, setFetchTimingPreview] = React.useState<string | null>(null);
+
   // Update without showing the refresh indicator whenever the sorting parameters change.
   React.useEffect(() => {
     dispatch({ type: 'reset', refreshing: false });
-  }, [mediaType, sortBy, albumId]);
+    setFetchTimingPreview(null);
+  }, [mediaType, sortBy, albumId, resolveWithFullInfo]);
 
   const toggleMediaType = React.useCallback(() => {
     setMediaType(mediaTypeStates[mediaType]);
@@ -217,6 +223,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
 
     try {
       // Make a native request for assets.
+      const start = performance.now();
       const { assets, endCursor, hasNextPage } = await MediaLibrary.getAssetsAsync({
         first: PAGE_SIZE,
         after: state.endCursor ?? undefined,
@@ -224,7 +231,10 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
         mediaSubtypes: [],
         sortBy,
         album: albumId,
+        resolveWithFullInfo,
       });
+      const elapsedMs = performance.now() - start;
+      setFetchTimingPreview(`${assets.length} assets in ${elapsedMs}ms`);
 
       // Get the last asset currently in the state.
       const lastAsset = state.assets[state.assets.length - 1];
@@ -245,7 +255,15 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
       // Toggle this back to false in a finally to ensure we can reload later, even if an error ocurred.
       isLoadingAssets.current = false;
     }
-  }, [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, albumId]);
+  }, [
+    state.endCursor,
+    state.hasNextPage,
+    state.assets,
+    mediaType,
+    sortBy,
+    albumId,
+    resolveWithFullInfo,
+  ]);
 
   // Fetch data whenever the state.fetching value is true.
   React.useEffect(() => {
@@ -321,6 +339,16 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
           />
           <Button style={styles.button} title={`Sort by key: ${sortBy}`} onPress={toggleSortBy} />
         </View>
+        {Platform.OS === 'android' && (
+          <TitledSwitch
+            title="Resolve with full info"
+            value={resolveWithFullInfo}
+            setValue={setResolveWithFullInfo}
+          />
+        )}
+        {fetchTimingPreview != null && (
+          <BodyText style={styles.fetchTimingPreview}>{fetchTimingPreview}</BodyText>
+        )}
         {accessPrivileges === 'limited' && (
           <View style={styles.headerButtons}>
             <Button
@@ -338,7 +366,17 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
         )}
       </View>
     );
-  }, [mediaType, albumId, albumTitle, sortBy, toggleMediaType, toggleSortBy]);
+  }, [
+    mediaType,
+    albumId,
+    albumTitle,
+    sortBy,
+    toggleMediaType,
+    toggleSortBy,
+    resolveWithFullInfo,
+    fetchTimingPreview,
+    accessPrivileges,
+  ]);
 
   const renderFooter = React.useCallback(() => {
     if (state.refreshing) {
@@ -417,5 +455,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  fetchTimingPreview: {
+    marginTop: 8,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });

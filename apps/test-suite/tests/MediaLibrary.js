@@ -442,6 +442,23 @@ export async function test(t) {
             t.expect(asset.creationTime).toBeGreaterThanOrEqual(createdAfter);
           }
         });
+
+        if (Platform.OS === 'android') {
+          t.it('resolveWithFullInfo returns numeric location when available', async () => {
+            const { assets } = await MediaLibrary.getAssetsAsync({
+              album,
+              first: 5,
+              resolveWithFullInfo: true,
+            });
+            t.expect(assets.length).toBeGreaterThan(0);
+            assets.forEach((asset) => {
+              if (asset.location != null) {
+                t.expect(typeof asset.location.latitude).toBe('number');
+                t.expect(typeof asset.location.longitude).toBe('number');
+              }
+            });
+          });
+        }
       });
 
       t.describe('getAssetInfoAsync', () => {
