@@ -328,8 +328,9 @@ export type AssetsOptions = {
    */
   createdBefore?: Date | number;
   /**
-   * Whether to resolve full info for the assets during the query.
-   * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+   * Whether to resolve full EXIF metadata for image assets during the query.
+   * When enabled, returned assets include EXIF data (including orientation) and GPS location.
+   * On iOS, GPS location is populated even when this option is not set.
    * @default false
    * @platform android
    */
@@ -856,8 +857,10 @@ export async function deleteAlbumsAsync(
 // @needsAudit
 /**
  * Fetches a page of assets matching the provided criteria.
+ * Returned assets may include a `location` field when GPS metadata is available.
+ * On iOS, location is included by default. On Android, it is included when `resolveWithFullInfo: true`.
  * @param assetsOptions
- * @return A promise that fulfils with to [`PagedInfo`](/versions/latest/sdk/media-library-legacy/#pagedinfo) object with array of [`Asset`](#asset)s.
+ * @return A promise that fulfils with a [`PagedInfo`](/versions/latest/sdk/media-library-legacy/#pagedinfo) object with an array of [`Asset`](#asset)s.
  */
 export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise<PagedInfo<Asset>> {
   if (!MediaLibrary.getAssetsAsync) {
