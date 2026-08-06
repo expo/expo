@@ -4,6 +4,7 @@ import React from 'react';
 import { Text } from 'react-native';
 
 import { router, Slot } from '../../exports';
+import { store as routerStore } from '../../global-state/store';
 import Tabs from '../../layouts/Tabs';
 import { LoaderClient } from '../../loaders/LoaderClient';
 import {
@@ -11,6 +12,7 @@ import {
   defaultLoaderContextValue,
   LoaderContext,
 } from '../../loaders/LoaderContext';
+import { sweepLoaderRoutes } from '../../loaders/LoaderNavigation';
 import { ServerDataLoaderContext } from '../../loaders/ServerDataLoaderContext';
 import { fetchLoader } from '../../loaders/utils';
 import { renderRouter } from '../../testing-library';
@@ -20,6 +22,8 @@ import { renderHook } from './renderHook';
 jest.mock('../../loaders/utils', () => ({
   fetchLoader: jest.fn(),
 }));
+
+const getSignal = (requestInit: RequestInit) => requestInit.signal as AbortSignal;
 
 describe(useLoaderData, () => {
   const originalWindow = global.window;
@@ -148,7 +152,10 @@ describe(useLoaderData, () => {
       wrapper: LoaderWrapper,
     });
     expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
-    expect(fetchLoaderMock).toHaveBeenCalledWith('/index');
+    expect(fetchLoaderMock).toHaveBeenCalledWith(
+      '/index',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
   });
 
   it('retrieves fresh data from `fetchLoaderModule()`', async () => {
@@ -169,7 +176,10 @@ describe(useLoaderData, () => {
       wrapper: LoaderWrapper,
     });
 
-    expect(fetchLoaderMock).toHaveBeenCalledWith('/users/123');
+    expect(fetchLoaderMock).toHaveBeenCalledWith(
+      '/users/123',
+      expect.objectContaining({ signal: expect.any(AbortSignal) })
+    );
 
     await act(async () => {
       await fetchLoaderMock.mock.results[0]!.value;
@@ -336,6 +346,188 @@ describe(useLoaderData, () => {
       data: { live: true },
     });
     expect(loaderContextValue.store.get('/inactive')).toBeUndefined();
+  });
+
+  it('aborts a suspended load on Back and fetches a new generation on revisit', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    const signals: AbortSignal[] = [];
+    const resolvers: ((value: unknown) => void)[] = [];
+    fetchLoaderMock.mockImplementation((_path, requestInit) => {
+      const signal = getSignal(requestInit);
+      return new Promise((resolve, reject) => {
+        signals.push(signal);
+        resolvers.push(resolve);
+        signal.addEventListener('abort', () => reject(signal.reason));
+      });
+    });
+
+    function SlowScreen() {
+      const data = useLoaderData();
+      return <Text>{JSON.stringify(data)}</Text>;
+    }
+
+    renderRouter(
+      {
+        index: () => <Text>Home</Text>,
+        slow: () => (
+          <React.Suspense fallback={<Text>Loading</Text>}>
+            <SlowScreen />
+          </React.Suspense>
+        ),
+      },
+      { initialUrl: '/' }
+    );
+    jest.useRealTimers();
+
+    await act(async () => router.push('/slow'));
+    expect(signals).toHaveLength(1);
+
+    await act(async () => router.back());
+    sweepLoaderRoutes(defaultLoaderContextValue, routerStore.state);
+    expect(signals[0]!.aborted).toBe(true);
+    expect(defaultLoaderContextValue.store.get('/slow')).toBeUndefined();
+
+    await act(async () => router.push('/slow'));
+    expect(signals).toHaveLength(2);
+    expect(signals[1]).not.toBe(signals[0]);
+
+    await act(async () => {
+      resolvers[1]!('fresh');
+    });
+    expect(defaultLoaderContextValue.store.get('/slow')).toEqual({
+      data: 'fresh',
+    });
+  });
+
+  it('does not abandon a suspended route when switching tabs', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    let signal!: AbortSignal;
+    let resolveFetch!: (value: unknown) => void;
+    fetchLoaderMock.mockImplementation(
+      (_path, requestInit) =>
+        new Promise((resolve) => {
+          signal = getSignal(requestInit);
+          resolveFetch = resolve;
+        })
+    );
+
+    function Profile() {
+      const data = useLoaderData();
+      return <Text>{JSON.stringify(data)}</Text>;
+    }
+
+    renderRouter(
+      {
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="profile" />
+          </Tabs>
+        ),
+        index: () => <Text>Home</Text>,
+        profile: () => (
+          <React.Suspense fallback={<Text>Loading</Text>}>
+            <Profile />
+          </React.Suspense>
+        ),
+      },
+      { initialUrl: '/' }
+    );
+    jest.useRealTimers();
+
+    await act(async () => router.push('/profile'));
+    await act(async () => router.push('/'));
+    sweepLoaderRoutes(defaultLoaderContextValue, routerStore.state);
+
+    expect(signal.aborted).toBe(false);
+    expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => {
+      resolveFetch('profile');
+    });
+    expect(defaultLoaderContextValue.store.get('/profile')).toEqual({
+      data: 'profile',
+    });
+  });
+
+  it('keeps a shared pending path until its final duplicate route instance leaves', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    let signal!: AbortSignal;
+    fetchLoaderMock.mockImplementation((_path, requestInit) => {
+      const executionSignal = getSignal(requestInit);
+      return new Promise((_, reject) => {
+        signal = executionSignal;
+        executionSignal.addEventListener('abort', () => reject(executionSignal.reason));
+      });
+    });
+
+    function Post() {
+      const data = useLoaderData();
+      return <Text>{JSON.stringify(data)}</Text>;
+    }
+
+    renderRouter(
+      {
+        index: () => <Text>Home</Text>,
+        'posts/[id]': () => (
+          <React.Suspense fallback={<Text>Loading</Text>}>
+            <Post />
+          </React.Suspense>
+        ),
+      },
+      { initialUrl: '/' }
+    );
+    jest.useRealTimers();
+
+    await act(async () => router.push('/posts/1'));
+    await act(async () => router.push('/posts/1'));
+    expect(fetchLoaderMock).toHaveBeenCalledTimes(1);
+
+    await act(async () => router.back());
+    sweepLoaderRoutes(defaultLoaderContextValue, routerStore.state);
+    expect(signal.aborted).toBe(false);
+
+    await act(async () => router.back());
+    sweepLoaderRoutes(defaultLoaderContextValue, routerStore.state);
+    expect(signal.aborted).toBe(true);
+  });
+
+  it('abandons the old pending path when navigation reuses a route key with new params', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    const signals: AbortSignal[] = [];
+    fetchLoaderMock.mockImplementation((_path, requestInit) => {
+      const signal = getSignal(requestInit);
+      return new Promise((_, reject) => {
+        signals.push(signal);
+        signal.addEventListener('abort', () => reject(signal.reason));
+      });
+    });
+
+    function Post() {
+      const data = useLoaderData();
+      return <Text>{JSON.stringify(data)}</Text>;
+    }
+
+    renderRouter(
+      {
+        index: () => <Text>Home</Text>,
+        'posts/[id]': () => (
+          <React.Suspense fallback={<Text>Loading</Text>}>
+            <Post />
+          </React.Suspense>
+        ),
+      },
+      { initialUrl: '/' }
+    );
+    jest.useRealTimers();
+
+    await act(async () => router.navigate('/posts/1'));
+    await act(async () => router.setParams({ id: '2' }));
+
+    expect(fetchLoaderMock.mock.calls.map(([path]) => path)).toEqual(['/posts/1', '/posts/2']);
+    expect(signals[0]!.aborted).toBe(true);
+    expect(signals[1]!.aborted).toBe(false);
+    expect(defaultLoaderContextValue.store.get('/posts/1')).toBeUndefined();
   });
 
   it(`uses the loader function's return types`, () => {

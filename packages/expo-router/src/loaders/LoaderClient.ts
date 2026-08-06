@@ -1,11 +1,11 @@
-type LoaderFetcher = (path: string) => Promise<unknown>;
+type LoaderFetcher = (path: string, requestInit: RequestInit) => Promise<unknown>;
 export type LoaderResult = { data: unknown } | { error: unknown };
 type LoaderSubscriber = (result: LoaderResult, isCurrentSource: boolean) => void;
 export type LoaderUnsubscribe = (onSourceTeardown?: () => void) => void;
 
 interface LoaderSource {
   subscribers: Set<LoaderSubscriber>;
-  isFetching: boolean;
+  controller: AbortController | null;
   onTeardown?: () => void;
 }
 
@@ -45,7 +45,7 @@ export class LoaderClient {
   subscribeLoader(path: string, callback: LoaderSubscriber = () => {}): LoaderUnsubscribe {
     let source = this.active.get(path);
     if (!source) {
-      source = { subscribers: new Set(), isFetching: false };
+      source = { subscribers: new Set(), controller: null };
       this.active.set(path, source);
     }
     source.onTeardown = undefined;
@@ -106,8 +106,16 @@ export class LoaderClient {
     return (this.active.get(path)?.subscribers.size ?? 0) > 0;
   }
 
-  abandon(path: string) {
+  abort(path: string) {
+    const source = this.active.get(path);
+    if (!source) {
+      return;
+    }
+
     this.active.delete(path);
+    const controller = source.controller;
+    source.controller = null;
+    controller?.abort();
   }
 
   execute(path: string, fetcher?: LoaderFetcher) {
@@ -116,12 +124,13 @@ export class LoaderClient {
     }
     const source = this.active.get(path);
     const fetcherFn = this.fetchers.get(path);
-    if (!source || !fetcherFn || source.isFetching) {
+    if (!source || !fetcherFn || source.controller) {
       return;
     }
 
-    source.isFetching = true;
-    fetcherFn(path).then(
+    const controller = new AbortController();
+    source.controller = controller;
+    fetcherFn(path, { signal: controller.signal }).then(
       (data) => this.settle(path, source, { data }),
       (error) =>
         this.settle(path, source, {
@@ -158,6 +167,9 @@ export class LoaderClient {
       ) {
         this.active.delete(path);
         source.onTeardown = undefined;
+        const controller = source.controller;
+        source.controller = null;
+        controller?.abort();
         onSourceTeardown?.();
       }
     };
@@ -166,7 +178,7 @@ export class LoaderClient {
   }
 
   private settle(path: string, source: LoaderSource, result: LoaderResult) {
-    source.isFetching = false;
+    source.controller = null;
     const isCurrentSource = this.active.get(path) === source;
     for (const subscriber of source.subscribers) {
       subscriber(result, isCurrentSource);

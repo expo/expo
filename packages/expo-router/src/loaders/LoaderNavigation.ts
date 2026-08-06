@@ -8,7 +8,7 @@ function abandonLoaderPath({ client, store }: LoaderContextValue, path: string) 
   }
 
   if (entry instanceof Promise) {
-    client.abandon(path);
+    client.abort(path);
   } else if (client.hasSubscribers(path)) {
     return;
   }
