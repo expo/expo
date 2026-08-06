@@ -210,6 +210,66 @@ describe(createReactNativeConfigAsync, () => {
     });
     expect(result).toBeDefined();
   });
+
+  itWithMemoize(
+    'should not link the other Apple platform host when react-native and react-native-tvos are both installed',
+    async () => {
+      const packageJson = {
+        name: 'test',
+        version: '1.0.0',
+        dependencies: {
+          'react-native': '0.0.1',
+          'react-native-tvos': '0.0.1-0',
+          'react-native-test': '~0.0.2',
+        },
+      };
+      const files = {
+        '/app/package.json': JSON.stringify(packageJson),
+        '/app/node_modules/react-native/package.json': '',
+        '/app/node_modules/react-native-tvos/package.json': '',
+        '/app/node_modules/react-native-test/package.json': '',
+      };
+      mockPlatformResolverIos.mockImplementation(async ({ path: packageRoot }) => ({
+        podspecPath: `${packageRoot}/Test.podspec`,
+        version: '1.0.0',
+        configurations: [],
+        scriptPhases: [],
+      }));
+
+      vol.fromJSON(files);
+      const ios = await createReactNativeConfigAsync({
+        appRoot: '/app',
+        sourceDir: undefined,
+        autolinkingOptions: {
+          ...BASE_AUTOLINKING_OPTIONS,
+          platform: 'ios',
+          searchPaths: ['/app/node_modules'],
+        },
+      });
+      // `react-native` is present only as the codegen entry created for a react-native without
+      // pre-generated FBReactNativeSpec output, and it carries no podspec.
+      expect(ios.dependencies['react-native']?.platforms.ios).toMatchObject({ podspecPath: '' });
+      expect(ios.dependencies['react-native-tvos']).toBeUndefined();
+      expect(ios.dependencies['react-native-test']).toBeDefined();
+      expect(ios.reactNativePath).toBe('/app/node_modules/react-native');
+
+      vol.reset();
+      vol.fromJSON(files);
+      const tvos = await createReactNativeConfigAsync({
+        appRoot: '/app',
+        sourceDir: undefined,
+        autolinkingOptions: {
+          ...BASE_AUTOLINKING_OPTIONS,
+          platform: 'tvos',
+          searchPaths: ['/app/node_modules'],
+        },
+      });
+      expect(tvos.dependencies['react-native']).toBeUndefined();
+      expect(tvos.dependencies['react-native-tvos']).toBeUndefined();
+      expect(tvos.dependencies['react-native-test']).toBeDefined();
+      expect(tvos.reactNativePath).toBe('/app/node_modules/react-native-tvos');
+    }
+  );
 });
 
 describe(resolveAppProjectConfigAsync, () => {
@@ -636,6 +696,35 @@ describe(resolveReactNativeModule, () => {
         },
         null,
         'ios',
+        new Set()
+      );
+      expect(result).toBe(null);
+    }
+  );
+
+  it.each([
+    ['react-native', 'tvos'],
+    ['react-native', 'macos'],
+    ['react-native-tvos', 'ios'],
+    ['react-native-tvos', 'macos'],
+    ['react-native-macos', 'ios'],
+    ['react-native-macos', 'tvos'],
+    ['react-native-windows', 'ios'],
+  ] as const)(
+    `should return null for %s on %s because it's another platform's host package`,
+    async (name, platform) => {
+      const result = await resolveReactNativeModule(
+        {
+          name,
+          version: '',
+          path: `/app/node_modules/${name}`,
+          originPath: `/app/node_modules/${name}`,
+          source: DependencyResolutionSource.RECURSIVE_RESOLUTION,
+          duplicates: null,
+          depth: 0,
+        },
+        null,
+        platform,
         new Set()
       );
       expect(result).toBe(null);
