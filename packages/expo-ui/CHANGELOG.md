@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
+- [Android] Add a Jetpack Compose `Image` component. ([#48521](https://github.com/expo/expo/pull/48521) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
