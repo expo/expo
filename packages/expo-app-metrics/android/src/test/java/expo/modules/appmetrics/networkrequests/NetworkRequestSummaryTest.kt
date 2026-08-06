@@ -93,6 +93,34 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
+  fun `reports the slowest request's status code so an empty body can be explained`() {
+    // A 304 revalidation is successful, so it's a candidate, but carries no body. Without the status
+    // code a reader can't tell that from a 200 whose transfer broke.
+    val requests = listOf(
+      makeRequest(
+        statusCode = 304,
+        responseBytesReceived = 0,
+        totalDuration = 1.1,
+        fetchStart = Date(0),
+        responseEnd = Date(1100)
+      ),
+      makeRequest(
+        statusCode = 200,
+        responseBytesReceived = 7000,
+        totalDuration = 0.5,
+        fetchStart = Date(0),
+        responseStart = Date(100),
+        responseEnd = Date(500)
+      )
+    )
+    val summary = NetworkRequestSummary.from(requests)
+    assertEquals(304, summary.slowest!!.statusCode)
+    assertEquals(0L, summary.slowest!!.bytesReceived)
+    // Not filtered out: the status code explains the zero rather than hiding the request.
+    assertEquals(1.1, summary.slowest!!.duration, 0.0001)
+  }
+
+  @Test
   fun `leaves slowest null when every request failed`() {
     val summary = NetworkRequestSummary.from(
       listOf(

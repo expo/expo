@@ -66,6 +66,9 @@ enum MetricParamsBuilder {
         if let host = slowest.host {
           params["expo.network.requests.slowest.host"] = host
         }
+        if let statusCode = slowest.statusCode {
+          params["expo.network.requests.slowest.statusCode"] = statusCode
+        }
         if let timeToFirstByte = slowest.timeToFirstByte {
           params["expo.network.requests.slowest.timeToFirstByte"] = timeToFirstByte
         }

@@ -34,7 +34,8 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   ///
   /// Every field describes that one request, so they can be read together: a `duration` mostly made
   /// up of `timeToFirstByte` means the server was slow to answer, while a small `timeToFirstByte`
-  /// against a large `bytesReceived` means the transfer itself was.
+  /// against a large `bytesReceived` means the transfer itself was. `statusCode` explains a
+  /// `bytesReceived` of 0, which is routine on a 304 and a problem on a 200.
   ///
   /// Failed requests are deliberately not candidates. A timeout's duration is the client's timeout
   /// setting rather than a measurement of the server, so letting one win would make these fields
@@ -49,6 +50,13 @@ public struct NetworkRequestSummary: Sendable, Equatable {
 
     /// Total wall-clock duration of the request.
     public let duration: TimeInterval
+
+    /// Response status code. Never `nil` in practice, since a request that never received headers
+    /// counts as failed and so isn't a candidate.
+    ///
+    /// Disambiguates an empty response: a `bytesReceived` of 0 means a cache revalidation on a 304,
+    /// an intentionally bodyless reply on a 204, and a broken transfer on a 200.
+    public let statusCode: Int?
 
     /// Time from the start of the fetch until the first response byte arrived, or `nil` if the
     /// request never reported one. Includes server processing time, so it's a proxy for network
@@ -148,6 +156,7 @@ public struct NetworkRequestSummary: Sendable, Equatable {
         SlowestRequest(
           host: request.url.host,
           duration: request.timings.totalDuration,
+          statusCode: request.statusCode,
           timeToFirstByte: request.timings.timeToFirstByte,
           bytesReceived: request.responseBytesReceived
         )

@@ -138,6 +138,7 @@ struct MetricParamsBuilderTests {
       slowest: NetworkRequestSummary.SlowestRequest(
         host: "api.expo.dev",
         duration: 0.6,
+        statusCode: 200,
         timeToFirstByte: nil,
         bytesReceived: nil
       ),
@@ -151,6 +152,7 @@ struct MetricParamsBuilderTests {
     #expect(params["expo.network.requests.totalDuration"] as? TimeInterval == 1.4)
     #expect(params["expo.network.requests.slowest.duration"] as? TimeInterval == 0.6)
     #expect(params["expo.network.requests.slowest.host"] as? String == "api.expo.dev")
+    #expect(params["expo.network.requests.slowest.statusCode"] as? Int == 200)
   }
 
   @Test
@@ -198,6 +200,7 @@ struct MetricParamsBuilderTests {
       slowest: NetworkRequestSummary.SlowestRequest(
         host: "slow.expo.dev",
         duration: 30,
+        statusCode: 200,
         timeToFirstByte: nil,
         bytesReceived: nil
       ),
@@ -223,6 +226,7 @@ struct MetricParamsBuilderTests {
       slowest: NetworkRequestSummary.SlowestRequest(
         host: "expo.dev",
         duration: 0.1,
+        statusCode: 200,
         timeToFirstByte: nil,
         bytesReceived: nil
       ),
@@ -244,6 +248,7 @@ struct MetricParamsBuilderTests {
       slowest: NetworkRequestSummary.SlowestRequest(
         host: "api.expo.dev",
         duration: 0.6,
+        statusCode: 200,
         timeToFirstByte: 0.35,
         bytesReceived: nil
       ),
@@ -268,6 +273,7 @@ struct MetricParamsBuilderTests {
       slowest: NetworkRequestSummary.SlowestRequest(
         host: "api.expo.dev",
         duration: 0.1,
+        statusCode: 200,
         timeToFirstByte: nil,
         bytesReceived: nil
       ),

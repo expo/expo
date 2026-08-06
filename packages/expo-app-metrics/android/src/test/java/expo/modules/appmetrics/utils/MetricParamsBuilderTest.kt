@@ -144,6 +144,7 @@ class MetricParamsBuilderTest {
       slowest = NetworkRequestSummary.SlowestRequest(
         host = "expo.dev",
         duration = 0.7,
+        statusCode = 200,
         timeToFirstByte = null,
         bytesReceived = null
       )
@@ -207,6 +208,7 @@ class MetricParamsBuilderTest {
       slowest = NetworkRequestSummary.SlowestRequest(
         host = "slow.expo.dev",
         duration = 30.0,
+        statusCode = 200,
         timeToFirstByte = null,
         bytesReceived = null
       )
@@ -231,6 +233,7 @@ class MetricParamsBuilderTest {
       slowest = NetworkRequestSummary.SlowestRequest(
         host = "expo.dev",
         duration = 0.1,
+        statusCode = 200,
         timeToFirstByte = null,
         bytesReceived = null
       )
@@ -250,6 +253,7 @@ class MetricParamsBuilderTest {
       slowest = NetworkRequestSummary.SlowestRequest(
         host = "api.expo.dev",
         duration = 0.6,
+        statusCode = 200,
         timeToFirstByte = 0.35,
         bytesReceived = 9000
       ),
@@ -258,6 +262,7 @@ class MetricParamsBuilderTest {
     val params = MetricParamsBuilder.build(networkRequests = summary)
     assertEquals(0.6, params["expo.network.requests.slowest.duration"])
     assertEquals("api.expo.dev", params["expo.network.requests.slowest.host"])
+    assertEquals(200, params["expo.network.requests.slowest.statusCode"])
     assertEquals(0.35, params["expo.network.requests.slowest.timeToFirstByte"])
     assertEquals(9000L, params["expo.network.requests.slowest.bytesReceived"])
     assertEquals(8571.4, params["expo.network.requests.throughputBytesPerSecond"])
@@ -276,6 +281,7 @@ class MetricParamsBuilderTest {
       slowest = NetworkRequestSummary.SlowestRequest(
         host = "api.expo.dev",
         duration = 0.1,
+        statusCode = 200,
         timeToFirstByte = null,
         bytesReceived = null
       )
