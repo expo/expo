@@ -209,6 +209,21 @@ export async function test(t) {
           const keys = Object.keys(value);
           GET_ASSETS_KEYS.forEach((key) => t.expect(keys).toContain(key));
         });
+
+        if (Platform.OS === 'ios') {
+          t.it('getAssetsAsync includes numeric location on batch results', async () => {
+            const [exifImage] = await Asset.loadAsync(require('../assets/exif_data_image.jpg'));
+            const exifAsset = await MediaLibrary.createAssetAsync(exifImage.localUri, album);
+            const { assets } = await MediaLibrary.getAssetsAsync({ album, first: 20 });
+            const batchAsset = assets.find((asset) => asset.id === exifAsset.id);
+            t.expect(batchAsset).toBeDefined();
+            if (batchAsset.location != null) {
+              t.expect(typeof batchAsset.location.latitude).toBe('number');
+              t.expect(typeof batchAsset.location.longitude).toBe('number');
+            }
+            await MediaLibrary.deleteAssetsAsync(exifAsset);
+          });
+        }
       });
 
       t.describe('Small tests', () => {

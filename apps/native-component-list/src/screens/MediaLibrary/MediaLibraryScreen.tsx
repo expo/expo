@@ -9,6 +9,7 @@ import {
   Dimensions,
   FlatList,
   ListRenderItem,
+  Platform,
   RefreshControl,
   StyleSheet,
   View,
@@ -60,6 +61,8 @@ type FetchState = {
   assets: MediaLibrary.Asset[];
   endCursor: string | null;
   hasNextPage: boolean;
+  /** First loaded asset location from getAssetsAsync (iOS batch location debug). */
+  batchLocationPreview: string | null;
 };
 
 const initialState: FetchState = {
@@ -68,6 +71,7 @@ const initialState: FetchState = {
   assets: [],
   endCursor: null,
   hasNextPage: true,
+  batchLocationPreview: null,
 };
 
 function reducer(
@@ -232,6 +236,12 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
       const shouldUpdateState = !lastAsset || lastAsset.id === state.endCursor;
       // Guard against updating on an unmounted component.
       if (shouldUpdateState) {
+        const mergedAssets = ([] as MediaLibrary.Asset[]).concat(state.assets, assets);
+        const assetWithLocation = mergedAssets.find((asset) => asset.location != null);
+        const batchLocationPreview =
+          Platform.OS === 'ios' && assetWithLocation?.location != null
+            ? JSON.stringify(assetWithLocation.location)
+            : state.batchLocationPreview;
         dispatch({
           type: 'update',
           fetching: false,
@@ -239,6 +249,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
           assets: ([] as MediaLibrary.Asset[]).concat(state.assets, assets),
           endCursor,
           hasNextPage,
+          batchLocationPreview,
         });
       }
     } finally {
@@ -336,9 +347,23 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
             />
           </View>
         )}
+        {Platform.OS === 'ios' && state.batchLocationPreview != null && (
+          <BodyText style={styles.batchLocationPreview}>
+            {`First batch asset location: ${state.batchLocationPreview}`}
+          </BodyText>
+        )}
       </View>
     );
-  }, [mediaType, albumId, albumTitle, sortBy, toggleMediaType, toggleSortBy]);
+  }, [
+    mediaType,
+    albumId,
+    albumTitle,
+    sortBy,
+    toggleMediaType,
+    toggleSortBy,
+    accessPrivileges,
+    state.batchLocationPreview,
+  ]);
 
   const renderFooter = React.useCallback(() => {
     if (state.refreshing) {
@@ -417,5 +442,10 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  batchLocationPreview: {
+    marginTop: 8,
+    fontSize: 12,
+    textAlign: 'center',
   },
 });
