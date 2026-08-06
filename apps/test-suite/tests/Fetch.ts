@@ -2,9 +2,11 @@ import * as FS from 'expo-file-system/legacy';
 import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'Fetch';
 
-export function test({ describe, expect, it, ...t }) {
+export function test({ describe, expect, it, ...t }: JasmineInterface) {
   describe('Response types', () => {
     setupTestTimeout(t);
 
@@ -55,13 +57,13 @@ export function test({ describe, expect, it, ...t }) {
     it('should process response in readablestream from late get reader call', async () => {
       const resp = await fetch('https://httpbin.io/get');
       expect(resp.ok).toBe(true);
-      expect(resp.body).not.toBeNull();
+      expect(resp.body!).not.toBeNull();
 
       // Delay 0.5s to ensure the response is completed before streaming started
       await delayAsync(500);
 
       const chunks = [];
-      const reader = resp.body.getReader();
+      const reader = resp.body!.getReader();
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -408,7 +410,7 @@ export function test({ describe, expect, it, ...t }) {
             Accept: 'text/event-stream',
           },
         });
-        const reader = resp.body.getReader();
+        const reader = resp.body!.getReader();
         while (true) {
           const { done } = await reader.read();
           hasReceivedChunk = true;
@@ -439,7 +441,7 @@ export function test({ describe, expect, it, ...t }) {
             Accept: 'text/event-stream',
           },
         });
-        const reader = resp.body.getReader();
+        const reader = resp.body!.getReader();
         while (true) {
           const { done } = await reader.read();
           hasReceivedChunk = true;
@@ -453,7 +455,7 @@ export function test({ describe, expect, it, ...t }) {
         }
       }
       expect(error).not.toBeNull();
-      expect(error.message).toContain('Fetch request has been canceled');
+      expect(error!.message).toContain('Fetch request has been canceled');
       expect(hasReceivedChunk).toBe(false);
     });
   });
@@ -467,7 +469,7 @@ export function test({ describe, expect, it, ...t }) {
           Accept: 'text/event-stream',
         },
       });
-      const reader = resp.body.getReader();
+      const reader = resp.body!.getReader();
       const chunks = [];
       while (true) {
         const { done, value } = await reader.read();
@@ -488,10 +490,10 @@ export function test({ describe, expect, it, ...t }) {
         },
       });
 
-      expect(resp.body[Symbol.asyncIterator]).not.toBeNull();
+      expect(resp.body![Symbol.asyncIterator]).not.toBeNull();
 
       const chunks = [];
-      for await (const chunk of resp.body) {
+      for await (const chunk of resp.body!) {
         chunks.push(chunk);
       }
       expect(chunks.length).toBeGreaterThan(3);
@@ -506,10 +508,10 @@ export function test({ describe, expect, it, ...t }) {
         },
       });
 
-      expect(resp.body[Symbol.asyncIterator]).not.toBeNull();
+      expect(resp.body![Symbol.asyncIterator]).not.toBeNull();
 
       const chunks = [];
-      for await (const chunk of resp.body) {
+      for await (const chunk of resp.body!) {
         chunks.push(chunk);
         if (chunks.length === 2) {
           break;
@@ -556,7 +558,7 @@ export function test({ describe, expect, it, ...t }) {
   addLocalFileTestSuite({ describe, expect, it, ...t });
 }
 
-function addLocalFileTestSuite({ describe, expect, it, ...t }) {
+function addLocalFileTestSuite({ describe, expect, it, ...t }: JasmineInterface) {
   if (Platform.OS === 'web') {
     return;
   }
@@ -630,7 +632,7 @@ function addLocalFileTestSuite({ describe, expect, it, ...t }) {
 }
 
 function setupTestTimeout(t: Record<string, any>, timeout: number = 30000) {
-  let originalTimeout;
+  let originalTimeout: number;
 
   t.beforeAll(() => {
     // Increase the timeout in general because httpbin.test.k6.io can be slow.
