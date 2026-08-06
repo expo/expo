@@ -121,6 +121,12 @@ export type Asset = {
    * @platform android
    */
   albumId?: string;
+  /**
+   * GPS location if available. Included in `getAssetsAsync` results on iOS
+   * when the asset has location metadata. On Android, included only when
+   * `getAssetsAsync` is called with `resolveWithFullInfo: true`.
+   */
+  location?: Location;
 };
 
 // @needsAudit

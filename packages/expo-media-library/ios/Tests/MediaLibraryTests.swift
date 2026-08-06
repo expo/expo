@@ -1,5 +1,6 @@
 import Testing
 import Photos
+import CoreLocation
 
 @testable import ExpoMediaLibrary
 
@@ -120,5 +121,22 @@ struct MediaLibraryTests {
         #expect(response.hasNextPage == true)
       }
     }
+  }
+}
+
+@Suite("exportLocation")
+struct ExportLocationTests {
+  @Test
+  func `returns numeric latitude and longitude`() {
+    let location = CLLocation(latitude: 1.23, longitude: 4.56)
+    let exported = exportLocation(location: location)
+
+    #expect(exported?["latitude"] as? Double == 1.23)
+    #expect(exported?["longitude"] as? Double == 4.56)
+  }
+
+  @Test
+  func `returns nil when location is unavailable`() {
+    #expect(exportLocation(location: nil) == nil)
   }
 }
