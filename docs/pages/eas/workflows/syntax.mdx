@@ -1823,7 +1823,7 @@ jobs:
       # @end #
 ```
 
-You can define reusable step sequences in your project and call them with a path that starts with `./` or `../`, such as `./.eas/functions/setup`. EAS Workflows resolves paths from the EAS project directory. A path that starts with `../` can point outside that directory, but the custom function must remain within the repository. The path must be a static, literal string. It cannot contain `${{ }}` interpolation or backslashes. Custom function calls accept the same fields as built-in function calls: `id`, `name`, `with`, `if`, and `env`. Do not set `working_directory` on the call step. Set it on the function's inner steps instead. A relative `working_directory` on an inner step resolves from the job's default working directory, not the directory containing **function.yml**. See the [custom function schema](#custom-functions) and the guide to [using custom functions in EAS Workflows](/eas/workflows/custom-functions/).
+You can define reusable step sequences in your project and call them with a path that starts with `./` or `../`, such as `./.eas/functions/setup`. See the [custom function schema](#custom-functions) and the guide to [using custom functions in EAS Workflows](/eas/workflows/custom-functions/).
 
 Below is a list of built-in functions you can use in your workflow steps.
 
@@ -2263,7 +2263,7 @@ jobs:
 
 ## Custom functions
 
-Define reusable step sequences in your project and call them with a relative path through [`uses`](#jobsjob_idstepsstepuses). Store each custom function in a directory that contains a **function.yml** or **function.yaml** file. Steps inside a custom function use the same format as [custom job steps](#jobsjob_idsteps). For details about organizing files, nesting functions, and calling functions from jobs or hooks, see [Custom functions in EAS Workflows](/eas/workflows/custom-functions/).
+Define reusable step sequences in your project and call them with a relative path through [`uses`](#jobsjob_idstepsstepuses). The path must be a static, literal string. It cannot contain `${{ }}` interpolation or backslashes. Custom function calls accept the same fields as built-in function calls: `id`, `name`, `with`, `if`, and `env`. Do not set `working_directory` on the call step. Set it on the function's inner steps instead. Store each custom function in a directory that contains a **function.yml** or **function.yaml** file. Steps inside a custom function use the same format as [custom job steps](#jobsjob_idsteps). For details about organizing files, nesting functions, and calling functions from jobs or hooks, see [Custom functions in EAS Workflows](/eas/workflows/custom-functions/).
 
 Your **function.yml** file supports the following top-level properties: `name`, `description`, `inputs`, `outputs`, and `runs`. EAS Workflows rejects unknown top-level properties.
 
