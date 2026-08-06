@@ -1,6 +1,5 @@
 'use strict';
 
-import { EventSubscription } from 'expo-modules-core';
 import {
   createVideoPlayer,
   SourceLoadEventPayload,
@@ -15,6 +14,7 @@ import {
 } from 'expo-video';
 import React from 'react';
 
+import type { JasmineInterface } from '../types';
 import { mountAndWaitFor } from './helpers';
 
 export const name = 'Video';
@@ -73,7 +73,26 @@ const brokenSource = {
 };
 
 // START: Expected return values from SourceLoadEventPayload
-const bigBuckBunnySourceData: SourceLoadEventPayload = {
+
+/**
+ * The expected payloads below are samples recorded from real `sourceLoad`
+ * events. The assertions only read `duration`, `availableVideoTracks` and the
+ * track counts, so this type spells out that subset: track fields no assertion
+ * reads are omitted, and `videoSource` is kept for reference only.
+ */
+type ExpectedSourceLoadPayload = {
+  duration: number;
+  availableVideoTracks: Omit<
+    SourceLoadEventPayload['availableVideoTracks'][number],
+    'url' | 'videoRange'
+  >[];
+  availableAudioTracks: SourceLoadEventPayload['availableAudioTracks'];
+  availableSubtitleTracks: SourceLoadEventPayload['availableSubtitleTracks'];
+  /** Recorded for reference; no assertion compares it. */
+  videoSource?: unknown;
+};
+
+const bigBuckBunnySourceData: ExpectedSourceLoadPayload = {
   availableVideoTracks: [
     {
       bitrate: 1676863,
@@ -103,7 +122,7 @@ const bigBuckBunnySourceData: SourceLoadEventPayload = {
   duration: 634.533333,
 };
 
-const localVideoSourceData: SourceLoadEventPayload = {
+const localVideoSourceData: ExpectedSourceLoadPayload = {
   videoSource: {
     headers: null,
     contentType: 'auto',
@@ -129,7 +148,7 @@ const localVideoSourceData: SourceLoadEventPayload = {
   duration: 15,
 };
 
-const hlsSourceData: SourceLoadEventPayload = {
+const hlsSourceData: ExpectedSourceLoadPayload = {
   videoSource: {
     uri: 'https://expo-test-media.com/tos_hls/master.m3u8',
     drm: null,
@@ -216,8 +235,13 @@ interface TestOptions {
   expectSubtitleTracks: boolean;
 }
 
-export async function test({ describe, expect, it, ...t }, { setPortalChild, cleanupPortal }: any) {
-  let player: VideoPlayer | null = null;
+export async function test(
+  { describe, expect, it, ...t }: JasmineInterface,
+  { setPortalChild, cleanupPortal }: any
+) {
+  // Assigned in `beforeEach` before any spec runs, and reassigned by specs that
+  // need a player built from a specific source.
+  let player!: VideoPlayer;
 
   t.beforeEach(() => {
     player = createVideoPlayer(null);
@@ -226,14 +250,11 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
   });
 
   t.afterEach(async () => {
-    if (player) {
-      try {
-        player.release();
-        cleanupPortal();
-      } catch (error: any) {
-        console.warn('Player release error:', error.message);
-      }
-      player = null;
+    try {
+      player.release();
+      cleanupPortal();
+    } catch (error: any) {
+      console.warn('Player release error:', error.message);
     }
   });
 
@@ -250,7 +271,7 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
   const runSourceTest = (
     label: string,
     source: VideoSourceObject,
-    expectedData: SourceLoadEventPayload,
+    expectedData: ExpectedSourceLoadPayload,
     options: Partial<TestOptions> = {}
   ) => {
     const opts = { ...defaultOptions, ...options };
@@ -514,8 +535,8 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
         const payload = await promise;
 
         expect(payload.subtitleTrack).toBeTruthy();
-        expect(payload.subtitleTrack.label).toEqual(availableSubtitleTracks[2].label);
-        expect(payload.subtitleTrack.language).toEqual(availableSubtitleTracks[2].language);
+        expect(payload.subtitleTrack!.label).toEqual(availableSubtitleTracks[2].label);
+        expect(payload.subtitleTrack!.language).toEqual(availableSubtitleTracks[2].language);
       });
     });
 
@@ -539,8 +560,8 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
         const payload = await promise;
 
         expect(payload.audioTrack).toBeTruthy();
-        expect(payload.audioTrack.label).toEqual(availableAudioTracks[1].label);
-        expect(payload.audioTrack.language).toEqual(availableAudioTracks[1].language);
+        expect(payload.audioTrack!.label).toEqual(availableAudioTracks[1].label);
+        expect(payload.audioTrack!.language).toEqual(availableAudioTracks[1].language);
       });
     });
 
@@ -555,10 +576,10 @@ export async function test({ describe, expect, it, ...t }, { setPortalChild, cle
         );
 
         expect(payload.videoTrack).toBeTruthy();
-        expect(payload.videoTrack.size).toBeDefined();
-        expect(payload.videoTrack.mimeType).toBeDefined();
-        expect(payload.videoTrack.frameRate).toBeDefined();
-        expect(payload.videoTrack.mimeType).toBeDefined();
+        expect(payload.videoTrack!.size).toBeDefined();
+        expect(payload.videoTrack!.mimeType).toBeDefined();
+        expect(payload.videoTrack!.frameRate).toBeDefined();
+        expect(payload.videoTrack!.mimeType).toBeDefined();
       });
     });
   });
@@ -821,18 +842,21 @@ type EventPayload<Func> = Func extends (...args: any[]) => any
 async function waitForEvent<EventName extends keyof VideoPlayerEvents>(
   player: VideoPlayer,
   eventName: EventName,
-  postAddListenerCallback: () => void | null = null
+  postAddListenerCallback: (() => void) | null = null
 ): Promise<EventPayload<VideoPlayerEvents[EventName]>> {
-  let subscription: EventSubscription | null = null;
+  let resolveEvent!: (payload: EventPayload<VideoPlayerEvents[EventName]>) => void;
+  const eventPromise = new Promise<EventPayload<VideoPlayerEvents[EventName]>>((resolve) => {
+    resolveEvent = resolve;
+  });
+  const subscription = player.addListener(eventName, ((payload: any) => {
+    resolveEvent(payload);
+  }) as VideoPlayerEvents[EventName]);
+
   try {
-    return await new Promise((resolve) => {
-      subscription = player.addListener(eventName, ((payload: any) => {
-        resolve(payload);
-      }) as VideoPlayerEvents[EventName]);
-      postAddListenerCallback?.();
-    });
+    postAddListenerCallback?.();
+    return await eventPromise;
   } finally {
-    subscription?.remove();
+    subscription.remove();
   }
 }
 
@@ -842,27 +866,33 @@ async function waitForEventTo<EventName extends keyof VideoPlayerEvents>(
   comparator: (payload: EventPayload<VideoPlayerEvents[EventName]>) => boolean,
   retries: number = 3
 ): Promise<EventPayload<VideoPlayerEvents[EventName]>> {
-  let subscription: EventSubscription | null = null;
   let retriesLeft = retries;
+  let resolveEvent!: (payload: EventPayload<VideoPlayerEvents[EventName]>) => void;
+  let rejectEvent!: (error: Error) => void;
+  const eventPromise = new Promise<EventPayload<VideoPlayerEvents[EventName]>>(
+    (resolve, reject) => {
+      resolveEvent = resolve;
+      rejectEvent = reject;
+    }
+  );
+  const subscription = player.addListener(eventName, ((payload: any) => {
+    if (comparator(payload)) {
+      resolveEvent(payload);
+    } else {
+      if (retriesLeft <= 0) {
+        rejectEvent(
+          new Error(
+            `waitForEventToEqual: Comparator failed to return true after ${retries} retries.`
+          )
+        );
+      }
+      retriesLeft--;
+    }
+  }) as VideoPlayerEvents[EventName]);
 
   try {
-    return await new Promise((resolve, reject) => {
-      subscription = player.addListener(eventName, ((payload: any) => {
-        if (comparator(payload)) {
-          resolve(payload);
-        } else {
-          if (retriesLeft <= 0) {
-            reject(
-              new Error(
-                `waitForEventToEqual: Comparator failed to return true after ${retries} retries.`
-              )
-            );
-          }
-          retriesLeft--;
-        }
-      }) as VideoPlayerEvents[EventName]);
-    });
+    return await eventPromise;
   } finally {
-    subscription?.remove();
+    subscription.remove();
   }
 }
