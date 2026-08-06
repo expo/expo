@@ -21,13 +21,15 @@ internal enum AgeRangeDeclaration: String, Enumerable {
     // iOS 26.5 deprecated all six in favour of `confirmed`.
     #if compiler(>=6.2.3) // Xcode 26.2+ (Swift 6.2.3) ships the iOS 26.2 SDK that declares these six.
     case .checkedByOtherMethod, .guardianCheckedByOtherMethod,
-         .governmentIDChecked, .guardianGovernmentIDChecked,
-         .paymentChecked, .guardianPaymentChecked:
+      .governmentIDChecked, .guardianGovernmentIDChecked,
+      .paymentChecked, .guardianPaymentChecked:
       self = .confirmed
     #endif
     @unknown default:
       // Fall back to the least assurance we can claim, so an unrecognised value can't loosen an age gate
-      log.error("Unhandled `AgeRangeService.AgeRangeDeclaration` value: \(range), reporting `selfDeclared` as fallback. Either the value was added in an iOS SDK newer than the one you build against — build with a newer Xcode — or expo-age-range needs to map it, in which case report it at github.com/expo/expo/issues.")
+      log.error(
+        "Unhandled `AgeRangeService.AgeRangeDeclaration` value: \(range), reporting `selfDeclared` as fallback. Either the value was added in an iOS SDK newer than the one you build against — build with a newer Xcode — or expo-age-range needs to map it, in which case report it at github.com/expo/expo/issues."
+      )
       self = .selfDeclared
     }
   }
