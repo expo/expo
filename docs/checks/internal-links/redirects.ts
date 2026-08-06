@@ -38,7 +38,8 @@ export function parseRedirects(content: string): ParsedRedirects {
 
 export function validateRedirectTargets(
   redirects: ParsedRedirects,
-  pages: Set<string>
+  pages: Set<string>,
+  files: Set<string>
 ): RedirectRule[] {
   const dangling: RedirectRule[] = [];
   const rules: RedirectRule[] = [
@@ -55,7 +56,7 @@ export function validateRedirectTargets(
       continue;
     }
     const destination = normalizePath(rule.destination.split(/[#?]/)[0]);
-    if (!pages.has(destination) && !redirects.literal.has(destination)) {
+    if (!pages.has(destination) && !files.has(destination) && !redirects.literal.has(destination)) {
       dangling.push(rule);
     }
   }

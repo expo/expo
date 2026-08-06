@@ -89,7 +89,7 @@ export async function scanSiteAsync(outDir: string, redirectsFile: string): Prom
   const redirects = parseRedirects(fs.readFileSync(redirectsFile, 'utf-8'));
   const sets: ValidSets = { pages, files, redirects };
 
-  const dangling = validateRedirectTargets(redirects, pages);
+  const dangling = validateRedirectTargets(redirects, pages, files);
 
   const broken = new Map<string, Aggregate>();
   const viaRedirect = new Map<string, Aggregate>();

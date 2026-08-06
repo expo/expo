@@ -21,6 +21,7 @@ jobs:
   report:
     if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
+    timeout-minutes: 45
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
@@ -51,10 +52,11 @@ jobs:
         working-directory: docs
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ISSUE_TITLE: ${{ steps.report.outputs.title }}
         run: |
           gh issue create \
             --repo "$GITHUB_REPOSITORY" \
-            --title "${{ steps.report.outputs.title }}" \
+            --title "$ISSUE_TITLE" \
             --body-file "$RUNNER_TEMP/issue-body.md" \
             --label docs \
             --assignee amandeepmittal

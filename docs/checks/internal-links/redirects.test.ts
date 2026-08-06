@@ -12,9 +12,12 @@ const REDIRECTS_FILE = `# Old redirects
 /external-target https://expo.dev/eas 301
 /hash-target /build/setup/#usage 301
 /query-target /build/setup/?tab=eas 301
+/llms-full.txt /llms.txt 301
 `;
 
 const PAGES = new Set(['/', '/build/setup', '/guides/overview', '/sdk/notifications']);
+
+const FILES = new Set(['/llms.txt', '/static/images/logo.png']);
 
 describe(parseRedirects, () => {
   it('parses rules and skips comments and blank lines', () => {
@@ -52,7 +55,7 @@ describe(parseRedirects, () => {
 
 describe(validateRedirectTargets, () => {
   const redirects = parseRedirects(REDIRECTS_FILE);
-  const dangling = validateRedirectTargets(redirects, PAGES);
+  const dangling = validateRedirectTargets(redirects, PAGES, FILES);
 
   it('accepts destinations that are live pages', () => {
     expect(dangling.map(rule => rule.source)).not.toContain(
@@ -62,6 +65,10 @@ describe(validateRedirectTargets, () => {
 
   it('accepts destinations that chain into another redirect', () => {
     expect(dangling.map(rule => rule.source)).not.toContain('/chained');
+  });
+
+  it('accepts destinations that are static files', () => {
+    expect(dangling.map(rule => rule.source)).not.toContain('/llms-full.txt');
   });
 
   it('skips external and splat destinations', () => {
