@@ -62,8 +62,10 @@ Accept only these Expo reviewer agents:
 
 - `config-plugins`
 - `correctness`
+- `correctness-android`
+- `correctness-ios`
+- `correctness-js`
 - `docs`
-- `native-platforms`
 - `public-api`
 - `security`
 
