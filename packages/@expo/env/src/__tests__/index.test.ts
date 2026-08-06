@@ -40,47 +40,24 @@ afterAll(() => {
 });
 
 describe(setNodeEnv, () => {
-  const devGlobal = globalThis as typeof globalThis & { __DEV__?: boolean };
-  const originalDev = devGlobal.__DEV__;
-
-  afterAll(() => {
-    devGlobal.__DEV__ = originalDev;
-  });
-
-  it('overwrites inherited NODE_ENV and BABEL_ENV values', () => {
+  it('overwrites an inherited NODE_ENV value', () => {
     process.env.NODE_ENV = 'test';
-    process.env.BABEL_ENV = 'staging';
 
     expect(setNodeEnv('production')).toBe(process.env);
     expect(process.env.NODE_ENV).toBe('production');
-    expect(process.env.BABEL_ENV).toBe('production');
-    expect(devGlobal.__DEV__).toBe(false);
-  });
-
-  it('sets __DEV__ in development mode', () => {
-    setNodeEnv('development');
-
-    expect(process.env.NODE_ENV).toBe('development');
-    expect(process.env.BABEL_ENV).toBe('development');
-    expect(devGlobal.__DEV__).toBe(true);
   });
 
   it('updates a custom environment without changing process.env', () => {
     process.env.NODE_ENV = 'development';
-    process.env.BABEL_ENV = 'development';
-    devGlobal.__DEV__ = true;
-    const systemEnv = { NODE_ENV: 'test', BABEL_ENV: 'staging', EXAMPLE: 'value' };
+    const systemEnv = { NODE_ENV: 'test', EXAMPLE: 'value' };
 
     expect(setNodeEnv('production', { systemEnv })).toBe(systemEnv);
 
     expect(systemEnv).toEqual({
       NODE_ENV: 'production',
-      BABEL_ENV: 'production',
       EXAMPLE: 'value',
     });
     expect(process.env.NODE_ENV).toBe('development');
-    expect(process.env.BABEL_ENV).toBe('development');
-    expect(devGlobal.__DEV__).toBe(true);
   });
 });
 
@@ -348,14 +325,11 @@ describe(parseProjectEnv, () => {
 });
 
 describe(loadProjectEnv, () => {
-  it('sets NODE_ENV and BABEL_ENV before loading project env files', () => {
+  it('sets NODE_ENV before loading project env files', () => {
     process.env.NODE_ENV = 'test';
-    process.env.BABEL_ENV = 'staging';
     vol.fromJSON(
       {
-        '.env.production': ['FOO=production', 'NODE_ENV=development', 'BABEL_ENV=development'].join(
-          '\n'
-        ),
+        '.env.production': ['FOO=production', 'NODE_ENV=development'].join('\n'),
       },
       '/'
     );
@@ -367,7 +341,6 @@ describe(loadProjectEnv, () => {
       loaded: ['FOO'],
     });
     expect(process.env.NODE_ENV).toBe('production');
-    expect(process.env.BABEL_ENV).toBe('production');
   });
 
   it('parses .env file with mutating system environment variables', () => {
