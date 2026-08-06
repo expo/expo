@@ -7,9 +7,14 @@ type NativeSourceCode =
 
 export function getBundleUrl(): string | null {
   // NOTE(@kitten): Requiring this initialises module bridge, which may not be available server-side
-  const __nativeSourceCode = require('react-native/Libraries/NativeModules/specs/NativeSourceCode');
-  const NativeSourceCode: NativeSourceCode = __nativeSourceCode.default ?? __nativeSourceCode;
-  let scriptURL = NativeSourceCode.getConstants().scriptURL;
+  let scriptURL: string | null;
+  try {
+    const __nativeSourceCode = require('react-native/Libraries/NativeModules/specs/NativeSourceCode');
+    const NativeSourceCode: NativeSourceCode = __nativeSourceCode.default ?? __nativeSourceCode;
+    scriptURL = NativeSourceCode.getConstants().scriptURL;
+  } catch {
+    return null;
+  }
   if (scriptURL == null) {
     return null;
   }

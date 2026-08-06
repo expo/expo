@@ -4,7 +4,8 @@ import { getBundleUrl } from './getBundleUrl';
 const FALLBACK_URL = 'http://localhost:8081/';
 
 export default function getDevServer() {
-  const origin = getBundleOrigin();
+  const bundleUrl = getBundleUrl();
+  const origin = getBundleOrigin(bundleUrl);
   if (origin === null) {
     return { url: FALLBACK_URL, fullBundleUrl: null, bundleLoadedFromServer: false };
   }
