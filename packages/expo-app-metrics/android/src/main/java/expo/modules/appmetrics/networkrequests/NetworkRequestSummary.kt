@@ -33,7 +33,16 @@ data class NetworkRequestSummary(
   /** Sum of `requestBytesSent` across all requests. */
   val bytesSent: Long,
 
-  /** Sum of `timings.totalDuration` across all requests, in seconds. Can exceed wall-clock when requests overlap. */
+  /**
+   * Sum of `timings.totalDuration` across all requests, in seconds. Can exceed wall-clock when
+   * requests overlap.
+   *
+   * Deliberately includes failures, unlike `slowest` and `throughputBytesPerSecond`, which describe
+   * only requests that completed. That makes it the one field that still accounts for time the app
+   * spent waiting on a request that never arrived: a window of timeouts reports the seconds they
+   * burned here even though nothing else measures them. The cost is that it can dwarf the other
+   * timings, since a single timeout contributes the client's whole timeout interval.
+   */
   val totalDuration: Double,
 
   /**
