@@ -142,7 +142,7 @@ insert into public.todos (title) values ('Hello from Supabase');
 
 Requests use the `anon` role when signed out and `authenticated` after sign-in, and the policy decides which rows those roles can read. Without a policy, a select returns an empty array and no error. To let the app write, add an insert policy.
 
-The grant is a safeguard rather than a requirement. Hosted projects already grant `select`, `insert`, `update`, and `delete` on new tables in `public` to both roles, but [Supabase is making those grants opt-in](https://supabase.com/docs/guides/database/hardening-data-api?utm_source=expo&utm_medium=referral&utm_term=expo-react-native), and a project with them revoked fails with `permission denied for table todos`. Granting a privilege the table already has changes nothing.
+The grant is a safeguard rather than a requirement. Hosted projects already grant `select`, `insert`, `update`, and `delete` on new tables in `public` to both roles. However, [Supabase is making those grants opt-in](https://supabase.com/docs/guides/database/hardening-data-api?utm_source=expo&utm_medium=referral&utm_term=expo-react-native), and a project with them revoked fails with `permission denied for table todos`. Granting a privilege the table already has changes nothing.
 
 </Step>
 
