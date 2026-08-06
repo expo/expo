@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 56.0.25 — 2026-08-06
+
+### 🛠 Breaking changes
+
 - [iOS] Fix `HStack`, `VStack` and `GlassEffectContainer` collapsing an unset `spacing` to `0` instead of forwarding `nil` to SwiftUI, so they now use the system default spacing like `Grid`, `LazyHStack` and `LazyVStack` already do. Pass `spacing={0}` explicitly to keep the previous layout. (by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🎉 New features
@@ -13,8 +23,6 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-
-### 💡 Others
 
 ## 56.0.24 — 2026-07-29
 

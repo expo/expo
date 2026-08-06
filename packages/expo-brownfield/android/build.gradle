@@ -4,7 +4,7 @@ plugins {
 }
 
 group = 'expo.modules.brownfield'
-version = '56.0.26'
+version = '56.0.27'
 
 expoModule {
   canBePublished false
@@ -14,7 +14,7 @@ android {
   namespace "expo.modules.brownfield"
   defaultConfig {
     versionCode 1
-    versionName '56.0.26'
+    versionName '56.0.27'
   }
 }
 

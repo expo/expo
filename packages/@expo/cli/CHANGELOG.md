@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
-
 ### 💡 Others
+
+## 56.1.23 — 2026-08-06
+
+### 🐛 Bug fixes
+
+- Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
 
 ## 56.1.22 — 2026-07-29
 
