@@ -15,8 +15,8 @@ class NetworkRequestSummaryTest {
     assertEquals(0L, summary.bytesReceived)
     assertEquals(0L, summary.bytesSent)
     assertEquals(0.0, summary.totalDuration, 0.0001)
-    assertNull(summary.slowestDuration)
-    assertNull(summary.slowestHost)
+    assertNull(summary.slowest?.duration)
+    assertNull(summary.slowest?.host)
     assertEquals(true, summary.isEmpty)
   }
 
@@ -43,8 +43,8 @@ class NetworkRequestSummaryTest {
       makeRequest(url = "https://mid.example/z", totalDuration = 0.3)
     )
     val summary = NetworkRequestSummary.from(requests)
-    assertEquals(0.5, summary.slowestDuration!!, 0.0001)
-    assertEquals("slow.example", summary.slowestHost)
+    assertEquals(0.5, summary.slowest?.duration!!, 0.0001)
+    assertEquals("slow.example", summary.slowest?.host)
   }
 
   @Test
@@ -57,6 +57,81 @@ class NetworkRequestSummaryTest {
     val summary = NetworkRequestSummary.from(requests)
     assertEquals(130L, summary.bytesSent)
     assertEquals(250L, summary.bytesReceived)
+  }
+
+  @Test
+  fun `picks the slowest completed request rather than the slowest failure`() {
+    // A timeout's duration is the client's timeout setting, not a measurement of the server, so
+    // letting it win would make this field report a config constant instead of the network.
+    val requests = listOf(
+      makeRequest(
+        url = "http://192.168.0.104/bundle",
+        statusCode = null,
+        errorDescription = "timeout",
+        totalDuration = 10.0,
+        isTimeout = true
+      ),
+      makeRequest(
+        url = "https://cdn.expo.dev/asset",
+        responseBytesReceived = 5000,
+        totalDuration = 2.0,
+        fetchStart = Date(0),
+        responseStart = Date(400),
+        responseEnd = Date(2000)
+      ),
+      makeRequest(url = "https://api.expo.dev/v2", responseBytesReceived = 100, totalDuration = 0.2)
+    )
+    val summary = NetworkRequestSummary.from(requests)
+    assertEquals(2.0, summary.slowest!!.duration, 0.0001)
+    assertEquals("cdn.expo.dev", summary.slowest!!.host)
+    // All fields describe that one request.
+    assertEquals(0.4, summary.slowest!!.timeToFirstByte!!, 0.0001)
+    assertEquals(5000L, summary.slowest!!.bytesReceived)
+    // The timeout is still counted, just not used to describe the slowest request.
+    assertEquals(1, summary.timedOut)
+    assertEquals(1, summary.failed)
+  }
+
+  @Test
+  fun `leaves slowest null when every request failed`() {
+    val summary = NetworkRequestSummary.from(
+      listOf(
+        makeRequest(
+          statusCode = null,
+          errorDescription = "timeout",
+          totalDuration = 10.0,
+          isTimeout = true
+        )
+      )
+    )
+    assertNull(summary.slowest)
+    assertEquals(1, summary.count)
+    assertEquals(1, summary.timedOut)
+  }
+
+  @Test
+  fun `reports the slowest request's own time to first byte, not the window maximum`() {
+    // The quick request has the higher TTFB; a window max would report 0.9 here. The slowest
+    // request's own TTFB is 0.3, which is what pairs with its duration.
+    val requests = listOf(
+      makeRequest(
+        responseBytesReceived = 9000,
+        totalDuration = 4.0,
+        fetchStart = Date(0),
+        responseStart = Date(300),
+        responseEnd = Date(4000)
+      ),
+      makeRequest(
+        responseBytesReceived = 100,
+        totalDuration = 1.0,
+        fetchStart = Date(0),
+        responseStart = Date(900),
+        responseEnd = Date(1000)
+      )
+    )
+    val summary = NetworkRequestSummary.from(requests)
+    assertEquals(4.0, summary.slowest!!.duration, 0.0001)
+    assertEquals(0.3, summary.slowest!!.timeToFirstByte!!, 0.0001)
   }
 
   @Test
@@ -85,21 +160,22 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
-  fun `aggregates slowest time to first byte and ignores requests without one`() {
+  fun `leaves slowest time to first byte null when the slowest request reported none`() {
     val requests = listOf(
-      makeRequest(fetchStart = Date(0), responseStart = Date(50)),
-      makeRequest(fetchStart = Date(0), responseStart = Date(300)),
-      // No responseStart (failed before headers arrived), so it contributes nothing.
-      makeRequest(statusCode = null, errorDescription = "timed out", totalDuration = 2.0)
+      makeRequest(totalDuration = 2.0, fetchStart = Date(0), responseStart = null),
+      makeRequest(totalDuration = 0.1, fetchStart = Date(0), responseStart = Date(50))
     )
     val summary = NetworkRequestSummary.from(requests)
-    assertEquals(0.3, summary.slowestTimeToFirstByte!!, 0.0001)
+    // The 2s request wins on duration but never produced a first byte, so the field is absent
+    // rather than borrowing the quick request's value.
+    assertEquals(2.0, summary.slowest!!.duration, 0.0001)
+    assertNull(summary.slowest!!.timeToFirstByte)
   }
 
   @Test
   fun `leaves slowest time to first byte null when no request reported one`() {
     val summary = NetworkRequestSummary.from(listOf(makeRequest()))
-    assertNull(summary.slowestTimeToFirstByte)
+    assertNull(summary.slowest?.timeToFirstByte)
   }
 
   @Test
@@ -171,7 +247,7 @@ class NetworkRequestSummaryTest {
   fun `ignores requests that received no bytes when timing throughput`() {
     // A slow API call that returns nothing spends real time in flight, but no bytes could have been
     // flowing during it. Counting its span would describe time the payload wasn't moving; its
-    // latency is already covered by `slowestTimeToFirstByte`.
+    // latency is already covered by `slowest.timeToFirstByte`.
     val requests = listOf(
       makeRequest(responseBytesReceived = 10000, fetchStart = Date(0), responseEnd = Date(1000)),
       makeRequest(
@@ -222,7 +298,7 @@ class NetworkRequestSummaryTest {
     val summary = NetworkRequestSummary.from(
       listOf(makeRequest(fetchStart = Date(500), responseStart = Date(300)))
     )
-    assertNull(summary.slowestTimeToFirstByte)
+    assertNull(summary.slowest?.timeToFirstByte)
   }
 
   private fun makeRequest(

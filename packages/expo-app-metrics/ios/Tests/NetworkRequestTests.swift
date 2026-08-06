@@ -349,7 +349,7 @@ struct NetworkRequestSummaryTests {
     let summary = NetworkRequestSummary.from([])
     #expect(summary.isEmpty)
     #expect(summary.count == 0)
-    #expect(summary.slowestHost == nil)
+    #expect(summary.slowest?.host == nil)
   }
 
   @Test
@@ -386,8 +386,103 @@ struct NetworkRequestSummaryTests {
     #expect(summary.bytesSent == 180)
     #expect(summary.bytesReceived == 9240)
     #expect(abs(summary.totalDuration - 1.2) < 0.0001)
-    #expect(summary.slowestDuration == 0.8)
-    #expect(summary.slowestHost == "cdn.expo.dev")
+    #expect(summary.slowest?.duration == 0.8)
+    #expect(summary.slowest?.host == "cdn.expo.dev")
+  }
+
+  @Test
+  func `picks the slowest completed request rather than the slowest failure`() {
+    let now = Date()
+    // A timeout's duration is the client's timeout setting, not a measurement of the server, so
+    // letting it win would make this field report a config constant instead of the network.
+    let timedOut = makeRequest(
+      host: "192.168.0.104",
+      duration: 10.0,
+      status: nil,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      error: "timed out",
+      isTimeout: true
+    )
+    let slowSuccess = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 2.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 5000,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.4),
+      responseEnd: now.addingTimeInterval(2)
+    )
+    let quick = makeRequest(
+      host: "api.expo.dev",
+      duration: 0.2,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 100,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.05),
+      responseEnd: now.addingTimeInterval(0.2)
+    )
+    let summary = NetworkRequestSummary.from([timedOut, slowSuccess, quick])
+    #expect(summary.slowest?.duration == 2.0)
+    #expect(summary.slowest?.host == "cdn.expo.dev")
+    // All three `slowest` fields describe that one request.
+    #expect(abs((summary.slowest?.timeToFirstByte ?? 0) - 0.4) < 0.0001)
+    // The timeout is still counted, just not used to describe the slowest request.
+    #expect(summary.timedOut == 1)
+    #expect(summary.failed == 1)
+  }
+
+  @Test
+  func `leaves the slowest fields nil when every request failed`() {
+    let request = makeRequest(
+      host: "expo.dev",
+      duration: 10.0,
+      status: nil,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date(),
+      error: "timed out",
+      isTimeout: true
+    )
+    let summary = NetworkRequestSummary.from([request])
+    #expect(summary.slowest?.duration == nil)
+    #expect(summary.slowest?.host == nil)
+    #expect(summary.slowest?.timeToFirstByte == nil)
+    #expect(summary.count == 1)
+    #expect(summary.timedOut == 1)
+  }
+
+  @Test
+  func `reports the slowest request's own time to first byte, not the window maximum`() {
+    let now = Date()
+    // The quick request has the higher TTFB relative to its own duration; a window max would report
+    // 0.9 here. The slowest request's own TTFB is 0.3, which is what pairs with its duration.
+    let slowest = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 4.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 9000,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.3),
+      responseEnd: now.addingTimeInterval(4)
+    )
+    let slowServer = makeRequest(
+      host: "api.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 100,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.9),
+      responseEnd: now.addingTimeInterval(1)
+    )
+    let summary = NetworkRequestSummary.from([slowest, slowServer])
+    #expect(summary.slowest?.duration == 4.0)
+    #expect(abs((summary.slowest?.timeToFirstByte ?? 0) - 0.3) < 0.0001)
   }
 
   @Test
@@ -473,7 +568,7 @@ struct NetworkRequestSummaryTests {
       error: "timed out"
     )
     let summary = NetworkRequestSummary.from([quick, stalled, headerless])
-    #expect(abs((summary.slowestTimeToFirstByte ?? 0) - 0.3) < 0.0001)
+    #expect(abs((summary.slowest?.timeToFirstByte ?? 0) - 0.3) < 0.0001)
   }
 
   @Test
@@ -487,7 +582,7 @@ struct NetworkRequestSummaryTests {
       fetchStart: Date()
     )
     let summary = NetworkRequestSummary.from([request])
-    #expect(summary.slowestTimeToFirstByte == nil)
+    #expect(summary.slowest?.timeToFirstByte == nil)
   }
 
   @Test
@@ -609,7 +704,7 @@ struct NetworkRequestSummaryTests {
     let now = Date()
     // A slow API call that returns nothing spends real time in flight, but no bytes could have been
     // flowing during it. Counting its span would describe time the payload wasn't moving and halve
-    // the reported rate; its latency is already covered by `slowestTimeToFirstByte`.
+    // the reported rate; its latency is already covered by `slowest.timeToFirstByte`.
     let download = makeRequest(
       host: "cdn.expo.dev",
       duration: 1.0,
@@ -706,7 +801,7 @@ struct NetworkRequestSummaryTests {
       responseStart: now.addingTimeInterval(-0.2)
     )
     let summary = NetworkRequestSummary.from([skewed])
-    #expect(summary.slowestTimeToFirstByte == nil)
+    #expect(summary.slowest?.timeToFirstByte == nil)
   }
 
   @Test

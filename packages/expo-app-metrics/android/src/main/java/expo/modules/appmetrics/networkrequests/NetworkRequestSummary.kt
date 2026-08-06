@@ -36,20 +36,19 @@ data class NetworkRequestSummary(
   /** Sum of `timings.totalDuration` across all requests, in seconds. Can exceed wall-clock when requests overlap. */
   val totalDuration: Double,
 
-  /** Longest single request duration in seconds, or `null` if `count == 0`. */
-  val slowestDuration: Double?,
-
-  /** Host of the slowest request, or `null` if the URL had no resolvable host. */
-  val slowestHost: String?,
-
   /**
-   * Longest time-to-first-byte in the window in seconds, or `null` if no request reported one.
+   * The single longest-running request that completed, or `null` when the window held none.
    *
-   * A maximum rather than an average, so a single stalled request stays visible instead of being
-   * diluted by fast ones. Note this includes server processing time, so it's a proxy for network
-   * quality rather than a measurement of it - see `Timings.timeToFirstByte`.
+   * Every field describes that one request, so they can be read together: a `duration` mostly made
+   * up of `timeToFirstByte` means the server was slow to answer, while a small `timeToFirstByte`
+   * against a large `bytesReceived` means the transfer itself was.
+   *
+   * Failed requests are deliberately not candidates. A timeout's duration is the client's timeout
+   * setting rather than a measurement of the server, so letting one win would make these fields
+   * report a config constant that barely varies with the network. `failed` and `timedOut` carry that
+   * signal instead.
    */
-  val slowestTimeToFirstByte: Double? = null,
+  val slowest: SlowestRequest? = null,
 
   /**
    * Received bytes over the time those bytes were actually moving, in bytes per second, or `null`
@@ -64,7 +63,7 @@ data class NetworkRequestSummary(
    *   launch that fetches briefly and then sits idle would otherwise look slow.
    * - Only requests that received bytes, so a slow request returning nothing can't stretch the
    *   denominator across time when no payload was in flight. Its latency belongs to
-   *   `slowestTimeToFirstByte`, not here.
+   *   `slowest.timeToFirstByte`, not here.
    *
    * This still can't see a stall between requests: if the radio dies while nothing is in flight, no
    * interval covers it. `timedOut` is the signal for that case.
@@ -76,6 +75,28 @@ data class NetworkRequestSummary(
    */
   val throughputBytesPerSecond: Double? = null
 ) {
+  /** Facts about the slowest completed request in a window. See `NetworkRequestSummary.slowest`. */
+  data class SlowestRequest(
+    /** Host of the request, or `null` if the URL had no resolvable host. */
+    val host: String?,
+
+    /** Total wall-clock duration of the request, in seconds. */
+    val duration: Double,
+
+    /**
+     * Time from the start of the fetch until the first response byte arrived, in seconds, or `null`
+     * if the request never reported one. Includes server processing time, so it's a proxy for
+     * network quality rather than a measurement of it - see `Timings.timeToFirstByte`.
+     */
+    val timeToFirstByte: Double?,
+
+    /**
+     * Response bytes received on the wire, or `null` if no count was reported. Distinguishes a
+     * request that was slow because it moved a lot of data from one that was slow while idle.
+     */
+    val bytesReceived: Long?
+  )
+
   val isEmpty: Boolean
     get() = count == 0
 
@@ -87,9 +108,7 @@ data class NetworkRequestSummary(
       bytesReceived = 0,
       bytesSent = 0,
       totalDuration = 0.0,
-      slowestDuration = null,
-      slowestHost = null,
-      slowestTimeToFirstByte = null,
+      slowest = null,
       throughputBytesPerSecond = null
     )
 
@@ -107,7 +126,6 @@ data class NetworkRequestSummary(
       var bytesSent = 0L
       var totalDuration = 0.0
       var slowest: NetworkRequest? = null
-      var slowestTimeToFirstByte: Double? = null
 
       for (request in requests) {
         if (request.isFailed) {
@@ -119,14 +137,15 @@ data class NetworkRequestSummary(
         bytesReceived += request.responseBytesReceived ?: 0
         bytesSent += request.requestBytesSent ?: 0
         totalDuration += request.timings.totalDuration
-        val current = slowest
-        if (current == null || request.timings.totalDuration > current.timings.totalDuration) {
-          slowest = request
-        }
-        // Skips requests that didn't report the phase, so a header-less failure doesn't drag the
-        // result toward a value that was never measured.
-        request.timings.timeToFirstByte?.let {
-          slowestTimeToFirstByte = maxOf(it, slowestTimeToFirstByte ?: it)
+        // Only completed requests are candidates. A timeout's duration is the client's timeout
+        // setting, not a measurement of the server, so letting one win would make these fields
+        // report a config constant that barely varies with the network. Failures are already counted
+        // by `failed` and `timedOut`.
+        if (!request.isFailed) {
+          val current = slowest
+          if (current == null || request.timings.totalDuration > current.timings.totalDuration) {
+            slowest = request
+          }
         }
       }
 
@@ -137,9 +156,14 @@ data class NetworkRequestSummary(
         bytesReceived = bytesReceived,
         bytesSent = bytesSent,
         totalDuration = totalDuration,
-        slowestDuration = slowest?.timings?.totalDuration,
-        slowestHost = slowest?.url?.toHttpUrlOrNull()?.host,
-        slowestTimeToFirstByte = slowestTimeToFirstByte,
+        slowest = slowest?.let { request ->
+          SlowestRequest(
+            host = request.url.toHttpUrlOrNull()?.host,
+            duration = request.timings.totalDuration,
+            timeToFirstByte = request.timings.timeToFirstByte,
+            bytesReceived = request.responseBytesReceived
+          )
+        },
         throughputBytesPerSecond = throughput(requests)
       )
     }

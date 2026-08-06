@@ -30,18 +30,35 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// Sum of `timings.totalDuration` across all requests. Can exceed wall-clock when requests overlap.
   public let totalDuration: TimeInterval
 
-  /// Longest single request duration in the window, or `nil` if `count == 0`.
-  public let slowestDuration: TimeInterval?
-
-  /// Host of the slowest request, or `nil` if the request had no resolvable host.
-  public let slowestHost: String?
-
-  /// Longest time-to-first-byte in the window, or `nil` if no request reported one.
+  /// The single longest-running request that completed, or `nil` when the window held none.
   ///
-  /// A maximum rather than an average, so a single stalled request stays visible instead of being
-  /// diluted by fast ones. Note this includes server processing time, so it's a proxy for network
-  /// quality rather than a measurement of it — see `Timings.timeToFirstByte`.
-  public let slowestTimeToFirstByte: TimeInterval?
+  /// Every field describes that one request, so they can be read together: a `duration` mostly made
+  /// up of `timeToFirstByte` means the server was slow to answer, while a small `timeToFirstByte`
+  /// against a large `bytesReceived` means the transfer itself was.
+  ///
+  /// Failed requests are deliberately not candidates. A timeout's duration is the client's timeout
+  /// setting rather than a measurement of the server, so letting one win would make these fields
+  /// report a config constant that barely varies with the network. `failed` and `timedOut` carry
+  /// that signal instead.
+  public let slowest: SlowestRequest?
+
+  /// Facts about the slowest completed request in a window. See `NetworkRequestSummary.slowest`.
+  public struct SlowestRequest: Sendable, Equatable {
+    /// Host of the request, or `nil` if the URL had no resolvable host.
+    public let host: String?
+
+    /// Total wall-clock duration of the request.
+    public let duration: TimeInterval
+
+    /// Time from the start of the fetch until the first response byte arrived, or `nil` if the
+    /// request never reported one. Includes server processing time, so it's a proxy for network
+    /// quality rather than a measurement of it — see `Timings.timeToFirstByte`.
+    public let timeToFirstByte: TimeInterval?
+
+    /// Response bytes received on the wire, or `nil` if the OS didn't report a count. Distinguishes
+    /// a request that was slow because it moved a lot of data from one that was slow while idle.
+    public let bytesReceived: Int64?
+  }
 
   /// Received bytes over the time those bytes were actually moving, in bytes per second, or `nil`
   /// when nothing was received or no receiving request reported a usable interval.
@@ -55,7 +72,7 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   ///   launch that fetches briefly and then sits idle would otherwise look slow.
   /// - Only requests that received bytes, so a slow request returning nothing can't stretch the
   ///   denominator across time when no payload was in flight. Its latency belongs to
-  ///   `slowestTimeToFirstByte`, not here.
+  ///   `slowest.timeToFirstByte`, not here.
   ///
   /// This still can't see a stall between requests: if the radio dies while nothing is in flight,
   /// no interval covers it. `timedOut` is the signal for that case.
@@ -78,9 +95,7 @@ public struct NetworkRequestSummary: Sendable, Equatable {
     bytesReceived: 0,
     bytesSent: 0,
     totalDuration: 0,
-    slowestDuration: nil,
-    slowestHost: nil,
-    slowestTimeToFirstByte: nil,
+    slowest: nil,
     throughputBytesPerSecond: nil
   )
 
@@ -96,7 +111,6 @@ public struct NetworkRequestSummary: Sendable, Equatable {
     var bytesSent: Int64 = 0
     var totalDuration: TimeInterval = 0
     var slowest: NetworkRequest?
-    var slowestTimeToFirstByte: TimeInterval?
 
     for request in requests {
       if request.isFailed {
@@ -108,17 +122,18 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       bytesReceived += request.responseBytesReceived ?? 0
       bytesSent += request.requestBytesSent ?? 0
       totalDuration += request.timings.totalDuration
-      if let current = slowest {
-        if request.timings.totalDuration > current.timings.totalDuration {
+      // Only completed requests are candidates. A timeout's duration is the client's timeout
+      // setting, not a measurement of the server, so letting one win would make these fields report
+      // a config constant that barely varies with the network. Failures are already counted by
+      // `failed` and `timedOut`.
+      if !request.isFailed {
+        if let current = slowest {
+          if request.timings.totalDuration > current.timings.totalDuration {
+            slowest = request
+          }
+        } else {
           slowest = request
         }
-      } else {
-        slowest = request
-      }
-      // Skips requests that didn't report the phase, so a header-less failure doesn't drag the
-      // result toward a value that was never measured.
-      if let timeToFirstByte = request.timings.timeToFirstByte {
-        slowestTimeToFirstByte = max(timeToFirstByte, slowestTimeToFirstByte ?? timeToFirstByte)
       }
     }
 
@@ -129,9 +144,14 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       bytesReceived: bytesReceived,
       bytesSent: bytesSent,
       totalDuration: totalDuration,
-      slowestDuration: slowest?.timings.totalDuration,
-      slowestHost: slowest?.url.host,
-      slowestTimeToFirstByte: slowestTimeToFirstByte,
+      slowest: slowest.map { request in
+        SlowestRequest(
+          host: request.url.host,
+          duration: request.timings.totalDuration,
+          timeToFirstByte: request.timings.timeToFirstByte,
+          bytesReceived: request.responseBytesReceived
+        )
+      },
       throughputBytesPerSecond: throughput(of: requests)
     )
   }

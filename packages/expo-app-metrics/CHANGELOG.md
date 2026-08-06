@@ -8,7 +8,7 @@
 
 - Add an optional `displayName` to `logEvent` ([#47289](https://github.com/expo/expo/pull/47289) by [@Ubax](https://github.com/Ubax))
 - Capture React render-phase errors via `AppMetricsErrorBoundary`. ([#47341](https://github.com/expo/expo/pull/47341) by [@tsapeta](https://github.com/tsapeta))
-- Attach network connection quality to metrics: `expo.network.isExpensive`, `expo.network.isConstrained` (iOS) and `expo.network.dataSaverEnabled` (Android), plus `timedOut`, `slowestTimeToFirstByte` and `throughputBytesPerSecond` on the `expo.network.requests.*` summary. ([#48518](https://github.com/expo/expo/pull/48518) by [@tsapeta](https://github.com/tsapeta))
+- Attach network connection quality to metrics: `expo.network.isExpensive`, `expo.network.isConstrained` (iOS) and `expo.network.dataSaverEnabled` (Android), plus `timedOut`, `throughputBytesPerSecond` and a `slowest.*` group (`host`, `duration`, `timeToFirstByte`, `bytesReceived`) describing the slowest completed request on the `expo.network.requests.*` summary. ([#48518](https://github.com/expo/expo/pull/48518) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
