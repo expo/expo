@@ -43,23 +43,16 @@ export const LOADED_ENV_NAME = '__EXPO_ENV_LOADED';
 export type EnvMode = 'development' | 'production';
 
 /**
- * Set `NODE_ENV` and `BABEL_ENV` for an Expo command or tool.
- * Existing values are replaced. This also sets `__DEV__` when `process.env` is used.
+ * Set `NODE_ENV` for an Expo command or tool.
+ * Existing values are replaced.
  *
- * Pass a custom `systemEnv` to set values for a child process without changing `process.env`.
+ * Pass a custom `systemEnv` to set the value without changing `process.env`.
  */
 export function setNodeEnv(
   mode: EnvMode,
   { systemEnv = process.env }: { systemEnv?: EnvOutput } = {}
 ) {
   systemEnv.NODE_ENV = mode;
-  systemEnv.BABEL_ENV = mode;
-
-  if (systemEnv === process.env) {
-    // @ts-expect-error: __DEV__ is not declared in the Node.js types.
-    globalThis.__DEV__ = mode === 'development';
-  }
-
   return systemEnv;
 }
 
@@ -294,7 +287,7 @@ export function parseProjectEnv(
 /**
  * Parse all environment variables using the detected list of `.env*` files from a project.
  * This won't override existing environment variables defined in the system environment.
- * A development or production mode also sets `NODE_ENV` and `BABEL_ENV` before loading.
+ * A development or production mode also sets `NODE_ENV` before loading.
  * Once the mutations are done, this will also set a property `__EXPO_ENV=true` on the system env to avoid multiple mutations.
  * This check can be disabled through `{ force: true }`.
  */
