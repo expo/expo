@@ -55,4 +55,18 @@ public enum WidgetsStorage {
 
     defaults.removeObject(forKey: key)
   }
+
+  static func getLiveActivityInteractionState(forActivityID activityID: String) -> [String: Any]? {
+    return getDictionary(forKey: liveActivityInteractionStateKey(forActivityID: activityID))
+  }
+
+  static func updateLiveActivityInteractionState(_ state: [String: Any], forActivityID activityID: String) {
+    let currentState = getLiveActivityInteractionState(forActivityID: activityID) ?? [:]
+    let newState = currentState.merging(state) { _, newValue in newValue }
+    set(newState, forKey: liveActivityInteractionStateKey(forActivityID: activityID))
+  }
+
+  private static func liveActivityInteractionStateKey(forActivityID activityID: String) -> String {
+    return "__expo_widgets_live_activity_\(activityID)_interaction_state"
+  }
 }
