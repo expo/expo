@@ -10,4 +10,7 @@ export async function showSignificantUpdateAcknowledgmentAsync(_updateDescriptio
 export async function getRequiredRegulatoryFeaturesAsync() {
     return null;
 }
+export async function requestAgeSignalsAccessAsync() {
+    return null;
+}
 //# sourceMappingURL=AgeRange.web.js.map

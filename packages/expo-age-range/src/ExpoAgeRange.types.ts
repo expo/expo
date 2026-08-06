@@ -28,7 +28,7 @@ export type AgeRangeResponse = {
    * Indicates how the age range was declared:
    * - `'selfDeclared'` — declared by the user themselves.
    * - `'guardianDeclared'` — declared by someone else (parent, guardian, or Family Organizer in a Family Sharing group).
-   * - `'confirmed'` — confirmed by the system (for example, verified against a government ID or payment method). Only reported on iOS 26.5+.
+   * - `'confirmed'` — confirmed by the system (for example, verified against a government ID or payment method). Only reported on iOS 26.2+.
    *
    * See `ageRangeSource` for the Android equivalent.
    *
