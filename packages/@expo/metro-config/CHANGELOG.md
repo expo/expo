@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Depend on `@react-native/js-polyfills` directly for `getPolyfills` instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.88. ([#48034](https://github.com/expo/expo/pull/48034) by [@alanjhughes](https://github.com/alanjhughes))
+- Install packed source map support from `getDefaultConfig` so Metro drivers other than `@expo/cli` no longer fail with `Unexpected module with full source map found`. ([#48593](https://github.com/expo/expo/pull/48593) by [@jakubstec](https://github.com/jakubstec))
 
 ### 💡 Others
 
