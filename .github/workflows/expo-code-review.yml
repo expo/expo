@@ -117,7 +117,7 @@ jobs:
         run: npx --yes -p "@expo/code-review-cli@$ECR_VERSION" ecr ci
         continue-on-error: true
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           # Layer-1 auth lock: the CLI refuses to run when the tokenEnv it would
           # honor (root config.jsonc, or routing.jsonc defaults.auth) differs from
           # this — it catches what the guard step above can't. Keep it in sync

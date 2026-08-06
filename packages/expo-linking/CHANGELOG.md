@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Internal] Read the development server URL from `expo/internal/bundle-origin` instead of duplicating its accessor ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
+
 ## 57.0.4 - 2026-07-22
 
 _This version does not introduce any user-facing changes._
