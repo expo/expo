@@ -60,7 +60,7 @@ public class DevMenuManager: NSObject {
 
   var currentBundleURL: URL? {
     guard let manifest = currentManifest else { return nil }
-    return ApiUtil.bundleUrlFromManifest(manifest)
+    return ApiUtil.bundleUrlFromManifest(manifest, relativeTo: currentManifestURL)
   }
 
   var hasActiveApp: Bool {

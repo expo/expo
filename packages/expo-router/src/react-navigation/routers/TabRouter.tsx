@@ -1,5 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 
+import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import type {
@@ -198,7 +199,9 @@ const changeIndex = (
       params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
     });
   } else {
-    history = getRouteHistory(state.routes, index, backBehavior, initialRouteName);
+    const routes = orderRoutesByRouteNames(state.routes, state.routeNames);
+    const orderedIndex = routes.findIndex((route) => route.key === state.routes[index]!.key);
+    history = getRouteHistory(routes, orderedIndex, backBehavior, initialRouteName);
   }
 
   return {
@@ -307,25 +310,48 @@ export function TabRouter({
       );
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const routes = routeNames.map(
-        (name) =>
-          state.routes.find((r) => r.name === name && !routeKeyChanges.includes(r.name)) || {
+    getStateForRouteNamesChange(state, { routeNames, routeParamList }) {
+      const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+      for (const name of routeNames) {
+        if (!routes.some((route) => route.name === name)) {
+          routes.push({
             name,
             key: `${name}-${nanoid()}`,
             params: routeParamList[name],
-          }
-      );
+          });
+        }
+      }
 
-      const index = Math.max(0, routeNames.indexOf(state.routes[state.index]!.name));
+      const focusedName = state.routes[state.index]!.name;
+      const index = Math.max(
+        0,
+        routes.findIndex((route) => route.name === focusedName)
+      );
 
       let history = state.history.filter(
         // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
         (it) => it.type !== 'route' || routes.find((r) => r.key === it.key)
       );
 
-      if (!history.length) {
-        history = getRouteHistory(routes, index, backBehavior, initialRouteName);
+      // Static back behaviors follow display order, while history behaviors retain valid visits.
+      // Preserve non-route entries added by extending routers such as `DrawerRouter`.
+      if (
+        backBehavior === 'firstRoute' ||
+        backBehavior === 'initialRoute' ||
+        backBehavior === 'order'
+      ) {
+        const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
+        const orderedIndex = orderedRoutes.findIndex((route) => route.key === routes[index]!.key);
+        history = [
+          ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
+          ...history.filter((item) => item.type !== 'route'),
+        ];
+      } else if (!history.some((item) => item.type === 'route')) {
+        history = [
+          ...getRouteHistory(routes, index, backBehavior, initialRouteName),
+          ...history.filter((item) => item.type !== 'route'),
+        ];
       }
 
       return {

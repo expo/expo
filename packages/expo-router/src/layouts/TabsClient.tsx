@@ -26,7 +26,10 @@ import type { Href } from '../types';
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
 export * from '../react-navigation/bottom-tabs';
 
-export type TabsScreenOptions = BottomTabNavigationOptions & { href?: Href | null };
+export type TabsScreenOptions = BottomTabNavigationOptions & {
+  // TODO: Consider deprecating `href`.
+  href?: Href | null;
+};
 
 /**
  * Renders a tabs navigator.
@@ -42,6 +45,7 @@ const Tabs = unstable_integrateWithRouter<
   BottomTabNavigatorCreateProps
 >(createStandardBottomTabNavigator, TabRouter, {
   createProps: ({ state, dispatch }) => ({
+    routeNames: state.routeNames,
     preloadedRouteKeys: state.preloadedRouteKeys,
     popNestedStackToTop: (routeKey) => {
       const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
@@ -58,15 +62,21 @@ const Tabs = unstable_integrateWithRouter<
         if (options.tabBarButton) {
           throw new Error('Cannot use `href` and `tabBarButton` together.');
         }
+        if (href === null) {
+          // TODO(@ubax): Update the hiding-a-tab guide for the new redirect behavior.
+          return {
+            ...screen,
+            options: {
+              ...options,
+              hidden: true,
+            },
+          };
+        }
         return {
           ...screen,
           options: {
             ...options,
-            tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
             tabBarButton: (props) => {
-              if (href == null) {
-                return null;
-              }
               const children =
                 Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
               // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>

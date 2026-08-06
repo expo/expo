@@ -189,7 +189,12 @@ describe(useLoaderData, () => {
 
     renderRouter(
       {
-        _layout: () => <Tabs />,
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="profile" />
+          </Tabs>
+        ),
         index: function Home() {
           homeResults.push(useLoaderData());
           return <Text>Home</Text>;

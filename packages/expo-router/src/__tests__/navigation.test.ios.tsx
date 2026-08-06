@@ -28,7 +28,12 @@ it('should respect `unstable_settings', () => {
               initialRouteName: 'orange',
             },
           },
-          default: () => <Tabs />,
+          default: () => (
+            <Tabs>
+              <Tabs.Screen name="orange" />
+              <Tabs.Screen name="banana" />
+            </Tabs>
+          ),
         },
         '(one,two)/apple': () => <Text testID="apple"> Apple</Text>,
         '(two)/banana': () => <Text testID="banana">Banana</Text>,
@@ -257,7 +262,11 @@ it('replaces from top level modal to initial route in a tab navigator', () => {
       default: () => <Stack />,
     },
     '[...missing]': () => <Text testID="missing">missing</Text>,
-    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/_layout': () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+      </Tabs>
+    ),
     '(tabs)/index': () => <Text testID="two">two</Text>,
   });
 
@@ -591,7 +600,12 @@ it('should stay within the same group', () => {
   renderRouter(
     {
       _layout: () => <Stack />,
-      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="(profile)" />
+        </Tabs>
+      ),
       '(tabs)/(home)/_layout': () => <Stack />,
       '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
       '(tabs)/(home)/shared': () => <Text testID="text">Home Shared</Text>,
@@ -613,7 +627,13 @@ it('should stay within the same group for hoisted routes', () => {
   renderRouter(
     {
       _layout: () => <Stack />,
-      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="(profile)/index" />
+          <Tabs.Screen name="(profile)/shared" />
+        </Tabs>
+      ),
       '(tabs)/(home)/_layout': () => <Stack />,
       '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
       '(tabs)/(home)/shared': () => <Text testID="text">Home Shared</Text>,
@@ -635,7 +655,12 @@ it('should stay within the same group even if another group has more specific ro
   renderRouter(
     {
       _layout: () => <Stack />,
-      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="(home)" />
+          <Tabs.Screen name="(profile)" />
+        </Tabs>
+      ),
       '(tabs)/(home)/_layout': () => <Stack />,
       '(tabs)/(home)/index': () => <Text testID="text">Home Index</Text>,
       // This is more specific (more segments)
@@ -867,7 +892,12 @@ it('can redirect within a group layout', () => {
 
 it('can replace across groups', async () => {
   renderRouter({
-    _layout: () => <Tabs />,
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="one" />
+        <Tabs.Screen name="two" />
+      </Tabs>
+    ),
     'one/_layout': () => <Stack />,
     'one/screen': () => <Text testID="one/screen" />,
     'two/_layout': () => <Stack />,
@@ -1154,7 +1184,13 @@ describe('shared routes with tabs', () => {
       '(one,two)/one': () => <Text />,
       '(one,two)/post': () => <Text />,
       '(two)/two': () => <Text />,
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="(one)" />
+          <Tabs.Screen name="(two)" />
+        </Tabs>
+      ),
       index: () => <Redirect href="/one" />,
     });
 
@@ -1673,7 +1709,13 @@ describe('navigation action fallbacks', () => {
 
   it('can fall back correctly for tab navigators', () => {
     renderRouter({
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+          <Tabs.Screen name="redirected" />
+        </Tabs>
+      ),
       one: () => <Text testID="one" />,
       two: () => <Text testID="two" />,
       redirected: () => <Redirect href="/" />,
