@@ -179,6 +179,47 @@ class NetworkRequestInterceptorTest {
   }
 
   @Test
+  fun `records response bytes for a chunked body with no declared length`() {
+    val body = "x".repeat(4096)
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setChunkedBody(body, 512)
+    )
+
+    val response = client.newCall(Request.Builder().url(server.url("/chunked")).build()).execute()
+    response.body!!.string()
+    response.close()
+
+    val snapshot = monitor.recent.first()
+    val received = snapshot.responseBytesReceived!!
+    // A chunked response declares no Content-Length, so the `contentLength()` fallback is -1.
+    // The count has to come from the event listener; without it we'd silently report headers only.
+    assertTrue("expected at least body length, got $received", received >= body.length)
+  }
+
+  @Test
+  fun `reports unknown response bytes rather than a headers-only count`() {
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setChunkedBody("y".repeat(2048), 256)
+    )
+
+    // Never drain the body: `responseBodyEnd` won't fire, so no byte count is available. The
+    // snapshot has to say "unknown" instead of reporting the header estimate as a measurement,
+    // which would both understate totals and let the request into the throughput denominator.
+    val response = client.newCall(Request.Builder().url(server.url("/abandoned")).build()).execute()
+    response.close()
+
+    val snapshot = monitor.recent.first()
+    assertNull(
+      "expected unknown byte count, got ${snapshot.responseBytesReceived}",
+      snapshot.responseBytesReceived
+    )
+  }
+
+  @Test
   fun `internal opt-out header skips observation and is stripped from the outgoing request`() {
     server.enqueue(MockResponse().setResponseCode(200))
 
