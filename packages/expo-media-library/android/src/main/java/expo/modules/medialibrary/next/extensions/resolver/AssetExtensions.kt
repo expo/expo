@@ -34,12 +34,6 @@ suspend fun ContentResolver.queryAssetDateModified(contentUri: Uri): Long? =
 suspend fun ContentResolver.queryAssetDuration(contentUri: Uri): Long? =
   queryOne(contentUri, MediaStore.MediaColumns.DURATION, Cursor::getNullableLong)
 
-suspend fun ContentResolver.queryAssetWidth(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.WIDTH, Cursor::getNullableInt)
-
-suspend fun ContentResolver.queryAssetHeight(contentUri: Uri): Int? =
-  queryOne(contentUri, MediaStore.MediaColumns.HEIGHT, Cursor::getNullableInt)
-
 suspend fun ContentResolver.queryAssetData(contentUri: Uri): String? =
   queryOne(contentUri, MediaStore.MediaColumns.DATA, Cursor::getNullableString)
 

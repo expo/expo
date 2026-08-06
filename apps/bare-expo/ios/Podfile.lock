@@ -108,9 +108,7 @@ PODS:
     - ExpoModulesTestCore
     - EXUpdatesInterface
     - hermes-engine
-    - Nimble
     - OHHTTPStubs
-    - Quick
     - RCTRequired
     - RCTTypeSafety
     - React-Core
@@ -188,8 +186,6 @@ PODS:
   - expo-dev-menu/Tests (57.0.10):
     - ExpoModulesTestCore
     - hermes-engine
-    - Nimble
-    - Quick
     - RCTRequired
     - RCTTypeSafety
     - React-Core
@@ -519,8 +515,6 @@ PODS:
     - ReactCommon
   - ExpoModulesTestCore (57.0.6):
     - ExpoModulesCore
-    - Nimble (~> 13.0.0)
-    - Quick (~> 7.3.0)
     - React-hermes
   - ExpoModulesWorklets (57.0.8):
     - ExpoModulesCore
@@ -798,7 +792,6 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
-  - Nimble (13.0.0)
   - OHHTTPStubs (9.1.0):
     - OHHTTPStubs/Default (= 9.1.0)
   - OHHTTPStubs/Core (9.1.0)
@@ -812,7 +805,6 @@ PODS:
   - OHHTTPStubs/NSURLSession (9.1.0):
     - OHHTTPStubs/Core
   - OHHTTPStubs/OHPathHelpers (9.1.0)
-  - Quick (7.3.1)
   - RCTDeprecation (0.86.0)
   - RCTRequired (0.86.0)
   - RCTSwiftUI (0.86.0)
@@ -3557,9 +3549,7 @@ SPEC REPOS:
     - libdav1d
     - libwebp
     - lottie-ios
-    - Nimble
     - OHHTTPStubs
-    - Quick
     - ReachabilitySwift
     - SDWebImage
     - SDWebImageAVIFCoder
@@ -4037,10 +4027,10 @@ SPEC CHECKSUMS:
   EXManifests: f9888c0bf5aaa6ddb7e3d4b224d6d54ac4ca84a4
   Expo: cba780b47e8661e90c9fe8e1a92a81cef5773290
   expo-dev-client: 678dd58df0bd6d3486b8b358e37c79ca67d32af5
-  expo-dev-launcher: e3c2a1108ecd0b3b7cf81daffd794631e44e04e7
-  expo-dev-menu: 0ba52c1ebfb1332fcd0134566a35c1417a546a05
+  expo-dev-launcher: 87a4c5db1de84486feaf9ffa778a8dd4a9d40e73
+  expo-dev-menu: 56ac74da2a223d0f45a7e871fb17b8d38c64e0f1
   expo-dev-menu-interface: 7a59e803916fbfd1b96c75ff91ea8dddac7e722f
-  ExpoAgeRange: ecab8ca4c26e033a55e096cf84f57297dbeb9e84
+  ExpoAgeRange: f30bef82f1a99c097e28f50ed41ca04d5e1cab1c
   ExpoAppIntegrity: c4f6d2065674ec9744881f8c04d52ade9b6cacd8
   ExpoAppleAuthentication: 97d113f0f2680067e6e76d3c9249e7e1fc026b42
   ExpoAppMetrics: edb2e75dba50059ba781c56b8ff0824aaeb9e74b
@@ -4086,7 +4076,7 @@ SPEC CHECKSUMS:
   ExpoMeshGradient: ade33604a92081a2deda41c6107e7d080493012d
   ExpoModulesCore: c74426df582d7c3f7bfbaf20306c9c526c14e75d
   ExpoModulesJSI: b20fefa4cdd9097e7e6b715466d1900b8c5d4711
-  ExpoModulesTestCore: 71a5709f2dc08974889c7def3472f6c3a3327d9a
+  ExpoModulesTestCore: 638024012fa1ec8639398a2afe1ee5dd0fa006c6
   ExpoModulesWorklets: 6b240031daa3de4df791588fc78236637ff602f6
   ExpoModulesWorkletsAdapter: 706c6898f1daeab56c03e062e77e0da2fb4f7998
   ExpoNetwork: 973d523fe9b1f99223dd945fed9ad1226ae64920
@@ -4117,16 +4107,14 @@ SPEC CHECKSUMS:
   EXUpdates: 01f1b6c3ef1df0a981f84af9a91dc027baed4a07
   EXUpdatesInterface: 92d2aa5194b6fb93ca8ab749db75665cb28b2e60
   FBLazyVector: b3e7ad108f0d882e30445c5527d774e3fd432f3d
-  hermes-engine: 4c998771d5218e20701b63d8358199a520a54447
+  hermes-engine: ebe8b908c0614fa2c4e3655af31dcbadd9e73c67
   JestMockSchema: 96b4cfec246644f6323d1c30693b6a02044be1e6
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8
   lottie-ios: 8f959969761e9c45d70353667d00af0e5b9cadb3
   lottie-react-native: ee142214581f3bb68fbda7efcf07b835a189eeda
-  Nimble: 97d90931cca412a23224ff29e258809f75c258f7
   OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
-  Quick: 83e25bf349dd84f894b024f48033274512d6129b
   RCTDeprecation: 2a74a2c57675e64419bd89078efde81f7c1de90b
   RCTRequired: 30451112e6fef4e6f31b4e7eee0845156e35e4b0
   RCTSwiftUI: 5aaf0b07e747ba749dc6acc94d8bd41eea4b570f

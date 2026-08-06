@@ -184,20 +184,16 @@ export function getRoutesForRouteNames(
   routeNames: string[],
   {
     routeParamList,
-    routeKeyChanges = [],
     initialRouteName,
   }: {
     routeParamList: ParamListBase;
-    routeKeyChanges?: string[];
     initialRouteName?: string;
   }
 ): Pick<StackNavigationState<ParamListBase>, 'routes' | 'index'> {
   const { activeRoutes, preloadedRoutes } = getStackRoutes(state);
-  const routes = activeRoutes.filter(
-    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
-  );
-  const filteredPreloadedRoutes = preloadedRoutes.filter(
-    (route) => routeNames.includes(route.name) && !routeKeyChanges.includes(route.name)
+  const routes = activeRoutes.filter((route) => routeNames.includes(route.name));
+  const filteredPreloadedRoutes = preloadedRoutes.filter((route) =>
+    routeNames.includes(route.name)
   );
 
   if (routes.length === 0) {
@@ -316,13 +312,12 @@ export function StackRouter(options: StackRouterOptions) {
       };
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
+    getStateForRouteNamesChange(state, { routeNames, routeParamList }) {
       return {
         ...state,
         routeNames,
         ...getRoutesForRouteNames(state, routeNames, {
           routeParamList,
-          routeKeyChanges,
           initialRouteName: options.initialRouteName,
         }),
       };

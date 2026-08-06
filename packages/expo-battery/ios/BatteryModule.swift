@@ -77,28 +77,41 @@ public class BatteryModule: Module {
     }
 
     OnStopObserving(powerModeDidChange) {
-      NotificationCenter.default.removeObserver(self, name: Notification.Name.NSProcessInfoPowerStateDidChange, object: nil)
+      NotificationCenter.default.removeObserver(
+        self,
+        name: Notification.Name.NSProcessInfoPowerStateDidChange,
+        object: nil
+      )
     }
   }
 
   @objc
   func batteryLevelListener() {
-    sendEvent(batteryLevelDidChange, [
-      "batteryLevel": UIDevice.current.batteryLevel
-    ])
+    sendEvent(
+      batteryLevelDidChange,
+      [
+        "batteryLevel": UIDevice.current.batteryLevel
+      ]
+    )
   }
 
   @objc
   func batteryStateListener() {
-    sendEvent(batteryStateDidChange, [
-      "batteryState": UIDevice.current.batteryState.rawValue
-    ])
+    sendEvent(
+      batteryStateDidChange,
+      [
+        "batteryState": UIDevice.current.batteryState.rawValue
+      ]
+    )
   }
 
   @objc
   func powerModeListener() {
-    sendEvent(powerModeDidChange, [
-      "lowPowerMode": ProcessInfo.processInfo.isLowPowerModeEnabled
-    ])
+    sendEvent(
+      powerModeDidChange,
+      [
+        "lowPowerMode": ProcessInfo.processInfo.isLowPowerModeEnabled
+      ]
+    )
   }
 }

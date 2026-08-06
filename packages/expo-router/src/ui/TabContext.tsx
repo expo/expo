@@ -49,7 +49,7 @@ export type ExpoTabsNavigationProp<
 
 export type ExpoTabsScreenOptions = Pick<
   BottomTabNavigationOptions,
-  'title' | 'lazy' | 'freezeOnBlur'
+  'title' | 'lazy' | 'freezeOnBlur' | 'hidden'
 > & {
   params?: object;
   title: string;

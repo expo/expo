@@ -27,7 +27,6 @@ import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
-import { isRecordEqual } from './isRecordEqual';
 import {
   type DefaultNavigatorOptions,
   type EventMapBase,
@@ -71,7 +70,6 @@ const isScreen = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
   name?: unknown;
-  navigationKey?: unknown;
 }> => {
   return child.type === Screen;
 };
@@ -79,16 +77,12 @@ const isScreen = (
 const isGroup = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
-  navigationKey?: unknown;
   screenOptions?: unknown;
   screenLayout?: unknown;
   children?: unknown;
 }> => {
   return child.type === React.Fragment || child.type === Group;
 };
-
-const isValidKey = (key: unknown): key is string | undefined =>
-  key === undefined || (typeof key === 'string' && key !== '');
 
 /**
  * Extract route config object from React children elements.
@@ -101,7 +95,6 @@ const getRouteConfigsFromChildren = <
   EventMap extends EventMapBase,
 >(
   children: React.ReactNode,
-  groupKey?: string,
   groupOptions?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['options'],
   groupLayout?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['layout']
 ) => {
@@ -125,19 +118,7 @@ const getRouteConfigsFromChildren = <
           );
         }
 
-        if (
-          child.props.navigationKey !== undefined &&
-          (typeof child.props.navigationKey !== 'string' || child.props.navigationKey === '')
-        ) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the screen '${child.props.name}'. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         acc.push({
-          keys: [groupKey, child.props.navigationKey],
           options: groupOptions,
           layout: groupLayout,
           props: child.props as RouteConfig<
@@ -154,20 +135,11 @@ const getRouteConfigsFromChildren = <
       }
 
       if (isGroup(child)) {
-        if (!isValidKey(child.props.navigationKey)) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the group. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         // When we encounter a fragment or group, we need to dive into its children to extract the configs
         // This is handy to conditionally define a group of screens
         acc.push(
           ...getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(
             child.props.children as React.ReactNode,
-            child.props.navigationKey,
             // FIXME
             // @ts-expect-error: add validation
             child.type !== Group
@@ -369,10 +341,6 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeKeyList = routeNames.reduce<Record<string, React.Key | undefined>>((acc, curr) => {
-    acc[curr] = screens[curr]!.keys.map((key) => key ?? '').join(':');
-    return acc;
-  }, {});
   const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
     const { initialParams } = screens[curr]!.props;
     acc[curr] = initialParams;
@@ -520,14 +488,6 @@ export function useNavigationBuilder<
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentState, router, isStateValid]);
 
-  const previousRouteKeyListRef = React.useRef(routeKeyList);
-
-  React.useEffect(() => {
-    previousRouteKeyListRef.current = routeKeyList;
-  });
-
-  const previousRouteKeyList = previousRouteKeyListRef.current;
-
   let state =
     // If the state isn't initialized, or stale, use the state we initialized instead
     // The state won't update until there's a change needed in the state we have initialized locally
@@ -535,18 +495,12 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
-  if (
-    !isArrayEqual(state.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList)
-  ) {
+  if (!isArrayEqual(state.routeNames, routeNames)) {
     // When the list of route names change, the router should handle it to remove invalid routes
     nextState = router.getStateForRouteNamesChange(state, {
       routeNames,
       routeParamList,
       routeGetIdList,
-      routeKeyChanges: Object.keys(routeKeyList).filter(
-        (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
-      ),
     });
   }
 

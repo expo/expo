@@ -5,15 +5,18 @@ import { StyleSheet, View } from 'react-native';
 
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
+import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
 import type {
   DefaultNavigatorOptions,
   ParamListBase,
+  RouteSource,
   TabActionHelpers,
   TabNavigationState,
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
@@ -25,13 +28,15 @@ import { ExpoTabRouter } from './TabRouter';
 import { isTabSlot } from './TabSlot';
 import { isTabTrigger } from './TabTrigger';
 import type { ScreenTrigger } from './common';
-import { ViewSlot, triggersToScreens } from './common';
+import { ViewSlot, useTriggersToScreens } from './common';
 import { useComponent } from './useComponent';
 
 export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
+
+const emptyGuardedRedirects: GuardedRedirects = new Map();
 
 /**
  * Options to provide to the Tab Router.
@@ -153,11 +158,10 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 
   const initialRouteName = routeNode.initialRouteName;
 
-  const { children, triggerMap } = triggersToScreens(
+  const { children, triggerMap } = useTriggersToScreens(
     triggers,
     routeNode,
     linking,
-    initialRouteName,
     parentTriggerMap,
     routeInfo,
     contextKey
@@ -175,6 +179,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     triggerMap,
     id: contextKey,
     initialRouteName,
+    backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
   });
 
   const {
@@ -194,14 +199,34 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
-    <TabTriggerMapContext.Provider value={triggerMap}>
-      <NavigatorContext.Provider value={navigatorContextValue}>
-        <RNNavigationContent>{children}</RNNavigationContent>
-      </NavigatorContext.Provider>
-    </TabTriggerMapContext.Provider>
+    // Headless tabs have no guards, so shadow parent guards whose route names may collide.
+    <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
+      <TabVisibilityRedirect state={state} descriptors={descriptors} />
+      <TabTriggerMapContext.Provider value={triggerMap}>
+        <NavigatorContext.Provider value={navigatorContextValue}>
+          <RNNavigationContent>{children}</RNNavigationContent>
+        </NavigatorContext.Provider>
+      </TabTriggerMapContext.Provider>
+    </GuardContextProvider>
   )) as TabsContextValue['NavigationContent'];
 
   return { state, descriptors, navigation, NavigationContent };
+}
+
+function TabVisibilityRedirect({
+  state,
+  descriptors,
+}: {
+  state: TabNavigationState<any>;
+  descriptors: Record<string, { routeSource?: RouteSource; options: ExpoTabsScreenOptions }>;
+}) {
+  useVisibleTabsWithRedirect({
+    routes: state.routes,
+    routeNames: state.routeNames,
+    focusedRouteKey: state.routes[state.index]!.key,
+    descriptors,
+  });
+  return null;
 }
 
 function parseTriggersFromChildren(

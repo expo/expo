@@ -7,7 +7,13 @@ import { renderRouter } from '../testing-library';
 
 it('removes the replaced tab from history', () => {
   renderRouter({
-    _layout: () => <Tabs backBehavior="history" />,
+    _layout: () => (
+      <Tabs backBehavior="history">
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+        <Tabs.Screen name="third" />
+      </Tabs>
+    ),
     index: () => null,
     second: () => null,
     third: () => null,
@@ -23,7 +29,14 @@ it('removes the replaced tab from history', () => {
 
 it('removes a redirecting tab from history', () => {
   renderRouter({
-    _layout: () => <Tabs backBehavior="history" />,
+    _layout: () => (
+      <Tabs backBehavior="history">
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" />
+        <Tabs.Screen name="third" />
+        <Tabs.Screen name="redirected" />
+      </Tabs>
+    ),
     index: () => null,
     second: () => null,
     third: () => null,

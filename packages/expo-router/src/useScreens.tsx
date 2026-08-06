@@ -507,10 +507,8 @@ export function screenOptionsFactory(
 
     // Prevent generated screens from showing up in the tab bar.
     if (route.internal || isGuarded) {
-      output.tabBarItemStyle = { display: 'none' };
-      output.tabBarButton = () => null;
-      // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-      output.drawerItemStyle = { height: 0, display: 'none' };
+      // TODO(@ubax): Document migrating withLayoutContext navigators to standard navigation,
+      // where processScreens can map hidden to navigator-specific options.
       output.hidden = true;
     }
 

@@ -1,4 +1,5 @@
 import ExpoModulesCore
+
 #if !os(tvOS)
 import WebKit
 #endif
@@ -14,12 +15,12 @@ public class ConstantsModule: Module {
     }
 
     AsyncFunction("getWebViewUserAgentAsync") { () -> String? in
-#if os(tvOS)
+      #if os(tvOS)
       return nil
-#else
+      #else
       let webView = WKWebView()
       return webView.value(forKey: "userAgent") as? String
-#endif
+      #endif
     }.runOnQueue(.main)
   }
 }
