@@ -12,7 +12,7 @@ import os from 'os';
 import path from 'path';
 
 import { resolveFontPaths, toValidAndroidResourceName } from './utils';
-import type { Font, FontObject } from './withFonts';
+import type { Font, FontDefinition, FontObject, FontVariationAxes } from './withFonts';
 
 const assetsFontsFir = 'app/src/main/assets/fonts';
 const resourcesFontsDir = 'app/src/main/res/font';
@@ -30,7 +30,7 @@ export const withFontsAndroid: ConfigPlugin<Font[]> = (config, fonts) => {
   return config;
 };
 
-type GroupedFontObject = Record<string, FontObject['fontDefinitions']>;
+type GroupedFontObject = Record<string, FontDefinition[]>;
 
 export function groupByFamily(array: FontObject[]): GroupedFontObject {
   return array.reduce<GroupedFontObject>((result, item) => {
@@ -84,10 +84,81 @@ export function assertNoConflictingDefinitions(fontsByFamily: GroupedFontObject)
   }
 }
 
+// Stricter than the spec, which allows any printable ASCII: tags are wrapped in single quotes, so
+// `a'b'` would emit `'a'b'' 400` and four spaces would name no axis.
+const AXIS_TAG_LENGTH = 4;
+const AXIS_TAG_PATTERN = /^[A-Za-z0-9]{4}$/;
+
+// Tags are case sensitive, and the axes registered with OpenType are all lowercase, so `SLNT` names
+// no axis the font declares.
+const registeredAxisTags = ['ital', 'opsz', 'slnt', 'wdth', 'wght'];
+
+export function assertValidAxes(fontsByFamily: GroupedFontObject) {
+  for (const [fontFamily, definitions] of Object.entries(fontsByFamily)) {
+    for (const definition of definitions) {
+      for (const [tag, value] of Object.entries(definition.axes ?? {})) {
+        // An `app.config.ts` conditional writes `undefined` for the axis it leaves out.
+        if (value === undefined) {
+          continue;
+        }
+
+        const declares = `Font family ${JSON.stringify(fontFamily)} declares the variation axis ${JSON.stringify(tag)} for ${definition.path}`;
+        // On Android 15, `'wght' 900, 'sl t' -10` rendered at weight 900 with no slant: the bad
+        // entry is dropped, the rest still applies.
+        const consequence = `Android may drop a setting it cannot parse.`;
+
+        if (tag.toLowerCase() === 'wght') {
+          throw new Error(
+            `${declares}, which the "weight" field already sets. Remove the ${JSON.stringify(tag)} axis and set "weight" to the value you want.`
+          );
+        }
+
+        if (tag.length !== AXIS_TAG_LENGTH) {
+          throw new Error(
+            `${declares}, which is not a valid OpenType axis tag. An axis tag is exactly four characters, such as "wght", "wdth" or "slnt". ${consequence} ` +
+              `List the axes the font actually declares with a utility such as fontTools: https://fonttools.readthedocs.io/`
+          );
+        }
+
+        if (!AXIS_TAG_PATTERN.test(tag)) {
+          throw new Error(
+            `${declares}, which holds characters that no axis tag uses. A tag is four letters or digits: the axes registered with OpenType are lowercase, such as "slnt" and "wdth", and the axes a font declares for itself are uppercase, such as "GRAD". ${consequence}`
+          );
+        }
+
+        const registeredTag = registeredAxisTags.find((it) => it === tag.toLowerCase());
+
+        if (registeredTag && registeredTag !== tag) {
+          throw new Error(
+            `${declares}, which names no axis because tags are case sensitive. Write it as ${JSON.stringify(registeredTag)} — the axes registered with OpenType are lowercase, and only the axes a font declares for itself are uppercase, such as "GRAD". ${consequence}`
+          );
+        }
+
+        if (typeof value !== 'number' || !Number.isFinite(value)) {
+          throw new Error(
+            `${declares} with the value ${JSON.stringify(value)}, which is not a finite number. ` +
+              `An axis takes a number inside the range the font declares for it, such as -10 for "slnt". ${consequence}`
+          );
+        }
+      }
+    }
+  }
+}
+
+function formatVariationSettings(definition: FontDefinition) {
+  const axes: FontVariationAxes = { wght: definition.weight, ...definition.axes };
+
+  return Object.entries(axes)
+    .filter(([, value]) => value !== undefined)
+    .map(([tag, value]) => `'${tag}' ${value}`)
+    .join(', ');
+}
+
 function addXmlFonts(config: ExpoConfig, xmlFontObjects: FontObject[]) {
   const fontsByFamily = groupByFamily(xmlFontObjects);
   assertAndroidCanLoadFonts(fontsByFamily);
   assertNoConflictingDefinitions(fontsByFamily);
+  assertValidAxes(fontsByFamily);
   const fontPaths = Object.values(fontsByFamily).flatMap((definitions) =>
     definitions.map((it) => it.path)
   );
@@ -140,9 +211,9 @@ export function getXmlSpecs(fontsDir: string, xmlFontObjects: GroupedFontObject)
                 'app:font': `@font/${toValidAndroidResourceName(definition.path)}`,
                 'app:fontStyle': definition.style || 'normal',
                 'app:fontWeight': String(definition.weight),
-                // Instances a variable font at the declared weight, so that one file can back
-                // several definitions. Static fonts have no `wght` axis and ignore it.
-                'app:fontVariationSettings': `'wght' ${definition.weight}`,
+                // Instances a variable font at the declared weight and axes, so that one file can
+                // back several definitions. Static fonts declare no axes and ignore this.
+                'app:fontVariationSettings': formatVariationSettings(definition),
               },
             };
           }),

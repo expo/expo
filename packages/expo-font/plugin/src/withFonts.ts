@@ -5,13 +5,35 @@ import { withFontsIos } from './withFontsIos';
 
 const pkg = require('../../package.json');
 
+/**
+ * The four axes that a font is most likely to declare, or any other four-character tag
+ * (a font may declare custom axes of its own, such as `GRAD`).
+ *
+ * `wght` is missing on purpose - it's covered by `weight`.
+ */
+export type FontVariationAxisTag = 'ital' | 'opsz' | 'slnt' | 'wdth' | (string & {});
+
+export type FontVariationAxes = Partial<Record<FontVariationAxisTag, number>>;
+
+export type FontDefinition = {
+  path: string;
+  weight: number;
+  style?: 'normal' | 'italic' | undefined;
+  /**
+   * The axes to instance a variable font at, such as `{ slnt: -10 }` for an oblique. `wght` comes
+   * from `weight`.
+   *
+   * `style` picks which face `fontStyle` matches but does not slant the glyphs, so an upright file
+   * declared `style: "italic"` renders upright until `slnt` or `ital` is set here.
+   *
+   * @platform android
+   */
+  axes?: FontVariationAxes | undefined;
+};
+
 export type FontObject = {
   fontFamily: string;
-  fontDefinitions: {
-    path: string;
-    weight: number;
-    style?: 'normal' | 'italic' | undefined;
-  }[];
+  fontDefinitions: FontDefinition[];
 };
 
 export type Font = string | FontObject;
