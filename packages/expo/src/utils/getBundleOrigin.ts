@@ -1,6 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 import { getBundleUrl } from './getBundleUrl';
+export { getBundleUrl } from './getBundleUrl';
 
 /**
  * Origin the running bundle was served from, or `null` when it wasn't served over HTTP.
@@ -11,8 +12,7 @@ import { getBundleUrl } from './getBundleUrl';
  *
  * A bundle loaded from disk has a `file:` URL, which is no address to resolve anything against.
  */
-export function getBundleOrigin(): string | null {
-  const bundleUrl = getBundleUrl();
+export function getBundleOrigin(bundleUrl = getBundleUrl()): string | null {
   if (!bundleUrl) {
     return null;
   }

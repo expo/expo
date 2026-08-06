@@ -32,6 +32,7 @@
 - Re-export more expo-modules-core APIs ([#45987](https://github.com/expo/expo/pull/45987) by [@Wenszel](https://github.com/Wenszel))
 - Update `URL` and `URLSearchParams` implementation to support IDNA/TR-46 and improve performance. Spec-adherence has increased and few gaps should now be noticeable compared to browsers ([#47813](https://github.com/expo/expo/pull/47813) by [@kitten](https://github.com/kitten))
 - [Internal] Add `getBundleOrigin`, exposed as `expo/internal/bundle-origin` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
+- [Internal] Derive `getDevServer` from the bundle URL internally and expose `getBundleUrl` helper ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
 
 ## 57.0.9 - 2026-07-29
 
