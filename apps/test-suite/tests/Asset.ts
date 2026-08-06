@@ -38,7 +38,7 @@ export function test(t: any) {
 
         await asset.downloadAsync();
 
-        const fileInfo = await FileSystem.getInfoAsync(asset.localUri);
+        const fileInfo = await FileSystem.getInfoAsync(asset.localUri!);
         invariant(fileInfo.exists, 'File should exist');
         t.expect(fileInfo.size > 0).toBeTruthy();
 
@@ -47,16 +47,16 @@ export function test(t: any) {
           name: asset.name + 'another',
           type: asset.type,
           hash: asset.hash,
-          uri: asset.localUri,
+          uri: asset.localUri!,
         });
         anotherAsset.downloaded = false;
         await anotherAsset.downloadAsync();
 
-        const fileInfo2 = await FileSystem.getInfoAsync(anotherAsset.localUri);
+        const fileInfo2 = await FileSystem.getInfoAsync(anotherAsset.localUri!);
         invariant(fileInfo2.exists, 'File should exist');
 
         t.expect(fileInfo2.size).toBe(fileInfo.size);
-        t.expect(anotherAsset.localUri).toBe(asset.localUri);
+        t.expect(anotherAsset.localUri!).toBe(asset.localUri!);
       }
     );
 
@@ -74,7 +74,7 @@ export function test(t: any) {
         t.it("when downloaded, has a 'file://' localUri", async () => {
           const asset = Asset.fromModule(module);
           await asset.downloadAsync();
-          t.expect(asset.localUri).toMatch(new RegExp(`^file:\/\/.*\.${type}`));
+          t.expect(asset.localUri!).toMatch(new RegExp(`^file:\/\/.*\.${type}`));
         });
 
         t.it(
@@ -84,7 +84,7 @@ export function test(t: any) {
             const asset = Asset.fromModule(module);
             await asset.downloadAsync();
 
-            const fileInfo = await FileSystem.getInfoAsync(asset.localUri, {
+            const fileInfo = await FileSystem.getInfoAsync(asset.localUri!, {
               md5: true,
             });
             invariant(fileInfo.exists, 'File should exist');
@@ -93,9 +93,9 @@ export function test(t: any) {
 
             t.expect(size > 0).toBeTruthy();
             more['hash'] && t.expect(md5).toBe(asset.hash);
-            t.expect(cacheUri).toBe(asset.localUri);
+            t.expect(cacheUri).toBe(asset.localUri!);
             await asset.downloadAsync();
-            t.expect(asset.localUri).toBe(cacheUri);
+            t.expect(asset.localUri!).toBe(cacheUri);
           }
         );
       })
