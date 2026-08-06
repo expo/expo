@@ -33,6 +33,17 @@ module Pod
       # Call original implementation first
       _original_perform_post_install_actions.bind(self).()
 
+      # CocoaPods has already assigned deterministic UUIDs and saved the Pods project by this
+      # point. Use collision-safe UUIDs for objects added below, then explicitly save them.
+      project = self.pods_project
+      existing_uuids = project.objects_by_uuid.keys.to_set
+      project.define_singleton_method(:generate_available_uuid_list) do |count = 100|
+        new_uuids = (0..count).map { SecureRandom.hex(12).upcase }
+        uniques = new_uuids.reject { |uuid| existing_uuids.include?(uuid) || @generated_uuids.include?(uuid) }
+        @generated_uuids += uniques
+        @available_uuids += uniques
+      end
+
       # Next we'll perform an Expo workaround for Codegen in React Native where it uses the wrong output path for
       # the generated files. This can be remove when the following PR is merged and released upstream:
       # https://github.com/facebook/react-native/pull/54066
@@ -102,6 +113,8 @@ module Pod
           else
             Pod::UI.puts "[Expo] ".yellow + "Could not find 'Compile Sources' phase, build phase added at default position"
           end
+
+          self.pods_project.save
         end
       else
         Pod::UI.puts "[Expo] ".yellow + "ReactCodegen target not found in pods project"
