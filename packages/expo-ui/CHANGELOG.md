@@ -9,10 +9,10 @@
 ### 🎉 New features
 
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
+- [iOS] Added `menuStyle` and `menuIndicator` SwiftUI modifiers, which together with `buttonStyle('plain')` keep a `Menu`'s custom label as its entire trigger on Mac Catalyst. ([#48447](https://github.com/expo/expo/issues/48447) by [@cvburgess](https://github.com/cvburgess)) ([#48448](https://github.com/expo/expo/pull/48448) by [@cvburgess](https://github.com/cvburgess))
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `MenuView` rendering as an AppKit pull-down on Mac Catalyst, which replaced the custom `label` and resized the trigger. ([#48447](https://github.com/expo/expo/issues/48447) by [@cvburgess](https://github.com/cvburgess)) ([#48448](https://github.com/expo/expo/pull/48448) by [@cvburgess](https://github.com/cvburgess))
 - [universal] Add an explicit type annotation to `BottomSheetTextInput` so its type doesn't depend on referencing React Native's internal `TextInputType`. ([#48218](https://github.com/expo/expo/pull/48218) by [@zoontek](https://github.com/zoontek))
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))

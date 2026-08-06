@@ -191,6 +191,28 @@ export default function StyledMenuExample() {
 }
 ```
 
+### Plain trigger on Mac Catalyst
+
+On a Mac Catalyst build that uses the Mac idiom (Xcode's **Optimize Interface for Mac**), SwiftUI renders `Menu` as an AppKit pull-down button: bordered chrome and a disclosure chevron replace a custom `label`, and the pull-down's own sizing widens the trigger. Combine `menuStyle('button')`, `buttonStyle('plain')` and `menuIndicator('hidden')` to keep the label as the entire trigger.
+
+```tsx PlainTriggerMenuExample.tsx
+import { Host, Menu, Button, Text } from '@expo/ui/swift-ui';
+import { buttonStyle, menuIndicator, menuStyle } from '@expo/ui/swift-ui/modifiers';
+
+export default function PlainTriggerMenuExample() {
+  return (
+    <Host matchContents>
+      <Menu
+        label={<Text>Custom Label</Text>}
+        modifiers={[menuStyle('button'), buttonStyle('plain'), menuIndicator('hidden')]}>
+        <Button label="Action 1" onPress={() => console.log('Action 1')} />
+        <Button label="Action 2" onPress={() => console.log('Action 2')} />
+      </Menu>
+    </Host>
+  );
+}
+```
+
 ### Glass menu
 
 To create a menu with the iOS Liquid Glass appearance, use `buttonStyle('glass')` or `buttonStyle('glassProminent')` on the Menu component.

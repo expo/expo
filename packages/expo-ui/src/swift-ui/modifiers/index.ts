@@ -655,6 +655,27 @@ export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
   createModifier('toggleStyle', { style });
 
 /**
+ * Sets the style for menus within this view.
+ * @param style - The menu style. Combine `'button'` with `buttonStyle('plain')` to render the
+ * menu's own label as the entire trigger, without any surrounding button chrome.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menustyle(_:)).
+ * @platform ios
+ */
+export const menuStyle = (style: 'automatic' | 'button') => createModifier('menuStyle', { style });
+
+/**
+ * Sets the visibility of the menu indicator, the disclosure chevron drawn next to a menu's label.
+ * @param visibility - Indicator visibility:
+ * - `'automatic'`: platform-default behavior.
+ * - `'visible'`: show the indicator.
+ * - `'hidden'`: hide the indicator.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menuindicator(_:)).
+ * @platform ios
+ */
+export const menuIndicator = (visibility: 'automatic' | 'visible' | 'hidden') =>
+  createModifier('menuIndicator', { visibility });
+
+/**
  * Sets the size of controls within this view.
  * @param size - The control size.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/controlsize(_:)).
@@ -1620,6 +1641,8 @@ export type BuiltInModifier =
   | ReturnType<typeof buttonStyle>
   | ReturnType<typeof buttonBorderShape>
   | ReturnType<typeof toggleStyle>
+  | ReturnType<typeof menuStyle>
+  | ReturnType<typeof menuIndicator>
   | ReturnType<typeof controlSize>
   | ReturnType<typeof imageScale>
   | ReturnType<typeof labelStyle>
