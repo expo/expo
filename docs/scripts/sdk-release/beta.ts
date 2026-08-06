@@ -7,8 +7,6 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const SDK_INPUT = /^(\d{2})(?:\.0\.0)?$/;
-const LLMS_SOURCE_URL = 'https://docs.expo.dev/llms-sdk.txt';
-const LLMS_MIN_BYTES = 500_000;
 const EXPO_DIST_TAGS_URL = 'https://registry.npmjs.org/-/package/expo/dist-tags';
 const CANARY_EXAMPLE = /`\d+\.\d+\.\d+-canary-\d{8}-[\da-f]+`/;
 const EXPOTOOLS_MAX_BUFFER = 64 * 1024 * 1024;
@@ -49,7 +47,6 @@ function parseOptions() {
   const overrides: Record<string, string> = {};
   let sdk = '';
   let dryRun = false;
-  let skipLlms = false;
   let commitPerStep = false;
 
   for (let index = 0; index < argv.length; index++) {
@@ -58,8 +55,6 @@ function parseOptions() {
       sdk = argv[++index] ?? '';
     } else if (arg === '--dry-run') {
       dryRun = true;
-    } else if (arg === '--skip-llms') {
-      skipLlms = true;
     } else if (arg === '--commit-per-step') {
       commitPerStep = true;
     } else if (arg === '--set') {
@@ -76,13 +71,13 @@ function parseOptions() {
     } else {
       fail(
         `Unknown argument "${arg}".`,
-        'Only --sdk, --dry-run, --skip-llms, --commit-per-step and --set are accepted.',
+        'Only --sdk, --dry-run, --commit-per-step and --set are accepted.',
         'For example: pnpm sdk-beta --sdk 58 --dry-run'
       );
     }
   }
 
-  return { sdk, dryRun, skipLlms, commitPerStep, overrides };
+  return { sdk, dryRun, commitPerStep, overrides };
 }
 
 const options = parseOptions();
@@ -366,63 +361,6 @@ function createNativeModulesStub() {
   );
 }
 
-async function archivePreviousLlmsBundleAsync() {
-  const archiveName = `llms-sdk-v${currentVersion}.txt`;
-  const archivePath = join(docsDir, 'public', archiveName);
-
-  if (existsSync(archivePath)) {
-    notes.push(`${archiveName} already existed and was left alone.`);
-    return;
-  }
-
-  const response = await fetch(LLMS_SOURCE_URL);
-  if (!response.ok) {
-    throw new Error(
-      `Could not download ${LLMS_SOURCE_URL} (HTTP ${response.status}). public/llms-sdk.txt is ` +
-        'gitignored and only exists after a build, so the published bundle is the snapshot source.'
-    );
-  }
-
-  const bundle = await response.text();
-  const bytes = Buffer.byteLength(bundle);
-
-  if (bytes < LLMS_MIN_BYTES) {
-    throw new Error(
-      `${LLMS_SOURCE_URL} returned only ${bytes} bytes, far below the expected size for an SDK bundle. ` +
-        'Production may be mid-deploy. Re-run this step, or pass --skip-llms and archive it by hand.'
-    );
-  }
-
-  if (!bundle.includes(`/versions/v${currentVersion}/`) && !bundle.includes('/versions/latest/')) {
-    throw new Error(
-      `${LLMS_SOURCE_URL} does not reference SDK ${currentVersion}, so it is not the snapshot this cut ` +
-        'should archive. Check what production is currently serving as latest.'
-    );
-  }
-
-  writeFileSync(archivePath, bundle);
-  git('add', '--force', relative(root, archivePath));
-
-  const llmsPagePath = join(docsDir, 'pages', 'llms.mdx');
-  const llmsPage = readFileSync(llmsPagePath, 'utf8');
-  const anchor = '<Collapsible summary="Looking for deprecated Expo SDK versions?">\n\n';
-
-  if (!llmsPage.includes(anchor)) {
-    throw new Error(
-      'Could not find the deprecated-versions Collapsible in pages/llms.mdx, so the archive link was ' +
-        `not added. Add a row for ${archiveName} by hand.`
-    );
-  }
-
-  const row = `- [/${archiveName}](/${archiveName}): Documentation for the Expo SDK v${currentVersion}\n\n`;
-  writeFileSync(llmsPagePath, llmsPage.replace(anchor, `${anchor}${row}`));
-  notes.push(
-    `${archiveName} archived from production (${(bytes / 1_000_000).toFixed(1)} MB) and force-added, ` +
-      'since `public/llms-sdk-*.txt` is gitignored and the existing archives are tracked only because ' +
-      'they were force-added too.'
-  );
-}
-
 const carriedFields: string[] = [];
 
 function planSdkVersionsRow() {
@@ -491,7 +429,6 @@ const steps: {
   label: string;
   run: () => void | Promise<void>;
   preview?: () => void;
-  skip?: boolean;
 }[] = [
   { label: 'Refresh the canary example on the Reference index', run: updateCanaryExampleAsync },
   { label: 'Regenerate unversioned API data', run: regenerateUnversionedApiData },
@@ -499,11 +436,6 @@ const steps: {
   { label: `Clone hardcoded type links into ${versionDir}`, run: addStaticDataTypeLinks },
   { label: 'Sync app config schema and repoint the import', run: syncAppConfigSchema },
   { label: 'Create the native-modules.json stub', run: createNativeModulesStub },
-  {
-    label: `Archive the SDK ${currentVersion} llms bundle`,
-    run: archivePreviousLlmsBundleAsync,
-    skip: options.skipLlms,
-  },
   {
     label: `Add the ${version} compatibility row`,
     run: addSdkVersionsRow,
@@ -514,7 +446,6 @@ const steps: {
 
 const failures = new Map<string, string>();
 const completed: string[] = [];
-const skipped: string[] = [];
 
 const startSha = git('rev-parse', 'HEAD');
 
@@ -537,13 +468,7 @@ function commitStep(label: string) {
   log(`  committed as ${git('rev-parse', '--short', 'HEAD')}`);
 }
 
-for (const { label, run, preview, skip } of steps) {
-  if (skip) {
-    log(`- skipped: ${label}`);
-    skipped.push(label);
-    continue;
-  }
-
+for (const { label, run, preview } of steps) {
   if (options.dryRun) {
     log(`- would run: ${label}`);
     try {
@@ -595,13 +520,7 @@ const HUMAN_TASKS = [
 const title = `[docs] Cut off SDK ${major} beta docs`;
 
 const statusOf = (label: string) =>
-  failures.has(label)
-    ? '❌ Failed'
-    : skipped.includes(label)
-      ? '➖ Skipped'
-      : options.dryRun
-        ? '🔍 Planned'
-        : '✅ Done';
+  failures.has(label) ? '❌ Failed' : options.dryRun ? '🔍 Planned' : '✅ Done';
 
 const excerpt = (text: string) => text.split('\n').slice(-30).join('\n').slice(-2000);
 
@@ -667,7 +586,7 @@ const body = [
 ].join('\n');
 
 log(
-  `\n${options.dryRun ? 'Dry run complete' : `${completed.length}/${steps.length - skipped.length} steps done`}` +
+  `\n${options.dryRun ? 'Dry run complete' : `${completed.length}/${steps.length} steps done`}` +
     `, ${changed.length} file(s) changed, ${failures.size} failure(s)`
 );
 
