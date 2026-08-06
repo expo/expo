@@ -270,8 +270,8 @@ function setPackageInBuildGradle(config, buildGradle) {
   if (packageName === null) {
     return buildGradle;
   }
-  const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
-  return buildGradle.replace(pattern, `$1 '${packageName}'`);
+  const pattern = new RegExp(`(applicationId|namespace)(\\s*=\\s*|\\s+)['"].*['"]`, 'g');
+  return buildGradle.replace(pattern, `$1$2'${packageName}'`);
 }
 async function getApplicationIdAsync(projectRoot) {
   const buildGradlePath = (0, _Paths().getAppBuildGradleFilePath)(projectRoot);
@@ -279,7 +279,9 @@ async function getApplicationIdAsync(projectRoot) {
     return null;
   }
   const buildGradle = await _fs().default.promises.readFile(buildGradlePath, 'utf8');
-  const matchResult = buildGradle.match(/applicationId ['"](.*)['"]/);
+  // Match both the legacy method-call form (`applicationId "com.app"`) and the
+  // Gradle assignment form (`applicationId = "com.app"`)
+  const matchResult = buildGradle.match(/applicationId\s*=?\s*['"](.*)['"]/);
   // TODO add fallback for legacy cases to read from AndroidManifest.xml
   return matchResult?.[1] ?? null;
 }
