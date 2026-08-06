@@ -2,15 +2,16 @@
   "name": "expo-test-runner",
   "version": "0.5.0",
   "description": "Script that enchants test experience.",
-  "homepage": "https://github.com/expo/expo-test-runner#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-test-runner#readme",
   "bugs": {
-    "url": "https://github.com/expo/expo-test-runner/issues"
+    "url": "https://github.com/expo/expo/issues"
   },
   "license": "MIT",
   "author": "650 Industries, Inc.",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/expo/expo-test-runner.git"
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-test-runner"
   },
   "bin": {
     "expo-test-runner": "bin/expo-test-runner.js"

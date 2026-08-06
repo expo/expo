@@ -20,11 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       # Version of the published engine used for BOTH the guard and the review, so the
-      # guard that clears a config is the same engine that then reads it. `latest` tracks
-      # every release automatically. If you ever need to freeze the reviewer, prefer
+      # guard that clears a config is the same engine that then reads it. If you ever
+      # need to change the reviewer version, prefer
       # editing this line over setting an ECR_VERSION repo variable: a variable silently
       # overrides this file and is invisible in code review.
-      ECR_VERSION: ${{ vars.ECR_VERSION || 'latest' }}
+      ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.1' }}
     # OPT-IN ONLY. This repo takes far too many PRs to spin a runner for each one, so the
     # `ai-review` label is required here, not just inside `ecr ci`. Because the workflow
     # triggers on `labeled`, adding the label to an open PR starts the review immediately.
@@ -32,8 +32,20 @@ jobs:
     # `ai-review:security` are not confused with `ai-review`.
     # This must stay in agreement with config.jsonc `review.trigger: "label"`, which is
     # the real policy — `ecr ci` re-checks it and honors `ai-review:skip` regardless.
+    #
+    # FORKS ARE EXCLUDED, and this is a platform limit, not a preference. GitHub withholds
+    # secrets from `pull_request` runs on a forked PR and downgrades GITHUB_TOKEN to
+    # read-only, so this job cannot reach the model credential AND cannot post a comment —
+    # not even to explain itself. Without this guard, labeling an external PR produced a
+    # failed run and total silence. `expo-code-review-fork-hint.yml` now posts the
+    # review-command pointer for that case, and the `/review` or `/expo-review`
+    # command path (issue_comment) is what actually reviews a fork PR: it runs in
+    # base-repo context with full secrets.
     # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — spin-up avoidance only; real policy is config.jsonc review.trigger
-    if: ${{ contains(github.event.pull_request.labels.*.name, 'ai-review') && !contains(github.event.pull_request.labels.*.name, 'ai-review:skip') }}
+    if: >-
+      ${{ !github.event.pull_request.head.repo.fork
+      && contains(github.event.pull_request.labels.*.name, 'ai-review')
+      && !contains(github.event.pull_request.labels.*.name, 'ai-review:skip') }}
     # Backstop so a stalled review fails fast instead of hanging. This is the ONE cap
     # with no soft landing (GitHub hard-kills the job and nothing is posted), so keep
     # margin over the worst-case internal chain: the passes budget

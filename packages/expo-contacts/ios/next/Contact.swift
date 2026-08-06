@@ -115,7 +115,8 @@ class ContactNext: SharedObject {
       offset: queryOptions?.offset,
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
-      }
+      },
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { contactFactory.create(id: $0.identifier) }
   }
@@ -135,7 +136,8 @@ class ContactNext: SharedObject {
       offset: queryOptions?.offset,
       sortOrder: queryOptions?.sortOrder.map {
         CNContactSortOrderMapper.map($0)
-      }
+      },
+      unifyResults: queryOptions?.rawContacts != true
     )
     .map { try getContactDetailsMapper.map(contact: $0) }
   }

@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Apply per-path `pageHeaders` to matching page responses ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
+- Apply `pageHeaders` rules to loader responses ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 

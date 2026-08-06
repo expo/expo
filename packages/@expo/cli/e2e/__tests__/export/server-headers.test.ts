@@ -29,6 +29,10 @@ const PAGE_HEADERS = [
 
 const EXPECTED_PAGE_HEADERS = [
   {
+    namedRegex: '^/_expo/loaders/.+$',
+    headers: { 'Cache-Control': 'no-store' },
+  },
+  {
     namedRegex: '^/(?:/)?$',
     headers: { 'X-Page-Rule': 'index', 'X-Powered-By': 'page-override' },
   },

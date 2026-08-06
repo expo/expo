@@ -20,7 +20,7 @@ permissions:
 env:
   # Published reviewer run via npx (override with repo variable ECR_VERSION).
   # Kept on the same pin as the review workflows so all three run one engine version.
-  ECR_VERSION: ${{ vars.ECR_VERSION || 'latest' }}
+  ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.1' }}
 
 concurrency:
   group: ai-code-review-dismiss-${{ github.event.issue.number }}
