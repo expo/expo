@@ -81,7 +81,7 @@ export type DefaultNavigatorOptions<
   screenOptions?:
     | ScreenOptions
     | ((props: {
-        route: RouteProp<ParamList>;
+        route: DescriptorRouteProp<ParamList>;
         navigation: Navigation;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);
@@ -478,6 +478,11 @@ export type RouteProp<
   RouteName extends keyof ParamList = Keyof<ParamList>,
 > = Route<Extract<RouteName, string>, ParamList[RouteName]>;
 
+export type DescriptorRouteProp<
+  ParamList extends ParamListBase,
+  RouteName extends keyof ParamList = Keyof<ParamList>,
+> = DescriptorRoute<RouteProp<ParamList, RouteName>>;
+
 export type CompositeNavigationProp<
   A extends NavigationProp<ParamListBase, string, any, any, any>,
   B extends NavigationHelpersCommon<ParamListBase, any>,
@@ -554,9 +559,8 @@ export type RouteSource = 'layout' | 'filesystem';
  * describes a route name declared in a layout that has no live route
  * instance in navigation state.
  */
-export type DescriptorRoute<Route extends RouteProp<any, any>> = Route extends unknown
-  ? Omit<Route, 'key'> & Readonly<{ key: string | undefined }>
-  : never;
+export type DescriptorRoute<Route extends RouteProp<any, any>> = Omit<Route, 'key'> &
+  Readonly<{ key: string | undefined }>;
 
 export type Descriptor<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -662,7 +666,7 @@ export type RouteConfigProps<
   options?:
     | ScreenOptions
     | ((props: {
-        route: RouteProp<ParamList, RouteName>;
+        route: DescriptorRouteProp<ParamList, RouteName>;
         navigation: Navigation;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);
@@ -729,7 +733,7 @@ export type RouteGroupConfig<
   screenOptions?:
     | ScreenOptions
     | ((props: {
-        route: RouteProp<ParamList, keyof ParamList>;
+        route: DescriptorRouteProp<ParamList, keyof ParamList>;
         navigation: Navigation;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);

@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Allow descriptor routes without a `key` in `expo-router/react-navigation` types.
+- Make `key` optional in `Descriptor` type ([#48596](https://github.com/expo/expo/pull/48596) by [@Ubax](https://github.com/Ubax))
 - Unify JS Tabs, TopTabs, Drawer, and headless tabs with NativeTabs - only screens declared in the layout become visible. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
 - Make `href: null` hide JS tabs and make their routes unreachable, redirecting navigation to the initial tab. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
 - Remove `getStateForRouteNamesChange` from the `Router` interface on `expo-router/react-navigation`. Custom routers must handle the `ROUTE_NAMES_CHANGED` action in `getStateForAction` instead. ([#48479](https://github.com/expo/expo/pull/48479) by [@Ubax](https://github.com/Ubax))

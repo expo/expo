@@ -69,7 +69,7 @@ export function HeaderContainer({
           return null;
         }
 
-        const isFocused = focusedRoute.key === scene.descriptor.route.key;
+        const isFocused = focusedRoute.key === scene.route.key;
         const previousScene = getPreviousScene({
           route: scene.route,
         });
@@ -136,7 +136,7 @@ export function HeaderContainer({
 
         return (
           <NavigationProvider
-            key={scene.descriptor.route.key}
+            key={scene.route.key}
             route={scene.route}
             navigation={scene.descriptor.navigation}>
             <View
