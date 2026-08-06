@@ -34,9 +34,29 @@ function printMatcherValues(
   );
 }
 
+function readRouterScreen(
+  screen: unknown,
+  method:
+    | 'getPathname'
+    | 'getPathnameWithParams'
+    | 'getSegments'
+    | 'getSearchParams'
+    | 'getRouterState',
+  matcherName: string
+) {
+  const fn = (screen as Record<string, unknown> | null | undefined)?.[method];
+  if (typeof fn !== 'function') {
+    throw new TypeError(
+      `expect(received).${matcherName}: received value is not an expo-router render result. ` +
+        `Call \`renderRouter()\` before asserting — and await it when using @testing-library/react-native v14: \`await renderRouter(...)\`.`
+    );
+  }
+  return fn.call(screen);
+}
+
 expect.extend({
   toHavePathname(screen, expected) {
-    const received = screen.getPathname();
+    const received = readRouterScreen(screen, 'getPathname', 'toHavePathname');
     const pass = this.equals(received, expected);
     return {
       pass,
@@ -48,7 +68,7 @@ expect.extend({
     };
   },
   toHavePathnameWithParams(screen, expected) {
-    const received = screen.getPathnameWithParams();
+    const received = readRouterScreen(screen, 'getPathnameWithParams', 'toHavePathnameWithParams');
     const pass = this.equals(received, expected);
     return {
       pass,
@@ -60,7 +80,7 @@ expect.extend({
     };
   },
   toHaveSegments(screen, expected) {
-    const received = screen.getSegments();
+    const received = readRouterScreen(screen, 'getSegments', 'toHaveSegments');
     const pass = this.equals(received, expected);
     return {
       pass,
@@ -71,7 +91,7 @@ expect.extend({
     };
   },
   toHaveSearchParams(screen, expected) {
-    const received = screen.getSearchParams();
+    const received = readRouterScreen(screen, 'getSearchParams', 'toHaveSearchParams');
     const pass = this.equals(received, expected);
     return {
       pass,
@@ -82,7 +102,7 @@ expect.extend({
     };
   },
   toHaveRouterState(screen, expected) {
-    const received = screen.getRouterState();
+    const received = readRouterScreen(screen, 'getRouterState', 'toHaveRouterState');
     const pass = this.equals(received, expected);
     return {
       pass,
