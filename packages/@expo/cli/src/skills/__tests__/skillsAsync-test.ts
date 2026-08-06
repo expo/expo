@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 
+import * as Log from '../../log';
 import {
   detectInstalledAgents,
   getAllAgents,
@@ -13,6 +14,7 @@ import {
   autoSyncSkillsAsync,
   cleanSkillsAsync,
   listSkillsAsync,
+  showSkillsAsync,
   syncSkillsAsync,
 } from '../skillsAsync';
 import type { DiscoveredSkill, SkillsAgent } from '../types';
@@ -174,6 +176,101 @@ describe('listSkillsAsync', () => {
     await listSkillsAsync('/root');
 
     expect(resolveAgentsAsync).not.toHaveBeenCalled();
+  });
+});
+
+describe('listSkillsAsync with json output', () => {
+  afterEach(() => vol.reset());
+
+  it('should print machine readable skill metadata', async () => {
+    vol.fromJSON({ '/root/.claude/skills/npm-acme-tool-my-skill/SKILL.md': '# my-skill' });
+    jest
+      .mocked(discoverSkillsAsync)
+      .mockResolvedValueOnce([{ ...testSkill, title: 'My skill', description: 'Does things' }]);
+    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(['claude-code']);
+    jest.mocked(getAllAgents).mockReturnValueOnce([claudeAgent]);
+
+    await listSkillsAsync('/root', { json: true });
+
+    const output = jest.mocked(Log.log).mock.calls.at(-1)?.[0];
+    expect(JSON.parse(output!)).toEqual([
+      {
+        package: '@acme/tool',
+        skill: 'my-skill',
+        name: 'My skill',
+        description: 'Does things',
+        path: testSkill.path,
+        linkName: 'npm-acme-tool-my-skill',
+        linkedIn: ['.claude/skills'],
+      },
+    ]);
+  });
+
+  it('should print an empty json array when nothing is discovered', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([]);
+    jest.mocked(getPersistedAgentIds).mockReturnValueOnce(null);
+    jest.mocked(detectInstalledAgents).mockReturnValueOnce([]);
+
+    await listSkillsAsync('/root', { json: true });
+
+    const output = jest.mocked(Log.log).mock.calls.at(-1)?.[0];
+    expect(JSON.parse(output!)).toEqual([]);
+  });
+});
+
+describe('showSkillsAsync', () => {
+  afterEach(() => vol.reset());
+
+  it('should print the skill contents for a package', async () => {
+    vol.fromJSON({
+      '/root/node_modules/@acme/tool/skills/my-skill/SKILL.md': '---\nname: my-skill\n---\nBody',
+    });
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+
+    await showSkillsAsync('/root', '@acme/tool');
+
+    const output = jest
+      .mocked(Log.log)
+      .mock.calls.map((call) => call[0])
+      .join('\n');
+    expect(output).toContain('Body');
+  });
+
+  it('should filter to a single skill by name', async () => {
+    const secondSkill: DiscoveredSkill = {
+      name: 'second-skill',
+      path: '/root/node_modules/@acme/tool/skills/second-skill',
+      packageName: '@acme/tool',
+      linkName: 'npm-acme-tool-second-skill',
+    };
+    vol.fromJSON({
+      '/root/node_modules/@acme/tool/skills/my-skill/SKILL.md': 'First body',
+      '/root/node_modules/@acme/tool/skills/second-skill/SKILL.md': 'Second body',
+    });
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill, secondSkill]);
+
+    await showSkillsAsync('/root', '@acme/tool', 'second-skill');
+
+    const output = jest
+      .mocked(Log.log)
+      .mock.calls.map((call) => call[0])
+      .join('\n');
+    expect(output).toContain('Second body');
+    expect(output).not.toContain('First body');
+  });
+
+  it('should throw when the package ships no skills', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+
+    await expect(showSkillsAsync('/root', 'expo-sqlite')).rejects.toThrow(
+      /No skills found for "expo-sqlite"/
+    );
+  });
+
+  it('should throw and list available names when the skill name is unknown', async () => {
+    jest.mocked(discoverSkillsAsync).mockResolvedValueOnce([testSkill]);
+
+    await expect(showSkillsAsync('/root', '@acme/tool', 'bogus')).rejects.toThrow(/my-skill/);
   });
 });
 
