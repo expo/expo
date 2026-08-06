@@ -422,10 +422,10 @@ const renderAPI = (
           sdkVersion={sdkVersion}
           componentsProps={componentsProps}
         />
-        <APISectionMethods data={staticMethods} header="Static Methods" sdkVersion={sdkVersion} />
+        <APISectionMethods data={staticMethods} header="Static methods" sdkVersion={sdkVersion} />
         <APISectionMethods
           data={componentMethods}
-          header="Component Methods"
+          header="Component methods"
           sdkVersion={sdkVersion}
         />
         <APISectionConstants data={constants} apiName={apiName} sdkVersion={sdkVersion} />
@@ -438,7 +438,7 @@ const renderAPI = (
         <APISectionMethods
           data={eventSubscriptions}
           apiName={apiName}
-          header="Event Subscriptions"
+          header="Event subscriptions"
           sdkVersion={sdkVersion}
         />
         <APISectionNamespaces data={namespaces} sdkVersion={sdkVersion} />

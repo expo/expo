@@ -1,6 +1,8 @@
 #if !TARGET_OS_MACCATALYST && EXPO_UNSTABLE_LOG_BOX
 
 #import <objc/runtime.h>
+#import <React/RCTBridgeModule.h>
+#import <React/RCTBundleManager.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTUtils.h>
 #import "ExpoLogBox-Swift.h"
@@ -39,7 +41,10 @@
                        withParsedStack:(NSArray<RCTJSStackFrame *> *)stack
                               isUpdate: (BOOL) isUpdate
                            errorCookie:(int)errorCookie {
-  UIViewController *expoRedBox = [ExpoLogBoxScreenProvider makeHostingControllerWithMessage:message stack:stack];
+  NSURL *bundleURL = self.overrideBundleURL ?: self.bundleManager.bundleURL;
+  UIViewController *expoRedBox = [ExpoLogBoxScreenProvider makeHostingControllerWithMessage:message
+                                                                                     stack:stack
+                                                                                 bundleURL:bundleURL];
   [RCTKeyWindow().rootViewController presentViewController:expoRedBox animated:YES completion:nil];
 }
 

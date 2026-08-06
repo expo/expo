@@ -196,7 +196,10 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
           override fun onManifestCompleted(manifest: Manifest) {
             lifecycleScope.launch {
               try {
-                val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
+                val bundleUrl = ExponentUrls.bundleUrlFromManifest(
+                  manifest,
+                  this@ExperienceActivity.manifestUrl!!
+                )
                 setManifest(
                   this@ExperienceActivity.manifestUrl!!,
                   manifest,
@@ -643,7 +646,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     Exponent.instance
       .testPackagerStatus(
         isDebugModeEnabled,
-        manifest!!,
+        ExponentUrls.bundleUrlFromManifest(manifest!!, manifestUrl!!),
         object : Exponent.PackagerStatusCallback {
           override fun onSuccess() {
             reactHost = startReactInstance(

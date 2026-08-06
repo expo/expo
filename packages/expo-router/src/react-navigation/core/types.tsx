@@ -103,27 +103,6 @@ export type DefaultNavigatorOptions<
   UNSTABLE_router?: <Action extends NavigationAction>(
     original: Router<State, Action>
   ) => Partial<Router<State, Action>>;
-
-  /**
-   * What should happen when the available route names change.
-   * e.g. when different screens are rendered based on a condition.
-   *
-   * - 'firstMatch': Navigate to the first route in the new list of routes (default).
-   * - 'lastUnhandled': Restore the last state that was unhandled due to conditional render.
-   *
-   * Example cases where previous state might have been unhandled:
-   * - Opened a deep link to a screen, but a login screen was shown.
-   * - Navigated to a screen containing a navigator, but a different screen was shown.
-   * - Reset the navigator to a state with different routes not matching the current list of routes.
-   *
-   * In these cases, 'lastUnhandled' will reuse the unhandled state if present.
-   * If there's no unhandled state, it will fallback to 'firstMatch' behavior.
-   *
-   * Caveats:
-   * - Direct navigation is only handled for `NAVIGATE` actions.
-   * - Unhandled state is restored only if the current state becomes invalid, i.e. it doesn't contain any currently defined screens.
-   */
-  UNSTABLE_routeNamesChangeBehavior?: 'firstMatch' | 'lastUnhandled';
 } & (NavigatorID extends string
     ? {
         /**
@@ -141,7 +120,8 @@ export type EventMapCore<State extends NavigationState> = {
   focus: { data: undefined };
   blur: { data: undefined };
   state: { data: { state: State } };
-  beforeRemove: { data: { action: NavigationAction }; canPreventDefault: true };
+  beforeRemove: { data: { action: NavigationAction } };
+  removePrevented: { data: { action: NavigationAction } };
 };
 
 export type EventArg<
@@ -211,6 +191,7 @@ export type EventEmitter<EventMap extends EventMapBase> = {
     options: {
       type: EventName;
       target?: string;
+      preventDefault?: () => void;
       // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     } & (EventMap[EventName]['canPreventDefault'] extends true ? { canPreventDefault: true } : {}) &
       (undefined extends EventMap[EventName]['data']
@@ -577,7 +558,7 @@ export type Descriptor<
   /**
    * Render the component associated with this route.
    */
-  render(): React.JSX.Element;
+  render(): React.JSX.Element | null;
 
   /**
    * Options for the route.
@@ -662,13 +643,6 @@ export type RouteConfigProps<
   Navigation,
 > = {
   /**
-   * Optional key for this screen. This doesn't need to be unique.
-   * If the key changes, existing screens with this name will be removed or reset.
-   * Useful when we have some common screens and have conditional rendering.
-   */
-  navigationKey?: string;
-
-  /**
    * Route name of this screen.
    */
   name: RouteName;
@@ -740,12 +714,6 @@ export type RouteGroupConfig<
   ScreenOptions extends {},
   Navigation,
 > = {
-  /**
-   * Optional key for the screens in this group.
-   * If the key changes, all existing screens in this group will be removed or reset.
-   */
-  navigationKey?: string;
-
   /**
    * Navigator options for this screen.
    */
@@ -934,10 +902,7 @@ export type NavigatorTypeBag<
   Navigator: Navigator;
 };
 
-export type TypedNavigator<
-  Bag extends NavigatorTypeBagBase,
-  Config = unknown,
-> = TypedNavigatorInternal<
+export type TypedNavigator<Bag extends NavigatorTypeBagBase> = TypedNavigatorInternal<
   Bag['ParamList'],
   Bag['NavigatorID'],
   Bag['State'],
@@ -945,9 +910,7 @@ export type TypedNavigator<
   Bag['EventMap'],
   Bag['NavigationList'],
   Bag['Navigator']
-> &
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  (undefined extends Config ? {} : { config: Config });
+>;
 
 type TypedNavigatorInternal<
   ParamList extends ParamListBase,

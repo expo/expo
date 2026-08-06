@@ -10,7 +10,7 @@ import { directoryExistsAsync, fileExistsAsync } from '../utils/dir';
 import { CommandError } from '../utils/errors';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
 import { setNodeEnv, loadEnvFiles } from '../utils/nodeEnv';
-import { resolvePortAsync } from '../utils/port';
+import { resolveMetroPortAsync } from '../utils/port';
 import { applyStaticHeaders, loadStaticManifestAsync, resolveStaticHeaders } from './static';
 
 type Options = {
@@ -25,7 +25,7 @@ export async function serveAsync(inputDir: string, options: Options) {
   setNodeEnv('production');
   loadEnvFiles(projectRoot);
 
-  const port = await resolvePortAsync(projectRoot, {
+  const port = await resolveMetroPortAsync(projectRoot, {
     defaultPort: options.port,
     fallbackPort: 8081,
   });

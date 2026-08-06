@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-test-core",
-  "version": "56.0.5",
+  "version": "57.0.6",
   "description": "Module providing native testing utilities for testing Expo modules",
   "keywords": [
     "expo",
@@ -42,5 +42,8 @@
   "devDependencies": {
     "@types/jest": "^29.2.1",
     "expo-module-scripts": "workspace:*"
+  },
+  "peerDependencies": {
+    "expo": "*"
   }
 }

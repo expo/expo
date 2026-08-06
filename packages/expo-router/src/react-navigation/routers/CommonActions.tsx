@@ -68,6 +68,15 @@ type PreloadAction = {
   target?: string;
 };
 
+/**
+ * @internal
+ */
+export type InternalRouteNamesChangedAction = {
+  type: 'ROUTE_NAMES_CHANGED';
+  payload: { routeNames: string[] };
+  target?: string;
+};
+
 export type Action =
   | GoBackAction
   | NavigateAction

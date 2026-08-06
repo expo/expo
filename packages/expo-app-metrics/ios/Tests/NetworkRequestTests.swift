@@ -80,7 +80,11 @@ struct NetworkRequestMonitorTests {
       id: UUID(),
       request: URLRequest(url: URL(string: "https://expo.dev/x")!),
       response: HTTPURLResponse(
-        url: URL(string: "https://expo.dev/x")!, statusCode: 200, httpVersion: nil, headerFields: nil),
+        url: URL(string: "https://expo.dev/x")!,
+        statusCode: 200,
+        httpVersion: nil,
+        headerFields: nil
+      ),
       taskBytesSent: nil,
       taskBytesReceived: nil,
       metrics: nil,
@@ -324,13 +328,37 @@ struct NetworkRequestSummaryTests {
     // typically follows but if one surfaces here it's still a successful response from the
     // origin's perspective. Only 4xx/5xx (and explicit errors) belong in the failed count.
     let cacheHit = makeRequest(
-      host: "expo.dev", duration: 0.05, status: 304, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+      host: "expo.dev",
+      duration: 0.05,
+      status: 304,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
     let redirect = makeRequest(
-      host: "expo.dev", duration: 0.1, status: 301, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+      host: "expo.dev",
+      duration: 0.1,
+      status: 301,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
     let clientError = makeRequest(
-      host: "expo.dev", duration: 0.1, status: 404, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+      host: "expo.dev",
+      duration: 0.1,
+      status: 404,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
     let serverError = makeRequest(
-      host: "expo.dev", duration: 0.1, status: 500, bytesSent: 0, bytesReceived: 0, fetchStart: Date())
+      host: "expo.dev",
+      duration: 0.1,
+      status: 500,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: Date()
+    )
 
     let summary = NetworkRequestSummary.from([cacheHit, redirect, clientError, serverError])
     #expect(summary.count == 4)
@@ -604,6 +632,56 @@ struct NetworkRequestTaskSwizzlingTests {
     #expect(recorded?.statusCode == 200)
   }
 
+  /// Regression test for the FirebaseAuth crash: GTMSessionFetcher reads the class and conformance of
+  /// `session.delegate` to decide what to send it.
+  @Test
+  func `mirrors the wrapped delegate for class and protocol checks`() {
+    let delegate = FakeSessionDelegate()
+    let session = URLSession(configuration: .ephemeral, delegate: delegate, delegateQueue: nil)
+    defer { session.invalidateAndCancel() }
+
+    let installed = session.delegate as? NSObject
+    // Without this the assertions below would pass for the wrong reason.
+    #expect(installed !== delegate)
+    #expect(installed?.isKind(of: FakeSessionDelegate.self) == true)
+    #expect(installed?.isKind(of: URLSession.self) == false)
+    #expect(installed?.conforms(to: URLSessionDataDelegate.self) == true)
+    #expect(installed?.conforms(to: URLSessionStreamDelegate.self) == false)
+  }
+
+  /// The other half of the crash: an unimplemented selector has to reach the wrapped delegate instead
+  /// of dying on the proxy.
+  @Test
+  func `forwards unimplemented selectors to the wrapped delegate`() {
+    let delegate = FakeSessionDelegate()
+    let session = URLSession(configuration: .ephemeral, delegate: delegate, delegateQueue: nil)
+    defer { session.invalidateAndCancel() }
+
+    let installed = session.delegate as? NSObject
+    #expect(installed !== delegate)
+    let unimplemented = NSSelectorFromString("setFetcher:forTask:")
+    #expect(delegate.responds(to: unimplemented) == false)
+    #expect(installed?.forwardingTarget(for: unimplemented) as? NSObject === delegate)
+    // A selector it does implement still forwards, as before.
+    #expect(
+      installed?.forwardingTarget(for: NSSelectorFromString("URLSession:didBecomeInvalidWithError:"))
+        as? NSObject === delegate
+    )
+  }
+
+  /// Delegate-less sessions are wrapped too, so the proxy exists with nothing behind it. Nothing to
+  /// forward to means the `unrecognized selector` lands on the proxy — pinned here so a refactor that
+  /// force-unwraps or substitutes a placeholder fails loudly.
+  @Test
+  func `forwards nowhere when it wraps a nil delegate`() {
+    let session = URLSession(configuration: .ephemeral, delegate: nil, delegateQueue: nil)
+    defer { session.invalidateAndCancel() }
+
+    let installed = session.delegate as? NSObject
+    #expect(installed != nil)
+    #expect(installed?.forwardingTarget(for: NSSelectorFromString("setFetcher:forTask:")) == nil)
+  }
+
   private func waitForRecorded(matching url: URL, attempts: Int = 50) async -> NetworkRequest? {
     for _ in 0..<attempts {
       let found = try? await AppMetricsActor.isolated {
@@ -843,6 +921,12 @@ private final class FilteringDelegate: NetworkRequestObserverDelegate, @unchecke
     }
     completed.append(request)
   }
+}
+
+/// Stands in for a third-party session delegate. Implements one callback so the forwarding test can
+/// tell a selector it handles apart from one it doesn't.
+private final class FakeSessionDelegate: NSObject, URLSessionDataDelegate {
+  func urlSession(_ session: URLSession, didBecomeInvalidWithError error: Error?) {}
 }
 
 /// A trivial `URLProtocol` that pretends to be a server. Routes by URL path:

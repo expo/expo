@@ -60,6 +60,20 @@ for (const outputMode of outputModes) {
       expect(JSON.parse(loaderDataContent!)).toEqual({ params: { postId: 'static-post-1' } });
     });
 
+    test('defaults headerless loaders to no-store without replacing declared headers', async ({
+      request,
+    }) => {
+      const headerless = await request.get(
+        new URL('/_expo/loaders/posts/static-post-1', expoStart.url).href
+      );
+      const declared = await request.get(new URL('/_expo/loaders/response', expoStart.url).href);
+
+      expect(headerless.headers()['cache-control']).toBe('no-store');
+      expect(declared.headers()['cache-control']).toBe(
+        outputMode === 'static' ? 'public, max-age=604800' : 'public, max-age=3600'
+      );
+    });
+
     test('caches loader data for subsequent navigations', async ({ page }) => {
       const loaderRequests: string[] = [];
       page.on('request', (request) => {

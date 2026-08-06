@@ -7,6 +7,7 @@ import type {
 import type {
   DefaultNavigatorOptions,
   DefaultRouterOptions,
+  EventMapBase,
   NavigationAction,
   NavigationHelpers,
   NavigationState,
@@ -14,6 +15,7 @@ import type {
   RouteSource,
 } from '../react-navigation/native';
 import type { GoBackAction, NavigateAction } from '../react-navigation/routers/CommonActions';
+import type { ScreenProps } from '../useScreens';
 
 export type StandardNavigatorEventMapBase = Record<
   string,
@@ -83,13 +85,22 @@ type CreatePropsOption<State extends NavigationState, CreateProps extends object
 export type IntegrateWithRouterOptions<
   State extends NavigationState = NavigationState,
   CreateProps extends object = object,
-> = {
+  NavigatorOptions extends object = Record<string, any>,
+  EventMap extends EventMapBase = EventMapBase,
+> = CreatePropsOption<State, CreateProps> & {
   /**
-   * When `true`, only screens explicitly declared as `<Navigator.Screen>` children are rendered;
-   * routes discovered from the filesystem that were not declared are ignored.
+   * Transforms the screens declared as children of the navigator before they are rendered.
+   *
+   * @example
+   * ```tsx
+   * processScreens: (screens) =>
+   *   screens.map((screen) => ({ ...screen, options: { ...screen.options, title: screen.name } })),
+   * ```
    */
-  useOnlyUserDefinedScreens?: boolean;
-} & CreatePropsOption<State, CreateProps>;
+  processScreens?: (
+    screens: (ScreenProps<NavigatorOptions, State, EventMap> & { name: string })[]
+  ) => (ScreenProps<NavigatorOptions, State, EventMap> & { name: string })[];
+};
 
 /**
  * A standard-navigation descriptor extended with Expo Router route information.

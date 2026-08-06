@@ -1,5 +1,4 @@
 'use client';
-import deepEqual from 'fast-deep-equal';
 import * as React from 'react';
 import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
@@ -23,12 +22,11 @@ import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
-import { PreventRemoveProvider } from './PreventRemoveProvider';
+import { PreventRemoveContext } from './PreventRemoveContext';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
-import { isRecordEqual } from './isRecordEqual';
 import {
   type DefaultNavigatorOptions,
   type EventMapBase,
@@ -53,6 +51,7 @@ import { NavigationStateListenerProvider } from './useNavigationState';
 import { useOnAction } from './useOnAction';
 import { useOnGetState } from './useOnGetState';
 import { useOnRouteFocus } from './useOnRouteFocus';
+import { usePreventRemoveState } from './usePreventRemoveState';
 import { useRegisterNavigator } from './useRegisterNavigator';
 import { useScheduleUpdate } from './useScheduleUpdate';
 
@@ -71,7 +70,6 @@ const isScreen = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
   name?: unknown;
-  navigationKey?: unknown;
 }> => {
   return child.type === Screen;
 };
@@ -79,16 +77,12 @@ const isScreen = (
 const isGroup = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
-  navigationKey?: unknown;
   screenOptions?: unknown;
   screenLayout?: unknown;
   children?: unknown;
 }> => {
   return child.type === React.Fragment || child.type === Group;
 };
-
-const isValidKey = (key: unknown): key is string | undefined =>
-  key === undefined || (typeof key === 'string' && key !== '');
 
 /**
  * Extract route config object from React children elements.
@@ -101,7 +95,6 @@ const getRouteConfigsFromChildren = <
   EventMap extends EventMapBase,
 >(
   children: React.ReactNode,
-  groupKey?: string,
   groupOptions?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['options'],
   groupLayout?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['layout']
 ) => {
@@ -125,19 +118,7 @@ const getRouteConfigsFromChildren = <
           );
         }
 
-        if (
-          child.props.navigationKey !== undefined &&
-          (typeof child.props.navigationKey !== 'string' || child.props.navigationKey === '')
-        ) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the screen '${child.props.name}'. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         acc.push({
-          keys: [groupKey, child.props.navigationKey],
           options: groupOptions,
           layout: groupLayout,
           props: child.props as RouteConfig<
@@ -154,20 +135,11 @@ const getRouteConfigsFromChildren = <
       }
 
       if (isGroup(child)) {
-        if (!isValidKey(child.props.navigationKey)) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the group. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         // When we encounter a fragment or group, we need to dive into its children to extract the configs
         // This is handy to conditionally define a group of screens
         acc.push(
           ...getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(
             child.props.children as React.ReactNode,
-            child.props.navigationKey,
             // FIXME
             // @ts-expect-error: add validation
             child.type !== Group
@@ -369,10 +341,6 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeKeyList = routeNames.reduce<Record<string, React.Key | undefined>>((acc, curr) => {
-    acc[curr] = screens[curr]!.keys.map((key) => key ?? '').join(':');
-    return acc;
-  }, {});
   const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
     const { initialParams } = screens[curr]!.props;
     acc[curr] = initialParams;
@@ -404,12 +372,6 @@ export function useNavigationBuilder<
     [isStateValid]
   );
 
-  const doesStateHaveOnlyInvalidRoutes = React.useCallback(
-    (state: NavigationState | PartialState<NavigationState>) =>
-      state.routes.every((r) => !routeNames.includes(r.name)),
-    [routeNames]
-  );
-
   const {
     state: currentState,
     getState: getCurrentState,
@@ -436,137 +398,95 @@ export function useNavigationBuilder<
     setCurrentState(state);
   });
 
-  const [
-    stateBeforeInitialization,
-    initializedState,
-    isFirstStateInitialization,
-    paramsUsedForInitialization,
-  ] = React.useMemo((): [
-    PartialState<State> | undefined,
-    State | undefined,
-    boolean,
-    object | undefined,
-  ] => {
-    // If the state was already cleaned up, but we have it stored in ref,
-    // It likely got cleaned up due to `<Activity mode="hidden">`
-    // We should reuse this state to avoid remounting screens
-    if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
-      const state: State = isStateInitialized(lastStateRef.current)
-        ? lastStateRef.current
-        : router.getRehydratedState(lastStateRef.current, {
-            routeNames,
-            routeParamList,
-            routeGetIdList,
-          });
-
-      return [undefined, state, false, undefined];
-    }
-
-    const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
-      (acc, curr) => {
-        const { initialParams } = screens[curr]!.props;
-        const initialParamsFromParams =
-          route?.params?.state == null &&
-          route?.params?.initial !== false &&
-          route?.params?.screen === curr
-            ? route.params.params
-            : undefined;
-
-        acc[curr] =
-          initialParams !== undefined || initialParamsFromParams !== undefined
-            ? {
-                ...initialParams,
-                ...initialParamsFromParams,
-              }
-            : undefined;
-
-        return acc;
-      },
-      {}
-    );
-
-    // If the current state isn't initialized on first render, we initialize it
-    // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
-    // Otherwise assume that the state was provided as initial state
-    // So we need to rehydrate it to make it usable
-    if (
-      (currentState === undefined || !isStateValid(currentState)) &&
-      route?.params?.state == null &&
-      !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
-      !isNestedParamsConsumed
-    ) {
-      return [
-        undefined,
-        router.getInitialState({
-          routeNames,
-          routeParamList: initialRouteParamList,
-          routeGetIdList,
-        }),
-        true,
-        undefined,
-      ];
-    } else {
-      const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-      const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
-
-      const stateBeforeInitialization = (stateFromParams ?? currentState) as
-        | PartialState<State>
-        | undefined;
-
-      const hydratedState =
-        stateBeforeInitialization == null
-          ? router.getInitialState({
+  const [initializedState, isFirstStateInitialization, paramsUsedForInitialization] =
+    React.useMemo((): [State | undefined, boolean, object | undefined] => {
+      // If the state was already cleaned up, but we have it stored in ref,
+      // It likely got cleaned up due to `<Activity mode="hidden">`
+      // We should reuse this state to avoid remounting screens
+      if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
+        const state: State = isStateInitialized(lastStateRef.current)
+          ? lastStateRef.current
+          : router.getRehydratedState(lastStateRef.current, {
               routeNames,
-              routeParamList: initialRouteParamList,
-              routeGetIdList,
-            })
-          : router.getRehydratedState(stateBeforeInitialization, {
-              routeNames,
-              routeParamList: initialRouteParamList,
+              routeParamList,
               routeGetIdList,
             });
 
-      if (
-        stateBeforeInitialization != null &&
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        doesStateHaveOnlyInvalidRoutes(stateBeforeInitialization)
-      ) {
-        return [stateBeforeInitialization, hydratedState, true, paramsForState];
+        return [state, false, undefined];
       }
 
-      return [undefined, hydratedState, false, paramsForState];
-    }
-    // We explicitly don't include routeNames, route.params etc. in the dep list
-    // below. We want to avoid forcing a new state to be calculated in those cases
-    // Instead, we handle changes to these in the nextState code below. Note
-    // that some changes to routeConfigs are explicitly ignored, such as changes
-    // to initialParams
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentState, router, isStateValid]);
+      const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
+        (acc, curr) => {
+          const { initialParams } = screens[curr]!.props;
+          const initialParamsFromParams =
+            route?.params?.state == null &&
+            route?.params?.initial !== false &&
+            route?.params?.screen === curr
+              ? route.params.params
+              : undefined;
 
-  const previousRouteKeyListRef = React.useRef(routeKeyList);
+          acc[curr] =
+            initialParams !== undefined || initialParamsFromParams !== undefined
+              ? {
+                  ...initialParams,
+                  ...initialParamsFromParams,
+                }
+              : undefined;
 
-  React.useEffect(() => {
-    previousRouteKeyListRef.current = routeKeyList;
-  });
+          return acc;
+        },
+        {}
+      );
 
-  const previousRouteKeyList = previousRouteKeyListRef.current;
+      // If the current state isn't initialized on first render, we initialize it
+      // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
+      // Otherwise assume that the state was provided as initial state
+      // So we need to rehydrate it to make it usable
+      if (
+        (currentState === undefined || !isStateValid(currentState)) &&
+        route?.params?.state == null &&
+        !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
+        !isNestedParamsConsumed
+      ) {
+        return [
+          router.getInitialState({
+            routeNames,
+            routeParamList: initialRouteParamList,
+            routeGetIdList,
+          }),
+          true,
+          undefined,
+        ];
+      } else {
+        const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
+        const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
 
-  const [unhandledState, setUnhandledState] = React.useState<
-    NavigationState | PartialState<NavigationState> | undefined
-  >(stateBeforeInitialization);
+        const stateBeforeInitialization = (stateFromParams ?? currentState) as
+          | PartialState<State>
+          | undefined;
 
-  // An unhandled state is state that didn't have any valid routes
-  // So it was unhandled, i.e. not used for initializing the state
-  // It's possible that they were absent due to conditional render
-  // Store this state so we can reuse it if the routes change later
-  if (
-    options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-    stateBeforeInitialization &&
-    unhandledState !== stateBeforeInitialization
-  ) {
-    setUnhandledState(stateBeforeInitialization);
-  }
+        const hydratedState =
+          stateBeforeInitialization == null
+            ? router.getInitialState({
+                routeNames,
+                routeParamList: initialRouteParamList,
+                routeGetIdList,
+              })
+            : router.getRehydratedState(stateBeforeInitialization, {
+                routeNames,
+                routeParamList: initialRouteParamList,
+                routeGetIdList,
+              });
+
+        return [hydratedState, false, paramsForState];
+      }
+      // We explicitly don't include routeNames, route.params etc. in the dep list
+      // below. We want to avoid forcing a new state to be calculated in those cases
+      // Instead, we handle changes to these in the nextState code below. Note
+      // that some changes to routeConfigs are explicitly ignored, such as changes
+      // to initialParams
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentState, router, isStateValid]);
 
   let state =
     // If the state isn't initialized, or stale, use the state we initialized instead
@@ -575,35 +495,6 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
-  let shouldClearUnhandledState = false;
-
-  // Previously unhandled state is now valid again
-  // And current state no longer has any valid routes
-  // We should reuse the unhandled state instead of re-calculating the state
-  if (
-    unhandledState?.routes.every((r) => routeNames.includes(r.name)) &&
-    state?.routes.every((r) => !routeNames.includes(r.name))
-  ) {
-    shouldClearUnhandledState = true;
-    nextState = router.getRehydratedState(unhandledState as PartialState<State>, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-    });
-  } else if (
-    !isArrayEqual(state.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList)
-  ) {
-    // When the list of route names change, the router should handle it to remove invalid routes
-    nextState = router.getStateForRouteNamesChange(state, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-      routeKeyChanges: Object.keys(routeKeyList).filter(
-        (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
-      ),
-    });
-  }
 
   let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
 
@@ -617,42 +508,22 @@ export function useNavigationBuilder<
     ) {
       didConsumeNestedParams = true;
 
-      if (
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        doesStateHaveOnlyInvalidRoutes(route.params.state)
-      ) {
-        if (route.params.state !== unhandledState) {
-          setUnhandledState(route.params.state);
-        }
-      } else {
-        // If the route was updated with new state, we should reset to it
-        action = CommonActions.reset(route.params.state);
-      }
+      // If the route was updated with new state, we should reset to it
+      action = CommonActions.reset(route.params.state);
     } else if (
       typeof route.params.screen === 'string' &&
       ((route.params.initial === false && isFirstStateInitialization) || !isNestedParamsConsumed)
     ) {
       didConsumeNestedParams = true;
 
-      if (
-        options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-        !routeNames.includes(route.params.screen)
-      ) {
-        const state = getStateFromParams(route.params);
-
-        if (state != null && !deepEqual(state, unhandledState)) {
-          setUnhandledState(state);
-        }
-      } else {
-        // If the route was updated with new screen name and/or params, we should navigate there
-        action = CommonActions.navigate({
-          name: route.params.screen,
-          params: route.params.params,
-          path: route.params.path,
-          merge: route.params.merge,
-          pop: route.params.pop,
-        });
-      }
+      // If the route was updated with new screen name and/or params, we should navigate there
+      action = CommonActions.navigate({
+        name: route.params.screen,
+        params: route.params.params,
+        path: route.params.path,
+        merge: route.params.merge,
+        pop: route.params.pop,
+      });
     }
 
     // The update should be limited to current navigator only, so we call the router manually
@@ -691,10 +562,6 @@ export function useNavigationBuilder<
     if (shouldUpdate) {
       // Schedule an update if the state needs to be updated
       setState(nextState);
-
-      if (shouldClearUnhandledState) {
-        setUnhandledState(undefined);
-      }
     }
   });
 
@@ -703,9 +570,14 @@ export function useNavigationBuilder<
   // So we override the state object we return to use the latest state as soon as possible
   state = nextState;
 
+  // Keep render consumers safe without committing a state outside the action pipeline. The router
+  // decides which survivor takes focus, so the interim render agrees with the state that
+  // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
+  state = router.getStateForDeclaredRoutes(state, routeNames);
+
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
-    lastStateRef.current = state;
+    lastStateRef.current = nextState;
   });
 
   const lastNotifiedStateRef = React.useRef<State | null>(null);
@@ -723,8 +595,8 @@ export function useNavigationBuilder<
       // This is necessary for proper screen tracking, URL updates etc.
       // We only notify if the state is different what we already notified
       // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(state);
-      lastNotifiedStateRef.current = state;
+      setState(nextState);
+      lastNotifiedStateRef.current = nextState;
     }
 
     return () => {
@@ -819,19 +691,38 @@ export function useNavigationBuilder<
 
   const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
 
+  const { isRoutePrevented, preventRemoveContextValue } = usePreventRemoveState({
+    getState,
+    state,
+  });
+
   const onAction = useOnAction({
     router,
     getState,
     setState,
     key: route?.key,
     actionListeners: childListeners.action,
+    preventRemoveListeners: keyedListeners.preventRemove,
     beforeRemoveListeners: keyedListeners.beforeRemove,
+    isRoutePrevented,
     routerConfigOptions: {
       routeNames,
       routeParamList,
       routeGetIdList,
     },
     emitter,
+  });
+
+  useClientLayoutEffect(() => {
+    const committed = getState();
+
+    if (!isArrayEqual(committed.routeNames, routeNames)) {
+      onAction({
+        type: 'ROUTE_NAMES_CHANGED',
+        payload: { routeNames },
+        target: committed.key,
+      });
+    }
   });
 
   const onRouteFocus = useOnRouteFocus({
@@ -844,35 +735,6 @@ export function useNavigationBuilder<
   const onUnhandledActionParent = use(UnhandledActionContext);
 
   const onUnhandledAction = useLatestCallback((action: NavigationAction) => {
-    if (
-      options.UNSTABLE_routeNamesChangeBehavior === 'lastUnhandled' &&
-      action.type === 'NAVIGATE' &&
-      action.payload != null &&
-      'name' in action.payload &&
-      typeof action.payload.name === 'string' &&
-      !routeNames.includes(action.payload.name)
-    ) {
-      const state = {
-        routes: [
-          {
-            name: action.payload.name,
-            params:
-              'params' in action.payload &&
-              typeof action.payload.params === 'object' &&
-              action.payload.params !== null
-                ? action.payload.params
-                : undefined,
-            path:
-              'path' in action.payload && typeof action.payload.path === 'string'
-                ? action.payload.path
-                : undefined,
-          },
-        ],
-      };
-
-      setUnhandledState(state);
-    }
-
     onUnhandledActionParent?.(action);
   });
 
@@ -896,8 +758,8 @@ export function useNavigationBuilder<
     getStateListeners: keyedListeners.getState,
   });
 
-  const { describe, descriptors } = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
-    state,
+  const descriptors = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
+    routes: state.routes,
     screens,
     navigation,
     screenOptions,
@@ -912,7 +774,6 @@ export function useNavigationBuilder<
     // @ts-expect-error: this should have both core and custom events, but too much work right now
     emitter,
   });
-
   useCurrentRender({
     state,
     navigation,
@@ -934,8 +795,10 @@ export function useNavigationBuilder<
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
           <NavigationStateListenerProvider state={state}>
-            <FocusedRouteKeyContext.Provider value={state.routes[state.index]!.key}>
-              <PreventRemoveProvider>{element}</PreventRemoveProvider>
+            <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
+              <PreventRemoveContext.Provider value={preventRemoveContextValue}>
+                {element}
+              </PreventRemoveContext.Provider>
             </FocusedRouteKeyContext.Provider>
           </NavigationStateListenerProvider>
         </NavigationHelpersContext.Provider>
@@ -946,7 +809,6 @@ export function useNavigationBuilder<
   return {
     state,
     navigation,
-    describe,
     descriptors,
     NavigationContent,
   };

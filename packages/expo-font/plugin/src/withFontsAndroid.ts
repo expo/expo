@@ -17,6 +17,9 @@ import type { Font, FontObject } from './withFonts';
 const assetsFontsFir = 'app/src/main/assets/fonts';
 const resourcesFontsDir = 'app/src/main/res/font';
 
+// The formats Android's font loader reads. `resolveFontPaths` deliberately keeps `.woff` and `.woff2` for iOS.
+const extensionsAndroidCanLoad = ['.ttf', '.otf'];
+
 export const withFontsAndroid: ConfigPlugin<Font[]> = (config, fonts) => {
   const assetFontPaths = fonts.filter((it) => typeof it === 'string');
   config = copyFontsToDir(config, assetFontPaths, assetsFontsFir);
@@ -38,12 +41,56 @@ export function groupByFamily(array: FontObject[]): GroupedFontObject {
   }, {});
 }
 
+export function assertAndroidCanLoadFonts(fontsByFamily: GroupedFontObject) {
+  for (const [fontFamily, definitions] of Object.entries(fontsByFamily)) {
+    for (const definition of definitions) {
+      if (extensionsAndroidCanLoad.includes(path.extname(definition.path).toLowerCase())) {
+        continue;
+      }
+
+      throw new Error(
+        `Font family ${JSON.stringify(fontFamily)} declares ${definition.path}, which Android cannot load. ` +
+          `Android reads TrueType (.ttf) and OpenType (.otf) files only. To convert a web font such as WOFF or WOFF2, use a utility such as fontTools: https://fonttools.readthedocs.io/`
+      );
+    }
+  }
+}
+
+/**
+ * Throws when two definitions in the same family claim the same weight and style.
+ *
+ * Android resolves a family by (weight, style), and `FontFamily.Builder.addFont` rejects a second
+ * font carrying a pair the family already holds.
+ */
+export function assertNoConflictingDefinitions(fontsByFamily: GroupedFontObject) {
+  for (const [fontFamily, definitions] of Object.entries(fontsByFamily)) {
+    const pathByWeightAndStyle = new Map<string, string>();
+
+    for (const definition of definitions) {
+      const style = definition.style || 'normal';
+      const key = `${definition.weight}/${style}`;
+      const alreadyDeclaredBy = pathByWeightAndStyle.get(key);
+
+      if (alreadyDeclaredBy) {
+        throw new Error(
+          `Font family ${JSON.stringify(fontFamily)} declares more than one font for weight ${definition.weight} and style ${JSON.stringify(style)}: ${alreadyDeclaredBy} and ${definition.path}. ` +
+            `Android resolves a font family by weight and style, so it cannot hold two fonts with the same pair — the app would crash on startup while registering the family. ` +
+            `Remove the duplicate, or give each definition a weight or style of its own. One variable font file can back several weights, but each definition needs a different weight.`
+        );
+      }
+
+      pathByWeightAndStyle.set(key, definition.path);
+    }
+  }
+}
+
 function addXmlFonts(config: ExpoConfig, xmlFontObjects: FontObject[]) {
   const fontsByFamily = groupByFamily(xmlFontObjects);
-
-  const fontPaths = Object.values(fontsByFamily)
-    .map((font) => font.map((it) => it.path))
-    .flat();
+  assertAndroidCanLoadFonts(fontsByFamily);
+  assertNoConflictingDefinitions(fontsByFamily);
+  const fontPaths = Object.values(fontsByFamily).flatMap((definitions) =>
+    definitions.map((it) => it.path)
+  );
 
   config = copyFontsToDir(config, fontPaths, resourcesFontsDir, (filenameWithExt) => {
     const filename = toValidAndroidResourceName(filenameWithExt);
@@ -93,6 +140,9 @@ export function getXmlSpecs(fontsDir: string, xmlFontObjects: GroupedFontObject)
                 'app:font': `@font/${toValidAndroidResourceName(definition.path)}`,
                 'app:fontStyle': definition.style || 'normal',
                 'app:fontWeight': String(definition.weight),
+                // Instances a variable font at the declared weight, so that one file can back
+                // several definitions. Static fonts have no `wght` axis and ignore it.
+                'app:fontVariationSettings': `'wght' ${definition.weight}`,
               },
             };
           }),
@@ -149,6 +199,37 @@ export function generateFontManagerCalls(
   );
 }
 
+/**
+ * A variable font backs one definition per weight, so the same file arrives several times and must
+ * only be copied once. Throws when two different files would land on the same one.
+ */
+export function planFontCopies(
+  resolvedFonts: string[],
+  fontsDir: string,
+  filenameProcessor: (filenameWithExt: string) => string
+) {
+  const targets = resolvedFonts
+    .map((asset) => ({
+      asset,
+      destination: path.join(fontsDir, filenameProcessor(path.basename(asset))),
+    }))
+    .filter(({ destination }) => extensionsAndroidCanLoad.some((it) => destination.endsWith(it)));
+
+  const sourceByDestination = new Map<string, string>();
+
+  for (const { asset, destination } of targets) {
+    const claimed = sourceByDestination.get(destination);
+    if (claimed && claimed !== asset) {
+      throw new Error(
+        `Font files ${claimed} and ${asset} both become ${path.basename(destination)} in the native project, so only one of them can be embedded. Rename one of them so their file names differ.`
+      );
+    }
+    sourceByDestination.set(destination, asset);
+  }
+
+  return sourceByDestination;
+}
+
 function copyFontsToDir(
   config: ExpoConfig,
   paths: string[],
@@ -162,16 +243,10 @@ function copyFontsToDir(
       await fs.mkdir(fontsDir, { recursive: true });
 
       const resolvedFonts = await resolveFontPaths(paths, config.modRequest.projectRoot);
+      const copies = planFontCopies(resolvedFonts, fontsDir, filenameProcessor);
 
       await Promise.all(
-        resolvedFonts.map(async (asset) => {
-          const filenameWithExt = path.basename(asset);
-          const outputFileName = filenameProcessor(filenameWithExt);
-          const output = path.join(fontsDir, outputFileName);
-          if (output.endsWith('.ttf') || output.endsWith('.otf')) {
-            await fs.copyFile(asset, output);
-          }
-        })
+        Array.from(copies, ([destination, asset]) => fs.copyFile(asset, destination))
       );
       return config;
     },

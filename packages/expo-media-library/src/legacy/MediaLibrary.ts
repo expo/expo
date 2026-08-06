@@ -285,7 +285,7 @@ export type AssetsOptions = {
   first?: number;
   /**
    * Asset ID of the last item returned on the previous page. To get the ID of the next page,
-   * pass [`endCursor`](#pagedinfo) as its value.
+   * pass [`endCursor`](/versions/latest/sdk/media-library-legacy/#pagedinfo) as its value.
    */
   after?: AssetRef;
   /**
@@ -851,7 +851,7 @@ export async function deleteAlbumsAsync(
 /**
  * Fetches a page of assets matching the provided criteria.
  * @param assetsOptions
- * @return A promise that fulfils with to [`PagedInfo`](#pagedinfo) object with array of [`Asset`](#asset)s.
+ * @return A promise that fulfils with to [`PagedInfo`](/versions/latest/sdk/media-library-legacy/#pagedinfo) object with array of [`Asset`](#asset)s.
  */
 export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise<PagedInfo<Asset>> {
   if (!MediaLibrary.getAssetsAsync) {

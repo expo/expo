@@ -1,6 +1,7 @@
 import type { ExpoConfig } from 'expo/config';
 import {
   AndroidConfig,
+  CodeGenerator,
   WarningAggregator,
   withAndroidManifest,
   withAppBuildGradle,
@@ -41,6 +42,22 @@ function assertLocale(value: unknown): asserts value is string {
 
 export function convertBcp47ToResourceQualifier(locale: string): string {
   return `b+${locale.replaceAll('-', '+')}`;
+}
+
+export function setResourceConfigurations(
+  appBuildGradle: string,
+  resourceQualifiers: string[]
+): string {
+  const list = resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ');
+
+  return CodeGenerator.mergeContents({
+    src: appBuildGradle,
+    comment: '//',
+    tag: 'expo-localization-supported-locales',
+    offset: 1,
+    anchor: /versionName "[\d.]+"/,
+    newSrc: `        resourceConfigurations += [${list}]`,
+  }).contents;
 }
 
 export function setAndroidSupportsRtl(
@@ -160,10 +177,9 @@ function withExpoLocalizationAndroid(config: ExpoConfig, data: ConfigPluginProps
           convertBcp47ToResourceQualifier(locale)
         );
 
-        config.modResults.contents = AndroidConfig.CodeMod.appendContentsInsideDeclarationBlock(
+        config.modResults.contents = setResourceConfigurations(
           config.modResults.contents,
-          'defaultConfig',
-          `    resourceConfigurations += [${resourceQualifiers.map((qualifier) => `"${qualifier}"`).join(', ')}]\n    `
+          resourceQualifiers
         );
       } else {
         WarningAggregator.addWarningAndroid(

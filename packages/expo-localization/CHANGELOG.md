@@ -12,7 +12,17 @@
 
 ### 🐛 Bug fixes
 
+- Prevent the `supportedLocales` config plugin from duplicating `resourceConfigurations` in `app/build.gradle` on repeated `expo prebuild --no-clean` runs. ([#48092](https://github.com/expo/expo/pull/48092) by [@zoontek](https://github.com/zoontek))
+
 ### 💡 Others
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.6 — 2026-05-21
 

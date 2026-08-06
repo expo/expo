@@ -323,6 +323,10 @@ public final class FileSystemModule: Module {
         return try file.info(options: options ?? InfoOptions())
       }
 
+      AsyncFunction("digest") { (file: FileSystemFile, algorithm: String) in
+        return try file.digest(algorithm: algorithm)
+      }
+
       AsyncFunction("write") { (file: FileSystemFile, content: Either<String, NativeArrayBuffer>, options: WriteOptions?) in
         try writeToFile(file, content: content, options: options)
       }

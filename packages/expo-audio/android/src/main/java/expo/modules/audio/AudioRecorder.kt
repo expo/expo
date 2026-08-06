@@ -240,7 +240,12 @@ class AudioRecorder(
   }
 
   private fun createRecordingFilePath(options: RecordingOptions): String {
-    val filename = "recording-${UUID.randomUUID()}${options.extension}"
+    val provided = options.fileName?.takeIf { it.isNotEmpty() }
+    if (provided != null && (provided.contains('/') || provided.contains('\\') || provided.contains(".."))) {
+      throw InvalidRecordingFileNameException(provided)
+    }
+    val baseName = provided ?: "recording-${UUID.randomUUID()}"
+    val filename = "$baseName${options.extension}"
     val parentDirectory = when (options.directory ?: RecordingDirectory.CACHE) {
       RecordingDirectory.CACHE -> _appContext.cacheDirectory
       RecordingDirectory.DOCUMENT -> _appContext.persistentFilesDirectory

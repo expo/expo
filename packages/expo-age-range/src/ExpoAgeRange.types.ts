@@ -28,7 +28,9 @@ export type AgeRangeResponse = {
    * Indicates how the age range was declared:
    * - `'selfDeclared'` — declared by the user themselves.
    * - `'guardianDeclared'` — declared by someone else (parent, guardian, or Family Organizer in a Family Sharing group).
-   * - `'confirmed'` — confirmed by the system (for example, verified against a government ID or payment method). Only reported on iOS 26.5+.
+   * - `'confirmed'` — confirmed by the system (for example, verified against a government ID or payment method). Only reported on iOS 26.2+.
+   *
+   * See `ageRangeSource` for the Android equivalent.
    *
    * @platform ios
    */
@@ -46,25 +48,54 @@ export type AgeRangeResponse = {
    */
   installId?: string | null;
   /**
-   * The user's age verification or supervision status.
+   * The methodology Play Age Signals used to determine the user's age range:
+   * - `'TIER_A'` — the user self-declared their age.
+   * - `'TIER_B'` — a parent or guardian manages the user's age.
+   * - `'TIER_C'` — the age was assessed using a credit card, email address, selfie assessment, government ID, or tax ID.
+   * - `'TIER_D'` — the age was checked using a combination of government ID and selfie assessment, or a digital ID.
+   *
+   * `null` when the sharing status reported by [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync)
+   * is `'NOT_SHARED'` or `'VERIFICATION_REQUIRED'`.
    *
    * @platform android
    */
-  userStatus?:
-    | 'VERIFIED'
-    | 'SUPERVISED'
-    | 'SUPERVISED_APPROVAL_PENDING'
-    | 'SUPERVISED_APPROVAL_DENIED'
-    | 'DECLARED'
-    | 'UNKNOWN'
-    | null;
+  ageRangeSource?: 'TIER_A' | 'TIER_B' | 'TIER_C' | 'TIER_D' | null;
+  /**
+   * Whether a guardian has approved the significant changes recorded for your app:
+   * - `'APPROVED'` — the most recent significant change, and all earlier ones, are approved.
+   * - `'PENDING'` — one or more significant changes are waiting for approval.
+   * - `'DECLINED'` — approval was denied for one or more significant changes.
+   *
+   * `null` for unsupervised accounts, and for supervised accounts with no significant changes yet.
+   *
+   * @platform android
+   */
+  significantChangeStatus?: 'APPROVED' | 'PENDING' | 'DECLINED' | null;
+  /**
+   * The effective date (timestamp) of the most recently approved significant change.
+   *
+   * `null` when no changes have been recorded for your app.
+   *
+   * @platform android
+   */
+  significantChangeApprovalDate?: number | null;
   /**
    * The effective date (timestamp) of the most recent significant change that was approved.
+   *
+   * @deprecated Use `significantChangeApprovalDate` instead — it reports the same value. This field
+   * will be removed in a future release.
    *
    * @platform android
    */
   mostRecentApprovalDate?: number | null;
 };
+
+/**
+ * The sharing status of age signals, returned by [`requestAgeSignalsAccessAsync`](#agerangerequestagesignalsaccessasync).
+ *
+ * @platform android
+ */
+export type AgeSignalsStatus = 'SHARED' | 'NOT_SHARED' | 'VERIFICATION_REQUIRED';
 
 /**
  * A regulatory feature that your app may need to support for the current user.
@@ -83,4 +114,5 @@ export interface ExpoAgeRangeModule extends NativeModule {
   isEligibleForAgeFeaturesAsync(): Promise<boolean | null>;
   showSignificantUpdateAcknowledgmentAsync(updateDescription: string): Promise<void>;
   getRequiredRegulatoryFeaturesAsync(): Promise<AgeRangeRegulatoryFeature[] | null>;
+  requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus | null>;
 }

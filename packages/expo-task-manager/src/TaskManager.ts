@@ -219,7 +219,7 @@ export async function getRegisteredTasksAsync(): Promise<TaskManagerTask[]> {
 /**
  * Unregisters task from the app, so the app will not be receiving updates for that task anymore.
  * _It is recommended to use methods specialized by modules that registered the task, eg.
- * [`Location.stopLocationUpdatesAsync`](./location/#expolocationstoplocationupdatesasynctaskname)._
+ * [`Location.stopLocationUpdatesAsync`](./location/#locationstoplocationupdatesasynctaskname)._
  *
  * @param taskName Name of the task to unregister.
  * @return A promise which fulfills as soon as the task is unregistered.

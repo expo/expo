@@ -1,8 +1,8 @@
 import { vol } from 'memfs';
 
-import { withMetroServer } from './utils';
 import { openInEditorAsync } from '../../../../../utils/editor';
 import { createMetroMiddleware } from '../createMetroMiddleware';
+import { withMetroServer } from './utils';
 
 jest.mock('../../../../../utils/editor');
 
@@ -63,6 +63,21 @@ describe(createMetroMiddleware, () => {
     );
     expect(response.headers.get('Pragma')).toBe('no-cache');
     expect(response.headers.get('Expires')).toBe('0');
+  });
+
+  it('does not apply blanket no-cache headers to loader requests', async () => {
+    metro.middleware.use('/_expo/loaders/cacheable', (_req, res) => {
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+      res.end('{}');
+    });
+
+    const response = await server.fetch('/_expo/loaders/cacheable');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Cache-Control')).toBe('public, max-age=3600');
+    expect(response.headers.get('Surrogate-Control')).toBeNull();
+    expect(response.headers.get('Pragma')).toBeNull();
+    expect(response.headers.get('Expires')).toBeNull();
   });
 
   it('responds to /status requests', async () => {

@@ -322,6 +322,18 @@ struct JSValueEncoderTests {
   }
 
   @Test
+  func `encodes a Date field as an ISO 8601 string`() throws {
+    struct Wrapper: Encodable {
+      let date: Date
+    }
+
+    let date = Date(timeIntervalSince1970: 1_700_000_000.125)
+    let result = try encode(Wrapper(date: date)).getObject()
+
+    #expect(result.getProperty("date").getString() == "2023-11-14T22:13:20.125Z")
+  }
+
+  @Test
   func `encodes a CGPoint field as an object with x and y`() throws {
     struct Wrapper: Encodable {
       let point: CGPoint

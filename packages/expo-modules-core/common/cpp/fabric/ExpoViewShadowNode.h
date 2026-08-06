@@ -69,6 +69,21 @@ private:
         this->traits_.unset(react::ShadowNodeTraits::Trait::ForceFlattenView);
       }
     }
+
+    {
+      // Views that dispatch touch events from their own root view (e.g. RNHostView) set
+      // `layoutRoot` so that `measure()` reports coordinates relative to this node instead of
+      // the surface root, matching the coordinate space of the dispatched touches. The same
+      // reason React Native's <Modal> shadow node sets this trait.
+      auto it = viewProps.propsMap.find("layoutRoot");
+      bool layoutRoot = (it != viewProps.propsMap.end()) && it->second.getBool();
+
+      if (layoutRoot) {
+        this->traits_.set(react::ShadowNodeTraits::Trait::RootNodeKind);
+      } else {
+        this->traits_.unset(react::ShadowNodeTraits::Trait::RootNodeKind);
+      }
+    }
   }
 };
 

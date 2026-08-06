@@ -1,15 +1,33 @@
 import { expect, jest, test } from '@jest/globals';
+import { expectTypeOf } from 'expect-type';
 
 import {
   CommonActions,
   type ParamListBase,
   type RouterConfigOptions,
   TabActions,
+  type TabActionHelpers,
   type TabNavigationState,
   TabRouter,
 } from '../index';
 
-jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
+jest.mock('nanoid/non-secure', () => ({ nanoid: jest.fn(() => 'test') }));
+
+test('types replace action helper params', () => {
+  type Params = {
+    optional: undefined;
+    required: { id: string };
+  };
+
+  expectTypeOf<TabActionHelpers<Params>['replace']>().toBeCallableWith('optional');
+  expectTypeOf<TabActionHelpers<Params>['replace']>().toBeCallableWith('required', { id: '1' });
+  // @ts-expect-error: Required route params cannot be omitted.
+  expectTypeOf<TabActionHelpers<Params>['replace']>().toBeCallableWith('required');
+  // @ts-expect-error: Route params must match the route's param type.
+  expectTypeOf<TabActionHelpers<Params>['replace']>().toBeCallableWith('required', { id: 1 });
+  // @ts-expect-error: The route must exist in the param list.
+  expectTypeOf<TabActionHelpers<Params>['replace']>().toBeCallableWith('missing');
+});
 
 test('gets initial state from route names and params with initialRouteName', () => {
   const router = TabRouter({ initialRouteName: 'baz' });
@@ -524,7 +542,7 @@ test('gets state on route names change', () => {
   const router = TabRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 0,
         key: 'tab-test',
@@ -539,6 +557,7 @@ test('gets state on route names change', () => {
         type: 'tab',
         preloadedRouteKeys: [],
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
         routeParamList: {
@@ -546,7 +565,6 @@ test('gets state on route names change', () => {
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -554,19 +572,22 @@ test('gets state on route names change', () => {
     key: 'tab-test',
     routeNames: ['qux', 'baz', 'foo', 'fiz'],
     routes: [
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
       { key: 'foo-test', name: 'foo' },
       { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
     ],
-    history: [{ type: 'route', key: 'qux-test' }],
+    history: [
+      { type: 'route', key: 'qux-test' },
+      { type: 'route', key: 'baz-test' },
+    ],
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
   });
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 0,
         key: 'tab-test',
@@ -580,11 +601,11 @@ test('gets state on route names change', () => {
         type: 'tab',
         preloadedRouteKeys: [],
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['foo', 'fiz'] } },
       {
         routeNames: ['foo', 'fiz'],
         routeParamList: {},
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -592,7 +613,7 @@ test('gets state on route names change', () => {
     key: 'tab-test',
     routeNames: ['foo', 'fiz'],
     routes: [
-      { key: 'foo-test', name: 'foo' },
+      { key: 'foo-test', name: 'foo', params: undefined },
       { key: 'fiz-test', name: 'fiz' },
     ],
     history: [{ type: 'route', key: 'foo-test' }],
@@ -606,7 +627,7 @@ test('preserves focused route on route names change', () => {
   const router = TabRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
         key: 'tab-test',
@@ -621,6 +642,7 @@ test('preserves focused route on route names change', () => {
         type: 'tab',
         preloadedRouteKeys: [],
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz', 'baz'] } },
       {
         routeNames: ['qux', 'foo', 'fiz', 'baz'],
         routeParamList: {
@@ -628,20 +650,22 @@ test('preserves focused route on route names change', () => {
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
-    index: 3,
+    index: 0,
     key: 'tab-test',
     routeNames: ['qux', 'foo', 'fiz', 'baz'],
     routes: [
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-      { key: 'foo-test', name: 'foo' },
-      { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
       { key: 'baz-test', name: 'baz', params: { answer: 42 } },
+      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
+      { key: 'foo-test', name: 'foo', params: undefined },
+      { key: 'fiz-test', name: 'fiz', params: { fruit: 'apple' } },
     ],
-    history: [{ type: 'route', key: 'baz-test' }],
+    history: [
+      { type: 'route', key: 'qux-test' },
+      { type: 'route', key: 'baz-test' },
+    ],
     stale: false,
     type: 'tab',
     preloadedRouteKeys: [],
@@ -652,7 +676,7 @@ test('falls back to first route if route is removed on route names change', () =
   const router = TabRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
         key: 'tab-test',
@@ -667,6 +691,7 @@ test('falls back to first route if route is removed on route names change', () =
         type: 'tab',
         preloadedRouteKeys: [],
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'foo', 'fiz'],
         routeParamList: {
@@ -674,7 +699,6 @@ test('falls back to first route if route is removed on route names change', () =
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -692,6 +716,120 @@ test('falls back to first route if route is removed on route names change', () =
     preloadedRouteKeys: [],
   });
 });
+
+test('returns the same tab state when route names already match', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = router.getInitialState(options);
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
+      options
+    )
+  ).toBe(state);
+});
+
+test.each<[Parameters<typeof TabRouter>[0]['backBehavior'], string[]]>([
+  ['firstRoute', ['qux-test', 'baz-test']],
+  ['initialRoute', ['bar-test', 'baz-test']],
+  ['order', ['qux-test', 'baz-test']],
+  ['history', ['bar-test', 'baz-test']],
+  ['fullHistory', ['bar-test', 'baz-test']],
+  ['none', ['bar-test', 'baz-test']],
+])(
+  'keeps route order and focus on an order-only change with backBehavior: %s',
+  (backBehavior, expectedHistory) => {
+    const router = TabRouter({ backBehavior, initialRouteName: 'bar' });
+    const options: RouterConfigOptions = {
+      routeNames: ['bar', 'baz', 'qux'],
+      routeParamList: {},
+      routeGetIdList: {},
+    };
+    const state = {
+      ...router.getInitialState(options),
+      index: 1,
+      history: [
+        { type: 'route' as const, key: 'bar-test' },
+        { type: 'route' as const, key: 'baz-test' },
+      ],
+    };
+
+    expect(
+      router.getStateForAction(
+        state,
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'bar'] } },
+        { ...options, routeNames: ['qux', 'baz', 'bar'] }
+      )
+    ).toMatchObject({
+      index: 1,
+      routeNames: ['qux', 'baz', 'bar'],
+      routes: state.routes,
+      history: expectedHistory.map((key) => ({ type: 'route', key })),
+    });
+  }
+);
+
+test('prunes preloaded keys when route names change', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = {
+    ...router.getInitialState(options),
+    preloadedRouteKeys: ['bar-test', 'baz-test'],
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz'] } },
+      { ...options, routeNames: ['baz'] }
+    )
+  ).toMatchObject({ preloadedRouteKeys: ['baz-test'] });
+});
+
+test.each<['history' | 'fullHistory', string[]]>([
+  ['history', ['qux-test', 'bar-test']],
+  ['fullHistory', ['bar-test', 'qux-test', 'bar-test']],
+])(
+  'keeps visit history aligned when the focused route is removed with backBehavior: %s',
+  (backBehavior, expectedHistory) => {
+    const router = TabRouter({ backBehavior });
+    const options: RouterConfigOptions = {
+      routeNames: ['bar', 'baz', 'qux'],
+      routeParamList: {},
+      routeGetIdList: {},
+    };
+    const state = {
+      ...router.getInitialState(options),
+      index: 1,
+      history: [
+        { type: 'route' as const, key: 'bar-test' },
+        { type: 'route' as const, key: 'qux-test' },
+        { type: 'route' as const, key: 'baz-test' },
+      ],
+    };
+
+    expect(
+      router.getStateForAction(
+        state,
+        { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'qux'] } },
+        { ...options, routeNames: ['bar', 'qux'] }
+      )
+    ).toMatchObject({
+      index: 0,
+      history: expectedHistory.map((key) => ({ type: 'route', key })),
+    });
+  }
+);
 
 test('handles navigate action', () => {
   const router = TabRouter({});
@@ -1053,6 +1191,242 @@ test('ensures unique ID for jump to', () => {
       { type: 'route', key: 'bar-test' },
     ],
   });
+});
+
+test('replaces the focused route when the destination is the first tab', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('qux'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(state, TabActions.replace('bar'), options);
+
+  expect(nextState?.history).toEqual([
+    { type: 'route', key: 'baz-test' },
+    { type: 'route', key: 'bar-test' },
+  ]);
+});
+
+test('replaces the focused route based on visit history instead of route order', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux', 'foo'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('foo'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(state, TabActions.replace('qux'), options);
+
+  expect(nextState?.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'foo-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
+});
+
+test('only removes the latest visit when replacing with backBehavior: fullHistory', () => {
+  const router = TabRouter({ backBehavior: 'fullHistory' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('bar'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(state, TabActions.replace('qux'), options);
+
+  expect(nextState?.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'baz-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
+});
+
+test('replaces the focused route with default backBehavior: firstRoute', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(
+    state,
+    TabActions.replace('qux'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  expect(nextState.index).toBe(2);
+  expect(nextState.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
+  expect(router.getStateForAction(nextState, CommonActions.goBack(), options)?.index).toBe(0);
+});
+
+test('replaces the focused route with backBehavior: order', () => {
+  const router = TabRouter({ backBehavior: 'order' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(
+    state,
+    TabActions.replace('qux'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  expect(nextState.index).toBe(2);
+  expect(nextState.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
+  expect(router.getStateForAction(nextState, CommonActions.goBack(), options)?.index).toBe(0);
+});
+
+test('replaces the focused route with backBehavior: initialRoute', () => {
+  const router = TabRouter({
+    backBehavior: 'initialRoute',
+    initialRouteName: 'baz',
+  });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('bar'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(
+    state,
+    TabActions.replace('qux'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  expect(nextState.index).toBe(2);
+  expect(nextState.history).toEqual([
+    { type: 'route', key: 'baz-test' },
+    { type: 'route', key: 'qux-test' },
+  ]);
+  expect(router.getStateForAction(nextState, CommonActions.goBack(), options)?.index).toBe(1);
+});
+
+test('replaces the focused route with backBehavior: none', () => {
+  const router = TabRouter({ backBehavior: 'none' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = router.getInitialState(options);
+
+  const nextState = router.getStateForAction(
+    state,
+    TabActions.replace('qux'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  expect(nextState.index).toBe(2);
+  expect(nextState.history).toEqual([{ type: 'route', key: 'qux-test' }]);
+  expect(router.getStateForAction(nextState, CommonActions.goBack(), options)).toBeNull();
+});
+
+test('preserves history when replacing a tab with itself', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  let state = router.getInitialState(options);
+  state = router.getStateForAction(
+    state,
+    TabActions.jumpTo('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+
+  const nextState = router.getStateForAction(state, TabActions.replace('baz'), options);
+
+  expect(nextState?.history).toEqual([
+    { type: 'route', key: 'bar-test' },
+    { type: 'route', key: 'baz-test' },
+  ]);
+});
+
+test('preserves the navigator key across repeated replaces', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const initialState = router.getInitialState(options);
+
+  const replacedState = router.getStateForAction(
+    initialState,
+    TabActions.replace('baz'),
+    options
+  ) as TabNavigationState<ParamListBase>;
+  const replacedAgainState = router.getStateForAction(
+    replacedState,
+    TabActions.replace('qux'),
+    options
+  );
+
+  expect(replacedState.key).toBe(initialState.key);
+  expect(replacedAgainState?.key).toBe(initialState.key);
 });
 
 test('handles back action with backBehavior: history', () => {

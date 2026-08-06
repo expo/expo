@@ -10,8 +10,8 @@ class PlaygroundService {
   private let templateSnackId = "@brents/code-playground"
 
   /// Default code for a new blank playground
-  static let defaultCode: [String: SnackSessionClient.SnackFile] = [
-    "App.js": SnackSessionClient.SnackFile(
+  static let defaultCode: [String: SnackFile] = [
+    "App.js": SnackFile(
       path: "App.js",
       contents: """
         import { Text, View, StyleSheet } from 'react-native';

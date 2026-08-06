@@ -59,7 +59,8 @@ enum OTAnyValue: Codable, Sendable {
       self = .kvlist(value.values)
     } else {
       throw DecodingError.dataCorruptedError(
-        forKey: .stringValue, in: container,
+        forKey: .stringValue,
+        in: container,
         debugDescription: "OTAnyValue has no recognized variant"
       )
     }
@@ -193,13 +194,11 @@ let metricNameMap = [
   "navigation/tti": "expo.navigation.tti",
 ]
 
-nonisolated(unsafe) let formatter = ISO8601DateFormatter()
-
 private func nsFromISOString(_ dateString: String?) -> UInt64 {
   if let dateString,
-    let date = formatter.date(from: dateString)
+    let date = try? Date.ISO8601FormatStyle().parse(dateString)
   {
-    return UInt64(date.timeIntervalSince1970 * 1_000_000_000)
+    return UInt64((date.timeIntervalSince1970 * 1_000).rounded()) * 1_000_000
   }
   return UInt64(Date().timeIntervalSince1970 * 1_000_000_000)
 }

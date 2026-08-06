@@ -20,6 +20,7 @@
     "build"
   ],
   "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
     "build": "ncc build ./src/index.ts -o build/ -e typescript",
     "build:prod": "ncc build ./src/index.ts -o build/ -e typescript --minify --no-cache --no-source-map-register",

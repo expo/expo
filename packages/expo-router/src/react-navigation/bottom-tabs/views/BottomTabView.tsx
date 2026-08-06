@@ -4,21 +4,17 @@ import { Animated, Platform, StyleSheet } from 'react-native';
 import { SafeAreaInsetsContext } from 'react-native-safe-area-context';
 
 import { getHeaderTitle, Header, SafeAreaProviderCompat, Screen } from '../../elements';
-import {
-  type NavigationAction,
-  type ParamListBase,
-  StackActions,
-  type TabNavigationState,
-} from '../../native';
+import { type ParamListBase } from '../../native';
 import { FadeTransition, ShiftTransition } from '../TransitionConfigs/TransitionPresets';
 import type {
   BottomTabBarProps,
   BottomTabDescriptorMap,
+  BottomTabEmitter,
   BottomTabHeaderProps,
   BottomTabNavigationConfig,
-  BottomTabNavigationHelpers,
   BottomTabNavigationOptions,
   BottomTabNavigationProp,
+  BottomTabViewState,
 } from '../types';
 import { BottomTabBarHeightCallbackContext } from '../utils/BottomTabBarHeightCallbackContext';
 import { BottomTabBarHeightContext } from '../utils/BottomTabBarHeightContext';
@@ -27,9 +23,12 @@ import { BottomTabBar, getTabBarHeight } from './BottomTabBar';
 import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
 
 type Props = BottomTabNavigationConfig & {
-  state: TabNavigationState<ParamListBase>;
-  navigation: BottomTabNavigationHelpers;
+  state: BottomTabViewState;
   descriptors: BottomTabDescriptorMap;
+  emitter: BottomTabEmitter;
+  navigateToTab: (routeKey: string) => void;
+  preloadedRouteKeys: string[];
+  popNestedStackToTop: (routeKey: string) => void;
 };
 
 const EPSILON = 1e-5;
@@ -67,8 +66,11 @@ export function BottomTabView(props: Props) {
   const {
     tabBar = renderTabBarDefault,
     state,
-    navigation,
     descriptors,
+    emitter,
+    navigateToTab,
+    preloadedRouteKeys,
+    popNestedStackToTop,
     safeAreaInsets,
     detachInactiveScreens = Platform.OS === 'web' ||
       Platform.OS === 'android' ||
@@ -93,25 +95,13 @@ export function BottomTabView(props: Props) {
   React.useEffect(() => {
     const previousRouteKey = previousRouteKeyRef.current;
 
-    let popToTopAction: NavigationAction | undefined;
-
-    if (
+    const shouldPopPreviousToTop =
       previousRouteKey !== focusedRouteKey &&
-      descriptors[previousRouteKey]?.options.popToTopOnBlur
-    ) {
-      const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
-
-      if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
-        popToTopAction = {
-          ...StackActions.popToTop(),
-          target: prevRoute.state.key,
-        };
-      }
-    }
+      !!descriptors[previousRouteKey]?.options.popToTopOnBlur;
 
     const animateToIndex = () => {
       if (previousRouteKey !== focusedRouteKey) {
-        navigation.emit({
+        emitter.emit({
           type: 'transitionStart',
           target: focusedRouteKey,
         });
@@ -146,12 +136,12 @@ export function BottomTabView(props: Props) {
           })
           .filter(Boolean) as Animated.CompositeAnimation[]
       ).start(({ finished }) => {
-        if (finished && popToTopAction) {
-          navigation.dispatch(popToTopAction);
+        if (finished && shouldPopPreviousToTop) {
+          popNestedStackToTop(previousRouteKey);
         }
 
         if (previousRouteKey !== focusedRouteKey) {
-          navigation.emit({
+          emitter.emit({
             type: 'transitionEnd',
             target: focusedRouteKey,
           });
@@ -162,7 +152,15 @@ export function BottomTabView(props: Props) {
     animateToIndex();
 
     previousRouteKeyRef.current = focusedRouteKey;
-  }, [descriptors, focusedRouteKey, navigation, state.index, state.routes, tabAnims]);
+  }, [
+    descriptors,
+    focusedRouteKey,
+    emitter,
+    popNestedStackToTop,
+    state.index,
+    state.routes,
+    tabAnims,
+  ]);
 
   const dimensions = SafeAreaProviderCompat.initialMetrics.frame;
   const [tabBarHeight, setTabBarHeight] = React.useState(() =>
@@ -185,7 +183,8 @@ export function BottomTabView(props: Props) {
           tabBar({
             state,
             descriptors,
-            navigation,
+            emitter,
+            navigateToTab,
             insets: {
               top: safeAreaInsets?.top ?? insets?.top ?? 0,
               right: safeAreaInsets?.right ?? insets?.right ?? 0,
@@ -230,7 +229,7 @@ export function BottomTabView(props: Props) {
             sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation]!.sceneStyleInterpolator,
           } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = state.preloadedRouteKeys.includes(route.key);
+          const isPreloaded = preloadedRouteKeys.includes(route.key);
 
           if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
             // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
