@@ -175,4 +175,16 @@ class TimeUtilsTest {
       parsedDate.time > tenYearsAgo
     )
   }
+
+  @Test
+  fun `dateToIsoUtcSeconds formats a fixed date as whole-second UTC`() {
+    // Given
+    val date = Date(1_700_000_000_000L)
+
+    // When
+    val timestamp = TimeUtils.dateToIsoUtcSeconds(date)
+
+    // Then
+    assertEquals("2023-11-14T22:13:20Z", timestamp)
+  }
 }
