@@ -18,6 +18,11 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
   var loopMode: LoopMode = .none
   var wasPlaying = false
 
+  // Supersedes a play deferred to AudioModule's sessionQueue — same contract
+  // as AudioPlayer.playGeneration: bumped in pause/clear/skipTo/teardown so a
+  // queued play can detect it was cancelled while waiting on activation.
+  let playGeneration = MonotonicGeneration()
+
   private(set) var sources: [AudioSource] = []
 
   private var playerItems: [AVPlayerItem?] = []
@@ -95,7 +100,17 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
   }
 
   func play(at rate: Float) {
+    prepareToPlay()
+    startPlayback(at: rate)
+  }
+
+  /// Calling-thread half of play(at:) — see AudioPlayer.prepareToPlay().
+  func prepareToPlay() {
     registerTimeObserver()
+  }
+
+  /// Queue-safe half of play(at:) — see AudioPlayer.startPlayback(at:).
+  func startPlayback(at rate: Float) {
     ref.playImmediately(atRate: rate)
 
     if isActiveForLockScreen {
@@ -104,6 +119,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
   }
 
   func pause() {
+    playGeneration.bump()
     ref.pause()
 
     if isActiveForLockScreen {
@@ -144,6 +160,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
       return
     }
 
+    playGeneration.bump()
     let wasPlaying = isPlaying
     rebuildPlaylist(startingAt: index)
 
@@ -230,6 +247,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
   }
 
   func clear() {
+    playGeneration.bump()
     ref.pause()
     ref.removeAllItems()
     sources.removeAll()
@@ -413,6 +431,7 @@ public class AudioPlaylist: SharedRef<AVQueuePlayer>, Playable, LockScreenPlayab
   }
 
   public override func sharedObjectWillRelease() {
+    playGeneration.bump()
     ref.currentItem?.cancelPendingSeeks()
     owningRegistry?.remove(self)
     cancellables.removeAll()

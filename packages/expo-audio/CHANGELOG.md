@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Run `AVAudioSession.setActive` calls on a serial queue instead of the calling thread. The synchronous `play()` performed the blocking activation XPC on the JS thread, so an audio-daemon stall froze all JS execution (timers, state updates) while the rest of the app appeared alive; deactivation had the same hazard on its calling thread. A monotonic activation token drops stale deactivations so rapid back-to-back playback isn't torn down, and a per-playable play generation prevents a queued play from audibly starting audio that `pause()`/`replace()` already cancelled. Behavior change: `play()` no longer throws when session activation fails — playback is still attempted and the failure is reported through the `playbackStatusUpdate` event's `error` field. ([#48532](https://github.com/expo/expo/pull/48532) by [@sbs44](https://github.com/sbs44))
 - [Android] Pause audio players and playlists when headphones or Bluetooth audio devices disconnect. ([#48151](https://github.com/expo/expo/pull/48151) by [@vivekjm](https://github.com/vivekjm))
 - [Android] Give the lock-screen `MediaSession` instances a unique ID so concurrent active players (and the basic session) no longer collide on the empty default. ([#47101](https://github.com/expo/expo/issues/47101) by [@tsushanth](https://github.com/tsushanth))
 - [Android] Fix stale lock screen artwork when updating metadata without an `artworkUrl`. ([#45738](https://github.com/expo/expo/pull/45738) by [@behenate](https://github.com/behenate))
