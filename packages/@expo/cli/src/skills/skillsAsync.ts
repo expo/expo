@@ -4,6 +4,7 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
+import { CommandError } from '../utils/errors';
 import {
   detectInstalledAgents,
   getAllAgents,
@@ -68,8 +69,29 @@ export async function syncSkillsAsync(projectRoot: string, options: SkillsOption
   );
 }
 
-export async function listSkillsAsync(projectRoot: string): Promise<void> {
+export async function listSkillsAsync(
+  projectRoot: string,
+  options: { json?: boolean } = {}
+): Promise<void> {
   const skills = await discoverSkillsAsync(projectRoot);
+
+  if (options.json) {
+    const skillsDirs = uniqueSkillsDirs(getConfiguredAgents(projectRoot));
+    const entries = skills.map((skill) => ({
+      package: skill.packageName,
+      skill: skill.name,
+      name: skill.title ?? skill.name,
+      description: skill.description ?? null,
+      path: skill.path,
+      linkName: skill.linkName,
+      linkedIn: skillsDirs.filter((dir) =>
+        fs.existsSync(path.join(projectRoot, dir, skill.linkName))
+      ),
+    }));
+    Log.log(JSON.stringify(entries, null, 2));
+    return;
+  }
+
   if (!skills.length) {
     Log.log('No agent skills found in the project dependencies.');
     return;
@@ -93,6 +115,44 @@ export async function listSkillsAsync(projectRoot: string): Promise<void> {
       const description = skill.description ? chalk.dim(` — ${skill.description}`) : '';
       Log.log(`  ${skill.name} ${chalk.dim(`(${status})`)}${description}`);
     }
+  }
+}
+
+/**
+ * Print the raw SKILL.md contents of a package's skills, so agents can load a
+ * skill into context straight from the CLI without linking it first.
+ */
+export async function showSkillsAsync(
+  projectRoot: string,
+  packageName: string,
+  skillName?: string
+): Promise<void> {
+  const skills = await discoverSkillsAsync(projectRoot);
+  const packageSkills = skills.filter((skill) => skill.packageName === packageName);
+  if (!packageSkills.length) {
+    throw new CommandError(
+      'BAD_ARGS',
+      `No skills found for "${packageName}". The package is not installed, or it ships no skills/<name>/SKILL.md directory. Run ${chalk.bold('npx expo skills list')} to see the packages that provide skills.`
+    );
+  }
+
+  const matched = skillName
+    ? packageSkills.filter((skill) => skill.name === skillName)
+    : packageSkills;
+  if (!matched.length) {
+    throw new CommandError(
+      'BAD_ARGS',
+      `No skill named "${skillName}" in ${packageName}. Available skills: ${packageSkills
+        .map((skill) => skill.name)
+        .join(', ')}.`
+    );
+  }
+
+  for (const skill of matched) {
+    if (matched.length > 1) {
+      Log.log(chalk.dim(`--- ${skill.packageName}/skills/${skill.name}/SKILL.md ---`));
+    }
+    Log.log(await fs.promises.readFile(path.join(skill.path, 'SKILL.md'), 'utf8'));
   }
 }
 
