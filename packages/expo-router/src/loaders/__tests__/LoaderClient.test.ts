@@ -170,6 +170,51 @@ describe(LoaderClient, () => {
     });
   });
 
+  describe('route ownership', () => {
+    it('returns a path when its final route key disappears', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/p', 'route-1');
+
+      expect(client.sweepRouteKeys(new Set())).toEqual(['/p']);
+      expect(client.sweepRouteKeys(new Set())).toEqual([]);
+    });
+
+    it('keeps a path while any of several route instances still owns it', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/p', 'route-1');
+      client.trackRoute('/p', 'route-2');
+
+      expect(client.sweepRouteKeys(new Set(['route-2']))).toEqual([]);
+      expect(client.sweepRouteKeys(new Set())).toEqual(['/p']);
+    });
+
+    it('returns the old path when a stable key moves to a new path', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/posts/1', 'post-route');
+
+      expect(client.trackRoute('/posts/2', 'post-route')).toBe('/posts/1');
+      expect(client.sweepRouteKeys(new Set())).toEqual(['/posts/2']);
+    });
+
+    it('does not return the old path on reassignment while another key owns it', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/posts/1', 'first');
+      client.trackRoute('/posts/1', 'second');
+
+      expect(client.trackRoute('/posts/2', 'first')).toBeUndefined();
+      expect(client.sweepRouteKeys(new Set(['first']))).toEqual(['/posts/1']);
+    });
+
+    it('clears every route association on reset', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/p', 'route-1');
+
+      client.clear();
+
+      expect(client.sweepRouteKeys(new Set())).toEqual([]);
+    });
+  });
+
   describe('revalidate', () => {
     it('re-executes paths with live subscribers and returns their paths', async () => {
       const client = new LoaderClient();
