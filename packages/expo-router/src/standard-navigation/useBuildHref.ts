@@ -14,6 +14,7 @@ type HrefRoute = Pick<NavigationRoute<ParamListBase, string>, 'name' | 'params'>
 export function useBuildHref() {
   const currentState = useStateForPath();
   return useMemo(() => {
+    // This cache uses object identity, so inline route objects never produce cache hits.
     const cache = new WeakMap<HrefRoute, string>();
     return (route: HrefRoute) => {
       const cached = cache.get(route);

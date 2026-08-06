@@ -19,6 +19,7 @@ import { SceneView } from './SceneView';
 import { ThemeContext } from './theming/ThemeContext';
 import type {
   Descriptor,
+  DescriptorRouteProp,
   EventMapBase,
   NavigationHelpers,
   NavigationProp,
@@ -53,7 +54,7 @@ type ScreenLayout<ScreenOptions extends {}> = (props: {
 type ScreenOptionsOrCallback<ScreenOptions extends {}> =
   | ScreenOptions
   | ((props: {
-      route: RouteProp<ParamListBase, string>;
+      route: DescriptorRouteProp<ParamListBase, string>;
       navigation: any;
       theme: ReactNavigation.Theme;
     }) => ScreenOptions);
@@ -152,7 +153,7 @@ export function useDescriptors<
   const cachedRoutes = useRouteCache(routes);
 
   const getOptions = (
-    route: RouteProp<ParamListBase, string>,
+    route: DescriptorRouteProp<ParamListBase, string>,
     navigation: NavigationProp<
       ParamListBase,
       string,
