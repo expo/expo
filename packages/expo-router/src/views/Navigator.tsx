@@ -118,10 +118,13 @@ function SlotNavigator(props: NavigatorProps<any>) {
     id: contextKey,
     children: useSortedScreens(screens ?? [], guardedRedirects),
   });
+  const focusedRouteKey = state.routes[state.index]?.key;
 
   return (
     <GuardContextProvider node={node} guardedRedirects={guardedRedirects}>
-      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+      <NavigationContent>
+        {focusedRouteKey ? descriptors[focusedRouteKey]!.render() : null}
+      </NavigationContent>
     </GuardContextProvider>
   );
 }
@@ -160,8 +163,9 @@ function NavigatorSlot() {
   const context = useNavigatorContext();
 
   const { state, descriptors } = context;
+  const focusedRouteKey = state.routes[state.index]?.key;
 
-  return descriptors[state.routes[state.index]!.key]?.render() ?? null;
+  return focusedRouteKey ? (descriptors[focusedRouteKey]?.render() ?? null) : null;
 }
 
 /**
