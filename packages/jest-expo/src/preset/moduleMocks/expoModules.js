@@ -632,6 +632,11 @@ module.exports = {
         ExpoObserve: [
           { name: 'configure', argumentsCount: 1, key: 'configure' },
           { name: 'dispatchEvents', argumentsCount: 0, key: 'dispatchEvents' },
+          {
+            name: 'getIntegrations',
+            argumentsCount: 0,
+            key: 'getIntegrations',
+          },
           { name: 'setBundleDefaults', argumentsCount: 1, key: 'setBundleDefaults' },
         ],
         ExpoPrint: [
@@ -1369,6 +1374,7 @@ module.exports = {
           addListener: { type: 'function' },
           configure: { type: 'function' },
           dispatchEvents: { type: 'function' },
+          getIntegrations: { type: 'function' },
           removeListeners: { type: 'function' },
           setBundleDefaults: { type: 'function' },
         },
