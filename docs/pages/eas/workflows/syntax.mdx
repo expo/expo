@@ -2267,7 +2267,7 @@ Define reusable step sequences in your project and call them with a relative pat
 
 Your **function.yml** file supports the following top-level properties: `name`, `description`, `inputs`, `outputs`, and `runs`. EAS Workflows rejects unknown top-level properties.
 
-### `name`
+### Function `name`
 
 An optional display name for the custom function that appears in job logs.
 
@@ -2275,7 +2275,7 @@ An optional display name for the custom function that appears in job logs.
 name: Greet
 ```
 
-### `description`
+### Function `description`
 
 An optional description of what the custom function does.
 
@@ -2283,7 +2283,7 @@ An optional description of what the custom function does.
 description: Prints a greeting for the given name.
 ```
 
-### `inputs`
+### Function `inputs`
 
 Input values a caller can pass to the custom function with `with:`. You can declare inputs two ways.
 
@@ -2317,7 +2317,7 @@ inputs:
 
 Inside the custom function's steps, read an input with `${{ inputs.<name> }}`.
 
-### `outputs`
+### Function `outputs`
 
 Declare the output values that the custom function exposes to its caller as a map keyed by output name:
 
@@ -2335,7 +2335,7 @@ outputs:
 
 EAS Workflows exposes each output as a string. Read the output as `${{ steps.<call_id>.outputs.<name> }}`. Use the `id` from the call step. The caller cannot reference the function's internal step identifiers.
 
-### `runs.steps`
+### Function `runs.steps`
 
 `runs.steps` is required and must contain at least one step. Steps use the same format as [custom job steps](#jobsjob_idsteps), including `id`, `run`, `uses`, `if`, and `working_directory`. Currently, custom functions cannot call `eas/build` or `eas/maestro_test`.
 
