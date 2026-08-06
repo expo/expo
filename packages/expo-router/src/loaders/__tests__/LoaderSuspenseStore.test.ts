@@ -32,32 +32,20 @@ describe(LoaderSuspenseStore, () => {
     expect(store.get('/p')).toBeUndefined();
   });
 
-  it('does not remove an entry on dispose alone', () => {
+  it('removes entries only after both disposal and teardown', () => {
     const store = new LoaderSuspenseStore();
-    store.set('/p', { data: 'v1' });
+    store.set('/disposed', { data: 'disposed' });
+    store.set('/torn-down', { data: 'torn-down' });
+    store.set('/reclaimed', { data: 'reclaimed' });
 
-    store.dispose('/p');
+    store.dispose('/disposed');
+    store.teardown('/torn-down');
+    store.dispose('/reclaimed');
+    store.teardown('/reclaimed');
 
-    expect(store.get('/p')).toEqual({ data: 'v1' });
-  });
-
-  it('does not remove an entry on teardown alone', () => {
-    const store = new LoaderSuspenseStore();
-    store.set('/p', { data: 'v1' });
-
-    store.teardown('/p');
-
-    expect(store.get('/p')).toEqual({ data: 'v1' });
-  });
-
-  it('removes an entry on dispose followed by teardown', () => {
-    const store = new LoaderSuspenseStore();
-    store.set('/p', { data: 'v1' });
-
-    store.dispose('/p');
-    store.teardown('/p');
-
-    expect(store.get('/p')).toBeUndefined();
+    expect(store.get('/disposed')).toEqual({ data: 'disposed' });
+    expect(store.get('/torn-down')).toEqual({ data: 'torn-down' });
+    expect(store.get('/reclaimed')).toBeUndefined();
   });
 
   it('unmarks a disposed key when a new entry is set', () => {
@@ -71,12 +59,19 @@ describe(LoaderSuspenseStore, () => {
     expect(store.get('/p')).toEqual({ data: 'v2' });
   });
 
-  it('lists entry keys', () => {
+  it('retains live entries and clears inactive entries', () => {
     const store = new LoaderSuspenseStore();
-    store.set('/a', { data: 1 });
-    store.set('/b', { data: 2 });
+    store.set('/live', { data: 'fresh' });
+    store.set('/inactive', { data: 'stale' });
+    store.dispose('/inactive');
 
-    expect(store.keys()).toEqual(['/a', '/b']);
+    store.retain(new Set(['/live']));
+
+    expect(store.get('/live')).toEqual({ data: 'fresh' });
+    expect(store.get('/inactive')).toBeUndefined();
+    store.set('/inactive', { data: 'new' });
+    store.teardown('/inactive');
+    expect(store.get('/inactive')).toEqual({ data: 'new' });
   });
 
   it('drops all entries and marks on reset', () => {
@@ -89,6 +84,5 @@ describe(LoaderSuspenseStore, () => {
     store.teardown('/a');
 
     expect(store.get('/a')).toEqual({ data: 2 });
-    expect(store.keys()).toEqual(['/a']);
   });
 });
