@@ -3,6 +3,7 @@ package host.exp.exponent.kernel
 
 import android.net.Uri
 import expo.modules.jsonutils.require
+import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import okhttp3.Request
@@ -37,6 +38,19 @@ object ExponentUrls {
     } catch (e: Exception) {
       rawUrl
     }
+  }
+
+  /**
+   * The HTTP(S) URL the JS bundle is loaded from, resolved against the URL the manifest was served
+   * from.
+   *
+   * This is the address the device actually reached, so it's what other development server requests
+   * must be built from. It's preferred over the manifest's `debuggerHost`, which holds the address
+   * the development server believes it has, and which is unreachable whenever the server is reached
+   * through something it can't observe, such as a proxy or a tunnel.
+   */
+  @JvmStatic fun bundleUrlFromManifest(manifest: Manifest, manifestUrl: String): String {
+    return toHttp(resolveManifestUrl(manifest.getBundleURL(), manifestUrl))
   }
 
   @JvmStatic fun addExponentHeadersToUrl(urlString: String): Request.Builder {
