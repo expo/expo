@@ -168,6 +168,26 @@ describe('routingQueue', () => {
     expect(routingQueue.queue).toHaveLength(0);
   });
 
+  it('add() produces a new queue array identity on every call', () => {
+    // Regression test for https://github.com/expo/expo/issues/48626:
+    // add() used to mutate the queue array in place, so the identity never
+    // changed. That defeats useSyncExternalStore's Object.is snapshot
+    // comparison and can cause a queued navigation action to be silently
+    // dropped whenever a subscriber re-render commits between run()'s
+    // array swap and the next add().
+    const beforeFirstAdd = routingQueue.queue;
+
+    routingQueue.add({ type: 'GO_BACK' });
+    const afterFirstAdd = routingQueue.queue;
+
+    routingQueue.add({ type: 'POP_TO_TOP' });
+    const afterSecondAdd = routingQueue.queue;
+
+    expect(afterFirstAdd).not.toBe(beforeFirstAdd);
+    expect(afterSecondAdd).not.toBe(afterFirstAdd);
+    expect(afterSecondAdd).toHaveLength(2);
+  });
+
   it('multiple subscribers all get notified on add()', () => {
     const callback1 = jest.fn();
     const callback2 = jest.fn();
