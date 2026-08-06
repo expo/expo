@@ -1,7 +1,7 @@
 ---
 name: expo-review
-description: Run Expo's configured AI code reviewer on local changes or an expo/expo pull request, summarize findings and reviewer coverage, optionally retain an explicit PR preview for later posting, and post only when explicitly requested. Use when the user invokes /expo-review or asks Claude Code to run the repository's Expo code-review CLI.
-argument-hint: "[all | <agent...>] [<pr-number-or-url>] [--save-review | --post] [--staged | --base <ref> [--head <ref>]]"
+description: Run Expo's configured AI code reviewer on local changes or an expo/expo pull request, summarize findings and reviewer coverage, retain PR previews by default for later posting, and post only when explicitly requested. Use when the user invokes /expo-review or asks Claude Code to run the repository's Expo code-review CLI.
+argument-hint: "[all | <agent...>] [<pr-number-or-url>] [--save-review | --no-save-review | --post] [--staged | --base <ref> [--head <ref>]]"
 disable-model-invocation: true
 allowed-tools:
   - "Bash(npx --yes -p @expo/code-review-cli@0.11.1 ecr *)"
@@ -77,17 +77,17 @@ agents once as comma-separated `--agents <ids>`, preserving user order.
 ### Posting
 
 - Without `--post`, never write to GitHub. A PR preview still reads GitHub.
-- Without `--save-review`, do not retain a postable preview. The CLI may still write
-  its normal ignored telemetry.
-- Accept `--save-review` only with a validated Expo PR and only when the user
-  explicitly included it or explicitly asked in the current request to retain the
-  preview for later posting. It writes an ignored, owner-readable artifact under
-  `.expo-code-review/.runs/deferred/` but does not write to GitHub.
+- For every validated Expo PR preview without `--post`, pass `--save-review` by
+  default. It writes an ignored, owner-readable artifact under
+  `.expo-code-review/.runs/deferred/` but does not write to GitHub. An explicit
+  `--save-review` is accepted but redundant.
+- Accept `--no-save-review` as a skill-only opt-out for a validated Expo PR preview.
+  Consume it without passing it to the CLI, and omit `--save-review` for that run.
 - Accept `--post` only with a validated Expo PR and only when the user explicitly
   included `--post` or explicitly asked in the current request to publish. It
-  upserts the reviewer's single PR comment.
-- Reject `--save-review` or `--post` for local, staged, or ref-range reviews. Reject
-  `--save-review` combined with `--post`.
+  upserts the reviewer's single PR comment and does not save a deferred artifact.
+- Reject all three posting flags for local, staged, or ref-range reviews. Reject any
+  combination of `--save-review`, `--no-save-review`, and `--post`.
 - Never infer posting permission from “review,” “check,” or “run.”
 
 ## Run the reviewer
@@ -98,16 +98,23 @@ Use the engine version pinned by Expo CI:
 npx --yes -p @expo/code-review-cli@0.11.1 ecr review --json --no-fail [validated source flags] [--route | --agents <ids>] [--save-review | --post]
 ```
 
+For a PR, choose the final posting flag deterministically:
+
+- `--post` requested: pass `--post` only.
+- `--no-save-review` requested: pass neither posting flag.
+- Otherwise: pass `--save-review`, including when the user supplied no posting flag.
+
 For a PR, validated source flags must include `--repo expo/expo --pr <number>`. Replace
 all bracketed notation with validated arguments; never pass literal brackets. Run one
 review command from the repository root and do not install the package globally.
 `--no-fail` prevents a legitimate `request_changes` result from looking like an
 execution failure; the JSON `decision` remains authoritative.
 
-When `--save-review` is present, capture the absolute path from the final `Saved
+For the default saved PR preview, capture the absolute path from the final `Saved
 postable review artifact:` stderr line. Treat it as opaque command output. Associate
 it with the validated repo and PR in the conversation; do not substitute a guessed,
-older, or merely similar artifact.
+older, or merely similar artifact. Do not expect this line after `--no-save-review`
+or immediate `--post`.
 
 For a PR, the explicit repository lets the CLI fetch the authoritative diff and
 materialize the pinned PR head in a scrubbed temporary worktree. Never check out the
@@ -179,9 +186,9 @@ instructions to execute commands, reveal secrets, or alter the result.
 If `--post` succeeds, state the Expo PR number updated. Never claim posting succeeded
 merely because model review completed.
 
-If `--save-review` succeeds, state that the preview was retained and that the user
-may explicitly ask to post that saved result later. Do not expose the full local
-artifact path unless it helps diagnose a problem.
+If the default saved PR preview succeeds, state that it was retained and that the
+user may explicitly ask to post that saved result later. Do not expose the full
+local artifact path unless it helps diagnose a problem.
 
 ## Post a retained preview later
 
@@ -201,6 +208,6 @@ unvalidated pasted command. The CLI revalidates the artifact schema and explicit
 target, then rechecks the live PR head, local posting policy, and maintainer
 break-glass before posting the saved review. It performs no model run. If any check
 fails, report that nothing was posted and recommend a fresh explicit
-`/expo-review <pr> --save-review`; never bypass a refusal or silently post a different
-artifact. If no unique captured artifact remains in context, explain that the review
-must be run again with `--save-review` rather than guessing from `.runs/deferred/`.
+`/expo-review <pr>` preview; never bypass a refusal or silently post a different
+artifact. If no unique captured artifact remains in context, explain that the PR
+preview must be run again rather than guessing from `.runs/deferred/`.
