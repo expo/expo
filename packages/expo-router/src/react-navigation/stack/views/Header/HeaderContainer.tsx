@@ -71,7 +71,7 @@ export function HeaderContainer({
 
         const isFocused = focusedRoute.key === scene.descriptor.route.key;
         const previousScene = getPreviousScene({
-          route: scene.descriptor.route,
+          route: scene.route,
         });
 
         let headerBack = parentHeaderBack;
@@ -119,7 +119,7 @@ export function HeaderContainer({
           back: headerBack,
           progress: scene.progress,
           options: scene.descriptor.options,
-          route: scene.descriptor.route,
+          route: scene.route,
           navigation: scene.descriptor.navigation as StackNavigationProp<ParamListBase>,
           styleInterpolator:
             mode === 'float'
@@ -137,7 +137,7 @@ export function HeaderContainer({
         return (
           <NavigationProvider
             key={scene.descriptor.route.key}
-            route={scene.descriptor.route}
+            route={scene.route}
             navigation={scene.descriptor.navigation}>
             <View
               onLayout={
@@ -146,7 +146,7 @@ export function HeaderContainer({
                       const { height } = e.nativeEvent.layout;
 
                       onContentHeightChange({
-                        route: scene.descriptor.route,
+                        route: scene.route,
                         height,
                       });
                     }

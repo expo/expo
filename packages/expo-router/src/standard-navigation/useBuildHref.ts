@@ -8,12 +8,14 @@ import {
 } from '../react-navigation/core';
 import type { FocusedRouteState } from '../react-navigation/core/NavigationFocusedRouteStateContext';
 
+type HrefRoute = Pick<NavigationRoute<ParamListBase, string>, 'name' | 'params'>;
+
 // TODO(@ubax): move route info to state - https://linear.app/expo/issue/ENG-21483/refactor-state-to-include-all-route-info-information
 export function useBuildHref() {
   const currentState = useStateForPath();
   return useMemo(() => {
-    const cache = new WeakMap<NavigationRoute<ParamListBase, string>, string>();
-    return (route: NavigationRoute<ParamListBase, string>) => {
+    const cache = new WeakMap<HrefRoute, string>();
+    return (route: HrefRoute) => {
       const cached = cache.get(route);
       if (cached !== undefined) {
         return cached;
