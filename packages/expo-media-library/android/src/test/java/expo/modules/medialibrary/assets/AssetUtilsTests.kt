@@ -12,6 +12,7 @@ import io.mockk.mockk
 import io.mockk.mockkClass
 import io.mockk.mockkStatic
 import io.mockk.verify
+import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -29,7 +30,7 @@ internal class AssetUtilsTests {
   }
 
   @Test
-  fun `putAssetsInfo returns correct response when fullInfo=false`() {
+  fun `putAssetsInfo returns correct response when fullInfo=false`() = runTest {
     // arrange
     val cursor = mockCursor(
       arrayOf(
@@ -40,26 +41,37 @@ internal class AssetUtilsTests {
 
     val contentResolver = mockContentResolver(cursor)
 
-    mockkStatic(::getAssetDimensionsFromCursor)
-    every {
-      getAssetDimensionsFromCursor(contentResolver, any(), cursor, any(), any())
-    } returns Pair(0, 0) andThen Pair(100, 200)
-
     // act
     val result = mutableListOf<Bundle>()
     putAssetsInfo(contentResolver, cursor, result, limit = 5, offset = 0, resolveWithFullInfo = false)
 
     // assert
-    verify(exactly = 0) {
-      getExifFullInfo(any(), any())
-    }
-
     assertEquals(2, result.size)
 
     assertEquals(MockData.mockVideo.id.toString(), result[0].getString("id"))
     assertEquals("file://${MockData.mockVideo.path}", result[0].getString("uri"))
+    assertEquals(MockData.mockVideo.width!!.toLong(), result[0].getLong("width"))
+    assertEquals(MockData.mockVideo.height!!.toLong(), result[0].getLong("height"))
 
     assertNull(result[0].getString("localUri"))
+  }
+
+  @Test
+  fun `putAssetsInfo preserves cursor position for pagination`() = runTest {
+    val cursor = mockCursor(
+      arrayOf(
+        MockData.mockImage.toColumnArray(),
+        MockData.mockVideo.toColumnArray(),
+        MockData.mockAudio.toColumnArray()
+      )
+    )
+    val contentResolver = mockContentResolver(cursor)
+    val result = mutableListOf<Bundle>()
+
+    putAssetsInfo(contentResolver, cursor, result, limit = 2, offset = 0, resolveWithFullInfo = false)
+
+    assertEquals(2, result.size)
+    assertEquals(2, cursor.position)
   }
 
   @Test

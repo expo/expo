@@ -94,8 +94,8 @@ internal class GetAssetInfoTests {
       )
     )
 
-    mockkStatic(MediaLibraryUtils::class)
-    every {
+    mockkStatic(::putAssetsInfo)
+    coEvery {
       putAssetsInfo(any(), any(), any(), any(), any(), any())
     } just runs
 
