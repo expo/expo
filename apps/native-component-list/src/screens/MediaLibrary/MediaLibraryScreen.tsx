@@ -23,6 +23,7 @@ import MediaLibraryCell from './MediaLibraryCell';
 
 const COLUMNS = 3;
 const PAGE_SIZE = COLUMNS * 10;
+const LARGE_PAGE_SIZE = COLUMNS * 10000;
 const WINDOW_SIZE = Dimensions.get('window');
 
 type MediaTypeWithoutPairedVideo = Exclude<MediaLibrary.MediaTypeValue, 'pairedVideo'>;
@@ -63,6 +64,8 @@ type FetchState = {
   hasNextPage: boolean;
   /** First loaded asset location from getAssetsAsync (iOS batch location debug). */
   batchLocationPreview: string | null;
+  /** Duration of the most recent getAssetsAsync call, in milliseconds. */
+  lastFetchDurationMs: number | null;
 };
 
 const initialState: FetchState = {
@@ -72,6 +75,7 @@ const initialState: FetchState = {
   endCursor: null,
   hasNextPage: true,
   batchLocationPreview: null,
+  lastFetchDurationMs: null,
 };
 
 function reducer(
@@ -192,13 +196,14 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const [mediaType, setMediaType] = React.useState<MediaTypeWithoutPairedVideo>(
     MediaLibrary.MediaType.photo
   );
+  const [pageSize, setPageSize] = React.useState(PAGE_SIZE);
 
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   // Update without showing the refresh indicator whenever the sorting parameters change.
   React.useEffect(() => {
     dispatch({ type: 'reset', refreshing: false });
-  }, [mediaType, sortBy, albumId]);
+  }, [mediaType, sortBy, albumId, pageSize]);
 
   const toggleMediaType = React.useCallback(() => {
     setMediaType(mediaTypeStates[mediaType]);
@@ -207,6 +212,10 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const toggleSortBy = React.useCallback(() => {
     setSortBy(sortByStates[sortBy]);
   }, [setSortBy, sortBy]);
+
+  const togglePageSize = React.useCallback(() => {
+    setPageSize((current) => (current === PAGE_SIZE ? LARGE_PAGE_SIZE : PAGE_SIZE));
+  }, []);
 
   const loadMoreAssets = React.useCallback(async () => {
     if (
@@ -221,14 +230,16 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
 
     try {
       // Make a native request for assets.
+      const fetchStartedAt = performance.now();
       const { assets, endCursor, hasNextPage } = await MediaLibrary.getAssetsAsync({
-        first: PAGE_SIZE,
+        first: pageSize,
         after: state.endCursor ?? undefined,
         mediaType,
         mediaSubtypes: [],
         sortBy,
         album: albumId,
       });
+      const lastFetchDurationMs = Math.round(performance.now() - fetchStartedAt);
 
       // Get the last asset currently in the state.
       const lastAsset = state.assets[state.assets.length - 1];
@@ -250,13 +261,14 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
           endCursor,
           hasNextPage,
           batchLocationPreview,
+          lastFetchDurationMs,
         });
       }
     } finally {
       // Toggle this back to false in a finally to ensure we can reload later, even if an error ocurred.
       isLoadingAssets.current = false;
     }
-  }, [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, albumId]);
+  }, [state.endCursor, state.hasNextPage, state.assets, mediaType, sortBy, albumId, pageSize]);
 
   // Fetch data whenever the state.fetching value is true.
   React.useEffect(() => {
@@ -331,9 +343,8 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
             onPress={toggleMediaType}
           />
           <Button style={styles.button} title={`Sort by key: ${sortBy}`} onPress={toggleSortBy} />
-        </View>
-        {accessPrivileges === 'limited' && (
-          <View style={styles.headerButtons}>
+          <Button style={styles.button} title={`Page size: ${pageSize}`} onPress={togglePageSize} />
+          {accessPrivileges === 'limited' && (
             <Button
               style={styles.button}
               title="Change permissions"
@@ -345,10 +356,16 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
                 }
               }}
             />
-          </View>
+          )}
+        </View>
+        {state.lastFetchDurationMs != null && (
+          <BodyText style={styles.headerMetadata}>
+            {`Last fetch: ${state.lastFetchDurationMs} ms (${state.assets.length} assets loaded)`}
+          </BodyText>
         )}
+
         {Platform.OS === 'ios' && state.batchLocationPreview != null && (
-          <BodyText style={styles.batchLocationPreview}>
+          <BodyText style={styles.headerMetadata}>
             {`First batch asset location: ${state.batchLocationPreview}`}
           </BodyText>
         )}
@@ -359,10 +376,14 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
     albumId,
     albumTitle,
     sortBy,
+    pageSize,
     toggleMediaType,
     toggleSortBy,
+    togglePageSize,
     accessPrivileges,
     state.batchLocationPreview,
+    state.lastFetchDurationMs,
+    state.assets.length,
   ]);
 
   const renderFooter = React.useCallback(() => {
@@ -432,6 +453,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     paddingVertical: 10,
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    rowGap: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -443,7 +466,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  batchLocationPreview: {
+  headerMetadata: {
     marginTop: 8,
     fontSize: 12,
     textAlign: 'center',
