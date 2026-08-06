@@ -97,14 +97,16 @@ export function useOnAction<State extends NavigationState>({
           onDispatchAction(action, state === result);
 
           if (state !== result) {
-            const isPrevented = shouldPreventRemove(
-              emitter,
-              preventRemoveListeners,
-              isRoutePrevented,
-              getPreventableRoutes(state),
-              getPreventableRoutes(result, state.type),
-              action
-            );
+            const isPrevented =
+              action.type !== 'ROUTE_NAMES_CHANGED' &&
+              shouldPreventRemove(
+                emitter,
+                preventRemoveListeners,
+                isRoutePrevented,
+                getPreventableRoutes(state),
+                getPreventableRoutes(result, state.type),
+                action
+              );
 
             if (isPrevented) {
               return true;

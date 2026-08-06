@@ -14,6 +14,7 @@
 - [macOS] Fix build failure from `RCTDevMenu.devMenuEnabled` / `keyboardShortcutsEnabled` access, which react-native-macos does not have. ([#47693](https://github.com/expo/expo/pull/47693) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [iOS] Fixed the dev menu sizing itself from the main screen instead of the app's own window, and the FAB choosing its slide-in edge from the screen rather than its window. ([#48171](https://github.com/expo/expo/pull/48171) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Fixed the dev menu and FAB resolving their scene by filtering all scene types before casting, which could miss a real window scene. ([#48317](https://github.com/expo/expo/pull/48317) by [@alanjhughes](https://github.com/alanjhughes))
+- Open the JS inspector on the origin the bundle was loaded from, keeping its scheme and port ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 

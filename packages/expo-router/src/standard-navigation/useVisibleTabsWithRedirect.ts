@@ -34,7 +34,7 @@ export function useVisibleTabsWithRedirect<
 }: {
   routes: Route[];
   routeNames: string[];
-  focusedRouteKey: string;
+  focusedRouteKey: string | undefined;
   descriptors: Record<string, TabDescriptor<Options>>;
 }) {
   const buildHref = useBuildHref();

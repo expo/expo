@@ -600,6 +600,10 @@ export class CardStack extends React.Component<Props, State> {
       routes.some((route) => route.key === scene.route.key)
     );
 
+    if (state.routes.length === 0) {
+      return null;
+    }
+
     const focusedRoute = state.routes[state.index]!;
     const focusedHeaderHeight = headerHeights[focusedRoute.key];
 

@@ -66,7 +66,7 @@ function NativeTabsContent({
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes,
     routeNames,
-    focusedRouteKey: routes[state.index]!.key,
+    focusedRouteKey: routes[state.index]?.key,
     descriptors,
   });
   const visibleTabs = useMemo(
