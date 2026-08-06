@@ -60,7 +60,9 @@ export type RenderRouterOptions = Parameters<typeof rnTestingLibrary.render>[1] 
   linking?: Partial<ExpoLinkingOptions>;
 };
 
-type Result = ReturnType<typeof rnTestingLibrary.render> & {
+type NativeRenderResult = Awaited<ReturnType<typeof rnTestingLibrary.render>>;
+
+type RouterRenderResult = NativeRenderResult & {
   getPathname(): string;
   getPathnameWithParams(): string;
   getSegments(): string[];
@@ -68,29 +70,22 @@ type Result = ReturnType<typeof rnTestingLibrary.render> & {
   getRouterState(): ReactNavigationState | undefined;
 };
 
-export function renderRouter(
-  context: MockContextConfig = './app',
-  { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
-): Result {
-  // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
-  const systemTime = Date.now();
-  jest.useFakeTimers();
-  try {
-    jest.setSystemTime(systemTime);
-  } catch {
-    // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
-  }
+// `render` is synchronous in `@testing-library/react-native` v13 and asynchronous in v14, so
+// `renderRouter` mirrors whichever version is installed.
+type Result =
+  ReturnType<typeof rnTestingLibrary.render> extends PromiseLike<any>
+    ? Promise<RouterRenderResult>
+    : RouterRenderResult;
 
-  const mockContext = getMockContext(context);
+function isThenable<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
+  return typeof (value as PromiseLike<T> | null | undefined)?.then === 'function';
+}
 
-  // Force the render to be synchronous
-  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+// Whether the last `render` returned a promise (v14). `act` returns a thenable in both versions,
+// so the `testRouter` helpers use this to decide when its result must be chained.
+let renderedAsynchronously = false;
 
-  const result = rnTestingLibrary.render(
-    <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,
-    options
-  );
-
+function decorateRenderResult(result: NativeRenderResult): RouterRenderResult {
   /**
    * This is a hack to ensure that React Navigation's state updates are processed before we run assertions.
    * Some updates are async and we need to wait for them to complete, otherwise will we get a false positive.
@@ -115,29 +110,85 @@ export function renderRouter(
   });
 }
 
+export function renderRouter(
+  context: MockContextConfig = './app',
+  { initialUrl = '/', linking, ...options }: RenderRouterOptions = {}
+): Result {
+  // See https://github.com/expo/expo/issues/46864 and https://github.com/expo/expo/pull/27648
+  const systemTime = Date.now();
+  jest.useFakeTimers();
+  try {
+    jest.setSystemTime(systemTime);
+  } catch {
+    // Legacy fake timers don't support `setSystemTime` (and don't mock the clock), so there's nothing to restore.
+  }
+
+  const mockContext = getMockContext(context);
+
+  // Force the render to be synchronous
+  process.env.EXPO_ROUTER_IMPORT_MODE = 'sync';
+
+  const result: NativeRenderResult | PromiseLike<NativeRenderResult> = rnTestingLibrary.render(
+    <ExpoRoot context={mockContext} location={initialUrl} linking={linking} />,
+    options
+  );
+
+  // On v14 `render` resolves with the same object it registers as `screen`, so the route helpers
+  // must be assigned after it settles — assigning them to the promise would leave `screen`
+  // without them (see https://github.com/expo/expo/issues/47444).
+  renderedAsynchronously = isThenable(result);
+  if (isThenable(result)) {
+    return Promise.resolve(result).then(decorateRenderResult) as unknown as Result;
+  }
+  return decorateRenderResult(result) as Result;
+}
+
+// `act` only settles asynchronously on v14, so the `testRouter` helpers mirror `render`: they
+// stay synchronous on v13 and return a promise that must be awaited on v14.
+type MaybeAsync<T> =
+  ReturnType<typeof rnTestingLibrary.render> extends PromiseLike<any> ? Promise<T> : T;
+
+function afterAct(actResult: void | PromiseLike<void>, assertion: () => void): MaybeAsync<void> {
+  if (renderedAsynchronously && isThenable(actResult)) {
+    return Promise.resolve(actResult).then(assertion) as unknown as MaybeAsync<void>;
+  }
+  assertion();
+  return undefined as unknown as MaybeAsync<void>;
+}
+
 export const testRouter = {
   /** Navigate to the provided pathname and assert the pathname */
-  navigate(path: string) {
-    rnTestingLibrary.act(() => router.navigate(path));
-    expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
+  navigate(path: string): MaybeAsync<void> {
+    return afterAct(
+      rnTestingLibrary.act(() => router.navigate(path)),
+      () => expect(rnTestingLibrary.screen).toHavePathnameWithParams(path)
+    );
   },
   /** Push the provided pathname and assert the pathname */
-  push(path: string) {
-    rnTestingLibrary.act(() => router.push(path));
-    expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
+  push(path: string): MaybeAsync<void> {
+    return afterAct(
+      rnTestingLibrary.act(() => router.push(path)),
+      () => expect(rnTestingLibrary.screen).toHavePathnameWithParams(path)
+    );
   },
   /** Replace with provided pathname and assert the pathname */
-  replace(path: string) {
-    rnTestingLibrary.act(() => router.replace(path));
-    expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
+  replace(path: string): MaybeAsync<void> {
+    return afterAct(
+      rnTestingLibrary.act(() => router.replace(path)),
+      () => expect(rnTestingLibrary.screen).toHavePathnameWithParams(path)
+    );
   },
   /** Go back in history and assert the new pathname */
-  back(path?: string) {
+  back(path?: string): MaybeAsync<void> {
     expect(router.canGoBack()).toBe(true);
-    rnTestingLibrary.act(() => router.back());
-    if (path) {
-      expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
-    }
+    return afterAct(
+      rnTestingLibrary.act(() => router.back()),
+      () => {
+        if (path) {
+          expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
+        }
+      }
+    );
   },
   /** If there's history that supports invoking the `back` function. */
   canGoBack() {
@@ -147,11 +198,14 @@ export const testRouter = {
   setParams(params: Record<string, string>, path?: string) {
     router.setParams(params);
     if (path) {
-      expect(screen).toHavePathnameWithParams(path);
+      expect(rnTestingLibrary.screen).toHavePathnameWithParams(path);
     }
   },
   /** If there's history that supports invoking the `back` function. */
-  dismissAll() {
-    rnTestingLibrary.act(() => router.dismissAll());
+  dismissAll(): MaybeAsync<void> {
+    return afterAct(
+      rnTestingLibrary.act(() => router.dismissAll()),
+      () => {}
+    );
   },
 };

@@ -28,6 +28,7 @@
 
 ### 🐛 Bug fixes
 
+- Fix `expo-router/testing-library` compatibility with `@testing-library/react-native` v14, where `render` and `act` are asynchronous and `screen.getPathname is not a function` was thrown. ([#48587](https://github.com/expo/expo/pull/48587) by [@henriquepe](https://github.com/henriquepe))
 - Prevent unfocused nested native tab navigators from redirecting global router state. ([#48257](https://github.com/expo/expo/pull/48257) by [@Ubax](https://github.com/Ubax))
 - Fixed `Tabs` and `TopTabs` (`expo-router/js-tabs`, `expo-router/js-top-tabs`) not being usable from RSC ([#48330](https://github.com/expo/expo/pull/48330) by [@Ubax](https://github.com/Ubax))
 - Redirect fully guarded navigators to parent ([#47984](https://github.com/expo/expo/pull/47984) by [@Ubax](https://github.com/Ubax))
