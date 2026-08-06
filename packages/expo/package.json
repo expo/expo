@@ -76,7 +76,7 @@
   "dependencies": {
     "@babel/runtime": "^7.20.0",
     "@expo/cli": "workspace:^57.0.13",
-    "@expo/config": "workspace:~57.0.6",
+    "@expo/config": "workspace:~57.0.7",
     "@expo/config-plugins": "workspace:~57.0.7",
     "@expo/devtools": "workspace:~57.0.1",
     "@expo/dom-webview": "workspace:~57.0.1",

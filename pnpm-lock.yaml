@@ -1824,7 +1824,7 @@ importers:
         specifier: ^0.0.6
         version: 0.0.6
       '@expo/config':
-        specifier: workspace:~57.0.6
+        specifier: workspace:~57.0.7
         version: link:../config
       '@expo/config-plugins':
         specifier: workspace:~57.0.7
@@ -2485,7 +2485,7 @@ importers:
   packages/@expo/local-build-cache-provider:
     dependencies:
       '@expo/config':
-        specifier: workspace:~57.0.6
+        specifier: workspace:~57.0.7
         version: link:../config
       chalk:
         specifier: ^4.1.2
@@ -2568,7 +2568,7 @@ importers:
         specifier: ^7.20.5
         version: 7.29.1
       '@expo/config':
-        specifier: workspace:~57.0.6
+        specifier: workspace:~57.0.7
         version: link:../config
       '@expo/env':
         specifier: workspace:~2.4.2
@@ -2830,7 +2830,7 @@ importers:
   packages/@expo/prebuild-config:
     dependencies:
       '@expo/config':
-        specifier: workspace:~57.0.6
+        specifier: workspace:~57.0.7
         version: link:../config
       '@expo/config-plugins':
         specifier: workspace:~57.0.7
@@ -3487,7 +3487,7 @@ importers:
         specifier: workspace:^57.0.13
         version: link:../@expo/cli
       '@expo/config':
-        specifier: workspace:~57.0.6
+        specifier: workspace:~57.0.7
         version: link:../@expo/config
       '@expo/config-plugins':
         specifier: workspace:~57.0.7
@@ -6121,7 +6121,7 @@ importers:
         specifier: 1.0.0-alpha.24
         version: 1.0.0-alpha.24
       '@expo/config':
-        specifier: workspace:~57.0.6
+        specifier: workspace:~57.0.7
         version: link:../@expo/config
       '@expo/config-plugins':
         specifier: workspace:~57.0.7

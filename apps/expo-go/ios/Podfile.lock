@@ -212,7 +212,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSensors (57.0.2):
     - ExpoModulesCore
-  - ExpoSharing (57.0.9):
+  - ExpoSharing (57.0.10):
     - ExpoModulesCore
   - ExpoSMS (57.0.1):
     - ExpoModulesCore
@@ -4604,7 +4604,7 @@ SPEC CHECKSUMS:
   ExpoScreenOrientation: ec9cb6cb2f37fe69b21622affc177def0e47e027
   ExpoSecureStore: 94793113049a2d7478dfe1a13aa15081e9f61755
   ExpoSensors: e71c7b6cb0c09d3427ef6ae29c69532a10c86b05
-  ExpoSharing: ce1ce5b4dc10dfb65378b38a52ac651a5f92d48f
+  ExpoSharing: 58dd4c1cb1a9b40d0a123e1350936a83020b0979
   ExpoSMS: ac35f6c85b72ee5b18a7c6bb06550fbd4a683775
   ExpoSpeech: 0e90904e2af5d6f166d4d2ffbdab535686597938
   ExpoSQLite: ddd65ed74bdebcff20f6766e682f9321ecb28ab8
