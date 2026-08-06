@@ -104,7 +104,10 @@ export function UIComponentCard({
               height={THUMBNAIL_HEIGHT}
               loading="lazy"
               decoding="async"
-              className="size-full object-cover transition-transform dark:hidden group-hover:scale-105"
+              className={mergeClasses(
+                'size-full object-cover transition-transform group-hover:scale-105',
+                darkSrc && 'dark:hidden'
+              )}
             />
             {darkSrc && (
               <img
