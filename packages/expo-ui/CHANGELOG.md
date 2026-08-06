@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added an optional `kind` argument to the `contentShape` modifier, so a shape can be applied to drag previews, context menu previews, hover effects, or accessibility instead of only hit-testing. ([#48540](https://github.com/expo/expo/issues/48540) by [@sinhong2011](https://github.com/sinhong2011)) ([#48564](https://github.com/expo/expo/pull/48564) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
