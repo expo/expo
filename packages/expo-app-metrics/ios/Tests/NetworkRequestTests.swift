@@ -436,6 +436,37 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
+  func `reports the slowest request's status code so an empty body can be explained`() {
+    let now = Date()
+    // A 304 revalidation is successful, so it's a `slowest` candidate, but carries no body. Without
+    // the status code a reader can't tell that from a 200 whose transfer broke.
+    let revalidation = makeRequest(
+      host: "192.168.0.104",
+      duration: 1.1,
+      status: 304,
+      bytesSent: 0,
+      bytesReceived: 0,
+      fetchStart: now,
+      responseEnd: now.addingTimeInterval(1.1)
+    )
+    let download = makeRequest(
+      host: "192.168.0.104",
+      duration: 0.5,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 7000,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.1),
+      responseEnd: now.addingTimeInterval(0.5)
+    )
+    let summary = NetworkRequestSummary.from([revalidation, download])
+    #expect(summary.slowest?.statusCode == 304)
+    #expect(summary.slowest?.bytesReceived == 0)
+    // Not filtered out: the status code explains the zero rather than hiding the request.
+    #expect(abs((summary.slowest?.duration ?? 0) - 1.1) < 0.0001)
+  }
+
+  @Test
   func `leaves the slowest fields nil when every request failed`() {
     let request = makeRequest(
       host: "expo.dev",

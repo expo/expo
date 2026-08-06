@@ -53,6 +53,7 @@ object MetricParamsBuilder {
       networkRequests.slowest?.let { slowest ->
         params["expo.network.requests.slowest.duration"] = slowest.duration
         slowest.host?.let { params["expo.network.requests.slowest.host"] = it }
+        slowest.statusCode?.let { params["expo.network.requests.slowest.statusCode"] = it }
         slowest.timeToFirstByte?.let {
           params["expo.network.requests.slowest.timeToFirstByte"] = it
         }
