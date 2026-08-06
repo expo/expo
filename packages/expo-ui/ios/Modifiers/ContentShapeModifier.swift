@@ -15,13 +15,26 @@ internal enum ContentShapeKind: String, Enumerable {
     case .interaction:
       return .interaction
     case .dragPreview:
+      #if os(tvOS)
+      return .interaction
+      #else
       return .dragPreview
+      #endif
     case .contextMenuPreview:
-      return .contextMenuPreview
+      if #available(iOS 15.0, tvOS 17.0, *) {
+        return .contextMenuPreview
+      }
+      return .interaction
     case .hoverEffect:
-      return .hoverEffect
+      if #available(iOS 15.0, tvOS 18.0, *) {
+        return .hoverEffect
+      }
+      return .interaction
     case .accessibility:
-      return .accessibility
+      if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+        return .accessibility
+      }
+      return .interaction
     }
   }
 }
