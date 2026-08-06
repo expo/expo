@@ -558,7 +558,7 @@ export type Descriptor<
   /**
    * Render the component associated with this route.
    */
-  render(): React.JSX.Element;
+  render(): React.JSX.Element | null;
 
   /**
    * Options for the route.

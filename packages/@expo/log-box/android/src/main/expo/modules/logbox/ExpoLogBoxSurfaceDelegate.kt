@@ -74,7 +74,8 @@ class ExpoLogBoxSurfaceDelegate(private val devSupportManager: DevSupportManager
           )
         )
       ),
-      context
+      context,
+      bundleUrl = devSupportManager.currentReactContext?.sourceURL
     )
     rootContainer.addView(webViewWrapper.webView)
     dialog?.setContentView(rootContainer)

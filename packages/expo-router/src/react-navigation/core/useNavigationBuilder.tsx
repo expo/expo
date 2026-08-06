@@ -495,14 +495,6 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
-  if (!isArrayEqual(state.routeNames, routeNames)) {
-    // When the list of route names change, the router should handle it to remove invalid routes
-    nextState = router.getStateForRouteNamesChange(state, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-    });
-  }
 
   let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
 
@@ -578,9 +570,14 @@ export function useNavigationBuilder<
   // So we override the state object we return to use the latest state as soon as possible
   state = nextState;
 
+  // Keep render consumers safe without committing a state outside the action pipeline. The router
+  // decides which survivor takes focus, so the interim render agrees with the state that
+  // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
+  state = router.getStateForDeclaredRoutes(state, routeNames);
+
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
-    lastStateRef.current = state;
+    lastStateRef.current = nextState;
   });
 
   const lastNotifiedStateRef = React.useRef<State | null>(null);
@@ -598,8 +595,8 @@ export function useNavigationBuilder<
       // This is necessary for proper screen tracking, URL updates etc.
       // We only notify if the state is different what we already notified
       // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(state);
-      lastNotifiedStateRef.current = state;
+      setState(nextState);
+      lastNotifiedStateRef.current = nextState;
     }
 
     return () => {
@@ -716,6 +713,18 @@ export function useNavigationBuilder<
     emitter,
   });
 
+  useClientLayoutEffect(() => {
+    const committed = getState();
+
+    if (!isArrayEqual(committed.routeNames, routeNames)) {
+      onAction({
+        type: 'ROUTE_NAMES_CHANGED',
+        payload: { routeNames },
+        target: committed.key,
+      });
+    }
+  });
+
   const onRouteFocus = useOnRouteFocus({
     router,
     key: route?.key,
@@ -786,7 +795,7 @@ export function useNavigationBuilder<
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
           <NavigationStateListenerProvider state={state}>
-            <FocusedRouteKeyContext.Provider value={state.routes[state.index]!.key}>
+            <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
               <PreventRemoveContext.Provider value={preventRemoveContextValue}>
                 {element}
               </PreventRemoveContext.Provider>

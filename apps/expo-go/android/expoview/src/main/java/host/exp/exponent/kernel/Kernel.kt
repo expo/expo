@@ -693,7 +693,7 @@ class Kernel : KernelInterface() {
     manifest: Manifest,
     existingTask: AppTask?
   ) {
-    val bundleUrl = toHttp(ExponentUrls.resolveManifestUrl(manifest.getBundleURL(), manifestUrl))
+    val bundleUrl = ExponentUrls.bundleUrlFromManifest(manifest, manifestUrl)
     val task = getExperienceActivityTask(manifestUrl)
     task.bundleUrl = bundleUrl
     if (existingTask == null) {

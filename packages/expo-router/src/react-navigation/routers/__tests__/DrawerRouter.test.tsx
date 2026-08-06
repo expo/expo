@@ -86,12 +86,13 @@ test('preserves drawer status when route names change', () => {
     options
   ) as DrawerNavigationState<ParamListBase>;
 
-  const state = router.getStateForRouteNamesChange(openState, {
-    ...options,
-    routeNames: ['baz', 'bar'],
-  });
+  const state = router.getStateForAction(
+    openState,
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'bar'] } },
+    { ...options, routeNames: ['baz', 'bar'] }
+  );
 
-  expect(state.history).toContainEqual({ type: 'drawer', status: 'open' });
+  expect(state!.history).toContainEqual({ type: 'drawer', status: 'open' });
 });
 
 test('restores route history without dropping drawer status when the active route is removed', () => {
@@ -108,12 +109,13 @@ test('restores route history without dropping drawer status when the active rout
     options
   ) as DrawerNavigationState<ParamListBase>;
 
-  const state = router.getStateForRouteNamesChange(openState, {
-    ...options,
-    routeNames: ['baz'],
-  });
+  const state = router.getStateForAction(
+    openState,
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz'] } },
+    { ...options, routeNames: ['baz'] }
+  );
 
-  expect(state.history).toEqual([
+  expect(state!.history).toEqual([
     { type: 'route', key: 'baz-test' },
     { type: 'drawer', status: 'open' },
   ]);
