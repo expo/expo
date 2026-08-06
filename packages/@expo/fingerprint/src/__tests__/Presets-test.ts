@@ -19,6 +19,17 @@ describe('resolvePreset', () => {
     expect(resolved.configPluginSourceType).toBe('package');
     expect(resolved.sourceSkips & SourceSkips.ExpoConfigVersions).toBeTruthy();
     expect(resolved.sourceSkips & SourceSkips.ExpoConfigRuntimeVersionIfString).toBeTruthy();
+    expect(resolved.sourceSkips & SourceSkips.EasJson).toBeTruthy();
+  });
+
+  it('should keep `.easignore` hashed in every preset', () => {
+    for (const preset of ['strict', 'balanced', 'relaxed'] as const) {
+      expect(resolvePreset(preset).sourceSkips & SourceSkips.EasIgnore).toBeFalsy();
+    }
+  });
+
+  it('should not skip `eas.json` in strict', () => {
+    expect(resolvePreset('strict').sourceSkips & SourceSkips.EasJson).toBeFalsy();
   });
 
   it('should resolve relaxed to additionally skip names, identifiers, schemes, and assets', () => {
@@ -29,6 +40,7 @@ describe('resolvePreset', () => {
       SourceSkips.ExpoConfigIosBundleIdentifier,
       SourceSkips.ExpoConfigSchemes,
       SourceSkips.ExpoConfigAssets,
+      SourceSkips.EasJson,
     ]) {
       expect(resolved.sourceSkips & skip).toBeTruthy();
     }
