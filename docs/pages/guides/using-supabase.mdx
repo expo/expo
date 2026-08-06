@@ -203,7 +203,7 @@ For the concepts behind these steps, see the Supabase database overview:
 
 ## Add authentication
 
-The client from [Step 2](#create-the-supabase-client) already stores sessions, so email and password sign-in needs no extra configuration. New Supabase projects confirm email addresses by default, so your first `signUp` returns `data.user` with `data.session` set to `null` until the address is confirmed or you turn off **Confirm email** in your project's email provider settings.
+The client from [Step 2](#create-the-supabase-client) already stores sessions, so email and password sign-in needs no extra configuration. New Supabase projects confirm email addresses by default. Your first `signUp` returns `data.user` with `data.session` set to `null` until the address is confirmed or you turn off **Confirm email** in your project's email provider settings.
 
 `autoRefreshToken` runs its refresh loop continuously on Android and iOS, so Supabase's [`startAutoRefresh` reference](https://supabase.com/docs/reference/javascript/auth-startautorefresh?utm_source=expo&utm_medium=referral&utm_term=expo-react-native) recommends tying the loop to app state. Add this to your client file:
 
