@@ -1,4 +1,3 @@
-import { ExpoRunFormatter } from '@expo/xcpretty';
 import path from 'path';
 
 import {
@@ -7,6 +6,7 @@ import {
   getXcodeBuildArgsAsync,
   _assertXcodeBuildResults,
   _extractXcodeBuildErrorLines,
+  _formatXcodeBuildFailure,
   matchEstimatedBinaryPath,
   getAppBinaryPath,
 } from '../XcodeBuild';
@@ -206,8 +206,6 @@ describe(_assertXcodeBuildResults, () => {
     expect(message).toContain(
       "call to undeclared function 'RCTBundleURLProviderAllowPackagerServerAccess'"
     );
-    // The extracted error is shown before the raw dependency-graph dump, so it
-    // survives CI log truncation. The full log is still there below for context.
     expect(message.indexOf('call to undeclared function')).toBeLessThan(
       message.indexOf('ComputeTargetDependencyGraph')
     );
@@ -226,52 +224,15 @@ describe(_assertXcodeBuildResults, () => {
     } catch (error: any) {
       message = error.message;
     }
-    // stderr never passes through the formatter, so the extractor scans it too.
     expect(message).toContain('error: config generation failed');
   });
+});
 
-  it(`extracts an error line the formatter left uncounted`, () => {
-    // The compile-error matching is stateful: a bare `error:` line with no
-    // source and caret following it is never counted, so the summary reads
-    // "0 error(s)". Intentionally coupled to the formatter's current gap: if
-    // an upgrade counts this, revisit the fallback's precondition.
-    const formatter = ExpoRunFormatter.create('/', {
-      xcodeProject: { name: 'BareExpo' },
-      isDebug: false,
-    });
-    const line =
-      "/path/EXDevLauncherController.m:185:3: error: call to undeclared function 'RCTBundleURLProviderAllowPackagerServerAccess'";
-    for (const _ of formatter.pipe(line + '\n')) {
-      // drain
-    }
-    expect(formatter.errors).toHaveLength(0);
-    expect(_extractXcodeBuildErrorLines(line)).toEqual([line]);
-  });
-
-  it(`extracts an error the formatter downgraded to a warning`, () => {
-    // A project-level `ld: warning:` line latches the compile-warning matcher,
-    // so the parser emits the next complete compile error as a warning. The
-    // duplicate `-lc++` warning is routine in CocoaPods projects. Same
-    // intentional coupling as the previous test.
-    const formatter = ExpoRunFormatter.create('/', {
-      xcodeProject: { name: 'BareExpo' },
-      isDebug: false,
-    });
-    const errorLine =
-      "/path/Broken.m:4:3: error: call to undeclared function 'thisFunctionDoesNotExist'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]";
-    const log = [
-      "/path/BareExpo.xcodeproj: BareExpo: ld: warning: ignoring duplicate libraries: '-lc++'",
-      errorLine,
-      '    4 |   thisFunctionDoesNotExist();',
-      '      |   ^',
-      '1 error generated.',
-    ].join('\n');
-    for (const _ of formatter.pipe(log + '\n')) {
-      // drain
-    }
-    // Lost despite the complete error block (source line and caret included).
-    expect(formatter.errors).toHaveLength(0);
-    expect(_extractXcodeBuildErrorLines(log)).toEqual([errorLine]);
+describe(_formatXcodeBuildFailure, () => {
+  it(`includes the build log path`, () => {
+    expect(_formatXcodeBuildFailure(65, '/app/.expo/xcodebuild.log')).toContain(
+      '/app/.expo/xcodebuild.log'
+    );
   });
 });
 
@@ -291,6 +252,17 @@ describe(_extractXcodeBuildErrorLines, () => {
 
   it(`returns nothing when no error lines are present`, () => {
     expect(_extractXcodeBuildErrorLines('** BUILD SUCCEEDED **\n› 0 error(s)')).toEqual([]);
+  });
+
+  it(`skips Xcode's no-output message when another error is present`, () => {
+    const output = [
+      'script.sh: error: config generation failed',
+      'error: the following command failed with exit code 1 but produced no further output',
+    ].join('\n');
+
+    expect(_extractXcodeBuildErrorLines(output)).toEqual([
+      'script.sh: error: config generation failed',
+    ]);
   });
 });
 
