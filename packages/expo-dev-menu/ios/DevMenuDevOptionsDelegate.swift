@@ -35,12 +35,11 @@ class DevMenuDevOptionsDelegate {
     guard let bundleURL = appContext?.bundleURL else {
       return
     }
-    // The bundle URL is the address this device reached the development server on, so its scheme and
-    // port are kept. Only its host is assumed when the bundle was loaded from disk.
+    let isServed = bundleURL.scheme == "http" || bundleURL.scheme == "https" || bundleURL.scheme == "exps" || bundleURL.scheme == "exp"
     var components = URLComponents()
-    components.scheme = bundleURL.scheme == "https" ? "https" : "http"
-    components.host = bundleURL.host ?? "localhost"
-    components.port = bundleURL.host != nil ? bundleURL.port : Int(RCT_METRO_PORT)
+    components.scheme = bundleURL.scheme == "https" || bundleURL.scheme == "exps" ? "https" : "http"
+    components.host = isServed ? bundleURL.host : "localhost"
+    components.port = isServed ? bundleURL.port : Int(RCT_METRO_PORT)
     components.path = "/_expo/debugger"
     components.queryItems = [
       URLQueryItem(name: "applicationId", value: Bundle.main.bundleIdentifier ?? "")
