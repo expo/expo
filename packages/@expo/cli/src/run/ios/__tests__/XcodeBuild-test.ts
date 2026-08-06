@@ -224,7 +224,6 @@ describe(_assertXcodeBuildResults, () => {
     } catch (error: any) {
       message = error.message;
     }
-    // xcpretty only reads stdout, so check stderr too.
     expect(message).toContain('error: config generation failed');
   });
 });
