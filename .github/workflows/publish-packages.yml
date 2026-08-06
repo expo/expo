@@ -1,0 +1,67 @@
+name: Publish Packages
+
+on:
+  workflow_dispatch:
+    inputs:
+      skip-ios-prebuilds:
+        description: Skip bundling iOS xcframeworks
+        type: boolean
+        default: false
+  pull_request:
+    paths:
+      - .github/workflows/publish-packages.yml
+  schedule:
+    - cron: 0 1 * * * # Nightly at 1:00 AM UTC
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish-packages:
+    if: github.repository == 'expo/expo'
+    runs-on: macos-26
+    timeout-minutes: 120
+    permissions:
+      # Lets the runner mint an OIDC token so npm can authenticate the publish
+      # through trusted publishing instead of a long-lived token.
+      id-token: write
+      contents: read
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: 🔨 Switch to Xcode 26.4.1
+        run: sudo xcode-select --switch /Applications/Xcode_26.4.1.app
+      - name: 🔨 Add bin to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🔨 Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          cache: 'pnpm'
+          registry-url: https://registry.npmjs.org/
+      - name: 🔨 Use JDK 17
+        uses: actions/setup-java@03ad4de0992f5dab5e18fcb136590ce7c4a0ac95 # v5.6.0
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - name: 📦 Install dependencies
+        run: pnpm install --frozen-lockfile
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_TEAM: expo
+      - name: 📦 Publish canaries
+        run: pnpm expotools publish-packages --canary ${{ github.event_name != 'workflow_dispatch' && '--dry' || '' }} ${{ inputs.skip-ios-prebuilds && '--skip-ios-prebuilds' || '' }}
+        env:
+          FORCE_COLOR: '2'
+      - name: 🔔 Notify on Slack
+        uses: ./.github/actions/slack-notify
+        if: failure() && github.event_name == 'schedule'
+        with:
+          webhook: ${{ secrets.slack_webhook_api }}
+          author_name: Publish Packages
+          fields: job,message,author,took

@@ -136,25 +136,30 @@ const getAndroidWidgetConfig = (widget: WidgetConfig): NonNullable<WidgetConfig[
   };
 };
 
-const escapeXmlSpecialChars = (value: string): string => {
+// XML entities are not enough for `<string>` resources: they decode back to raw
+// characters before AAPT parses the value, so quotes must be backslash-escaped
+// and a leading @/? must not be read as a resource reference.
+const escapeAndroidString = (value: string): string => {
   return value
+    .replace(/\\/g, '\\\\')
+    .replace(/'/g, "\\'")
+    .replace(/"/g, '\\"')
+    .replace(/^([@?])/, '\\$1')
     .replace(/&/g, '&amp;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
 };
 
-const createWidgetStringsXml = (widgets: WidgetConfig[]): string => {
+export const createWidgetStringsXml = (widgets: WidgetConfig[]): string => {
   return `<?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string-array name="expo_widgets_names">
-${widgets.map((widget) => `    <item>${escapeXmlSpecialChars(widget.name)}</item>`).join('\n')}
+${widgets.map((widget) => `    <item>${escapeAndroidString(widget.name)}</item>`).join('\n')}
   </string-array>
 ${widgets
   .map((widget) => {
-    return `  <string name="${getWidgetDisplayNameResourceName(widget)}">${escapeXmlSpecialChars(widget.displayName)}</string>
-  <string name="${getWidgetDescriptionResourceName(widget)}">${escapeXmlSpecialChars(widget.description)}</string>`;
+    return `  <string name="${getWidgetDisplayNameResourceName(widget)}">${escapeAndroidString(widget.displayName)}</string>
+  <string name="${getWidgetDescriptionResourceName(widget)}">${escapeAndroidString(widget.description)}</string>`;
   })
   .join('\n')}
 </resources>

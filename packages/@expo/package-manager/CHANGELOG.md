@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add [nub](https://nubjs.com/) package manager support ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

@@ -35,7 +35,6 @@ export type ScreenConfigWithParent<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 > = {
-  keys: (string | undefined)[];
   options: (ScreenOptionsOrCallback<ScreenOptions> | undefined)[] | undefined;
   layout: ScreenLayout<ScreenOptions> | undefined;
   props: RouteConfig<ParamListBase, string, State, ScreenOptions, EventMap, unknown>;

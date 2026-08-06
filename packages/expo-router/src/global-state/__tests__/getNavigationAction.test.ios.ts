@@ -205,7 +205,7 @@ describe(getNavigateAction, () => {
     expect(result!.type).toBe('JUMP_TO');
   });
 
-  it('REPLACE becomes JUMP_TO when target navigator is drawer', () => {
+  it('preserves REPLACE when target navigator is drawer', () => {
     mockFindDivergentState.mockReturnValue({
       actionState: { routes: [{ name: 'screen1' }] },
       navigationState: {
@@ -222,7 +222,7 @@ describe(getNavigateAction, () => {
 
     const result = getNavigateAction('/screen1', {}, 'REPLACE');
 
-    expect(result!.type).toBe('JUMP_TO');
+    expect(result!.type).toBe('REPLACE');
   });
 
   it('sets target to navigationState.key', () => {

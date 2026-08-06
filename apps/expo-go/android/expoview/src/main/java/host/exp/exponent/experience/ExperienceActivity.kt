@@ -196,7 +196,9 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
           override fun onManifestCompleted(manifest: Manifest) {
             lifecycleScope.launch {
               try {
-                val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
+                val bundleUrl = ExponentUrls.toHttp(
+                  ExponentUrls.resolveManifestUrl(manifest.getBundleURL(), this@ExperienceActivity.manifestUrl!!)
+                )
                 setManifest(
                   this@ExperienceActivity.manifestUrl!!,
                   manifest,

@@ -7,6 +7,18 @@ import { CommandOptions, Parcel, TaskArgs } from '../types';
 const { cyan } = chalk;
 
 /**
+ * Whether the process can authenticate to npm through trusted publishing (OIDC)
+ * instead of a long-lived token.
+ *
+ * GitHub Actions only sets `ACTIONS_ID_TOKEN_REQUEST_URL` for jobs that request
+ * the `id-token: write` permission, which makes it an accurate signal for "an
+ * OIDC token can be minted here".
+ */
+export function isTrustedPublishingEnvironment(env: NodeJS.ProcessEnv = process.env): boolean {
+  return !!env.ACTIONS_ID_TOKEN_REQUEST_URL;
+}
+
+/**
  * Checks whether the environment allows to proceed with any further tasks.
  */
 export const checkEnvironmentTask = new Task<TaskArgs>(
@@ -19,6 +31,14 @@ export const checkEnvironmentTask = new Task<TaskArgs>(
     // the login check so dry runs work without a token (e.g. on Dependabot
     // pull requests and forks, which don't have access to repository secrets).
     if (options.dry) {
+      return;
+    }
+
+    // Under trusted publishing there is no token to authenticate `npm whoami`,
+    // so both checks below would fail. Skipping them loses nothing: the registry
+    // authorizes the publish against the package's trusted-publisher config,
+    // which is a stronger guarantee than comparing a username to a team roster.
+    if (isTrustedPublishingEnvironment()) {
       return;
     }
 

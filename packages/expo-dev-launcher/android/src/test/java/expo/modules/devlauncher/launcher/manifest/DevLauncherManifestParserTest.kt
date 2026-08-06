@@ -149,6 +149,23 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `isManifestUrl includes forwarding headers`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/dev/manifest").toString()),
+      null
+    )
+
+    server.enqueue(MockResponse().setResponseCode(200))
+    manifestParser.isManifestUrl()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("forwarded")).contains("proto=http")
+    Truth.assertThat(request.getHeader("x-forwarded-host")).isEqualTo(server.url("/").host + ":" + server.port)
+    Truth.assertThat(request.getHeader("x-forwarded-proto")).isEqualTo("http")
+  }
+
+  @Test
   fun `checks if parseManifest parses successful response`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,
@@ -173,6 +190,33 @@ internal class DevLauncherManifestParserTest {
     Truth.assertThat(manifest.getPrimaryColor()).isEqualTo("#cccccc")
     Truth.assertThat(manifest.getBundleURL()).isEqualTo("http://127.0.0.1:8081/__generated__/AppEntry.bundle?platform=ios&dev=true&hot=false&minify=false")
     Truth.assertThat(manifest.getOrientation()).isEqualTo(DevLauncherOrientation.DEFAULT)
+  }
+
+  @Test
+  fun `parseManifest resolves relative bundle URL`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/dev/manifest").toString()),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setBody(
+        """
+        {
+          "name": "testproject",
+          "slug": "testproject",
+          "sdkVersion": "UNVERSIONED",
+          "bundleUrl": "index.bundle?platform=android"
+        }
+        """.trimIndent()
+      )
+    )
+
+    val manifest = manifestParser.parseManifest()
+
+    Truth.assertThat(manifest.getBundleURL())
+      .isEqualTo(server.url("/dev/index.bundle?platform=android").toString())
   }
 
   @Test

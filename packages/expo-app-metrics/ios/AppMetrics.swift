@@ -35,7 +35,8 @@ public struct AppMetrics {
         // not the just-started `mainSession`, so this doesn't depend on the current session's row INSERT.
         do {
           _ = try database?.insert(
-            log: LogRow.from(log: pendingError.toLogRecord(), sessionId: pendingError.sessionId))
+            log: LogRow.from(log: pendingError.toLogRecord(), sessionId: pendingError.sessionId)
+          )
         } catch {
           logger.warn("[AppMetrics] Failed to ingest pending error: \(error.localizedDescription)")
         }
@@ -139,7 +140,8 @@ public struct AppMetrics {
     AppMetricsActor.isolated {
       if let foregroundSession = Self.foregroundSession {
         logger.warn(
-          "[AppMetrics] New foreground session started while one was already active. Stopping the old session.")
+          "[AppMetrics] New foreground session started while one was already active. Stopping the old session."
+        )
         foregroundSession.stop()
       }
       foregroundSession = ForegroundSession()

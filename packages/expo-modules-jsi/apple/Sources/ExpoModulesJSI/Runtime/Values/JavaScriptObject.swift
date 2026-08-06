@@ -278,7 +278,8 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   @_disfavoredOverload
   @JavaScriptActor
   public func setProperty(
-    _ name: String, function: sending @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
+    _ name: String,
+    function: sending @escaping JavaScriptRuntime.UnownedThisSyncFunctionClosure
   ) {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -330,7 +331,9 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   }
 
   public func defineProperty<T: JavaScriptRepresentable & ~Copyable>(
-    _ name: String, value: borrowing T, options: PropertyOptions = []
+    _ name: String,
+    value: borrowing T,
+    options: PropertyOptions = []
   ) {
     guard let runtime else {
       FatalError.runtimeLost()
@@ -359,7 +362,8 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
   @discardableResult
   @JavaScriptActor
   public func callFunction<each T: JavaScriptRepresentable>(
-    _ functionName: JavaScriptPropNameID, arguments: repeat each T
+    _ functionName: JavaScriptPropNameID,
+    arguments: repeat each T
   ) throws -> JavaScriptValue {
     return try getPropertyAsFunction(functionName).call(this: self, arguments: repeat each arguments)
   }
@@ -534,7 +538,10 @@ public struct JavaScriptObject: JavaScriptType, Sendable, ~Copyable {
     /// - Note: When all parameters use their default values, this creates a non-configurable,
     ///   non-enumerable, non-writable property with no value (undefined in JavaScript).
     public init(
-      configurable: Bool = false, enumerable: Bool = false, writable: Bool = false, value: JavaScriptValue? = nil
+      configurable: Bool = false,
+      enumerable: Bool = false,
+      writable: Bool = false,
+      value: JavaScriptValue? = nil
     ) {
       self.configurable = configurable
       self.enumerable = enumerable

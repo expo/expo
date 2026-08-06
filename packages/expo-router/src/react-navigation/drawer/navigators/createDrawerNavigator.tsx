@@ -3,6 +3,7 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
+import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
 import type { DrawerNavigationState, ParamListBase } from '../../native';
 import type {
   DrawerDescriptorMap,
@@ -44,9 +45,24 @@ function DrawerNavigatorContent({
   drawerContent,
   detachInactiveScreens,
 }: ContentArgs) {
+  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+    routes: drawerState.routes,
+    routeNames: drawerState.routeNames,
+    focusedRouteKey: drawerState.routes[drawerState.index]!.key,
+    descriptors,
+  });
+
+  if (visibleRoutes.length === 0) {
+    return null;
+  }
+
   return (
     <DrawerView
-      state={drawerState}
+      state={{
+        ...drawerState,
+        routes: visibleRoutes,
+        index: focusedIndex,
+      }}
       navigation={navigation}
       // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
       // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.

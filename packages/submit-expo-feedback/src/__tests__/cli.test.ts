@@ -73,9 +73,14 @@ describe('help output', () => {
       );
       expect(helpOutput).toContain('| eas-cli    | Full EAS CLI command, such as eas build');
       expect(helpOutput).toContain(
+        '| evals      | Expo package, command, or capability the task involves'
+      );
+      expect(helpOutput).toContain('| simulator  | EAS Simulator feature or workflow involved');
+      expect(helpOutput).toContain(
         '| unknown    | Concise Expo product, package, feature, or topic, or leave empty'
       );
       expect(helpOutput).toContain('--resume <feedbackId>');
+      expect(helpOutput).toContain('Feedback messages can be up to 5,000 characters.');
       expect(helpOutput).toContain(
         'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected'
       );
@@ -116,10 +121,27 @@ describe('feedback message resolution', () => {
   });
 
   it('uses a category supplied on the command line', async () => {
-    await expect(resolveFeedbackAsync(['improve', 'the', 'server'], 'mcp')).resolves.toEqual({
-      category: 'mcp',
-      feedback: 'improve the server',
+    await expect(
+      resolveFeedbackAsync(['improve', 'the', 'controls'], 'simulator')
+    ).resolves.toEqual({
+      category: 'simulator',
+      feedback: 'improve the controls',
     });
+  });
+
+  it('accepts feedback at the maximum length', async () => {
+    const feedback = 'a'.repeat(5_000);
+
+    await expect(resolveFeedbackAsync([feedback])).resolves.toEqual({
+      category: 'unknown',
+      feedback,
+    });
+  });
+
+  it('rejects feedback over the maximum length', async () => {
+    await expect(resolveFeedbackAsync(['a'.repeat(5_001)])).rejects.toThrow(
+      'Feedback cannot exceed 5,000 characters.'
+    );
   });
 
   it('rejects invalid categories', async () => {
@@ -376,6 +398,17 @@ describe('feedback submission', () => {
         username: 'expo-user',
       },
     });
+  });
+
+  it('does not submit feedback over the maximum length', async () => {
+    await expect(
+      sendFeedbackAsync({
+        feedback: 'a'.repeat(5_001),
+        metadata: await createFeedbackMetadataAsync(projectRoot),
+      })
+    ).rejects.toThrow('Feedback cannot exceed 5,000 characters.');
+
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 
   it('resumes a feedback session and prints instructions using the provided ID', async () => {

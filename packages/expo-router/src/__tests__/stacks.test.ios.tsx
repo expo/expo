@@ -8,6 +8,7 @@ import Stack from '../layouts/Stack';
 import Tabs from '../layouts/Tabs';
 import type { StackScreenProps } from '../layouts/stack-utils';
 import { renderRouter, testRouter } from '../testing-library';
+import type { ScreenProps } from '../useScreens';
 
 jest.mock('react-native-screens', () => {
   const actualScreens = jest.requireActual(
@@ -50,7 +51,12 @@ describe('canDismiss', () => {
       {
         a: () => null,
         b: () => null,
-        _layout: () => <Tabs />,
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="a" />
+            <Tabs.Screen name="b" />
+          </Tabs>
+        ),
       },
       {
         initialUrl: '/a',
@@ -116,7 +122,13 @@ test('dismissAll', () => {
 test('dismissAll nested', () => {
   renderRouter(
     {
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="a" />
+          <Tabs.Screen name="b" />
+          <Tabs.Screen name="one" />
+        </Tabs>
+      ),
       a: () => null,
       b: () => null,
       'one/_layout': () => <Stack />,
@@ -720,7 +732,8 @@ describe('singular', () => {
 
 describe('Stack.Screen types', () => {
   it('accepts layout navigation props', () => {
-    expectTypeOf({ name: 'home', redirect: true }).toExtend<StackScreenProps>();
+    expectTypeOf<ScreenProps>().not.toHaveProperty('redirect');
+    expectTypeOf<StackScreenProps>().not.toHaveProperty('redirect');
     expectTypeOf({ name: 'profile', initialParams: { id: '123' } }).toExtend<StackScreenProps>();
     expectTypeOf({ name: 'settings', dangerouslySingular: true }).toExtend<StackScreenProps>();
     expectTypeOf({
@@ -752,6 +765,23 @@ describe('Stack.Screen types', () => {
       }),
     } satisfies StackScreenProps).toExtend<StackScreenProps>();
   });
+});
+
+it('does not deregister screens when passed the removed redirect prop', () => {
+  renderRouter(
+    {
+      _layout: () => (
+        <Stack>
+          <Stack.Screen name="a" {...({ redirect: true } as Record<string, unknown>)} />
+        </Stack>
+      ),
+      a: () => <Text testID="a">A</Text>,
+      b: () => <Text>B</Text>,
+    },
+    { initialUrl: '/a' }
+  );
+
+  expect(screen.getByTestId('a')).toBeVisible();
 });
 
 describe('function-form options', () => {

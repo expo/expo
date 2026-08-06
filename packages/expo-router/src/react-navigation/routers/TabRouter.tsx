@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid/non-secure';
 
-import type { StackActionType } from '../core';
+import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import type {
@@ -13,12 +13,19 @@ import type {
   Router,
 } from './types';
 
-export type TabActionType = {
-  type: 'JUMP_TO';
-  payload: { name: string; params?: object };
-  source?: string;
-  target?: string;
-};
+export type TabActionType =
+  | {
+      type: 'JUMP_TO';
+      payload: { name: string; params?: object };
+      source?: string;
+      target?: string;
+    }
+  | {
+      type: 'REPLACE';
+      payload: { name: string; params?: object };
+      source?: string;
+      target?: string;
+    };
 
 export type BackBehavior =
   | 'firstRoute'
@@ -61,6 +68,20 @@ export type TabNavigationState<ParamList extends ParamListBase> = Omit<
 
 export type TabActionHelpers<ParamList extends ParamListBase> = {
   /**
+   * Replaces the current tab with another tab.
+   *
+   * @param screen Name of the tab that will replace the current one.
+   * @param [params] Params object for the new tab.
+   */
+  replace<RouteName extends keyof ParamList>(
+    ...args: RouteName extends unknown
+      ? undefined extends ParamList[RouteName]
+        ? [screen: RouteName, params?: ParamList[RouteName]]
+        : [screen: RouteName, params: ParamList[RouteName]]
+      : never
+  ): void;
+
+  /**
    * Jump to an existing tab.
    *
    * @param screen Name of the route to jump to.
@@ -81,6 +102,12 @@ export const TabActions = {
   jumpTo(name: string, params?: object) {
     return {
       type: 'JUMP_TO',
+      payload: { name, params },
+    } as const satisfies TabActionType;
+  },
+  replace(name: string, params?: object) {
+    return {
+      type: 'REPLACE',
       payload: { name, params },
     } as const satisfies TabActionType;
   },
@@ -172,7 +199,9 @@ const changeIndex = (
       params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
     });
   } else {
-    history = getRouteHistory(state.routes, index, backBehavior, initialRouteName);
+    const routes = orderRoutesByRouteNames(state.routes, state.routeNames);
+    const orderedIndex = routes.findIndex((route) => route.key === state.routes[index]!.key);
+    history = getRouteHistory(routes, orderedIndex, backBehavior, initialRouteName);
   }
 
   return {
@@ -182,9 +211,16 @@ const changeIndex = (
   };
 };
 
-// TODO(@ubax): unify the logic into single router instead of BaseTabRouter and override
-// TODO(@ubax): add REPLACE action to CommonAction type and handle it in all routers
-function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRouterOptions) {
+/**
+ * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
+ */
+export function TabRouter({
+  initialRouteName,
+  backBehavior = 'firstRoute',
+}: TabRouterOptions): Router<
+  TabNavigationState<ParamListBase>,
+  TabActionType | CommonNavigationAction
+> {
   const router: Router<
     TabNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
@@ -274,25 +310,48 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
       );
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const routes = routeNames.map(
-        (name) =>
-          state.routes.find((r) => r.name === name && !routeKeyChanges.includes(r.name)) || {
+    getStateForRouteNamesChange(state, { routeNames, routeParamList }) {
+      const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+      for (const name of routeNames) {
+        if (!routes.some((route) => route.name === name)) {
+          routes.push({
             name,
             key: `${name}-${nanoid()}`,
             params: routeParamList[name],
-          }
-      );
+          });
+        }
+      }
 
-      const index = Math.max(0, routeNames.indexOf(state.routes[state.index]!.name));
+      const focusedName = state.routes[state.index]!.name;
+      const index = Math.max(
+        0,
+        routes.findIndex((route) => route.name === focusedName)
+      );
 
       let history = state.history.filter(
         // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
         (it) => it.type !== 'route' || routes.find((r) => r.key === it.key)
       );
 
-      if (!history.length) {
-        history = getRouteHistory(routes, index, backBehavior, initialRouteName);
+      // Static back behaviors follow display order, while history behaviors retain valid visits.
+      // Preserve non-route entries added by extending routers such as `DrawerRouter`.
+      if (
+        backBehavior === 'firstRoute' ||
+        backBehavior === 'initialRoute' ||
+        backBehavior === 'order'
+      ) {
+        const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
+        const orderedIndex = orderedRoutes.findIndex((route) => route.key === routes[index]!.key);
+        history = [
+          ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
+          ...history.filter((item) => item.type !== 'route'),
+        ];
+      } else if (!history.some((item) => item.type === 'route')) {
+        history = [
+          ...getRouteHistory(routes, index, backBehavior, initialRouteName),
+          ...history.filter((item) => item.type !== 'route'),
+        ];
       }
 
       return {
@@ -315,7 +374,12 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
     },
 
     getStateForAction(state, action, { routeParamList, routeGetIdList }) {
+      if (action.target && action.target !== state.key) {
+        return null;
+      }
+
       switch (action.type) {
+        case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE':
         case 'NAVIGATE_DEPRECATED': {
@@ -374,12 +438,14 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
             initialRouteName
           );
 
-          return {
+          const result = {
             ...updatedState,
             preloadedRouteKeys: updatedState.preloadedRouteKeys.filter(
               (key) => key !== state.routes[updatedState.index]!.key
             ),
           };
+
+          return action.type === 'REPLACE' ? removeReplacedRouteFromHistory(state, result) : result;
         }
 
         case 'SET_PARAMS':
@@ -495,56 +561,23 @@ function BaseTabRouter({ initialRouteName, backBehavior = 'firstRoute' }: TabRou
   return router;
 }
 
-/**
- * TabRouter is considered an internal implementation and its behavior may change without a notice between expo-router's version
- */
-export function TabRouter(
-  args: TabRouterOptions
-): Router<TabNavigationState<ParamListBase>, TabActionType | CommonNavigationAction> {
-  const base = BaseTabRouter(args);
+function removeReplacedRouteFromHistory(
+  previousState: TabNavigationState<ParamListBase>,
+  nextState: TabNavigationState<ParamListBase>
+) {
+  const replacedRouteKey = previousState.routes[previousState.index]?.key;
+  const focusedRouteKey = nextState.routes[nextState.index]?.key;
+  if (!replacedRouteKey || replacedRouteKey === focusedRouteKey) {
+    return nextState;
+  }
+
+  const replacedIndex = nextState.history.findLastIndex((item) => item.key === replacedRouteKey);
+  if (replacedIndex === -1) {
+    return nextState;
+  }
+
   return {
-    ...base,
-    getStateForAction: (state, action, options) => {
-      if (action.target && action.target !== state.key) {
-        return null;
-      }
-
-      if ((action.type as string) === 'REPLACE') {
-        const replaceAction = action as unknown as Extract<StackActionType, { type: 'REPLACE' }>;
-        // Generate the state as if we were using JUMP_TO
-        let nextState = base.getStateForAction(
-          state,
-          {
-            ...replaceAction,
-            type: 'JUMP_TO',
-          },
-          options
-        );
-
-        if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
-          return null;
-        }
-
-        // If the state is valid and we didn't JUMP_TO a single history state,
-        // then remove the previous state.
-        if (nextState.index !== 0) {
-          const previousIndex = nextState.index - 1;
-
-          nextState = {
-            ...nextState,
-            key: `${nextState.key}-replace`,
-            // Omit the previous history entry that we are replacing
-            history: [
-              ...nextState.history.slice(0, previousIndex),
-              ...nextState.history.splice(nextState.index),
-            ],
-          };
-        }
-
-        return nextState;
-      }
-
-      return base.getStateForAction(state, action, options);
-    },
+    ...nextState,
+    history: nextState.history.filter((_, index) => index !== replacedIndex),
   };
 }

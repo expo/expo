@@ -1,5 +1,4 @@
 import type { NativeStackViewState } from '../../../react-navigation/native-stack';
-import type { NativeStackDescriptorMap } from '../descriptors-context';
 import type { CompositionRegistry } from './types';
 
 /**
@@ -12,12 +11,12 @@ import type { CompositionRegistry } from './types';
  * 2. If route is preloaded (positioned after the focused route) → skip composition (pass through)
  * 3. Otherwise → merge descriptor.options with composition options (composition wins)
  */
-export function mergeOptions(
-  descriptors: NativeStackDescriptorMap,
+export function mergeOptions<T extends { options: object }>(
+  descriptors: Record<string, T>,
   registry: CompositionRegistry,
   state: NativeStackViewState
-): NativeStackDescriptorMap {
-  const result: NativeStackDescriptorMap = {};
+): Record<string, T> {
+  const result: Record<string, T> = {};
   const activeRoutes = state.routes.slice(0, state.index + 1);
   const preloadedRoutes = state.routes.slice(state.index + 1);
   const focusedKey = activeRoutes[state.index]?.key;
@@ -47,7 +46,7 @@ export function mergeOptions(
       options: mergedOptions,
     };
 
-    result[key] = merged;
+    result[key] = merged as T;
   }
 
   return result;
