@@ -4582,7 +4582,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 4503d2da51ff7109712ccdfe0e4939f66818183e
   ExpoImage: d66c5e5be02228cdfed42ebcb31acf2dd594b8e7
   ExpoImageManipulator: 3bdad664e6eb2e632b10edb4ba92d7983d54d81a
-  ExpoImagePicker: 53793977b6f686c3f1230739a1dbe7178a9cef80
+  ExpoImagePicker: 8c6898eba27bb4086c4970ce5599e50bce5d7c80
   ExpoKeepAwake: c26f14275017370cc8a4b7b43a0e23361f2053a5
   ExpoLinearGradient: 903b3f5fe566c666ff78b2599add51d094483613
   ExpoLinking: a516e12e2cb5af6eaeea32809c6a6ede1a7da8bb
@@ -4635,7 +4635,7 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 8a82b93a6400c8e6551c0bcd66a9177f2e067aed
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
-  hermes-engine: ff5096b4b68fee24fa4fc7aa9267e0bcccf03713
+  hermes-engine: 1aac0336ab06465103e89322838baf2911318c89
   libavif: 5f8e715bea24debec477006f21ef9e95432e254d
   libdav1d: 23581a4d8ec811ff171ed5e2e05cd27bad64c39f
   libwebp: 02b23773aedb6ff1fd38cec7a77b81414c6842a8

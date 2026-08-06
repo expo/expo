@@ -460,6 +460,9 @@ PODS:
     - SDWebImageWebPCoder
   - ExpoImagePicker (57.0.7):
     - ExpoModulesCore
+  - ExpoImagePicker/Tests (57.0.7):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoInsights (57.0.7):
     - EASClient
     - ExpoModulesCore
@@ -3409,6 +3412,7 @@ DEPENDENCIES:
   - ExpoImage/Tests (from `../../../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../../../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../../../packages/expo-image-picker/ios`)
+  - ExpoImagePicker/Tests (from `../../../packages/expo-image-picker/ios`)
   - ExpoInsights (from `../../../packages/expo-insights/ios`)
   - ExpoKeepAwake (from `../../../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../../../packages/expo-linear-gradient/ios`)
@@ -4075,7 +4079,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 4503d2da51ff7109712ccdfe0e4939f66818183e
   ExpoImage: d66c5e5be02228cdfed42ebcb31acf2dd594b8e7
   ExpoImageManipulator: 3bdad664e6eb2e632b10edb4ba92d7983d54d81a
-  ExpoImagePicker: 53793977b6f686c3f1230739a1dbe7178a9cef80
+  ExpoImagePicker: 8c6898eba27bb4086c4970ce5599e50bce5d7c80
   ExpoInsights: c7b7de693d2e81734a650086884016708e9d57ab
   ExpoKeepAwake: c26f14275017370cc8a4b7b43a0e23361f2053a5
   ExpoLinearGradient: 903b3f5fe566c666ff78b2599add51d094483613
