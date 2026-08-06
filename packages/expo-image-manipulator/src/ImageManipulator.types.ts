@@ -152,7 +152,7 @@ export declare class ImageManipulator extends NativeModule {
   /**
    * @hidden
    */
-  Image: ImageRef;
+  Image: typeof ImageRef;
 
   /**
    * Loads an image from the given URI and creates a new image manipulation context.
