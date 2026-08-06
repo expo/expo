@@ -3,11 +3,26 @@ import * as FileSystem from 'expo-file-system/legacy';
 import { manipulateAsync, ImageManipulator, FlipType, SaveFormat } from 'expo-image-manipulator';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'ImageManipulator';
 
-export async function test(t) {
+/**
+ * `FileSystem.getInfoAsync` returns a union discriminated on `exists`, and only
+ * the existing branch carries `size`. Every caller below has just written or
+ * downloaded the file, so a missing one is a genuine failure.
+ */
+async function getFileSizeAsync(uri: string) {
+  const info = await FileSystem.getInfoAsync(uri);
+  if (!info.exists) {
+    throw new Error(`Expected a file at ${uri}, but none exists.`);
+  }
+  return info.size;
+}
+
+export async function test(t: JasmineInterface) {
   t.describe('ImageManipulator', () => {
-    let asset;
+    let asset: Asset;
 
     t.beforeAll(async () => {
       asset = Asset.fromModule(require('../assets/example_image_1.jpg'));
@@ -16,7 +31,7 @@ export async function test(t) {
 
     t.describe('manipulate()', () => {
       t.it('returns a context', () => {
-        const context = ImageManipulator.manipulate(asset.localUri);
+        const context = ImageManipulator.manipulate(asset.localUri!);
 
         t.expect(context).toBeDefined();
         t.expect(context instanceof ImageManipulator.Context).toBe(true);
@@ -25,13 +40,16 @@ export async function test(t) {
 
     t.describe('Context', () => {
       t.it('renders valid image', async () => {
-        const context = ImageManipulator.manipulate(asset.localUri).resize({
+        const context = ImageManipulator.manipulate(asset.localUri!).resize({
           width: 100,
           height: 100,
         });
         const image = await context.renderAsync();
 
         t.expect(image).toBeDefined();
+        // @ts-expect-error `ImageManipulator.Image` is declared as an `ImageRef` instance rather than
+        // `typeof ImageRef`, so TypeScript does not accept it on the right of `instanceof`,
+        // even though the runtime value is the class.
         t.expect(image instanceof ImageManipulator.Image).toBe(true);
         t.expect(image.width).toBe(100);
         t.expect(image.height).toBe(100);
@@ -45,37 +63,40 @@ export async function test(t) {
         const image = await context.renderAsync();
 
         t.expect(image).toBeDefined();
+        // @ts-expect-error `ImageManipulator.Image` is declared as an `ImageRef` instance rather than
+        // `typeof ImageRef`, so TypeScript does not accept it on the right of `instanceof`,
+        // even though the runtime value is the class.
         t.expect(image instanceof ImageManipulator.Image).toBe(true);
         t.expect(image.width).toBe(100);
         t.expect(image.height).toBe(100);
       });
 
       t.it('rotates images', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri).rotate(45).renderAsync();
+        const image = await ImageManipulator.manipulate(asset.localUri!).rotate(45).renderAsync();
 
-        t.expect(image.width).toBeGreaterThan(asset.width);
+        t.expect(image.width).toBeGreaterThan(asset.width!);
       });
 
       t.it('flips horizontally', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .flip('horizontal')
           .renderAsync();
 
-        t.expect(image.width).toBe(asset.width);
-        t.expect(image.height).toBe(asset.height);
+        t.expect(image.width).toBe(asset.width!);
+        t.expect(image.height).toBe(asset.height!);
       });
 
       t.it('flips vertically', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .flip('vertical')
           .renderAsync();
 
-        t.expect(image.width).toBe(asset.width);
-        t.expect(image.height).toBe(asset.height);
+        t.expect(image.width).toBe(asset.width!);
+        t.expect(image.height).toBe(asset.height!);
       });
 
       t.it('resizes image', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .resize({ width: 100, height: 100 })
           .renderAsync();
 
@@ -84,7 +105,7 @@ export async function test(t) {
       });
 
       t.it('crops image', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .crop({ originX: 20, originY: 20, width: 100, height: 100 })
           .renderAsync();
 
@@ -93,7 +114,7 @@ export async function test(t) {
       });
 
       t.it('performs multiple transformations', async () => {
-        const context = ImageManipulator.manipulate(asset.localUri);
+        const context = ImageManipulator.manipulate(asset.localUri!);
         const image = await context
           .resize({ width: 200, height: 200 })
           .flip('vertical')
@@ -108,7 +129,7 @@ export async function test(t) {
 
     t.describe('Image', () => {
       t.it('saves with default format', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .resize({
             width: 100,
             height: 100,
@@ -124,7 +145,7 @@ export async function test(t) {
       });
 
       t.it('saves as JPEG', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .resize({ width: 100, height: 100 })
           .renderAsync();
         const result = await image.saveAsync({
@@ -139,7 +160,7 @@ export async function test(t) {
       });
 
       t.it('saves as PNG', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .resize({ width: 100, height: 100 })
           .renderAsync();
         const result = await image.saveAsync({
@@ -154,7 +175,7 @@ export async function test(t) {
       });
 
       t.it('provides Base64 with no header or newline terminator', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .resize({ width: 100, height: 100 })
           .renderAsync();
         const result = await image.saveAsync({
@@ -168,7 +189,7 @@ export async function test(t) {
       });
 
       t.it('performs compression', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri)
+        const image = await ImageManipulator.manipulate(asset.localUri!)
           .flip('vertical')
           .renderAsync();
         const result = await image.saveAsync({
@@ -177,22 +198,22 @@ export async function test(t) {
         });
 
         if (Platform.OS === 'web') {
-          const originalInfo = await fetch(asset.localUri).then((a) => a.blob());
+          const originalInfo = await fetch(asset.localUri!).then((a) => a.blob());
           const resultInfo = await fetch(result.uri).then((a) => a.blob());
 
           t.expect(originalInfo.size).toBeGreaterThan(resultInfo.size);
         } else {
-          const originalInfo = await FileSystem.getInfoAsync(asset.localUri);
-          const resultInfo = await FileSystem.getInfoAsync(result.uri);
+          const originalSize = await getFileSizeAsync(asset.localUri!);
+          const resultSize = await getFileSizeAsync(result.uri);
 
-          t.expect(originalInfo.size).toBeGreaterThan(resultInfo.size);
+          t.expect(originalSize).toBeGreaterThan(resultSize);
         }
       });
     });
   });
 
   t.describe('ImageManipulator (Legacy)', () => {
-    let image;
+    let image: Asset;
 
     t.beforeAll(async () => {
       image = Asset.fromModule(require('../assets/example_image_1.jpg'));
@@ -201,7 +222,7 @@ export async function test(t) {
 
     t.describe('manipulateAsync()', () => {
       t.it('returns valid image', async () => {
-        const result = await manipulateAsync(image.localUri, [
+        const result = await manipulateAsync(image.localUri!, [
           { resize: { width: 100, height: 100 } },
         ]);
         t.expect(result).toBeDefined();
@@ -223,7 +244,7 @@ export async function test(t) {
       });
 
       t.it('saves with default format', async () => {
-        const result = await manipulateAsync(image.localUri, [
+        const result = await manipulateAsync(image.localUri!, [
           { resize: { width: 100, height: 100 } },
         ]);
 
@@ -236,7 +257,7 @@ export async function test(t) {
 
       t.it('saves as JPEG', async () => {
         const result = await manipulateAsync(
-          image.localUri,
+          image.localUri!,
           [{ resize: { width: 100, height: 100 } }],
           {
             format: SaveFormat.JPEG,
@@ -252,7 +273,7 @@ export async function test(t) {
 
       t.it('saves as PNG', async () => {
         const result = await manipulateAsync(
-          image.localUri,
+          image.localUri!,
           [{ resize: { width: 100, height: 100 } }],
           {
             format: SaveFormat.PNG,
@@ -268,7 +289,7 @@ export async function test(t) {
 
       t.it('provides Base64 with no header or newline terminator', async () => {
         const result = await manipulateAsync(
-          image.localUri,
+          image.localUri!,
           [{ resize: { width: 100, height: 100 } }],
           {
             base64: true,
@@ -278,46 +299,46 @@ export async function test(t) {
         t.expect(typeof result.base64).toBe('string');
         t.expect(result.base64).not.toContain('\n');
         t.expect(result.base64).not.toContain('\r');
-        t.expect(result.base64.startsWith('data:image/jpeg;base64,')).toBe(false);
+        t.expect(result.base64!.startsWith('data:image/jpeg;base64,')).toBe(false);
       });
 
       t.it('performs compression', async () => {
-        const result = await manipulateAsync(image.localUri, [{ flip: FlipType.Vertical }], {
+        const result = await manipulateAsync(image.localUri!, [{ flip: FlipType.Vertical }], {
           compress: 0.0,
         });
 
         if (Platform.OS === 'web') {
-          const imageInfo = await fetch(image.localUri).then((a) => a.blob());
+          const imageInfo = await fetch(image.localUri!).then((a) => a.blob());
           const resultInfo = await fetch(result.uri).then((a) => a.blob());
 
           t.expect(imageInfo.size).toBeGreaterThan(resultInfo.size);
         } else {
-          const imageInfo = await FileSystem.getInfoAsync(image.localUri);
-          const resultInfo = await FileSystem.getInfoAsync(result.uri);
+          const imageSize = await getFileSizeAsync(image.localUri!);
+          const resultSize = await getFileSizeAsync(result.uri);
 
-          t.expect(imageInfo.size).toBeGreaterThan(resultInfo.size);
+          t.expect(imageSize).toBeGreaterThan(resultSize);
         }
       });
 
       t.it('rotates images', async () => {
-        const result = await manipulateAsync(image.localUri, [{ rotate: 45 }]);
-        t.expect(result.width).toBeGreaterThan(image.width);
+        const result = await manipulateAsync(image.localUri!, [{ rotate: 45 }]);
+        t.expect(result.width).toBeGreaterThan(image.width!);
       });
 
       t.it('flips horizontally', async () => {
-        const result = await manipulateAsync(image.localUri, [{ flip: FlipType.Horizontal }]);
-        t.expect(result.width).toBe(image.width);
-        t.expect(result.height).toBe(image.height);
+        const result = await manipulateAsync(image.localUri!, [{ flip: FlipType.Horizontal }]);
+        t.expect(result.width).toBe(image.width!);
+        t.expect(result.height).toBe(image.height!);
       });
 
       t.it('flips vertically', async () => {
-        const result = await manipulateAsync(image.localUri, [{ flip: FlipType.Vertical }]);
-        t.expect(result.width).toBe(image.width);
-        t.expect(result.height).toBe(image.height);
+        const result = await manipulateAsync(image.localUri!, [{ flip: FlipType.Vertical }]);
+        t.expect(result.width).toBe(image.width!);
+        t.expect(result.height).toBe(image.height!);
       });
 
       t.it('resizes image', async () => {
-        const result = await manipulateAsync(image.localUri, [
+        const result = await manipulateAsync(image.localUri!, [
           { resize: { width: 100, height: 100 } },
         ]);
         t.expect(result.height).toBe(100);
@@ -325,7 +346,7 @@ export async function test(t) {
       });
 
       t.it('crops image', async () => {
-        const result = await manipulateAsync(image.localUri, [
+        const result = await manipulateAsync(image.localUri!, [
           { crop: { originX: 20, originY: 20, width: 100, height: 100 } },
         ]);
         t.expect(result.height).toBe(100);
@@ -333,7 +354,7 @@ export async function test(t) {
       });
 
       t.it('performs multiple transformations', async () => {
-        const result = await manipulateAsync(image.localUri, [
+        const result = await manipulateAsync(image.localUri!, [
           { resize: { width: 200, height: 200 } },
           { flip: FlipType.Vertical },
           { rotate: 45 },
