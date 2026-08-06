@@ -17,7 +17,7 @@ import {
 } from '../../react-navigation/routers';
 import { act, fireEvent, renderRouter, screen } from '../../testing-library';
 import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
-import type { NavigatorContentProps } from '../types';
+import type { NavigatorContentProps, StandardNavigatorDescriptor } from '../types';
 
 type TestOptions = { title?: string };
 type TestEventMap = Record<string, { data: object | undefined; canPreventDefault: boolean }>;
@@ -40,15 +40,6 @@ const StandardTabs = unstable_createStandardRouterNavigator<
   TabNavigationState<ParamListBase>,
   TestEventMap,
   { tintColor?: string },
-  TabRouterOptions
->(NavigatorContent, TabRouter, { useOnlyUserDefinedScreens: true });
-
-// Same navigator, but without restricting to user-defined screens (the default).
-const StandardTabsAll = unstable_createStandardRouterNavigator<
-  TestOptions,
-  TabNavigationState<ParamListBase>,
-  TestEventMap,
-  object,
   TabRouterOptions
 >(NavigatorContent, TabRouter);
 
@@ -190,26 +181,12 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().tintColor).toBe('rebeccapurple');
   });
 
-  it('respects useOnlyUserDefinedScreens by filtering undeclared routes', () => {
+  it('always registers undeclared filesystem routes', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
           <StandardTabs.Screen name="index" />
         </StandardTabs>
-      ),
-      index: () => <View testID="index" />,
-      second: () => <View testID="second" />,
-    });
-
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
-  });
-
-  it('includes undeclared matched routes when useOnlyUserDefinedScreens is false', () => {
-    renderRouter({
-      _layout: () => (
-        <StandardTabsAll>
-          <StandardTabsAll.Screen name="index" />
-        </StandardTabsAll>
       ),
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
@@ -222,7 +199,28 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     ).toEqual(['index', 'second']);
   });
 
-  it('filters out Protected screens whose guard is false', () => {
+  it('distinguishes declared and inferred routes via descriptor routeSource', () => {
+    renderRouter({
+      _layout: () => (
+        <StandardTabs>
+          <StandardTabs.Screen name="index" />
+        </StandardTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    const { state, descriptors } = lastArgs();
+    const routeSourceByName = Object.fromEntries(
+      state.routes.map((route) => [
+        route.name,
+        (descriptors[route.key]! as StandardNavigatorDescriptor<TestOptions>).routeSource,
+      ])
+    );
+    expect(routeSourceByName).toEqual({ index: 'layout', second: 'filesystem' });
+  });
+
+  it('keeps Protected screens whose guard is false registered but hidden', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -236,7 +234,12 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
+    const args = lastArgs();
+    const second = args.state.routes.find((route) => route.name === 'second')!;
+
+    expect(args.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
+    expect(args.descriptors[second.key]!.options).toMatchObject({ hidden: true });
+    expect(screen.queryByTestId('second')).toBeNull();
   });
 
   it('propagates route params into state and href', () => {
@@ -301,10 +304,10 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
-      { focusedName?: string },
-      TabRouterOptions
+      object,
+      TabRouterOptions,
+      { focusedName: string }
     >(NavigatorContent, TabRouter, {
-      useOnlyUserDefinedScreens: true,
       createProps: ({ state }) => ({ focusedName: state.routes[state.index]!.name }),
     });
 
@@ -333,10 +336,10 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       TestOptions,
       TabNavigationState<ParamListBase>,
       TestEventMap,
-      { goToSecond?: () => void },
-      TabRouterOptions
+      object,
+      TabRouterOptions,
+      { goToSecond: () => void }
     >(NavigatorContent, TabRouter, {
-      useOnlyUserDefinedScreens: true,
       createProps: ({ dispatch }) => ({
         goToSecond: () => dispatch(TabActions.jumpTo('second')),
       }),
@@ -379,6 +382,178 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
   });
 });
 
+describe('processScreens', () => {
+  const optionsByName = () =>
+    Object.fromEntries(
+      lastArgs().state.routes.map(
+        (route) => [route.name, lastArgs().descriptors[route.key]!.options] as const
+      )
+    );
+
+  it('transforms declared screen options before they are rendered', () => {
+    const Prefixed = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) =>
+        screens.map((screen) => ({
+          ...screen,
+          options: { ...screen.options, title: `processed-${screen.name}` },
+        })),
+    });
+
+    renderRouter({
+      _layout: () => (
+        <Prefixed>
+          <Prefixed.Screen name="index" options={{ title: 'Home' }} />
+          <Prefixed.Screen name="second" />
+        </Prefixed>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(optionsByName()).toMatchObject({
+      index: { title: 'processed-index' },
+      second: { title: 'processed-second' },
+    });
+  });
+
+  it('receives only the declared screens', () => {
+    const names: string[] = [];
+    const Recording = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) => {
+        names.length = 0;
+        names.push(...screens.map((screen) => screen.name));
+        return screens;
+      },
+    });
+
+    renderRouter({
+      _layout: () => (
+        <Recording>
+          <Recording.Screen name="index" />
+        </Recording>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+    });
+
+    expect(names).toEqual(['index']);
+    // The undeclared route is still registered, it just never reaches the processor.
+    expect(lastArgs().state.routes.map((route) => route.name)).toContain('second');
+  });
+
+  it('rejects dropped screens', () => {
+    const Filtered = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) => screens.filter((screen) => screen.name !== 'second'),
+    });
+
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          <Filtered>
+            <Filtered.Screen name="index" options={{ title: 'Home' }} />
+            <Filtered.Screen name="second" options={{ title: 'Declared title' }} />
+          </Filtered>
+        ),
+        index: () => <View testID="index" />,
+        second: () => <View testID="second" />,
+      })
+    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+  });
+
+  it('rejects renamed screens', () => {
+    const Renamed = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) =>
+        screens.map((screen) => ({ ...screen, name: `renamed-${screen.name}` })),
+    });
+
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          <Renamed>
+            <Renamed.Screen name="index" />
+          </Renamed>
+        ),
+        index: () => <View testID="index" />,
+      })
+    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+  });
+
+  it('rejects screens renamed in place', () => {
+    const Renamed = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) => {
+        screens[0] = { ...screens[0]!, name: 'renamed-index' };
+        return screens;
+      },
+    });
+
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          <Renamed>
+            <Renamed.Screen name="index" />
+          </Renamed>
+        ),
+        index: () => <View testID="index" />,
+      })
+    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+  });
+
+  it('rejects duplicate screens returned by the processor', () => {
+    const Duplicated = unstable_createStandardRouterNavigator<
+      TestOptions,
+      TabNavigationState<ParamListBase>,
+      TestEventMap,
+      object,
+      TabRouterOptions
+    >(NavigatorContent, TabRouter, {
+      processScreens: (screens) => [screens[0]!, { ...screens[0]! }],
+    });
+
+    expect(() =>
+      renderRouter({
+        _layout: () => (
+          <Duplicated>
+            <Duplicated.Screen name="index" />
+            <Duplicated.Screen name="second" />
+          </Duplicated>
+        ),
+        index: () => <View testID="index" />,
+        second: () => <View testID="second" />,
+      })
+    ).toThrow('`processScreens` must not add, remove, rename, or duplicate screens');
+  });
+});
+
 describe('preloaded routes projected through the integration (StackRouter)', () => {
   const StandardStack = unstable_createStandardRouterNavigator<
     TestOptions,
@@ -386,7 +561,7 @@ describe('preloaded routes projected through the integration (StackRouter)', () 
     TestEventMap,
     object,
     StackRouterOptions
-  >(NavigatorContent, StackRouter, { useOnlyUserDefinedScreens: true });
+  >(NavigatorContent, StackRouter);
 
   const renderStack = () =>
     renderRouter({
@@ -585,16 +760,15 @@ describe('custom-navigators guide example', () => {
   // `preloadedNames` is derived from the raw `state` — exactly the "router-specific information that
   // is not part of the standard state" that `createProps` exists to expose (TabRouter keeps preloaded
   // routes in `preloadedRouteKeys`, which the standard contract does not project).
-  // Props supplied by `createProps` are declared optional so they are not required on the `<Tabs>`
-  // element (it is rendered without them); the content still receives them at runtime.
   type CreatePropsProps = {
-    activeRouteKey?: string;
-    preload?: (name: string) => void;
-    preloadedNames?: string[];
+    activeRouteKey: string;
+    preload: (name: string) => void;
+    preloadedNames: string[];
   };
   type ContentProps = NavigatorContentProps<
     { title?: string },
     Record<string, never>,
+    object,
     CreatePropsProps
   >;
 
@@ -611,10 +785,10 @@ describe('custom-navigators guide example', () => {
     { title?: string },
     TabNavigationState<ParamListBase>,
     Record<string, never>,
-    CreatePropsProps,
-    TabRouterOptions
+    object,
+    TabRouterOptions,
+    CreatePropsProps
   >(TabsContent, TabRouter, {
-    useOnlyUserDefinedScreens: true,
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
@@ -649,7 +823,7 @@ describe('custom-navigators guide example', () => {
     renderExample();
     expect(lastProps().preloadedNames).toEqual([]);
 
-    act(() => lastProps().preload!('settings'));
+    act(() => lastProps().preload('settings'));
 
     // The action reached the TabRouter: `settings` is now preloaded, and focus stayed on `index`.
     expect(lastProps().preloadedNames).toEqual(['settings']);

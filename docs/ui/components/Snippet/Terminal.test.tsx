@@ -2,6 +2,8 @@ import { jest } from '@jest/globals';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import { axe } from '~/common/test-utilities';
+
 import { Terminal } from '.';
 
 describe(Terminal, () => {
@@ -148,5 +150,20 @@ describe(Terminal, () => {
     );
 
     window.open = originalWindowOpen;
+  });
+
+  it('has no axe violations', async () => {
+    const { container } = render(
+      <>
+        <Terminal cmd={['$ expo install expo-updates']} />
+        <Terminal
+          cmd={{
+            npm: ['$ npm install expo'],
+            yarn: ['$ yarn add expo'],
+          }}
+        />
+      </>
+    );
+    expect(await axe(container)).toHaveNoViolations();
   });
 });

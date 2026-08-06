@@ -14,6 +14,11 @@ public class DevMenuManager: NSObject {
     menuWillShowSubject.eraseToAnyPublisher()
   }
 
+  private let sourceExplorerPresentationSubject = CurrentValueSubject<Bool, Never>(false)
+  var sourceExplorerPresentationPublisher: AnyPublisher<Bool, Never> {
+    sourceExplorerPresentationSubject.eraseToAnyPublisher()
+  }
+
   private let manifestSubject = PassthroughSubject<Void, Never>()
   var manifestPublisher: AnyPublisher<Void, Never> {
     manifestSubject.eraseToAnyPublisher()
@@ -32,7 +37,7 @@ public class DevMenuManager: NSObject {
     super.init()
     self.window = DevMenuWindow(manager: self)
     DevMenuPreferences.setup()
-    
+
     NotificationCenter.default.addObserver(
       self,
       selector: #selector(handleContentDidAppear),
@@ -55,7 +60,7 @@ public class DevMenuManager: NSObject {
 
   var currentBundleURL: URL? {
     guard let manifest = currentManifest else { return nil }
-    return ApiUtil.bundleUrlFromManifest(manifest)
+    return ApiUtil.bundleUrlFromManifest(manifest, relativeTo: currentManifestURL)
   }
 
   var hasActiveApp: Bool {
@@ -75,6 +80,19 @@ public class DevMenuManager: NSObject {
   @discardableResult
   func openMenu() -> Bool {
     return setVisibility(true)
+  }
+
+  @discardableResult
+  func openSourceExplorer() -> Bool {
+    guard openMenu() else { return false }
+    DispatchQueue.main.async {
+      self.sourceExplorerPresentationSubject.send(true)
+    }
+    return true
+  }
+
+  func sourceExplorerDidPresent() {
+    sourceExplorerPresentationSubject.send(false)
   }
 
   @objc
@@ -104,14 +122,13 @@ public class DevMenuManager: NSObject {
     if visible && !hasActiveApp { return false }
 
     if visible {
+      sourceExplorerPresentationSubject.send(false)
       menuWillShowSubject.send()
       DispatchQueue.main.async {
         self.updateFABVisibility()
 
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-          self.window?.windowScene = windowScene
+          self.window?.windowScene = SceneGeometry.foregroundActiveScene()
         }
         self.window?.makeKeyAndVisible()
       }
@@ -131,6 +148,7 @@ public class DevMenuManager: NSObject {
   @objc func goHome() {
     isNavigatingHome = true
     isLessonLikeSession = false
+    ProjectSourceSession.end()
     fabWindow?.setVisible(false, animated: false)
     EXKernel.sharedInstance().switchTasks()
   }
@@ -206,8 +224,7 @@ public class DevMenuManager: NSObject {
       guard let self else { return }
 
       if self.fabWindow == nil {
-        if let windowScene = UIApplication.shared.connectedScenes
-          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+        if let windowScene = SceneGeometry.foregroundActiveScene() {
           self.setupFABWindowIfNeeded(for: windowScene)
         }
       }

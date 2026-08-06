@@ -18,6 +18,13 @@ export const ModulesCoreScreens = [
       return optionalRequire(() => require('./ExpoModulesScreen'));
     },
   },
+  {
+    name: 'Runtime teardown',
+    route: 'modulescore/runtime-teardown',
+    getComponent() {
+      return optionalRequire(() => require('./RuntimeTeardownScreen'));
+    },
+  },
 ];
 
 if (!isRunningInExpoGo()) {

@@ -106,7 +106,6 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
     'jetpack-compose/DockedSearchBar/index.tsx',
     'expo-ui',
   ],
-  'expo-ui/jetpack-compose/filterchip': ['jetpack-compose/FilterChip/index.tsx', 'expo-ui'],
   'expo-ui/jetpack-compose/floatingactionbutton': [
     'jetpack-compose/FloatingActionButton/index.tsx',
     'expo-ui',
@@ -182,7 +181,7 @@ const uiPackagesMapping: Record<string, CommandAdditionalParams> = {
   'expo-ui/universal/rnhostview': ['universal/RNHostView/index.tsx', 'expo-ui'],
 };
 
-const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
+export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   expo: ['Expo.ts'],
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-apple-authentication': ['index.ts'],
@@ -270,7 +269,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-server': ['index.ts'],
   'expo-sharing': ['index.ts'],
   'expo-sms': ['SMS.ts'],
-  'expo-speech': ['Speech/Speech.ts'],
+  'expo-speech': ['Speech.ts'],
   'expo-splash-screen': ['index.ts'],
   'expo-sqlite': [['index.ts', 'Storage.ts'], 'expo-sqlite'],
   'expo-status-bar': ['StatusBar.ts'],
@@ -433,35 +432,38 @@ function filterOutKeys(data: Record<string, any>) {
 async function action({ packageName, sdk }: ActionOptions) {
   const taskQueue = new TaskQueue(Promise as PromisyClass, os.cpus().length);
 
-  try {
-    if (packageName) {
-      const packagesEntries = Object.entries(PACKAGES_MAPPING)
-        .filter(([key, value]) => key === packageName || value.includes(packageName))
-        .map(([key, value]) => taskQueue.add(() => executeCommand(key, sdk, ...value)));
-      if (packagesEntries.length) {
-        await Promise.all(packagesEntries);
-        logger.log(
-          chalk.green(`\n🎉 Successful extraction of docs API data for the selected package!`)
-        );
-      } else {
-        logger.warn(
-          `🚨 Package '${packageName}' API data generation is not supported yet! Add it to the mapping in ${
-            __filename
-          }.`
-        );
-      }
-    } else {
-      const packagesEntries = Object.entries(PACKAGES_MAPPING).map(([key, value]) =>
-        taskQueue.add(() => executeCommand(key, sdk, ...value))
-      );
-      await Promise.all(packagesEntries);
-      logger.log(
-        chalk.green(`\n🎉 Successful extraction of docs API data for all available packages!`)
-      );
-    }
-  } catch (error) {
-    logger.error(error);
+  const entries = Object.entries(PACKAGES_MAPPING).filter(
+    ([key, value]) => !packageName || key === packageName || value.includes(packageName)
+  );
+  if (!entries.length) {
+    logger.warn(
+      `🚨 Package '${packageName}' API data generation is not supported yet! Add it to the mapping in ${
+        __filename
+      }.`
+    );
+    return;
   }
+
+  const results = await Promise.allSettled(
+    entries.map(([key, value]) => taskQueue.add(() => executeCommand(key, sdk, ...value)))
+  );
+  const failures = results.flatMap((result, index) =>
+    result.status === 'rejected' ? [{ key: entries[index][0], reason: result.reason }] : []
+  );
+  if (failures.length) {
+    for (const { key, reason } of failures) {
+      logger.error(`💥 Failed to generate docs API data for '${key}':`, reason);
+    }
+    process.exitCode = 1;
+    return;
+  }
+  logger.log(
+    chalk.green(
+      `\n🎉 Successful extraction of docs API data for ${
+        packageName ? 'the selected package' : 'all available packages'
+      }!`
+    )
+  );
 }
 
 export default (program: Command) => {

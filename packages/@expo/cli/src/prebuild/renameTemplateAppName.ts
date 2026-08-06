@@ -3,7 +3,7 @@ import fs from 'fs';
 import { glob } from 'glob';
 import path from 'path';
 
-const debug = require('debug')('expo:prebuild:copyTemplateFiles') as typeof console.log;
+import { debugEvent } from './events';
 
 function escapeXMLCharacters(original: string): string {
   const noAmps = original.replace('&', '&amp;');
@@ -129,7 +129,7 @@ export async function renameTemplateAppNameAsync(
     files: string[];
   }
 ) {
-  debug(`Got files to transform: ${JSON.stringify(files)}`);
+  debugEvent('rename_files', { count: files.length });
 
   await Promise.all(
     files.map(async (file) => {
@@ -145,7 +145,7 @@ export async function renameTemplateAppNameAsync(
         );
       }
 
-      debug(`Renaming app name in file: ${absoluteFilePath}`);
+      debugEvent('rename_file', { path: debugEvent.path(absoluteFilePath) });
 
       const safeName = ['.xml', '.plist'].includes(path.extname(file))
         ? escapeXMLCharacters(name)

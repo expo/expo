@@ -79,6 +79,47 @@ export default function BottomSheetFitsContentExample() {
 }
 ```
 
+### Custom background color
+
+By default, a sheet uses the system's translucent material background (Liquid Glass on iOS 26). Use the [`presentationBackground`](modifiers/#presentationbackgroundcolor) modifier on `Group` to paint the sheet with a solid color instead, which also opts the sheet out of that translucent material.
+
+> **info** Prefer `presentationBackground` over a `background` modifier on the sheet's content. A `background` sits _behind_ the content's own background, so a `Form` or `List` covers it, and the color shows inconsistently as the sheet moves between detents. `presentationBackground` colors the sheet surface itself, so it stays consistent at every detent. When the content is a `Form` or `List`, also add [`scrollContentBackground('hidden')`](modifiers/#scrollcontentbackgroundvisible) so the sheet color shows through the grouped background.
+
+```tsx BottomSheetBackgroundColorExample.tsx
+import { useState } from 'react';
+import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
+import {
+  presentationBackground,
+  presentationDetents,
+  padding,
+  foregroundStyle,
+} from '@expo/ui/swift-ui/modifiers';
+
+export default function BottomSheetBackgroundColorExample() {
+  const [isPresented, setIsPresented] = useState(false);
+
+  return (
+    <Host style={{ flex: 1 }}>
+      <VStack>
+        <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+        <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
+          <Group
+            modifiers={[
+              presentationDetents(['medium', 'large']),
+              presentationBackground('#ffffff'),
+            ]}>
+            <VStack modifiers={[padding({ all: 20 })]}>
+              <Text modifiers={[foregroundStyle('#000000')]}>Solid white sheet background.</Text>
+              <Button label="Close" onPress={() => setIsPresented(false)} />
+            </VStack>
+          </Group>
+        </BottomSheet>
+      </VStack>
+    </Host>
+  );
+}
+```
+
 ### Bottom sheet with presentation detents
 
 Use the [`presentationDetents`](modifiers/#presentationdetentsdetents-options) modifier on `Group` to control the available heights. You can use:

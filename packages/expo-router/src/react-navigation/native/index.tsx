@@ -1,8 +1,4 @@
 /**
- * @deprecated Will be removed in a future SDK.
- */
-export { createStaticNavigation } from './createStaticNavigation';
-/**
  * @deprecated Use `Link` from `expo-router` instead. Will be removed in a future SDK.
  */
 export { Link } from './Link';

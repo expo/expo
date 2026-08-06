@@ -2,12 +2,14 @@ package expo.modules.ui
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.ui.res.stringResource
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -15,11 +17,19 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerDefaults
 import androidx.compose.material3.TimePickerLayoutType
 import androidx.compose.material3.TimePickerState
+import android.view.WindowManager
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.window.DialogWindowProvider
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.types.Enumerable
@@ -331,26 +341,53 @@ fun ExpoDatePickerDialogContent(props: DatePickerDialogProps, onDateSelected: (D
   }
 
   val colors = buildDatePickerColors(props.elementColors, props.color.composeOrNull, DatePickerDefaults.colors())
+  val buttonColors = props.color.composeOrNull
+    ?.let { ButtonDefaults.textButtonColors(contentColor = it) } ?: ButtonDefaults.textButtonColors()
 
   DatePickerDialog(
     onDismissRequest = { onDismissRequest() },
     confirmButton = {
-      TextButton(onClick = { onDateSelected(DatePickerResult(date = state.selectedDateMillis)) }) {
+      TextButton(onClick = { onDateSelected(DatePickerResult(date = state.selectedDateMillis)) }, colors = buttonColors) {
         Text(props.confirmButtonLabel ?: stringResource(android.R.string.ok))
       }
     },
     dismissButton = {
-      TextButton(onClick = { onDismissRequest() }) {
+      TextButton(onClick = { onDismissRequest() }, colors = buttonColors) {
         Text(props.dismissButtonLabel ?: stringResource(android.R.string.cancel))
       }
     },
     colors = colors
   ) {
-    DatePicker(
-      state = state,
-      showModeToggle = props.showVariantToggle,
-      colors = colors
-    )
+    val view = LocalView.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val displayMode = state.displayMode
+    val originalSoftInputMode = remember(view) {
+      (view.parent as? DialogWindowProvider)?.window?.attributes?.softInputMode
+    }
+    SideEffect {
+      val window = (view.parent as? DialogWindowProvider)?.window ?: return@SideEffect
+      if (displayMode == DisplayMode.Picker) {
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING)
+        keyboardController?.hide()
+      } else if (originalSoftInputMode != null) {
+        window.setSoftInputMode(originalSoftInputMode)
+      }
+    }
+
+    // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
+    // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
+    CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
+      DatePicker(
+        modifier = if (displayMode == DisplayMode.Picker) {
+          Modifier.wrapContentHeight(align = Alignment.Top, unbounded = true)
+        } else {
+          Modifier
+        },
+        state = state,
+        showModeToggle = props.showVariantToggle,
+        colors = colors
+      )
+    }
   }
 }
 
@@ -372,6 +409,8 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
   }
 
   val timePickerColors = buildTimePickerColors(props.elementColors, props.color.composeOrNull, TimePickerDefaults.colors())
+  val buttonColors = props.color.composeOrNull
+    ?.let { ButtonDefaults.textButtonColors(contentColor = it) } ?: ButtonDefaults.textButtonColors()
 
   AlertDialog(
     onDismissRequest = { onDismissRequest() },
@@ -384,12 +423,12 @@ fun ExpoTimePickerDialogContent(props: TimePickerDialogProps, onDateSelected: (D
         cal.set(Calendar.HOUR_OF_DAY, state.hour)
         cal.set(Calendar.MINUTE, state.minute)
         onDateSelected(DatePickerResult(date = cal.time.time))
-      }) {
+      }, colors = buttonColors) {
         Text(props.confirmButtonLabel ?: stringResource(android.R.string.ok))
       }
     },
     dismissButton = {
-      TextButton(onClick = { onDismissRequest() }) {
+      TextButton(onClick = { onDismissRequest() }, colors = buttonColors) {
         Text(props.dismissButtonLabel ?: stringResource(android.R.string.cancel))
       }
     },
@@ -443,12 +482,18 @@ fun ExpoDatePicker(modifier: Modifier = Modifier, props: DateTimePickerProps, on
     onDateSelected(DatePickerResult(date = state.selectedDateMillis))
   }
 
-  DatePicker(
-    modifier = modifier,
-    state = state,
-    showModeToggle = props.showVariantToggle,
-    colors = buildDatePickerColors(props.elementColors, props.color.composeOrNull)
-  )
+  val colors = buildDatePickerColors(props.elementColors, props.color.composeOrNull)
+
+  // Material3's year-selector chevron tints from the ambient LocalContentColor (which defaults to
+  // black), not `navigationContentColor`; bind the local so the chevron honors the navigation color.
+  CompositionLocalProvider(LocalContentColor provides colors.navigationContentColor) {
+    DatePicker(
+      modifier = modifier,
+      state = state,
+      showModeToggle = props.showVariantToggle,
+      colors = colors
+    )
+  }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

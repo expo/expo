@@ -35,5 +35,5 @@ export function createRoutesManifest(
   if (!routeTree) {
     return null;
   }
-  return getServerManifest(routeTree, { headers: options.headers });
+  return getServerManifest(routeTree, options);
 }

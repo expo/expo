@@ -4,11 +4,20 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `validateProperty`, `validateName`, `validateSlug`, `validateSdkVersion`, and `validateIcon` methods ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
+- Drop `ajv`, `ajv-formats`, and `json-schema-traverse` for `@expo/schema-utils`. This may change internal outputs, such as error messages and metadata ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
+- Resolve `$ref` before validating asset fields, so assets defined through refs such as iOS assets are validated properly ([#47340](https://github.com/expo/expo/pull/47340) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+## 2.3.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 2.2.1 — 2026-05-06
 

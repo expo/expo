@@ -17,7 +17,7 @@ export type {
   StackNavigationState,
   StackRouterOptions,
 } from './StackRouter';
-export { StackActions, StackRouter } from './StackRouter';
+export { StackActions, StackRouter, getRoutesForRouteNames } from './StackRouter';
 export type {
   TabActionHelpers,
   TabActionType,

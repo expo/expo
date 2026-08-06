@@ -106,9 +106,14 @@ class Env {
     return string('EXPO_PUBLIC_FOLDER', 'public');
   }
 
-  /** Higher priority `$EDIOTR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
+  /** Higher priority `$EDITOR` variable for indicating which editor to use when pressing `o` in the Terminal UI. */
   get EXPO_EDITOR(): string {
     return string('EXPO_EDITOR', '');
+  }
+
+  /** Overwrite the hostname used in dev server URLs, disregarding the `--host`, `--lan` and `--localhost` arguments. */
+  get REACT_NATIVE_PACKAGER_HOSTNAME(): string | null {
+    return string('REACT_NATIVE_PACKAGER_HOSTNAME', '')?.trim() || null;
   }
 
   /**

@@ -79,6 +79,10 @@ public final class WidgetsModule: Module {
       Function("getTimeline") { (widget: WidgetObject) in
         try widget.getTimeline()
       }
+
+      Function("setConfigurationParameterEnum") { (widget: WidgetObject, parameterName: String, options: [WidgetConfigurationOptionRecord]?) in
+        widget.setConfigurationParameterEnum(parameterName: parameterName, options: options)
+      }
     }
 
     Class("LiveActivityFactory", LiveActivityFactory.self) {

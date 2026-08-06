@@ -1,0 +1,18 @@
+appId: dev.expo.routere2e
+name: Screen pressable works under bottom toolbar (ENG-22124)
+---
+# Reproduces ENG-22124: on Android the bottom Stack.Toolbar renders inside a full-screen
+# Compose host that swallows touches, so this screen Pressable never fires. This test asserts
+# the CORRECT behavior, so it FAILS on the current build (counter stays at 0) — that failure
+# is the reproduction. It will pass once the toolbar stops blocking touches.
+- stopApp: dev.expo.routere2e
+- openLink: router-e2e://
+- runFlow: close-warning.yml
+- assertVisible:
+    id: "press-count"
+    text: "Pressed: 0"
+- tapOn:
+    id: "press-target"
+- assertVisible:
+    id: "press-count"
+    text: "Pressed: 1"

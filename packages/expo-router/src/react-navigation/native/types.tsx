@@ -144,7 +144,7 @@ export type LinkingOptions<ParamList extends object> = {
    */
   getInitialURL?: () => string | null | undefined | Promise<string | null | undefined>;
   /**
-   * Custom function to get subscribe to URL updates.
+   * Custom function to subscribe to URL updates.
    * Uses `Linking.addEventListener('url', callback)` by default.
    *
    * This is not supported on Web.

@@ -4,6 +4,7 @@ description: Learn how to incrementally upgrade the Expo SDK version in your pro
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { RelatedSkills } from '~/ui/components/RelatedSkills';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
@@ -17,7 +18,9 @@ If you are looking to install a specific version of Expo Go, visit [expo.dev/go]
 
 ### Upgrade with an AI coding agent
 
-If you use an AI coding agent, install [Expo Skills](/skills/) and use the [`upgrading-expo` skill](/skills/#available-expo-skills). The skill provides guidelines for upgrading Expo SDK versions and fixing dependency issues. Review any proposed changes and check the SDK changelog for version-specific instructions.
+If you use an AI coding agent, install [Expo Skills](/skills/) and use the [`expo-upgrade` skill](/skills/#available-expo-skills). The skill provides guidelines for upgrading Expo SDK versions and fixing dependency issues. Review any proposed changes and check the SDK changelog for version-specific instructions.
+
+<RelatedSkills names={['expo-upgrade']} />
 
 ### Upgrade manually
 
@@ -70,7 +73,7 @@ Read the [SDK changelogs](#sdk-changelogs) for the SDK version you are upgrading
 
 </Step>
 
-## SDK Changelogs
+## SDK changelogs
 
 Each SDK announcement release notes post contains information about deprecations, breaking changes, and anything else that might be unique to that particular SDK version. When upgrading, be sure to check these out to make sure you don't miss anything.
 
@@ -79,7 +82,7 @@ Each SDK announcement release notes post contains information about deprecations
 - **SDK 55**: [Release notes](https://expo.dev/changelog/sdk-55)
 - **SDK 54**: [Release notes](https://expo.dev/changelog/sdk-54)
 
-### Deprecated SDK Version Changelogs
+### Deprecated SDK version changelogs
 
 The following blog posts may included outdated information, but they are still useful for reference if you happen to fall far behind on SDK upgrades.
 

@@ -6,6 +6,7 @@ import type {
   NativeLiveActivity,
   NativeLiveActivityFactory,
   NativeWidgetObject,
+  WidgetConfigurationEnum,
 } from './Widgets.types';
 
 const noopSubscription: EventSubscription = { remove() {} };
@@ -19,6 +20,10 @@ class WidgetStub {
   async getTimeline(): Promise<ExpoTimelineEntry[]> {
     return [];
   }
+  setConfigurationParameterEnum(
+    _parameterName: string,
+    _options?: WidgetConfigurationEnum[]
+  ): void {}
 }
 
 class LiveActivityStub {

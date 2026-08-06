@@ -67,6 +67,16 @@ export type ObserveConfig = {
   integrations?: ObserveIntegrationsConfig;
 };
 
+export type ObserveNavigationIntegrationConfig = {
+  /**
+   * Route or query parameter keys to remove from exported navigation metric
+   * `routeParams`. When any configured parameter is removed from a metric,
+   * the exported resolved URL/path is replaced with `urlHidden: true`.
+   * Does not affect `routeName`.
+   */
+  filteredParams?: string[];
+};
+
 export interface ObserveIntegrationsConfig {
   /**
    * Enables the `expo-router` integration, which records navigation metrics
@@ -74,9 +84,11 @@ export interface ObserveIntegrationsConfig {
    *
    * Requires `expo-router` to be installed.
    *
+   * Pass an object to filter exported route/query params.
+   *
    * @default false
    */
-  'expo-router'?: boolean;
+  'expo-router'?: boolean | ObserveNavigationIntegrationConfig;
   /**
    * Enables the `@react-navigation/native` integration, which records
    * navigation metrics (`cold_ttr`, `warm_ttr`, `tti`).
@@ -85,9 +97,11 @@ export interface ObserveIntegrationsConfig {
    * to be wrapped in `<ObserveNavigationContainer>` instead of the stock
    * `<NavigationContainer>`.
    *
+   * Pass an object to filter exported route/query params.
+   *
    * @default false
    */
-  'react-navigation'?: boolean;
+  'react-navigation'?: boolean | ObserveNavigationIntegrationConfig;
 }
 
 /**
@@ -113,6 +127,23 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   getIntegrations(): ObserveIntegrationsConfig;
   /**
+   * Invokes a callback once when the named integration configuration becomes available.
+   *
+   * @param name Integration name.
+   * @param callback Function called with the integration configuration.
+   *
+   * @example
+   * ```ts
+   * Observe.registerIntegration('expo-router', config => {
+   *   console.log(config);
+   * });
+   * ```
+   */
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void;
+  /**
    * Records a log event against the current main session. The event is
    * persisted locally and dispatched on the next `dispatchEvents()` flush.
    *
@@ -122,6 +153,27 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Reports an error your code caught and handled, recorded as a non-fatal `exception` event. Use it
+   * to keep visibility into failures you recover from, which never reach the automatic global handler
+   * or an error boundary.
+   *
+   * The thrown value is normalized: an `Error`'s `name`, `message`, and `stack` are captured; any
+   * other value (a string, a plain object) is stringified as the message.
+   *
+   * @param error The caught value. An `Error` is preferred, but any thrown value is accepted.
+   *
+   * @example
+   * ```ts
+   * try {
+   *   await syncCart();
+   * } catch (error) {
+   *   Observe.reportError(error);
+   * }
+   * ```
+   */
+  // eslint-disable-next-line handle-callback-err -- `error` is the caught value to report, not a Node callback error.
+  reportError(error: unknown): void;
   /**
    * Marks the first render of the app. Used to compute the `cold_ttr` and
    * `warm_ttr` metrics.

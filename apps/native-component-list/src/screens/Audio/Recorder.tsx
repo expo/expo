@@ -277,12 +277,23 @@ export default function Recorder({ onDone, style }: RecorderProps) {
         <BodyText style={{ fontWeight: 'bold', marginVertical: 10 }}>
           {_formatTime(recorderState.durationMillis / 1000)}
         </BodyText>
+        <BodyText>File size: {_formatFileSize(recorderState.fileSize)}</BodyText>
       </View>
       <AudioInputSelector recorder={audioRecorder} canRecord={recorderState.canRecord} />
       {maybeRenderErrorOverlay()}
     </View>
   );
 }
+
+const _formatFileSize = (bytes: number) => {
+  if (bytes < 1000) {
+    return `${bytes} B`;
+  }
+  if (bytes < 1000 * 1000) {
+    return `${(bytes / 1000).toFixed(1)} kB`;
+  }
+  return `${(bytes / (1000 * 1000)).toFixed(2)} MB`;
+};
 
 const _formatTime = (duration: number) => {
   const paddedSecs = _leftPad(`${Math.floor(duration % 60)}`, '0', 2);

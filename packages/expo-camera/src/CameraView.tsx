@@ -8,10 +8,13 @@ import type {
   CameraViewProps,
   CameraRecordingOptions,
   CameraViewRef,
+  DocumentScanningOptions,
+  DocumentScanningResult,
   ScanningOptions,
   ScanningResult,
   VideoCodec,
   AvailableLenses,
+  LensInfo,
 } from './Camera.types';
 import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExpoCameraManager';
@@ -80,6 +83,13 @@ export default class CameraView extends Component<CameraViewProps> {
    */
   static isModernBarcodeScannerAvailable: boolean = CameraManager.isModernBarcodeScannerAvailable;
   /**
+   * Property that determines whether the current device can present the system document scanner through
+   * [`scanDocumentAsync`](#scandocumentasyncoptions) —
+   * ML Kit document scanner on Android, which requires Google Play Services or the
+   * VisionKit's `VNDocumentCameraViewController` on iOS.
+   */
+  static isDocumentScannerAvailable: boolean = CameraManager.isDocumentScannerAvailable;
+  /**
    * Check whether the current device has a camera. This is useful for web and simulators cases.
    * This isn't influenced by the Permissions API (all platforms), or HTTP usage (in the browser).
    * You will still need to check if the native permission has been accepted.
@@ -119,10 +129,10 @@ export default class CameraView extends Component<CameraViewProps> {
   /**
    * Returns the available lenses for the currently selected camera.
    *
-   * @return Returns a Promise that resolves to an array of strings representing the lens type that can be passed to `selectedLens` prop.
+   * @return An array of `LensInfo` objects containing both the stable `deviceType` identifier and the `localizedName` for display purposes. The `deviceType` can be passed to the `selectedLens` prop.
    * @platform ios
    */
-  async getAvailableLensesAsync(): Promise<string[]> {
+  async getAvailableLensesAsync(): Promise<LensInfo[]> {
     return (await this._cameraRef.current?.getAvailableLenses()) ?? [];
   }
 
@@ -201,7 +211,7 @@ export default class CameraView extends Component<CameraViewProps> {
    * `exif` is included if the `exif` option was truthy, and is an object containing EXIF
    * data for the image. The names of its properties are EXIF tags and their values are the values for those tags.
    *
-   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copy`](filesystem/#copydestination-1)
+   * > On native platforms, the local image URI is temporary. Use [`FileSystem.copy`](filesystem/#copydestination-options-1)
    * > to make a permanent copy of the image.
    */
   async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
@@ -236,6 +246,39 @@ export default class CameraView extends Component<CameraViewProps> {
     if (Platform.OS !== 'web' && CameraView.isModernBarcodeScannerAvailable) {
       await CameraManager.dismissScanner();
     }
+  }
+
+  /**
+   * Presents the system document scanner and returns the captured pages once the user saves. On iOS, this uses
+   * VisionKit's [`VNDocumentCameraViewController`](https://developer.apple.com/documentation/visionkit/vndocumentcameraviewcontroller);
+   * on Android it uses the [ML Kit document scanner](https://developers.google.com/ml-kit/vision/doc-scanner).
+   *
+   * The page images and the optional PDF are written to the app's cache directory, so copy them to a permanent
+   * location with [`expo-file-system`](/versions/latest/sdk/filesystem/) if you need to keep them.
+   *
+   * @param options A map of `DocumentScanningOptions`.
+   * @return A promise that resolves to a [`DocumentScanningResult`](#documentscanningresult), or `null` if the user
+   * cancels the scan or the scanner is unavailable on the device.
+   *
+   * @example
+   * ```ts
+   * const result = await CameraView.scanDocumentAsync({ requestPdf: true });
+   * if (result) {
+   *   console.log(result.pages); // ['file:///.../DocumentScanner/<uuid>.jpg', ...]
+   *   console.log(result.pdfUri); // 'file:///.../DocumentScanner/<uuid>.pdf'
+   * }
+   * ```
+   *
+   * @platform android
+   * @platform ios
+   */
+  static async scanDocumentAsync(
+    options?: DocumentScanningOptions
+  ): Promise<DocumentScanningResult | null> {
+    if (Platform.OS === 'web' || !CameraView.isDocumentScannerAvailable) {
+      return null;
+    }
+    return (await CameraManager.scanDocumentAsync(options ?? {})) ?? null;
   }
 
   /**

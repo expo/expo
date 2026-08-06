@@ -1,7 +1,6 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
-import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.types.descriptors.TypeDescriptor
 import expo.modules.kotlin.types.descriptors.typeDescriptorOf
@@ -28,12 +27,12 @@ class AnyType(
       ?: TypeConverterProviderImpl.obtainTypeConverter(typeDescriptor)
   }
 
-  fun convert(value: Any?, appContext: AppContext? = null, forceConversion: Boolean = false): Any? {
+  fun convert(value: Any?, converterContext: ConverterContext, forceConversion: Boolean = false): Any? {
     // We can skip conversion if we already did it on the C++ side.
     if (!forceConversion && converter.isTrivial() && value !is Dynamic) {
       return value
     }
-    return converter.convert(value, appContext, forceConversion)
+    return converter.convert(value, converterContext, forceConversion)
   }
 
   fun getCppRequiredTypes(): ExpectedType = converter.getCppRequiredTypes()

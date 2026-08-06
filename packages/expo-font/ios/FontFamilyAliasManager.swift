@@ -30,7 +30,7 @@ internal struct FontFamilyAliasManager {
 
   /**
    Sets the alias for the given family name.
-   If the alias has already been set, its family name will be overriden.
+   If the alias has already been set, its family name will be overridden.
    */
   internal static func setAlias(_ familyNameAlias: String, forFont font: String) {
     maybeSwizzleUIFont()

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import AppMetrics from 'expo-app-metrics';
 
-import { initListeners } from '../init';
+import { initListeners, initRouterIntegration } from '../init';
 import { createRouterIntegrationStorage, type RouterIntegrationStorage } from '../storage';
 
 // These are `expo-router`'s event types, but importing them here would pull expo-router's source
@@ -105,12 +105,19 @@ let warnSpy: jest.SpyInstance;
 
 beforeEach(() => {
   jest.clearAllMocks();
+  initRouterIntegration(undefined);
   logSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
   warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
   storage = createRouterIntegrationStorage();
   events = createFakeNavigationEvents();
   cleanup = initListeners(storage, events as any);
 });
+
+function setRouterConfig(config: Parameters<typeof initRouterIntegration>[0]) {
+  cleanup?.();
+  initRouterIntegration(config);
+  cleanup = initListeners(storage, events as any);
+}
 
 afterEach(() => {
   cleanup?.();
@@ -134,6 +141,59 @@ describe('initListeners', () => {
       routeName: '/a',
       value: expect.closeTo(0.1, 2),
       params: { isAppLaunch: true, routeParams: {}, url: '/a' },
+    });
+  });
+
+  it('filters route params from cold_ttr, warm_ttr, and deferred tti metrics', async () => {
+    setRouterConfig({ filteredParams: ['userId', 'token'] });
+    const circular: Record<string, unknown> = {};
+    circular.self = circular;
+    storage.screenTimes['b'] = { lastInteractiveCall: performance.now() };
+
+    focus(events, 'a', { params: { userId: '1', tab: 'home', callback: () => {}, circular } });
+    await flushAsync();
+
+    dispatch(events, 'NAVIGATE');
+    focus(events, 'b', {
+      pathname: '/b?token=secret',
+      params: { token: 'secret', q: 'ok', callback: () => {}, circular },
+    });
+    await flushAsync();
+
+    expect(mockAddMetric.mock.calls[0][0].params).toEqual({
+      isAppLaunch: true,
+      routeParams: { tab: 'home' },
+      urlHidden: true,
+    });
+    expect(mockAddMetric.mock.calls[1][0].params).toEqual({
+      isAppLaunch: false,
+      routeParams: { q: 'ok' },
+      urlHidden: true,
+    });
+    expect(mockAddMetric.mock.calls[2][0].params).toEqual({
+      isAppLaunch: false,
+      routeParams: { q: 'ok' },
+      urlHidden: true,
+    });
+  });
+
+  it('keeps URL visible when filteredParams does not remove any route param', async () => {
+    setRouterConfig({ filteredParams: ['userId'] });
+    storage.screenTimes['a'] = { lastInteractiveCall: performance.now() };
+
+    focus(events, 'a', { pathname: '/a?token=secret', params: { token: 'secret' } });
+    await flushAsync();
+
+    expect(mockAddMetric).toHaveBeenCalledTimes(2);
+    expect(mockAddMetric.mock.calls[0][0].params).toEqual({
+      isAppLaunch: true,
+      routeParams: { token: 'secret' },
+      url: '/a?token=secret',
+    });
+    expect(mockAddMetric.mock.calls[1][0].params).toEqual({
+      isAppLaunch: true,
+      routeParams: { token: 'secret' },
+      url: '/a?token=secret',
     });
   });
 

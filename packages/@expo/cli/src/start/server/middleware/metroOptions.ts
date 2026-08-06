@@ -5,9 +5,8 @@ import type { BundleOptions as MetroBundleOptions } from '@expo/metro/metro/shar
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
+import { debugEvent } from '../metro/metroDebugEvents';
 import { getRouterDirectoryModuleIdWithManifest } from '../metro/router';
-
-const debug = require('debug')('expo:metro:options') as typeof console.log;
 
 /** Enforce conversion of `true` to `'true'` */
 function toBoolStr(x: true): 'true';
@@ -186,7 +185,7 @@ export function getMetroDirectBundleOptions(options: ExpoMetroOptions) {
   const isHermes = engine === 'hermes';
 
   if (isExporting) {
-    debug('Disabling lazy bundling for export build');
+    debugEvent('options_lazy_disabled_for_export', {});
     options.lazy = false;
   }
 
@@ -421,7 +420,7 @@ export function createBundleUrlSearchParams(options: ExpoMetroOptions): URLSearc
 
 /**
  * Convert all path separators to `/`, including on Windows.
- * Metro asumes that all module specifiers are posix paths.
+ * Metro assumes that all module specifiers are posix paths.
  * References to directories can still be Windows-style paths in Metro.
  *
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules#importing_features_into_your_script

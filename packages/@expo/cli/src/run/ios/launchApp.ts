@@ -1,9 +1,6 @@
 import chalk from 'chalk';
 import path from 'path';
 
-import * as XcodeBuild from './XcodeBuild';
-import type { BuildProps } from './XcodeBuild.types';
-import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 import { Log } from '../../log';
 import { AppleDeviceManager } from '../../start/platforms/ios/AppleDeviceManager';
 import { launchBinaryOnMacAsync } from '../../start/platforms/ios/devicectl';
@@ -11,6 +8,10 @@ import { SimulatorLogStreamer } from '../../start/platforms/ios/simctlLogging';
 import type { DevServerManager } from '../../start/server/DevServerManager';
 import { parsePlistAsync } from '../../utils/plist';
 import { profile } from '../../utils/profile';
+import { event } from '../events';
+import * as XcodeBuild from './XcodeBuild';
+import type { BuildProps } from './XcodeBuild.types';
+import { getAppDeltaDirectory, installOnDeviceAsync } from './appleDevice/installOnDeviceAsync';
 
 type BinaryLaunchInfo = {
   bundleId: string;
@@ -32,6 +33,7 @@ export async function launchAppAsync(
 
   Log.log(chalk.gray`\u203A Installing ${binaryPath}`);
   if (!props.isSimulator) {
+    const done = event.span();
     if (props.device.osType === 'macOS') {
       await launchBinaryOnMacAsync(appId, binaryPath);
     } else {
@@ -43,6 +45,8 @@ export async function launchAppAsync(
         deviceName: props.device.name,
       });
     }
+    done('install', { platform: 'ios', appId });
+    event('launch', { platform: 'ios', appId });
 
     return;
   }
@@ -50,7 +54,9 @@ export async function launchAppAsync(
   XcodeBuild.logPrettyItem(chalk`{bold Installing} on ${props.device.name}`);
 
   const device = await AppleDeviceManager.resolveAsync({ device: props.device });
+  const doneInstall = event.span();
   await device.installAppAsync(binaryPath);
+  doneInstall('install', { platform: 'ios', appId });
 
   XcodeBuild.logPrettyItem(chalk`{bold Opening} on ${device.name} {dim (${appId})}`);
 
@@ -67,6 +73,8 @@ export async function launchAppAsync(
     },
     { device: device.device }
   );
+
+  event('launch', { platform: 'ios', appId });
 }
 
 export async function getLaunchInfoForBinaryAsync(binaryPath: string): Promise<BinaryLaunchInfo> {

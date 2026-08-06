@@ -1,5 +1,6 @@
-import { Screen } from '../views/Screen';
 import Drawer from './DrawerClient';
+
+export type { DrawerNavigatorProps } from './DrawerClient';
 
 // Re-export the drawer building blocks (content components, items, types, etc.) from the
 // vendored react-navigation so apps can build custom `drawerContent` without depending on
@@ -24,12 +25,9 @@ export type {
   DrawerNavigationEventMap,
   DrawerNavigationOptions,
   DrawerNavigationProp,
-  DrawerNavigatorProps,
   DrawerOptionsArgs,
   DrawerScreenProps,
 } from '../react-navigation/drawer';
-
-Drawer.Screen = Screen;
 
 export { Drawer };
 

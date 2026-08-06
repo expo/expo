@@ -209,6 +209,7 @@ export function DrawerRouter({
 
           return addDrawerToHistory(state);
 
+        case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE':
         case 'NAVIGATE_DEPRECATED': {

@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-jsi",
-  "version": "56.0.7",
+  "version": "57.0.4",
   "description": "The JavaScript Interface for Expo Modules",
   "main": "index.js",
   "sideEffects": [],
@@ -12,6 +12,7 @@
   },
   "scripts": {
     "build:xcframework": "apple/scripts/build-xcframework.sh",
+    "clean": "apple/scripts/clear-caches.sh",
     "swift:format": "../../scripts/swift-format.sh",
     "swift:lint": "../../scripts/swift-format.sh --lint",
     "test:integration": "apple/scripts/test.sh"

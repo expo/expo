@@ -42,6 +42,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import java.io.File
+import java.util.UUID
 import java.util.concurrent.ConcurrentHashMap
 
 @androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
@@ -508,9 +509,13 @@ class AudioModule : Module() {
         }
       }
 
-      Function("replace") { player: AudioPlayer, source: AudioSource ->
+      Function("replace") { player: AudioPlayer, source: AudioSource? ->
         runOnMain {
           if (player.ref.availableCommands.contains(Player.COMMAND_CHANGE_MEDIA_ITEMS)) {
+            if (source == null) {
+              player.clearMediaSource()
+              return@runOnMain
+            }
             val mediaSource = createMediaItem(source)
             val wasPlaying = player.ref.isPlaying
             mediaSource?.let {
@@ -679,6 +684,35 @@ class AudioModule : Module() {
 
       Function("stop") { stream: AudioStream ->
         stream.stop()
+      }
+
+      AsyncFunction("startFileRecordingAsync") Coroutine { stream: AudioStream, options: AudioStreamFileRecordingOptions? ->
+        val opts = options ?: AudioStreamFileRecordingOptions()
+        val format = opts.format
+        val file = opts.uri?.let { uri ->
+          val ext = File(uri.toURI()).extension.lowercase()
+          if (ext != format.fileExtension) {
+            throw AudioStreamFileException(
+              "The URI '${File(uri.toURI()).name}' has extension '.$ext' but the chosen format is '${format.value}'. Change the URI extension or the format to match."
+            )
+          }
+          File(uri.toURI())
+        } ?: run {
+          val parentDir = when (opts.directory ?: RecordingDirectory.CACHE) {
+            RecordingDirectory.CACHE -> appContext.cacheDirectory
+            RecordingDirectory.DOCUMENT -> appContext.persistentFilesDirectory
+          }
+          val dir = File(parentDir, "AudioStream")
+          dir.mkdirs()
+          File(dir, "stream-${UUID.randomUUID()}.${format.fileExtension}")
+        }
+        AudioStreamFileRecordingStartResult().apply {
+          uri = stream.startFileRecording(file, format)
+        }
+      }
+
+      AsyncFunction("stopFileRecordingAsync") Coroutine { stream: AudioStream ->
+        stream.stopFileRecording()
       }
     }
 

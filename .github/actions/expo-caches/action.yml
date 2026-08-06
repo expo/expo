@@ -14,6 +14,14 @@ inputs:
   bare-expo-pods:
     description: 'Restore /apps/bare-expo/ios pods cache'
     required: false
+  bare-expo-pods-configuration:
+    description: >
+      Build configuration the restored /apps/bare-expo/ios pods will be used with.
+      The Pods dir holds configuration-specific prebuilt artifacts (React-Core-prebuilt's
+      React.xcframework and its .last_build_configuration marker), so Debug and Release
+      consumers must not share a cache entry.
+    default: 'Release'
+    required: false
   bare-expo-macos-pods:
     description: 'Restore /apps/bare-expo/macos pods cache'
     required: false
@@ -62,14 +70,14 @@ runs:
   steps:
     - name: ♻️ Restore /docs node modules
       if: inputs.pnpm-docs == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: docs-modules-cache
       with:
         path: docs/node_modules
         key: ${{ runner.os }}-docs-modules-${{ hashFiles('docs/pnpm-lock.yaml') }}
     - name: ♻️ Restore Docs Next cache
       if: inputs.pnpm-docs == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: docs/.next/cache
         key: ${{ runner.os }}-docs-${{ hashFiles('docs/pnpm-lock.yaml') }}-${{ hashFiles('docs/**/*.js', 'docs/**/*.jsx', 'docs/**/*.ts', 'docs/**/*.tsx') }}
@@ -77,7 +85,7 @@ runs:
           ${{ runner.os }}-docs-${{ hashFiles('docs/pnpm-lock.yaml') }}-
     - name: ♻️ Restore Docs ESLint cache
       if: inputs.pnpm-docs == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: docs/.eslintcache
         key: ${{ runner.os }}-docs-eslint-${{ hashFiles('docs/pnpm-lock.yaml') }}-${{ hashFiles('docs/eslint.config.mjs') }}
@@ -85,7 +93,7 @@ runs:
 
     - name: ♻️ Restore Docs API data
       if: inputs.docs-api-data == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: docs-api-data-cache
       with:
         path: docs/public/static/data/unversioned
@@ -93,7 +101,7 @@ runs:
 
     - name: ♻️ Restore ios/Pods from cache
       if: inputs.ios-pods == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: ios-pods-cache
       with:
         path: ios/Pods
@@ -101,15 +109,15 @@ runs:
 
     - name: ♻️ Restore apps/bare-expo/ios/Pods from cache
       if: inputs.bare-expo-pods == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: bare-expo-pods-cache
       with:
         path: apps/bare-expo/ios/Pods
-        key: ${{ runner.os }}-bare-expo-pods-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
+        key: ${{ runner.os }}-bare-expo-pods-${{ inputs.bare-expo-pods-configuration }}-${{ hashFiles('apps/bare-expo/ios/Podfile.lock') }}
 
     - name: ♻️ Restore apps/bare-expo/macos/Pods from cache
       if: inputs.bare-expo-macos-pods == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: bare-expo-macos-pods-cache
       with:
         path: apps/bare-expo/macos/Pods
@@ -117,7 +125,7 @@ runs:
 
     - name: ♻️ Restore apps/native-tests/ios/Pods from cache
       if: inputs.native-tests-pods == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: native-tests-pods-cache
       with:
         path: apps/native-tests/ios/Pods
@@ -125,13 +133,13 @@ runs:
 
     - name: ♻️ Restore Gradle cache
       if: inputs.ndk == 'true' || inputs.gradle == 'true'
-      uses: gradle/actions/setup-gradle@0723195856401067f7a2779048b490ace7a47d7c # v5.0.2
+      uses: gradle/actions/setup-gradle@3f131e8634966bd73d06cc69884922b02e6faf92 # v6.2.0
       with:
         cache-read-only: ${{ github.ref != 'refs/heads/main' && !contains(github.ref, 'sdk-') }}
 
     - name: ♻️ Restore Android NDK from cache
       if: inputs.ndk == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       id: cache-android-ndk
       with:
         path: /usr/local/lib/android/sdk/ndk/${{ inputs.ndk-version }}/
@@ -149,7 +157,7 @@ runs:
 
     - name: ♻️ Restore ccache (iOS)
       if: inputs.ccache == 'true' && runner.os == 'macOS'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ runner.temp }}/.ccache
         # It is necessary to include Xcode version in the cache key, because each Xcode version introduces changes to clang compiler,
@@ -159,7 +167,7 @@ runs:
 
     - name: ♻️ Restore ccache (Android)
       if: inputs.ccache == 'true' && runner.os == 'Linux'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ runner.temp }}/.ccache
         # The key is divided into two parts:
@@ -171,7 +179,8 @@ runs:
         # ccache tracks these files without any sloppiness issues.
         # - C/C++ source files
         # - Gradle files: see https://github.com/expo/expo/pull/44884
-        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h') }}
+        # - Gradle plugin files: see https://github.com/expo/expo/pull/47455
+        key: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}-${{ hashFiles('packages/**/*.c', 'packages/**/*.cpp', 'packages/**/*.h', 'packages/**/build.gradle', 'packages/**/build.gradle.kts', 'packages/**/settings.gradle', 'packages/**/settings.gradle.kts', 'apps/bare-expo/**/build.gradle', 'apps/bare-expo/**/settings.gradle', 'apps/bare-expo/android/app/src/main/jni/pch.h', 'packages/expo-modules-autolinking/android/expo-gradle-plugin/**/*.kt', 'packages/expo-modules-autolinking/android/expo-gradle-plugin/**/*.kts', 'packages/expo-modules-core/expo-module-gradle-plugin/**/*.kt', 'packages/expo-modules-core/expo-module-gradle-plugin/**/*.kts', 'packages/expo-updates/expo-updates-gradle-plugin/**/*.kt', 'packages/expo-updates/expo-updates-gradle-plugin/**/*.kts', 'packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/**/*.kt', 'packages/expo-dev-launcher/expo-dev-launcher-gradle-plugin/**/*.kts', 'packages/expo-network-addons/expo-network-addons-gradle-plugin/**/*.kt', 'packages/expo-network-addons/expo-network-addons-gradle-plugin/**/*.kts') }}
         restore-keys: ${{ runner.os }}-ccache-${{hashFiles('pnpm-lock.yaml')}}
 
     - name: 🛠 Setup "REACT_NATIVE_DOWNLOADS_DIR" environment variable
@@ -180,7 +189,7 @@ runs:
       run: echo "REACT_NATIVE_DOWNLOADS_DIR=$HOME/.gradle/react-native-downloads" >> $GITHUB_ENV
     - name: ♻️ Restore Gradle downloads cache for React Native libraries
       if: inputs.react-native-gradle-downloads == 'true'
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
       with:
         path: ${{ env.REACT_NATIVE_DOWNLOADS_DIR }}
         key: gradle-downloads-${{ hashFiles('pnpm-lock.yaml') }}

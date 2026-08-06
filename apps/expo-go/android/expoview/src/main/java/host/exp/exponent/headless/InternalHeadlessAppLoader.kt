@@ -3,11 +3,9 @@ package host.exp.exponent.headless
 import android.app.Application
 import android.content.Context
 import android.net.Uri
-import android.util.SparseArray
 import com.facebook.react.ReactHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.UiThreadUtil
-import com.facebook.react.devsupport.DevInternalSettings
 import com.facebook.react.soloader.OpenSourceMergedSoMapping
 import com.facebook.soloader.SoLoader
 import expo.modules.apploader.AppLoaderProvider
@@ -21,6 +19,7 @@ import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
 import host.exp.exponent.experience.ExpoGoReactNativeHost
+import host.exp.exponent.factories.ExpoGoDevSupportManager
 import host.exp.exponent.factories.ReactHostFactory
 import host.exp.exponent.kernel.ExponentUrls
 import host.exp.exponent.kernel.KernelConstants
@@ -84,8 +83,9 @@ class InternalHeadlessAppLoader(private val context: Context) :
         override fun onManifestCompleted(manifest: Manifest) {
           Exponent.instance.runOnUiThread {
             try {
-              val bundleUrl = ExponentUrls.toHttp(manifest.getBundleURL())
-              activityIdToBundleUrl.put(activityId, bundleUrl)
+              val bundleUrl = ExponentUrls.toHttp(
+                ExponentUrls.resolveManifestUrl(manifest.getBundleURL(), manifestUrl!!)
+              )
               setManifest(manifestUrl!!, manifest, bundleUrl)
             } catch (e: JSONException) {
               this@InternalHeadlessAppLoader.callback!!.onComplete(false, Exception(e.message))
@@ -240,9 +240,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
     )
 
     if (delegate.isDebugModeEnabled) {
-      val debuggerHost = manifest!!.getDebuggerHost()
-      val mainModuleName = manifest!!.getMainModuleName()
-      Exponent.enableDeveloperSupport(debuggerHost, mainModuleName, host)
+      Exponent.enableDeveloperSupport(manifest!!.getMainModuleName(), host)
     }
 
     val reactHost = ReactHostFactory.getDefaultReactHost(
@@ -250,12 +248,11 @@ class InternalHeadlessAppLoader(private val context: Context) :
       packageList = host.packages,
       jsMainModulePath = host.jsMainModuleName,
       jsBundleFilePath = host.jsBundleFile,
-      useDevSupport = host.useDeveloperSupport
+      useDevSupport = host.useDeveloperSupport,
+      devServerBundleUrl = ExponentUrls.toHttp(manifest!!.getBundleURL())
     )
 
-    val devSupportManager = reactHost.devSupportManager
-    val devSettings = devSupportManager?.devSettings as? DevInternalSettings
-    devSettings?.setExponentActivityId(activityId)
+    (reactHost.devSupportManager as? ExpoGoDevSupportManager)?.exponentActivityId = activityId
 
     // keep a reference in app record, so it can be invalidated through AppRecord.invalidate()
     appRecord!!.setReactHost(reactHost)
@@ -302,15 +299,5 @@ class InternalHeadlessAppLoader(private val context: Context) :
 
   companion object {
     private const val READY_FOR_BUNDLE = "headlessAppReadyForBundle"
-
-    private val activityIdToBundleUrl = SparseArray<String>()
-
-    fun hasBundleUrlForActivityId(activityId: Int): Boolean {
-      return activityId < -1 && activityIdToBundleUrl[activityId] != null
-    }
-
-    fun getBundleUrlForActivityId(activityId: Int): String? {
-      return activityIdToBundleUrl[activityId]
-    }
   }
 }

@@ -3,11 +3,9 @@ import type { PanGesture } from 'react-native-gesture-handler';
 
 import type { HeaderOptions } from '../elements';
 import type {
-  DefaultNavigatorOptions,
   Descriptor,
   DrawerActionHelpers,
   DrawerNavigationState,
-  DrawerRouterOptions,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -39,6 +37,13 @@ export type DrawerNavigationConfig = {
 };
 
 export type DrawerNavigationOptions = HeaderOptions & {
+  /**
+   * Hides the drawer item. If the screen is focused, the navigator redirects to its initial
+   * visible screen.
+   * @default false
+   */
+  hidden?: boolean;
+
   /**
    * Title text for the screen.
    */
@@ -131,7 +136,7 @@ export type DrawerNavigationOptions = HeaderOptions & {
 
   /**
    * Type of the drawer. It determines how the drawer looks and animates.
-   * - `front`: Traditional drawer which covers the screen with a overlay behind it.
+   * - `front`: Traditional drawer which covers the screen with an overlay behind it.
    * - `back`: The drawer is revealed behind the screen on swipe.
    * - `slide`: Both the screen and the drawer slide on swipe to reveal the drawer.
    * - `permanent`: A permanent drawer is shown as a sidebar.
@@ -141,7 +146,7 @@ export type DrawerNavigationOptions = HeaderOptions & {
   drawerType?: 'front' | 'back' | 'slide' | 'permanent';
 
   /**
-   * Whether the statusbar should be hidden when the drawer is pulled or opens,
+   * Whether the statusbar should be hidden when the drawer is pulled or opens.
    */
   drawerHideStatusBarOnOpen?: boolean;
 
@@ -327,14 +332,3 @@ export type DrawerProps = {
   swipeVelocityThreshold: number;
   overlayAccessibilityLabel?: string;
 };
-
-export type DrawerNavigatorProps = DefaultNavigatorOptions<
-  ParamListBase,
-  string | undefined,
-  DrawerNavigationState<ParamListBase>,
-  DrawerNavigationOptions,
-  DrawerNavigationEventMap,
-  DrawerNavigationProp<ParamListBase>
-> &
-  DrawerRouterOptions &
-  DrawerNavigationConfig;

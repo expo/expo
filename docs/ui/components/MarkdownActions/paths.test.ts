@@ -1,4 +1,9 @@
-import { hasDynamicData, normalizePath, shouldShowMarkdownActions } from './paths';
+import {
+  getVersionedMarkdownPath,
+  hasDynamicData,
+  normalizePath,
+  shouldShowMarkdownActions,
+} from './paths';
 
 describe(normalizePath, () => {
   it('strips trailing slashes', () => {
@@ -36,6 +41,51 @@ describe(hasDynamicData, () => {
   });
 });
 
+describe(getVersionedMarkdownPath, () => {
+  it('resolves the pair markdown path from the upgrade helper query', () => {
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=52&toSdk=57')).toBe(
+      '/bare/upgrade/52-to-57/index.md'
+    );
+  });
+
+  it('resolves without a trailing slash and with a hash fragment', () => {
+    expect(getVersionedMarkdownPath('/bare/upgrade?fromSdk=52&toSdk=57')).toBe(
+      '/bare/upgrade/52-to-57/index.md'
+    );
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=52&toSdk=57#packagejson')).toBe(
+      '/bare/upgrade/52-to-57/index.md'
+    );
+  });
+
+  it('allows unversioned as the target version', () => {
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=52&toSdk=unversioned')).toBe(
+      '/bare/upgrade/52-to-unversioned/index.md'
+    );
+  });
+
+  it('returns null when either version is missing', () => {
+    expect(getVersionedMarkdownPath('/bare/upgrade/')).toBeNull();
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=52')).toBeNull();
+    expect(getVersionedMarkdownPath('/bare/upgrade/?toSdk=57')).toBeNull();
+  });
+
+  it('returns null on other pages carrying the same query', () => {
+    expect(getVersionedMarkdownPath('/guides/overview/?fromSdk=52&toSdk=57')).toBeNull();
+  });
+
+  it('rejects versions that are not plain numbers or unversioned', () => {
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=..%2F52&toSdk=57')).toBeNull();
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=52abc&toSdk=57')).toBeNull();
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=&toSdk=57')).toBeNull();
+  });
+
+  it('rejects pairs that do not upgrade to a newer version', () => {
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=57&toSdk=52')).toBeNull();
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=52&toSdk=52')).toBeNull();
+    expect(getVersionedMarkdownPath('/bare/upgrade/?fromSdk=unversioned&toSdk=57')).toBeNull();
+  });
+});
+
 describe(shouldShowMarkdownActions, () => {
   it('agrees between server and client paths for the same page', () => {
     const server = shouldShowMarkdownActions({ path: '/additional-resources/' });
@@ -48,5 +98,23 @@ describe(shouldShowMarkdownActions, () => {
     expect(shouldShowMarkdownActions({ packageName: 'expo-video', path: '/guides/x/' })).toBe(
       false
     );
+  });
+
+  it('hides actions on the upgrade helper without a version pair', () => {
+    expect(shouldShowMarkdownActions({ path: '/bare/upgrade/' })).toBe(false);
+    expect(shouldShowMarkdownActions({ path: '/bare/upgrade/?fromSdk=57&toSdk=52' })).toBe(false);
+  });
+
+  it('shows actions on the upgrade helper once a version pair is selected', () => {
+    expect(shouldShowMarkdownActions({ path: '/bare/upgrade/?fromSdk=52&toSdk=57' })).toBe(true);
+  });
+
+  it('keeps package pages hidden even with a version pair selected', () => {
+    expect(
+      shouldShowMarkdownActions({
+        packageName: 'expo-video',
+        path: '/bare/upgrade/?fromSdk=52&toSdk=57',
+      })
+    ).toBe(false);
   });
 });

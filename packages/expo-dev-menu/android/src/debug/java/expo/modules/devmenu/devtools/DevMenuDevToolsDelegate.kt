@@ -22,10 +22,13 @@ import java.lang.ref.WeakReference
 import java.lang.reflect.Proxy
 
 class DevMenuDevToolsDelegate(
-  private val weakDevSupportManager: WeakReference<out DevSupportManager>
+  private val devSupportManagerProvider: () -> DevSupportManager?
 ) {
+  constructor(weakDevSupportManager: WeakReference<out DevSupportManager>) :
+    this({ weakDevSupportManager.get() })
+
   private val devSupportManager: DevSupportManager?
-    get() = weakDevSupportManager.get()
+    get() = devSupportManagerProvider()
 
   private val currentActivity: Activity?
     get() = devSupportManager?.currentActivity

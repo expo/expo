@@ -9,7 +9,7 @@ const compressionMiddleware = createCompressionMiddleware();
  */
 export const compression: NextHandleFunction = (req, res, next) => {
   // We need to make compression decision based on request,
-  // because resposnse is not ready when the middleware is executed.
+  // because response is not ready when the middleware is executed.
 
   if (!req.url) {
     return next();

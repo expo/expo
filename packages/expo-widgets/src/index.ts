@@ -10,6 +10,7 @@ export type {
   PushTokenEvent,
   PushToStartTokenEvent,
   UserInteractionEvent,
+  WidgetConfigurationEnum,
   WidgetEnvironment,
   WidgetFamily,
   WidgetRenderingMode,

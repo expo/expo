@@ -2,6 +2,7 @@ import type {
   AgeRangeRequest,
   AgeRangeResponse,
   AgeRangeRegulatoryFeature,
+  AgeSignalsStatus,
 } from './ExpoAgeRange.types';
 
 export async function requestAgeRangeAsync(_: AgeRangeRequest): Promise<AgeRangeResponse> {
@@ -21,5 +22,9 @@ export async function showSignificantUpdateAcknowledgmentAsync(
 export async function getRequiredRegulatoryFeaturesAsync(): Promise<
   AgeRangeRegulatoryFeature[] | null
 > {
+  return null;
+}
+
+export async function requestAgeSignalsAccessAsync(): Promise<AgeSignalsStatus | null> {
   return null;
 }

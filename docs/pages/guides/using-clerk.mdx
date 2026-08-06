@@ -14,19 +14,19 @@ import { BookOpen02Icon } from '@expo/styleguide-icons/outline/BookOpen02Icon';
 
 <TabsGroup>
 
-[Clerk](https://clerk.com/expo-authentication) is an authentication and user management platform that provides sign-up, sign-in, multi-factor authentication, social sign-in, organizations, and a hosted user database. The [`@clerk/expo`](https://www.npmjs.com/package/@clerk/expo) SDK gives you React hooks, control components, and prebuilt native UI components that render with Jetpack Compose on Android and SwiftUI on iOS.
+[Clerk](https://clerk.com/expo-authentication) is an authentication and user management platform that provides sign-up, sign-in, multi-factor authentication, social sign-in, organizations, and a hosted user database. The [`@clerk/expo`](https://www.npmjs.com/package/@clerk/expo) SDK gives you React hooks, control components, hosted authentication, and prebuilt native UI components that render with Jetpack Compose on Android and SwiftUI on iOS.
 
-This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvider>`, and choose the integration approach that fits your project. It targets `@clerk/expo` Core 3 (the 3.x release line), which supports Expo SDK 53, 54, and 55.
+This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvider>`, and choose the integration approach that fits your project. It targets `@clerk/expo` 4.x, which supports Expo SDK 54 and later.
 
 ## Choose your integration approach
 
-`@clerk/expo` supports three approaches. Pick the one that matches your needs — you can change later without rewriting your app.
+`@clerk/expo` supports three approaches. Pick the one that matches your needs. You can change later without rewriting your app.
 
-| Approach                       | What you build                                                                                | Runs in Expo Go | Best for                                                         |
-| ------------------------------ | --------------------------------------------------------------------------------------------- | --------------- | ---------------------------------------------------------------- |
-| JavaScript only                | Your own React Native screens that call `useSignIn()` and `useSignUp()`                       | <YesIcon />     | Maximum UI control, prototyping in Expo Go                       |
-| JavaScript with native sign-in | Your own screens plus native Sign in with Google and Sign in with Apple buttons               | <NoIcon />      | Apps that want a custom look but native social sign-in           |
-| Native UI components           | Drop in `<AuthView />`, `<UserButton />`, and `<UserProfileView />` from `@clerk/expo/native` | <NoIcon />      | The fastest path to a complete sign-in and account management UI |
+| Approach              | What you build                                                                                | Runs in Expo Go | Best for                                                       |
+| --------------------- | --------------------------------------------------------------------------------------------- | --------------- | -------------------------------------------------------------- |
+| Hosted authentication | A button that opens Clerk's Account Portal in a browser authentication session                | <YesIcon />     | The fastest setup, with every method enabled in your dashboard |
+| Native UI components  | Drop in `<AuthView />`, `<UserButton />`, and `<UserProfileView />` from `@clerk/expo/native` | <NoIcon />      | A complete native sign-in and account management UI            |
+| Custom flow           | Your own React Native screens that call hooks such as `useSignUp()` and `useSignIn()`         | <YesIcon />     | Maximum UI control                                             |
 
 > **info** The native UI components in `@clerk/expo/native` are currently in beta. They render with Jetpack Compose on Android and SwiftUI on iOS and they synchronize the signed-in session back to the JavaScript SDK so all `@clerk/expo` hooks (such as `useAuth()` and `useUser()`) stay in sync.
 
@@ -43,7 +43,7 @@ This guide shows you how to install `@clerk/expo`, wrap your app in `<ClerkProvi
     `@clerk/expo` Core 3 has a peer dependency of `expo: >=53 <56`.
   </Requirement>
   <Requirement title="Use a development build for native features">
-    The native sign-in and native UI component approaches require a development build. The JavaScript-only approach also works in Expo Go.
+    The native UI components and the native sign-in hooks require a development build. The hosted authentication and custom flow approaches also work in Expo Go.
   </Requirement>
 </Prerequisites>
 
@@ -66,18 +66,29 @@ Use `npx expo install` so versions match your Expo SDK:
 
 `expo-secure-store` is a peer dependency. Clerk uses it through `@clerk/expo/token-cache` to encrypt session tokens with the iOS Keychain and the Android Keystore.
 
-If you plan to use native Sign in with Google, also install `expo-crypto`:
+For hosted authentication, also install the packages Clerk uses to open the browser authentication session:
 
 <Terminal
   cmd={{
-    npm: ['$ npx expo install expo-crypto'],
-    yarn: ['$ yarn expo install expo-crypto'],
-    pnpm: ['$ pnpm expo install expo-crypto'],
-    bun: ['$ bun expo install expo-crypto'],
+    npm: ['$ npx expo install expo-auth-session expo-crypto expo-web-browser'],
+    yarn: ['$ yarn expo install expo-auth-session expo-crypto expo-web-browser'],
+    pnpm: ['$ pnpm expo install expo-auth-session expo-crypto expo-web-browser'],
+    bun: ['$ bun expo install expo-auth-session expo-crypto expo-web-browser'],
   }}
 />
 
-For native Sign in with Apple, install both `expo-apple-authentication` and `expo-crypto`:
+If you plan to add native Sign in with Google buttons to a custom flow, install `@clerk/expo-google-signin` and `expo-crypto`:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo install @clerk/expo-google-signin expo-crypto'],
+    yarn: ['$ yarn expo install @clerk/expo-google-signin expo-crypto'],
+    pnpm: ['$ pnpm expo install @clerk/expo-google-signin expo-crypto'],
+    bun: ['$ bun expo install @clerk/expo-google-signin expo-crypto'],
+  }}
+/>
+
+For native Sign in with Apple buttons, install both `expo-apple-authentication` and `expo-crypto`:
 
 <Terminal
   cmd={{
@@ -94,19 +105,21 @@ You do not need any of these extra packages if you only use `<AuthView />` from 
 
 <Step label="2">
 
-### Add the Clerk config plugin
+### Verify the config plugins
 
-Add `@clerk/expo` to the `plugins` array in your [app config](/workflow/configuration/):
+Add `@clerk/expo` and `expo-secure-store` to the `plugins` array in your [app config](/workflow/configuration/). If your project uses a static **app.json** and you installed the packages with `npx expo install`, Expo has already added them:
 
 ```json app.json
 {
   "expo": {
-    "plugins": ["@clerk/expo"]
+    "plugins": ["expo-secure-store", "@clerk/expo"]
   }
 }
 ```
 
-The plugin configures the iOS URL scheme for native Sign in with Google (when `EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME` is set) and applies the Android packaging fixes required by the underlying `clerk-android` SDK. The Apple Sign In entitlement is added by the plugin from `expo-apple-authentication` library, if you install it.
+The `@clerk/expo` plugin adds the Apple Sign In entitlement (disable it with the `appleSignIn: false` plugin option if your app doesn't use it), registers the Android intent filter for the hosted authentication callback, and applies the Android packaging fixes required by the underlying `clerk-android` SDK. If you use the native Sign in with Google buttons, also add the `@clerk/expo-google-signin` plugin alongside it.
+
+Hosted authentication derives its default callback from the `android.package` and `ios.bundleIdentifier` values in your app config. Before you create a production build, add the app on the [Native applications](https://dashboard.clerk.com/last-active?path=native-applications) page in the Clerk Dashboard with the same Android package name and iOS bundle identifier, since production instances validate the callback against the registered values.
 
 </Step>
 
@@ -156,73 +169,101 @@ In Core 3, `publishableKey` is required on `<ClerkProvider>` for Expo apps. Envi
 
 </Step>
 
-## Build your sign-in screen
+## Add authentication
 
 The next step depends on which approach you chose. The tabs below show the minimum code for each.
 
-<Tabs tabs={['Native UI components', 'JavaScript with native sign-in', 'JavaScript-only (Expo Go)']}>
+<Tabs tabs={['Hosted authentication', 'Native UI components', 'Custom flow']}>
 
 <Tab>
 
-Drop `<AuthView />` into a screen. It renders a complete native sign-in and sign-up interface that handles email, phone, passkeys, multi-factor authentication, and any social connection enabled in the Clerk Dashboard:
+Hosted authentication opens Clerk's [Account Portal](https://clerk.com/docs/guides/account-portal/overview) in a browser authentication session over your app. Users can complete any sign-in or sign-up method enabled for your Clerk application, and the SDK activates the resulting session in your app. Call `startHostedAuth()` from the `useHostedAuth()` hook:
 
-```tsx
-import { AuthView } from '@clerk/expo/native';
+```tsx src/app/index.tsx
 import { useAuth } from '@clerk/expo';
-import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useHostedAuth } from '@clerk/expo/hosted-auth';
+import { ActivityIndicator, Button, Text, View } from 'react-native';
 
-export default function SignInScreen() {
-  const { isSignedIn } = useAuth({ treatPendingAsSignedOut: false });
-  const router = useRouter();
+export default function MainScreen() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const { startHostedAuth } = useHostedAuth();
 
-  useEffect(() => {
-    if (isSignedIn) {
-      router.replace('/(home)');
+  const handleSignUp = async () => {
+    try {
+      await startHostedAuth({ mode: 'sign-up' });
+    } catch (error) {
+      // Handle the error in your app
     }
-  }, [isSignedIn]);
+  };
 
-  return <AuthView mode="signInOrUp" />;
-}
-```
+  if (!isLoaded) {
+    return <ActivityIndicator size="large" />;
+  }
 
-After the user signs in, the native session is synchronized back to the JavaScript SDK, so `useAuth()` and `useUser()` reflect the signed-in state. Pass `treatPendingAsSignedOut: false` to `useAuth()` so the brief native-to-JS session sync isn't reported as a signed-out state, which can otherwise cause redirect loops on screens that key navigation off `isSignedIn`.
-
-`<AuthView />` accepts `mode="signIn" | "signUp" | "signInOrUp"` and an optional `isDismissable` boolean.
-
-To show the user's avatar and a profile modal elsewhere in your app, use `<UserButton />`:
-
-```tsx
-import { UserButton } from '@clerk/expo/native';
-import { Show } from '@clerk/expo';
-import { View } from 'react-native';
-
-export function Header() {
   return (
-    <Show when="signed-in">
-      <View style={{ width: 36, height: 36, borderRadius: 18, overflow: 'hidden' }}>
-        <UserButton />
-      </View>
-    </Show>
+    <View>
+      {isSignedIn ? (
+        <Text>You're signed in</Text>
+      ) : (
+        <Button title="Sign up" onPress={handleSignUp} />
+      )}
+    </View>
   );
 }
 ```
 
-`<UserButton />` fills its parent, so the parent controls size and shape. To open the native profile modal from any other UI, use the `useUserProfileModal()` hook:
+After authentication completes, the SDK closes the browser session, activates the new session, and updates `useAuth()` with the signed-in state. The browser doesn't retain a separate active session.
 
-```tsx
-import { useUserProfileModal } from '@clerk/expo';
-import { Pressable, Text } from 'react-native';
+`startHostedAuth()` opens the sign-in page by default and accepts `mode: 'sign-in' | 'sign-up'`. It resolves with a `null` `createdSessionId` when the user dismisses the browser without finishing, and throws when authentication fails.
 
-export function ProfileLink() {
-  const { presentUserProfile, isAvailable } = useUserProfileModal();
+This approach works in Expo Go, where Expo supplies a development callback. In a development or production build, the callback is derived from your iOS bundle identifier or Android package name, so keep the `@clerk/expo` config plugin in your app config and rebuild the native project after changing either identifier.
+
+Account Portal runs in a browser, so social sign-in uses each provider's web OAuth flow rather than the native one. See the [hosted authentication guide](https://clerk.com/docs/expo/guides/account-portal/hosted-auth) for production credential requirements and troubleshooting.
+
+</Tab>
+
+<Tab>
+
+`<AuthView />` renders a complete native sign-in and sign-up interface that handles email, phone, passkeys, multi-factor authentication, and any social connection enabled in the Clerk Dashboard. It renders inline in your React Native view hierarchy, so you can place it in a modal, a route, or a full-screen view. The following example opens it in a modal:
+
+```tsx src/app/index.tsx
+import { useAuth } from '@clerk/expo';
+import { AuthView, UserButton } from '@clerk/expo/native';
+import { useState } from 'react';
+import { ActivityIndicator, Button, Modal, View } from 'react-native';
+
+export default function MainScreen() {
+  const { isLoaded, isSignedIn } = useAuth({ treatPendingAsSignedOut: false });
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+
+  if (!isLoaded) {
+    return <ActivityIndicator size="large" />;
+  }
+
   return (
-    <Pressable onPress={presentUserProfile} disabled={!isAvailable}>
-      <Text>Manage profile</Text>
-    </Pressable>
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      {isSignedIn ? <UserButton /> : <Button title="Sign up" onPress={() => setIsAuthOpen(true)} />}
+      <Modal
+        animationType="slide"
+        visible={isAuthOpen}
+        presentationStyle="pageSheet"
+        onRequestClose={() => setIsAuthOpen(false)}>
+        <AuthView onDismiss={() => setIsAuthOpen(false)} />
+      </Modal>
+    </View>
   );
 }
 ```
+
+After the user signs in, the native session is synchronized back to the JavaScript SDK, so `useAuth()` and `useUser()` reflect the signed-in state. Pass `treatPendingAsSignedOut: false` to `useAuth()` so pending [session tasks](https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks) are not treated as signed out.
+
+> **warning** Keep the `<Modal>` that contains `<AuthView />` mounted at the same level as your signed-in and signed-out content. If you render it only inside signed-out content, auth state can change while session tasks are still pending, and your conditional render unmounts the modal too early.
+
+`<AuthView />` accepts `mode="signIn" | "signUp" | "signInOrUp"` (the default), an `isDismissible` boolean that controls the native dismiss button, and an `onDismiss` callback. When users must authenticate before continuing, render it as a full-screen view with `isDismissible={false}` instead of in a modal.
+
+`<UserButton />` takes no props. It displays the signed-in user's profile image or initials and opens the native `<UserProfileView />` when tapped, where users can manage personal information, security settings, and sign out.
+
+`<AuthView />` automatically shows sign-in buttons for any social connections enabled in the Clerk Dashboard and handles the flows internally, so you don't need `expo-crypto` or the native sign-in hooks. Native OAuth still requires credential setup in the Clerk Dashboard and provider consoles. Otherwise, the buttons appear but fail when tapped. Follow the Clerk Sign in with Google and Sign in with Apple guides linked at the bottom of this page.
 
 This approach requires a development build because the components are backed by native modules:
 
@@ -271,67 +312,108 @@ This approach requires a development build because the components are backed by 
 
 <Tab>
 
-Use the `useSignInWithGoogle()` and `useSignInWithApple()` hooks alongside your own React Native UI:
+Build your own screens with the Core 3 hooks. This works in Expo Go. The following example uses `useSignUp()` to build an email and password sign-up form with email code verification:
 
-```tsx
-import { useSignInWithGoogle } from '@clerk/expo/google';
-import { useRouter } from 'expo-router';
-import { Platform, Text, TouchableOpacity } from 'react-native';
+```tsx src/app/index.tsx
+import { useAuth, useSignUp } from '@clerk/expo';
+import { useState } from 'react';
+import { Button, Text, TextInput, View } from 'react-native';
 
-export function GoogleSignInButton() {
-  const { startGoogleAuthenticationFlow } = useSignInWithGoogle();
-  const router = useRouter();
+export default function MainScreen() {
+  const { isLoaded, isSignedIn } = useAuth();
+  const { signUp } = useSignUp();
 
-  if (Platform.OS !== 'ios' && Platform.OS !== 'android') return null;
+  const [emailAddress, setEmailAddress] = useState('');
+  const [password, setPassword] = useState('');
+  const [code, setCode] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
 
-  const onPress = async () => {
-    try {
-      const { createdSessionId, setActive } = await startGoogleAuthenticationFlow();
-      if (createdSessionId && setActive) {
-        await setActive({ session: createdSessionId });
-        router.replace('/');
-      }
-    } catch (err) {
-      console.error('Google sign-in error', err);
+  const handleSignUp = async () => {
+    const { error } = await signUp.password({ emailAddress, password });
+    if (error) {
+      console.error(JSON.stringify(error, null, 2));
+      return;
     }
+
+    const { error: sendError } = await signUp.verifications.sendEmailCode();
+    if (sendError) {
+      console.error(JSON.stringify(sendError, null, 2));
+      return;
+    }
+
+    setIsVerifying(true);
   };
 
+  const handleVerify = async () => {
+    const { error } = await signUp.verifications.verifyEmailCode({ code });
+    if (error) {
+      console.error(JSON.stringify(error, null, 2));
+      return;
+    }
+
+    await signUp.finalize();
+  };
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  if (isSignedIn) {
+    return <Text>You're signed in</Text>;
+  }
+
+  if (isVerifying) {
+    return (
+      <View>
+        <TextInput
+          value={code}
+          placeholder="Enter your verification code"
+          onChangeText={setCode}
+          keyboardType="numeric"
+        />
+        <Button title="Verify" onPress={handleVerify} />
+      </View>
+    );
+  }
+
   return (
-    <TouchableOpacity onPress={onPress}>
-      <Text>Continue with Google</Text>
-    </TouchableOpacity>
+    <View>
+      <TextInput
+        autoCapitalize="none"
+        value={emailAddress}
+        placeholder="Enter email"
+        onChangeText={setEmailAddress}
+        keyboardType="email-address"
+      />
+      <TextInput
+        value={password}
+        placeholder="Enter password"
+        secureTextEntry
+        onChangeText={setPassword}
+      />
+      <Button title="Sign up" onPress={handleSignUp} />
+      {/* Required for sign-up flows on Expo web. Clerk skips the browser CAPTCHA on Android and iOS */}
+      <View nativeID="clerk-captcha" />
+    </View>
   );
 }
 ```
 
-On Android, this uses Credential Manager and never opens a browser. On iOS, the flow uses `ASAuthorization` (the system credential picker) when `EXPO_PUBLIC_CLERK_GOOGLE_IOS_URL_SCHEME` is configured — without it, iOS falls back to a system browser sheet. Follow the Clerk guides linked at the bottom of this page to register your Android package name, iOS bundle ID, and SHA-256 fingerprints in the Clerk Dashboard and the Google Cloud Console.
+In Core 3, methods such as `signUp.password()` and `signUp.verifications.verifyEmailCode()` return `{ error }` instead of throwing for validation errors. When verification completes the sign-up, `signUp.finalize()` converts it into an active session and updates `useAuth()` with the signed-in state.
 
-`useSignInWithApple()` from `@clerk/expo/apple` follows the same pattern (`startAppleAuthenticationFlow()` returning `{ createdSessionId, setActive }`) and is iOS only. App Store Guideline 4.8 requires that any app offering third-party social sign-in must also offer Sign in with Apple on iOS.
-
-This approach requires a development build because it uses native modules. `useSignInWithGoogle()` requires `expo-crypto`. The `useSignInWithApple()` requires both `expo-apple-authentication` and `expo-crypto`.
-
-</Tab>
-
-<Tab>
-
-Build a custom sign-in form using the Core 3 hooks. This works in Expo Go.
+The corresponding sign-in flow uses `useSignIn()`, where `finalize()` accepts a `navigate` callback so you can handle [session tasks](https://clerk.com/docs/guides/development/custom-flows/authentication/session-tasks) before redirecting:
 
 ```tsx
 import { useSignIn } from '@clerk/expo';
-import { useRouter, type Href } from 'expo-router';
-import { useState } from 'react';
-import { Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { type Href, useRouter } from 'expo-router';
 
 export default function SignInScreen() {
-  const { signIn, fetchStatus, errors } = useSignIn();
+  const { signIn } = useSignIn();
   const router = useRouter();
-  const [emailAddress, setEmailAddress] = useState('');
-  const [password, setPassword] = useState('');
 
-  const onSignInPress = async () => {
+  const handleSignIn = async (emailAddress: string, password: string) => {
     const { error } = await signIn.password({ emailAddress, password });
     if (error) {
-      console.error(JSON.stringify(error, null, 2));
       return;
     }
 
@@ -345,50 +427,13 @@ export default function SignInScreen() {
     }
   };
 
-  return (
-    <View>
-      <TextInput
-        autoCapitalize="none"
-        value={emailAddress}
-        placeholder="Email"
-        onChangeText={setEmailAddress}
-      />
-      <TextInput
-        value={password}
-        placeholder="Password"
-        secureTextEntry
-        onChangeText={setPassword}
-      />
-      <TouchableOpacity onPress={onSignInPress} disabled={fetchStatus === 'fetching'}>
-        <Text>Sign in</Text>
-      </TouchableOpacity>
-      {errors?.fields?.identifier ? <Text>{errors.fields.identifier.message}</Text> : null}
-      {errors?.fields?.password ? <Text>{errors.fields.password.message}</Text> : null}
-    </View>
-  );
+  // ... render your email and password fields
 }
 ```
 
-In Core 3, `signIn.password()` returns `{ error }` instead of throwing for validation errors, and `signIn.finalize()` replaces the legacy `setActive()` call for sign-in flows built with `useSignIn()`.
+To add native Sign in with Google and Sign in with Apple buttons to your custom screens, use the `useSignInWithGoogle()` hook from `@clerk/expo/google` and the `useSignInWithApple()` hook from `@clerk/expo/apple`. Both return a start method (`startGoogleAuthenticationFlow()` and `startAppleAuthenticationFlow()`) that resolves with `{ createdSessionId, setActive }`.
 
-The corresponding sign-up flow with email verification looks like:
-
-```tsx
-await signUp.password({ emailAddress, password });
-await signUp.verifications.sendEmailCode();
-// ... collect the code from the user, then:
-await signUp.verifications.verifyEmailCode({ code });
-if (signUp.status === 'complete') {
-  await signUp.finalize({
-    navigate: ({ session, decorateUrl }) => {
-      if (session?.currentTask) return;
-      router.replace(decorateUrl('/') as Href);
-    },
-  });
-}
-```
-
-Clerk's bot sign-up protection is enabled by default, so include `<View nativeID="clerk-captcha" />` somewhere in your sign-up screen so the invisible CAPTCHA can mount.
+Both hooks use native modules, so they require a development build and the packages from the install step. `useSignInWithGoogle()` also needs the `@clerk/expo-google-signin` config plugin. On iOS, App Store Guideline 4.8 requires that any app offering third-party social sign-in must also offer Sign in with Apple. Follow the Clerk guides linked at the bottom of this page to register your credentials in the Clerk Dashboard and the provider consoles.
 
 </Tab>
 
@@ -429,7 +474,22 @@ export default function HomeScreen() {
 
 ## Run the app
 
-<Tabs tabs={['Android', 'iOS', 'JavaScript-only (Expo Go)']}>
+<Tabs tabs={['Expo Go', 'Android', 'iOS']}>
+
+<Tab>
+
+For the hosted authentication and custom flow approaches, run the following command and open the project in Expo Go:
+
+<Terminal
+  cmd={{
+    npm: ['$ npx expo start'],
+    yarn: ['$ yarn expo start'],
+    pnpm: ['$ pnpm expo start'],
+    bun: ['$ bun expo start'],
+  }}
+/>
+
+</Tab>
 
 <Tab>
 
@@ -457,21 +517,6 @@ export default function HomeScreen() {
 
 </Tab>
 
-<Tab>
-
-For the JavaScript-only approach, run the following command and open the project in Expo Go:
-
-<Terminal
-  cmd={{
-    npm: ['$ npx expo start'],
-    yarn: ['$ yarn expo start'],
-    pnpm: ['$ pnpm expo start'],
-    bun: ['$ bun expo start'],
-  }}
-/>
-
-</Tab>
-
 </Tabs>
 
 ## Next steps
@@ -484,6 +529,13 @@ For the JavaScript-only approach, run the following command and open the project
 />
 
 <BoxLink
+  title="Hosted authentication"
+  description="Use Clerk's Account Portal to sign users in and up from your Expo app, with callbacks, cancellation handling, and production setup."
+  href="https://clerk.com/docs/expo/guides/account-portal/hosted-auth"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
   title="Native components reference"
   description="API reference for AuthView, UserButton, and UserProfileView, including configuration, theming, and platform requirements."
   href="https://clerk.com/docs/reference/expo/native-components/overview"
@@ -492,7 +544,7 @@ For the JavaScript-only approach, run the following command and open the project
 
 <BoxLink
   title="Sign in with Google"
-  description="Set up native Sign in with Google for Android and iOS using ASAuthorization and Credential Manager."
+  description="Set up native Sign in with Google for Android and iOS with the Clerk Dashboard and the Google Cloud Console."
   href="https://clerk.com/docs/expo/guides/configure/auth-strategies/sign-in-with-google"
   Icon={BookOpen02Icon}
 />

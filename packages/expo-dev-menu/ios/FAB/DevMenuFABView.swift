@@ -3,6 +3,7 @@
 #if !os(macOS) && !os(tvOS)
 
 import SwiftUI
+import ExpoModulesCore
 
 enum FABConstants {
   static let iconSize: CGFloat = 44
@@ -67,7 +68,7 @@ struct FabPill: View {
     .animation(.easeInOut(duration: 0.3), value: isIdle)
     .task {
       // [Alan] This is poor practice but without it, the label is not included in the drag gesture
-      // and remains in it's original posistion.
+      // and remains in its original position.
       try? await Task.sleep(nanoseconds: UInt64(1_000_000_000 * FABConstants.labelDismissDelay))
       await MainActor.run {
         withAnimation(.easeOut(duration: 0.3)) {
@@ -138,11 +139,7 @@ struct DevMenuFABView: View {
 
   // Get safe area from window since .ignoresSafeArea() may zero out geometry values
   private var windowSafeArea: UIEdgeInsets {
-    guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-          let window = windowScene.windows.first else {
-      return .zero
-    }
-    return window.safeAreaInsets
+    return SceneGeometry.keyWindow()?.safeAreaInsets ?? .zero
   }
 
   private let dragSpring: Animation = .spring(

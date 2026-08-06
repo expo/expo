@@ -13,8 +13,7 @@ import type { NgrokInstance } from '../doctor/ngrok/NgrokResolver';
 import { isNgrokClientError, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { hasAdbReverseAsync, startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
-
-const debug = require('debug')('expo:start:server:ngrok') as typeof console.log;
+import { debugEvent, event } from './tunnelEvents';
 
 const NGROK_CONFIG = {
   authToken: '5W1bR67GNbWcXqmxZzBG1_56GezNeaX6sSRvn8npeQ8',
@@ -71,35 +70,40 @@ export class AsyncNgrok {
 
   /** Start ngrok on the given port for the project. */
   async startAsync({ timeout }: { timeout?: number } = {}): Promise<void> {
-    // Ensure the instance is loaded first, this can linger so we should run it before the timeout.
-    await this.resolver.resolveAsync({
-      // For now, prefer global install since the package has native code (harder to install) and doesn't change very often.
-      prefersGlobalInstall: true,
-    });
+    const done = event.span();
+    try {
+      // Ensure the instance is loaded first, this can linger so we should run it before the timeout.
+      await this.resolver.resolveAsync({
+        // For now, prefer global install since the package has native code (harder to install) and doesn't change very often.
+        prefersGlobalInstall: true,
+      });
 
-    // NOTE(EvanBacon): If the user doesn't have ADB installed,
-    // then skip attempting to reverse the port.
-    if (hasAdbReverseAsync()) {
-      // Ensure ADB reverse is running.
-      if (!(await startAdbReverseAsync([this.port]))) {
-        // TODO: Better error message.
-        throw new CommandError(
-          'NGROK_ADB',
-          `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
-        );
+      // NOTE(EvanBacon): If the user doesn't have ADB installed,
+      // then skip attempting to reverse the port.
+      if (hasAdbReverseAsync()) {
+        // Ensure ADB reverse is running.
+        if (!(await startAdbReverseAsync([this.port]))) {
+          // TODO: Better error message.
+          throw new CommandError(
+            'NGROK_ADB',
+            `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
+          );
+        }
       }
+
+      this.serverUrl = await this._connectToNgrokAsync({ timeout });
+    } catch (error) {
+      event('failed', { provider: 'ngrok', error: event.error(error as Error) });
+      throw error;
     }
 
-    this.serverUrl = await this._connectToNgrokAsync({ timeout });
-
-    debug('Tunnel URL:', this.serverUrl);
+    debugEvent('url', { url: this.serverUrl });
     Log.log('Tunnel ready.');
+    done('done', { provider: 'ngrok', url: this.serverUrl });
   }
 
   /** Stop the ngrok process if it's running. */
   public async stopAsync(): Promise<void> {
-    debug('Stopping Tunnel');
-
     await this.resolver.get()?.kill?.();
     this.serverUrl = null;
   }
@@ -144,11 +148,11 @@ export class AsyncNgrok {
         typeof userDefinedSubdomain === 'string'
           ? userDefinedSubdomain
           : await this._getProjectSubdomainAsync();
-      debug('Subdomain:', subdomain);
+      debugEvent('ngrok_subdomain', { subdomain });
       return { subdomain };
     } else {
       const hostname = await this._getProjectHostnameAsync();
-      debug('Hostname:', hostname);
+      debugEvent('ngrok_hostname', { hostname });
       return { hostname };
     }
   }
@@ -160,7 +164,7 @@ export class AsyncNgrok {
     try {
       // Global config path.
       const configPath = path.join(getSettingsDirectory(), 'ngrok.yml');
-      debug('Global config path:', configPath);
+      debugEvent('ngrok_config_path', { path: configPath });
       const urlProps = await this._getConnectionPropsAsync();
 
       const url = await instance.connect({
@@ -238,7 +242,7 @@ export class AsyncNgrok {
     } while (randomness.startsWith('_')); // _ is an invalid character for a hostname
 
     await ProjectSettings.setAsync(this.projectRoot, { urlRandomness: randomness });
-    debug('Resetting project randomness:', randomness);
+    debugEvent('ngrok_randomness_reset', { randomness });
     return randomness;
   }
 }

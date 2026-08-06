@@ -1,11 +1,10 @@
-/* eslint-env jest */
 import { resolveEntryPoint } from '@expo/config/paths';
 import fs from 'fs';
 import path from 'path';
 
-import { projectRoot, getLoadedModulesAsync, findProjectFiles } from './utils';
 import { isHermesBytecodeBundleAsync } from '../../src/export/exportHermes';
 import { executeExpoAsync } from '../utils/expo';
+import { projectRoot, getLoadedModulesAsync, findProjectFiles } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;

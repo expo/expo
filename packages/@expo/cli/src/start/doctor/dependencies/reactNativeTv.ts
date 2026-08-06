@@ -4,10 +4,9 @@ import semver from 'semver';
 
 import { env } from '../../../utils/env';
 import { fetch } from '../../../utils/fetch';
+import { debugEvent } from '../events';
 
 export const REACT_NATIVE_TVOS_PACKAGE_NAME = 'react-native-tvos';
-
-const debug = require('debug')('expo:doctor:reactNativeTv') as typeof console.log;
 
 const NPM_DIST_TAGS_URL = `https://registry.npmjs.org/-/package/${REACT_NATIVE_TVOS_PACKAGE_NAME}/dist-tags`;
 
@@ -56,25 +55,23 @@ export async function correctReactNativeTvVersion(
 ): Promise<string> {
   const derivedTag = deriveDistTag(bundledReactNativeVersion);
   if (!derivedTag) {
-    debug(
-      `Could not derive a react-native-tvos dist-tag from "${bundledReactNativeVersion}"; falling back to @latest`
-    );
+    debugEvent('tv_dist_tag_fallback', {
+      bundledVersion: bundledReactNativeVersion,
+      reason: 'could not derive dist-tag',
+    });
     return LATEST_FALLBACK_SPEC;
   }
   // In offline mode skip the npm dist-tags lookup and trust the derived tag —
   // any other CLI code path that needs a network request also bails on
   // `EXPO_OFFLINE` (see `validateDependenciesVersionsAsync`).
   if (env.EXPO_OFFLINE) {
-    debug(`EXPO_OFFLINE is set; skipping npm dist-tags lookup for react-native-tvos`);
     return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@${derivedTag}`;
   }
   const publishedTags = await fetchReactNativeTvDistTagsAsync();
   if (publishedTags.has(derivedTag)) {
     return `npm:${REACT_NATIVE_TVOS_PACKAGE_NAME}@${derivedTag}`;
   }
-  debug(
-    `Derived react-native-tvos dist-tag "${derivedTag}" is not published; falling back to @latest`
-  );
+  debugEvent('tv_dist_tag_not_published', { tag: derivedTag });
   return LATEST_FALLBACK_SPEC;
 }
 
@@ -120,7 +117,7 @@ async function fetchReactNativeTvDistTagsAsync(): Promise<Set<string>> {
   try {
     response = await fetch(NPM_DIST_TAGS_URL);
   } catch (error: any) {
-    debug(`npm dist-tags lookup threw: ${error?.message ?? error}`);
+    debugEvent('tv_dist_tags_fetch_error', { error: debugEvent.error(error as Error) });
     return new Set();
   }
   // Always read the body to release the underlying stream — even on a non-2xx —
@@ -130,11 +127,11 @@ async function fetchReactNativeTvDistTagsAsync(): Promise<Set<string>> {
   try {
     body = await response.text();
   } catch (error: any) {
-    debug(`npm dist-tags body read threw: ${error?.message ?? error}`);
+    debugEvent('tv_dist_tags_body_error', { error: debugEvent.error(error as Error) });
     return new Set();
   }
   if (!response.ok) {
-    debug(`npm dist-tags lookup failed with status ${response.status}`);
+    debugEvent('tv_dist_tags_http_error', { status: response.status });
     return new Set();
   }
   let json: unknown;

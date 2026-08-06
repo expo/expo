@@ -82,6 +82,10 @@ async function handlePermissionsQueryAsync(
 
 export default {
   isModernBarcodeScannerAvailable: false,
+  isDocumentScannerAvailable: false,
+  async scanDocumentAsync() {
+    return null;
+  },
   toggleRecordingAsyncAvailable: false,
   addListener(_eventName: string, _listener: (...args: any[]) => any) {
     return { remove: () => {} };

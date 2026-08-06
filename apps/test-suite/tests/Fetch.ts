@@ -33,6 +33,25 @@ export function test({ describe, expect, it, ...t }) {
       expect(buffer.byteLength).toBe(20);
     });
 
+    it('should process blob with size and type', async () => {
+      const resp = await fetch('https://httpbin.io/bytes/20');
+      const blob = await resp.blob();
+      expect(blob.size).toBe(20);
+      expect(blob.type).toBe('application/octet-stream');
+    });
+
+    it('should read blob content back through FileReader', async () => {
+      const resp = await fetch('https://httpbin.io/base64/aGVsbG8gYmxvYg==');
+      const blob = await resp.blob();
+      const buffer = await new Promise<ArrayBuffer>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as ArrayBuffer);
+        reader.onerror = reject;
+        reader.readAsArrayBuffer(blob);
+      });
+      expect(new TextDecoder().decode(buffer)).toBe('hello blob');
+    });
+
     it('should process response in readablestream from late get reader call', async () => {
       const resp = await fetch('https://httpbin.io/get');
       expect(resp.ok).toBe(true);

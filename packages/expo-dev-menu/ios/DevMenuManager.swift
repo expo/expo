@@ -83,8 +83,6 @@ open class DevMenuManager: NSObject {
 
   static public var wasInitilized = false
 
-  private var contentDidAppearObserver: NSObjectProtocol?
-
   /**
    Shared singleton instance.
    */
@@ -114,40 +112,6 @@ open class DevMenuManager: NSObject {
   private var lastReloadEventAt: Date?
 
   weak var hostDelegate: DevMenuHostDelegate?
-
-  @objc
-  public private(set) var currentBridge: RCTBridge? {
-    didSet {
-      updateAutoLaunchObserver()
-
-      if let currentBridge {
-        DispatchQueue.main.async {
-          self.disableRNDevMenuHoykeys(for: currentBridge)
-        }
-        observeContentDidAppear()
-      } else {
-        updateFABVisibility()
-      }
-    }
-  }
-
-  private func observeContentDidAppear() {
-    if let observer = contentDidAppearObserver {
-      NotificationCenter.default.removeObserver(observer)
-    }
-
-    contentDidAppearObserver = NotificationCenter.default.addObserver(
-      forName: NSNotification.Name.RCTContentDidAppear,
-      object: nil,
-      queue: .main
-    ) { [weak self] _ in
-      self?.updateFABVisibility()
-      if let observer = self?.contentDidAppearObserver {
-        NotificationCenter.default.removeObserver(observer)
-        self?.contentDidAppearObserver = nil
-      }
-    }
-  }
 
   private let manifestSubject = PassthroughSubject<Void, Never>()
   public var manifestPublisher: AnyPublisher<Void, Never> {
@@ -272,23 +236,6 @@ open class DevMenuManager: NSObject {
       NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: NSNotification.Name.RCTContentDidAppear, object: nil)
     }
     // swiftlint:enable legacy_objc_type
-  }
-
-  private func disableRNDevMenuHoykeys(for bridge: RCTBridge) {
-    if let devMenu = bridge.devMenu {
-      devMenu.hotkeysEnabled = false
-
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        if DevMenuPreferences.keyCommandsEnabled {
-          DevMenuKeyCommandsInterceptor.isInstalled = false
-          DevMenuKeyCommandsInterceptor.isInstalled = true
-        }
-      }
-    } else {
-      DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-        self.disableRNDevMenuHoykeys(for: bridge)
-      }
-    }
   }
 
   override init() {
@@ -492,9 +439,7 @@ open class DevMenuManager: NSObject {
         self.updateFABVisibility()
 
         if self.window?.windowScene == nil {
-          let windowScene = UIApplication.shared.connectedScenes
-            .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene
-          self.window?.windowScene = windowScene
+          self.window?.windowScene = SceneGeometry.foregroundActiveScene()
         }
         self.window?.makeKeyAndVisible()
 #endif
@@ -629,8 +574,7 @@ open class DevMenuManager: NSObject {
       guard let self else { return }
 
       if self.fabWindow == nil {
-        if let windowScene = UIApplication.shared.connectedScenes
-          .first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
+        if let windowScene = SceneGeometry.foregroundActiveScene() {
           self.setupFABWindowIfNeeded(for: windowScene)
         }
       }

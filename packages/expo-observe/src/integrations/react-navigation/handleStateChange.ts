@@ -1,7 +1,9 @@
 import AppMetrics from 'expo-app-metrics';
 
+import { getNavigationRouteParams } from '../navigationConfig';
 import { emitTTI } from './emitTTI';
 import { getPathname } from './getPathname';
+import { getReactNavigationIntegrationConfig } from './init';
 import { collectMountedKeys, findFocusedLeaf } from './stateTraversal';
 import type { ReactNavigationIntegrationStorage } from './storage';
 import type { NavigationStateLike } from './types';
@@ -61,7 +63,10 @@ export function createStateChangeHandler(
     previousFocusedKey = focused.key;
 
     const pathname = getPathname(state) ?? focused.route.name;
-    const routeParams = focused.route.params ?? {};
+    const navigationParams = getNavigationRouteParams(
+      getReactNavigationIntegrationConfig(),
+      focused.route.params ?? {}
+    );
     const name = isInitial ? 'cold_ttr' : 'warm_ttr';
 
     // The main session is a static shared object, available synchronously and
@@ -83,7 +88,7 @@ export function createStateChangeHandler(
         name,
         routeName: pathname,
         value: appLaunchTtrSeconds,
-        params: { isAppLaunch: true, routeParams },
+        params: { isAppLaunch: true, ...navigationParams },
       });
       if (hasPendingInteractive) {
         await emitTTI({
@@ -91,7 +96,7 @@ export function createStateChangeHandler(
           timestamp,
           routeName: pathname,
           value: appLaunchTtrSeconds,
-          routeParams,
+          ...navigationParams,
         });
       }
       storage.pendingActions.length = 0;
@@ -113,7 +118,7 @@ export function createStateChangeHandler(
       name,
       routeName: pathname,
       value: ttrSeconds,
-      params: { isAppLaunch: false, routeParams },
+      params: { isAppLaunch: false, ...navigationParams },
     });
     if (hasPendingInteractive) {
       await emitTTI({
@@ -121,7 +126,7 @@ export function createStateChangeHandler(
         timestamp,
         routeName: pathname,
         value: ttrSeconds,
-        routeParams,
+        ...navigationParams,
       });
     }
     storage.pendingActions.length = 0;

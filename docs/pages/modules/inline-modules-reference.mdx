@@ -55,6 +55,25 @@ A directory in `watchedDirectories`:
 
 </PaddedAPIBox>
 
+<PaddedAPIBox header="expo.experiments.inlineModules.xcodeProjectTargets" platforms={["ios"]}>
+Configures which Xcode targets the inline module files are added to. When omitted, inline modules are added to your app's main target only.
+
+```json app.json
+{
+  "expo": {
+    "experiments": {
+      "inlineModules": {
+        "xcodeProjectTargets": ["MyApp", "MyAppWidgets"]
+      }
+    }
+  }
+}
+```
+
+Each entry is the name of a target as it appears in your Xcode project (and in the `target` blocks of your **ios/Podfile**). Use the target name only — even when the target is nested inside an `abstract_target`, do not include the abstract target's name.
+
+</PaddedAPIBox>
+
 > **Warning** You need to run `npx expo prebuild` after changing the [app config](/workflow/configuration/), for it to take effect.
 
 ## Naming convention

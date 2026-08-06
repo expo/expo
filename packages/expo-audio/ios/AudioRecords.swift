@@ -40,6 +40,7 @@ enum PitchCorrectionQuality: String, Enumerable {
 
 struct RecordingOptions: Record {
   @Field var directory: RecordingDirectory?
+  @Field var fileName: String?
   @Field var `extension`: String
   @Field var sampleRate: Double
   @Field var numberOfChannels: Double
@@ -108,4 +109,32 @@ struct AudioStreamOptions: Record {
   @Field var sampleRate: Double = 48000
   @Field var channels: Int = 1
   @Field var encoding: AudioStreamEncoding = .float32
+}
+
+enum AudioStreamFileFormat: String, Enumerable {
+  case wav
+  case pcm
+
+  var fileExtension: String {
+      rawValue
+  }
+}
+
+struct AudioStreamFileRecordingOptions: Record {
+  @Field var uri: URL? = nil
+  @Field var directory: RecordingDirectory? = .cache
+  @Field var format: AudioStreamFileFormat = .wav
+}
+
+struct AudioStreamFileRecordingStartResult: Record {
+  @Field var uri: String? = nil
+}
+
+struct AudioStreamFileRecordingResult: Record {
+  @Field var uri: String = ""
+  @Field var duration: Double = 0.0
+  @Field var size: Int = 0
+  @Field var sampleRate: Int = 0
+  @Field var channels: Int = 0
+  @Field var encoding: AudioStreamEncoding  = .int16
 }

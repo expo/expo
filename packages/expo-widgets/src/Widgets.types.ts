@@ -145,6 +145,22 @@ export type WidgetTimelineEntry<T extends object = object> = {
   props: T;
 };
 
+export type WidgetConfigurationEnum = {
+  /**
+   * User-visible option label.
+   */
+  name: string;
+  /**
+   * Value available in `environment.configuration`.
+   */
+  value: string;
+  /**
+   * Optional secondary text displayed to user.
+   * @platform iOS
+   */
+  subtitle?: string;
+};
+
 export type ExpoTimelineEntry = {
   timestamp: number;
   props: Record<string, any>;
@@ -281,6 +297,7 @@ export declare class NativeWidgetObject extends SharedObject {
   updateSnapshot(props: Record<string, any>): void;
   updateTimeline(entries: ExpoTimelineEntry[]): void;
   getTimeline(): Promise<ExpoTimelineEntry[]>;
+  setConfigurationParameterEnum(parameterName: string, options?: WidgetConfigurationEnum[]): void;
 }
 
 export declare class NativeLiveActivityFactory extends SharedObject {

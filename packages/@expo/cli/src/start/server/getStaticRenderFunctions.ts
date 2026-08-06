@@ -15,11 +15,10 @@ import { SilentError } from '../../utils/errors';
 import { toPosixPath } from '../../utils/filePath';
 import { profile } from '../../utils/profile';
 import { IS_METRO_BUNDLE_ERROR_SYMBOL, logMetroError } from './metro/metroErrorInterface';
+import { event } from './metro/ssrEvents';
 import type { ExpoMetroOptions } from './middleware/metroOptions';
 import { createBundleUrlPath } from './middleware/metroOptions';
 import { augmentLogs } from './serverLogLikeMetro';
-
-const debug = require('debug')('expo:start:server:getStaticRenderFunctions') as typeof console.log;
 
 /** The list of input keys will become optional, everything else will remain the same. */
 export type PickPartial<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
@@ -126,9 +125,9 @@ export function evalMetroNoHandling(
   // but doesn't validate that the filename exists. These debug messages should help identify
   // these problems, if they occur in user projects without reproductions
   if (!fs.existsSync(path.dirname(filename))) {
-    debug(`evalMetroNoHandling received filename in a directory that does not exist: ${filename}`);
+    event('eval_filename_not_in_dir', { filename: event.path(filename) });
   } else if (!toPosixPath(path.dirname(filename)).startsWith(toPosixPath(projectRoot))) {
-    debug(`evalMetroNoHandling received filename outside of the project root: ${filename}`);
+    event('eval_filename_outside_root', { filename: event.path(filename) });
   }
 
   return profile(evalModule, 'eval-metro-bundle')(src, filename, {

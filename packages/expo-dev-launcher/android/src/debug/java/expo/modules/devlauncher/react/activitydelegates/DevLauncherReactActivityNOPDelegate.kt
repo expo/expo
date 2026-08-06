@@ -12,6 +12,7 @@ open class DevLauncherReactActivityNOPDelegate(activity: ReactActivity) :
   override fun onCreate(savedInstanceState: Bundle?) {}
   override fun onResume() {}
   override fun onPause() {}
+  override fun onUserLeaveHint() {}
   override fun onDestroy() {}
   override fun onNewIntent(intent: Intent?): Boolean = true
   override fun onBackPressed(): Boolean = true

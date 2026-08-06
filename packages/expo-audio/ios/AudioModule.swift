@@ -119,7 +119,7 @@ public class AudioModule: Module {
 
     // swiftlint:disable:next closure_body_length
     Class(AudioPlayer.self) {
-      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double) -> AudioPlayer in
+      Constructor { (source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Bool, preferredForwardBufferDuration: Double, allowsExternalPlayback: Bool) -> AudioPlayer in
         let avPlayer: AVPlayer
         if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
           avPlayer = cachedPlayer
@@ -129,6 +129,7 @@ public class AudioModule: Module {
             avPlayer.currentItem?.preferredForwardBufferDuration = preferredForwardBufferDuration
           }
         }
+        avPlayer.allowsExternalPlayback = allowsExternalPlayback
         let player = AudioPlayer(avPlayer, interval: updateInterval, source: source)
         player.owningRegistry = self.registry
         player.keepAudioSessionActive = keepAudioSessionActive
@@ -231,8 +232,8 @@ public class AudioModule: Module {
         }
       }
 
-      Function("replace") { (player, source: AudioSource) in
-        if let uri = source.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
+      Function("replace") { (player, source: AudioSource?) in
+        if let uri = source?.uri?.absoluteString, let cachedPlayer = self.registry.removePreloadedPlayer(forKey: uri) {
           let cachedItem = cachedPlayer.currentItem
           cachedPlayer.replaceCurrentItem(with: nil)
           player.replaceWithPreloadedItem(cachedItem)
@@ -555,6 +556,31 @@ public class AudioModule: Module {
 
       Function("stop") { (stream: AudioStream) in
         stream.stop()
+      }
+
+      AsyncFunction("startFileRecordingAsync") { (stream: AudioStream, options: AudioStreamFileRecordingOptions?) throws -> AudioStreamFileRecordingStartResult in
+        let opts = options ?? AudioStreamFileRecordingOptions()
+        let format = opts.format
+        let url: URL
+        if let uri = opts.uri {
+          guard uri.pathExtension.lowercased() == format.fileExtension else {
+            throw AudioStreamFileException(
+              "The URI '\(uri.lastPathComponent)' has extension '.\(uri.pathExtension.lowercased())' but the chosen format is '\(format.rawValue)'. Change the URI extension or the format to match."
+            )
+          }
+          url = uri
+        } else {
+          let baseDir = try recordingDirectory(for: opts.directory)
+          let streamDir = baseDir.appendingPathComponent("AudioStream")
+          try FileManager.default.createDirectory(at: streamDir, withIntermediateDirectories: true)
+          url = streamDir.appendingPathComponent("stream-\(UUID().uuidString).\(format.fileExtension)")
+        }
+        let resolvedUri = try stream.startFileRecording(url: url, format: format)
+        return AudioStreamFileRecordingStartResult(uri: resolvedUri)
+      }
+
+      AsyncFunction("stopFileRecordingAsync") { (stream: AudioStream) throws -> AudioStreamFileRecordingResult in
+        return try stream.stopFileRecording()
       }
     }
     #endif

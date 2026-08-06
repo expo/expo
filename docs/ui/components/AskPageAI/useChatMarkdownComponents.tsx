@@ -56,7 +56,7 @@ export function useChatMarkdownComponents({ onNavigate }: UseChatMarkdownCompone
       };
 
       return (
-        <div className="relative">
+        <div className="relative" data-selection-copy-ignore>
           <PreComponent {...preProps} className={mergeClasses('px-3 py-2', preProps.className)} />
           <Button
             type="button"

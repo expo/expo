@@ -8,12 +8,17 @@
 
 ### 🎉 New features
 
+- Detect and support the nub package manager ([#48060](https://github.com/expo/expo/pull/48060) by [@colinhacks](https://github.com/colinhacks))
 - Reuse agent files from `@expo/llm-configs` ([#46968](https://github.com/expo/expo/pull/46968) by [@davidmokos](https://github.com/davidmokos))
 - Improved monorepo support ([#46434](https://github.com/expo/expo/pull/46434) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 5.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
 
 ## 4.0.2 — 2026-05-20
 

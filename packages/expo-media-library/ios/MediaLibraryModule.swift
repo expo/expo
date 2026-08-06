@@ -413,7 +413,7 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
       }
       let avAsset = AVAsset(url: fileUrl)
       let duration = avAsset.duration.seconds
-      // The video resouece of a paired photo may have different dimensions from the original photo
+      // The video resource of a paired photo may have different dimensions from the original photo
       if let videoSize = readSizeFrom(url: fileUrl) {
         width = videoSize.width
         height = videoSize.height

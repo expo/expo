@@ -1,5 +1,7 @@
 import AppMetrics from 'expo-app-metrics';
 
+import type { ObserveIntegrationsConfig } from '../../types';
+import { getNavigationMetricParams } from '../navigationConfig';
 import { emitTTI } from './emitTTI';
 import { buildRoutePattern } from './routeName';
 import { optionalRouter } from './router';
@@ -11,11 +13,14 @@ import { type RouterIntegrationStorage } from './storage';
 // relying on the web stubs in `expo-app-metrics/module.web.ts`.
 
 let initialized = false;
+let routerIntegrationConfig: ObserveIntegrationsConfig['expo-router'];
 
 export const isInitialized = () => initialized;
+export const getRouterIntegrationConfig = () => routerIntegrationConfig;
 
-export function initRouterIntegration() {
+export function initRouterIntegration(config?: ObserveIntegrationsConfig['expo-router']) {
   initialized = true;
+  routerIntegrationConfig = config;
   optionalRouter?.unstable_navigationEvents.enable();
 }
 
@@ -101,6 +106,11 @@ export function initListeners(
     }
 
     const mainSession = AppMetrics.getMainSession();
+    const navigationParams = getNavigationMetricParams(
+      routerIntegrationConfig,
+      e.params,
+      e.pathname
+    );
 
     mainSession.addMetric({
       timestamp,
@@ -108,7 +118,7 @@ export function initListeners(
       name,
       routeName: routePattern,
       value: ttrSeconds,
-      params: { isAppLaunch, routeParams: e.params, url: e.pathname },
+      params: { isAppLaunch, ...navigationParams },
     });
     if (hasPendingInteractive) {
       await emitTTI({
@@ -119,6 +129,7 @@ export function initListeners(
         isAppLaunch,
         routeParams: e.params,
         url: e.pathname,
+        config: routerIntegrationConfig,
       });
     }
   });

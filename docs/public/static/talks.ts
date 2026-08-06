@@ -8,6 +8,14 @@ export const TALKS = [
     home: true,
   },
   {
+    title: 'What is your app actually doing in production?',
+    event: 'App.js Conf 2026',
+    description: 'Kadi Kraman',
+    videoId: '7DzSnY33t-Y',
+    uploadDate: '2026-07-06',
+    home: true,
+  },
+  {
     title: 'React Native without Cocoapods',
     event: 'App.js Conf 2026',
     description: 'Riccardo Cipolleschi, Christian Falch',
@@ -29,7 +37,6 @@ export const TALKS = [
     description: 'Charlie Cheever, Jon Samp',
     videoId: 'lnxanzsP1rM',
     uploadDate: '2025-06-04',
-    home: true,
   },
   {
     title: 'Deploy Everywhere with Expo Router',
@@ -470,6 +477,18 @@ export const LIVE_STREAMS = [
 ] as Talk[];
 
 export const YOUTUBE_VIDEOS = [
+  {
+    title: 'How to build an iOS widget',
+    event: 'Expo Tutorials',
+    videoId: '3r_OHePTCcI',
+    uploadDate: '2026-07-27',
+  },
+  {
+    title: 'The 3 tools you need to build mobile apps with AI',
+    event: 'Expo Tutorials',
+    videoId: 'WLGAuwagI8o',
+    uploadDate: '2026-07-13',
+  },
   {
     title: 'Introducing "Observe": Performance monitoring for React Native apps',
     event: 'Expo Tutorials',
