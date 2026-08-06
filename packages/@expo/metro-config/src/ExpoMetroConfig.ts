@@ -24,7 +24,9 @@ import { getModulesPaths } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import type { JSModule } from './serializer/getCssDeps';
+import { patchBundlerPrototypeForPackedMaps } from './serializer/packedMap';
 import { isVirtualModule } from './serializer/sideEffects';
+import { patchMetroSourceMapStringForPackedMaps } from './serializer/sourceMap';
 import { withExpoSerializers } from './serializer/withExpoSerializers';
 import { getPostcssConfigHash } from './transform-worker/postcss';
 import { toPosixPath } from './utils/filePath';
@@ -216,6 +218,13 @@ export function getDefaultConfig(
   if (isCSSEnabled) {
     patchMetroGraphToSupportUncachedModules();
   }
+
+  // The transformer below emits packed source maps, so non-CLI Metro drivers
+  // need the unpack side too, not just
+  // `@expo/cli`. Both patches are idempotent, so it's fine that the CLI installs
+  // them again on its own `Bundler`.
+  patchBundlerPrototypeForPackedMaps();
+  patchMetroSourceMapStringForPackedMaps();
 
   const reactNativePath = path.dirname(
     resolveFrom.silent(projectRoot, 'react-native/package.json') ?? 'react-native/package.json'

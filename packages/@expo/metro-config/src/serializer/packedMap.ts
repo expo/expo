@@ -191,15 +191,37 @@ export function wrapTransformResultMaps<T extends { output?: readonly unknown[] 
   return result;
 }
 
-// Idempotent: chaining is safe because `installPackedMap` only fires
-// when `data.map` is still a `SerializableSourceMap`.
+// An instance inherits this from a patched prototype, so patching the prototype
+// first makes a later instance-level call a no-op instead of double-wrapping.
+const PATCHED_FLAG = '__expoPackedSourceMapsPatched';
+
+// Idempotent, and works whether `bundler` is an instance or `Bundler.prototype`.
+// The receiver is forwarded, not bound, so a prototype patch still runs against
+// whichever bundler actually calls `transformFile`.
 export function patchTransformFileForPackedMaps(bundler: {
   transformFile: (...args: any[]) => Promise<unknown>;
 }): void {
-  const originalTransformFile = bundler.transformFile.bind(bundler);
-  bundler.transformFile = async (...args: any[]) => {
-    return wrapTransformResultMaps((await originalTransformFile(...args)) as any);
+  if ((bundler as Record<string, unknown>)[PATCHED_FLAG]) return;
+  const originalTransformFile = bundler.transformFile;
+  bundler.transformFile = async function (this: unknown, ...args: any[]) {
+    return wrapTransformResultMaps((await originalTransformFile.apply(this, args)) as any);
   };
+  Object.defineProperty(bundler, PATCHED_FLAG, {
+    value: true,
+    enumerable: false,
+    configurable: true,
+  });
+}
+
+// `@expo/cli` patches its own `Bundler` instance, but other Metro drivers
+// build their own and never expose it.
+// Patching the prototype covers those too — otherwise their `data.map` stays
+// packed and Metro's `fromRawMappings` throws "Unexpected module with full
+// source map found".
+export function patchBundlerPrototypeForPackedMaps(): void {
+  const mod = require('@expo/metro/metro/Bundler');
+  const Bundler = mod.default ?? mod;
+  patchTransformFileForPackedMaps(Bundler.prototype);
 }
 
 // Materialize any `data.map` shape (serialized, Proxy, or plain tuples) into a

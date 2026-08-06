@@ -689,4 +689,55 @@ describe('patchTransformFileForPackedMaps', () => {
     expect(r.output[0].data.__packedMap).toBeInstanceOf(PackedMap);
     expect(r.output[0].data.map.length).toBe(1);
   });
+
+  // The patch has to work on `Bundler.prototype` since third-party drivers never
+  // hand out an instance — which only works if it forwards `this` instead of
+  // binding, otherwise it'd run against the prototype, not the real bundler.
+  it('forwards the receiver so it can be installed on a shared prototype', async () => {
+    const receivers: unknown[] = [];
+    class FakeBundler {
+      async transformFile(this: FakeBundler) {
+        receivers.push(this);
+        return {
+          output: [
+            {
+              type: 'js/module',
+              data: {
+                map: wire({ segments: [[1, 0, 1, 0]] }),
+                code: '',
+                lineCount: 1,
+                functionMap: null,
+              },
+            },
+          ],
+        };
+      }
+    }
+    patchTransformFileForPackedMaps(FakeBundler.prototype as any);
+
+    const a = new FakeBundler();
+    const b = new FakeBundler();
+    const ra: any = await a.transformFile();
+    await b.transformFile();
+
+    // toBe, not toEqual — these bare instances have no properties, so they'd
+    // compare equal structurally even though they're different objects.
+    expect(receivers).toHaveLength(2);
+    expect(receivers[0]).toBe(a);
+    expect(receivers[1]).toBe(b);
+    expect(ra.output[0].data.__packedMap).toBeInstanceOf(PackedMap);
+  });
+
+  it('leaves an instance alone when its prototype is already patched', async () => {
+    class FakeBundler {
+      async transformFile() {
+        return { output: [] };
+      }
+    }
+    patchTransformFileForPackedMaps(FakeBundler.prototype as any);
+    const instance = new FakeBundler();
+    patchTransformFileForPackedMaps(instance as any);
+
+    expect(Object.prototype.hasOwnProperty.call(instance, 'transformFile')).toBe(false);
+  });
 });
