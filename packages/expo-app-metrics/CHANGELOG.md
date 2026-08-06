@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [android] Fix `UnsupportedOperationException` and `NoSuchMethodError` on Android 7.x ([#48577](https://github.com/expo/expo/pull/48577) by [@Ubax](https://github.com/Ubax))
+
 ### 💡 Others
 
 ## 57.0.8 — 2026-08-04
