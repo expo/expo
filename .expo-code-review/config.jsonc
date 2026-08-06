@@ -133,9 +133,13 @@
   // provider — an `anthropic/…` agent runs through the Claude Code CLI while an
   // `openai/…` agent runs through OpenCode, in the SAME run:
   //   "auth": { "providers": {
-  //     "anthropic": { "tokenEnv": "CLAUDE_CODE_REVIEW_SHARED_API_TOKEN" },
+  //     "anthropic": { "tokenEnv": "CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN" },
   //     "openai":    { "mode": "oauth", "tokenEnv": "CODEX_OAUTH_ACCESS_TOKEN" }
   //   } }
+  //
+  // NOTE: whatever you put here must ALSO be named by ECR_EXPECTED_TOKEN_ENV in the two
+  // review workflows (and by a repo secret of the same name), or `ecr verify-config`
+  // refuses to review. Keep the three in sync.
   "auth": {
     "providers": {
       "anthropic": { "tokenEnv": "CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN" }
