@@ -19,6 +19,9 @@ import expo.modules.medialibrary.EXIF_TAGS
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.UnableToLoadException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
@@ -79,9 +82,13 @@ suspend fun queryAssetInfo(
  * Reads given `cursor` and saves the data to `response` param.
  * Reads `limit` rows, starting by `offset`.
  * Cursor must be a result of query with [ASSET_PROJECTION] projection
+ *
+ * When [resolveWithFullInfo] is true, per-file EXIF and location reads run in
+ * parallel (bounded by [exifReadDispatcher]). Cursor access is not
+ * thread-safe, so rows are copied in [drainCursorRows] first.
  */
 @Throws(IOException::class, UnsupportedOperationException::class)
-fun putAssetsInfo(
+suspend fun putAssetsInfo(
   contentResolver: ContentResolver,
   cursor: Cursor,
   response: MutableList<Bundle>,
@@ -89,62 +96,15 @@ fun putAssetsInfo(
   offset: Int,
   resolveWithFullInfo: Boolean
 ) {
-  val idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID)
-  val filenameIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
-  val mediaTypeIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE)
-  val creationDateIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN)
-  val modificationDateIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)
-  val durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION)
-  val localUriIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
-  val albumIdIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
-  if (!cursor.moveToPosition(offset)) {
-    return
-  }
-  var i = 0
-  while (i < limit && !cursor.isAfterLast) {
-    val assetId = cursor.getString(idIndex)
-    val path = cursor.getString(localUriIndex)
-    val localUri = "file://$path"
-    val mediaType = cursor.getInt(mediaTypeIndex)
-    var exifInterface: ExifInterface? = null
-    if (resolveWithFullInfo && mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
-      try {
-        exifInterface = ExifInterface(path)
-      } catch (e: IOException) {
-        Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
-        e.printStackTrace()
+  val rows = drainCursorRows(cursor, limit, offset)
+  val bundles = withContext(exifReadDispatcher) {
+    rows.map { row ->
+      async {
+        buildAssetBundle(contentResolver, row, resolveWithFullInfo)
       }
-    }
-    val (width, height) =
-      getAssetDimensionsFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex)
-    val asset = Bundle().apply {
-      putString("id", assetId)
-      putString("filename", cursor.getString(filenameIndex))
-      putString("uri", localUri)
-      putString("mediaType", exportMediaType(mediaType))
-      putLong("width", width.toLong())
-      putLong("height", height.toLong())
-      putLong("creationTime", cursor.getLong(creationDateIndex))
-      putDouble("modificationTime", cursor.getLong(modificationDateIndex) * 1000.0)
-      putDouble("duration", cursor.getInt(durationIndex) / 1000.0)
-      putString("albumId", cursor.getString(albumIdIndex))
-    }
-    if (resolveWithFullInfo && exifInterface != null) {
-      getExifFullInfo(exifInterface, asset)
-
-      val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId)
-        getExifLocationForUri(contentResolver, photoUri)
-      } else {
-        getExifLocationLegacy(exifInterface)
-      }
-      asset.putParcelable("location", location)
-      asset.putString("localUri", localUri)
-    }
-    cursor.moveToNext()
-    response.add(asset)
-    i++
+    }.awaitAll()
   }
+  response.addAll(bundles)
 }
 
 fun getExifFullInfo(exifInterface: ExifInterface, response: Bundle) {
@@ -312,4 +272,191 @@ fun maybeRotateAssetSize(width: Int, height: Int, orientation: Int): Pair<Int, I
   } else {
     Pair(width, height)
   }
+}
+
+/**
+ * Bounded parallelism for per-file EXIF reads. Location reads call
+ * MediaStore.setRequireOriginal + openInputStream (Binder IPC into
+ * MediaProvider). libbinder's default thread pool is 15 threads, shared
+ * across apps, so concurrency much past ~16 mostly queues on Binder.
+ *
+ * https://source.android.com/docs/core/architecture/ipc/binder-threading
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+private val exifReadDispatcher = Dispatchers.IO.limitedParallelism(16)
+
+/** One cursor row's columns, copied out so file work can run off-cursor. */
+private class AssetRowData(
+  val assetId: String,
+  val filename: String,
+  val path: String,
+  val mediaType: Int,
+  val creationTime: Long,
+  val modificationTime: Long,
+  val durationMs: Int,
+  val albumId: String?,
+  val width: Int,
+  val height: Int,
+  val orientation: Int
+)
+
+/**
+ * Copies up to `limit` rows starting at `offset` out of the cursor.
+ *
+ * Iterates like the original sequential loop so the cursor's final position
+ * — used for `hasNextPage` / `endCursor` — is unchanged.
+ */
+private fun drainCursorRows(
+  cursor: Cursor,
+  limit: Int,
+  offset: Int
+): List<AssetRowData> {
+  val idIndex = cursor.getColumnIndex(MediaStore.Images.Media._ID)
+  val filenameIndex = cursor.getColumnIndex(MediaStore.Images.Media.DISPLAY_NAME)
+  val mediaTypeIndex = cursor.getColumnIndex(MediaStore.Files.FileColumns.MEDIA_TYPE)
+  val creationDateIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_TAKEN)
+  val modificationDateIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATE_MODIFIED)
+  val durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION)
+  val localUriIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
+  val albumIdIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
+  val widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
+  val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
+  val orientationIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
+
+  val rows = mutableListOf<AssetRowData>()
+  if (!cursor.moveToPosition(offset)) {
+    return rows
+  }
+  var i = 0
+  while (i < limit && !cursor.isAfterLast) {
+    rows.add(
+      AssetRowData(
+        assetId = cursor.getString(idIndex),
+        filename = cursor.getString(filenameIndex),
+        path = cursor.getString(localUriIndex),
+        mediaType = cursor.getInt(mediaTypeIndex),
+        creationTime = cursor.getLong(creationDateIndex),
+        modificationTime = cursor.getLong(modificationDateIndex),
+        durationMs = cursor.getInt(durationIndex),
+        albumId = cursor.getString(albumIdIndex),
+        width = cursor.getInt(widthIndex),
+        height = cursor.getInt(heightIndex),
+        orientation = cursor.getInt(orientationIndex)
+      )
+    )
+    cursor.moveToNext()
+    i++
+  }
+  return rows
+}
+
+private fun buildAssetBundle(
+  contentResolver: ContentResolver,
+  row: AssetRowData,
+  resolveWithFullInfo: Boolean
+): Bundle {
+  val localUri = "file://${row.path}"
+  var exifInterface: ExifInterface? = null
+  if (resolveWithFullInfo && row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
+    try {
+      exifInterface = ExifInterface(row.path)
+    } catch (e: IOException) {
+      Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
+      e.printStackTrace()
+    }
+  }
+  val (width, height) = getAssetDimensions(contentResolver, row, exifInterface)
+  val asset = Bundle().apply {
+    putString("id", row.assetId)
+    putString("filename", row.filename)
+    putString("uri", localUri)
+    putString("mediaType", exportMediaType(row.mediaType))
+    putLong("width", width.toLong())
+    putLong("height", height.toLong())
+    putLong("creationTime", row.creationTime)
+    putDouble("modificationTime", row.modificationTime * 1000.0)
+    putDouble("duration", row.durationMs / 1000.0)
+    putString("albumId", row.albumId)
+  }
+  if (resolveWithFullInfo && exifInterface != null) {
+    getExifFullInfo(exifInterface, asset)
+
+    val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+      val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, row.assetId)
+      getExifLocationForUri(contentResolver, photoUri)
+    } else {
+      getExifLocationLegacy(exifInterface)
+    }
+    asset.putParcelable("location", location)
+    asset.putString("localUri", localUri)
+  }
+  return asset
+}
+
+private fun getAssetDimensions(
+  contentResolver: ContentResolver,
+  row: AssetRowData,
+  exifInterface: ExifInterface?
+): Pair<Int, Int> {
+  if (row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
+    if (row.width > 0 && row.height > 0) {
+      return maybeRotateAssetSize(row.width, row.height, row.orientation)
+    }
+    return getVideoDimensionsFromFile(contentResolver, row.path)
+  }
+
+  var width = row.width
+  var height = row.height
+  var orientation = row.orientation
+
+  if (width <= 0 || height <= 0) {
+    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeFile(row.path, options)
+    width = options.outWidth
+    height = options.outHeight
+  }
+  if (exifInterface != null) {
+    val exifOrientation = exifInterface.getAttributeInt(
+      ExifInterface.TAG_ORIENTATION,
+      ExifInterface.ORIENTATION_NORMAL
+    )
+    if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 ||
+      exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 ||
+      exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
+      exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
+    ) {
+      orientation = 90
+    }
+  }
+  return maybeRotateAssetSize(width, height, orientation)
+}
+
+@Throws(IOException::class)
+private fun getVideoDimensionsFromFile(
+  contentResolver: ContentResolver,
+  path: String
+): Pair<Int, Int> {
+  val videoUri = Uri.parse("file://$path")
+  try {
+    contentResolver.openAssetFileDescriptor(videoUri, "r").use { photoDescriptor ->
+      MediaMetadataRetriever().use { retriever ->
+        retriever.setDataSource(photoDescriptor!!.fileDescriptor)
+        val videoWidth =
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt()
+        val videoHeight =
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)!!.toInt()
+        val videoOrientation =
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)!!.toInt()
+
+        return maybeRotateAssetSize(videoWidth, videoHeight, videoOrientation)
+      }
+    }
+  } catch (e: NumberFormatException) {
+    Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: ${e.message}")
+  } catch (e: FileNotFoundException) {
+    Log.e("expo-media-library", "ContentResolver failed to read $path: ${e.message}")
+  } catch (e: RuntimeException) {
+    Log.e("expo-media-library", "MediaMetadataRetriever finished with unexpected error: ${e.message}")
+  }
+  return Pair(0, 0)
 }
