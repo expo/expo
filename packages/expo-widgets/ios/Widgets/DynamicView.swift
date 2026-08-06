@@ -99,6 +99,7 @@ public struct WidgetsDynamicView: View, ExpoSwiftUI.AnyChild {
           render(LiveActivityButtonView.self, ButtonProps.self) { buttonProps in
             try updateChildren(buttonProps)
             buttonProps.source = name
+            buttonProps.environmentString = environmentString
           }
         }
       } else {

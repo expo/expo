@@ -27,45 +27,51 @@ public struct WidgetLiveActivity: Widget {
 
   public var body: some WidgetConfiguration {
     ActivityConfiguration(for: LiveActivityAttributes.self) { context in
+      let environment = getLiveActivityEnvironment(for: env, in: context)
+      let environmentString = serializeEnvironment(environment)
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
+        activityID: context.activityID,
         props: context.state.props,
-        environment: getLiveActivityEnvironment(for: env, in: context)
+        environment: environment
       )
       // Only apply widgetURL when the activity has one: a hierarchy with more than one
       // widgetURL modifier is undefined behavior, and layouts can set their own through
       // the widgetURL modifier from @expo/ui.
-      let banner = LiveActivityBannerView(context: context, nodes: nodes)
+      let banner = LiveActivityBannerView(context: context, nodes: nodes, environmentString: environmentString)
       if let url = context.attributes.url.flatMap(URL.init(string:)) {
         banner.widgetURL(url)
       } else {
         banner
       }
     } dynamicIsland: { context in
+      let environment = getLiveActivityEnvironment(for: env, in: context)
+      let environmentString = serializeEnvironment(environment)
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
+        activityID: context.activityID,
         props: context.state.props,
-        environment: getLiveActivityEnvironment(for: env, in: context)
+        environment: environment
       )
       let island = DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
-          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedCenter")
+          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedCenter", environmentString: environmentString)
         }
         DynamicIslandExpandedRegion(.leading) {
-          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedLeading")
+          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedLeading", environmentString: environmentString)
         }
         DynamicIslandExpandedRegion(.trailing) {
-          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedTrailing")
+          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedTrailing", environmentString: environmentString)
         }
         DynamicIslandExpandedRegion(.bottom) {
-          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedBottom")
+          LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedBottom", environmentString: environmentString)
         }
       } compactLeading: {
-        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "compactLeading")
+        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "compactLeading", environmentString: environmentString)
       } compactTrailing: {
-        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "compactTrailing")
+        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "compactTrailing", environmentString: environmentString)
       } minimal: {
-        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "minimal")
+        LiveActivitySectionView(context: context, nodes: nodes, sectionName: "minimal", environmentString: environmentString)
       }
       if let url = context.attributes.url.flatMap(URL.init(string:)) {
         return island.widgetURL(url)
@@ -76,14 +82,22 @@ public struct WidgetLiveActivity: Widget {
   }
 }
 
+private func serializeEnvironment(_ environment: [String: Any]) -> String? {
+  guard let data = try? JSONSerialization.data(withJSONObject: environment) else {
+    return nil
+  }
+  return String(data: data, encoding: .utf8)
+}
+
 private struct LiveActivitySectionView: View {
   let context: ActivityViewContext<LiveActivityAttributes>
   let nodes: [String: Any]
   let sectionName: String
+  let environmentString: String?
 
   var body: some View {
     if let node = nodes[sectionName] as? [String: Any] {
-      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
+      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node, entryIndex: nil, environmentString: environmentString)
     } else {
       EmptyView()
     }
@@ -93,12 +107,13 @@ private struct LiveActivitySectionView: View {
 private struct LiveActivityBannerView: View {
   var context: ActivityViewContext<LiveActivityAttributes>
   let nodes: [String: Any]
+  let environmentString: String?
 
   var body: some View {
     if #available(iOS 18.0, *) {
-      LiveActivityBanner(context: context, nodes: nodes)
+      LiveActivityBanner(context: context, nodes: nodes, environmentString: environmentString)
     } else if let node = nodes["banner"] as? [String: Any] {
-      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node)
+      WidgetsDynamicView(name: context.activityID, kind: .liveActivity, node: node, entryIndex: nil, environmentString: environmentString)
     } else {
       EmptyView()
     }

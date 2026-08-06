@@ -45,7 +45,8 @@ struct LiveActivityButtonView: ExpoSwiftUI.View {
       role: props.role?.toNativeRole(),
       intent: LiveActivityUserInteraction(
         source: props.source,
-        target: props.target
+        target: props.target,
+        environmentString: props.environmentString
       )
     ) {
       if let label = props.label {
