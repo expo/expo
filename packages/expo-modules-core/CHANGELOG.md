@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 57.0.10 — 2026-08-06
+
+### 💡 Others
+
 - [Android] Ignore already-settled promises. ([#46770](https://github.com/expo/expo/pull/46770) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.9 — 2026-08-04

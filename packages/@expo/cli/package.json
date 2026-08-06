@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "57.0.12",
+  "version": "57.0.13",
   "description": "The Expo CLI",
   "main": "main.js",
   "bin": {
@@ -50,7 +50,7 @@
   "dependencies": {
     "@expo/code-signing-certificates": "^0.0.6",
     "@expo/config": "workspace:~57.0.6",
-    "@expo/config-plugins": "workspace:~57.0.6",
+    "@expo/config-plugins": "workspace:~57.0.7",
     "@expo/devcert": "^1.2.1",
     "@expo/env": "workspace:~2.4.2",
     "@expo/image-utils": "workspace:^0.11.4",

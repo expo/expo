@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix legacy decorators on class properties when corresponding class transforms are disabled, which the decorators plugin relies on ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano), [@kitten](https://github.com/kitten))
-
 ### 💡 Others
+
+## 57.0.6 — 2026-08-06
+
+### 🐛 Bug fixes
+
+- Fix legacy decorators on class properties when corresponding class transforms are disabled, which the decorators plugin relies on ([#47724](https://github.com/expo/expo/pull/47724) by [@Gitarcitano](https://github.com/Gitarcitano), [@kitten](https://github.com/kitten))
 
 ## 57.0.5 — 2026-07-29
 
