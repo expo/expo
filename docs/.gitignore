@@ -23,7 +23,6 @@ next-env.d.ts
 
 # generated file(s) for llms
 public/llms.txt
-scripts/generate-llms/talks.js
 
 # vale binary (installed by scripts/install-vale.sh)
 .vale/bin/
