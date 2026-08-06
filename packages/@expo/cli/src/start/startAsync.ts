@@ -84,6 +84,14 @@ export async function startAsync(
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
+  // Sync agent skills in the background when opted in via `expo.skills.autoSync` in package.json.
+  // Never blocks startup and never throws.
+  const { autoSyncSkillsAsync } =
+    require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
+  autoSyncSkillsAsync(projectRoot).catch(() => {
+    // noop -- autoSyncSkillsAsync handles its own errors.
+  });
+
   // Start dependency version check in the background as early as possible (non-blocking).
   // The result will be displayed in the TUI once it resolves.
   let dependencyCheckRef: DependencyCheckRef | undefined;

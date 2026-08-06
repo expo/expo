@@ -34,6 +34,7 @@ CLI tool for all Expo projects. The public interface should be lean, all command
 │   │   │   └── runAndroidAsync.ts      # Gradle build and install
 │   │   └── startBundler.ts     # Starts Metro for run commands
 │   ├── serve/         # `expo serve` command
+│   ├── skills/        # `expo skills` command (link agent skills from npm packages)
 │   ├── start/         # `expo start` - development server
 │   │   ├── server/
 │   │   │   ├── metro/          # Metro bundler integration

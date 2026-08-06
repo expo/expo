@@ -206,6 +206,12 @@ export async function installPackagesAsync(
   });
 
   await applyPluginsAsync(projectRoot, versioning.packages);
+
+  // Opt-in via `expo.skills.autoSync` in package.json. Best-effort, never throws.
+  // Scoped to the packages that were just installed, so nothing else changes.
+  const { autoSyncSkillsAsync } =
+    require('../skills/skillsAsync') as typeof import('../skills/skillsAsync');
+  await autoSyncSkillsAsync(projectRoot, { packages: versioning.packages });
 }
 
 /** Find a package, by name, in the requested packages list (`expo` -> `expo`/`expo@<version>`) */
