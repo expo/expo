@@ -72,7 +72,11 @@ class DevLauncherManifestParser(
   private fun getHeaders(): Headers {
     val headersMap = mutableMapOf(
       "expo-platform" to "android",
-      "accept" to "application/expo+json,application/json"
+      "accept" to "application/expo+json,application/json",
+      // Dev-launcher infrastructure, not app traffic. Without this the reachability probe wins
+      // `slowest` on nearly every dev launch and skews the launch metrics summary. Mirrors
+      // `INTERNAL_HEADER_NAME` in expo-app-metrics, which strips the header before sending.
+      "Expo-AppMetrics-Skip" to "1"
     )
     headersMap.putAll(getForwardedHeaders(url))
     if (installationID != null) {

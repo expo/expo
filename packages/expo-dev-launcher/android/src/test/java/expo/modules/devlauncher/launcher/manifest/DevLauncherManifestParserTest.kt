@@ -149,6 +149,47 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `isManifestUrl opts out of network observation`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/").toString()),
+      null
+    )
+
+    server.enqueue(MockResponse().setResponseCode(200))
+    manifestParser.isManifestUrl()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("Expo-AppMetrics-Skip")).isEqualTo("1")
+  }
+
+  @Test
+  fun `parseManifest opts out of network observation`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/").toString()),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setBody(
+        """
+        {
+          "name": "testproject",
+          "slug": "testproject",
+          "sdkVersion": "UNVERSIONED",
+          "bundleUrl": "http://test.io/bundle.js"
+        }
+        """.trimIndent()
+      )
+    )
+    manifestParser.parseManifest()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("Expo-AppMetrics-Skip")).isEqualTo("1")
+  }
+
+  @Test
   fun `isManifestUrl includes forwarding headers`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,
