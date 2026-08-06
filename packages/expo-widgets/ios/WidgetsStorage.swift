@@ -66,6 +66,10 @@ public enum WidgetsStorage {
     set(newState, forKey: liveActivityInteractionStateKey(forActivityID: activityID))
   }
 
+  static func removeLiveActivityInteractionState(forActivityID activityID: String) {
+    removeObject(forKey: liveActivityInteractionStateKey(forActivityID: activityID))
+  }
+
   private static func liveActivityInteractionStateKey(forActivityID activityID: String) -> String {
     return "__expo_widgets_live_activity_\(activityID)_interaction_state"
   }
