@@ -21,6 +21,9 @@ import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSi
 // When multiple builds run simultaneously, Xcode's build database can become locked.
 const CONCURRENT_BUILD_ERROR_MESSAGE_1 = 'database is locked';
 const CONCURRENT_BUILD_ERROR_MESSAGE_2 = 'there are two concurrent builds running';
+// Xcode prints this after a command fails, but it does not show the cause.
+const XCODE_BUILD_NO_OUTPUT_ERROR_MESSAGE =
+  /^error: the following command failed with exit code \d+ but produced no further output$/;
 
 /** Get the generic Xcode destination string for a given OS type.
  * Used when building without targeting a specific device (build-only workflow).
@@ -412,21 +415,21 @@ export async function buildAsync(props: BuildProps): Promise<string> {
   const logFilePath = writeBuildLogs(projectRoot, results, error);
 
   if (code !== 0) {
-    // Determine if the logger found any errors;
-    const wasErrorPresented = !!formatter.errors.length;
-
-    if (wasErrorPresented) {
-      // This has a flaw, if the user is missing a file, and there is a script error, only the missing file error will be shown.
-      // They will only see the script error if they fix the missing file and rerun.
-      // The flaw can be fixed by catching script errors in the custom logger.
-      throw new CommandError(
-        `Failed to build iOS project. "xcodebuild" exited with error code ${code}.`
-      );
+    if (formatter.errors.length > 0) {
+      // The formatter can miss another error, so include the build log path.
+      throw new CommandError(_formatXcodeBuildFailure(code, logFilePath));
     }
 
     _assertXcodeBuildResults(code, results, error, xcodeProject, logFilePath);
   }
   return results;
+}
+
+// Exposed for testing.
+export function _formatXcodeBuildFailure(code: number | null, logFilePath: string): string {
+  return `Failed to build iOS project. "xcodebuild" exited with error code ${code}.\nBuild logs written to ${chalk.underline(
+    logFilePath
+  )}`;
 }
 
 // Exposed for testing.
@@ -453,10 +456,8 @@ export function _assertXcodeBuildResults(
     throwWithMessage(chalk.bold(localizedError) + '\n\n');
   }
 
-  // `@expo/xcpretty` can leave a real failure uncounted (its compile-error
-  // matching is stateful and anchored, and stderr never passes through it), so
-  // the build summary reads "0 error(s)" and in CI the full log below is
-  // truncated before the real error line.
+  // `@expo/xcpretty` only reads stdout and can miss some Xcode errors.
+  // Show useful error lines first so CI does not cut them off.
   const errorLines = _extractXcodeBuildErrorLines(results + '\n' + error);
   if (errorLines.length) {
     throwWithMessage(chalk.red(errorLines.join('\n')) + '\n\n' + results + '\n\n' + error);
@@ -474,12 +475,16 @@ export function _extractXcodeBuildErrorLines(output: string): string[] {
   const errors: string[] = [];
   for (const raw of output.split(/\r?\n/)) {
     const line = raw.trim();
-    if (/(?:^|\s)error:\s/.test(line) && !seen.has(line)) {
+    if (/(?:^|\s)error:\s/.test(line) && !isXcodeBuildNoOutputErrorLine(line) && !seen.has(line)) {
       seen.add(line);
       errors.push(line);
     }
   }
   return errors;
+}
+
+function isXcodeBuildNoOutputErrorLine(line: string): boolean {
+  return XCODE_BUILD_NO_OUTPUT_ERROR_MESSAGE.test(line);
 }
 
 function writeBuildLogs(projectRoot: string, buildOutput: string, errorOutput: string) {
