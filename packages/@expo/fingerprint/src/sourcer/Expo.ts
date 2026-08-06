@@ -289,7 +289,7 @@ export async function createHashSourceExternalFileAsync({
 export async function getEasBuildSourcesAsync(projectRoot: string, options: NormalizedOptions) {
   const files = [
     ...(options.sourceSkips & SourceSkips.EasJson ? [] : ['eas.json']),
-    ...(options.sourceSkips & SourceSkips.EasIgnore ? [] : ['.easignore']),
+    ...(options.sourceSkips & SourceSkips.Easignore ? [] : ['.easignore']),
   ];
   const results = (
     await Promise.all(

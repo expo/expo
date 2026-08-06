@@ -20,16 +20,13 @@ describe('resolvePreset', () => {
     expect(resolved.sourceSkips & SourceSkips.ExpoConfigVersions).toBeTruthy();
     expect(resolved.sourceSkips & SourceSkips.ExpoConfigRuntimeVersionIfString).toBeTruthy();
     expect(resolved.sourceSkips & SourceSkips.EasJson).toBeTruthy();
+    expect(resolved.sourceSkips & SourceSkips.Easignore).toBeTruthy();
   });
 
-  it('should keep `.easignore` hashed in every preset', () => {
-    for (const preset of ['strict', 'balanced', 'relaxed'] as const) {
-      expect(resolvePreset(preset).sourceSkips & SourceSkips.EasIgnore).toBeFalsy();
-    }
-  });
-
-  it('should not skip `eas.json` in strict', () => {
-    expect(resolvePreset('strict').sourceSkips & SourceSkips.EasJson).toBeFalsy();
+  it('should keep the EAS Build files hashed in strict', () => {
+    const resolved = resolvePreset('strict');
+    expect(resolved.sourceSkips & SourceSkips.EasJson).toBeFalsy();
+    expect(resolved.sourceSkips & SourceSkips.Easignore).toBeFalsy();
   });
 
   it('should resolve relaxed to additionally skip names, identifiers, schemes, and assets', () => {
@@ -41,6 +38,7 @@ describe('resolvePreset', () => {
       SourceSkips.ExpoConfigSchemes,
       SourceSkips.ExpoConfigAssets,
       SourceSkips.EasJson,
+      SourceSkips.Easignore,
     ]) {
       expect(resolved.sourceSkips & skip).toBeTruthy();
     }

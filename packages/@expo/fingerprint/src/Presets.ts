@@ -21,9 +21,9 @@ export const DEFAULT_PRESET: FingerprintPreset = 'balanced';
  *
  * - `strict`: highest fidelity - the historical default. Only skips prebuild-mutated package.json
  *   scripts so a fingerprint stays consistent before and after prebuild.
- * - `balanced`: the default. Also ignores app version and string runtime version churn and
- *   `eas.json`, and hashes autolinked packages and node_modules config-plugin modules by their
- *   `package.json` version. Best first-time experience.
+ * - `balanced`: the default. Also ignores app version and string runtime version churn and the EAS
+ *   Build files (`eas.json` and `.easignore`), and hashes autolinked packages and node_modules
+ *   config-plugin modules by their `package.json` version. Best first-time experience.
  * - `relaxed`: for building multiple variants from one native project. Additionally ignores app
  *   names, bundle identifiers, schemes, and assets, while still hashing the config-plugins list so
  *   adding a plugin still changes the fingerprint.
@@ -42,7 +42,8 @@ export function resolvePreset(preset: FingerprintPreset): ResolvedPreset {
           SourceSkips.PackageJsonAndroidAndIosScriptsIfNotContainRun |
           SourceSkips.ExpoConfigVersions |
           SourceSkips.ExpoConfigRuntimeVersionIfString |
-          SourceSkips.EasJson,
+          SourceSkips.EasJson |
+          SourceSkips.Easignore,
         nativeModuleSourceType: 'package',
         configPluginSourceType: 'package',
       };
@@ -53,6 +54,7 @@ export function resolvePreset(preset: FingerprintPreset): ResolvedPreset {
           SourceSkips.ExpoConfigVersions |
           SourceSkips.ExpoConfigRuntimeVersionIfString |
           SourceSkips.EasJson |
+          SourceSkips.Easignore |
           SourceSkips.ExpoConfigNames |
           SourceSkips.ExpoConfigAndroidPackage |
           SourceSkips.ExpoConfigIosBundleIdentifier |

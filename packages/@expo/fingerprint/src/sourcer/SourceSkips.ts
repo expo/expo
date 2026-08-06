@@ -76,10 +76,10 @@ export enum SourceSkips {
 
   /**
    * Skip .easignore.
-   * This file decides which files are uploaded to EAS Build, so skipping it can hide changes to the
-   * build input.
+   * The file only controls which files are uploaded to EAS Build.
+   * Note that excluding a file that does affect the native build will not change the fingerprint.
    */
-  EasIgnore = 1 << 14,
+  Easignore = 1 << 14,
 
   //#endregion - EAS Build source
 }

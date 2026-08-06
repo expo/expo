@@ -118,10 +118,10 @@ describe(getEasBuildSourcesAsync, () => {
     );
   });
 
-  it('should skip `.easignore` but keep `eas.json` when SourceSkips.EasIgnore is set', async () => {
+  it('should skip `.easignore` but keep `eas.json` when SourceSkips.Easignore is set', async () => {
     const sources = await getEasBuildSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.EasIgnore })
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.Easignore })
     );
     expect(sources).not.toContainEqual(expect.objectContaining({ filePath: '.easignore' }));
     expect(sources).toContainEqual(
@@ -132,9 +132,9 @@ describe(getEasBuildSourcesAsync, () => {
     );
   });
 
-  it('should skip `eas.json` with the default preset', async () => {
+  it('should skip both EAS Build files with the default preset', async () => {
     const sources = await getEasBuildSourcesAsync('/app', await normalizeOptionsAsync('/app'));
-    expect(sources).not.toContainEqual(expect.objectContaining({ filePath: 'eas.json' }));
+    expect(sources).toEqual([]);
   });
 });
 
