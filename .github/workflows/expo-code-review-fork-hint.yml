@@ -12,7 +12,7 @@ name: AI code review (fork hint)
 # and a write token to a run triggered by an untrusted PR. That danger comes from
 # checking out and EXECUTING the PR's code. This job does none of that: no checkout, no
 # dependency install, no build, no model, no model credential. It reads two fields off
-# the event payload and posts a fixed string with the default GITHUB_TOKEN. There is no
+# the event payload and posts a fixed string as expo-bot. There is no
 # attacker-controlled input anywhere in it — the PR number is an integer from the event,
 # and the body is a literal. It also fires only on `labeled`, so an attacker cannot
 # re-trigger it by pushing.
@@ -40,7 +40,7 @@ jobs:
     steps:
       - name: Explain that the label cannot work here
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           PR: ${{ github.event.pull_request.number }}
           REPO: ${{ github.repository }}
         run: |
