@@ -27,8 +27,7 @@ function getDevServerLocation(): { authority: string; isSecure: boolean } | null
   return { authority: host, isSecure: protocol === 'https:' };
 }
 
-function getHostUri(): string | null {
-  const devServer = getDevServerLocation();
+function getHostUri(devServer = getDevServerLocation()): string | null {
   if (devServer) {
     return devServer.authority;
   } else if (Constants.expoConfig?.hostUri) {
@@ -42,8 +41,7 @@ function getHostUri(): string | null {
   }
 }
 
-function isExpoHosted(): boolean {
-  const hostUri = getHostUri();
+function isExpoHosted(hostUri = getHostUri()): boolean {
   return !!(
     hostUri &&
     (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test|expo\.dev)(:.*)?(\/.*)?$/.test(hostUri) ||
@@ -105,22 +103,24 @@ export function createURL(
   path: string,
   { scheme, queryParams = {}, isTripleSlashed = false }: CreateURLOptions = {}
 ): string {
+  const devServer = getDevServerLocation();
   let resolvedScheme = resolveScheme({ scheme });
 
   // Expo Go maps the `exps` scheme to HTTPS, which `exp` can't express, so an HTTPS development
   // server needs it to be reached over the scheme it's actually served on.
-  if (!scheme && resolvedScheme === 'exp' && getDevServerLocation()?.isSecure) {
+  if (!scheme && resolvedScheme === 'exp' && devServer?.isSecure) {
     resolvedScheme = 'exps';
   }
 
-  let hostUri = getHostUri() || '';
+  let hostUri = getHostUri(devServer) || '';
+  const expoHosted = isExpoHosted(hostUri);
 
-  if (hasCustomScheme() && isExpoHosted()) {
+  if (hasCustomScheme() && expoHosted) {
     hostUri = '';
   }
 
   if (path) {
-    if (isExpoHosted() && hostUri) {
+    if (expoHosted && hostUri) {
       path = `/--/${removeLeadingSlash(path)}`;
     }
     if (isTripleSlashed && !path.startsWith('/')) {
