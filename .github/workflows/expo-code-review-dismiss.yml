@@ -75,7 +75,7 @@ jobs:
       - name: Acknowledge
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
 
       # Base ref only (issue_comment runs with base-repo context). Dismiss just edits
@@ -99,11 +99,11 @@ jobs:
           # the post step doesn't error trying to save an empty cache.
           package-manager-cache: false
 
-      # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — GH_TOKEN only, no OPENAI_API_KEY or model credential
+      # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — GitHub token only, no OPENAI_API_KEY or model credential
       - name: Apply dismissal
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           SUB: ${{ steps.cmd.outputs.sub }}
           IDS: ${{ steps.cmd.outputs.ids }}
           REASON: ${{ steps.cmd.outputs.reason }}
