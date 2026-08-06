@@ -1,5 +1,7 @@
 import { Platform } from 'expo-modules-core';
 
+jest.mock('expo/internal/bundle-origin', () => ({ getBundleOrigin: jest.fn(() => null) }));
+
 const mockFontMetadata = {
   hash: 'cafecafecafecafecafecafecafecafe',
   name: 'test',
@@ -17,6 +19,7 @@ const mockFontMonorepoMetadata = {
 
 describe('selectAssetSource', () => {
   beforeEach(() => {
+    _mockDevServerUrl(null);
     _mockConstants({
       experienceUrl: 'https://example.com/app/expo-manifest.json',
       __unsafeNoWarnManifest2: {},
@@ -360,5 +363,5 @@ function _mockConstants(constants: { [key: string]: any }): void {
 
 /** Mock the origin the running bundle was loaded from. */
 function _mockDevServerUrl(origin: string | null): void {
-  jest.doMock('expo/internal/bundle-origin', () => ({ getBundleOrigin: () => origin }));
+  jest.mocked(require('expo/internal/bundle-origin').getBundleOrigin).mockReturnValue(origin);
 }
