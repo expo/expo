@@ -3,6 +3,7 @@
 import { createStandardNavigator } from 'standard-navigation';
 
 import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
 import type {
   BottomTabDescriptorMap,
   BottomTabNavigationConfig,
@@ -12,6 +13,7 @@ import type {
 import { BottomTabView } from '../views/BottomTabView';
 
 export interface BottomTabNavigatorCreateProps {
+  routeNames: string[];
   preloadedRouteKeys: string[];
   popNestedStackToTop: (routeKey: string) => void;
 }
@@ -31,10 +33,17 @@ function BottomTabNavigatorContent({
   descriptors,
   actions,
   emitter,
+  routeNames,
   preloadedRouteKeys,
   popNestedStackToTop,
   ...rest
 }: ContentArgs) {
+  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+    routes: state.routes,
+    routeNames,
+    focusedRouteKey: state.routes[state.index]!.key,
+    descriptors,
+  });
   const navigateToTab = (routeKey: string) => {
     const route = state.routes.find((route) => route.key === routeKey);
     if (route) {
@@ -47,10 +56,19 @@ function BottomTabNavigatorContent({
     }
   };
 
+  if (visibleRoutes.length === 0) {
+    return null;
+  }
+
   return (
     <BottomTabView
       {...rest}
-      state={state}
+      state={{
+        // Only routes are substituted; navigator metadata remains from the real state.
+        ...state,
+        routes: visibleRoutes,
+        index: focusedIndex,
+      }}
       // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
       // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
       descriptors={descriptors as unknown as BottomTabDescriptorMap}

@@ -17,6 +17,7 @@ const inputDir = 'fast-refresh';
 
 const appDir = path.join(projectRoot, '__e2e__', inputDir, 'app');
 const tempRoute = '/temp-route.tsx';
+const renamedRoute = '/renamed.tsx';
 
 test.describe(inputDir, () => {
   const expoStart = createExpoStart({
@@ -64,6 +65,9 @@ test.describe(inputDir, () => {
 
     if (fs.existsSync(appDir + tempRoute)) {
       await fsPromise.unlink(appDir + tempRoute);
+    }
+    if (fs.existsSync(appDir + renamedRoute)) {
+      await fsPromise.unlink(appDir + renamedRoute);
     }
   });
 
@@ -165,11 +169,27 @@ test.describe(inputDir, () => {
     // Ensure the React Navigation Tabs component is visible
     await expect(page.getByRole('tab', { name: '⏷ ⏷ index' })).toBeVisible();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "temp-route" is extraneous')
+      )
+    ).toBe(true);
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
     // If the file is added, a new tab should be visible
+    pageErrors.warnings.length = 0;
     await fsPromise.copyFile(appDir + '/index.tsx', appDir + tempRoute);
     await waitForFashRefresh();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -189,18 +209,38 @@ test.describe(inputDir, () => {
     // Ensure the React Navigation Tabs component is visible
     await expect(page.getByRole('tab', { name: '⏷ ⏷ index' })).toBeVisible();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "temp-route" is extraneous')
+      )
+    ).toBe(true);
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
     // If the file is added, a new tab should be visible
+    pageErrors.warnings.length = 0;
     await fsPromise.copyFile(appDir + '/index.tsx', appDir + tempRoute);
     await waitForFashRefresh();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
-    await fsPromise.rename(appDir + tempRoute, appDir + '/renamed.tsx');
+    pageErrors.warnings.length = 0;
+    await fsPromise.rename(appDir + tempRoute, appDir + renamedRoute);
     await waitForFashRefresh();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ renamed' })).toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) => warning.text().includes('No route named "temp-route"'))
+    ).toBe(true);
 
-    await fsPromise.rename(appDir + '/renamed.tsx', appDir + tempRoute);
+    await fsPromise.rename(appDir + renamedRoute, appDir + tempRoute);
     expect(pageErrors.all).toEqual([]);
   });
 
@@ -223,9 +263,20 @@ test.describe(inputDir, () => {
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).toBeVisible();
 
     // If a file is deleted, the tab should be removed
+    pageErrors.warnings.length = 0;
     await fsPromise.unlink(appDir + tempRoute);
     await waitForFashRefresh();
     await expect(page.getByRole('tab', { name: '⏷ ⏷ temp-route' })).not.toBeVisible();
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "temp-route" is extraneous')
+      )
+    ).toBe(true);
+    expect(
+      pageErrors.warnings.some((warning) =>
+        warning.text().includes('Route "renamed" is extraneous')
+      )
+    ).toBe(true);
 
     expect(pageErrors.all).toEqual([]);
   });

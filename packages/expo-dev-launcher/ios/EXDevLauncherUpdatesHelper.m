@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      installationID:(NSString *)installationID
 {
   NSMutableDictionary *requestHeaders = @{@"Expo-Updates-Environment": @"DEVELOPMENT"}.mutableCopy;
+  [requestHeaders addEntriesFromDictionary:[self forwardedHeadersForURL:url]];
   if (installationID) {
     requestHeaders[@"Expo-Dev-Client-ID"] = installationID;
   }
@@ -26,6 +27,22 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesRequestHeaders": requestHeaders,
     @"EXUpdatesRuntimeVersion": runtimeVersion,
   };
+}
+
++ (NSDictionary *)forwardedHeadersForURL:(NSURL *)url
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+  if (!components.host || !components.scheme) {
+    return @{};
+  }
+
+  NSString *authority = components.port ? [NSString stringWithFormat:@"%@:%@", components.host, components.port] : components.host;
+  NSMutableDictionary *headers = @{
+    @"Forwarded": [NSString stringWithFormat:@"host=\"%@\";proto=%@", authority, components.scheme],
+    @"X-Forwarded-Host": authority,
+    @"X-Forwarded-Proto": components.scheme,
+  }.mutableCopy;
+  return headers;
 }
 
 @end

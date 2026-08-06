@@ -129,14 +129,8 @@ internal final class NativeResponse: SharedObject, ExpoURLSessionTaskDelegate, @
 
   // MARK: - ExpoURLSessionTaskDelegate implementations
 
-  // URLSession invokes these callbacks on its own serial delegate queue while
-  // `startStreaming`/`cancelStreaming` run on `dispatchQueue`. `state` and the
-  // sink are unsynchronized, so routing a chunk could race a concurrent state
-  // transition: the chunk lands in an already-finalized sink, or `didComplete`
-  // overtakes the flushed data and the stream closes empty even though the
-  // request succeeded. Hopping every callback onto `dispatchQueue` — where the
-  // JS-driven methods already run — serializes the whole state machine on one
-  // queue.
+  // URLSession runs these callbacks on its own queue, racing `state` / sink access on `dispatchQueue`.
+  // Hop every callback onto `dispatchQueue` to serialize the whole state machine on one queue.
 
   func urlSessionDidStart(_ session: ExpoURLSessionTask) {
     dispatchQueue.async { [weak self] in

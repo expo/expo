@@ -1,5 +1,5 @@
 import { userEvent } from '@testing-library/react-native';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import {
   type EmitterSubscription,
   Keyboard,
@@ -17,7 +17,14 @@ import { Text } from '../../elements';
 import type { ParamListBase } from '../../native';
 import type { BottomTabBarProps, BottomTabNavigationProp } from '../types';
 
+let warnSpy: jest.SpyInstance;
+
+beforeEach(() => {
+  warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
 afterEach(() => {
+  warnSpy.mockRestore();
   jest.restoreAllMocks();
 });
 
@@ -44,6 +51,39 @@ test('renders a bottom tab navigator and navigates between screens on tab press'
 
   expect(screen.queryByText('Screen second')).not.toBeNull();
   expect(screen).toHavePathname('/second');
+});
+
+test('renders tabs in route names order while preserving focus', () => {
+  let reverse!: () => void;
+
+  function Layout() {
+    const [reversed, setReversed] = useState(false);
+    reverse = () => setReversed(true);
+    const screens = [
+      <Tabs.Screen key="index" name="index" />,
+      <Tabs.Screen key="second" name="second" />,
+    ];
+    return <Tabs>{reversed ? screens.reverse() : screens}</Tabs>;
+  }
+
+  renderRouter({
+    _layout: Layout,
+    index: () => <Text>Screen index</Text>,
+    second: () => <Text>Screen second</Text>,
+  });
+
+  act(() => router.navigate('/second'));
+  act(reverse);
+
+  expect(
+    screen.getByRole('button', { name: 'second, tab, 1 of 2' }).props.accessibilityState
+  ).toEqual({ selected: true });
+  expect(
+    screen.getByRole('button', { name: 'index, tab, 2 of 2' }).props.accessibilityState
+  ).toEqual({
+    selected: false,
+  });
+  expect(screen.queryByText('Screen second')).not.toBeNull();
 });
 
 test('handles screens preloading', () => {
@@ -215,7 +255,7 @@ test('keeps the dynamic segment of a tab when it is re-selected', async () => {
   expect(screen).toHavePathname('/abc');
 });
 
-test('hides a tab whose href is null', () => {
+test('removes and redirects from a tab whose href is null', () => {
   renderRouter({
     _layout: () => (
       <Tabs>
@@ -228,7 +268,140 @@ test('hides a tab whose href is null', () => {
   });
 
   expect(screen.queryByRole('button', { name: /second/ })).toBeNull();
-  expect(screen.getByRole('button', { name: 'index, tab, 1 of 2' })).toBeVisible();
+  expect(screen.getByRole('button', { name: 'index, tab, 1 of 1' })).toBeVisible();
+
+  act(() => router.push('/second'));
+
+  expect(screen).toHavePathname('/');
+  expect(screen.queryByTestId('second')).toBeNull();
+});
+
+test('redirects when the focused tab href becomes null', () => {
+  let setHidden!: (hidden: boolean) => void;
+  function Layout() {
+    const [hidden, set] = useState(false);
+    setHidden = set;
+    return (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="second" options={{ href: hidden ? null : '/second' }} />
+      </Tabs>
+    );
+  }
+
+  renderRouter({
+    _layout: Layout,
+    index: () => <View testID="index" />,
+    second: () => <View testID="second" />,
+  });
+
+  act(() => router.push('/second'));
+  expect(screen).toHavePathname('/second');
+
+  act(() => setHidden(true));
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeVisible();
+  expect(screen.queryByTestId('second')).toBeNull();
+});
+
+test('renders only screens declared in the layout and redirects from undeclared routes', () => {
+  renderRouter({
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+      </Tabs>
+    ),
+    index: () => <View testID="index" />,
+    second: () => <View testID="second" />,
+  });
+
+  expect(screen.getAllByRole('button', { name: /tab/ })).toHaveLength(1);
+
+  act(() => router.push('/second'));
+
+  expect(screen).toHavePathname('/');
+  expect(screen.getByTestId('index')).toBeVisible();
+});
+
+test('redirects an undeclared route to the configured initial tab', () => {
+  renderRouter({
+    _layout: {
+      unstable_settings: { initialRouteName: 'second' },
+      default: () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="second" />
+        </Tabs>
+      ),
+    },
+    index: () => <View testID="index" />,
+    second: () => <View testID="second" />,
+    undeclared: () => <View testID="undeclared" />,
+  });
+
+  act(() => router.push('/undeclared'));
+
+  expect(screen).toHavePathname('/second');
+  expect(screen.getByTestId('second')).toBeVisible();
+});
+
+test('renders no tab UI when no screens are declared in the layout', () => {
+  renderRouter({
+    _layout: () => <Tabs />,
+    index: () => <View testID="index" />,
+  });
+
+  expect(screen.queryByTestId('index')).toBeNull();
+  expect(screen.queryAllByRole('button', { name: /tab/ })).toHaveLength(0);
+  expect(warnSpy.mock.calls).toMatchSnapshot();
+});
+
+test('prefers a protected screen redirect over the tab visibility fallback', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      'tabs/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Protected guard={false} redirectTo="/login">
+            <Tabs.Screen name="secret" />
+          </Tabs.Protected>
+        </Tabs>
+      ),
+      'tabs/index': () => <View testID="index" />,
+      'tabs/secret': () => <View testID="secret" />,
+      login: () => <View testID="login" />,
+    },
+    { initialUrl: '/tabs/secret' }
+  );
+
+  expect(screen).toHavePathname('/login');
+  expect(screen.getByTestId('login')).toBeVisible();
+});
+
+test('redirects a fully guarded layout without warning that no screens are declared', () => {
+  renderRouter(
+    {
+      _layout: () => <Stack />,
+      'tabs/_layout': () => (
+        <Tabs>
+          <Tabs.Protected guard={false} redirectTo="/login">
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="second" />
+          </Tabs.Protected>
+        </Tabs>
+      ),
+      'tabs/index': () => <View testID="index" />,
+      'tabs/second': () => <View testID="second" />,
+      login: () => <View testID="login" />,
+    },
+    { initialUrl: '/tabs/second' }
+  );
+
+  expect(screen).toHavePathname('/login');
+  expect(screen.getByTestId('login')).toBeVisible();
+  expect(warnSpy).not.toHaveBeenCalled();
 });
 
 test('throws when a screen uses both href and tabBarButton', () => {

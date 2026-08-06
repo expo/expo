@@ -57,6 +57,16 @@ describe('constructDevClientUrl', () => {
       `"bacon://expo-development-client/?url=http%3A%2F%2F100.100.1.100%3A8081"`
     );
   });
+  it(`uses the forwarded address`, () => {
+    expect(
+      createDefaultCreator().constructDevClientUrl({
+        scheme: 'bacon',
+        forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+      })
+    ).toMatchInlineSnapshot(
+      `"bacon://expo-development-client/?url=https%3A%2F%2Fproxy.test%3A4443"`
+    );
+  });
   it(`creates tunnel`, () => {
     expect(
       createDefaultCreator().constructDevClientUrl({ scheme: 'bacon', hostType: 'tunnel' })
@@ -77,6 +87,45 @@ describe('constructDevClientUrl', () => {
 });
 
 describe('constructUrl', () => {
+  it(`uses the forwarded authority`, () => {
+    expect(
+      createDefaultCreator().constructUrl({
+        scheme: 'http',
+        forwarded: { authority: 'proxy.test:4443', protocol: undefined },
+      })
+    ).toMatchInlineSnapshot(`"http://proxy.test:4443"`);
+  });
+  it(`uses the forwarded authority without a port`, () => {
+    expect(
+      createDefaultCreator().constructUrl({
+        scheme: 'http',
+        forwarded: { authority: 'proxy.test', protocol: undefined },
+      })
+    ).toMatchInlineSnapshot(`"http://proxy.test"`);
+  });
+  it(`uses the forwarded authority over a requested hostname and the tunnel`, () => {
+    expect(
+      createDefaultCreator().constructUrl({
+        hostname: 'foobar.dev',
+        hostType: 'tunnel',
+        forwarded: { authority: 'proxy.test:4443', protocol: undefined },
+      })
+    ).toMatchInlineSnapshot(`"http://proxy.test:4443"`);
+  });
+  it(`ignores a forwarded protocol without an authority`, () => {
+    expect(
+      createDefaultCreator().constructUrl({
+        forwarded: { authority: undefined, protocol: 'https' },
+      })
+    ).toMatchInlineSnapshot(`"http://100.100.1.100:8081"`);
+  });
+  it(`keeps the proxy url over the forwarded authority`, () => {
+    expect(
+      createDefaultCreator({ getProxyUrl: () => 'http://expo.dev' }).constructUrl({
+        forwarded: { authority: 'proxy.test:4443', protocol: undefined },
+      })
+    ).toMatchInlineSnapshot(`"http://expo.dev"`);
+  });
   it(`skips default port with proxy url`, () => {
     expect(
       createDefaultCreator({ getProxyUrl: () => 'http://expo.dev' }).constructUrl({})
