@@ -1,0 +1,175 @@
+import JsonFile from '@expo/json-file';
+import chalk from 'chalk';
+import fs from 'fs';
+import path from 'path';
+
+import * as Log from '../log';
+import {
+  detectInstalledAgents,
+  getAllAgents,
+  getPersistedAgentIds,
+  persistAgentSelectionAsync,
+  resolveAgentsAsync,
+} from './agents';
+import { discoverSkillsAsync } from './discovery';
+import { debugEvent } from './events';
+import { cleanSkillLinksAsync, ensureGitIgnoreAsync, syncSkillLinksAsync } from './linking';
+import type { DiscoveredSkill, SkillsAgent, SkillsOptions } from './types';
+
+function uniqueSkillsDirs(agents: SkillsAgent[]): string[] {
+  return [...new Set(agents.map((agent) => agent.skillsDir))];
+}
+
+/** Agents to target without prompting: the persisted selection, or the detected ones. */
+function getConfiguredAgents(projectRoot: string): SkillsAgent[] {
+  const persistedIds = getPersistedAgentIds(projectRoot);
+  if (persistedIds != null) {
+    return getAllAgents().filter((agent) => persistedIds.includes(agent.id));
+  }
+  return detectInstalledAgents(projectRoot);
+}
+
+export async function syncSkillsAsync(projectRoot: string, options: SkillsOptions): Promise<void> {
+  const skills = await discoverSkillsAsync(projectRoot);
+  if (!skills.length && !options.agents.length && getPersistedAgentIds(projectRoot) == null) {
+    Log.log('No agent skills found in the project dependencies.');
+    return;
+  }
+
+  const { agents, fromPrompt } = await resolveAgentsAsync(projectRoot, { agents: options.agents });
+  if (fromPrompt && !options.dryRun) {
+    await persistAgentSelectionAsync(projectRoot, agents);
+  }
+
+  const { created, pruned } = await syncSkillLinksAsync(
+    projectRoot,
+    skills,
+    uniqueSkillsDirs(agents),
+    { dryRun: options.dryRun }
+  );
+  if (created.length) {
+    await ensureGitIgnoreAsync(projectRoot, { dryRun: options.dryRun });
+  }
+
+  const prefix = options.dryRun ? chalk.dim('[dry-run] ') : '';
+  if (created.length || pruned.length) {
+    for (const link of created) {
+      Log.log(`${prefix}${chalk.green('+')} ${link}`);
+    }
+    for (const link of pruned) {
+      Log.log(`${prefix}${chalk.red('-')} ${link}`);
+    }
+  }
+  const packageCount = new Set(skills.map((skill) => skill.packageName)).size;
+  Log.log(
+    `${prefix}${skills.length} skill(s) from ${packageCount} package(s) linked for: ${agents
+      .map((agent) => agent.displayName)
+      .join(', ')}`
+  );
+}
+
+export async function listSkillsAsync(projectRoot: string): Promise<void> {
+  const skills = await discoverSkillsAsync(projectRoot);
+  if (!skills.length) {
+    Log.log('No agent skills found in the project dependencies.');
+    return;
+  }
+
+  const skillsDirs = uniqueSkillsDirs(getConfiguredAgents(projectRoot));
+  const byPackage = new Map<string, DiscoveredSkill[]>();
+  for (const skill of skills) {
+    byPackage.set(skill.packageName, [...(byPackage.get(skill.packageName) ?? []), skill]);
+  }
+
+  for (const [packageName, packageSkills] of byPackage) {
+    Log.log(chalk.bold(packageName));
+    for (const skill of packageSkills) {
+      const linkedDirs = skillsDirs.filter((dir) =>
+        fs.existsSync(path.join(projectRoot, dir, skill.linkName))
+      );
+      const status = linkedDirs.length
+        ? chalk.green(`linked in ${linkedDirs.join(', ')}`)
+        : chalk.dim('not linked');
+      const description = skill.description ? chalk.dim(` — ${skill.description}`) : '';
+      Log.log(`  ${skill.name} ${chalk.dim(`(${status})`)}${description}`);
+    }
+  }
+}
+
+export async function cleanSkillsAsync(
+  projectRoot: string,
+  options: Pick<SkillsOptions, 'dryRun'> & Partial<SkillsOptions>
+): Promise<void> {
+  // Clean every known agent directory: the `npm-` prefix guard makes this safe even for
+  // directories belonging to agents the user never selected.
+  const skillsDirs = uniqueSkillsDirs(getAllAgents());
+  const { pruned } = await cleanSkillLinksAsync(projectRoot, skillsDirs, {
+    dryRun: options.dryRun,
+  });
+  const prefix = options.dryRun ? chalk.dim('[dry-run] ') : '';
+  for (const link of pruned) {
+    Log.log(`${prefix}${chalk.red('-')} ${link}`);
+  }
+  Log.log(`${prefix}Removed ${pruned.length} managed skill link(s).`);
+}
+
+/**
+ * Best-effort skill sync for `expo install` / `expo start`, enabled with
+ * `expo.skills.autoSync: true` in the app's package.json.
+ * Never prompts and never throws.
+ *
+ * With `packages` (the specs just installed, e.g. `['uuid', 'expo-camera@~16.0.0']`) only the
+ * skills of those packages are linked and nothing is pruned. Without it, a full sync runs:
+ * missing links are created and stale ones are removed.
+ */
+export async function autoSyncSkillsAsync(
+  projectRoot: string,
+  options: { packages?: string[] } = {}
+): Promise<void> {
+  try {
+    const pkg = JsonFile.read(path.join(projectRoot, 'package.json'));
+    const skillsConfig = (pkg.expo as undefined | { skills?: { autoSync?: boolean } })?.skills;
+    if (skillsConfig?.autoSync !== true) {
+      return;
+    }
+
+    const agents = getConfiguredAgents(projectRoot);
+    if (!agents.length) {
+      debugEvent('auto_sync_skipped', { reason: 'no-agents' });
+      return;
+    }
+
+    const packageNames = options.packages?.map(parsePackageNameFromSpec);
+    let skills = await discoverSkillsAsync(projectRoot);
+    if (packageNames) {
+      skills = skills.filter((skill) => packageNames.includes(skill.packageName));
+    }
+
+    const { created, pruned } = await syncSkillLinksAsync(
+      projectRoot,
+      skills,
+      uniqueSkillsDirs(agents),
+      packageNames ? { prune: false } : {}
+    );
+    if (created.length) {
+      await ensureGitIgnoreAsync(projectRoot, {});
+    }
+    if (created.length || pruned.length) {
+      Log.log(
+        chalk.gray(
+          `Synced agent skills: ${created.length} linked, ${pruned.length} removed. Run ${chalk.bold(
+            'npx expo skills list'
+          )} for details.`
+        )
+      );
+    }
+  } catch (error: any) {
+    Log.warn(`Skipping agent skills auto-sync: ${error.message}`);
+  }
+}
+
+/** Strip the version range from a package spec, e.g. `@expo/ui@~1.2.0` -> `@expo/ui`. */
+function parsePackageNameFromSpec(spec: string): string {
+  const versionIndex = spec.indexOf('@', 1);
+  return versionIndex > 0 ? spec.slice(0, versionIndex) : spec;
+}
