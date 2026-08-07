@@ -14,6 +14,7 @@ import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
 import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'Calendar@next';
@@ -522,7 +523,7 @@ export async function test(t: JasmineInterface) {
         if (Platform.OS === 'ios') {
           t.expect(result.action).toBe(Calendar.CalendarDialogResultActions.saved);
           t.expect(typeof result.id).toBe('string');
-          const storedEvent = ExpoCalendarEvent.get(result.id!);
+          const storedEvent = ExpoCalendarEvent.get(requireNotNull(result.id));
 
           t.expect(storedEvent).toEqual(
             t.jasmine.objectContaining({
@@ -589,7 +590,7 @@ export async function test(t: JasmineInterface) {
           const calendars = await getCalendars();
           const fetchedCalendar = calendars.find((c) => c.id === calendar.id);
           t.expect(fetchedCalendar).toBeDefined();
-          t.expect(fetchedCalendar!.id).toBe(calendar.id);
+          t.expect(fetchedCalendar?.id).toBe(calendar.id);
         });
 
         t.afterEach(async () => {
@@ -738,9 +739,9 @@ export async function test(t: JasmineInterface) {
           t.expect(event).toBeDefined();
           t.expect(typeof event.id).toBe('string');
           t.expect(event.recurrenceRule).not.toBeNull();
-          t.expect(event.recurrenceRule!.frequency).toEqual(recurrenceRule.frequency);
-          t.expect(event.recurrenceRule!.interval).toEqual(recurrenceRule.interval);
-          t.expect(event.recurrenceRule!.endDate).toEqual(recurrenceRule.endDate);
+          t.expect(event.recurrenceRule?.frequency).toEqual(recurrenceRule.frequency);
+          t.expect(event.recurrenceRule?.interval).toEqual(recurrenceRule.interval);
+          t.expect(event.recurrenceRule?.endDate).toEqual(recurrenceRule.endDate);
         });
 
         if (Platform.OS === 'android') {
@@ -1195,23 +1196,23 @@ export async function test(t: JasmineInterface) {
           const fetchedEvent = fetchedEvents.find((e) => e.id === event.id);
 
           t.expect(fetchedEvent).toBeDefined();
-          t.expect(fetchedEvent!.id).toBe(event.id);
-          t.expect(fetchedEvent!.title).toBe(updatedData.title);
-          t.expect(fetchedEvent!.startDate).toBe(updatedData.startDate.toISOString());
-          t.expect(fetchedEvent!.endDate).toBe(updatedData.endDate.toISOString());
-          t.expect(fetchedEvent!.location).toBe(updatedData.location);
-          t.expect(fetchedEvent!.notes).toBe(updatedData.notes);
-          t.expect(fetchedEvent!.timeZone).toBe(updatedData.timeZone);
+          t.expect(fetchedEvent?.id).toBe(event.id);
+          t.expect(fetchedEvent?.title).toBe(updatedData.title);
+          t.expect(fetchedEvent?.startDate).toBe(updatedData.startDate.toISOString());
+          t.expect(fetchedEvent?.endDate).toBe(updatedData.endDate.toISOString());
+          t.expect(fetchedEvent?.location).toBe(updatedData.location);
+          t.expect(fetchedEvent?.notes).toBe(updatedData.notes);
+          t.expect(fetchedEvent?.timeZone).toBe(updatedData.timeZone);
 
           if (Platform.OS === 'ios') {
-            t.expect(fetchedEvent!.url).toBe(updatedData.url);
+            t.expect(fetchedEvent?.url).toBe(updatedData.url);
           }
 
           if (Platform.OS === 'android') {
-            t.expect(fetchedEvent!.endTimeZone).toBe(updatedData.endTimeZone);
-            t.expect(fetchedEvent!.accessLevel).toBe(updatedData.accessLevel);
-            t.expect(fetchedEvent!.guestsCanModify).toBe(updatedData.guestsCanModify);
-            t.expect(fetchedEvent!.guestsCanInviteOthers).toBe(updatedData.guestsCanInviteOthers);
+            t.expect(fetchedEvent?.endTimeZone).toBe(updatedData.endTimeZone);
+            t.expect(fetchedEvent?.accessLevel).toBe(updatedData.accessLevel);
+            t.expect(fetchedEvent?.guestsCanModify).toBe(updatedData.guestsCanModify);
+            t.expect(fetchedEvent?.guestsCanInviteOthers).toBe(updatedData.guestsCanInviteOthers);
           }
         });
 
@@ -1293,10 +1294,10 @@ export async function test(t: JasmineInterface) {
             recurrenceRule: newRecurrenceRule,
           });
 
-          t.expect(event.recurrenceRule!.frequency).toEqual(newRecurrenceRule.frequency);
-          t.expect(event.recurrenceRule!.interval).toEqual(newRecurrenceRule.interval);
-          t.expect(event.recurrenceRule!.occurrence).toEqual(newRecurrenceRule.occurrence);
-          t.expect(event.recurrenceRule!.endDate).toBeNull();
+          t.expect(event.recurrenceRule?.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule?.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule?.occurrence).toEqual(newRecurrenceRule.occurrence);
+          t.expect(event.recurrenceRule?.endDate).toBeNull();
         });
 
         t.it('updates a recurrence rule with endDate', async () => {
@@ -1312,10 +1313,10 @@ export async function test(t: JasmineInterface) {
             recurrenceRule: newRecurrenceRule,
           });
 
-          t.expect(event.recurrenceRule!.frequency).toEqual(newRecurrenceRule.frequency);
-          t.expect(event.recurrenceRule!.interval).toEqual(newRecurrenceRule.interval);
-          t.expect(event.recurrenceRule!.endDate).toEqual(newRecurrenceRule.endDate);
-          t.expect(event.recurrenceRule!.occurrence).toBeNull();
+          t.expect(event.recurrenceRule?.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule?.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule?.endDate).toEqual(newRecurrenceRule.endDate);
+          t.expect(event.recurrenceRule?.occurrence).toBeNull();
         });
 
         t.it('endDate takes precedence over occurrence', async () => {
@@ -1332,11 +1333,11 @@ export async function test(t: JasmineInterface) {
             recurrenceRule: newRecurrenceRule,
           });
 
-          t.expect(event.recurrenceRule!.frequency).toEqual(newRecurrenceRule.frequency);
-          t.expect(event.recurrenceRule!.interval).toEqual(newRecurrenceRule.interval);
-          t.expect(event.recurrenceRule!.endDate).toEqual(newRecurrenceRule.endDate);
+          t.expect(event.recurrenceRule?.frequency).toEqual(newRecurrenceRule.frequency);
+          t.expect(event.recurrenceRule?.interval).toEqual(newRecurrenceRule.interval);
+          t.expect(event.recurrenceRule?.endDate).toEqual(newRecurrenceRule.endDate);
           // The endDate takes precedence over the occurrence
-          t.expect(event.recurrenceRule!.occurrence).toBeNull();
+          t.expect(event.recurrenceRule?.occurrence).toBeNull();
         });
 
         t.it('updates the all day property', async () => {
@@ -1395,7 +1396,7 @@ export async function test(t: JasmineInterface) {
             defaultEventData.endDate,
             event.id
           );
-          t.expect(fetchedEvent!.alarms).toEqual([]);
+          t.expect(fetchedEvent?.alarms).toEqual([]);
         });
 
         t.it('clears a recurrence rule when set to null', async () => {
@@ -1407,7 +1408,7 @@ export async function test(t: JasmineInterface) {
             },
           });
           t.expect(event.recurrenceRule).toBeDefined();
-          t.expect(event.recurrenceRule!.frequency).toBe(Calendar.Frequency.DAILY);
+          t.expect(event.recurrenceRule?.frequency).toBe(Calendar.Frequency.DAILY);
           await event.update({
             recurrenceRule: null,
           });
@@ -1417,8 +1418,8 @@ export async function test(t: JasmineInterface) {
             defaultEventData.endDate,
             event.id
           );
-          t.expect(fetchedEvent!.recurrenceRule).toBeNull();
-          t.expect(fetchedEvent!.title).toBe(defaultEventData.title);
+          t.expect(fetchedEvent?.recurrenceRule).toBeNull();
+          t.expect(fetchedEvent?.title).toBe(defaultEventData.title);
         });
 
         t.it('distinguishes between null and undefined values', async () => {
@@ -1711,7 +1712,7 @@ export async function test(t: JasmineInterface) {
           });
 
           t.it('returns a reminder by its ID', async () => {
-            const fetchedReminder = await ExpoCalendarReminder.get(reminder.id!);
+            const fetchedReminder = await ExpoCalendarReminder.get(requireNotNull(reminder.id));
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder).toEqual(reminder);
           });
@@ -1729,7 +1730,7 @@ export async function test(t: JasmineInterface) {
               title: 'New title',
             });
 
-            const fetchedReminder = await ExpoCalendarReminder.get(reminder.id!);
+            const fetchedReminder = await ExpoCalendarReminder.get(requireNotNull(reminder.id));
             t.expect(fetchedReminder).toBeDefined();
             t.expect(fetchedReminder.title).toBe('New title');
           });
@@ -1793,13 +1794,13 @@ export async function test(t: JasmineInterface) {
             t.expect(found).toBeDefined();
 
             const newTitle = `New title ${new Date().toISOString()}`;
-            await found!.update({
+            await requireNotNull(found).update({
               title: newTitle,
               dueDate: new Date(2025, 0, 5),
             });
 
-            t.expect(found!.title).toBe(newTitle);
-            t.expect(found!.dueDate).toBe(new Date(2025, 0, 5).toISOString());
+            t.expect(found?.title).toBe(newTitle);
+            t.expect(found?.dueDate).toBe(new Date(2025, 0, 5).toISOString());
           });
 
           t.it('marks a reminder as completed', async () => {
@@ -1893,7 +1894,7 @@ export async function test(t: JasmineInterface) {
               dueDate: new Date(2025, 0, 2),
             });
             t.expect(reminder.recurrenceRule).toBeDefined();
-            t.expect(reminder.recurrenceRule!.frequency).toBe(Calendar.Frequency.WEEKLY);
+            t.expect(reminder.recurrenceRule?.frequency).toBe(Calendar.Frequency.WEEKLY);
 
             await reminder.update({
               recurrenceRule: null,
