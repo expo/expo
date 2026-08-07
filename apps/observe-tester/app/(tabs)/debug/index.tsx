@@ -13,6 +13,7 @@ import { LogEventsSection } from '@/components/LogEventsSection';
 import { NetworkRequestObserverSection } from '@/components/NetworkRequestObserverSection';
 import { RenderErrorSection } from '@/components/RenderErrorSection';
 import { ReportErrorSection } from '@/components/ReportErrorSection';
+import { WorkletAnimationSection } from '@/components/WorkletAnimationSection';
 import CrashTester from '@/modules/crash-tester';
 import { useTheme } from '@/utils/theme';
 
@@ -33,6 +34,8 @@ export default function Debug() {
       style={{ backgroundColor: theme.background.screen }}
       contentContainerStyle={styles.container}>
       <LogEventsSection />
+      <Divider />
+      <WorkletAnimationSection />
       <Divider />
       <NetworkRequestObserverSection />
       <Divider />
