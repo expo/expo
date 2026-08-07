@@ -1,30 +1,25 @@
 // Copyright 2026-present 650 Industries. All rights reserved.
 
-import CryptoKit
 import Foundation
 
-/**
- Substitutes CSS custom properties — `var(--name)` and `var(--name, fallback)` — in an SVG
- document with caller-provided values, before the document is handed to a renderer.
-
- Rewriting the source text, rather than asking the renderer to resolve the variables, has two
- properties we want. It keeps the vector rendering path intact — tinting an SVG no longer has to
- rasterize it — and it works no matter whether the underlying renderer understands custom
- properties at all. Apple's CoreSVG does not.
-
- Substitution happens only inside quoted attribute values and `<style>` element bodies, the two
- places a custom property can legally appear. Text content, comments, CDATA sections, the XML
- declaration and the doctype are copied verbatim, so a literal `var(--x)` written inside a
- `<text>` element survives untouched.
- */
+/// Substitutes CSS custom properties — `var(--name)` and `var(--name, fallback)` — in an SVG
+/// document with caller-provided values, before the document is handed to a renderer.
+///
+/// Rewriting the source text, rather than asking the renderer to resolve the variables, has two
+/// properties we want. It keeps the vector rendering path intact — tinting an SVG no longer has to
+/// rasterize it — and it works no matter whether the underlying renderer understands custom
+/// properties at all. Apple's CoreSVG does not.
+///
+/// Substitution happens only inside quoted attribute values and `<style>` element bodies, the two
+/// places a custom property can legally appear. Text content, comments, CDATA sections, the XML
+/// declaration and the doctype are copied verbatim, so a literal `var(--x)` written inside a
+/// `<text>` element survives untouched.
 internal enum SVGVariables {
-  /**
-   Substitutes the variables in a UTF-8 encoded SVG document.
-
-   Returns the original data unchanged when there is nothing to do, or when the data is not valid
-   UTF-8. Re-encoding a document that declares a different encoding in its XML declaration would
-   make that declaration lie about its own contents, so those are deliberately left alone.
-   */
+  /// Substitutes the variables in a UTF-8 encoded SVG document.
+  ///
+  /// Returns the original data unchanged when there is nothing to do, or when the data is not valid
+  /// UTF-8. Re-encoding a document that declares a different encoding in its XML declaration would
+  /// make that declaration lie about its own contents, so those are deliberately left alone.
   static func substitute(in data: Data, variables: [String: String]) -> Data {
     guard !variables.isEmpty, let source = String(data: data, encoding: .utf8) else {
       return data
@@ -64,20 +59,6 @@ internal enum SVGVariables {
       }
     }
     return out
-  }
-
-  /**
-   A short, stable, order-independent digest of a variable map, suitable for use as a cache key
-   component. Two maps with the same entries always produce the same digest regardless of the
-   order the keys were inserted in.
-   */
-  static func digest(of variables: [String: String]) -> String {
-    let canonical = variables
-      .sorted { $0.key < $1.key }
-      .map { "\($0.key)=\($0.value)" }
-      .joined(separator: ";")
-    let hash = SHA256.hash(data: Data(canonical.utf8))
-    return hash.compactMap { String(format: "%02x", $0) }.joined().prefix(16).description
   }
 
   // MARK: - Document scanning
@@ -160,13 +141,11 @@ internal enum SVGVariables {
     let valueRange: Range<Int>
   }
 
-  /**
-   Rewrites one element tag, substituting variables inside attribute values.
-
-   An attribute whose entire value is a single unresolved variable with no fallback is dropped, so
-   the renderer applies its own default for that property rather than seeing a value it cannot
-   parse. Any tag this cannot confidently parse is copied through verbatim.
-   */
+  /// Rewrites one element tag, substituting variables inside attribute values.
+  ///
+  /// An attribute whose entire value is a single unresolved variable with no fallback is dropped, so
+  /// the renderer applies its own default for that property rather than seeing a value it cannot
+  /// parse. Any tag this cannot confidently parse is copied through verbatim.
   private static func substituteTag(
     _ chars: [Character],
     in range: Range<Int>,
@@ -268,11 +247,9 @@ internal enum SVGVariables {
     case verbatim
   }
 
-  /**
-   Replaces every `var()` reference in a value. Handles nested fallbacks (`var(--a, var(--b, red))`),
-   commas inside fallbacks (`var(--a, rgb(0, 0, 0))`) and several references in one value
-   (`var(--a, 1) var(--b, 2)`).
-   */
+  /// Replaces every `var()` reference in a value. Handles nested fallbacks (`var(--a, var(--b, red))`),
+  /// commas inside fallbacks (`var(--a, rgb(0, 0, 0))`) and several references in one value
+  /// (`var(--a, 1) var(--b, 2)`).
   private static func substituteValue(_ value: [Character], variables: [String: String]) -> SubstitutedValue {
     var out = ""
     var index = 0
@@ -395,11 +372,9 @@ internal enum SVGVariables {
     return nil
   }
 
-  /**
-   Case-insensitive search, comparing character by character. Lowercasing the whole document first
-   would be simpler but is not index-safe — for some scripts `lowercased()` changes the length of
-   the string, which would misalign every index that follows.
-   */
+  /// Case-insensitive search, comparing character by character. Lowercasing the whole document first
+  /// would be simpler but is not index-safe — for some scripts `lowercased()` changes the length of
+  /// the string, which would misalign every index that follows.
   private static func firstIndex(ofCaseInsensitive needle: String, in chars: [Character], from start: Int) -> Int? {
     let needleChars = Array(needle.lowercased())
     let last = chars.count - needleChars.count
