@@ -59,6 +59,8 @@ export async function generateFaviconAssetAsync(
   return { href: `${baseUrl}/${data.path}` };
 }
 
+const SVG_EXT_RE = /\.svg$/i;
+
 export async function getFaviconFromExpoConfigAsync(
   projectRoot: string,
   { force = false, exp = getConfig(projectRoot).exp }: { force?: boolean; exp?: ExpoConfig } = {}
@@ -66,6 +68,22 @@ export async function getFaviconFromExpoConfigAsync(
   const src = exp.web?.favicon ?? null;
   if (!src) {
     return null;
+  }
+
+  // SVG favicons are copied raw instead of rasterized, preserving media queries
+  // (e.g. prefers-color-scheme) and other SVG features.
+  if (SVG_EXT_RE.test(src)) {
+    const srcPath = path.resolve(projectRoot, src);
+    try {
+      const source = await fs.promises.readFile(srcPath);
+      return { source, path: 'favicon.svg' };
+    } catch (error: any) {
+      if (!force && error.code === 'ENOENT') {
+        Log.warn(`Favicon source file in Expo config (web.favicon) does not exist: ${src}`);
+        return null;
+      }
+      throw error;
+    }
   }
 
   const dims = [16, 32, 48];

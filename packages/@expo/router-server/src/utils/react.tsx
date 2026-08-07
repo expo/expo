@@ -76,7 +76,8 @@ export function getBootstrapContents({
 }
 
 export function createFaviconAsNode(href: string): ReactNode {
-  return <link key="favicon" rel="icon" href={href} />;
+  const typeAttr = /\.svg$/i.test(href) ? 'image/svg+xml' : undefined;
+  return <link key="favicon" rel="icon" type={typeAttr} href={href} />;
 }
 
 export function createInjectedFontsAsNodes(

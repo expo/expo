@@ -69,7 +69,8 @@ export function createInjectedScriptsAsString(srcs: string[]): string {
  * so both rendering paths agree on the tag shape.
  */
 export function createFaviconAsString(href: string): string {
-  return `<link rel="icon" href="${escapeHtmlAttribute(href)}"/>`;
+  const typeAttr = /\.svg$/i.test(href) ? ' type="image/svg+xml"' : '';
+  return `<link rel="icon"${typeAttr} href="${escapeHtmlAttribute(href)}"/>`;
 }
 
 /**

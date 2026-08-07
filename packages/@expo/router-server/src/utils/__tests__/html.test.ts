@@ -96,6 +96,18 @@ describe(createFaviconAsString, () => {
       '<link rel="icon" href="/icons?size=32&amp;q=&quot;x&quot;"/>'
     );
   });
+
+  it('adds `type="image/svg+xml"` for .svg hrefs', () => {
+    expect(createFaviconAsString('/favicon.svg')).toBe(
+      '<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>'
+    );
+  });
+
+  it('matches .SVG case-insensitively', () => {
+    expect(createFaviconAsString('/FAVICON.SVG')).toBe(
+      '<link rel="icon" type="image/svg+xml" href="/FAVICON.SVG"/>'
+    );
+  });
 });
 
 describe(getHydrationFlagScriptAsString, () => {
