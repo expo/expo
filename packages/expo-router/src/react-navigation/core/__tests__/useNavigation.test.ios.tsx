@@ -120,7 +120,7 @@ test("gets navigation's parent's parent from context", () => {
   );
 });
 
-test('gets navigation from container from context', () => {
+test('throws when inside a container but outside any navigator', () => {
   expect.assertions(1);
 
   const TestNavigator = (props: any): any => {
@@ -134,9 +134,10 @@ test('gets navigation from container from context', () => {
   };
 
   const Test = () => {
-    const navigation = useNavigation();
-
-    expect(navigation.navigate).toBeDefined();
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    expect(() => useNavigation()).toThrow(
+      "Couldn't find a navigation object. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
+    );
 
     return null;
   };
@@ -151,13 +152,13 @@ test('gets navigation from container from context', () => {
   );
 });
 
-test('throws if called outside a navigation context', () => {
+test('throws when outside the navigation container', () => {
   expect.assertions(1);
 
   const Test = () => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     expect(() => useNavigation()).toThrow(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+      "Couldn't find a navigation object. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
     );
 
     return null;
