@@ -66,13 +66,11 @@ describe('useVisibleTabsWithRedirect', () => {
       })
     );
 
-    expect(result.current).toEqual({
-      visibleRoutes: [routes[0], routes[1]],
-      focusedIndex: 1,
-    });
+    expect(result.current.visibleRoutes).toEqual([routes[0], routes[1]]);
+    expect(result.current.focusedIndex).toBe(1);
   });
 
-  it('returns zero when the focused route is not visible', () => {
+  it('does not focus another tab when the focused route is not visible', () => {
     const { result } = renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
@@ -82,7 +80,7 @@ describe('useVisibleTabsWithRedirect', () => {
       })
     );
 
-    expect(result.current.focusedIndex).toBe(0);
+    expect(result.current.focusedIndex).toBe(-1);
   });
 
   it('redirects an unavailable focused route to the configured visible route', () => {
@@ -135,10 +133,10 @@ describe('useVisibleTabsWithRedirect', () => {
     expect(replaceSpy).toHaveBeenCalledWith('/href/home');
   });
 
-  it('does not redirect when the navigator is unfocused', () => {
+  it('redirects when a navigator with no visible focused route becomes focused', () => {
     mockedUseIsFocused.mockReturnValue(false);
 
-    renderHook(() =>
+    const { result, rerender } = renderHook(() =>
       useVisibleTabsWithRedirect({
         routes,
         routeNames,
@@ -147,7 +145,14 @@ describe('useVisibleTabsWithRedirect', () => {
       })
     );
 
+    expect(result.current.focusedIndex).toBe(-1);
     expect(replaceSpy).not.toHaveBeenCalled();
+
+    mockedUseIsFocused.mockReturnValue(true);
+    rerender({});
+
+    expect(replaceSpy).toHaveBeenCalledTimes(1);
+    expect(replaceSpy).toHaveBeenCalledWith('/href/home');
   });
 
   it('does not redirect when the focused route is visible', () => {
