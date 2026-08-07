@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `getIntegrations` method to the `ExpoObserve` module mock, which crashed every test importing `expo-image` since `expo-image@57.0.2`. ([#48632](https://github.com/expo/expo/pull/48632) by [@radko93](https://github.com/radko93))
+
 ### 💡 Others
 
 ## 57.0.3 — 2026-07-29
