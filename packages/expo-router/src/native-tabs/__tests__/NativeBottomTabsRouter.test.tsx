@@ -48,3 +48,67 @@ test('post-processes a first navigation to an unvisited tab', () => {
     'Zoom transition is not supported when navigating between tabs. Falling back to standard navigation transition.'
   );
 });
+
+test('post-processes pure navigator params while preserving the preallocated key', () => {
+  const router = NativeBottomTabsRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['index', 'second'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = router.getInitialState(options);
+
+  const result = router.getStateForNavigatorParams!(
+    state,
+    {
+      screen: 'second',
+      params: {
+        screen: 'nested',
+        [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: 'source-id',
+      },
+      routeKey: 'second-preallocated',
+    },
+    options
+  )!;
+  const route = result.routes[result.index!]!;
+
+  expect(route.key).toBe('second-preallocated');
+  expect(route.params).toMatchObject({
+    screen: 'nested',
+    [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+  });
+  expect(route.params).not.toHaveProperty(
+    INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME
+  );
+});
+
+test('post-processes stale navigator params before rehydration', () => {
+  const router = NativeBottomTabsRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['index', 'second'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+
+  const result = router.getStateForNavigatorParams!(
+    { key: 'tab', routes: [{ key: 'index', name: 'index' }] },
+    {
+      screen: 'second',
+      params: {
+        screen: 'nested',
+        [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: 'source-id',
+      },
+      routeKey: 'second-preallocated',
+    },
+    options
+  )!;
+  const route = result.routes[result.index!]!;
+
+  expect(route.params).toMatchObject({
+    screen: 'nested',
+    [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
+  });
+  expect(route.params).not.toHaveProperty(
+    INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME
+  );
+});

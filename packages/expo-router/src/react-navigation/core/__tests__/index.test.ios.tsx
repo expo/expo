@@ -173,7 +173,7 @@ test('rehydrates state for a navigator on navigation', () => {
 
   expect(onStateChange).toHaveBeenLastCalledWith({
     index: 1,
-    key: '0',
+    key: expect.stringMatching(/^root-/),
     routeNames: ['foo', 'bar'],
     routes: [
       { key: 'foo', name: 'foo' },
@@ -761,7 +761,7 @@ test('updates route params with setParams applied to parent', () => {
         params: { username: 'alice' },
         state: {
           index: 0,
-          key: '1',
+          key: expect.any(String),
           routeNames: ['baz'],
           routes: [{ key: 'baz', name: 'baz' }],
           stale: false,
@@ -788,7 +788,7 @@ test('updates route params with setParams applied to parent', () => {
         params: { username: 'alice', age: 25 },
         state: {
           index: 0,
-          key: '1',
+          key: expect.any(String),
           routeNames: ['baz'],
           routes: [{ key: 'baz', name: 'baz' }],
           stale: false,
@@ -811,7 +811,7 @@ test('handles change in route names', () => {
   const onStateChange = jest.fn();
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer onStateChange={onStateChange}>
       <TestNavigator initialRouteName="bar">
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />
@@ -847,7 +847,7 @@ test('reconciles route names when no previous route survives', () => {
 
   const onStateChange = jest.fn();
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer onStateChange={onStateChange}>
       <TestNavigator initialRouteName="bar">
         <Screen name="foo" component={React.Fragment} />
         <Screen name="bar" component={React.Fragment} />
@@ -931,14 +931,54 @@ test('navigates to nested child in a navigator', () => {
   );
 
   expect(element).toMatchInlineSnapshot(`"[bar-a, {"lol":"why","whoa":"test"}]"`);
-
   act(() => navigation.goBack());
 
   expect(element).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff","test":42}]"`);
 
   act(() => navigation.navigate('bar', { screen: 'bar-a' }));
 
-  expect(element).toMatchInlineSnapshot(`"[bar-a, {"lol":"why","whoa":"test"}]"`);
+  expect(element).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff","test":42}]"`);
+});
+
+test('does not reapply shallow-equal parent params to a nested navigator in StrictMode', () => {
+  const TestNavigator = (props: any): any => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    );
+  };
+  let childNavigation: { navigate(name: string): void } | undefined;
+  const TestComponent = ({ route, navigation }: any): any => {
+    childNavigation = navigation;
+    return route.name;
+  };
+  const navigation = createNavigationContainerRef<ParamListBase>();
+  const element = render(
+    <React.StrictMode>
+      <BaseNavigationContainer ref={navigation}>
+        <TestNavigator>
+          <Screen name="parent">
+            {() => (
+              <TestNavigator>
+                <Screen name="first" component={TestComponent} />
+                <Screen name="second" component={TestComponent} />
+              </TestNavigator>
+            )}
+          </Screen>
+        </TestNavigator>
+      </BaseNavigationContainer>
+    </React.StrictMode>
+  );
+
+  act(() => navigation.navigate('parent', { screen: 'second' }));
+  expect(element).toMatchInlineSnapshot(`"second"`);
+
+  act(() => childNavigation!.navigate('first'));
+  expect(element).toMatchInlineSnapshot(`"first"`);
+
+  act(() => navigation.navigate('parent', { screen: 'second' }));
+  expect(element).toMatchInlineSnapshot(`"first"`);
 });
 
 test('navigates to nested child in a navigator with initial: false', () => {
@@ -1073,11 +1113,11 @@ test('navigates to nested child in a navigator with initial: false', () => {
         },
         state: {
           index: 0,
-          key: '4',
+          key: expect.stringMatching(/^test-/),
           routeNames: ['bar-a', 'bar-b'],
           routes: [
             {
-              key: 'bar-b-3',
+              key: expect.stringMatching(/^bar-b-/),
               name: 'bar-b',
               params: { some: 'stuff', test: 42 },
             },
@@ -1117,7 +1157,7 @@ test('navigates to nested child in a navigator with initial: false', () => {
   expect(second).toMatchInlineSnapshot(`"[foo-a, undefined]"`);
   expect(navigation.getRootState()).toEqual({
     index: 0,
-    key: '5',
+    key: expect.any(String),
     routeNames: ['foo', 'bar'],
     routes: [
       {
@@ -1125,7 +1165,7 @@ test('navigates to nested child in a navigator with initial: false', () => {
         name: 'foo',
         state: {
           index: 0,
-          key: '6',
+          key: expect.any(String),
           routeNames: ['foo-a', 'foo-b'],
           routes: [
             { key: 'foo-a', name: 'foo-a' },
@@ -1149,17 +1189,17 @@ test('navigates to nested child in a navigator with initial: false', () => {
     })
   );
 
-  expect(second).toMatchInlineSnapshot(`"[bar-b, {"test":42}]"`);
+  expect(second).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff","test":42}]"`);
 
   expect(navigation.getRootState()).toEqual({
     index: 2,
-    key: '5',
+    key: expect.any(String),
     routeNames: ['foo', 'bar'],
     routes: [
       { key: 'foo', name: 'foo' },
       { key: 'bar', name: 'bar' },
       {
-        key: '7',
+        key: expect.any(String),
         name: 'bar',
         params: {
           screen: 'bar-b',
@@ -1167,8 +1207,8 @@ test('navigates to nested child in a navigator with initial: false', () => {
           initial: false,
         },
         state: {
-          index: 2,
-          key: '8',
+          index: 1,
+          key: expect.any(String),
           routeNames: ['bar-a', 'bar-b'],
           routes: [
             {
@@ -1179,9 +1219,8 @@ test('navigates to nested child in a navigator with initial: false', () => {
             {
               key: 'bar-b',
               name: 'bar-b',
-              params: { some: 'stuff' },
+              params: { some: 'stuff', test: 42 },
             },
-            { key: '9', name: 'bar-b', params: { test: 42 } },
           ],
           stale: false,
           type: 'test',
@@ -1239,16 +1278,16 @@ test('navigates to nested child in a navigator with initial: false', () => {
     </BaseNavigationContainer>
   );
 
-  expect(third).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff"}]"`);
+  expect(third).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff","test":42}]"`);
 
   expect(navigation.getRootState()).toEqual({
     index: 1,
-    key: '12',
+    key: expect.stringMatching(/^root-/),
     routeNames: ['foo', 'bar'],
     routes: [
-      { key: 'foo-10', name: 'foo' },
+      { key: expect.stringMatching(/^foo-/), name: 'foo' },
       {
-        key: 'bar-11',
+        key: expect.stringMatching(/^bar-/),
         name: 'bar',
         params: {
           params: { test: 42 },
@@ -1257,18 +1296,18 @@ test('navigates to nested child in a navigator with initial: false', () => {
         },
         state: {
           index: 1,
-          key: '15',
+          key: expect.any(String),
           routeNames: ['bar-a', 'bar-b'],
           routes: [
             {
-              key: 'bar-a-13',
+              key: expect.stringMatching(/^bar-a-/),
               name: 'bar-a',
               params: { lol: 'why' },
             },
             {
-              key: 'bar-b-14',
+              key: expect.stringMatching(/^bar-b-/),
               name: 'bar-b',
-              params: { some: 'stuff' },
+              params: { some: 'stuff', test: 42 },
             },
           ],
           stale: false,
@@ -1468,15 +1507,15 @@ test('resets state of a nested child in a navigator', () => {
         },
         state: {
           index: 0,
-          key: '4',
+          key: expect.stringMatching(/^test-/),
           routeNames: ['bar-a', 'bar-b'],
           routes: [
             {
-              key: 'bar-a-2',
+              key: expect.stringMatching(/^bar-a-/),
               name: 'bar-a',
             },
             {
-              key: 'bar-b-3',
+              key: expect.stringMatching(/^bar-b-/),
               name: 'bar-b',
               params: { some: 'stuff' },
             },
@@ -1526,7 +1565,7 @@ test('resets state of a nested child in a navigator', () => {
         },
         state: {
           index: 2,
-          key: '7',
+          key: expect.stringMatching(/^test-/),
           routeNames: ['bar-a', 'bar-b'],
           routes: [
             {
@@ -1535,12 +1574,12 @@ test('resets state of a nested child in a navigator', () => {
               params: { some: 'stuff' },
             },
             {
-              key: 'bar-b-5',
+              key: expect.stringMatching(/^bar-b-/),
               name: 'bar-b',
               params: { some: 'stuff' },
             },
             {
-              key: 'bar-a-6',
+              key: expect.stringMatching(/^bar-a-/),
               name: 'bar-a',
               params: { test: 18 },
             },
@@ -1615,9 +1654,9 @@ test('resets state for navigator which has screen from params', () => {
         params: { screen: 'qux', params: { test: 42 } },
         state: {
           index: 0,
-          key: '2',
+          key: expect.stringMatching(/^test-/),
           routeNames: ['baz', 'qux'],
-          routes: [{ key: 'qux-1', name: 'qux', params: { test: 42 } }],
+          routes: [{ key: expect.stringMatching(/^qux-/), name: 'qux', params: { test: 42 } }],
           stale: false,
           type: 'test',
         },
@@ -1649,9 +1688,9 @@ test('resets state for navigator which has screen from params', () => {
         },
         state: {
           index: 0,
-          key: '4',
+          key: expect.stringMatching(/^test-/),
           routeNames: ['baz', 'qux'],
-          routes: [{ key: 'baz-3', name: 'baz' }],
+          routes: [{ key: expect.stringMatching(/^baz-/), name: 'baz' }],
           stale: false,
           type: 'test',
         },
@@ -1713,9 +1752,9 @@ test('clears params for nested navigator after initial mount', () => {
         },
         state: {
           index: 0,
-          key: '2',
+          key: expect.stringMatching(/^test-/),
           routeNames: ['baz', 'qux'],
-          routes: [{ key: 'qux-1', name: 'qux', params: { test: 42 } }],
+          routes: [{ key: expect.stringMatching(/^qux-/), name: 'qux', params: { test: 42 } }],
           stale: false,
           type: 'test',
         },

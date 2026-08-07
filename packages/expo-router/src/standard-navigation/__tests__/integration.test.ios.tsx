@@ -829,7 +829,7 @@ describe('custom-navigators guide example', () => {
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
-      preloadedNames: state.preloadedRouteKeys
+      preloadedNames: (state.preloadedRouteKeys ?? [])
         .map((key) => state.routes.find((route) => route.key === key)?.name)
         .filter((name): name is string => name !== undefined),
     }),
