@@ -1,9 +1,6 @@
 {
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
-    // `expo/tsconfig.base` does not set this, so it followed the compiler
-    // default and silently flipped on with TypeScript 6. Pin it so the setting
-    // does not change again underneath the app.
     "strict": true,
     // TypeScript 6 no longer picks up `@types` packages implicitly, so the
     // jasmine globals the test modules rely on and the jest globals used by
