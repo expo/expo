@@ -95,61 +95,6 @@ class NetworkRequestInterceptorTest {
   }
 
   @Test
-  fun `flags a read timeout as a timeout`() {
-    // A response the server never finishes sending, against a client with a short read timeout,
-    // produces a real SocketTimeoutException rather than a simulated one.
-    server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.NO_RESPONSE))
-    val timingOutClient = client.newBuilder()
-      .readTimeout(Duration.ofMillis(200))
-      .build()
-
-    var thrown = false
-    try {
-      timingOutClient.newCall(Request.Builder().url(server.url("/stall")).build()).execute()
-    } catch (_: IOException) {
-      thrown = true
-    }
-    assertTrue("the network call should time out", thrown)
-    assertEquals(1, monitor.recent.size)
-    assertTrue(monitor.recent.first().isTimeout)
-  }
-
-  @Test
-  fun `flags a dropped connection as a timeout`() {
-    // The server accepts the connection and then drops it, which is what the radio going away
-    // mid-request looks like to OkHttp. iOS reports this as NSURLErrorNetworkConnectionLost and
-    // counts it, so Android has to count it too for the metric to mean one thing.
-    server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
-
-    var thrown = false
-    try {
-      client.newCall(Request.Builder().url(server.url("/dropped")).build()).execute()
-    } catch (_: IOException) {
-      thrown = true
-    }
-    assertTrue("the network call should fail", thrown)
-    assertEquals(1, monitor.recent.size)
-    assertTrue(monitor.recent.first().isTimeout)
-  }
-
-  @Test
-  fun `flags an unresolvable host as a timeout`() {
-    // DNS failing is what an offline device looks like from here. iOS counts the equivalent
-    // NSURLErrorNotConnectedToInternet and NSURLErrorCannotFindHost codes.
-    var thrown = false
-    try {
-      client
-        .newCall(Request.Builder().url("https://host.invalid/x").build())
-        .execute()
-    } catch (_: IOException) {
-      thrown = true
-    }
-    assertTrue("the network call should fail to resolve", thrown)
-    assertEquals(1, monitor.recent.size)
-    assertTrue(monitor.recent.first().isTimeout)
-  }
-
-  @Test
   fun `records a body that breaks mid-transfer as failed`() {
     // Headers arrive and the body is cut off partway. The interceptor's own catch only wraps
     // `chain.proceed`, which has already returned by then, so without the listener's report this
@@ -176,12 +121,31 @@ class NetworkRequestInterceptorTest {
   }
 
   @Test
-  fun `does not flag a server error as a timeout`() {
-    server.enqueue(MockResponse().setResponseCode(503))
-    client.newCall(Request.Builder().url(server.url("/boom")).build()).execute().close()
-    val snapshot = monitor.recent.first()
-    assertEquals(503, snapshot.statusCode)
-    assertFalse(snapshot.isTimeout)
+  fun `treats a message-less failure as failed`() {
+    // `SocketException()` with no message: `localizedMessage` and `message` are both null, so a
+    // snapshot keyed off the description alone would keep the 200 the response started as and
+    // report a broken transfer as a success.
+    // The headers arrived, so the snapshot carries a 200; the body then broke. This is exactly the
+    // shape the body-read fix produces, and the only path where a null description isn't rescued by
+    // a missing status code.
+    val request = Request.Builder().url("https://expo.dev/x").build()
+    val response = okhttp3.Response.Builder()
+      .request(request)
+      .protocol(okhttp3.Protocol.HTTP_1_1)
+      .code(200)
+      .message("OK")
+      .build()
+    val snapshot = buildSnapshot(
+      id = java.util.UUID.randomUUID(),
+      originalRequest = request,
+      response = response,
+      phases = null,
+      fallbackStart = java.util.Date(0),
+      fallbackEnd = java.util.Date(100),
+      totalDuration = 0.1,
+      error = java.net.SocketException()
+    )
+    assertTrue("a message-less failure should still count as failed", snapshot.isFailed)
   }
 
   @Test

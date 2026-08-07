@@ -18,15 +18,6 @@ data class NetworkRequestSummary(
   /** Requests that errored or returned a non-2xx status. */
   val failed: Int,
 
-  /**
-   * Subset of `failed` where the network stalled or went away rather than the server answering.
-   *
-   * Split out from `failed` because the two have different causes: timeouts point at the
-   * connection, 4xx/5xx point at the backend. A window where most failures are timeouts is the
-   * clearest signal available here that the user was on a bad network.
-   */
-  val timedOut: Int = 0,
-
   /** Sum of `responseBytesReceived` across all requests. */
   val bytesReceived: Long,
 
@@ -55,8 +46,8 @@ data class NetworkRequestSummary(
    *
    * Failed requests are deliberately not candidates. A timeout's duration is the client's timeout
    * setting rather than a measurement of the server, so letting one win would make these fields
-   * report a config constant that barely varies with the network. `failed` and `timedOut` carry that
-   * signal instead.
+   * report a config constant that barely varies with the network. `failed` carries that signal
+   * instead.
    */
   val slowest: SlowestRequest? = null,
 
@@ -77,14 +68,14 @@ data class NetworkRequestSummary(
    *   launch that fetches briefly and then sits idle would otherwise look slow.
    * - Only requests that completed and received bytes, so neither a slow request returning nothing
    *   nor one that stalled until the client gave up can stretch the denominator across time when no
-   *   payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `timedOut`.
+   *   payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `failed`.
    *
    * Requiring a first-byte timestamp also excludes cache hits for free: a response served from disk
    * never reports one, so the bytes it contributes can't be divided by the milliseconds it took to
    * read them.
    *
    * This still can't see a stall between requests: if the radio dies while nothing is in flight, no
-   * interval covers it. `timedOut` is the signal for that case.
+   * interval covers it. `failed` is the signal for that case.
    *
    * Being a ratio, it also degrades differently from the counts when the monitor's ring buffer evicts
    * the earliest requests in a window: both sides shrink together, so the value stays plausible while
@@ -131,7 +122,6 @@ data class NetworkRequestSummary(
     val empty = NetworkRequestSummary(
       count = 0,
       failed = 0,
-      timedOut = 0,
       bytesReceived = 0,
       bytesSent = 0,
       totalDuration = 0.0,
@@ -148,7 +138,6 @@ data class NetworkRequestSummary(
         return empty
       }
       var failed = 0
-      var timedOut = 0
       var bytesReceived = 0L
       var bytesSent = 0L
       var totalDuration = 0.0
@@ -158,16 +147,13 @@ data class NetworkRequestSummary(
         if (request.isFailed) {
           failed += 1
         }
-        if (request.isTimeout) {
-          timedOut += 1
-        }
         bytesReceived += request.responseBytesReceived ?: 0
         bytesSent += request.requestBytesSent ?: 0
         totalDuration += request.timings.totalDuration
         // Only completed requests are candidates. A timeout's duration is the client's timeout
         // setting, not a measurement of the server, so letting one win would make these fields
         // report a config constant that barely varies with the network. Failures are already counted
-        // by `failed` and `timedOut`.
+        // by `failed`.
         if (!request.isFailed) {
           val current = slowest
           if (current == null || request.timings.totalDuration > current.timings.totalDuration) {
@@ -179,7 +165,6 @@ data class NetworkRequestSummary(
       return NetworkRequestSummary(
         count = requests.size,
         failed = failed,
-        timedOut = timedOut,
         bytesReceived = bytesReceived,
         bytesSent = bytesSent,
         totalDuration = totalDuration,

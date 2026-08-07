@@ -68,8 +68,7 @@ class NetworkRequestSummaryTest {
         url = "http://192.168.0.104/bundle",
         statusCode = null,
         errorDescription = "timeout",
-        totalDuration = 10.0,
-        isTimeout = true
+        totalDuration = 10.0
       ),
       makeRequest(
         url = "https://cdn.expo.dev/asset",
@@ -88,7 +87,6 @@ class NetworkRequestSummaryTest {
     assertEquals(0.4, summary.slowest!!.timeToFirstByte!!, 0.0001)
     assertEquals(5000L, summary.slowest!!.bytesReceived)
     // The timeout is still counted, just not used to describe the slowest request.
-    assertEquals(1, summary.timedOut)
     assertEquals(1, summary.failed)
   }
 
@@ -127,14 +125,12 @@ class NetworkRequestSummaryTest {
         makeRequest(
           statusCode = null,
           errorDescription = "timeout",
-          totalDuration = 10.0,
-          isTimeout = true
+          totalDuration = 10.0
         )
       )
     )
     assertNull(summary.slowest)
     assertEquals(1, summary.count)
-    assertEquals(1, summary.timedOut)
   }
 
   @Test
@@ -160,31 +156,6 @@ class NetworkRequestSummaryTest {
     val summary = NetworkRequestSummary.from(requests)
     assertEquals(4.0, summary.slowest!!.duration, 0.0001)
     assertEquals(0.3, summary.slowest!!.timeToFirstByte!!, 0.0001)
-  }
-
-  @Test
-  fun `counts timeouts separately from other failures`() {
-    val requests = listOf(
-      makeRequest(
-        statusCode = null,
-        errorDescription = "timeout",
-        totalDuration = 30.0,
-        isTimeout = true
-      ),
-      // A 5xx is the backend failing, not the network.
-      makeRequest(statusCode = 503),
-      makeRequest(statusCode = 200)
-    )
-    val summary = NetworkRequestSummary.from(requests)
-    assertEquals(2, summary.failed)
-    assertEquals(1, summary.timedOut)
-  }
-
-  @Test
-  fun `reports no timeouts when every request reached the server`() {
-    val summary = NetworkRequestSummary.from(listOf(makeRequest(statusCode = 500)))
-    assertEquals(1, summary.failed)
-    assertEquals(0, summary.timedOut)
   }
 
   @Test
@@ -279,7 +250,6 @@ class NetworkRequestSummaryTest {
       makeRequest(
         statusCode = null,
         errorDescription = "timeout",
-        isTimeout = true,
         responseBytesReceived = 2000,
         fetchStart = Date(0),
         responseStart = Date(0),
@@ -449,7 +419,6 @@ class NetworkRequestSummaryTest {
     requestBytesSent: Long? = 0,
     responseBytesReceived: Long? = 0,
     totalDuration: Double = 0.1,
-    isTimeout: Boolean = false,
     fetchStart: Date = Date(0),
     responseStart: Date? = null,
     responseEnd: Date? = Date(100)
@@ -476,7 +445,6 @@ class NetworkRequestSummaryTest {
       totalDuration = totalDuration
     ),
     errorDescription = errorDescription,
-    redirects = emptyList(),
-    isTimeout = isTimeout
+    redirects = emptyList()
   )
 }

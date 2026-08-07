@@ -131,7 +131,6 @@ struct MetricParamsBuilderTests {
     let summary = NetworkRequestSummary(
       count: 4,
       failed: 1,
-      timedOut: 0,
       bytesReceived: 12_000,
       bytesSent: 800,
       totalDuration: 1.4,
@@ -189,59 +188,10 @@ struct MetricParamsBuilderTests {
   }
 
   @Test
-  func `emits the timeout count alongside the failure count`() {
-    let summary = NetworkRequestSummary(
-      count: 3,
-      failed: 2,
-      timedOut: 1,
-      bytesReceived: 0,
-      bytesSent: 0,
-      totalDuration: 30.2,
-      slowest: NetworkRequestSummary.SlowestRequest(
-        host: "slow.expo.dev",
-        duration: 30,
-        statusCode: 200,
-        timeToFirstByte: nil,
-        bytesReceived: nil
-      ),
-      throughputBytesPerSecond: nil
-    )
-    let params = MetricParamsBuilder.build(networkRequests: summary)
-    #expect(params["expo.network.requests.failed"] as? Int == 2)
-    #expect(params["expo.network.requests.timedOut"] as? Int == 1)
-  }
-
-  @Test
-  func `emits a zero timeout count so its absence is not ambiguous`() {
-    // Unlike the optional latency fields, a count of zero is a real measurement: we saw requests
-    // and none of them timed out. Omitting it would make "no timeouts" and "not measured" look
-    // the same.
-    let summary = NetworkRequestSummary(
-      count: 1,
-      failed: 0,
-      timedOut: 0,
-      bytesReceived: 10,
-      bytesSent: 10,
-      totalDuration: 0.1,
-      slowest: NetworkRequestSummary.SlowestRequest(
-        host: "expo.dev",
-        duration: 0.1,
-        statusCode: 200,
-        timeToFirstByte: nil,
-        bytesReceived: nil
-      ),
-      throughputBytesPerSecond: nil
-    )
-    let params = MetricParamsBuilder.build(networkRequests: summary)
-    #expect(params["expo.network.requests.timedOut"] as? Int == 0)
-  }
-
-  @Test
   func `emits the derived latency and throughput keys when the summary has them`() {
     let summary = NetworkRequestSummary(
       count: 4,
       failed: 1,
-      timedOut: 0,
       bytesReceived: 12_000,
       bytesSent: 800,
       totalDuration: 1.4,
@@ -266,7 +216,6 @@ struct MetricParamsBuilderTests {
     let summary = NetworkRequestSummary(
       count: 2,
       failed: 0,
-      timedOut: 0,
       bytesReceived: 0,
       bytesSent: 40,
       totalDuration: 0.2,

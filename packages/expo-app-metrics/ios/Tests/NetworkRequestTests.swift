@@ -67,107 +67,7 @@ struct NetworkRequestTests {
   }
 
   @Test
-  func `flags a timed-out request as a timeout`() {
-    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
-    let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorTimedOut, userInfo: nil)
-    let now = Date()
-    let snapshot = NetworkRequest.from(
-      id: UUID(),
-      request: request,
-      response: nil,
-      taskBytesSent: nil,
-      taskBytesReceived: nil,
-      metrics: nil,
-      fallbackStart: now,
-      fallbackEnd: now,
-      error: error
-    )
-    #expect(snapshot.isTimeout)
-  }
-
-  @Test
-  func `flags a lost connection as a timeout`() {
-    // The radio dropping mid-request is the same "network went away" condition as a timeout, and
-    // is what an elevator actually produces.
-    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
-    let error = NSError(
-      domain: NSURLErrorDomain,
-      code: NSURLErrorNetworkConnectionLost,
-      userInfo: nil
-    )
-    let now = Date()
-    let snapshot = NetworkRequest.from(
-      id: UUID(),
-      request: request,
-      response: nil,
-      taskBytesSent: nil,
-      taskBytesReceived: nil,
-      metrics: nil,
-      fallbackStart: now,
-      fallbackEnd: now,
-      error: error
-    )
-    #expect(snapshot.isTimeout)
-  }
-
-  @Test
-  func `flags an unreachable network as a timeout`() {
-    // An offline device surfaces as any of these, depending on how far the request got before it
-    // gave up. Android reports the same conditions as UnknownHostException and counts them, so all
-    // four have to count here for the metric to mean one thing on both platforms.
-    let codes = [
-      NSURLErrorNotConnectedToInternet,
-      NSURLErrorCannotFindHost,
-      NSURLErrorDNSLookupFailed,
-      NSURLErrorCannotConnectToHost,
-    ]
-    for code in codes {
-      let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
-      let error = NSError(domain: NSURLErrorDomain, code: code, userInfo: nil)
-      let now = Date()
-      let snapshot = NetworkRequest.from(
-        id: UUID(),
-        request: request,
-        response: nil,
-        taskBytesSent: nil,
-        taskBytesReceived: nil,
-        metrics: nil,
-        fallbackStart: now,
-        fallbackEnd: now,
-        error: error
-      )
-      #expect(snapshot.isTimeout, "expected code \(code) to count as a timeout")
-    }
-  }
-
-  @Test
-  func `does not flag a TLS failure as a timeout`() {
-    // A failed handshake is a certificate or trust problem, not an absent network. Android leaves
-    // SSLException out of its set for the same reason.
-    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
-    let error = NSError(
-      domain: NSURLErrorDomain,
-      code: NSURLErrorSecureConnectionFailed,
-      userInfo: nil
-    )
-    let now = Date()
-    let snapshot = NetworkRequest.from(
-      id: UUID(),
-      request: request,
-      response: nil,
-      taskBytesSent: nil,
-      taskBytesReceived: nil,
-      metrics: nil,
-      fallbackStart: now,
-      fallbackEnd: now,
-      error: error
-    )
-    #expect(!snapshot.isTimeout)
-  }
-
-  @Test
-  func `does not flag a cancelled request as a timeout`() {
-    // The app abandoned the request; that says nothing about the network.
+  func `records a description for a cancelled request`() {
     let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
     let error = NSError(domain: NSURLErrorDomain, code: NSURLErrorCancelled, userInfo: nil)
     let now = Date()
@@ -182,26 +82,9 @@ struct NetworkRequestTests {
       fallbackEnd: now,
       error: error
     )
-    #expect(!snapshot.isTimeout)
+    // A description is what makes the summary treat the request as failed, so an abandoned request
+    // still has to carry one rather than passing for a success.
     #expect(snapshot.errorDescription != nil)
-  }
-
-  @Test
-  func `does not flag a successful request as a timeout`() {
-    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
-    let now = Date()
-    let snapshot = NetworkRequest.from(
-      id: UUID(),
-      request: request,
-      response: nil,
-      taskBytesSent: nil,
-      taskBytesReceived: nil,
-      metrics: nil,
-      fallbackStart: now,
-      fallbackEnd: now,
-      error: nil
-    )
-    #expect(!snapshot.isTimeout)
   }
 }
 
@@ -450,15 +333,14 @@ struct NetworkRequestSummaryTests {
     let now = Date()
     // A timeout's duration is the client's timeout setting, not a measurement of the server, so
     // letting it win would make this field report a config constant instead of the network.
-    let timedOut = makeRequest(
+    let failure = makeRequest(
       host: "192.168.0.104",
       duration: 10.0,
       status: nil,
       bytesSent: 0,
       bytesReceived: 0,
       fetchStart: now,
-      error: "timed out",
-      isTimeout: true
+      error: "timed out"
     )
     let slowSuccess = makeRequest(
       host: "cdn.expo.dev",
@@ -480,13 +362,12 @@ struct NetworkRequestSummaryTests {
       responseStart: now.addingTimeInterval(0.05),
       responseEnd: now.addingTimeInterval(0.2)
     )
-    let summary = NetworkRequestSummary.from([timedOut, slowSuccess, quick])
+    let summary = NetworkRequestSummary.from([failure, slowSuccess, quick])
     #expect(summary.slowest?.duration == 2.0)
     #expect(summary.slowest?.host == "cdn.expo.dev")
     // All three `slowest` fields describe that one request.
     #expect(abs((summary.slowest?.timeToFirstByte ?? 0) - 0.4) < 0.0001)
     // The timeout is still counted, just not used to describe the slowest request.
-    #expect(summary.timedOut == 1)
     #expect(summary.failed == 1)
   }
 
@@ -530,15 +411,13 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 0,
       fetchStart: Date(),
-      error: "timed out",
-      isTimeout: true
+      error: "timed out"
     )
     let summary = NetworkRequestSummary.from([request])
     #expect(summary.slowest?.duration == nil)
     #expect(summary.slowest?.host == nil)
     #expect(summary.slowest?.timeToFirstByte == nil)
     #expect(summary.count == 1)
-    #expect(summary.timedOut == 1)
   }
 
   @Test
@@ -569,57 +448,6 @@ struct NetworkRequestSummaryTests {
     let summary = NetworkRequestSummary.from([slowest, slowServer])
     #expect(summary.slowest?.duration == 4.0)
     #expect(abs((summary.slowest?.timeToFirstByte ?? 0) - 0.3) < 0.0001)
-  }
-
-  @Test
-  func `counts timeouts separately from other failures`() {
-    let now = Date()
-    let timedOut = makeRequest(
-      host: "slow.expo.dev",
-      duration: 30,
-      status: nil,
-      bytesSent: 0,
-      bytesReceived: 0,
-      fetchStart: now,
-      error: "timed out",
-      isTimeout: true
-    )
-    // A 5xx is the backend failing, not the network.
-    let serverError = makeRequest(
-      host: "broken.expo.dev",
-      duration: 0.2,
-      status: 503,
-      bytesSent: 0,
-      bytesReceived: 0,
-      fetchStart: now
-    )
-    let ok = makeRequest(
-      host: "api.expo.dev",
-      duration: 0.1,
-      status: 200,
-      bytesSent: 0,
-      bytesReceived: 100,
-      fetchStart: now
-    )
-    let summary = NetworkRequestSummary.from([timedOut, serverError, ok])
-    #expect(summary.failed == 2)
-    #expect(summary.timedOut == 1)
-  }
-
-  @Test
-  func `reports no timeouts when every request reached the server`() {
-    let summary = NetworkRequestSummary.from([
-      makeRequest(
-        host: "expo.dev",
-        duration: 0.1,
-        status: 500,
-        bytesSent: 0,
-        bytesReceived: 0,
-        fetchStart: Date()
-      )
-    ])
-    #expect(summary.failed == 1)
-    #expect(summary.timedOut == 0)
   }
 
   @Test
@@ -745,7 +573,6 @@ struct NetworkRequestSummaryTests {
       bytesReceived: 2000,
       fetchStart: now,
       error: "The request timed out.",
-      isTimeout: true,
       responseStart: now,
       responseEnd: now.addingTimeInterval(30)
     )
@@ -1052,7 +879,6 @@ struct NetworkRequestSummaryTests {
     bytesReceived: Int64,
     fetchStart: Date?,
     error: String? = nil,
-    isTimeout: Bool = false,
     responseStart: Date? = nil,
     responseEnd: Date? = nil
   ) -> NetworkRequest {
@@ -1079,7 +905,6 @@ struct NetworkRequestSummaryTests {
         totalDuration: duration
       ),
       errorDescription: error,
-      isTimeout: isTimeout,
       redirects: []
     )
   }

@@ -138,6 +138,11 @@ object DeviceConditions {
       isExpensive = capabilities
         ?.takeIf { it.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) }
         ?.let { !it.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED) },
+      // Signals the user's intent to conserve data, not a restriction on the requests this is
+      // attached to: Data Saver limits background traffic, and a launch runs in the foreground, so
+      // the observed requests proceed at full speed even when this is `true`. `WHITELISTED` reports
+      // `false` because the question worth answering is whether Data Saver restricts *this app*,
+      // not whether the user switched it on somewhere.
       dataSaverEnabled = cm.restrictBackgroundStatus ==
         ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED
     )

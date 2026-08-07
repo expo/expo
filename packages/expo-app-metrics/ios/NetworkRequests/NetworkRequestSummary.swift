@@ -14,13 +14,6 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// Requests that errored or returned a non-2xx status.
   public let failed: Int
 
-  /// Subset of `failed` where the network stalled or went away rather than the server answering.
-  ///
-  /// Split out from `failed` because the two have different causes: timeouts point at the
-  /// connection, 4xx/5xx point at the backend. A window where most failures are timeouts is the
-  /// clearest signal available here that the user was on a bad network.
-  public let timedOut: Int
-
   /// Sum of `responseBytesReceived` across all requests in the window.
   public let bytesReceived: Int64
 
@@ -45,8 +38,8 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   ///
   /// Failed requests are deliberately not candidates. A timeout's duration is the client's timeout
   /// setting rather than a measurement of the server, so letting one win would make these fields
-  /// report a config constant that barely varies with the network. `failed` and `timedOut` carry
-  /// that signal instead.
+  /// report a config constant that barely varies with the network. `failed` carries that signal
+  /// instead.
   public let slowest: SlowestRequest?
 
   /// Facts about the slowest completed request in a window. See `NetworkRequestSummary.slowest`.
@@ -90,14 +83,14 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   ///   launch that fetches briefly and then sits idle would otherwise look slow.
   /// - Only requests that completed and received bytes, so neither a slow request returning nothing
   ///   nor one that stalled until the client gave up can stretch the denominator across time when
-  ///   no payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `timedOut`.
+  ///   no payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `failed`.
   ///
   /// Requiring a first-byte timestamp also excludes cache hits for free: a response served from
   /// disk never reports one, so the megabytes it contributes can't be divided by the milliseconds
   /// it took to read them.
   ///
   /// This still can't see a stall between requests: if the radio dies while nothing is in flight,
-  /// no interval covers it. `timedOut` is the signal for that case.
+  /// no interval covers it. `failed` is the signal for that case.
   ///
   /// Being a ratio, it also degrades differently from the counts when the monitor's ring buffer
   /// evicts the earliest requests in a window: both sides shrink together, so the value stays
@@ -113,7 +106,6 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   static let empty = NetworkRequestSummary(
     count: 0,
     failed: 0,
-    timedOut: 0,
     bytesReceived: 0,
     bytesSent: 0,
     totalDuration: 0,
@@ -128,7 +120,6 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       return .empty
     }
     var failed = 0
-    var timedOut = 0
     var bytesReceived: Int64 = 0
     var bytesSent: Int64 = 0
     var totalDuration: TimeInterval = 0
@@ -138,16 +129,13 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       if request.isFailed {
         failed += 1
       }
-      if request.isTimeout {
-        timedOut += 1
-      }
       bytesReceived += request.responseBytesReceived ?? 0
       bytesSent += request.requestBytesSent ?? 0
       totalDuration += request.timings.totalDuration
       // Only completed requests are candidates. A timeout's duration is the client's timeout
       // setting, not a measurement of the server, so letting one win would make these fields report
       // a config constant that barely varies with the network. Failures are already counted by
-      // `failed` and `timedOut`.
+      // `failed`.
       if !request.isFailed {
         if let current = slowest {
           if request.timings.totalDuration > current.timings.totalDuration {
@@ -162,7 +150,6 @@ public struct NetworkRequestSummary: Sendable, Equatable {
     return NetworkRequestSummary(
       count: requests.count,
       failed: failed,
-      timedOut: timedOut,
       bytesReceived: bytesReceived,
       bytesSent: bytesSent,
       totalDuration: totalDuration,
