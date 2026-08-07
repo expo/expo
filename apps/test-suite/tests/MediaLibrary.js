@@ -211,24 +211,28 @@ export async function test(t) {
         });
 
         if (Platform.OS === 'ios') {
-          t.it('getAssetsAsync includes numeric location on batch results', async () => {
-            let exifAsset = null;
-            try {
-              const [exifImage] = await Asset.loadAsync(require('../assets/exif_data_image.jpg'));
-              exifAsset = await MediaLibrary.createAssetAsync(exifImage.localUri, album);
-              const { assets } = await MediaLibrary.getAssetsAsync({ album, first: 20 });
-              const batchAsset = assets.find((asset) => asset.id === exifAsset.id);
-              t.expect(typeof batchAsset.location.latitude).toBe('number');
-              t.expect(typeof batchAsset.location.longitude).toBe('number');
-            } finally {
-              // We delete the asset to ensure other tests that depend on there
-              // being specific numbers of assets won't fail even if this test
-              // fails.
-              if (exifAsset != null) {
-                await MediaLibrary.deleteAssetsAsync(exifAsset);
+          t.it(
+            'getAssetsAsync includes numeric location on batch results',
+            async () => {
+              let exifAsset = null;
+              try {
+                const [exifImage] = await Asset.loadAsync(require('../assets/exif_data_image.jpg'));
+                exifAsset = await MediaLibrary.createAssetAsync(exifImage.localUri, album);
+                const { assets } = await MediaLibrary.getAssetsAsync({ album, first: 20 });
+                const batchAsset = assets.find((asset) => asset.id === exifAsset.id);
+                t.expect(typeof batchAsset.location.latitude).toBe('number');
+                t.expect(typeof batchAsset.location.longitude).toBe('number');
+              } finally {
+                // We delete the asset to ensure other tests that depend on there
+                // being specific numbers of assets won't fail even if this test
+                // fails.
+                if (exifAsset != null) {
+                  await MediaLibrary.deleteAssetsAsync(exifAsset);
+                }
               }
-            }
-          });
+            },
+            TIMEOUT_WHEN_USER_NEEDS_TO_INTERACT
+          );
         }
       });
 
