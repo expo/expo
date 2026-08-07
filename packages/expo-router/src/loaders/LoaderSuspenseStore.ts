@@ -1,5 +1,11 @@
 type SuspenseEntry = { data: unknown } | { error: unknown } | Promise<unknown>;
 
+/**
+ * Stores pending and settled loader reads for React Suspense.
+ *
+ * Disposal marks an entry reclaimable, teardown confirms its removal, and a replacement written
+ * between them cancels reclamation.
+ */
 export class LoaderSuspenseStore {
   private entries = new Map<string, SuspenseEntry>();
   private reclaim = new Set<string>();
@@ -34,8 +40,12 @@ export class LoaderSuspenseStore {
     }
   }
 
-  keys(): string[] {
-    return [...this.entries.keys()];
+  retain(livePaths: ReadonlySet<string>) {
+    for (const path of this.entries.keys()) {
+      if (!livePaths.has(path)) {
+        this.clear(path);
+      }
+    }
   }
 
   reset() {
