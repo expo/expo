@@ -37,15 +37,22 @@ public struct WidgetLiveActivity: Widget {
         props: context.state.props,
         environment: environment
       )
-      LiveActivityBannerView(context: context, nodes: nodes)
-        .widgetURL(context.attributes.url.flatMap(URL.init(string:)))
+      // Only apply widgetURL when the activity has one: a hierarchy with more than one
+      // widgetURL modifier is undefined behavior, and layouts can set their own through
+      // the widgetURL modifier from @expo/ui.
+      let banner = LiveActivityBannerView(context: context, nodes: nodes)
+      if let url = context.attributes.url.flatMap(URL.init(string:)) {
+        banner.widgetURL(url)
+      } else {
+        banner
+      }
     } dynamicIsland: { context in
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
         props: context.state.props,
         environment: environment
       )
-      return DynamicIsland {
+      let island = DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
           LiveActivitySectionView(context: context, nodes: nodes, sectionName: "expandedCenter")
         }
@@ -65,7 +72,10 @@ public struct WidgetLiveActivity: Widget {
       } minimal: {
         LiveActivitySectionView(context: context, nodes: nodes, sectionName: "minimal")
       }
-      .widgetURL(context.attributes.url.flatMap(URL.init(string:)))
+      if let url = context.attributes.url.flatMap(URL.init(string:)) {
+        return island.widgetURL(url)
+      }
+      return island
     }
     .supplementalActivityFamiliesIfAvailable()
   }
