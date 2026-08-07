@@ -19,8 +19,22 @@ internal import SDWebImageSVGCoder
 internal final class SVGVariablesImageLoader: Sendable {
   static let shared = SVGVariablesImageLoader()
 
+  /// The non-`Sendable` SDWebImage values a load needs, boxed so they can be handed to a `nonisolated`
+  /// async function in one piece.
+  ///
+  /// Unchecked because the context dictionary holds `Any` values and the progress block is a plain
+  /// closure — neither is something Swift can prove safe to transfer. It holds here: the box is built
+  /// on the main actor, never mutated afterwards, and only read from SDWebImage's own callbacks.
+  struct Options: @unchecked Sendable {
+    let context: SDWebImageContext
+    let progress: SDImageLoaderProgressBlock?
+  }
+
   /// The outcome of one load. The data is the *original* document, which is what the cache holds.
-  struct Result {
+  ///
+  /// Unchecked for `UIImage`, which isn't `Sendable`. The image is freshly parsed here, handed
+  /// straight to the main actor and never touched again from this side.
+  struct Result: @unchecked Sendable {
     let image: UIImage
     let data: Data
     let cacheType: SDImageCacheType
@@ -30,22 +44,23 @@ internal final class SVGVariablesImageLoader: Sendable {
   /// as a vector image.
   ///
   /// Both the parsing and any download happen off the main actor. Cancelling the surrounding task
-  /// cancels an in-flight download.
+  /// cancels an in-flight download. Throws `SVGVariablesNotAnSVG` when the bytes turn out not to be
+  /// an SVG at all, which lets the caller fall back to the normal load path.
   func image(
     for url: URL,
     cacheKey: String,
     variables: [String: String],
     scale: Double,
-    context: SDWebImageContext,
-    progress: SDImageLoaderProgressBlock?
+    options: Options
   ) async throws -> Result {
-    let (data, cacheType) = try await originalDocument(
-      for: url,
-      cacheKey: cacheKey,
-      context: context,
-      progress: progress
-    )
+    let (data, cacheType) = try await originalDocument(for: url, cacheKey: cacheKey, options: options)
     try Task.checkCancellation()
+
+    // `svgVariables` is meaningless for other formats, and this loader only knows how to parse SVG.
+    // Reporting it lets the view retry through `SDWebImageManager` instead of failing the load.
+    guard SDImageSVGCoder.shared.canDecode(from: data) else {
+      throw SVGVariablesNotAnSVG()
+    }
     return Result(image: try parse(data, variables: variables, scale: scale), data: data, cacheType: cacheType)
   }
 
@@ -54,20 +69,38 @@ internal final class SVGVariablesImageLoader: Sendable {
   private func originalDocument(
     for url: URL,
     cacheKey: String,
-    context: SDWebImageContext,
-    progress: SDImageLoaderProgressBlock?
+    options: Options
   ) async throws -> (Data, SDImageCacheType) {
     // Local files are already on disk — there is nothing to cache and nothing to download.
     if url.isFileURL {
       return (try Data(contentsOf: url), .none)
     }
-    if let cached = await diskDocument(forKey: cacheKey) {
+
+    let disk = diskPermissions(from: options.context)
+    if disk.query, let cached = await diskDocument(forKey: cacheKey) {
       return (cached, .disk)
     }
-    let downloaded = try await download(url, context: context, progress: progress)
-    // Cache the original document, never the substituted one.
-    SDImageCache.shared.storeImageData(toDisk: downloaded, forKey: cacheKey)
+    let downloaded = try await download(url, options: options)
+    if disk.store {
+      // Cache the original document, never the substituted one.
+      SDImageCache.shared.storeImageData(toDisk: downloaded, forKey: cacheKey)
+    }
     return (downloaded, .none)
+  }
+
+  /// Whether the `cachePolicy` prop, which reaches us as cache types on the context, allows the disk
+  /// cache to be read and written. Without this the loader would persist documents an app asked not
+  /// to cache.
+  private func diskPermissions(from context: SDWebImageContext) -> (query: Bool, store: Bool) {
+    func allowsDisk(_ option: SDWebImageContextOption) -> Bool {
+      guard let raw = context[option] as? NSNumber,
+            let cacheType = SDImageCacheType(rawValue: raw.intValue) else {
+        // SDWebImage's own default is `.all`.
+        return true
+      }
+      return cacheType == .disk || cacheType == .all
+    }
+    return (allowsDisk(.queryCacheType), allowsDisk(.storeCacheType))
   }
 
   private func diskDocument(forKey key: String) async -> Data? {
@@ -78,11 +111,7 @@ internal final class SVGVariablesImageLoader: Sendable {
     }
   }
 
-  private func download(
-    _ url: URL,
-    context: SDWebImageContext,
-    progress: SDImageLoaderProgressBlock?
-  ) async throws -> Data {
+  private func download(_ url: URL, options: Options) async throws -> Data {
     let token = DownloadToken()
 
     return try await withTaskCancellationHandler {
@@ -94,8 +123,8 @@ internal final class SVGVariablesImageLoader: Sendable {
           SDWebImageDownloader.shared.downloadImage(
             with: url,
             options: [],
-            context: context,
-            progress: progress
+            context: options.context,
+            progress: options.progress
           ) { _, data, error, finished in
             guard finished else {
               return
@@ -115,8 +144,8 @@ internal final class SVGVariablesImageLoader: Sendable {
 
   // MARK: - Parsing
 
-  /// Substitutes the variables and parses the document. `nonisolated` and synchronous, so it runs on
-  /// the caller's cooperative thread rather than hopping back to the main actor.
+  /// Substitutes the variables and parses the document. Synchronous, so it runs on the cooperative
+  /// thread the caller is already on rather than hopping back to the main actor.
   private func parse(_ data: Data, variables: [String: String], scale: Double) throws -> UIImage {
     let substituted = SVGVariables.substitute(in: data, variables: variables)
 
@@ -157,6 +186,10 @@ private final class DownloadToken: @unchecked Sendable {
     token = nil
   }
 }
+
+/// Thrown when a source with `svgVariables` set turns out not to be an SVG. Not surfaced to JS — the
+/// view uses it to retry through the normal load path.
+internal struct SVGVariablesNotAnSVG: Error {}
 
 internal struct SVGVariablesLoadingFailed: LocalizedError {
   var errorDescription: String? {

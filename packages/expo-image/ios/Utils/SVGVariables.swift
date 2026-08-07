@@ -100,7 +100,7 @@ internal enum SVGVariables {
   ) -> Int {
     let end = firstIndex(ofCaseInsensitive: "</style", in: chars, from: start) ?? chars.count
     let body = Array(chars[start..<end])
-    out += substituteValue(body, variables: variables).text
+    out += substituteValue(body, variables: variables, context: .styleBody).text
     return end
   }
 
@@ -181,7 +181,7 @@ internal enum SVGVariables {
 
     var out = String(chars[range.lowerBound..<prefixEnd])
     for attribute in attributes {
-      let value = substituteValue(Array(chars[attribute.valueRange]), variables: variables)
+      let value = substituteValue(Array(chars[attribute.valueRange]), variables: variables, context: .attribute)
       if value.isEntirelyUnresolved {
         continue
       }
@@ -247,10 +247,54 @@ internal enum SVGVariables {
     case verbatim
   }
 
+  /// Where a value is being written, which decides how it has to be escaped.
+  private enum Context {
+    case attribute
+    case styleBody
+  }
+
+  /// Escapes a caller-supplied value so that it cannot terminate the attribute it sits in or add
+  /// markup of its own. Returns `nil` for a value that can't be made safe, which the caller treats
+  /// as unresolved.
+  ///
+  /// Only values that came from the variable map go through this. Fallbacks are document text that
+  /// is already escaped, so escaping them again would double up their entities.
+  private static func escape(_ value: String, for context: Context) -> String? {
+    // Inside a stylesheet these could close the declaration or the rule and start another one. No
+    // legitimate CSS value needs them.
+    if context == .styleBody, value.contains(where: { $0 == "{" || $0 == "}" || $0 == ";" }) {
+      return nil
+    }
+    var escaped = ""
+    escaped.reserveCapacity(value.count)
+
+    for char in value {
+      switch char {
+      case "&":
+        escaped += "&amp;"
+      case "<":
+        escaped += "&lt;"
+      case ">":
+        escaped += "&gt;"
+      case "\"":
+        escaped += "&quot;"
+      case "'":
+        escaped += "&apos;"
+      default:
+        escaped.append(char)
+      }
+    }
+    return escaped
+  }
+
   /// Replaces every `var()` reference in a value. Handles nested fallbacks (`var(--a, var(--b, red))`),
   /// commas inside fallbacks (`var(--a, rgb(0, 0, 0))`) and several references in one value
   /// (`var(--a, 1) var(--b, 2)`).
-  private static func substituteValue(_ value: [Character], variables: [String: String]) -> SubstitutedValue {
+  private static func substituteValue(
+    _ value: [Character],
+    variables: [String: String],
+    context: Context
+  ) -> SubstitutedValue {
     var out = ""
     var index = 0
     var unresolvedSpan: Range<Int>?
@@ -265,7 +309,7 @@ internal enum SVGVariables {
       let span = index..<(close + 1)
       let inner = Array(value[(index + 4)..<close])
 
-      switch resolve(inner, variables: variables) {
+      switch resolve(inner, variables: variables, context: context) {
       case .resolved(let text):
         out += text
         substitutions += 1
@@ -285,7 +329,11 @@ internal enum SVGVariables {
     return SubstitutedValue(text: out, isEntirelyUnresolved: isEntirelyUnresolved)
   }
 
-  private static func resolve(_ inner: [Character], variables: [String: String]) -> Resolution {
+  private static func resolve(
+    _ inner: [Character],
+    variables: [String: String],
+    context: Context
+  ) -> Resolution {
     let (namePart, fallbackPart) = splitAtTopLevelComma(inner)
     let name = String(namePart).trimmingCharacters(in: .whitespacesAndNewlines)
 
@@ -293,13 +341,16 @@ internal enum SVGVariables {
       return .verbatim
     }
     if let value = variables[name] {
-      return .resolved(value)
+      guard let escaped = escape(value, for: context) else {
+        return .unresolved
+      }
+      return .resolved(escaped)
     }
     guard let fallbackPart else {
       return .unresolved
     }
     // A fallback may itself reference other variables.
-    let fallback = substituteValue(fallbackPart, variables: variables)
+    let fallback = substituteValue(fallbackPart, variables: variables, context: context)
     if fallback.isEntirelyUnresolved {
       return .unresolved
     }

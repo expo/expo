@@ -205,6 +205,61 @@ struct SVGVariablesTests {
     }
   }
 
+  @Suite("escaping caller-supplied values")
+  struct EscapingTests {
+    @Test
+    func `escapes xml metacharacters in a value`() {
+      // Unescaped, `A & B` would make the document malformed and fail the whole load.
+      #expect(substitute(##"<rect fill="var(--a)"/>"##, ["--a": "A & B"])
+        == ##"<rect fill="A &amp; B"/>"##)
+    }
+
+    @Test
+    func `a value cannot close its attribute and add another`() {
+      #expect(substitute(##"<rect fill="var(--a)"/>"##, ["--a": ##"red" transform="scale(9)"##])
+        == ##"<rect fill="red&quot; transform=&quot;scale(9)"/>"##)
+    }
+
+    @Test
+    func `a value cannot close its element and add markup`() {
+      let injected = substitute(##"<svg><rect fill="var(--a)"/></svg>"##, ["--a": ##"red"/><script/>"##])
+      #expect(!injected.contains("<script"))
+      #expect(injected == ##"<svg><rect fill="red&quot;/&gt;&lt;script/&gt;"/></svg>"##)
+    }
+
+    @Test
+    func `escapes single quotes so a single-quoted attribute survives`() {
+      #expect(substitute("<rect fill='var(--a)'/>", ["--a": "it's red"])
+        == "<rect fill='it&apos;s red'/>")
+    }
+
+    @Test
+    func `leaves an ordinary css value untouched`() {
+      #expect(substitute(##"<rect fill="var(--a)"/>"##, ["--a": "rgb(0, 0, 0)"])
+        == ##"<rect fill="rgb(0, 0, 0)"/>"##)
+    }
+
+    @Test
+    func `does not escape a fallback, which is already document text`() {
+      // The fallback came from the document, so its entities are correct as written.
+      #expect(substitute(##"<rect fill="var(--a, A &amp; B)"/>"##, ["--z": "x"])
+        == ##"<rect fill="A &amp; B"/>"##)
+    }
+
+    @Test
+    func `rejects a style value that could escape its rule`() {
+      // `}` would close the rule and let the value add selectors of its own.
+      #expect(substitute(##"<style>.a { fill: var(--a) }</style>"##, ["--a": "red } .b { fill: blue"])
+        == ##"<style>.a { fill:  }</style>"##)
+    }
+
+    @Test
+    func `escapes metacharacters inside a style body`() {
+      #expect(substitute(##"<style>.a { fill: var(--a) }</style>"##, ["--a": "A & B"])
+        == ##"<style>.a { fill: A &amp; B }</style>"##)
+    }
+  }
+
   @Suite("data")
   struct DataTests {
     @Test

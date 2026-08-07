@@ -1,6 +1,7 @@
 package expo.modules.image.svg
 
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 
 /**
@@ -288,6 +289,78 @@ class SVGVariablesTest {
     assertEquals(
       """<rect fill="var(--a, #000)"/>""",
       substitute("""<rect fill="var(--a, #000)"/>""", emptyMap())
+    )
+  }
+
+  // endregion
+  // region escaping caller-supplied values
+
+  @Test
+  fun `escapes xml metacharacters in a value`() {
+    // Unescaped, `A & B` would make the document malformed and fail the whole load.
+    assertEquals(
+      """<rect fill="A &amp; B"/>""",
+      substitute("""<rect fill="var(--a)"/>""", mapOf("--a" to "A & B"))
+    )
+  }
+
+  @Test
+  fun `a value cannot close its attribute and add another`() {
+    assertEquals(
+      """<rect fill="red&quot; transform=&quot;scale(9)"/>""",
+      substitute("""<rect fill="var(--a)"/>""", mapOf("--a" to """red" transform="scale(9)"""))
+    )
+  }
+
+  @Test
+  fun `a value cannot close its element and add markup`() {
+    val injected = substitute(
+      """<svg><rect fill="var(--a)"/></svg>""",
+      mapOf("--a" to """red"/><script/>""")
+    )
+    assertFalse(injected.contains("<script"))
+    assertEquals("""<svg><rect fill="red&quot;/&gt;&lt;script/&gt;"/></svg>""", injected)
+  }
+
+  @Test
+  fun `escapes single quotes so a single-quoted attribute survives`() {
+    assertEquals(
+      "<rect fill='it&apos;s red'/>",
+      substitute("<rect fill='var(--a)'/>", mapOf("--a" to "it's red"))
+    )
+  }
+
+  @Test
+  fun `leaves an ordinary css value untouched`() {
+    assertEquals(
+      """<rect fill="rgb(0, 0, 0)"/>""",
+      substitute("""<rect fill="var(--a)"/>""", mapOf("--a" to "rgb(0, 0, 0)"))
+    )
+  }
+
+  @Test
+  fun `does not escape a fallback, which is already document text`() {
+    // The fallback came from the document, so its entities are correct as written.
+    assertEquals(
+      """<rect fill="A &amp; B"/>""",
+      substitute("""<rect fill="var(--a, A &amp; B)"/>""", mapOf("--z" to "x"))
+    )
+  }
+
+  @Test
+  fun `rejects a style value that could escape its rule`() {
+    // `}` would close the rule and let the value add selectors of its own.
+    assertEquals(
+      """<style>.a { fill:  }</style>""",
+      substitute("""<style>.a { fill: var(--a) }</style>""", mapOf("--a" to "red } .b { fill: blue"))
+    )
+  }
+
+  @Test
+  fun `escapes metacharacters inside a style body`() {
+    assertEquals(
+      """<style>.a { fill: A &amp; B }</style>""",
+      substitute("""<style>.a { fill: var(--a) }</style>""", mapOf("--a" to "A & B"))
     )
   }
 
