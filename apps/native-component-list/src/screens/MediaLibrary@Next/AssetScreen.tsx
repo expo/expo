@@ -9,6 +9,7 @@ import {
   Query,
   requestPermissionsAsync,
   MediaSubtype,
+  AssetUriVersion,
 } from 'expo-media-library';
 import { useVideoPlayer, VideoView } from 'expo-video';
 import { useEffect, useState } from 'react';
@@ -38,6 +39,7 @@ const AssetScreen = () => {
   const [orientation, setOrientation] = useState<number | null | undefined>(undefined);
   const [isNetworkAsset, setIsNetworkAsset] = useState<boolean | undefined>(undefined);
   const [pairedVideoUri, setPairedVideoUri] = useState<string | null | undefined>(undefined);
+  const [uriVersions, setUriVersions] = useState<Record<AssetUriVersion, string> | null>(null);
   const [testState, setTestState] = useState<TestState>(TestState.START);
 
   const isVideo = assetInfo?.mediaType === MediaType.VIDEO;
@@ -152,6 +154,30 @@ const AssetScreen = () => {
     }
   };
 
+  // Edit the asset in the Photos app first, then run this. The Asset is re-instantiated because
+  // it caches its PHAsset, so an instance created before the edit would resolve a stale snapshot.
+  const handleCompareUriVersions = async () => {
+    if (!asset) {
+      return;
+    }
+    try {
+      const freshAsset = new Asset(asset.id);
+      const startedCurrent = Date.now();
+      const current = await freshAsset.getUri({ version: AssetUriVersion.CURRENT });
+      const startedOriginal = Date.now();
+      const original = await freshAsset.getUri({ version: AssetUriVersion.ORIGINAL });
+      const finished = Date.now();
+
+      console.log(
+        `current: ${startedOriginal - startedCurrent} ms, original: ${finished - startedOriginal} ms`
+      );
+      setUriVersions({ [AssetUriVersion.CURRENT]: current, [AssetUriVersion.ORIGINAL]: original });
+    } catch (e) {
+      console.error('Error comparing uri versions:', e);
+      Alert.alert('Error', 'Unable to resolve both uri versions.');
+    }
+  };
+
   const downloadFile = async (type: 'image' | 'video'): Promise<File> => {
     try {
       const dir = new Directory(Paths.cache, screenName);
@@ -238,6 +264,17 @@ const AssetScreen = () => {
               {pairedVideoUri !== undefined ? (pairedVideoUri ?? 'N/A') : 'N/A'}
             </Text>
           )}
+          {uriVersions && (
+            <>
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Current URI:</Text> {uriVersions[AssetUriVersion.CURRENT]}
+              </Text>
+              <Text style={styles.infoText}>
+                <Text style={styles.bold}>Original URI:</Text>{' '}
+                {uriVersions[AssetUriVersion.ORIGINAL]}
+              </Text>
+            </>
+          )}
         </ScrollView>
       </View>
     );
@@ -283,6 +320,11 @@ const AssetScreen = () => {
                 {assetInfo?.isFavorite ? 'Unmark Favorite' : 'Mark Favorite'}
               </Text>
             </Pressable>
+            {Platform.OS === 'ios' && (
+              <Pressable style={styles.primaryButton} onPress={handleCompareUriVersions}>
+                <Text style={styles.primaryButtonText}>Compare URI Versions</Text>
+              </Pressable>
+            )}
           </View>
           {renderAssetInfo()}
         </>
