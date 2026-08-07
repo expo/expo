@@ -6,6 +6,7 @@ import type { XcodeProject } from 'xcode';
 
 import type { ExportedConfigWithProps } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
+import { toApplePlatform } from './Paths';
 import { addResourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 
 export type PrivacyInfo = {
@@ -38,9 +39,9 @@ export function setPrivacyInfo(
   projectConfig: ExportedConfigWithProps<XcodeProject>,
   privacyManifests: Partial<PrivacyInfo>
 ) {
-  const { projectRoot, platformProjectRoot } = projectConfig.modRequest;
+  const { projectRoot, platformProjectRoot, platform } = projectConfig.modRequest;
 
-  const projectName = getProjectName(projectRoot);
+  const projectName = getProjectName(projectRoot, toApplePlatform(platform));
 
   const privacyFilePath = path.join(platformProjectRoot, projectName, 'PrivacyInfo.xcprivacy');
 

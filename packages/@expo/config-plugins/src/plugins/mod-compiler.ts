@@ -17,6 +17,9 @@ export function withDefaultBaseMods(
   props: ForwardedBaseModOptions = {}
 ): ExportedConfig {
   config = withIosBaseMods(config, props);
+  // tvOS builds through the same Apple mods, registered under its own key so that the mod compiler
+  // reports `tvos` and the providers resolve inside `<projectRoot>/tvos`.
+  config = withIosBaseMods(config, { ...props, platform: 'tvos' });
   config = withAndroidBaseMods(config, props);
   return config;
 }
@@ -108,15 +111,18 @@ function getRawClone({ mods, ...config }: ExportedConfig) {
   return Object.freeze(JSON.parse(JSON.stringify(config)));
 }
 
+const applePrecedences = {
+  // dangerous runs first
+  dangerous: -2,
+  // run the XcodeProject mod second because many plugins attempt to read from it.
+  xcodeproj: -1,
+  // put the finalized mod at the last
+  finalized: 1,
+};
+
 const precedences: Record<string, Record<string, number>> = {
-  ios: {
-    // dangerous runs first
-    dangerous: -2,
-    // run the XcodeProject mod second because many plugins attempt to read from it.
-    xcodeproj: -1,
-    // put the finalized mod at the last
-    finalized: 1,
-  },
+  ios: applePrecedences,
+  tvos: applePrecedences,
 };
 /**
  * A generic plugin compiler.
@@ -159,7 +165,9 @@ export async function evalModsAsync(
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = path.join(projectRoot, platformName);
       const projectName =
-        platformName === 'ios' ? getHackyProjectName(projectRoot, config) : undefined;
+        platformName === 'ios' || platformName === 'tvos'
+          ? getHackyProjectName(projectRoot, config, platformName)
+          : undefined;
 
       for (const [modName, mod] of entries) {
         const modRequest = {
