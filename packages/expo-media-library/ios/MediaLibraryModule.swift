@@ -89,13 +89,13 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
         }
 
         guard let albumId else {
-          promise.resolve(exportAsset(asset: asset))
+          promise.resolve(exportAsset(asset: asset, includeLocation: false))
           return
         }
 
         addAssets(ids: [asset.localIdentifier], to: albumId) { success, error in
           if success {
-            promise.resolve(exportAsset(asset: asset))
+            promise.resolve(exportAsset(asset: asset, includeLocation: false))
           } else {
             promise.reject(error ?? SaveAssetException(nil))
           }
@@ -558,15 +558,15 @@ public class MediaLibraryModule: Module, PhotoLibraryObserverHandler {
           var updatedAssets = [[String: Any?]?]()
 
           for asset in changeDetails.insertedObjects {
-            insertedAssets.append(exportAsset(asset: asset))
+            insertedAssets.append(exportAsset(asset: asset, includeLocation: false))
           }
 
           for asset in changeDetails.removedObjects {
-            deletedAssets.append(exportAsset(asset: asset))
+            deletedAssets.append(exportAsset(asset: asset, includeLocation: false))
           }
 
           for asset in changeDetails.changedObjects {
-            updatedAssets.append(exportAsset(asset: asset))
+            updatedAssets.append(exportAsset(asset: asset, includeLocation: false))
           }
 
           let body: [String: Any] = [

@@ -99,6 +99,7 @@ struct AssetWithOptions: Record {
   @Field var mediaSubtypes: [MediaSubtype]
   @Field var createdAfter: Double?
   @Field var createdBefore: Double?
+  @Field var resolveWithFullInfo: Bool = false
 }
 
 struct GetAssetsResponse {

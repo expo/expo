@@ -140,3 +140,18 @@ struct ExportLocationTests {
     #expect(exportLocation(location: nil) == nil)
   }
 }
+
+@Suite("exportAsset")
+struct ExportAssetTests {
+  @Test
+  func `includes location only when includeLocation is enabled`() {
+    let location = CLLocation(latitude: 1.23, longitude: 4.56)
+    let asset = MockPHAsset(id: 0, location: location)
+
+    let withoutLocation = exportAsset(asset: asset, includeLocation: false)
+    #expect(withoutLocation["location"] == nil)
+
+    let withLocation = exportAsset(asset: asset, includeLocation: true)
+    #expect(withLocation["location"] as? [String: Double] == ["latitude": 1.23, "longitude": 4.56])
+  }
+}

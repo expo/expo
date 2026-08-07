@@ -122,8 +122,7 @@ export type Asset = {
    */
   albumId?: string;
   /**
-   * GPS location if available. Included in `getAssetsAsync` results on iOS
-   * when the asset has location metadata. On Android, included only when
+   * GPS location if available. Included in `getAssetsAsync` results only when
    * `getAssetsAsync` is called with `resolveWithFullInfo: true`.
    */
   location?: Location;
@@ -330,9 +329,12 @@ export type AssetsOptions = {
   /**
    * Whether to resolve full EXIF metadata for image assets during the query.
    * When enabled, returned assets include EXIF data (including orientation) and GPS location.
-   * On iOS, GPS location is populated even when this option is not set.
+   *
+   * > **Note:** Enabling this option significantly increases request time on Android (~5×),
+   * > because EXIF and location data must be fetched per photo. On iOS, the impact is much
+   * > smaller (~10–20%), because the data is already included in the query results.
+   *
    * @default false
-   * @platform android
    */
   resolveWithFullInfo?: boolean;
 };
@@ -857,8 +859,13 @@ export async function deleteAlbumsAsync(
 // @needsAudit
 /**
  * Fetches a page of assets matching the provided criteria.
- * Returned assets may include a `location` field when GPS metadata is available.
- * On iOS, location is included by default. On Android, it is included when `resolveWithFullInfo: true`.
+ * Set `resolveWithFullInfo: true` to include GPS `location` in returned assets on Android and iOS.
+ * On Android, this option also resolves full EXIF data for images (including orientation).
+ *
+ * > **Note:** Using `resolveWithFullInfo: true` significantly increases request time on Android (~5×),
+ * > because EXIF and location data must be fetched per photo. On iOS, the impact is much
+ * > smaller (~10–20%), because the data is already included in the query results.
+ *
  * @param assetsOptions
  * @return A promise that fulfils with a [`PagedInfo`](/versions/latest/sdk/media-library-legacy/#pagedinfo) object with an array of [`Asset`](#asset)s.
  */
