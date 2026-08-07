@@ -530,7 +530,6 @@ export interface NativeTabsViewProps extends Omit<
 
 export interface NativeTabsViewTabItem {
   options: NativeTabOptions;
-  routeKey: string;
   name: string;
   contentRenderer: () => React.ReactNode;
 }

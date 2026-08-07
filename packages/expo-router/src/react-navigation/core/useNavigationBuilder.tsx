@@ -29,6 +29,7 @@ import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
 import {
   type DefaultNavigatorOptions,
+  type DescriptorRouteProp,
   type EventMapBase,
   type EventMapCore,
   type NavigatorScreenParams,
@@ -634,9 +635,16 @@ export function useNavigationBuilder<
     const routeNames = [];
 
     let route: Route<string> | undefined;
+    let isPlaceholder = false;
 
     if (e.target) {
       route = state.routes.find((route) => route.key === e.target);
+      const config = screens[e.target];
+
+      if (!route && config) {
+        route = { key: e.target, name: e.target, params: config.props.initialParams };
+        isPlaceholder = true;
+      }
 
       if (route?.name) {
         routeNames.push(route.name);
@@ -650,7 +658,10 @@ export function useNavigationBuilder<
       return;
     }
 
-    const navigation = descriptors[route.key]!.navigation;
+    const descriptor = isPlaceholder
+      ? describe({ ...route, key: undefined } as DescriptorRouteProp<ParamListBase, string>)
+      : descriptors[route.key]!;
+    const navigation = descriptor.navigation;
 
     const listeners = ([] as (((e: any) => void) | undefined)[])
       .concat(
@@ -758,8 +769,9 @@ export function useNavigationBuilder<
     getStateListeners: keyedListeners.getState,
   });
 
-  const descriptors = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
+  const { describe, descriptors } = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
     routes: state.routes,
+    routeNames: state.routeNames,
     screens,
     navigation,
     screenOptions,
@@ -809,6 +821,7 @@ export function useNavigationBuilder<
   return {
     state,
     navigation,
+    describe,
     descriptors,
     NavigationContent,
   };
