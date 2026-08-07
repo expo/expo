@@ -2,6 +2,7 @@ import * as Cellular from 'expo-cellular';
 import Constants from 'expo-constants';
 
 import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'Cellular (device-only)';
 
@@ -58,7 +59,8 @@ export async function test({ describe, it, expect, jasmine }: JasmineInterface) 
 
         expect(hasError).toBe(false);
         expect(cellularGeneration).toEqual(jasmine.any(Number));
-        expect(CellularGenerationEnumValues.includes(cellularGeneration!)).toBe(true);
+        const generation = requireNotNull(cellularGeneration);
+        expect(CellularGenerationEnumValues.includes(generation)).toBe(true);
       });
     });
   });

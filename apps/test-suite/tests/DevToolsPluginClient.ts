@@ -9,6 +9,7 @@ import {
 } from 'expo/devtools';
 
 import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'DevToolsPluginClient';
 
@@ -33,7 +34,8 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
 
     it('should support plaintext messages', async () => {
       const message = 'Test message';
-      context.client!.sendMessage(METHOD_PING, message);
+      const client = requireNotNull(context.client);
+      client.sendMessage(METHOD_PING, message);
       const response = await context.responsePromise;
       expect(response).toEqual(message);
     });
@@ -43,14 +45,16 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
         foo: 'foo',
         bar: 'bar',
       };
-      context.client!.sendMessage(METHOD_PING, json);
+      const client = requireNotNull(context.client);
+      client.sendMessage(METHOD_PING, json);
       const response = await context.responsePromise;
       expect(response).toEqual(json);
     });
 
     it('should support binary payload', async () => {
       const payload = new Uint8Array([0x01, 0x02, 0x03]);
-      context.client!.sendMessage(METHOD_PING, payload);
+      const client = requireNotNull(context.client);
+      client.sendMessage(METHOD_PING, payload);
       const response = await context.responsePromise;
       expect(response).toEqual(payload);
     });
@@ -65,10 +69,10 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     setupContext(context, t, { websocketBinaryType: 'arraybuffer' });
 
     it('should terminate duplicated browser clients for the same plugin', async () => {
-      expect(context.browserEchoClient!.isConnected()).toBe(true);
+      expect(context.browserEchoClient?.isConnected()).toBe(true);
       const newBrowserClient = await createBrowserEchoClientAsync({ pluginName: PLUGIN_NAME });
       await delayAsync(200);
-      expect(context.browserEchoClient!.isConnected()).toBe(false);
+      expect(context.browserEchoClient?.isConnected()).toBe(false);
       expect(newBrowserClient.isConnected()).toBe(true);
       await newBrowserClient.closeAsync();
     });
@@ -104,16 +108,17 @@ function setupContext(
   });
 
   t.beforeEach(async () => {
+    const client = requireNotNull(context.client);
     context.responsePromise = new Promise((resolve) => {
-      context.client!.addMessageListenerOnce(METHOD_PONG, (message) => {
+      client.addMessageListenerOnce(METHOD_PONG, (message) => {
         resolve(message);
       });
     });
   });
 
   t.afterAll(async () => {
-    await context.browserEchoClient!.closeAsync();
-    await context.client!.closeAsync();
+    await requireNotNull(context.browserEchoClient).closeAsync();
+    await requireNotNull(context.client).closeAsync();
   });
 }
 

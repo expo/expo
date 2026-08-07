@@ -193,8 +193,8 @@ export function test({ describe, expect, it, afterEach }: JasmineInterface) {
       const recorded = metrics.find((metric) => metric.name === name) as Metric;
       expect(recorded).toBeDefined();
       expect(recorded.params).toBeDefined();
-      expect(recorded.params!.screen).toBe('home');
-      expect(recorded.params!.count).toBe(3);
+      expect(recorded.params?.screen).toBe('home');
+      expect(recorded.params?.count).toBe(3);
     });
   });
 
@@ -356,12 +356,12 @@ export function test({ describe, expect, it, afterEach }: JasmineInterface) {
         // One logical fetch → one completion event observed at the caller-supplied URL.
         const completed = capture.completed.find((event) => event.url === url);
         expect(completed).toBeDefined();
-        expect(completed!.statusCode).toBe(200);
-        expect(completed!.redirects.length).toBe(1);
-        expect(completed!.redirects[0].fromUrl).toBe(url);
-        expect(completed!.redirects[0].toUrl).toBe(target);
-        expect(completed!.redirects[0].statusCode).toBeGreaterThanOrEqual(300);
-        expect(completed!.redirects[0].statusCode).toBeLessThan(400);
+        expect(completed?.statusCode).toBe(200);
+        expect(completed?.redirects.length).toBe(1);
+        expect(completed?.redirects[0].fromUrl).toBe(url);
+        expect(completed?.redirects[0].toUrl).toBe(target);
+        expect(completed?.redirects[0].statusCode).toBeGreaterThanOrEqual(300);
+        expect(completed?.redirects[0].statusCode).toBeLessThan(400);
       } finally {
         release();
       }
