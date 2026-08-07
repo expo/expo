@@ -360,6 +360,10 @@ class ExpoImageModule : Module() {
         view.tintColor = color
       }
 
+      Prop("svgVariables") { view: ExpoImageViewWrapper, variables: Map<String, String>? ->
+        view.svgVariables = variables ?: emptyMap()
+      }
+
       Prop("placeholder") { view: ExpoImageViewWrapper, placeholder: List<SourceMap>? ->
         view.placeholders = placeholder ?: emptyList()
       }
