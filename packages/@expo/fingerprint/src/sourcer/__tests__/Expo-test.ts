@@ -172,7 +172,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
   it('should contain expo autolinking projects', async () => {
     let sources = await getExpoAutolinkingAndroidSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app'),
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
       expoAutolinkingVersion
     );
     expect(sources).toContainEqual(
@@ -185,7 +185,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
 
     sources = await getExpoAutolinkingIosSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app'),
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
       expoAutolinkingVersion
     );
     expect(sources).toContainEqual(
@@ -197,7 +197,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
   it('should not contain absolute path in contents', async () => {
     let sources = await getExpoAutolinkingAndroidSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app'),
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
       expoAutolinkingVersion
     );
     for (const source of sources) {
@@ -208,7 +208,7 @@ describe('getExpoAutolinkingSourcesAsync', () => {
 
     sources = await getExpoAutolinkingIosSourcesAsync(
       '/app',
-      await normalizeOptionsAsync('/app'),
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None }),
       expoAutolinkingVersion
     );
     for (const source of sources) {
@@ -216,6 +216,35 @@ describe('getExpoAutolinkingSourcesAsync', () => {
         expect(source.contents.indexOf('/app/')).toBe(-1);
       }
     }
+  });
+
+  it('should keep autolinking projects but drop the config when SourceSkips.AutolinkingConfig is set', async () => {
+    const options = await normalizeOptionsAsync('/app', {
+      sourceSkips: SourceSkips.AutolinkingConfig,
+    });
+
+    let sources = await getExpoAutolinkingAndroidSourcesAsync(
+      '/app',
+      options,
+      expoAutolinkingVersion
+    );
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'dir',
+        filePath: 'node_modules/expo-modules-core/android',
+      })
+    );
+    expect(sources).not.toContainEqual(
+      expect.objectContaining({ id: 'expoAutolinkingConfig:android' })
+    );
+
+    sources = await getExpoAutolinkingIosSourcesAsync('/app', options, expoAutolinkingVersion);
+    expect(sources).toContainEqual(
+      expect.objectContaining({ type: 'dir', filePath: 'node_modules/expo-modules-core' })
+    );
+    expect(sources).not.toContainEqual(
+      expect.objectContaining({ id: 'expoAutolinkingConfig:ios' })
+    );
   });
 });
 

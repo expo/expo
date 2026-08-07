@@ -82,4 +82,13 @@ export enum SourceSkips {
   Easignore = 1 << 14,
 
   //#endregion - EAS Build source
+
+  /**
+   * Skip the resolved autolinking config from `expo-modules-autolinking` and `react-native-config`.
+   * Each autolinked module is still hashed on its own, so adding, removing, or upgrading a module
+   * still changes the fingerprint.
+   * Note that autolinking settings which don't change the linked module list are then ignored,
+   * e.g. turning off one platform for a dependency in **react-native.config.js**.
+   */
+  AutolinkingConfig = 1 << 15,
 }
