@@ -16,6 +16,15 @@ export function getLoaderModulePath(routePath: string): string {
   return `/_expo/loaders${pathSegment}${search}`;
 }
 
+// The platform HTTP cache has no eviction API; a fresh query-string revision is how dev HMR
+// stops an edited loader's declared `max-age` from serving the pre-edit response.
+let devLoaderCacheRevision = 0;
+
+/** Bump the revision appended to loader URLs so dev fetches bypass previously cached responses. */
+export function bumpDevLoaderRevision() {
+  devLoaderCacheRevision++;
+}
+
 /**
  * Fetches and parses a loader module from the given route path.
  * This works in all environments including:
@@ -27,7 +36,10 @@ export function getLoaderModulePath(routePath: string): string {
  * @see import('packages/expo-server/src/vendor/environment/common.ts').createEnvironment
  */
 export async function fetchLoader(routePath: string): Promise<any> {
-  const loaderPath = getLoaderModulePath(routePath);
+  let loaderPath = getLoaderModulePath(routePath);
+  if (__DEV__ && devLoaderCacheRevision > 0) {
+    loaderPath += `${loaderPath.includes('?') ? '&' : '?'}_expo_loader_v=${devLoaderCacheRevision}`;
+  }
 
   const response = await fetch(loaderPath, {
     headers: {
