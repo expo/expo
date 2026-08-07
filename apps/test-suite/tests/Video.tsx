@@ -535,8 +535,8 @@ export async function test(
         const payload = await promise;
 
         expect(payload.subtitleTrack).toBeTruthy();
-        expect(payload.subtitleTrack!.label).toEqual(availableSubtitleTracks[2].label);
-        expect(payload.subtitleTrack!.language).toEqual(availableSubtitleTracks[2].language);
+        expect(payload.subtitleTrack?.label).toEqual(availableSubtitleTracks[2].label);
+        expect(payload.subtitleTrack?.language).toEqual(availableSubtitleTracks[2].language);
       });
     });
 
@@ -560,8 +560,8 @@ export async function test(
         const payload = await promise;
 
         expect(payload.audioTrack).toBeTruthy();
-        expect(payload.audioTrack!.label).toEqual(availableAudioTracks[1].label);
-        expect(payload.audioTrack!.language).toEqual(availableAudioTracks[1].language);
+        expect(payload.audioTrack?.label).toEqual(availableAudioTracks[1].label);
+        expect(payload.audioTrack?.language).toEqual(availableAudioTracks[1].language);
       });
     });
 
@@ -576,10 +576,10 @@ export async function test(
         );
 
         expect(payload.videoTrack).toBeTruthy();
-        expect(payload.videoTrack!.size).toBeDefined();
-        expect(payload.videoTrack!.mimeType).toBeDefined();
-        expect(payload.videoTrack!.frameRate).toBeDefined();
-        expect(payload.videoTrack!.mimeType).toBeDefined();
+        expect(payload.videoTrack?.size).toBeDefined();
+        expect(payload.videoTrack?.mimeType).toBeDefined();
+        expect(payload.videoTrack?.frameRate).toBeDefined();
+        expect(payload.videoTrack?.mimeType).toBeDefined();
       });
     });
   });
