@@ -38,7 +38,7 @@
 - [android][ios] Fix `expo-router/head` and `expo-router/stack` resolution on native platforms. ([#47870](https://github.com/expo/expo/pull/47870) by [@hassankhan](https://github.com/hassankhan))
 - Fix missing subpath warning from Metro when importing from `expo-router/server` ([#48045](https://github.com/expo/expo/pull/48045) by [@hassankhan](https://github.com/hassankhan))
 - Fix `replace` navigation in tabs leaving the replaced route in history. ([#48256](https://github.com/expo/expo/pull/48256) by [@Ubax](https://github.com/Ubax))
-- Fix navigation actions (e.g. from `<Redirect>`) being silently dropped by preserving the routing queue's array identity on every `add()`, so `useSyncExternalStore` can no longer bail out on a stale snapshot. ([#48627](https://github.com/expo/expo/pull/48627) by [@hkaraoguz](https://github.com/hkaraoguz))
+- Fix navigation actions (e.g. from `<Redirect>`) being silently dropped by giving the routing queue a new array identity on every `add()`, so `useSyncExternalStore` can no longer bail out on a stale snapshot. ([#48627](https://github.com/expo/expo/pull/48627) by [@hkaraoguz](https://github.com/hkaraoguz))
 
 ### 💡 Others
 
