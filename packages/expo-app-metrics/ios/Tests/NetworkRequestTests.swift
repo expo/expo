@@ -111,6 +111,61 @@ struct NetworkRequestTests {
   }
 
   @Test
+  func `flags an unreachable network as a timeout`() {
+    // An offline device surfaces as any of these, depending on how far the request got before it
+    // gave up. Android reports the same conditions as UnknownHostException and counts them, so all
+    // four have to count here for the metric to mean one thing on both platforms.
+    let codes = [
+      NSURLErrorNotConnectedToInternet,
+      NSURLErrorCannotFindHost,
+      NSURLErrorDNSLookupFailed,
+      NSURLErrorCannotConnectToHost,
+    ]
+    for code in codes {
+      let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
+      let error = NSError(domain: NSURLErrorDomain, code: code, userInfo: nil)
+      let now = Date()
+      let snapshot = NetworkRequest.from(
+        id: UUID(),
+        request: request,
+        response: nil,
+        taskBytesSent: nil,
+        taskBytesReceived: nil,
+        metrics: nil,
+        fallbackStart: now,
+        fallbackEnd: now,
+        error: error
+      )
+      #expect(snapshot.isTimeout, "expected code \(code) to count as a timeout")
+    }
+  }
+
+  @Test
+  func `does not flag a TLS failure as a timeout`() {
+    // A failed handshake is a certificate or trust problem, not an absent network. Android leaves
+    // SSLException out of its set for the same reason.
+    let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
+    let error = NSError(
+      domain: NSURLErrorDomain,
+      code: NSURLErrorSecureConnectionFailed,
+      userInfo: nil
+    )
+    let now = Date()
+    let snapshot = NetworkRequest.from(
+      id: UUID(),
+      request: request,
+      response: nil,
+      taskBytesSent: nil,
+      taskBytesReceived: nil,
+      metrics: nil,
+      fallbackStart: now,
+      fallbackEnd: now,
+      error: error
+    )
+    #expect(!snapshot.isTimeout)
+  }
+
+  @Test
   func `does not flag a cancelled request as a timeout`() {
     // The app abandoned the request; that says nothing about the network.
     let request = URLRequest(url: URL(string: "https://expo.dev/api")!)
@@ -660,6 +715,37 @@ struct NetworkRequestSummaryTests {
     }
     let summary = NetworkRequestSummary.from(requests)
     #expect(abs((summary.throughputBytesPerSecond ?? 0) - 40_000) < 0.0001)
+  }
+
+  @Test
+  func `excludes a stalled failed request from throughput`() {
+    let now = Date()
+    // A healthy 1 MB download inside the span of a request that received a few bytes and then
+    // stalled until the client gave up. Counting the stall would merge the two spans and report
+    // the whole window as busy, which reads as a connection many times slower than the one that
+    // actually delivered the megabyte.
+    let healthy = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 1_000_000,
+      fetchStart: now,
+      responseEnd: now.addingTimeInterval(1)
+    )
+    let stalled = makeRequest(
+      host: "slow.expo.dev",
+      duration: 30.0,
+      status: nil,
+      bytesSent: 0,
+      bytesReceived: 2000,
+      fetchStart: now,
+      error: "The request timed out.",
+      isTimeout: true,
+      responseEnd: now.addingTimeInterval(30)
+    )
+    let summary = NetworkRequestSummary.from([healthy, stalled])
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 1_000_000) < 0.0001)
   }
 
   @Test

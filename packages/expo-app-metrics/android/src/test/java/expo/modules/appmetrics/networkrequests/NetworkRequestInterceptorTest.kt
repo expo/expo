@@ -115,6 +115,41 @@ class NetworkRequestInterceptorTest {
   }
 
   @Test
+  fun `flags a dropped connection as a timeout`() {
+    // The server accepts the connection and then drops it, which is what the radio going away
+    // mid-request looks like to OkHttp. iOS reports this as NSURLErrorNetworkConnectionLost and
+    // counts it, so Android has to count it too for the metric to mean one thing.
+    server.enqueue(MockResponse().setSocketPolicy(SocketPolicy.DISCONNECT_AT_START))
+
+    var thrown = false
+    try {
+      client.newCall(Request.Builder().url(server.url("/dropped")).build()).execute()
+    } catch (_: IOException) {
+      thrown = true
+    }
+    assertTrue("the network call should fail", thrown)
+    assertEquals(1, monitor.recent.size)
+    assertTrue(monitor.recent.first().isTimeout)
+  }
+
+  @Test
+  fun `flags an unresolvable host as a timeout`() {
+    // DNS failing is what an offline device looks like from here. iOS counts the equivalent
+    // NSURLErrorNotConnectedToInternet and NSURLErrorCannotFindHost codes.
+    var thrown = false
+    try {
+      client
+        .newCall(Request.Builder().url("https://host.invalid/x").build())
+        .execute()
+    } catch (_: IOException) {
+      thrown = true
+    }
+    assertTrue("the network call should fail to resolve", thrown)
+    assertEquals(1, monitor.recent.size)
+    assertTrue(monitor.recent.first().isTimeout)
+  }
+
+  @Test
   fun `does not flag a server error as a timeout`() {
     server.enqueue(MockResponse().setResponseCode(503))
     client.newCall(Request.Builder().url(server.url("/boom")).build()).execute().close()

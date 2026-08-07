@@ -251,9 +251,18 @@ extension NetworkRequest {
 /// Whether a `URLSession` error means the network stalled or went away, rather than the server
 /// answering with something we didn't like.
 ///
-/// `NSURLErrorNetworkConnectionLost` counts because the radio dropping mid-request is the same
-/// condition from the user's point of view, and it's what walking into an elevator actually
-/// produces. `NSURLErrorCancelled` does not: the app abandoned the request.
+/// Three conditions count, and `NetworkRequestInterceptor.isNetworkTimeout` on Android matches the
+/// same three so the `timedOut` metric describes one population on both platforms:
+///
+/// - The request stalled until the client gave up (`NSURLErrorTimedOut`).
+/// - The connection dropped mid-request (`NSURLErrorNetworkConnectionLost`). This is what walking
+///   into an elevator actually produces.
+/// - The device couldn't reach the network at all, whether that surfaced as no connectivity or as
+///   a name that wouldn't resolve. DNS failure is what losing connectivity looks like from here.
+///
+/// `NSURLErrorCancelled` does not count: the app abandoned the request, which says nothing about
+/// the connection. Neither does a TLS failure, which is a certificate or trust problem rather than
+/// an absent network.
 private func isNetworkTimeout(_ error: Error?) -> Bool {
   guard let error else {
     return false
@@ -263,7 +272,12 @@ private func isNetworkTimeout(_ error: Error?) -> Bool {
     return false
   }
   switch nsError.code {
-  case NSURLErrorTimedOut, NSURLErrorNetworkConnectionLost:
+  case NSURLErrorTimedOut,
+    NSURLErrorNetworkConnectionLost,
+    NSURLErrorNotConnectedToInternet,
+    NSURLErrorCannotFindHost,
+    NSURLErrorDNSLookupFailed,
+    NSURLErrorCannotConnectToHost:
     return true
   default:
     return false

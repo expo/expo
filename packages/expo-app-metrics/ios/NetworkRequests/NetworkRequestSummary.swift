@@ -84,9 +84,9 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   ///   parallel one-second requests would otherwise report a quarter of the real rate.
   /// - The busy span rather than the whole window, so idle time isn't charged to the network. A
   ///   launch that fetches briefly and then sits idle would otherwise look slow.
-  /// - Only requests that received bytes, so a slow request returning nothing can't stretch the
-  ///   denominator across time when no payload was in flight. Its latency belongs to
-  ///   `slowest.timeToFirstByte`, not here.
+  /// - Only requests that completed and received bytes, so neither a slow request returning nothing
+  ///   nor one that stalled until the client gave up can stretch the denominator across time when
+  ///   no payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `timedOut`.
   ///
   /// This still can't see a stall between requests: if the radio dies while nothing is in flight,
   /// no interval covers it. `timedOut` is the signal for that case.
@@ -190,15 +190,23 @@ public struct NetworkRequestSummary: Sendable, Equatable {
     return Double(bytes) / busySeconds
   }
 
-  /// The requests that both received bytes and reported a measurable span, which is the subset the
-  /// throughput ratio is computed over.
+  /// The requests that completed, received bytes, and reported a measurable span, which is the
+  /// subset the throughput ratio is computed over.
   ///
   /// Deciding it once keeps the numerator and denominator describing the same traffic. Filtering
   /// inside the busy-time fold instead would let a request contribute its bytes while adding no
   /// time, which reads as a faster connection than actually happened. A cache hit is the case that
   /// matters: it reports bytes from the task counters but is served from disk inside one clock tick.
+  ///
+  /// Failures are excluded for the opposite reason. A request that received a few bytes and then
+  /// stalled until the client gave up reports a span covering the whole stall, so it would hold the
+  /// denominator open across time when nothing was moving and report a connection far slower than
+  /// the one that served the requests around it.
   private static func measurableReceiving(in requests: [NetworkRequest]) -> [NetworkRequest] {
     return requests.filter { request in
+      guard !request.isFailed else {
+        return false
+      }
       guard (request.responseBytesReceived ?? 0) > 0 else {
         return false
       }
