@@ -3,7 +3,6 @@ import fs from 'fs';
 import inquirer from 'inquirer';
 import path from 'path';
 
-import { loadRequestedParcels } from './loadRequestedParcels';
 import { EXPO_DIR, PACKAGES_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
@@ -11,6 +10,7 @@ import { runWithSpinner, spawnAsync } from '../../Utils';
 import { runPrebuildPackagesAsync } from '../../commands/PrebuildPackages';
 import { IOS_PREBUILD_PACKAGES } from '../../prebuilds/Utils';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { loadRequestedParcels } from './loadRequestedParcels';
 
 /**
  * Xcode version that prebuilds must be built with. Each Xcode bundles a specific Swift

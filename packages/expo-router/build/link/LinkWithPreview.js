@@ -91,7 +91,6 @@ function LinkWithPreview({ children, ...rest }) {
     const trigger = react_1.default.useMemo(() => triggerElement ?? (0, jsx_runtime_1.jsx)(elements_1.LinkTrigger, { children: children }), [triggerElement, children]);
     const preview = react_1.default.useMemo(() => ((0, url_1.shouldLinkExternally)(String(rest.href)) || !previewElement ? null : previewElement), [previewElement, rest.href]);
     const isPreviewTapped = (0, react_1.useRef)(false);
-    const blockPressRef = (0, react_1.useRef)(false);
     const tabPathValue = (0, react_1.useMemo)(() => ({
         path: tabPath,
     }), [tabPath]);
@@ -101,7 +100,6 @@ function LinkWithPreview({ children, ...rest }) {
     }
     return ((0, jsx_runtime_1.jsx)(native_1.NativeLinkPreview, { nextScreenId: isPad ? undefined : nextScreenId, tabPath: isPad ? undefined : tabPathValue, onWillPreviewOpen: () => {
             if (hasPreview) {
-                blockPressRef.current = true;
                 isPreviewTapped.current = false;
                 prefetch(rest.href);
                 setIsCurrenPreviewOpen(true);
@@ -116,7 +114,6 @@ function LinkWithPreview({ children, ...rest }) {
                 }
             }
         }, onPreviewDidClose: () => {
-            blockPressRef.current = false;
             if (hasPreview && isPreviewTapped.current && isPad) {
                 router.navigate(rest.href, { __internal__PreviewKey: nextScreenId });
             }
@@ -128,7 +125,6 @@ function LinkWithPreview({ children, ...rest }) {
         }, style: { display: 'contents' }, disableForceFlatten: true, children: (0, jsx_runtime_1.jsx)(NativeMenuContext_1.NativeMenuContext, { value: true, children: (0, jsx_runtime_1.jsxs)(InternalLinkPreviewContext_1.InternalLinkPreviewContext, { value: {
                     isVisible: isCurrentPreviewOpen,
                     href: rest.hrefForPreviewNavigation,
-                    blockPressRef,
                 }, children: [(0, jsx_runtime_1.jsx)(BaseExpoRouterLink_1.BaseExpoRouterLink, { ...rest, children: trigger, ref: rest.ref }), preview, menuElement] }) }) }));
 }
 //# sourceMappingURL=LinkWithPreview.js.map
