@@ -3,6 +3,7 @@ import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'Fetch';
 
@@ -57,13 +58,13 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
     it('should process response in readablestream from late get reader call', async () => {
       const resp = await fetch('https://httpbin.io/get');
       expect(resp.ok).toBe(true);
-      expect(resp.body!).not.toBeNull();
+      expect(resp.body).not.toBeNull();
 
       // Delay 0.5s to ensure the response is completed before streaming started
       await delayAsync(500);
 
       const chunks = [];
-      const reader = resp.body!.getReader();
+      const reader = requireNotNull(resp.body).getReader();
       while (true) {
         const { done, value } = await reader.read();
         if (done) {
@@ -153,7 +154,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
 
     it('should throw a TypeError when cloning a response with a locked body', async () => {
       const resp = await fetch('https://httpbin.io/get');
-      resp.body!.getReader();
+      requireNotNull(resp.body).getReader();
       let error: TypeError | null = null;
       try {
         resp.clone();
@@ -410,7 +411,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
             Accept: 'text/event-stream',
           },
         });
-        const reader = resp.body!.getReader();
+        const reader = requireNotNull(resp.body).getReader();
         while (true) {
           const { done } = await reader.read();
           hasReceivedChunk = true;
@@ -441,7 +442,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
             Accept: 'text/event-stream',
           },
         });
-        const reader = resp.body!.getReader();
+        const reader = requireNotNull(resp.body).getReader();
         while (true) {
           const { done } = await reader.read();
           hasReceivedChunk = true;
@@ -455,7 +456,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
         }
       }
       expect(error).not.toBeNull();
-      expect(error!.message).toContain('Fetch request has been canceled');
+      expect(error?.message).toContain('Fetch request has been canceled');
       expect(hasReceivedChunk).toBe(false);
     });
   });
@@ -469,7 +470,7 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
           Accept: 'text/event-stream',
         },
       });
-      const reader = resp.body!.getReader();
+      const reader = requireNotNull(resp.body).getReader();
       const chunks = [];
       while (true) {
         const { done, value } = await reader.read();
@@ -490,10 +491,11 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
         },
       });
 
-      expect(resp.body![Symbol.asyncIterator]).not.toBeNull();
+      const body = requireNotNull(resp.body);
+      expect(body[Symbol.asyncIterator]).not.toBeNull();
 
       const chunks = [];
-      for await (const chunk of resp.body!) {
+      for await (const chunk of body) {
         chunks.push(chunk);
       }
       expect(chunks.length).toBeGreaterThan(3);
@@ -508,10 +510,11 @@ export function test({ describe, expect, it, ...t }: JasmineInterface) {
         },
       });
 
-      expect(resp.body![Symbol.asyncIterator]).not.toBeNull();
+      const body = requireNotNull(resp.body);
+      expect(body[Symbol.asyncIterator]).not.toBeNull();
 
       const chunks = [];
-      for await (const chunk of resp.body!) {
+      for await (const chunk of body) {
         chunks.push(chunk);
         if (chunks.length === 2) {
           break;
