@@ -19,10 +19,9 @@ export function useNavigation<
 
   if (navigation === undefined) {
     throw new Error(
-      "Couldn't find a navigation object. This is most likely an issue in expo-router."
+      "Couldn't find a navigation object. Make sure the component is rendered inside your app's route tree. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues."
     );
   }
 
-  // FIXME: Figure out a better way to do this
-  return navigation as unknown as T;
+  return navigation as T;
 }
