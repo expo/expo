@@ -8,10 +8,14 @@
 
 ### 🎉 New features
 
+- Add `altitudeAboveMeanSeaLevel` property to `LocationObjectCoords`. ([#48220](https://github.com/expo/expo/pull/48220) by [@Wenszel](https://github.com/Wenszel))
+
 ### 🐛 Bug fixes
 
 - [Android] Fix `timeInterval` and `distanceInterval` being ignored for background location updates. ([#46788](https://github.com/expo/expo/issues/46788) by [@doshisunny](https://github.com/doshisunny))
 - [iOS] Fix incorrect default value for `pausesUpdatesAutomatically` to match docs. ([#47008](https://github.com/expo/expo/pull/47008) by [@Ignigena](https://github.com/Ignigena))
+- [iOS] Fix foreground location updates to return the WGS 84 ellipsoid `altitude`. ([#48220](https://github.com/expo/expo/pull/48220) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Fix `altitudeAccuracy` being `undefined` instead of `null` on Android API < 26. ([#48220](https://github.com/expo/expo/pull/48220) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 

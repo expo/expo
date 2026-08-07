@@ -24,7 +24,8 @@ internal func exportLocation(_ location: CLLocation) -> [String: Any] {
     "coords": [
       "latitude": location.coordinate.latitude,
       "longitude": location.coordinate.longitude,
-      "altitude": location.altitude,
+      "altitude": location.ellipsoidalAltitude,
+      "altitudeAboveMeanSeaLevel": location.altitude,
       "accuracy": location.horizontalAccuracy,
       "altitudeAccuracy": location.verticalAccuracy,
       "heading": location.course,
