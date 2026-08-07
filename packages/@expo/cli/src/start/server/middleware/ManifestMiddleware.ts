@@ -405,6 +405,15 @@ export abstract class ManifestMiddleware<
     const options = this.getParsedHeaders(req);
 
     const response = await this._getManifestResponseAsync(options);
+
+    // Clients frequently disconnect while the manifest is being resolved, e.g. a dev client
+    // reconnecting while Metro restarts. The response is already destroyed at this point, so piping
+    // to it would throw (`ERR_STREAM_UNABLE_TO_PIPE` on Node 24+, `ERR_STREAM_PREMATURE_CLOSE`
+    // before that). Treat this as a cancelled request instead.
+    if (isResponseCancelled(res)) {
+      return;
+    }
+
     // Convert `Response` to node:http response
     if (typeof res.setHeaders === 'function') {
       res.setHeaders(response.headers);
@@ -414,9 +423,21 @@ export abstract class ManifestMiddleware<
       }
     }
     if (response.body) {
-      await pipeline(Readable.fromWeb(response.body as any), res);
+      try {
+        await pipeline(Readable.fromWeb(response.body as any), res);
+      } catch (error: any) {
+        // The client can also disconnect part-way through the response, which is not an error.
+        if (!isResponseCancelled(res)) {
+          throw error;
+        }
+      }
     } else {
       res.end();
     }
   }
+}
+
+/** Determine if the client disconnected before the response could be written. */
+function isResponseCancelled(res: ServerResponse): boolean {
+  return res.destroyed || res.writableEnded;
 }

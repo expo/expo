@@ -448,4 +448,54 @@ describe('getHandler', () => {
     // Ensure the user sees the error in the terminal.
     expect(Log.exception).toHaveBeenCalled();
   });
+
+  it(`quietly skips the response when the client disconnects while the manifest resolves`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+    });
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+
+    const res = new MockServerResponse();
+    middleware._getManifestResponseAsync = jest.fn(async () => {
+      // Emulate the client hanging up while the runtime version is being resolved.
+      res.destroy();
+      return new Response('body', { headers: { header: 'value' } });
+    });
+
+    const handleAsync = middleware.getHandler();
+    const next = jest.fn();
+    const req = asReq({ url: '/', headers: {} });
+
+    await handleAsync(req, asRes(res), next);
+
+    // The response is never written to, so the pipeline never throws.
+    expect(res.setHeaders).not.toHaveBeenCalled();
+    expect(res.statusCode).toEqual(200);
+    expect(next).not.toHaveBeenCalled();
+    // Cancelled requests are not server errors, so nothing is logged.
+    expect(Log.exception).not.toHaveBeenCalled();
+  });
+
+  it(`quietly skips the response when the client disconnects while the manifest is streaming`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+    });
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+    middleware._getManifestResponseAsync = jest.fn(
+      async () => new Response('body', { headers: { header: 'value' } })
+    );
+
+    const handleAsync = middleware.getHandler();
+    const next = jest.fn();
+    const req = asReq({ url: '/', headers: {} });
+
+    const res = new MockServerResponse();
+    // Emulate the client hanging up part-way through the response.
+    res.once('data', () => res.destroy());
+
+    await handleAsync(req, asRes(res), next);
+
+    expect(next).not.toHaveBeenCalled();
+    expect(Log.exception).not.toHaveBeenCalled();
+  });
 });
