@@ -82,17 +82,6 @@ suspend fun queryAssetInfo(
  * Reads given `cursor` and saves the data to `response` param.
  * Reads `limit` rows, starting by `offset`.
  * Cursor must be a result of query with [ASSET_PROJECTION] projection
- *
- * When [resolveWithFullInfo] is true, per-file EXIF data (including GPS
- * location) is read in parallel across [exifReadDispatcher] instead of
- * sequentially. EXIF location reads cost ~15ms per image sequentially;
- * they are independent per-file I/O, so parallelizing them speeds up large
- * queries by several times. Cursor access is not thread-safe, so cursor columns
- * are copied into [AssetRowData] in batches before parallel file work; workers
- * never touch the cursor. Iteration matches the original sequential loop
- * original sequential loop (moveToPosition, then moveToNext per row) so the
- * cursor's final position — which callers read for `hasNextPage`/`endCursor` —
- * is unchanged.
  */
 @Throws(IOException::class, UnsupportedOperationException::class)
 suspend fun putAssetsInfo(
@@ -153,6 +142,13 @@ suspend fun putAssetsInfo(
       i++
     }
 
+    // When resolveWithFullInfo is true, per-file EXIF data (including GPS location) is read in
+    // parallel across exifReadDispatcher instead of sequentially.
+    //
+    // - EXIF location reads cost ~15ms per image sequentially. They are independent per-file I/O,
+    //   so parallelizing them speeds up large queries by several times.
+    // - Cursor access is not thread-safe. Cursor columns are copied into AssetRowData in batches
+    //   before parallel file work; workers never touch the cursor.
     val bundles = withContext(exifReadDispatcher) {
       rows.map { row ->
         async {
@@ -277,6 +273,8 @@ private fun getAssetDimensions(
   exifInterface: ExifInterface?
 ): Pair<Int, Int> {
   if (row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
+    // Fast path: read dimensions from cursor data (no file I/O)
+    // MediaStore populates these when the media scanner indexes the file.
     if (row.width > 0 && row.height > 0) {
       return maybeRotateAssetSize(row.width, row.height, row.orientation)
     }

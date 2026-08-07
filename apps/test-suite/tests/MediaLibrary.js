@@ -445,18 +445,23 @@ export async function test(t) {
 
         if (Platform.OS === 'android') {
           t.it('resolveWithFullInfo returns numeric location when available', async () => {
-            const { assets } = await MediaLibrary.getAssetsAsync({
-              album,
-              first: 5,
-              resolveWithFullInfo: true,
-            });
-            t.expect(assets.length).toBeGreaterThan(0);
-            assets.forEach((asset) => {
-              if (asset.location != null) {
-                t.expect(typeof asset.location.latitude).toBe('number');
-                t.expect(typeof asset.location.longitude).toBe('number');
-              }
-            });
+            const [exifFile] = await Asset.loadAsync(require('../assets/exif_data_image.jpg'));
+            const exifAsset = await MediaLibrary.createAssetAsync(exifFile.localUri, album);
+            try {
+              const { assets } = await MediaLibrary.getAssetsAsync({
+                album,
+                resolveWithFullInfo: true,
+              });
+              const asset = assets.find((a) => a.id === exifAsset.id);
+              t.expect(asset).toBeDefined();
+              t.expect(asset.exif).toBeDefined();
+              t.expect(asset.localUri).toBeDefined();
+              t.expect(asset.location).not.toBeNull();
+              t.expect(typeof asset.location.latitude).toBe('number');
+              t.expect(typeof asset.location.longitude).toBe('number');
+            } finally {
+              await MediaLibrary.deleteAssetsAsync(exifAsset);
+            }
           });
         }
       });
