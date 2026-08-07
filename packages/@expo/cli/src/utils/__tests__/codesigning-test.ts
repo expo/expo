@@ -228,7 +228,11 @@ describe(getCodeSigningInfoAsync, () => {
 
     it('throws when private key path is specified without codeSigningCertificate', async () => {
       await expect(
-        getCodeSigningInfoAsync({} as any, 'keyid="test", alg="rsa-v1_5-sha256"', 'keys/private-key.pem')
+        getCodeSigningInfoAsync(
+          {} as any,
+          'keyid="test", alg="rsa-v1_5-sha256"',
+          'keys/private-key.pem'
+        )
       ).rejects.toThrow(
         '--private-key-path was specified, but updates.codeSigningCertificate is not set in the resolved app config'
       );
