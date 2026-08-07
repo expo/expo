@@ -43,9 +43,31 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
   applySelectedColor(options, props.selectedColor);
 }
 
-export function convertOptionsIconToScreensPropsIcon(
+/**
+ * How an image-based icon is tinted: `template` lets the tab bar recolor it, `original` keeps
+ * the image's own colors. It does not apply to SF Symbols, which the system always tints.
+ */
+export type IconRenderingMode = 'template' | 'original';
+
+/**
+ * Resolves the rendering mode an icon will be displayed with, or `undefined` when the icon isn't
+ * image-based. An explicit `renderingMode` always wins; otherwise an icon color implies
+ * `template`, because a color can only take effect on a template image.
+ */
+export function resolveIconRenderingMode(
   icon: AwaitedIcon | undefined,
   iconColor?: ColorValue
+): IconRenderingMode | undefined {
+  if (!getIconImageSource(icon)) {
+    return undefined;
+  }
+  const renderingMode = icon && 'renderingMode' in icon ? icon.renderingMode : undefined;
+  return renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
+}
+
+export function convertOptionsIconToScreensPropsIcon(
+  icon: AwaitedIcon | undefined,
+  renderingMode?: IconRenderingMode
 ): PlatformIconIOS | undefined {
   if (icon && 'sf' in icon && icon.sf) {
     return {
@@ -53,18 +75,31 @@ export function convertOptionsIconToScreensPropsIcon(
       name: icon.sf,
     };
   }
-  if (icon && (('xcasset' in icon && icon.xcasset) || ('src' in icon && icon.src))) {
-    const imageSource =
-      'xcasset' in icon && icon.xcasset
-        ? { uri: icon.xcasset }
-        : (icon as { src: ImageSourcePropType }).src;
-    const renderingMode = 'renderingMode' in icon ? icon.renderingMode : undefined;
-    const effectiveRenderingMode =
-      renderingMode ?? (iconColor !== undefined ? 'template' : 'original');
-    if (effectiveRenderingMode === 'original') {
-      return { type: 'imageSource', imageSource };
+  const imageSource = getIconImageSource(icon);
+  if (imageSource) {
+    const effectiveRenderingMode = renderingMode ?? resolveIconRenderingMode(icon);
+    if (effectiveRenderingMode === 'template') {
+      return { type: 'templateSource', templateSource: imageSource };
     }
-    return { type: 'templateSource', templateSource: imageSource };
+    return { type: 'imageSource', imageSource };
+  }
+  return undefined;
+}
+
+/**
+ * Returns the image an icon renders, mirroring the precedence in
+ * {@link convertOptionsIconToScreensPropsIcon} — SF Symbols aren't image-based, so they resolve
+ * to `undefined`.
+ */
+function getIconImageSource(icon: AwaitedIcon | undefined): ImageSourcePropType | undefined {
+  if (!icon || ('sf' in icon && icon.sf)) {
+    return undefined;
+  }
+  if ('xcasset' in icon && icon.xcasset) {
+    return { uri: icon.xcasset };
+  }
+  if ('src' in icon && icon.src) {
+    return icon.src;
   }
   return undefined;
 }

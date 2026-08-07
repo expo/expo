@@ -353,6 +353,8 @@ export default function TabLayout() {
 
 > **info** The `renderingMode` prop only affects iOS. On Android, all image icons are rendered with their original colors.
 
+> **info** On iOS, a tab's default and selected icons must use the same rendering mode. When they resolve to different modes, for example when only `selectedIconColor` is set, both icons use the default icon's rendering mode and a warning is logged.
+
 #### Asset catalog icons (iOS)
 
 > **info** This feature is available in SDK 55 and later.

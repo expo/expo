@@ -18,9 +18,18 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
   applySelectedColor(options, props.selectedColor);
 }
 
+export type IconRenderingMode = 'template' | 'original';
+
 export function convertOptionsIconToScreensPropsIcon(
   _icon: AwaitedIcon | undefined,
-  _iconColor?: ColorValue
+  _renderingMode?: IconRenderingMode
 ): PlatformIconIOS | PlatformIconAndroid | undefined {
+  return undefined;
+}
+
+export function resolveIconRenderingMode(
+  _icon: AwaitedIcon | undefined,
+  _iconColor?: ColorValue
+): IconRenderingMode | undefined {
   return undefined;
 }

@@ -478,28 +478,76 @@ describe('Icons', () => {
     }
   );
 
-  // React Native Screens throws when `icon` and `selectedIcon` have different types.
-  it.each([
-    { name: 'only selectedIconColor is set', iconColor: { selected: 'red' } as const },
-    { name: 'only iconColor is set', iconColor: { default: 'red' } as const },
-    { name: 'both icon colors are set', iconColor: { default: 'blue', selected: 'red' } as const },
-    { name: 'no icon color is set', iconColor: undefined },
-  ])('icon and selectedIcon have the same type when $name', ({ iconColor }) => {
-    renderRouter({
-      _layout: () => (
-        <NativeTabs iconColor={iconColor}>
-          <NativeTabs.Trigger name="index">
-            <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
-          </NativeTabs.Trigger>
-        </NativeTabs>
-      ),
-      index: () => <View testID="index" />,
+  // React Native Screens throws when `icon` and `selectedIcon` have different types, so both
+  // states have to use the same rendering mode — the one resolved for the normal state.
+  describe('rendering mode', () => {
+    let warnSpy: jest.SpyInstance;
+
+    beforeEach(() => {
+      warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
     });
 
-    expect(screen.getByTestId('index')).toBeVisible();
-    expect(TabsScreen).toHaveBeenCalledTimes(1);
-    const { icon, selectedIcon } = TabsScreen.mock.calls[0][0].ios ?? {};
-    expect(icon?.type).toBe(selectedIcon?.type);
+    afterEach(() => {
+      warnSpy.mockRestore();
+    });
+
+    it.each([
+      {
+        name: 'only selectedIconColor is set',
+        iconColor: { selected: 'red' } as const,
+        expectedType: 'imageSource',
+        expectsWarning: true,
+      },
+      {
+        // `iconColor` applies to every state, so both icons agree without a warning.
+        name: 'only iconColor is set',
+        iconColor: { default: 'red' } as const,
+        expectedType: 'templateSource',
+        expectsWarning: false,
+      },
+      {
+        name: 'both icon colors are set',
+        iconColor: { default: 'blue', selected: 'red' } as const,
+        expectedType: 'templateSource',
+        expectsWarning: false,
+      },
+      {
+        name: 'no icon color is set',
+        iconColor: undefined,
+        expectedType: 'imageSource',
+        expectsWarning: false,
+      },
+    ])(
+      'icon and selectedIcon are $expectedType when $name',
+      ({ iconColor, expectedType, expectsWarning }) => {
+        renderRouter({
+          _layout: () => (
+            <NativeTabs iconColor={iconColor}>
+              <NativeTabs.Trigger name="index">
+                <NativeTabs.Trigger.Icon src={{ uri: 'some-uri' }} />
+              </NativeTabs.Trigger>
+            </NativeTabs>
+          ),
+          index: () => <View testID="index" />,
+        });
+
+        expect(screen.getByTestId('index')).toBeVisible();
+        expect(TabsScreen).toHaveBeenCalledTimes(1);
+        const { icon, selectedIcon } = TabsScreen.mock.calls[0][0].ios ?? {};
+        expect(icon?.type).toBe(expectedType);
+        expect(selectedIcon?.type).toBe(expectedType);
+
+        if (expectsWarning) {
+          expect(warnSpy).toHaveBeenCalledWith(
+            expect.stringContaining(
+              'NativeTabs does not currently support rendering icons in different modes'
+            )
+          );
+        } else {
+          expect(warnSpy).not.toHaveBeenCalled();
+        }
+      }
+    );
   });
 });
 
