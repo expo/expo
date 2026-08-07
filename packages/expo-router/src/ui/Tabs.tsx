@@ -10,12 +10,16 @@ import { resolveHref } from '../link/href';
 import type {
   DefaultNavigatorOptions,
   ParamListBase,
-  RouteSource,
   TabActionHelpers,
   TabNavigationState,
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
 import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
@@ -184,18 +188,29 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 
   const {
     state,
-    descriptors,
+    describe,
+    descriptors: sparseDescriptors,
     navigation,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
+  const descriptors = useMemo(
+    () =>
+      appendMissingPlaceholderTabDescriptors(
+        sparseDescriptors,
+        state,
+        describe
+      ) as typeof sparseDescriptors,
+    [describe, sparseDescriptors, state]
+  );
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () => ({
-      ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
+      ...(navigatorContext as unknown as NavigatorContextValue),
+      descriptors: descriptors as unknown as NavigatorContextValue['descriptors'],
       contextKey,
       router: ExpoTabRouter,
     }),
-    [navigatorContext, contextKey, ExpoTabRouter]
+    [navigatorContext, descriptors, contextKey, ExpoTabRouter]
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
@@ -210,7 +225,7 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     </GuardContextProvider>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent };
+  return { state, describe, descriptors, navigation, NavigationContent };
 }
 
 function TabVisibilityRedirect({
@@ -218,12 +233,16 @@ function TabVisibilityRedirect({
   descriptors,
 }: {
   state: TabNavigationState<any>;
-  descriptors: Record<string, { routeSource?: RouteSource; options: ExpoTabsScreenOptions }>;
+  descriptors: PlaceholderDescriptorMap;
 }) {
+  const stateWithPlaceholders = useMemo(
+    () => appendMissingPlaceholderTabRoutes(state, descriptors),
+    [descriptors, state]
+  );
   useVisibleTabsWithRedirect({
-    routes: state.routes,
-    routeNames: state.routeNames,
-    focusedRouteKey: state.routes[state.index]?.key,
+    routes: stateWithPlaceholders.routes,
+    routeNames: stateWithPlaceholders.routeNames,
+    focusedRouteKey: stateWithPlaceholders.routes[stateWithPlaceholders.index]?.key,
     descriptors,
   });
   return null;

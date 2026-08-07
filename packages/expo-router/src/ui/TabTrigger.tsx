@@ -161,7 +161,10 @@ export function useTabTrigger(options: TabTriggerProps): UseTabTriggerResult {
         config.type === 'internal'
           ? state.routes.find((route) => route.name === config.routeNode.route)
           : undefined;
-      const routeOptions = route != null ? descriptors[route.key]?.options : undefined;
+      const routeOptions =
+        config.type === 'internal'
+          ? descriptors[route?.key ?? config.routeNode.route]?.options
+          : undefined;
       const hidden =
         routeOptions != null && 'hidden' in routeOptions && routeOptions.hidden === true;
 

@@ -42,9 +42,8 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
 
       const route = state.routes.find((route) => route.name === action.payload.name);
 
-      if (!route || !state) {
-        // This shouldn't occur, but lets just hand it off to the next navigator in case.
-        return null;
+      if (!route) {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
       // We should reset if this is the first time visiting the route
