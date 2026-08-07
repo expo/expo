@@ -38,6 +38,8 @@
 
 ### 💡 Others
 
+- [iOS] Remove availability check for iOS 16.
+
 ## 57.0.7 - 2026-07-29
 
 _This version does not introduce any user-facing changes._
