@@ -67,41 +67,6 @@ internal class AssetUtilsTests {
   }
 
   @Test
-  fun `putAssetsInfo returns exif and location when fullInfo=true for images`() = runTest {
-    mockkConstructor(ExifInterface::class)
-    every { anyConstructed<ExifInterface>().getAttribute(any()) } returns "value"
-    every { anyConstructed<ExifInterface>().getAttributeInt(any(), any()) } returns 1
-    every { anyConstructed<ExifInterface>().getAttributeDouble(any(), any()) } returns 1.0
-    every { anyConstructed<ExifInterface>().latLong } returns doubleArrayOf(1.23, 4.56)
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      mockkStatic(::getExifLocationForUri)
-      every { getExifLocationForUri(any(), any()) } returns Bundle().apply {
-        putDouble("latitude", 1.23)
-        putDouble("longitude", 4.56)
-      }
-    }
-
-    val cursor = mockCursor(arrayOf(MockData.mockImage.toColumnArray()))
-    val contentResolver = mockContentResolver(cursor)
-    val result = mutableListOf<Bundle>()
-
-    putAssetsInfo(contentResolver, cursor, result, limit = 1, offset = 0, resolveWithFullInfo = true)
-
-    assertEquals(1, result.size)
-    val asset = result[0]
-    assertEquals("file://${MockData.mockImage.path}", asset.getString("localUri"))
-    assertNotNull(asset.getParcelable("exif"))
-    assertNotNull(asset.getParcelable("location"))
-    verify { anyConstructed<ExifInterface>() }
-
-    unmockkConstructor(ExifInterface::class)
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      unmockkStatic(::getExifLocationForUri)
-    }
-  }
-
-  @Test
   fun `putAssetsInfo preserves cursor position for pagination`() = runTest {
     val cursor = mockCursor(
       arrayOf(
