@@ -7,6 +7,7 @@ import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
 import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'FileSystem';
 const shouldSkipTestsRequiringPermissions = true;
@@ -2296,11 +2297,11 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
       expect((await reader.read(array1)).done).toBe(false);
       const result = await reader.read(array2);
       expect(result.done).toBe(false);
-      expect(result.value![4999]).toBe(alphabet.charCodeAt(9999));
+      expect(result.value?.[4999]).toBe(alphabet.charCodeAt(9999));
 
       const result2 = await reader.read(array3);
       expect(result2.done).toBe(true);
-      expect(result2.value!.length).toBe(0);
+      expect(result2.value?.length).toBe(0);
     });
 
     it('Provides a WriteableStream', async () => {
@@ -2316,7 +2317,7 @@ export async function test({ describe, expect, it, ...t }: JasmineInterface) {
 
     it('Returns correct file type', async () => {
       const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
-      const src = new File(asset.localUri!);
+      const src = new File(requireNotNull(asset.localUri));
       expect(src.type).toBe('image/jpeg');
       const src2 = new File(testDirectory, 'file.txt');
       src2.writeSync('abcde');
@@ -2397,14 +2398,16 @@ function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }: Jasmine
     });
 
     scopedIt('Writes a string to a file reference', () => {
-      const outputFile = new File(sharedContainerTestDir!, 'file.txt');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const outputFile = new File(containerDir, 'file.txt');
       expect(outputFile.exists).toBe(false);
       outputFile.writeSync('Hello world');
       expect(outputFile.exists).toBe(true);
     });
 
     scopedIt('Deletes a file reference', () => {
-      const outputFile = new File(sharedContainerTestDir!, 'file3.txt');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const outputFile = new File(containerDir, 'file3.txt');
       outputFile.writeSync('Hello world');
       expect(outputFile.exists).toBe(true);
 
@@ -2413,13 +2416,15 @@ function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }: Jasmine
     });
 
     scopedIt('Creates a folder', () => {
-      const folder = new Directory(sharedContainerTestDir!, 'newFolder');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const folder = new Directory(containerDir, 'newFolder');
       folder.create();
       expect(folder.exists).toBe(true);
     });
 
     scopedIt('Deletes a folder', () => {
-      const folder = new Directory(sharedContainerTestDir!, 'newFolder');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const folder = new Directory(containerDir, 'newFolder');
       folder.create();
       expect(folder.exists).toBe(true);
 
