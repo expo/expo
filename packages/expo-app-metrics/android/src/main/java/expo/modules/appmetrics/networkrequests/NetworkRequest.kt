@@ -89,6 +89,17 @@ data class NetworkRequest(
     val responseEnd: Date?,
 
     /**
+     * When the last response byte arrived, or `null` if the listener never reported one.
+     *
+     * Unlike `responseEnd`, this is never synthesized. `responseEnd` falls back to a wall-clock
+     * timestamp taken when the snapshot was recorded, which is right for a duration but wrong for a
+     * transfer window: a request that got headers and then died reports an end long after its last
+     * byte, and dividing its bytes by that window describes the recording delay rather than the
+     * connection.
+     */
+    val measuredResponseEnd: Date?,
+
+    /**
      * Total wall-clock duration of the request in seconds. Convenience: callers don't have to
      * subtract `fetchStart` from `responseEnd` themselves, and we can populate this even when
      * individual phases are `null` (cache hits, errors before headers).

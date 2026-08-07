@@ -602,6 +602,47 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
+  func `excludes a request whose end was never measured from throughput`() {
+    let now = Date()
+    // Headers arrived and then the request died, so `responseEnd` is the wall-clock moment the
+    // snapshot was recorded rather than the last byte. Dividing by that window would describe the
+    // recording delay: 100 kB over the 550ms fallback reads as 186 kB/s for a 50ms transfer.
+    let unfinished = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.55,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 102_400,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(1.0),
+      responseEnd: now.addingTimeInterval(1.55),
+      endWasMeasured: false
+    )
+    let summary = NetworkRequestSummary.from([unfinished])
+    #expect(summary.throughputBytesPerSecond == nil)
+  }
+
+  @Test
+  func `excludes a transfer too fast for the clock to measure`() {
+    let now = Date()
+    // Android timestamps in whole milliseconds, so a sub-millisecond transfer records as a
+    // zero-length window there. iOS can resolve it but reports nothing either, so the two agree on
+    // when the rate is unknown rather than one of them dividing by a duration it barely measured.
+    let instant = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 0.01,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 8192,
+      fetchStart: now,
+      responseStart: now,
+      responseEnd: now.addingTimeInterval(0.0004)
+    )
+    let summary = NetworkRequestSummary.from([instant])
+    #expect(summary.throughputBytesPerSecond == nil)
+  }
+
+  @Test
   func `excludes a cache hit from throughput`() {
     let now = Date()
     // A cached read reports its bytes from the task counters but never touches the network, so it
@@ -880,7 +921,11 @@ struct NetworkRequestSummaryTests {
     fetchStart: Date?,
     error: String? = nil,
     responseStart: Date? = nil,
-    responseEnd: Date? = nil
+    responseEnd: Date? = nil,
+    // Defaults to whatever `responseEnd` is so a test that doesn't care gets a transfer window
+    // matching the span it set up. Pass `false` to model a request whose last byte was never
+    // reported, which is what an unmeasured end looks like in production.
+    endWasMeasured: Bool = true
   ) -> NetworkRequest {
     return NetworkRequest(
       id: UUID(),
@@ -902,6 +947,7 @@ struct NetworkRequestSummaryTests {
         requestEnd: nil,
         responseStart: responseStart,
         responseEnd: responseEnd,
+        measuredResponseEnd: endWasMeasured ? responseEnd : nil,
         totalDuration: duration
       ),
       errorDescription: error,
@@ -951,6 +997,7 @@ struct NetworkRequestMonitorWindowingTests {
         requestEnd: nil,
         responseStart: nil,
         responseEnd: nil,
+        measuredResponseEnd: nil,
         totalDuration: 0.1
       ),
       errorDescription: nil,
@@ -1256,6 +1303,7 @@ struct NetworkRequestObserverTests {
         requestEnd: nil,
         responseStart: nil,
         responseEnd: responseEnd,
+        measuredResponseEnd: responseEnd,
         totalDuration: 0.5
       ),
       errorDescription: nil,
@@ -1314,6 +1362,7 @@ struct NetworkRequestObserverTests {
         requestEnd: nil,
         responseStart: nil,
         responseEnd: nil,
+        measuredResponseEnd: nil,
         totalDuration: 0.1
       ),
       errorDescription: "timed out",

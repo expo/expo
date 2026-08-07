@@ -89,8 +89,10 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// disk never reports one, so the megabytes it contributes can't be divided by the milliseconds
   /// it took to read them.
   ///
-  /// This still can't see a stall between requests: if the radio dies while nothing is in flight,
-  /// no interval covers it. `failed` is the signal for that case.
+  /// Two cases it still can't see. A stall between requests: if the radio dies while nothing is in
+  /// flight, no interval covers it, and `failed` is the signal instead. And a long-lived response
+  /// that trickles, such as a server-sent event stream, whose window stays open across time when
+  /// almost nothing is moving and drags the rate down for everything overlapping it.
   ///
   /// Being a ratio, it also degrades differently from the counts when the monitor's ring buffer
   /// evicts the earliest requests in a window: both sides shrink together, so the value stays
@@ -129,8 +131,11 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       if request.isFailed {
         failed += 1
       }
-      bytesReceived += request.responseBytesReceived ?? 0
-      bytesSent += request.requestBytesSent ?? 0
+      // Clamped rather than `+=`: Swift traps on overflow, and this library must not be able to
+      // abort a host app over an implausible byte count from the OS. A total pinned at the maximum
+      // is visibly wrong; a crash in someone else's app is not recoverable.
+      bytesReceived = bytesReceived.addingClamped(request.responseBytesReceived ?? 0)
+      bytesSent = bytesSent.addingClamped(request.requestBytesSent ?? 0)
       totalDuration += request.timings.totalDuration
       // Only completed requests are candidates. A timeout's duration is the client's timeout
       // setting, not a measurement of the server, so letting one win would make these fields report
@@ -174,7 +179,7 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// the same traffic.
   private static func throughput(of requests: [NetworkRequest]) -> Double? {
     let measurable = measurableReceiving(in: requests)
-    let bytes = measurable.reduce(Int64(0)) { $0 + ($1.responseBytesReceived ?? 0) }
+    let bytes = measurable.reduce(Int64(0)) { $0.addingClamped($1.responseBytesReceived ?? 0) }
     guard bytes > 0 else {
       return nil
     }
@@ -206,12 +211,27 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       guard (request.responseBytesReceived ?? 0) > 0 else {
         return false
       }
-      guard let start = request.timings.responseStart, let end = request.timings.responseEnd else {
+      guard let start = request.timings.responseStart,
+        let end = request.timings.measuredResponseEnd
+      else {
         return false
       }
-      return end > start
+      return end.timeIntervalSince(start) >= minimumTransferWindow
     }
   }
+
+  /// Shortest transfer window this ratio will divide by, in seconds.
+  ///
+  /// Android timestamps its phases with `Date()`, which advances in whole milliseconds, so a
+  /// transfer faster than that records as a zero-length window and drops out. iOS gets sub-
+  /// millisecond resolution from the transaction metrics and would otherwise keep those requests,
+  /// which is worse than it sounds: the platforms would disagree on whether the key is present at
+  /// all, and Android's surviving sample would skew slow while iOS's kept every fast transfer.
+  ///
+  /// Holding both to Android's floor costs the rate for transfers too quick to measure, which is
+  /// the honest outcome: dividing kilobytes by a duration the clock can't resolve produces a number
+  /// that says more about the timer than the network.
+  private static let minimumTransferWindow: TimeInterval = 0.001
 
   /// Total length of the union of the requests' transfer windows, in seconds, each running from the
   /// first response byte to the last.
@@ -222,10 +242,12 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// `measurableReceiving(in:)` so the same requests feed both sides of the ratio.
   private static func busyDuration(of requests: [NetworkRequest]) -> TimeInterval {
     let intervals = requests.compactMap { request -> (start: Date, end: Date)? in
-      guard let start = request.timings.responseStart, let end = request.timings.responseEnd else {
+      guard let start = request.timings.responseStart,
+        let end = request.timings.measuredResponseEnd
+      else {
         return nil
       }
-      return end > start ? (start, end) : nil
+      return end.timeIntervalSince(start) >= minimumTransferWindow ? (start, end) : nil
     }
     .sorted { $0.start < $1.start }
 
@@ -251,6 +273,18 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       total += spanEnd.timeIntervalSince(spanStart)
     }
     return total
+  }
+}
+
+extension Int64 {
+  /// Adds `other`, pinning at `Int64.max` instead of trapping.
+  ///
+  /// Byte counts come from the OS, and an observability library has no business aborting its host
+  /// app over one that doesn't make sense. Both operands are non-negative here, so only the upper
+  /// bound is reachable.
+  fileprivate func addingClamped(_ other: Int64) -> Int64 {
+    let (sum, overflowed) = addingReportingOverflow(other)
+    return overflowed ? Int64.max : sum
   }
 }
 

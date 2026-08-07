@@ -278,6 +278,43 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
+  fun `excludes a request whose end was never measured from throughput`() {
+    // Headers arrived and then the request died, so `responseEnd` is the wall-clock moment the
+    // snapshot was recorded rather than the last byte. Dividing by that window would describe the
+    // recording delay: 100 kB over the 550ms fallback reads as 186 kB/s for a 50ms transfer.
+    val summary = NetworkRequestSummary.from(
+      listOf(
+        makeRequest(
+          responseBytesReceived = 102_400,
+          fetchStart = Date(0),
+          responseStart = Date(1000),
+          responseEnd = Date(1550),
+          endWasMeasured = false
+        )
+      )
+    )
+    assertNull(summary.throughputBytesPerSecond)
+  }
+
+  @Test
+  fun `excludes a transfer too fast for the clock to measure`() {
+    // `Date()` advances in whole milliseconds, so a sub-millisecond transfer records as a
+    // zero-length window. iOS applies the same floor rather than dividing by the finer windows it
+    // can resolve, so the two platforms agree on when the rate is unknown.
+    val summary = NetworkRequestSummary.from(
+      listOf(
+        makeRequest(
+          responseBytesReceived = 8192,
+          fetchStart = Date(0),
+          responseStart = Date(1),
+          responseEnd = Date(1)
+        )
+      )
+    )
+    assertNull(summary.throughputBytesPerSecond)
+  }
+
+  @Test
   fun `excludes a cache hit from throughput`() {
     // A cached read reports its bytes from the task counters but never touches the network, so it
     // has no first-byte timestamp. Counting it would add megabytes to the numerator against the
@@ -421,7 +458,11 @@ class NetworkRequestSummaryTest {
     totalDuration: Double = 0.1,
     fetchStart: Date = Date(0),
     responseStart: Date? = null,
-    responseEnd: Date? = Date(100)
+    responseEnd: Date? = Date(100),
+    // Defaults to whatever `responseEnd` is so a test that doesn't care gets a transfer window
+    // matching the span it set up. Pass `false` to model a request whose last byte was never
+    // reported, which is what an unmeasured end looks like in production.
+    endWasMeasured: Boolean = true
   ): NetworkRequest = NetworkRequest(
     id = UUID.randomUUID(),
     url = url,
@@ -442,6 +483,7 @@ class NetworkRequestSummaryTest {
       requestEnd = null,
       responseStart = responseStart,
       responseEnd = responseEnd,
+      measuredResponseEnd = if (endWasMeasured) responseEnd else null,
       totalDuration = totalDuration
     ),
     errorDescription = errorDescription,
