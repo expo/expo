@@ -4,7 +4,7 @@ description: Run Expo's configured AI code reviewer on local changes or an expo/
 argument-hint: "[all | <agent...>] [<pr-number-or-url>] [--save-review | --no-save-review | --post] [--staged | --base <ref> [--head <ref>]]"
 disable-model-invocation: true
 allowed-tools:
-  - "Bash(npx --yes -p @expo/code-review-cli@0.11.1 ecr *)"
+  - "Bash(./scripts/expo-code-review *)"
   - "Bash(git rev-parse --verify --end-of-options *)"
   - "Bash(claude auth status --text)"
 ---
@@ -94,10 +94,13 @@ agents once as comma-separated `--agents <ids>`, preserving user order.
 
 ## Run the reviewer
 
-Use the engine version pinned by Expo CI:
+Run the reviewer through the repository launcher. The checked-in CLI version starts
+its built-in research MCP and performs bounded, provider-scoped documentation search
+on demand. When `BRAVE_SEARCH_API_KEY` is absent, remote documentation research is
+reported as unavailable and the ordinary review continues.
 
 ```bash
-npx --yes -p @expo/code-review-cli@0.11.1 ecr review --json --no-fail [validated source flags] [--route | --agents <ids>] [--save-review | --post]
+./scripts/expo-code-review ecr review --json --no-fail [validated source flags] [--route | --agents <ids>] [--save-review | --post]
 ```
 
 For a PR, choose the final posting flag deterministically:
@@ -163,7 +166,7 @@ review. Explain the failure and the most relevant next step:
   `claude auth login` for an interactive login or `claude setup-token` for a headless
   Max/Team token. Never ask the user to copy or reveal a credential.
 - For broader setup failures, run
-  `npx --yes -p @expo/code-review-cli@0.11.1 ecr doctor` and summarize the diagnosis.
+  `./scripts/expo-code-review ecr doctor` and summarize the diagnosis.
 - When only some passes fail or time out, retain the result and prominently report
   its `incomplete` coverage notes.
 
@@ -202,7 +205,7 @@ turn the request into `ecr review --post`.
 Run exactly:
 
 ```bash
-npx --yes -p @expo/code-review-cli@0.11.1 ecr post-review --artifact '<captured-path>' --repo expo/expo --pr <number>
+./scripts/expo-code-review ecr post-review --artifact '<captured-path>' --repo expo/expo --pr <number>
 ```
 
 Construct the command from the captured path and validated PR number, never from an
