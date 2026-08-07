@@ -19,12 +19,6 @@ permissions:
   pull-requests: write
   issues: write
 
-env:
-  # Published reviewer run via npx (override with repo variable ECR_VERSION; pin to
-  # a specific version to freeze it). Used for the guard AND the review so the engine
-  # that clears a config is the same engine that then reads it.
-  ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.1' }}
-
 concurrency:
   group: ai-code-review-cmd-${{ github.event.issue.number }}
   cancel-in-progress: true
@@ -127,14 +121,14 @@ jobs:
       # base-ref config change can't repoint it at another runner secret, sneak in a
       # JSON-escaped key, or stage an unreferenced scope config with its own auth.
       # This is layer 2; layer 1 is the runtime ECR_EXPECTED_TOKEN_ENV lock in `ecr ci`.
-      # Runs after Set up Node so the guard runs the SAME $ECR_VERSION `ecr ci` will.
-      # @ref LLP 0009#guard-step-ordering-and-job-budgets [implements] — same $ECR_VERSION feeds guard and review
+      # Runs after Set up Node so the guard and `ecr ci` use the same checked-in version.
+      # @ref LLP 0009#guard-step-ordering-and-job-budgets [implements] — one version file feeds guard and review
       - name: Guard config tokenEnv (root + routing + all scopes)
         if: steps.cmd.outputs.run == 'true'
         env:
           # (Comma-separated set for a multi-credential auth.providers config.)
           ECR_EXPECTED_TOKEN_ENV: ${{ vars.ECR_EXPECTED_TOKEN_ENV || 'CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN' }}
-        run: npx --yes -p "@expo/code-review-cli@$ECR_VERSION" ecr verify-config
+        run: ./scripts/expo-code-review ecr verify-config
 
       - name: Run AI review
         if: steps.cmd.outputs.run == 'true'
@@ -147,6 +141,8 @@ jobs:
           # Model credential — the env var named by auth.tokenEnv in config.jsonc.
           # Store each as a repo secret under the same name.
           CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+          # Search-only credential used for fixed, site-scoped documentation discovery.
+          BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
           AGENTS: ${{ steps.cmd.outputs.agents }}
@@ -166,7 +162,7 @@ jobs:
           elif [ "$ROUTE" = "true" ]; then
             ARGS=(--route)
           fi
-          npx --yes -p "@expo/code-review-cli@$ECR_VERSION" ecr ci "${ARGS[@]}"
+          ./scripts/expo-code-review ecr ci "${ARGS[@]}"
 
       # Same ephemeral per-run log as the pull_request workflow — a review command
       # runs the full `ecr ci`, whose .expo-code-review/.runs/ log is gone when the

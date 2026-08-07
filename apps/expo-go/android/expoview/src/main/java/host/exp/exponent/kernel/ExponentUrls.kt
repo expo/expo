@@ -34,10 +34,24 @@ object ExponentUrls {
   @JvmStatic fun resolveManifestUrl(rawUrl: String, manifestUrl: String): String {
     val baseUrl = ExponentManifest.httpManifestUrl(manifestUrl).toString()
     return try {
-      URI(baseUrl).resolve(rawUrl).toString()
+      URI(baseUrl).withRootPath().resolve(rawUrl).toString()
     } catch (e: Exception) {
       rawUrl
     }
+  }
+
+  /**
+   * Works around Android's [URI.resolve] dropping the separator between the authority and a
+   * path-relative reference when the base path is empty, which splices the reference's first
+   * segment onto the port. A manifest URL without a path reaches this in the normal case, since
+   * building the HTTP manifest URL normalizes a missing path to an empty one.
+   */
+  private fun URI.withRootPath(): URI {
+    if (rawAuthority == null || !rawPath.isNullOrEmpty()) {
+      return this
+    }
+    // A base query or fragment is dropped during resolution anyway, so it doesn't need carrying.
+    return URI("$scheme://$rawAuthority/")
   }
 
   /**

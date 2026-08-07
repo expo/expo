@@ -78,6 +78,16 @@
     ]
   },
 
+  // Trusted host-side documentation research. Review-time queries contain only
+  // bounded API identifiers; scoped search results are independently allowlisted,
+  // fetched from official documentation, and fenced as untrusted evidence.
+  "research": {
+    "enabled": true,
+    "maxQueries": 20,
+    "resultsPerQuery": 2,
+    "timeoutMs": 15000
+  },
+
   // Large diffs are split into focused chunks by changed-line count, plus a
   // cross-cutting pass for multi-file issues. Diffs under maxChangedLines are one
   // full-context pass. Defaults shown; raise/lower per your model + PR sizes.
