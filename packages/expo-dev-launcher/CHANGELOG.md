@@ -87,6 +87,7 @@ _This version does not introduce any user-facing changes._
 - [iOS] Make the development server list reliable, keep discovery running across tab switches, periodically re-verify discovered servers, add pull-to-refresh on the Home tab, and show a searching state instead of "No development servers found". ([#46811](https://github.com/expo/expo/pull/46811) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Explain why a project failed to load instead of showing a generic "Failed to connect" message. ([#46866](https://github.com/expo/expo/pull/46866) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix auto-launching into the most recently opened project on startup. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
+- Pass `initialUrl` from dev-launcher deep links through to the loaded app. ([#19846](https://github.com/expo/expo/issues/19846) by [@mvincentong](https://github.com/mvincentong)) ([#46395](https://github.com/expo/expo/pull/46395) by [@mvincentong](https://github.com/mvincentong))
 
 ## 57.0.0 - 2026-06-25
 

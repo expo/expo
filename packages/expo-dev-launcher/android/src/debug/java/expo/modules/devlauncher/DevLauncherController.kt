@@ -302,7 +302,10 @@ class DevLauncherController private constructor(
 
         coroutineScope.launch {
           try {
-            pendingIntentRegistry.intent = intent
+            val devLauncherUrl = DevLauncherUrl(uri)
+            pendingIntentRegistry.intent = devLauncherUrl.initialUrl?.let { initialUrl ->
+              Intent(intent).apply { data = initialUrl }
+            } ?: intent
             loadApp(uri, activityToBeInvalidated)
           } catch (e: Throwable) {
             DevLauncherErrorActivity.showFatalError(context, DevLauncherAppError(e.message, e))
