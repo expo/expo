@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix template downloads failing on `npm@>=12`, which returns `npm pack --json` results as an object keyed by package name instead of an array. ([#48392](https://github.com/expo/expo/pull/48392) by [@00vortexlabsoneuzb00-wq](https://github.com/00vortexlabsoneuzb00-wq))
+
 ### 💡 Others
 
 ## 5.0.0 - 2026-06-25

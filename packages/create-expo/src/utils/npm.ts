@@ -128,7 +128,7 @@ export async function extractLocalNpmTarballAsync(
   );
 }
 
-async function npmPackAsync(
+export async function npmPackAsync(
   packageName: string,
   cwd: string | undefined = undefined,
   ...props: string[]
@@ -148,7 +148,7 @@ async function npmPackAsync(
   try {
     results = (await spawnAsync(npm, [...cmd, '--json'], { cwd })).stdout?.trim();
   } catch (error: any) {
-    if (error?.stderr.match(/npm ERR! code E404/)) {
+    if (error?.stderr?.match(/npm ERR! code E404/)) {
       const pkg =
         error.stderr.match(/npm ERR! 404\s+'(.*)' is not in this registry\./)?.[1] ?? error.stderr;
       throw new Error(`NPM package not found: ` + pkg);
@@ -160,18 +160,54 @@ async function npmPackAsync(
     return null;
   }
 
-  try {
-    const json = JSON.parse(results);
-    if (Array.isArray(json) && json.every(isNpmPackageInfo)) {
-      return json.map(sanitizeNpmPackageFilename);
-    } else {
-      throw new Error(`Invalid response from npm: ${results}`);
-    }
-  } catch (error: any) {
+  const json = extractJson(results);
+
+  if (json === null) {
     throw new Error(
-      `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
+      `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: no JSON found in the npm output`
     );
   }
+
+  const infos = normalizeNpmPackInfos(json);
+
+  if (!infos) {
+    throw new Error(`Invalid response from npm: ${results}`);
+  }
+
+  return infos.map(sanitizeNpmPackageFilename);
+}
+
+/** Parse the JSON payload from npm output, dropping any log lines printed around it. */
+function extractJson(output: string): unknown | null {
+  const candidates = [output.indexOf('{'), output.indexOf('[')].filter((index) => index !== -1);
+  const start = candidates.length ? Math.min(...candidates) : -1;
+  const end = Math.max(output.lastIndexOf('}'), output.lastIndexOf(']'));
+
+  try {
+    return JSON.parse(start !== -1 && end > start ? output.slice(start, end + 1) : output);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Normalize the shape of `npm pack --json`, which differs per npm version.
+ * - `npm@<12` returns an array of package infos.
+ * - `npm@>=12` returns an object keyed by package name, e.g. `{ "expo-template-blank": { ... } }`.
+ */
+function normalizeNpmPackInfos(json: unknown): NpmPackageInfo[] | null {
+  // A single package info is an object too, so it must not be unwrapped below.
+  if (isNpmPackageInfo(json)) {
+    return [json];
+  }
+
+  const list = Array.isArray(json)
+    ? json
+    : json && typeof json === 'object'
+      ? Object.values(json)
+      : null;
+
+  return list?.every(isNpmPackageInfo) ? list : null;
 }
 
 export type NpmPackageInfo = {
