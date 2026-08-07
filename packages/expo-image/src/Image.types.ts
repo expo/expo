@@ -231,6 +231,11 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * > **Note:** Colors must be values the SVG itself understands, such as `'#ff0000'` or `'red'`.
    * > React Native color descriptors like `PlatformColor` are not resolved.
    *
+   * > **Note:** `tintColor` takes precedence over this prop on iOS. A tint floods every pixel with a
+   * > single color, which would hide the substitution.
+   *
+   * Has no effect on sources that aren't SVG.
+   *
    * @example
    * ```tsx
    * // house.svg contains fill="var(--roof, #888)" and fill="var(--wall, #ccc)"
