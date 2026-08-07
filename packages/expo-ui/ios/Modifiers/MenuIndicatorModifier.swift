@@ -8,11 +8,11 @@ internal struct MenuIndicatorModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    // `menuIndicator(_:)` is unavailable on tvOS.
-    #if os(tvOS)
-    content
-    #else
-    content.menuIndicator(visibility.toVisibility())
-    #endif
+    // `menuIndicator(_:)` requires iOS 15.0 / tvOS 17.0.
+    if #available(iOS 15.0, tvOS 17.0, *) {
+      content.menuIndicator(visibility.toVisibility())
+    } else {
+      content
+    }
   }
 }

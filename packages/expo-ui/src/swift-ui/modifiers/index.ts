@@ -656,10 +656,12 @@ export const toggleStyle = (style: 'automatic' | 'switch' | 'button') =>
 
 /**
  * Sets the style for menus within this view.
- * @param style - The menu style. Combine `'button'` with `buttonStyle('plain')` to render the
- * menu's own label as the entire trigger, without any surrounding button chrome.
+ * @param style - The menu style. Combine `'button'` with `buttonStyle('plain')` and
+ * `menuIndicator('hidden')` to render the menu's own label as the entire trigger, without any
+ * surrounding button chrome or disclosure chevron.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menustyle(_:)).
  * @platform ios
+ * @platform tvos 17.0+
  */
 export const menuStyle = (style: 'automatic' | 'button') => createModifier('menuStyle', { style });
 
@@ -671,6 +673,7 @@ export const menuStyle = (style: 'automatic' | 'button') => createModifier('menu
  * - `'hidden'`: hide the indicator.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/menuindicator(_:)).
  * @platform ios
+ * @platform tvos 17.0+
  */
 export const menuIndicator = (visibility: 'automatic' | 'visible' | 'hidden') =>
   createModifier('menuIndicator', { visibility });

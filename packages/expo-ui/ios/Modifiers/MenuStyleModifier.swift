@@ -13,16 +13,16 @@ internal struct MenuStyleModifier: ViewModifier, Record {
 
   @ViewBuilder
   func body(content: Content) -> some View {
-    // `ButtonMenuStyle` is unavailable on tvOS; menus there keep the platform default.
-    #if os(tvOS)
-    content
-    #else
-    switch style {
-    case .button:
-      content.menuStyle(.button)
-    case .automatic:
-      content.menuStyle(.automatic)
+    // `MenuStyle` requires iOS 16.0 / tvOS 17.0; below that, menus keep the platform default.
+    if #available(iOS 16.0, tvOS 17.0, *) {
+      switch style {
+      case .button:
+        content.menuStyle(.button)
+      case .automatic:
+        content.menuStyle(.automatic)
+      }
+    } else {
+      content
     }
-    #endif
   }
 }
