@@ -240,6 +240,7 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * />
    * ```
    *
+   * @platform android
    * @platform ios
    */
   svgVariables?: Record<string, string | number> | null;

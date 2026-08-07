@@ -81,7 +81,7 @@ export default function ExpoImage({
   tintColor,
   containerViewRef,
   draggable,
-  // Destructured so it isn't forwarded to the DOM. SVG variables are iOS-only for now.
+  // Destructured so it isn't forwarded to the DOM. SVG variables are a native-only feature.
   svgVariables,
   ...props
 }: ImageNativeProps) {
