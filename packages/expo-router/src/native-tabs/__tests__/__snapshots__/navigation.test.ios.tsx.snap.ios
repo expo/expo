@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Native Bottom Tabs trigger changes renders no tab UI when every trigger is hidden 1`] = `
+[
+  [
+    "No screens are declared in ./_layout.js, so the navigator renders nothing. Only screens declared in the layout become visible. Declare each screen you want to show, for example <Tabs.Screen name="index" /> or <NativeTabs.Trigger name="index" />. Undeclared routes: index.",
+  ],
+]
+`;

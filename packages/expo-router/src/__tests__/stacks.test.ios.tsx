@@ -51,7 +51,12 @@ describe('canDismiss', () => {
       {
         a: () => null,
         b: () => null,
-        _layout: () => <Tabs />,
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="a" />
+            <Tabs.Screen name="b" />
+          </Tabs>
+        ),
       },
       {
         initialUrl: '/a',
@@ -117,7 +122,13 @@ test('dismissAll', () => {
 test('dismissAll nested', () => {
   renderRouter(
     {
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="a" />
+          <Tabs.Screen name="b" />
+          <Tabs.Screen name="one" />
+        </Tabs>
+      ),
       a: () => null,
       b: () => null,
       'one/_layout': () => <Stack />,

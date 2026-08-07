@@ -353,7 +353,7 @@ private func writeDataToUri(userId: String, data: Data?, imageKey: String, inclu
 
   try data.write(to: newPath, options: .atomic)
   var response: [String: Any?] = [
-    "uri": newPath.path,
+    "uri": newPath.absoluteString,
     "width": image?.cgImage?.width,
     "height": image?.cgImage?.height
   ]

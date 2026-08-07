@@ -420,6 +420,9 @@ importers:
       '@expo/vector-icons':
         specifier: ^15.0.2
         version: 15.1.1(expo-font@packages+expo-font)(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      expo-router:
+        specifier: workspace:*
+        version: link:../../packages/expo-router
       react:
         specifier: 19.2.3
         version: 19.2.3
@@ -4731,6 +4734,9 @@ importers:
 
   packages/expo-linking:
     dependencies:
+      expo:
+        specifier: '*'
+        version: link:../expo
       expo-constants:
         specifier: workspace:~56.0.16
         version: link:../expo-constants
@@ -5389,12 +5395,18 @@ importers:
       react-native-gesture-handler:
         specifier: ~3.1.0
         version: 3.1.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-pager-view:
+        specifier: ^8.0.2
+        version: 8.0.2(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-reanimated:
         specifier: 4.5.1
         version: 4.5.1(patch_hash=f1adeb1c26dfb66311eb34b353a16b2ae27f5a95a65e9d52e683a60af0e8b18e)(react-native-worklets@0.10.1(patch_hash=b72ac0fc85273472ec4b8974adb8d4eba75672291aa7501270a7b08e58ba7dec)(@babel/core@7.29.7)(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-safe-area-context:
         specifier: ~5.7.0
         version: 5.7.0(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
+      react-native-tab-view:
+        specifier: ^4.3.0
+        version: 4.3.0(react-native-pager-view@8.0.2(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3))(react-native@0.86.0(@babel/core@7.29.7)(@react-native/jest-preset@0.86.0(@babel/core@7.29.7)(react@19.2.3))(@react-native/metro-config@0.86.0(@babel/core@7.29.7))(@types/react@19.2.14)(react@19.2.3))(react@19.2.3)
       react-native-web:
         specifier: ~0.21.0
         version: 0.21.2(encoding@0.1.13)(react-dom@19.2.3(react@19.2.3))(react@19.2.3)

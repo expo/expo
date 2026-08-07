@@ -12,6 +12,7 @@
 'use client';
 
 import Constants from 'expo-constants';
+import { getBundleUrl } from 'expo/internal/bundle-origin';
 import {
   createContext,
   createElement,
@@ -25,7 +26,6 @@ import {
 import type { ReactNode } from 'react';
 import RSDWClient from 'react-server-dom-webpack/client';
 
-import { getDevServer } from '../../getDevServer';
 import { getOriginFromConstants } from '../../head/url';
 import { MetroServerError, ReactServerError } from './errors';
 import { fetch } from './fetch';
@@ -66,9 +66,7 @@ if (!BASE_PATH.endsWith('/')) {
 
 if (BASE_PATH === '/') {
   throw new Error(
-    `Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${
-      getDevServer().fullBundleUrl
-    }`
+    `Invalid React Flight path "${BASE_PATH}". The path should not live at the project root, e.g. /_flight/. Dev server URL: ${getBundleUrl()}`
   );
 }
 

@@ -8,19 +8,21 @@ TopTabs.Protected = Protected;
 export { TopTabs };
 
 export {
-  createMaterialTopTabNavigator,
+  createStandardMaterialTopTabNavigator,
   MaterialTopTabBar,
   MaterialTopTabView,
   useTabAnimation,
 } from './TopTabsClient';
 export type {
   MaterialTopTabBarProps,
+  MaterialTopTabEmitter,
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigationOptions,
   MaterialTopTabNavigationProp,
-  MaterialTopTabNavigatorProps,
   MaterialTopTabOptionsArgs,
   MaterialTopTabScreenProps,
+  MaterialTopTabViewState,
 } from '../react-navigation/material-top-tabs';
+export type { JSTopTabsProps } from './TopTabsClient';
 
 export default TopTabs;

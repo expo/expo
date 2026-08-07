@@ -7,7 +7,6 @@ import {
   mergeOptions,
   useCompositionRegistry,
 } from '../../fork/native-stack/composition-options';
-import type { NativeStackDescriptorMap } from '../../fork/native-stack/descriptors-context';
 import {
   createNavigatorFactory,
   type EventArg,
@@ -61,8 +60,7 @@ function ExperimentalStackNavigator({
   const { registry, contextValue } = useCompositionRegistry();
 
   const mergedDescriptors = useMemo(
-    // TODO(@ubax): implement properly when more stack options are available
-    () => mergeOptions(descriptors as NativeStackDescriptorMap, registry, state),
+    () => mergeOptions(descriptors, registry, state),
     [descriptors, registry, state]
   );
 

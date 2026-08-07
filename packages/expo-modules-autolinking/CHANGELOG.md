@@ -7,9 +7,11 @@
 ### 🎉 New features
 
 - [Android] Set `CMAKE_OBJECT_PATH_MAX=1024` by default for the app and all library subprojects that build native code with CMake, so long object file paths (for example in pnpm monorepos on Windows) no longer fail the build. Configurable with the `expo.android.cmakeObjectPathMax` Gradle property. ([#47791](https://github.com/expo/expo/pull/47791) by [@ide](https://github.com/ide))
+- [Android] Support linking published Gradle plugins. ([#48334](https://github.com/expo/expo/pull/48334) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
+- [Android] Fix autolinking pure C++ React Native modules published without `includesGeneratedCode: true`. ([#48514](https://github.com/expo/expo/pull/48514) by [@satya164](https://github.com/satya164))
 - [iOS] Only stub a source pod bundled inside a prebuilt XCFramework (e.g. `SDWebImage` in `ExpoImage.xcframework`) when one of its consumers also links the owning prebuilt pod. An app extension that depends on such a pod on its own now keeps building it from source instead of failing to link with undefined symbols. ([#47847](https://github.com/expo/expo/pull/47847) by [@chrfalch](https://github.com/chrfalch))
 - [iOS] Fix a duplicate pod error (`multiple dependencies with different sources`) for precompiled modules in a Podfile with multiple targets. `prebuilt_react_active?` now mirrors React Native's default for `RCT_USE_PREBUILT_RNCORE` (prebuilt unless explicitly `0`), since `use_react_native!` only sets it after `use_expo_modules!` has run. ([#47329](https://github.com/expo/expo/pull/47329) by [@janicduplessis](https://github.com/janicduplessis))
 
