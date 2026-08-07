@@ -7,6 +7,8 @@ import type { ConfigPlugin } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
 import type { LocaleJson, ResolvedLocalesJson } from '../utils/locales';
 import { getResolvedLocalesAsync } from '../utils/locales';
+import type { ApplePlatform } from './Paths';
+import { getSupportingPath, toApplePlatform } from './Paths';
 import { addResourceFileToGroup, ensureGroupRecursively, getProjectName } from './utils/Xcodeproj';
 
 export const withLocales: ConfigPlugin = (config) => {
@@ -14,6 +16,7 @@ export const withLocales: ConfigPlugin = (config) => {
     config.modResults = await setLocalesAsync(config, {
       projectRoot: config.modRequest.projectRoot,
       project: config.modResults,
+      platform: toApplePlatform(config.modRequest.platform),
     });
     return config;
   });
@@ -72,7 +75,11 @@ export function getLocales(
 
 export async function setLocalesAsync(
   config: Pick<ExpoConfig, 'locales'>,
-  { projectRoot, project }: { projectRoot: string; project: XcodeProject }
+  {
+    projectRoot,
+    project,
+    platform,
+  }: { projectRoot: string; project: XcodeProject; platform?: ApplePlatform }
 ): Promise<XcodeProject> {
   const locales = getLocales(config);
   if (!locales) {
@@ -85,8 +92,8 @@ export async function setLocalesAsync(
     'ios'
   );
 
-  const projectName = getProjectName(projectRoot);
-  const supportingDirectory = path.join(projectRoot, 'ios', projectName, 'Supporting');
+  const projectName = getProjectName(projectRoot, platform);
+  const supportingDirectory = getSupportingPath(projectRoot, platform);
 
   // TODO: Should we delete all before running? Revisit after we land on a lock file.
   project = await writeStringsFile({
