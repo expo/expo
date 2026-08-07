@@ -14,7 +14,6 @@ final class LiveActivityFactory: SharedObject {
   }
 
   func start(props: String?, url: URL?, staleDate: Date?) throws -> LiveActivity {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
     guard ActivityAuthorizationInfo().areActivitiesEnabled else {
       throw LiveActivitiesNotSupportedException()
     }
@@ -36,8 +35,6 @@ final class LiveActivityFactory: SharedObject {
   }
 
   func getInstances() throws -> [LiveActivity] {
-    guard #available(iOS 16.2, *) else { throw LiveActivitiesNotSupportedException() }
-
     return Activity<LiveActivityAttributes>.activities
       .filter { $0.content.state.name == name }
       // A stale activity is still visible and updatable; only ended/dismissed ones are gone.

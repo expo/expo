@@ -97,14 +97,12 @@ public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any
   var env: [String: Any] = [
     "showsContainerBackground": environment.showsWidgetContainerBackground,
     "widgetFamily": environment.widgetFamily.description,
-    "colorScheme": "\(environment.colorScheme)"
+    "colorScheme": "\(environment.colorScheme)",
+    "isLuminanceReduced": environment.isLuminanceReduced,
+    "widgetRenderingMode": environment.widgetRenderingMode.description,
+    "showsWidgetLabel": environment.showsWidgetLabel
   ]
 
-  if #available(iOS 16.0, *) {
-    env["isLuminanceReduced"] = environment.isLuminanceReduced
-    env["widgetRenderingMode"] = environment.widgetRenderingMode.description
-    env["showsWidgetLabel"] = environment.showsWidgetLabel
-  }
   if #available(iOS 17.0, *) {
     env["widgetContentMargins"] = [
       "top": environment.widgetContentMargins.top,
@@ -121,15 +119,11 @@ public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any
 
 func getLiveActivityEnvironment(environment: EnvironmentValues) -> [String: Any] {
   var env: [String: Any] = [
-    "colorScheme": "\(environment.colorScheme)"
+    "colorScheme": "\(environment.colorScheme)",
+    "isLuminanceReduced": environment.isLuminanceReduced,
+    "isActivityFullscreen": environment.isActivityFullscreen
   ]
 
-  if #available(iOS 16.0, *) {
-    env["isLuminanceReduced"] = environment.isLuminanceReduced
-  }
-  if #available(iOS 16.1, *) {
-    env["isActivityFullscreen"] = environment.isActivityFullscreen
-  }
   if #available(iOS 18.0, *) {
     env["isActivityUpdateReduced"] = environment.isActivityUpdateReduced
     env["activityFamily"] = "\(environment.activityFamily)"
