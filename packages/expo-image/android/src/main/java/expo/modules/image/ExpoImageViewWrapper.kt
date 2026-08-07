@@ -126,6 +126,17 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
     }
 
+  internal var svgVariables: Map<String, String> = emptyMap()
+    set(value) {
+      if (field == value) {
+        return
+      }
+      field = value
+      // The variables are substituted into the source before it's parsed, so the document has to be
+      // decoded again for new values to take effect.
+      shouldRerender = true
+    }
+
   internal var isFocusableProp: Boolean = false
     set(value) {
       field = value
@@ -598,6 +609,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .apply(options)
         .customize(tintColor) {
           apply(RequestOptions().set(CustomOptions.tintColor, it))
+        }
+        .customize(svgVariables.takeIf { it.isNotEmpty() }) {
+          apply(RequestOptions().set(CustomOptions.svgVariables, it))
         }
 
       val cookie = Trace.getNextCookieValue()
