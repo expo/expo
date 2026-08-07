@@ -86,6 +86,8 @@ export default function ExpoImage({
   containerViewRef,
   draggable,
   dataSet,
+  // Destructured so it isn't forwarded to the DOM. SVG variables are iOS-only for now.
+  svgVariables,
   ...props
 }: ExpoImageWebProps) {
   const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
