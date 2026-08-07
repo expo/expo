@@ -9,13 +9,17 @@ import EXManifests
 /**
  LauncherSelectionPolicy similar to LauncherSelectionPolicyFilterAware but specifically for
  Expo Go which uses a Expo-Go-specific field to determine compatibility.
+
+ Compatibility is determined by SDK major version (see `Versions.areCompatible`) so that a client
+ patch release whose version differs in its patch from the supported SDK version (e.g. a 56.0.1
+ client serving SDK 56.0.0 updates) can still launch matching updates.
  */
 @objcMembers
 public final class EXExpoGoLauncherSelectionPolicyFilterAware: NSObject, LauncherSelectionPolicy {
-  let sdkVersions: [String]
+  let supportedSdkVersion: String
 
-  public init(sdkVersions: [String]) {
-    self.sdkVersions = sdkVersions
+  public init(supportedSdkVersion: String) {
+    self.supportedSdkVersion = supportedSdkVersion
   }
 
   public func launchableUpdate(fromUpdates updates: [Update], filters: [String: Any]?) -> Update? {
@@ -25,7 +29,8 @@ public final class EXExpoGoLauncherSelectionPolicyFilterAware: NSObject, Launche
         continue
       }
 
-      if !sdkVersions.contains(updateSDKVersion) || !SelectionPolicies.doesUpdate(update, matchFilters: filters) {
+      if !Versions.areCompatible(supportedSdkVersion: supportedSdkVersion, sdkVersion: updateSDKVersion) ||
+          !SelectionPolicies.doesUpdate(update, matchFilters: filters) {
         continue
       }
 
