@@ -8,8 +8,8 @@
 
 - Added an `imageLoaded` module event emitted with the decoded pixel size from every load path. ([#47337](https://github.com/expo/expo/pull/47337) by [@Ubax](https://github.com/Ubax))
 - add expo-observe integration ([#47145](https://github.com/expo/expo/pull/47145) by [@Ubax](https://github.com/Ubax))
-- [iOS][Android] Added an `svgVariables` prop that substitutes values for the CSS custom properties an SVG source refers to with `var()`. Different parts of one document can be given different values, which makes multi-color template images possible, and the image stays a vector instead of being rasterized the way `tintColor` is. Values are not limited to colors. ([#PR](https://github.com/expo/expo/pull/PR) by [@tsapeta](https://github.com/tsapeta))
 - [iOS][Android] Added a `skipOnCacheHit` field to `transition` that skips the fade the first time a cached image appears (`'memory'` for memory-cache hits, `'all'` for any cache hit), so already-loaded images don't re-animate on mount, tab change, or when scrolling back into view. A transition from a `source` change still plays. ([#48181](https://github.com/expo/expo/pull/48181) by [@janicduplessis](https://github.com/janicduplessis))
+- [iOS][Android] Added an `svgVariables` prop that substitutes values for the CSS custom properties an SVG source refers to with `var()`, so different parts of one document can be given different colors and the image stays a vector instead of being rasterized the way `tintColor` is. Values are not limited to colors. ([#48663](https://github.com/expo/expo/pull/48663) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
