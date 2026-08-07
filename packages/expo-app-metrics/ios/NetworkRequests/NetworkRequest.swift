@@ -82,6 +82,15 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
     public let responseStart: Date?
     public let responseEnd: Date?
 
+    /// When the last response byte arrived, or `nil` if the OS never reported one.
+    ///
+    /// Unlike `responseEnd`, this is never synthesized. `responseEnd` falls back to a wall-clock
+    /// timestamp taken when the snapshot was recorded, which is right for a duration but wrong for
+    /// a transfer window: a request that got headers and then died reports an end long after its
+    /// last byte, and dividing its bytes by that window describes the recording delay rather than
+    /// the connection.
+    public let measuredResponseEnd: Date?
+
     /// Total wall-clock duration of the task. Convenience: callers don't have to subtract
     /// `fetchStart` from `responseEnd` themselves, and we can populate this even when the
     /// individual phases are `nil` (cache hits, errors before headers).
@@ -127,6 +136,16 @@ public struct NetworkRequestStarted: Sendable, Equatable, Identifiable {
   public let startedAt: Date
 }
 
+/// Adds two non-negative byte counts, pinning at `Int64.max` instead of trapping.
+///
+/// The operands come from `URLSessionTaskTransactionMetrics`, and Swift aborts the process on
+/// `Int64` overflow. No honest response reaches that total, but an observability library must not
+/// be able to take its host app down over a counter that doesn't make sense.
+private func clampedSum(_ lhs: Int64, _ rhs: Int64) -> Int64 {
+  let (sum, overflowed) = lhs.addingReportingOverflow(rhs)
+  return overflowed ? Int64.max : sum
+}
+
 extension NetworkRequest {
   /// Builds a snapshot from the data we have at task completion. The metrics argument may be `nil`
   /// for cache-only responses or in tests; in that case, callers fall back to wall-clock timestamps
@@ -166,6 +185,7 @@ extension NetworkRequest {
       requestEnd: transaction?.requestEndDate,
       responseStart: transaction?.responseStartDate,
       responseEnd: transaction?.responseEndDate ?? fallbackEnd,
+      measuredResponseEnd: transaction?.responseEndDate,
       totalDuration: metrics?.taskInterval.duration ?? fallbackEnd.timeIntervalSince(fallbackStart)
     )
 
@@ -177,7 +197,12 @@ extension NetworkRequest {
     //     Received` is wall-clock accurate in both environments.
     let requestBytesSent: Int64? = {
       if let transaction {
-        let fromTransaction = transaction.countOfRequestHeaderBytesSent + transaction.countOfRequestBodyBytesSent
+        // Clamped: these come from the OS and Swift traps on overflow, which must never take a host
+        // app down from inside an observability library.
+        let fromTransaction = clampedSum(
+          transaction.countOfRequestHeaderBytesSent,
+          transaction.countOfRequestBodyBytesSent
+        )
         if fromTransaction > 0 {
           return fromTransaction
         }
@@ -187,7 +212,10 @@ extension NetworkRequest {
     let responseBytesReceived: Int64? = {
       if let transaction {
         let fromTransaction =
-          transaction.countOfResponseHeaderBytesReceived + transaction.countOfResponseBodyBytesReceived
+          clampedSum(
+            transaction.countOfResponseHeaderBytesReceived,
+            transaction.countOfResponseBodyBytesReceived
+          )
         if fromTransaction > 0 {
           return fromTransaction
         }

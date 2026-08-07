@@ -74,8 +74,10 @@ data class NetworkRequestSummary(
    * never reports one, so the bytes it contributes can't be divided by the milliseconds it took to
    * read them.
    *
-   * This still can't see a stall between requests: if the radio dies while nothing is in flight, no
-   * interval covers it. `failed` is the signal for that case.
+   * Two cases it still can't see. A stall between requests: if the radio dies while nothing is in
+   * flight, no interval covers it, and `failed` is the signal instead. And a long-lived response
+   * that trickles, such as a server-sent event stream, whose window stays open across time when
+   * almost nothing is moving and drags the rate down for everything overlapping it.
    *
    * Being a ratio, it also degrades differently from the counts when the monitor's ring buffer evicts
    * the earliest requests in a window: both sides shrink together, so the value stays plausible while
@@ -216,11 +218,17 @@ data class NetworkRequestSummary(
      * stalled until the client gave up reports a window covering the whole stall, so it would hold
      * the denominator open across time when nothing was moving and report a connection far slower than
      * the one that served the requests around it.
+     *
+     * A transfer faster than a millisecond drops out, because `Date()` advances in whole
+     * milliseconds and can't describe it. iOS applies the same floor deliberately rather than
+     * dividing by the sub-millisecond windows its transaction metrics can resolve, so the two
+     * platforms agree on when the rate is unknown instead of Android quietly reporting only its
+     * slower transfers.
      */
     private fun measurableReceiving(requests: List<NetworkRequest>): List<NetworkRequest> {
       return requests.filter { request ->
         val start = request.timings.responseStart
-        val end = request.timings.responseEnd
+        val end = request.timings.measuredResponseEnd
         !request.isFailed && (request.responseBytesReceived ?: 0) > 0 && start != null &&
           end != null && end.time > start.time
       }
@@ -242,7 +250,7 @@ data class NetworkRequestSummary(
       val intervals = requests
         .mapNotNull { request ->
           val start = request.timings.responseStart ?: return@mapNotNull null
-          val end = request.timings.responseEnd ?: return@mapNotNull null
+          val end = request.timings.measuredResponseEnd ?: return@mapNotNull null
           if (end.time > start.time) start.time to end.time else null
         }
         .sortedBy { it.first }

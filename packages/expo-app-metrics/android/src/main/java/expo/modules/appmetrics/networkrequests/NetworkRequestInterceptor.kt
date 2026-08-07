@@ -238,6 +238,7 @@ internal fun buildSnapshot(
     requestEnd = phases?.requestBodyEnd ?: phases?.requestHeadersEnd,
     responseStart = phases?.responseHeadersStart,
     responseEnd = phases?.responseBodyEnd ?: phases?.responseHeadersEnd ?: fallbackEnd,
+    measuredResponseEnd = phases?.responseBodyEnd,
     totalDuration = totalDuration
   )
 

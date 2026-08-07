@@ -55,8 +55,6 @@ enum MetricParamsBuilder {
     if let networkRequests, !networkRequests.isEmpty {
       params["expo.network.requests.count"] = networkRequests.count
       params["expo.network.requests.failed"] = networkRequests.failed
-      // Emitted even at zero, unlike the optional latency fields below: we saw requests and none of
-      // them timed out, which is a real measurement rather than a missing one.
       params["expo.network.requests.bytesReceived"] = networkRequests.bytesReceived
       params["expo.network.requests.bytesSent"] = networkRequests.bytesSent
       params["expo.network.requests.totalDuration"] = networkRequests.totalDuration
