@@ -5,8 +5,11 @@
 ### 🛠 Breaking changes
 
 - Hash autolinked packages that live in a virtual store, such as pnpm's `node_modules/.pnpm`. Nested `node_modules` folders inside a package are still skipped. Fingerprints change once on upgrade for isolated installs. ([#48704](https://github.com/expo/expo/pull/48704) by [@kudo](https://github.com/kudo))
+- Skipped the resolved autolinking config in the `balanced` and `relaxed` presets, which changes the default fingerprint once on upgrade. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
+
+- Added `SourceSkips.AutolinkingConfig` to exclude the resolved `expo-modules-autolinking` and `react-native-config` configs from fingerprints. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
