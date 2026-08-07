@@ -18,11 +18,6 @@ describe('server-output', () => {
   describe.each(
     prepareServers([RUNTIME_EXPRESS_SERVER, RUNTIME_EXPO_START, RUNTIME_WORKERD], {
       fixtureName: 'server',
-      export: {
-        env: {
-          E2E_ROUTER_ASYNC: 'development',
-        },
-      },
       serve: {
         env: {
           TEST_SECRET_KEY: 'test-secret-key',
