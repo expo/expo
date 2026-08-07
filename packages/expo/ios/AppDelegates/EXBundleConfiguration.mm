@@ -23,6 +23,14 @@
 
 - (NSURL *)getBundleURL
 {
+  // A file URL is a snapshot of whichever bundle was current when this configuration was built,
+  // and `RCTBundleManager` prefers it over the live getter that `RCTHost` installs. Returning it
+  // would pin every reload to that bundle, so `Updates.reloadAsync` could never start a newly
+  // downloaded update.
+  if (_bundleURL.fileURL) {
+    return nil;
+  }
+
   return _bundleURL;
 }
 
