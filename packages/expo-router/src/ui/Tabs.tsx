@@ -223,7 +223,7 @@ function TabVisibilityRedirect({
   useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames: state.routeNames,
-    focusedRouteKey: state.routes[state.index]!.key,
+    focusedRouteKey: state.routes[state.index]?.key,
     descriptors,
   });
   return null;

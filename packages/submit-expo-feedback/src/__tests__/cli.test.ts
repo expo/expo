@@ -3,6 +3,7 @@ import { tmpdir } from 'os';
 import path from 'path';
 import prompts from 'prompts';
 
+import packageJson from '../../package.json';
 import {
   createFeedbackMetadataAsync,
   getProjectMetadata,
@@ -361,7 +362,7 @@ describe('feedback submission', () => {
       signal: timeoutSignal,
       headers: expect.objectContaining({
         'Content-Type': 'application/json',
-        'User-Agent': 'submit-expo-feedback/0.0.2',
+        'User-Agent': `submit-expo-feedback/${packageJson.version}`,
         'expo-session': 'session-secret',
       }),
       body: JSON.stringify({

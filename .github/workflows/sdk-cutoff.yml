@@ -10,6 +10,14 @@ on:
 jobs:
   cut-release:
     runs-on: ubuntu-24.04
+    # Stated explicitly because the repository default is moving to read-only. This job
+    # needs both: `contents: write` to push the new sdk-* branch (that push authenticates
+    # with the credentials actions/checkout stores), and `issues: write` for
+    # `gh label create`, which goes through the issues API even though the labels are
+    # applied to pull requests.
+    permissions:
+      contents: write
+      issues: write
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1

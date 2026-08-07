@@ -41,7 +41,7 @@ function BottomTabNavigatorContent({
   const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
     routes: state.routes,
     routeNames,
-    focusedRouteKey: state.routes[state.index]!.key,
+    focusedRouteKey: state.routes[state.index]?.key,
     descriptors,
   });
   const navigateToTab = (routeKey: string) => {
