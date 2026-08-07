@@ -20,6 +20,7 @@ import java.io.IOException
 import java.net.InetAddress
 import java.net.InetSocketAddress
 import java.net.Proxy
+import java.net.SocketException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import java.util.Date
@@ -284,17 +285,30 @@ private fun Response.responseBodyByteCount(
  * Whether an OkHttp failure means the network stalled or went away, rather than the server
  * answering with something we didn't like.
  *
- * `SocketTimeoutException` covers OkHttp's connect/read/write timeouts. `UnknownHostException` is
- * included because DNS failing is what losing connectivity looks like from here, though it's an
- * imperfect signal: a typo'd endpoint, a dead CDN domain, or a removed DNS record produce the same
- * exception, and a misconfigured host recurs on every launch rather than averaging out. A
- * persistently high timeout count can therefore mean a broken hostname rather than a bad connection.
+ * Three conditions count, and `isNetworkTimeout` in `NetworkRequest.swift` matches the same three
+ * so the `timedOut` metric describes one population on both platforms:
+ *
+ * - The request stalled until the client gave up (`SocketTimeoutException`, which covers OkHttp's
+ *   connect, read and write timeouts).
+ * - The connection dropped mid-request (`SocketException`, which covers a reset or a truncated
+ *   stream).
+ * - The device couldn't reach the network at all (`UnknownHostException`). DNS failing is what
+ *   losing connectivity looks like from here, though it's an imperfect signal: a typo'd endpoint, a
+ *   dead CDN domain, or a removed DNS record produce the same exception, and a misconfigured host
+ *   recurs on every launch rather than averaging out. A persistently high timeout count can
+ *   therefore mean a broken hostname rather than a bad connection.
+ *
+ * `SSLException` is deliberately absent. A failed handshake is a certificate or trust problem
+ * rather than an absent network, and counting it here would also break parity, since no iOS TLS
+ * error maps to this flag.
  *
  * A deliberate `Call.cancel()` surfaces as a plain `IOException` and is not counted: the app
  * abandoned the request, which says nothing about the connection.
  */
 private val IOException?.isNetworkTimeout: Boolean
-  get() = this is SocketTimeoutException || this is UnknownHostException
+  get() = this is SocketTimeoutException ||
+    this is UnknownHostException ||
+    this is SocketException
 
 /**
  * Walks `Response.priorResponse()` chronologically and emits one `Redirect` per hop. The chain

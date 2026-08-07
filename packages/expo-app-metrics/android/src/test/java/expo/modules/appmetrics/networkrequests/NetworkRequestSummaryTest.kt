@@ -252,6 +252,30 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
+  fun `excludes a stalled failed request from throughput`() {
+    // A healthy 1 MB download inside the span of a request that received a few bytes and then
+    // stalled until the client gave up. Counting the stall would merge the two spans and report the
+    // whole window as busy, which reads as a connection many times slower than the real one.
+    val requests = listOf(
+      makeRequest(
+        responseBytesReceived = 1_000_000,
+        fetchStart = Date(0),
+        responseEnd = Date(1000)
+      ),
+      makeRequest(
+        statusCode = null,
+        errorDescription = "timeout",
+        isTimeout = true,
+        responseBytesReceived = 2000,
+        fetchStart = Date(0),
+        responseEnd = Date(30000)
+      )
+    )
+    val summary = NetworkRequestSummary.from(requests)
+    assertEquals(1_000_000.0, summary.throughputBytesPerSecond!!, 0.0001)
+  }
+
+  @Test
   fun `merges partially overlapping requests into one busy span`() {
     // 0-2s and 1-3s overlap, so busy time is 3s rather than the 4s of summed duration.
     val requests = listOf(
