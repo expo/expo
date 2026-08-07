@@ -150,6 +150,32 @@ class NetworkRequestInterceptorTest {
   }
 
   @Test
+  fun `records a body that breaks mid-transfer as failed`() {
+    // Headers arrive and the body is cut off partway. The interceptor's own catch only wraps
+    // `chain.proceed`, which has already returned by then, so without the listener's report this
+    // lands as a clean 200 and the broken transfer is counted as a success.
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setBody("x".repeat(1024))
+        .setSocketPolicy(SocketPolicy.DISCONNECT_DURING_RESPONSE_BODY)
+    )
+
+    var thrown = false
+    try {
+      val response = client.newCall(Request.Builder().url(server.url("/truncated")).build()).execute()
+      response.body!!.string()
+    } catch (_: Exception) {
+      thrown = true
+    }
+    assertTrue("the body read should fail", thrown)
+    assertEquals(1, monitor.recent.size)
+    val snapshot = monitor.recent.first()
+    assertNotNull("a broken transfer should carry an error", snapshot.errorDescription)
+    assertTrue("a broken transfer should count as failed", snapshot.isFailed)
+  }
+
+  @Test
   fun `does not flag a server error as a timeout`() {
     server.enqueue(MockResponse().setResponseCode(503))
     client.newCall(Request.Builder().url(server.url("/boom")).build()).execute().close()

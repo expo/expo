@@ -244,6 +244,11 @@ internal fun buildSnapshot(
     totalDuration = totalDuration
   )
 
+  // The interceptor only sees failures raised while `chain.proceed` runs. A response body that
+  // breaks after the headers arrive is reported to the event listener instead, and without folding
+  // that in here a truncated transfer would be recorded as the successful response it started as.
+  val failure = error ?: phases?.failure
+
   return NetworkRequest(
     id = id,
     url = originalRequest.url.toString(),
@@ -253,9 +258,9 @@ internal fun buildSnapshot(
     requestBytesSent = requestBytesSent,
     responseBytesReceived = responseBytesReceived,
     timings = timings,
-    errorDescription = error?.localizedMessage ?: error?.message,
+    errorDescription = failure?.localizedMessage ?: failure?.message,
     redirects = redirects,
-    isTimeout = error.isNetworkTimeout
+    isTimeout = failure.isNetworkTimeout
   )
 }
 
@@ -409,6 +414,9 @@ class NetworkRequestEventListener : EventListener() {
   }
 
   override fun callFailed(call: Call, ioe: IOException) {
+    // The interceptor's own `catch` only wraps `chain.proceed`, so a body that breaks after the
+    // headers arrive never reaches it. This is the only place that failure is reported.
+    builder.failure = ioe
     publish(call)
   }
 
@@ -442,7 +450,8 @@ class NetworkRequestEventListener : EventListener() {
     @Volatile var responseHeadersEnd: Date? = null,
     @Volatile var responseBodyEnd: Date? = null,
     @Volatile var requestBodyBytes: Long? = null,
-    @Volatile var responseBodyBytes: Long? = null
+    @Volatile var responseBodyBytes: Long? = null,
+    @Volatile var failure: IOException? = null
   ) {
     fun snapshot() = PhaseTimings(
       fetchStart, dnsStart, dnsEnd,
@@ -452,7 +461,8 @@ class NetworkRequestEventListener : EventListener() {
       requestBodyStart, requestBodyEnd,
       responseHeadersStart, responseHeadersEnd,
       responseBodyEnd,
-      requestBodyBytes, responseBodyBytes
+      requestBodyBytes, responseBodyBytes,
+      failure
     )
   }
 
@@ -466,6 +476,10 @@ class NetworkRequestEventListener : EventListener() {
    * `GzipSource`. They report the bytes actually on the wire, not the (gunzipped, app-layer)
    * view that the interceptor sees. `null` means the corresponding body-end callback never
    * fired (no request body / response not fully consumed / error before headers).
+   *
+   * `failure` carries the exception from `callFailed`. The interceptor's own `catch` only wraps
+   * `chain.proceed`, so a response body that breaks after the headers arrive is reported here and
+   * nowhere else.
    */
   data class PhaseTimings(
     val fetchStart: Date?,
@@ -483,7 +497,8 @@ class NetworkRequestEventListener : EventListener() {
     val responseHeadersEnd: Date?,
     val responseBodyEnd: Date?,
     val requestBodyBytes: Long?,
-    val responseBodyBytes: Long?
+    val responseBodyBytes: Long?,
+    val failure: IOException? = null
   )
 
   companion object {
