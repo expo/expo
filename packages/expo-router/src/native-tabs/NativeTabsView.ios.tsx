@@ -131,17 +131,20 @@ function Screen(props: InternalTabScreenProps) {
     normalRenderingMode !== selectedRenderingMode
   ) {
     console.warn(
-      'NativeTabs does not currently support rendering icons in different modes. ' +
-        'This issue may occur if you specify a color only for the standard or selected icon, ' +
-        'or if you explicitly set renderingMode.'
+      `NativeTabs does not currently support rendering icons in different modes, so the "${props.name}" tab renders both icons with the default icon's mode. ` +
+        'The modes disagree when an icon color applies to only one of the states — `tintColor`, `iconColor={{ selected }}`, or the `Icon` `selectedColor` prop — or when `renderingMode` is set for only one state. ' +
+        'To render both the same way, set a color for both states (for example `iconColor` rather than only `tintColor`), or set `renderingMode` on the `Icon`.'
     );
   }
 
   // The normal state wins, so the selected icon follows the mode the tab bar shows most of the time.
-  const renderingMode = normalRenderingMode ?? selectedRenderingMode;
+  const effectiveRenderingMode = normalRenderingMode ?? selectedRenderingMode;
 
-  const iosIcon = convertOptionsIconToScreensPropsIcon(shared.icon, renderingMode);
-  const iosSelectedIcon = convertOptionsIconToScreensPropsIcon(selectedIcon, renderingMode);
+  const iosIcon = convertOptionsIconToScreensPropsIcon(shared.icon, effectiveRenderingMode);
+  const iosSelectedIcon = convertOptionsIconToScreensPropsIcon(
+    selectedIcon,
+    effectiveRenderingMode
+  );
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);
