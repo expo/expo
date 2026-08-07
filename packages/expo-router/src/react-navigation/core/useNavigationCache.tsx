@@ -97,6 +97,7 @@ export function useNavigationCache<
       const action = typeof thunk === 'function' ? thunk(state) : thunk;
 
       if (action != null) {
+        // TODO(@ubax): https://github.com/expo/expo/pull/48618#discussion_r3735996416
         navigation.dispatch({ source: route.key, ...action });
       }
     };

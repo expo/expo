@@ -58,6 +58,7 @@ export function useVisibleTabsWithRedirect<
     () => visibleRoutes.findIndex((route) => route.key === focusedRouteKey),
     [focusedRouteKey, visibleRoutes]
   );
+  // TODO(@ubax): https://github.com/expo/expo/pull/48618#discussion_r3735996409
   const focusedIndex = visibleFocusedIndex;
 
   const redirectHref = useMemo(() => {
