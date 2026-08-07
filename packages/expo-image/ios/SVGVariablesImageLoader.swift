@@ -3,197 +3,158 @@
 internal import SDWebImage
 internal import SDWebImageSVGCoder
 
-/**
- A cancellation token for an in-flight variable-substituted SVG load.
- */
-internal final class SVGVariablesLoadTask: @unchecked Sendable {
-  private let lock = NSLock()
-  private var cancelled = false
-  private var downloadToken: SDWebImageDownloadToken?
+/// Loads SVG sources that have `svgVariables` set.
+///
+/// This deliberately sidesteps `SDWebImageManager`. The manager caches the image it decodes, and with
+/// substitution happening at decode time that would put a variable-substituted document into the
+/// shared cache — including under the un-substituted cache key, via the disk-hit write-back in
+/// `SDWebImageManager`. A source rendered with one set of variables could then be served for another.
+///
+/// Instead only the original document is cached, on disk under the same key a normal load would use,
+/// so variants share one cached download. Substitution and parsing happen per view. Nothing derived is
+/// cached anywhere, which is also why changing `svgVariables` cannot serve a stale variant.
+///
+/// This is a `Sendable` class rather than an `actor` on purpose. It holds no mutable state, and an
+/// actor would serialize loads that have no reason to wait for each other.
+internal final class SVGVariablesImageLoader: Sendable {
+  static let shared = SVGVariablesImageLoader()
 
-  var isCancelled: Bool {
-    lock.lock()
-    defer { lock.unlock() }
-    return cancelled
+  /// The outcome of one load. The data is the *original* document, which is what the cache holds.
+  struct Result {
+    let image: UIImage
+    let data: Data
+    let cacheType: SDImageCacheType
   }
 
-  fileprivate func attach(_ token: SDWebImageDownloadToken?) {
+  /// Resolves the original SVG for a source, substitutes the variables into it and parses the result
+  /// as a vector image.
+  ///
+  /// Both the parsing and any download happen off the main actor. Cancelling the surrounding task
+  /// cancels an in-flight download.
+  func image(
+    for url: URL,
+    cacheKey: String,
+    variables: [String: String],
+    scale: Double,
+    context: SDWebImageContext,
+    progress: SDImageLoaderProgressBlock?
+  ) async throws -> Result {
+    let (data, cacheType) = try await originalDocument(
+      for: url,
+      cacheKey: cacheKey,
+      context: context,
+      progress: progress
+    )
+    try Task.checkCancellation()
+    return Result(image: try parse(data, variables: variables, scale: scale), data: data, cacheType: cacheType)
+  }
+
+  // MARK: - Fetching the original document
+
+  private func originalDocument(
+    for url: URL,
+    cacheKey: String,
+    context: SDWebImageContext,
+    progress: SDImageLoaderProgressBlock?
+  ) async throws -> (Data, SDImageCacheType) {
+    // Local files are already on disk — there is nothing to cache and nothing to download.
+    if url.isFileURL {
+      return (try Data(contentsOf: url), .none)
+    }
+    if let cached = await diskDocument(forKey: cacheKey) {
+      return (cached, .disk)
+    }
+    let downloaded = try await download(url, context: context, progress: progress)
+    // Cache the original document, never the substituted one.
+    SDImageCache.shared.storeImageData(toDisk: downloaded, forKey: cacheKey)
+    return (downloaded, .none)
+  }
+
+  private func diskDocument(forKey key: String) async -> Data? {
+    await withCheckedContinuation { continuation in
+      SDImageCache.shared.diskImageDataQuery(forKey: key) { data in
+        continuation.resume(returning: data)
+      }
+    }
+  }
+
+  private func download(
+    _ url: URL,
+    context: SDWebImageContext,
+    progress: SDImageLoaderProgressBlock?
+  ) async throws -> Data {
+    let token = DownloadToken()
+
+    return try await withTaskCancellationHandler {
+      try await withCheckedThrowingContinuation { continuation in
+        // The downloader gives us the untouched bytes along with headers, cookies and progress
+        // handling. It also decodes the data, which we ignore — the document we want is the
+        // substituted one.
+        token.attach(
+          SDWebImageDownloader.shared.downloadImage(
+            with: url,
+            options: [],
+            context: context,
+            progress: progress
+          ) { _, data, error, finished in
+            guard finished else {
+              return
+            }
+            if let data {
+              continuation.resume(returning: data)
+            } else {
+              continuation.resume(throwing: error ?? SVGVariablesLoadingFailed())
+            }
+          }
+        )
+      }
+    } onCancel: {
+      token.cancel()
+    }
+  }
+
+  // MARK: - Parsing
+
+  /// Substitutes the variables and parses the document. `nonisolated` and synchronous, so it runs on
+  /// the caller's cooperative thread rather than hopping back to the main actor.
+  private func parse(_ data: Data, variables: [String: String], scale: Double) throws -> UIImage {
+    let substituted = SVGVariables.substitute(in: data, variables: variables)
+
+    // No thumbnail size is passed on purpose. That is what makes the SVG coder take its vector
+    // branch instead of rasterizing the document at the view's current size.
+    guard let image = SDImageSVGCoder.shared.decodedImage(with: substituted, options: [
+      .decodeScaleFactor: scale
+    ]) else {
+      throw SVGVariablesDecodingFailed()
+    }
+    return image
+  }
+}
+
+/// Bridges `SDWebImageDownloadToken` to task cancellation. The token only exists once the download
+/// has started, but `withTaskCancellationHandler` needs something to cancel before that, so this
+/// holds the gap and cancels immediately if the task was already cancelled.
+private final class DownloadToken: @unchecked Sendable {
+  private let lock = NSLock()
+  private var token: SDWebImageDownloadToken?
+  private var isCancelled = false
+
+  func attach(_ newToken: SDWebImageDownloadToken?) {
     lock.lock()
     defer { lock.unlock() }
-    if cancelled {
-      token?.cancel()
+    if isCancelled {
+      newToken?.cancel()
     } else {
-      downloadToken = token
+      token = newToken
     }
   }
 
   func cancel() {
     lock.lock()
     defer { lock.unlock() }
-    cancelled = true
-    downloadToken?.cancel()
-    downloadToken = nil
-  }
-}
-
-/**
- Loads SVG sources that have `svgVariables` set.
-
- This deliberately sidesteps `SDWebImageManager`. The manager caches the image it decodes, and with
- substitution happening at decode time that would put a variable-substituted document into the
- shared cache — including under the un-substituted cache key, via the disk-hit write-back in
- `SDWebImageManager`. A source rendered with one set of variables could then be served for another.
-
- Instead only the original document is cached, on disk under the same key a normal load would use,
- so variants share one cached download. Substitution and parsing happen per view. Nothing derived is
- cached anywhere, which is also why changing `svgVariables` cannot serve a stale variant.
- */
-internal final class SVGVariablesImageLoader: Sendable {
-  static let shared = SVGVariablesImageLoader()
-
-  private let queue = DispatchQueue(
-    label: "dev.expo.modules.image.svgVariables",
-    qos: .userInitiated,
-    attributes: .concurrent
-  )
-
-  typealias Completion = @Sendable (UIImage?, Data?, Error?, SDImageCacheType) -> Void
-
-  /**
-   Everything one load needs, boxed so it can be handed between SDWebImage's callback queues and
-   ours as a single value.
-
-   The conformance is unchecked because `context` holds `Any` values and `progress` is a plain
-   closure, neither of which Swift can prove safe to transfer. It holds in practice: the box is
-   created on the main queue, only ever read afterwards, and both callbacks that receive it —
-   SDWebImage's disk query and its downloader — deliver on the main queue.
-   */
-  private struct Request: @unchecked Sendable {
-    let url: URL
-    let cacheKey: String
-    let variables: [String: String]
-    let scale: Double
-    let context: SDWebImageContext
-    let task: SVGVariablesLoadTask
-    let progress: SDImageLoaderProgressBlock?
-    let completion: Completion
-  }
-
-  /**
-   Resolves the original SVG for a source, substitutes the variables into it and decodes the result
-   as a vector image. The completion is always called on the main queue, and is skipped entirely when
-   the task has been cancelled.
-   */
-  // swiftlint:disable:next function_parameter_count
-  func load(
-    url: URL,
-    cacheKey: String,
-    variables: [String: String],
-    scale: Double,
-    context: SDWebImageContext,
-    task: SVGVariablesLoadTask,
-    progress: SDImageLoaderProgressBlock?,
-    completion: @escaping Completion
-  ) {
-    let request = Request(
-      url: url,
-      cacheKey: cacheKey,
-      variables: variables,
-      scale: scale,
-      context: context,
-      task: task,
-      progress: progress,
-      completion: completion
-    )
-
-    // Local files are already on disk — there is nothing to cache and nothing to download.
-    if url.isFileURL {
-      queue.async {
-        guard !request.task.isCancelled else {
-          return
-        }
-        do {
-          self.finish(data: try Data(contentsOf: request.url), cacheType: .none, request: request)
-        } catch {
-          self.fail(with: error, request: request)
-        }
-      }
-      return
-    }
-
-    // Always called on the main queue, so the work below is hopped onto our own.
-    SDImageCache.shared.diskImageDataQuery(forKey: cacheKey) { data in
-      guard !request.task.isCancelled else {
-        return
-      }
-      guard let data else {
-        self.download(request: request)
-        return
-      }
-      self.queue.async {
-        self.finish(data: data, cacheType: .disk, request: request)
-      }
-    }
-  }
-
-  // MARK: - Private
-
-  private func download(request: Request) {
-    // The downloader gives us the untouched bytes along with headers, cookies and progress handling.
-    // It also decodes the data, which we ignore — the document we want is the substituted one.
-    let token = SDWebImageDownloader.shared.downloadImage(
-      with: request.url,
-      options: [],
-      context: request.context,
-      progress: request.progress
-    ) { _, data, error, finished in
-      guard finished, !request.task.isCancelled else {
-        return
-      }
-      guard let data else {
-        self.fail(with: error ?? SVGVariablesLoadingFailed(), request: request)
-        return
-      }
-      // Cache the original document, never the substituted one.
-      SDImageCache.shared.storeImageData(toDisk: data, forKey: request.cacheKey)
-
-      self.queue.async {
-        self.finish(data: data, cacheType: .none, request: request)
-      }
-    }
-    request.task.attach(token)
-  }
-
-  /// Substitutes and decodes. Must be called off the main queue.
-  private func finish(data: Data, cacheType: SDImageCacheType, request: Request) {
-    let substituted = SVGVariables.substitute(in: data, variables: request.variables)
-
-    // No thumbnail size is passed on purpose. That is what makes the SVG coder take its vector
-    // branch instead of rasterizing the document at the view's current size.
-    let image = SDImageSVGCoder.shared.decodedImage(with: substituted, options: [
-      .decodeScaleFactor: request.scale
-    ])
-
-    DispatchQueue.main.async {
-      guard !request.task.isCancelled else {
-        return
-      }
-      if let image {
-        // The original data is reported, not the substituted document — it is what the cache holds.
-        request.completion(image, data, nil, cacheType)
-      } else {
-        request.completion(nil, data, SVGVariablesDecodingFailed(), cacheType)
-      }
-    }
-  }
-
-  private func fail(with error: Error, request: Request) {
-    DispatchQueue.main.async {
-      guard !request.task.isCancelled else {
-        return
-      }
-      request.completion(nil, nil, error, .none)
-    }
+    isCancelled = true
+    token?.cancel()
+    token = nil
   }
 }
 
@@ -205,6 +166,6 @@ internal struct SVGVariablesLoadingFailed: LocalizedError {
 
 internal struct SVGVariablesDecodingFailed: LocalizedError {
   var errorDescription: String? {
-    "Failed to decode the SVG document after substituting its variables. The substituted document may not be valid SVG — check the values passed to `svgVariables`."
+    "Failed to parse the SVG document after substituting its variables. The substituted document may not be valid SVG — check the values passed to `svgVariables`."
   }
 }

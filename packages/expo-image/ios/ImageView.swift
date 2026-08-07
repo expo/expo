@@ -45,7 +45,7 @@ public final class ImageView: ExpoView {
 
   var pendingOperation: SDWebImageCombinedOperation?
 
-  var pendingSVGVariablesTask: SVGVariablesLoadTask?
+  var pendingSVGVariablesTask: Task<Void, Never>?
 
   var contentFit: ContentFit = .cover
 
@@ -57,14 +57,12 @@ public final class ImageView: ExpoView {
 
   var imageTintColor: UIColor?
 
-  /**
-   Values for the CSS custom properties — `var(--name)` — used by an SVG source. They are substituted
-   into the document before it is parsed, so the image stays a vector and different parts of one
-   document can be given different values.
-
-   Not limited to colors: anything a custom property can stand in for, such as `stroke-width` or
-   `opacity`, works the same way.
-   */
+  /// Values for the CSS custom properties — `var(--name)` — used by an SVG source. They are
+  /// substituted into the document before it is parsed, so the image stays a vector and different
+  /// parts of one document can be given different values.
+  ///
+  /// Not limited to colors: anything a custom property can stand in for, such as `stroke-width` or
+  /// `opacity`, works the same way.
   var svgVariables: [String: String] = [:]
 
   var cachePolicy: ImageCachePolicy = .disk
@@ -237,33 +235,48 @@ public final class ImageView: ExpoView {
 
   // MARK: - Loading
 
-  /**
-   Loads an SVG source whose variables need substituting. Only the original document is cached, so
-   the substituted one is rebuilt per view — see `SVGVariablesImageLoader`.
-   */
+  /// Loads an SVG source whose variables need substituting. Only the original document is cached, so
+  /// the substituted one is rebuilt per view — see `SVGVariablesImageLoader`.
   private func loadSVGWithVariables(from source: ImageSource, url: URL, context: SDWebImageContext) {
     onLoadStart([:])
 
-    let task = SVGVariablesLoadTask()
-    pendingSVGVariablesTask = task
+    let cacheKey = imageManager.cacheKey(for: url, context: context) ?? url.absoluteString
+    let variables = svgVariables
+    let scale = source.scale
 
-    SVGVariablesImageLoader.shared.load(
-      url: url,
-      cacheKey: imageManager.cacheKey(for: url, context: context) ?? url.absoluteString,
-      variables: svgVariables,
-      scale: source.scale,
-      context: context,
-      task: task,
-      progress: imageLoadProgress(_:_:_:)
-    ) { [weak self] image, data, error, cacheType in
-      // The loader always completes on the main queue, so this is already the view's actor.
-      MainActor.assumeIsolated {
-        // A newer load may have started while this one was in flight.
-        guard let self, self.pendingSVGVariablesTask === task else {
+    // The view is main-actor isolated, so the task body is too — no hopping back to apply the result.
+    pendingSVGVariablesTask = Task { [weak self] in
+      guard let self else {
+        return
+      }
+      do {
+        let result = try await SVGVariablesImageLoader.shared.image(
+          for: url,
+          cacheKey: cacheKey,
+          variables: variables,
+          scale: scale,
+          context: context,
+          // SDWebImage reports progress from its download queue, so hop back before touching the view.
+          progress: { received, expected, progressUrl in
+            Task { @MainActor [weak self] in
+              self?.imageLoadProgress(received, expected, progressUrl)
+            }
+          }
+        )
+        // A newer load may have superseded this one after the last suspension point.
+        guard !Task.isCancelled else {
           return
         }
         self.pendingSVGVariablesTask = nil
-        self.imageLoadCompleted(image, data, error, cacheType, true, url)
+        self.imageLoadCompleted(result.image, result.data, nil, result.cacheType, true, url)
+      } catch is CancellationError {
+        // A newer load replaced this one.
+      } catch {
+        guard !Task.isCancelled else {
+          return
+        }
+        self.pendingSVGVariablesTask = nil
+        self.imageLoadCompleted(nil, nil, error, .none, true, url)
       }
     }
   }
