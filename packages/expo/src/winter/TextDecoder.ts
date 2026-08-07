@@ -48,8 +48,7 @@ const ASCII_BATCH_SIZE = 8192;
  * consumed.
  */
 function decodeAsciiPrefix(bytes: Uint8Array): string {
-  // Hermes' optimizer won't hoist this property load, and re-reading it per byte costs 4x.
-  const length = bytes.length;
+  const length = bytes.length; // Hermes won't hoist this: typed array `.length` costs 4x per byte.
   let end = 0;
   while (end < length && bytes[end]! < 0x80) {
     end += 1;

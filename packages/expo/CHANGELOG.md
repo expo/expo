@@ -24,7 +24,7 @@
 
 ### 💡 Others
 
-- Decode ASCII bytes in bulk in `TextDecoder`, speeding up streamed text such as SSE, NDJSON, and RSC payloads by roughly 9x on Hermes. ([#XXXXX](https://github.com/expo/expo/pull/XXXXX) by [@Ignigena](https://github.com/Ignigena))
+- Decode ASCII bytes in bulk in `TextDecoder`, speeding up streamed text such as SSE, NDJSON, and RSC payloads by roughly 8x on Hermes. ([#48633](https://github.com/expo/expo/pull/48633) by [@Ignigena](https://github.com/Ignigena))
 - [Android] `ExpoReactHostFactory` now passes host handlers' `DevSupportManagerFactory` to `ReactHostImpl`. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build by guarding the `bundleConfiguration` override, which requires react-native 0.84+. ([#48494](https://github.com/expo/expo/pull/48494) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - Restore RCTHostRuntimeDelegate conformance for react-native-macos ([#46420](https://github.com/expo/expo/pull/46420) by [@gabrieldonadel](https://github.com/gabrieldonadel))
