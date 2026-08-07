@@ -42,15 +42,6 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// string rather than carrying `NSError` so the type stays `Sendable` and serializable.
   public let errorDescription: String?
 
-  /// Whether the request failed because the network stalled or went away, as opposed to reaching
-  /// the server and getting an error back.
-  ///
-  /// Classified at capture time from the underlying error, because `errorDescription` is a
-  /// localized string and can't be matched on afterwards. A 5xx response is a failure but not a
-  /// timeout: the server answered. Deliberate cancellation isn't one either, since the app
-  /// abandoned the request and that says nothing about the connection.
-  public var isTimeout: Bool = false
-
   /// Ordered list of redirect hops that preceded the final response. Empty when the task returned
   /// directly. Each entry describes one hop: `fromUrl` is the URL that returned the redirect,
   /// `statusCode` is the 3xx code it returned, and `toUrl` is where the redirect pointed. For a
@@ -242,44 +233,7 @@ extension NetworkRequest {
       responseBytesReceived: responseBytesReceived,
       timings: timings,
       errorDescription: error.map { ($0 as NSError).localizedDescription },
-      isTimeout: isNetworkTimeout(error),
       redirects: redirects
     )
-  }
-}
-
-/// Whether a `URLSession` error means the network stalled or went away, rather than the server
-/// answering with something we didn't like.
-///
-/// Three conditions count, and `NetworkRequestInterceptor.isNetworkTimeout` on Android matches the
-/// same three so the `timedOut` metric describes one population on both platforms:
-///
-/// - The request stalled until the client gave up (`NSURLErrorTimedOut`).
-/// - The connection dropped mid-request (`NSURLErrorNetworkConnectionLost`). This is what walking
-///   into an elevator actually produces.
-/// - The device couldn't reach the network at all, whether that surfaced as no connectivity or as
-///   a name that wouldn't resolve. DNS failure is what losing connectivity looks like from here.
-///
-/// `NSURLErrorCancelled` does not count: the app abandoned the request, which says nothing about
-/// the connection. Neither does a TLS failure, which is a certificate or trust problem rather than
-/// an absent network.
-private func isNetworkTimeout(_ error: Error?) -> Bool {
-  guard let error else {
-    return false
-  }
-  let nsError = error as NSError
-  guard nsError.domain == NSURLErrorDomain else {
-    return false
-  }
-  switch nsError.code {
-  case NSURLErrorTimedOut,
-    NSURLErrorNetworkConnectionLost,
-    NSURLErrorNotConnectedToInternet,
-    NSURLErrorCannotFindHost,
-    NSURLErrorDNSLookupFailed,
-    NSURLErrorCannotConnectToHost:
-    return true
-  default:
-    return false
   }
 }

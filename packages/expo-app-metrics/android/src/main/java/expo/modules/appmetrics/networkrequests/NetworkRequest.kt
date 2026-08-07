@@ -53,17 +53,7 @@ data class NetworkRequest(
    * directly. Each entry's `fromUrl` is the URL that returned the redirect, `toUrl` is where the
    * redirect pointed, and `statusCode` is the 3xx code that caused the hop.
    */
-  val redirects: List<Redirect>,
-
-  /**
-   * Whether the request failed because the network stalled or went away, as opposed to reaching
-   * the server and getting an error back.
-   *
-   * Classified at capture time from the thrown exception, because `errorDescription` is a localized
-   * string and can't be matched on afterwards. A 5xx response is a failure but not a timeout: the
-   * server answered.
-   */
-  val isTimeout: Boolean = false
+  val redirects: List<Redirect>
 ) {
   data class Redirect(
     /** The URL that returned the redirect. */

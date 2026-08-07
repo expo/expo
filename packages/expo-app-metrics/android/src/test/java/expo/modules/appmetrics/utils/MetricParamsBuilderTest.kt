@@ -197,52 +197,6 @@ class MetricParamsBuilderTest {
   }
 
   @Test
-  fun `emits the timeout count alongside the failure count`() {
-    val summary = NetworkRequestSummary(
-      count = 3,
-      failed = 2,
-      timedOut = 1,
-      bytesReceived = 0,
-      bytesSent = 0,
-      totalDuration = 30.2,
-      slowest = NetworkRequestSummary.SlowestRequest(
-        host = "slow.expo.dev",
-        duration = 30.0,
-        statusCode = 200,
-        timeToFirstByte = null,
-        bytesReceived = null
-      )
-    )
-    val params = MetricParamsBuilder.build(networkRequests = summary)
-    assertEquals(2, params["expo.network.requests.failed"])
-    assertEquals(1, params["expo.network.requests.timedOut"])
-  }
-
-  @Test
-  fun `emits a zero timeout count so its absence is not ambiguous`() {
-    // Unlike the optional latency fields, a count of zero is a real measurement: we saw requests
-    // and none of them timed out. Omitting it would make "no timeouts" and "not measured" look
-    // the same.
-    val summary = NetworkRequestSummary(
-      count = 1,
-      failed = 0,
-      timedOut = 0,
-      bytesReceived = 10,
-      bytesSent = 10,
-      totalDuration = 0.1,
-      slowest = NetworkRequestSummary.SlowestRequest(
-        host = "expo.dev",
-        duration = 0.1,
-        statusCode = 200,
-        timeToFirstByte = null,
-        bytesReceived = null
-      )
-    )
-    val params = MetricParamsBuilder.build(networkRequests = summary)
-    assertEquals(0, params["expo.network.requests.timedOut"])
-  }
-
-  @Test
   fun `emits the derived latency and throughput keys when the summary has them`() {
     val summary = NetworkRequestSummary(
       count = 4,
