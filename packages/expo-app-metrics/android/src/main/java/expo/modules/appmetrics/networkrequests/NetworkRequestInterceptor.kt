@@ -285,7 +285,6 @@ private fun Response.responseBodyByteCount(
   return body?.contentLength()?.takeIf { it >= 0 }
 }
 
-
 /**
  * Walks `Response.priorResponse()` chronologically and emits one `Redirect` per hop. The chain
  * is naturally redirect-only — OkHttp doesn't surface intermediate protocol upgrades through

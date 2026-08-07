@@ -287,7 +287,7 @@ struct NetworkRequestSummaryTests {
     let summary = NetworkRequestSummary.from([])
     #expect(summary.isEmpty)
     #expect(summary.count == 0)
-    #expect(summary.slowest?.host == nil)
+    #expect(summary.slowest == nil)
   }
 
   @Test
@@ -414,9 +414,9 @@ struct NetworkRequestSummaryTests {
       error: "timed out"
     )
     let summary = NetworkRequestSummary.from([request])
-    #expect(summary.slowest?.duration == nil)
-    #expect(summary.slowest?.host == nil)
-    #expect(summary.slowest?.timeToFirstByte == nil)
+    // The whole group is absent, not present with nil fields: asserting through `slowest?` would
+    // pass either way.
+    #expect(summary.slowest == nil)
     #expect(summary.count == 1)
   }
 

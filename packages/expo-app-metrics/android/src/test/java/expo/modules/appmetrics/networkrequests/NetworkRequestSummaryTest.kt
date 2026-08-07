@@ -15,8 +15,7 @@ class NetworkRequestSummaryTest {
     assertEquals(0L, summary.bytesReceived)
     assertEquals(0L, summary.bytesSent)
     assertEquals(0.0, summary.totalDuration, 0.0001)
-    assertNull(summary.slowest?.duration)
-    assertNull(summary.slowest?.host)
+    assertNull(summary.slowest)
     assertEquals(true, summary.isEmpty)
   }
 
