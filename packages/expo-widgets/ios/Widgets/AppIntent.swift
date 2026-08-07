@@ -1,4 +1,5 @@
 import AppIntents
+import ActivityKit
 import WidgetKit
 
 struct WidgetReload: AppIntent {
@@ -114,13 +115,50 @@ struct LiveActivityUserInteraction: LiveActivityIntent {
   @Parameter(title: "target")
   var target: String?
 
+  @Parameter(title: "environmentString")
+  var environmentString: String?
+
   init() {}
-  init(source: String?, target: String?) {
+  init(source: String?, target: String?, environmentString: String?) {
     self.source = source
     self.target = target
+    self.environmentString = environmentString
   }
 
   func perform() async throws -> some IntentResult {
+    if #available(iOS 16.1, *),
+       let source,
+       let target,
+       let activity = Activity<LiveActivityAttributes>.activities.first(where: { $0.id == source }) {
+      let currentState = activity.content.state
+      let layout = WidgetsStorage.getString(
+        forKey: "__expo_widgets_live_activity_\(currentState.name)_layout"
+      ) ?? ""
+      let propsData = currentState.props?.data(using: .utf8)
+      var props = propsData.flatMap {
+        try? JSONSerialization.jsonObject(with: $0) as? [String: Any]
+      } ?? [:]
+      if let interactionState = WidgetsStorage.getLiveActivityInteractionState(forActivityID: source) {
+        props.merge(interactionState) { _, localValue in localValue }
+      }
+
+      let environmentData = environmentString?.data(using: .utf8)
+      var environment = environmentData.flatMap {
+        try? JSONSerialization.jsonObject(with: $0) as? [String: Any]
+      } ?? [:]
+      environment["target"] = target
+
+      switch evaluateWidgetButtonPress(layout: layout, props: props, environment: environment) {
+      case .success(let result):
+        if let result {
+          WidgetsStorage.updateLiveActivityInteractionState(result, forActivityID: source)
+          WidgetCenter.shared.reloadAllTimelines()
+        }
+      case .failure(let error):
+        print("[ExpoWidgets] Live Activity button press evaluation failed: \(error.message)")
+      }
+    }
+
     WidgetsEvents.shared.sendNotification(type: .userEvent, data: [
       "source": source as Any,
       "target": target as Any,

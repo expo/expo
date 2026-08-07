@@ -76,13 +76,22 @@ public func evaluateLayout(
   }
 }
 
-func getLiveActivityNodes(forName name: String, props: String? = nil, environment: [String: Any]) -> [String: Any] {
+func getLiveActivityNodes(
+  forName name: String,
+  activityID: String,
+  props: String? = nil,
+  environment: [String: Any]
+) -> [String: Any] {
   let layout = WidgetsStorage.getString(forKey: "__expo_widgets_live_activity_\(name)_layout") ?? ""
-  let propsDict = props.flatMap { props in
+  let remoteProps = props.flatMap { props in
     props.data(using: .utf8).flatMap {
       try? JSONSerialization.jsonObject(with: $0, options: []) as? [String: Any]
     }
   }
+  let interactionState = WidgetsStorage.getLiveActivityInteractionState(forActivityID: activityID)
+  let propsDict = interactionState.map { state in
+    return (remoteProps ?? [:]).merging(state) { _, localValue in localValue }
+  } ?? remoteProps
 
   switch evaluateWidgetLayout(layout: layout, props: propsDict, environment: environment) {
   case .success(let result):
