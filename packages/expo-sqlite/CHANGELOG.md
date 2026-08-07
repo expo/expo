@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for FTS3, FTS4 and FTS5 on web
+
 ### 🐛 Bug fixes
 
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
