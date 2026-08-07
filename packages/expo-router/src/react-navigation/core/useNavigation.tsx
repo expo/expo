@@ -2,7 +2,6 @@
 import { use } from 'react';
 
 import type { NavigationState } from '../routers';
-import { NavigationContainerRefContext } from './NavigationContainerRefContext';
 import { NavigationContext } from './NavigationContext';
 import type { NavigationProp } from './types';
 
@@ -16,15 +15,14 @@ export function useNavigation<
     getState(): NavigationState | undefined;
   },
 >(): T {
-  const root = use(NavigationContainerRefContext);
   const navigation = use(NavigationContext);
 
-  if (navigation === undefined && root === undefined) {
+  if (navigation === undefined) {
     throw new Error(
-      "Couldn't find a navigation object. Is your component inside NavigationContainer?"
+      "Couldn't find a navigation object. This is most likely an issue in expo-router."
     );
   }
 
   // FIXME: Figure out a better way to do this
-  return (navigation ?? root) as unknown as T;
+  return navigation as unknown as T;
 }
