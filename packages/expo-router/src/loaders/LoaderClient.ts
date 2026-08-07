@@ -1,11 +1,11 @@
-type LoaderFetcher = (path: string) => Promise<unknown>;
+type LoaderFetcher = (path: string, requestInit: RequestInit) => Promise<unknown>;
 export type LoaderResult = { data: unknown } | { error: unknown };
 type LoaderSubscriber = (result: LoaderResult, isCurrentSource: boolean) => void;
 export type LoaderUnsubscribe = (onSourceTeardown?: () => void) => void;
 
 interface LoaderSource {
   subscribers: Set<LoaderSubscriber>;
-  isFetching: boolean;
+  controller: AbortController | null;
   onTeardown?: () => void;
 }
 
@@ -18,6 +18,7 @@ interface LoaderSource {
 export class LoaderClient {
   private active = new Map<string, LoaderSource>();
   private fetchers = new Map<string, LoaderFetcher>();
+  private loaderPathByRouteKey = new Map<string, string>();
   private version = 0;
   private listeners = new Set<() => void>();
 
@@ -44,7 +45,7 @@ export class LoaderClient {
   subscribeLoader(path: string, callback: LoaderSubscriber = () => {}): LoaderUnsubscribe {
     let source = this.active.get(path);
     if (!source) {
-      source = { subscribers: new Set(), isFetching: false };
+      source = { subscribers: new Set(), controller: null };
       this.active.set(path, source);
     }
     source.onTeardown = undefined;
@@ -67,18 +68,69 @@ export class LoaderClient {
     this.fetchers.set(path, fetcher);
   }
 
+  trackRoute(path: string, routeKey: string): string | undefined {
+    const previousPath = this.loaderPathByRouteKey.get(routeKey);
+    if (previousPath === path) {
+      return;
+    }
+
+    this.loaderPathByRouteKey.set(routeKey, path);
+    if (previousPath === undefined) {
+      return;
+    }
+    for (const ownedPath of this.loaderPathByRouteKey.values()) {
+      if (ownedPath === previousPath) {
+        return;
+      }
+    }
+    return previousPath;
+  }
+
+  sweepRouteKeys(presentKeys: ReadonlySet<string>): string[] {
+    const removedPaths = new Set<string>();
+    for (const [routeKey, path] of this.loaderPathByRouteKey) {
+      if (presentKeys.has(routeKey)) {
+        continue;
+      }
+
+      this.loaderPathByRouteKey.delete(routeKey);
+      removedPaths.add(path);
+    }
+    for (const ownedPath of this.loaderPathByRouteKey.values()) {
+      removedPaths.delete(ownedPath);
+    }
+    return [...removedPaths];
+  }
+
+  hasSubscribers(path: string): boolean {
+    return (this.active.get(path)?.subscribers.size ?? 0) > 0;
+  }
+
+  abort(path: string) {
+    const source = this.active.get(path);
+    if (!source) {
+      return;
+    }
+
+    this.active.delete(path);
+    const controller = source.controller;
+    source.controller = null;
+    controller?.abort();
+  }
+
   execute(path: string, fetcher?: LoaderFetcher) {
     if (fetcher) {
       this.fetchers.set(path, fetcher);
     }
     const source = this.active.get(path);
     const fetcherFn = this.fetchers.get(path);
-    if (!source || !fetcherFn || source.isFetching) {
+    if (!source || !fetcherFn || source.controller) {
       return;
     }
 
-    source.isFetching = true;
-    fetcherFn(path).then(
+    const controller = new AbortController();
+    source.controller = controller;
+    fetcherFn(path, { signal: controller.signal }).then(
       (data) => this.settle(path, source, { data }),
       (error) =>
         this.settle(path, source, {
@@ -103,6 +155,7 @@ export class LoaderClient {
   clear() {
     this.active.clear();
     this.fetchers.clear();
+    this.loaderPathByRouteKey.clear();
   }
 
   private scheduleTeardown(path: string, source: LoaderSource, onSourceTeardown?: () => void) {
@@ -114,6 +167,9 @@ export class LoaderClient {
       ) {
         this.active.delete(path);
         source.onTeardown = undefined;
+        const controller = source.controller;
+        source.controller = null;
+        controller?.abort();
         onSourceTeardown?.();
       }
     };
@@ -122,7 +178,7 @@ export class LoaderClient {
   }
 
   private settle(path: string, source: LoaderSource, result: LoaderResult) {
-    source.isFetching = false;
+    source.controller = null;
     const isCurrentSource = this.active.get(path) === source;
     for (const subscriber of source.subscribers) {
       subscriber(result, isCurrentSource);

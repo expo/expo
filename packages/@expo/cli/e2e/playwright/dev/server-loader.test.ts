@@ -172,6 +172,39 @@ for (const outputMode of outputModes) {
       await expect(suspenseFallback).not.toBeVisible();
     });
 
+    test('abandons a suspended load on Back without abandoning a covered route', async ({
+      page,
+    }) => {
+      const slowRequests: string[] = [];
+      page.on('request', (request) => {
+        if (request.url().includes('/_expo/loaders/slow')) {
+          slowRequests.push(request.url());
+        }
+      });
+
+      await page.goto(expoStart.url.href);
+      await page.click('a[href="/slow"]');
+      await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
+      await expect.poll(() => slowRequests).toHaveLength(1);
+
+      await page.goBack();
+      await expect(page).toHaveURL(expoStart.url.href);
+
+      await page.click('a[href="/slow"]');
+      await expect(page.locator('[data-testid="suspense-fallback"]')).toBeVisible();
+      await expect.poll(() => slowRequests).toHaveLength(2);
+
+      await page.click('a[href="/second"]');
+      await expect(page).toHaveURL(new URL('/second', expoStart.url).href);
+      await page.waitForSelector('[data-testid="loader-result"]');
+
+      await page.goBack();
+      await expect(page).toHaveURL(new URL('/slow', expoStart.url).href);
+      await page.waitForSelector('[data-testid="loader-result"]');
+
+      expect(slowRequests).toHaveLength(2);
+    });
+
     test('navigates from route without loader to route with loader', async ({ page }) => {
       const pageErrors = pageCollectErrors(page);
 

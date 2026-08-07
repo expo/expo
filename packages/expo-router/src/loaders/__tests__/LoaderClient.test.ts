@@ -1,6 +1,7 @@
 import { LoaderClient } from '../LoaderClient';
 
 const tick = () => Promise.resolve();
+const getSignal = (requestInit: RequestInit) => requestInit.signal as AbortSignal;
 
 describe(LoaderClient, () => {
   describe('notify', () => {
@@ -40,6 +41,26 @@ describe(LoaderClient, () => {
         ['second', { data: 'v1' }, true],
         'notify',
       ]);
+    });
+
+    it('passes a distinct signal to each execution generation', async () => {
+      const client = new LoaderClient();
+      const signals: AbortSignal[] = [];
+      const fetcher = jest.fn(async (_path: string, requestInit: RequestInit) => {
+        const signal = getSignal(requestInit);
+        signals.push(signal);
+        return signals.length;
+      });
+      client.subscribeLoader('/p');
+
+      client.execute('/p', fetcher);
+      await tick();
+      client.execute('/p');
+      await tick();
+
+      expect(signals).toHaveLength(2);
+      expect(signals[0]).not.toBe(signals[1]);
+      expect(signals.every((signal) => !signal.aborted)).toBe(true);
     });
 
     it('does not execute a fetcher for a path without a source', () => {
@@ -90,6 +111,106 @@ describe(LoaderClient, () => {
   });
 
   describe('teardown', () => {
+    it('aborts an in-flight execution after confirmed last-subscriber teardown', async () => {
+      const client = new LoaderClient();
+      let signal!: AbortSignal;
+      const unsubscribe = client.subscribeLoader('/p');
+      client.execute('/p', (_path, requestInit) => {
+        const executionSignal = getSignal(requestInit);
+        signal = executionSignal;
+        return new Promise((_, reject) => {
+          executionSignal.addEventListener('abort', () => reject(executionSignal.reason));
+        });
+      });
+
+      unsubscribe();
+      expect(signal.aborted).toBe(false);
+      await tick();
+
+      expect(signal.aborted).toBe(true);
+    });
+
+    it('does not abort while a sibling subscriber remains', async () => {
+      const client = new LoaderClient();
+      let signal!: AbortSignal;
+      const first = client.subscribeLoader('/p');
+      client.subscribeLoader('/p');
+      client.execute('/p', (_path, requestInit) => {
+        const executionSignal = getSignal(requestInit);
+        signal = executionSignal;
+        return new Promise(() => {});
+      });
+
+      first();
+      await tick();
+
+      expect(signal.aborted).toBe(false);
+    });
+
+    it('does not abort when a subscriber remounts within the teardown microtask', async () => {
+      const client = new LoaderClient();
+      let signal!: AbortSignal;
+      const first = client.subscribeLoader('/p');
+      client.execute('/p', (_path, requestInit) => {
+        const executionSignal = getSignal(requestInit);
+        signal = executionSignal;
+        return new Promise(() => {});
+      });
+
+      first();
+      client.subscribeLoader('/p');
+      await tick();
+
+      expect(signal.aborted).toBe(false);
+    });
+
+    it('does not let a cancelled teardown attempt abort a replacement source', async () => {
+      const client = new LoaderClient();
+      const signals: AbortSignal[] = [];
+      const first = client.subscribeLoader('/p');
+      client.execute('/p', (_path, requestInit) => {
+        const signal = getSignal(requestInit);
+        signals.push(signal);
+        return new Promise(() => {});
+      });
+      first();
+
+      client.clear();
+      const second = client.subscribeLoader('/p');
+      client.execute('/p', (_path, requestInit) => {
+        const signal = getSignal(requestInit);
+        signals.push(signal);
+        return new Promise(() => {});
+      });
+      await tick();
+
+      expect(signals).toHaveLength(2);
+      expect(signals[0]!.aborted).toBe(false);
+      expect(signals[1]!.aborted).toBe(false);
+
+      second();
+      await tick();
+      expect(signals[0]!.aborted).toBe(false);
+      expect(signals[1]!.aborted).toBe(true);
+    });
+
+    it('does not abort a settled generation when its source later tears down', async () => {
+      const client = new LoaderClient();
+      let signal!: AbortSignal;
+      const unsubscribe = client.subscribeLoader('/p');
+      client.execute('/p', async (_path, requestInit) => {
+        const executionSignal = getSignal(requestInit);
+        signal = executionSignal;
+        return 'settled';
+      });
+      await tick();
+
+      unsubscribe();
+      await tick();
+
+      expect(signal.aborted).toBe(false);
+    });
+
     it('calls onTearDown after the last unsubscribe', async () => {
       const client = new LoaderClient();
       const onTearDown = jest.fn();
@@ -167,6 +288,51 @@ describe(LoaderClient, () => {
       await tick();
 
       expect(subscriber).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('route ownership', () => {
+    it('returns a path when its final route key disappears', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/p', 'route-1');
+
+      expect(client.sweepRouteKeys(new Set())).toEqual(['/p']);
+      expect(client.sweepRouteKeys(new Set())).toEqual([]);
+    });
+
+    it('keeps a path while any of several route instances still owns it', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/p', 'route-1');
+      client.trackRoute('/p', 'route-2');
+
+      expect(client.sweepRouteKeys(new Set(['route-2']))).toEqual([]);
+      expect(client.sweepRouteKeys(new Set())).toEqual(['/p']);
+    });
+
+    it('returns the old path when a stable key moves to a new path', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/posts/1', 'post-route');
+
+      expect(client.trackRoute('/posts/2', 'post-route')).toBe('/posts/1');
+      expect(client.sweepRouteKeys(new Set())).toEqual(['/posts/2']);
+    });
+
+    it('does not return the old path on reassignment while another key owns it', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/posts/1', 'first');
+      client.trackRoute('/posts/1', 'second');
+
+      expect(client.trackRoute('/posts/2', 'first')).toBeUndefined();
+      expect(client.sweepRouteKeys(new Set(['first']))).toEqual(['/posts/1']);
+    });
+
+    it('clears every route association on reset', () => {
+      const client = new LoaderClient();
+      client.trackRoute('/p', 'route-1');
+
+      client.clear();
+
+      expect(client.sweepRouteKeys(new Set())).toEqual([]);
     });
   });
 

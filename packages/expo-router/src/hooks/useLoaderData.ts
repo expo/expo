@@ -6,10 +6,11 @@ import { use, useEffect, useMemo, useSyncExternalStore } from 'react';
 import { useContextKey } from '../Route';
 import { getRouteInfoFromState } from '../global-state/getRouteInfoFromState';
 import { LoaderContext } from '../loaders/LoaderContext';
+import { trackLoaderRoute } from '../loaders/LoaderNavigation';
 import { ServerDataLoaderContext } from '../loaders/ServerDataLoaderContext';
 import { readLoaderData } from '../loaders/readLoaderData';
 import { fetchLoader } from '../loaders/utils';
-import { useStateForPath } from '../react-navigation/native';
+import { useRoute, useStateForPath } from '../react-navigation/native';
 import { getSingularId } from '../useScreens';
 
 type LoaderFunctionResult<T extends LoaderFunction<any>> =
@@ -46,6 +47,7 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   useSyncExternalStore(client.subscribe, client.getSnapshot, client.getSnapshot);
 
   const stateForPath = useStateForPath();
+  const routeKey = useRoute().key;
   const contextKey = useContextKey();
 
   const resolvedPath = useMemo(() => {
@@ -76,6 +78,8 @@ export function useLoaderData<T extends LoaderFunction<any> = any>(): LoaderFunc
   if (serverDataLoaderContext) {
     return serverDataLoaderContext[resolvedPath];
   }
+
+  trackLoaderRoute(ctx, resolvedPath, routeKey);
 
   // The second invocation happens after the client has hydrated, so we seed the suspense store
   // with the preloaded data from `globalThis.__EXPO_ROUTER_LOADER_DATA__`

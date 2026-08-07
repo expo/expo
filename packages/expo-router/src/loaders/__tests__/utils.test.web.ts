@@ -18,8 +18,10 @@ describe(getLoaderModulePath, () => {
 
 describe(fetchLoader, () => {
   const originalFetch = global.fetch;
+  let controller: AbortController;
 
   beforeEach(() => {
+    controller = new AbortController();
     global.fetch = jest.fn(
       async () =>
         ({
@@ -37,17 +39,30 @@ describe(fetchLoader, () => {
     return (global.fetch as jest.Mock).mock.calls[0][0];
   }
 
+  function fetchedRequestInit(): RequestInit {
+    return (global.fetch as jest.Mock).mock.calls[0][1];
+  }
+
   // These tests run in order: the revision is module state that only ever increments.
   it('fetches the plain loader URL before any dev invalidation', async () => {
-    await fetchLoader('/about');
+    await fetchLoader('/about', {
+      credentials: 'include',
+      headers: { 'X-Test': 'request-init' },
+      signal: controller.signal,
+    });
 
     expect(fetchedUrl()).toBe('/_expo/loaders/about');
+    expect(fetchedRequestInit().credentials).toBe('include');
+    expect(fetchedRequestInit().signal).toBe(controller.signal);
+    const headers = new Headers(fetchedRequestInit().headers);
+    expect(headers.get('Accept')).toBe('application/json');
+    expect(headers.get('X-Test')).toBe('request-init');
   });
 
   it('appends a cache-busting revision to loader URLs after a dev invalidation', async () => {
     bumpDevLoaderRevision();
 
-    await fetchLoader('/about');
+    await fetchLoader('/about', { signal: controller.signal });
 
     const url = new URL(fetchedUrl(), 'http://localhost');
     expect(url.pathname).toBe('/_expo/loaders/about');
@@ -55,7 +70,7 @@ describe(fetchLoader, () => {
   });
 
   it('appends the revision after existing query parameters', async () => {
-    await fetchLoader('/request?foo=bar');
+    await fetchLoader('/request?foo=bar', { signal: controller.signal });
 
     const url = new URL(fetchedUrl(), 'http://localhost');
     expect(url.pathname).toBe('/_expo/loaders/request');
@@ -64,12 +79,12 @@ describe(fetchLoader, () => {
   });
 
   it('changes the revision on each subsequent invalidation', async () => {
-    await fetchLoader('/about');
+    await fetchLoader('/about', { signal: controller.signal });
     const firstUrl = fetchedUrl();
 
     bumpDevLoaderRevision();
     (global.fetch as jest.Mock).mockClear();
-    await fetchLoader('/about');
+    await fetchLoader('/about', { signal: controller.signal });
 
     expect(fetchedUrl()).not.toBe(firstUrl);
   });
