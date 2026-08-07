@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `NavigationContainerRefContext` fallback in `useNavigation`. The hook now throws when called outside a navigator, including components rendered via `ExpoRoot`'s `wrapper` prop. ([#48638](https://github.com/expo/expo/pull/48638) by [@Ubax](https://github.com/Ubax))
+- Allow `key` to be `undefined` in the `Descriptor` type and in routes passed to screen `options`, navigator `screenOptions`, and `RouteGroupConfig.screenOptions` callbacks. ([#48596](https://github.com/expo/expo/pull/48596) by [@Ubax](https://github.com/Ubax))
 - Unify JS Tabs, TopTabs, Drawer, and headless tabs with NativeTabs - only screens declared in the layout become visible. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
 - Make `href: null` hide JS tabs and make their routes unreachable, redirecting navigation to the initial tab. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
 - Remove `getStateForRouteNamesChange` from the `Router` interface on `expo-router/react-navigation`. Custom routers must handle the `ROUTE_NAMES_CHANGED` action in `getStateForAction` instead. ([#48479](https://github.com/expo/expo/pull/48479) by [@Ubax](https://github.com/Ubax))
@@ -33,6 +35,7 @@
 - Fixed `Tabs` and `TopTabs` (`expo-router/js-tabs`, `expo-router/js-top-tabs`) not being usable from RSC ([#48330](https://github.com/expo/expo/pull/48330) by [@Ubax](https://github.com/Ubax))
 - Redirect fully guarded navigators to parent ([#47984](https://github.com/expo/expo/pull/47984) by [@Ubax](https://github.com/Ubax))
 - Unset `nativeContainerStyle` in transparent presentations ([#48154](https://github.com/expo/expo/pull/48154) by [@Ubax](https://github.com/Ubax))
+- [ios] Fix broken navigation state when a long press on a `Link` with a menu is released before the context menu fully presents. ([#48104](https://github.com/expo/expo/pull/48104) by [@jiunshinn](https://github.com/jiunshinn))
 - [android] Disable safe area insets in Native Tabs on Android when tab bar is hidden. ([#47611](https://github.com/expo/expo/pull/47611) by [@debitan](https://github.com/debitan))
 - [ios] Fix memory leaks in the native toolbar and link preview from strong-reference cycles and closures that strongly captured `self`. ([#47378](https://github.com/expo/expo/pull/47378) by [@Ubax](https://github.com/Ubax))
 - [android][ios] Fix `expo-router/head` and `expo-router/stack` resolution on native platforms. ([#47870](https://github.com/expo/expo/pull/47870) by [@hassankhan](https://github.com/hassankhan))
@@ -41,6 +44,7 @@
 
 ### 💡 Others
 
+- Render only the focused tab route during the first render. ([#48618](https://github.com/expo/expo/pull/48618) by [@Ubax](https://github.com/Ubax))
 - Order JS Tabs, NativeTabs, headless tabs and Drawer by `routeNames` order ([#48374](https://github.com/expo/expo/pull/48374) by [@Ubax](https://github.com/Ubax))
 - Integrate native stack with standard navigation ([#48114](https://github.com/expo/expo/pull/48114) by [@Ubax](https://github.com/Ubax))
 - Refactor native-stack for compliance with standard-navigation integration ([#46592](https://github.com/expo/expo/pull/46592) by [@Ubax](https://github.com/Ubax))

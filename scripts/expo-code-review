@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd -P)"
+version_file="$repo_root/.expo-code-review/cli-version"
+
+if [[ ! -f "$version_file" ]]; then
+  echo "Missing Expo code review version file: $version_file" >&2
+  exit 1
+fi
+
+version="$(tr -d '[:space:]' < "$version_file")"
+if [[ "$version" != "latest" && ! "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+  echo "Invalid Expo code review version: $version" >&2
+  exit 1
+fi
+
+tool="${1:-}"
+if [[ "$tool" != "ecr" && "$tool" != "review-research-mcp" ]]; then
+  echo "Usage: scripts/expo-code-review <ecr|review-research-mcp> [args...]" >&2
+  exit 1
+fi
+shift
+
+exec npx --yes -p "@expo/code-review-cli@$version" "$tool" "$@"

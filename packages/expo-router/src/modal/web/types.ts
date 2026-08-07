@@ -27,7 +27,7 @@ export type ModalStackViewProps = Omit<
       NativeStackNavigationEventMap
     >
   >,
-  'NavigationContent'
+  'NavigationContent' | 'describe'
 >;
 
 export type CSSWithVars = React.CSSProperties & {

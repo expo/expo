@@ -18,13 +18,6 @@ concurrency:
 jobs:
   review:
     runs-on: ubuntu-latest
-    env:
-      # Version of the published engine used for BOTH the guard and the review, so the
-      # guard that clears a config is the same engine that then reads it. If you ever
-      # need to change the reviewer version, prefer
-      # editing this line over setting an ECR_VERSION repo variable: a variable silently
-      # overrides this file and is invisible in code review.
-      ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.1' }}
     # OPT-IN ONLY. This repo takes far too many PRs to spin a runner for each one, so the
     # `ai-review` label is required here, not just inside `ecr ci`. Because the workflow
     # triggers on `labeled`, adding the label to an open PR starts the review immediately.
@@ -101,20 +94,18 @@ jobs:
       # fails safe.
       #
       # This step MUST run BEFORE `ecr ci` (before any PR code is built or loaded).
-      # Only setup-node (runtime install) precedes it; running the PUBLISHED package
-      # via npx is safe pre-review because npx fetches @expo/code-review-cli@$ECR_VERSION
-      # from the registry — it never builds or executes the PR's code.
+      # Only setup-node (runtime install) precedes it; the trusted-base launcher
+      # selects a published package from the registry and never executes PR code.
       # @ref LLP 0009#guard-step-ordering-and-job-budgets [implements] — layer 2; layer 1 is ecr ci's own runtime check
       - name: Guard config tokenEnv (root + routing + all scopes)
         env:
           # (Comma-separated set for a multi-credential auth.providers config.)
           ECR_EXPECTED_TOKEN_ENV: ${{ vars.ECR_EXPECTED_TOKEN_ENV || 'CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN' }}
-        run: npx --yes -p "@expo/code-review-cli@$ECR_VERSION" ecr verify-config
+        run: ./scripts/expo-code-review ecr verify-config
 
       - name: Run AI review
-        # npx installs @expo/code-review-cli and its bundled `opencode` binary and
-        # puts them on PATH for this process — the SAME $ECR_VERSION the guard cleared.
-        run: npx --yes -p "@expo/code-review-cli@$ECR_VERSION" ecr ci
+        # The launcher selects the SAME checked-in package version the guard cleared.
+        run: ./scripts/expo-code-review ecr ci
         continue-on-error: true
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
@@ -126,6 +117,8 @@ jobs:
           # Model credential — the env var named by auth.tokenEnv in config.jsonc.
           # Store each as a repo secret under the same name.
           CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+          # Search-only credential used for fixed, site-scoped documentation discovery.
+          BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
           # Optional: override the model for every agent.
           REVIEWER_MODEL: ${{ vars.REVIEWER_MODEL }}
 

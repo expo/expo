@@ -57,4 +57,5 @@ function beforeAll() {
 
 beforeAll
 
-maestro test $MAESTRO_TEST_SUITE
+# Without -p, maestro runs on any connected device and ignores the platform argument
+maestro -p "$MAESTRO_PLATFORM" test $MAESTRO_TEST_SUITE
