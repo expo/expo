@@ -216,7 +216,38 @@ internal class DevLauncherManifestParserTest {
     val manifest = manifestParser.parseManifest()
 
     Truth.assertThat(manifest.getBundleURL())
-      .isEqualTo(server.url("/dev/index.bundle?platform=android").toString())
+      .isEqualTo("http://${server.hostName}:${server.port}/dev/index.bundle?platform=android")
+  }
+
+  @Test
+  fun `parseManifest resolves relative bundle URL against base URL without a path`() = runBlocking {
+    // Regression test: the dev server URL passed to the dev client has no path
+    // (e.g. "http://192.168.1.5:8081"). Android's java.net.URI.resolve drops the "/"
+    // between authority and relative path in that case, producing invalid URLs like
+    // "http://192.168.1.5:8081apps/project/index.bundle".
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse("http://${server.hostName}:${server.port}"),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setBody(
+        """
+        {
+          "name": "testproject",
+          "slug": "testproject",
+          "sdkVersion": "UNVERSIONED",
+          "bundleUrl": "apps/testproject/index.bundle?platform=android"
+        }
+        """.trimIndent()
+      )
+    )
+
+    val manifest = manifestParser.parseManifest()
+
+    Truth.assertThat(manifest.getBundleURL())
+      .isEqualTo("http://${server.hostName}:${server.port}/apps/testproject/index.bundle?platform=android")
   }
 
   @Test

@@ -6,11 +6,11 @@ import expo.modules.devlauncher.helpers.fetch
 import expo.modules.manifests.core.Manifest
 import okhttp3.Headers
 import okhttp3.Headers.Companion.toHeaders
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.OkHttpClient
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.Reader
-import java.net.URI
 
 class DevLauncherManifestParser(
   private val httpClient: OkHttpClient,
@@ -62,8 +62,20 @@ class DevLauncherManifestParser(
   }
 
   private fun resolveUrl(rawUrl: String): String {
+    // We use okhttp instead of java.net.URI because Android's URI
+    // implementation (Harmony-derived, RFC 2396) does not insert the missing
+    // `/` when the base has an empty path. This is unlike modern desktop
+    // JDKs and okhttp, which do insert the `/`.
+    //
+    // For example:
+    // - Inputs
+    //   - rawUrl: "apps/bare-expo/index.bundle?platform=android"
+    //   - url: "http://192.168.1.5:8081"
+    // - Outputs
+    //   - Using java.net.URI: "http://192.168.1.5:8081apps/bare-expo/index.bundle?platform=android"
+    //   - Using current code: "http://192.168.1.5:8081/apps/bare-expo/index.bundle?platform=android"
     return try {
-      URI(url.toString()).resolve(rawUrl).toString()
+      url.toString().toHttpUrl().resolve(rawUrl)?.toString() ?: rawUrl
     } catch (e: Exception) {
       rawUrl
     }

@@ -11,10 +11,10 @@ import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.manifests.core.ExpoUpdatesManifest
 import expo.modules.updates.db.enums.UpdateStatus
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import org.json.JSONArray
 import org.json.JSONException
 import org.json.JSONObject
-import java.net.URI
 import java.text.ParseException
 import java.util.*
 
@@ -140,8 +140,20 @@ class ExpoUpdatesUpdate private constructor(
     }
 
     private fun resolveUrl(url: String, baseUrl: Uri): String {
+      // We use okhttp instead of java.net.URI because Android's URI
+      // implementation (Harmony-derived, RFC 2396) does not insert the missing
+      // `/` when the base has an empty path. This is unlike modern desktop
+      // JDKs and okhttp, which do insert the `/`.
+      //
+      // For example:
+      // - Inputs
+      //   - url: "apps/bare-expo/index.bundle?platform=android"
+      //   - base: "http://192.168.1.5:8081"
+      // - Outputs
+      //   - Using java.net.URI: "http://192.168.1.5:8081apps/bare-expo/index.bundle?platform=android"
+      //   - Using current code: "http://192.168.1.5:8081/apps/bare-expo/index.bundle?platform=android"
       return try {
-        URI(baseUrl.toString()).resolve(url).toString()
+        baseUrl.toString().toHttpUrl().resolve(url)?.toString() ?: url
       } catch (e: Exception) {
         url
       }

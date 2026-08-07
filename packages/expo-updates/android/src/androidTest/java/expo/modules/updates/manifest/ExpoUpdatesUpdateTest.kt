@@ -45,6 +45,28 @@ class ExpoUpdatesUpdateTest {
     )
   }
 
+  @Test
+  @Throws(JSONException::class)
+  fun testFromManifestJson_RelativeAssetUrls_BaseUrlWithoutPath() {
+    // Regression test: development servers are addressed without a path
+    // (e.g. "http://192.168.1.5:8081"). Android's java.net.URI.resolve drops the "/"
+    // between authority and relative path in that case, producing invalid URLs like
+    // "http://192.168.1.5:8081apps/project/index.bundle".
+    val manifestJson =
+      "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"key\":\"bundle\",\"url\":\"apps/testproject/index.bundle?platform=android\",\"contentType\":\"application/javascript\"}}"
+    val manifest = ExpoUpdatesManifest(JSONObject(manifestJson))
+    val update = ExpoUpdatesUpdate.fromExpoUpdatesManifest(
+      manifest,
+      null,
+      createConfig(updateUrl = "http://192.168.1.5:8081")
+    )
+
+    Assert.assertEquals(
+      "http://192.168.1.5:8081/apps/testproject/index.bundle?platform=android",
+      update.manifest.getBundleURL()
+    )
+  }
+
   @Test(expected = JSONException::class)
   @Throws(JSONException::class)
   fun testFromManifestJson_NoId() {
@@ -81,9 +103,9 @@ class ExpoUpdatesUpdateTest {
     ExpoUpdatesUpdate.fromExpoUpdatesManifest(manifest, null, createConfig())
   }
 
-  private fun createConfig(): UpdatesConfiguration {
+  private fun createConfig(updateUrl: String = "https://exp.host/@test/test"): UpdatesConfiguration {
     val configMap = HashMap<String, Any>()
-    configMap["updateUrl"] = Uri.parse("https://exp.host/@test/test")
+    configMap["updateUrl"] = Uri.parse(updateUrl)
     return UpdatesConfiguration(null, configMap)
   }
 }
