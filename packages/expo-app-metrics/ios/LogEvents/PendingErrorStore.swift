@@ -95,7 +95,11 @@ enum PendingErrorStore {
   /// The directory holding pending-error files, under the caches directory so they're not backed up.
   private static func directoryUrl() throws -> URL {
     let base = try FileManager.default.url(
-      for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+      for: .cachesDirectory,
+      in: .userDomainMask,
+      appropriateFor: nil,
+      create: true
+    )
     let directory = base.appendingPathComponent("ExpoAppMetrics/pending-errors")
     try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
     return directory

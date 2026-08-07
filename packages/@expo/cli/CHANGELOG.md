@@ -12,14 +12,23 @@
 - Add `pageHeaders` to exported routes manifests ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Apply `pageHeaders` when serving static exports with `expo serve` ([#47781](https://github.com/expo/expo/pull/47781) by [@hassankhan](https://github.com/hassankhan))
 - Create `pageHeaders` rules from loader-declared `Cache-Control` headers for SSG ([#47774](https://github.com/expo/expo/pull/47774) by [@hassankhan](https://github.com/hassankhan))
+- Emit relative asset URLs and `bundleUrl` in manifest responses conditionally ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
+- Resolve `hostUri`, `debuggerHost`, and `/_expo/link` deep links from forwarded request addresses ([#48267](https://github.com/expo/expo/pull/48267) by [@kitten](https://github.com/kitten))
+- Preserve loader `Cache-Control` headers in development ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
+- Use default loader `Cache-Control` header value of `no-store` for loader responses in development ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
+- Use default `Cache-Control` header value of `public, max-age=0, must-revalidate` for SSG loader files and their pages ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
+- Use default `Cache-Control` header value of `no-store` for SSR loader responses ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
+- Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
+- Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
 - In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))
 - Ignore a whitespace-only `REACT_NATIVE_PACKAGER_HOSTNAME` instead of failing to start the dev server ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Fix opening web from the Terminal UI when the dev server was started without `--web` ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Ignore an invalid `--port` or an out-of-range `RCT_METRO_PORT` and start on the preferred port instead of prompting to use port `null` ([#48300](https://github.com/expo/expo/pull/48300) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Resolve the signed-in username for partner provisioned actors so Expo Go can verify the account match ([#48354](https://github.com/expo/expo/pull/48354) by [@davidko604](https://github.com/davidko604))
 
 ### 💡 Others
 
@@ -31,6 +40,7 @@
 - [Internal] Migrate structured event logging to the `2g` package ([#46667](https://github.com/expo/expo/pull/46667) by [@kitten](https://github.com/kitten))
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
 - [Internal] Resolve the dev server port once instead of re-deriving it, and read the URL environment variables outside the `UrlCreator` ([#48236](https://github.com/expo/expo/pull/48236) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Update `expo start --private-key-path` help text ([#47795](https://github.com/expo/expo/pull/47795) by [@kitten](https://github.com/kitten))
 
 ## 57.0.11 - 2026-07-29
 

@@ -31,7 +31,7 @@
   "footerShareFeedback": "フィードバックを共有する",
   "footerAskOnForums": "フォーラムで質問する",
   "footerEditPage": "このページを編集する",
-  "footerLlmsView": "<llmsLink>llms.txt</llmsLink> と <fullLink>{fullName}</fullLink> を表示",
+  "footerLlmsView": "<llmsLink>llms.txt</llmsLink> を表示",
   "footerNewsletterTitle": "Expo ニュースレターに登録する",
   "footerSignUp": "登録",
   "footerThankYouSignUp": "ご登録ありがとうございます！💙",

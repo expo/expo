@@ -4,7 +4,6 @@
 
 import UIKit
 import WebKit
-import React
 
 protocol ExpoLogBoxNativeActionsProtocol {
     func onReload() -> Void
@@ -36,12 +35,30 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
     private let nativeMessageHandlerName = "nativeHandler"
     private let nativeActions: ExpoLogBoxNativeActionsProtocol
     private let props: [String: Any]
+    private let bundleURL: URL?
     private let webView: WKWebView
 
-    init(nativeActions: ExpoLogBoxNativeActionsProtocol, props: [String: Any]) {
+    init(nativeActions: ExpoLogBoxNativeActionsProtocol, props: [String: Any], bundleURL: URL?) {
         self.nativeActions = nativeActions
         self.props = props
+        self.bundleURL = bundleURL
         self.webView = WKWebView(frame: .zero)
+    }
+
+    private var devServerOrigin: String? {
+        guard let bundleURL,
+              let scheme = bundleURL.scheme,
+              scheme == "http" || scheme == "https",
+              let host = bundleURL.host
+        else {
+            return nil
+        }
+        // A bundle URL without a port is served on its scheme's default port, as a development server
+        // behind a TLS-terminating proxy is.
+        guard let port = bundleURL.port else {
+            return "\(scheme)://\(host)"
+        }
+        return "\(scheme)://\(host):\(port)"
     }
 
     func prepareWebView() -> WKWebView {
@@ -55,17 +72,6 @@ class ExpoLogBoxWebViewWrapper: NSObject, WKScriptMessageHandler {
             fatalError("Failed to serialize initProps. This is an issue in ExpoLogBox. Please report it.")
         }
 
-        let devServerOrigin: String? = {
-            guard let bundleUrl = RCTBundleURLProvider.sharedSettings()
-                    .jsBundleURL(forBundleRoot: "unused.name"),
-                  let scheme = bundleUrl.scheme,
-                  let host = bundleUrl.host,
-                  let port = bundleUrl.port
-            else {
-                return nil
-            }
-            return "\(scheme)://\(host):\(port)"
-        }()
         let devServerOriginJsValue: String = devServerOrigin.map { "'\($0)'" } ?? "undefined"
 
         let injectJavascript = """

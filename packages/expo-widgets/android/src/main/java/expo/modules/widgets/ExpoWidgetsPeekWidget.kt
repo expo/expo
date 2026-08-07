@@ -3,22 +3,22 @@ package expo.modules.widgets
 import android.content.Context
 import android.os.Bundle
 import androidx.compose.ui.unit.DpSize
-import io.github.jakex7.peek.appwidget.PeekAppWidgetId
-import io.github.jakex7.peek.appwidget.PeekAppWidgetSizeMode
+import androidx.glance.Emittable
+import androidx.glance.appwidget.AppWidgetId
+import androidx.glance.appwidget.SizeMode
 import io.github.jakex7.peek.emittables.PeekEmittableAppWidget
-import io.github.jakex7.peek.emittables.PeekRoot
 
 internal class ExpoWidgetsPeekWidget(
   private val widgetName: String
 ) : PeekEmittableAppWidget() {
-  override val sizeMode = PeekAppWidgetSizeMode.Exact
+  override val sizeMode = SizeMode.Exact
 
-  override suspend fun provideRoot(
+  override fun provideRoot(
     context: Context,
-    id: PeekAppWidgetId,
+    id: AppWidgetId,
     options: Bundle,
     size: DpSize
-  ): PeekRoot {
+  ): Emittable {
     val appContext = context.applicationContext
     val layout = WidgetsLayoutRegistry.layout(appContext, widgetName)
       ?: return createErrorRoot("No layout found for $widgetName")

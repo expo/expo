@@ -52,7 +52,6 @@ export { NavigationProvider } from './NavigationProvider';
  */
 export { NavigationRouteContext } from './NavigationProvider';
 export { PreventRemoveContext } from './PreventRemoveContext';
-export { PreventRemoveProvider } from './PreventRemoveProvider';
 /**
  * @deprecated Will be removed in a future SDK.
  */

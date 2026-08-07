@@ -7,6 +7,7 @@ import {
 
 import Stack from '../../../../layouts/StackClient';
 import { renderRouter } from '../../../../testing-library';
+import { usePreventRemove } from '../../../core/usePreventRemove';
 import type { NativeStackNavigationOptions } from '../../types';
 
 jest.mock('react-native-screens', () => {
@@ -23,14 +24,17 @@ jest.mock('react-native-screens', () => {
 const ScreenStack = _ScreenStack as jest.MockedFunction<typeof _ScreenStack>;
 const ScreenStackItem = _ScreenStackItem as jest.MockedFunction<typeof _ScreenStackItem>;
 
-function renderStack(options?: NativeStackNavigationOptions) {
+function renderStack(
+  options?: NativeStackNavigationOptions,
+  Screen = () => <Text testID="index">Index</Text>
+) {
   renderRouter({
     _layout: () => (
       <Stack>
         <Stack.Screen name="index" options={options} />
       </Stack>
     ),
-    index: () => <Text testID="index">Index</Text>,
+    index: Screen,
   });
 
   expect(screen.getByTestId('index')).toBeVisible();
@@ -141,4 +145,16 @@ describe('unstable_nativeProps', () => {
 
     expect(props.headerConfig?.title).toBe('index');
   });
+});
+
+it('sets preventNativeDismiss from usePreventRemove', () => {
+  ScreenStackItem.mockClear();
+  const ProtectedScreen = () => {
+    usePreventRemove(true, () => {});
+    return <Text testID="index">Index</Text>;
+  };
+
+  const props = renderStack(undefined, ProtectedScreen);
+
+  expect(props.preventNativeDismiss).toBe(true);
 });

@@ -1,5 +1,5 @@
-import Foundation
 import ExpoModulesCore
+import Foundation
 
 internal class Blob: SharedObject {
   var blobParts: [BlobPart]

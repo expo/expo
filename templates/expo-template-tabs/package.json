@@ -4,6 +4,11 @@
   "description": "The Tab Navigation project template includes several example screens.",
   "license": "0BSD",
   "version": "57.0.11",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "templates/expo-template-tabs"
+  },
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",

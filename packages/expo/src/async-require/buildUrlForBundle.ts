@@ -5,7 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-import getDevServer from './getDevServer';
+import getDevServer from '../utils/getDevServer';
 
 /**
  * Given a path and some optional additional query parameters, create the dev server bundle URL.

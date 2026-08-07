@@ -18,6 +18,7 @@
 - Added `./next` subpath to package `exports` field to resolve Metro bundler warning. ([#44793](https://github.com/expo/expo/pull/44793) by [@chang-in](https://github.com/chang-in))
 - Fixed `FileHandle` security-scoped access, and non-SAF `content://` URI support. ([#47176](https://github.com/expo/expo/pull/47176) by [@barthap](https://github.com/barthap))
 - Fixed potential file offset races when asynchronous and synchronous `FileHandle` operations overlap on Android and iOS. ([#47945](https://github.com/expo/expo/pull/47945) by [@wh201906](https://github.com/wh201906))
+- [android] Fixed `rename()` storing an unencoded URI, so reading `.uri` afterwards threw for names containing a space. ([#48496](https://github.com/expo/expo/issues/48496) by [@yagiz2000](https://github.com/yagiz2000), [#48510](https://github.com/expo/expo/pull/48510) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 💡 Others
 
