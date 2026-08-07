@@ -68,36 +68,21 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   }
 
   /// Received bytes over the time those bytes were actually moving, in bytes per second, or `nil`
-  /// when nothing was received or no receiving request reported a usable interval.
+  /// when nothing was received or no request reported a usable transfer window.
   ///
   /// The denominator is the union of the transfer windows of the requests that received bytes, each
-  /// running from the first response byte to the last. Four choices are folded into that:
+  /// running from the first response byte to the last. Measuring from the first byte keeps DNS,
+  /// connect and server think time out of the rate, and it excludes cache hits for free, since a
+  /// response served from disk never reports one. Taking the union rather than a sum keeps
+  /// concurrency from deflating it, and gaps between requests are left out so idle time isn't
+  /// charged to the network. Failures are excluded: a request that stalled until the client gave up
+  /// would otherwise hold the window open while nothing moved.
   ///
-  /// - The transfer window rather than the whole request, so time spent resolving DNS, connecting,
-  ///   and waiting on the server isn't charged to the connection. A request that waits four seconds
-  ///   on a backend and then delivers a kilobyte instantly describes a fast network, not a slow one;
-  ///   the wait belongs to `slowest.timeToFirstByte`.
-  /// - A union rather than a sum of durations, so request concurrency doesn't inflate it. Four
-  ///   parallel one-second requests would otherwise report a quarter of the real rate.
-  /// - The busy span rather than the whole window, so idle time isn't charged to the network. A
-  ///   launch that fetches briefly and then sits idle would otherwise look slow.
-  /// - Only requests that completed and received bytes, so neither a slow request returning nothing
-  ///   nor one that stalled until the client gave up can stretch the denominator across time when
-  ///   no payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `failed`.
-  ///
-  /// Requiring a first-byte timestamp also excludes cache hits for free: a response served from
-  /// disk never reports one, so the megabytes it contributes can't be divided by the milliseconds
-  /// it took to read them.
-  ///
-  /// Two cases it still can't see. A stall between requests: if the radio dies while nothing is in
-  /// flight, no interval covers it, and `failed` is the signal instead. And a long-lived response
-  /// that trickles, such as a server-sent event stream, whose window stays open across time when
-  /// almost nothing is moving and drags the rate down for everything overlapping it.
-  ///
-  /// Being a ratio, it also degrades differently from the counts when the monitor's ring buffer
-  /// evicts the earliest requests in a window: both sides shrink together, so the value stays
-  /// plausible while describing only the requests that survived. Read it as the rate of a sample of
-  /// the window rather than of all of it.
+  /// Three things it can't see. A stall between requests, since no interval covers it; `failed` is
+  /// the signal there. A long-lived trickle, such as an event stream, whose window stays open while
+  /// almost nothing moves and drags down everything overlapping it. And eviction: when the ring
+  /// buffer drops the earliest requests both sides shrink together, so read this as the rate of a
+  /// sample of the window rather than all of it.
   public let throughputBytesPerSecond: Double?
 
   /// Convenience: returns `nil` when the summary is empty so callers can skip emitting fields.
@@ -191,18 +176,9 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   }
 
   /// The requests that completed, received bytes, and reported a measurable transfer window, which
-  /// is the subset the throughput ratio is computed over.
-  ///
-  /// Deciding it once keeps the numerator and denominator describing the same traffic. Filtering
-  /// inside the busy-time fold instead would let a request contribute its bytes while adding no
-  /// time, which reads as a faster connection than actually happened. A cache hit is the case that
-  /// matters: it reports bytes from the task counters but is served from disk, so it never gets a
-  /// first-byte timestamp and drops out here.
-  ///
-  /// Failures are excluded for the opposite reason. A request that received a few bytes and then
-  /// stalled until the client gave up reports a window covering the whole stall, so it would hold
-  /// the denominator open across time when nothing was moving and report a connection far slower
-  /// than the one that served the requests around it.
+  /// is the subset the throughput ratio is computed over. Deciding it once keeps the numerator and
+  /// denominator describing the same traffic; filtering inside the busy-time fold instead would let
+  /// a request contribute bytes while adding no time.
   private static func measurableReceiving(in requests: [NetworkRequest]) -> [NetworkRequest] {
     return requests.filter { request in
       guard !request.isFailed else {
@@ -222,15 +198,11 @@ public struct NetworkRequestSummary: Sendable, Equatable {
 
   /// Shortest transfer window this ratio will divide by, in seconds.
   ///
-  /// Android timestamps its phases with `Date()`, which advances in whole milliseconds, so a
-  /// transfer faster than that records as a zero-length window and drops out. iOS gets sub-
-  /// millisecond resolution from the transaction metrics and would otherwise keep those requests,
-  /// which is worse than it sounds: the platforms would disagree on whether the key is present at
-  /// all, and Android's surviving sample would skew slow while iOS's kept every fast transfer.
-  ///
-  /// Holding both to Android's floor costs the rate for transfers too quick to measure, which is
-  /// the honest outcome: dividing kilobytes by a duration the clock can't resolve produces a number
-  /// that says more about the timer than the network.
+  /// Matches Android, where `Date()` advances in whole milliseconds and a faster transfer records
+  /// as a zero-length window. iOS could resolve those from the transaction metrics, but keeping
+  /// them would make the platforms disagree on whether the key is present at all, and would leave
+  /// Android's sample skewed slow. Dividing bytes by a duration the clock can't resolve says more
+  /// about the timer than the network.
   private static let minimumTransferWindow: TimeInterval = 0.001
 
   /// Total length of the union of the requests' transfer windows, in seconds, each running from the

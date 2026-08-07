@@ -53,36 +53,21 @@ data class NetworkRequestSummary(
 
   /**
    * Received bytes over the time those bytes were actually moving, in bytes per second, or `null`
-   * when nothing was received or no receiving request reported a usable interval.
+   * when nothing was received or no request reported a usable transfer window.
    *
    * The denominator is the union of the transfer windows of the requests that received bytes, each
-   * running from the first response byte to the last. Four choices are folded into that:
+   * running from the first response byte to the last. Measuring from the first byte keeps DNS,
+   * connect and server think time out of the rate, and it excludes cache hits for free, since a
+   * response served from disk never reports one. Taking the union rather than a sum keeps
+   * concurrency from deflating it, and gaps between requests are left out so idle time isn't charged
+   * to the network. Failures are excluded: a request that stalled until the client gave up would
+   * otherwise hold the window open while nothing moved.
    *
-   * - The transfer window rather than the whole request, so time spent resolving DNS, connecting,
-   *   and waiting on the server isn't charged to the connection. A request that waits four seconds
-   *   on a backend and then delivers a kilobyte instantly describes a fast network, not a slow one;
-   *   the wait belongs to `slowest.timeToFirstByte`.
-   * - A union rather than a sum of durations, so request concurrency doesn't inflate it. Four
-   *   parallel one-second requests would otherwise report a quarter of the real rate.
-   * - The busy span rather than the whole window, so idle time isn't charged to the network. A
-   *   launch that fetches briefly and then sits idle would otherwise look slow.
-   * - Only requests that completed and received bytes, so neither a slow request returning nothing
-   *   nor one that stalled until the client gave up can stretch the denominator across time when no
-   *   payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `failed`.
-   *
-   * Requiring a first-byte timestamp also excludes cache hits for free: a response served from disk
-   * never reports one, so the bytes it contributes can't be divided by the milliseconds it took to
-   * read them.
-   *
-   * Two cases it still can't see. A stall between requests: if the radio dies while nothing is in
-   * flight, no interval covers it, and `failed` is the signal instead. And a long-lived response
-   * that trickles, such as a server-sent event stream, whose window stays open across time when
-   * almost nothing is moving and drags the rate down for everything overlapping it.
-   *
-   * Being a ratio, it also degrades differently from the counts when the monitor's ring buffer evicts
-   * the earliest requests in a window: both sides shrink together, so the value stays plausible while
-   * describing only the requests that survived. Read it as the rate of a sample of the window rather
-   * than of all of it.
+   * Three things it can't see. A stall between requests, since no interval covers it; `failed` is
+   * the signal there. A long-lived trickle, such as an event stream, whose window stays open while
+   * almost nothing moves and drags down everything overlapping it. And eviction: when the ring
+   * buffer drops the earliest requests both sides shrink together, so read this as the rate of a
+   * sample of the window rather than all of it.
    */
   val throughputBytesPerSecond: Double? = null
 ) {
@@ -206,24 +191,14 @@ data class NetworkRequestSummary(
 
     /**
      * The requests that completed, received bytes, and reported a measurable transfer window, which
-     * is the subset the throughput ratio is computed over.
-     *
-     * Deciding it once keeps the numerator and denominator describing the same traffic. Filtering
-     * inside the busy-time fold instead would let a request contribute its bytes while adding no
-     * time, which reads as a faster connection than actually happened. A cache hit is the case that
-     * matters: it reports bytes from the task counters but is served from disk, so it never gets a
-     * first-byte timestamp and drops out here.
-     *
-     * Failures are excluded for the opposite reason. A request that received a few bytes and then
-     * stalled until the client gave up reports a window covering the whole stall, so it would hold
-     * the denominator open across time when nothing was moving and report a connection far slower than
-     * the one that served the requests around it.
+     * is the subset the throughput ratio is computed over. Deciding it once keeps the numerator and
+     * denominator describing the same traffic; filtering inside the busy-time fold instead would let
+     * a request contribute bytes while adding no time.
      *
      * A transfer faster than a millisecond drops out, because `Date()` advances in whole
-     * milliseconds and can't describe it. iOS applies the same floor deliberately rather than
-     * dividing by the sub-millisecond windows its transaction metrics can resolve, so the two
-     * platforms agree on when the rate is unknown instead of Android quietly reporting only its
-     * slower transfers.
+     * milliseconds and can't describe it. iOS applies the same floor rather than dividing by the
+     * finer windows its transaction metrics can resolve, so the platforms agree on when the rate is
+     * unknown instead of Android quietly reporting only its slower transfers.
      */
     private fun measurableReceiving(requests: List<NetworkRequest>): List<NetworkRequest> {
       return requests.filter { request ->
@@ -235,16 +210,10 @@ data class NetworkRequestSummary(
     }
 
     /**
-     * Total length of the union of the requests' in-flight intervals, in seconds.
-     *
-     * Overlapping requests are merged so concurrency doesn't inflate the total, and gaps between
-     * requests are excluded so idle time isn't charged to the network.
-     *
-     * Requests are skipped unless they report both endpoints and a strictly positive span. A
-     * collapsed interval would otherwise let a request contribute its bytes to the numerator while
-     * adding nothing to the denominator, which reads as a faster connection than actually happened.
-     * A cache hit is the case that matters: it reports bytes from the task counters but is served
-     * from disk inside one clock tick.
+     * Total length of the union of the requests' transfer windows, in seconds. Overlapping requests
+     * are merged so concurrency doesn't inflate the total, and gaps between them are excluded so
+     * idle time isn't charged to the network. Callers computing a rate should pass a list already
+     * narrowed by `measurableReceiving`, so the same requests feed both sides of the ratio.
      */
     private fun busyDuration(requests: List<NetworkRequest>): Double {
       val intervals = requests
