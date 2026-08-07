@@ -26,6 +26,9 @@
 - [iOS] Activate the audio session once and keep it active instead of toggling. ([#48588](https://github.com/expo/expo/pull/48588) by [@alanjhughes](https://github.com/alanjhughes))
 - [Android] Fix `createAudioPlayer`/`useAudioPlayer` throwing "Received 5 arguments, but 4 was expected" due to the native `AudioPlayer` constructor missing the iOS-only `allowsExternalPlayback` parameter. ([#48655](https://github.com/expo/expo/pull/48655) by [@RasmusKard](https://github.com/RasmusKard))
 - [iOS] Report `denied` instead of crashing the app when `NSMicrophoneUsageDescription` is missing. ([#48840](https://github.com/expo/expo/pull/48840) by [@ahmadaccino](https://github.com/ahmadaccino))
+- [iOS] Fix interruption bookkeeping (`interruptedPlayers`/`playerVolumes`) racing the queued resume path: the snapshot is taken on the notification thread, and the collections are only written on the session queue. ([#48913](https://github.com/expo/expo/pull/48913) by [@sbs44](https://github.com/sbs44))
+- [iOS] `setIsAudioActiveAsync` settles its promise from the session queue instead of blocking the shared AsyncFunction queue via `sessionQueue.sync`. ([#48913](https://github.com/expo/expo/pull/48913) by [@sbs44](https://github.com/sbs44))
+- [iOS] Surface audio-session activation failures during `AudioPlayer.play()` through the `playbackStatusUpdate` event's existing `error` field (activation is async, so `play()` cannot throw for them). ([#48913](https://github.com/expo/expo/pull/48913) by [@sbs44](https://github.com/sbs44))
 
 ### 💡 Others
 
