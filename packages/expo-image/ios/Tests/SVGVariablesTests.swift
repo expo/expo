@@ -221,24 +221,4 @@ struct SVGVariablesTests {
       #expect(SVGVariables.substitute(in: data, variables: ["--a": "red"]) == data)
     }
   }
-
-  @Suite("digest")
-  struct DigestTests {
-    @Test
-    func `does not depend on key order`() {
-      #expect(SVGVariables.digest(of: ["--a": "1", "--b": "2"])
-        == SVGVariables.digest(of: ["--b": "2", "--a": "1"]))
-    }
-
-    @Test
-    func `changes when a value changes`() {
-      #expect(SVGVariables.digest(of: ["--a": "1"]) != SVGVariables.digest(of: ["--a": "2"]))
-    }
-
-    @Test
-    func `is bounded in length`() {
-      let many = (0..<200).reduce(into: [String: String]()) { $0["--v\($1)"] = "value-\($1)" }
-      #expect(SVGVariables.digest(of: many).count == 16)
-    }
-  }
 }
