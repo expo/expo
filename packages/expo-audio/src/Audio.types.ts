@@ -138,6 +138,18 @@ export type AudioPlayerOptions = {
    * @platform android
    */
   preferredForwardBufferDuration?: number;
+  /**
+   * Whether the player can switch to AirPlay's external playback mode. In this mode, iOS sends
+   * the media URL directly to the AirPlay device and the local player only sends playback
+   * commands to it.
+   *
+   * Set to `false` to keep the local player in control. Audio still routes to the AirPlay device
+   * through the audio session, and playback notifications (including looping) keep working.
+   *
+   * @default true
+   * @platform ios
+   */
+  allowsExternalPlayback?: boolean;
 };
 
 /**

@@ -381,7 +381,7 @@ public final class CalendarNextModule: Module {
       }
 
       Property("calendarId") { (expoEvent: ExpoCalendarEvent) in
-        expoEvent.event?.calendar.calendarIdentifier
+        expoEvent.event?.calendar?.calendarIdentifier
       }
 
       Property("title") { (expoEvent: ExpoCalendarEvent) in
@@ -544,7 +544,7 @@ public final class CalendarNextModule: Module {
       }
 
       Property("calendarId") { (expoReminder: ExpoCalendarReminder) in
-        expoReminder.reminder?.calendar.calendarIdentifier
+        expoReminder.reminder?.calendar?.calendarIdentifier
       }
 
       Property("title") { (expoReminder: ExpoCalendarReminder) in

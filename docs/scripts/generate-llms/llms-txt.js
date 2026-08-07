@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { home, learn, general, eas, reference } from '../../constants/navigation.js';
-import { generateCrossLinksSection, getMarkdownUrl, toBlockquote } from './shared.js';
+import { getMarkdownUrl, toBlockquote } from './shared.js';
 import { EXPO_DESCRIPTION, PAGE_DESCRIPTION_OVERRIDES } from './transforms/descriptions.js';
 import { MISCONCEPTIONS_SECTION } from './transforms/misconceptions.js';
 import { PERFORMANCE_SECTION } from './transforms/performance.js';
@@ -71,9 +71,8 @@ function generateFullMarkdown({ title, description, sections }) {
     `# ${title}\n\n${toBlockquote(description)}\n\n` +
     MISCONCEPTIONS_SECTION +
     PERFORMANCE_SECTION +
-    filteredSections.map(generateSectionMarkdown).join('') +
-    '\n' +
-    generateCrossLinksSection(OUTPUT_FILENAME_LLMS_TXT)
+    filteredSections.map(generateSectionMarkdown).join('').trimEnd() +
+    '\n'
   );
 }
 

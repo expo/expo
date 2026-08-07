@@ -120,7 +120,8 @@ export type EventMapCore<State extends NavigationState> = {
   focus: { data: undefined };
   blur: { data: undefined };
   state: { data: { state: State } };
-  beforeRemove: { data: { action: NavigationAction }; canPreventDefault: true };
+  beforeRemove: { data: { action: NavigationAction } };
+  removePrevented: { data: { action: NavigationAction } };
 };
 
 export type EventArg<
@@ -190,6 +191,7 @@ export type EventEmitter<EventMap extends EventMapBase> = {
     options: {
       type: EventName;
       target?: string;
+      preventDefault?: () => void;
       // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     } & (EventMap[EventName]['canPreventDefault'] extends true ? { canPreventDefault: true } : {}) &
       (undefined extends EventMap[EventName]['data']
@@ -556,7 +558,7 @@ export type Descriptor<
   /**
    * Render the component associated with this route.
    */
-  render(): React.JSX.Element;
+  render(): React.JSX.Element | null;
 
   /**
    * Options for the route.
@@ -641,13 +643,6 @@ export type RouteConfigProps<
   Navigation,
 > = {
   /**
-   * Optional key for this screen. This doesn't need to be unique.
-   * If the key changes, existing screens with this name will be removed or reset.
-   * Useful when we have some common screens and have conditional rendering.
-   */
-  navigationKey?: string;
-
-  /**
    * Route name of this screen.
    */
   name: RouteName;
@@ -719,12 +714,6 @@ export type RouteGroupConfig<
   ScreenOptions extends {},
   Navigation,
 > = {
-  /**
-   * Optional key for the screens in this group.
-   * If the key changes, all existing screens in this group will be removed or reset.
-   */
-  navigationKey?: string;
-
   /**
    * Navigator options for this screen.
    */

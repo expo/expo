@@ -100,7 +100,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
           {isPreviewVisible && (
             <SidebarSingleEntry
               href="/feature-preview/"
-              title="Feature Preview"
+              title="Feature preview"
               Icon={Stars02DuotoneIcon}
               isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
               allowCompactDisplay

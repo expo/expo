@@ -78,8 +78,6 @@ export function getNavigateAction(
     type = 'NAVIGATE';
   } else if (navigationState.type === 'expo-tab') {
     type = 'JUMP_TO';
-  } else if (type === 'REPLACE' && navigationState.type === 'drawer') {
-    type = 'JUMP_TO';
   }
 
   if (withAnchor) {

@@ -22,6 +22,7 @@ import type {
   NativeStackNavigationProp,
   NativeStackNavigatorProps,
 } from '../types';
+import { makePopAction } from '../utils/makePopAction';
 import { NativeStackView } from '../views/NativeStackView';
 
 function NativeStackNavigator({
@@ -35,7 +36,7 @@ function NativeStackNavigator({
   UNSTABLE_router,
   ...rest
 }: NativeStackNavigatorProps) {
-  const { state, describe, descriptors, navigation, NavigationContent } = useNavigationBuilder<
+  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
     StackActionHelpers<ParamListBase>,
@@ -80,14 +81,16 @@ function NativeStackNavigator({
     });
   }, [meta, navigation, state.index, state.key]);
 
+  const pop = makePopAction(navigation.dispatch, state.key);
+
   return (
     <NavigationContent>
       <NativeStackView
         {...rest}
         state={state}
-        navigation={navigation}
         descriptors={descriptors}
-        describe={describe}
+        emit={navigation.emit}
+        pop={pop}
       />
     </NavigationContent>
   );

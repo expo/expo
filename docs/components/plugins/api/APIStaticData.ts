@@ -12,6 +12,7 @@ export const nonLinkableTypes = [
   'AppearSymbolEffect',
   'ArrayBufferLike',
   'ArrayBufferView',
+  'AssetMetadata',
   'AudioTrackChangeEventPayload',
   'AvailableAudioTracksChangeEventPayload',
   'AvailableSubtitleTracksChangeEventPayload',
@@ -43,6 +44,8 @@ export const nonLinkableTypes = [
   'ContentAlignment',
   'Context',
   'ContextMenuContentProps',
+  'CreateProps',
+  'CreatePropsOption',
   'DefaultRouterOptions',
   'DeletingOptions',
   'DependencyList',
@@ -89,6 +92,7 @@ export const nonLinkableTypes = [
   'ImageDecodeFormat',
   'ImageRef',
   'InferEventParameter',
+  'IntegrateWithRouterOptionsTuple',
   'IOSSplashConfig',
   'JSXElementConstructor',
   'K',
@@ -135,6 +139,7 @@ export const nonLinkableTypes = [
   'NativeTheme',
   'NavigationAction',
   'NavigationContainerRefWithCurrent',
+  'NavigatorDescriptor',
   'NavigationHelpers',
   'NavigationHelpersCommon',
   'NavigationHelpersRoute',
@@ -281,10 +286,16 @@ export const omittableTypes = [
  * Map of internal entity/type names that should be replaced with something more developer-friendly.
  */
 export const replaceableTypes: Partial<Record<string, string>> = {
+  ClientScopingConfigForReExport: 'ClientScopingConfig',
+  ExpoGoPackagerOptsForReExport: 'ExpoGoPackagerOpts',
   ForwardRefExoticComponent: 'Component',
   LocationAccuracy: 'Accuracy',
   LocationActivityType: 'ActivityType',
   LocationGeofencingRegionState: 'GeofencingRegionState',
+  ManifestAssetForReExport: 'ManifestAsset',
+  ManifestExtraForReExport: 'ManifestExtra',
+  ManifestsEASConfig: 'EASConfig',
+  ManifestsExpoGoConfig: 'ExpoGoConfig',
 };
 
 /**
@@ -317,6 +328,7 @@ export const hardcodedTypeLinks: Record<string, string> = {
   DeviceSensor: '/versions/latest/sdk/sensors',
   Element: 'https://www.typescriptlang.org/docs/handbook/jsx.html#function-component',
   Error: 'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error',
+  EventEmitter: '/versions/latest/sdk/expo/#eventemittertype',
   Exclude:
     'https://www.typescriptlang.org/docs/handbook/utility-types.html#excludeuniontype-excludedmembers',
   ExpoConfig:
@@ -368,10 +380,12 @@ export const hardcodedTypeLinks: Record<string, string> = {
   NavigationOptions: 'https://reactnavigation.org/docs/screen-options/',
   NavigationState: 'https://reactnavigation.org/docs/navigation-state',
   NavigatorID: 'https://reactnavigation.org/docs/custom-navigators/#type-checking-navigators',
+  NoInfer: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#noinfertype',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   OrientationChangeListener:
     '/versions/latest/sdk/screen-orientation/#orientationchangelistenerevent',
   PackagerAsset: 'https://github.com/facebook/react-native/blob/main/packages/assets/registry.js',
+  PagedInfo: '/versions/latest/sdk/media-library-legacy/#pagedinfo',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   PedometerUpdateCallback: '/versions/latest/sdk/pedometer/#pedometerupdatecallbackresult',
   PermissionStatus: '/versions/latest/sdk/expo/#permissionstatus',
@@ -395,12 +409,14 @@ export const hardcodedTypeLinks: Record<string, string> = {
   ReturnKeyTypeOptions: 'https://reactnative.dev/docs/textinput#returnkeytype',
   Response: 'https://developer.mozilla.org/en-US/docs/Web/API/Response',
   RootParamList: 'https://reactnavigation.org/docs/typescript/#navigator-specific-types',
+  Router: 'https://reactnavigation.org/docs/custom-routers',
   RouteProp: 'https://reactnavigation.org/docs/glossary-of-terms/#route-object',
   ScrollGeometry: '/versions/latest/sdk/ui/swift-ui/scrollview/#scrollgeometry',
   ScrollPhase: '/versions/latest/sdk/ui/swift-ui/scrollview/#scrollphase',
   SFSymbol: 'https://github.com/nandorojo/sf-symbols-typescript',
   SFSymbols6_0: 'https://github.com/nandorojo/sf-symbols-typescript',
   SFSymbols7_0: 'https://github.com/nandorojo/sf-symbols-typescript',
+  SharedObject: '/versions/latest/sdk/expo/#sharedobjecttype',
   SharedRefType: '/versions/latest/sdk/expo/#sharedreftype',
   ShareOptions: 'https://reactnative.dev/docs/share#share',
   SingularOptions: '/versions/latest/sdk/router/#singularoptions',

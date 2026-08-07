@@ -1304,7 +1304,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     const parsedOptions = {
       host: options.location.hostType === 'localhost' ? 'localhost' : undefined,
-      port: options.port,
+      port: this.getPort(),
       maxWorkers: options.maxWorkers,
       resetCache: options.resetDevServer,
     };
@@ -1330,7 +1330,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
     // Required for symbolication:
-    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${address?.port ?? options.port}`;
+    const serverBaseUrl = `${address?.protocol ?? 'http'}://localhost:${this.getPort()}`;
     process.env.EXPO_DEV_SERVER_ORIGIN = serverBaseUrl;
 
     if (!options.isExporting) {
@@ -1358,12 +1358,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
 
       const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-        getLocation: ({ runtime }) => {
+        getLocation: ({ runtime, forwarded }) => {
           if (runtime === 'custom') {
-            return this.urlCreator?.constructDevClientUrl();
+            return this.urlCreator?.constructDevClientUrl({ forwarded });
           } else {
             return this.urlCreator?.constructUrl({
-              scheme: 'exp',
+              // Expo Go maps the `exps` scheme to HTTPS, which `exp` can't express.
+              scheme: forwarded?.protocol === 'https' ? 'exps' : 'exp',
+              forwarded,
             });
           }
         },
@@ -1604,7 +1606,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       server,
       location: {
         // The port is the main thing we want to send back.
-        port: address?.port ?? options.port,
+        port: this.getPort(),
         // localhost isn't always correct.
         host: 'localhost',
         url: serverBaseUrl,

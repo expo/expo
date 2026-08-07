@@ -1,7 +1,5 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
-import type { ExpoPlist } from './IosConfig.types';
 import type { ConfigPlugin } from '../Plugin.types';
 import { withExpoPlist } from '../plugins/ios-plugins';
 import { withPlugins } from '../plugins/withPlugins';
@@ -21,6 +19,8 @@ import {
   getUpdateUrl,
 } from '../utils/Updates';
 import { addWarningIOS } from '../utils/warnings';
+import { createBuildPodfilePropsConfigPlugin } from './BuildProperties';
+import type { ExpoPlist } from './IosConfig.types';
 
 export enum Config {
   ENABLED = 'EXUpdatesEnabled',

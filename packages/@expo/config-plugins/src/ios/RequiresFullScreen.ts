@@ -1,8 +1,8 @@
 import type { ExpoConfig } from '@expo/config-types';
 
-import type { InfoPlist } from './IosConfig.types';
 import { createInfoPlistPlugin } from '../plugins/ios-plugins';
 import { addWarningIOS } from '../utils/warnings';
+import type { InfoPlist } from './IosConfig.types';
 
 export const withRequiresFullScreen = createInfoPlistPlugin(
   setRequiresFullScreen,

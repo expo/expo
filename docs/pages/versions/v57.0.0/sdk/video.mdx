@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
 ### Receiving events
 
 The changes in properties of the [`VideoPlayer`](#videoplayer) do not update the React state. Therefore, to display the information about the current state of the `VideoPlayer`, it is necessary to listen to the [events](#videoplayerevents) it emits.
-The event system is based on the [`EventEmitter`](../sdk/expo/#eventemitter) class and [hooks](../sdk/expo/#hooks) from the [`expo`](../sdk/expo) package. There are a few ways to listen to events:
+The event system is based on the [`EventEmitter`](../sdk/expo/#eventemittertype) class and [hooks](../sdk/expo/#hooks) from the [`expo`](../sdk/expo) package. There are a few ways to listen to events:
 
 #### `useEvent` hook
 
@@ -300,7 +300,7 @@ export default function PreloadingVideoPlayerScreen() {
     <View style={styles.contentContainer}>
       <VideoView player={currentPlayer} style={styles.video} nativeControls={false} />
       <TouchableOpacity style={styles.button} onPress={replacePlayer}>
-        <Text style={styles.buttonText}>Replace Player</Text>
+        <Text style={styles.buttonText}>Replace player</Text>
       </TouchableOpacity>
     </View>
   );
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
 ### Using the VideoPlayer directly
 
 In most cases, the [`useVideoPlayer`](#usevideoplayersource-setup-playerbuilderoptions) hook should be used to create a `VideoPlayer` instance. It manages the player's lifecycle and ensures that it is properly disposed of when the component is unmounted. However, in some advanced use cases, it might be necessary to create a `VideoPlayer` that does not get automatically destroyed when the component is unmounted.
-In those cases, the `VideoPlayer` can be created using the [`createVideoPlayer`](#videocreatevideoplayersource) function. You need be aware of the risks that come with this approach, as it is your responsibility to call the [`release()`](../sdk/expo/#release) method when the player is no longer needed. If not handled properly, this approach may lead to memory leaks.
+In those cases, the `VideoPlayer` can be created using the [`createVideoPlayer`](#videocreatevideoplayersource-playerbuilderoptions) function. You need be aware of the risks that come with this approach, as it is your responsibility to call the [`release()`](../sdk/expo/#release) method when the player is no longer needed. If not handled properly, this approach may lead to memory leaks.
 
 ```tsx Creating player instance
 import { createVideoPlayer } from 'expo-video';

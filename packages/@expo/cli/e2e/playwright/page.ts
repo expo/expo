@@ -5,6 +5,7 @@ export function pageCollectErrors(page: Page) {
   const collected = {
     errors: [] as Error[],
     logs: [] as ConsoleMessage[],
+    warnings: [] as ConsoleMessage[],
     all: [] as (Error | ConsoleMessage)[],
   };
 
@@ -12,6 +13,8 @@ export function pageCollectErrors(page: Page) {
     if (log.type() === 'error') {
       collected.logs.push(log);
       collected.all.push(log);
+    } else if (log.type() === 'warning') {
+      collected.warnings.push(log);
     }
   });
 

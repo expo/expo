@@ -166,7 +166,11 @@ describe('tabPress', () => {
 
     renderRouter(
       {
-        _layout: () => <Tabs />,
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="a" />
+          </Tabs>
+        ),
         'a/_layout': () => <Stack />,
         'a/index': () => <View testID="a-index" />,
         'a/b': () => <View testID="a-b" />,

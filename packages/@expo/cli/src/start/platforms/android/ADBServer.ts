@@ -1,12 +1,12 @@
 import spawnAsync from '@expo/spawn-async';
 import { execFileSync } from 'child_process';
 
-import { assertSdkRoot } from './AndroidSdk';
 import { Log } from '../../../log';
 import { env } from '../../../utils/env';
 import { AbortCommandError, CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { event } from '../events';
+import { assertSdkRoot } from './AndroidSdk';
 
 const BEGINNING_OF_ADB_ERROR_MESSAGE = 'error: ';
 

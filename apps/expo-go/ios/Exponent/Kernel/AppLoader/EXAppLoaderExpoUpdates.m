@@ -317,6 +317,15 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
     }
     return;
   }
+
+  NSString *scopeKey = _confirmedManifest.scopeKey;
+  NSData *interceptor = scopeKey ? [EXPatchedBundleRegistry interceptorForScopeKey:scopeKey] : nil;
+  if (interceptor && _bundle) {
+    NSMutableData *patched = [NSMutableData dataWithCapacity:interceptor.length + _bundle.length];
+    [patched appendData:interceptor];
+    [patched appendData:_bundle];
+    _bundle = patched;
+  }
   if (self.delegate) {
     [self.delegate appLoader:self didFinishLoadingManifest:_confirmedManifest bundle:_bundle];
   }
@@ -772,14 +781,31 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
       @"Expo-Client-Release-Type": [EXClientReleaseType clientReleaseType]
   };
 
+  NSMutableDictionary *requestHeadersMutable = [requestHeaders mutableCopy];
+  [requestHeadersMutable addEntriesFromDictionary:[self forwardedHeadersForURL:[[self class] _httpUrlFromManifestUrl:_manifestUrl]]];
+
   NSString *sessionSecret = [[EXSession sharedInstance] sessionSecret];
   if (sessionSecret) {
-    NSMutableDictionary *requestHeadersMutable = [requestHeaders mutableCopy];
     requestHeadersMutable[@"Expo-Session"] = sessionSecret;
-    requestHeaders = requestHeadersMutable;
   }
 
-  return requestHeaders;
+  return requestHeadersMutable;
+}
+
+- (NSDictionary *)forwardedHeadersForURL:(NSURL *)url
+{
+  NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:NO];
+  if (!components.host || !components.scheme) {
+    return @{};
+  }
+
+  NSString *authority = components.port ? [NSString stringWithFormat:@"%@:%@", components.host, components.port] : components.host;
+  NSMutableDictionary *headers = @{
+    @"Forwarded": [NSString stringWithFormat:@"host=\"%@\";proto=%@", authority, components.scheme],
+    @"X-Forwarded-Host": authority,
+    @"X-Forwarded-Proto": components.scheme,
+  }.mutableCopy;
+  return headers;
 }
 
 - (NSString *)_userAgentString

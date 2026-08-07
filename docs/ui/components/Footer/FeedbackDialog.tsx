@@ -146,7 +146,7 @@ export const FeedbackDialog = ({ pathname }: Props) => {
                 </div>
                 <div className="flex min-h-14 items-center justify-end gap-2 bg-subtle px-3">
                   <Dialog.Close asChild>
-                    <Button theme="quaternary">No Thanks</Button>
+                    <Button theme="quaternary">No thanks</Button>
                   </Dialog.Close>
                   <Button type="submit">Submit</Button>
                 </div>

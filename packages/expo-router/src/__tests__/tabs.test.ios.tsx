@@ -10,7 +10,11 @@ import { renderRouter } from '../testing-library';
 
 it('should not render generated screens', () => {
   renderRouter({
-    _layout: () => <Tabs />,
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+      </Tabs>
+    ),
     index: () => <Text testID="index">Index</Text>,
   });
 
@@ -21,22 +25,24 @@ it('should not render generated screens', () => {
   expect(tabList?.children).toHaveLength(1);
 });
 
-it('screens can be hidden', () => {
+it('only layout-declared screens render tab items', () => {
   renderRouter({
     _layout: () => (
       <Tabs>
-        <Tabs.Screen name="hidden" />
+        <Tabs.Screen name="visible" />
       </Tabs>
     ),
     index: () => <Text testID="index">Index</Text>,
-    hidden: () => <Text testID="index">Index</Text>,
+    hidden: () => <Text testID="hidden">Hidden</Text>,
+    visible: () => <Text testID="visible">Visible</Text>,
   });
 
-  expect(screen.getByTestId('index')).toBeVisible();
-
-  const tabList = screen.getByLabelText('index, tab, 2 of 2').parent;
+  const tabList = screen.getByLabelText('visible, tab, 1 of 1').parent;
 
   expect(tabList?.children).toHaveLength(1);
+  expect(screen.queryByTestId('index')).toBeNull();
+  expect(screen.queryByTestId('hidden')).toBeNull();
+  expect(screen.getByTestId('visible')).toBeVisible();
 });
 
 it('has correct routeInfo when switching tabs as a nested navigator - using api', () => {
@@ -52,7 +58,12 @@ it('has correct routeInfo when switching tabs as a nested navigator - using api'
       _layout: () => <Stack />,
       '(tabs)/_layout': function Layout() {
         layoutCalls(useSegments());
-        return <Tabs />;
+        return (
+          <Tabs>
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="explore" />
+          </Tabs>
+        );
       },
       '(tabs)/index': function Index() {
         indexCalls(useSegments());
@@ -118,7 +129,12 @@ it('has correct routeInfo when switching tabs as a nested navigator - using pres
       _layout: () => <Stack />,
       '(tabs)/_layout': function Layout() {
         layoutCalls(useSegments());
-        return <Tabs />;
+        return (
+          <Tabs>
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="explore" />
+          </Tabs>
+        );
       },
       '(tabs)/index': function Index() {
         indexCalls(useSegments());
@@ -195,7 +211,12 @@ it('has correct routeInfo when switching tabs using press', () => {
     {
       _layout: function Layout() {
         layoutCalls(useSegments());
-        return <Tabs />;
+        return (
+          <Tabs>
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="explore" />
+          </Tabs>
+        );
       },
       index: function Index() {
         indexCalls(useSegments());
@@ -259,7 +280,12 @@ it('has correct routeInfo when switching tabs using press', () => {
 it('can push screens', () => {
   renderRouter(
     {
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
       one: () => <Text testID="one">One</Text>,
       two: () => <Text testID="two">Two</Text>,
     },
@@ -278,7 +304,13 @@ it('can push screens', () => {
 it('works with goBack', () => {
   renderRouter(
     {
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+          <Tabs.Screen name="three" />
+        </Tabs>
+      ),
       one: () => <Text testID="one">One</Text>,
       two: () => <Text testID="two">Two</Text>,
       three: () => <Text testID="three">Three</Text>,
@@ -304,7 +336,13 @@ it('works with goBack', () => {
 it('works with goBack (history)', () => {
   renderRouter(
     {
-      _layout: () => <Tabs backBehavior="history" />,
+      _layout: () => (
+        <Tabs backBehavior="history">
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+          <Tabs.Screen name="three" />
+        </Tabs>
+      ),
       one: () => <Text testID="one">One</Text>,
       two: () => <Text testID="two">Two</Text>,
       three: () => <Text testID="three">Three</Text>,
@@ -329,7 +367,12 @@ it('works with goBack (history)', () => {
 it('can use replace navigation', () => {
   renderRouter(
     {
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
       one: () => <Text testID="one">One</Text>,
       two: () => <Text testID="two">Two</Text>,
     },
@@ -350,7 +393,6 @@ it('can use replace navigation', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -395,7 +437,13 @@ it('can use replace navigation', () => {
 it('can use replace navigation with history backBehavior', () => {
   renderRouter(
     {
-      _layout: () => <Tabs backBehavior="history" />,
+      _layout: () => (
+        <Tabs backBehavior="history">
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+          <Tabs.Screen name="three" />
+        </Tabs>
+      ),
       one: () => <Text testID="one">One</Text>,
       two: () => <Text testID="two">Two</Text>,
       three: () => <Text testID="three">Three</Text>,
@@ -422,7 +470,12 @@ it('does not re-render when navigating to different tab', () => {
   const onTwoRender = jest.fn();
   renderRouter(
     {
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="one" />
+          <Tabs.Screen name="two" />
+        </Tabs>
+      ),
       one: function One() {
         onOneRender();
         return <Text testID="one">One</Text>;
@@ -467,7 +520,11 @@ it('updates route info, when going back to initial screen', () => {
         </View>
       );
     },
-    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/_layout': () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+      </Tabs>
+    ),
     '(tabs)/index': function Index() {
       const segments = useSegments();
       return <Text testID="index">{JSON.stringify(segments)}</Text>;

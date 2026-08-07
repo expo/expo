@@ -880,7 +880,7 @@ properties.
           data-heading="true"
           id="inherited-props"
         >
-          Inherited Props
+          Inherited props
           <a
             class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100 size-5.5 min-w-5.5"
             href="#inherited-props"
@@ -2522,7 +2522,7 @@ sign-out operation.
     data-heading="true"
     id="event-subscriptions"
   >
-    Event Subscriptions
+    Event subscriptions
     <a
       class="border border-solid rounded-full font-medium items-center whitespace-nowrap gap-2 text-sm border-button-quaternary bg-button-quaternary text-button-quaternary shadow-none hocus:bg-button-quaternary-hover active:scale-98 relative my-auto inline-flex size-6.25 min-w-6.25 justify-center p-0 transition-all duration-default invisible opacity-0 group-hover:visible group-hover:opacity-100 group-focus-visible:visible group-focus-visible:opacity-100"
       href="#event-subscriptions"
@@ -4020,7 +4020,7 @@ may be
       <span
         class="text-sm font-medium text-tertiary"
       >
-        Literal Type: 
+        Literal type: 
       </span>
       <code
         class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"
@@ -8840,7 +8840,7 @@ After calling this function, the listener will no longer receive any events from
       <span
         class="text-sm font-medium text-tertiary"
       >
-        Literal Type: 
+        Literal type: 
       </span>
       <code
         class="text-inherit text-xs leading-[130%] font-normal inline-block rounded-md border border-secondary bg-subtle px-1 py-0.5"

@@ -156,9 +156,9 @@ func resolvePodsRoot() -> String {
   let repoRoot =
     env["EXPO_ROOT_DIR"]
     ?? URL(fileURLWithPath: packageDir)
-    .deletingLastPathComponent()  // expo-modules-jsi
-    .deletingLastPathComponent()  // packages
-    .deletingLastPathComponent()  // repo root
+    .deletingLastPathComponent() // expo-modules-jsi
+    .deletingLastPathComponent() // packages
+    .deletingLastPathComponent() // repo root
     .path
   return "\(repoRoot)/apps/bare-expo/ios/Pods"
 }

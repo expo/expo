@@ -4,6 +4,7 @@ import { View } from 'react-native';
 import { Tabs } from 'react-native-screens';
 
 import { router } from '../../imperative-api';
+import Stack from '../../layouts/StackClient';
 import { Link } from '../../link/Link';
 import { renderRouter } from '../../testing-library';
 import { NativeTabs } from '../NativeTabs';
@@ -173,6 +174,16 @@ describe('Native Bottom Tabs Navigation', () => {
 });
 
 describe('Native Bottom Tabs trigger changes', () => {
+  let warnSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    warnSpy.mockRestore();
+  });
+
   it('renders only routes with visible triggers', () => {
     renderRouter({
       _layout: () => (
@@ -240,6 +251,27 @@ describe('Native Bottom Tabs trigger changes', () => {
     expect(screen.getByTestId('index')).toBeVisible();
     expect(screen.queryByTestId('not-specified')).toBeNull();
     expect(screen).toHavePathname('/');
+  });
+
+  it('removes a replaced route from tab history', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs backBehavior="history">
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+      second: () => <View testID="second" />,
+      notSpecified: () => <View testID="not-specified" />,
+    });
+
+    act(() => router.push('/second'));
+    act(() => router.push('/notSpecified'));
+    expect(screen).toHavePathname('/');
+
+    act(() => router.back());
+    expect(screen).toHavePathname('/second');
   });
 
   it('respects initialRouteName when redirecting from a route without a visible tab', () => {
@@ -343,6 +375,41 @@ describe('Native Bottom Tabs trigger changes', () => {
     }
   });
 
+  it('waits for a nested native tabs navigator to regain focus before redirecting', () => {
+    let setHidden!: (hidden: boolean) => void;
+    function TabsLayout() {
+      const [hidden, set] = useState(false);
+      setHidden = set;
+      return (
+        <NativeTabs>
+          <NativeTabs.Trigger name="index" />
+          <NativeTabs.Trigger name="second" hidden={hidden} />
+        </NativeTabs>
+      );
+    }
+    renderRouter(
+      {
+        _layout: () => <Stack />,
+        index: () => <View testID="outside" />,
+        'tabs/_layout': TabsLayout,
+        'tabs/index': () => <View testID="tabs-index" />,
+        'tabs/second': () => <View testID="tabs-second" />,
+      },
+      { initialUrl: '/tabs/second' }
+    );
+
+    act(() => router.push('/'));
+    act(() => setHidden(true));
+
+    expect(screen).toHavePathname('/');
+    expect(screen.getByTestId('outside')).toBeVisible();
+
+    act(() => router.back());
+
+    expect(screen).toHavePathname('/tabs');
+    expect(screen.getByTestId('tabs-index')).toBeVisible();
+  });
+
   it('renders no tab UI when every trigger is hidden', () => {
     renderRouter({
       _layout: () => (
@@ -355,5 +422,6 @@ describe('Native Bottom Tabs trigger changes', () => {
 
     expect(screen.queryByTestId('index')).toBeNull();
     expect(TabsScreen).not.toHaveBeenCalled();
+    expect(warnSpy.mock.calls).toMatchSnapshot();
   });
 });

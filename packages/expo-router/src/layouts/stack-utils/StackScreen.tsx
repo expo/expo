@@ -34,14 +34,6 @@ export interface StackScreenProps extends PropsWithChildren {
   options?: StackBaseScreenProps['options'];
 
   /**
-   * Redirect to the nearest sibling route.
-   * If all children are `redirect={true}`, the layout will render `null` as there are no children to render.
-   *
-   * Only supported when used inside a Layout component.
-   */
-  redirect?: StackBaseScreenProps['redirect'];
-
-  /**
    * Initial params to pass to the route.
    *
    * Only supported when used inside a Layout component.

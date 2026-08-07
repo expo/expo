@@ -8,6 +8,7 @@ import {
 } from '../../expo-ui/src/jetpack-compose/Button';
 import { Checkbox } from '../../expo-ui/src/jetpack-compose/Checkbox';
 import { Column } from '../../expo-ui/src/jetpack-compose/Column';
+import { LazyColumn } from '../../expo-ui/src/jetpack-compose/LazyColumn';
 import { LoadingIndicator } from '../../expo-ui/src/jetpack-compose/LoadingIndicator';
 import {
   CircularProgressIndicator,
@@ -38,4 +39,5 @@ export {
   Switch,
   Text,
   TextButton,
+  LazyColumn,
 };

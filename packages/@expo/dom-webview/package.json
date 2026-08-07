@@ -1,6 +1,6 @@
 {
   "name": "@expo/dom-webview",
-  "version": "56.0.5",
+  "version": "57.0.1",
   "description": "A WebView specifically designed for Expo DOM components",
   "keywords": [
     "dom",

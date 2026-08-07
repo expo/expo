@@ -47,7 +47,7 @@ describe('APISection', () => {
     expect(screen.getAllByRole('table')).toHaveLength(11);
     expect(screen.queryAllByText('Interfaces')).toHaveLength(1);
 
-    expect(screen.queryByText('Event Subscriptions'));
+    expect(screen.queryByText('Event subscriptions'));
     expect(screen.queryByText('Components'));
 
     expect(screen.queryByDisplayValue('AppleAuthenticationButton'));
@@ -78,7 +78,7 @@ describe('APISection', () => {
     expect(screen.queryByDisplayValue('PermissionStatus'));
 
     expect(screen.queryAllByText('Constants')).toHaveLength(0);
-    expect(screen.queryAllByText('Event Subscriptions')).toHaveLength(0);
+    expect(screen.queryAllByText('Event subscriptions')).toHaveLength(0);
     expect(screen.queryAllByText('Hooks')).toHaveLength(0);
 
     expect(container).toMatchSnapshot();

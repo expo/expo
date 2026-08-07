@@ -1,6 +1,6 @@
 {
   "name": "expo-brightness",
-  "version": "56.0.5",
+  "version": "57.0.1",
   "description": "Provides an API to get and set screen brightness.",
   "keywords": [
     "brightness",
@@ -29,6 +29,8 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module",
