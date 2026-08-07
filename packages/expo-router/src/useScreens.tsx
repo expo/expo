@@ -23,6 +23,7 @@ import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
   useStateForPath,
+  type DescriptorRouteProp,
   type EventConsumer,
   type EventMapBase,
   type NavigationProp,
@@ -57,7 +58,7 @@ export type ScreenProps<
   initialParams?: Record<string, any>;
   options?:
     | TOptions
-    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
+    | ((prop: { route: DescriptorRouteProp<ParamListBase, string>; navigation: any }) => TOptions);
 
   listeners?:
     | ScreenListeners<TState, TEventMap>

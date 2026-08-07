@@ -19,7 +19,7 @@ import {
   SafeAreaProviderCompat,
   useFrameSize,
 } from '../../elements';
-import { NavigationProvider, usePreventRemoveContext, useTheme } from '../../native';
+import { NavigationProvider, type Route, usePreventRemoveContext, useTheme } from '../../native';
 import type {
   NativeStackDescriptor,
   NativeStackDescriptorMap,
@@ -45,6 +45,7 @@ type SceneViewProps = {
   index: number;
   focused: boolean;
   shouldFreeze: boolean;
+  route: Route<string>;
   descriptor: NativeStackDescriptor;
   previousDescriptor?: NativeStackDescriptor;
   nextDescriptor?: NativeStackDescriptor;
@@ -67,6 +68,7 @@ const SceneView = ({
   index,
   focused,
   shouldFreeze,
+  route,
   descriptor,
   previousDescriptor,
   nextDescriptor,
@@ -82,7 +84,7 @@ const SceneView = ({
   onGestureCancel,
   onSheetDetentChanged,
 }: SceneViewProps) => {
-  const { route, navigation, options, render } = descriptor;
+  const { navigation, options, render } = descriptor;
 
   let {
     animation,
@@ -508,6 +510,7 @@ export function NativeStackView({ state, descriptors, emit, pop, unstable_native
               index={index}
               focused={isFocused}
               shouldFreeze={shouldFreeze}
+              route={route}
               descriptor={descriptor}
               previousDescriptor={previousDescriptor}
               nextDescriptor={nextDescriptor}

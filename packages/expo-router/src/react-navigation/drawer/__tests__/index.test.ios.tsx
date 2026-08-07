@@ -194,6 +194,39 @@ test('preloads screens', async () => {
   expect(screen.queryByText('Second screen', { includeHiddenElements: true })).not.toBeNull();
 });
 
+test('preloads a non-lazy screen after mount', () => {
+  renderRouter({
+    _layout: () => (
+      <Drawer>
+        <Drawer.Screen name="index" />
+        <Drawer.Screen name="second" options={{ lazy: false }} />
+      </Drawer>
+    ),
+    index: () => null,
+    second: () => <Text>Second screen</Text>,
+  });
+
+  expect(screen.queryByText('Second screen', { includeHiddenElements: true })).not.toBeNull();
+});
+
+test('renders drawer items for unvisited routes and navigates on press', async () => {
+  renderRouter({
+    _layout: () => (
+      <Drawer>
+        <Drawer.Screen name="index" />
+        <Drawer.Screen name="second" options={{ drawerLabel: 'Second item' }} />
+      </Drawer>
+    ),
+    index: () => null,
+    second: () => <Text>Second screen</Text>,
+  });
+
+  await userEvent.press(screen.getByRole('button', { name: 'Second item' }));
+
+  expect(screen.getByText('Second screen')).toBeVisible();
+  expect(screen).toHavePathname('/second');
+});
+
 test('resets a nested stack when its drawer screen loses focus with popToTopOnBlur', async () => {
   renderRouter(
     {

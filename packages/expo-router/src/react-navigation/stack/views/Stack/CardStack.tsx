@@ -563,9 +563,7 @@ export class CardStack extends React.Component<Props, State> {
     const previousRoute = getPreviousRoute({ route });
 
     if (previousRoute) {
-      const previousScene = scenes.find(
-        (scene) => scene.descriptor.route.key === previousRoute.key
-      );
+      const previousScene = scenes.find((scene) => scene.route.key === previousRoute.key);
 
       return previousScene;
     }
