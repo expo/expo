@@ -100,7 +100,6 @@ suspend fun putAssetsInfo(
   val durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION)
   val localUriIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
   val albumIdIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
-  // Read dimension columns here so parallel workers never touch the cursor.
   val widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
   val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
   val orientationIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
