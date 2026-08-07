@@ -20,6 +20,7 @@ import { Alert, AppState, type AppStateStatus } from 'react-native';
 import * as TestUtils from '../TestUtils';
 import type { JasmineInterface } from '../types';
 import { isInteractive } from '../utils/Environment';
+import { requireNotNull } from '../utils/requireNotNull';
 import { waitFor } from './helpers';
 
 export const name = 'Notifications';
@@ -151,7 +152,7 @@ export async function test(t: JasmineInterface) {
       t.it('emits a "notification received" event with `data` value', async () => {
         await waitUntil(() => !!receivedEvent);
         t.expect(receivedEvent).not.toBeNull();
-        t.expect(receivedEvent!.request.content.data!.fieldTestedInDataContentsTest).toBe(42);
+        t.expect(receivedEvent?.request.content.data?.fieldTestedInDataContentsTest).toBe(42);
         if (Platform.OS === 'android') {
           // @ts-expect-error delete this later, see TODO in mapNotificationContent
           t.expect(typeof receivedEvent.request.content.dataString).toBe('string');
@@ -187,7 +188,7 @@ export async function test(t: JasmineInterface) {
           async () => {
             await waitUntil(() => !!handleErrorEvent);
             t.expect(handleErrorEvent).not.toBeNull();
-            t.expect(typeof handleErrorEvent![0]).toBe('string');
+            t.expect(typeof handleErrorEvent?.[0]).toBe('string');
             t.expect(handleSuccessEvent).toBeNull();
           },
           10000
@@ -346,9 +347,9 @@ export async function test(t: JasmineInterface) {
                 ...testChannel,
                 groupId,
               });
-              t.expect(channel!.groupId).toBe(groupId);
+              t.expect(channel?.groupId).toBe(groupId);
               const group = await Notifications.getNotificationChannelGroupAsync(groupId);
-              t.expect(group!.channels).toContain(t.jasmine.objectContaining(testChannel));
+              t.expect(group?.channels).toContain(t.jasmine.objectContaining(testChannel));
             } catch (e) {
               await Notifications.deleteNotificationChannelAsync(testChannelId);
               await Notifications.deleteNotificationChannelGroupAsync(groupId);
@@ -1485,8 +1486,9 @@ export async function test(t: JasmineInterface) {
             minute: 20,
           });
           t.expect(nextDate).not.toBeNull();
-          t.expect(new Date(nextDate!).getHours()).toBe(9);
-          t.expect(new Date(nextDate!).getMinutes()).toBe(20);
+          const triggerDate = new Date(requireNotNull(nextDate, 'nextDate'));
+          t.expect(triggerDate.getHours()).toBe(9);
+          t.expect(triggerDate.getMinutes()).toBe(20);
         });
 
         t.it('generates trigger date for a weekly trigger', async () => {
@@ -1497,7 +1499,7 @@ export async function test(t: JasmineInterface) {
             minute: 20,
           });
           t.expect(nextDateTimestamp).not.toBeNull();
-          const nextDate = new Date(nextDateTimestamp!);
+          const nextDate = new Date(requireNotNull(nextDateTimestamp, 'nextDateTimestamp'));
           // JS has 0 (Sunday) - 6 (Saturday) based week days
           t.expect(nextDate.getDay()).toBe(1);
           t.expect(nextDate.getHours()).toBe(9);
@@ -1513,7 +1515,7 @@ export async function test(t: JasmineInterface) {
             minute: 20,
           });
           t.expect(nextDateTimestamp).not.toBeNull();
-          const nextDate = new Date(nextDateTimestamp!);
+          const nextDate = new Date(requireNotNull(nextDateTimestamp, 'nextDateTimestamp'));
           t.expect(nextDate.getDate()).toBe(2);
           t.expect(nextDate.getMonth()).toBe(6);
           t.expect(nextDate.getHours()).toBe(9);
@@ -1730,8 +1732,8 @@ export async function test(t: JasmineInterface) {
           });
           await waitUntil(() => !!event);
           t.expect(event).not.toBeNull();
-          t.expect(event!.actionIdentifier).toBe(Notifications.DEFAULT_ACTION_IDENTIFIER);
-          t.expect(event!.notification).toEqual(
+          t.expect(event?.actionIdentifier).toBe(Notifications.DEFAULT_ACTION_IDENTIFIER);
+          t.expect(event?.notification).toEqual(
             t.jasmine.objectContaining({
               request: t.jasmine.objectContaining({
                 content: t.jasmine.objectContaining(notificationSpec),
