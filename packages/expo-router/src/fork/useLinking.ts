@@ -367,6 +367,15 @@ export function useLinking(
 
       if (state) {
         const route = findFocusedRoute(state);
+
+        // START FORK
+        // Skip URL sync for partially-mounted group routes (same guard as onStateChange).
+        // See: https://github.com/expo/expo/issues/48439
+        if (route && /^\([^/]+\)$/.test(route.name) && !('state' in route && route.state)) {
+          return;
+        }
+        // END FORK
+
         const path = getPathForRoute(route, state);
 
         if (previousStateRef.current === undefined) {
@@ -403,6 +412,19 @@ export function useLinking(
 
       const pendingPath = pendingPopStatePathRef.current;
       const route = findFocusedRoute(state);
+
+      // START FORK
+      // If the focused route is a group whose nested navigator has not mounted yet,
+      // the state is still partial. Resolving a path from it would fall back to the
+      // group's first defined screen, briefly rewriting the URL to the wrong path.
+      // Skip the sync — the next state event (when the child navigator mounts) will
+      // carry the real route and write the correct URL.
+      // See: https://github.com/expo/expo/issues/48439
+      if (route && /^\([^/]+\)$/.test(route.name) && !('state' in route && route.state)) {
+        return;
+      }
+      // END FORK
+
       const path = getPathForRoute(route, state);
 
       // START FORK
