@@ -119,13 +119,16 @@ public func getWidgetEnvironment(environment: EnvironmentValues) -> [String: Any
   return env
 }
 
-func getLiveActivityEnvironment(environment: EnvironmentValues) -> [String: Any] {
+func getLiveActivityEnvironment(for environment: EnvironmentValues, in context: ActivityViewContext<LiveActivityAttributes>) -> [String: Any] {
   var env: [String: Any] = [
     "colorScheme": "\(environment.colorScheme)"
   ]
 
   if #available(iOS 16.0, *) {
     env["isLuminanceReduced"] = environment.isLuminanceReduced
+  }
+  if #available(iOS 16.2, *) {
+    env["isStale"] = context.isStale
   }
   if #available(iOS 16.1, *) {
     env["isActivityFullscreen"] = environment.isActivityFullscreen

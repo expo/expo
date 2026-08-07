@@ -23,14 +23,6 @@ public struct WidgetLiveActivity: Widget {
   @Environment(\.self) var env
   
   let widgetContext: AppContext = AppContext()
-  
-  func environment(for context: ActivityViewContext<LiveActivityAttributes>) -> [String: Any] {
-    var env: [String: Any] = getLiveActivityEnvironment(environment: self.env)
-    if #available(iOS 16.2, *) {
-      env["isStale"] = context.isStale
-    }
-    return env
-  }
 
   public init() {}
 
@@ -39,7 +31,7 @@ public struct WidgetLiveActivity: Widget {
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
         props: context.state.props,
-        environment: environment(for: context)
+        environment: getLiveActivityEnvironment(for: env, in: context)
       )
       // Only apply widgetURL when the activity has one: a hierarchy with more than one
       // widgetURL modifier is undefined behavior, and layouts can set their own through
@@ -54,7 +46,7 @@ public struct WidgetLiveActivity: Widget {
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
         props: context.state.props,
-        environment: environment(for: context)
+        environment: getLiveActivityEnvironment(for: env, in: context)
       )
       let island = DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
