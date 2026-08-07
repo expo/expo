@@ -543,6 +543,8 @@ describe('Icons', () => {
               'NativeTabs does not currently support rendering icons in different modes'
             )
           );
+          // The warning names the tab so it can be found in a layout with many triggers.
+          expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('"index" tab'));
         } else {
           expect(warnSpy).not.toHaveBeenCalled();
         }

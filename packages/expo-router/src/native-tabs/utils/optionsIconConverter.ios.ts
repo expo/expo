@@ -2,7 +2,7 @@ import type { ColorValue, ImageSourcePropType } from 'react-native';
 import type { PlatformIconIOS } from 'react-native-screens';
 
 import type { NativeTabsTriggerIconProps } from '../common/elements';
-import type { NativeTabOptions } from '../types';
+import type { IconRenderingMode, NativeTabOptions } from '../types';
 import type { AwaitedIcon } from './icon';
 import { applyIconSrcOptions, applySelectedColor } from './optionsIconConverter.shared';
 
@@ -44,12 +44,6 @@ export function appendIconOptions(options: NativeTabOptions, props: NativeTabsTr
 }
 
 /**
- * How an image-based icon is tinted: `template` lets the tab bar recolor it, `original` keeps
- * the image's own colors. It does not apply to SF Symbols, which the system always tints.
- */
-export type IconRenderingMode = 'template' | 'original';
-
-/**
  * Resolves the rendering mode an icon will be displayed with, or `undefined` when the icon isn't
  * image-based. An explicit `renderingMode` always wins; otherwise an icon color implies
  * `template`, because a color can only take effect on a template image.
@@ -76,21 +70,16 @@ export function convertOptionsIconToScreensPropsIcon(
     };
   }
   const imageSource = getIconImageSource(icon);
-  if (imageSource) {
-    const effectiveRenderingMode = renderingMode ?? resolveIconRenderingMode(icon);
-    if (effectiveRenderingMode === 'template') {
-      return { type: 'templateSource', templateSource: imageSource };
-    }
+  if (!imageSource) {
+    return undefined;
+  }
+  const effectiveRenderingMode = renderingMode ?? resolveIconRenderingMode(icon);
+  if (effectiveRenderingMode === 'original') {
     return { type: 'imageSource', imageSource };
   }
-  return undefined;
+  return { type: 'templateSource', templateSource: imageSource };
 }
 
-/**
- * Returns the image an icon renders, mirroring the precedence in
- * {@link convertOptionsIconToScreensPropsIcon} — SF Symbols aren't image-based, so they resolve
- * to `undefined`.
- */
 function getIconImageSource(icon: AwaitedIcon | undefined): ImageSourcePropType | undefined {
   if (!icon || ('sf' in icon && icon.sf)) {
     return undefined;

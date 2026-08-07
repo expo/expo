@@ -38,7 +38,7 @@
 - [android][ios] Fix `expo-router/head` and `expo-router/stack` resolution on native platforms. ([#47870](https://github.com/expo/expo/pull/47870) by [@hassankhan](https://github.com/hassankhan))
 - Fix missing subpath warning from Metro when importing from `expo-router/server` ([#48045](https://github.com/expo/expo/pull/48045) by [@hassankhan](https://github.com/hassankhan))
 - Fix `replace` navigation in tabs leaving the replaced route in history. ([#48256](https://github.com/expo/expo/pull/48256) by [@Ubax](https://github.com/Ubax))
-- [ios][native-tabs] Fix a `[RNScreens] icon and selectedIcon must be same type.` crash when the normal and selected icons resolved to different rendering modes, for example when only `selectedIconColor` was set. Both icons now use the normal state's rendering mode and a warning is logged. ([#48302](https://github.com/expo/expo/pull/48302) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
+- [ios][native-tabs] Fix a `[RNScreens] icon and selectedIcon must be same type.` crash when the normal and selected icons resolved to different rendering modes. ([#48302](https://github.com/expo/expo/pull/48302) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 
 ### 💡 Others
 
