@@ -170,9 +170,12 @@ describe('module Proxy', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
-  it('forwards errorHandlingEnabled to native along with the rest of the config', () => {
+  it('passes the config through to the native module unchanged', () => {
     const Observe = loadModule();
     Observe.configure({ environment: 'test', errorHandlingEnabled: false });
+    // The native `Config` record has no `errorHandlingEnabled` field, so decoding drops it. This
+    // asserts the JS layer doesn't strip or rewrite the object on its way out, not that native
+    // reads the flag: the gate lives entirely in JS.
     expect(mockNative.configure).toHaveBeenCalledWith({
       environment: 'test',
       errorHandlingEnabled: false,

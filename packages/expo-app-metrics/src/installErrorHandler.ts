@@ -6,14 +6,14 @@ let installed = false;
 let enabled = true;
 
 /**
- * Enables or disables reporting from the unhandled-JS-error handler.
+ * Enables or disables reporting of unhandled JavaScript errors.
  *
- * The handler itself is installed once at import time, before any configuration call can run, so
- * this toggles whether it records anything rather than whether it is installed. When disabled, the
- * handler still chains to the previously-installed handler, leaving React Native's behavior (red box
- * in development, fatal termination in production) unchanged.
+ * The handler is installed once when this package is imported, before any configuration call can
+ * run, so this toggles whether errors are recorded rather than whether the handler is installed.
+ * Disabling it leaves React Native's own behavior (red box in development, fatal termination in
+ * production) unchanged.
  *
- * Meant for the packages that wrap this one, not for host apps to call directly.
+ * Exported for the packages that wrap this one, not for host apps to call directly.
  *
  * @internal
  */
@@ -29,9 +29,12 @@ export function setErrorHandlerEnabled(value: boolean): void {
  * fatal termination in production) is unchanged.
  *
  * Idempotent: only the first call installs. Called automatically when `expo-app-metrics` is
- * imported, so capture is live as early as the app pulls the module in.
+ * imported, so capture is live as early as the app pulls the module in. Nothing else needs to call
+ * it, which is why it isn't part of the package's exports.
  *
  * Reporting can be turned off afterwards with `setErrorHandlerEnabled(false)`.
+ *
+ * @private
  */
 export function installErrorHandler(): void {
   if (installed) {
