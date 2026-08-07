@@ -281,6 +281,7 @@ export function test({ describe, expect, it, ...t }: any) {
         expect(player.shouldCorrectPitch).toBe(true);
         expect(player.currentTime).toBe(0);
         expect(player.duration).toBeGreaterThan(0);
+        expect(player.isActiveForLockScreen).toBe(false);
       });
 
       it('has valid currentStatus object', async () => {

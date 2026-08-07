@@ -227,6 +227,10 @@ public class AudioModule: Module {
         player.currentStatus()
       }
 
+      Property("isActiveForLockScreen") { player in
+        player.isActiveForLockScreen
+      }
+
       Function("play") { player in
         guard self.canStartPlayback() else {
           return
@@ -373,6 +377,10 @@ public class AudioModule: Module {
 
       Property("currentStatus") { playlist in
         playlist.currentStatus()
+      }
+
+      Property("isActiveForLockScreen") { playlist in
+        playlist.isActiveForLockScreen
       }
 
       Function("play") { playlist in
