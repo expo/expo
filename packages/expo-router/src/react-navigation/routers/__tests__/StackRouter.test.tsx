@@ -1,6 +1,13 @@
 import { expect, jest, test } from '@jest/globals';
 
-import { CommonActions, type RouterConfigOptions, StackActions, StackRouter } from '..';
+import {
+  CommonActions,
+  type ParamListBase,
+  type RouterConfigOptions,
+  StackActions,
+  StackRouter,
+  type StackNavigationState,
+} from '..';
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
 
@@ -216,7 +223,7 @@ test('gets state on route names change', () => {
   const router = StackRouter({});
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 2,
         key: 'stack-test',
@@ -229,6 +236,7 @@ test('gets state on route names change', () => {
         stale: false,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
         routeParamList: {
@@ -236,7 +244,6 @@ test('gets state on route names change', () => {
           fiz: { fruit: 'apple' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -252,7 +259,7 @@ test('gets state on route names change', () => {
   });
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
         key: 'stack-test',
@@ -264,13 +271,13 @@ test('gets state on route names change', () => {
         stale: false,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
       {
         routeNames: ['baz', 'qux'],
         routeParamList: {
           baz: { name: 'John' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -287,7 +294,7 @@ test('gets state on route names change with initialRouteName', () => {
   const router = StackRouter({ initialRouteName: 'qux' });
 
   expect(
-    router.getStateForRouteNamesChange(
+    router.getStateForAction(
       {
         index: 1,
         key: 'stack-test',
@@ -299,13 +306,13 @@ test('gets state on route names change with initialRouteName', () => {
         stale: false,
         type: 'stack',
       },
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
       {
         routeNames: ['baz', 'qux'],
         routeParamList: {
           baz: { name: 'John' },
         },
         routeGetIdList: {},
-        routeKeyChanges: [],
       }
     )
   ).toEqual({
@@ -315,6 +322,52 @@ test('gets state on route names change with initialRouteName', () => {
     routes: [{ key: 'qux-test', name: 'qux' }],
     stale: false,
     type: 'stack',
+  });
+});
+
+test('returns the same stack state when route names already match', () => {
+  const router = StackRouter({});
+  const state = router.getInitialState({
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  });
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
+      { routeNames: ['bar', 'baz'], routeParamList: {}, routeGetIdList: {} }
+    )
+  ).toBe(state);
+});
+
+test('promotes a surviving preloaded route when every active route is removed', () => {
+  const router = StackRouter({});
+  const state = {
+    stale: false as const,
+    type: 'stack' as const,
+    key: 'stack-test',
+    index: 0,
+    routeNames: ['active', 'preloaded', 'removed'],
+    routes: [
+      { key: 'active-test', name: 'active' },
+      { key: 'preloaded-existing', name: 'preloaded' },
+      { key: 'removed-test', name: 'removed' },
+    ],
+  };
+
+  expect(
+    router.getStateForAction(
+      state,
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['preloaded', 'new'] } },
+      { routeNames: ['preloaded', 'new'], routeParamList: {}, routeGetIdList: {} }
+    )
+  ).toEqual({
+    ...state,
+    index: 0,
+    routeNames: ['preloaded', 'new'],
+    routes: [{ key: 'preloaded-existing', name: 'preloaded' }],
   });
 });
 
@@ -3192,3 +3245,37 @@ test.each(['secret', 'nonExisting'])(
     ).toBe(state);
   }
 );
+
+test('getStateForDeclaredRoutes focuses the surviving top of the stack', () => {
+  const router = StackRouter({});
+  const state: StackNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'stack',
+    key: 'stack-test',
+    index: 2,
+    routeNames: ['bar', 'baz', 'qux'],
+    routes: [
+      { key: 'bar-test', name: 'bar' },
+      { key: 'baz-test', name: 'baz' },
+      { key: 'qux-test', name: 'qux' },
+    ],
+  };
+
+  // `qux` is the focused top; dropping it leaves `baz` on top, not `bar`.
+  expect(router.getStateForDeclaredRoutes(state, ['bar', 'baz'])).toEqual({
+    ...state,
+    index: 1,
+    routes: [state.routes[0], state.routes[1]],
+  });
+});
+
+test('getStateForDeclaredRoutes returns the same state when every route is declared', () => {
+  const router = StackRouter({});
+  const state = router.getInitialState({
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  });
+
+  expect(router.getStateForDeclaredRoutes(state, ['bar', 'baz'])).toBe(state);
+});

@@ -5,7 +5,6 @@ import { MapsScreens } from '../screens/ExpoMaps/MapsScreen';
 import { GLScreens } from '../screens/GL/GLScreen';
 import { ImageScreens } from '../screens/Image/ImageScreen';
 import { SVGScreens } from '../screens/SVG/SVGScreen';
-import { ScreensExampleScreens } from '../screens/Screens';
 import { UIScreens } from '../screens/UI/UIScreen';
 import { UIUniversalScreens } from '../screens/UIUniversal/UIUniversalScreen';
 import { VideoScreens } from '../screens/Video/VideoScreen';
@@ -237,12 +236,6 @@ export const ScreensList: ScreenConfig[] = [
   },
   {
     getComponent() {
-      return optionalRequire(() => require('../screens/Screens'));
-    },
-    name: 'Screens',
-  },
-  {
-    getComponent() {
       return optionalRequire(() => require('../screens/SymbolImageScreen'));
     },
     name: 'Symbols',
@@ -304,7 +297,6 @@ export const Screens: ScreenConfig[] = [
   ...UIUniversalScreens,
   ...SVGScreens,
   ...MapsScreens,
-  ...ScreensExampleScreens,
 ];
 
 export const screenApiItems = componentScreensToListElements(ScreensList);

@@ -2,7 +2,8 @@ import ExpoModulesCore
 import RNScreens
 
 class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDelegate,
-  RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable {
+  RNSDismissibleModalProtocol, LinkPreviewMenuUpdatable
+{
   private var preview: NativeLinkPreviewContentView?
   private var interaction: UIContextMenuInteraction?
   var directChild: UIView?
@@ -49,7 +50,10 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
     }
     // However if one these is defined then we can perform the native update
     linkPreviewNativeNavigation.updatePreloadedView(
-      screenId: nextScreenId, tabPath: tabPath, responder: self)
+      screenId: nextScreenId,
+      tabPath: tabPath,
+      responder: self
+    )
   }
 
   // MARK: - Children
@@ -124,7 +128,8 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
       },
       actionProvider: { [weak self] _ in
         self?.createContextMenu()
-      })
+      }
+    )
   }
 
   func contextMenuInteraction(
@@ -136,7 +141,9 @@ class NativeLinkPreviewView: RouterViewWithLogger, UIContextMenuInteractionDeleg
       let triggerView: UIView =
         (directChild as? LinkPreviewIndirectTriggerProtocol)?.indirectTrigger ?? directChild
       let target = UIPreviewTarget(
-        container: superview, center: self.convert(triggerView.center, to: superview))
+        container: superview,
+        center: self.convert(triggerView.center, to: superview)
+      )
 
       let parameters = UIPreviewParameters()
       parameters.backgroundColor = triggerView.backgroundColor ?? .clear

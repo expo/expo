@@ -77,7 +77,8 @@ public final class NetworkModule: Module {
             socklen_t(hostname.count),
             nil,
             socklen_t(0),
-            NI_NUMERICHOST)
+            NI_NUMERICHOST
+          )
           address = String(cString: hostname)
         }
       }
@@ -124,7 +125,7 @@ public final class NetworkModule: Module {
       return [
         "type": NetworkType.none.description,
         "isConnected": isConnected,
-        "isInternetReachable": isConnected
+        "isInternetReachable": isConnected,
       ]
     }
 
@@ -149,7 +150,7 @@ public final class NetworkModule: Module {
     return [
       "type": currentNetworkType.description,
       "isConnected": isConnected,
-      "isInternetReachable": isConnected
+      "isInternetReachable": isConnected,
     ]
   }
 }

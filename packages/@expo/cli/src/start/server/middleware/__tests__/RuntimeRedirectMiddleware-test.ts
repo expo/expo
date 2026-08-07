@@ -58,7 +58,7 @@ describe('handleRequestAsync', () => {
     expect(response.end).toHaveBeenCalledWith();
     expect(response.setHeader).toHaveBeenCalledTimes(4);
     expect(response.setHeader).toHaveBeenNthCalledWith(1, 'Location', 'mock-location-expo');
-    expect(getLocation).toHaveBeenCalledWith({ runtime: 'expo' });
+    expect(getLocation).toHaveBeenCalledWith({ runtime: 'expo', forwarded: null });
     expect(onDeepLink).toHaveBeenCalledWith({ runtime: 'expo', platform: 'android' });
   });
 
@@ -80,7 +80,7 @@ describe('handleRequestAsync', () => {
     expect(response.end).toHaveBeenCalledWith();
     expect(response.setHeader).toHaveBeenCalledTimes(4);
     expect(response.setHeader).toHaveBeenNthCalledWith(1, 'Location', 'mock-location-expo');
-    expect(getLocation).toHaveBeenCalledWith({ runtime: 'expo' });
+    expect(getLocation).toHaveBeenCalledWith({ runtime: 'expo', forwarded: null });
     expect(onDeepLink).toHaveBeenCalledWith({ runtime: 'expo', platform: 'android' });
   });
 
@@ -98,7 +98,23 @@ describe('handleRequestAsync', () => {
     expect(response.end).toHaveBeenCalledWith();
     expect(response.setHeader).toHaveBeenCalledTimes(4);
     expect(response.setHeader).toHaveBeenNthCalledWith(1, 'Location', 'mock-location-custom');
-    expect(getLocation).toHaveBeenCalledWith({ runtime: 'custom' });
+    expect(getLocation).toHaveBeenCalledWith({ runtime: 'custom', forwarded: null });
     expect(onDeepLink).toHaveBeenCalledWith({ runtime: 'custom', platform: 'ios' });
+  });
+
+  it('passes the forwarded address to the location resolver', async () => {
+    const { middleware, getLocation } = createMiddleware();
+
+    await middleware.handleRequestAsync(
+      asReq({
+        url: 'http://localhost:8081/_expo/link?platform=ios',
+        headers: { forwarded: 'host="proxy.test:4443";proto=https' },
+      }),
+      createMockResponse()
+    );
+    expect(getLocation).toHaveBeenCalledWith({
+      runtime: 'expo',
+      forwarded: { authority: 'proxy.test:4443', protocol: 'https' },
+    });
   });
 });

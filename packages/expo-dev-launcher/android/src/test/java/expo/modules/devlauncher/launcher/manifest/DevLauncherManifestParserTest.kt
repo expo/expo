@@ -149,6 +149,23 @@ internal class DevLauncherManifestParserTest {
   }
 
   @Test
+  fun `isManifestUrl includes forwarding headers`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/dev/manifest").toString()),
+      null
+    )
+
+    server.enqueue(MockResponse().setResponseCode(200))
+    manifestParser.isManifestUrl()
+
+    val request = server.takeRequest()
+    Truth.assertThat(request.getHeader("forwarded")).contains("proto=http")
+    Truth.assertThat(request.getHeader("x-forwarded-host")).isEqualTo(server.url("/").host + ":" + server.port)
+    Truth.assertThat(request.getHeader("x-forwarded-proto")).isEqualTo("http")
+  }
+
+  @Test
   fun `checks if parseManifest parses successful response`() = runBlocking {
     val manifestParser = DevLauncherManifestParser(
       client,
@@ -173,6 +190,62 @@ internal class DevLauncherManifestParserTest {
     Truth.assertThat(manifest.getPrimaryColor()).isEqualTo("#cccccc")
     Truth.assertThat(manifest.getBundleURL()).isEqualTo("http://127.0.0.1:8081/__generated__/AppEntry.bundle?platform=ios&dev=true&hot=false&minify=false")
     Truth.assertThat(manifest.getOrientation()).isEqualTo(DevLauncherOrientation.DEFAULT)
+  }
+
+  @Test
+  fun `parseManifest resolves relative bundle URL`() = runBlocking {
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(server.url("/dev/manifest").toString()),
+      null
+    )
+
+    server.enqueue(
+      MockResponse().setBody(
+        """
+        {
+          "name": "testproject",
+          "slug": "testproject",
+          "sdkVersion": "UNVERSIONED",
+          "bundleUrl": "index.bundle?platform=android"
+        }
+        """.trimIndent()
+      )
+    )
+
+    val manifest = manifestParser.parseManifest()
+
+    Truth.assertThat(manifest.getBundleURL())
+      .isEqualTo(server.url("/dev/index.bundle?platform=android").toString())
+  }
+
+  @Test
+  fun `parseManifest resolves relative bundle URL against a base URL without a path`() = runBlocking {
+    // A dev server URL typed without a trailing slash, e.g. `http://10.0.2.2:8081`, has an empty
+    // path. Resolving a path-relative bundle URL against it must still insert the `/` separator,
+    // otherwise the first path segment is glued onto the port and the authority becomes unparseable.
+    val baseUrl = "http://${server.hostName}:${server.port}"
+    val manifestParser = DevLauncherManifestParser(
+      client,
+      Uri.parse(baseUrl),
+      null
+    )
+    server.enqueue(
+      MockResponse().setBody(
+        """
+        {
+          "name": "testproject",
+          "slug": "testproject",
+          "sdkVersion": "UNVERSIONED",
+          "bundleUrl": "apps/testproject/node_modules/expo-router/entry.bundle?platform=android"
+        }
+        """.trimIndent()
+      )
+    )
+    val manifest = manifestParser.parseManifest()
+    Truth.assertThat(manifest.getBundleURL())
+      .isEqualTo("$baseUrl/apps/testproject/node_modules/expo-router/entry.bundle?platform=android")
+    Truth.assertThat(Uri.parse(manifest.getBundleURL()).port).isEqualTo(server.port)
   }
 
   @Test

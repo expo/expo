@@ -44,6 +44,8 @@
     "clean": "expo-module clean",
     "lint": "oxlint --config oxlint.config.mjs .",
     "format": "expo-module format",
+    "swift:format": "../../scripts/swift-format.sh",
+    "swift:lint": "../../scripts/swift-format.sh --lint",
     "test": "jest",
     "prepublishOnly": "expo-module prepublishOnly",
     "depscheck": "expo-module depscheck",
@@ -59,6 +61,7 @@
     "expo-module-scripts": "workspace:*"
   },
   "peerDependencies": {
+    "expo": "*",
     "react": "*",
     "react-native": "*"
   }

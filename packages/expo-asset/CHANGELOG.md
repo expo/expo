@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Resolve development asset URLs from the bundle URL instead of the manifest's `debuggerHost` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.8 - 2026-07-29

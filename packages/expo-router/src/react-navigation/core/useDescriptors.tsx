@@ -35,7 +35,6 @@ export type ScreenConfigWithParent<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 > = {
-  keys: (string | undefined)[];
   options: (ScreenOptionsOrCallback<ScreenOptions> | undefined)[] | undefined;
   layout: ScreenLayout<ScreenOptions> | undefined;
   props: RouteConfig<ParamListBase, string, State, ScreenOptions, EventMap, unknown>;
@@ -271,6 +270,19 @@ export function useDescriptors<
     >
   >((acc, route, i) => {
     const navigation = navigations[route.key]!;
+
+    if (screens[route.name] === undefined) {
+      acc[route.key] = {
+        route,
+        // @ts-expect-error: it's missing action helpers, fix later
+        navigation,
+        options: {} as ScreenOptions,
+        render: () => null,
+      };
+
+      return acc;
+    }
+
     const customOptions = getOptions(route, navigation, options[route.key]!);
     const element = render(route, navigation, customOptions, routes[i]!.state);
 

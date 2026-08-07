@@ -2,6 +2,7 @@ import { Stack, Unmatched, useLocalSearchParams, useNavigation } from 'expo-rout
 import * as React from 'react';
 
 import { type ScreenConfig } from '../types/ScreenConfig';
+import { SearchToolbar } from './StackConfig';
 
 /**
  * Renders a registry screen resolved from a catch-all route segment
@@ -27,6 +28,7 @@ export default function RegistryScreenRoute({
   return (
     <>
       <Stack.Screen options={{ title: config.name, ...config.options }} />
+      <SearchToolbar />
       {/* Pass react-navigation style props for screens that still read them. */}
       <Component {...{ navigation, route: { params } }} />
     </>

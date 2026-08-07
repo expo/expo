@@ -1,5 +1,7 @@
 import { nanoid } from 'nanoid/non-secure';
 
+import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
+import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
 import type {
@@ -198,7 +200,9 @@ const changeIndex = (
       params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
     });
   } else {
-    history = getRouteHistory(state.routes, index, backBehavior, initialRouteName);
+    const routes = orderRoutesByRouteNames(state.routes, state.routeNames);
+    const orderedIndex = routes.findIndex((route) => route.key === state.routes[index]!.key);
+    history = getRouteHistory(routes, orderedIndex, backBehavior, initialRouteName);
   }
 
   return {
@@ -307,36 +311,6 @@ export function TabRouter({
       );
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList, routeKeyChanges }) {
-      const routes = routeNames.map(
-        (name) =>
-          state.routes.find((r) => r.name === name && !routeKeyChanges.includes(r.name)) || {
-            name,
-            key: `${name}-${nanoid()}`,
-            params: routeParamList[name],
-          }
-      );
-
-      const index = Math.max(0, routeNames.indexOf(state.routes[state.index]!.name));
-
-      let history = state.history.filter(
-        // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
-        (it) => it.type !== 'route' || routes.find((r) => r.key === it.key)
-      );
-
-      if (!history.length) {
-        history = getRouteHistory(routes, index, backBehavior, initialRouteName);
-      }
-
-      return {
-        ...state,
-        history,
-        routeNames,
-        routes,
-        index,
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 
@@ -353,6 +327,88 @@ export function TabRouter({
       }
 
       switch (action.type) {
+        case 'ROUTE_NAMES_CHANGED': {
+          const routeNames = action.payload.routeNames;
+
+          if (isArrayEqual(state.routeNames, routeNames)) {
+            return state;
+          }
+
+          const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+          for (const name of routeNames) {
+            if (!routes.some((route) => route.name === name)) {
+              routes.push({
+                name,
+                key: `${name}-${nanoid()}`,
+                params: routeParamList[name],
+              });
+            }
+          }
+
+          const focusedKey = state.routes[state.index]!.key;
+          const focusedIndex = routes.findIndex((route) => route.key === focusedKey);
+          const index = Math.max(0, focusedIndex);
+          const routeKeys = routes.map((route) => route.key);
+          let history = state.history.filter(
+            (item) => item.type !== 'route' || routeKeys.includes(item.key)
+          );
+
+          if (
+            focusedIndex === -1 &&
+            (backBehavior === 'history' || backBehavior === 'fullHistory')
+          ) {
+            const currentRoute = routes[index]!;
+            const nonRouteHistory = history.filter((item) => item.type !== 'route');
+            let routeHistory = history.filter((item) => item.type === 'route');
+
+            if (backBehavior === 'history') {
+              routeHistory = routeHistory.filter((item) => item.key !== currentRoute.key);
+            } else if (routeHistory[routeHistory.length - 1]?.key === currentRoute.key) {
+              routeHistory = routeHistory.slice(0, -1);
+            }
+
+            history = [
+              ...routeHistory,
+              {
+                type: TYPE_ROUTE,
+                key: currentRoute.key,
+                params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
+              },
+              ...nonRouteHistory,
+            ];
+          }
+
+          if (
+            backBehavior === 'firstRoute' ||
+            backBehavior === 'initialRoute' ||
+            backBehavior === 'order'
+          ) {
+            const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
+            const orderedIndex = orderedRoutes.findIndex(
+              (route) => route.key === routes[index]!.key
+            );
+            history = [
+              ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
+              ...history.filter((item) => item.type !== 'route'),
+            ];
+          } else if (!history.some((item) => item.type === 'route')) {
+            history = [
+              ...getRouteHistory(routes, index, backBehavior, initialRouteName),
+              ...history.filter((item) => item.type !== 'route'),
+            ];
+          }
+
+          return {
+            ...state,
+            history,
+            routeNames,
+            routes,
+            index,
+            preloadedRouteKeys: state.preloadedRouteKeys.filter((key) => routeKeys.includes(key)),
+          };
+        }
+
         case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE':

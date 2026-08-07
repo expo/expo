@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix transposed `width`/`height` for rotated assets (portrait photos and videos): `Asset.getInfo()`, `getWidth()`/`getHeight()`/`getShape()` and `Query.exeForMetadata()` now honor MediaStore `ORIENTATION`, matching the legacy API. ([#48150](https://github.com/expo/expo/pull/48150) by [@oeddyo](https://github.com/oeddyo))
+
 ### 💡 Others
 
 - Re-organize TS code ([#45953](https://github.com/expo/expo/pull/45953) by [@Wenszel](https://github.com/Wenszel))

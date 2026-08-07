@@ -65,11 +65,13 @@ export function useEventEmitter<T extends Record<string, any>>(
       data,
       target,
       canPreventDefault,
+      preventDefault,
     }: {
       type: string;
       data?: any;
       target?: string;
       canPreventDefault?: boolean;
+      preventDefault?: () => void;
     }) => {
       const items = listeners.current[type] || {};
 
@@ -120,6 +122,18 @@ export function useEventEmitter<T extends Record<string, any>>(
             value() {
               defaultPrevented = true;
             },
+          },
+        });
+      } else if (preventDefault) {
+        // Legacy `beforeRemove` listeners get a throwing shim without making the event preventable.
+        Object.defineProperties(event, {
+          defaultPrevented: {
+            enumerable: true,
+            value: false,
+          },
+          preventDefault: {
+            enumerable: true,
+            value: preventDefault,
           },
         });
       }

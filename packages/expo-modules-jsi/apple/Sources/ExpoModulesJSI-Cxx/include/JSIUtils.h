@@ -5,6 +5,9 @@
 
 #include <TargetConditionals.h>
 
+// `jsi.h` only forward-declares `jsi::Instrumentation`.
+#include <jsi/instrumentation.h>
+
 #include "HostFunctionClosure.h"
 #include "CppError.h"
 #include "IRuntimeCompat.h"
@@ -139,6 +142,11 @@ inline jsi::Value evaluateJavaScript(jsi::IRuntime &runtime, const std::shared_p
   return expo::CppError::tryCatch(runtime, [&] {
     return runtime.evaluateJavaScript(buffer, sourceURL);
   });
+}
+
+// `jsi::Instrumentation` is not imported into Swift, so reach it from here.
+inline void collectGarbage(jsi::IRuntime &runtime, const std::string &cause) {
+  runtime.instrumentation().collectGarbage(cause);
 }
 
 inline jsi::Value callFunction(jsi::IRuntime &runtime, const jsi::Function &function, const jsi::Value *_Nullable args, size_t count) {

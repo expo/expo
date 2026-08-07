@@ -8,6 +8,7 @@
 
 ### 🎉 New features
 
+- [iOS] Add `JavaScriptRuntime.collectGarbage(cause:)` that requests a full garbage collection through the runtime's JSI instrumentation. It is a no-op on engines whose runtime doesn't implement GC instrumentation, unlike the Hermes-only `gc()` global that the tests used to evaluate. ([#48446](https://github.com/expo/expo/pull/48446) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add `JavaScriptRuntime.runOrSchedule` that runs the given closure synchronously when called on the JavaScript thread and schedules it asynchronously otherwise. ([#47915](https://github.com/expo/expo/pull/47915) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add a `JavaScriptPromise.resolve` overload that takes a `JavaScriptEncodable` value, encoding it on the JavaScript thread and rejecting the promise if encoding or the resolver call throws. ([#47862](https://github.com/expo/expo/pull/47862) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Add a `JavaScriptEncodable` conformance for `Task` that encodes it to a JS `Promise` settling with the task's result, so native code can hand JavaScript a promise as a value. ([#47861](https://github.com/expo/expo/pull/47861) by [@tsapeta](https://github.com/tsapeta))

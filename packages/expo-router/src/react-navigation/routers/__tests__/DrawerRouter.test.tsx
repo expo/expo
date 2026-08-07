@@ -72,6 +72,55 @@ test('gets initial state from route names and params without initialRouteName', 
   });
 });
 
+test('preserves drawer status when route names change', () => {
+  const router = DrawerRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const initialState = router.getInitialState(options) as DrawerNavigationState<ParamListBase>;
+  const openState = router.getStateForAction(
+    initialState,
+    DrawerActions.openDrawer(),
+    options
+  ) as DrawerNavigationState<ParamListBase>;
+
+  const state = router.getStateForAction(
+    openState,
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'bar'] } },
+    { ...options, routeNames: ['baz', 'bar'] }
+  );
+
+  expect(state!.history).toContainEqual({ type: 'drawer', status: 'open' });
+});
+
+test('restores route history without dropping drawer status when the active route is removed', () => {
+  const router = DrawerRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const initialState = router.getInitialState(options) as DrawerNavigationState<ParamListBase>;
+  const openState = router.getStateForAction(
+    initialState,
+    DrawerActions.openDrawer(),
+    options
+  ) as DrawerNavigationState<ParamListBase>;
+
+  const state = router.getStateForAction(
+    openState,
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz'] } },
+    { ...options, routeNames: ['baz'] }
+  );
+
+  expect(state!.history).toEqual([
+    { type: 'route', key: 'baz-test' },
+    { type: 'drawer', status: 'open' },
+  ]);
+});
+
 test('gets rehydrated state from partial state', () => {
   const router = DrawerRouter({});
 

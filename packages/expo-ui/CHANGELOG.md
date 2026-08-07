@@ -5,11 +5,13 @@
 ### 🛠 Breaking changes
 
 - [iOS] Fix `<Host>` centering its content instead of top-aligning it, so a `flex: 1` host matches Android's top-leading layout. ([#47561](https://github.com/expo/expo/pull/47561) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `HStack`, `VStack` and `GlassEffectContainer` collapsing an unset `spacing` to `0` instead of forwarding `nil` to SwiftUI, so they now use the system default spacing like `Grid`, `LazyHStack` and `LazyVStack` already do. Pass `spacing={0}` explicitly to keep the previous layout. (by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🎉 New features
 
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
 - [iOS] Added `menuStyle` and `menuIndicator` SwiftUI modifiers, which together with `buttonStyle('plain')` keep a `Menu`'s custom label as its entire trigger on Mac Catalyst. ([#48447](https://github.com/expo/expo/issues/48447) by [@cvburgess](https://github.com/cvburgess)) ([#48448](https://github.com/expo/expo/pull/48448) by [@cvburgess](https://github.com/cvburgess))
+- [iOS] Added an optional `kind` argument to the `contentShape` modifier, so a shape can be applied to drag previews, context menu previews, hover effects, or accessibility instead of only hit-testing. ([#48540](https://github.com/expo/expo/issues/48540) by [@sinhong2011](https://github.com/sinhong2011)) ([#48564](https://github.com/expo/expo/pull/48564) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
@@ -22,6 +24,7 @@
 
 - [Android] Change modifiers type and provide appContext. ([#47616](https://github.com/expo/expo/pull/47616) by [@jakex7](https://github.com/jakex7))
 - [Android] Change `Text` color props to `ColorValue`. ([#47739](https://github.com/expo/expo/pull/47739) by [@jakex7](https://github.com/jakex7))
+- [Android] Expose `getMaterialColorTokens` for `expo-widgets`. ([#48453](https://github.com/expo/expo/pull/48453) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.8 - 2026-07-29
 

@@ -37,12 +37,26 @@ export default function Example() {
 
 ## Components
 
-- **Container:** [`Host`](host) — the required root for every universal subtree.
-- **Layout:** [`Column`](column), [`Row`](row), [`Spacer`](spacer), [`ScrollView`](scrollview).
-- **Display:** [`Text`](text), [`Icon`](icon).
-- **Controls:** [`Button`](button), [`Switch`](switch), [`Checkbox`](checkbox), [`Slider`](slider), [`TextInput`](textinput), [`Picker`](picker).
-- **Disclosure and presentation:** [`BottomSheet`](bottomsheet), [`Collapsible`](collapsible).
-- **Collections and forms:** [`List`](list) (with `ListItem`), [`FieldGroup`](fieldgroup).
+| Component                    | Description                                                                                               |
+| ---------------------------- | --------------------------------------------------------------------------------------------------------- |
+| [`BottomSheet`](bottomsheet) | A modal sheet that slides up from the bottom of the screen.                                               |
+| [`Button`](button)           | A pressable button with multiple visual variants.                                                         |
+| [`Checkbox`](checkbox)       | A toggle control that represents a checked or unchecked state.                                            |
+| [`Collapsible`](collapsible) | A labelled tappable header that toggles visibility of its content.                                        |
+| [`Column`](column)           | A vertical layout container for universal @expo/ui components.                                            |
+| [`FieldGroup`](fieldgroup)   | A scrollable container of grouped settings-style rows.                                                    |
+| [`Host`](host)               | A cross-platform Host component that wraps universal @expo/ui content.                                    |
+| [`Icon`](icon)               | A platform-native icon — SF Symbol on iOS, Material Symbol on Android.                                    |
+| [`List`](list)               | A virtualized vertical container of rows, paired with a tappable ListItem primitive.                      |
+| [`Picker`](picker)           | A single-selection input with menu and wheel appearances.                                                 |
+| [`RNHostView`](rnhostview)   | A cross-platform component for hosting React Native views inside @expo/ui views.                          |
+| [`Row`](row)                 | A horizontal layout container for universal @expo/ui components.                                          |
+| [`ScrollView`](scrollview)   | A scrollable container that supports vertical or horizontal scrolling.                                    |
+| [`Slider`](slider)           | A control for selecting a value from a continuous or stepped range.                                       |
+| [`Spacer`](spacer)           | A layout spacer that produces empty space between siblings.                                               |
+| [`Switch`](switch)           | A toggle control that switches between on and off states.                                                 |
+| [`Text`](text)               | A component for displaying styled text content.                                                           |
+| [`TextInput`](textinput)     | A text input backed by native SwiftUI and Jetpack Compose components, with a React Native-compatible API. |
 
 ## When to use this versus `swift-ui` / `jetpack-compose`
 
