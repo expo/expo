@@ -8,7 +8,9 @@ import { createRouteFromAction } from './createRouteFromAction';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
+  KeyedPartialState,
   NavigationState,
+  NavigatorParamsPayload,
   ParamListBase,
   PartialState,
   Route,
@@ -104,7 +106,8 @@ const addFallbackRouteIfEmpty = (
   routes: Route<string>[],
   routeNames: string[],
   routeParamList: ParamListBase,
-  initialRouteName: string | undefined
+  initialRouteName: string | undefined,
+  fallbackRouteKey?: string
 ) => {
   if (routes.length > 0 || routeNames.length === 0) {
     return routes;
@@ -114,7 +117,7 @@ const addFallbackRouteIfEmpty = (
     initialRouteName !== undefined && routeNames.includes(initialRouteName)
       ? initialRouteName
       : routeNames[0]!;
-  return [{ name, key: `${name}-${nanoid()}`, params: routeParamList[name] }];
+  return [{ name, key: fallbackRouteKey ?? `${name}-${nanoid()}`, params: routeParamList[name] }];
 };
 
 const addRouteIfMissing = (
@@ -216,7 +219,7 @@ const changeIndex = (
 
     if (backBehavior === 'history') {
       // Remove the existing key from the history to de-duplicate it
-      history = history.filter((it) => (it.type === 'route' ? it.key !== currentRoute.key : false));
+      history = history.filter((it) => it.type !== 'route' || it.key !== currentRoute.key);
     } else if (backBehavior === 'fullHistory') {
       const lastHistoryRouteItemIndex = history.findLastIndex((item) => item.type === 'route');
 
@@ -319,13 +322,14 @@ export function TabRouter({
 
       const routeKeys = routes.map((route) => route.key);
 
-      const history = state.history?.filter((it) => routeKeys.includes(it.key)) ?? [];
+      const history =
+        state.history?.filter((it) => it.type !== 'route' || routeKeys.includes(it.key)) ?? [];
 
       return changeIndex(
         {
           stale: false,
           type: 'tab',
-          key: `tab-${nanoid()}`,
+          key: state.key ?? `tab-${nanoid()}`,
           index,
           routeNames,
           history,
@@ -339,6 +343,149 @@ export function TabRouter({
       );
     },
 
+    getStateForDeclaredRoutes(state, routeNames, fallbackRouteKey) {
+      const routes = addFallbackRouteIfEmpty(
+        state.routes.filter((route) => routeNames.includes(route.name)),
+        routeNames,
+        {},
+        initialRouteName,
+        fallbackRouteKey
+      );
+
+      if (
+        routes.length === state.routes.length &&
+        state.index !== undefined &&
+        routes.every((route, index) => route === state.routes[index])
+      ) {
+        return state;
+      }
+
+      const focusedKey = state.routes[state.index ?? 0]?.key;
+      const routeKeys = routes.map((route) => route.key);
+      return {
+        ...state,
+        routes,
+        index: Math.max(
+          0,
+          routes.findIndex((route) => route.key === focusedKey)
+        ),
+        ...(state.history
+          ? {
+              history: state.history.filter(
+                (item) => item.type !== 'route' || routeKeys.includes(item.key)
+              ),
+            }
+          : {}),
+        ...(state.preloadedRouteKeys
+          ? {
+              preloadedRouteKeys: state.preloadedRouteKeys.filter((key) => routeKeys.includes(key)),
+            }
+          : {}),
+      };
+    },
+
+    getStateForNavigatorParams(state, params: NavigatorParamsPayload, config) {
+      if (params.state) {
+        // The payload is structurally generic, while this router fixes the state type to `tab`.
+        return { ...params.state, key: state.key } as
+          | TabNavigationState<ParamListBase>
+          | KeyedPartialState<TabNavigationState<ParamListBase>>;
+      }
+
+      if (!config.routeNames.includes(params.screen)) {
+        return null;
+      }
+
+      if (state.stale !== false) {
+        const routeIndex = state.routes.findIndex((route) => route.name === params.screen);
+        const route = state.routes[routeIndex];
+        const getId = config.routeGetIdList[params.screen];
+        const currentId = getId?.({ params: route?.params });
+        const nextId = getId?.({ params: params.params });
+        const key = route && currentId === nextId ? route.key : params.routeKey;
+        const routeParams =
+          params.merge && route && currentId === nextId
+            ? { ...config.routeParamList[params.screen], ...route.params, ...params.params }
+            : config.routeParamList[params.screen] !== undefined
+              ? { ...config.routeParamList[params.screen], ...params.params }
+              : params.params;
+        const nextRoute = {
+          ...route,
+          key,
+          name: params.screen,
+          path: params.path ?? route?.path,
+          params: routeParams,
+        };
+        const routes = [...state.routes];
+        const index = routeIndex === -1 ? routes.push(nextRoute) - 1 : routeIndex;
+        routes[index] = nextRoute;
+        const routeKeys = routes.map((route) => route.key);
+        let history = state.history?.filter(
+          (item) => item.type !== 'route' || routeKeys.includes(item.key)
+        );
+
+        if (history && (backBehavior === 'history' || backBehavior === 'fullHistory')) {
+          if (backBehavior === 'history') {
+            history = history.filter((item) => item.type !== 'route' || item.key !== nextRoute.key);
+          } else {
+            const lastRouteIndex = history.findLastIndex((item) => item.type === 'route');
+
+            if (history[lastRouteIndex]?.key === nextRoute.key) {
+              history = [...history.slice(0, lastRouteIndex), ...history.slice(lastRouteIndex + 1)];
+            }
+          }
+
+          history = history.concat({
+            type: TYPE_ROUTE,
+            key: nextRoute.key,
+            params: backBehavior === 'fullHistory' ? nextRoute.params : undefined,
+          });
+        } else if (history) {
+          const orderedRoutes = orderRoutesByRouteNames(routes, config.routeNames);
+          const orderedIndex = orderedRoutes.findIndex((route) => route.key === nextRoute.key);
+          history = [
+            ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
+            ...history.filter((item) => item.type !== 'route'),
+          ];
+        }
+
+        return {
+          ...state,
+          routes,
+          index,
+          ...(history ? { history } : {}),
+          ...(state.preloadedRouteKeys
+            ? {
+                preloadedRouteKeys: state.preloadedRouteKeys.filter((key) =>
+                  routeKeys.includes(key)
+                ),
+              }
+            : {}),
+        } as typeof state;
+      }
+
+      const result = router.getStateForAction(
+        state as TabNavigationState<ParamListBase>,
+        {
+          type: 'NAVIGATE',
+          payload: {
+            name: params.screen,
+            params: params.params,
+            path: params.path,
+            merge: params.merge,
+            pop: params.pop,
+            routeKey: params.routeKey,
+          },
+        },
+        config
+      );
+      // Supplying `routeKey` guarantees that a stale result remains keyed.
+      return result as
+        | TabNavigationState<ParamListBase>
+        | KeyedPartialState<TabNavigationState<ParamListBase>>
+        | null;
+    },
+
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 
@@ -349,7 +496,8 @@ export function TabRouter({
       return changeIndex(state, index, backBehavior, initialRouteName);
     },
 
-    getStateForAction(state, action, { routeParamList, routeGetIdList }) {
+    getStateForAction(state, action, config) {
+      const { routeParamList, routeGetIdList } = config;
       if (action.target && action.target !== state.key) {
         return null;
       }
@@ -366,7 +514,8 @@ export function TabRouter({
             state.routes.filter((route) => routeNames.includes(route.name)),
             routeNames,
             routeParamList,
-            initialRouteName
+            initialRouteName,
+            action.payload.fallbackRouteKey
           );
 
           if (routes.length === 0) {
@@ -443,6 +592,13 @@ export function TabRouter({
           };
         }
 
+        case 'NAVIGATOR_PARAMS_CHANGED': {
+          const result = router.getStateForNavigatorParams!(state, action.payload.params, config);
+          return result?.stale === false || result === null
+            ? result
+            : router.getRehydratedState(result, config);
+        }
+
         case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE':
@@ -452,9 +608,21 @@ export function TabRouter({
           }
 
           const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
+            if (action.type === 'NAVIGATE' && action.payload.routeKey) {
+              return {
+                key: action.payload.routeKey,
+                name: action.payload.name,
+                params: createParamsFromAction({ action, routeParamList }),
+                ...(action.payload.path != null ? { path: action.payload.path } : {}),
+              };
+            }
+
             const route = createRouteFromAction({ action, routeParamList });
-            return action.type === 'NAVIGATE' && action.payload.path != null
-              ? { ...route, path: action.payload.path }
+            return action.type === 'NAVIGATE'
+              ? {
+                  ...route,
+                  ...(action.payload.path != null ? { path: action.payload.path } : {}),
+                }
               : route;
           });
 
@@ -471,7 +639,12 @@ export function TabRouter({
                 const currentId = getId?.({ params: route.params });
                 const nextId = getId?.({ params: action.payload.params });
 
-                const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+                const key =
+                  currentId === nextId
+                    ? route.key
+                    : action.type === 'NAVIGATE' && 'routeKey' in action.payload
+                      ? (action.payload.routeKey ?? `${route.name}-${nanoid()}`)
+                      : `${route.name}-${nanoid()}`;
 
                 let params;
 

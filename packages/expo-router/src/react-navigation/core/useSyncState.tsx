@@ -1,7 +1,6 @@
 'use client';
 import * as React from 'react';
 
-import useLatestCallback from '../../utils/useLatestCallback';
 import { deepFreeze } from './deepFreeze';
 
 const createStore = <T,>(getInitialState: () => T) => {
@@ -21,16 +20,9 @@ const createStore = <T,>(getInitialState: () => T) => {
     return state;
   };
 
-  let isBatching = false;
-  let didUpdate = false;
-
   const setState = (newState: T) => {
     state = deepFreeze(newState);
-    didUpdate = true;
-
-    if (!isBatching) {
-      listeners.forEach((listener) => listener());
-    }
+    listeners.forEach((listener) => listener());
   };
 
   const subscribe = (callback: () => void) => {
@@ -45,21 +37,9 @@ const createStore = <T,>(getInitialState: () => T) => {
     };
   };
 
-  const batchUpdates = (callback: () => void) => {
-    isBatching = true;
-    callback();
-    isBatching = false;
-
-    if (didUpdate) {
-      didUpdate = false;
-      listeners.forEach((listener) => listener());
-    }
-  };
-
   return {
     getState,
     setState,
-    batchUpdates,
     subscribe,
   };
 };
@@ -71,32 +51,9 @@ export function useSyncState<T>(getInitialState: () => T) {
 
   React.useDebugValue(state);
 
-  const pendingUpdatesRef = React.useRef<(() => void)[]>([]);
-
-  const scheduleUpdate = useLatestCallback((callback: () => void) => {
-    pendingUpdatesRef.current.push(callback);
-  });
-
-  const flushUpdates = useLatestCallback(() => {
-    const pendingUpdates = pendingUpdatesRef.current;
-
-    pendingUpdatesRef.current = [];
-
-    if (pendingUpdates.length !== 0) {
-      store.batchUpdates(() => {
-        // Flush all the pending updates
-        for (const update of pendingUpdates) {
-          update();
-        }
-      });
-    }
-  });
-
   return {
     state,
     getState: store.getState,
     setState: store.setState,
-    scheduleUpdate,
-    flushUpdates,
   } as const;
 }

@@ -1,7 +1,7 @@
 /**
  * Compare two records with primitive values as the content.
  */
-export function isRecordEqual(a: Record<string, unknown>, b: Record<string, unknown>) {
+export function isRecordEqual(a: object, b: object) {
   if (a === b) {
     return true;
   }
@@ -13,5 +13,5 @@ export function isRecordEqual(a: Record<string, unknown>, b: Record<string, unkn
     return false;
   }
 
-  return aKeys.every((key) => Object.is(a[key], b[key]));
+  return aKeys.every((key) => Object.is(Reflect.get(a, key), Reflect.get(b, key)));
 }

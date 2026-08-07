@@ -3,6 +3,7 @@ import * as CommonActions from './CommonActions';
 export { CommonActions };
 
 export { BaseRouter } from './BaseRouter';
+export { ensureStateKeys } from './ensureStateKeys';
 export type {
   DrawerActionHelpers,
   DrawerActionType,

@@ -2,7 +2,8 @@ import type * as CommonActions from './CommonActions';
 
 export type CommonNavigationAction =
   | CommonActions.Action
-  | CommonActions.InternalRouteNamesChangedAction;
+  | CommonActions.InternalRouteNamesChangedAction
+  | CommonActions.InternalNavigatorParamsChangedAction;
 
 export type NavigationRoute<
   ParamList extends ParamListBase,
@@ -52,7 +53,7 @@ export type InitialState = Readonly<
 
 export type PartialRoute<R extends Route<string>> = Omit<R, 'key'> & {
   key?: string;
-  state?: PartialState<NavigationState>;
+  state?: NavigationState | PartialState<NavigationState>;
 };
 
 export type PartialState<State extends NavigationState> = Partial<Omit<State, 'stale' | 'routes'>> &
@@ -60,6 +61,52 @@ export type PartialState<State extends NavigationState> = Partial<Omit<State, 's
     stale?: true;
     routes: PartialRoute<Route<State['routeNames'][number]>>[];
   }>;
+
+export type KeyedPartialRoute<R extends Route<string>> = Omit<PartialRoute<R>, 'key' | 'state'> & {
+  key: string;
+  state?: KeyedPartialState<NavigationState> | NavigationState;
+};
+
+export type KeyedPartialState<State extends NavigationState> = Partial<
+  Omit<State, 'key' | 'stale' | 'routes'>
+> &
+  Readonly<{
+    key: string;
+    stale?: true;
+    routes: KeyedPartialRoute<Route<State['routeNames'][number]>>[];
+  }>;
+
+export type RenderRoute<R extends Route<string>> = Omit<KeyedPartialRoute<R>, 'state'> & {
+  key: string;
+  state?: RenderState<NavigationState>;
+};
+
+export type RenderState<State extends NavigationState> =
+  | State
+  | (Partial<Omit<State, 'stale' | 'routes' | 'key' | 'index' | 'routeNames' | 'type'>> &
+      Readonly<{
+        key: string;
+        index: number;
+        routeNames: State['routeNames'];
+        routes: RenderRoute<Route<State['routeNames'][number]>>[];
+        stale?: true;
+        type: State['type'];
+      }>);
+
+export type NavigatorParamsPayload =
+  | {
+      state: KeyedPartialState<NavigationState> | NavigationState;
+      screen?: never;
+    }
+  | {
+      state?: never;
+      screen: string;
+      params?: object;
+      path?: string;
+      merge?: boolean;
+      pop?: boolean;
+      routeKey: string;
+    };
 
 export type Route<
   RouteName extends string,
@@ -164,23 +211,36 @@ export type Router<State extends NavigationState, Action extends NavigationActio
    * @param options.routeParamsList Object containing params for each route.
    */
   getRehydratedState(
-    partialState: PartialState<State> | State,
+    partialState: PartialState<State> | KeyedPartialState<State> | State,
     options: RouterConfigOptions
   ): State;
 
   /**
-   * Take the current state and the route names the navigator declares, and return the state to
-   * render until `ROUTE_NAMES_CHANGED` has been reconciled.
+   * Project state to the route names currently declared by the navigator for rendering until
+   * `ROUTE_NAMES_CHANGED` has been reconciled.
    *
-   * This is a render-phase fallback, not a state change. Return `state` when nothing was removed,
-   * and set `index` to `-1` when no declared route is left to focus.
-   *
-   * This function will only be called in development, when route file is removed.
+   * This is a render-phase fallback, not a state change. It filters undeclared active and
+   * preloaded routes, keeps a definite index, and may add a route with `fallbackRouteKey` when no
+   * declared route survives. Return `state` unchanged when no projection is needed.
    *
    * @param state State object to filter.
    * @param routeNames Route names currently declared by the navigator.
    */
-  getStateForDeclaredRoutes(state: State, routeNames: string[]): State;
+  getStateForDeclaredRoutes<InputState extends State | KeyedPartialState<State>>(
+    state: InputState,
+    routeNames: string[],
+    fallbackRouteKey?: string
+  ): InputState;
+
+  /**
+   * Project nested navigator params without rehydrating or creating keys. Custom routers which
+   * override navigation semantics must override this method as well.
+   */
+  getStateForNavigatorParams?(
+    state: State | KeyedPartialState<State>,
+    params: NavigatorParamsPayload,
+    options: RouterConfigOptions
+  ): State | KeyedPartialState<State> | null;
 
   /**
    * Take the current state and key of a route, and return a new state with the route focused
@@ -193,7 +253,8 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   /**
    * Take the current state and action, and return a new state.
    * If the action cannot be handled, return `null`. Custom routers must explicitly handle
-   * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
+   * `ROUTE_NAMES_CHANGED` and `NAVIGATOR_PARAMS_CHANGED` to durably reconcile state using their
+   * effective router methods.
    *
    * @param state State object to apply the action on.
    * @param action Action object to apply.

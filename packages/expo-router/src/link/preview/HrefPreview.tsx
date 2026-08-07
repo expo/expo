@@ -41,7 +41,8 @@ export function HrefPreview({ href }: { href: Href }) {
       if (rnIndex === -1) {
         break;
       }
-      routerState = routerRoute.state;
+      // Routes in parser output recursively contain parser output, despite the shared wider type.
+      routerState = routerRoute.state as ResultState | undefined;
       rnState = rnState.routes[rnIndex]?.state;
     }
     if (!isProtected) {

@@ -8,7 +8,13 @@ import {
   TabRouter,
   type TabRouterOptions,
 } from './TabRouter';
-import type { CommonNavigationAction, ParamListBase, PartialState, Router } from './types';
+import type {
+  CommonNavigationAction,
+  KeyedPartialState,
+  ParamListBase,
+  PartialState,
+  Router,
+} from './types';
 export type DrawerStatus = 'open' | 'closed';
 
 export type DrawerActionType =
@@ -87,7 +93,10 @@ export function DrawerRouter({
   >;
 
   const isDrawerInHistory = (
-    state: DrawerNavigationState<ParamListBase> | PartialState<DrawerNavigationState<ParamListBase>>
+    state:
+      | DrawerNavigationState<ParamListBase>
+      | PartialState<DrawerNavigationState<ParamListBase>>
+      | KeyedPartialState<DrawerNavigationState<ParamListBase>>
   ) => Boolean(state.history?.some((it) => it.type === 'drawer'));
 
   const addDrawerToHistory = (
@@ -142,6 +151,54 @@ export function DrawerRouter({
     return removeDrawerFromHistory(state);
   };
 
+  const getStateForNavigatorParams: NonNullable<
+    Router<
+      DrawerNavigationState<ParamListBase>,
+      DrawerActionType | CommonNavigationAction
+    >['getStateForNavigatorParams']
+  > = (state, params, options) => {
+    const result = router.getStateForNavigatorParams!(state, params, options);
+    const currentIndex = state.index ?? 0;
+
+    if (result && result.index !== currentIndex) {
+      if (result.stale === false) {
+        return closeDrawer(result);
+      }
+
+      if (result.history?.some((item) => item.type === 'drawer')) {
+        return {
+          ...result,
+          history: result.history.filter((item) => item.type !== 'drawer'),
+        };
+      }
+    }
+
+    return result;
+  };
+
+  const getRehydratedState: Router<
+    DrawerNavigationState<ParamListBase>,
+    DrawerActionType | CommonNavigationAction
+  >['getRehydratedState'] = (partialState, options) => {
+    if (partialState.stale === false) {
+      return partialState;
+    }
+
+    let state = router.getRehydratedState(partialState, options);
+
+    if (isDrawerInHistory(partialState)) {
+      state = removeDrawerFromHistory(state);
+      state = addDrawerToHistory(state);
+    }
+
+    return {
+      ...state,
+      default: defaultStatus,
+      type: 'drawer',
+      key: partialState.key ?? `drawer-${nanoid()}`,
+    };
+  };
+
   return {
     ...router,
 
@@ -163,36 +220,15 @@ export function DrawerRouter({
       };
     },
 
-    getRehydratedState(partialState, { routeNames, routeParamList, routeGetIdList }) {
-      if (partialState.stale === false) {
-        return partialState;
-      }
-
-      let state = router.getRehydratedState(partialState, {
-        routeNames,
-        routeParamList,
-        routeGetIdList,
-      });
-
-      if (isDrawerInHistory(partialState)) {
-        // Re-sync the drawer entry in history to correct it if it was wrong
-        state = removeDrawerFromHistory(state);
-        state = addDrawerToHistory(state);
-      }
-
-      return {
-        ...state,
-        default: defaultStatus,
-        type: 'drawer',
-        key: `drawer-${nanoid()}`,
-      };
-    },
+    getRehydratedState,
 
     getStateForRouteFocus(state, key) {
       const result = router.getStateForRouteFocus(state, key);
 
       return closeDrawer(result);
     },
+
+    getStateForNavigatorParams,
 
     getStateForAction(state, action, options) {
       switch (action.type) {
@@ -208,6 +244,13 @@ export function DrawerRouter({
           }
 
           return addDrawerToHistory(state);
+
+        case 'NAVIGATOR_PARAMS_CHANGED': {
+          const result = getStateForNavigatorParams(state, action.payload.params, options);
+          return result?.stale === false || result === null
+            ? result
+            : getRehydratedState(result, options);
+        }
 
         case 'REPLACE':
         case 'JUMP_TO':

@@ -9,6 +9,7 @@ import type {
   Router,
   RouterConfigOptions,
 } from '../routers';
+import { ensureStateKeys } from '../routers';
 import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChildContext';
 import {
   type ChildActionListener,
@@ -17,6 +18,7 @@ import {
   NavigationBuilderContext,
 } from './NavigationBuilderContext';
 import type { EventMapCore } from './types';
+import { useClientLayoutEffect } from './useClientLayoutEffect';
 import type { NavigationEventEmitter } from './useEventEmitter';
 import {
   getPreventableRoutes,
@@ -70,7 +72,7 @@ export function useOnAction<State extends NavigationState>({
 
   const routerConfigOptionsRef = React.useRef<RouterConfigOptions>(routerConfigOptions);
 
-  React.useEffect(() => {
+  useClientLayoutEffect(() => {
     routerConfigOptionsRef.current = routerConfigOptions;
   });
 
@@ -89,6 +91,10 @@ export function useOnAction<State extends NavigationState>({
       if (typeof action.target !== 'string' || action.target === state.key) {
         let result = router.getStateForAction(state, action, routerConfigOptionsRef.current);
 
+        if (result !== null) {
+          result = ensureStateKeys(result, state.type) as State | PartialState<State>;
+        }
+
         // If a target is specified and set to current navigator, the action shouldn't bubble
         // So instead of `null`, we use the state object for such cases to signal that action was handled
         result = result === null && action.target === state.key ? state : result;
@@ -99,6 +105,7 @@ export function useOnAction<State extends NavigationState>({
           if (state !== result) {
             const isPrevented =
               action.type !== 'ROUTE_NAMES_CHANGED' &&
+              action.type !== 'NAVIGATOR_PARAMS_CHANGED' &&
               shouldPreventRemove(
                 emitter,
                 preventRemoveListeners,

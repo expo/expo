@@ -1,4 +1,5 @@
 'use client';
+import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
@@ -6,13 +7,16 @@ import { isValidElementType } from 'react-is';
 
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
-  CommonActions,
+  ensureStateKeys,
   type DefaultRouterOptions,
+  type KeyedPartialState,
   type NavigationAction,
   type NavigationState,
+  type NavigatorParamsPayload,
   type ParamListBase,
   type PartialState,
   type Route,
+  type RenderState,
   type Router,
   type RouterConfigOptions,
   type RouterFactory,
@@ -27,6 +31,7 @@ import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
+import { isRecordEqual } from './isRecordEqual';
 import {
   type DefaultNavigatorOptions,
   type DescriptorRouteProp,
@@ -54,7 +59,6 @@ import { useOnGetState } from './useOnGetState';
 import { useOnRouteFocus } from './useOnRouteFocus';
 import { usePreventRemoveState } from './usePreventRemoveState';
 import { useRegisterNavigator } from './useRegisterNavigator';
-import { useScheduleUpdate } from './useScheduleUpdate';
 
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -362,14 +366,15 @@ export function useNavigationBuilder<
   }
 
   const isStateValid = React.useCallback(
-    (state: NavigationState | PartialState<NavigationState>) =>
+    (state: NavigationState | PartialState<NavigationState> | RenderState<NavigationState>) =>
       state.type === undefined || state.type === router.type,
     [router.type]
   );
 
   const isStateInitialized = React.useCallback(
-    <T extends NavigationState>(state: T | PartialState<T> | undefined): state is T =>
-      state !== undefined && state.stale === false && isStateValid(state),
+    <T extends NavigationState>(
+      state: T | PartialState<T> | RenderState<T> | undefined
+    ): state is T => state !== undefined && state.stale === false && isStateValid(state),
     [isStateValid]
   );
 
@@ -383,7 +388,9 @@ export function useNavigationBuilder<
   } = use(NavigationStateContext);
 
   const stateCleanupRef = React.useRef<boolean>(false);
-  const lastStateRef = React.useRef<State | PartialState<State> | undefined>(undefined);
+  const lastStateRef = React.useRef<RenderState<State> | PartialState<State> | undefined>(
+    undefined
+  );
 
   const setState = useLatestCallback((state: State | PartialState<State> | undefined) => {
     if (stateCleanupRef.current) {
@@ -399,21 +406,29 @@ export function useNavigationBuilder<
     setCurrentState(state);
   });
 
+  const keyedNestedParams = React.useMemo(() => {
+    if (isNestedParamsConsumed || route?.params == null) {
+      return undefined;
+    }
+
+    const stateFromParams = getStateFromParams(route.params);
+
+    return {
+      params: route.params,
+      state: stateFromParams ? ensureStateKeys(stateFromParams, router.type) : undefined,
+      routeKey: `${route.params.screen ?? routeNames[0]}-${nanoid()}`,
+    };
+    // Route names are handled by the declared-routes projection below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isNestedParamsConsumed, route?.params, router.type]);
+
   const [initializedState, isFirstStateInitialization, paramsUsedForInitialization] =
-    React.useMemo((): [State | undefined, boolean, object | undefined] => {
+    React.useMemo((): [RenderState<State> | undefined, boolean, object | undefined] => {
       // If the state was already cleaned up, but we have it stored in ref,
       // It likely got cleaned up due to `<Activity mode="hidden">`
       // We should reuse this state to avoid remounting screens
       if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
-        const state: State = isStateInitialized(lastStateRef.current)
-          ? lastStateRef.current
-          : router.getRehydratedState(lastStateRef.current, {
-              routeNames,
-              routeParamList,
-              routeGetIdList,
-            });
-
-        return [state, false, undefined];
+        return [lastStateRef.current as RenderState<State>, false, undefined];
       }
 
       const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
@@ -459,27 +474,34 @@ export function useNavigationBuilder<
           undefined,
         ];
       } else {
-        const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-        const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
+        const existingState = currentState ?? lastStateRef.current;
+        const shouldInitializeFromParams = existingState == null || !isStateValid(existingState);
+        const paramsForState = shouldInitializeFromParams ? keyedNestedParams?.params : undefined;
+        const keyedState = (
+          shouldInitializeFromParams
+            ? keyedNestedParams?.state
+            : ensureStateKeys(existingState, router.type)
+        ) as RenderState<State> | undefined;
 
-        const stateBeforeInitialization = (stateFromParams ?? currentState) as
-          | PartialState<State>
-          | undefined;
-
-        const hydratedState =
-          stateBeforeInitialization == null
+        const stateForRender =
+          keyedState == null
             ? router.getInitialState({
                 routeNames,
                 routeParamList: initialRouteParamList,
                 routeGetIdList,
               })
-            : router.getRehydratedState(stateBeforeInitialization, {
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              });
+            : {
+                ...keyedState,
+                routes: keyedState.routes.map((route) => ({
+                  ...route,
+                  params:
+                    initialRouteParamList[route.name] !== undefined
+                      ? { ...initialRouteParamList[route.name], ...route.params }
+                      : route.params,
+                })),
+              };
 
-        return [hydratedState, false, paramsForState];
+        return [stateForRender as RenderState<State>, false, paramsForState];
       }
       // We explicitly don't include routeNames, route.params etc. in the dep list
       // below. We want to avoid forcing a new state to be calculated in those cases
@@ -487,20 +509,22 @@ export function useNavigationBuilder<
       // that some changes to routeConfigs are explicitly ignored, such as changes
       // to initialParams
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentState, router, isStateValid]);
+    }, [currentState, router, isStateValid, keyedNestedParams]);
 
-  let state =
+  let state: RenderState<State> =
     // If the state isn't initialized, or stale, use the state we initialized instead
     // The state won't update until there's a change needed in the state we have initialized locally
     // So it'll be `undefined` or stale until the first navigation event happens
-    isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
+    isStateInitialized(currentState)
+      ? (currentState as State)
+      : (initializedState as RenderState<State>);
 
-  let nextState: State = state;
+  let nextState = state;
 
   let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
 
   if (route?.params && !didConsumeNestedParams) {
-    let action: CommonActions.Action | undefined;
+    let params: NavigatorParamsPayload | undefined;
 
     if (
       typeof route.params.state === 'object' &&
@@ -509,79 +533,70 @@ export function useNavigationBuilder<
     ) {
       didConsumeNestedParams = true;
 
-      // If the route was updated with new state, we should reset to it
-      action = CommonActions.reset(route.params.state);
+      params = { state: keyedNestedParams!.state! };
     } else if (
       typeof route.params.screen === 'string' &&
       ((route.params.initial === false && isFirstStateInitialization) || !isNestedParamsConsumed)
     ) {
       didConsumeNestedParams = true;
 
-      // If the route was updated with new screen name and/or params, we should navigate there
-      action = CommonActions.navigate({
-        name: route.params.screen,
+      params = {
+        screen: route.params.screen,
         params: route.params.params,
         path: route.params.path,
         merge: route.params.merge,
         pop: route.params.pop,
-      });
+        routeKey: keyedNestedParams!.routeKey,
+      };
     }
 
-    // The update should be limited to current navigator only, so we call the router manually
-    const updatedState = action
-      ? router.getStateForAction(nextState, action, {
-          routeNames,
-          routeParamList,
-          routeGetIdList,
-        })
-      : null;
-
-    nextState =
-      updatedState !== null
-        ? router.getRehydratedState(updatedState, {
+    const updatedState = params
+      ? router.getStateForNavigatorParams?.(
+          // The render state has recursively keyed routes and is valid keyed stale router input.
+          nextState as KeyedPartialState<State> | State,
+          params,
+          {
             routeNames,
             routeParamList,
             routeGetIdList,
-          })
-        : nextState;
+          }
+        )
+      : null;
+
+    // The declared-routes projection below fills the required render fields on keyed stale output.
+    nextState = (updatedState ?? nextState) as RenderState<State>;
   }
-
-  React.useEffect(() => {
-    if (didConsumeNestedParams && typeof route?.params === 'object' && route.params != null) {
-      // Track whether the params have been already consumed
-      // Set it to the same object, so merged params can be handled again
-      Object.defineProperty(route.params, CONSUMED_PARAMS, {
-        value: route.params,
-        enumerable: false,
-      });
-    }
-  }, [didConsumeNestedParams, route?.params]);
-
-  const shouldUpdate = state !== nextState;
-
-  useScheduleUpdate(() => {
-    if (shouldUpdate) {
-      // Schedule an update if the state needs to be updated
-      setState(nextState);
-    }
-  });
 
   // The up-to-date state will come in next render, but we don't need to wait for it
   // We can't use the outdated state since the screens have changed, which will cause error due to mismatched config
   // So we override the state object we return to use the latest state as soon as possible
-  state = nextState;
+  const needsFallbackRoute = !nextState.routes.some((route) => routeNames.includes(route.name));
+  const fallbackRouteKey = React.useMemo(
+    () => (needsFallbackRoute ? `${routeNames[0]}-${nanoid()}` : undefined),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [needsFallbackRoute, routeNames[0]]
+  );
 
-  // Keep render consumers safe without committing a state outside the action pipeline. The router
-  // decides which survivor takes focus, so the interim render agrees with the state that
-  // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
-  state = router.getStateForDeclaredRoutes(state, routeNames);
+  // TODO: Remove this projection once stale state can only contain declared routes.
+  const stateWithDeclaredFields =
+    nextState.type === router.type &&
+    nextState.routeNames !== undefined &&
+    isArrayEqual(nextState.routeNames, routeNames)
+      ? nextState
+      : ({ ...nextState, routeNames, type: router.type } as KeyedPartialState<State> | State);
+  state = router.getStateForDeclaredRoutes(
+    // Render state has the same recursively keyed shape accepted by keyed stale router input.
+    stateWithDeclaredFields as KeyedPartialState<State> | State,
+    routeNames,
+    fallbackRouteKey
+  ) as RenderState<State>;
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
     lastStateRef.current = nextState;
   });
 
-  const lastNotifiedStateRef = React.useRef<State | null>(null);
+  const lastNotifiedStateRef = React.useRef<RenderState<State> | null>(null);
 
   React.useEffect(() => {
     // In strict mode, React will double-invoke effects.
@@ -596,8 +611,9 @@ export function useNavigationBuilder<
       // This is necessary for proper screen tracking, URL updates etc.
       // We only notify if the state is different what we already notified
       // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(nextState);
-      lastNotifiedStateRef.current = nextState;
+      // Render state has all fields accepted by the stale store shape, with stronger nested keys.
+      setState(nextState as PartialState<State>);
+      lastNotifiedStateRef.current = state;
     }
 
     return () => {
@@ -615,7 +631,7 @@ export function useNavigationBuilder<
   // During this time, we need to return the internal state in `getState`
   // Otherwise it can result in inconsistent state during render in children
   // To avoid this, we use a ref for render phase, and immediately clear it on commit
-  const stateRef = React.useRef<State | null>(state);
+  const stateRef = React.useRef<RenderState<State> | null>(state);
 
   stateRef.current = state;
 
@@ -623,12 +639,48 @@ export function useNavigationBuilder<
     stateRef.current = null;
   });
 
-  const getState = useLatestCallback((): State => {
-    const currentState = getCurrentState();
+  const hydrationCacheRef = React.useRef<
+    | {
+        base: State | PartialState<State>;
+        routeNames: string[];
+        routeParamList: Record<string, object | undefined>;
+        routeGetIdList: RouterConfigOptions['routeGetIdList'];
+        state: State;
+      }
+    | undefined
+  >(undefined);
 
-    return deepFreeze(
-      (isStateInitialized(currentState) ? currentState : initializedState) as State
+  const getState = useLatestCallback((): State => {
+    const current = getCurrentState();
+    const base = (current && isStateValid(current) ? current : initializedState) as
+      | State
+      | PartialState<State>;
+
+    if (isStateInitialized(base)) {
+      return deepFreeze(base);
+    }
+
+    const cached = hydrationCacheRef.current;
+    if (
+      cached?.base === base &&
+      isArrayEqual(cached.routeNames, routeNames) &&
+      isRecordEqual(cached.routeParamList, routeParamList) &&
+      isRecordEqual(cached.routeGetIdList, routeGetIdList)
+    ) {
+      return cached.state;
+    }
+
+    const hydrated = deepFreeze(
+      router.getRehydratedState(base, { routeNames, routeParamList, routeGetIdList })
     );
+    hydrationCacheRef.current = {
+      base,
+      routeNames,
+      routeParamList,
+      routeGetIdList,
+      state: hydrated,
+    };
+    return hydrated;
   });
 
   const emitter = useEventEmitter<EventMapCore<State>>((e) => {
@@ -695,8 +747,8 @@ export function useNavigationBuilder<
   useFocusEvents({ state, emitter });
 
   React.useEffect(() => {
-    emitter.emit({ type: 'state', data: { state } });
-  }, [emitter, state]);
+    emitter.emit({ type: 'state', data: { state: getState() } });
+  }, [emitter, getState, state]);
 
   const { listeners: childListeners, addListener } = useChildListeners();
 
@@ -725,14 +777,44 @@ export function useNavigationBuilder<
   });
 
   useClientLayoutEffect(() => {
-    const committed = getState();
+    const committed = getCurrentState() ?? initializedState;
 
-    if (!isArrayEqual(committed.routeNames, routeNames)) {
+    if (
+      committed &&
+      (isStateInitialized(committed)
+        ? !isArrayEqual(committed.routeNames, routeNames)
+        : committed.routes.some((route) => !routeNames.includes(route.name)))
+    ) {
       onAction({
         type: 'ROUTE_NAMES_CHANGED',
-        payload: { routeNames },
+        payload: { routeNames, fallbackRouteKey },
         target: committed.key,
       });
+    }
+
+    if (
+      didConsumeNestedParams &&
+      typeof route?.params === 'object' &&
+      route.params != null &&
+      !(CONSUMED_PARAMS in route.params && route.params[CONSUMED_PARAMS] === route.params)
+    ) {
+      Object.defineProperty(route.params, CONSUMED_PARAMS, {
+        value: route.params,
+        enumerable: false,
+        configurable: true,
+      });
+      const params: NavigatorParamsPayload =
+        route.params.state != null
+          ? { state: keyedNestedParams!.state! }
+          : {
+              screen: route.params.screen!,
+              params: route.params.params,
+              path: route.params.path,
+              merge: route.params.merge,
+              pop: route.params.pop,
+              routeKey: keyedNestedParams!.routeKey,
+            };
+      onAction({ type: 'NAVIGATOR_PARAMS_CHANGED', payload: { params }, target: state.key });
     }
   });
 

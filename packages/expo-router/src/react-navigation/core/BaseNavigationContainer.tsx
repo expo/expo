@@ -1,10 +1,12 @@
 'use client';
+import { nanoid } from 'nanoid/non-secure';
 import * as React from 'react';
 import { use } from 'react';
 
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
+  ensureStateKeys,
   type InitialState,
   type NavigationAction,
   type NavigationState,
@@ -42,7 +44,7 @@ const serializableWarnings: string[] = [];
 const duplicateNameWarnings: string[] = [];
 
 /**
- * Remove `key` and `routeNames` from the state objects recursively to get partial state.
+ * Remove `routeNames` from state objects before keying the partial tree.
  *
  * @param state Initial state object.
  */
@@ -53,22 +55,28 @@ const getPartialState = (
     return;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { key, routeNames, ...partialState } = state;
+  const stripState = (current: InitialState, isRoot = false): PartialState<NavigationState> => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { routeNames, ...partialState } = current;
 
-  return {
-    ...partialState,
-    stale: true,
-    routes: state.routes.map((route) => {
-      if (route.state === undefined) {
-        return route as Route<string> & {
-          state?: PartialState<NavigationState>;
-        };
-      }
+    return {
+      ...partialState,
+      key: isRoot ? `root-${nanoid()}` : current.key,
+      stale: true,
+      routes: current.routes.map((route) => {
+        if (route.state === undefined) {
+          return route as Route<string> & {
+            state?: PartialState<NavigationState>;
+          };
+        }
 
-      return { ...route, state: getPartialState(route.state) };
-    }),
+        return { ...route, state: stripState(route.state) };
+      }),
+    };
   };
+
+  // `ensureStateKeys` makes the root, routes, and nested stale states satisfy `PartialState`.
+  return ensureStateKeys(stripState(state, true)) as PartialState<NavigationState>;
 };
 
 /**
@@ -102,7 +110,7 @@ export function BaseNavigationContainer({
     );
   }
 
-  const { state, getState, setState, scheduleUpdate, flushUpdates } = useSyncState<State>(() =>
+  const { state, getState, setState } = useSyncState<State>(() =>
     getPartialState(initialState == null ? undefined : initialState)
   );
 
@@ -195,7 +203,7 @@ export function BaseNavigationContainer({
       isFocused: () => true,
       canGoBack,
       getParent: () => undefined,
-      getState,
+      getState: getRootState,
       getRootState,
       getCurrentRoute,
       getCurrentOptions,
@@ -211,7 +219,6 @@ export function BaseNavigationContainer({
       getCurrentOptions,
       getCurrentRoute,
       getRootState,
-      getState,
       isReady,
       resetRoot,
     ]
@@ -249,11 +256,9 @@ export function BaseNavigationContainer({
       addKeyedListener,
       onDispatchAction,
       onOptionsChange,
-      scheduleUpdate,
-      flushUpdates,
       stackRef,
     }),
-    [addListener, addKeyedListener, onDispatchAction, onOptionsChange, scheduleUpdate, flushUpdates]
+    [addListener, addKeyedListener, onDispatchAction, onOptionsChange]
   );
 
   const isInitialRef = React.useRef(true);
@@ -357,7 +362,7 @@ export function BaseNavigationContainer({
       }
     }
 
-    emitter.emit({ type: 'state', data: { state } });
+    emitter.emit({ type: 'state', data: { state: hydratedState } });
 
     if (!isFirstMountRef.current && onStateChangeRef.current) {
       onStateChangeRef.current(hydratedState);

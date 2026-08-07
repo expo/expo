@@ -26,6 +26,15 @@ export function useRouteCache<State extends NavigationState>(routes: State['rout
     const previous = cache.current.get(route.key);
     const { state, ...routeWithoutState } = route;
 
+    if (
+      previous?.params !== routeWithoutState.params &&
+      previous?.params != null &&
+      routeWithoutState.params != null &&
+      isRecordEqual(previous.params, routeWithoutState.params)
+    ) {
+      routeWithoutState.params = previous.params;
+    }
+
     let proxy;
 
     if (previous && isRecordEqual(previous, routeWithoutState)) {

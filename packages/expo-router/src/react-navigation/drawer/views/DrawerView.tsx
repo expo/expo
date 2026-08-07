@@ -16,6 +16,7 @@ import {
   type DrawerNavigationState,
   type DrawerStatus,
   type ParamListBase,
+  type RenderState,
   StackActions,
   useLocale,
   useTheme,
@@ -38,7 +39,7 @@ import { MaybeScreen, MaybeScreenContainer } from './ScreenFallback';
 
 type Props = DrawerNavigationConfig & {
   defaultStatus: DrawerStatus;
-  state: DrawerNavigationState<ParamListBase>;
+  state: RenderState<DrawerNavigationState<ParamListBase>>;
   navigation: DrawerNavigationHelpers;
   descriptors: DrawerDescriptorMap;
 };
@@ -208,7 +209,7 @@ function DrawerViewBase({
           const descriptor = descriptors[route.key]!;
           const { lazy = true } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = state.preloadedRouteKeys.includes(route.key);
+          const isPreloaded = state.preloadedRouteKeys?.includes(route.key) ?? false;
 
           if (
             descriptor.route.key === undefined ||

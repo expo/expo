@@ -1,5 +1,5 @@
 import type { ReactNavigationState } from '../global-state/types';
-import type { NavigationState } from '../react-navigation/native';
+import type { NavigationState, RenderState } from '../react-navigation/native';
 
 export function getHistoryLength(state: ReactNavigationState): number {
   if (state.history) {
@@ -19,7 +19,7 @@ export function getHistoryLength(state: ReactNavigationState): number {
 }
 
 export function isRoutePreloadedInStack(
-  navigationState: NavigationState | undefined,
+  navigationState: RenderState<NavigationState> | undefined,
   route: { key: string }
 ): boolean {
   if (!navigationState || navigationState.type !== 'stack') {

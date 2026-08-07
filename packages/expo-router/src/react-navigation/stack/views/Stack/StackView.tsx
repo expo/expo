@@ -8,6 +8,7 @@ import {
   CommonActions,
   type LocaleDirection,
   type ParamListBase,
+  type RenderState,
   type Route,
   StackActions,
   type StackNavigationState,
@@ -24,7 +25,7 @@ import { CardStack, getAnimationEnabled } from './CardStack';
 
 type Props = StackNavigationConfig & {
   direction: LocaleDirection;
-  state: StackNavigationState<ParamListBase>;
+  state: RenderState<StackNavigationState<ParamListBase>>;
   navigation: StackNavigationHelpers;
   descriptors: StackDescriptorMap;
 };

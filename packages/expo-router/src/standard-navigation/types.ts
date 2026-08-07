@@ -11,6 +11,7 @@ import type {
   NavigationAction,
   NavigationHelpers,
   NavigationState,
+  RenderState,
   ParamListBase,
   DescriptorRouteProp,
   RouteSource,
@@ -60,7 +61,7 @@ export type StandardUseNavigationBuilderOptions<
 >;
 
 export interface StandardNavigatorCreatePropsFactoryDeps<State extends NavigationState> {
-  state: State;
+  state: RenderState<State>;
   dispatch: (action: NavigationAction) => void;
   navigation: NavigationHelpers<ParamListBase>;
 }
@@ -115,14 +116,14 @@ export type IntegrateWithRouterOptions<
    * ```
    */
   processState?: (
-    state: State,
+    state: RenderState<State>,
     descriptors: PlaceholderDescriptorMap,
     describe: DescribePlaceholderRoute
-  ) => State;
+  ) => RenderState<State>;
   /** Creates additional descriptors before `processState` and navigator rendering. */
   processDescriptors?: (
     descriptors: PlaceholderDescriptorMap,
-    state: State,
+    state: RenderState<State>,
     describe: DescribePlaceholderRoute
   ) => PlaceholderDescriptorMap;
   /**

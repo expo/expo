@@ -45,7 +45,6 @@ const getStateFromParams = (
         {
           name: params.screen,
           params: params.params,
-          // @ts-expect-error this is fine 🔥
           state: params.screen
             ? getStateFromParams(params.params as NavigatorScreenParams<ParamListBase> | undefined)
             : undefined,
