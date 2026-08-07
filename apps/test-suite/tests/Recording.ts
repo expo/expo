@@ -256,7 +256,7 @@ export async function test(t: JasmineInterface) {
           options: RecordingOptions,
           expectedRootUri: string
         ) => {
-          const currentRecorder = recorder!;
+          const currentRecorder = recorder;
           let recordingUri: string | null = null;
 
           try {
