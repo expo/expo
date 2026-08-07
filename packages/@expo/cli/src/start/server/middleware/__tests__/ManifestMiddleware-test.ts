@@ -498,4 +498,40 @@ describe('getHandler', () => {
     expect(next).not.toHaveBeenCalled();
     expect(Log.exception).not.toHaveBeenCalled();
   });
+
+  it(`still reports a manifest body that fails while the client is connected`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+    });
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+    // Expo Go streams a lazily encoded multipart body, so it can fail mid-response for reasons
+    // that have nothing to do with the client.
+    middleware._getManifestResponseAsync = jest.fn(
+      async () =>
+        new Response(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(new TextEncoder().encode('part-one'));
+              controller.error(new Error('multipart encoding failed'));
+            },
+          }),
+          { headers: { header: 'value' } }
+        )
+    );
+
+    const handleAsync = middleware.getHandler();
+    const next = jest.fn();
+    const req = asReq({ url: '/', headers: {} });
+    const res = new MockServerResponse();
+    res.on('data', () => {});
+
+    await handleAsync(req, asRes(res), next);
+
+    // `pipeline` destroys `res` here too, so this only passes if the error itself is inspected.
+    expect(Log.exception).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'multipart encoding failed' })
+    );
+    expect(res.statusCode).toEqual(500);
+    expect(next).not.toHaveBeenCalled();
+  });
 });
