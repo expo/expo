@@ -64,9 +64,13 @@ data class NetworkRequestSummary(
    * Received bytes over the time those bytes were actually moving, in bytes per second, or `null`
    * when nothing was received or no receiving request reported a usable interval.
    *
-   * The denominator is the union of the intervals of the requests that received bytes. Three choices
-   * are folded into that:
+   * The denominator is the union of the transfer windows of the requests that received bytes, each
+   * running from the first response byte to the last. Four choices are folded into that:
    *
+   * - The transfer window rather than the whole request, so time spent resolving DNS, connecting,
+   *   and waiting on the server isn't charged to the connection. A request that waits four seconds
+   *   on a backend and then delivers a kilobyte instantly describes a fast network, not a slow one;
+   *   the wait belongs to `slowest.timeToFirstByte`.
    * - A union rather than a sum of durations, so request concurrency doesn't inflate it. Four
    *   parallel one-second requests would otherwise report a quarter of the real rate.
    * - The busy span rather than the whole window, so idle time isn't charged to the network. A
@@ -74,6 +78,10 @@ data class NetworkRequestSummary(
    * - Only requests that completed and received bytes, so neither a slow request returning nothing
    *   nor one that stalled until the client gave up can stretch the denominator across time when no
    *   payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `timedOut`.
+   *
+   * Requiring a first-byte timestamp also excludes cache hits for free: a response served from disk
+   * never reports one, so the bytes it contributes can't be divided by the milliseconds it took to
+   * read them.
    *
    * This still can't see a stall between requests: if the radio dies while nothing is in flight, no
    * interval covers it. `timedOut` is the signal for that case.
@@ -210,22 +218,23 @@ data class NetworkRequestSummary(
     }
 
     /**
-     * The requests that completed, received bytes, and reported a measurable span, which is the
-     * subset the throughput ratio is computed over.
+     * The requests that completed, received bytes, and reported a measurable transfer window, which
+     * is the subset the throughput ratio is computed over.
      *
      * Deciding it once keeps the numerator and denominator describing the same traffic. Filtering
      * inside the busy-time fold instead would let a request contribute its bytes while adding no
      * time, which reads as a faster connection than actually happened. A cache hit is the case that
-     * matters: it reports bytes from the task counters but is served from disk inside one clock tick.
+     * matters: it reports bytes from the task counters but is served from disk, so it never gets a
+     * first-byte timestamp and drops out here.
      *
      * Failures are excluded for the opposite reason. A request that received a few bytes and then
-     * stalled until the client gave up reports a span covering the whole stall, so it would hold the
-     * denominator open across time when nothing was moving and report a connection far slower than
+     * stalled until the client gave up reports a window covering the whole stall, so it would hold
+     * the denominator open across time when nothing was moving and report a connection far slower than
      * the one that served the requests around it.
      */
     private fun measurableReceiving(requests: List<NetworkRequest>): List<NetworkRequest> {
       return requests.filter { request ->
-        val start = request.timings.fetchStart
+        val start = request.timings.responseStart
         val end = request.timings.responseEnd
         !request.isFailed && (request.responseBytesReceived ?: 0) > 0 && start != null &&
           end != null && end.time > start.time
@@ -247,7 +256,7 @@ data class NetworkRequestSummary(
     private fun busyDuration(requests: List<NetworkRequest>): Double {
       val intervals = requests
         .mapNotNull { request ->
-          val start = request.timings.fetchStart ?: return@mapNotNull null
+          val start = request.timings.responseStart ?: return@mapNotNull null
           val end = request.timings.responseEnd ?: return@mapNotNull null
           if (end.time > start.time) start.time to end.time else null
         }

@@ -213,11 +213,13 @@ class NetworkRequestSummaryTest {
       makeRequest(
         responseBytesReceived = 8000,
         fetchStart = Date(0),
+        responseStart = Date(0),
         responseEnd = Date(1000)
       ),
       makeRequest(
         responseBytesReceived = 2000,
         fetchStart = Date(1000),
+        responseStart = Date(1000),
         responseEnd = Date(2000)
       )
     )
@@ -233,6 +235,7 @@ class NetworkRequestSummaryTest {
       makeRequest(
         responseBytesReceived = 10000,
         fetchStart = Date(0),
+        responseStart = Date(0),
         responseEnd = Date(1000)
       )
     }
@@ -244,8 +247,18 @@ class NetworkRequestSummaryTest {
   fun `excludes idle gaps between requests from throughput`() {
     // 1s of transfer, a 10s idle gap, then another 1s: only the 2s of busy time counts.
     val requests = listOf(
-      makeRequest(responseBytesReceived = 5000, fetchStart = Date(0), responseEnd = Date(1000)),
-      makeRequest(responseBytesReceived = 5000, fetchStart = Date(11000), responseEnd = Date(12000))
+      makeRequest(
+        responseBytesReceived = 5000,
+        fetchStart = Date(0),
+        responseStart = Date(0),
+        responseEnd = Date(1000)
+      ),
+      makeRequest(
+        responseBytesReceived = 5000,
+        fetchStart = Date(11000),
+        responseStart = Date(11000),
+        responseEnd = Date(12000)
+      )
     )
     val summary = NetworkRequestSummary.from(requests)
     assertEquals(5000.0, summary.throughputBytesPerSecond!!, 0.0001)
@@ -260,6 +273,7 @@ class NetworkRequestSummaryTest {
       makeRequest(
         responseBytesReceived = 1_000_000,
         fetchStart = Date(0),
+        responseStart = Date(0),
         responseEnd = Date(1000)
       ),
       makeRequest(
@@ -268,6 +282,7 @@ class NetworkRequestSummaryTest {
         isTimeout = true,
         responseBytesReceived = 2000,
         fetchStart = Date(0),
+        responseStart = Date(0),
         responseEnd = Date(30000)
       )
     )
@@ -276,11 +291,62 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
+  fun `measures throughput over the transfer window, not the whole request`() {
+    // 4 seconds waiting on the backend, then 1 kB delivered in 10ms. Charging the wait to the
+    // network reports ~256 B/s for a connection that moved 1 kB in a hundredth of a second.
+    val summary = NetworkRequestSummary.from(
+      listOf(
+        makeRequest(
+          responseBytesReceived = 1024,
+          fetchStart = Date(0),
+          responseStart = Date(4000),
+          responseEnd = Date(4010)
+        )
+      )
+    )
+    assertEquals(102_400.0, summary.throughputBytesPerSecond!!, 0.0001)
+  }
+
+  @Test
+  fun `excludes a cache hit from throughput`() {
+    // A cached read reports its bytes from the task counters but never touches the network, so it
+    // has no first-byte timestamp. Counting it would add megabytes to the numerator against the
+    // few milliseconds it took to read from disk.
+    val summary = NetworkRequestSummary.from(
+      listOf(
+        makeRequest(
+          responseBytesReceived = 5_000_000,
+          fetchStart = Date(0),
+          responseStart = null,
+          responseEnd = Date(20)
+        ),
+        makeRequest(
+          responseBytesReceived = 100_000,
+          fetchStart = Date(0),
+          responseStart = Date(0),
+          responseEnd = Date(1000)
+        )
+      )
+    )
+    assertEquals(100_000.0, summary.throughputBytesPerSecond!!, 0.0001)
+  }
+
+  @Test
   fun `merges partially overlapping requests into one busy span`() {
     // 0-2s and 1-3s overlap, so busy time is 3s rather than the 4s of summed duration.
     val requests = listOf(
-      makeRequest(responseBytesReceived = 3000, fetchStart = Date(0), responseEnd = Date(2000)),
-      makeRequest(responseBytesReceived = 3000, fetchStart = Date(1000), responseEnd = Date(3000))
+      makeRequest(
+        responseBytesReceived = 3000,
+        fetchStart = Date(0),
+        responseStart = Date(0),
+        responseEnd = Date(2000)
+      ),
+      makeRequest(
+        responseBytesReceived = 3000,
+        fetchStart = Date(1000),
+        responseStart = Date(1000),
+        responseEnd = Date(3000)
+      )
     )
     val summary = NetworkRequestSummary.from(requests)
     assertEquals(2000.0, summary.throughputBytesPerSecond!!, 0.0001)
@@ -301,12 +367,18 @@ class NetworkRequestSummaryTest {
     // flowing during it. Counting its span would describe time the payload wasn't moving; its
     // latency is already covered by `slowest.timeToFirstByte`.
     val requests = listOf(
-      makeRequest(responseBytesReceived = 10000, fetchStart = Date(0), responseEnd = Date(1000)),
+      makeRequest(
+        responseBytesReceived = 10000,
+        fetchStart = Date(0),
+        responseStart = Date(0),
+        responseEnd = Date(1000)
+      ),
       makeRequest(
         url = "https://httpbin.org/status/204",
         statusCode = 204,
         responseBytesReceived = 0,
         fetchStart = Date(1000),
+        responseStart = Date(1000),
         responseEnd = Date(4000)
       )
     )
@@ -319,8 +391,18 @@ class NetworkRequestSummaryTest {
     // A cache hit reports its bytes but is served from disk inside one clock tick, so its interval
     // collapses. Counting those bytes against another request's span would double the rate.
     val requests = listOf(
-      makeRequest(responseBytesReceived = 10000, fetchStart = Date(0), responseEnd = Date(0)),
-      makeRequest(responseBytesReceived = 10000, fetchStart = Date(5000), responseEnd = Date(6000))
+      makeRequest(
+        responseBytesReceived = 10000,
+        fetchStart = Date(0),
+        responseStart = Date(0),
+        responseEnd = Date(0)
+      ),
+      makeRequest(
+        responseBytesReceived = 10000,
+        fetchStart = Date(5000),
+        responseStart = Date(5000),
+        responseEnd = Date(6000)
+      )
     )
     val summary = NetworkRequestSummary.from(requests)
     // Only the download's 10 kB over its own 1s span.
@@ -330,7 +412,14 @@ class NetworkRequestSummaryTest {
   @Test
   fun `leaves throughput null when the only receiving request had no measurable span`() {
     val summary = NetworkRequestSummary.from(
-      listOf(makeRequest(responseBytesReceived = 10000, fetchStart = Date(0), responseEnd = Date(0)))
+      listOf(
+        makeRequest(
+          responseBytesReceived = 10000,
+          fetchStart = Date(0),
+          responseStart = Date(0),
+          responseEnd = Date(0)
+        )
+      )
     )
     assertNull(summary.throughputBytesPerSecond)
   }

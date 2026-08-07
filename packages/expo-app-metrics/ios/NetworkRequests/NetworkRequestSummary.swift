@@ -77,9 +77,13 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// Received bytes over the time those bytes were actually moving, in bytes per second, or `nil`
   /// when nothing was received or no receiving request reported a usable interval.
   ///
-  /// The denominator is the union of the intervals of the requests that received bytes. Three
-  /// choices are folded into that:
+  /// The denominator is the union of the transfer windows of the requests that received bytes, each
+  /// running from the first response byte to the last. Four choices are folded into that:
   ///
+  /// - The transfer window rather than the whole request, so time spent resolving DNS, connecting,
+  ///   and waiting on the server isn't charged to the connection. A request that waits four seconds
+  ///   on a backend and then delivers a kilobyte instantly describes a fast network, not a slow one;
+  ///   the wait belongs to `slowest.timeToFirstByte`.
   /// - A union rather than a sum of durations, so request concurrency doesn't inflate it. Four
   ///   parallel one-second requests would otherwise report a quarter of the real rate.
   /// - The busy span rather than the whole window, so idle time isn't charged to the network. A
@@ -87,6 +91,10 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// - Only requests that completed and received bytes, so neither a slow request returning nothing
   ///   nor one that stalled until the client gave up can stretch the denominator across time when
   ///   no payload was in flight. Their latency belongs to `slowest.timeToFirstByte` and `timedOut`.
+  ///
+  /// Requiring a first-byte timestamp also excludes cache hits for free: a response served from
+  /// disk never reports one, so the megabytes it contributes can't be divided by the milliseconds
+  /// it took to read them.
   ///
   /// This still can't see a stall between requests: if the radio dies while nothing is in flight,
   /// no interval covers it. `timedOut` is the signal for that case.
@@ -190,18 +198,19 @@ public struct NetworkRequestSummary: Sendable, Equatable {
     return Double(bytes) / busySeconds
   }
 
-  /// The requests that completed, received bytes, and reported a measurable span, which is the
-  /// subset the throughput ratio is computed over.
+  /// The requests that completed, received bytes, and reported a measurable transfer window, which
+  /// is the subset the throughput ratio is computed over.
   ///
   /// Deciding it once keeps the numerator and denominator describing the same traffic. Filtering
   /// inside the busy-time fold instead would let a request contribute its bytes while adding no
   /// time, which reads as a faster connection than actually happened. A cache hit is the case that
-  /// matters: it reports bytes from the task counters but is served from disk inside one clock tick.
+  /// matters: it reports bytes from the task counters but is served from disk, so it never gets a
+  /// first-byte timestamp and drops out here.
   ///
   /// Failures are excluded for the opposite reason. A request that received a few bytes and then
-  /// stalled until the client gave up reports a span covering the whole stall, so it would hold the
-  /// denominator open across time when nothing was moving and report a connection far slower than
-  /// the one that served the requests around it.
+  /// stalled until the client gave up reports a window covering the whole stall, so it would hold
+  /// the denominator open across time when nothing was moving and report a connection far slower
+  /// than the one that served the requests around it.
   private static func measurableReceiving(in requests: [NetworkRequest]) -> [NetworkRequest] {
     return requests.filter { request in
       guard !request.isFailed else {
@@ -210,22 +219,23 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       guard (request.responseBytesReceived ?? 0) > 0 else {
         return false
       }
-      guard let start = request.timings.fetchStart, let end = request.timings.responseEnd else {
+      guard let start = request.timings.responseStart, let end = request.timings.responseEnd else {
         return false
       }
       return end > start
     }
   }
 
-  /// Total length of the union of the requests' in-flight intervals, in seconds.
+  /// Total length of the union of the requests' transfer windows, in seconds, each running from the
+  /// first response byte to the last.
   ///
   /// Overlapping requests are merged so concurrency doesn't inflate the total, and gaps between
   /// requests are excluded so idle time isn't charged to the network. Requests without a measurable
-  /// span are skipped; callers computing a rate should pass a list already narrowed by
+  /// window are skipped; callers computing a rate should pass a list already narrowed by
   /// `measurableReceiving(in:)` so the same requests feed both sides of the ratio.
   private static func busyDuration(of requests: [NetworkRequest]) -> TimeInterval {
     let intervals = requests.compactMap { request -> (start: Date, end: Date)? in
-      guard let start = request.timings.fetchStart, let end = request.timings.responseEnd else {
+      guard let start = request.timings.responseStart, let end = request.timings.responseEnd else {
         return nil
       }
       return end > start ? (start, end) : nil
