@@ -682,6 +682,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 8000,
       fetchStart: now,
+      responseStart: now,
       responseEnd: now.addingTimeInterval(1)
     )
     let second = makeRequest(
@@ -691,6 +692,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 2000,
       fetchStart: now.addingTimeInterval(1),
+      responseStart: now.addingTimeInterval(1),
       responseEnd: now.addingTimeInterval(2)
     )
     let summary = NetworkRequestSummary.from([first, second])
@@ -710,6 +712,7 @@ struct NetworkRequestSummaryTests {
         bytesSent: 0,
         bytesReceived: 10_000,
         fetchStart: now,
+        responseStart: now,
         responseEnd: now.addingTimeInterval(1)
       )
     }
@@ -731,6 +734,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 1_000_000,
       fetchStart: now,
+      responseStart: now,
       responseEnd: now.addingTimeInterval(1)
     )
     let stalled = makeRequest(
@@ -742,10 +746,62 @@ struct NetworkRequestSummaryTests {
       fetchStart: now,
       error: "The request timed out.",
       isTimeout: true,
+      responseStart: now,
       responseEnd: now.addingTimeInterval(30)
     )
     let summary = NetworkRequestSummary.from([healthy, stalled])
     #expect(abs((summary.throughputBytesPerSecond ?? 0) - 1_000_000) < 0.0001)
+  }
+
+  @Test
+  func `measures throughput over the transfer window, not the whole request`() {
+    let now = Date()
+    // 4 seconds waiting on the backend, then 1 kB delivered in 10ms. Charging the wait to the
+    // network reports ~256 B/s for a connection that moved 1 kB in a hundredth of a second.
+    let slowServer = makeRequest(
+      host: "api.expo.dev",
+      duration: 4.01,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 1024,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(4.0),
+      responseEnd: now.addingTimeInterval(4.01)
+    )
+    let summary = NetworkRequestSummary.from([slowServer])
+    // `Date` arithmetic is base-2 floating point, so the 10ms window isn't exactly 0.01s. Compare
+    // against a relative tolerance rather than an absolute one that a rate this large can't meet.
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 102_400) < 1.0)
+  }
+
+  @Test
+  func `excludes a cache hit from throughput`() {
+    let now = Date()
+    // A cached read reports its bytes from the task counters but never touches the network, so it
+    // has no `responseStart`. Counting it would add megabytes to the numerator against the few
+    // milliseconds it took to read from disk.
+    let cached = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 0.02,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 5_000_000,
+      fetchStart: now,
+      responseStart: nil,
+      responseEnd: now.addingTimeInterval(0.02)
+    )
+    let real = makeRequest(
+      host: "api.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 100_000,
+      fetchStart: now,
+      responseStart: now,
+      responseEnd: now.addingTimeInterval(1.0)
+    )
+    let summary = NetworkRequestSummary.from([cached, real])
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 100_000) < 0.0001)
   }
 
   @Test
@@ -760,6 +816,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 5000,
       fetchStart: now,
+      responseStart: now,
       responseEnd: now.addingTimeInterval(1)
     )
     let second = makeRequest(
@@ -769,6 +826,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 5000,
       fetchStart: now.addingTimeInterval(11),
+      responseStart: now.addingTimeInterval(11),
       responseEnd: now.addingTimeInterval(12)
     )
     let summary = NetworkRequestSummary.from([first, second])
@@ -786,6 +844,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 3000,
       fetchStart: now,
+      responseStart: now,
       responseEnd: now.addingTimeInterval(2)
     )
     let second = makeRequest(
@@ -795,6 +854,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 3000,
       fetchStart: now.addingTimeInterval(1),
+      responseStart: now.addingTimeInterval(1),
       responseEnd: now.addingTimeInterval(3)
     )
     let summary = NetworkRequestSummary.from([first, second])
@@ -829,6 +889,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 10_000,
       fetchStart: now,
+      responseStart: now,
       responseEnd: now.addingTimeInterval(1)
     )
     let slowEmptyResponse = makeRequest(
@@ -838,6 +899,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 0,
       fetchStart: now.addingTimeInterval(1),
+      responseStart: now.addingTimeInterval(1),
       responseEnd: now.addingTimeInterval(4)
     )
     let summary = NetworkRequestSummary.from([download, slowEmptyResponse])
@@ -857,6 +919,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 10_000,
       fetchStart: now,
+      responseStart: now,
       responseEnd: now
     )
     let download = makeRequest(
@@ -866,6 +929,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 10_000,
       fetchStart: now.addingTimeInterval(5),
+      responseStart: now.addingTimeInterval(5),
       responseEnd: now.addingTimeInterval(6)
     )
     let summary = NetworkRequestSummary.from([cacheHit, download])
@@ -883,6 +947,7 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 10_000,
       fetchStart: now,
+      responseStart: now,
       responseEnd: now
     )
     let summary = NetworkRequestSummary.from([cacheHit])
