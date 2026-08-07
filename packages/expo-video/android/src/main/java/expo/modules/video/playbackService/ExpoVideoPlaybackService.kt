@@ -97,9 +97,9 @@ class ExpoVideoPlaybackService : MediaSessionService() {
 
   fun unregisterPlayer(player: ExoPlayer) {
     appContext.mainQueue.launch {
+      val session = mediaSessions.remove(player) ?: return@launch
       hidePlayerNotification(player)
-      val session = mediaSessions.remove(player)
-      session?.release()
+      session.release()
       if (mediaSessions.isEmpty()) {
         cleanup()
         stopSelf()
@@ -233,7 +233,12 @@ class ExpoVideoPlaybackService : MediaSessionService() {
   @MainThread
   private fun hideAllNotifications() {
     val notificationManager: NotificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-    notificationManager.cancelAll()
+    for (session in mediaSessions.values) {
+      notificationManager.cancel(session.player.hashCode())
+    }
+    mostRecentInteractionSession?.let {
+      notificationManager.cancel(it.player.hashCode())
+    }
   }
 
   private fun MediaSession.wantsToShowNotification(): Boolean =

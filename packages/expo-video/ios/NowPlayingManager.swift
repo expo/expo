@@ -42,6 +42,10 @@ class NowPlayingManager: VideoPlayerObserverDelegate {
   }
 
   func unregisterPlayer(_ player: VideoPlayer) {
+    guard players.allObjects.contains(where: { $0 === player }) else {
+      return
+    }
+
     players.remove(player)
     player.observer?.unregisterDelegate(delegate: self)
 
