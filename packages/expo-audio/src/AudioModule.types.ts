@@ -169,6 +169,11 @@ export declare class AudioPlayer extends SharedObject<AudioEvents> {
   currentStatus: AudioStatus;
 
   /**
+   * A boolean describing whether the player is active for lock screen controls. See [`setActiveForLockScreen()`](#setactiveforlockscreenactive-metadata-options).
+   */
+  isActiveForLockScreen: boolean;
+
+  /**
    * Start playing audio.
    */
   play(): void;
@@ -471,6 +476,11 @@ export declare class AudioPlaylist extends SharedObject<AudioPlaylistEvents> {
    * @hidden
    */
   currentStatus: AudioPlaylistStatus;
+
+  /**
+   * A boolean describing whether the player is active for lock screen controls. See [`setActiveForLockScreen()`](#setactiveforlockscreenactive-metadata-options-1).
+   */
+  isActiveForLockScreen: boolean;
 
   /**
    * Start playing the current track in the playlist.
