@@ -87,11 +87,12 @@ suspend fun queryAssetInfo(
  * location) is read in parallel across [exifReadDispatcher] instead of
  * sequentially. EXIF location reads cost ~15ms per image sequentially;
  * they are independent per-file I/O, so parallelizing them speeds up large
- * queries by several times. Cursor access is not thread-safe, so all cursor
- * columns are copied into [AssetRowData] first; the parallel workers never
- * touch the cursor. Iteration matches the original sequential loop
- * (moveToPosition, then moveToNext per row) so the cursor's final position
- * — which callers read for `hasNextPage`/`endCursor` — is unchanged.
+ * queries by several times. Cursor access is not thread-safe, so cursor columns
+ * are copied into [AssetRowData] in batches before parallel file work; workers
+ * never touch the cursor. Iteration matches the original sequential loop
+ * original sequential loop (moveToPosition, then moveToNext per row) so the
+ * cursor's final position — which callers read for `hasNextPage`/`endCursor` —
+ * is unchanged.
  */
 @Throws(IOException::class, UnsupportedOperationException::class)
 suspend fun putAssetsInfo(
@@ -115,74 +116,88 @@ suspend fun putAssetsInfo(
   val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
   val orientationIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
 
-  val rows = mutableListOf<AssetRowData>()
   if (!cursor.moveToPosition(offset)) {
     return
   }
-  var i = 0
-  while (i < limit && !cursor.isAfterLast) {
-    rows.add(
-      AssetRowData(
-        assetId = cursor.getString(idIndex),
-        filename = cursor.getString(filenameIndex),
-        path = cursor.getString(localUriIndex),
-        mediaType = cursor.getInt(mediaTypeIndex),
-        creationTime = cursor.getLong(creationDateIndex),
-        modificationTime = cursor.getLong(modificationDateIndex),
-        durationMs = cursor.getInt(durationIndex),
-        albumId = cursor.getString(albumIdIndex),
-        width = cursor.getInt(widthIndex),
-        height = cursor.getInt(heightIndex),
-        orientation = cursor.getInt(orientationIndex)
+
+  // Large `limit` values would otherwise hold every [AssetRowData] in memory
+  // at once. Each row is ~400 bytes (mostly id/filename/path strings), so
+  // 5000 * 400 bytes ≈ 2 MB.
+  //
+  // We limit batches to 5000 since that should keep [AssetRowData] memory
+  // memory usage low.
+  val ASSET_ROW_BATCH_SIZE = 5000
+
+  var remaining = limit
+  while (remaining > 0 && !cursor.isAfterLast) {
+    val batchSize = minOf(remaining, ASSET_ROW_BATCH_SIZE)
+    val rows = ArrayList<AssetRowData>(batchSize)
+    var i = 0
+    while (i < batchSize && !cursor.isAfterLast) {
+      rows.add(
+        AssetRowData(
+          assetId = cursor.getString(idIndex),
+          filename = cursor.getString(filenameIndex),
+          path = cursor.getString(localUriIndex),
+          mediaType = cursor.getInt(mediaTypeIndex),
+          creationTime = cursor.getLong(creationDateIndex),
+          modificationTime = cursor.getLong(modificationDateIndex),
+          durationMs = cursor.getInt(durationIndex),
+          albumId = cursor.getString(albumIdIndex),
+          width = cursor.getInt(widthIndex),
+          height = cursor.getInt(heightIndex),
+          orientation = cursor.getInt(orientationIndex)
+        )
       )
-    )
-    cursor.moveToNext()
-    i++
-  }
+      cursor.moveToNext()
+      i++
+    }
 
-  val bundles = withContext(exifReadDispatcher) {
-    rows.map { row ->
-      async {
-        val localUri = "file://${row.path}"
-        var exifInterface: ExifInterface? = null
-        if (resolveWithFullInfo && row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
-          try {
-            exifInterface = ExifInterface(row.path)
-          } catch (e: IOException) {
-            Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
-            e.printStackTrace()
+    val bundles = withContext(exifReadDispatcher) {
+      rows.map { row ->
+        async {
+          val localUri = "file://${row.path}"
+          var exifInterface: ExifInterface? = null
+          if (resolveWithFullInfo && row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
+            try {
+              exifInterface = ExifInterface(row.path)
+            } catch (e: IOException) {
+              Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
+              e.printStackTrace()
+            }
           }
-        }
-        val (width, height) = getAssetDimensions(contentResolver, row, exifInterface)
-        val asset = Bundle().apply {
-          putString("id", row.assetId)
-          putString("filename", row.filename)
-          putString("uri", localUri)
-          putString("mediaType", exportMediaType(row.mediaType))
-          putLong("width", width.toLong())
-          putLong("height", height.toLong())
-          putLong("creationTime", row.creationTime)
-          putDouble("modificationTime", row.modificationTime * 1000.0)
-          putDouble("duration", row.durationMs / 1000.0)
-          putString("albumId", row.albumId)
-        }
-        if (resolveWithFullInfo && exifInterface != null) {
-          getExifFullInfo(exifInterface, asset)
+          val (width, height) = getAssetDimensions(contentResolver, row, exifInterface)
+          val asset = Bundle().apply {
+            putString("id", row.assetId)
+            putString("filename", row.filename)
+            putString("uri", localUri)
+            putString("mediaType", exportMediaType(row.mediaType))
+            putLong("width", width.toLong())
+            putLong("height", height.toLong())
+            putLong("creationTime", row.creationTime)
+            putDouble("modificationTime", row.modificationTime * 1000.0)
+            putDouble("duration", row.durationMs / 1000.0)
+            putString("albumId", row.albumId)
+          }
+          if (resolveWithFullInfo && exifInterface != null) {
+            getExifFullInfo(exifInterface, asset)
 
-          val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, row.assetId)
-            getExifLocationForUri(contentResolver, photoUri)
-          } else {
-            getExifLocationLegacy(exifInterface)
+            val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+              val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, row.assetId)
+              getExifLocationForUri(contentResolver, photoUri)
+            } else {
+              getExifLocationLegacy(exifInterface)
+            }
+            asset.putParcelable("location", location)
+            asset.putString("localUri", localUri)
           }
-          asset.putParcelable("location", location)
-          asset.putString("localUri", localUri)
+          asset
         }
-        asset
-      }
-    }.awaitAll()
+      }.awaitAll()
+    }
+    response.addAll(bundles)
+    remaining -= i
   }
-  response.addAll(bundles)
 }
 
 fun getExifFullInfo(exifInterface: ExifInterface, response: Bundle) {
