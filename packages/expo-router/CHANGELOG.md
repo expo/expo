@@ -33,6 +33,7 @@
 - Fixed `Tabs` and `TopTabs` (`expo-router/js-tabs`, `expo-router/js-top-tabs`) not being usable from RSC ([#48330](https://github.com/expo/expo/pull/48330) by [@Ubax](https://github.com/Ubax))
 - Redirect fully guarded navigators to parent ([#47984](https://github.com/expo/expo/pull/47984) by [@Ubax](https://github.com/Ubax))
 - Unset `nativeContainerStyle` in transparent presentations ([#48154](https://github.com/expo/expo/pull/48154) by [@Ubax](https://github.com/Ubax))
+- [ios] Fix broken navigation state when a long press on a `Link` with a menu is released before the context menu fully presents. ([#48104](https://github.com/expo/expo/pull/48104) by [@jiunshinn](https://github.com/jiunshinn))
 - [android] Disable safe area insets in Native Tabs on Android when tab bar is hidden. ([#47611](https://github.com/expo/expo/pull/47611) by [@debitan](https://github.com/debitan))
 - [ios] Fix memory leaks in the native toolbar and link preview from strong-reference cycles and closures that strongly captured `self`. ([#47378](https://github.com/expo/expo/pull/47378) by [@Ubax](https://github.com/Ubax))
 - [android][ios] Fix `expo-router/head` and `expo-router/stack` resolution on native platforms. ([#47870](https://github.com/expo/expo/pull/47870) by [@hassankhan](https://github.com/hassankhan))
