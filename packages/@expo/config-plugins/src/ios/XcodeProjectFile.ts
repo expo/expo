@@ -3,6 +3,7 @@ import path from 'path';
 
 import type { ConfigPlugin, XcodeProject } from '../Plugin.types';
 import { withXcodeProject } from '../plugins/ios-plugins';
+import { toApplePlatform } from './Paths';
 import { addBuildSourceFileToGroup, getProjectName } from './utils/Xcodeproj';
 
 /**
@@ -20,7 +21,10 @@ export const withBuildSourceFile: ConfigPlugin<{
   overwrite?: boolean;
 }> = (config, { filePath, contents, overwrite }) => {
   return withXcodeProject(config, (config) => {
-    const projectName = getProjectName(config.modRequest.projectRoot);
+    const projectName = getProjectName(
+      config.modRequest.projectRoot,
+      toApplePlatform(config.modRequest.platform)
+    );
 
     config.modResults = createBuildSourceFile({
       project: config.modResults,

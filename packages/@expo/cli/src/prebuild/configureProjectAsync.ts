@@ -1,5 +1,5 @@
 import type { ExpoConfig } from '@expo/config';
-import type { ModPlatform } from '@expo/config-plugins';
+import type { ExportedConfig, ModPlatform } from '@expo/config-plugins';
 import { compileModsAsync } from '@expo/config-plugins';
 import { getPrebuildConfigAsync } from '@expo/prebuild-config';
 
@@ -46,20 +46,18 @@ export async function configureProjectAsync(
     config._internal.templateChecksum = templateChecksum;
   }
 
-  // tvOS shares the iOS mod registrations (withIosExpoPlugins registers mods
-  // under the `ios` key). compileModsAsync filters mods by platform, so a
-  // tvos-only prebuild needs `ios` in the list too — otherwise the iOS mods
-  // (including withBundleIdentifier) are skipped and the pbxproj is never
-  // touched.
-  const modPlatforms =
-    platforms.includes('tvos') && !platforms.includes('ios')
-      ? ([...platforms, 'ios'] as ModPlatform[])
-      : platforms;
+  // Plugins register the Apple mods under the `ios` key, since tvOS shares the iOS mod shape.
+  // Copy them onto the `tvos` key so the mod compiler runs the same chain once per platform,
+  // each against its own native directory (`ios/` and `tvos/`).
+  const moddedConfig = config as ExportedConfig;
+  if (platforms.includes('tvos') && moddedConfig.mods?.ios) {
+    moddedConfig.mods.tvos = { ...moddedConfig.mods.ios };
+  }
 
   // compile all plugins and mods
   config = await compileModsAsync(config, {
     projectRoot,
-    platforms: modPlatforms,
+    platforms,
     assertMissingModProviders: false,
   });
 

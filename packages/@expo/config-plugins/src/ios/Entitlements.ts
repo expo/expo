@@ -5,6 +5,8 @@ import path from 'path';
 import type { XCBuildConfiguration, XcodeProject } from 'xcode';
 
 import { createEntitlementsPlugin } from '../plugins/ios-plugins';
+// Type-only so this doesn't add a runtime cycle — `Paths` already imports this module.
+import type * as Paths from './Paths';
 import { findFirstNativeTarget, getXCBuildConfigurationFromPbxproj } from './Target';
 import {
   getBuildConfigurationsForListId,
@@ -38,9 +40,14 @@ export function getEntitlementsPath(
   {
     targetName,
     buildConfiguration = 'Release',
-  }: { targetName?: string; buildConfiguration?: string } = {}
+    platform,
+  }: {
+    targetName?: string;
+    buildConfiguration?: string;
+    platform?: Paths.ApplePlatform;
+  } = {}
 ): string | null {
-  const project = getPbxproj(projectRoot);
+  const project = getPbxproj(projectRoot, platform);
   const xcBuildConfiguration = getXCBuildConfigurationFromPbxproj(project, {
     targetName,
     buildConfiguration,
@@ -77,9 +84,12 @@ function getEntitlementsPathFromBuildConfiguration(
   }
 }
 
-export function ensureApplicationTargetEntitlementsFileConfigured(projectRoot: string): void {
-  const project = getPbxproj(projectRoot);
-  const projectName = getProjectName(projectRoot);
+export function ensureApplicationTargetEntitlementsFileConfigured(
+  projectRoot: string,
+  platform?: Paths.ApplePlatform
+): void {
+  const project = getPbxproj(projectRoot, platform);
+  const projectName = getProjectName(projectRoot, platform);
   const productName = getProductName(project);
   const platformProjectRoot = getPlatformProjectRoot(project);
 
