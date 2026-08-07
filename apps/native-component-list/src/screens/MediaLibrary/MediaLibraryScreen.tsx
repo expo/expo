@@ -1,3 +1,4 @@
+import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as MediaLibrary from 'expo-media-library/legacy';
 import { router, useFocusEffect, type NativeStackScreenProps } from 'expo-router';
@@ -18,12 +19,10 @@ import {
 import { BodyText } from '../../components/BodyText';
 import Button from '../../components/Button';
 import HeadingText from '../../components/HeadingText';
-import TitledSwitch from '../../components/TitledSwitch';
 import Colors from '../../constants/Colors';
 import MediaLibraryCell from './MediaLibraryCell';
-
 const COLUMNS = 3;
-const PAGE_SIZE = COLUMNS * 10;
+const PAGE_SIZE_OPTIONS = [30, 3000, 30000] as const;
 const WINDOW_SIZE = Dimensions.get('window');
 
 type MediaTypeWithoutPairedVideo = Exclude<MediaLibrary.MediaTypeValue, 'pairedVideo'>;
@@ -62,6 +61,10 @@ type FetchState = {
   assets: MediaLibrary.Asset[];
   endCursor: string | null;
   hasNextPage: boolean;
+  /** First loaded asset location from getAssetsAsync (iOS batch location debug). */
+  batchLocationPreview: string | null;
+  /** Duration of the most recent getAssetsAsync call, in milliseconds. */
+  lastFetchDurationMs: number | null;
 };
 
 const initialState: FetchState = {
@@ -70,6 +73,8 @@ const initialState: FetchState = {
   assets: [],
   endCursor: null,
   hasNextPage: true,
+  batchLocationPreview: null,
+  lastFetchDurationMs: null,
 };
 
 function reducer(
@@ -190,17 +195,15 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const [mediaType, setMediaType] = React.useState<MediaTypeWithoutPairedVideo>(
     MediaLibrary.MediaType.photo
   );
+  const [pageSize, setPageSize] = React.useState<number>(PAGE_SIZE_OPTIONS[0]);
+  const [resolveWithFullInfo, setResolveWithFullInfo] = React.useState(false);
 
   const [state, dispatch] = React.useReducer(reducer, initialState);
-
-  const [resolveWithFullInfo, setResolveWithFullInfo] = React.useState(false);
-  const [fetchTimingPreview, setFetchTimingPreview] = React.useState<string | null>(null);
 
   // Update without showing the refresh indicator whenever the sorting parameters change.
   React.useEffect(() => {
     dispatch({ type: 'reset', refreshing: false });
-    setFetchTimingPreview(null);
-  }, [mediaType, sortBy, albumId, resolveWithFullInfo]);
+  }, [mediaType, sortBy, albumId, pageSize, resolveWithFullInfo]);
 
   const toggleMediaType = React.useCallback(() => {
     setMediaType(mediaTypeStates[mediaType]);
@@ -209,6 +212,10 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
   const toggleSortBy = React.useCallback(() => {
     setSortBy(sortByStates[sortBy]);
   }, [setSortBy, sortBy]);
+
+  const toggleResolveWithFullInfo = React.useCallback(() => {
+    setResolveWithFullInfo((current) => !current);
+  }, []);
 
   const loadMoreAssets = React.useCallback(async () => {
     if (
@@ -223,9 +230,9 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
 
     try {
       // Make a native request for assets.
-      const start = performance.now();
+      const fetchStartedAt = performance.now();
       const { assets, endCursor, hasNextPage } = await MediaLibrary.getAssetsAsync({
-        first: PAGE_SIZE,
+        first: pageSize,
         after: state.endCursor ?? undefined,
         mediaType,
         mediaSubtypes: [],
@@ -233,8 +240,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
         album: albumId,
         resolveWithFullInfo,
       });
-      const elapsedMs = performance.now() - start;
-      setFetchTimingPreview(`${assets.length} assets in ${elapsedMs}ms`);
+      const lastFetchDurationMs = Math.round(performance.now() - fetchStartedAt);
 
       // Get the last asset currently in the state.
       const lastAsset = state.assets[state.assets.length - 1];
@@ -249,6 +255,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
           assets: ([] as MediaLibrary.Asset[]).concat(state.assets, assets),
           endCursor,
           hasNextPage,
+          lastFetchDurationMs,
         });
       }
     } finally {
@@ -262,6 +269,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
     mediaType,
     sortBy,
     albumId,
+    pageSize,
     resolveWithFullInfo,
   ]);
 
@@ -338,19 +346,18 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
             onPress={toggleMediaType}
           />
           <Button style={styles.button} title={`Sort by key: ${sortBy}`} onPress={toggleSortBy} />
-        </View>
-        {Platform.OS === 'android' && (
-          <TitledSwitch
-            title="Resolve with full info"
-            value={resolveWithFullInfo}
-            setValue={setResolveWithFullInfo}
-          />
-        )}
-        {fetchTimingPreview != null && (
-          <BodyText style={styles.fetchTimingPreview}>{fetchTimingPreview}</BodyText>
-        )}
-        {accessPrivileges === 'limited' && (
-          <View style={styles.headerButtons}>
+          <View style={styles.pageSizeSelector}>
+            <BodyText style={styles.pageSizeLabel}>Page size</BodyText>
+            <SegmentedControl
+              style={styles.pageSizeControl}
+              values={PAGE_SIZE_OPTIONS.map(String)}
+              selectedIndex={PAGE_SIZE_OPTIONS.indexOf(
+                pageSize as (typeof PAGE_SIZE_OPTIONS)[number]
+              )}
+              onValueChange={(value) => setPageSize(Number(value))}
+            />
+          </View>
+          {accessPrivileges === 'limited' && (
             <Button
               style={styles.button}
               title="Change permissions"
@@ -362,7 +369,24 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
                 }
               }}
             />
-          </View>
+          )}
+          {Platform.OS === 'android' && (
+            <Button
+              style={styles.button}
+              title={`Resolve with full info: ${resolveWithFullInfo}`}
+              onPress={toggleResolveWithFullInfo}
+            />
+          )}
+        </View>
+        {state.lastFetchDurationMs != null && (
+          <BodyText style={styles.headerMetadata}>
+            {`Last fetch: ${state.lastFetchDurationMs} ms (${state.assets.length} assets loaded)`}
+          </BodyText>
+        )}
+        {Platform.OS === 'ios' && state.batchLocationPreview != null && (
+          <BodyText style={styles.headerMetadata}>
+            {`First batch asset location: ${state.batchLocationPreview}`}
+          </BodyText>
         )}
       </View>
     );
@@ -371,11 +395,15 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
     albumId,
     albumTitle,
     sortBy,
+    pageSize,
     toggleMediaType,
     toggleSortBy,
+    toggleResolveWithFullInfo,
     resolveWithFullInfo,
-    fetchTimingPreview,
     accessPrivileges,
+    state.batchLocationPreview,
+    state.lastFetchDurationMs,
+    state.assets.length,
   ]);
 
   const renderFooter = React.useCallback(() => {
@@ -433,6 +461,17 @@ const styles = StyleSheet.create({
   button: {
     marginHorizontal: 5,
   },
+  pageSizeSelector: {
+    marginHorizontal: 5,
+    alignItems: 'center',
+    gap: 6,
+  },
+  pageSizeLabel: {
+    fontSize: 12,
+  },
+  pageSizeControl: {
+    minWidth: 200,
+  },
   header: {
     paddingTop: 0,
     paddingBottom: 16,
@@ -445,6 +484,8 @@ const styles = StyleSheet.create({
     marginTop: 5,
     paddingVertical: 10,
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    rowGap: 8,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -456,7 +497,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  fetchTimingPreview: {
+  headerMetadata: {
     marginTop: 8,
     fontSize: 12,
     textAlign: 'center',

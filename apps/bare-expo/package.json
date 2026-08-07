@@ -45,6 +45,7 @@
     "expo-insights": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-location": "workspace:*",
+    "expo-media-library": "workspace:*",
     "expo-navigation-bar": "workspace:*",
     "expo-network-addons": "workspace:*",
     "expo-notifications": "workspace:*",
