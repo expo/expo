@@ -2,12 +2,34 @@ import { existsSync, readFileSync } from 'fs';
 import { globSync } from 'glob';
 import * as path from 'path';
 
+import type { ModPlatform } from '../Plugin.types';
 import { UnexpectedError } from '../utils/errors';
 import { withSortedGlobResult } from '../utils/glob';
 import { addWarningIOS } from '../utils/warnings';
 import * as Entitlements from './Entitlements';
 
 const ignoredPaths = ['**/@(Carthage|Pods|vendor|node_modules)/**'];
+
+/** Apple platforms that prebuild generates their own native project directory for. */
+export type ApplePlatform = 'ios' | 'tvos';
+
+/**
+ * Builds a glob rooted at one Apple platform's native directory. Every helper below accepts an
+ * optional platform: pass it to target that platform's project, and omit it to search all of them.
+ * Omitting it is ambiguous once a project has both `ios/` and `tvos/`, so callers that know which
+ * platform they are configuring — the base mods — always pass one.
+ */
+function platformGlob(pattern: string, platform?: ApplePlatform): string {
+  return `${platform ?? '{ios,tvos}'}/${pattern}`;
+}
+
+/**
+ * Narrows the mod compiler's platform to the Apple platform directory it writes to. The Apple mods
+ * are registered under both `ios` and `tvos`, so any mod that resolves a path needs this.
+ */
+export function toApplePlatform(platform: ModPlatform): ApplePlatform {
+  return platform === 'tvos' ? 'tvos' : 'ios';
+}
 
 interface ProjectFile<L extends string = string> {
   path: string;
@@ -20,9 +42,12 @@ type AppleLanguage = 'objc' | 'objcpp' | 'swift' | 'rb';
 export type PodfileProjectFile = ProjectFile<'rb'>;
 export type AppDelegateProjectFile = ProjectFile<AppleLanguage>;
 
-export function getAppDelegateHeaderFilePath(projectRoot: string): string {
+export function getAppDelegateHeaderFilePath(
+  projectRoot: string,
+  platform?: ApplePlatform
+): string {
   const [using, ...extra] = withSortedGlobResult(
-    globSync('{ios,tvos}/*/AppDelegate.h', {
+    globSync(platformGlob('*/AppDelegate.h', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -48,9 +73,9 @@ export function getAppDelegateHeaderFilePath(projectRoot: string): string {
   return using;
 }
 
-export function getAppDelegateFilePath(projectRoot: string): string {
+export function getAppDelegateFilePath(projectRoot: string, platform?: ApplePlatform): string {
   const [using, ...extra] = withSortedGlobResult(
-    globSync('{ios,tvos}/*/AppDelegate.@(m|mm|swift)', {
+    globSync(platformGlob('*/AppDelegate.@(m|mm|swift)', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -74,9 +99,12 @@ export function getAppDelegateFilePath(projectRoot: string): string {
   return using;
 }
 
-export function getAppDelegateObjcHeaderFilePath(projectRoot: string): string {
+export function getAppDelegateObjcHeaderFilePath(
+  projectRoot: string,
+  platform?: ApplePlatform
+): string {
   const [using, ...extra] = withSortedGlobResult(
-    globSync('{ios,tvos}/*/AppDelegate.h', {
+    globSync(platformGlob('*/AppDelegate.h', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -100,9 +128,9 @@ export function getAppDelegateObjcHeaderFilePath(projectRoot: string): string {
   return using;
 }
 
-export function getPodfilePath(projectRoot: string): string {
+export function getPodfilePath(projectRoot: string, platform?: ApplePlatform): string {
   const [using, ...extra] = withSortedGlobResult(
-    globSync('{ios,tvos}/Podfile', {
+    globSync(platformGlob('Podfile', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -152,19 +180,22 @@ export function getFileInfo(filePath: string) {
   };
 }
 
-export function getAppDelegate(projectRoot: string): AppDelegateProjectFile {
-  const filePath = getAppDelegateFilePath(projectRoot);
+export function getAppDelegate(
+  projectRoot: string,
+  platform?: ApplePlatform
+): AppDelegateProjectFile {
+  const filePath = getAppDelegateFilePath(projectRoot, platform);
   return getFileInfo(filePath);
 }
 
-export function getSourceRoot(projectRoot: string): string {
-  const appDelegate = getAppDelegate(projectRoot);
+export function getSourceRoot(projectRoot: string, platform?: ApplePlatform): string {
+  const appDelegate = getAppDelegate(projectRoot, platform);
   return path.dirname(appDelegate.path);
 }
 
-export function findSchemePaths(projectRoot: string): string[] {
+export function findSchemePaths(projectRoot: string, platform?: ApplePlatform): string[] {
   return withSortedGlobResult(
-    globSync('{ios,tvos}/*.xcodeproj/xcshareddata/xcschemes/*.xcscheme', {
+    globSync(platformGlob('*.xcodeproj/xcshareddata/xcschemes/*.xcscheme', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -172,15 +203,15 @@ export function findSchemePaths(projectRoot: string): string[] {
   );
 }
 
-export function findSchemeNames(projectRoot: string): string[] {
-  const schemePaths = findSchemePaths(projectRoot);
+export function findSchemeNames(projectRoot: string, platform?: ApplePlatform): string[] {
+  const schemePaths = findSchemePaths(projectRoot, platform);
   return schemePaths.map((schemePath) => path.parse(schemePath).name);
 }
 
-export function getAllXcodeProjectPaths(projectRoot: string): string[] {
+export function getAllXcodeProjectPaths(projectRoot: string, platform?: ApplePlatform): string[] {
   const platformFolders = ['ios', 'tvos'];
   const pbxprojPaths = withSortedGlobResult(
-    globSync('{ios,tvos}/**/*.xcodeproj', { cwd: projectRoot, ignore: ignoredPaths })
+    globSync(platformGlob('**/*.xcodeproj', platform), { cwd: projectRoot, ignore: ignoredPaths })
       // Drop leading `/` from glob results to mimic glob@<9 behavior
       .map((filePath) => filePath.replace(/^\//, ''))
       .filter(
@@ -208,8 +239,8 @@ export function getAllXcodeProjectPaths(projectRoot: string): string[] {
 /**
  * Get the pbxproj for the given path
  */
-export function getXcodeProjectPath(projectRoot: string): string {
-  const [using = '', ...extra] = getAllXcodeProjectPaths(projectRoot);
+export function getXcodeProjectPath(projectRoot: string, platform?: ApplePlatform): string {
+  const [using = '', ...extra] = getAllXcodeProjectPaths(projectRoot, platform);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -224,8 +255,8 @@ export function getXcodeProjectPath(projectRoot: string): string {
   return using;
 }
 
-export function getAllPBXProjectPaths(projectRoot: string): string[] {
-  const projectPaths = getAllXcodeProjectPaths(projectRoot);
+export function getAllPBXProjectPaths(projectRoot: string, platform?: ApplePlatform): string[] {
+  const projectPaths = getAllXcodeProjectPaths(projectRoot, platform);
   const paths = projectPaths
     .map((value) => path.join(value, 'project.pbxproj'))
     .filter((value) => existsSync(value));
@@ -238,8 +269,8 @@ export function getAllPBXProjectPaths(projectRoot: string): string[] {
   return paths;
 }
 
-export function getPBXProjectPath(projectRoot: string): string {
-  const [using = '', ...extra] = getAllPBXProjectPaths(projectRoot);
+export function getPBXProjectPath(projectRoot: string, platform?: ApplePlatform): string {
+  const [using = '', ...extra] = getAllPBXProjectPaths(projectRoot, platform);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -254,9 +285,9 @@ export function getPBXProjectPath(projectRoot: string): string {
   return using;
 }
 
-export function getAllInfoPlistPaths(projectRoot: string): string[] {
+export function getAllInfoPlistPaths(projectRoot: string, platform?: ApplePlatform): string[] {
   const paths = withSortedGlobResult(
-    globSync('{ios,tvos}/*/Info.plist', {
+    globSync(platformGlob('*/Info.plist', platform), {
       absolute: true,
       cwd: projectRoot,
       ignore: ignoredPaths,
@@ -274,8 +305,8 @@ export function getAllInfoPlistPaths(projectRoot: string): string[] {
   return paths;
 }
 
-export function getInfoPlistPath(projectRoot: string): string {
-  const [using = '', ...extra] = getAllInfoPlistPaths(projectRoot);
+export function getInfoPlistPath(projectRoot: string, platform?: ApplePlatform): string {
+  const [using = '', ...extra] = getAllInfoPlistPaths(projectRoot, platform);
 
   if (extra.length) {
     warnMultipleFiles({
@@ -290,8 +321,8 @@ export function getInfoPlistPath(projectRoot: string): string {
   return using;
 }
 
-export function getAllEntitlementsPaths(projectRoot: string): string[] {
-  const paths = globSync('{ios,tvos}/*/*.entitlements', {
+export function getAllEntitlementsPaths(projectRoot: string, platform?: ApplePlatform): string[] {
+  const paths = globSync(platformGlob('*/*.entitlements', platform), {
     absolute: true,
     cwd: projectRoot,
     ignore: ignoredPaths,
@@ -302,18 +333,18 @@ export function getAllEntitlementsPaths(projectRoot: string): string[] {
 /**
  * @deprecated: use Entitlements.getEntitlementsPath instead
  */
-export function getEntitlementsPath(projectRoot: string): string | null {
-  return Entitlements.getEntitlementsPath(projectRoot);
+export function getEntitlementsPath(projectRoot: string, platform?: ApplePlatform): string | null {
+  return Entitlements.getEntitlementsPath(projectRoot, { platform });
 }
 
-export function getSupportingPath(projectRoot: string): string {
-  // Derive from the source root rather than hardcoding `ios/`, so a tvos-only
-  // project resolves to `<projectRoot>/tvos/<name>/Supporting`.
-  return path.resolve(getSourceRoot(projectRoot), 'Supporting');
+export function getSupportingPath(projectRoot: string, platform?: ApplePlatform): string {
+  // Derive from the source root rather than hardcoding `ios/`, so a tvos project resolves to
+  // `<projectRoot>/tvos/<name>/Supporting`.
+  return path.resolve(getSourceRoot(projectRoot, platform), 'Supporting');
 }
 
-export function getExpoPlistPath(projectRoot: string): string {
-  const supportingPath = getSupportingPath(projectRoot);
+export function getExpoPlistPath(projectRoot: string, platform?: ApplePlatform): string {
+  const supportingPath = getSupportingPath(projectRoot, platform);
   return path.join(supportingPath, 'Expo.plist');
 }
 
