@@ -1,13 +1,23 @@
 // @needsAudit
 export type SharingOptions = {
   /**
-   * Sets `mimeType` for `Intent`.
+   * The MIME type of the target file, for example `image/jpeg`.
+   * On Android, it sets the `mimeType` of the sharing `Intent`. On iOS, it determines
+   * the shared file's type when [`UTI`](#uti) is not provided.
+   * > **Note:** On iOS the MIME type is not attached to the shared item as metadata.
+   * > It is only used to give the file the matching extension, which is how the share
+   * > sheet infers the type. Types with no canonical extension, such as
+   * > `application/octet-stream`, therefore have no effect.
    * @platform android
+   * @platform ios
    */
   mimeType?: string;
   /**
    * [Uniform Type Identifier](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/understanding_utis/understand_utis_conc/understand_utis_conc.html)
-   *  - the type of the target file.
+   *  - the type of the target file. When iOS can resolve the identifier, it takes
+   * precedence over [`mimeType`](#mimetype).
+   * > **Note:** iOS can only resolve types registered by the system or an installed app.
+   * > Otherwise, `UTI` is ignored and [`mimeType`](#mimetype) is used instead.
    * @platform ios
    */
   UTI?: string;
