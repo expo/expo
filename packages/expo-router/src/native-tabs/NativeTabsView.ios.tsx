@@ -18,7 +18,10 @@ import {
 import { NativeTabsBottomAccessory } from './common/elements';
 import { SUPPORTED_TAB_BAR_MINIMIZE_BEHAVIORS, type NativeTabsViewProps } from './types';
 import { useBottomAccessoryFunctionFromBottomAccessories } from './utils/bottomAccessory';
-import { convertOptionsIconToScreensPropsIcon } from './utils/optionsIconConverter';
+import {
+  convertOptionsIconToScreensPropsIcon,
+  resolveIconRenderingMode,
+} from './utils/optionsIconConverter';
 
 export function NativeTabsView(props: NativeTabsViewProps) {
   const { minimizeBehavior, tabs, sidebarAdaptable, nonTriggerChildren, unstable_nativeProps } =
@@ -107,19 +110,38 @@ function Screen(props: InternalTabScreenProps) {
 
   const shared = useSharedScreenProps(props);
 
-  // React Native Screens requires `icon` and `selectedIcon` to resolve to the same icon
-  // type and throws otherwise. The icon color only decides whether an image icon is
-  // rendered as a template, so derive it from both states — using the per-state color
-  // would make the two icons disagree whenever only one of the states sets a color.
-  const iconColor =
-    standardAppearance?.stacked?.normal?.tabBarItemIconColor ??
-    standardAppearance?.stacked?.selected?.tabBarItemIconColor;
+  const selectedIcon = shared.selectedIcon ?? shared.icon;
 
-  const iosIcon = convertOptionsIconToScreensPropsIcon(shared.icon, iconColor);
-  const iosSelectedIcon = convertOptionsIconToScreensPropsIcon(
-    shared.selectedIcon ?? shared.icon,
-    iconColor
+  // React Native Screens requires `icon` and `selectedIcon` to resolve to the same icon type and
+  // throws otherwise, so both states have to share a rendering mode. The two can disagree when a
+  // color is set for only one of the states, or when `renderingMode` is set explicitly.
+  const normalRenderingMode = resolveIconRenderingMode(
+    shared.icon,
+    standardAppearance?.stacked?.normal?.tabBarItemIconColor
   );
+  const selectedRenderingMode = resolveIconRenderingMode(
+    selectedIcon,
+    standardAppearance?.stacked?.selected?.tabBarItemIconColor
+  );
+
+  if (
+    process.env.NODE_ENV !== 'production' &&
+    normalRenderingMode &&
+    selectedRenderingMode &&
+    normalRenderingMode !== selectedRenderingMode
+  ) {
+    console.warn(
+      'NativeTabs does not currently support rendering icons in different modes. ' +
+        'This issue may occur if you specify a color only for the standard or selected icon, ' +
+        'or if you explicitly set renderingMode.'
+    );
+  }
+
+  // The normal state wins, so the selected icon follows the mode the tab bar shows most of the time.
+  const renderingMode = normalRenderingMode ?? selectedRenderingMode;
+
+  const iosIcon = convertOptionsIconToScreensPropsIcon(shared.icon, renderingMode);
+  const iosSelectedIcon = convertOptionsIconToScreensPropsIcon(selectedIcon, renderingMode);
 
   const content = <ScreenContent options={options} contentRenderer={contentRenderer} />;
   const wrappedContent = useMemo(() => <SafeAreaProvider>{content}</SafeAreaProvider>, [content]);

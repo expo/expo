@@ -56,7 +56,7 @@
 - Fix missing subpath warning from Metro when importing from `expo-router/server` ([#48045](https://github.com/expo/expo/pull/48045) by [@hassankhan](https://github.com/hassankhan))
 - Fix `replace` navigation in tabs leaving the replaced route in history. ([#48256](https://github.com/expo/expo/pull/48256) by [@Ubax](https://github.com/Ubax))
 - Prevent `useLoaderData()` from re-rendering readers of unrelated loader paths ([#48523](https://github.com/expo/expo/pull/48523) by [@hassankhan](https://github.com/hassankhan))
-- [ios][native-tabs] Fix a `[RNScreens] icon and selectedIcon must be same type.` crash when only one of `iconColor` and `selectedIconColor` was set. ([#48302](https://github.com/expo/expo/pull/48302) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
+- [ios][native-tabs] Fix a `[RNScreens] icon and selectedIcon must be same type.` crash when the normal and selected icons resolved to different rendering modes, for example when only `selectedIconColor` was set. Both icons now use the normal state's rendering mode and a warning is logged. ([#48302](https://github.com/expo/expo/pull/48302) by [@CavalcanteLeo](https://github.com/CavalcanteLeo))
 
 ### 💡 Others
 
