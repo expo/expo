@@ -1,7 +1,12 @@
 import type { ComponentProps } from 'react';
 
 import type { Drawer, DrawerNavigatorProps } from '../../../layouts/Drawer';
-import type { DescriptorRouteProp, DrawerNavigationState, ParamListBase } from '../../native';
+import type {
+  DescriptorRouteProp,
+  DrawerNavigationState,
+  ParamListBase,
+  RenderState,
+} from '../../native';
 import type { DrawerNavigatorContentProps } from '../navigators/createDrawerNavigator';
 import type { DrawerNavigationHelpers, DrawerOptionsArgs } from '../types';
 
@@ -28,7 +33,10 @@ export type _DefaultStatusIsPublic = Expect<
   Equal<DrawerProps['defaultStatus'], 'open' | 'closed' | undefined>
 >;
 export type _ContentRequiresDrawerState = Expect<
-  Equal<DrawerNavigatorContentProps['drawerState'], DrawerNavigationState<ParamListBase>>
+  Equal<
+    DrawerNavigatorContentProps['drawerState'],
+    RenderState<DrawerNavigationState<ParamListBase>>
+  >
 >;
 export type _ContentRequiresNavigation = Expect<
   Equal<DrawerNavigatorContentProps['navigation'], DrawerNavigationHelpers>

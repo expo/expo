@@ -154,12 +154,62 @@ test('handle dispatching with ref', () => {
     stale: false,
     type: 'test',
     index: 1,
-    key: '0',
+    key: expect.stringMatching(/^root-/),
     routeNames: ['foo', 'foo2', 'bar', 'baz'],
     routes: [
       { key: 'bar', name: 'bar' },
       { key: 'baz', name: 'baz' },
     ],
+  });
+});
+
+test('replaces the root navigator key while preserving route and nested navigator keys', () => {
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(StackRouter, props);
+    return (
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    );
+  };
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const initialState = {
+    key: 'persisted-root',
+    index: 0,
+    routes: [
+      {
+        key: 'parent-route',
+        name: 'parent',
+        state: {
+          key: 'nested-navigator',
+          index: 0,
+          routes: [{ key: 'child-route', name: 'child' }],
+        },
+      },
+    ],
+  };
+
+  render(
+    <BaseNavigationContainer ref={ref} initialState={initialState}>
+      <TestNavigator>
+        <Screen name="parent">
+          {() => (
+            <TestNavigator>
+              <Screen name="child">{() => null}</Screen>
+            </TestNavigator>
+          )}
+        </Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  const state = ref.current!.getRootState();
+  expect(ref.current!.getState()).toBe(ref.current!.getState());
+  expect(ref.current!.getState()).toBe(state);
+  expect(ref.current!.getState().stale).toBe(false);
+  expect(state.key).not.toBe('persisted-root');
+  expect(state.routes[0]!.key).toBe('parent-route');
+  expect(state.routes[0]!.state).toMatchObject({
+    key: 'nested-navigator',
+    routes: [{ key: 'child-route', name: 'child' }],
   });
 });
 
@@ -232,7 +282,7 @@ test('handle resetting state with ref', () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenLastCalledWith({
     index: 1,
-    key: '3',
+    key: expect.stringMatching(/^test-/),
     routeNames: ['foo', 'foo2', 'bar', 'baz'],
     routes: [
       {

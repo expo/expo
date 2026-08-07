@@ -1,4 +1,4 @@
-import type { NavigationState, PartialState, Route } from './types';
+import type { NavigationState, NavigatorParamsPayload, PartialState, Route } from './types';
 
 type ResetState =
   | PartialState<NavigationState>
@@ -21,6 +21,8 @@ export type NavigateAction = {
     path?: string;
     merge?: boolean;
     pop?: boolean;
+    /** Preallocated route key for internal render-state projection. */
+    routeKey?: string;
   };
   source?: string;
   target?: string;
@@ -73,7 +75,14 @@ type PreloadAction = {
  */
 export type InternalRouteNamesChangedAction = {
   type: 'ROUTE_NAMES_CHANGED';
-  payload: { routeNames: string[] };
+  payload: { routeNames: string[]; fallbackRouteKey?: string };
+  target?: string;
+};
+
+/** @internal */
+export type InternalNavigatorParamsChangedAction = {
+  type: 'NAVIGATOR_PARAMS_CHANGED';
+  payload: { params: NavigatorParamsPayload };
   target?: string;
 };
 

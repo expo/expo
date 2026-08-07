@@ -28,6 +28,37 @@ export function MockRouter(options: DefaultRouterOptions) {
 
     getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
 
+    getStateForNavigatorParams(state, params, config) {
+      if (params.state) {
+        return BaseRouter.getStateForNavigatorParams(state, params, config);
+      }
+
+      // This fixture's action handler expects full fields, so fill them from current config.
+      const result = router.getStateForAction(
+        {
+          ...state,
+          index: state.index ?? 0,
+          routeNames: config.routeNames,
+          stale: false,
+          type: 'test',
+        } as NavigationState,
+        {
+          type: 'NAVIGATE',
+          payload: {
+            name: params.screen,
+            params: params.params,
+            path: params.path,
+            merge: params.merge,
+            pop: params.pop,
+            routeKey: params.routeKey,
+          },
+        },
+        config
+      );
+      // The navigate branch preserves the keyed input and creates keyed routes.
+      return result as NavigationState | typeof state | null;
+    },
+
     getInitialState({ routeNames, routeParamList }) {
       const index =
         options.initialRouteName === undefined ? 0 : routeNames.indexOf(options.initialRouteName);
@@ -41,7 +72,7 @@ export function MockRouter(options: DefaultRouterOptions) {
         routes: routeNames.map((name) => ({
           name,
           key: name,
-          params: routeParamList[name],
+          ...(routeParamList[name] !== undefined ? { params: routeParamList[name] } : null),
         })),
       };
     },
@@ -60,13 +91,14 @@ export function MockRouter(options: DefaultRouterOptions) {
             ({
               ...route,
               key: route.key || `${route.name}-${MockRouterKey.current++}`,
-              params:
-                routeParamList[route.name] !== undefined
-                  ? {
+              ...(routeParamList[route.name] !== undefined || route.params !== undefined
+                ? {
+                    params: {
                       ...routeParamList[route.name],
                       ...route.params,
-                    }
-                  : route.params,
+                    },
+                  }
+                : {}),
             }) as Route<string>
         );
 
@@ -92,7 +124,7 @@ export function MockRouter(options: DefaultRouterOptions) {
       return {
         stale: false,
         type: 'test',
-        key: String(MockRouterKey.current++),
+        key: state.key ?? String(MockRouterKey.current++),
         index,
         routeNames,
         routes,
@@ -111,6 +143,23 @@ export function MockRouter(options: DefaultRouterOptions) {
 
     getStateForAction(state, action, { routeParamList }) {
       switch (action.type) {
+        case 'NAVIGATOR_PARAMS_CHANGED': {
+          const result = router.getStateForNavigatorParams!(state, action.payload.params, {
+            routeNames: state.routeNames,
+            routeParamList,
+            routeGetIdList: {},
+          });
+          return result?.stale === false
+            ? result
+            : result
+              ? router.getRehydratedState(result, {
+                  routeNames: state.routeNames,
+                  routeParamList,
+                  routeGetIdList: {},
+                })
+              : null;
+        }
+
         case 'ROUTE_NAMES_CHANGED': {
           const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
 
@@ -151,7 +200,9 @@ export function MockRouter(options: DefaultRouterOptions) {
               ...state.routes,
               {
                 name: action.payload.name,
-                key: `${action.payload.name}-${MockRouterKey.current++}`,
+                key:
+                  (action.type === 'NAVIGATE' ? action.payload.routeKey : undefined) ??
+                  `${action.payload.name}-${MockRouterKey.current++}`,
                 params:
                   action.payload.params !== undefined
                     ? {

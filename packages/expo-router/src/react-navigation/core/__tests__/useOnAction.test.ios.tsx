@@ -215,7 +215,7 @@ test("lets children handle the action if parent didn't with navigationInChildEna
     stale: false,
     type: 'test',
     index: 0,
-    key: '0',
+    key: 'root-1',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       {
@@ -225,7 +225,7 @@ test("lets children handle the action if parent didn't with navigationInChildEna
           stale: false,
           type: 'test',
           index: 0,
-          key: '1',
+          key: '4',
           routeNames: ['qux', 'lex'],
           routes: [
             { key: 'lex', name: 'lex' },
@@ -338,7 +338,7 @@ test('action goes to correct parent navigator if target is specified', () => {
 
   const TestScreen = (props: any) => {
     React.useEffect(() => {
-      props.navigation.dispatch({ type: 'REVERSE', target: '0' });
+      props.navigation.dispatch({ type: 'REVERSE', target: 'root-1' });
     }, [props.navigation]);
 
     return null;
@@ -397,7 +397,7 @@ test('action goes to correct parent navigator if target is specified', () => {
     stale: false,
     type: 'test',
     index: 1,
-    key: '0',
+    key: 'root-1',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo', name: 'foo' },
@@ -517,7 +517,7 @@ test('action goes to correct child navigator if target is specified', () => {
     stale: false,
     type: 'test',
     index: 2,
-    key: '0',
+    key: 'root-1',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
       { key: 'foo', name: 'foo' },

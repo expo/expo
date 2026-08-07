@@ -1,34 +1,58 @@
 import { nanoid } from 'nanoid/non-secure';
 
-import type { CommonNavigationAction, NavigationState, PartialState } from './types';
+import type {
+  CommonNavigationAction,
+  KeyedPartialState,
+  NavigationState,
+  NavigatorParamsPayload,
+  PartialState,
+  RouterConfigOptions,
+} from './types';
 
 /**
  * Base router object that can be used when writing custom routers.
  * This provides few helper methods to handle common actions such as `RESET`.
  */
 export const BaseRouter = {
-  getStateForDeclaredRoutes<State extends NavigationState>(
-    state: State,
-    routeNames: string[]
-  ): State {
+  getStateForDeclaredRoutes<
+    State extends NavigationState,
+    InputState extends State | KeyedPartialState<State>,
+  >(state: InputState, routeNames: string[], fallbackRouteKey?: string): InputState {
     const declaredRouteNames = new Set(routeNames);
     const routes = state.routes.filter((route) => declaredRouteNames.has(route.name));
 
-    if (routes.length === state.routes.length) {
+    if (
+      routes.length === state.routes.length &&
+      state.index !== undefined &&
+      !(routes.length === 0 && fallbackRouteKey && routeNames[0])
+    ) {
       return state;
     }
 
-    const focusedKey = state.routes[state.index]?.key;
-    // `-1` reports that nothing is focused; consumers of the focused route handle it.
-    const index =
-      routes.length === 0
-        ? -1
-        : Math.max(
-            0,
-            routes.findIndex((route) => route.key === focusedKey)
-          );
+    if (routes.length === 0 && fallbackRouteKey && routeNames[0]) {
+      routes.push({ key: fallbackRouteKey, name: routeNames[0] });
+    }
 
-    return { ...state, routes, index };
+    const focusedKey = state.routes[state.index ?? 0]?.key;
+    const index = Math.max(
+      0,
+      routes.findIndex((route) => route.key === focusedKey)
+    );
+
+    // Filtering preserves keyed routes and their recursively keyed nested states.
+    return { ...state, routes, index } as InputState;
+  },
+
+  getStateForNavigatorParams<State extends NavigationState>(
+    state: State | KeyedPartialState<State>,
+    params: NavigatorParamsPayload,
+    _options: RouterConfigOptions
+  ): State | KeyedPartialState<State> | null {
+    if (params.state) {
+      return { ...params.state, key: state.key } as KeyedPartialState<State>;
+    }
+
+    return null;
   },
 
   getStateForAction<State extends NavigationState>(

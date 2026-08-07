@@ -277,6 +277,159 @@ test('gets rehydrated state from partial state', () => {
   });
 });
 
+test('preserves a stale navigator key during rehydration', () => {
+  const result = TabRouter({}).getRehydratedState(
+    { key: 'preserved', routes: [{ key: 'bar', name: 'bar' }] },
+    { routeNames: ['bar'], routeParamList: {}, routeGetIdList: {} }
+  );
+
+  expect(result.key).toBe('preserved');
+});
+
+test('projects stale navigator params with a preallocated key', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['home', 'details'],
+    routeParamList: { details: { initial: true } },
+    routeGetIdList: { details: ({ params }) => params?.id as string | undefined },
+  };
+  const state = { key: 'tab', routes: [{ key: 'home', name: 'home' }] };
+  const nanoid = jest.mocked(require('nanoid/non-secure').nanoid);
+  nanoid.mockClear();
+
+  const result = router.getStateForNavigatorParams!(
+    state,
+    { screen: 'details', params: { id: 'one' }, path: '/one', routeKey: 'details-one' },
+    options
+  );
+
+  expect(result).toMatchObject({
+    key: 'tab',
+    index: 1,
+    routes: [
+      state.routes[0],
+      {
+        key: 'details-one',
+        name: 'details',
+        path: '/one',
+        params: { initial: true, id: 'one' },
+      },
+    ],
+  });
+  expect(nanoid).not.toHaveBeenCalled();
+  expect(
+    router.getStateForNavigatorParams!(
+      result!,
+      { screen: 'details', params: { id: 'two' }, routeKey: 'details-two' },
+      options
+    )
+  ).toMatchObject({
+    index: 1,
+    routes: [state.routes[0], { key: 'details-two', params: { initial: true, id: 'two' } }],
+  });
+});
+
+test('appends navigator params to fresh state without minting a route key', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['home', 'details'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = router.getInitialState(options);
+  const nanoid = jest.mocked(require('nanoid/non-secure').nanoid);
+  nanoid.mockClear();
+
+  const result = router.getStateForNavigatorParams!(
+    state,
+    { screen: 'details', routeKey: 'details-preallocated' },
+    options
+  );
+
+  expect(result?.routes[1]?.key).toBe('details-preallocated');
+  expect(nanoid).not.toHaveBeenCalled();
+});
+
+test('projects stale navigator params with history semantics', () => {
+  const router = TabRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['home', 'details'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = {
+    key: 'tab',
+    index: 0,
+    routes: [
+      { key: 'home', name: 'home' },
+      { key: 'details', name: 'details' },
+    ],
+    history: [{ type: 'route' as const, key: 'home' }],
+  };
+
+  const result = router.getStateForNavigatorParams!(
+    state,
+    { screen: 'details', routeKey: 'unused' },
+    options
+  );
+
+  expect(result).toMatchObject({
+    index: 1,
+    history: [
+      { type: 'route', key: 'home' },
+      { type: 'route', key: 'details' },
+    ],
+  });
+});
+
+test('uses the projected fallback key for declared tab routes', () => {
+  const router = TabRouter({ initialRouteName: 'second' });
+  const state = { key: 'tab', routes: [{ key: 'removed', name: 'removed' }] };
+
+  expect(router.getStateForDeclaredRoutes(state, ['first', 'second'], 'fallback')).toEqual({
+    key: 'tab',
+    index: 0,
+    routes: [{ key: 'fallback', name: 'second', params: undefined }],
+  });
+});
+
+test('defaults a stale tab projection to the first route', () => {
+  const router = TabRouter({});
+  const state = {
+    key: 'tab',
+    routes: [
+      { key: 'first', name: 'first' },
+      { key: 'second', name: 'second' },
+    ],
+  };
+
+  expect(router.getStateForDeclaredRoutes(state, ['first', 'second'])).toMatchObject({ index: 0 });
+});
+
+test('uses the fallback key when route names change removes every tab', () => {
+  const router = TabRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['replacement'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = router.getInitialState({ ...options, routeNames: ['removed'] });
+
+  const result = router.getStateForAction(
+    state,
+    {
+      type: 'ROUTE_NAMES_CHANGED',
+      payload: { routeNames: options.routeNames, fallbackRouteKey: 'replacement-projected' },
+    },
+    options
+  );
+
+  expect(result).toMatchObject({
+    index: 0,
+    routes: [{ key: 'replacement-projected', name: 'replacement' }],
+  });
+});
+
 test.each([
   CommonActions.navigate('baz', { value: 2 }),
   TabActions.jumpTo('baz', { value: 2 }),

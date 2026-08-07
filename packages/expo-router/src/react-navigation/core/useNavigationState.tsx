@@ -3,9 +3,11 @@ import React, { use } from 'react';
 
 import useLatestCallback from '../../utils/useLatestCallback';
 import { useSyncExternalStoreWithSelector } from '../../utils/useSyncExternalStoreWithSelector';
-import type { NavigationState, ParamListBase } from '../routers';
+import type { NavigationState, ParamListBase, RenderState } from '../routers';
 
-type Selector<ParamList extends ParamListBase, T> = (state: NavigationState<ParamList>) => T;
+type Selector<ParamList extends ParamListBase, T> = (
+  state: RenderState<NavigationState<ParamList>>
+) => T;
 
 /**
  * Hook to get a value from the current navigation state using a selector.
@@ -36,7 +38,7 @@ export function NavigationStateListenerProvider({
   state,
   children,
 }: {
-  state: NavigationState<ParamListBase>;
+  state: RenderState<NavigationState<ParamListBase>>;
   children: React.ReactNode;
 }) {
   const listeners = React.useRef<(() => void)[]>([]);
@@ -74,7 +76,7 @@ export function NavigationStateListenerProvider({
 
 const NavigationStateListenerContext = React.createContext<
   | {
-      getState: () => NavigationState<ParamListBase>;
+      getState: () => RenderState<NavigationState<ParamListBase>>;
       subscribe: (callback: () => void) => () => void;
     }
   | undefined

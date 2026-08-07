@@ -6,13 +6,14 @@ import {
   DrawerActions,
   type DrawerNavigationState,
   type ParamListBase,
+  type RenderState,
   useLinkBuilder,
 } from '../../native';
 import type { DrawerDescriptorMap, DrawerNavigationHelpers } from '../types';
 import { DrawerItem } from './DrawerItem';
 
 type Props = {
-  state: DrawerNavigationState<ParamListBase>;
+  state: RenderState<DrawerNavigationState<ParamListBase>>;
   navigation: DrawerNavigationHelpers;
   descriptors: DrawerDescriptorMap;
 };

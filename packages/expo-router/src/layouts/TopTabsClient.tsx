@@ -38,7 +38,7 @@ const TopTabs = unstable_integrateWithRouter<
   processState: appendMissingPlaceholderTabRoutes,
   createProps: ({ state, dispatch }) => ({
     routeNames: state.routeNames,
-    preloadedRouteKeys: state.preloadedRouteKeys,
+    preloadedRouteKeys: state.preloadedRouteKeys ?? [],
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
   }),
 });

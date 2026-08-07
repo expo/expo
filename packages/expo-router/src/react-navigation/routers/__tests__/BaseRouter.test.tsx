@@ -248,12 +248,44 @@ test('getStateForDeclaredRoutes returns the same state when every route is decla
   ).toBe(DECLARED_ROUTES_STATE);
 });
 
-test('getStateForDeclaredRoutes returns an empty state when no route is declared', () => {
+test('getStateForDeclaredRoutes returns an empty state with a definite index', () => {
   expect(BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, ['replacement'])).toEqual({
     ...DECLARED_ROUTES_STATE,
-    index: -1,
+    index: 0,
     routes: [],
   });
+});
+
+test('getStateForDeclaredRoutes uses the provided fallback key', () => {
+  expect(
+    BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, ['replacement'], 'fallback')
+  ).toEqual({
+    ...DECLARED_ROUTES_STATE,
+    index: 0,
+    routes: [{ key: 'fallback', name: 'replacement' }],
+  });
+});
+
+test('getStateForDeclaredRoutes adds a fallback to an already empty state', () => {
+  expect(
+    BaseRouter.getStateForDeclaredRoutes(
+      { ...DECLARED_ROUTES_STATE, routes: [], index: 0 },
+      ['replacement'],
+      'fallback'
+    )
+  ).toMatchObject({ index: 0, routes: [{ key: 'fallback', name: 'replacement' }] });
+});
+
+test('getStateForDeclaredRoutes fills a missing index when every route is declared', () => {
+  const state = {
+    key: DECLARED_ROUTES_STATE.key,
+    routeNames: DECLARED_ROUTES_STATE.routeNames,
+    routes: DECLARED_ROUTES_STATE.routes.map(({ key, name }) => ({ key, name })),
+  };
+
+  expect(
+    BaseRouter.getStateForDeclaredRoutes(state, DECLARED_ROUTES_STATE.routeNames)
+  ).toMatchObject({ index: 0, routes: state.routes });
 });
 
 test('getStateForDeclaredRoutes filters routes without reordering or changing unrelated state', () => {

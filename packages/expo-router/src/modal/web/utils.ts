@@ -2,7 +2,11 @@
 import React from 'react';
 
 import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
-import type { ParamListBase, StackNavigationState } from '../../react-navigation/native';
+import type {
+  ParamListBase,
+  RenderState,
+  StackNavigationState,
+} from '../../react-navigation/native';
 import { isModalPresentation } from '../../utils/stackPresentation';
 
 /**
@@ -72,7 +76,7 @@ export function useIsDesktop(breakpoint: number = 768) {
  * @internal
  */
 export function convertStackStateToNonModalState(
-  state: StackNavigationState<ParamListBase>,
+  state: RenderState<StackNavigationState<ParamListBase>>,
   descriptors: Record<string, { options: ExtendedStackNavigationOptions }>,
   isWeb: boolean
 ) {
@@ -109,7 +113,7 @@ export function convertStackStateToNonModalState(
  * @internal
  */
 export function findLastNonModalIndex(
-  state: StackNavigationState<ParamListBase>,
+  state: RenderState<StackNavigationState<ParamListBase>>,
   descriptors: Record<string, { options: ExtendedStackNavigationOptions }>
 ) {
   const activeRoutes = state.routes.slice(0, state.index + 1);

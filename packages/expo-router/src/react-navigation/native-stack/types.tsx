@@ -21,6 +21,7 @@ import type {
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
+  RenderState,
   Route,
   RouteProp,
   StackActionHelpers,
@@ -1239,7 +1240,10 @@ export type NativeStackViewEmit = (
  *
  * Routes after `index` are preloaded and rendered natively-detached.
  */
-export type NativeStackViewState = Pick<StackNavigationState<ParamListBase>, 'index' | 'routes'>;
+export type NativeStackViewState = Pick<
+  RenderState<StackNavigationState<ParamListBase>>,
+  'index' | 'routes'
+>;
 
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,

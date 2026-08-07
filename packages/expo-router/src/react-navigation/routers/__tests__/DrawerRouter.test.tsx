@@ -110,6 +110,56 @@ test('restores route history without dropping drawer status when the active rout
   ]);
 });
 
+test('preserves drawer history while projecting declared routes', () => {
+  const router = DrawerRouter({ backBehavior: 'history' });
+  const state = {
+    key: 'drawer',
+    index: 0,
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'removed', name: 'removed' },
+    ],
+    history: [
+      { type: 'route' as const, key: 'bar' },
+      { type: 'drawer' as const, status: 'open' as const },
+    ],
+  };
+
+  expect(router.getStateForDeclaredRoutes(state, ['bar'])).toMatchObject({
+    history: [
+      { type: 'route', key: 'bar' },
+      { type: 'drawer', status: 'open' },
+    ],
+  });
+});
+
+test('preserves drawer history when navigator params keep the current route focused', () => {
+  const router = DrawerRouter({ backBehavior: 'history' });
+  const options: RouterConfigOptions = {
+    routeNames: ['bar'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = {
+    key: 'drawer',
+    index: 0,
+    routes: [{ key: 'bar', name: 'bar' }],
+    history: [
+      { type: 'route' as const, key: 'bar' },
+      { type: 'drawer' as const, status: 'open' as const },
+    ],
+  };
+
+  expect(
+    router.getStateForNavigatorParams!(state, { screen: 'bar', routeKey: 'unused' }, options)
+  ).toMatchObject({
+    history: [
+      { type: 'drawer', status: 'open' },
+      { type: 'route', key: 'bar' },
+    ],
+  });
+});
+
 test('gets rehydrated state from partial state', () => {
   const router = DrawerRouter({});
 

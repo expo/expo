@@ -5,6 +5,7 @@ import { Stack as ScreensStackV5 } from 'react-native-screens/experimental';
 
 import {
   type ParamListBase,
+  type RenderState,
   StackActions,
   type StackNavigationState,
   usePreventRemoveContext,
@@ -25,7 +26,7 @@ const SUPPORTED_OPTION_KEYS = new Set<keyof ExperimentalStackNavigationOptions>(
 ]);
 
 type Props = {
-  state: StackNavigationState<ParamListBase>;
+  state: RenderState<StackNavigationState<ParamListBase>>;
   navigation: ExperimentalStackNavigationHelpers;
   descriptors: ExperimentalStackDescriptorMap;
 };

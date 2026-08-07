@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
 import { type NavigatorState } from 'standard-navigation';
 
-import { type NavigationState } from '../react-navigation/core';
+import { type NavigationState, type RenderState } from '../react-navigation/core';
 import { useBuildHref } from './useBuildHref';
 
-export function useStandardState(builderState: NavigationState): NavigatorState {
+export function useStandardState(builderState: RenderState<NavigationState>): NavigatorState {
   const buildHref = useBuildHref();
   return useMemo<NavigatorState>(() => {
     return {

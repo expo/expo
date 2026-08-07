@@ -135,6 +135,142 @@ test('gets rehydrated state from partial state', () => {
   });
 });
 
+test('preserves a stale navigator key during rehydration', () => {
+  const router = StackRouter({});
+  const result = router.getRehydratedState(
+    { key: 'preserved', routes: [{ key: 'bar', name: 'bar' }] },
+    { routeNames: ['bar'], routeParamList: {}, routeGetIdList: {} }
+  );
+
+  expect(result.key).toBe('preserved');
+});
+
+test('projects stale navigator params without minting keys', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['home', 'details'],
+    routeParamList: { details: { initial: true } },
+    routeGetIdList: { details: ({ params }) => params?.id as string | undefined },
+  };
+  const stale = {
+    key: 'stack',
+    routes: [
+      { key: 'home', name: 'home' },
+      { key: 'details-one', name: 'details', params: { id: 'one', old: true } },
+    ],
+  };
+
+  expect(
+    router.getStateForNavigatorParams!(
+      stale,
+      { screen: 'details', params: { id: 'two' }, routeKey: 'details-two' },
+      options
+    )
+  ).toMatchObject({
+    key: 'stack',
+    index: 2,
+    routes: [stale.routes[0], stale.routes[1], { key: 'details-two', name: 'details' }],
+  });
+  expect(
+    router.getStateForNavigatorParams!(
+      { ...stale, index: 1 },
+      {
+        screen: 'details',
+        params: { id: 'one', next: true },
+        merge: true,
+        pop: true,
+        routeKey: 'unused',
+      },
+      options
+    )
+  ).toMatchObject({
+    index: 1,
+    routes: [
+      stale.routes[0],
+      { key: 'details-one', params: { id: 'one', initial: true, old: true, next: true } },
+    ],
+  });
+  expect(
+    router.getStateForNavigatorParams!(stale, { screen: 'missing', routeKey: 'missing' }, options)
+  ).toBeNull();
+});
+
+test('projects reset params while preserving the current navigator key', () => {
+  const router = StackRouter({});
+  const result = router.getStateForNavigatorParams!(
+    { key: 'current', routes: [{ key: 'home', name: 'home' }] },
+    { state: { key: '', routes: [{ key: 'details', name: 'details' }] } },
+    { routeNames: ['details'], routeParamList: {}, routeGetIdList: {} }
+  );
+
+  expect(result).toMatchObject({ key: 'current', routes: [{ key: 'details', name: 'details' }] });
+});
+
+test('uses the projected fallback key for declared routes', () => {
+  const router = StackRouter({ initialRouteName: 'second' });
+  const state = { key: 'stack', routes: [{ key: 'removed', name: 'removed' }] };
+
+  expect(router.getStateForDeclaredRoutes(state, ['first', 'second'], 'fallback')).toEqual({
+    key: 'stack',
+    index: 0,
+    routes: [{ key: 'fallback', name: 'second' }],
+  });
+});
+
+test('uses the projected fallback key for an empty stack', () => {
+  const router = StackRouter({});
+
+  expect(
+    router.getStateForDeclaredRoutes({ key: 'stack', routes: [] }, ['first'], 'fallback')
+  ).toEqual({
+    key: 'stack',
+    index: 0,
+    routes: [{ key: 'fallback', name: 'first' }],
+  });
+});
+
+test('defaults a stale stack projection to the last active route', () => {
+  const router = StackRouter({});
+  const state = {
+    key: 'stack',
+    routes: [
+      { key: 'first', name: 'first' },
+      { key: 'second', name: 'second' },
+    ],
+  };
+
+  expect(router.getStateForDeclaredRoutes(state, ['first', 'second'])).toMatchObject({ index: 1 });
+});
+
+test('handles navigator params changed and rehydrates the keyed projection', () => {
+  const router = StackRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['home', 'details'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state = router.getInitialState(options);
+
+  const result = router.getStateForAction(
+    state,
+    {
+      type: 'NAVIGATOR_PARAMS_CHANGED',
+      payload: {
+        params: { screen: 'details', routeKey: 'details-preallocated' },
+      },
+      target: state.key,
+    },
+    options
+  );
+
+  expect(result).toMatchObject({
+    stale: false,
+    key: state.key,
+    index: 1,
+    routes: [state.routes[0], { key: 'details-preallocated', name: 'details' }],
+  });
+});
+
 test('treats all routes as active when rehydrating state without an index', () => {
   const router = StackRouter({});
 

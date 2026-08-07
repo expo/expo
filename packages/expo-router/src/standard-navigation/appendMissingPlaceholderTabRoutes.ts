@@ -1,9 +1,9 @@
-import type { NavigationState } from '../react-navigation/native';
+import type { NavigationState, RenderState } from '../react-navigation/native';
 import type { DescribePlaceholderRoute, PlaceholderDescriptorMap } from './types';
 
 export function appendMissingPlaceholderTabDescriptors<State extends NavigationState>(
   descriptors: PlaceholderDescriptorMap,
-  state: State,
+  state: RenderState<State>,
   describe: DescribePlaceholderRoute
 ): PlaceholderDescriptorMap {
   const missingRouteNames = state.routeNames.filter(
@@ -25,9 +25,9 @@ export function appendMissingPlaceholderTabDescriptors<State extends NavigationS
 
 // TODO: Evaluate making this function public.
 export function appendMissingPlaceholderTabRoutes<State extends NavigationState>(
-  state: State,
+  state: RenderState<State>,
   descriptors: PlaceholderDescriptorMap
-): State {
+): RenderState<State> {
   const hasMissingRoute = state.routeNames.some(
     (name) => !state.routes.some((route) => route.name === name)
   );
@@ -48,7 +48,8 @@ export function appendMissingPlaceholderTabRoutes<State extends NavigationState>
     routes.findIndex((route) => route.key === focusedKey)
   );
 
-  return { ...state, index, routes };
+  // Existing render routes and placeholders are all keyed.
+  return { ...state, index, routes } as RenderState<State>;
 }
 
 function createPlaceholderRoute<State extends NavigationState>(

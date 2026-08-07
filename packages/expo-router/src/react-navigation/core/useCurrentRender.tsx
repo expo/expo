@@ -1,12 +1,12 @@
 'use client';
 import { use } from 'react';
 
-import type { NavigationState, ParamListBase } from '../routers';
+import type { NavigationState, ParamListBase, RenderState } from '../routers';
 import { CurrentRenderContext } from './CurrentRenderContext';
 import type { Descriptor, NavigationHelpers, NavigationProp, RouteProp } from './types';
 
 type Options = {
-  state: NavigationState;
+  state: RenderState<NavigationState>;
   navigation: NavigationHelpers<ParamListBase>;
   descriptors: Record<
     string,

@@ -2,13 +2,13 @@
 import * as React from 'react';
 import { use } from 'react';
 
-import type { NavigationState } from '../routers';
+import type { NavigationState, RenderState } from '../routers';
 import { NavigationContext } from './NavigationContext';
 import type { EventMapCore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
 
 type Options<State extends NavigationState> = {
-  state: State;
+  state: RenderState<State>;
   emitter: NavigationEventEmitter<EventMapCore<State>>;
 };
 

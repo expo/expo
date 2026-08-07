@@ -10,6 +10,7 @@ import {
 import {
   type CommonNavigationAction,
   type NavigationAction,
+  type NavigatorParamsPayload,
   type ParamListBase,
   type PartialRoute,
   type PartialState,
@@ -27,6 +28,10 @@ type GetId = NonNullable<RouterConfigOptions['routeGetIdList'][string]>;
 
 type RNNavigationAction = Extract<CommonNavigationAction, { type: 'NAVIGATE' }>;
 type RNPreloadAction = Extract<CommonNavigationAction, { type: 'PRELOAD' }>;
+type NavigatorParamsChangedAction = Extract<
+  CommonNavigationAction,
+  { type: 'NAVIGATOR_PARAMS_CHANGED' }
+>;
 type ExpoNavigationAction = Omit<RNNavigationAction, 'payload'> & {
   payload: Omit<RNNavigationAction['payload'], 'params'> & {
     params: RNNavigationAction['payload']['params'] & InternalExpoRouterParams;
@@ -79,10 +84,23 @@ const getZoomTransitionIdFromAction = (action: NavigationAction): string | undef
 export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABLE_router']> = (
   original
 ) => {
-  return {
+  const override: Partial<typeof original> = {
     getStateForAction: (state, action, options) => {
       if (action.target && action.target !== state.key) {
         return null;
+      }
+
+      if (action.type === 'NAVIGATOR_PARAMS_CHANGED') {
+        // The override's generic action type cannot express router-owned internal actions.
+        const paramsAction = action as unknown as NavigatorParamsChangedAction;
+        const result = override.getStateForNavigatorParams!(
+          state,
+          paramsAction.payload.params,
+          options
+        );
+        return result?.stale === false || result === null
+          ? result
+          : original.getRehydratedState(result, options);
       }
 
       if (!isStackAction(action)) {
@@ -248,7 +266,9 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
               // For preloaded route, we want to use the same key, so that preloaded screen is used.
               const key =
                 routes.length === activeRoutes.length && !isPreloadedRoute
-                  ? `${action.payload.name}-${nanoid()}`
+                  ? action.type === 'NAVIGATE' && action.payload.routeKey
+                    ? action.payload.routeKey
+                    : `${action.payload.name}-${nanoid()}`
                   : route.key;
 
               routes.push({
@@ -276,7 +296,10 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
             routes = [
               ...activeRoutes,
               {
-                key: `${action.payload.name}-${nanoid()}`,
+                key:
+                  action.type === 'NAVIGATE' && action.payload.routeKey
+                    ? action.payload.routeKey
+                    : `${action.payload.name}-${nanoid()}`,
                 name: action.payload.name,
                 path: action.type === 'NAVIGATE' ? action.payload.path : undefined,
                 params,
@@ -436,7 +459,33 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         }
       }
     },
+    getStateForNavigatorParams: (state, params: NavigatorParamsPayload, options) => {
+      if (params.state || state.stale !== false) {
+        return original.getStateForNavigatorParams!(state, params, options);
+      }
+
+      const result = override.getStateForAction!(
+        state as StackNavigationState<ParamListBase>,
+        // The override's generic action type cannot include this internal route-key field.
+        {
+          type: 'NAVIGATE',
+          payload: {
+            name: params.screen,
+            params: params.params,
+            path: params.path,
+            merge: params.merge,
+            pop: params.pop,
+            routeKey: params.routeKey,
+          },
+        } as unknown as Parameters<typeof original.getStateForAction>[1],
+        options
+      );
+      // `routeKey` ensures that partial results from this projection are keyed.
+      return result as ReturnType<NonNullable<typeof original.getStateForNavigatorParams>>;
+    },
   };
+
+  return override;
 };
 
 function getActionSingularIdFn(

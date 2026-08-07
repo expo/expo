@@ -53,7 +53,7 @@ export function getActionFromState(
   const route = state.routes[state.index ?? state.routes.length - 1];
 
   // TODO(@kitten): The `route` here was treated as optional, but `config` is treated as non-optional. Looks fishy
-  let current: PartialState<NavigationState> | undefined = route?.state;
+  let current: NavigationState | PartialState<NavigationState> | undefined = route?.state;
   let config: ConfigItem | undefined =
     route != null ? normalizedConfig?.screens?.[route.name] : undefined;
   let params = { ...route?.params } as NavigatorScreenParams<ParamListBase>;

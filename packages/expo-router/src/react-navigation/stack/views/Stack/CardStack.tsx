@@ -3,7 +3,13 @@ import { Animated, type LayoutChangeEvent, Platform, StyleSheet, View } from 're
 import type { EdgeInsets } from 'react-native-safe-area-context';
 
 import { getDefaultHeaderHeight, SafeAreaProviderCompat } from '../../../elements';
-import type { LocaleDirection, ParamListBase, Route, StackNavigationState } from '../../../native';
+import type {
+  LocaleDirection,
+  ParamListBase,
+  RenderState,
+  Route,
+  StackNavigationState,
+} from '../../../native';
 import {
   forModalPresentationIOS,
   forNoAnimation as forNoAnimationCard,
@@ -45,7 +51,7 @@ type GestureValues = {
 type Props = {
   direction: LocaleDirection;
   insets: EdgeInsets;
-  state: StackNavigationState<ParamListBase>;
+  state: RenderState<StackNavigationState<ParamListBase>>;
   descriptors: StackDescriptorMap;
   routes: Route<string>[];
   openingRouteKeys: string[];
@@ -231,7 +237,10 @@ export function getAnimationEnabled(animation: StackAnimationName | undefined) {
   return getDefaultAnimation(animation) !== 'none';
 }
 
-const getAllRoutes = (routes: Route<string>[], state: StackNavigationState<ParamListBase>) => {
+const getAllRoutes = (
+  routes: Route<string>[],
+  state: RenderState<StackNavigationState<ParamListBase>>
+) => {
   const routeKeys = new Set(routes.map((route) => route.key));
   return routes.concat(
     state.routes.slice(state.index + 1).filter((route) => !routeKeys.has(route.key))

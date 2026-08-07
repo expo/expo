@@ -5,13 +5,13 @@ import { use } from 'react';
 
 import { isRoutePreloadedInStack } from '../../utils/stack';
 import useLatestCallback from '../../utils/useLatestCallback';
-import type { NavigationState } from '../routers';
+import type { NavigationState, RenderState } from '../routers';
 import { NavigationRouteContext } from './NavigationProvider';
 import { type PreventedRoutes, PreventRemoveContext } from './PreventRemoveContext';
 
 type Props = {
   getState: () => NavigationState;
-  state: NavigationState;
+  state: RenderState<NavigationState>;
 };
 
 export type IsRoutePrevented = (routeKey: string) => boolean;

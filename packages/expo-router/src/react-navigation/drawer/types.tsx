@@ -10,6 +10,7 @@ import type {
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
+  RenderState,
   Route,
   RouteProp,
   Theme,
@@ -219,7 +220,7 @@ export type DrawerNavigationOptions = HeaderOptions & {
 };
 
 export type DrawerContentComponentProps = {
-  state: DrawerNavigationState<ParamListBase>;
+  state: RenderState<DrawerNavigationState<ParamListBase>>;
   navigation: DrawerNavigationHelpers;
   descriptors: DrawerDescriptorMap;
 };

@@ -7,11 +7,27 @@ import {
   type NavigationAction,
   type NavigationState,
   type ParamListBase,
+  type RenderState,
   type Router,
 } from '../routers';
 import { NavigationContext } from './NavigationContext';
 import { type NavigationHelpers, PrivateValueStore } from './types';
 import type { NavigationEventEmitter } from './useEventEmitter';
+
+const GET_HYDRATED_STATE = Symbol();
+
+export function getHydratedState(navigation: object): NavigationState {
+  // Navigator helpers carry this internal getter so callers can bypass the render projection.
+  const getState = (navigation as { [GET_HYDRATED_STATE]?: () => NavigationState })[
+    GET_HYDRATED_STATE
+  ];
+
+  if (getState == null) {
+    throw new Error('Expected navigation helpers to provide an internal hydrated state getter.');
+  }
+
+  return getState();
+}
 
 // This is to make TypeScript compiler happy
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions
@@ -24,7 +40,7 @@ type Options<State extends NavigationState, Action extends NavigationAction> = {
   getState: () => State;
   emitter: NavigationEventEmitter<any>;
   router: Router<State, Action>;
-  stateRef: React.RefObject<State | null>;
+  stateRef: React.RefObject<RenderState<State> | null>;
 };
 
 /**
@@ -102,7 +118,7 @@ export function useNavigationHelpers<
 
         return parentNavigationHelpers;
       },
-      getState: (): State => {
+      getState: (): RenderState<State> => {
         // FIXME: Workaround for when the state is read during render
         // By this time, we haven't committed the new state yet
         // Without this `useSyncExternalStore` will keep reading the old state
@@ -114,6 +130,7 @@ export function useNavigationHelpers<
 
         return getState();
       },
+      [GET_HYDRATED_STATE]: getState,
     } as NavigationHelpers<ParamListBase, EventMap> & ActionHelpers;
 
     return navigationHelpers;

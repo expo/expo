@@ -52,7 +52,7 @@ export function findDivergentState(
   // If true, look through all tabs to find the target state, rather then just the current tab
   lookThroughAllTabs: boolean = false
 ) {
-  let actionState: PartialState<NavigationState> | undefined = _actionState;
+  let actionState: NavigationState | PartialState<NavigationState> | undefined = _actionState;
   let navigationState: NavigationState | undefined = _navigationState;
   let actionStateRoute: PartialRoute<any> | undefined;
   const navigationRoutes = [];
@@ -69,7 +69,8 @@ export function findDivergentState(
       return navigationState.routes[navigationState.index ?? 0]!;
     })();
 
-    const childState: PartialState<NavigationState> | undefined = actionStateRoute.state;
+    const childState: NavigationState | PartialState<NavigationState> | undefined =
+      actionStateRoute.state;
     const nextNavigationState = stateRoute.state;
 
     const dynamicName = matchDynamicName(actionStateRoute!.name);

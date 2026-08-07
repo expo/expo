@@ -8,6 +8,7 @@ import type {
   ParamListBase,
   PartialState,
   Route,
+  RenderState,
   Router,
 } from '../routers';
 
@@ -45,7 +46,7 @@ export type DefaultNavigatorOptions<
    * Useful for wrapping with a component with access to navigator's state and options.
    */
   layout?: (props: {
-    state: State;
+    state: RenderState<State>;
     navigation: NavigationHelpers<ParamList>;
     descriptors: Record<
       string,

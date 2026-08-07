@@ -1,6 +1,7 @@
 'use client';
 
 import { INTERNAL_SLOT_NAME } from '../constants';
+import { getHydratedState } from '../react-navigation/core/useNavigationHelpers';
 import type { NavigationProp, NavigationState } from '../react-navigation/native';
 import { useNavigation } from '../react-navigation/native';
 
@@ -34,5 +35,5 @@ export function useRootNavigationState(): NavigationState {
       'useRootNavigationState was called from a generated route. This is likely a bug in Expo Router.'
     );
   }
-  return parent.getState();
+  return getHydratedState(parent);
 }

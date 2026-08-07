@@ -5,7 +5,7 @@ import { createStandardNavigator } from 'standard-navigation';
 import type { StandardNavigatorContentProps } from '../../../standard-navigation/types';
 import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
 import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
-import type { DrawerNavigationState, ParamListBase } from '../../native';
+import type { DrawerNavigationState, ParamListBase, RenderState } from '../../native';
 import type {
   DrawerDescriptorMap,
   DrawerNavigationConfig,
@@ -16,7 +16,7 @@ import type {
 import { DrawerView } from '../views/DrawerView';
 
 export interface DrawerNavigatorCreateProps {
-  drawerState: DrawerNavigationState<ParamListBase>;
+  drawerState: RenderState<DrawerNavigationState<ParamListBase>>;
   navigation: DrawerNavigationHelpers;
   preload: (name: string) => void;
 }
@@ -71,11 +71,12 @@ function DrawerNavigatorContent({
 
   return (
     <DrawerView
-      state={{
-        ...drawerState,
-        routes: visibleRoutes,
-        index: focusedIndex,
-      }}
+      state={
+        // Visible routes originate from keyed render state or keyed placeholders.
+        { ...drawerState, routes: visibleRoutes, index: focusedIndex } as RenderState<
+          DrawerNavigationState<ParamListBase>
+        >
+      }
       navigation={navigation}
       descriptors={drawerDescriptors}
       defaultStatus={defaultStatus}

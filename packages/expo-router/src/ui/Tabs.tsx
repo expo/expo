@@ -10,6 +10,7 @@ import { resolveHref } from '../link/href';
 import type {
   DefaultNavigatorOptions,
   ParamListBase,
+  RenderState,
   TabActionHelpers,
   TabNavigationState,
   TabRouterOptions,
@@ -232,7 +233,7 @@ function TabVisibilityRedirect({
   state,
   descriptors,
 }: {
-  state: TabNavigationState<any>;
+  state: RenderState<TabNavigationState<any>>;
   descriptors: PlaceholderDescriptorMap;
 }) {
   const stateWithPlaceholders = useMemo(
