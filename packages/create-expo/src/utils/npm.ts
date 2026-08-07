@@ -161,17 +161,31 @@ async function npmPackAsync(
   }
 
   try {
-    const json = JSON.parse(results);
-    if (Array.isArray(json) && json.every(isNpmPackageInfo)) {
-      return json.map(sanitizeNpmPackageFilename);
-    } else {
-      throw new Error(`Invalid response from npm: ${results}`);
-    }
+    return parseNpmPackOutput(results);
   } catch (error: any) {
     throw new Error(
       `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
     );
   }
+}
+
+/**
+ * Parses the JSON emitted by `npm pack --json`.
+ *
+ * npm 12 changed this output from an array of package infos to an object
+ * keyed by package name, to match `npm publish --json`
+ * (see https://github.com/npm/cli/pull/9247). Supports both shapes so
+ * `create-expo` keeps working across npm versions.
+ */
+export function parseNpmPackOutput(results: string): NpmPackageInfo[] {
+  const json = JSON.parse(results);
+  const infos = Array.isArray(json) ? json : Object.values(json);
+
+  if (!infos.every(isNpmPackageInfo)) {
+    throw new Error(`Invalid response from npm: ${results}`);
+  }
+
+  return infos.map(sanitizeNpmPackageFilename);
 }
 
 export type NpmPackageInfo = {
