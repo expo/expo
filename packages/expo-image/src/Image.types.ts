@@ -215,6 +215,36 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
   tintColor?: string | null;
 
   /**
+   * Values for the [CSS custom properties](https://developer.mozilla.org/en-US/docs/Web/CSS/--*)
+   * that an SVG source refers to with `var()`. Each entry is substituted into the document before it
+   * is parsed, so the image is still rendered as a vector — unlike `tintColor`, which rasterizes it.
+   *
+   * Because the substitution happens on the document itself, different parts of one SVG can be given
+   * different values, which makes multi-color template images possible.
+   *
+   * Values are not limited to colors. Anything a custom property stands in for, such as
+   * `stroke-width` or `opacity`, is substituted the same way. Keys include the leading `--`.
+   *
+   * A property that is not supplied falls back to the value declared inside its own `var()`, and
+   * when there is no fallback the declaration is dropped so the renderer applies its own default.
+   *
+   * > **Note:** Colors must be values the SVG itself understands, such as `'#ff0000'` or `'red'`.
+   * > React Native color descriptors like `PlatformColor` are not resolved.
+   *
+   * @example
+   * ```tsx
+   * // house.svg contains fill="var(--roof, #888)" and fill="var(--wall, #ccc)"
+   * <Image
+   *   source={require('./house.svg')}
+   *   svgVariables={{ '--roof': '#ee3333', '--wall': '#3399ff', '--stroke-width': 2 }}
+   * />
+   * ```
+   *
+   * @platform ios
+   */
+  svgVariables?: Record<string, string | number> | null;
+
+  /**
    * Priorities for completing loads. If more than one load is queued at a time,
    * the load with the higher priority will be started first.
    * Priorities are considered best effort, there are no guarantees about the order in which loads will start or finish.
@@ -487,6 +517,11 @@ export interface ImageNativeProps extends ImageProps {
   containerViewRef?: React.RefObject<View | null>;
   symbolWeight?: string | null;
   symbolSize?: number | null;
+  /**
+   * Already normalized to strings by the `Image` component, since the values are substituted into
+   * the SVG document as text.
+   */
+  svgVariables?: Record<string, string> | null;
 }
 
 /**
