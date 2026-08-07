@@ -82,7 +82,7 @@ object SVGVariables {
   ): Int {
     val found = indexOfIgnoreCase(chars, "</style", start)
     val end = if (found == -1) chars.size else found
-    out.append(substituteValue(chars, start, end, variables).text)
+    out.append(substituteValue(chars, start, end, variables, Context.STYLE_BODY).text)
     return end
   }
 
@@ -158,7 +158,7 @@ object SVGVariables {
     val out = StringBuilder()
     out.append(chars, start, prefixEnd - start)
     for (attribute in attributes) {
-      val value = substituteValue(chars, attribute.valueStart, attribute.valueEnd, variables)
+      val value = substituteValue(chars, attribute.valueStart, attribute.valueEnd, variables, Context.ATTRIBUTE)
       if (value.isEntirelyUnresolved) {
         continue
       }
@@ -218,6 +218,40 @@ object SVGVariables {
     val isEntirelyUnresolved: Boolean
   )
 
+  /** Where a value is being written, which decides how it has to be escaped. */
+  private enum class Context {
+    ATTRIBUTE,
+    STYLE_BODY
+  }
+
+  /**
+   * Escapes a caller-supplied value so that it cannot terminate the attribute it sits in or add
+   * markup of its own. Returns null for a value that can't be made safe, which the caller treats as
+   * unresolved.
+   *
+   * Only values that came from the variable map go through this. Fallbacks are document text that is
+   * already escaped, so escaping them again would double up their entities.
+   */
+  private fun escape(value: String, context: Context): String? {
+    // Inside a stylesheet these could close the declaration or the rule and start another one. No
+    // legitimate CSS value needs them.
+    if (context == Context.STYLE_BODY && value.any { it == '{' || it == '}' || it == ';' }) {
+      return null
+    }
+    val escaped = StringBuilder(value.length)
+    for (char in value) {
+      when (char) {
+        '&' -> escaped.append("&amp;")
+        '<' -> escaped.append("&lt;")
+        '>' -> escaped.append("&gt;")
+        '"' -> escaped.append("&quot;")
+        '\'' -> escaped.append("&apos;")
+        else -> escaped.append(char)
+      }
+    }
+    return escaped.toString()
+  }
+
   private sealed class Resolution {
     class Resolved(val text: String) : Resolution()
 
@@ -237,7 +271,8 @@ object SVGVariables {
     chars: CharArray,
     start: Int,
     end: Int,
-    variables: Map<String, String>
+    variables: Map<String, String>,
+    context: Context
   ): SubstitutedValue {
     val out = StringBuilder()
     var index = start
@@ -252,7 +287,7 @@ object SVGVariables {
         index += 1
         continue
       }
-      when (val resolution = resolve(chars, index + 4, closeParen, variables)) {
+      when (val resolution = resolve(chars, index + 4, closeParen, variables, context)) {
         is Resolution.Resolved -> {
           out.append(resolution.text)
           substitutions += 1
@@ -280,7 +315,8 @@ object SVGVariables {
     chars: CharArray,
     start: Int,
     end: Int,
-    variables: Map<String, String>
+    variables: Map<String, String>,
+    context: Context
   ): Resolution {
     val commaIndex = topLevelCommaIndex(chars, start, end)
     val name = String(chars, start, (if (commaIndex == -1) end else commaIndex) - start).trim()
@@ -288,14 +324,15 @@ object SVGVariables {
     if (!name.startsWith("--")) {
       return Resolution.Verbatim
     }
-    variables[name]?.let {
-      return Resolution.Resolved(it)
+    variables[name]?.let { supplied ->
+      val escaped = escape(supplied, context) ?: return Resolution.Unresolved
+      return Resolution.Resolved(escaped)
     }
     if (commaIndex == -1) {
       return Resolution.Unresolved
     }
     // A fallback may itself reference other variables.
-    val fallback = substituteValue(chars, commaIndex + 1, end, variables)
+    val fallback = substituteValue(chars, commaIndex + 1, end, variables, context)
     if (fallback.isEntirelyUnresolved) {
       return Resolution.Unresolved
     }
