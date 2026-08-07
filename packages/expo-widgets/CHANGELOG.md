@@ -11,6 +11,9 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix `LiveActivityFactory.getInstances()` returning live activities that belong to other factories or that have already ended. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
+- [iOS] Deliver the Live Activity `start()` URL to the Lock Screen banner, and scope it to the activity that set it instead of storing it globally per factory name. ([#48489](https://github.com/expo/expo/pull/48489) by [@huextrat](https://github.com/huextrat))
+
 ### 💡 Others
 
 ## 57.0.11 — 2026-08-20
