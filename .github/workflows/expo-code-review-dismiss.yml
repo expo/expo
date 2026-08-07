@@ -17,11 +17,6 @@ permissions:
   pull-requests: write
   issues: write
 
-env:
-  # Published reviewer run via npx (override with repo variable ECR_VERSION).
-  # Kept on the same pin as the review workflows so all three run one engine version.
-  ECR_VERSION: ${{ vars.ECR_VERSION || '0.11.1' }}
-
 concurrency:
   group: ai-code-review-dismiss-${{ github.event.issue.number }}
   cancel-in-progress: false
@@ -75,7 +70,7 @@ jobs:
       - name: Acknowledge
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
 
       # Base ref only (issue_comment runs with base-repo context). Dismiss just edits
@@ -99,11 +94,11 @@ jobs:
           # the post step doesn't error trying to save an empty cache.
           package-manager-cache: false
 
-      # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — GH_TOKEN only, no OPENAI_API_KEY or model credential
+      # @ref LLP 0009#guard-step-ordering-and-job-budgets [explains] — GitHub token only, no OPENAI_API_KEY or model credential
       - name: Apply dismissal
         if: steps.cmd.outputs.run == 'true'
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           SUB: ${{ steps.cmd.outputs.sub }}
           IDS: ${{ steps.cmd.outputs.ids }}
           REASON: ${{ steps.cmd.outputs.reason }}
@@ -114,4 +109,4 @@ jobs:
           ARGS=(--pr "$PR" --repo "$REPO" --by "$BY")
           [ -n "$REASON" ] && ARGS+=(--reason "$REASON")
           for id in $IDS; do ARGS+=("$id"); done
-          npx --yes -p "@expo/code-review-cli@$ECR_VERSION" ecr "$SUB" "${ARGS[@]}"
+          ./scripts/expo-code-review ecr "$SUB" "${ARGS[@]}"

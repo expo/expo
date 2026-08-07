@@ -210,8 +210,11 @@ function DrawerViewBase({
           const isFocused = state.index === index;
           const isPreloaded = state.preloadedRouteKeys.includes(route.key);
 
-          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
-            // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
+          if (
+            descriptor.route.key === undefined ||
+            (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded)
+          ) {
+            // Don't render placeholder or unloaded lazy screens.
             return null;
           }
 
@@ -250,14 +253,14 @@ function DrawerViewBase({
               shouldFreeze={!isFocused && !isPreloaded}>
               <Screen
                 focused={isFocused}
-                route={descriptor.route}
+                route={route}
                 navigation={descriptor.navigation}
                 headerShown={headerShown}
                 headerStatusBarHeight={headerStatusBarHeight}
                 headerTransparent={headerTransparent}
                 header={header({
                   layout: dimensions,
-                  route: descriptor.route,
+                  route,
                   navigation: descriptor.navigation as DrawerNavigationProp<ParamListBase>,
                   options: descriptor.options,
                 })}

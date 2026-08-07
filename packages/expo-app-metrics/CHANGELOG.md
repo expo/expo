@@ -19,6 +19,7 @@
 - Rename the no-update `downloadComplete` state event to `downloadCompleteUnavailable`. ([#47902](https://github.com/expo/expo/pull/47902) by [@kudo](https://github.com/kudo))
 - [iOS] Measure the JS bundle load time against the app startup end marker to stay compatible with upcoming React Native versions. ([#47782](https://github.com/expo/expo/pull/47782) by [@tsapeta](https://github.com/tsapeta))
 - Add a `caught` source to the private `reportError` for errors reported from user code. ([#47871](https://github.com/expo/expo/pull/47871) by [@tsapeta](https://github.com/tsapeta))
+- Add an internal `setErrorHandlerEnabled` so the installed unhandled-error handler can stop reporting without being uninstalled. ([#48506](https://github.com/expo/expo/pull/48506) by [@tsapeta](https://github.com/tsapeta))
 - Add session shared object API ([#46652](https://github.com/expo/expo/pull/46652) by [@Ubax](https://github.com/Ubax))
 
 ## 57.0.7 — 2026-07-29
