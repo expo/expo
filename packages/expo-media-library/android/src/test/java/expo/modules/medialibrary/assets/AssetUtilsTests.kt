@@ -34,7 +34,8 @@ internal class AssetUtilsTests {
     val cursor = mockCursor(
       arrayOf(
         MockData.mockVideo.toColumnArray(),
-        MockData.mockAudio.toColumnArray()
+        MockData.mockAudio.toColumnArray(),
+        MockData.mockImage.toColumnArray()
       )
     )
 
@@ -45,14 +46,19 @@ internal class AssetUtilsTests {
     putAssetsInfo(contentResolver, cursor, result, limit = 5, offset = 0, resolveWithFullInfo = false)
 
     // assert
-    assertEquals(2, result.size)
+    assertEquals(3, result.size)
+
+    result.forEach { asset ->
+      // no exif or detailed ddata
+      assertNull(asset.getString("localUri"))
+      assertNull(asset.getParcelable("exif"))
+      assertNull(asset.getParcelable("location"))
+    }
 
     assertEquals(MockData.mockVideo.id.toString(), result[0].getString("id"))
     assertEquals("file://${MockData.mockVideo.path}", result[0].getString("uri"))
     assertEquals(MockData.mockVideo.width!!.toLong(), result[0].getLong("width"))
     assertEquals(MockData.mockVideo.height!!.toLong(), result[0].getLong("height"))
-
-    assertNull(result[0].getString("localUri"))
   }
 
   @Test

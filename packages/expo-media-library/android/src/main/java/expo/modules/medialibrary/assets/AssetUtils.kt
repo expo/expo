@@ -143,7 +143,42 @@ suspend fun putAssetsInfo(
   val bundles = withContext(exifReadDispatcher) {
     rows.map { row ->
       async {
-        buildAssetBundle(contentResolver, row, resolveWithFullInfo)
+        val localUri = "file://${row.path}"
+        var exifInterface: ExifInterface? = null
+        if (resolveWithFullInfo && row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
+          try {
+            exifInterface = ExifInterface(row.path)
+          } catch (e: IOException) {
+            Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
+            e.printStackTrace()
+          }
+        }
+        val (width, height) = getAssetDimensions(contentResolver, row, exifInterface)
+        val asset = Bundle().apply {
+          putString("id", row.assetId)
+          putString("filename", row.filename)
+          putString("uri", localUri)
+          putString("mediaType", exportMediaType(row.mediaType))
+          putLong("width", width.toLong())
+          putLong("height", height.toLong())
+          putLong("creationTime", row.creationTime)
+          putDouble("modificationTime", row.modificationTime * 1000.0)
+          putDouble("duration", row.durationMs / 1000.0)
+          putString("albumId", row.albumId)
+        }
+        if (resolveWithFullInfo && exifInterface != null) {
+          getExifFullInfo(exifInterface, asset)
+
+          val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, row.assetId)
+            getExifLocationForUri(contentResolver, photoUri)
+          } else {
+            getExifLocationLegacy(exifInterface)
+          }
+          asset.putParcelable("location", location)
+          asset.putString("localUri", localUri)
+        }
+        asset
       }
     }.awaitAll()
   }
@@ -210,34 +245,28 @@ fun getExifLocationLegacy(exifInterface: ExifInterface): Bundle? {
 }
 
 /**
- * Gets image/video dimensions
+ * Gets image/video dimensions from the already-read cursor columns.
+ *
+ * For videos, prefers MediaStore `WIDTH`/`HEIGHT`/`ORIENTATION` (see [1])
+ * and falls back to MediaMetadataRetriever when the scanner has not indexed
+ * the file yet. For images, uses the same cursor columns with
+ * BitmapFactory and EXIF orientation handling when dimensions are missing.
+ *
+ * [1]: https://developer.android.com/reference/android/provider/MediaStore.MediaColumns#WIDTH
+ *
  * @return Pair of integers: width and height, respectively
  */
-@Throws(IOException::class)
-fun getAssetDimensionsFromCursor(
+private fun getAssetDimensions(
   contentResolver: ContentResolver,
-  exifInterface: ExifInterface?,
-  cursor: Cursor,
-  mediaType: Int,
-  localUriColumnIndex: Int
+  row: AssetRowData,
+  exifInterface: ExifInterface?
 ): Pair<Int, Int> {
-  val uri = cursor.getString(localUriColumnIndex)
-  if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
-    // Fast path: read dimensions from MediaStore cursor (no file I/O).
-    // MediaStore populates these when the media scanner indexes the file.
-    val widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
-    val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
-    val width = cursor.getInt(widthIndex)
-    val height = cursor.getInt(heightIndex)
-    if (width > 0 && height > 0) {
-      val orientationIndex = cursor.getColumnIndex(MediaStore.MediaColumns.ORIENTATION)
-      val orientation = cursor.getInt(orientationIndex)
-
-      return maybeRotateAssetSize(width, height, orientation)
+  if (row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
+    if (row.width > 0 && row.height > 0) {
+      return maybeRotateAssetSize(row.width, row.height, row.orientation)
     }
-
     // Slow fallback for files not yet indexed by the media scanner.
-    val videoUri = Uri.parse("file://$uri")
+    val videoUri = Uri.parse("file://${row.path}")
     try {
       contentResolver.openAssetFileDescriptor(videoUri, "r").use { photoDescriptor ->
         MediaMetadataRetriever().use { retriever ->
@@ -255,23 +284,20 @@ fun getAssetDimensionsFromCursor(
     } catch (e: NumberFormatException) {
       Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: ${e.message}")
     } catch (e: FileNotFoundException) {
-      Log.e("expo-media-library", "ContentResolver failed to read $uri: ${e.message}")
+      Log.e("expo-media-library", "ContentResolver failed to read ${row.path}: ${e.message}")
     } catch (e: RuntimeException) {
       Log.e("expo-media-library", "MediaMetadataRetriever finished with unexpected error: ${e.message}")
     }
+    return Pair(0, 0)
   }
 
-  val widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
-  val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
-  val orientationIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
-  var width = cursor.getInt(widthIndex)
-  var height = cursor.getInt(heightIndex)
-  var orientation = cursor.getInt(orientationIndex)
+  var width = row.width
+  var height = row.height
+  var orientation = row.orientation
 
-  // If the image doesn't have the required information, we can get them from Bitmap.Options
-  if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE && (width <= 0 || height <= 0)) {
+  if (width <= 0 || height <= 0) {
     val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeFile(uri, options)
+    BitmapFactory.decodeFile(row.path, options)
     width = options.outWidth
     height = options.outHeight
   }
@@ -280,6 +306,7 @@ fun getAssetDimensionsFromCursor(
       ExifInterface.TAG_ORIENTATION,
       ExifInterface.ORIENTATION_NORMAL
     )
+    // Full list of orientations are here: https://developer.android.com/reference/android/media/ExifInterface#summary
     if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 ||
       exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 ||
       exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
@@ -347,130 +374,3 @@ private class AssetRowData(
   val height: Int,
   val orientation: Int
 )
-
-/**
- * Fetches data for a single asset and places the data into a Bundle.
- */
-private fun buildAssetBundle(
-  contentResolver: ContentResolver,
-  row: AssetRowData,
-  resolveWithFullInfo: Boolean
-): Bundle {
-  val localUri = "file://${row.path}"
-  var exifInterface: ExifInterface? = null
-  if (resolveWithFullInfo && row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
-    try {
-      exifInterface = ExifInterface(row.path)
-    } catch (e: IOException) {
-      Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
-      e.printStackTrace()
-    }
-  }
-  val (width, height) = getAssetDimensions(contentResolver, row, exifInterface)
-  val asset = Bundle().apply {
-    putString("id", row.assetId)
-    putString("filename", row.filename)
-    putString("uri", localUri)
-    putString("mediaType", exportMediaType(row.mediaType))
-    putLong("width", width.toLong())
-    putLong("height", height.toLong())
-    putLong("creationTime", row.creationTime)
-    putDouble("modificationTime", row.modificationTime * 1000.0)
-    putDouble("duration", row.durationMs / 1000.0)
-    putString("albumId", row.albumId)
-  }
-  if (resolveWithFullInfo && exifInterface != null) {
-    getExifFullInfo(exifInterface, asset)
-
-    val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-      val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, row.assetId)
-      getExifLocationForUri(contentResolver, photoUri)
-    } else {
-      getExifLocationLegacy(exifInterface)
-    }
-    asset.putParcelable("location", location)
-    asset.putString("localUri", localUri)
-  }
-  return asset
-}
-
-/**
- * Gets image/video dimensions from the pre-read cursor columns.
- *
- * For videos, prefers MediaStore `WIDTH`/`HEIGHT`/`ORIENTATION` (see [1])
- * and falls back to [getVideoDimensionsFromFile] when the scanner has not
- * indexed the file yet. For images, uses the same cursor columns with
- * BitmapFactory and EXIF orientation handling when dimensions are missing.
- *
- * [1]: https://developer.android.com/reference/android/provider/MediaStore.MediaColumns#WIDTH
- *
- * @return Pair of integers: width and height, respectively
- */
-private fun getAssetDimensions(
-  contentResolver: ContentResolver,
-  row: AssetRowData,
-  exifInterface: ExifInterface?
-): Pair<Int, Int> {
-  if (row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
-    if (row.width > 0 && row.height > 0) {
-      return maybeRotateAssetSize(row.width, row.height, row.orientation)
-    }
-    // Slow fallback for files not yet indexed by the media scanner.
-    return getVideoDimensionsFromFile(contentResolver, row.path)
-  }
-
-  var width = row.width
-  var height = row.height
-  var orientation = row.orientation
-
-  if (width <= 0 || height <= 0) {
-    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeFile(row.path, options)
-    width = options.outWidth
-    height = options.outHeight
-  }
-  if (exifInterface != null) {
-    val exifOrientation = exifInterface.getAttributeInt(
-      ExifInterface.TAG_ORIENTATION,
-      ExifInterface.ORIENTATION_NORMAL
-    )
-    if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 ||
-      exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 ||
-      exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
-      exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
-    ) {
-      orientation = 90
-    }
-  }
-  return maybeRotateAssetSize(width, height, orientation)
-}
-
-@Throws(IOException::class)
-private fun getVideoDimensionsFromFile(
-  contentResolver: ContentResolver,
-  path: String
-): Pair<Int, Int> {
-  val videoUri = Uri.parse("file://$path")
-  try {
-    contentResolver.openAssetFileDescriptor(videoUri, "r").use { photoDescriptor ->
-      MediaMetadataRetriever().use { retriever ->
-        retriever.setDataSource(photoDescriptor!!.fileDescriptor)
-        val videoWidth =
-          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt()
-        val videoHeight =
-          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)!!.toInt()
-        val videoOrientation =
-          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)!!.toInt()
-
-        return maybeRotateAssetSize(videoWidth, videoHeight, videoOrientation)
-      }
-    }
-  } catch (e: NumberFormatException) {
-    Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: ${e.message}")
-  } catch (e: FileNotFoundException) {
-    Log.e("expo-media-library", "ContentResolver failed to read $path: ${e.message}")
-  } catch (e: RuntimeException) {
-    Log.e("expo-media-library", "MediaMetadataRetriever finished with unexpected error: ${e.message}")
-  }
-  return Pair(0, 0)
-}
