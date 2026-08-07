@@ -224,13 +224,13 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathname).toBe('/feed');
   });
 
-  it('decodes URI-encoded params', () => {
+  it('passes through params unchanged (already decoded upstream)', () => {
     const result = getRouteInfoFromState({
       routes: [
         {
           name: '__root',
           state: {
-            routes: [{ name: '[name]', params: { name: 'hello%20world' } }],
+            routes: [{ name: '[name]', params: { name: 'hello world' } }],
             index: 0,
           },
         },
@@ -242,7 +242,10 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathname).toBe('/hello world');
   });
 
-  it('handles malformed URI component (returns as-is)', () => {
+  it('preserves percent-encoded values without double-decoding', () => {
+    // Params containing percent-encoded sequences should pass through unchanged
+    // since decoding already happened upstream (URLSearchParams / getStateFromPath).
+    // This prevents double-decoding that corrupts values like AWS SigV4 URLs.
     const result = getRouteInfoFromState({
       routes: [
         {
@@ -256,7 +259,6 @@ describe('getRouteInfoFromState', () => {
       index: 0,
     });
 
-    // Malformed URI should be returned as-is
     expect(result.params.name).toBe('%E0%A4%A');
     expect(result.pathname).toBe('/%E0%A4%A');
     expect(result.pathnameWithParams).toBe('/%E0%A4%A');
@@ -309,13 +311,13 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathname).toBe('/dashboard');
   });
 
-  it('decodes array params in catch-all', () => {
+  it('passes through array params unchanged (already decoded upstream)', () => {
     const result = getRouteInfoFromState({
       routes: [
         {
           name: '__root',
           state: {
-            routes: [{ name: '[...path]', params: { path: ['hello%20world', 'foo%2Fbar'] } }],
+            routes: [{ name: '[...path]', params: { path: ['hello world', 'foo/bar'] } }],
             index: 0,
           },
         },

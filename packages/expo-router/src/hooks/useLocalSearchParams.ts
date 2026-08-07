@@ -48,33 +48,19 @@ export function useLocalSearchParams<
 export function useLocalSearchParams() {
   const params = React.use(LocalRouteParamsContext) ?? {};
   const { params: previewParams } = usePreviewInfo();
+  // Params are already decoded upstream: query params by URLSearchParams (in
+  // parseQueryParams) and path params by decodeURIComponent (in getStateFromPath).
+  // Applying decodeURIComponent again here would double-decode percent-encoded
+  // values (e.g. `%2F` → `/`), corrupting URLs like AWS SigV4 presigned URLs.
+  // See: https://github.com/expo/expo/issues/48421
   return Object.fromEntries(
     Object.entries(previewParams ?? params).map(([key, value]) => {
       // React Navigation doesn't remove `undefined` values from the params object, and you cannot remove them via
-      // `navigation.setParams()` as it shallow merges. Hence, we hide them here. We also pass `null` through unchanged
-      // for the same reason; running it through `decodeURIComponent()` would otherwise stringify it to `null`.
+      // `navigation.setParams()` as it shallow merges. Hence, we hide them here.
       if (value == null) {
         return [key, value];
       }
-
-      if (Array.isArray(value)) {
-        return [
-          key,
-          value.map((v) => {
-            try {
-              return decodeURIComponent(v);
-            } catch {
-              return v;
-            }
-          }),
-        ];
-      } else {
-        try {
-          return [key, decodeURIComponent(value as string)];
-        } catch {
-          return [key, value];
-        }
-      }
+      return [key, value];
     })
   ) as any;
 }
