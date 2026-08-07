@@ -33,6 +33,7 @@
 - Update `URL` and `URLSearchParams` implementation to support IDNA/TR-46 and improve performance. Spec-adherence has increased and few gaps should now be noticeable compared to browsers ([#47813](https://github.com/expo/expo/pull/47813) by [@kitten](https://github.com/kitten))
 - [Internal] Add `getBundleOrigin`, exposed as `expo/internal/bundle-origin` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
 - [Internal] Derive `getDevServer` from the bundle URL internally and expose `getBundleUrl` helper ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
+- Bump recommended `react-native-get-random-values` version to `~2.0.0` in `bundledNativeModules.json` ([#1](https://github.com/cucumber-sp/expo/pull/1) by [@cucumber-sp](https://github.com/cucumber-sp))
 
 ## 57.0.9 - 2026-07-29
 
