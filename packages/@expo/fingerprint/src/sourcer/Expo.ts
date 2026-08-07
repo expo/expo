@@ -390,12 +390,14 @@ export async function getExpoAutolinkingAndroidSourcesAsync(
         }
       }
     }
-    results.push({
-      type: 'contents',
-      id: 'expoAutolinkingConfig:android',
-      contents: JSON.stringify(config),
-      reasons,
-    });
+    if (!(options.sourceSkips & SourceSkips.AutolinkingConfig)) {
+      results.push({
+        type: 'contents',
+        id: 'expoAutolinkingConfig:android',
+        contents: JSON.stringify(config),
+        reasons,
+      });
+    }
     return results;
   } catch {
     return [];
@@ -453,12 +455,14 @@ export async function getExpoAutolinkingIosSourcesAsync(
         );
       }
     }
-    results.push({
-      type: 'contents',
-      id: 'expoAutolinkingConfig:ios',
-      contents: JSON.stringify(config),
-      reasons,
-    });
+    if (!(options.sourceSkips & SourceSkips.AutolinkingConfig)) {
+      results.push({
+        type: 'contents',
+        id: 'expoAutolinkingConfig:ios',
+        contents: JSON.stringify(config),
+        reasons,
+      });
+    }
     return results;
   } catch {
     return [];
