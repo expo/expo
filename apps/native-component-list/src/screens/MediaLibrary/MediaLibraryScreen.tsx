@@ -243,6 +243,13 @@ function MediaLibraryView({ route, accessPrivileges }: Props) {
         resolveWithFullInfo,
       });
       const lastFetchDurationMs = Math.round(performance.now() - fetchStartedAt);
+      const firstBatchAssetLocation = assets[0]?.location;
+      const batchLocationPreview =
+        state.endCursor == null
+          ? firstBatchAssetLocation != null
+            ? `${firstBatchAssetLocation.latitude}, ${firstBatchAssetLocation.longitude}`
+            : null
+          : state.batchLocationPreview;
 
       // Get the last asset currently in the state.
       const lastAsset = state.assets[state.assets.length - 1];
@@ -258,6 +265,7 @@ function MediaLibraryView({ route, accessPrivileges }: Props) {
           endCursor,
           hasNextPage,
           lastFetchDurationMs,
+          batchLocationPreview,
         });
       }
     } finally {
@@ -268,6 +276,7 @@ function MediaLibraryView({ route, accessPrivileges }: Props) {
     state.endCursor,
     state.hasNextPage,
     state.assets,
+    state.batchLocationPreview,
     mediaType,
     sortBy,
     albumId,
