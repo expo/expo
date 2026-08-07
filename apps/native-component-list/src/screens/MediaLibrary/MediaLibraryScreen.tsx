@@ -22,7 +22,7 @@ import HeadingText from '../../components/HeadingText';
 import Colors from '../../constants/Colors';
 import MediaLibraryCell from './MediaLibraryCell';
 const COLUMNS = 3;
-const PAGE_SIZE_OPTIONS = [30, 3000, 30000] as const;
+const PAGE_SIZE_OPTIONS = [30, 300, 3000, 30000] as const;
 const WINDOW_SIZE = Dimensions.get('window');
 
 type MediaTypeWithoutPairedVideo = Exclude<MediaLibrary.MediaTypeValue, 'pairedVideo'>;
@@ -230,6 +230,9 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
 
     try {
       // Make a native request for assets.
+      if (!state.endCursor) {
+        dispatch({ type: 'update', refreshing: true });
+      }
       const fetchStartedAt = performance.now();
       const { assets, endCursor, hasNextPage } = await MediaLibrary.getAssetsAsync({
         first: pageSize,
