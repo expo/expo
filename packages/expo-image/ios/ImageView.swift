@@ -256,12 +256,15 @@ public final class ImageView: ExpoView {
       task: task,
       progress: imageLoadProgress(_:_:_:)
     ) { [weak self] image, data, error, cacheType in
-      // A newer load may have started while this one was in flight.
-      guard let self, self.pendingSVGVariablesTask === task else {
-        return
+      // The loader always completes on the main queue, so this is already the view's actor.
+      MainActor.assumeIsolated {
+        // A newer load may have started while this one was in flight.
+        guard let self, self.pendingSVGVariablesTask === task else {
+          return
+        }
+        self.pendingSVGVariablesTask = nil
+        self.imageLoadCompleted(image, data, error, cacheType, true, url)
       }
-      self.pendingSVGVariablesTask = nil
-      self.imageLoadCompleted(image, data, error, cacheType, true, url)
     }
   }
 
