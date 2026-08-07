@@ -4,6 +4,7 @@ import { manipulateAsync, ImageManipulator, FlipType, SaveFormat } from 'expo-im
 import { Platform } from 'react-native';
 
 import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 export const name = 'ImageManipulator';
 
@@ -23,15 +24,17 @@ async function getFileSizeAsync(uri: string) {
 export async function test(t: JasmineInterface) {
   t.describe('ImageManipulator', () => {
     let asset: Asset;
+    let assetUri: string;
 
     t.beforeAll(async () => {
       asset = Asset.fromModule(require('../assets/example_image_1.jpg'));
       await asset.downloadAsync();
+      assetUri = requireNotNull(asset.localUri, 'asset.localUri');
     });
 
     t.describe('manipulate()', () => {
       t.it('returns a context', () => {
-        const context = ImageManipulator.manipulate(asset.localUri!);
+        const context = ImageManipulator.manipulate(assetUri);
 
         t.expect(context).toBeDefined();
         t.expect(context instanceof ImageManipulator.Context).toBe(true);
@@ -40,7 +43,7 @@ export async function test(t: JasmineInterface) {
 
     t.describe('Context', () => {
       t.it('renders valid image', async () => {
-        const context = ImageManipulator.manipulate(asset.localUri!).resize({
+        const context = ImageManipulator.manipulate(assetUri).resize({
           width: 100,
           height: 100,
         });
@@ -72,31 +75,27 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('rotates images', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!).rotate(45).renderAsync();
+        const image = await ImageManipulator.manipulate(assetUri).rotate(45).renderAsync();
 
         t.expect(image.width).toBeGreaterThan(asset.width!);
       });
 
       t.it('flips horizontally', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
-          .flip('horizontal')
-          .renderAsync();
+        const image = await ImageManipulator.manipulate(assetUri).flip('horizontal').renderAsync();
 
         t.expect(image.width).toBe(asset.width!);
         t.expect(image.height).toBe(asset.height!);
       });
 
       t.it('flips vertically', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
-          .flip('vertical')
-          .renderAsync();
+        const image = await ImageManipulator.manipulate(assetUri).flip('vertical').renderAsync();
 
         t.expect(image.width).toBe(asset.width!);
         t.expect(image.height).toBe(asset.height!);
       });
 
       t.it('resizes image', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
+        const image = await ImageManipulator.manipulate(assetUri)
           .resize({ width: 100, height: 100 })
           .renderAsync();
 
@@ -105,7 +104,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('crops image', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
+        const image = await ImageManipulator.manipulate(assetUri)
           .crop({ originX: 20, originY: 20, width: 100, height: 100 })
           .renderAsync();
 
@@ -114,7 +113,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('performs multiple transformations', async () => {
-        const context = ImageManipulator.manipulate(asset.localUri!);
+        const context = ImageManipulator.manipulate(assetUri);
         const image = await context
           .resize({ width: 200, height: 200 })
           .flip('vertical')
@@ -129,7 +128,7 @@ export async function test(t: JasmineInterface) {
 
     t.describe('Image', () => {
       t.it('saves with default format', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
+        const image = await ImageManipulator.manipulate(assetUri)
           .resize({
             width: 100,
             height: 100,
@@ -145,7 +144,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('saves as JPEG', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
+        const image = await ImageManipulator.manipulate(assetUri)
           .resize({ width: 100, height: 100 })
           .renderAsync();
         const result = await image.saveAsync({
@@ -160,7 +159,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('saves as PNG', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
+        const image = await ImageManipulator.manipulate(assetUri)
           .resize({ width: 100, height: 100 })
           .renderAsync();
         const result = await image.saveAsync({
@@ -175,7 +174,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('provides Base64 with no header or newline terminator', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
+        const image = await ImageManipulator.manipulate(assetUri)
           .resize({ width: 100, height: 100 })
           .renderAsync();
         const result = await image.saveAsync({
@@ -189,21 +188,19 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('performs compression', async () => {
-        const image = await ImageManipulator.manipulate(asset.localUri!)
-          .flip('vertical')
-          .renderAsync();
+        const image = await ImageManipulator.manipulate(assetUri).flip('vertical').renderAsync();
         const result = await image.saveAsync({
           format: SaveFormat.JPEG,
           compress: 0.0,
         });
 
         if (Platform.OS === 'web') {
-          const originalInfo = await fetch(asset.localUri!).then((a) => a.blob());
+          const originalInfo = await fetch(assetUri).then((a) => a.blob());
           const resultInfo = await fetch(result.uri).then((a) => a.blob());
 
           t.expect(originalInfo.size).toBeGreaterThan(resultInfo.size);
         } else {
-          const originalSize = await getFileSizeAsync(asset.localUri!);
+          const originalSize = await getFileSizeAsync(assetUri);
           const resultSize = await getFileSizeAsync(result.uri);
 
           t.expect(originalSize).toBeGreaterThan(resultSize);
@@ -214,17 +211,17 @@ export async function test(t: JasmineInterface) {
 
   t.describe('ImageManipulator (Legacy)', () => {
     let image: Asset;
+    let imageUri: string;
 
     t.beforeAll(async () => {
       image = Asset.fromModule(require('../assets/example_image_1.jpg'));
       await image.downloadAsync();
+      imageUri = requireNotNull(image.localUri, 'image.localUri');
     });
 
     t.describe('manipulateAsync()', () => {
       t.it('returns valid image', async () => {
-        const result = await manipulateAsync(image.localUri!, [
-          { resize: { width: 100, height: 100 } },
-        ]);
+        const result = await manipulateAsync(imageUri, [{ resize: { width: 100, height: 100 } }]);
         t.expect(result).toBeDefined();
         t.expect(typeof result.uri).toBe('string');
         t.expect(typeof result.width).toBe('number');
@@ -244,9 +241,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('saves with default format', async () => {
-        const result = await manipulateAsync(image.localUri!, [
-          { resize: { width: 100, height: 100 } },
-        ]);
+        const result = await manipulateAsync(imageUri, [{ resize: { width: 100, height: 100 } }]);
 
         if (Platform.OS === 'web') {
           t.expect(result.uri.startsWith('data:image/jpeg;base64,')).toBe(true);
@@ -256,13 +251,9 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('saves as JPEG', async () => {
-        const result = await manipulateAsync(
-          image.localUri!,
-          [{ resize: { width: 100, height: 100 } }],
-          {
-            format: SaveFormat.JPEG,
-          }
-        );
+        const result = await manipulateAsync(imageUri, [{ resize: { width: 100, height: 100 } }], {
+          format: SaveFormat.JPEG,
+        });
 
         if (Platform.OS === 'web') {
           t.expect(result.uri.startsWith('data:image/jpeg;base64,')).toBe(true);
@@ -272,13 +263,9 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('saves as PNG', async () => {
-        const result = await manipulateAsync(
-          image.localUri!,
-          [{ resize: { width: 100, height: 100 } }],
-          {
-            format: SaveFormat.PNG,
-          }
-        );
+        const result = await manipulateAsync(imageUri, [{ resize: { width: 100, height: 100 } }], {
+          format: SaveFormat.PNG,
+        });
 
         if (Platform.OS === 'web') {
           t.expect(result.uri.startsWith('data:image/png;base64,')).toBe(true);
@@ -288,32 +275,28 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('provides Base64 with no header or newline terminator', async () => {
-        const result = await manipulateAsync(
-          image.localUri!,
-          [{ resize: { width: 100, height: 100 } }],
-          {
-            base64: true,
-          }
-        );
+        const result = await manipulateAsync(imageUri, [{ resize: { width: 100, height: 100 } }], {
+          base64: true,
+        });
 
         t.expect(typeof result.base64).toBe('string');
         t.expect(result.base64).not.toContain('\n');
         t.expect(result.base64).not.toContain('\r');
-        t.expect(result.base64!.startsWith('data:image/jpeg;base64,')).toBe(false);
+        t.expect(result.base64?.startsWith('data:image/jpeg;base64,')).toBe(false);
       });
 
       t.it('performs compression', async () => {
-        const result = await manipulateAsync(image.localUri!, [{ flip: FlipType.Vertical }], {
+        const result = await manipulateAsync(imageUri, [{ flip: FlipType.Vertical }], {
           compress: 0.0,
         });
 
         if (Platform.OS === 'web') {
-          const imageInfo = await fetch(image.localUri!).then((a) => a.blob());
+          const imageInfo = await fetch(imageUri).then((a) => a.blob());
           const resultInfo = await fetch(result.uri).then((a) => a.blob());
 
           t.expect(imageInfo.size).toBeGreaterThan(resultInfo.size);
         } else {
-          const imageSize = await getFileSizeAsync(image.localUri!);
+          const imageSize = await getFileSizeAsync(imageUri);
           const resultSize = await getFileSizeAsync(result.uri);
 
           t.expect(imageSize).toBeGreaterThan(resultSize);
@@ -321,32 +304,30 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('rotates images', async () => {
-        const result = await manipulateAsync(image.localUri!, [{ rotate: 45 }]);
+        const result = await manipulateAsync(imageUri, [{ rotate: 45 }]);
         t.expect(result.width).toBeGreaterThan(image.width!);
       });
 
       t.it('flips horizontally', async () => {
-        const result = await manipulateAsync(image.localUri!, [{ flip: FlipType.Horizontal }]);
+        const result = await manipulateAsync(imageUri, [{ flip: FlipType.Horizontal }]);
         t.expect(result.width).toBe(image.width!);
         t.expect(result.height).toBe(image.height!);
       });
 
       t.it('flips vertically', async () => {
-        const result = await manipulateAsync(image.localUri!, [{ flip: FlipType.Vertical }]);
+        const result = await manipulateAsync(imageUri, [{ flip: FlipType.Vertical }]);
         t.expect(result.width).toBe(image.width!);
         t.expect(result.height).toBe(image.height!);
       });
 
       t.it('resizes image', async () => {
-        const result = await manipulateAsync(image.localUri!, [
-          { resize: { width: 100, height: 100 } },
-        ]);
+        const result = await manipulateAsync(imageUri, [{ resize: { width: 100, height: 100 } }]);
         t.expect(result.height).toBe(100);
         t.expect(result.width).toBe(100);
       });
 
       t.it('crops image', async () => {
-        const result = await manipulateAsync(image.localUri!, [
+        const result = await manipulateAsync(imageUri, [
           { crop: { originX: 20, originY: 20, width: 100, height: 100 } },
         ]);
         t.expect(result.height).toBe(100);
@@ -354,7 +335,7 @@ export async function test(t: JasmineInterface) {
       });
 
       t.it('performs multiple transformations', async () => {
-        const result = await manipulateAsync(image.localUri!, [
+        const result = await manipulateAsync(imageUri, [
           { resize: { width: 200, height: 200 } },
           { flip: FlipType.Vertical },
           { rotate: 45 },
