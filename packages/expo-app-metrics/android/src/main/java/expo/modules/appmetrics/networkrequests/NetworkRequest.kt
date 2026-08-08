@@ -32,7 +32,11 @@ data class NetworkRequest(
   /** Number of bytes sent on the wire for the request (headers + body). */
   val requestBytesSent: Long?,
 
-  /** Number of bytes received on the wire for the response (headers + body). */
+  /**
+   * Number of bytes received on the wire for the response (headers + body), or `null` when the
+   * size wasn't reported: the request failed before a response, or the caller abandoned the body
+   * of a response that declared no `Content-Length`. Zero means a genuinely empty body.
+   */
   val responseBytesReceived: Long?,
 
   /** Phase-by-phase timings, populated from OkHttp `EventListener` callbacks where available. */
@@ -85,12 +89,53 @@ data class NetworkRequest(
     val responseEnd: Date?,
 
     /**
+     * When the last response byte arrived, or `null` if the listener never reported one.
+     *
+     * Unlike `responseEnd`, this is never synthesized. `responseEnd` falls back to a wall-clock
+     * timestamp taken when the snapshot was recorded, which is right for a duration but wrong for a
+     * transfer window: a request that got headers and then died reports an end long after its last
+     * byte, and dividing its bytes by that window describes the recording delay rather than the
+     * connection.
+     */
+    val measuredResponseEnd: Date?,
+
+    /**
      * Total wall-clock duration of the request in seconds. Convenience: callers don't have to
      * subtract `fetchStart` from `responseEnd` themselves, and we can populate this even when
      * individual phases are `null` (cache hits, errors before headers).
      */
     val totalDuration: Double
-  )
+  ) {
+    /**
+     * Time from the start of the fetch until the first response byte arrived, in seconds.
+     *
+     * This is not a measurement of network latency: it also covers DNS, the TCP and TLS handshakes,
+     * sending the request, and the server's own processing time. A slow backend inflates it the same
+     * way a slow network does. On a reused connection (the common case under keep-alive) the
+     * handshakes are already done, so it sits much closer to one round trip plus server time.
+     *
+     * `null` when the response never produced headers, so callers can tell "not measured" from a
+     * genuinely fast response.
+     */
+    val timeToFirstByte: Double?
+      get() = positiveInterval(fetchStart, responseStart)
+
+    /**
+     * Returns the interval between two nullable timestamps in seconds, or `null` if either is
+     * missing or the result isn't strictly positive.
+     *
+     * Negative results are discarded because these are wall-clock dates and a clock adjustment
+     * mid-request can invert them. Exactly zero is discarded too: a phase that completes inside one
+     * clock tick was too fast to measure, and reporting `0` would claim it took no time at all.
+     */
+    private fun positiveInterval(start: Date?, end: Date?): Double? {
+      if (start == null || end == null) {
+        return null
+      }
+      val seconds = (end.time - start.time) / 1000.0
+      return if (seconds > 0) seconds else null
+    }
+  }
 }
 
 /**

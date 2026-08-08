@@ -24,15 +24,84 @@ data class NetworkRequestSummary(
   /** Sum of `requestBytesSent` across all requests. */
   val bytesSent: Long,
 
-  /** Sum of `timings.totalDuration` across all requests, in seconds. Can exceed wall-clock when requests overlap. */
+  /**
+   * Sum of `timings.totalDuration` across all requests, in seconds. Can exceed wall-clock when
+   * requests overlap.
+   *
+   * Deliberately includes failures, unlike `slowest` and `throughputBytesPerSecond`, which describe
+   * only requests that completed. That makes it the one field that still accounts for time the app
+   * spent waiting on a request that never arrived: a window of timeouts reports the seconds they
+   * burned here even though nothing else measures them. The cost is that it can dwarf the other
+   * timings, since a single timeout contributes the client's whole timeout interval.
+   */
   val totalDuration: Double,
 
-  /** Longest single request duration in seconds, or `null` if `count == 0`. */
-  val slowestDuration: Double?,
+  /**
+   * The single longest-running request that completed, or `null` when the window held none.
+   *
+   * Every field describes that one request, so they can be read together: a `duration` mostly made
+   * up of `timeToFirstByte` means the server was slow to answer, while a small `timeToFirstByte`
+   * against a large `bytesReceived` means the transfer itself was. `statusCode` explains a
+   * `bytesReceived` of 0, which is routine on a 304 and a problem on a 200.
+   *
+   * Failed requests are deliberately not candidates. A timeout's duration is the client's timeout
+   * setting rather than a measurement of the server, so letting one win would make these fields
+   * report a config constant that barely varies with the network. `failed` carries that signal
+   * instead.
+   */
+  val slowest: SlowestRequest? = null,
 
-  /** Host of the slowest request, or `null` if the URL had no resolvable host. */
-  val slowestHost: String?
+  /**
+   * Received bytes over the time those bytes were actually moving, in bytes per second, or `null`
+   * when nothing was received or no request reported a usable transfer window.
+   *
+   * The denominator is the union of the transfer windows of the requests that received bytes, each
+   * running from the first response byte to the last. Measuring from the first byte keeps DNS,
+   * connect and server think time out of the rate, and it excludes cache hits for free, since a
+   * response served from disk never reports one. Taking the union rather than a sum keeps
+   * concurrency from deflating it, and gaps between requests are left out so idle time isn't charged
+   * to the network. Failures are excluded: a request that stalled until the client gave up would
+   * otherwise hold the window open while nothing moved.
+   *
+   * Three things it can't see. A stall between requests, since no interval covers it; `failed` is
+   * the signal there. A long-lived trickle, such as an event stream, whose window stays open while
+   * almost nothing moves and drags down everything overlapping it. And eviction: when the ring
+   * buffer drops the earliest requests both sides shrink together, so read this as the rate of a
+   * sample of the window rather than all of it.
+   */
+  val throughputBytesPerSecond: Double? = null
 ) {
+  /** Facts about the slowest completed request in a window. See `NetworkRequestSummary.slowest`. */
+  data class SlowestRequest(
+    /** Host of the request, or `null` if the URL had no resolvable host. */
+    val host: String?,
+
+    /** Total wall-clock duration of the request, in seconds. */
+    val duration: Double,
+
+    /**
+     * Response status code. Never `null` in practice, since a request that never received headers
+     * counts as failed and so isn't a candidate.
+     *
+     * Disambiguates an empty response: a `bytesReceived` of 0 means a cache revalidation on a 304,
+     * an intentionally bodyless reply on a 204, and a broken transfer on a 200.
+     */
+    val statusCode: Int?,
+
+    /**
+     * Time from the start of the fetch until the first response byte arrived, in seconds, or `null`
+     * if the request never reported one. Includes server processing time, so it's a proxy for
+     * network quality rather than a measurement of it - see `Timings.timeToFirstByte`.
+     */
+    val timeToFirstByte: Double?,
+
+    /**
+     * Response bytes received on the wire, or `null` if no count was reported. Distinguishes a
+     * request that was slow because it moved a lot of data from one that was slow while idle.
+     */
+    val bytesReceived: Long?
+  )
+
   val isEmpty: Boolean
     get() = count == 0
 
@@ -43,8 +112,8 @@ data class NetworkRequestSummary(
       bytesReceived = 0,
       bytesSent = 0,
       totalDuration = 0.0,
-      slowestDuration = null,
-      slowestHost = null
+      slowest = null,
+      throughputBytesPerSecond = null
     )
 
     /**
@@ -68,9 +137,15 @@ data class NetworkRequestSummary(
         bytesReceived += request.responseBytesReceived ?: 0
         bytesSent += request.requestBytesSent ?: 0
         totalDuration += request.timings.totalDuration
-        val current = slowest
-        if (current == null || request.timings.totalDuration > current.timings.totalDuration) {
-          slowest = request
+        // Only completed requests are candidates. A timeout's duration is the client's timeout
+        // setting, not a measurement of the server, so letting one win would make these fields
+        // report a config constant that barely varies with the network. Failures are already counted
+        // by `failed`.
+        if (!request.isFailed) {
+          val current = slowest
+          if (current == null || request.timings.totalDuration > current.timings.totalDuration) {
+            slowest = request
+          }
         }
       }
 
@@ -80,9 +155,97 @@ data class NetworkRequestSummary(
         bytesReceived = bytesReceived,
         bytesSent = bytesSent,
         totalDuration = totalDuration,
-        slowestDuration = slowest?.timings?.totalDuration,
-        slowestHost = slowest?.url?.toHttpUrlOrNull()?.host
+        slowest = slowest?.let { request ->
+          SlowestRequest(
+            host = request.url.toHttpUrlOrNull()?.host,
+            duration = request.timings.totalDuration,
+            statusCode = request.statusCode,
+            timeToFirstByte = request.timings.timeToFirstByte,
+            bytesReceived = request.responseBytesReceived
+          )
+        },
+        throughputBytesPerSecond = throughput(requests)
       )
+    }
+
+    /**
+     * Received bytes over the time those bytes were moving. Returns `null` when nothing was received
+     * or no receiving request reported a usable interval, so the caller can tell "unknown" from a
+     * genuinely slow connection.
+     *
+     * Both sides are computed from the same subset, so the numerator and denominator always describe
+     * the same traffic.
+     */
+    private fun throughput(requests: List<NetworkRequest>): Double? {
+      val measurable = measurableReceiving(requests)
+      val bytes = measurable.sumOf { it.responseBytesReceived ?: 0 }
+      if (bytes <= 0) {
+        return null
+      }
+      val busySeconds = busyDuration(measurable)
+      if (busySeconds <= 0) {
+        return null
+      }
+      return bytes.toDouble() / busySeconds
+    }
+
+    /**
+     * The requests that completed, received bytes, and reported a measurable transfer window, which
+     * is the subset the throughput ratio is computed over. Deciding it once keeps the numerator and
+     * denominator describing the same traffic; filtering inside the busy-time fold instead would let
+     * a request contribute bytes while adding no time.
+     *
+     * A transfer faster than a millisecond drops out, because `Date()` advances in whole
+     * milliseconds and can't describe it. iOS applies the same floor rather than dividing by the
+     * finer windows its transaction metrics can resolve, so the platforms agree on when the rate is
+     * unknown instead of Android quietly reporting only its slower transfers.
+     */
+    private fun measurableReceiving(requests: List<NetworkRequest>): List<NetworkRequest> {
+      return requests.filter { request ->
+        val start = request.timings.responseStart
+        val end = request.timings.measuredResponseEnd
+        !request.isFailed && (request.responseBytesReceived ?: 0) > 0 && start != null &&
+          end != null && end.time > start.time
+      }
+    }
+
+    /**
+     * Total length of the union of the requests' transfer windows, in seconds. Overlapping requests
+     * are merged so concurrency doesn't inflate the total, and gaps between them are excluded so
+     * idle time isn't charged to the network. Callers computing a rate should pass a list already
+     * narrowed by `measurableReceiving`, so the same requests feed both sides of the ratio.
+     */
+    private fun busyDuration(requests: List<NetworkRequest>): Double {
+      val intervals = requests
+        .mapNotNull { request ->
+          val start = request.timings.responseStart ?: return@mapNotNull null
+          val end = request.timings.measuredResponseEnd ?: return@mapNotNull null
+          if (end.time > start.time) start.time to end.time else null
+        }
+        .sortedBy { it.first }
+
+      var totalMillis = 0L
+      var spanStart: Long? = null
+      var spanEnd: Long? = null
+      for ((start, end) in intervals) {
+        val currentStart = spanStart
+        val currentEnd = spanEnd
+        if (currentStart == null || currentEnd == null) {
+          spanStart = start
+          spanEnd = end
+          continue
+        }
+        if (start <= currentEnd) {
+          // Overlaps (or touches) the open span, so extend it instead of counting the time twice.
+          spanEnd = maxOf(currentEnd, end)
+        } else {
+          totalMillis += currentEnd - currentStart
+          spanStart = start
+          spanEnd = end
+        }
+      }
+      spanStart?.let { start -> spanEnd?.let { end -> totalMillis += end - start } }
+      return totalMillis / 1000.0
     }
   }
 }

@@ -5,14 +5,17 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import okhttp3.mockwebserver.SocketPolicy
 import org.junit.After
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
+import java.time.Duration
 
 /**
  * End-to-end interceptor tests driven through OkHttp's `MockWebServer`. Each test installs a
@@ -92,6 +95,60 @@ class NetworkRequestInterceptorTest {
   }
 
   @Test
+  fun `records a body that breaks mid-transfer as failed`() {
+    // Headers arrive and the body is cut off partway. The interceptor's own catch only wraps
+    // `chain.proceed`, which has already returned by then, so without the listener's report this
+    // lands as a clean 200 and the broken transfer is counted as a success.
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setBody("x".repeat(1024))
+        .setSocketPolicy(SocketPolicy.DISCONNECT_DURING_RESPONSE_BODY)
+    )
+
+    var thrown = false
+    try {
+      val response = client.newCall(Request.Builder().url(server.url("/truncated")).build()).execute()
+      response.body!!.string()
+    } catch (_: Exception) {
+      thrown = true
+    }
+    assertTrue("the body read should fail", thrown)
+    assertEquals(1, monitor.recent.size)
+    val snapshot = monitor.recent.first()
+    assertNotNull("a broken transfer should carry an error", snapshot.errorDescription)
+    assertTrue("a broken transfer should count as failed", snapshot.isFailed)
+  }
+
+  @Test
+  fun `treats a message-less failure as failed`() {
+    // `SocketException()` with no message: `localizedMessage` and `message` are both null, so a
+    // snapshot keyed off the description alone would keep the 200 the response started as and
+    // report a broken transfer as a success.
+    // The headers arrived, so the snapshot carries a 200; the body then broke. This is exactly the
+    // shape the body-read fix produces, and the only path where a null description isn't rescued by
+    // a missing status code.
+    val request = Request.Builder().url("https://expo.dev/x").build()
+    val response = okhttp3.Response.Builder()
+      .request(request)
+      .protocol(okhttp3.Protocol.HTTP_1_1)
+      .code(200)
+      .message("OK")
+      .build()
+    val snapshot = buildSnapshot(
+      id = java.util.UUID.randomUUID(),
+      originalRequest = request,
+      response = response,
+      phases = null,
+      fallbackStart = java.util.Date(0),
+      fallbackEnd = java.util.Date(100),
+      totalDuration = 0.1,
+      error = java.net.SocketException()
+    )
+    assertTrue("a message-less failure should still count as failed", snapshot.isFailed)
+  }
+
+  @Test
   fun `reconstructs a redirect chain in chronological order`() {
     server.enqueue(MockResponse().setResponseCode(302).setHeader("Location", "/b"))
     server.enqueue(MockResponse().setResponseCode(301).setHeader("Location", "/c"))
@@ -144,6 +201,47 @@ class NetworkRequestInterceptorTest {
     val snapshot = monitor.recent.first()
     val received = snapshot.responseBytesReceived!!
     assertTrue("expected at least body length, got $received", received >= body.length)
+  }
+
+  @Test
+  fun `records response bytes for a chunked body with no declared length`() {
+    val body = "x".repeat(4096)
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setChunkedBody(body, 512)
+    )
+
+    val response = client.newCall(Request.Builder().url(server.url("/chunked")).build()).execute()
+    response.body!!.string()
+    response.close()
+
+    val snapshot = monitor.recent.first()
+    val received = snapshot.responseBytesReceived!!
+    // A chunked response declares no Content-Length, so the `contentLength()` fallback is -1.
+    // The count has to come from the event listener; without it we'd silently report headers only.
+    assertTrue("expected at least body length, got $received", received >= body.length)
+  }
+
+  @Test
+  fun `reports unknown response bytes rather than a headers-only count`() {
+    server.enqueue(
+      MockResponse()
+        .setResponseCode(200)
+        .setChunkedBody("y".repeat(2048), 256)
+    )
+
+    // Never drain the body: `responseBodyEnd` won't fire, so no byte count is available. The
+    // snapshot has to say "unknown" instead of reporting the header estimate as a measurement,
+    // which would both understate totals and let the request into the throughput denominator.
+    val response = client.newCall(Request.Builder().url(server.url("/abandoned")).build()).execute()
+    response.close()
+
+    val snapshot = monitor.recent.first()
+    assertNull(
+      "expected unknown byte count, got ${snapshot.responseBytesReceived}",
+      snapshot.responseBytesReceived
+    )
   }
 
   @Test
