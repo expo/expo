@@ -9,10 +9,12 @@
 ### 🐛 Bug fixes
 
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
+- Fixed the devtools plugin bundle missing its `wa-sqlite.wasm` asset. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Changed native implementation to use the unified `ArrayBuffer` type. ([#47168](https://github.com/expo/expo/pull/47168) by [@barthap](https://github.com/barthap))
+- Build the devtools plugin web UI from the monorepo workspace instead of a standalone project. ([#48542](https://github.com/expo/expo/pull/48542) by [@kudo](https://github.com/kudo))
 
 ## 57.0.1 - 2026-07-15
 

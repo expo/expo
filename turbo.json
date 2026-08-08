@@ -18,6 +18,15 @@
         "^build"
       ]
     },
+    "build:webui": {
+      "outputs": [
+        "dev-plugin-dist/**"
+      ],
+      "outputLogs": "new-only",
+      "dependsOn": [
+        "build"
+      ]
+    },
     "typecheck": {
       "outputs": [
         ".tsbuildinfo",

@@ -1,18 +1,25 @@
-import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import {
+  afterAll,
+  afterEach,
+  beforeAll,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  jest,
+} from '@jest/globals';
 import { act, renderHook, waitFor } from '@testing-library/react-native';
 import * as SQLite from 'expo-sqlite';
 import fs from 'fs';
 
-import { useSQLiteDatabase } from '../useSQLiteDatabase';
-
 import * as sqliteDump from '@/lib/sqliteDump';
 
+import { useSQLiteDatabase } from '../useSQLiteDatabase';
+
 // Mock expo-sqlite
-jest.mock(
-  '../../../../src/ExpoSQLite',
-  () =>
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    require('../../../../src/__mocks__/ExpoSQLite')
+jest.mock('../../../../src/ExpoSQLite', () =>
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  require('../../../../src/__mocks__/ExpoSQLite')
 );
 
 // Mock sqliteDump
@@ -199,7 +206,7 @@ describe('useSQLiteDatabase - State Management', () => {
     });
   });
 
-  test.skip('should set error state on database open failure', async () => {
+  it.skip('should set error state on database open failure', async () => {
     // Note: better-sqlite3 (the mock) is quite lenient and accepts various data formats.
     // In a real environment with native SQLite, corrupted data would throw an error.
     // This test is skipped as we can't easily create data that the mock will reject.
