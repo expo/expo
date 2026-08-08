@@ -374,7 +374,7 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double ->
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double, /* allowsExternalPlayback - iOS only */ _: Boolean? ->
         val mediaSource = createMediaItem(source)
         val bufferDurationMs = (preferredForwardBufferDuration * 1000).toLong()
         runOnMain {
@@ -485,6 +485,12 @@ class AudioModule : Module() {
         }
       }.set { ref, volume: Float? ->
         ref.setVolume(volume)
+      }
+
+      Property("isActiveForLockScreen") { player ->
+        runOnMain {
+          player.isActiveForLockScreen
+        }
       }
 
       Function("play") { player: AudioPlayer ->
@@ -837,6 +843,12 @@ class AudioModule : Module() {
       Property("currentStatus") { playlist ->
         runOnMain {
           playlist.currentStatus()
+        }
+      }
+      
+      Property("isActiveForLockScreen") { playlist ->
+        runOnMain {
+          playlist.isActiveForLockScreen
         }
       }
 
