@@ -19,6 +19,9 @@ import expo.modules.medialibrary.EXIF_TAGS
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.UnableToLoadException
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.withContext
 import java.io.FileNotFoundException
@@ -81,7 +84,7 @@ suspend fun queryAssetInfo(
  * Cursor must be a result of query with [ASSET_PROJECTION] projection
  */
 @Throws(IOException::class, UnsupportedOperationException::class)
-fun putAssetsInfo(
+suspend fun putAssetsInfo(
   contentResolver: ContentResolver,
   cursor: Cursor,
   response: MutableList<Bundle>,
@@ -97,53 +100,98 @@ fun putAssetsInfo(
   val durationIndex = cursor.getColumnIndex(MediaStore.Video.VideoColumns.DURATION)
   val localUriIndex = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
   val albumIdIndex = cursor.getColumnIndex(MediaStore.Images.Media.BUCKET_ID)
+  val widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
+  val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
+  val orientationIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
+
   if (!cursor.moveToPosition(offset)) {
     return
   }
-  var i = 0
-  while (i < limit && !cursor.isAfterLast) {
-    val assetId = cursor.getString(idIndex)
-    val path = cursor.getString(localUriIndex)
-    val localUri = "file://$path"
-    val mediaType = cursor.getInt(mediaTypeIndex)
-    var exifInterface: ExifInterface? = null
-    if (resolveWithFullInfo && mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
-      try {
-        exifInterface = ExifInterface(path)
-      } catch (e: IOException) {
-        Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
-        e.printStackTrace()
-      }
-    }
-    val (width, height) =
-      getAssetDimensionsFromCursor(contentResolver, exifInterface, cursor, mediaType, localUriIndex)
-    val asset = Bundle().apply {
-      putString("id", assetId)
-      putString("filename", cursor.getString(filenameIndex))
-      putString("uri", localUri)
-      putString("mediaType", exportMediaType(mediaType))
-      putLong("width", width.toLong())
-      putLong("height", height.toLong())
-      putLong("creationTime", cursor.getLong(creationDateIndex))
-      putDouble("modificationTime", cursor.getLong(modificationDateIndex) * 1000.0)
-      putDouble("duration", cursor.getInt(durationIndex) / 1000.0)
-      putString("albumId", cursor.getString(albumIdIndex))
-    }
-    if (resolveWithFullInfo && exifInterface != null) {
-      getExifFullInfo(exifInterface, asset)
 
-      val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-        val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId)
-        getExifLocationForUri(contentResolver, photoUri)
-      } else {
-        getExifLocationLegacy(exifInterface)
-      }
-      asset.putParcelable("location", location)
-      asset.putString("localUri", localUri)
+  // We limit batches to 5000 since that should keep [AssetRowData] memory
+  // memory usage low.
+  //
+  // Large `limit` values would otherwise hold every [AssetRowData] in memory
+  // at once. Each row is ~400 bytes (mostly id/filename/path strings), so
+  // 5000 * 400 bytes ≈ 2 MB.
+  val ASSET_ROW_BATCH_SIZE = 5000
+
+  var remaining = limit
+  while (remaining > 0 && !cursor.isAfterLast) {
+    val batchSize = minOf(remaining, ASSET_ROW_BATCH_SIZE)
+    val rows = ArrayList<AssetRowData>(batchSize)
+    var i = 0
+    while (i < batchSize && !cursor.isAfterLast) {
+      rows.add(
+        AssetRowData(
+          assetId = cursor.getString(idIndex),
+          filename = cursor.getString(filenameIndex),
+          path = cursor.getString(localUriIndex),
+          mediaType = cursor.getInt(mediaTypeIndex),
+          creationTime = cursor.getLong(creationDateIndex),
+          modificationTime = cursor.getLong(modificationDateIndex),
+          durationMs = cursor.getInt(durationIndex),
+          albumId = cursor.getString(albumIdIndex),
+          width = cursor.getInt(widthIndex),
+          height = cursor.getInt(heightIndex),
+          orientation = cursor.getInt(orientationIndex)
+        )
+      )
+      cursor.moveToNext()
+      i++
     }
-    cursor.moveToNext()
-    response.add(asset)
-    i++
+
+    // When resolveWithFullInfo is true, per-file EXIF data (including GPS location) is read in
+    // parallel across exifReadDispatcher instead of sequentially.
+    //
+    // - EXIF location reads cost ~15ms per image sequentially. They are independent per-file I/O,
+    //   so parallelizing them speeds up large queries by several times.
+    // - Cursor access is not thread-safe. Cursor columns are copied into AssetRowData in batches
+    //   before parallel file work; workers never touch the cursor.
+    val bundles = withContext(exifReadDispatcher) {
+      rows.map { row ->
+        async {
+          val localUri = "file://${row.path}"
+          var exifInterface: ExifInterface? = null
+          if (resolveWithFullInfo && row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
+            try {
+              exifInterface = ExifInterface(row.path)
+            } catch (e: IOException) {
+              Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
+              e.printStackTrace()
+            }
+          }
+          val (width, height) = getAssetDimensions(contentResolver, row, exifInterface)
+          val asset = Bundle().apply {
+            putString("id", row.assetId)
+            putString("filename", row.filename)
+            putString("uri", localUri)
+            putString("mediaType", exportMediaType(row.mediaType))
+            putLong("width", width.toLong())
+            putLong("height", height.toLong())
+            putLong("creationTime", row.creationTime)
+            putDouble("modificationTime", row.modificationTime * 1000.0)
+            putDouble("duration", row.durationMs / 1000.0)
+            putString("albumId", row.albumId)
+          }
+          if (resolveWithFullInfo && exifInterface != null) {
+            getExifFullInfo(exifInterface, asset)
+
+            val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+              val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, row.assetId)
+              getExifLocationForUri(contentResolver, photoUri)
+            } else {
+              getExifLocationLegacy(exifInterface)
+            }
+            asset.putParcelable("location", location)
+            asset.putString("localUri", localUri)
+          }
+          asset
+        }
+      }.awaitAll()
+    }
+    response.addAll(bundles)
+    remaining -= i
   }
 }
 
@@ -207,34 +255,30 @@ fun getExifLocationLegacy(exifInterface: ExifInterface): Bundle? {
 }
 
 /**
- * Gets image/video dimensions
+ * Gets image/video dimensions from the already-read cursor columns.
+ *
+ * For videos, prefers MediaStore `WIDTH`/`HEIGHT`/`ORIENTATION` (see [1])
+ * and falls back to MediaMetadataRetriever when the scanner has not indexed
+ * the file yet. For images, uses the same cursor columns with
+ * BitmapFactory and EXIF orientation handling when dimensions are missing.
+ *
+ * [1]: https://developer.android.com/reference/android/provider/MediaStore.MediaColumns#WIDTH
+ *
  * @return Pair of integers: width and height, respectively
  */
-@Throws(IOException::class)
-fun getAssetDimensionsFromCursor(
+private fun getAssetDimensions(
   contentResolver: ContentResolver,
-  exifInterface: ExifInterface?,
-  cursor: Cursor,
-  mediaType: Int,
-  localUriColumnIndex: Int
+  row: AssetRowData,
+  exifInterface: ExifInterface?
 ): Pair<Int, Int> {
-  val uri = cursor.getString(localUriColumnIndex)
-  if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
-    // Fast path: read dimensions from MediaStore cursor (no file I/O).
+  if (row.mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
+    // Fast path: read dimensions from cursor data (no file I/O)
     // MediaStore populates these when the media scanner indexes the file.
-    val widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
-    val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
-    val width = cursor.getInt(widthIndex)
-    val height = cursor.getInt(heightIndex)
-    if (width > 0 && height > 0) {
-      val orientationIndex = cursor.getColumnIndex(MediaStore.MediaColumns.ORIENTATION)
-      val orientation = cursor.getInt(orientationIndex)
-
-      return maybeRotateAssetSize(width, height, orientation)
+    if (row.width > 0 && row.height > 0) {
+      return maybeRotateAssetSize(row.width, row.height, row.orientation)
     }
-
     // Slow fallback for files not yet indexed by the media scanner.
-    val videoUri = Uri.parse("file://$uri")
+    val videoUri = Uri.parse("file://${row.path}")
     try {
       contentResolver.openAssetFileDescriptor(videoUri, "r").use { photoDescriptor ->
         MediaMetadataRetriever().use { retriever ->
@@ -252,23 +296,20 @@ fun getAssetDimensionsFromCursor(
     } catch (e: NumberFormatException) {
       Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: ${e.message}")
     } catch (e: FileNotFoundException) {
-      Log.e("expo-media-library", "ContentResolver failed to read $uri: ${e.message}")
+      Log.e("expo-media-library", "ContentResolver failed to read ${row.path}: ${e.message}")
     } catch (e: RuntimeException) {
       Log.e("expo-media-library", "MediaMetadataRetriever finished with unexpected error: ${e.message}")
     }
+    return Pair(0, 0)
   }
 
-  val widthIndex = cursor.getColumnIndex(MediaStore.MediaColumns.WIDTH)
-  val heightIndex = cursor.getColumnIndex(MediaStore.MediaColumns.HEIGHT)
-  val orientationIndex = cursor.getColumnIndex(MediaStore.Images.Media.ORIENTATION)
-  var width = cursor.getInt(widthIndex)
-  var height = cursor.getInt(heightIndex)
-  var orientation = cursor.getInt(orientationIndex)
+  var width = row.width
+  var height = row.height
+  var orientation = row.orientation
 
-  // If the image doesn't have the required information, we can get them from Bitmap.Options
-  if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE && (width <= 0 || height <= 0)) {
+  if (width <= 0 || height <= 0) {
     val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
-    BitmapFactory.decodeFile(uri, options)
+    BitmapFactory.decodeFile(row.path, options)
     width = options.outWidth
     height = options.outHeight
   }
@@ -277,6 +318,7 @@ fun getAssetDimensionsFromCursor(
       ExifInterface.TAG_ORIENTATION,
       ExifInterface.ORIENTATION_NORMAL
     )
+    // Full list of orientations are here: https://developer.android.com/reference/android/media/ExifInterface#summary
     if (exifOrientation == ExifInterface.ORIENTATION_ROTATE_90 ||
       exifOrientation == ExifInterface.ORIENTATION_ROTATE_270 ||
       exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
@@ -313,3 +355,42 @@ fun maybeRotateAssetSize(width: Int, height: Int, orientation: Int): Pair<Int, I
     Pair(width, height)
   }
 }
+
+/**
+ * Bounded parallelism for per-file EXIF reads.
+ *
+ * The ceiling is not Dispatchers.IO (elastic, default 64+). Location reads
+ * call MediaStore.setRequireOriginal + openInputStream, which are Binder
+ * IPCs into MediaProvider. libbinder's default thread pool is 15 threads
+ * ([1]), shared across apps, so concurrency much past ~32 mostly queues on
+ * Binder rather than speeding up.
+ *
+ * This matches our experimental findings. 32 seems to be a good concurrency.
+ * Here are the times to fetch per photo for a group of 300 photos, as tested
+ * with the demo app's MediaLibraryScreen:
+ *
+ * - 16: 4.02 ms
+ * - 32: 2.78 ms
+ * - 64: 3.12 ms
+ * - 128: 3.19 ms
+ *
+ * [1]: https://source.android.com/docs/core/architecture/ipc/binder-threading#configure
+ * Scoped storage location path: https://developer.android.com/training/data-storage/shared/media#location-info-photos
+ */
+@OptIn(ExperimentalCoroutinesApi::class)
+private val exifReadDispatcher = Dispatchers.IO.limitedParallelism(32)
+
+/** One cursor row's columns, copied out so file work can run off-cursor. */
+private class AssetRowData(
+  val assetId: String,
+  val filename: String,
+  val path: String,
+  val mediaType: Int,
+  val creationTime: Long,
+  val modificationTime: Long,
+  val durationMs: Int,
+  val albumId: String?,
+  val width: Int,
+  val height: Int,
+  val orientation: Int
+)
