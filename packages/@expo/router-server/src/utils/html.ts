@@ -62,14 +62,20 @@ export function createInjectedScriptsAsString(srcs: string[]): string {
 }
 
 /**
- * Returns a `<link rel="icon" />` HTML string for the given favicon href.
+ * Returns a `<link rel="icon" />` HTML string for the given favicon href. When the href
+ * points to an SVG (extension `.svg`), the tag also carries `type="image/svg+xml"` so
+ * browsers know to use the vector asset in preference to any auto-discovered `/favicon.ico`.
  *
  * Used by the SPA export path, which splices into a pre-rendered template instead of a React
  * tree. Output must stay byte-equivalent to `createFaviconAsNode` (rendered to static markup)
  * so both rendering paths agree on the tag shape.
  */
 export function createFaviconAsString(href: string): string {
-  return `<link rel="icon" href="${escapeHtmlAttribute(href)}"/>`;
+  const safeHref = escapeHtmlAttribute(href);
+  if (href.endsWith('.svg')) {
+    return `<link rel="icon" type="image/svg+xml" href="${safeHref}"/>`;
+  }
+  return `<link rel="icon" href="${safeHref}"/>`;
 }
 
 /**
