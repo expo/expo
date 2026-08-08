@@ -31,7 +31,7 @@ only needs to be used by the EAS CLI for generic projects that don't use continu
   {dim $} npx expo-updates configuration:syncnative --platform <platform>
 
   Options
-  --platform <string>                  Platform to sync
+  --platform <string>                  Platform to sync: ios, tvos or android
   --workflow <string>                  Workflow to use for configuration sync
   -h, --help                           Output usage information
     `,
@@ -40,8 +40,10 @@ only needs to be used by the EAS CLI for generic projects that don't use continu
   }
 
   const platform = requireArg(args, '--platform');
-  if (!['ios', 'android'].includes(platform)) {
-    throw new CommandError(`Invalid platform argument: ${platform}`);
+  if (!['ios', 'tvos', 'android'].includes(platform)) {
+    throw new CommandError(
+      `Invalid platform argument: ${platform}. Must be one of 'ios', 'tvos' or 'android'`
+    );
   }
 
   const workflow = requireArg(args, '--workflow');
