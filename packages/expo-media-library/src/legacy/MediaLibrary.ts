@@ -121,6 +121,11 @@ export type Asset = {
    * @platform android
    */
   albumId?: string;
+  /**
+   * GPS location if available. Included in `getAssetsAsync` results only when
+   * `getAssetsAsync` is called with `resolveWithFullInfo: true`.
+   */
+  location?: Location;
 };
 
 // @needsAudit
@@ -322,10 +327,14 @@ export type AssetsOptions = {
    */
   createdBefore?: Date | number;
   /**
-   * Whether to resolve full info for the assets during the query.
-   * This is useful to get the full EXIF data for images. It can fix the orientation of the image.
+   * Whether to resolve full EXIF metadata for image assets during the query.
+   * When enabled, returned assets include EXIF data (including orientation) and GPS location.
+   *
+   * > **Note:** Enabling this option significantly increases request time on Android (~5×),
+   * > because EXIF and location data must be fetched per photo. On iOS, the impact is much
+   * > smaller (~10–20%), because the data is already included in the query results.
+   *
    * @default false
-   * @platform android
    */
   resolveWithFullInfo?: boolean;
 };
@@ -850,8 +859,15 @@ export async function deleteAlbumsAsync(
 // @needsAudit
 /**
  * Fetches a page of assets matching the provided criteria.
+ * Set `resolveWithFullInfo: true` to include GPS `location` in returned assets on Android and iOS.
+ * On Android, this option also resolves full EXIF data for images (including orientation).
+ *
+ * > **Note:** Using `resolveWithFullInfo: true` significantly increases request time on Android (~5×),
+ * > because EXIF and location data must be fetched per photo. On iOS, the impact is much
+ * > smaller (~10–20%), because the data is already included in the query results.
+ *
  * @param assetsOptions
- * @return A promise that fulfils with to [`PagedInfo`](/versions/latest/sdk/media-library-legacy/#pagedinfo) object with array of [`Asset`](#asset)s.
+ * @return A promise that fulfils with a [`PagedInfo`](/versions/latest/sdk/media-library-legacy/#pagedinfo) object with an array of [`Asset`](#asset)s.
  */
 export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise<PagedInfo<Asset>> {
   if (!MediaLibrary.getAssetsAsync) {

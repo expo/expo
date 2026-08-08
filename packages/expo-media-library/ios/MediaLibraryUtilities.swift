@@ -25,16 +25,15 @@ func stringifyAlbumType(type: PHAssetCollectionType) -> String {
 }
 
 func exportAssetInfo(asset: PHAsset) -> [String: Any?] {
-  var assetDict = exportAsset(asset: asset)
-  assetDict["location"] = exportLocation(location: asset.location)
+  var assetDict = exportAsset(asset: asset, includeLocation: true)
   assetDict["isFavorite"] = asset.isFavorite
   assetDict["isHidden"] = asset.isHidden
   return assetDict
 }
 
-func exportAsset(asset: PHAsset) -> [String: Any?] {
+func exportAsset(asset: PHAsset, includeLocation: Bool) -> [String: Any?] {
   let fileName = asset.value(forKey: "filename")
-  return [
+  var result: [String: Any?] = [
     "id": asset.localIdentifier,
     "filename": fileName,
     "uri": assetUriForLocalId(localId: asset.localIdentifier),
@@ -49,16 +48,24 @@ func exportAsset(asset: PHAsset) -> [String: Any?] {
     "duration": asset.duration,
     "pairedVideoAsset": nil
   ]
+
+  if includeLocation {
+    // `PHAsset.location` is already loaded; including it here avoids N calls to
+    // `getAssetInfoAsync` when batch-fetching assets that need GPS coordinates.
+    result["location"] = exportLocation(location: asset.location)
+  }
+
+  return result
 }
 
-func exportLocation(location: CLLocation?) -> [String: String]? {
+func exportLocation(location: CLLocation?) -> [String: Double]? {
   guard let location else {
     return nil
   }
 
   return [
-    "latitude": "\(location.coordinate.latitude)",
-    "longitude": "\(location.coordinate.longitude)"
+    "latitude": location.coordinate.latitude,
+    "longitude": location.coordinate.longitude
   ]
 }
 
@@ -416,7 +423,8 @@ func getAssetsWithAfter(options: AssetWithOptions, collection: PHAssetCollection
     fetchResult: fetchResult,
     cursorIndex: cursorIndex,
     numOfRequestedItems: options.first,
-    sortDescriptors: fetchOptions.sortDescriptors
+    sortDescriptors: fetchOptions.sortDescriptors,
+    resolveWithFullInfo: options.resolveWithFullInfo
   )
 
   let lastAsset = resultingAssets.assets.last
@@ -434,7 +442,8 @@ func getAssets(
   fetchResult: PHFetchResult<PHAsset>,
   cursorIndex: Int,
   numOfRequestedItems: Int,
-  sortDescriptors: [NSSortDescriptor]? = nil
+  sortDescriptors: [NSSortDescriptor]? = nil,
+  resolveWithFullInfo: Bool = false
 ) -> GetAssetsResponse {
   let totalCount = fetchResult.count
   if totalCount == 0 {
@@ -453,7 +462,7 @@ func getAssets(
 
     for i in stride(from: upperIndex, to: lowerIndex, by: -1) {
       let asset = fetchResult.object(at: i)
-      let exportedAsset = exportAsset(asset: asset)
+      let exportedAsset = exportAsset(asset: asset, includeLocation: resolveWithFullInfo)
       assets.append(exportedAsset)
     }
 
@@ -464,7 +473,7 @@ func getAssets(
 
     for index in startIndex..<endIndex {
       let asset = fetchResult.object(at: index)
-      let exportedAsset = exportAsset(asset: asset)
+      let exportedAsset = exportAsset(asset: asset, includeLocation: resolveWithFullInfo)
       assets.append(exportedAsset)
     }
 
