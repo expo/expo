@@ -37,6 +37,8 @@ metadata. You do **not** re-review the code. You consolidate and decide.
    field from the final finding after folding it into `rationale`; otherwise the
    reporter detaches it below the collapsed block. Infer conservatively when a
    reviewer omitted either signal. Drop low-confidence findings.
+   Preserve each kept finding's grounded `sources` array. When merging duplicates,
+   keep the union of their existing sources. Never invent or edit a source.
 <!-- @ref LLP 0009#prompt-rules-for-adopters [implements] — the handoff is summary input only, never a reported finding and never a decision input -->
 4. **Extract overall PR risk.** Find the internal `__overall_pr_risk__` handoff
    from the cross-cutting reviewer, or from the full-context security reviewer
