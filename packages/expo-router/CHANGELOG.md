@@ -20,6 +20,7 @@
 
 ### 🎉 New features
 
+- [native-tabs] Add the `colorScheme` prop to `NativeTabs`. ([#48673](https://github.com/expo/expo/pull/48673) by [@slavaluka](https://github.com/slavaluka))
 - Improve withLayoutContext types ([#48356](https://github.com/expo/expo/pull/48356) by [@Ubax](https://github.com/Ubax))
 - Expose `unstable_nativeProps` props from Stack component ([#48152](https://github.com/expo/expo/pull/48152) by [@Ubax](https://github.com/Ubax))
 - Expose route provenance to custom navigators through descriptor `routeSource`. ([#47827](https://github.com/expo/expo/pull/47827) by [@Ubax](https://github.com/Ubax))

@@ -225,6 +225,12 @@ export default function TabLayout() {
 
 Liquid glass on iOS automatically changes colors based on if the background color is light or dark. There is no callback for this, so you need to use a `PlatformColor` or `DynamicColorIOS` to set the color of the icon.
 
+Use the `colorScheme` prop to set a light or dark appearance for the native tabs host and its child containers. On iOS 26 and later, this also controls the Liquid Glass tab bar appearance. The default value, `inherit`, follows the app's color scheme.
+
+```tsx
+<NativeTabs colorScheme="dark">{/* ... */}</NativeTabs>
+```
+
 <Tabs>
 
 <Tab label="SDK 55 and later">
@@ -1553,7 +1559,7 @@ export default function TabLayout() {
 
 <Collapsible summary="Limited tab bar background customization on iOS 26 and later">
 
-On iOS 26 and later, Liquid Glass controls the native tab bar background and shadow. The `backgroundColor`, `blurEffect`, and `shadowColor` props do not affect its appearance. You can still use `tintColor` to customize the selected tab item and selection glow. Use [JavaScript tabs](/router/advanced/tabs/) if your app requires full control over the tab bar background.
+On iOS 26 and later, Liquid Glass controls the native tab bar background and shadow. Use `colorScheme` to select a light or dark Liquid Glass appearance. The `backgroundColor`, `blurEffect`, and `shadowColor` props do not affect its appearance, but you can still use `tintColor` to customize the selected tab item and selection glow. Use [JavaScript tabs](/router/advanced/tabs/) if your app requires full control over the tab bar background.
 
 </Collapsible>
 

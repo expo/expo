@@ -57,6 +57,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         tabBarRespectsIMEInsets: !!tabBarRespectsIMEInsets,
         ...rawAndroidProps,
       }}
+      colorScheme={props.colorScheme}
       tabBarHidden={props.hidden}
       {...rawHostRestProps}
       navStateRequest={{ selectedScreenKey, baseProvenance: provenance }}

@@ -25,6 +25,24 @@ jest.mock('react-native-screens', () => {
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
+it.each(['inherit', 'light', 'dark'] as const)(
+  'forwards colorScheme=%s to Tabs.Host',
+  (colorScheme) => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs colorScheme={colorScheme}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].colorScheme).toBe(colorScheme);
+  }
+);
+
 it.each([
   { value: undefined, expected: 'automatic' },
   { value: true, expected: 'tabSidebar' },

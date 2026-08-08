@@ -87,6 +87,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         bottomAccessory: bottomAccessoryFn,
         ...rawIosProps,
       }}
+      colorScheme={props.colorScheme}
       tabBarHidden={props.hidden}
       {...rawHostRestProps}
       navStateRequest={{ selectedScreenKey, baseProvenance: provenance }}

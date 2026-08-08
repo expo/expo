@@ -17,6 +17,7 @@ export type {
   SymbolOrImageSource,
   NativeTabsTabBarItemLabelVisibilityMode,
   NativeTabsBlurEffect,
+  NativeTabsColorScheme,
   NativeTabsTabBarMinimizeBehavior,
   NativeTabsTabBarItemRole,
 } from './types';

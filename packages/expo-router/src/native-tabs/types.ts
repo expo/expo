@@ -106,7 +106,7 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   badgeTextColor?: ColorValue;
   /**
    * On iOS 26 and later, Liquid Glass controls the tab bar background, so this prop has no
-   * effect.
+   * effect. Use the `colorScheme` prop on `NativeTabs` to select a light or dark appearance.
    *
    * @platform android
    * @platform iOS
@@ -115,13 +115,14 @@ export interface NativeTabOptions extends DefaultRouterOptions {
   backgroundColor?: ColorValue;
   /**
    * On iOS 26 and later, Liquid Glass controls the tab bar background, so this prop has no
-   * effect.
+   * effect. Use the `colorScheme` prop on `NativeTabs` to select a light or dark appearance.
    *
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
   /**
    * On iOS 26 and later, Liquid Glass controls the tab bar shadow, so this prop has no effect.
+   * Use the `colorScheme` prop on `NativeTabs` to select a light or dark appearance.
    *
    * @platform iOS
    */
@@ -302,6 +303,11 @@ export const SUPPORTED_BLUR_EFFECTS = [
  */
 export type NativeTabsBlurEffect = (typeof SUPPORTED_BLUR_EFFECTS)[number];
 
+/**
+ * The color scheme used by the native tab host.
+ */
+export type NativeTabsColorScheme = 'inherit' | 'light' | 'dark';
+
 export interface NativeTabsProps extends PropsWithChildren {
   // #region common props
   /**
@@ -324,10 +330,20 @@ export interface NativeTabsProps extends PropsWithChildren {
    */
   tintColor?: ColorValue;
   /**
+   * The color scheme used by the native tab bar and its child containers.
+   *
+   * On iOS 26 and later, this controls the Liquid Glass appearance.
+   *
+   * @default inherit
+   * @platform android
+   * @platform iOS
+   */
+  colorScheme?: NativeTabsColorScheme;
+  /**
    * The background color of the tab bar.
    *
    * On iOS 26 and later, Liquid Glass controls the tab bar background, so this prop has no
-   * effect.
+   * effect. Use `colorScheme` to select a light or dark appearance.
    */
   backgroundColor?: ColorValue;
   /**
@@ -367,7 +383,7 @@ export interface NativeTabsProps extends PropsWithChildren {
    * The blur effect applied to the tab bar.
    *
    * On iOS 26 and later, Liquid Glass controls the tab bar background, so this prop has no
-   * effect.
+   * effect. Use `colorScheme` to select a light or dark appearance.
    *
    * @platform iOS
    */
@@ -376,6 +392,7 @@ export interface NativeTabsProps extends PropsWithChildren {
    * The color of the shadow.
    *
    * On iOS 26 and later, Liquid Glass controls the tab bar shadow, so this prop has no effect.
+   * Use `colorScheme` to select a light or dark appearance.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
    *
