@@ -45,6 +45,8 @@ public final class ImageView: ExpoView {
 
   var pendingOperation: SDWebImageCombinedOperation?
 
+  var pendingSVGVariablesTask: Task<Void, Never>?
+
   var contentFit: ContentFit = .cover
 
   var contentPosition: ContentPosition = .center
@@ -54,6 +56,14 @@ public final class ImageView: ExpoView {
   var blurRadius: CGFloat = 0.0
 
   var imageTintColor: UIColor?
+
+  /// Values for the CSS custom properties — `var(--name)` — used by an SVG source. They are
+  /// substituted into the document before it is parsed, so the image stays a vector and different
+  /// parts of one document can be given different values.
+  ///
+  /// Not limited to colors: anything a custom property can stand in for, such as `stroke-width` or
+  /// `opacity`, works the same way.
+  var svgVariables: [String: String] = [:]
 
   var cachePolicy: ImageCachePolicy = .disk
 
@@ -205,6 +215,23 @@ public final class ImageView: ExpoView {
       return
     }
 
+    // SVG sources with variables go through their own loader so that the cache only ever holds the
+    // original document. See `SVGVariablesImageLoader` for why `SDWebImageManager` can't be used.
+    //
+    // `tintColor` is left on the normal path on purpose: it needs the rasterized template image that
+    // path produces, and flooding every pixel with one color would hide the substitution anyway.
+    if !svgVariables.isEmpty, imageTintColor == nil, let url = source.uri {
+      loadSVGWithVariables(from: source, url: url, context: context)
+      return
+    }
+
+    loadWithImageManager(source: source, context: context)
+  }
+
+  // MARK: - Loading
+
+  /// The standard load, through `SDWebImageManager`.
+  private func loadWithImageManager(source: ImageSource, context: SDWebImageContext) {
     onLoadStart([:])
 
     pendingOperation = imageManager.loadImage(
@@ -216,7 +243,58 @@ public final class ImageView: ExpoView {
     )
   }
 
-  // MARK: - Loading
+  /// Loads an SVG source whose variables need substituting. Only the original document is cached, so
+  /// the substituted one is rebuilt per view — see `SVGVariablesImageLoader`.
+  private func loadSVGWithVariables(from source: ImageSource, url: URL, context: SDWebImageContext) {
+    onLoadStart([:])
+
+    let cacheKey = imageManager.cacheKey(for: url, context: context) ?? url.absoluteString
+    let variables = svgVariables
+    let scale = source.scale
+    let options = SVGVariablesImageLoader.Options(
+      context: context,
+      // SDWebImage reports progress from its download queue, so hop back before touching the view.
+      progress: { [weak self] received, expected, progressUrl in
+        Task { @MainActor in
+          self?.imageLoadProgress(received, expected, progressUrl)
+        }
+      }
+    )
+
+    // The view is main-actor isolated, so the task body is too — no hopping back to apply the result.
+    pendingSVGVariablesTask = Task { [weak self] in
+      guard let self else {
+        return
+      }
+      do {
+        let result = try await SVGVariablesImageLoader.shared.image(
+          for: url,
+          cacheKey: cacheKey,
+          variables: variables,
+          scale: scale,
+          options: options
+        )
+        // A newer load may have superseded this one after the last suspension point.
+        guard !Task.isCancelled else {
+          return
+        }
+        self.pendingSVGVariablesTask = nil
+        self.imageLoadCompleted(result.image, result.data, nil, result.cacheType, true, url)
+      } catch is CancellationError {
+        // A newer load replaced this one.
+      } catch is SVGVariablesNotAnSVG {
+        // Not an SVG after all, so `svgVariables` is simply a no-op for this source.
+        self.pendingSVGVariablesTask = nil
+        self.loadWithImageManager(source: source, context: context)
+      } catch {
+        guard !Task.isCancelled else {
+          return
+        }
+        self.pendingSVGVariablesTask = nil
+        self.imageLoadCompleted(nil, nil, error, .none, true, url)
+      }
+    }
+  }
 
   private func imageLoadProgress(_ receivedSize: Int, _ expectedSize: Int, _ imageUrl: URL?) {
     // Don't send the event when the expected size is unknown (it's usually -1 or 0 when called for the first time).
@@ -758,6 +836,8 @@ public final class ImageView: ExpoView {
   func cancelPendingOperation() {
     pendingOperation?.cancel()
     pendingOperation = nil
+    pendingSVGVariablesTask?.cancel()
+    pendingSVGVariablesTask = nil
   }
 
   /**

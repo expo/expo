@@ -6,8 +6,13 @@ import com.bumptech.glide.load.engine.Resource
 import com.bumptech.glide.load.resource.SimpleResource
 import com.caverock.androidsvg.SVG
 import com.caverock.androidsvg.SVGParseException
+import expo.modules.image.CustomOptions
+import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.io.InputStream
+import java.nio.ByteBuffer
+import java.nio.charset.CharacterCodingException
+import java.nio.charset.CodingErrorAction
 
 /**
  * Decodes an SVG internal representation from an [InputStream].
@@ -22,7 +27,7 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
   @Throws(IOException::class)
   override fun decode(source: InputStream, width: Int, height: Int, options: Options): Resource<SVG>? {
     return try {
-      val svg: SVG = SVG.getFromInputStream(source)
+      val svg: SVG = parse(source, options)
       // Use document width and height if view box is not set.
       if (svg.documentViewBox == null) {
         val documentWidth = svg.documentWidth
@@ -52,5 +57,34 @@ class SVGDecoder : ResourceDecoder<InputStream, SVG> {
     } catch (ex: SVGParseException) {
       throw IOException("Cannot load SVG from stream", ex)
     }
+  }
+
+  /**
+   * Parses the document, first substituting any CSS custom properties the request asked for.
+   * The substitution happens on the source text because AndroidSVG cannot resolve `var()` itself.
+   */
+  private fun parse(source: InputStream, options: Options): SVG {
+    val variables = options.get(CustomOptions.svgVariables)
+    if (variables.isNullOrEmpty()) {
+      return SVG.getFromInputStream(source)
+    }
+
+    val bytes = source.readBytes()
+    val text = decodeUtf8(bytes)
+      // Substituting would mean re-encoding the document as UTF-8, which would contradict its own
+      // XML declaration. Leave it alone rather than corrupt it.
+      ?: return SVG.getFromInputStream(ByteArrayInputStream(bytes))
+
+    return SVG.getFromString(SVGVariables.substitute(text, variables))
+  }
+
+  private fun decodeUtf8(bytes: ByteArray): String? = try {
+    Charsets.UTF_8.newDecoder()
+      .onMalformedInput(CodingErrorAction.REPORT)
+      .onUnmappableCharacter(CodingErrorAction.REPORT)
+      .decode(ByteBuffer.wrap(bytes))
+      .toString()
+  } catch (_: CharacterCodingException) {
+    null
   }
 }
