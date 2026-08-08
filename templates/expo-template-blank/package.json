@@ -3,6 +3,11 @@
   "description": "The Blank project template includes the minimum dependencies to run and an empty root component.",
   "license": "0BSD",
   "version": "57.0.11",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "templates/expo-template-blank"
+  },
   "main": "index.js",
   "scripts": {
     "start": "expo start",

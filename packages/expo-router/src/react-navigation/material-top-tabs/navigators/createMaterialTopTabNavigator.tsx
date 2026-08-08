@@ -1,82 +1,94 @@
-import {
-  createNavigatorFactory,
-  type NavigatorTypeBagBase,
-  type ParamListBase,
-  type TabActionHelpers,
-  type TabNavigationState,
-  TabRouter,
-  type TabRouterOptions,
-  type TypedNavigator,
-  useNavigationBuilder,
-} from '../../native';
+'use client';
+// TODO: Rename this file to `createStandardMaterialTopTabNavigator.tsx` in a follow-up.
+import { createStandardNavigator } from 'standard-navigation';
+
+import type { NavigatorContentProps } from '../../../standard-navigation/types';
+import { usePreloadPlaceholderRoutes } from '../../../standard-navigation/usePreloadPlaceholderRoutes';
+import { useVisibleTabsWithRedirect } from '../../../standard-navigation/useVisibleTabsWithRedirect';
 import type {
+  MaterialTopTabDescriptorMap,
+  MaterialTopTabNavigationConfig,
   MaterialTopTabNavigationEventMap,
   MaterialTopTabNavigationOptions,
-  MaterialTopTabNavigationProp,
-  MaterialTopTabNavigatorProps,
 } from '../types';
 import { MaterialTopTabView } from '../views/MaterialTopTabView';
 
-function MaterialTopTabNavigator({
-  id,
-  initialRouteName,
-  backBehavior,
-  children,
-  layout,
-  screenListeners,
-  screenOptions,
-  screenLayout,
-  UNSTABLE_router,
+export interface MaterialTopTabNavigatorCreateProps {
+  routeNames: string[];
+  preloadedRouteKeys: string[];
+  preload: (name: string) => void;
+}
+
+export type MaterialTopTabNavigatorContentProps = MaterialTopTabNavigationConfig &
+  MaterialTopTabNavigatorCreateProps;
+
+type ContentArgs = NavigatorContentProps<
+  MaterialTopTabNavigationOptions,
+  MaterialTopTabNavigationEventMap,
+  MaterialTopTabNavigationConfig,
+  MaterialTopTabNavigatorCreateProps
+>;
+
+function MaterialTopTabNavigatorContent({
+  state,
+  descriptors,
+  actions,
+  emitter,
+  routeNames,
+  preloadedRouteKeys,
+  preload,
   ...rest
-}: MaterialTopTabNavigatorProps) {
-  const { state, descriptors, navigation, NavigationContent } = useNavigationBuilder<
-    TabNavigationState<ParamListBase>,
-    TabRouterOptions,
-    TabActionHelpers<ParamListBase>,
-    MaterialTopTabNavigationOptions,
-    MaterialTopTabNavigationEventMap
-  >(TabRouter, {
-    id,
-    initialRouteName,
-    backBehavior,
-    children,
-    layout,
-    screenListeners,
-    screenOptions,
-    screenLayout,
-    UNSTABLE_router,
+}: ContentArgs) {
+  const { visibleRoutes, focusedIndex } = useVisibleTabsWithRedirect({
+    routes: state.routes,
+    routeNames,
+    focusedRouteKey: state.routes[state.index]?.key,
+    descriptors,
+  });
+  // TODO(@ubax): SDK-58: Try to remove the casting from here to ensure type safety
+  // Integration supplies full descriptors, including preload placeholders; standard types omit route/navigation.
+  const topTabDescriptors = descriptors as unknown as MaterialTopTabDescriptorMap;
+  const navigateToTab = (routeKey: string) => {
+    const route = state.routes.find((route) => route.key === routeKey);
+    if (route) {
+      actions.navigate(route.name, route.params);
+    } else if (__DEV__) {
+      console.warn(
+        `Top tabs could not switch to the tab "${routeKey}" because no tab with that key exists. ` +
+          `'navigateToTab' takes a route key, not a route name — pass 'route.key' from the tab bar props.`
+      );
+    }
+  };
+
+  usePreloadPlaceholderRoutes({
+    routes: visibleRoutes,
+    descriptors: topTabDescriptors,
+    preload,
+    lazyByDefault: false,
   });
 
+  if (visibleRoutes.length === 0 || focusedIndex < 0) {
+    return null;
+  }
+
   return (
-    <NavigationContent>
-      <MaterialTopTabView
-        {...rest}
-        state={state}
-        navigation={navigation}
-        descriptors={descriptors}
-      />
-    </NavigationContent>
+    <MaterialTopTabView
+      {...rest}
+      state={{
+        ...state,
+        routes: visibleRoutes,
+        index: focusedIndex,
+      }}
+      descriptors={topTabDescriptors}
+      emitter={emitter}
+      navigateToTab={navigateToTab}
+      preloadedRouteKeys={preloadedRouteKeys}
+    />
   );
 }
 
-export function createMaterialTopTabNavigator<
-  const ParamList extends ParamListBase,
-  const NavigatorID extends string | undefined = string | undefined,
-  const TypeBag extends NavigatorTypeBagBase = {
-    ParamList: ParamList;
-    NavigatorID: NavigatorID;
-    State: TabNavigationState<ParamList>;
-    ScreenOptions: MaterialTopTabNavigationOptions;
-    EventMap: MaterialTopTabNavigationEventMap;
-    NavigationList: {
-      [RouteName in keyof ParamList]: MaterialTopTabNavigationProp<
-        ParamList,
-        RouteName,
-        NavigatorID
-      >;
-    };
-    Navigator: typeof MaterialTopTabNavigator;
-  },
->(): TypedNavigator<TypeBag> {
-  return createNavigatorFactory(MaterialTopTabNavigator)();
-}
+export const createStandardMaterialTopTabNavigator = createStandardNavigator<
+  MaterialTopTabNavigationOptions,
+  MaterialTopTabNavigationEventMap,
+  MaterialTopTabNavigatorContentProps
+>(MaterialTopTabNavigatorContent);

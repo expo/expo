@@ -480,7 +480,6 @@ export interface NativeTabsProps extends PropsWithChildren {
 
 export interface InternalNativeTabsProps extends NativeTabsProps {
   nonTriggerChildren?: React.ReactNode;
-  redirectToRouteName?: string;
 }
 export interface OnTabChangeEventPayload {
   /**
@@ -518,7 +517,6 @@ export interface NativeTabsViewProps extends Omit<
   | 'badgeTextColor'
   | 'rippleColor'
   | 'disableIndicator'
-  | 'redirectToRouteName'
   | 'labelVisibilityMode'
 > {
   focusedIndex: number;
@@ -532,7 +530,6 @@ export interface NativeTabsViewProps extends Omit<
 
 export interface NativeTabsViewTabItem {
   options: NativeTabOptions;
-  routeKey: string;
   name: string;
   contentRenderer: () => React.ReactNode;
 }

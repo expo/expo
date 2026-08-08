@@ -686,6 +686,22 @@ open class JavaScriptRuntime: Equatable, Identifiable, @unchecked Sendable {
     return result.is("Promise") ? try await result.getPromise().await() : result
   }
 
+  // MARK: - Garbage collection
+
+  /// Requests a full, synchronous garbage collection of the JavaScript heap.
+  ///
+  /// Intended for tests and memory diagnostics. The engine collects on its own, so calling this in
+  /// production code usually costs more than it saves.
+  ///
+  /// - Note: This is a no-op on engines whose runtime doesn't implement GC instrumentation. JSI's
+  ///   default implementation does nothing; Hermes overrides it with a real collection.
+  /// - Parameter cause: Reason for the collection, as the engine should report it in its logs.
+  ///   Defaults to the calling function's name.
+  @JavaScriptActor
+  public func collectGarbage(cause: String = #function) {
+    expo.collectGarbage(pointee, std.string(cause))
+  }
+
   // MARK: - Equatable
 
   public static func == (lhs: JavaScriptRuntime, rhs: JavaScriptRuntime) -> Bool {

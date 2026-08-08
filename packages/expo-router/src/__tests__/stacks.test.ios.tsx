@@ -24,6 +24,7 @@ const { ScreenStackItem } = jest.requireMock(
   'react-native-screens'
 ) as typeof import('react-native-screens');
 const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof ScreenStackItem>;
+
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *
@@ -51,7 +52,12 @@ describe('canDismiss', () => {
       {
         a: () => null,
         b: () => null,
-        _layout: () => <Tabs />,
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="a" />
+            <Tabs.Screen name="b" />
+          </Tabs>
+        ),
       },
       {
         initialUrl: '/a',
@@ -117,7 +123,13 @@ test('dismissAll', () => {
 test('dismissAll nested', () => {
   renderRouter(
     {
-      _layout: () => <Tabs />,
+      _layout: () => (
+        <Tabs>
+          <Tabs.Screen name="a" />
+          <Tabs.Screen name="b" />
+          <Tabs.Screen name="one" />
+        </Tabs>
+      ),
       a: () => null,
       b: () => null,
       'one/_layout': () => <Stack />,
@@ -181,7 +193,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -190,7 +201,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 3,
                 key: expect.any(String),
@@ -303,7 +313,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -312,7 +321,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 3,
                 key: expect.any(String),
@@ -413,7 +421,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -422,7 +429,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),

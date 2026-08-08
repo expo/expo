@@ -1,4 +1,4 @@
-import { act, render } from '@testing-library/react-native';
+import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { DefaultRouterOptions, NavigationState, Router } from '../../routers';
@@ -12,6 +12,52 @@ jest.useFakeTimers();
 
 beforeEach(() => {
   MockRouterKey.current = 0;
+});
+
+test('describes absent routes on demand', () => {
+  function SparseRouter(options: DefaultRouterOptions) {
+    const router = MockRouter(options);
+
+    return {
+      ...router,
+      getInitialState(config: Parameters<typeof router.getInitialState>[0]) {
+        const state = router.getInitialState(config);
+        return { ...state, routes: state.routes.slice(0, 1) };
+      },
+    };
+  }
+
+  const barOptions = jest.fn(() => ({ title: 'Bar' }));
+  const wrapper = ({ children }: React.PropsWithChildren) => (
+    <BaseNavigationContainer>{children}</BaseNavigationContainer>
+  );
+  const { result } = renderHook(
+    () =>
+      useNavigationBuilder(SparseRouter, {
+        children: [
+          <Screen key="foo" name="foo" component={React.Fragment} options={{ title: 'Foo' }} />,
+          <Screen key="bar" name="bar" component={React.Fragment} options={barOptions} />,
+        ],
+      }),
+    { wrapper }
+  );
+
+  expect(result.current.descriptors.foo).toMatchObject({
+    route: { key: 'foo', name: 'foo' },
+    options: { title: 'Foo' },
+  });
+  expect(result.current.descriptors.foo!.render()).not.toBeNull();
+  expect(result.current.descriptors.bar).toBeUndefined();
+  expect(barOptions).not.toHaveBeenCalled();
+
+  const descriptor = result.current.describe({ key: undefined, name: 'bar' });
+  expect(descriptor).toMatchObject({
+    route: { key: undefined, name: 'bar' },
+    options: { title: 'Bar' },
+  });
+  expect(descriptor.render()).toBeNull();
+  expect(descriptor.navigation).toBeDefined();
+  expect(barOptions).toHaveBeenCalledTimes(1);
 });
 
 test('sets options with options prop as an object', () => {

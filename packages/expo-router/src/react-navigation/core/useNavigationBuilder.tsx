@@ -22,14 +22,14 @@ import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
-import { PreventRemoveProvider } from './PreventRemoveProvider';
+import { PreventRemoveContext } from './PreventRemoveContext';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
 import { deepFreeze } from './deepFreeze';
 import { isArrayEqual } from './isArrayEqual';
-import { isRecordEqual } from './isRecordEqual';
 import {
   type DefaultNavigatorOptions,
+  type DescriptorRouteProp,
   type EventMapBase,
   type EventMapCore,
   type NavigatorScreenParams,
@@ -52,6 +52,7 @@ import { NavigationStateListenerProvider } from './useNavigationState';
 import { useOnAction } from './useOnAction';
 import { useOnGetState } from './useOnGetState';
 import { useOnRouteFocus } from './useOnRouteFocus';
+import { usePreventRemoveState } from './usePreventRemoveState';
 import { useRegisterNavigator } from './useRegisterNavigator';
 import { useScheduleUpdate } from './useScheduleUpdate';
 
@@ -70,7 +71,6 @@ const isScreen = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
   name?: unknown;
-  navigationKey?: unknown;
 }> => {
   return child.type === Screen;
 };
@@ -78,16 +78,12 @@ const isScreen = (
 const isGroup = (
   child: React.ReactElement<unknown>
 ): child is React.ReactElement<{
-  navigationKey?: unknown;
   screenOptions?: unknown;
   screenLayout?: unknown;
   children?: unknown;
 }> => {
   return child.type === React.Fragment || child.type === Group;
 };
-
-const isValidKey = (key: unknown): key is string | undefined =>
-  key === undefined || (typeof key === 'string' && key !== '');
 
 /**
  * Extract route config object from React children elements.
@@ -100,7 +96,6 @@ const getRouteConfigsFromChildren = <
   EventMap extends EventMapBase,
 >(
   children: React.ReactNode,
-  groupKey?: string,
   groupOptions?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['options'],
   groupLayout?: ScreenConfigWithParent<State, ScreenOptions, EventMap>['layout']
 ) => {
@@ -124,19 +119,7 @@ const getRouteConfigsFromChildren = <
           );
         }
 
-        if (
-          child.props.navigationKey !== undefined &&
-          (typeof child.props.navigationKey !== 'string' || child.props.navigationKey === '')
-        ) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the screen '${child.props.name}'. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         acc.push({
-          keys: [groupKey, child.props.navigationKey],
           options: groupOptions,
           layout: groupLayout,
           props: child.props as RouteConfig<
@@ -153,20 +136,11 @@ const getRouteConfigsFromChildren = <
       }
 
       if (isGroup(child)) {
-        if (!isValidKey(child.props.navigationKey)) {
-          throw new Error(
-            `Got an invalid 'navigationKey' prop (${JSON.stringify(
-              child.props.navigationKey
-            )}) for the group. It must be a non-empty string or 'undefined'.`
-          );
-        }
-
         // When we encounter a fragment or group, we need to dive into its children to extract the configs
         // This is handy to conditionally define a group of screens
         acc.push(
           ...getRouteConfigsFromChildren<State, ScreenOptions, EventMap>(
             child.props.children as React.ReactNode,
-            child.props.navigationKey,
             // FIXME
             // @ts-expect-error: add validation
             child.type !== Group
@@ -368,10 +342,6 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeKeyList = routeNames.reduce<Record<string, React.Key | undefined>>((acc, curr) => {
-    acc[curr] = screens[curr]!.keys.map((key) => key ?? '').join(':');
-    return acc;
-  }, {});
   const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
     const { initialParams } = screens[curr]!.props;
     acc[curr] = initialParams;
@@ -519,14 +489,6 @@ export function useNavigationBuilder<
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentState, router, isStateValid]);
 
-  const previousRouteKeyListRef = React.useRef(routeKeyList);
-
-  React.useEffect(() => {
-    previousRouteKeyListRef.current = routeKeyList;
-  });
-
-  const previousRouteKeyList = previousRouteKeyListRef.current;
-
   let state =
     // If the state isn't initialized, or stale, use the state we initialized instead
     // The state won't update until there's a change needed in the state we have initialized locally
@@ -534,20 +496,6 @@ export function useNavigationBuilder<
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
   let nextState: State = state;
-  if (
-    !isArrayEqual(state.routeNames, routeNames) ||
-    !isRecordEqual(routeKeyList, previousRouteKeyList)
-  ) {
-    // When the list of route names change, the router should handle it to remove invalid routes
-    nextState = router.getStateForRouteNamesChange(state, {
-      routeNames,
-      routeParamList,
-      routeGetIdList,
-      routeKeyChanges: Object.keys(routeKeyList).filter(
-        (name) => name in previousRouteKeyList && routeKeyList[name] !== previousRouteKeyList[name]
-      ),
-    });
-  }
 
   let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
 
@@ -623,9 +571,14 @@ export function useNavigationBuilder<
   // So we override the state object we return to use the latest state as soon as possible
   state = nextState;
 
+  // Keep render consumers safe without committing a state outside the action pipeline. The router
+  // decides which survivor takes focus, so the interim render agrees with the state that
+  // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
+  state = router.getStateForDeclaredRoutes(state, routeNames);
+
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
-    lastStateRef.current = state;
+    lastStateRef.current = nextState;
   });
 
   const lastNotifiedStateRef = React.useRef<State | null>(null);
@@ -643,8 +596,8 @@ export function useNavigationBuilder<
       // This is necessary for proper screen tracking, URL updates etc.
       // We only notify if the state is different what we already notified
       // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(state);
-      lastNotifiedStateRef.current = state;
+      setState(nextState);
+      lastNotifiedStateRef.current = nextState;
     }
 
     return () => {
@@ -682,9 +635,16 @@ export function useNavigationBuilder<
     const routeNames = [];
 
     let route: Route<string> | undefined;
+    let isPlaceholder = false;
 
     if (e.target) {
       route = state.routes.find((route) => route.key === e.target);
+      const config = screens[e.target];
+
+      if (!route && config) {
+        route = { key: e.target, name: e.target, params: config.props.initialParams };
+        isPlaceholder = true;
+      }
 
       if (route?.name) {
         routeNames.push(route.name);
@@ -698,7 +658,10 @@ export function useNavigationBuilder<
       return;
     }
 
-    const navigation = descriptors[route.key]!.navigation;
+    const descriptor = isPlaceholder
+      ? describe({ ...route, key: undefined } as DescriptorRouteProp<ParamListBase, string>)
+      : descriptors[route.key]!;
+    const navigation = descriptor.navigation;
 
     const listeners = ([] as (((e: any) => void) | undefined)[])
       .concat(
@@ -739,19 +702,38 @@ export function useNavigationBuilder<
 
   const { keyedListeners, addKeyedListener } = useKeyedChildListeners();
 
+  const { isRoutePrevented, preventRemoveContextValue } = usePreventRemoveState({
+    getState,
+    state,
+  });
+
   const onAction = useOnAction({
     router,
     getState,
     setState,
     key: route?.key,
     actionListeners: childListeners.action,
+    preventRemoveListeners: keyedListeners.preventRemove,
     beforeRemoveListeners: keyedListeners.beforeRemove,
+    isRoutePrevented,
     routerConfigOptions: {
       routeNames,
       routeParamList,
       routeGetIdList,
     },
     emitter,
+  });
+
+  useClientLayoutEffect(() => {
+    const committed = getState();
+
+    if (!isArrayEqual(committed.routeNames, routeNames)) {
+      onAction({
+        type: 'ROUTE_NAMES_CHANGED',
+        payload: { routeNames },
+        target: committed.key,
+      });
+    }
   });
 
   const onRouteFocus = useOnRouteFocus({
@@ -787,8 +769,9 @@ export function useNavigationBuilder<
     getStateListeners: keyedListeners.getState,
   });
 
-  const descriptors = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
+  const { describe, descriptors } = useDescriptors<State, ActionHelpers, ScreenOptions, EventMap>({
     routes: state.routes,
+    routeNames: state.routeNames,
     screens,
     navigation,
     screenOptions,
@@ -803,7 +786,6 @@ export function useNavigationBuilder<
     // @ts-expect-error: this should have both core and custom events, but too much work right now
     emitter,
   });
-
   useCurrentRender({
     state,
     navigation,
@@ -825,8 +807,10 @@ export function useNavigationBuilder<
       <NavigationMetaContext.Provider value={undefined}>
         <NavigationHelpersContext.Provider value={navigation}>
           <NavigationStateListenerProvider state={state}>
-            <FocusedRouteKeyContext.Provider value={state.routes[state.index]!.key}>
-              <PreventRemoveProvider>{element}</PreventRemoveProvider>
+            <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
+              <PreventRemoveContext.Provider value={preventRemoveContextValue}>
+                {element}
+              </PreventRemoveContext.Provider>
             </FocusedRouteKeyContext.Provider>
           </NavigationStateListenerProvider>
         </NavigationHelpersContext.Provider>
@@ -837,6 +821,7 @@ export function useNavigationBuilder<
   return {
     state,
     navigation,
+    describe,
     descriptors,
     NavigationContent,
   };

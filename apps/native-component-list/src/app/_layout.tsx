@@ -1,10 +1,5 @@
 import { ThemeProvider, useTheme } from 'ThemeProvider';
-import {
-  DarkTheme,
-  DefaultTheme,
-  Stack,
-  ThemeProvider as NavigationThemeProvider,
-} from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
@@ -56,13 +51,11 @@ function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationThemeProvider value={themeName === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ presentation: 'modal', headerShown: false }}>
-          <Stack.Screen name="(main)" />
-          <Stack.Screen name="redirect" />
-          <Stack.Screen name="search" options={getSearchScreenOptions(theme)} />
-        </Stack>
-      </NavigationThemeProvider>
+      <Stack screenOptions={{ presentation: 'modal', headerShown: false }}>
+        <Stack.Screen name="(main)" />
+        <Stack.Screen name="redirect" />
+        <Stack.Screen name="search" options={getSearchScreenOptions(theme)} />
+      </Stack>
     </GestureHandlerRootView>
   );
 }

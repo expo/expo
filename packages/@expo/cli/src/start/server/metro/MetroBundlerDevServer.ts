@@ -1358,12 +1358,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       );
 
       const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
-        getLocation: ({ runtime }) => {
+        getLocation: ({ runtime, forwarded }) => {
           if (runtime === 'custom') {
-            return this.urlCreator?.constructDevClientUrl();
+            return this.urlCreator?.constructDevClientUrl({ forwarded });
           } else {
             return this.urlCreator?.constructUrl({
-              scheme: 'exp',
+              // Expo Go maps the `exps` scheme to HTTPS, which `exp` can't express.
+              scheme: forwarded?.protocol === 'https' ? 'exps' : 'exp',
+              forwarded,
             });
           }
         },

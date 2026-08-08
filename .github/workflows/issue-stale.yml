@@ -8,6 +8,15 @@ jobs:
   close-issues:
     if: github.repository == 'expo/expo'
     runs-on: ubuntu-24.04
+    # actions/stale labels and closes issues with the default GITHUB_TOKEN, so it needs
+    # `issues: write` stated explicitly. It worked until now only because the repository
+    # default was "read and write", which we are moving to read-only.
+    #
+    # `pull-requests: write` is deliberately NOT granted: days-before-pr-stale and
+    # days-before-pr-close are both -1 below, which disables PR handling entirely. Grant
+    # it if those ever change.
+    permissions:
+      issues: write
     steps:
       - uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
         with:

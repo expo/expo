@@ -1,3 +1,4 @@
+import { getWebNativeTabsTheme, useTheme } from 'ThemeProvider';
 import { Drawer } from 'expo-router/drawer';
 import { NativeTabs } from 'expo-router/unstable-native-tabs';
 import * as React from 'react';
@@ -5,6 +6,7 @@ import { Platform, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function MainLayout() {
+  const { theme } = useTheme();
   const { width } = useWindowDimensions();
   const { left } = useSafeAreaInsets();
   const isMobile = width <= 640;
@@ -18,7 +20,7 @@ export default function MainLayout() {
   // of its children will be reset.
   if (Platform.OS !== 'web' || isMobile) {
     return (
-      <NativeTabs>
+      <NativeTabs {...(Platform.OS === 'web' && getWebNativeTabsTheme(theme))}>
         <NativeTabs.Trigger name="apis">
           <NativeTabs.Trigger.Icon sf="chevron.left.forwardslash.chevron.right" md="code" />
           <NativeTabs.Trigger.Label>APIs</NativeTabs.Trigger.Label>

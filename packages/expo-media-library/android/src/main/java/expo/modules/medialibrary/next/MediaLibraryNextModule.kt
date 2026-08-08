@@ -16,6 +16,7 @@ import expo.modules.medialibrary.next.objects.album.AlbumQuery
 import expo.modules.medialibrary.next.objects.asset.Asset
 import expo.modules.medialibrary.next.objects.album.factories.AlbumModernFactory
 import expo.modules.medialibrary.next.objects.album.factories.AlbumLegacyFactory
+import expo.modules.medialibrary.next.objects.asset.AssetDimensionsResolver
 import expo.modules.medialibrary.next.objects.asset.AssetMapper
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetLegacyDeleter
 import expo.modules.medialibrary.next.objects.asset.deleters.AssetModernDeleter
@@ -79,14 +80,18 @@ class MediaLibraryNextModule : Module() {
   }
 
   private val assetMapper by lazy {
-    AssetMapper(context.contentResolver)
+    AssetMapper()
+  }
+
+  private val assetDimensionsResolver by lazy {
+    AssetDimensionsResolver()
   }
 
   private val assetFactory by lazy {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-      AssetModernFactory(assetDeleter, assetMover, assetMapper, mediaStorePermissionsDelegate, context)
+      AssetModernFactory(assetDeleter, assetMover, assetMapper, assetDimensionsResolver, mediaStorePermissionsDelegate, context)
     } else {
-      AssetLegacyFactory(assetDeleter, assetMover, assetMapper, systemPermissionsDelegate, context)
+      AssetLegacyFactory(assetDeleter, assetMover, assetMapper, assetDimensionsResolver, systemPermissionsDelegate, context)
     }
   }
 

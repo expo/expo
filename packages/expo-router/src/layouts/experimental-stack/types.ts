@@ -1,6 +1,7 @@
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  NavigationAction,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -33,6 +34,7 @@ export type ExperimentalStackNavigationOptions = {
  * @experimental
  */
 export type ExperimentalStackNavigationEventMap = {
+  removePrevented: { data: { action: NavigationAction } };
   transitionStart: { data: { closing: boolean } };
   transitionEnd: { data: { closing: boolean } };
   gestureCancel: { data: undefined };

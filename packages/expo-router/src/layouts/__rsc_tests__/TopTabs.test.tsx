@@ -3,7 +3,7 @@
 import TopTabs, {
   MaterialTopTabBar,
   MaterialTopTabView,
-  createMaterialTopTabNavigator,
+  createStandardMaterialTopTabNavigator,
   useTabAnimation,
 } from '../TopTabs';
 
@@ -14,7 +14,7 @@ function expectClientReference(value: unknown) {
 }
 
 it('resolves React Navigation exports as client references', () => {
-  expectClientReference(createMaterialTopTabNavigator);
+  expectClientReference(createStandardMaterialTopTabNavigator);
   expectClientReference(MaterialTopTabBar);
   expectClientReference(MaterialTopTabView);
   expectClientReference(useTabAnimation);
