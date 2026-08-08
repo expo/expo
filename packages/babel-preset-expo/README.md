@@ -38,7 +38,6 @@ If the `bundler` is not defined, it will default to checking if a `babel-loader`
 [metro]: https://facebook.github.io/metro/
 [webpack]: https://webpack.js.org/
 
-
 ## Options
 
 ### `react-compiler`
