@@ -13,6 +13,7 @@ import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
+import { prefetchBundleAsync } from '../prefetchBundle';
 import { startBundlerAsync } from '../startBundler';
 import { resolveInstallApkNameAsync } from './resolveInstallApkName';
 import type { Options, ResolvedOptions } from './resolveOptions';
@@ -100,6 +101,8 @@ export async function runAndroidAsync(projectRoot: string, { install, ...options
     scheme: (await getSchemesForAndroidAsync(projectRoot))?.[0],
     headless: !props.shouldStartBundler,
   });
+  // prefetch the bundle so it's cached when the app requests it.
+  prefetchBundleAsync(projectRoot, manager, 'android');
 
   if (!options.binary) {
     // Find the APK file path
