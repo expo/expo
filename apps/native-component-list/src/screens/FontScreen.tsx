@@ -177,110 +177,155 @@ export default function FontScreen() {
             </View>
           </View>
         </Section>
-        <VectorIconSection />
+        {Platform.OS !== 'web' && <VectorIconSection />}
 
-        <Section title="renderToImageAsync" gap={5}>
-          {renderedFontAwesomeImage && (
-            <>
-              <BodyText>
-                FontAwesome5Free rendered to image
-                {round(renderedFontAwesomeImage.width)}x{round(renderedFontAwesomeImage.height)}
-              </BodyText>
-              <Image
-                source={{ uri: renderedFontAwesomeImage.uri }}
-                style={{
-                  height: renderedFontAwesomeImage.height,
-                  width: renderedFontAwesomeImage.width,
-                  backgroundColor: 'grey',
-                }}
-                contentFit="cover"
-              />
-            </>
-          )}
-          {renderedFontAsImage && (
-            <>
-              <BodyText>
-                Inter-BoldItalic rendered to image
-                {round(renderedFontAsImage.width)}x{round(renderedFontAsImage.height)}
-              </BodyText>
-              <Image
-                source={{ uri: renderedFontAsImage.uri }}
-                style={{
-                  height: renderedFontAsImage.height,
-                  width: renderedFontAsImage.width,
-                  backgroundColor: 'grey',
-                }}
-                contentFit="cover"
-              />
-            </>
-          )}
-          {renderedFontAsImageLineHeight100 && (
-            <>
-              <BodyText>
-                Inter-BoldItalic rendered to image line-heigth: 100{' '}
-                {round(renderedFontAsImageLineHeight100.width)}x
-                {round(renderedFontAsImageLineHeight100.height)}
-              </BodyText>
-              <Image
-                source={{ uri: renderedFontAsImageLineHeight100.uri }}
-                style={{
-                  height: renderedFontAsImageLineHeight100.height,
-                  width: renderedFontAsImageLineHeight100.width,
-                  backgroundColor: 'grey',
-                }}
-                contentFit="cover"
-              />
-              <BodyText>Image above should look the same as &lt;Text&gt;</BodyText>
-              <BodyText
-                style={{
-                  fontFamily: 'Inter-BoldItalic',
-                  fontSize: 100,
-                  lineHeight: 100,
-                  backgroundColor: 'grey',
-                }}>
-                ÅBÇD
-              </BodyText>
-            </>
-          )}
-          {renderedFontAsImageLineHeight150 && (
-            <>
-              <BodyText>
-                Inter-BoldItalic rendered to image line-heigth: 150{' '}
-                {round(renderedFontAsImageLineHeight150.width)}x
-                {round(renderedFontAsImageLineHeight150.height)}
-              </BodyText>
-              <Image
-                source={{ uri: renderedFontAsImageLineHeight150.uri }}
-                style={{
-                  height: renderedFontAsImageLineHeight150.height,
-                  width: renderedFontAsImageLineHeight150.width,
-                  backgroundColor: 'grey',
-                }}
-                contentFit="cover"
-              />
-              <BodyText>Image above should look the same as &lt;Text&gt;</BodyText>
-              <BodyText
-                style={{
-                  fontFamily: 'Inter-BoldItalic',
-                  fontSize: 100,
-                  lineHeight: 150,
-                  backgroundColor: 'grey',
-                }}>
-                ÅBÇD
-              </BodyText>
-            </>
-          )}
-        </Section>
+        {Platform.OS !== 'web' && (
+          <Section title="renderToImageAsync" gap={5}>
+            {renderedFontAwesomeImage && (
+              <>
+                <BodyText>
+                  FontAwesome5Free rendered to image
+                  {round(renderedFontAwesomeImage.width)}x{round(renderedFontAwesomeImage.height)}
+                </BodyText>
+                <Image
+                  source={{ uri: renderedFontAwesomeImage.uri }}
+                  style={{
+                    height: renderedFontAwesomeImage.height,
+                    width: renderedFontAwesomeImage.width,
+                    backgroundColor: 'grey',
+                  }}
+                  contentFit="cover"
+                />
+              </>
+            )}
+            {renderedFontAsImage && (
+              <>
+                <BodyText>
+                  Inter-BoldItalic rendered to image
+                  {round(renderedFontAsImage.width)}x{round(renderedFontAsImage.height)}
+                </BodyText>
+                <Image
+                  source={{ uri: renderedFontAsImage.uri }}
+                  style={{
+                    height: renderedFontAsImage.height,
+                    width: renderedFontAsImage.width,
+                    backgroundColor: 'grey',
+                  }}
+                  contentFit="cover"
+                />
+              </>
+            )}
+            {renderedFontAsImageLineHeight100 && (
+              <>
+                <BodyText>
+                  Inter-BoldItalic rendered to image line-heigth: 100{' '}
+                  {round(renderedFontAsImageLineHeight100.width)}x
+                  {round(renderedFontAsImageLineHeight100.height)}
+                </BodyText>
+                <Image
+                  source={{ uri: renderedFontAsImageLineHeight100.uri }}
+                  style={{
+                    height: renderedFontAsImageLineHeight100.height,
+                    width: renderedFontAsImageLineHeight100.width,
+                    backgroundColor: 'grey',
+                  }}
+                  contentFit="cover"
+                />
+                <BodyText>Image above should look the same as &lt;Text&gt;</BodyText>
+                <BodyText
+                  style={{
+                    fontFamily: 'Inter-BoldItalic',
+                    fontSize: 100,
+                    lineHeight: 100,
+                    backgroundColor: 'grey',
+                  }}>
+                  ÅBÇD
+                </BodyText>
+              </>
+            )}
+            {renderedFontAsImageLineHeight150 && (
+              <>
+                <BodyText>
+                  Inter-BoldItalic rendered to image line-heigth: 150{' '}
+                  {round(renderedFontAsImageLineHeight150.width)}x
+                  {round(renderedFontAsImageLineHeight150.height)}
+                </BodyText>
+                <Image
+                  source={{ uri: renderedFontAsImageLineHeight150.uri }}
+                  style={{
+                    height: renderedFontAsImageLineHeight150.height,
+                    width: renderedFontAsImageLineHeight150.width,
+                    backgroundColor: 'grey',
+                  }}
+                  contentFit="cover"
+                />
+                <BodyText>Image above should look the same as &lt;Text&gt;</BodyText>
+                <BodyText
+                  style={{
+                    fontFamily: 'Inter-BoldItalic',
+                    fontSize: 100,
+                    lineHeight: 150,
+                    backgroundColor: 'grey',
+                  }}>
+                  ÅBÇD
+                </BodyText>
+              </>
+            )}
+          </Section>
+        )}
+
+        <VariableFontSection />
       </Page>
     </ScrollView>
   );
 }
 
-FontScreen.navigationOptions = {
-  title: 'Font',
-};
+// One file, loaded under one name, carrying a `wght` axis with a named instance per weight and a
+// `slnt` axis giving each of them an italic. `fontWeight` and `fontStyle` pick between them — with
+// a static font every row below would look identical.
+const VARIABLE_FONT_FAMILY = 'RobotoFlex-variable';
+const WEIGHTS = ['100', '200', '300', '400', '500', '600', '700', '800', '900'] as const;
+
+function VariableFontSection() {
+  return (
+    <Section title="variable fonts" gap={5}>
+      <BodyText>
+        Roboto Flex, loaded at runtime once under the name &quot;{VARIABLE_FONT_FAMILY}&quot;. Both
+        columns should get steadily heavier, and the right one should slant — one file backing all
+        of it.
+      </BodyText>
+      <View style={styles.variableFontRow}>
+        <View style={styles.variableFontColumn}>
+          {WEIGHTS.map((weight) => (
+            <BodyText
+              key={weight}
+              style={{ fontFamily: VARIABLE_FONT_FAMILY, fontWeight: weight, fontSize: 20 }}>
+              {weight} Hamburg
+            </BodyText>
+          ))}
+        </View>
+        <View style={styles.variableFontColumn}>
+          {WEIGHTS.map((weight) => (
+            <BodyText
+              key={weight}
+              style={{
+                fontFamily: VARIABLE_FONT_FAMILY,
+                fontWeight: weight,
+                fontStyle: 'italic',
+                fontSize: 20,
+              }}>
+              {weight} Hamburg
+            </BodyText>
+          ))}
+        </View>
+      </View>
+    </Section>
+  );
+}
 
 const styles = StyleSheet.create({
+  variableFontRow: { flexDirection: 'row', columnGap: 12 },
+  variableFontColumn: { flex: 1 },
   vectorIconsContainer: {
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -308,6 +353,10 @@ const size = 100;
 function useLoadIcon(getImage: () => Promise<RenderToImageResult | null>) {
   const [icon, setIcon] = useState<RenderToImageResult | null>(null);
   useEffect(() => {
+    if (Platform.OS === 'web') {
+      // result not used on web
+      return;
+    }
     const loadIcon = async () => {
       const icon = await getImage();
       if (icon) {
