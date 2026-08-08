@@ -21,6 +21,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed an infinite main-thread layout loop (frozen UI, watchdog kill on backgrounding) when a SwiftUI host with `matchContents` and Yoga persistently disagree on the content size, e.g. with the Button Shapes accessibility setting enabled. Synchronous size commits are now budgeted per run-loop turn; over-budget updates are coalesced on the view and committed asynchronously on the next turn, and no-op size updates no longer dirty the layout. ([#48058](https://github.com/expo/expo/issues/48058), [#48059](https://github.com/expo/expo/pull/48059) by [@focux](https://github.com/focux))
 - [Android] Fixed hosted Compose views missing layout after reattachment or in-place configuration changes. ([#48370](https://github.com/expo/expo/issues/48370) by [@lujjjh](https://github.com/lujjjh))
 - [iOS] Fixed infinite recursion and `EXC_BAD_ACCESS` when encoding native `Date` values to JavaScript. ([#48239](https://github.com/expo/expo/issues/48239), [#48240](https://github.com/expo/expo/pull/48240) by [@samuelcorsan](https://github.com/samuelcorsan))
 - [iOS] Concurrent functions build on the new two-phase `createAsyncFunction` from `expo-modules-jsi` again, instead of wiring the promise themselves. This also restores rejecting the returned promise (rather than throwing synchronously) when the app context is lost or argument decoding fails. ([#47755](https://github.com/expo/expo/pull/47755) by [@tsapeta](https://github.com/tsapeta))
