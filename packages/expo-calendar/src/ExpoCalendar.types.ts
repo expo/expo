@@ -229,6 +229,10 @@ export declare class ExpoCalendar {
 
   /**
    * Gets a calendar by its ID. Throws an error if the calendar with the given ID does not exist.
+   *
+   * > **iOS 17+:** With write-only calendar access, only the virtual calendar's ID can be
+   * > resolved - real calendars require full calendar access.
+   *
    * @param calendarId The ID of the calendar to get.
    * @returns An [`ExpoCalendar`](#expocalendar) object representing the calendar.
    */

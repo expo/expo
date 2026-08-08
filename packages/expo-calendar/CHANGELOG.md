@@ -10,6 +10,7 @@
 
 - [ios] Fix a crash when reading `calendarId` on an event or reminder whose `EKCalendarItem.calendar` is nil. The property is `null_unspecified` in the EventKit headers, so the bare access was an implicit force-unwrap that trapped the JS thread. ([#48445](https://github.com/expo/expo/pull/48445) by [@cvburgess](https://github.com/cvburgess))
 - [ios] Fix typo in the internal permissions exception name (`MissionPermissionsException` -> `MissingPermissionsException`), which corrects the error code surfaced to JS from `ERR_MISSION_PERMISSIONS` to `ERR_MISSING_PERMISSIONS`. ([#47804](https://github.com/expo/expo/pull/47804) by [@conanm](https://github.com/conanm))
+- [iOS] Allow `getDefaultCalendarSync`, `getCalendars` and `ExpoCalendar.get` to work with write-only calendar access. ([#48186](https://github.com/expo/expo/pull/48186) by [@Wenszel](https://github.com/Wenszel))
 
 ### 💡 Others
 
