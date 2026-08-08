@@ -1,6 +1,7 @@
 import { installErrorHandler } from './installErrorHandler';
 
 export { default } from './module';
+export { setErrorHandlerEnabled } from './installErrorHandler';
 export { AppMetricsRoot } from './AppMetricsRoot';
 export { AppMetricsErrorBoundary } from './AppMetricsErrorBoundary';
 export type {

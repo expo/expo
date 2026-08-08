@@ -1,9 +1,11 @@
 import type { JSTopTabsProps } from '../../../layouts/TopTabs';
+import type { DescriptorRouteProp, ParamListBase } from '../../native';
 import type { MaterialTopTabNavigatorContentProps } from '../navigators/createMaterialTopTabNavigator';
 import type {
   MaterialTopTabBarProps,
   MaterialTopTabNavigationConfig,
   MaterialTopTabNavigationOptions,
+  MaterialTopTabOptionsArgs,
   MaterialTopTabViewState,
 } from '../types';
 
@@ -17,6 +19,12 @@ type IndicatorProps = Parameters<
 >[0];
 type TabBarCallbackProps = Parameters<NonNullable<MaterialTopTabNavigationConfig['tabBar']>>[0];
 
+export type _OptionsRouteIsDescriptorRoute = Expect<
+  Equal<MaterialTopTabOptionsArgs<ParamListBase>['route'], DescriptorRouteProp<ParamListBase>>
+>;
+export type _OptionsRouteKeyMayBeUndefined = Expect<
+  Equal<MaterialTopTabOptionsArgs<ParamListBase>['route']['key'], string | undefined>
+>;
 export type _PublicPropsIncludeTabBar = Expect<
   'tabBar' extends keyof JSTopTabsProps ? true : false
 >;

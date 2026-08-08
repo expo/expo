@@ -17,6 +17,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -79,7 +80,8 @@ export type NativeStackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = NativeStackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<NativeStackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
