@@ -25,9 +25,13 @@ jest.mock('react-native-screens', () => {
 const TabsHost = Tabs.Host as jest.MockedFunction<typeof Tabs.Host>;
 const TabsScreen = Tabs.Screen as jest.MockedFunction<typeof Tabs.Screen>;
 
-it.each(['inherit', 'light', 'dark'] as const)(
-  'forwards colorScheme=%s to Tabs.Host',
-  (colorScheme) => {
+it.each([
+  { colorScheme: 'inherit', expectedScreenStyle: 'unspecified' },
+  { colorScheme: 'light', expectedScreenStyle: 'light' },
+  { colorScheme: 'dark', expectedScreenStyle: 'dark' },
+] as const)(
+  'forwards colorScheme=$colorScheme to Tabs.Host and Tabs.Screen',
+  ({ colorScheme, expectedScreenStyle }) => {
     renderRouter({
       _layout: () => (
         <NativeTabs colorScheme={colorScheme}>
@@ -40,6 +44,10 @@ it.each(['inherit', 'light', 'dark'] as const)(
     expect(screen.getByTestId('index')).toBeVisible();
     expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0][0].colorScheme).toBe(colorScheme);
+    expect(TabsScreen).toHaveBeenCalledTimes(1);
+    expect(TabsScreen.mock.calls[0][0].ios?.experimental_userInterfaceStyle).toBe(
+      expectedScreenStyle
+    );
   }
 );
 
@@ -114,6 +122,23 @@ describe('unstable_nativeProps', () => {
     expect(TabsHost).toHaveBeenCalledTimes(1);
     expect(TabsHost.mock.calls[0][0].colorScheme).toBe('dark');
     expect(TabsHost.mock.calls[0][0].direction).toBe('rtl');
+    expect(TabsScreen.mock.calls[0][0].ios?.experimental_userInterfaceStyle).toBe('dark');
+  });
+
+  it('uses the raw host color scheme for Tabs.Screen when it overrides the stable prop', () => {
+    renderRouter({
+      _layout: () => (
+        <NativeTabs colorScheme="light" unstable_nativeProps={{ colorScheme: 'dark' }}>
+          <NativeTabs.Trigger name="index" />
+        </NativeTabs>
+      ),
+      index: () => <View testID="index" />,
+    });
+
+    expect(screen.getByTestId('index')).toBeVisible();
+    expect(TabsHost).toHaveBeenCalledTimes(1);
+    expect(TabsHost.mock.calls[0][0].colorScheme).toBe('dark');
+    expect(TabsScreen.mock.calls[0][0].ios?.experimental_userInterfaceStyle).toBe('dark');
   });
 
   it('merges ios raw props with expo-router-managed ios props', () => {

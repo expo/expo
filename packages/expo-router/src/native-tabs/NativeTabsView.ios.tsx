@@ -30,6 +30,8 @@ export function NativeTabsView(props: NativeTabsViewProps) {
     android: _ignoredRawAndroidProps,
     ...rawHostRestProps
   } = unstable_nativeProps ?? {};
+  const colorScheme =
+    'colorScheme' in rawHostRestProps ? rawHostRestProps.colorScheme : props.colorScheme;
 
   const { selectedScreenKey, provenance } = useSelectedScreenKey(props);
   const onTabSelected = useOnTabSelectedHandler(props.onTabChange);
@@ -67,6 +69,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
       isFocused={selectedScreenKey === tab.name}
       standardAppearance={iosAppearances[index]!.standardAppearance}
       scrollEdgeAppearance={iosAppearances[index]!.scrollEdgeAppearance}
+      colorScheme={colorScheme}
       contentRenderer={tab.contentRenderer}
     />
   ));
@@ -87,7 +90,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
         bottomAccessory: bottomAccessoryFn,
         ...rawIosProps,
       }}
-      colorScheme={props.colorScheme}
+      colorScheme={colorScheme}
       tabBarHidden={props.hidden}
       {...rawHostRestProps}
       navStateRequest={{ selectedScreenKey, baseProvenance: provenance }}
@@ -101,6 +104,7 @@ export function NativeTabsView(props: NativeTabsViewProps) {
 interface InternalTabScreenProps extends SharedInternalTabScreenProps {
   standardAppearance: TabsScreenAppearanceIOS;
   scrollEdgeAppearance: TabsScreenAppearanceIOS;
+  colorScheme?: NativeTabsViewProps['colorScheme'];
 }
 
 function Screen(props: InternalTabScreenProps) {
@@ -129,6 +133,10 @@ function Screen(props: InternalTabScreenProps) {
         selectedIcon: iosSelectedIcon,
         standardAppearance,
         scrollEdgeAppearance,
+        // On iOS 26, react-native-screens reapplies the selected screen's interface style to the
+        // tab bar ancestor. Keep it aligned with the host so the appearance persists after selection.
+        experimental_userInterfaceStyle:
+          props.colorScheme === 'inherit' ? 'unspecified' : props.colorScheme,
         systemItem: options.role,
         overrideScrollViewContentInsetAdjustmentBehavior: !options.disableAutomaticContentInsets,
         ...shared.nativeIosOverrides,
