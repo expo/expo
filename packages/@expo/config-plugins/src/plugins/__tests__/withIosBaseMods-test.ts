@@ -1,4 +1,5 @@
 import type { ExpoConfig } from '@expo/config-types';
+import plist from '@expo/plist';
 import { globSync } from 'glob';
 import { vol } from 'memfs';
 import path from 'path';
@@ -239,6 +240,76 @@ describe('platform scoping', () => {
     expect(vol.readFileSync('/tvos/HelloWorld/HelloWorld.entitlements', 'utf8')).not.toBe(
       entitlements
     );
+  });
+
+  it('does not carry iOS values into the tvos files on a combined run', async () => {
+    const pbxproj = jest
+      .requireActual<typeof import('fs')>('fs')
+      .readFileSync(
+        path.resolve(__dirname, './fixtures/project-files/ios/project.pbxproj'),
+        'utf-8'
+      );
+    // An iOS-only key and entitlement. Neither belongs in the generated tvOS files.
+    const iosInfoPlist = plist.build({
+      CFBundleName: '$(PRODUCT_NAME)',
+      UIApplicationSceneManifest: { UIApplicationSupportsMultipleScenes: true },
+    });
+    const tvosInfoPlist = plist.build({ CFBundleName: '$(PRODUCT_NAME)' });
+    const iosEntitlements = plist.build({ 'aps-environment': 'development' });
+    const tvosEntitlements = plist.build({});
+
+    vol.fromJSON({
+      '/ios/HelloWorld/AppDelegate.mm': 'Fake AppDelegate.mm',
+      '/ios/HelloWorld.xcodeproj/project.pbxproj': pbxproj,
+      '/ios/HelloWorld/Info.plist': iosInfoPlist,
+      '/ios/HelloWorld/HelloWorld.entitlements': iosEntitlements,
+      '/tvos/HelloWorld/AppDelegate.mm': 'Fake AppDelegate.mm',
+      '/tvos/HelloWorld.xcodeproj/project.pbxproj': pbxproj,
+      '/tvos/HelloWorld/Info.plist': tvosInfoPlist,
+      '/tvos/HelloWorld/HelloWorld.entitlements': tvosEntitlements,
+    });
+
+    jest.mocked(globSync).mockImplementation((pattern) => {
+      if (pattern === 'ios/**/*.xcodeproj') return ['/ios/HelloWorld.xcodeproj'];
+      if (pattern === 'ios/*/AppDelegate.@(m|mm|swift)') return ['/ios/HelloWorld/AppDelegate.mm'];
+      if (pattern === 'tvos/**/*.xcodeproj') return ['/tvos/HelloWorld.xcodeproj'];
+      if (pattern === 'tvos/*/AppDelegate.@(m|mm|swift)')
+        return ['/tvos/HelloWorld/AppDelegate.mm'];
+      throw new Error(`Unexpected glob pattern used in test: ${pattern}`);
+    });
+
+    let config: ExpoConfig = { name: 'bacon', slug: 'bacon' };
+    config = withInfoPlist(config, (config) => {
+      config.modResults.CFBundleDisplayName = 'bacon';
+      return config;
+    });
+    config = withEntitlementsPlist(config, (config) => {
+      config.modResults['com.example.shared'] = true;
+      return config;
+    });
+    // Plugins register Apple mods under `ios`; prebuild copies them to `tvos`.
+    (config as ExportedConfig).mods!.tvos = { ...(config as ExportedConfig).mods!.ios };
+    const providers = {
+      infoPlist: getIosModFileProviders().infoPlist,
+      entitlements: getIosModFileProviders().entitlements,
+    };
+    config = withIosBaseMods(config, { providers });
+    config = withIosBaseMods(config, { platform: 'tvos', providers });
+    config = await evalModsAsync(config, { projectRoot: '/', platforms: ['ios', 'tvos'] });
+
+    const writtenTvosInfoPlist = plist.parse(
+      vol.readFileSync('/tvos/HelloWorld/Info.plist', 'utf8') as string
+    );
+    const writtenTvosEntitlements = plist.parse(
+      vol.readFileSync('/tvos/HelloWorld/HelloWorld.entitlements', 'utf8') as string
+    );
+
+    // The mods still apply to tvos...
+    expect(writtenTvosInfoPlist).toMatchObject({ CFBundleDisplayName: 'bacon' });
+    expect(writtenTvosEntitlements).toMatchObject({ 'com.example.shared': true });
+    // ...but the iOS-only values from the preceding pass must not follow them over.
+    expect(writtenTvosInfoPlist).not.toHaveProperty('UIApplicationSceneManifest');
+    expect(writtenTvosEntitlements).not.toHaveProperty('aps-environment');
   });
 });
 
