@@ -6,7 +6,8 @@
 
 ### 🎉 New features
 
-- [android] Support variable fonts in the config plugin ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
+- [android] Added an `axes` field to the config plugin's font definitions, so one variable font file can also back a slanted or condensed face through its `slnt`, `wdth` and other variation axes. ([#48621](https://github.com/expo/expo/pull/48621) by [@vonovak](https://github.com/vonovak))
+- [android] Support variable weight fonts in the config plugin ([#48129](https://github.com/expo/expo/pull/48129) by [@L65FREAD](https://github.com/L65FREAD))
 
 ### 🐛 Bug fixes
 

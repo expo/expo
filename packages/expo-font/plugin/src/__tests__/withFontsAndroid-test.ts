@@ -1,7 +1,7 @@
 import * as path from 'path';
 
 import { toValidAndroidResourceName } from '../utils';
-import type { FontObject } from '../withFonts';
+import type { FontObject, FontVariationAxes } from '../withFonts';
 import {
   groupByFamily,
   planFontCopies,
@@ -9,6 +9,7 @@ import {
   generateFontManagerCalls,
   assertNoConflictingDefinitions,
   assertAndroidCanLoadFonts,
+  assertValidAxes,
 } from '../withFontsAndroid';
 
 const input = [
@@ -37,6 +38,8 @@ const input = [
     fontDefinitions: [
       { path: './assets/fonts/Inter[wght].ttf', weight: 400 },
       { path: './assets/fonts/Inter[wght].ttf', weight: 700 },
+      // The same file slanted by its `slnt` axis, so one variable font also backs the oblique.
+      { path: './assets/fonts/Inter[wght].ttf', weight: 400, style: 'italic', axes: { slnt: -10 } },
     ],
   },
 ] as const satisfies FontObject[];
@@ -54,6 +57,12 @@ describe('groupByFamily', () => {
       Inter: [
         { path: './assets/fonts/Inter[wght].ttf', weight: 400 },
         { path: './assets/fonts/Inter[wght].ttf', weight: 700 },
+        {
+          path: './assets/fonts/Inter[wght].ttf',
+          weight: 400,
+          style: 'italic',
+          axes: { slnt: -10 },
+        },
       ],
     };
 
@@ -269,6 +278,14 @@ describe('getXmlSpecs', () => {
                   'app:fontVariationSettings': `'wght' 700`,
                 },
               },
+              {
+                $: {
+                  'app:font': '@font/inter_wght_',
+                  'app:fontStyle': 'italic',
+                  'app:fontWeight': '400',
+                  'app:fontVariationSettings': `'wght' 400, 'slnt' -10`,
+                },
+              },
             ],
           },
         },
@@ -278,10 +295,64 @@ describe('getXmlSpecs', () => {
     expect(getXmlSpecs(fontsDir, groupByFamily(input))).toEqual(expected);
   });
 
+  it('should leave an undefined axis out of the variation settings', () => {
+    const specs = getXmlSpecs(
+      '/path/to/fonts',
+      groupByFamily([
+        {
+          fontFamily: 'Roboto Flex',
+          fontDefinitions: [
+            { path: './RobotoFlex.ttf', weight: 400, axes: { slnt: undefined, wdth: 75 } },
+          ],
+        },
+      ])
+    );
+
+    expect(specs[0]?.xml['font-family'].font[0]?.$['app:fontVariationSettings']).toBe(
+      `'wght' 400, 'wdth' 75`
+    );
+  });
+
   it('should handle empty input', () => {
     const fontsDir = '/path/to/fonts';
     const result = getXmlSpecs(fontsDir, {});
     expect(result).toHaveLength(0);
+  });
+});
+
+describe('assertValidAxes', () => {
+  const declaring = (axes: FontVariationAxes) =>
+    groupByFamily([
+      {
+        fontFamily: 'Roboto Flex',
+        fontDefinitions: [{ path: './RobotoFlex.ttf', weight: 400, axes }],
+      },
+    ]);
+
+  it('should accept registered and custom axis tags', () => {
+    expect(() => assertValidAxes(declaring({ slnt: -10, GRAD: -50 }))).not.toThrow();
+    expect(() => assertValidAxes(groupByFamily(input))).not.toThrow();
+  });
+
+  it('should accept an axis left undefined', () => {
+    // A conditional in app.config.ts writes `undefined` and the type allows it.
+    expect(() => assertValidAxes(declaring({ slnt: undefined }))).not.toThrow();
+  });
+
+  it('should reject an axis it cannot emit', () => {
+    expect(() => assertValidAxes(declaring({ slant: -10 }))).toThrow(/"slant".+four/s);
+    expect(() => assertValidAxes(declaring({ "a'b'": -10 }))).toThrow(/letters or digits/);
+    expect(() => assertValidAxes(declaring({ '    ': -10 }))).toThrow(/letters or digits/);
+    // `weight` already sets wght. The type leaves it out, but app.json is not type checked.
+    expect(() => assertValidAxes(declaring({ wght: 650 }))).toThrow(/"weight" field/);
+    // @ts-expect-error an axis takes a number
+    expect(() => assertValidAxes(declaring({ slnt: 'left' }))).toThrow();
+  });
+
+  it('should reject a registered axis tag in the wrong case', () => {
+    expect(() => assertValidAxes(declaring({ SLNT: -10 }))).toThrow(/"SLNT".+"slnt"/s);
+    expect(() => assertValidAxes(declaring({ Wdth: 75 }))).toThrow(/"Wdth".+"wdth"/s);
+    expect(() => assertValidAxes(declaring({ WGHT: 650 }))).toThrow(/"weight" field/);
   });
 });
 
