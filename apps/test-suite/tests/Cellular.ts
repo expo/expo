@@ -1,9 +1,12 @@
 import * as Cellular from 'expo-cellular';
 import Constants from 'expo-constants';
 
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
+
 export const name = 'Cellular (device-only)';
 
-export async function test({ describe, it, expect, jasmine }) {
+export async function test({ describe, it, expect, jasmine }: JasmineInterface) {
   const isNullOrString = (value: any) => {
     if (Constants.isDevice) {
       return typeof value === 'string';
@@ -45,7 +48,7 @@ export async function test({ describe, it, expect, jasmine }) {
       it('returns an enum value of Cellular.Cellular Generation', async () => {
         let hasError = false;
         let cellularGeneration: Cellular.CellularGeneration | undefined;
-        const CellularGenerationEnumValues = [0, 1, 2, 3, 4];
+        const CellularGenerationEnumValues: Cellular.CellularGeneration[] = [0, 1, 2, 3, 4];
 
         try {
           cellularGeneration = await Cellular.getCellularGenerationAsync();
@@ -56,7 +59,8 @@ export async function test({ describe, it, expect, jasmine }) {
 
         expect(hasError).toBe(false);
         expect(cellularGeneration).toEqual(jasmine.any(Number));
-        expect(CellularGenerationEnumValues.includes(cellularGeneration)).toBe(true);
+        const generation = requireNotNull(cellularGeneration, 'cellularGeneration');
+        expect(CellularGenerationEnumValues.includes(generation)).toBe(true);
       });
     });
   });

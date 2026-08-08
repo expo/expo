@@ -2,6 +2,8 @@ import { Asset } from 'expo-asset';
 import * as FileSystem from 'expo-file-system/legacy';
 import invariant from 'invariant';
 
+import { requireNotNull } from '../utils/requireNotNull';
+
 export const name = 'Asset';
 
 export function test(t: any) {
@@ -38,7 +40,8 @@ export function test(t: any) {
 
         await asset.downloadAsync();
 
-        const fileInfo = await FileSystem.getInfoAsync(asset.localUri);
+        const localUri = requireNotNull(asset.localUri, 'asset.localUri');
+        const fileInfo = await FileSystem.getInfoAsync(localUri);
         invariant(fileInfo.exists, 'File should exist');
         t.expect(fileInfo.size > 0).toBeTruthy();
 
@@ -47,12 +50,13 @@ export function test(t: any) {
           name: asset.name + 'another',
           type: asset.type,
           hash: asset.hash,
-          uri: asset.localUri,
+          uri: localUri,
         });
         anotherAsset.downloaded = false;
         await anotherAsset.downloadAsync();
 
-        const fileInfo2 = await FileSystem.getInfoAsync(anotherAsset.localUri);
+        const anotherLocalUri = requireNotNull(anotherAsset.localUri, 'anotherAsset.localUri');
+        const fileInfo2 = await FileSystem.getInfoAsync(anotherLocalUri);
         invariant(fileInfo2.exists, 'File should exist');
 
         t.expect(fileInfo2.size).toBe(fileInfo.size);
@@ -84,7 +88,8 @@ export function test(t: any) {
             const asset = Asset.fromModule(module);
             await asset.downloadAsync();
 
-            const fileInfo = await FileSystem.getInfoAsync(asset.localUri, {
+            const localUri = requireNotNull(asset.localUri, 'asset.localUri');
+            const fileInfo = await FileSystem.getInfoAsync(localUri, {
               md5: true,
             });
             invariant(fileInfo.exists, 'File should exist');
