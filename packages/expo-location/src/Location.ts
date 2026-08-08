@@ -188,9 +188,6 @@ export async function watchHeadingAsync(
 /**
  * Geocode an address string to latitude-longitude location.
  *
- * On Android, you must request location permissions with [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync)
- * before geocoding can be used.
- *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
  * > It's also discouraged to use geocoding while the app is in the background and its results won't
@@ -224,9 +221,6 @@ export async function geocodeAsync(address: string): Promise<LocationGeocodedLoc
 // @needsAudit
 /**
  * Reverse geocode a location to postal address.
- *
- * On Android, you must request location permissions with [`requestForegroundPermissionsAsync`](#locationrequestforegroundpermissionsasync)
- * before geocoding can be used.
  *
  * > **Note**: Geocoding is resource consuming and has to be used reasonably. Creating too many
  * > requests at a time can result in an error, so they have to be managed properly.
