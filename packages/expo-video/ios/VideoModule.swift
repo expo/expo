@@ -27,6 +27,10 @@ public final class VideoModule: Module {
       return try await VideoCacheManager.shared.clearAllCache()
     }
 
+    AsyncFunction("setIsAudioActiveAsync") { (active: Bool) in
+      try AVAudioSession.sharedInstance().setActive(active, options: active ? [] : [.notifyOthersOnDeactivation])
+    }
+
     View(VideoView.self) {
       Events(
         "onPictureInPictureStart",

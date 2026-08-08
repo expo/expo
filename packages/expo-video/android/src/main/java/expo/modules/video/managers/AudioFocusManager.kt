@@ -41,7 +41,9 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
     }
     val audioFocusType = when (audioMixingMode) {
       AudioMixingMode.DUCK_OTHERS -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
-      AudioMixingMode.AUTO -> AudioManager.AUDIOFOCUS_GAIN
+      // An in-app video is a temporary interruption of the current audio, so we request transient
+      // focus. When it's abandoned, other apps (e.g. music players) resume playback on their own.
+      AudioMixingMode.AUTO -> AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
       AudioMixingMode.DO_NOT_MIX -> AudioManager.AUDIOFOCUS_GAIN
       else -> AudioManager.AUDIOFOCUS_GAIN
     }
@@ -87,6 +89,14 @@ class AudioFocusManager(private val appContext: AppContext) : AudioManager.OnAud
       }
     }
     currentFocusRequest = null
+  }
+
+  fun setIsAudioActive(active: Boolean) {
+    if (active) {
+      updateAudioFocus()
+    } else {
+      abandonAudioFocus()
+    }
   }
 
   fun registerPlayer(player: VideoPlayer) {
