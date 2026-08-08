@@ -36,6 +36,33 @@ function codePointsToString(codePoints: number[]): string {
   return s;
 }
 
+/** Sits on a plateau: smaller batches give up most of the speedup, larger ones gain nothing. */
+const ASCII_BATCH_SIZE = 8192;
+
+/**
+ * Converts the leading ASCII bytes of a buffer to a string. ASCII is byte-identical to its UTF-8
+ * encoding, so those bytes can be converted in bulk instead of one at a time by the decoder.
+ * @param bytes The bytes to convert.
+ * @returns The string decoded from the longest ASCII prefix of the given bytes, which may be empty.
+ * Every ASCII byte decodes to exactly one character, so its length is also the number of bytes it
+ * consumed.
+ */
+function decodeAsciiPrefix(bytes: Uint8Array): string {
+  const length = bytes.length; // Hermes won't hoist this: typed array `.length` costs 4x per byte.
+  let end = 0;
+  while (end < length && bytes[end]! < 0x80) {
+    end += 1;
+  }
+
+  let s = '';
+  for (let i = 0; i < end; i += ASCII_BATCH_SIZE) {
+    const batchEnd = Math.min(i + ASCII_BATCH_SIZE, end);
+    // `apply` is much faster here than spreading, which goes through the iterator protocol.
+    s += String.fromCharCode.apply(null, bytes.subarray(i, batchEnd) as unknown as number[]);
+  }
+  return s;
+}
+
 function normalizeBytes(input?: ArrayBuffer | DataView): Uint8Array {
   if (typeof input === 'object' && input instanceof ArrayBuffer) {
     return new Uint8Array(input);
@@ -190,6 +217,15 @@ class UTF8Decoder implements Decoder {
   private utf8LowerBoundary = 0x80;
   private utf8UpperBoundary = 0xbf;
   constructor(private options: { fatal: boolean }) {}
+
+  /**
+   * Whether a multi-byte sequence has been partially consumed and is still waiting for
+   * continuation bytes from a subsequent streaming chunk.
+   */
+  get hasPendingBytes(): boolean {
+    return this.utf8BytesNeeded !== 0;
+  }
+
   /**
    * @param {Stream} stream The stream of bytes being decoded.
    * @param {number} bite The next byte read from the stream.
@@ -360,7 +396,7 @@ export class TextDecoder {
   }
 
   decode(input?: ArrayBuffer | DataView, options: { stream?: boolean } = {}): string {
-    const bytes = normalizeBytes(input);
+    let bytes = normalizeBytes(input);
 
     // 1. If the do not flush flag is unset, set decoder to a new
     // encoding's decoder, set stream to a new stream, and unset the
@@ -373,6 +409,24 @@ export class TextDecoder {
     // 2. If options's stream is true, set the do not flush flag, and
     // unset the do not flush flag otherwise.
     this._doNotFlush = Boolean(options['stream']);
+
+    // Each ASCII byte is a complete code point that can never begin a BOM or a decoder error, so
+    // the leading run of them is decoded in bulk and only the rest reaches the decoder. This is
+    // unsafe while a partial sequence is pending, because such a sequence is terminated by the
+    // byte that follows it even when that byte is ASCII.
+    let asciiPrefix = '';
+    if (
+      this._encoding!.name === 'UTF-8' &&
+      this._decoder != null &&
+      !this._decoder.hasPendingBytes
+    ) {
+      asciiPrefix = decodeAsciiPrefix(bytes);
+      if (asciiPrefix.length > 0) {
+        bytes = bytes.subarray(asciiPrefix.length);
+        // As in `serializeStream`, emitting output means a later BOM is not a leading BOM.
+        this._BOMseen = true;
+      }
+    }
 
     // 3. If input is given, push a copy of input to stream.
     // TODO: Align with spec algorithm - maintain stream on instance.
@@ -406,7 +460,7 @@ export class TextDecoder {
       this._decoder = null;
     }
 
-    return this.serializeStream(output);
+    return asciiPrefix + this.serializeStream(output);
   }
 
   // serializeStream method for converting code points to a string

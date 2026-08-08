@@ -404,4 +404,55 @@ describe('TextDecoder', () => {
       assertStringEquals(decoded, expDecoded, 'UTF-8 reference decoding ' + block_tag);
     }
   });
+
+  // ASCII bytes are decoded in bulk rather than through the byte-at-a-time state machine, so these
+  // cover the boundaries between the two paths.
+  describe('ASCII bulk decoding', () => {
+    it('decodes buffers spanning several `String.fromCharCode` batches', () => {
+      for (const length of [8191, 8192, 8193, 16385, 40000]) {
+        const codes = Array.from({ length }, (_, i) => 0x20 + (i % 0x5f));
+        const expected = codes.map((code) => String.fromCharCode(code)).join('');
+
+        expect(new TextDecoder().decode(new Uint8Array(codes))).toBe(expected);
+      }
+    });
+
+    it('replaces a bare continuation byte surrounded by ASCII', () => {
+      expect(new TextDecoder().decode(new Uint8Array([0x61, 0x80, 0x62]))).toBe('a\ufffdb');
+    });
+
+    it('does not drop a lead byte that ended the previous chunk', () => {
+      const decoder = new TextDecoder();
+
+      let out = decoder.decode(new Uint8Array([0xc3]), { stream: true });
+      out += decoder.decode(new Uint8Array([0x61, 0x62]), { stream: true });
+      out += decoder.decode();
+
+      expect(out).toBe('\ufffdab');
+    });
+
+    it('still throws in fatal mode when ASCII breaks a pending sequence', () => {
+      const decoder = new TextDecoder('utf-8', { fatal: true });
+      decoder.decode(new Uint8Array([0xc3]), { stream: true });
+
+      expect(() => decoder.decode(new Uint8Array([0x61]), { stream: true })).toThrow(TypeError);
+    });
+
+    it('keeps a BOM that follows ASCII output', () => {
+      const decoder = new TextDecoder();
+
+      let out = decoder.decode(new Uint8Array([0x61]), { stream: true });
+      out += decoder.decode(new Uint8Array([0xef, 0xbb, 0xbf, 0x62]), { stream: true });
+      out += decoder.decode();
+
+      expect(out).toBe('a\ufeffb');
+    });
+
+    it('resets the BOM seen flag between non-streaming decodes', () => {
+      const decoder = new TextDecoder();
+
+      expect(decoder.decode(new Uint8Array([0x61]))).toBe('a');
+      expect(decoder.decode(new Uint8Array([0xef, 0xbb, 0xbf, 0x62]))).toBe('b');
+    });
+  });
 });
