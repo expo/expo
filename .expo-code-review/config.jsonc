@@ -85,7 +85,7 @@
     "enabled": true,
     "maxQueries": 20,
     "resultsPerQuery": 2,
-    "timeoutMs": 15000
+    "timeoutMs": 30000
   },
 
   // Large diffs are split into focused chunks by changed-line count, plus a
