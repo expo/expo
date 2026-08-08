@@ -19,6 +19,7 @@ export class FetchError extends Error {
  * React Native's `AbortController` polyfill has no `reason`, hence the fallback.
  */
 export function createAbortError(signal?: AbortSignal | null): unknown {
-  const reason = signal != null && 'reason' in signal ? signal.reason : undefined;
-  return reason ?? new DOMException('The operation was aborted.', 'AbortError');
+  return signal != null && 'reason' in signal
+    ? signal.reason
+    : new DOMException('The operation was aborted.', 'AbortError');
 }

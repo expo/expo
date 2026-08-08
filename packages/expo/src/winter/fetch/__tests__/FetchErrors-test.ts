@@ -33,6 +33,13 @@ describe('createAbortError', () => {
     expect(createAbortError(controller.signal)).toBe(reason);
   });
 
+  it('passes a nullish reason through instead of replacing it', () => {
+    const controller = new AbortController();
+    controller.abort(null);
+
+    expect(createAbortError(controller.signal)).toBeNull();
+  });
+
   it('falls back to an AbortError when the signal has no reason', () => {
     // React Native's AbortController polyfill does not implement `reason`.
     const signal = { aborted: true } as unknown as AbortSignal;

@@ -5,12 +5,12 @@
 ### 🛠 Breaking changes
 
 - Raise minimum Node.js version to `^22.13.0` ([#47202](https://github.com/expo/expo/pull/47202) by [@kitten](https://github.com/kitten))
+- Give `expo/fetch` errors a `name`, so an aborted request rejects with the signal's reason (an `AbortError`, or a `TimeoutError` from `AbortSignal.timeout()`) like React Native's `fetch` does, and any other failure rejects with a `FetchError`. ([#48251](https://github.com/expo/expo/pull/48251) by [@0xLuca](https://github.com/0xLuca))
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Give `expo/fetch` errors a `name`, so an aborted request rejects with the signal's reason (an `AbortError`, or a `TimeoutError` from `AbortSignal.timeout()`) like React Native's `fetch` does, and any other failure rejects with a `FetchError`. ([#48251](https://github.com/expo/expo/pull/48251) by [@0xLuca](https://github.com/0xLuca))
 - [iOS] Fix `expo/fetch` `Response.text()` and `.arrayBuffer()` never settling when the request fails (network drop, `abort()`) after the response was already delivered. ([#48230](https://github.com/expo/expo/pull/48230) by [@zoontek](https://github.com/zoontek))
 - [Android] Fixed expo-fetch race condition causing out-of-order delivery of initial chunks ([#42161](https://github.com/expo/expo/pull/42161) by [@matthieugicquel](https://github.com/matthieugicquel))
 - [iOS] Pass the React runtime scheduler to `ExpoModulesCore` through a weak handle, so dispatching onto the JS thread during a reload no longer risks calling into a scheduler the React instance already destroyed. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
