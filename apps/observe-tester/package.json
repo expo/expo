@@ -32,6 +32,7 @@
     "expo-haptics": "workspace:*",
     "expo-image": "workspace:*",
     "expo-linking": "workspace:*",
+    "expo-modules-core": "workspace:*",
     "expo-observe": "workspace:*",
     "expo-router": "workspace:*",
     "expo-splash-screen": "workspace:*",
@@ -43,8 +44,10 @@
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
+    "react-native-reanimated": "4.5.1",
     "react-native-safe-area-context": "5.7.0",
-    "react-native-screens": "4.26.0"
+    "react-native-screens": "4.26.0",
+    "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
     "@expo/config": "workspace:*",
