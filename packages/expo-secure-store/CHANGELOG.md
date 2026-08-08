@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add an Android-only `requireConfirmation` option for authenticated reads and writes.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
