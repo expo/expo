@@ -12,6 +12,9 @@ import { Paths, File } from 'expo-file-system';
 import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
+
 function timeoutWrapper(fn: () => void, time: number): Promise<void> {
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -23,7 +26,7 @@ function timeoutWrapper(fn: () => void, time: number): Promise<void> {
 
 export const name = 'Contacts@Next';
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   const contacts: Contact[] = [];
 
   t.beforeAll(async () => {
@@ -105,7 +108,7 @@ export async function test(t) {
       t.expect(fetchedDetails.emails.length).toBe(1);
       t.expect(fetchedDetails.emails[0].address).toBe(contactDetails.emails[0].address);
       t.expect(fetchedDetails.dates.length).toBe(1);
-      t.expect(fetchedDetails.dates[0].date.year).toBe(contactDetails.dates[0].date.year);
+      t.expect(fetchedDetails.dates[0].date?.year).toBe(contactDetails.dates[0].date?.year);
       t.expect(fetchedDetails.phones.length).toBe(1);
       t.expect(fetchedDetails.phones[0].number).toBe(contactDetails.phones[0].number);
       t.expect(fetchedDetails.addresses.length).toBe(1);
@@ -376,9 +379,9 @@ export async function test(t) {
       t.expect(fetchedDetails.dates.length).toBe(1);
       t.expect(fetchedItem.label).toBe(value[0].label);
       t.expect(fetchedItem.date).toBeDefined();
-      t.expect(fetchedItem.date.year).toBe(value[0].date.year);
-      t.expect(fetchedItem.date.month).toBe(value[0].date.month);
-      t.expect(fetchedItem.date.day).toBe(value[0].date.day);
+      t.expect(fetchedItem.date?.year).toBe(value[0].date?.year);
+      t.expect(fetchedItem.date?.month).toBe(value[0].date?.month);
+      t.expect(fetchedItem.date?.day).toBe(value[0].date?.day);
     });
 
     t.it(
@@ -672,13 +675,13 @@ export async function test(t) {
       const fetchedContact1 = allContacts.find((c) => c.id === newContact1.id);
       const fetchedContact2 = allContacts.find((c) => c.id === newContact2.id);
       t.expect(fetchedContact1).toBeDefined();
-      t.expect(fetchedContact1.emails.length).toBe(1);
-      t.expect(fetchedContact1.emails[0].address).toBe(contactDetails1.emails[0].address);
-      t.expect(fetchedContact1.relations.length).toBe(0);
+      t.expect(fetchedContact1?.emails.length).toBe(1);
+      t.expect(fetchedContact1?.emails[0].address).toBe(contactDetails1.emails[0].address);
+      t.expect(fetchedContact1?.relations.length).toBe(0);
       t.expect(fetchedContact2).toBeDefined();
-      t.expect(fetchedContact2.relations.length).toBe(1);
-      t.expect(fetchedContact2.emails.length).toBe(0);
-      t.expect(fetchedContact2.relations[0].name).toBe(contactDetails2.relations[0].name);
+      t.expect(fetchedContact2?.relations.length).toBe(1);
+      t.expect(fetchedContact2?.emails.length).toBe(0);
+      t.expect(fetchedContact2?.relations[0].name).toBe(contactDetails2.relations[0].name);
     });
   });
 
@@ -740,8 +743,8 @@ export async function test(t) {
       });
 
       for (let i = 0; i < result.length - 1; i++) {
-        const current = result[i].familyName;
-        const next = result[i + 1].familyName;
+        const current = requireNotNull(result[i].familyName, 'familyName');
+        const next = requireNotNull(result[i + 1].familyName, 'familyName');
         t.expect(current.toLowerCase().localeCompare(next.toLowerCase())).toBeLessThanOrEqual(0);
       }
     });
@@ -1017,11 +1020,11 @@ export async function test(t) {
 
           const retrievedBirthday = await contact.getNonGregorianBirthday();
 
-          t.expect(retrievedBirthday.calendar).toBe(calendarCase.type);
+          t.expect(retrievedBirthday?.calendar).toBe(calendarCase.type);
 
-          t.expect(retrievedBirthday.year).toBe(birthday.year);
-          t.expect(retrievedBirthday.month).toBe(birthday.month);
-          t.expect(retrievedBirthday.day).toBe(birthday.day);
+          t.expect(retrievedBirthday?.year).toBe(birthday.year);
+          t.expect(retrievedBirthday?.month).toBe(birthday.month);
+          t.expect(retrievedBirthday?.day).toBe(birthday.day);
         });
       });
     }
@@ -1113,9 +1116,9 @@ export async function test(t) {
       });
       dates = await contact.getDates();
       t.expect(dates[0].label).toBe('birthday-updated');
-      t.expect(dates[0].date.year).toBe(1991);
-      t.expect(dates[0].date.month).toBe(2);
-      t.expect(dates[0].date.day).toBe(2);
+      t.expect(dates[0].date?.year).toBe(1991);
+      t.expect(dates[0].date?.month).toBe(2);
+      t.expect(dates[0].date?.day).toBe(2);
       await contact.deleteDate(dates[0]);
       dates = await contact.getDates();
       t.expect(dates.length).toBe(0);
@@ -1255,6 +1258,8 @@ export async function test(t) {
 
       t.expect(company).toBe('UpdatedCompany');
       t.expect(department).toBe(null);
+      // @ts-expect-error the field is typed `string | undefined`, but clearing it yields
+      // `null` at runtime, which is what this spec checks.
       t.expect(jobTitle).toBe(null);
     });
 
@@ -1319,9 +1324,9 @@ export async function test(t) {
       t.expect(familyName).toBe(null);
       t.expect(dates.length).toBe(1);
       t.expect(dates[0].label).toBe('anniversary');
-      t.expect(dates[0].date.year).toBe(2015);
-      t.expect(dates[0].date.month).toBe(6);
-      t.expect(dates[0].date.day).toBe(15);
+      t.expect(dates[0].date?.year).toBe(2015);
+      t.expect(dates[0].date?.month).toBe(6);
+      t.expect(dates[0].date?.day).toBe(15);
     });
 
     t.it('.update(allFields)', async () => {
@@ -1387,6 +1392,8 @@ export async function test(t) {
       t.expect(details.phoneticFamilyName).toBe(null);
       t.expect(details.company).toBe('UpdatedCompany');
       t.expect(details.department).toBe(null);
+      // @ts-expect-error the field is typed `string | undefined`, but clearing it yields
+      // `null` at runtime, which is what this spec checks.
       t.expect(details.jobTitle).toBe(null);
       t.expect(details.phones.length).toBe(1);
       t.expect(details.phones[0].label).toBe('personal');
@@ -1573,9 +1580,9 @@ export async function test(t) {
 
       const updatedDates = await contact.getDates();
       t.expect(updatedDates.length).toBe(2);
-      t.expect(updatedDates.some((d) => d.date.year === 1991)).toBe(true);
-      t.expect(updatedDates.some((d) => d.date.year === 2020)).toBe(true);
-      t.expect(updatedDates.some((d) => d.date.year === 1990)).toBe(false);
+      t.expect(updatedDates.some((d) => d.date?.year === 1991)).toBe(true);
+      t.expect(updatedDates.some((d) => d.date?.year === 2020)).toBe(true);
+      t.expect(updatedDates.some((d) => d.date?.year === 1990)).toBe(false);
     });
 
     t.it('.patch({ dates: [] })', async () => {
@@ -1820,11 +1827,9 @@ export async function test(t) {
       const initialEmails = await contact.getEmails();
       const initialPhones = await contact.getPhones();
       const initialDates = await contact.getDates();
-      let initialExtraNames;
+      let initialExtraNames: Awaited<ReturnType<typeof contact.getExtraNames>> = [];
       if (Platform.OS === 'android') {
         initialExtraNames = await contact.getExtraNames();
-      } else {
-        initialExtraNames = [];
       }
       const initialAddresses = await contact.getAddresses();
       const initialUrls = await contact.getUrlAddresses();
@@ -1883,6 +1888,8 @@ export async function test(t) {
       t.expect(updatedContact.familyName).toBe(null);
 
       t.expect(updatedContact.company).toBe('UpdatedCompany');
+      // @ts-expect-error the field is typed `string | undefined`, but clearing it yields
+      // `null` at runtime, which is what this spec checks.
       t.expect(updatedContact.jobTitle).toBe(null);
 
       const updatedEmails = await contact.getEmails();
@@ -1897,8 +1904,8 @@ export async function test(t) {
 
       const updatedDates = await contact.getDates();
       t.expect(updatedDates.length).toBe(2);
-      t.expect(updatedDates.some((d) => d.date.year === 1991)).toBe(true);
-      t.expect(updatedDates.some((d) => d.date.year === 2021)).toBe(true);
+      t.expect(updatedDates.some((d) => d.date?.year === 1991)).toBe(true);
+      t.expect(updatedDates.some((d) => d.date?.year === 2021)).toBe(true);
 
       if (Platform.OS === 'android') {
         const updatedExtraNames = await contact.getExtraNames();
