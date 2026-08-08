@@ -448,4 +448,90 @@ describe('getHandler', () => {
     // Ensure the user sees the error in the terminal.
     expect(Log.exception).toHaveBeenCalled();
   });
+
+  it(`quietly skips the response when the client disconnects while the manifest resolves`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+    });
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+
+    const res = new MockServerResponse();
+    middleware._getManifestResponseAsync = jest.fn(async () => {
+      // Emulate the client hanging up while the runtime version is being resolved.
+      res.destroy();
+      return new Response('body', { headers: { header: 'value' } });
+    });
+
+    const handleAsync = middleware.getHandler();
+    const next = jest.fn();
+    const req = asReq({ url: '/', headers: {} });
+
+    await handleAsync(req, asRes(res), next);
+
+    // The response is never written to, so the pipeline never throws.
+    expect(res.setHeaders).not.toHaveBeenCalled();
+    expect(res.statusCode).toEqual(200);
+    expect(next).not.toHaveBeenCalled();
+    // Cancelled requests are not server errors, so nothing is logged.
+    expect(Log.exception).not.toHaveBeenCalled();
+  });
+
+  it(`quietly skips the response when the client disconnects while the manifest is streaming`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+    });
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+    middleware._getManifestResponseAsync = jest.fn(
+      async () => new Response('body', { headers: { header: 'value' } })
+    );
+
+    const handleAsync = middleware.getHandler();
+    const next = jest.fn();
+    const req = asReq({ url: '/', headers: {} });
+
+    const res = new MockServerResponse();
+    // Emulate the client hanging up part-way through the response.
+    res.once('data', () => res.destroy());
+
+    await handleAsync(req, asRes(res), next);
+
+    expect(next).not.toHaveBeenCalled();
+    expect(Log.exception).not.toHaveBeenCalled();
+  });
+
+  it(`still reports a manifest body that fails while the client is connected`, async () => {
+    const middleware = new MockManifestMiddleware('/', {
+      constructUrl: jest.fn(() => 'http://fake.mock'),
+    });
+    middleware.getParsedHeaders = jest.fn(() => ({ platform: 'ios' }));
+    // Expo Go streams a lazily encoded multipart body, so it can fail mid-response for reasons
+    // that have nothing to do with the client.
+    middleware._getManifestResponseAsync = jest.fn(
+      async () =>
+        new Response(
+          new ReadableStream({
+            start(controller) {
+              controller.enqueue(new TextEncoder().encode('part-one'));
+              controller.error(new Error('multipart encoding failed'));
+            },
+          }),
+          { headers: { header: 'value' } }
+        )
+    );
+
+    const handleAsync = middleware.getHandler();
+    const next = jest.fn();
+    const req = asReq({ url: '/', headers: {} });
+    const res = new MockServerResponse();
+    res.on('data', () => {});
+
+    await handleAsync(req, asRes(res), next);
+
+    // `pipeline` destroys `res` here too, so this only passes if the error itself is inspected.
+    expect(Log.exception).toHaveBeenCalledWith(
+      expect.objectContaining({ message: 'multipart encoding failed' })
+    );
+    expect(res.statusCode).toEqual(500);
+    expect(next).not.toHaveBeenCalled();
+  });
 });

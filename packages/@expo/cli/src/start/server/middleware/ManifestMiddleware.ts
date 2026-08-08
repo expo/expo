@@ -405,6 +405,15 @@ export abstract class ManifestMiddleware<
     const options = this.getParsedHeaders(req);
 
     const response = await this._getManifestResponseAsync(options);
+
+    // Clients frequently disconnect while the manifest is being resolved, e.g. a dev client
+    // reconnecting while Metro restarts. The response is already destroyed at this point, so piping
+    // to it would throw (`ERR_STREAM_UNABLE_TO_PIPE` on Node 24+, `ERR_STREAM_PREMATURE_CLOSE`
+    // before that). Treat this as a cancelled request instead.
+    if (isResponseCancelled(res)) {
+      return;
+    }
+
     // Convert `Response` to node:http response
     if (typeof res.setHeaders === 'function') {
       res.setHeaders(response.headers);
@@ -414,9 +423,37 @@ export abstract class ManifestMiddleware<
       }
     }
     if (response.body) {
-      await pipeline(Readable.fromWeb(response.body as any), res);
+      try {
+        await pipeline(Readable.fromWeb(response.body as any), res);
+      } catch (error: any) {
+        // The client can also disconnect part-way through the response, which is not a server
+        // error. `pipeline` destroys every stream it touches on *any* failure, so `res` is equally
+        // destroyed whether the client hung up or the manifest body itself threw — only the error
+        // identifies which happened. Anything else is a real failure and must still be reported.
+        if (!isClientDisconnectError(error)) {
+          throw error;
+        }
+      }
     } else {
       res.end();
     }
   }
+}
+
+/** Determine if the client disconnected before the response could be written. */
+function isResponseCancelled(res: ServerResponse): boolean {
+  return res.destroyed || res.writableEnded;
+}
+
+/** Errors Node raises when the client hangs up part-way through a response. */
+const CLIENT_DISCONNECT_ERROR_CODES = new Set([
+  'ERR_STREAM_PREMATURE_CLOSE',
+  'ERR_STREAM_UNABLE_TO_PIPE',
+  'ECONNRESET',
+  'EPIPE',
+]);
+
+/** Determine if a rejected response pipeline was caused by the client going away. */
+function isClientDisconnectError(error: any): boolean {
+  return typeof error?.code === 'string' && CLIENT_DISCONNECT_ERROR_CODES.has(error.code);
 }
