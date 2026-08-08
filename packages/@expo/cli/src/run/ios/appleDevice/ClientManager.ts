@@ -31,12 +31,25 @@ export class ClientManager {
 
   static async create(udid?: string) {
     const usbmuxClient = new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket());
-    const device = await usbmuxClient.getDevice(udid);
-    const pairRecord = await usbmuxClient.readPairRecord(device.Properties.SerialNumber);
-    const lockdownSocket = await usbmuxClient.connect(device, 62078);
-    const lockdownClient = new LockdowndClient(lockdownSocket);
-    await lockdownClient.doHandshake(pairRecord);
-    return new ClientManager(pairRecord, device, lockdownClient);
+    try {
+      const device = await usbmuxClient.getDevice(udid);
+      const pairRecord = await usbmuxClient.readPairRecord(device.Properties.SerialNumber);
+      const lockdownSocket = await usbmuxClient.connect(device, 62078);
+      const lockdownClient = new LockdowndClient(lockdownSocket);
+      await lockdownClient.doHandshake(pairRecord);
+      return new ClientManager(pairRecord, device, lockdownClient);
+    } catch (error) {
+      // `getDevice()` throws `APPLE_DEVICE_USBMUXD` when the device isn't in usbmuxd's USB
+      // device list (e.g. a wireless device). The socket opened above isn't tracked by a
+      // `ClientManager` instance yet — `create()` threw before constructing one, so
+      // `ClientManager.end()` will never close it. Close it here; otherwise the orphaned
+      // socket keeps the Node event loop alive and `expo run:ios --device` never exits after
+      // the slower `devicectl` fallback installs and launches the app.
+      try {
+        usbmuxClient.socket.end();
+      } catch {}
+      throw error;
+    }
   }
 
   async getUsbmuxdClient() {
