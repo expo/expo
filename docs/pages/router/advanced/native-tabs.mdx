@@ -1551,6 +1551,12 @@ export default function TabLayout() {
 
 ## Known limitations
 
+<Collapsible summary="Limited tab bar background customization on iOS 26 and later">
+
+On iOS 26 and later, Liquid Glass controls the native tab bar background and shadow. The `backgroundColor`, `blurEffect`, and `shadowColor` props do not affect its appearance. You can still use `tintColor` to customize the selected tab item and selection glow. Use [JavaScript tabs](/router/advanced/tabs/) if your app requires full control over the tab bar background.
+
+</Collapsible>
+
 <Collapsible summary="A limit of 5 tabs on Android">
 
 On Android, there is a limitation of having a maximum of 5 tabs in the tab bar. This restriction comes from the platform's Material Tabs component.

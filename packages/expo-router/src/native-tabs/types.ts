@@ -105,16 +105,24 @@ export interface NativeTabOptions extends DefaultRouterOptions {
    */
   badgeTextColor?: ColorValue;
   /**
+   * On iOS 26 and later, Liquid Glass controls the tab bar background, so this prop has no
+   * effect.
+   *
    * @platform android
    * @platform iOS
    * @platform web
    */
   backgroundColor?: ColorValue;
   /**
+   * On iOS 26 and later, Liquid Glass controls the tab bar background, so this prop has no
+   * effect.
+   *
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
   /**
+   * On iOS 26 and later, Liquid Glass controls the tab bar shadow, so this prop has no effect.
+   *
    * @platform iOS
    */
   shadowColor?: ColorValue;
@@ -317,6 +325,9 @@ export interface NativeTabsProps extends PropsWithChildren {
   tintColor?: ColorValue;
   /**
    * The background color of the tab bar.
+   *
+   * On iOS 26 and later, Liquid Glass controls the tab bar background, so this prop has no
+   * effect.
    */
   backgroundColor?: ColorValue;
   /**
@@ -355,11 +366,16 @@ export interface NativeTabsProps extends PropsWithChildren {
   /**
    * The blur effect applied to the tab bar.
    *
+   * On iOS 26 and later, Liquid Glass controls the tab bar background, so this prop has no
+   * effect.
+   *
    * @platform iOS
    */
   blurEffect?: NativeTabsBlurEffect;
   /**
    * The color of the shadow.
+   *
+   * On iOS 26 and later, Liquid Glass controls the tab bar shadow, so this prop has no effect.
    *
    * @see [Apple documentation](https://developer.apple.com/documentation/uikit/uibarappearance/shadowcolor)
    *
