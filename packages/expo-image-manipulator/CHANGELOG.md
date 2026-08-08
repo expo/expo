@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `ImageManipulator.Image` being typed as an `ImageRef` instance rather than the class it holds at runtime, which rejected `instanceof` checks and made instance members appear to exist on it. ([#48613](https://github.com/expo/expo/pull/48613) by [@vonovak](https://github.com/vonovak))
+
 ### 💡 Others
 
 ## 57.0.7 - 2026-07-29
