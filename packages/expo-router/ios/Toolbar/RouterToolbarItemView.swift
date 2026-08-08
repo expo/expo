@@ -60,6 +60,10 @@ class RouterToolbarItemView: RouterViewWithLogger {
     onSelected()
   }
 
+  func invalidateBarButtonItem() {
+    currentBarButtonItem = nil
+  }
+
   var barButtonItem: UIBarButtonItem {
     if let item = currentBarButtonItem {
       return item
