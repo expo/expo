@@ -318,6 +318,41 @@ describe('infoPlist', () => {
     vol.reset();
   });
 
+  it('resolves the Info.plist when no AppDelegate sits in a named subdirectory', async () => {
+    const pbxproj = jest
+      .requireActual<typeof import('fs')>('fs')
+      .readFileSync(
+        path.resolve(__dirname, './fixtures/project-files/ios/project.pbxproj'),
+        'utf-8'
+      );
+    // A project whose AppDelegate is not at `ios/<name>/AppDelegate.*` — the layout the
+    // `getSourceRoot` glob assumes. The Info.plist still resolves from the pbxproj build setting.
+    vol.fromJSON({
+      '/ios/HelloWorld.xcodeproj/project.pbxproj': pbxproj,
+      '/ios/HelloWorld/Info.plist': plist.build({ CFBundleName: '$(PRODUCT_NAME)' }),
+    });
+
+    jest.mocked(globSync).mockImplementation((pattern) => {
+      if (pattern === 'ios/**/*.xcodeproj') return ['/ios/HelloWorld.xcodeproj'];
+      if (pattern === 'ios/*/AppDelegate.@(m|mm|swift)') return [];
+      if (pattern === 'ios/*/Info.plist') return ['/ios/HelloWorld/Info.plist'];
+      throw new Error(`Unexpected glob pattern used in test: ${pattern}`);
+    });
+
+    let config: ExpoConfig = { name: 'bacon', slug: 'bacon' };
+    config = withInfoPlist(config, (config) => {
+      config.modResults.CFBundleDisplayName = 'bacon';
+      return config;
+    });
+    config = withIosBaseMods(config, {
+      providers: { infoPlist: getIosModFileProviders().infoPlist },
+    });
+    config = await evalModsAsync(config, { projectRoot: '/', platforms: ['ios'] });
+
+    const written = plist.parse(vol.readFileSync('/ios/HelloWorld/Info.plist', 'utf8') as string);
+    expect(written).toMatchObject({ CFBundleDisplayName: 'bacon' });
+  });
+
   it(`evaluates in dry run mode`, async () => {
     // Ensure this test runs in a blank file system
     vol.fromJSON({});
