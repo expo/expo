@@ -59,6 +59,17 @@
 			path = "../../native-component-list/src/screens/inlineModules/inlineModulesExamples";
 			sourceTree = SOURCE_ROOT;
 		};
+		A33828129C2D4325846AC205 /* ../../native-component-list/src/screens/ModulesCore */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
+			explicitFileTypes = {
+			};
+			explicitFolders = (
+			);
+			path = "../../native-component-list/src/screens/ModulesCore";
+			sourceTree = SOURCE_ROOT;
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -133,6 +144,7 @@
 				D7E4C46ADA2E9064B798F356 /* ExpoModulesProviders */,
 				AC3B6E5EB4FE4A6AACD31066 /* Resources */,
 				A33828129C2D4325846AC204 /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
+				A33828129C2D4325846AC205 /* ../../native-component-list/src/screens/ModulesCore */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -238,6 +250,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				A33828129C2D4325846AC204 /* ../../native-component-list/src/screens/inlineModules/inlineModulesExamples */,
+				A33828129C2D4325846AC205 /* ../../native-component-list/src/screens/ModulesCore */,
 			);
 			name = BareExpo;
 			productName = BareExpo;
@@ -805,7 +818,7 @@
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PODFILE_DIR = "$(SRCROOT)";
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.7_@react-native+jest-preset@0.86.0_@babel+core@7.2_05fe3c1b42d0a26b4dba0087fc75e51f/node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
@@ -876,7 +889,7 @@
 				);
 				OTHER_LDFLAGS = "$(inherited)";
 				PODFILE_DIR = "$(SRCROOT)";
-				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.0_@react-native+jest-preset@0.86.0_@babel+core@7.2_ef63ad2607bf1660bcad07b5e75613ee/node_modules/react-native";
+				REACT_NATIVE_PATH = "${PODS_ROOT}/../../../../node_modules/.pnpm/react-native@0.86.0_@babel+core@7.29.7_@react-native+jest-preset@0.86.0_@babel+core@7.2_05fe3c1b42d0a26b4dba0087fc75e51f/node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ENABLE_EXPLICIT_MODULES = NO;
 				USE_HERMES = true;

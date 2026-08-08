@@ -1,12 +1,11 @@
-import { getOriginalEnvValue } from '@expo/env';
 import assert from 'assert';
 import { URL } from 'url';
 
 import * as Log from '../../log';
 import type { GatewayInfo } from '../../utils/ip';
 import { getGateway, getGatewayAsync } from '../../utils/ip';
-
-const debug = require('debug')('expo:start:server:urlCreator') as typeof console.log;
+import { debugEvent } from './events';
+import type { ForwardedRequestInfo } from './middleware/resolveForwarded';
 
 export interface CreateURLOptions {
   /** URL scheme to use when opening apps in custom runtimes. */
@@ -15,6 +14,8 @@ export interface CreateURLOptions {
   hostType?: 'localhost' | 'lan' | 'tunnel';
   /** Requested hostname. */
   hostname?: string | null;
+  /** Address the client used to reach the dev server, from a forwarded request */
+  forwarded?: ForwardedRequestInfo | null;
 }
 
 interface UrlComponents {
@@ -24,8 +25,12 @@ interface UrlComponents {
 }
 
 interface BundlerInfo {
-  port: number;
+  getPort(): number;
   getTunnelUrl?(): string | null;
+  /** Hostname that replaces the requested or LAN host. The proxy and tunnel URLs still win over it. */
+  getHostnameOverride?(): string | null;
+  /** Proxy URL that replaces the host and port of every URL. Read before every other host. */
+  getProxyUrl?(): string;
 }
 
 export class UrlCreator {
@@ -56,7 +61,7 @@ export class UrlCreator {
       url.search = new URLSearchParams({ platform }).toString();
     }
     const loadingUrl = url.toString();
-    debug(`Loading URL: ${loadingUrl}`);
+    debugEvent('loading_url', { url: loadingUrl });
     return loadingUrl;
   }
 
@@ -71,18 +76,17 @@ export class UrlCreator {
       // Prohibit the use of `_` characters in the protocol, Node will throw an error when parsing these URLs
       protocol.includes('_')
     ) {
-      debug(`Invalid protocol for dev client URL: ${protocol}`);
+      debugEvent('dev_client_url_invalid_protocol', { protocol: protocol ?? '' });
       return null;
     }
 
-    const manifestUrl = this.constructUrl({
-      ...options,
-      scheme: this.defaults?.hostType === 'tunnel' ? 'https' : 'http',
-    });
-    const devClientUrl = `${protocol}://expo-development-client/?url=${encodeURIComponent(
-      manifestUrl
-    )}`;
-    debug(`Dev client URL: ${devClientUrl} -- manifestUrl: ${manifestUrl} -- %O`, options);
+    // We fallback to the assumed scheme based on whether we have our own proxy (a tunnel)
+    const scheme =
+      options?.forwarded?.protocol ?? (this.defaults?.hostType === 'tunnel' ? 'https' : 'http');
+    const manifestUrl = this.constructUrl({ ...options, scheme });
+    const manifestUrlEncoded = encodeURIComponent(manifestUrl);
+    const devClientUrl = `${protocol}://expo-development-client/?url=${manifestUrlEncoded}`;
+    debugEvent('dev_client_url', { url: devClientUrl, manifestUrl });
     return devClientUrl;
   }
 
@@ -93,7 +97,6 @@ export class UrlCreator {
       ...options,
     });
     const url = joinUrlComponents(urlComponents);
-    debug(`URL: ${url}`);
     return url;
   }
 
@@ -122,9 +125,17 @@ export class UrlCreator {
 
   private getUrlComponents(options: CreateURLOptions): UrlComponents {
     // Proxy comes first.
-    const proxyURL = getProxyUrl();
+    const proxyURL = this.bundlerInfo.getProxyUrl?.();
     if (proxyURL) {
       return getUrlComponentsFromProxyUrl(options, proxyURL);
+    }
+
+    // A forwarded request tells us an address the client can reach, which beats anything we can infer
+    if (options.forwarded) {
+      const authorityComponents = getUrlComponentsFromAuthority(options, options.forwarded);
+      if (authorityComponents) {
+        return authorityComponents;
+      }
     }
 
     // Ngrok.
@@ -139,11 +150,32 @@ export class UrlCreator {
     }
 
     return {
-      hostname: getDefaultHostname(options, this.gatewayInfo),
-      port: this.bundlerInfo.port.toString(),
+      hostname: getDefaultHostname(
+        options,
+        this.gatewayInfo,
+        this.bundlerInfo.getHostnameOverride?.()
+      ),
+      port: this.bundlerInfo.getPort().toString(),
       protocol: options.scheme ?? 'http',
     };
   }
+}
+
+function getUrlComponentsFromAuthority(
+  options: Pick<CreateURLOptions, 'scheme'>,
+  forwarded: ForwardedRequestInfo
+): UrlComponents | null {
+  const { authority } = forwarded;
+  if (!authority) {
+    return null;
+  }
+  const scheme = options.scheme ?? forwarded.protocol ?? 'http';
+  const parsed = new URL(`${scheme}://${forwarded.authority}`);
+  return {
+    hostname: parsed.hostname,
+    port: parsed.port,
+    protocol: scheme,
+  };
 }
 
 function getUrlComponentsFromProxyUrl(
@@ -167,10 +199,13 @@ function getUrlComponentsFromProxyUrl(
   };
 }
 
-const getDefaultHostname = (options: CreateURLOptions, gateway: GatewayInfo) => {
-  // TODO: Drop REACT_NATIVE_PACKAGER_HOSTNAME
-  if (process.env.REACT_NATIVE_PACKAGER_HOSTNAME) {
-    return process.env.REACT_NATIVE_PACKAGER_HOSTNAME.trim();
+const getDefaultHostname = (
+  options: CreateURLOptions,
+  gateway: GatewayInfo,
+  hostnameOverride?: string | null
+) => {
+  if (hostnameOverride) {
+    return hostnameOverride;
   } else if (options.hostname === 'localhost') {
     // NOTE: We always convert "localhost" as a request to 127.0.0.1,
     // to normalize to an address that's consistent
@@ -193,14 +228,3 @@ function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>)
 
   return url;
 }
-
-/** @deprecated */
-function getProxyUrl(): string | undefined {
-  // Read from the pre-dotenv env — overriding this would redirect connected dev
-  // clients through an attacker-controlled URL.
-  return getOriginalEnvValue('EXPO_PACKAGER_PROXY_URL');
-}
-
-// TODO: Drop the undocumented env variables:
-// REACT_NATIVE_PACKAGER_HOSTNAME
-// EXPO_PACKAGER_PROXY_URL

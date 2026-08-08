@@ -2,8 +2,6 @@ import { URL } from 'url';
 
 import type { FetchLike } from './client.types';
 
-// const debug = require('debug')('expo:api:fetch:base') as typeof console.log;
-
 /**
  * Wrap a fetch function with support for a predefined base URL.
  * This implementation works like the browser fetch, applying the input to a prefix base URL.

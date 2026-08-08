@@ -1,7 +1,7 @@
 import chalk from 'chalk';
 import { boolish } from 'getenv';
 
-import { Options, createFingerprintAsync } from '../../../build/index';
+import { FingerprintPreset, Options, createFingerprintAsync } from '../../../build/index';
 import { Command } from '../cli';
 import { assertArgs, getProjectRoot } from '../utils/args';
 import { CommandError } from '../utils/errors';
@@ -13,6 +13,7 @@ export const generateFingerprintAsync: Command = async (argv) => {
     {
       // Types
       '--help': Boolean,
+      '--preset': String,
       '--platform': [String],
       '--concurrent-io-limit': Number,
       '--hash-algorithm': String,
@@ -35,11 +36,12 @@ Generate fingerprint for a project
   {dim $} npx @expo/fingerprint fingerprint:generate
 
   Options
+  --preset <string>                    Preset to derive defaults from: 'strict', 'balanced' (default), or 'relaxed'. An explicit --source-skips overrides the preset.
   --platform <string[]>                Limit native files to those for specified platforms. Default is ['android', 'ios'].
   --concurrent-io-limit <number>       I/O concurrent limit. Default is the number of CPU cores.
   --hash-algorithm <string>            The algorithm to use for crypto.createHash(). Default is 'sha1'.
   --ignore-path <string[]>             Ignore files and directories from hashing. The supported pattern is the same as glob().
-  --source-skips <number>              Skips some sources from fingerprint. Value is the result of bitwise-OR'ing desired values of SourceSkips. Default is DEFAULT_SOURCE_SKIPS.
+  --source-skips <number>              Skips some sources from fingerprint. Value is the result of bitwise-OR'ing desired values of SourceSkips. Overrides the preset's source skips.
   --debug                              Whether to include verbose debug information in output
   -h, --help                           Output usage information
     `,
@@ -86,12 +88,20 @@ Generate fingerprint for a project
     throw new CommandError(`Invalid value for --source-skips argument: ${sourceSkips}`);
   }
 
+  const preset = args['--preset'] as FingerprintPreset | undefined;
+  if (preset && !['strict', 'balanced', 'relaxed'].includes(preset)) {
+    throw new CommandError(
+      `Invalid value for --preset argument: ${preset}. Supported presets are 'strict', 'balanced', and 'relaxed'.`
+    );
+  }
+
   const options: Options = {
     debug: !!process.env.DEBUG || args['--debug'],
     silent: true,
     useRNCoreAutolinkingFromExpo: process.env['USE_RNCORE_AUTOLINKING_FROM_EXPO']
       ? boolish('USE_RNCORE_AUTOLINKING_FROM_EXPO')
       : undefined,
+    ...(preset ? { preset } : null),
     ...(platforms ? { platforms } : null),
     ...(concurrentIoLimit ? { concurrentIoLimit } : null),
     ...(hashAlgorithm ? { hashAlgorithm } : null),

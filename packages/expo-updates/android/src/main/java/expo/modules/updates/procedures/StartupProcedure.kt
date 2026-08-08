@@ -194,7 +194,7 @@ class StartupProcedure(
             logger.info("UpdatesController onBackgroundUpdateFinished: No update available", UpdatesErrorCode.NoUpdatesAvailable)
             // TODO: handle rollbacks properly, but this works for now
             if (procedureContext.getCurrentState() == UpdatesStateValue.Downloading) {
-              procedureContext.processStateEvent(UpdatesStateEvent.DownloadComplete())
+              procedureContext.processStateEvent(UpdatesStateEvent.DownloadCompleteUnavailable())
             }
           }
         }

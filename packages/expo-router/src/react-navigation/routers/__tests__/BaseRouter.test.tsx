@@ -2,6 +2,7 @@ import { expect, jest, test } from '@jest/globals';
 
 import { BaseRouter } from '../BaseRouter';
 import * as CommonActions from '../CommonActions';
+import type { NavigationState } from '../types';
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: () => 'test' }));
 
@@ -224,4 +225,74 @@ test("doesn't handle RESET if there are no routes", () => {
   );
 
   expect(result).toBeNull();
+});
+
+const DECLARED_ROUTES_STATE: NavigationState = {
+  stale: false,
+  type: 'tab',
+  key: 'test',
+  index: 2,
+  routeNames: ['first', 'removed', 'focused', 'last'],
+  routes: [
+    { key: 'first', name: 'first' },
+    { key: 'removed', name: 'removed' },
+    { key: 'focused', name: 'focused' },
+    { key: 'last', name: 'last' },
+  ],
+  history: [{ type: 'route', key: 'removed' }],
+};
+
+test('getStateForDeclaredRoutes returns the same state when every route is declared', () => {
+  expect(
+    BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, DECLARED_ROUTES_STATE.routeNames)
+  ).toBe(DECLARED_ROUTES_STATE);
+});
+
+test('getStateForDeclaredRoutes returns an empty state when no route is declared', () => {
+  expect(BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, ['replacement'])).toEqual({
+    ...DECLARED_ROUTES_STATE,
+    index: -1,
+    routes: [],
+  });
+});
+
+test('getStateForDeclaredRoutes filters routes without reordering or changing unrelated state', () => {
+  const result = BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, [
+    'last',
+    'focused',
+    'first',
+  ]);
+
+  expect(result).toEqual({
+    ...DECLARED_ROUTES_STATE,
+    index: 1,
+    routes: [
+      DECLARED_ROUTES_STATE.routes[0],
+      DECLARED_ROUTES_STATE.routes[2],
+      DECLARED_ROUTES_STATE.routes[3],
+    ],
+  });
+  expect(result.history).toBe(DECLARED_ROUTES_STATE.history);
+  expect(result.routeNames).toBe(DECLARED_ROUTES_STATE.routeNames);
+});
+
+test('getStateForDeclaredRoutes falls back to the first survivor when the focused route is removed', () => {
+  const result = BaseRouter.getStateForDeclaredRoutes(DECLARED_ROUTES_STATE, [
+    'first',
+    'removed',
+    'last',
+  ]);
+
+  expect(result.index).toBe(0);
+  expect(result.routes[result.index]).toBe(DECLARED_ROUTES_STATE.routes[0]);
+});
+
+test('getStateForDeclaredRoutes falls back to the first survivor when no earlier route survives', () => {
+  const result = BaseRouter.getStateForDeclaredRoutes({ ...DECLARED_ROUTES_STATE, index: 0 }, [
+    'focused',
+    'last',
+  ]);
+
+  expect(result.index).toBe(0);
+  expect(result.routes[result.index]).toBe(DECLARED_ROUTES_STATE.routes[2]);
 });

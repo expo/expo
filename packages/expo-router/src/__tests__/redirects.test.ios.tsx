@@ -224,7 +224,6 @@ it('can push to a redirect', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -234,7 +233,6 @@ it('can push to a redirect', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', 'bar', 'foo'],
           routes: [
             {
@@ -269,7 +267,12 @@ it('does not render redirects in tabs', async () => {
   ]);
 
   renderRouter({
-    _layout: () => <Tabs />,
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="bar" />
+      </Tabs>
+    ),
     index: () => null,
     bar: () => <Text testID="bar" />,
   });
@@ -286,7 +289,12 @@ it('redirect to external URL', async () => {
   ]);
 
   renderRouter({
-    _layout: () => <Tabs />,
+    _layout: () => (
+      <Tabs>
+        <Tabs.Screen name="index" />
+        <Tabs.Screen name="bar" />
+      </Tabs>
+    ),
     index: () => null,
     bar: () => <Text testID="bar" />,
   });
@@ -306,7 +314,11 @@ it('redirects will override existing routes', () => {
 
   renderRouter({
     _layout: () => <Stack />,
-    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/_layout': () => (
+      <Tabs>
+        <Tabs.Screen name="explore" />
+      </Tabs>
+    ),
     '(tabs)/explore': () => <Text testID="explore">Explore</Text>,
     index: () => null,
     bar: () => <Text testID="bar" />,
@@ -328,7 +340,12 @@ it('tabs can still work for redirects', () => {
   renderRouter(
     {
       _layout: () => <Stack />,
-      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="explore" />
+        </Tabs>
+      ),
       '(tabs)/index': () => <Text testID="index">Index</Text>,
       '(tabs)/explore': () => <Text testID="explore">Explore</Text>,
       '/page': () => <Text testID="page">Page</Text>,
@@ -355,7 +372,12 @@ it('tabs can still work for external redirects', () => {
   renderRouter(
     {
       _layout: () => <Stack />,
-      '(tabs)/_layout': () => <Tabs />,
+      '(tabs)/_layout': () => (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="explore" />
+        </Tabs>
+      ),
       '(tabs)/index': () => <Text testID="index">Index</Text>,
       '(tabs)/explore': () => <Text testID="explore">Explore</Text>,
     },
@@ -392,7 +414,6 @@ it('not existing nested route redirects correctly', () => {
   expect(store.state).toStrictEqual({
     index: 0,
     key: expect.any(String),
-    preloadedRoutes: [],
     routeNames: ['__root', '+not-found', '_sitemap'],
     routes: [
       {
@@ -402,7 +423,6 @@ it('not existing nested route redirects correctly', () => {
         state: {
           index: 1,
           key: expect.any(String),
-          preloadedRoutes: [],
           routeNames: ['index', 'explore', 'test/1234', '[id]'],
           routes: [
             {

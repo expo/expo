@@ -38,12 +38,12 @@ export default function BasicAlertDialogExample() {
   return (
     <Host matchContents>
       <Button onClick={() => setVisible(true)}>
-        <Text>Show Alert</Text>
+        <Text>Show alert</Text>
       </Button>
       {visible && (
         <AlertDialog onDismissRequest={() => setVisible(false)}>
           <AlertDialog.Title>
-            <Text>Confirm Action</Text>
+            <Text>Confirm action</Text>
           </AlertDialog.Title>
           <AlertDialog.Text>
             <Text>Are you sure you want to proceed?</Text>
@@ -77,7 +77,7 @@ export default function CustomColorsExample() {
   return (
     <Host matchContents>
       <Button onClick={() => setVisible(true)}>
-        <Text>Show Alert</Text>
+        <Text>Show alert</Text>
       </Button>
       {visible && (
         <AlertDialog
@@ -122,7 +122,7 @@ export default function IconDialogExample() {
   return (
     <Host matchContents>
       <Button onClick={() => setVisible(true)}>
-        <Text>Show Alert</Text>
+        <Text>Show alert</Text>
       </Button>
       {visible && (
         <AlertDialog onDismissRequest={() => setVisible(false)}>

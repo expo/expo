@@ -1,6 +1,7 @@
 import { NativeModule, registerWebModule } from 'expo';
 import AppMetrics, { type LogEventOptions, type MetricAttributes } from 'expo-app-metrics';
 
+import { reportCaughtError } from './reportCaughtError';
 import type {
   ObserveConfig,
   ObserveIntegrationsConfig,
@@ -15,8 +16,17 @@ class ExpoObserveModule extends NativeModule<ObserveModuleEvents> implements Obs
   getIntegrations(): ObserveIntegrationsConfig {
     return {};
   }
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void {
+    // Web does not provide integration configuration or emit `configure` events.
+  }
   logEvent(name: string, options?: LogEventOptions): void {
     AppMetrics.logEvent(name, options);
+  }
+  reportError(error: unknown): void {
+    reportCaughtError(error);
   }
   markFirstRender(): void {
     AppMetrics.markFirstRender();

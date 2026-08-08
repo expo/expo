@@ -4,7 +4,7 @@ internal import SDWebImage
 import ExpoModulesCore
 
 /**
- An exception to throw when it its not possible to generate a blurhash for a given URL.
+ An exception to throw when it is not possible to generate a blurhash for a given URL.
  */
 public final class BlurhashGenerationException: Exception {
   override public var reason: String {

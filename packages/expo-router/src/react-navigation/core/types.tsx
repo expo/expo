@@ -81,7 +81,7 @@ export type DefaultNavigatorOptions<
   screenOptions?:
     | ScreenOptions
     | ((props: {
-        route: RouteProp<ParamList>;
+        route: DescriptorRouteProp<ParamList>;
         navigation: Navigation;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);
@@ -103,27 +103,6 @@ export type DefaultNavigatorOptions<
   UNSTABLE_router?: <Action extends NavigationAction>(
     original: Router<State, Action>
   ) => Partial<Router<State, Action>>;
-
-  /**
-   * What should happen when the available route names change.
-   * e.g. when different screens are rendered based on a condition.
-   *
-   * - 'firstMatch': Navigate to the first route in the new list of routes (default).
-   * - 'lastUnhandled': Restore the last state that was unhandled due to conditional render.
-   *
-   * Example cases where previous state might have been unhandled:
-   * - Opened a deep link to a screen, but a login screen was shown.
-   * - Navigated to a screen containing a navigator, but a different screen was shown.
-   * - Reset the navigator to a state with different routes not matching the current list of routes.
-   *
-   * In these cases, 'lastUnhandled' will reuse the unhandled state if present.
-   * If there's no unhandled state, it will fallback to 'firstMatch' behavior.
-   *
-   * Caveats:
-   * - Direct navigation is only handled for `NAVIGATE` actions.
-   * - Unhandled state is restored only if the current state becomes invalid, i.e. it doesn't contain any currently defined screens.
-   */
-  UNSTABLE_routeNamesChangeBehavior?: 'firstMatch' | 'lastUnhandled';
 } & (NavigatorID extends string
     ? {
         /**
@@ -141,7 +120,8 @@ export type EventMapCore<State extends NavigationState> = {
   focus: { data: undefined };
   blur: { data: undefined };
   state: { data: { state: State } };
-  beforeRemove: { data: { action: NavigationAction }; canPreventDefault: true };
+  beforeRemove: { data: { action: NavigationAction } };
+  removePrevented: { data: { action: NavigationAction } };
 };
 
 export type EventArg<
@@ -211,6 +191,7 @@ export type EventEmitter<EventMap extends EventMapBase> = {
     options: {
       type: EventName;
       target?: string;
+      preventDefault?: () => void;
       // eslint-disable-next-line @typescript-eslint/no-empty-object-type
     } & (EventMap[EventName]['canPreventDefault'] extends true ? { canPreventDefault: true } : {}) &
       (undefined extends EventMap[EventName]['data']
@@ -497,6 +478,11 @@ export type RouteProp<
   RouteName extends keyof ParamList = Keyof<ParamList>,
 > = Route<Extract<RouteName, string>, ParamList[RouteName]>;
 
+export type DescriptorRouteProp<
+  ParamList extends ParamListBase,
+  RouteName extends keyof ParamList = Keyof<ParamList>,
+> = DescriptorRoute<RouteProp<ParamList, RouteName>>;
+
 export type CompositeNavigationProp<
   A extends NavigationProp<ParamListBase, string, any, any, any>,
   B extends NavigationHelpersCommon<ParamListBase, any>,
@@ -562,6 +548,20 @@ export type ScreenLayoutArgs<
   children: React.ReactElement;
 };
 
+/**
+ * Whether a screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+ * or inferred from the filesystem.
+ */
+export type RouteSource = 'layout' | 'filesystem';
+
+/**
+ * Route carried by a descriptor. `key` is `undefined` when the descriptor
+ * describes a route name declared in a layout that has no live route
+ * instance in navigation state.
+ */
+export type DescriptorRoute<Route extends RouteProp<any, any>> = Omit<Route, 'key'> &
+  Readonly<{ key: string | undefined }>;
+
 export type Descriptor<
   // eslint-disable-next-line @typescript-eslint/no-empty-object-type
   ScreenOptions extends {},
@@ -571,7 +571,7 @@ export type Descriptor<
   /**
    * Render the component associated with this route.
    */
-  render(): React.JSX.Element;
+  render(): React.JSX.Element | null;
 
   /**
    * Options for the route.
@@ -581,12 +581,19 @@ export type Descriptor<
   /**
    * Route object for the screen
    */
-  route: Route;
+  route: DescriptorRoute<Route>;
 
   /**
    * Navigation object for the screen
    */
   navigation: Navigation;
+
+  /**
+   * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+   * or inferred from the filesystem. Set by Expo Router; `undefined` for screens
+   * created outside Expo Router's screen pipeline.
+   */
+  routeSource?: RouteSource;
 };
 
 export type ScreenListeners<
@@ -649,13 +656,6 @@ export type RouteConfigProps<
   Navigation,
 > = {
   /**
-   * Optional key for this screen. This doesn't need to be unique.
-   * If the key changes, existing screens with this name will be removed or reset.
-   * Useful when we have some common screens and have conditional rendering.
-   */
-  navigationKey?: string;
-
-  /**
    * Route name of this screen.
    */
   name: RouteName;
@@ -666,7 +666,7 @@ export type RouteConfigProps<
   options?:
     | ScreenOptions
     | ((props: {
-        route: RouteProp<ParamList, RouteName>;
+        route: DescriptorRouteProp<ParamList, RouteName>;
         navigation: Navigation;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);
@@ -702,6 +702,12 @@ export type RouteConfigProps<
    * Initial params object for the route.
    */
   initialParams?: Partial<ParamList[RouteName]>;
+
+  /**
+   * Whether this screen was declared in the layout (`<Screen>`/`<NativeTabs.Trigger>`)
+   * or inferred from the filesystem.
+   */
+  routeSource?: RouteSource;
 };
 
 export type RouteConfig<
@@ -722,18 +728,12 @@ export type RouteGroupConfig<
   Navigation,
 > = {
   /**
-   * Optional key for the screens in this group.
-   * If the key changes, all existing screens in this group will be removed or reset.
-   */
-  navigationKey?: string;
-
-  /**
    * Navigator options for this screen.
    */
   screenOptions?:
     | ScreenOptions
     | ((props: {
-        route: RouteProp<ParamList, keyof ParamList>;
+        route: DescriptorRouteProp<ParamList, keyof ParamList>;
         navigation: Navigation;
         theme: ReactNavigation.Theme;
       }) => ScreenOptions);
@@ -792,7 +792,7 @@ export type NavigationContainerEventMap = {
        */
       action: NavigationAction;
       /**
-       * Whether the action was a no-op, i.e. resulted any state changes.
+       * Whether the action was a no-op, i.e. resulted in any state changes.
        */
       noop: boolean;
       /**
@@ -915,10 +915,7 @@ export type NavigatorTypeBag<
   Navigator: Navigator;
 };
 
-export type TypedNavigator<
-  Bag extends NavigatorTypeBagBase,
-  Config = unknown,
-> = TypedNavigatorInternal<
+export type TypedNavigator<Bag extends NavigatorTypeBagBase> = TypedNavigatorInternal<
   Bag['ParamList'],
   Bag['NavigatorID'],
   Bag['State'],
@@ -926,9 +923,7 @@ export type TypedNavigator<
   Bag['EventMap'],
   Bag['NavigationList'],
   Bag['Navigator']
-> &
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  (undefined extends Config ? {} : { config: Config });
+>;
 
 type TypedNavigatorInternal<
   ParamList extends ParamListBase,
@@ -1011,8 +1006,8 @@ type PathConfigAlias = {
    */
   path: string;
   /**
-   * Whether the path should be consider parent paths or use the exact path.
-   * By default, paths are relating to the path config on the parent screen.
+   * Whether the path should consider parent paths or use the exact path.
+   * By default, paths are relative to the path config on the parent screen.
    * If `exact` is set to `true`, the parent path configuration is not used.
    */
   exact?: boolean;

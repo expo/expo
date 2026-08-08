@@ -52,7 +52,7 @@ export function UseCallActions({
       <Button
         testID={'call-jsx-server-action-' + title}
         onPress={handleClick1}
-        title={`Invoke: action()`}
+        title="Invoke: action()"
       />
 
       <View

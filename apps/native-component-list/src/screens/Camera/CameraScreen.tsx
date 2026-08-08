@@ -51,6 +51,13 @@ export const CameraScreens = [
       return optionalRequire(() => require('./CameraScreenDocumentScanner'));
     },
   },
+  {
+    name: 'Capture Dimensions',
+    route: 'camera/expo-camera-capture-dimensions',
+    getComponent() {
+      return optionalRequire(() => require('./CameraScreenCaptureDimensions'));
+    },
+  },
 ];
 
 export default function CameraScreen() {

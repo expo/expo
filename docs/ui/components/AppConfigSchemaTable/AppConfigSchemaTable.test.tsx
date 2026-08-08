@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 
-import { renderWithHeadings } from '~/common/test-utilities';
+import { axe, renderWithHeadings } from '~/common/test-utilities';
 
 import AppConfigSchemaTable from './';
 import { formatSchema, createDescription } from './helpers';
@@ -98,6 +98,13 @@ describe('AppConfigSchemaPropertiesTable', () => {
 
     expect(screen.getByText('Color to fill the loading screen background.'));
     expect(screen.getByText('6 character long hex color string, eg:'));
+  });
+
+  test('has no axe violations', async () => {
+    const { container } = renderWithHeadings(<AppConfigSchemaTable schema={TEST_SCHEMA} />);
+    expect(
+      await axe(container, { rules: { 'nested-interactive': { enabled: false } } })
+    ).toHaveNoViolations();
   });
 });
 

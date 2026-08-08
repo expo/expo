@@ -62,6 +62,20 @@ export type ObserveConfig = {
    */
   sampleRate?: number;
   /**
+   * Whether to record unhandled JavaScript errors as `exception` log events.
+   *
+   * When `false`, unhandled errors are no longer recorded. React Native's own handling is
+   * unaffected either way: the red box in development and fatal termination in production still
+   * happen. Errors you report yourself with `reportError`, and render-phase errors captured by
+   * `ObserveErrorBoundary`, are also unaffected.
+   *
+   * > Note: The handler is installed when the package is first imported, which is earlier than any
+   * > `configure` call. An error thrown before `configure` runs is therefore still recorded.
+   *
+   * @default true
+   */
+  errorHandlingEnabled?: boolean;
+  /**
    * Opt in to per-integration behavior.
    */
   integrations?: ObserveIntegrationsConfig;
@@ -127,6 +141,23 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    */
   getIntegrations(): ObserveIntegrationsConfig;
   /**
+   * Invokes a callback once when the named integration configuration becomes available.
+   *
+   * @param name Integration name.
+   * @param callback Function called with the integration configuration.
+   *
+   * @example
+   * ```ts
+   * Observe.registerIntegration('expo-router', config => {
+   *   console.log(config);
+   * });
+   * ```
+   */
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void;
+  /**
    * Records a log event against the current main session. The event is
    * persisted locally and dispatched on the next `dispatchEvents()` flush.
    *
@@ -136,6 +167,27 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * @param options Optional body, attributes, and severity overrides.
    */
   logEvent(name: string, options?: LogEventOptions): void;
+  /**
+   * Reports an error your code caught and handled, recorded as a non-fatal `exception` event. Use it
+   * to keep visibility into failures you recover from, which never reach the automatic global handler
+   * or an error boundary.
+   *
+   * The thrown value is normalized: an `Error`'s `name`, `message`, and `stack` are captured; any
+   * other value (a string, a plain object) is stringified as the message.
+   *
+   * @param error The caught value. An `Error` is preferred, but any thrown value is accepted.
+   *
+   * @example
+   * ```ts
+   * try {
+   *   await syncCart();
+   * } catch (error) {
+   *   Observe.reportError(error);
+   * }
+   * ```
+   */
+  // eslint-disable-next-line handle-callback-err -- `error` is the caught value to report, not a Node callback error.
+  reportError(error: unknown): void;
   /**
    * Marks the first render of the app. Used to compute the `cold_ttr` and
    * `warm_ttr` metrics.

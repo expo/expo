@@ -10,8 +10,7 @@ import { directoryExistsSync, isPathInside } from '../../../utils/dir';
 import { CommandError } from '../../../utils/errors';
 import { toPosixPath } from '../../../utils/filePath';
 import { learnMore } from '../../../utils/link';
-
-const debug = require('debug')('expo:start:server:metro:router') as typeof console.log;
+import { event } from './routerEvents';
 
 /**
  * Get the relative path for requiring the `/app` folder relative to the `expo-router/entry` file.
@@ -30,7 +29,11 @@ export function getAppRouterRelativeEntryPath(
   // It doesn't matter if the app folder exists.
   const appFolder = path.join(projectRoot, routerDirectory);
   const appRoot = path.relative(path.dirname(routerEntry), appFolder);
-  debug('expo-router entry', routerEntry, appFolder, appRoot);
+  event('entry_resolved', {
+    routerEntry: event.path(routerEntry),
+    appFolder: event.path(appFolder),
+    appRoot,
+  });
   return appRoot;
 }
 
@@ -75,7 +78,6 @@ export function getRouterDirectory(projectRoot: string): string {
     return path.join('src', 'app');
   }
 
-  debug('Using app as the root directory for Expo Router.');
   return 'app';
 }
 
@@ -92,7 +94,7 @@ export function getApiRoutesForDirectory(cwd: string) {
 }
 
 /**
- * Gets the +middleware file for a given directory. In
+ * Gets the +middleware file for a given directory.
  * @param cwd
  */
 export function getMiddlewareForDirectory(cwd: string): string | null {

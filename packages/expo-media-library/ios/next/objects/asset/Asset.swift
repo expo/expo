@@ -110,9 +110,11 @@ class Asset: SharedObject {
 
   func getOrientation() async throws -> Int? {
     let phAsset = try await requirePHAsset()
+    let options = PHContentEditingInputRequestOptions()
+    options.isNetworkAccessAllowed = true
     guard
       phAsset.mediaType == .image,
-      let contentEditingInput = try await phAsset.requestContentEditingInput().input
+      let contentEditingInput = try await phAsset.requestContentEditingInput(options: options).input
     else {
       return nil
     }

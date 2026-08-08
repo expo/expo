@@ -5,8 +5,6 @@ import {
   type TabActionType as RNTabActionType,
   type TabNavigationState,
   type TabRouterOptions as RNTabRouterOptions,
-  type StackActionType,
-  type NavigationAction,
   TabRouter as RNTabRouter,
 } from '../react-navigation/native';
 import type { TriggerMap } from './common';
@@ -15,12 +13,9 @@ export type ExpoTabRouterOptions = RNTabRouterOptions & {
   triggerMap: TriggerMap;
 };
 
-type ReplaceAction = Extract<StackActionType, { type: 'REPLACE' }>;
-
 export type ExpoTabActionType =
   | RNTabActionType
   | CommonNavigationAction
-  | ReplaceAction
   | {
       type: 'JUMP_TO';
       source?: string;
@@ -40,46 +35,15 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
     ExpoTabActionType | CommonNavigationAction
   > = {
     ...rnTabRouter,
-    getStateForAction(state, action, options) {
-      if (isReplaceAction(action)) {
-        action = {
-          ...action,
-          type: 'JUMP_TO',
-        };
-        // Generate the state as if we were using JUMP_TO
-        const nextState = rnTabRouter.getStateForAction(state, action, options);
-
-        if (!nextState || nextState.index === undefined || !Array.isArray(nextState.history)) {
-          return null;
-        }
-
-        // We can assert that nextState is TabNavigationState here, because we checked for index and history above
-        state = nextState as TabNavigationState<ParamListBase>;
-
-        // If the state is valid and we didn't JUMP_TO a single history state,
-        // then remove the previous state.
-        if (state.index !== 0) {
-          const previousIndex = state.index - 1;
-
-          state = {
-            ...state,
-            key: `${state.key}-replace`,
-            // Omit the previous history entry that we are replacing
-            history: [
-              ...state.history.slice(0, previousIndex),
-              ...state.history.splice(state.index),
-            ],
-          };
-        }
-      } else if (action.type !== 'JUMP_TO') {
-        return rnTabRouter.getStateForAction(state, action, options);
+    getStateForAction(state, action, routerConfigOptions) {
+      if (action.type !== 'JUMP_TO') {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
       const route = state.routes.find((route) => route.name === action.payload.name);
 
-      if (!route || !state) {
-        // This shouldn't occur, but lets just hand it off to the next navigator in case.
-        return null;
+      if (!route) {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
 
       // We should reset if this is the first time visiting the route
@@ -90,8 +54,8 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       }
 
       if (shouldReset) {
-        options.routeParamList[route.name] = {
-          ...options.routeParamList[route.name],
+        routerConfigOptions.routeParamList[route.name] = {
+          ...routerConfigOptions.routeParamList[route.name],
         };
         state = {
           ...state,
@@ -102,16 +66,17 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
             return { ...r, state: undefined };
           }),
         };
-        return rnTabRouter.getStateForAction(state, action, options);
-      } else {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
+      } else if (route.state !== undefined) {
+        // TODO(@ubax): Remove this branch together with nested trigger href support. Refocusing
+        // a tab that hosts a navigator must not re-apply the trigger's nested payload
+        // (`params.screen`), which would reset the preserved child state.
         return rnTabRouter.getStateForRouteFocus(state, route.key);
+      } else {
+        return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }
     },
   };
 
   return router;
-}
-
-function isReplaceAction(action: NavigationAction): action is ReplaceAction {
-  return action.type === 'REPLACE';
 }

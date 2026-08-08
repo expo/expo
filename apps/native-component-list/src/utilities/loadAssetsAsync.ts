@@ -6,14 +6,15 @@ import {
 } from '@expo-google-fonts/inter';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-import { Assets as StackAssets } from '@react-navigation/elements';
 import { Asset } from 'expo-asset';
 import * as Font from 'expo-font';
+import { Assets as StackAssets } from 'expo-router/react-navigation';
 import { Platform } from 'react-native';
 
 async function loadAssetsAsync() {
   const assetPromises: Promise<any>[] = [
-    Asset.loadAsync(StackAssets),
+    // The assets are `require` results, so they are numbers at runtime.
+    Asset.loadAsync(StackAssets as number[]),
     Font.loadAsync(Ionicons.font),
     Font.loadAsync(MaterialIcons.font),
     Font.loadAsync({

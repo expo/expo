@@ -6,32 +6,105 @@
 
 ### 🎉 New features
 
+- Resolve asset URLs and `bundleUrl` from base request URL ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
+
+### 🐛 Bug fixes
+
+- [Android] Fix SIGABRT when loading a development server URL that has no path (e.g. `http://192.168.1.2:8081`): Android's `URI.resolve` omits the path separator for an empty-path base, so the first segment of a relative `bundleUrl` was spliced onto the port and the resulting authority failed to parse. ([#48625](https://github.com/expo/expo/pull/48625) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Use `RCTPlatformName` instead of hardcoding `ios` when requesting bundles from Metro. ([#46443](https://github.com/expo/expo/pull/46443) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [Android] Fixed a crash when cold-launching a development build from a deep link that carries intent categories (e.g. an App Link opened from a browser). ([#46314](https://github.com/expo/expo/pull/46314) by [@lilianchiassai-fc](https://github.com/lilianchiassai-fc) & [#46328](https://github.com/expo/expo/pull/46328) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Discover packagers across all connected networks on Android 33+. ([#46487](https://github.com/expo/expo/pull/46487) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Forward the launching intent's extras when cold-launching the most recently opened bundle, so launch arguments (e.g. from Maestro/Detox or `adb am start -e`) reach the app and `react-native-launch-arguments` can read them. ([#47352](https://github.com/expo/expo/pull/47352) by [@kanzelm3](https://github.com/kanzelm3))
+- [iOS] Fix Release build failure from an unguarded call to `RCTBundleURLProviderAllowPackagerServerAccess`. ([#47688](https://github.com/expo/expo/pull/47688) by [@ramonclaudio](https://github.com/ramonclaudio))
+- [iOS] Keep the dev-launcher local network Info.plist keys in custom debug build configurations instead of only a configuration literally named "Debug".
+- [iOS] Report a distinct "discovery isn't configured" message and stop mislabeling a missing Info.plist entry, no network, or a pending system prompt as a denied Local Network permission.
+- [iOS] Stop triggering the Local Network permission prompt at launch by suppressing the React Native packager check until a development server is selected.
+- [iOS] Point at the Local Network setting when a local dev server URL can't be reached, and log instead of silently dropping discovered servers that fail to resolve. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Reload the recently opened apps list when the launcher appears so it no longer shows up empty or stale. ([#48103](https://github.com/expo/expo/pull/48103) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- [iOS] Fix flaky recently opened apps registry tests by giving each one its own storage key. ([#48349](https://github.com/expo/expo/pull/48349) by [@tsapeta](https://github.com/tsapeta))
+- [Android] Remove the legacy (old architecture) dev support manager and dead build configuration. ([#47640](https://github.com/expo/expo/pull/47640) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Remove legacy (old architecture) code paths and dead build configuration. ([#47639](https://github.com/expo/expo/pull/47639) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Replace swizzling and reflection into React Native internals (packager access, RedBox, instance teardown) with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
+- [Android] Replace reflection into React Native internals with public 0.86 APIs. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
+- Removed Quick and Nimble in favor of Swift Testing. ([#48530](https://github.com/expo/expo/pull/48530) by [@tsapeta](https://github.com/tsapeta))
+
+## 57.0.10 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.9 - 2026-07-23
+
+### 🐛 Bug fixes
+
+- [Android] Fix onUserLeaveHint NPE and lost EAS sign-in redirect. ([#47347](https://github.com/expo/expo/pull/47347) by [@vicprz](https://github.com/vicprz))
+
+## 57.0.8 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.7 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.6 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fix tvOS compile error in DevServersView. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
+
+## 57.0.4 - 2026-07-01
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-25
+
+### 🎉 New features
+
 - Add a Settings toggle to switch between auto-launching the most recent app and showing the launcher. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Add build's expiration date to Settings. ([#47190](https://github.com/expo/expo/pull/47190) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes
 
-- [iOS] Use `RCTPlatformName` instead of hardcoding `ios` when requesting bundles from Metro. ([#46443](https://github.com/expo/expo/pull/46443) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [iOS] Cleared the deep-link URL from cached `launchOptions` after it is consumed ([#46265](https://github.com/expo/expo/pull/46265) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [Android] Fixed a crash when cold-launching a development build from a deep link that carries intent categories (e.g. an App Link opened from a browser). ([#46314](https://github.com/expo/expo/pull/46314) by [@lilianchiassai-fc](https://github.com/lilianchiassai-fc) & [#46328](https://github.com/expo/expo/pull/46328) by [@lukmccall](https://github.com/lukmccall))
-- [Android] Discover packagers across all connected networks on Android 33+. ([#46487](https://github.com/expo/expo/pull/46487) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Present Local Network permission as a status row instead of a toggle, and make the Settings debug actions native, full-row-tappable list rows. ([#46758](https://github.com/expo/expo/pull/46758) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Improve the Updates tab empty state with clearer guidance on how to publish an update. ([#46759](https://github.com/expo/expo/pull/46759) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Present the development server info dialog as a native sheet. ([#46760](https://github.com/expo/expo/pull/46760) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Reduce accidental logout in the account selector with a confirmation step and a less prominent button, and add more spacing around the header title. ([#46761](https://github.com/expo/expo/pull/46761) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Make the development server list reliable, keep discovery running across tab switches, periodically re-verify discovered servers, add pull-to-refresh on the Home tab, and show a searching state instead of "No development servers found". ([#46811](https://github.com/expo/expo/pull/46811) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Explain why a project failed to load instead of showing a generic "Failed to connect" message. ([#46866](https://github.com/expo/expo/pull/46866) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Fix tvOS compile error in DevServersView. ([#47082](https://github.com/expo/expo/pull/47082) by [@douglowder](https://github.com/douglowder))
 - [Android] Fix auto-launching into the most recently opened project on startup. ([#47131](https://github.com/expo/expo/pull/47131) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Forward the launching intent's extras when cold-launching the most recently opened bundle, so launch arguments (e.g. from Maestro/Detox or `adb am start -e`) reach the app and `react-native-launch-arguments` can read them. ([#47352](https://github.com/expo/expo/pull/47352) by [@kanzelm3](https://github.com/kanzelm3))
-- [iOS] Fix Release build failure from an unguarded call to `RCTBundleURLProviderAllowPackagerServerAccess`. ([#47688](https://github.com/expo/expo/pull/47688) by [@ramonclaudio](https://github.com/ramonclaudio))
 
-### 💡 Others
+## 57.0.0 - 2026-06-25
 
-- [Android] Remove the legacy (old architecture) dev support manager and dead build configuration. ([#47640](https://github.com/expo/expo/pull/47640) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Remove legacy (old architecture) code paths and dead build configuration. ([#47639](https://github.com/expo/expo/pull/47639) by [@alanjhughes](https://github.com/alanjhughes))
-- [iOS] Replace swizzling and reflection into React Native internals (packager access, RedBox, instance teardown) with public APIs. ([#47638](https://github.com/expo/expo/pull/47638) by [@alanjhughes](https://github.com/alanjhughes))
-- [Android] Replace reflection into React Native internals with public 0.86 APIs. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
+_This version does not introduce any user-facing changes._
+
+## 56.0.20 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.18 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.17 - 2026-05-29
+
+### 🐛 Bug fixes
+
+- [iOS] Cleared the deep-link URL from cached `launchOptions` after it is consumed ([#46265](https://github.com/expo/expo/pull/46265) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 56.0.16 — 2026-05-26
 
@@ -339,7 +412,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix port scanning on pysical devices. ([#40824](https://github.com/expo/expo/pull/40824) by [@alanjhughes](https://github.com/alanjhughes))
+- [iOS] Fix port scanning on physical devices. ([#40824](https://github.com/expo/expo/pull/40824) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 6.0.19 - 2025-12-04
 
@@ -655,7 +728,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed mutiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
+- [Android] Fixed multiple reload when pressing `r` in CLI on react-native old architecture mode. ([#32532](https://github.com/expo/expo/pull/32532) by [@kudo](https://github.com/kudo))
 - Fixed build error when `EX_DEV_CLIENT_NETWORK_INSPECTOR` is false. ([#32644](https://github.com/expo/expo/pull/32644) by [@kudo](https://github.com/kudo))
 - [iOS] Fix handling deep links ([#32677](https://github.com/expo/expo/pull/32677) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
@@ -1147,7 +1220,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fix modern manifest serving for dev client without expo-updates. ([#22470](https://github.com/expo/expo/pull/22470) by [@wschurman](https://github.com/wschurman))
-- Fixed react-native nighlies `0.73.0-nightly-20230515-066f0b76d` build errors on Android. ([#22503](https://github.com/expo/expo/pull/22503) by [@kudo](https://github.com/kudo))
+- Fixed react-native nightlies `0.73.0-nightly-20230515-066f0b76d` build errors on Android. ([#22503](https://github.com/expo/expo/pull/22503) by [@kudo](https://github.com/kudo))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 - Fixed Home screen KeyboardAvoidingView. ([#22661](https://github.com/expo/expo/pull/22661) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Refactored network inspector code and add unit tests. ([#22669](https://github.com/expo/expo/pull/22669), [#22693](https://github.com/expo/expo/pull/22693) by [@kudo](https://github.com/kudo))
@@ -1352,7 +1425,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Fixed the singleton `RCTBridge.currentBridge` instance value be override by expo-dev-launcher bridge instance on iOS. ([#17780](https://github.com/expo/expo/pull/17780) by [@kudo](https://github.com/kudo))
+- Fixed the singleton `RCTBridge.currentBridge` instance value be overridden by expo-dev-launcher bridge instance on iOS. ([#17780](https://github.com/expo/expo/pull/17780) by [@kudo](https://github.com/kudo))
 
 ## 0.11.7 — 2022-06-07
 
@@ -1445,7 +1518,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- Added `android:exported="true"` to the activity, cause on Android 12 and higher it needs to [explicity declared](https://developer.android.com/about/versions/12/behavior-changes-12#exported). ([#16367](https://github.com/expo/expo/pull/16367) by [@wbroek](https://github.com/wbroek))
+- Added `android:exported="true"` to the activity, cause on Android 12 and higher it needs to [explicitly declared](https://developer.android.com/about/versions/12/behavior-changes-12#exported). ([#16367](https://github.com/expo/expo/pull/16367) by [@wbroek](https://github.com/wbroek))
 - Fix build errors on React Native 0.66 caused by `okio` and `okhttp`. ([#15632](https://github.com/expo/expo/pull/15632) by [@kudo](https://github.com/kudo))
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Fix regression in deep linking configuration. ([#16125](https://github.com/expo/expo/pull/16125) by [@ajsmth](https://github.com/ajsmth))

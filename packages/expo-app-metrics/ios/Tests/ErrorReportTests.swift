@@ -36,4 +36,20 @@ struct ErrorReportTests {
     let attributes = try! #require(report.toLogRecord().attributes?.value as? [String: Any])
     #expect(attributes.keys.contains("expo.error.component_stack") == false)
   }
+
+  @Test
+  func `tags a user-reported error with the reportedByUser source at error severity`() {
+    let report = ErrorReport(
+      source: .reportedByUser,
+      type: "TypeError",
+      message: "nope",
+      stacktrace: "at f (app.js:1:1)",
+      isFatal: false
+    )
+    let record = report.toLogRecord()
+    let attributes = try! #require(record.attributes?.value as? [String: Any])
+    #expect(attributes["expo.error.source"] as? String == "reportedByUser")
+    #expect(attributes["expo.error.is_fatal"] as? Bool == false)
+    #expect(record.severity == .error)
+  }
 }

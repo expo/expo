@@ -7,15 +7,15 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
-import type { BuildProps, ProjectInfo } from './XcodeBuild.types';
-import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
-import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 import * as Log from '../../log';
 import type { OSType } from '../../start/platforms/ios/simctl';
 import { ensureDirectory } from '../../utils/dir';
 import { env } from '../../utils/env';
 import { AbortCommandError, CommandError } from '../../utils/errors';
 import { getUserTerminal } from '../../utils/terminal';
+import type { BuildProps, ProjectInfo } from './XcodeBuild.types';
+import { ensureDeviceIsCodeSignedForDeploymentAsync } from './codeSigning/configureCodeSigning';
+import { simulatorBuildRequiresCodeSigning } from './codeSigning/simulatorCodeSigning';
 
 // Error messages that indicate concurrent Xcode build failures.
 // When multiple builds run simultaneously, Xcode's build database can become locked.
@@ -452,10 +452,34 @@ export function _assertXcodeBuildResults(
   if (localizedError) {
     throwWithMessage(chalk.bold(localizedError) + '\n\n');
   }
+
+  // `@expo/xcpretty` can leave a real failure uncounted (its compile-error
+  // matching is stateful and anchored, and stderr never passes through it), so
+  // the build summary reads "0 error(s)" and in CI the full log below is
+  // truncated before the real error line.
+  const errorLines = _extractXcodeBuildErrorLines(results + '\n' + error);
+  if (errorLines.length) {
+    throwWithMessage(chalk.red(errorLines.join('\n')) + '\n\n' + results + '\n\n' + error);
+  }
+
   // Show all the log info because often times the error is coming from a shell script,
   // that invoked a node script, that started metro, which threw an error.
 
   throwWithMessage(results + '\n\n' + error);
+}
+
+// Exposed for testing.
+export function _extractXcodeBuildErrorLines(output: string): string[] {
+  const seen = new Set<string>();
+  const errors: string[] = [];
+  for (const raw of output.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (/(?:^|\s)error:\s/.test(line) && !seen.has(line)) {
+      seen.add(line);
+      errors.push(line);
+    }
+  }
+  return errors;
 }
 
 function writeBuildLogs(projectRoot: string, buildOutput: string, errorOutput: string) {

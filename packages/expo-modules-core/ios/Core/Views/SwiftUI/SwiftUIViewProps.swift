@@ -7,6 +7,7 @@ internal let GLOBAL_EVENT_NAME = "onGlobalEvent"
 extension ExpoSwiftUI {
   public enum IgnoreSafeArea: String, Enumerable {
     case all
+    case container
     case keyboard
   }
 

@@ -36,7 +36,7 @@ function Example() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+      <Button label="Open sheet" onPress={() => setIsPresented(true)} />
       <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
         <RNHostView matchContents>
           <View style={{ padding: 24 }}>
@@ -69,7 +69,7 @@ function Example() {
 
   return (
     <Host style={{ flex: 1 }}>
-      <Button label="Open Sheet" onPress={() => setIsPresented(true)} />
+      <Button label="Open sheet" onPress={() => setIsPresented(true)} />
       <BottomSheet isPresented={isPresented} onIsPresentedChange={setIsPresented}>
         <Group modifiers={[presentationDetents(['medium', 'large'])]}>
           <RNHostView>

@@ -31,3 +31,4 @@
 #import "EXAbstractLoader.h"
 #import "EXProgressHUD.h"
 #import "EXConstantsBinding.h"
+#import "EXOnDeviceTransformer.h"

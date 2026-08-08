@@ -1,6 +1,6 @@
 import Head from 'expo-router/head';
-import { Text } from 'react-native';
 import type { GenerateMetadataFunction, Metadata } from 'expo-router/server';
+import { Text } from 'react-native';
 
 export const generateMetadata: GenerateMetadataFunction = async () => {
   return {

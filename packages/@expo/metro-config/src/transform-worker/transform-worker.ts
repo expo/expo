@@ -22,6 +22,7 @@ import {
   transformCssModuleWeb,
 } from './css-modules';
 import { parseEnvFile } from './dot-env-development';
+import { event, debugEvent } from './events';
 import * as worker from './metro-transform-worker';
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
@@ -35,8 +36,6 @@ export interface TransformResponse {
   // `SerializableSourceMap` for an `Array.isArray`-true Proxy first.
   readonly output: readonly ExpoJsOutput[];
 }
-
-const debug = require('debug')('expo:metro-config:transform-worker') as typeof console.log;
 
 function getStringArray(value: any): string[] | undefined {
   if (!value) return undefined;
@@ -54,6 +53,31 @@ function getStringArray(value: any): string[] | undefined {
 }
 
 export async function transform(
+  config: JsTransformerConfig,
+  projectRoot: string,
+  filename: string,
+  data: Buffer,
+  options: JsTransformOptions
+): Promise<TransformResponse> {
+  const done = debugEvent.span();
+  try {
+    const result = await transformImpl(config, projectRoot, filename, data, options);
+    done('file', {
+      file: toPosixPath(filename),
+      platform: options.platform ?? null,
+      environment: options.customTransformOptions?.environment ?? null,
+      type: options.type,
+      deps: result.dependencies.length,
+      cached: false,
+    });
+    return result;
+  } catch (error) {
+    event('failed', { file: toPosixPath(filename), error: event.error(error as Error) });
+    throw error;
+  }
+}
+
+async function transformImpl(
   config: JsTransformerConfig,
   projectRoot: string,
   filename: string,
@@ -79,7 +103,7 @@ export async function transform(
       const clientBoundaries = getStringArray(options.customTransformOptions?.clientBoundaries);
       // Inject client boundaries into the root client bundle for production bundling.
       if (clientBoundaries) {
-        debug('Parsed client boundaries:', clientBoundaries);
+        debugEvent('client_boundaries:parsed', { boundaries: clientBoundaries });
 
         // Inject source
         const src =
@@ -246,7 +270,7 @@ async function transformCss(
   // in development and a static CSS file in production.
   if (matchCssModule(filename)) {
     const results = await transformCssModuleWeb({
-      // NOTE(cedric): use POSIX-formatted filename fo rconsistent CSS module class names.
+      // NOTE(cedric): use POSIX-formatted filename for consistent CSS module class names.
       // This affects the content hashes, which should be stable across platforms.
       filename: toPosixPath(filename),
       src: code,

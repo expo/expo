@@ -10,27 +10,125 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Pass the React runtime scheduler to `ExpoModulesCore` through a weak handle, so dispatching onto the JS thread during a reload no longer risks calling into a scheduler the React instance already destroyed. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
-- Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))
+- [iOS] Fix `expo/fetch` streaming race between URLSession delegate callbacks and `startStreaming()` that could deliver an empty body on a 200 response, drop chunks, or leave the body stream open. ([#47796](https://github.com/expo/expo/pull/47796) by [@idoyana](https://github.com/idoyana))
+- Fix `expo/fetch` body-stream teardown races: aborting via an `AbortSignal` now rejects the in-flight read with an `AbortError` instead of hanging forever, and late native events no longer throw `The stream is not in a state that permits enqueue`/`close` from outside any consumer `try`/`catch`. ([#47573](https://github.com/expo/expo/pull/47573) by [@idoyana](https://github.com/idoyana))
+- [iOS] Fix `expo/fetch` `Response.text()` and `.arrayBuffer()` never settling when the request fails (network drop, `abort()`) after the response was already delivered. ([#48230](https://github.com/expo/expo/pull/48230) by [@zoontek](https://github.com/zoontek))
 - Fix iOS build against React Native 0.87+ by dropping the legacy architecture (bridge) `RCTRootViewFactoryConfiguration` setup. ([#46641](https://github.com/expo/expo/pull/46641) by [@zoontek](https://github.com/zoontek))
-- Include JavaScript and React component stacks in web dev server error logs. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
-- Decompress `gzip` / `br` / `zstd` `expo/fetch` responses on Android even when the caller sets their own `Accept-Encoding` header. ([#46398](https://github.com/expo/expo/pull/46398) by [@zoontek](https://github.com/zoontek))
-- Fix `bodyUsed` leaking across siblings when fetch Response is cloned twice ([#46397](https://github.com/expo/expo/pull/46397) by [@zoontek](https://github.com/zoontek))
-- Prevent fatal `The stream is not in a state that permits close` in `expo/fetch` when native delivers `didComplete`/`didFailWithError` after the consumer has already canceled the body stream. ([#44909](https://github.com/expo/expo/pull/44909) by [@safaiyeh](https://github.com/safaiyeh))
 - Adopted the UIKit scene-based life cycle on iOS so apps built with the iOS 27 SDK launch correctly. ([#46733](https://github.com/expo/expo/pull/46733) by [@alanjhughes](https://github.com/alanjhughes))
 - [iOS] Mark `ExpoAppSceneDelegate` as unavailable in extensions. ([#46799](https://github.com/expo/expo/pull/46799) by [@jakex7](https://github.com/jakex7))
-- Fix `asyncRoutes` failing on Android and iOS with `Requiring unknown module` ([#46870](https://github.com/expo/expo/pull/46870) by [@hassankhan](https://github.com/hassankhan))
-- Fix `Response.blob()` in `expo/fetch` throwing when the global `Blob` is react-native's implementation. ([#47538](https://github.com/expo/expo/pull/47538) by [@kudo](https://github.com/kudo))
 - [iOS] Fix `Linking.getInitialURL()` returning `null` and deep links being dropped when a URL cold-starts an app on the UIKit scene life cycle. ([#47628](https://github.com/expo/expo/pull/47628) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Mark `ExpoAppSceneDelegate` as unavailable in `iOSApplicationExtension` for widgets. ([#47894](https://github.com/expo/expo/pull/47894) by [@jakex7](https://github.com/jakex7))
+- [iOS] Add ExpoBundleConfiguration to derive RCTBundleConfiguration from the normalized bundle URL instead of default shared settings singleton ([#48010](https://github.com/expo/expo/pull/48010) by [@kitten](https://github.com/kitten))
+- [iOS] Resolve the dev server port from the `RCTMetroPort` Info.plist key at runtime so bare projects without expo-dev-client connect to their own Metro instance instead of defaulting to 8081. ([#48098](https://github.com/expo/expo/pull/48098) by [@alanjhughes](https://github.com/alanjhughes))
+- Fix async imports (`import(...)`) via `asyncRequireModule` not a thenable instead of a full promise shape ([#48550](https://github.com/expo/expo/pull/48550) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
 - [Android] `ExpoReactHostFactory` now passes host handlers' `DevSupportManagerFactory` to `ReactHostImpl`. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
+- [macOS] Fix build by guarding the `bundleConfiguration` override, which requires react-native 0.84+. ([#48494](https://github.com/expo/expo/pull/48494) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - Restore RCTHostRuntimeDelegate conformance for react-native-macos ([#46420](https://github.com/expo/expo/pull/46420) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Add explicit `react-native/Libraries/Core/InitializeCore` import to native runtime entrypoint ([#46344](https://github.com/expo/expo/pull/46344) by [@kitten](https://github.com/kitten))
-- [Internal] Return thenable with sync-bailout for async require calls ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
 - [Internal] Update logbox imports ([#46640](https://github.com/expo/expo/pull/46640) by [@kitten](https://github.com/kitten))
 - Re-export more expo-modules-core APIs ([#45987](https://github.com/expo/expo/pull/45987) by [@Wenszel](https://github.com/Wenszel))
+- Update `URL` and `URLSearchParams` implementation to support IDNA/TR-46 and improve performance. Spec-adherence has increased and few gaps should now be noticeable compared to browsers ([#47813](https://github.com/expo/expo/pull/47813) by [@kitten](https://github.com/kitten))
+- [Internal] Add `getBundleOrigin`, exposed as `expo/internal/bundle-origin` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
+- [Internal] Derive `getDevServer` from the bundle URL internally and expose `getBundleUrl` helper ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
+
+## 57.0.9 - 2026-07-29
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.8 - 2026-07-22
+
+### 🐛 Bug fixes
+
+- [Android] Fixed expo-fetch race condition causing out-of-order delivery of initial chunks ([#42161](https://github.com/expo/expo/pull/42161) by [@matthieugicquel](https://github.com/matthieugicquel))
+
+## 57.0.7 - 2026-07-17
+
+### 🐛 Bug fixes
+
+- Fix `import.meta.url` being `null` on web when read after the bundle's synchronous execution (from effects, async code, or dynamic imports). ([#47802](https://github.com/expo/expo/pull/47802) by [@zoontek](https://github.com/zoontek))
+
+## 57.0.6 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-15
+
+### 🐛 Bug fixes
+
+- [iOS] Pass the React runtime scheduler to `ExpoModulesCore` through a weak handle, so dispatching onto the JS thread during a reload no longer risks calling into a scheduler the React instance already destroyed. ([#47492](https://github.com/expo/expo/pull/47492) by [@tsapeta](https://github.com/tsapeta))
+- Fix `Response.blob()` in `expo/fetch` throwing when the global `Blob` is react-native's implementation. ([#47538](https://github.com/expo/expo/pull/47538) by [@kudo](https://github.com/kudo))
+
+## 57.0.4 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-30
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0-preview.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0-preview.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.12 - 2026-06-15
+
+### 🐛 Bug fixes
+
+- Fix `asyncRoutes` failing on Android and iOS with `Requiring unknown module` ([#46870](https://github.com/expo/expo/pull/46870) by [@hassankhan](https://github.com/hassankhan))
+
+## 56.0.11 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.10 - 2026-06-10
+
+### 🐛 Bug fixes
+
+- Fix `expo/fetch` on Android sending a single `0x00` byte instead of an empty body for body-less `POST`/`PUT`/`PATCH` requests. ([#46678](https://github.com/expo/expo/pull/46678) by [@zoontek](https://github.com/zoontek))
+- Include JavaScript and React component stacks in web dev server error logs. ([#46584](https://github.com/expo/expo/pull/46584) by [@krystofwoldrich](https://github.com/krystofwoldrich))
+
+### 💡 Others
+
+- [Internal] Return thenable with sync-bailout for async require calls ([#46539](https://github.com/expo/expo/pull/46539) by [@kitten](https://github.com/kitten))
+
+## 56.0.9 - 2026-06-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.8 - 2026-05-29
+
+### 🐛 Bug fixes
+
+- Decompress `gzip` / `br` / `zstd` `expo/fetch` responses on Android even when the caller sets their own `Accept-Encoding` header. ([#46398](https://github.com/expo/expo/pull/46398) by [@zoontek](https://github.com/zoontek))
+- Fix `bodyUsed` leaking across siblings when fetch Response is cloned twice ([#46397](https://github.com/expo/expo/pull/46397) by [@zoontek](https://github.com/zoontek))
+- Prevent fatal `The stream is not in a state that permits close` in `expo/fetch` when native delivers `didComplete`/`didFailWithError` after the consumer has already canceled the body stream. ([#44909](https://github.com/expo/expo/pull/44909) by [@safaiyeh](https://github.com/safaiyeh))
+
+## 56.0.7 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.6 - 2026-05-28
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.5 — 2026-05-26
 
@@ -1202,7 +1300,7 @@ _This version does not introduce any user-facing changes._
 - Re-exported `EventEmitter`, `SharedObject` and `NativeModule` classes from `expo-modules-core`. ([#28994](https://github.com/expo/expo/pull/28994) by [@tsapeta](https://github.com/tsapeta))
 - Use the `src` folder as the Metro target. ([#29702](https://github.com/expo/expo/pull/29702) by [@tsapeta](https://github.com/tsapeta))
 - Added public assets support for DOM components. ([#30975](https://github.com/expo/expo/pull/30975) by [@kudo](https://github.com/kudo))
-- Removed `expo_patch_react_imports!` and align more stardard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
+- Removed `expo_patch_react_imports!` and align more standard react-native project layout. ([#31699](https://github.com/expo/expo/pull/31699) by [@kudo](https://github.com/kudo))
 - Added a default `AppEntryNotFound` component and prevent the `Invariant Violation: "main" has not been registered.` error. ([#31813](https://github.com/expo/expo/pull/31813) by [@kudo](https://github.com/kudo))
 - Decoupled the usage from `@react-native-community/cli-tools`. ([#31966](https://github.com/expo/expo/pull/31966) by [@kudo](https://github.com/kudo))
 - Promoted `DevToolsPluginClient.useTransportationNext` as default and removed the option. ([#31852](https://github.com/expo/expo/pull/31852) by [@kudo](https://github.com/kudo))
@@ -1581,8 +1679,8 @@ _This version does not introduce any user-facing changes._
 
 ### 🐛 Bug fixes
 
-- [Android] Fixed `concurrentRoot` is missing from intialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
-- Use explicit `@expo/metro-config` dependendecy to avoid unexpected versions in monorepos. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
+- [Android] Fixed `concurrentRoot` is missing from initialProps when running on New Architecture mode. ([#25415](https://github.com/expo/expo/pull/25415) by [@kudo](https://github.com/kudo))
+- Use explicit `@expo/metro-config` dependency to avoid unexpected versions in monorepos. ([#25804](https://github.com/expo/expo/pull/25804) by [@byCedric](https://github.com/byCedric))
 - Fixed `Unable to resolve "fbemitter"` issue when using DevTools Plugins. ([#25856](https://github.com/expo/expo/pull/25856) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others

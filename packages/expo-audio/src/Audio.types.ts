@@ -138,6 +138,18 @@ export type AudioPlayerOptions = {
    * @platform android
    */
   preferredForwardBufferDuration?: number;
+  /**
+   * Whether the player can switch to AirPlay's external playback mode. In this mode, iOS sends
+   * the media URL directly to the AirPlay device and the local player only sends playback
+   * commands to it.
+   *
+   * Set to `false` to keep the local player in control. Audio still routes to the AirPlay device
+   * through the audio session, and playback notifications (including looping) keep working.
+   *
+   * @default true
+   * @platform ios
+   */
+  allowsExternalPlayback?: boolean;
 };
 
 /**
@@ -401,6 +413,23 @@ export type RecordingOptions = {
    * @platform ios
    */
   directory?: RecordingDirectory;
+  /**
+   * The basename of the recording file (without extension). The SDK appends `extension`
+   * and writes into `<directory>/Audio/<fileName><extension>` on Android and `<directory>/ExpoAudio/<fileName><extension>` on iOS.
+   *
+   * If omitted, defaults to a random UUID.
+   *
+   * Path separators (`/`, `\`) and parent-directory references (`..`) are rejected
+   * at runtime so callers cannot escape the recording directory.
+   *
+   * > **Note:** When using the default `cache` [`directory`](#recordingdirectory), the system may delete
+   * > the file when it is not being used. Use `document` [`directory`](#recordingdirectory) or [`expo-file-system`](/versions/latest/sdk/filesystem/)
+   * > to retain it.
+   *
+   * @platform android
+   * @platform ios
+   */
+  fileName?: string;
   /**
    * A boolean that determines whether audio level information will be part of the status object under the "metering" key.
    */

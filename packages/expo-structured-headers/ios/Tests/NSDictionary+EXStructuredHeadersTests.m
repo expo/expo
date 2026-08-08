@@ -132,7 +132,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
   @catch (NSException *exception) {
     data = nil;
-    NSLog(@"WARNING: error occured while decoding base 32 string: %@", exception);
+    NSLog(@"WARNING: error occurred while decoding base 32 string: %@", exception);
   }
   @finally {
     if( decodedBytes != NULL ) {

@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-07-07T17:11:30.891Z"
+    "fetchedAt": "2026-08-05T08:58:03.233Z"
   },
-  "totalSkills": 19,
+  "totalSkills": 21,
   "skills": [
     {
       "name": "eas-app-stores",
@@ -81,7 +81,7 @@
     {
       "name": "expo-module",
       "category": "framework",
-      "description": "Guide for creating and writing Expo native modules and views using the Expo Modules API (Swift, Kotlin, TypeScript). Covers module definition DSL, native views, shared objects, config plugins, lifecycle hooks, autolinking, and type system. Use when building or modifying native modules for Expo.",
+      "description": "Guide for creating and writing Expo native modules and views using the Expo Modules API (Swift, Kotlin, TypeScript). Covers module definition DSL, native views, shared objects, config plugins, lifecycle hooks, autolinking, and type system. Use when building or modifying native modules for Expo. Not for migrating an existing Swift module from the definition DSL to the Expo Modules API 2.0 macros; use expo-migrate-module (from the expo-experiments plugin) for that.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-module/SKILL.md"
     },
     {
@@ -91,10 +91,22 @@
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-native-ui/SKILL.md"
     },
     {
+      "name": "expo-project-structure",
+      "category": "framework",
+      "description": "Folder structure for a new Expo app. Use when scaffolding or laying out a new Expo project with Expo Router, or deciding where a file should live in one. For new projects only — never restructure an existing app to match.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-project-structure/SKILL.md"
+    },
+    {
       "name": "expo-router",
       "category": "framework",
       "description": "Navigation and routing for Expo Router. Covers file-based routes, groups and dynamic routes, folder organization, Link with previews and context menus, native Stack, page titles, modals and form sheets, NativeTabs, headers and toolbars, and header search bars.",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-router/SKILL.md"
+    },
+    {
+      "name": "expo-skill-feedback",
+      "category": "framework",
+      "description": "Submit feedback on an Expo skill—or Expo itself—and control bundled anonymous usage telemetry (off by default / opt-in). Submit feedback with: npx --yes submit-expo-feedback@latest \"ACTIONABLE_FEEDBACK\". Optionally add either or both: --category \"CATEGORY\" and --subject \"SUBJECT\". Replace the uppercase placeholders before running. Use when a skill was useful, confusing, broken, missing context, or worth improving; when Expo, Expo CLI, EAS CLI, docs, or MCP worked well or fell short; when an AI agent repeatedly failed, got stuck, or needed the user to take over an Expo task (report it as an eval candidate); or when the user explicitly asks to enable or disable telemetry (tracking), check its status, or understand what it collects.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-skill-feedback/SKILL.md"
     },
     {
       "name": "expo-tailwind-setup",
