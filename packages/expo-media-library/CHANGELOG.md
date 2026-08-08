@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- [iOS] `Asset.getUri()` and `AssetInfo.uri` now resolve a video to the version currently shown in the Photos app instead of the originally captured file. Pass `version: AssetUriVersion.ORIGINAL` to `getUri()` to keep the previous behavior. ([#TODO](https://github.com/expo/expo/pull/TODO) by [@barthap](https://github.com/barthap))
+
 ### 🎉 New features
 
+- [iOS] Add a `version` option to `Asset.getUri()` for choosing between the current and the original rendition of an asset. ([#TODO](https://github.com/expo/expo/pull/TODO) by [@barthap](https://github.com/barthap))
 - [Android] Add `PhotographicSensitivity` to returned EXIF metadata. ([#47222](https://github.com/expo/expo/pull/47222) by [@Wenszel](https://github.com/Wenszel))
 
 ### 🐛 Bug fixes
