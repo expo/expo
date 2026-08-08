@@ -189,7 +189,10 @@ const defaultProviders = {
       // Apply all of the Info.plist values to the expo.ios.infoPlist object
       // TODO: Remove this in favor of just overwriting the Info.plist with the Expo object. This will enable people to actually remove values.
       if (!config.ios) config.ios = {};
-      if (!config.ios.infoPlist) config.ios.infoPlist = {};
+      // `ios.infoPlist` doubles as the user's overrides and as the resolved contents that were
+      // written, and the ios and tvos passes share it. Restart from the user's config so a
+      // combined prebuild doesn't merge the iOS Info.plist into the tvOS one.
+      config.ios.infoPlist = { ...config.modRawConfig.ios?.infoPlist };
 
       let modResults: InfoPlist;
       try {
@@ -267,7 +270,9 @@ const defaultProviders = {
       // Apply all of the .entitlements values to the expo.ios.entitlements object
       // TODO: Remove this in favor of just overwriting the .entitlements with the Expo object. This will enable people to actually remove values.
       if (!config.ios) config.ios = {};
-      if (!config.ios.entitlements) config.ios.entitlements = {};
+      // Shared by the ios and tvos passes like `ios.infoPlist` above — restart from the user's
+      // config so the iOS entitlements don't follow the mods over to tvOS.
+      config.ios.entitlements = { ...config.modRawConfig.ios?.entitlements };
 
       config.ios.entitlements = {
         ...(modResults || {}),
