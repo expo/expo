@@ -8,12 +8,14 @@
 - Hashed the built-in `react-native` source by its `package.json` name+version instead of the whole `package.json`, so fingerprints change once on upgrade. ([#47667](https://github.com/expo/expo/pull/47667) by [@kudo](https://github.com/kudo))
 - Changed the default preset to `balanced`, which changes the default fingerprint once on upgrade. Use `preset: 'strict'` to keep the previous behavior. ([#47668](https://github.com/expo/expo/pull/47668) by [@kudo](https://github.com/kudo))
 - Skipped `eas.json` and `.easignore` in the `balanced` and `relaxed` presets, which changes the default fingerprint once on upgrade for projects that have either file. ([#48586](https://github.com/expo/expo/pull/48586) by [@kudo](https://github.com/kudo))
+- Skipped the resolved autolinking config in the `balanced` and `relaxed` presets, which changes the default fingerprint once on upgrade. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
 - Added a `package` source type that hashes a dependency by its `package.json` name and version. ([#47667](https://github.com/expo/expo/pull/47667) by [@kudo](https://github.com/kudo))
 - Added fingerprint presets (`strict`, `balanced`, `relaxed`), selectable via `preset` in **fingerprint.config.js** or the `--preset` CLI flag. ([#47668](https://github.com/expo/expo/pull/47668) by [@kudo](https://github.com/kudo))
 - Added `SourceSkips.EasJson` and `SourceSkips.Easignore` to exclude `eas.json` and `.easignore` from fingerprints. ([#48586](https://github.com/expo/expo/pull/48586) by [@kudo](https://github.com/kudo))
+- Added `SourceSkips.AutolinkingConfig` to exclude the resolved `expo-modules-autolinking` and `react-native-config` configs from fingerprints. ([#48661](https://github.com/expo/expo/pull/48661) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
