@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [tvos] Accept `tvos` in `configuration:syncnative`, so a tvOS build syncs `tvos/…/Expo.plist` instead of the iOS one. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 ## 58.0.8 — 2026-09-23
