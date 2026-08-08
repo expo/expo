@@ -1,0 +1,11 @@
+{
+  "name": "prs-triage",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "triage": "bun run fetch.ts && bun run prioritize.ts",
+    "fetch": "bun run fetch.ts",
+    "prioritize": "bun run prioritize.ts"
+  }
+}
