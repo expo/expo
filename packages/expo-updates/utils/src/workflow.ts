@@ -8,7 +8,7 @@ export type Workflow = 'managed' | 'generic';
 
 export async function resolveWorkflowAsync(
   projectDir: string,
-  platform: 'ios' | 'android'
+  platform: 'ios' | 'tvos' | 'android'
 ): Promise<Workflow> {
   const vcsClient = await getVCSClientAsync(projectDir);
 
@@ -20,7 +20,8 @@ export async function resolveWorkflowAsync(
             path.join(projectDir, 'android/app/build.gradle'),
             await AndroidConfig.Paths.getAndroidManifestAsync(projectDir),
           ]
-        : [IOSConfig.Paths.getPBXProjectPath(projectDir)];
+        : // tvOS has its own `tvos/` Xcode project; scope the marker to the platform being built.
+          [IOSConfig.Paths.getPBXProjectPath(projectDir, platform)];
   } catch {
     return 'managed';
   }
