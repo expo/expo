@@ -24,6 +24,7 @@ const { ScreenStackItem } = jest.requireMock(
   'react-native-screens'
 ) as typeof import('react-native-screens');
 const MockedScreenStackItem = ScreenStackItem as jest.MockedFunction<typeof ScreenStackItem>;
+
 /**
  * Stacks are the most common navigator and have unique navigation actions
  *
@@ -192,7 +193,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -201,7 +201,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 3,
                 key: expect.any(String),
@@ -314,7 +313,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -323,7 +321,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 3,
                 key: expect.any(String),
@@ -424,7 +421,6 @@ test('dismissAll nested', () => {
               key: expect.any(String),
               name: 'b',
               params: {},
-              path: undefined,
             },
             {
               key: expect.any(String),
@@ -433,7 +429,6 @@ test('dismissAll nested', () => {
                 params: {},
                 screen: 'index',
               },
-              path: undefined,
               state: {
                 index: 0,
                 key: expect.any(String),

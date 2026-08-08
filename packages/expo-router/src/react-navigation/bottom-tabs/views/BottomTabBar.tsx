@@ -333,7 +333,8 @@ export function BottomTabBar({ state, descriptors, emitter, navigateToTab, inset
       <View role="tablist" style={sidebar ? styles.sideContent : styles.bottomContent}>
         {routes.map((route, index) => {
           const focused = index === state.index;
-          const { options } = descriptors[route.key]!;
+          const descriptor = descriptors[route.key]!;
+          const { options } = descriptor;
 
           const onPress = () => {
             const event = emitter.emit({
@@ -367,14 +368,11 @@ export function BottomTabBar({ state, descriptors, emitter, navigateToTab, inset
                 : undefined;
 
           return (
-            <NavigationProvider
-              key={route.key}
-              route={route}
-              navigation={descriptors[route.key]!.navigation}>
+            <NavigationProvider key={route.name} route={route} navigation={descriptor.navigation}>
               <BottomTabItem
                 href={buildHref(route.name, route.params)}
                 route={route}
-                descriptor={descriptors[route.key]!}
+                descriptor={descriptor}
                 focused={focused}
                 horizontal={hasHorizontalLabels}
                 compact={compact}

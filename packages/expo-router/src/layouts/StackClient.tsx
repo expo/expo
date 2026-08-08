@@ -13,8 +13,8 @@ import {
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
 } from '../navigationParams';
 import {
+  type DescriptorRouteProp,
   type ParamListBase,
-  type RouteProp,
   StackActions,
   type StackNavigationState,
   type StackRouterOptions,
@@ -174,7 +174,7 @@ type NativeStackScreenOptions = ComponentProps<typeof RNStack>['screenOptions'];
 
 function disableAnimationInScreenOptions(
   options: NativeStackScreenOptions | undefined,
-  condition: (route: RouteProp<ParamListBase, string>) => boolean
+  condition: (route: DescriptorRouteProp<ParamListBase, string>) => boolean
 ): NativeStackScreenOptions {
   if (options && typeof options === 'function') {
     return (props) => {
@@ -199,7 +199,9 @@ function disableAnimationInScreenOptions(
   };
 }
 
-function shouldDisableAnimationBasedOnParams(route: RouteProp<ParamListBase, string>): boolean {
+function shouldDisableAnimationBasedOnParams(
+  route: DescriptorRouteProp<ParamListBase, string>
+): boolean {
   const expoParams = getInternalExpoRouterParams(route.params);
   return !!expoParams[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME];
 }
