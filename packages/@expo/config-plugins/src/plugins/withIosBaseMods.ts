@@ -91,20 +91,10 @@ const defaultProviders = {
   // Append a rule to supply Expo.plist data to mods on `mods.ios.expoPlist`
   expoPlist: provider<JSONObject>({
     isIntrospective: true,
-    getFilePath({ modRequest: { projectRoot, platform, introspect } }) {
-      try {
-        return path.resolve(
-          Paths.getSupportingPath(projectRoot, Paths.toApplePlatform(platform)),
-          'Expo.plist'
-        );
-      } catch (error) {
-        if (introspect) {
-          // No AppDelegate is expected in introspect mode (no native project);
-          // mirror the infoPlist provider and fall back to an empty path.
-          return '';
-        }
-        throw error;
-      }
+    getFilePath({ modRequest: { platformProjectRoot, projectName } }) {
+      //: [root]/myapp/{ios,tvos}/MyApp/Supporting
+      const supportingDirectory = path.join(platformProjectRoot, projectName!, 'Supporting');
+      return path.resolve(supportingDirectory, 'Expo.plist');
     },
     async read(filePath, { modRequest: { introspect } }) {
       try {
@@ -156,10 +146,9 @@ const defaultProviders = {
 
         if (infoPlistBuildProperty) {
           //: [root]/myapp/{ios,tvos}/MyApp/Info.plist
-          const sourceRoot = Paths.getSourceRoot(config.modRequest.projectRoot, platform);
           const infoPlistPath = path.join(
-            //: <projectRoot>/{ios,tvos}
-            path.dirname(sourceRoot),
+            //: myapp/{ios,tvos}
+            config.modRequest.platformProjectRoot,
             //: MyApp/Info.plist
             infoPlistBuildProperty
           );
@@ -316,20 +305,8 @@ const defaultProviders = {
   podfileProperties: provider<Record<string, JSONValue>>({
     isIntrospective: true,
 
-    getFilePath({ modRequest: { projectRoot, platform, introspect } }) {
-      try {
-        // Sibling of the Podfile.
-        return path.resolve(
-          path.dirname(Paths.getPodfilePath(projectRoot, Paths.toApplePlatform(platform))),
-          'Podfile.properties.json'
-        );
-      } catch (error) {
-        if (introspect) {
-          // No Podfile is expected in introspect mode (no native project).
-          return '';
-        }
-        throw error;
-      }
+    getFilePath({ modRequest: { platformProjectRoot } }) {
+      return path.resolve(platformProjectRoot, 'Podfile.properties.json');
     },
     async read(filePath) {
       let results: Record<string, JSONValue> = {};
