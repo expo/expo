@@ -29,7 +29,10 @@ export const routingQueue = {
     return routingQueue.queue;
   },
   add(action: NavigationAction | LinkAction) {
-    routingQueue.queue.push(action);
+    // Always produce a new array identity so that `useSyncExternalStore`'s
+    // `Object.is` snapshot comparison can never bail out and silently drop
+    // a queued navigation action (https://github.com/expo/expo/issues/48626).
+    routingQueue.queue = [...routingQueue.queue, action];
     for (const callback of routingQueue.subscribers) {
       callback();
     }
