@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- [tvos] Write the plugin's generated files into `tvos/` instead of `ios/` when prebuilding for tvOS. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
 - Resolve development asset URLs from the bundle URL instead of the manifest's `debuggerHost` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
