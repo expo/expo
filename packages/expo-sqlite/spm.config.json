@@ -47,7 +47,6 @@
             "ExpoSQLite_c"
           ],
           "linkedFrameworks": ["Foundation", "UIKit"],
-          "exclude": ["libsql/**", "libsql.xcframework/**", "SQLiteModuleLibSQL.swift"],
           "compilerFlags": [
             "-DHAVE_USLEEP=1",
             "-DSQLITE_ENABLE_LOCKING_STYLE=0",
