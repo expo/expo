@@ -160,14 +160,19 @@ class AudioModule : Module() {
     val result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
       val requestType = interruptionMode?.let {
         if (it == InterruptionMode.DO_NOT_MIX) {
-          AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+          // Media playback should hold permanent focus. AUDIOFOCUS_GAIN_TRANSIENT tells the
+          // other app we will hand focus back shortly, so it auto-resumes as soon as we
+          // abandon it. media3's AudioFocusManager only manages focus for AUDIOFOCUS_GAIN.
+          AudioManager.AUDIOFOCUS_GAIN
         } else {
           AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
         }
-      } ?: AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+      } ?: AudioManager.AUDIOFOCUS_GAIN
       audioFocusRequest = AudioFocusRequest.Builder(requestType).run {
         setAudioAttributes(
           AudioAttributes.Builder()
+            // Without an explicit usage the request is made with USAGE_UNKNOWN.
+            .setUsage(AudioAttributes.USAGE_MEDIA)
             .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
             .build()
         )
@@ -181,7 +186,7 @@ class AudioModule : Module() {
     } else {
       @Suppress("DEPRECATION")
       val requestType = if (interruptionMode == InterruptionMode.DO_NOT_MIX) {
-        AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+        AudioManager.AUDIOFOCUS_GAIN
       } else {
         AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
       }
@@ -385,8 +390,26 @@ class AudioModule : Module() {
             updateInterval,
             bufferDurationMs
           )
+          // Tie audio focus to the player being alive rather than to `isPlaying`, the same
+          // way media3's AudioFocusManager does:
+          //
+          //   shouldHandleAudioFocus(state) = state != Player.STATE_IDLE && gain == AUDIOFOCUS_GAIN
+          //
+          // `onIsPlayingChanged(false)` also fires for buffering stalls and track transitions
+          // (BaseAudioPlayer computes `isTransient` *after* invoking this callback), and
+          // nothing re-acquires focus when playback resumes. Abandoning focus mid-playback
+          // makes the other app regain it and stop re-requesting, so AUDIOFOCUS_LOSS never
+          // reaches us again and playback ends up stacked on top of the other app's audio.
+          //
+          // Requesting on playback start also covers lock screen / notification play, which
+          // media3's MediaSession routes straight to player.play(), bypassing the `play`
+          // function where requestAudioFocus() lives.
           player.onPlaybackStateChange = { isPlaying ->
-            if (!isPlaying && shouldReleaseFocus()) {
+            if (isPlaying) {
+              if (!focusAcquired) {
+                requestAudioFocus()
+              }
+            } else if (player.ref.playbackState == Player.STATE_IDLE && shouldReleaseFocus()) {
               releaseAudioFocus()
             }
           }
@@ -740,8 +763,13 @@ class AudioModule : Module() {
             }
           }
           playlist.loadInitialPlaylist()
+          // Same as the AudioPlayer path above - the two must not diverge.
           playlist.onPlaybackStateChange = { isPlaying ->
-            if (!isPlaying && shouldReleaseFocus()) {
+            if (isPlaying) {
+              if (!focusAcquired) {
+                requestAudioFocus()
+              }
+            } else if (playlist.ref.playbackState == Player.STATE_IDLE && shouldReleaseFocus()) {
               releaseAudioFocus()
             }
           }
