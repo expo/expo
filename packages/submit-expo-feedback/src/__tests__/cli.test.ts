@@ -323,6 +323,7 @@ describe('feedback submission', () => {
       EXPO_LOCAL: '1',
     };
     delete env.EXPO_STAGING;
+    delete env.EXPO_FEEDBACK_API_BASE_URL;
     delete env.EXPO_TOKEN;
     delete env.DO_NOT_TRACK;
     delete env.EXPO_NO_TELEMETRY;
@@ -399,6 +400,35 @@ describe('feedback submission', () => {
         username: 'expo-user',
       },
     });
+  });
+
+  it('uses the feedback API base URL override in local mode', async () => {
+    process.env.EXPO_FEEDBACK_API_BASE_URL = 'http://127.0.0.1:43210';
+
+    await sendFeedbackAsync({
+      feedback: 'please make errors clearer',
+      metadata: await createFeedbackMetadataAsync(projectRoot),
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://127.0.0.1:43210/v2/feedback/cli-send',
+      expect.any(Object)
+    );
+  });
+
+  it('ignores the feedback API base URL override outside local mode', async () => {
+    delete process.env.EXPO_LOCAL;
+    process.env.EXPO_FEEDBACK_API_BASE_URL = 'http://127.0.0.1:43210';
+
+    await sendFeedbackAsync({
+      feedback: 'please make errors clearer',
+      metadata: await createFeedbackMetadataAsync(projectRoot),
+    });
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://api.expo.dev/v2/feedback/cli-send',
+      expect.any(Object)
+    );
   });
 
   it('does not submit feedback over the maximum length', async () => {
