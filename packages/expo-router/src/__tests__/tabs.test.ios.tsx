@@ -421,7 +421,6 @@ it('can use replace navigation', () => {
               key: expect.any(String),
               name: 'two',
               params: {},
-              path: undefined,
             },
           ],
           stale: false,

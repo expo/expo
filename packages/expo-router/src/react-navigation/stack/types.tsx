@@ -11,6 +11,7 @@ import type {
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   LocaleDirection,
   NavigationHelpers,
   NavigationProp,
@@ -76,7 +77,8 @@ export type StackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = StackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<StackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 

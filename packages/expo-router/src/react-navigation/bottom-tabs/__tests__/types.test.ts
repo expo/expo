@@ -1,7 +1,9 @@
 import type { ComponentProps } from 'react';
 
 import type { JSTabsProps, Tabs, TabsScreenOptions } from '../../../layouts/Tabs';
+import type { DescriptorRouteProp, ParamListBase, RouteProp } from '../../native';
 import type { BottomTabNavigatorContentProps } from '../navigators/createBottomTabNavigator';
+import type { BottomTabOptionsArgs } from '../types';
 
 type Expect<T extends true> = T;
 type Equal<A, B> =
@@ -9,6 +11,15 @@ type Equal<A, B> =
 
 type TabsProps = ComponentProps<typeof Tabs>;
 
+export type _OptionsRouteIsDescriptorRoute = Expect<
+  Equal<BottomTabOptionsArgs<ParamListBase>['route'], DescriptorRouteProp<ParamListBase>>
+>;
+export type _OptionsRouteKeyMayBeUndefined = Expect<
+  Equal<BottomTabOptionsArgs<ParamListBase>['route']['key'], string | undefined>
+>;
+export type _RoutePropIsDescriptorRoute = Expect<
+  RouteProp<ParamListBase> extends DescriptorRouteProp<ParamListBase> ? true : false
+>;
 export type _PublicPropsMatchTabs = Expect<Equal<JSTabsProps, TabsProps>>;
 
 // The props injected by `createProps` reach the content component but never the element.
