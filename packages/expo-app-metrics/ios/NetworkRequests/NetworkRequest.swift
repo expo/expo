@@ -37,9 +37,10 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
 
   /// Whether the response came off the network rather than out of a cache.
   ///
-  /// `nil` when the OS reported no transaction. Cache hits still report byte counts and phase
-  /// timestamps, so this is the only reliable way to tell a disk read from a download: dividing
-  /// cached megabytes by the milliseconds it took to read them would describe the disk.
+  /// `nil` when the OS reported no transaction. `URLSession` timestamps a cache hit like any other
+  /// response, so this is the only way to tell a disk read from a download. Android needs no
+  /// equivalent: OkHttp skips the response-body callbacks for a cached response, so its
+  /// `measuredResponseEnd` stays null and the request drops out on its own.
   public let cameFromNetwork: Bool?
 
   /// Phase-by-phase timings pulled from the most recent (post-redirect) transaction.

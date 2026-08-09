@@ -96,6 +96,10 @@ data class NetworkRequest(
      * transfer window: a request that got headers and then died reports an end long after its last
      * byte, and dividing its bytes by that window describes the recording delay rather than the
      * connection.
+     *
+     * Also what keeps cache hits out of the throughput ratio: OkHttp skips the response-body
+     * callbacks for a cached response, so this stays `null` and the request drops out. iOS needs an
+     * explicit flag for that, since `URLSession` timestamps a cache hit like any other response.
      */
     val measuredResponseEnd: Date?,
 
