@@ -44,7 +44,7 @@ function headingIds(mdxPath: string): Set<string> {
   const ids = new Set<string>();
   for (const line of fs.readFileSync(mdxPath, 'utf8').split('\n')) {
     const heading = line.match(/^#{2,5}\s+(.*)$/);
-    const summary = line.match(/<(?:Collapsible\s+summary|Requirement\s+title)="([^"]+)"/);
+    const summary = line.match(/<Collapsible\s+summary="([^"]+)"/);
     const title = heading?.[1] ?? summary?.[1];
     if (title) {
       ids.add(generateSlug(slugger, title.trim()));
