@@ -35,6 +35,13 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
   /// Number of bytes received on the wire for the response (headers + body).
   public let responseBytesReceived: Int64?
 
+  /// Whether the response came off the network rather than out of a cache.
+  ///
+  /// `nil` when the OS reported no transaction. Cache hits still report byte counts and phase
+  /// timestamps, so this is the only reliable way to tell a disk read from a download: dividing
+  /// cached megabytes by the milliseconds it took to read them would describe the disk.
+  public let cameFromNetwork: Bool?
+
   /// Phase-by-phase timings pulled from the most recent (post-redirect) transaction.
   public let timings: Timings
 
@@ -173,6 +180,10 @@ extension NetworkRequest {
     // future need arises to surface per-hop timing, expose `metrics.transactionMetrics` here.
     let transaction = metrics?.transactionMetrics.last
 
+    // `.networkLoad` is the only fetch type that actually crossed the wire; `.localCache`,
+    // `.serverPush` and `.unknown` did not.
+    let cameFromNetwork = transaction.map { $0.resourceFetchType == .networkLoad }
+
     let timings = NetworkRequest.Timings(
       fetchStart: transaction?.fetchStartDate ?? fallbackStart,
       domainLookupStart: transaction?.domainLookupStartDate,
@@ -259,6 +270,7 @@ extension NetworkRequest {
       networkProtocol: transaction?.networkProtocolName,
       requestBytesSent: requestBytesSent,
       responseBytesReceived: responseBytesReceived,
+      cameFromNetwork: cameFromNetwork,
       timings: timings,
       errorDescription: error.map { ($0 as NSError).localizedDescription },
       redirects: redirects

@@ -36,10 +36,10 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// against a large `bytesReceived` means the transfer itself was. `statusCode` explains a
   /// `bytesReceived` of 0, which is routine on a 304 and a problem on a 200.
   ///
-  /// Failed requests are deliberately not candidates. A timeout's duration is the client's timeout
-  /// setting rather than a measurement of the server, so letting one win would make these fields
-  /// report a config constant that barely varies with the network. `failed` carries that signal
-  /// instead.
+  /// A 4xx or 5xx that came back is a candidate: the app waited for it, and on a launch that felt
+  /// slow that wait is often the answer. Only requests that never produced a response are excluded,
+  /// because a timeout's duration is the client's own setting rather than a measurement of anything
+  /// the server did.
   public let slowest: SlowestRequest?
 
   /// Facts about the slowest completed request in a window. See `NetworkRequestSummary.slowest`.
@@ -72,8 +72,9 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   ///
   /// The denominator is the union of the transfer windows of the requests that received bytes, each
   /// running from the first response byte to the last. Measuring from the first byte keeps DNS,
-  /// connect and server think time out of the rate, and it excludes cache hits for free, since a
-  /// response served from disk never reports one. Taking the union rather than a sum keeps
+  /// connect and server think time out of the rate. Responses served from a cache are excluded by
+  /// fetch type, since they report bytes and timestamps like any other response but measure a disk
+  /// read. Taking the union rather than a sum keeps
   /// concurrency from deflating it, and gaps between requests are left out so idle time isn't
   /// charged to the network. Failures are excluded: a request that stalled until the client gave up
   /// would otherwise hold the window open while nothing moved.
@@ -122,11 +123,10 @@ public struct NetworkRequestSummary: Sendable, Equatable {
       bytesReceived = bytesReceived.addingClamped(request.responseBytesReceived ?? 0)
       bytesSent = bytesSent.addingClamped(request.requestBytesSent ?? 0)
       totalDuration += request.timings.totalDuration
-      // Only completed requests are candidates. A timeout's duration is the client's timeout
-      // setting, not a measurement of the server, so letting one win would make these fields report
-      // a config constant that barely varies with the network. Failures are already counted by
-      // `failed`.
-      if !request.isFailed {
+      // A 4xx or 5xx that came back is still a candidate: the app waited for it, and that wait is
+      // what this field exists to surface. Only requests that never produced a response are skipped,
+      // since a timeout's duration is the client's setting rather than the server's.
+      if !request.neverCompleted {
         if let current = slowest {
           if request.timings.totalDuration > current.timings.totalDuration {
             slowest = request
@@ -181,7 +181,12 @@ public struct NetworkRequestSummary: Sendable, Equatable {
   /// a request contribute bytes while adding no time.
   private static func measurableReceiving(in requests: [NetworkRequest]) -> [NetworkRequest] {
     return requests.filter { request in
-      guard !request.isFailed else {
+      guard !request.neverCompleted else {
+        return false
+      }
+      // A cache hit reports bytes and timestamps like any other response, so nothing else here
+      // excludes it. Its window measures a disk read, not the connection.
+      guard request.cameFromNetwork != false else {
         return false
       }
       guard (request.responseBytesReceived ?? 0) > 0 else {
@@ -261,6 +266,17 @@ extension Int64 {
 }
 
 extension NetworkRequest {
+  /// Whether the request never produced a response at all: it errored, or it died before headers
+  /// arrived. Distinct from `isFailed`, which also counts a 4xx or 5xx the server did return.
+  ///
+  /// This is the predicate for `slowest` and for the throughput subset. A 503 that came back after
+  /// eight seconds is a real measurement of a slow backend, and on a launch that felt slow it is
+  /// often the answer; a timeout's duration is the client's own setting and says nothing about the
+  /// network.
+  var neverCompleted: Bool {
+    return errorDescription != nil || statusCode == nil
+  }
+
   /// A request is treated as failed if it errored, or returned a 4xx (client error) or 5xx (server
   /// error) status. 1xx (informational), 2xx (success), and 3xx (redirection — usually followed
   /// transparently by URLSession, but the unfollowed case is still a successful response from the

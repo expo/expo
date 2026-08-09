@@ -372,6 +372,40 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
+  func `picks a slow error response over a fast success`() {
+    let now = Date()
+    // A 503 that took 8 seconds is the answer to "why was this launch slow": the app really did
+    // wait that long. Only requests that never completed are excluded, because a timeout's duration
+    // is the client's own setting rather than anything the server did.
+    let slowError = makeRequest(
+      host: "api.expo.dev",
+      duration: 8.0,
+      status: 503,
+      bytesSent: 0,
+      bytesReceived: 900,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(7.8),
+      responseEnd: now.addingTimeInterval(8.0)
+    )
+    let fastSuccess = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 0.2,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 100,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.1),
+      responseEnd: now.addingTimeInterval(0.2)
+    )
+    let summary = NetworkRequestSummary.from([slowError, fastSuccess])
+    #expect(summary.slowest?.duration == 8.0)
+    #expect(summary.slowest?.host == "api.expo.dev")
+    #expect(summary.slowest?.statusCode == 503)
+    // Still counted as a failure; the two fields answer different questions.
+    #expect(summary.failed == 1)
+  }
+
+  @Test
   func `reports the slowest request's status code so an empty body can be explained`() {
     let now = Date()
     // A 304 revalidation is successful, so it's a `slowest` candidate, but carries no body. Without
@@ -645,9 +679,8 @@ struct NetworkRequestSummaryTests {
   @Test
   func `excludes a cache hit from throughput`() {
     let now = Date()
-    // A cached read reports its bytes from the task counters but never touches the network, so it
-    // has no `responseStart`. Counting it would add megabytes to the numerator against the few
-    // milliseconds it took to read from disk.
+    // A cached read reports bytes AND timestamps just like a network response, so giving it a real
+    // window here is what actually happens on device. Only the fetch type distinguishes it.
     let cached = makeRequest(
       host: "cdn.expo.dev",
       duration: 0.02,
@@ -655,8 +688,9 @@ struct NetworkRequestSummaryTests {
       bytesSent: 0,
       bytesReceived: 5_000_000,
       fetchStart: now,
-      responseStart: nil,
-      responseEnd: now.addingTimeInterval(0.02)
+      responseStart: now,
+      responseEnd: now.addingTimeInterval(0.02),
+      cameFromNetwork: false
     )
     let real = makeRequest(
       host: "api.expo.dev",
@@ -925,7 +959,8 @@ struct NetworkRequestSummaryTests {
     // Defaults to whatever `responseEnd` is so a test that doesn't care gets a transfer window
     // matching the span it set up. Pass `false` to model a request whose last byte was never
     // reported, which is what an unmeasured end looks like in production.
-    endWasMeasured: Bool = true
+    endWasMeasured: Bool = true,
+    cameFromNetwork: Bool? = true
   ) -> NetworkRequest {
     return NetworkRequest(
       id: UUID(),
@@ -935,6 +970,7 @@ struct NetworkRequestSummaryTests {
       networkProtocol: nil,
       requestBytesSent: bytesSent,
       responseBytesReceived: bytesReceived,
+      cameFromNetwork: cameFromNetwork,
       timings: NetworkRequest.Timings(
         fetchStart: fetchStart,
         domainLookupStart: nil,
@@ -985,6 +1021,7 @@ struct NetworkRequestMonitorWindowingTests {
       networkProtocol: nil,
       requestBytesSent: 0,
       responseBytesReceived: 0,
+      cameFromNetwork: true,
       timings: NetworkRequest.Timings(
         fetchStart: fetchStart,
         domainLookupStart: nil,
@@ -1291,6 +1328,7 @@ struct NetworkRequestObserverTests {
       networkProtocol: "h2",
       requestBytesSent: 123,
       responseBytesReceived: 4567,
+      cameFromNetwork: true,
       timings: NetworkRequest.Timings(
         fetchStart: fetchStart,
         domainLookupStart: nil,
@@ -1350,6 +1388,7 @@ struct NetworkRequestObserverTests {
       networkProtocol: nil,
       requestBytesSent: nil,
       responseBytesReceived: nil,
+      cameFromNetwork: nil,
       timings: NetworkRequest.Timings(
         fetchStart: fetchStart,
         domainLookupStart: nil,

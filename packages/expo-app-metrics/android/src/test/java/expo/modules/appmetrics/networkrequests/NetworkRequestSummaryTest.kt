@@ -90,6 +90,38 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
+  fun `picks a slow error response over a fast success`() {
+    // A 503 that took 8 seconds is the answer to "why was this launch slow": the app really did
+    // wait that long. Only requests that never completed are excluded, because a timeout's duration
+    // is the client's own setting rather than anything the server did.
+    val requests = listOf(
+      makeRequest(
+        url = "https://api.expo.dev/v2",
+        statusCode = 503,
+        responseBytesReceived = 900,
+        totalDuration = 8.0,
+        fetchStart = Date(0),
+        responseStart = Date(7800),
+        responseEnd = Date(8000)
+      ),
+      makeRequest(
+        url = "https://cdn.expo.dev/asset",
+        responseBytesReceived = 100,
+        totalDuration = 0.2,
+        fetchStart = Date(0),
+        responseStart = Date(100),
+        responseEnd = Date(200)
+      )
+    )
+    val summary = NetworkRequestSummary.from(requests)
+    assertEquals(8.0, summary.slowest!!.duration, 0.0001)
+    assertEquals("api.expo.dev", summary.slowest!!.host)
+    assertEquals(503, summary.slowest!!.statusCode)
+    // Still counted as a failure; the two fields answer different questions.
+    assertEquals(1, summary.failed)
+  }
+
+  @Test
   fun `reports the slowest request's status code so an empty body can be explained`() {
     // A 304 revalidation is successful, so it's a candidate, but carries no body. Without the status
     // code a reader can't tell that from a 200 whose transfer broke.

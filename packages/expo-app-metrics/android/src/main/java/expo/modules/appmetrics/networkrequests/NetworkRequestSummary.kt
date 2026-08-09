@@ -44,10 +44,10 @@ data class NetworkRequestSummary(
    * against a large `bytesReceived` means the transfer itself was. `statusCode` explains a
    * `bytesReceived` of 0, which is routine on a 304 and a problem on a 200.
    *
-   * Failed requests are deliberately not candidates. A timeout's duration is the client's timeout
-   * setting rather than a measurement of the server, so letting one win would make these fields
-   * report a config constant that barely varies with the network. `failed` carries that signal
-   * instead.
+   * A 4xx or 5xx that came back is a candidate: the app waited for it, and on a launch that felt
+   * slow that wait is often the answer. Only requests that never produced a response are excluded,
+   * because a timeout's duration is the client's own setting rather than a measurement of anything
+   * the server did.
    */
   val slowest: SlowestRequest? = null,
 
@@ -60,8 +60,8 @@ data class NetworkRequestSummary(
    * connect and server think time out of the rate, and it excludes cache hits for free, since a
    * response served from disk never reports one. Taking the union rather than a sum keeps
    * concurrency from deflating it, and gaps between requests are left out so idle time isn't charged
-   * to the network. Failures are excluded: a request that stalled until the client gave up would
-   * otherwise hold the window open while nothing moved.
+   * to the network. Requests that never produced a response are excluded: one that stalled until
+   * the client gave up would otherwise hold the window open while nothing moved.
    *
    * Three things it can't see. A stall between requests, since no interval covers it; `failed` is
    * the signal there. A long-lived trickle, such as an event stream, whose window stays open while
@@ -137,11 +137,10 @@ data class NetworkRequestSummary(
         bytesReceived += request.responseBytesReceived ?: 0
         bytesSent += request.requestBytesSent ?: 0
         totalDuration += request.timings.totalDuration
-        // Only completed requests are candidates. A timeout's duration is the client's timeout
-        // setting, not a measurement of the server, so letting one win would make these fields
-        // report a config constant that barely varies with the network. Failures are already counted
-        // by `failed`.
-        if (!request.isFailed) {
+        // A 4xx or 5xx that came back is still a candidate: the app waited for it, and that wait is
+        // what this field exists to surface. Only requests that never produced a response are
+        // skipped, since a timeout's duration is the client's setting rather than the server's.
+        if (!request.neverCompleted) {
           val current = slowest
           if (current == null || request.timings.totalDuration > current.timings.totalDuration) {
             slowest = request
@@ -204,7 +203,7 @@ data class NetworkRequestSummary(
       return requests.filter { request ->
         val start = request.timings.responseStart
         val end = request.timings.measuredResponseEnd
-        !request.isFailed && (request.responseBytesReceived ?: 0) > 0 && start != null &&
+        !request.neverCompleted && (request.responseBytesReceived ?: 0) > 0 && start != null &&
           end != null && end.time > start.time
       }
     }
@@ -257,6 +256,17 @@ data class NetworkRequestSummary(
  * origin's perspective) are not failures. A missing status code (the request failed before
  * headers arrived) counts as failed.
  */
+/**
+ * Whether the request never produced a response at all: it errored, or it died before headers
+ * arrived. Distinct from `isFailed`, which also counts a 4xx or 5xx the server did return.
+ *
+ * This is the predicate for `slowest` and for the throughput subset. A 503 that came back after
+ * eight seconds is a real measurement of a slow backend, and on a launch that felt slow it is often
+ * the answer; a timeout's duration is the client's own setting and says nothing about the network.
+ */
+internal val NetworkRequest.neverCompleted: Boolean
+  get() = errorDescription != null || statusCode == null
+
 internal val NetworkRequest.isFailed: Boolean
   get() {
     if (errorDescription != null) {
