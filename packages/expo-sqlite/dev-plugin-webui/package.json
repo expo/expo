@@ -17,6 +17,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@tailwindcss/postcss": "^4.1.16",
     "autoprefixer": "^10.4.21",
+    "brace-expansion": "1.1.18",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "expo": "^55.0.0",
