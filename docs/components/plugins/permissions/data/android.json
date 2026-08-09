@@ -1,7 +1,7 @@
 {
   "meta": {
     "source": "https://developer.android.com/reference/android/Manifest.permission",
-    "scrapedAt": "2026-07-02T09:06:47.354Z"
+    "scrapedAt": "2026-08-08T08:14:13.934Z"
   },
   "data": {
     "ACCEPT_HANDOVER": {
@@ -2732,6 +2732,17 @@
       "protection": "normal",
       "warning": null
     },
+    "QUERY_APP_USAGE": {
+      "apiAdded": 10000,
+      "apiDeprecated": null,
+      "apiReplaced": null,
+      "name": "QUERY_APP_USAGE",
+      "description": "Allows the holder to query app usage stats.",
+      "explanation": null,
+      "constant": "android.permission.QUERY_APP_USAGE",
+      "protection": "internal|role",
+      "warning": null
+    },
     "RANGING": {
       "apiAdded": 36,
       "apiDeprecated": null,
@@ -3431,7 +3442,7 @@
       "apiReplaced": null,
       "name": "SET_PROCESS_LIMIT",
       "description": "Allows an application to set the maximum number of (not needed) application processes that can be running.",
-      "explanation": null,
+      "explanation": "Allows an application to configure the memory limits and budgets of processes other than itself.",
       "constant": "android.permission.SET_PROCESS_LIMIT",
       "protection": null,
       "warning": null
