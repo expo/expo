@@ -1,9 +1,9 @@
 import type { ExpoConfig, ExpoGoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { respond } from 'expo-server/adapter/http';
+import type http from 'http';
 import { posix } from 'node:path';
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
 import { resolve } from 'url';
 
 import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
@@ -406,43 +406,21 @@ export abstract class ManifestMiddleware<
 
     const response = await this._getManifestResponseAsync(options);
 
-    // Clients frequently disconnect while the manifest is being resolved, e.g. a dev client
-    // reconnecting while Metro restarts. The response is already destroyed at this point, so piping
-    // to it would throw (`ERR_STREAM_UNABLE_TO_PIPE` on Node 24+, `ERR_STREAM_PREMATURE_CLOSE`
-    // before that). Treat this as a cancelled request instead.
-    if (isResponseCancelled(res)) {
-      return;
-    }
-
-    // Convert `Response` to node:http response
-    if (typeof res.setHeaders === 'function') {
-      res.setHeaders(response.headers);
-    } else {
-      for (const [key, value] of response.headers.entries()) {
-        res.appendHeader(key, value);
+    try {
+      // `respond` returns early when the response is already ended or destroyed, which is routine
+      // here: clients disconnect while the manifest is being resolved, e.g. a dev client
+      // reconnecting while Metro restarts.
+      await respond(res as http.ServerResponse, response);
+    } catch (error: any) {
+      // The client can also disconnect part-way through the response, which is not a server error.
+      // `pipeline` destroys every stream it touches on *any* failure, so `res` is equally destroyed
+      // whether the client hung up or the manifest body itself threw — only the error identifies
+      // which happened. Anything else is a real failure and must still be reported.
+      if (!isClientDisconnectError(error)) {
+        throw error;
       }
-    }
-    if (response.body) {
-      try {
-        await pipeline(Readable.fromWeb(response.body as any), res);
-      } catch (error: any) {
-        // The client can also disconnect part-way through the response, which is not a server
-        // error. `pipeline` destroys every stream it touches on *any* failure, so `res` is equally
-        // destroyed whether the client hung up or the manifest body itself threw — only the error
-        // identifies which happened. Anything else is a real failure and must still be reported.
-        if (!isClientDisconnectError(error)) {
-          throw error;
-        }
-      }
-    } else {
-      res.end();
     }
   }
-}
-
-/** Determine if the client disconnected before the response could be written. */
-function isResponseCancelled(res: ServerResponse): boolean {
-  return res.destroyed || res.writableEnded;
 }
 
 /** Errors Node raises when the client hangs up part-way through a response. */

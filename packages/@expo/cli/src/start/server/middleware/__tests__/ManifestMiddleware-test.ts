@@ -469,7 +469,7 @@ describe('getHandler', () => {
     await handleAsync(req, asRes(res), next);
 
     // The response is never written to, so the pipeline never throws.
-    expect(res.setHeaders).not.toHaveBeenCalled();
+    expect(res.setHeader).not.toHaveBeenCalled();
     expect(res.statusCode).toEqual(200);
     expect(next).not.toHaveBeenCalled();
     // Cancelled requests are not server errors, so nothing is logged.
