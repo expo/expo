@@ -35,7 +35,8 @@ abstract class ExpoView(
 
   /**
    * Manually trigger measure and layout.
-   * If [shouldUseAndroidLayout] is set to `true`, this method will be called automatically after [requestLayout].
+   * If [shouldUseAndroidLayout] is set to `true`, this method will be called automatically after
+   * [requestLayout] or [forceLayout].
    */
   @UiThread
   fun measureAndLayout() {
@@ -51,6 +52,19 @@ abstract class ExpoView(
     if (shouldUseAndroidLayout) {
       // We need to force measure and layout, because React Native doesn't do it for us.
       post { measureAndLayout() }
+    }
+  }
+
+  override fun forceLayout() {
+    super.forceLayout()
+    if (shouldUseAndroidLayout && isAttachedToWindow && isLaidOut) {
+      // ViewRootImpl can force-layout the hierarchy without React Native laying out its
+      // managed children. Preserve the Android-layout contract at that boundary.
+      post {
+        if (isAttachedToWindow && isLayoutRequested) {
+          measureAndLayout()
+        }
+      }
     }
   }
 
