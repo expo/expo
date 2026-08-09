@@ -171,7 +171,9 @@ export function useReleasingSharedObjectWithLifecycle<TSharedObject extends Shar
         if (pendingUpdatePromiseRef.current) {
           pendingUpdatePromiseRef.current.then(doRelease, doRelease);
         } else {
-          doRelease();
+          // This cleanup runs before those of the component's own hooks, which may still use the object.
+          // React runs a commit's cleanups synchronously, so a microtask is enough for them to run first.
+          queueMicrotask(doRelease);
         }
       }
     };
