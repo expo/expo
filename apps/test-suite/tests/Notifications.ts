@@ -34,7 +34,7 @@ export async function test(t) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
-  const onlyInteractiveDescribe = isInteractive ? t.describe : t.xdescribe;
+  const onlyInteractiveDescribe = isInteractive() ? t.describe : t.xdescribe;
 
   t.describe('Notifications', () => {
     t.describe('getDevicePushTokenAsync', () => {
@@ -89,11 +89,11 @@ export async function test(t) {
       let handleErrorEvent: Parameters<NotificationHandler['handleError']>;
 
       let receivedEvent: Notifications.Notification | undefined;
-      let receivedSubscription = null;
+      let receivedSubscription: EventSubscription | null = null;
 
       let expoPushToken: string | undefined;
 
-      let handleFuncOverride: NotificationHandler['handleNotification'];
+      let handleFuncOverride: NotificationHandler['handleNotification'] | null;
 
       t.beforeAll(async () => {
         const pushToken = await Notifications.getExpoPushTokenAsync();
@@ -1250,144 +1250,147 @@ export async function test(t) {
           10000
         );
 
-        t.it(
-          'schedules a repeating daily notification; only first scheduled event is verified.',
-          async () => {
-            const dateNow = new Date();
-            const trigger: NotificationTriggerInput = {
-              type: SchedulableTriggerInputTypes.DAILY,
-              hour: dateNow.getHours(),
-              minute: (dateNow.getMinutes() + 2) % 60,
-            };
-            await Notifications.scheduleNotificationAsync({
-              identifier,
-              content: notificationContent,
-              trigger,
-            });
-            const result = await Notifications.getAllScheduledNotificationsAsync();
+        t.describe('schedules', () => {
+          t.it(
+            'schedules a repeating daily notification; only first scheduled event is verified.',
+            async () => {
+              const dateNow = new Date();
+              const trigger: NotificationTriggerInput = {
+                type: SchedulableTriggerInputTypes.DAILY,
+                hour: dateNow.getHours(),
+                minute: (dateNow.getMinutes() + 2) % 60,
+              };
+              await Notifications.scheduleNotificationAsync({
+                identifier,
+                content: notificationContent,
+                trigger,
+              });
+              const result = await Notifications.getAllScheduledNotificationsAsync();
 
-            if (Platform.OS === 'android') {
-              t.expect(result[0].trigger).toEqual({
-                type: 'daily',
-                channelId: null,
-                ...trigger,
-              });
-            } else if (Platform.OS === 'ios') {
-              t.expect(result[0].trigger).toEqual({
-                type: 'calendar',
-                class: 'UNCalendarNotificationTrigger',
-                repeats: true,
-                payload: undefined,
-                seconds: undefined,
-                region: undefined,
-                dateComponents: {
-                  ...removeTriggerType(trigger),
-                  timeZone: null,
-                  isLeapMonth: false,
-                  calendar: null,
-                },
-              });
-            } else {
-              throw new Error('Test does not support platform');
-            }
-          },
-          4000
-        );
+              if (Platform.OS === 'android') {
+                t.expect(result[0].trigger).toEqual({
+                  channelId: null,
+                  ...trigger,
+                });
+              } else if (Platform.OS === 'ios') {
+                t.expect(result[0].trigger).toEqual({
+                  type: 'calendar',
+                  class: 'UNCalendarNotificationTrigger',
+                  repeats: true,
+                  payload: undefined,
+                  seconds: undefined,
+                  region: undefined,
+                  dateComponents: {
+                    ...removeTriggerType(trigger),
+                    timeZone: null,
+                    isLeapMonth: false,
+                    isRepeatedDay: false,
+                    calendar: null,
+                  },
+                });
+              } else {
+                throw new Error('Test does not support platform');
+              }
+            },
+            4000
+          );
 
-        t.it(
-          'schedules a repeating weekly notification; only first scheduled event is verified.',
-          async () => {
-            const dateNow = new Date();
-            const trigger: NotificationTriggerInput = {
-              type: SchedulableTriggerInputTypes.WEEKLY,
-              // JS weekday range equals 0 to 6, Sunday equals 0
-              // Native weekday range equals 1 to 7, Sunday equals 1
-              weekday: dateNow.getDay() + 1,
-              hour: dateNow.getHours(),
-              minute: (dateNow.getMinutes() + 2) % 60,
-            };
-            await Notifications.scheduleNotificationAsync({
-              identifier,
-              content: notificationContent,
-              trigger,
-            });
-            const result = await Notifications.getAllScheduledNotificationsAsync();
+          t.it(
+            'schedules a repeating weekly notification; only first scheduled event is verified.',
+            async () => {
+              const dateNow = new Date();
+              const trigger: NotificationTriggerInput = {
+                type: SchedulableTriggerInputTypes.WEEKLY,
+                // JS weekday range equals 0 to 6, Sunday equals 0
+                // Native weekday range equals 1 to 7, Sunday equals 1
+                weekday: dateNow.getDay() + 1,
+                hour: dateNow.getHours(),
+                minute: (dateNow.getMinutes() + 2) % 60,
+              };
+              await Notifications.scheduleNotificationAsync({
+                identifier,
+                content: notificationContent,
+                trigger,
+              });
+              const result = await Notifications.getAllScheduledNotificationsAsync();
 
-            if (Platform.OS === 'android') {
-              t.expect(result[0].trigger).toEqual({
-                type: 'weekly',
-                channelId: null,
-                ...trigger,
-              });
-            } else if (Platform.OS === 'ios') {
-              t.expect(result[0].trigger).toEqual({
-                type: 'calendar',
-                class: 'UNCalendarNotificationTrigger',
-                repeats: true,
-                payload: undefined,
-                seconds: undefined,
-                region: undefined,
-                dateComponents: {
-                  ...removeTriggerType(trigger),
-                  timeZone: null,
-                  isLeapMonth: false,
-                  calendar: null,
-                },
-              });
-            } else {
-              throw new Error('Test does not support platform');
-            }
-          },
-          4000
-        );
+              if (Platform.OS === 'android') {
+                t.expect(result[0].trigger).toEqual({
+                  channelId: null,
+                  ...trigger,
+                });
+              } else if (Platform.OS === 'ios') {
+                t.expect(result[0].trigger).toEqual({
+                  type: 'calendar',
+                  class: 'UNCalendarNotificationTrigger',
+                  repeats: true,
+                  payload: undefined,
+                  seconds: undefined,
+                  region: undefined,
+                  dateComponents: {
+                    ...removeTriggerType(trigger),
+                    timeZone: null,
+                    isLeapMonth: false,
+                    isRepeatedDay: false,
+                    calendar: null,
+                  },
+                });
+              } else {
+                throw new Error('Test does not support platform');
+              }
+            },
+            4000
+          );
 
-        t.it(
-          'schedules a repeating yearly notification; only first scheduled event is verified.',
-          async () => {
-            const dateNow = new Date();
-            const trigger: NotificationTriggerInput = {
-              type: SchedulableTriggerInputTypes.YEARLY,
-              day: dateNow.getDate(),
-              month: dateNow.getMonth(), // 0 is January
-              hour: dateNow.getHours(),
-              minute: (dateNow.getMinutes() + 2) % 60,
-            };
-            await Notifications.scheduleNotificationAsync({
-              identifier,
-              content: notificationContent,
-              trigger,
-            });
-            const result = await Notifications.getAllScheduledNotificationsAsync();
+          t.it(
+            'schedules a repeating yearly notification; only first scheduled event is verified.',
+            async () => {
+              const dateNow = new Date();
+              const trigger: NotificationTriggerInput = {
+                type: SchedulableTriggerInputTypes.YEARLY,
+                day: dateNow.getDate(),
+                month: dateNow.getMonth(), // 0 is January
+                hour: dateNow.getHours(),
+                minute: (dateNow.getMinutes() + 2) % 60,
+              };
+              await Notifications.scheduleNotificationAsync({
+                identifier,
+                content: notificationContent,
+                trigger,
+              });
+              const result = await Notifications.getAllScheduledNotificationsAsync();
 
-            if (Platform.OS === 'android') {
-              t.expect(result[0].trigger).toEqual({
-                type: 'yearly',
-                channelId: null,
-                ...trigger,
-              });
-            } else if (Platform.OS === 'ios') {
-              t.expect(result[0].trigger).toEqual({
-                type: 'calendar',
-                class: 'UNCalendarNotificationTrigger',
-                repeats: true,
-                payload: undefined,
-                seconds: undefined,
-                region: undefined,
-                dateComponents: {
-                  ...removeTriggerType(trigger),
-                  // iOS uses 1-12 based months
-                  month: trigger.month + 1,
-                  timeZone: null,
-                  isLeapMonth: false,
-                  calendar: null,
-                },
-              });
-            } else {
-              throw new Error('Test does not support platform');
-            }
-          },
-          4000
-        );
+              if (Platform.OS === 'android') {
+                t.expect(result[0].trigger).toEqual({
+                  channelId: null,
+                  ...trigger,
+                });
+              } else if (Platform.OS === 'ios') {
+                t.expect(result[0].trigger).toEqual({
+                  type: 'calendar',
+                  class: 'UNCalendarNotificationTrigger',
+                  repeats: true,
+                  payload: undefined,
+                  seconds: undefined,
+                  region: undefined,
+                  dateComponents: {
+                    ...removeTriggerType(trigger),
+                    // iOS uses 1-12 based months
+                    month: trigger.month + 1,
+                    timeZone: null,
+                    isRepeatedDay: false,
+
+                    isLeapMonth: false,
+                    calendar: null,
+                  },
+                });
+              } else {
+                throw new Error('Test does not support platform');
+              }
+            },
+            4000
+          );
+        });
 
         // iOS rejects with "time interval must be at least 60 if repeating"
         // and having a test running for more than 60 seconds may be too
@@ -1918,9 +1921,12 @@ export async function test(t) {
 const PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send';
 
 async function sendTestPushNotification(
-  expoPushToken: string,
+  expoPushToken: string | undefined,
   notificationOverrides?: Record<string, string>
 ) {
+  if (!expoPushToken) {
+    throw new Error('push token was nullish or empty');
+  }
   // POST the token to the Expo push server
   const response = await fetch(PUSH_ENDPOINT, {
     method: 'POST',
@@ -1976,7 +1982,7 @@ async function sendTestPushNotification(
   }
 }
 
-function askUserYesOrNo(title, message = '') {
+function askUserYesOrNo(title: string, message = '') {
   return new Promise((resolve, reject) => {
     try {
       Alert.alert(

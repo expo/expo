@@ -2,12 +2,7 @@ import { ThemeProvider, useTheme } from 'ThemeProvider';
 import BenchmarkHelper from 'benchmark-helper';
 import * as DevMenu from 'expo-dev-menu';
 import { AppMetrics, Observe, ObserveRoot } from 'expo-observe';
-import {
-  DarkTheme,
-  DefaultTheme,
-  Stack,
-  ThemeProvider as NavigationThemeProvider,
-} from 'expo-router';
+import { Stack } from 'expo-router';
 import * as Splashscreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -100,15 +95,12 @@ function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      {/* TODO(kudo,20260802): Unify these navigation themes with `ThemeProvider` so there's a single source of truth. */}
-      <NavigationThemeProvider value={themeName === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="redirect" />
-          <Stack.Screen name="search" options={getSearchScreenOptions?.(theme)} />
-        </Stack>
-        <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
-      </NavigationThemeProvider>
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="redirect" />
+        <Stack.Screen name="search" options={getSearchScreenOptions?.(theme)} />
+      </Stack>
+      <StatusBar style={themeName === 'light' ? 'dark' : 'light'} />
     </GestureHandlerRootView>
   );
 }

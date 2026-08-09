@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Create development deep links from the bundle URL's authority instead of the manifest's `hostUri` ([#48275](https://github.com/expo/expo/pull/48275) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
+
+- [Internal] Read the development server URL from `expo/internal/bundle-origin` instead of duplicating its accessor ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
 
 ## 57.0.4 - 2026-07-22
 

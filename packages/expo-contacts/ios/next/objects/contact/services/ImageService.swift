@@ -14,7 +14,7 @@ class ImageService {
   func url(from imageData: Data, filename: String) throws -> String {
     let imageFileURL = try prepareCacheFileURL(filename: filename)
     try imageData.write(to: imageFileURL, options: .atomic)
-    return imageFileURL.path
+    return imageFileURL.absoluteString
   }
 
   func imageData(from url: String) throws -> Data? {

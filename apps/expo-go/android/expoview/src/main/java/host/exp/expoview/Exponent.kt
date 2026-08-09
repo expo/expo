@@ -5,6 +5,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Handler
 import android.os.Looper
 import android.os.StrictMode
@@ -281,9 +282,17 @@ class Exponent private constructor(val context: Context, val application: Applic
     fun onFailure(errorMessage: String)
   }
 
+  /**
+   * Check that the development server that serves [bundleUrl] is running.
+   *
+   * The status URL is built from the bundle URL, which is the address this device reached, rather
+   * than from the manifest's `debuggerHost`, which is the address the development server believes it
+   * has. The two differ when the server is reached through a proxy or a tunnel, and only the former
+   * keeps its scheme and port.
+   */
   fun testPackagerStatus(
     isDebug: Boolean,
-    mManifest: Manifest,
+    bundleUrl: String,
     callback: PackagerStatusCallback
   ) {
     if (!isDebug) {
@@ -291,13 +300,19 @@ class Exponent private constructor(val context: Context, val application: Applic
       return
     }
 
-    val debuggerHost = mManifest.getDebuggerHost()
+    val statusUrl = Uri.parse(bundleUrl)
+      .buildUpon()
+      .path("status")
+      .clearQuery()
+      .fragment(null)
+      .build()
+      .toString()
     exponentNetwork.noCacheClient.newCall(
-      Request.Builder().url("http://$debuggerHost/status").build()
+      Request.Builder().url(statusUrl).build()
     ).enqueue(object : Callback {
       override fun onFailure(call: Call, e: IOException) {
         EXL.d(TAG, e.toString())
-        callback.onFailure("Packager is not running at http://$debuggerHost")
+        callback.onFailure("Packager is not running at $statusUrl")
       }
 
       @Throws(IOException::class)
@@ -306,7 +321,7 @@ class Exponent private constructor(val context: Context, val application: Applic
         if (responseString.contains(PACKAGER_RUNNING)) {
           runOnUiThread { callback.onSuccess() }
         } else {
-          callback.onFailure("Packager is not running at http://$debuggerHost")
+          callback.onFailure("Packager is not running at $statusUrl")
         }
       }
     })

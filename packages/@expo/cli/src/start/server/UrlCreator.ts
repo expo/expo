@@ -5,6 +5,7 @@ import * as Log from '../../log';
 import type { GatewayInfo } from '../../utils/ip';
 import { getGateway, getGatewayAsync } from '../../utils/ip';
 import { debugEvent } from './events';
+import type { ForwardedRequestInfo } from './middleware/resolveForwarded';
 
 export interface CreateURLOptions {
   /** URL scheme to use when opening apps in custom runtimes. */
@@ -13,6 +14,8 @@ export interface CreateURLOptions {
   hostType?: 'localhost' | 'lan' | 'tunnel';
   /** Requested hostname. */
   hostname?: string | null;
+  /** Address the client used to reach the dev server, from a forwarded request */
+  forwarded?: ForwardedRequestInfo | null;
 }
 
 interface UrlComponents {
@@ -77,13 +80,12 @@ export class UrlCreator {
       return null;
     }
 
-    const manifestUrl = this.constructUrl({
-      ...options,
-      scheme: this.defaults?.hostType === 'tunnel' ? 'https' : 'http',
-    });
-    const devClientUrl = `${protocol}://expo-development-client/?url=${encodeURIComponent(
-      manifestUrl
-    )}`;
+    // We fallback to the assumed scheme based on whether we have our own proxy (a tunnel)
+    const scheme =
+      options?.forwarded?.protocol ?? (this.defaults?.hostType === 'tunnel' ? 'https' : 'http');
+    const manifestUrl = this.constructUrl({ ...options, scheme });
+    const manifestUrlEncoded = encodeURIComponent(manifestUrl);
+    const devClientUrl = `${protocol}://expo-development-client/?url=${manifestUrlEncoded}`;
     debugEvent('dev_client_url', { url: devClientUrl, manifestUrl });
     return devClientUrl;
   }
@@ -128,6 +130,14 @@ export class UrlCreator {
       return getUrlComponentsFromProxyUrl(options, proxyURL);
     }
 
+    // A forwarded request tells us an address the client can reach, which beats anything we can infer
+    if (options.forwarded) {
+      const authorityComponents = getUrlComponentsFromAuthority(options, options.forwarded);
+      if (authorityComponents) {
+        return authorityComponents;
+      }
+    }
+
     // Ngrok.
     if (options.hostType === 'tunnel') {
       const components = this.getTunnelUrlComponents(options);
@@ -149,6 +159,23 @@ export class UrlCreator {
       protocol: options.scheme ?? 'http',
     };
   }
+}
+
+function getUrlComponentsFromAuthority(
+  options: Pick<CreateURLOptions, 'scheme'>,
+  forwarded: ForwardedRequestInfo
+): UrlComponents | null {
+  const { authority } = forwarded;
+  if (!authority) {
+    return null;
+  }
+  const scheme = options.scheme ?? forwarded.protocol ?? 'http';
+  const parsed = new URL(`${scheme}://${forwarded.authority}`);
+  return {
+    hostname: parsed.hostname,
+    port: parsed.port,
+    protocol: scheme,
+  };
 }
 
 function getUrlComponentsFromProxyUrl(

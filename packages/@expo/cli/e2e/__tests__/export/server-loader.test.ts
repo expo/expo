@@ -259,6 +259,13 @@ describe.each(
     expect(data).toEqual({ foo: 'bar' });
   });
 
+  it('defaults a headerless server loader to no-store', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/index');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('no-store');
+  });
+
   it('sets custom headers on response using `setResponseHeaders()`', async () => {
     const response = await server.fetchAsync('/_expo/loaders/response?setresponseheaders=true');
     expect(response.status).toBe(200);

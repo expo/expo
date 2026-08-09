@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [ios] Forward notification center calls to a `UNUserNotificationCenterDelegate` that another library set, so that both libraries keep working. ([#48313](https://github.com/expo/expo/pull/48313) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 - [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws on some OEM ROMs. ([#47889](https://github.com/expo/expo/pull/47889) by [@nunocaseiro](https://github.com/nunocaseiro))
