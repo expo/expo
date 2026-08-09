@@ -8,14 +8,12 @@ import okhttp3.mockwebserver.MockWebServer
 import okhttp3.mockwebserver.SocketPolicy
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import java.io.IOException
-import java.time.Duration
 
 /**
  * End-to-end interceptor tests driven through OkHttp's `MockWebServer`. Each test installs a
@@ -122,12 +120,9 @@ class NetworkRequestInterceptorTest {
 
   @Test
   fun `treats a message-less failure as failed`() {
-    // `SocketException()` with no message: `localizedMessage` and `message` are both null, so a
-    // snapshot keyed off the description alone would keep the 200 the response started as and
-    // report a broken transfer as a success.
-    // The headers arrived, so the snapshot carries a 200; the body then broke. This is exactly the
-    // shape the body-read fix produces, and the only path where a null description isn't rescued by
-    // a missing status code.
+    // `SocketException()` carries no message at all, so a snapshot keyed off the description alone
+    // would keep the 200 the headers arrived with and report a broken transfer as a success. This
+    // is the only path where a null description isn't already caught by a missing status code.
     val request = Request.Builder().url("https://expo.dev/x").build()
     val response = okhttp3.Response.Builder()
       .request(request)
