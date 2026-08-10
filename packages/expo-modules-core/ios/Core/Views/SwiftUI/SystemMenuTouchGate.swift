@@ -1,7 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #if os(iOS)
-// Also brings in the subclass header, required to set `state` from the touch callbacks.
+// Also brings in the subclass header, required to set `state` from the touch callbacks
+// and to call `ignore(_:for:)` on React Native's touch handler.
 import UIKit.UIGestureRecognizerSubclass
 
 /**
@@ -24,20 +25,28 @@ internal final class SystemMenuTouchGate: UIGestureRecognizer {
    The one view UIKit adds to the window for a presented context menu.
    */
   static func isContextMenuContainerClassName(_ className: String) -> Bool {
-    return className == "_UIContextMenuContainerView"
+    return className == "_UI".appending("ContextMenuContainerView")
   }
 
   /**
-    Consider Menu to be open when container view is present and interaction on it is enabled.
+    Consider Menu to be open when the container is present, still accepts interaction, and is modal.
+    UIKit turns `isUserInteractionEnabled` off the moment dismissal commits, so taps made during
+    the dismiss animation pass through to the app again. `accessibilityViewIsModal` is how UIKit
+    marks the container as blocking the content behind it — a semantic signal beside the class name.
    */
-  static func isOpenContextMenuContainer(className: String, isUserInteractionEnabled: Bool) -> Bool {
-    return isUserInteractionEnabled && isContextMenuContainerClassName(className)
+  static func isOpenContextMenuContainer(
+    className: String,
+    isUserInteractionEnabled: Bool,
+    accessibilityViewIsModal: Bool
+  ) -> Bool {
+    return isUserInteractionEnabled && accessibilityViewIsModal && isContextMenuContainerClassName(className)
   }
 
   static func isContextMenuContainer(_ view: UIView) -> Bool {
     return isOpenContextMenuContainer(
       className: NSStringFromClass(type(of: view)),
-      isUserInteractionEnabled: view.isUserInteractionEnabled
+      isUserInteractionEnabled: view.isUserInteractionEnabled,
+      accessibilityViewIsModal: view.accessibilityViewIsModal
     )
   }
 
@@ -64,20 +73,26 @@ internal final class SystemMenuTouchGate: UIGestureRecognizer {
     return className == "RCTSurfaceTouchHandler"
   }
 
+  static func isSurfaceTouchHandler(_ recognizer: UIGestureRecognizer) -> Bool {
+    return isSurfaceTouchHandlerClassName(NSStringFromClass(type(of: recognizer)))
+  }
+
   /**
-  Cancels touches by disabling and re-enabling the gesture recognizer. This is the same approach React Native uses in
-  RCTSurfaceTouchHandler.mm.
-  https://github.com/react/react-native/blob/3a95e0e93c80537d519dd7e9a771544396d4ab6b/packages/react-native/React/Fabric/RCTSurfaceTouchHandler.mm#L414
+   React Native's touch handlers along the touched view's superview chain.
    */
-  static func cancelReactNativeTouches(in view: UIView) {
-    for recognizer in view.gestureRecognizers ?? []
-    where isSurfaceTouchHandlerClassName(NSStringFromClass(type(of: recognizer))) {
-      recognizer.isEnabled = false
-      recognizer.isEnabled = true
+  static func surfaceTouchHandlers(
+    above view: UIView?,
+    isSurfaceTouchHandler: @MainActor (UIGestureRecognizer) -> Bool = SystemMenuTouchGate.isSurfaceTouchHandler
+  ) -> [UIGestureRecognizer] {
+    var handlers: [UIGestureRecognizer] = []
+    var current = view
+    while let view = current {
+      for recognizer in view.gestureRecognizers ?? [] where isSurfaceTouchHandler(recognizer) {
+        handlers.append(recognizer)
+      }
+      current = view.superview
     }
-    for subview in view.subviews {
-      cancelReactNativeTouches(in: subview)
-    }
+    return handlers
   }
 
   // MARK: - Installing
@@ -100,7 +115,11 @@ internal final class SystemMenuTouchGate: UIGestureRecognizer {
     super.touchesBegan(touches, with: event)
 
     if let window = view as? UIWindow, Self.isShowingContextMenu(in: window) {
-      Self.cancelReactNativeTouches(in: window)
+      for touch in touches {
+        for handler in Self.surfaceTouchHandlers(above: touch.view) {
+          handler.ignore(touch, for: event)
+        }
+      }
     }
     state = .failed
   }
