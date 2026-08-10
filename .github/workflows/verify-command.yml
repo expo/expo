@@ -138,13 +138,16 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code@2.1.212
 
       # The long-lived secret never reaches the agent: it lives in THIS step's
-      # env only, and is exchanged for a derived token that can create at most
-      # TWO sandboxes within 90 minutes and nothing else. Two, not one,
-      # because a PR verification runs before/after arms and a boot-hang
-      # investigation wants a control app — the prompt's stated budget and
-      # this number must stay equal. Only the derived token is
-      # written to disk, so a config file read off the runner — or a token
-      # echoed into a public comment — buys one sandbox, not the account.
+      # env only, and is exchanged for a derived token bounded on every axis
+      # that costs money or is publicly visible — at most 2 sandboxes, at most
+      # 3 EAS builds, comments ONLY on the triggering thread, and a TTL that
+      # does not outlive the job. Two sandboxes and three builds because a PR
+      # verification runs before/after arms and a boot-hang investigation
+      # wants a control app; these numbers and the prompt's stated budget must
+      # stay equal. Server-side enforcement, not prompt text — the budgets are
+      # spent transactionally and the comment target is checked per call.
+      # Only the derived token is written to disk, so a config file read off
+      # the runner — or a token echoed anywhere — buys that bounded set.
       # (Deriving in-process rather than passing a token between jobs is
       # deliberate: job outputs and artifacts are readable by anyone who can
       # read the run, which on a public repository is everyone.)
@@ -153,12 +156,13 @@ jobs:
         env:
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
           MCP_URL: https://agile-minnow-543.convex.site
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: |
           umask 077
           scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
             -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
             -H 'Content-Type: application/json' \
-            -d "{\"sandboxBudget\":2,\"ttlSeconds\":5400,\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
+            -d "{\"sandboxBudget\":2,\"buildBudget\":3,\"ttlSeconds\":4200,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
             | jq -r '.token // empty')
           if [ -z "$scoped" ]; then
             echo "::error::Could not mint a scoped sandbox token"
@@ -196,9 +200,23 @@ jobs:
           if [ "$IS_PR" = "true" ]; then
             gh pr view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
               --json number,title,state,headRefName,baseRefName,files,body > pull-request.json
-            # Truncated: a huge diff must not blow the agent's context.
+            # A huge diff must not blow the agent's context — but a SILENTLY
+            # cut or failed diff is worse than a big one: the agent would post
+            # a public verdict built on it. So fetch in full (failing the step
+            # if gh fails), then truncate with an explicit marker the prompt
+            # tells the agent to look for. Piping straight into `head` would
+            # hide both failures: the default run: shell has no pipefail, and
+            # head closes the pipe, killing gh with SIGPIPE.
             gh pr diff "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
-              | head -c 400000 > pull-request.diff
+              > "$RUNNER_TEMP/full.diff"
+            limit=400000
+            if [ "$(wc -c < "$RUNNER_TEMP/full.diff")" -gt "$limit" ]; then
+              head -c "$limit" "$RUNNER_TEMP/full.diff" > pull-request.diff
+              printf '\n*** DIFF TRUNCATED AT %s BYTES — THIS IS NOT THE COMPLETE DIFF ***\n' \
+                "$limit" >> pull-request.diff
+            else
+              cp "$RUNNER_TEMP/full.diff" pull-request.diff
+            fi
           fi
           ls -la
 

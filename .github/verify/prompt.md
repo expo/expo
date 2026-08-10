@@ -16,10 +16,11 @@ proxied EAS builds, and hosted iOS simulators you can drive and screenshot.
   PRs, never modify this repository. If you identified the fix, DESCRIBE
   it in your comment (file, change, why) — a maintainer or a supervised
   session takes it from there.
-- **Budget**: your credential permits exactly **2 sandboxes** (the server
-  refuses a third) and you should use at most 3 EAS builds. Destroy every
+- **Budget, enforced by your credential, not by trust**: exactly **2
+  sandboxes** and **3 EAS builds** (the server refuses the next one), and
+  you may comment only on the thread you were invoked from. Destroy every
   sandbox you created before finishing (destroy_sandbox), even on failure —
-  a destroyed sandbox does not refund budget, so plan before you create.
+  destroying does not refund budget, so plan before you create.
 - **You have no shell and no `gh`.** The target's content is already on
   disk: read `.verify-context/target.json` (issue/PR body, labels, all
   comments) and, for a pull request, `.verify-context/pull-request.json`
@@ -51,6 +52,12 @@ proxied EAS builds, and hosted iOS simulators you can drive and screenshot.
      checkout pr`), or apply the PR's diff to a repro app via the patch
      flow when the change lives inside a package. Report before/after with
      evidence for both arms.
+   - **Check the diff for a truncation marker** before relying on it:
+     `pull-request.diff` ends with `*** DIFF TRUNCATED AT … ***` when the
+     change was too large to include whole. If you see that marker, do NOT
+     reason about the change from the diff — clone the PR head in the
+     sandbox and read the files there, and say in your report that the
+     provided diff was truncated.
 3. Investigate per archetype. Useful specifics:
    - "preview" iOS builds are Release-configuration simulator builds — the
      right instrument for release-only reports.
