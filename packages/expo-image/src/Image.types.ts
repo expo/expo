@@ -723,6 +723,39 @@ export type ImageTransition = {
     | 'sf:up-up'
     | 'sf:off-up'
     | null;
+
+  /**
+   * Skips the transition when an image first appears from a cache hit. Already-cached images are
+   * then shown instantly instead of re-animating on every mount, tab change, or scroll back into
+   * view.
+   *
+   * This only affects the first appearance of an image in a view. A later `source` change on a
+   * populated view always plays its transition. A visible placeholder still counts as the first
+   * appearance.
+   *
+   * - `'none'` - The transition always plays. This is the default.
+   * - `'memory'` - Skips the transition for images served from the in-memory cache.
+   * - `'all'` - Skips it for any cache hit, so only uncached (typically network) loads animate.
+   *
+   * Locally bundled assets are always instantly available, so both `'memory'` and `'all'` treat
+   * them as in-memory cache hits and skip their transition.
+   *
+   * @example
+   * ```tsx
+   * // Fade a list item in the first time it loads, but show it instantly
+   * // when it scrolls back into view.
+   * <Image
+   *   source={item.uri}
+   *   recyclingKey={item.id}
+   *   transition={{ duration: 300, skipOnCacheHit: 'all' }}
+   * />
+   * ```
+   *
+   * @default 'none'
+   * @platform android
+   * @platform ios
+   */
+  skipOnCacheHit?: 'none' | 'memory' | 'all' | null;
 };
 
 export type ImageLoadEventData = {
@@ -835,7 +868,7 @@ export declare class ImageNativeModule extends NativeModule<ImageModuleEvents> {
 }
 
 /**
- * An object with options for the [`useImage`](#useimage) hook.
+ * An object with options for the [`useImage`](#useimagesource-options-dependencies) hook.
  */
 export type ImageLoadOptions = {
   /**

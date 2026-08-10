@@ -233,7 +233,9 @@ internal struct ObservabilityManager {
 
   // Static function extracted for testability
   internal nonisolated static func shouldDispatch(
-    config: PersistedConfig?, isDev: Bool, isInSample: Bool
+    config: PersistedConfig?,
+    isDev: Bool,
+    isInSample: Bool
   ) -> Bool {
     let dispatchingEnabled = config?.dispatchingEnabled ?? true
     let dispatchInDebug = config?.dispatchInDebug ?? false
@@ -244,7 +246,9 @@ internal struct ObservabilityManager {
     let isJsDev = ObserveUserDefaults.bundleDefaults?.isJsDev ?? false
     let isDev = EXAppDefines.APP_DEBUG || isJsDev
     return Self.shouldDispatch(
-      config: ObserveUserDefaults.config, isDev: isDev, isInSample: isInSample()
+      config: ObserveUserDefaults.config,
+      isDev: isDev,
+      isInSample: isInSample()
     )
   }
 

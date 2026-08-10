@@ -12,6 +12,7 @@ export function useKeyedChildListeners() {
   }>(
     Object.assign(Object.create(null), {
       getState: {},
+      preventRemove: {},
       beforeRemove: {},
     })
   );

@@ -4,7 +4,6 @@ import React
 
 public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
-  private var _bundleConfiguration: RCTBundleConfiguration?
 
   @MainActor
   private lazy var reactDelegate: ExpoReactDelegate = {
@@ -27,21 +26,46 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     super.init(delegate: delegate, releaseLevel: releaseLevel)
   }
 
+  // `RCTBundleConfiguration` is only available in react-native 0.84+, so it doesn't exist yet on react-native-macos.
+#if os(iOS) || os(tvOS)
+  private var _bundleConfiguration: RCTBundleConfiguration?
+
   public override var bundleConfiguration: RCTBundleConfiguration {
     get {
       if let _bundleConfiguration {
         return _bundleConfiguration
       }
-#if os(iOS) || os(tvOS)
+      adoptInfoPlistMetroPort()
       return ExpoBundleConfiguration.configuration(bundleURL: self.delegate?.bundleURL())
-#else
-      return super.bundleConfiguration
-#endif
     }
     set {
       _bundleConfiguration = newValue
     }
   }
+
+  private func adoptInfoPlistMetroPort() {
+#if DEBUG
+    if NSClassFromString("EXDevLauncherController") != nil {
+      return
+    }
+    guard let port = Bundle.main.object(forInfoDictionaryKey: "RCTMetroPort") as? String,
+      !port.isEmpty else {
+      return
+    }
+    var host = "localhost"
+    if let ipPath = Bundle.main.path(forResource: "ip", ofType: "txt"),
+      let ip = try? String(contentsOfFile: ipPath, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines),
+      !ip.isEmpty {
+      host = ip
+    }
+    let settings = RCTBundleURLProvider.sharedSettings()
+    let target = "\(host):\(port)"
+    if settings.jsLocation != target {
+      settings.jsLocation = target
+    }
+#endif
+  }
+#endif
 
   @MainActor
   @objc func createRCTRootViewFactory() -> RCTRootViewFactory {
@@ -91,6 +115,10 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
         return bundleURL
       }
     }
+
+#if os(iOS) || os(tvOS)
+    adoptInfoPlistMetroPort()
+#endif
 
     let rootView: UIView
     if let factory = self.rootViewFactory as? ExpoReactRootViewFactory {

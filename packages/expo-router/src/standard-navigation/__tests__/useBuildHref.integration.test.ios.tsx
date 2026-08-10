@@ -9,6 +9,10 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import { renderRouter } from '../../testing-library';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../appendMissingPlaceholderTabRoutes';
 import { unstable_createStandardRouterNavigator } from '../index';
 
 // Integration: useBuildHref through the real useStateForPath → getCachedRouteInfo pipeline, resolving
@@ -33,7 +37,10 @@ const StandardTabs = unstable_createStandardRouterNavigator<
   Record<string, never>,
   object,
   TabRouterOptions
->(NavigatorContent, TabRouter, { useOnlyUserDefinedScreens: true });
+>(NavigatorContent, TabRouter, {
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+  processState: appendMissingPlaceholderTabRoutes,
+});
 
 describe('useBuildHref (integration)', () => {
   it('resolves real hrefs (index → /, group segment stripped) for navigator routes', () => {

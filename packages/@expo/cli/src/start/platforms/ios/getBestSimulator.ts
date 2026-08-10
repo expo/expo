@@ -1,8 +1,8 @@
 import { execSync } from 'child_process';
 
-import * as SimControl from './simctl';
 import { CommandError } from '../../../utils/errors';
 import { event } from '../events';
+import * as SimControl from './simctl';
 
 type DeviceContext = Partial<Pick<SimControl.Device, 'osType'>>;
 

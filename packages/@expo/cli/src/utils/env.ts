@@ -111,6 +111,11 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
+  /** Overwrite the hostname used in dev server URLs, disregarding the `--host`, `--lan` and `--localhost` arguments. */
+  get REACT_NATIVE_PACKAGER_HOSTNAME(): string | null {
+    return string('REACT_NATIVE_PACKAGER_HOSTNAME', '')?.trim() || null;
+  }
+
   /**
    * Overwrite the dev server URL, disregarding the `--port`, `--host`, `--tunnel`, `--lan`, `--localhost` arguments.
    * This is useful for browser editors that require custom proxy URLs.

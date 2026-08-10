@@ -1,7 +1,8 @@
 {
   "name": "sqlite-inspector-webui",
-  "main": "expo-router/entry",
   "version": "0.0.1",
+  "private": true,
+  "main": "expo-router/entry",
   "scripts": {
     "build": "bun install && expo export -p web --output-dir dist",
     "start": "expo start --web",
@@ -24,7 +25,7 @@
     "expo-sqlite": "~55.0.9",
     "lucide-react": "^0.548.0",
     "next-themes": "^0.4.6",
-    "postcss": "^8.5.6",
+    "postcss": "^8.5.23",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "react-native": "0.86.0",
@@ -56,19 +57,18 @@
     "typescript": "~5.9.2"
   },
   "prettier": {
-    "printWidth": 100,
-    "tabWidth": 2,
-    "singleQuote": true,
     "bracketSameLine": true,
+    "printWidth": 100,
+    "singleQuote": true,
+    "tabWidth": 2,
     "trailingComma": "es5"
   },
   "jest": {
-    "preset": "jest-expo",
     "moduleNameMapper": {
       "^expo-sqlite$": "<rootDir>/../src/index.ts"
-    }
+    },
+    "preset": "jest-expo"
   },
-  "private": true,
   "patchedDependencies": {
     "@expo/devtools@0.1.7": "patches/@expo%2Fdevtools@0.1.7.patch"
   }

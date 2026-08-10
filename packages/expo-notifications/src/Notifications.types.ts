@@ -567,7 +567,7 @@ export type NotificationContentInput = {
   badge?: number;
   /**
    * The notification sound. Use `false` for a silent notification.
-   * On Android version 8 and later, control the sounds via [notification channels](#setNotificationChannelAsync).
+   * On Android version 8 and later, control the sounds via [notification channels](#setnotificationchannelasyncchannelid-channel).
    * `defaultCritical` and `defaultRingtone` are applicable only on iOS, with `defaultCritical` requiring the critical alerts entitlement.
    *
    * On iOS, you can also provide a custom sound filename including the extension. The file needs to be added
@@ -738,7 +738,7 @@ export interface NotificationAction {
  * Defines a group of notification actions and their behavior. Categories allow you to create custom
  * action buttons that appear with notifications, enabling users to respond to notifications.
  *
- * Categories must be registered with [`setNotificationCategoryAsync`](#notificationssetnotificationcategoryasyncidentifier-actions-options)
+ * Categories must be registered with [`setNotificationCategoryAsync`](#setnotificationcategoryasyncidentifier-actions-options)
  * before they can be used. When scheduling a notification, reference the category by its `identifier` in the
  * [`NotificationContentInput.categoryIdentifier`](#notificationcontentinput) field.
  */

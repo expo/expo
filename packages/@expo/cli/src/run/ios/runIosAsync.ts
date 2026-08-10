@@ -3,12 +3,6 @@ import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
-import * as XcodeBuild from './XcodeBuild';
-import type { Options } from './XcodeBuild.types';
-import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
-import { resolveOptionsAsync } from './options/resolveOptions';
-import { getValidBinaryPathAsync } from './validateExternalBinary';
-import { event, debugEvent } from '../events';
 import { exportEagerAsync } from '../../export/embed/exportEager';
 import * as Log from '../../log';
 import { AppleAppIdResolver } from '../../start/platforms/ios/AppleAppIdResolver';
@@ -21,8 +15,14 @@ import { ensurePortAvailabilityAsync } from '../../utils/port';
 import { profile } from '../../utils/profile';
 import { getSchemesForIosAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
+import { event, debugEvent } from '../events';
 import { logProjectLogsLocation } from '../hints';
 import { startBundlerAsync } from '../startBundler';
+import * as XcodeBuild from './XcodeBuild';
+import type { Options } from './XcodeBuild.types';
+import { getLaunchInfoForBinaryAsync, launchAppAsync } from './launchApp';
+import { resolveOptionsAsync } from './options/resolveOptions';
+import { getValidBinaryPathAsync } from './validateExternalBinary';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');

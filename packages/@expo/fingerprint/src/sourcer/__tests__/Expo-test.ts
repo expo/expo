@@ -5,7 +5,6 @@ import { vol, fs as volFS } from 'memfs';
 import path from 'path';
 import requireString from 'require-from-string';
 
-import { copyDirSync } from './vol-utils';
 import { getExpoConfigAsync } from '../../ExpoConfig';
 import type { HashSource, HashSourceContents } from '../../Fingerprint.types';
 import { normalizeOptionsAsync } from '../../Options';
@@ -20,6 +19,7 @@ import {
   getExpoCNGPatchSourcesAsync,
   sortExpoAutolinkingAndroidConfig,
 } from '../Expo';
+import { copyDirSync } from './vol-utils';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs/promises');
@@ -55,11 +55,7 @@ function mockLoadedModules(config: unknown, loadedModules: unknown[]) {
 const expoAutolinkingVersion = '1.11.2';
 
 describe(getEasBuildSourcesAsync, () => {
-  afterEach(() => {
-    vol.reset();
-  });
-
-  it('should contains `eas.json` file', async () => {
+  beforeEach(() => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     vol.writeFileSync(
       '/app/eas.json',
@@ -88,14 +84,57 @@ describe(getEasBuildSourcesAsync, () => {
   }
 }`
     );
+    vol.writeFileSync('/app/.easignore', 'node_modules/\n');
+  });
 
-    const sources = await getEasBuildSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+  afterEach(() => {
+    vol.reset();
+  });
+
+  it('should contains `eas.json` file', async () => {
+    const sources = await getEasBuildSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.None })
+    );
     expect(sources).toContainEqual(
       expect.objectContaining({
         type: 'file',
         filePath: 'eas.json',
       })
     );
+  });
+
+  it('should skip `eas.json` but keep `.easignore` when SourceSkips.EasJson is set', async () => {
+    const sources = await getEasBuildSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.EasJson })
+    );
+    expect(sources).not.toContainEqual(expect.objectContaining({ filePath: 'eas.json' }));
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: '.easignore',
+      })
+    );
+  });
+
+  it('should skip `.easignore` but keep `eas.json` when SourceSkips.Easignore is set', async () => {
+    const sources = await getEasBuildSourcesAsync(
+      '/app',
+      await normalizeOptionsAsync('/app', { sourceSkips: SourceSkips.Easignore })
+    );
+    expect(sources).not.toContainEqual(expect.objectContaining({ filePath: '.easignore' }));
+    expect(sources).toContainEqual(
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'eas.json',
+      })
+    );
+  });
+
+  it('should skip both EAS Build files with the default preset', async () => {
+    const sources = await getEasBuildSourcesAsync('/app', await normalizeOptionsAsync('/app'));
+    expect(sources).toEqual([]);
   });
 });
 
@@ -549,7 +588,11 @@ describe(getExpoConfigSourcesAsync, () => {
     const configResult = JSON.stringify({
       config,
       loadedModules: [
-        { type: 'contents', id: 'plugins/virtual-plugin.js', contents: 'module.exports = () => {};' },
+        {
+          type: 'contents',
+          id: 'plugins/virtual-plugin.js',
+          contents: 'module.exports = () => {};',
+        },
       ],
     });
     mockSpawnWithIpcAsync.mockResolvedValueOnce({
@@ -597,7 +640,10 @@ describe(getExpoConfigSourcesAsync, () => {
       })
     );
     expect(sources).not.toContainEqual(
-      expect.objectContaining({ type: 'file', filePath: 'node_modules/some-plugin/build/withPlugin.js' })
+      expect.objectContaining({
+        type: 'file',
+        filePath: 'node_modules/some-plugin/build/withPlugin.js',
+      })
     );
   });
 

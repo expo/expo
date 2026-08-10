@@ -321,7 +321,8 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval(
       """
         try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
-      """)
+      """
+    )
 
     #expect(result.getString().contains("set failed"))
   }
@@ -365,7 +366,8 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval(
       """
         try { globalThis.hostObj.foo; 'no error' } catch (e) { e.message }
-      """)
+      """
+    )
 
     #expect(result.getString().contains("get failed"))
   }
@@ -418,7 +420,8 @@ struct JavaScriptRuntimeTests {
     let firstAttempt = try runtime.eval(
       """
         try { globalThis.hostObj.value = 1; 'no error' } catch (e) { e.message }
-      """)
+      """
+    )
     #expect(firstAttempt.getString().contains("boom"))
 
     // Subsequent write must succeed — verifies the C++ thread-local error
@@ -427,7 +430,8 @@ struct JavaScriptRuntimeTests {
     let secondAttempt = try runtime.eval(
       """
         try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
-      """)
+      """
+    )
     #expect(secondAttempt.getInt() == 7)
   }
 
@@ -456,7 +460,8 @@ struct JavaScriptRuntimeTests {
       """
         try { globalThis.hostObj.value = 1 } catch (e) {}
         globalThis.hostObj.ok
-      """)
+      """
+    )
 
     #expect(result.getInt() == 123)
   }
@@ -474,7 +479,8 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval(
       """
         try { globalThis.hostObj.foo = 1; 'no error' } catch (e) { e.message }
-      """)
+      """
+    )
     let message = result.getString()
 
     #expect(message.contains("read-only host object"))
@@ -495,7 +501,8 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval(
       """
         try { globalThis.hostObj.value = 7; globalThis.hostObj.value } catch (e) { -1 }
-      """)
+      """
+    )
 
     #expect(result.getInt() == 7)
   }
@@ -509,7 +516,8 @@ struct JavaScriptRuntimeTests {
           e.code = 'ERR_INNER';
           throw e;
         };
-      """)
+      """
+    )
     let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
@@ -541,7 +549,8 @@ struct JavaScriptRuntimeTests {
           e.code = 'ERR_SETTER';
           throw e;
         };
-      """)
+      """
+    )
     let throwTagged = try runtime.global().getPropertyAsFunction("throwTagged")
 
     let hostObject = runtime.createHostObject(
@@ -579,7 +588,8 @@ struct JavaScriptRuntimeTests {
     let result = try runtime.eval(
       """
         try { failing(); 'no error' } catch (e) { e.message }
-      """)
+      """
+    )
 
     #expect(result.getString().contains("something went wrong"))
   }
@@ -994,6 +1004,35 @@ struct JavaScriptRuntimeTests {
     // without a crash is the assertion.
     wrapper = nil
     _ = wrapper
+  }
+
+  // MARK: - Garbage collection
+
+  @Test
+  func `collecting garbage releases an unreachable object`() {
+    var weakObject: JavaScriptWeakObject? = nil
+
+    do {
+      let object = runtime.createObject()
+      weakObject = JavaScriptWeakObject(runtime, object)
+      #expect((weakObject?.lock() != nil) == true)
+    }
+
+    runtime.collectGarbage()
+
+    #expect((weakObject?.lock() == nil) == true)
+  }
+
+  @Test
+  func `collecting garbage keeps a reachable object alive`() {
+    let object = runtime.createObject()
+    object.setProperty("survives", value: true)
+    let weakObject = JavaScriptWeakObject(runtime, object)
+
+    runtime.collectGarbage(cause: "test")
+
+    let survives = weakObject.lock()?.getProperty("survives").getBool()
+    #expect(survives == true)
   }
 }
 

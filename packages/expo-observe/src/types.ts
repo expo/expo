@@ -62,6 +62,20 @@ export type ObserveConfig = {
    */
   sampleRate?: number;
   /**
+   * Whether to record unhandled JavaScript errors as `exception` log events.
+   *
+   * When `false`, unhandled errors are no longer recorded. React Native's own handling is
+   * unaffected either way: the red box in development and fatal termination in production still
+   * happen. Errors you report yourself with `reportError`, and render-phase errors captured by
+   * `ObserveErrorBoundary`, are also unaffected.
+   *
+   * > Note: The handler is installed when the package is first imported, which is earlier than any
+   * > `configure` call. An error thrown before `configure` runs is therefore still recorded.
+   *
+   * @default true
+   */
+  errorHandlingEnabled?: boolean;
+  /**
    * Opt in to per-integration behavior.
    */
   integrations?: ObserveIntegrationsConfig;
@@ -126,6 +140,23 @@ export declare class ObserveModule extends NativeModule<ObserveModuleEvents> {
    * call, or an empty object if `configure` has not run yet.
    */
   getIntegrations(): ObserveIntegrationsConfig;
+  /**
+   * Invokes a callback once when the named integration configuration becomes available.
+   *
+   * @param name Integration name.
+   * @param callback Function called with the integration configuration.
+   *
+   * @example
+   * ```ts
+   * Observe.registerIntegration('expo-router', config => {
+   *   console.log(config);
+   * });
+   * ```
+   */
+  registerIntegration<K extends keyof ObserveIntegrationsConfig>(
+    name: K,
+    callback: (config: ObserveIntegrationsConfig[K]) => void
+  ): void;
   /**
    * Records a log event against the current main session. The event is
    * persisted locally and dispatched on the next `dispatchEvents()` flush.

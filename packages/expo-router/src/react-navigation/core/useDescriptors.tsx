@@ -19,6 +19,7 @@ import { SceneView } from './SceneView';
 import { ThemeContext } from './theming/ThemeContext';
 import type {
   Descriptor,
+  DescriptorRouteProp,
   EventMapBase,
   NavigationHelpers,
   NavigationProp,
@@ -35,7 +36,6 @@ export type ScreenConfigWithParent<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 > = {
-  keys: (string | undefined)[];
   options: (ScreenOptionsOrCallback<ScreenOptions> | undefined)[] | undefined;
   layout: ScreenLayout<ScreenOptions> | undefined;
   props: RouteConfig<ParamListBase, string, State, ScreenOptions, EventMap, unknown>;
@@ -54,7 +54,7 @@ type ScreenLayout<ScreenOptions extends {}> = (props: {
 type ScreenOptionsOrCallback<ScreenOptions extends {}> =
   | ScreenOptions
   | ((props: {
-      route: RouteProp<ParamListBase, string>;
+      route: DescriptorRouteProp<ParamListBase, string>;
       navigation: any;
       theme: ReactNavigation.Theme;
     }) => ScreenOptions);
@@ -65,7 +65,8 @@ type Options<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 > = {
-  state: State;
+  routes: State['routes'];
+  routeNames: State['routeNames'];
   screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
@@ -95,7 +96,8 @@ export function useDescriptors<
   ScreenOptions extends {},
   EventMap extends EventMapBase,
 >({
-  state,
+  routes,
+  routeNames,
   screens,
   navigation,
   screenOptions,
@@ -141,8 +143,9 @@ export function useDescriptors<
     ]
   );
 
-  const { base, navigations } = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
-    state,
+  const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
+    routes,
+    routeNames,
     getState,
     navigation,
     setOptions,
@@ -150,10 +153,10 @@ export function useDescriptors<
     emitter,
   });
 
-  const routes = useRouteCache(state.routes);
+  const cachedRoutes = useRouteCache(routes);
 
   const getOptions = (
-    route: RouteProp<ParamListBase, string>,
+    route: DescriptorRouteProp<ParamListBase, string>,
     navigation: NavigationProp<
       ParamListBase,
       string,
@@ -259,20 +262,34 @@ export function useDescriptors<
     );
   };
 
-  const descriptors = routes.reduce<
-    Record<
-      string,
-      Descriptor<
-        ScreenOptions,
-        NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions, EventMap> &
-          ActionHelpers,
-        RouteProp<ParamListBase>
-      >
+  // TODO: Unify this with the standard-navigation descriptor-map type.
+  type DescriptorMap = Record<
+    string,
+    Descriptor<
+      ScreenOptions,
+      NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions, EventMap> &
+        ActionHelpers,
+      RouteProp<ParamListBase>
     >
-  >((acc, route, i) => {
-    const navigation = navigations[route.key]!;
+  >;
+
+  const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
+    const navigation = getNavigation(route);
+
+    if (screens[route.name] === undefined) {
+      acc[route.key] = {
+        route,
+        // @ts-expect-error: it's missing action helpers, fix later
+        navigation,
+        options: {} as ScreenOptions,
+        render: () => null,
+      };
+
+      return acc;
+    }
+
     const customOptions = getOptions(route, navigation, options[route.key]!);
-    const element = render(route, navigation, customOptions, state.routes[i]!.state);
+    const element = render(route, navigation, customOptions, routes[i]!.state);
 
     acc[route.key] = {
       route,
@@ -282,43 +299,48 @@ export function useDescriptors<
         return element;
       },
       options: customOptions as ScreenOptions,
+      routeSource: screens[route.name]?.props.routeSource,
     };
 
     return acc;
   }, {});
 
-  /**
-   * Create a descriptor object for a route.
-   *
-   * @param route Route object for which the descriptor should be created
-   * @param placeholder Whether the descriptor should be a placeholder, e.g. for a route not yet in the state
-   * @returns Descriptor object
-   */
-  const describe = (route: RouteProp<ParamListBase>, placeholder: boolean) => {
-    if (!placeholder) {
-      if (!(route.key in descriptors)) {
+  // Placeholder descriptors need a cast because `useNavigationCache` adds action helpers at
+  // runtime, but its return type omits them.
+  // TODO: Fix the `useNavigationCache` return type and remove these casts.
+  // TODO: Stabilize screens, options, descriptors, and `describe` without relying on React Compiler.
+  const describe = (route: DescriptorRouteProp<ParamListBase, string>) => {
+    if (route.key !== undefined) {
+      const descriptor = descriptors[route.key];
+      if (!descriptor) {
         throw new Error(`Couldn't find a route with the key ${route.key}.`);
       }
-
-      return descriptors[route.key]!;
+      return descriptor;
     }
 
-    const navigation = base;
-    const customOptions = getOptions(route, navigation, {});
-    const element = render(route, navigation, customOptions, undefined);
+    const config = screens[route.name];
+    if (!config) {
+      return {
+        route,
+        navigation: getNavigation({ key: route.name, name: route.name }),
+        options: {} as ScreenOptions,
+        render: () => null,
+      } as DescriptorMap[string];
+    }
 
+    const describedRoute =
+      route.params === undefined && config.props.initialParams !== undefined
+        ? { ...route, params: config.props.initialParams }
+        : route;
+    const navigation = getNavigation({ key: route.name, name: route.name });
     return {
-      route,
+      route: describedRoute,
       navigation,
-      render() {
-        return element;
-      },
-      options: customOptions as ScreenOptions,
-    };
+      options: getOptions(describedRoute, navigation, {}),
+      render: () => null,
+      routeSource: config.props.routeSource,
+    } as DescriptorMap[string];
   };
 
-  return {
-    describe,
-    descriptors,
-  };
+  return { describe, descriptors };
 }

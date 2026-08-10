@@ -1,0 +1,67 @@
+name: AI code review (fork hint)
+
+# Explains, once, why the `ai-review` label did nothing on a PR from a fork.
+#
+# GitHub withholds secrets from `pull_request` runs on a forked PR and downgrades
+# GITHUB_TOKEN to read-only. The auto-review job in expo-code-review.yml therefore
+# cannot reach the model credential, and cannot post a comment to say so — it is the
+# one job that knows the label failed and the one job that cannot report it. Before
+# this workflow existed, labeling an external PR produced a red run and silence.
+#
+# SECURITY: `pull_request_target` normally deserves suspicion, because it hands secrets
+# and a write token to a run triggered by an untrusted PR. That danger comes from
+# checking out and EXECUTING the PR's code. This job does none of that: no checkout, no
+# dependency install, no build, no model, no model credential. It reads two fields off
+# the event payload and posts a fixed string as expo-bot. There is no
+# attacker-controlled input anywhere in it — the PR number is an integer from the event,
+# and the body is a literal. It also fires only on `labeled`, so an attacker cannot
+# re-trigger it by pushing.
+on:
+  pull_request_target:
+    types: [labeled]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: ai-code-review-fork-hint-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  hint:
+    # Only the exact `ai-review` label, and only on a PR from a fork. `github.event.label`
+    # is the label just added, so `ai-review:skip` and `ai-review:security` do not match.
+    if: >-
+      ${{ github.event.label.name == 'ai-review'
+      && github.event.pull_request.head.repo.fork }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Explain that the label cannot work here
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          # Post at most once per PR: re-adding the label should not stack up comments.
+          if gh api "repos/$REPO/issues/$PR/comments" --paginate \
+               --jq '.[].body' | grep -q '<!-- expo-ai-code-reviewer:fork-hint -->'; then
+            echo "Hint already posted on #$PR — nothing to do."
+            exit 0
+          fi
+          # One paragraph per line, deliberately not wrapped: GitHub renders a single
+          # newline inside a comment paragraph as a hard break, so wrapping this to a
+          # column width posts ragged mid-sentence breaks. Let GitHub reflow it.
+          cat > /tmp/fork-hint.md <<'MARKDOWN'
+          <!-- expo-ai-code-reviewer:fork-hint -->
+          The `ai-review` label does not start a review on a pull request from a fork.
+
+          With the exception of a read-only `GITHUB_TOKEN`, [GitHub does not pass secrets to a workflow triggered from a forked repository](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#pull-request-events-for-forked-repositories), so the reviewer cannot reach its model credential there. This is a platform rule, not a setting we can change.
+
+          **A maintainer can comment `/review` or `/expo-review` on this PR instead.** That path runs in the base repository's context, so it has the credential and works normally.
+
+          Running it does not execute anything from the pull request: the branch is never checked out, and no dependency install, build, or script from it runs. The reviewer reads the diff and the changed files. Treat the result as advisory — a pull request's own code and description are part of what the reviewer reads, so a review that finds nothing is not evidence that the change is safe to merge.
+          MARKDOWN
+          gh pr comment "$PR" --repo "$REPO" --body-file /tmp/fork-hint.md
+          echo "Posted the fork hint on #$PR."

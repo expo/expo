@@ -5,6 +5,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { useRouteNode, useContextKey } from '../Route';
 import { useRouteInfo } from '../hooks';
+import { GuardContextProvider, type GuardedRedirects } from '../layouts/GuardContext';
 import { resolveHref } from '../link/href';
 import type {
   DefaultNavigatorOptions,
@@ -14,6 +15,12 @@ import type {
   TabRouterOptions,
 } from '../react-navigation/native';
 import { LinkingContext, useNavigationBuilder } from '../react-navigation/native';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../standard-navigation/appendMissingPlaceholderTabRoutes';
+import type { PlaceholderDescriptorMap } from '../standard-navigation/types';
+import { useVisibleTabsWithRedirect } from '../standard-navigation/useVisibleTabsWithRedirect';
 import { shouldLinkExternally } from '../utils/url';
 import type { NavigatorContextValue } from '../views/Navigator';
 import { NavigatorContext } from '../views/Navigator';
@@ -25,13 +32,15 @@ import { ExpoTabRouter } from './TabRouter';
 import { isTabSlot } from './TabSlot';
 import { isTabTrigger } from './TabTrigger';
 import type { ScreenTrigger } from './common';
-import { ViewSlot, triggersToScreens } from './common';
+import { ViewSlot, useTriggersToScreens } from './common';
 import { useComponent } from './useComponent';
 
 export * from './TabContext';
 export * from './TabList';
 export * from './TabSlot';
 export * from './TabTrigger';
+
+const emptyGuardedRedirects: GuardedRedirects = new Map();
 
 /**
  * Options to provide to the Tab Router.
@@ -153,11 +162,10 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
 
   const initialRouteName = routeNode.initialRouteName;
 
-  const { children, triggerMap } = triggersToScreens(
+  const { children, triggerMap } = useTriggersToScreens(
     triggers,
     routeNode,
     linking,
-    initialRouteName,
     parentTriggerMap,
     routeInfo,
     contextKey
@@ -175,34 +183,69 @@ export function useTabsWithTriggers(options: UseTabsWithTriggersOptions): TabsCo
     triggerMap,
     id: contextKey,
     initialRouteName,
+    backBehavior: rest.backBehavior ?? (initialRouteName ? 'initialRoute' : undefined),
   });
 
   const {
     state,
-    descriptors,
-    navigation,
     describe,
+    descriptors: sparseDescriptors,
+    navigation,
     NavigationContent: RNNavigationContent,
   } = navigatorContext;
+  const descriptors = useMemo(
+    () =>
+      appendMissingPlaceholderTabDescriptors(
+        sparseDescriptors,
+        state,
+        describe
+      ) as typeof sparseDescriptors,
+    [describe, sparseDescriptors, state]
+  );
 
   const navigatorContextValue = useMemo<NavigatorContextValue>(
     () => ({
-      ...(navigatorContext as unknown as ReturnType<typeof useNavigationBuilder>),
+      ...(navigatorContext as unknown as NavigatorContextValue),
+      descriptors: descriptors as unknown as NavigatorContextValue['descriptors'],
       contextKey,
       router: ExpoTabRouter,
     }),
-    [navigatorContext, contextKey, ExpoTabRouter]
+    [navigatorContext, descriptors, contextKey, ExpoTabRouter]
   );
 
   const NavigationContent = useComponent((children: React.ReactNode) => (
-    <TabTriggerMapContext.Provider value={triggerMap}>
-      <NavigatorContext.Provider value={navigatorContextValue}>
-        <RNNavigationContent>{children}</RNNavigationContent>
-      </NavigatorContext.Provider>
-    </TabTriggerMapContext.Provider>
+    // Headless tabs have no guards, so shadow parent guards whose route names may collide.
+    <GuardContextProvider node={routeNode} guardedRedirects={emptyGuardedRedirects}>
+      <TabVisibilityRedirect state={state} descriptors={descriptors} />
+      <TabTriggerMapContext.Provider value={triggerMap}>
+        <NavigatorContext.Provider value={navigatorContextValue}>
+          <RNNavigationContent>{children}</RNNavigationContent>
+        </NavigatorContext.Provider>
+      </TabTriggerMapContext.Provider>
+    </GuardContextProvider>
   )) as TabsContextValue['NavigationContent'];
 
-  return { state, descriptors, navigation, NavigationContent, describe };
+  return { state, describe, descriptors, navigation, NavigationContent };
+}
+
+function TabVisibilityRedirect({
+  state,
+  descriptors,
+}: {
+  state: TabNavigationState<any>;
+  descriptors: PlaceholderDescriptorMap;
+}) {
+  const stateWithPlaceholders = useMemo(
+    () => appendMissingPlaceholderTabRoutes(state, descriptors),
+    [descriptors, state]
+  );
+  useVisibleTabsWithRedirect({
+    routes: stateWithPlaceholders.routes,
+    routeNames: stateWithPlaceholders.routeNames,
+    focusedRouteKey: stateWithPlaceholders.routes[stateWithPlaceholders.index]?.key,
+    descriptors,
+  });
+  return null;
 }
 
 function parseTriggersFromChildren(

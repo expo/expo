@@ -8,10 +8,62 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix a crash when a task execution request is evaluated re-entrantly, by making its completion callback fire exactly once. ([#47594](https://github.com/expo/expo/pull/47594) by [@tsapeta](https://github.com/tsapeta))
 - [Android] Clear headless task manager on context destroy ([#47958](https://github.com/expo/expo/pull/47958) by [@Wenszel](https://github.com/Wenszel))
+- [Android] Fix a crash on Android 9 when delivering a task event through `JobScheduler` (geofencing, background location), where the job was built without the scheduling constraint that `JobInfo.Builder.build()` requires. ([#48305](https://github.com/expo/expo/pull/48305) by [@rvaccone](https://github.com/rvaccone))
 
 ### 💡 Others
+
+## 57.0.7 - 2026-07-29
+
+### 🐛 Bug fixes
+
+- [Android] Fix `TaskService` leaking a `TaskExecutionCallback` (and the `JobService` it retains) for every executed background task. ([#47844](https://github.com/expo/expo/pull/47844) by [@chrfalch](https://github.com/chrfalch))
+
+## 57.0.6 - 2026-07-22
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.5 - 2026-07-17
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.4 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.3 - 2026-07-15
+
+### 🐛 Bug fixes
+
+- [iOS] Fix a crash when a task execution request is evaluated re-entrantly, by making its completion callback fire exactly once. ([#47594](https://github.com/expo/expo/pull/47594) by [@tsapeta](https://github.com/tsapeta))
+
+## 57.0.2 - 2026-07-03
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.1 - 2026-06-27
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.19 - 2026-06-15
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.18 - 2026-06-10
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.17 - 2026-06-05
+
+_This version does not introduce any user-facing changes._
+
+## 56.0.16 - 2026-05-29
+
+_This version does not introduce any user-facing changes._
 
 ## 56.0.15 — 2026-05-26
 

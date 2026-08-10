@@ -104,7 +104,6 @@ exceptions:
   - '.*FileSystem.*'
   - '.*FlatList.*'
   - '.*Flipper.*'
-  - '.*Frequently Asked Questions.*'
   - '.*Frame Content-Security Policy.*'
   - '.*FAB.*'
   - '.*FAQ.*'
@@ -156,7 +155,6 @@ exceptions:
   - '.*Maven.*'
   - '.*Netlify.*'
   - '.*Node\.js.*'
-  - '.*Node Package Managers.*'
   - '.*NavigationContainer.*'
   - '.*Next\.js.*'
   - '.*New Architecture.*'
@@ -296,7 +294,6 @@ exceptions:
   - Maestro
   - Maestro Cloud
   - Require Approval
-  - Asset Caching
   - Getting Started
   - Keyboard Controller
   - PR
@@ -318,7 +315,6 @@ exceptions:
   - 'Prerequisite: Creating a widget'
   - 'Prerequisite: Creating a Live Activity'
   - Hiding the Tab bar
-  - Integrated vs Isolated
   - Expo Skills
   - DSL
   - TriStateCheckbox

@@ -50,7 +50,12 @@ export function createMetroMiddleware(
   };
 }
 
-const noCacheMiddleware: connect.NextHandleFunction = (_req, res, next) => {
+const noCacheMiddleware: connect.NextHandleFunction = (req, res, next) => {
+  // Loader responses set their own `Cache-Control`, so skip the blanket no-cache headers.
+  if (req.url?.startsWith('/_expo/loaders/')) {
+    return next();
+  }
+
   res.setHeader('Surrogate-Control', 'no-store');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
   res.setHeader('Pragma', 'no-cache');

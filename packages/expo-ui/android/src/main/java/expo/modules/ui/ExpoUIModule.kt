@@ -155,7 +155,11 @@ class ExpoUIModule : Module() {
       colorScheme.toTokenMap()
     }
 
-    View(RNHostView::class)
+    View(RNHostView::class) {
+      // Consumed by `ExpoViewShadowNode` in C++, which marks the shadow node with the
+      // `RootNodeKind` trait. Declared here only so React Native forwards the prop to native
+      Prop("layoutRoot") { _, _: Boolean -> }
+    }
 
     View(SlotView::class) {
       Events("onSlotEvent")

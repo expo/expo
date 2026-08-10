@@ -1,6 +1,6 @@
 {
   "name": "expo-app-metrics",
-  "version": "56.0.14",
+  "version": "57.0.7",
   "description": "Expo module that collects app startup, frame rate, memory, and session metrics",
   "keywords": [
     "ExpoAppMetrics",
