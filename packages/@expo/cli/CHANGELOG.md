@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Switch `ManifestMiddleware` to `expo-server`'s response helpers to avoid cancellations being surfaced as exceptions ([#48700](https://github.com/expo/expo/pull/48700) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.13 — 2026-08-06
