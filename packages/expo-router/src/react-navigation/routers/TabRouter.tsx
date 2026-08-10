@@ -67,7 +67,7 @@ export type TabNavigationState<ParamList extends ParamListBase> = Omit<
   /**
    * List of previously visited route keys.
    */
-  history: { type: 'route'; key: string; params?: object | undefined }[];
+  history?: { type: 'route'; key: string; params?: object | undefined }[];
   /**
    * List of routes' key, which are supposed to be preloaded before navigating to.
    */
@@ -103,6 +103,9 @@ export type TabActionHelpers<ParamList extends ParamListBase> = {
       : never
   ): void;
 };
+
+type TabNavigationStateWithHistory = TabNavigationState<ParamListBase> &
+  Required<Pick<TabNavigationState<ParamListBase>, 'history'>>;
 
 const TYPE_ROUTE = 'route' as const;
 
@@ -156,7 +159,7 @@ const getRouteHistory = (
   index: number,
   backBehavior: BackBehavior,
   initialRouteName: string | undefined
-) => {
+): NonNullable<TabNavigationState<ParamListBase>['history']> => {
   if (routes.length === 0) {
     return [];
   }
@@ -206,8 +209,35 @@ const getRouteHistory = (
   return history;
 };
 
-const changeIndex = (
+const ensureStateHistory = (
   state: TabNavigationState<ParamListBase>,
+  backBehavior: BackBehavior,
+  initialRouteName: string | undefined
+): TabNavigationStateWithHistory => {
+  if (state.history != null) {
+    // The null check narrows the optional property, but TypeScript doesn't narrow the object type.
+    return state as TabNavigationStateWithHistory;
+  }
+
+  const routes = orderRoutesByRouteNames(state.routes, state.routeNames);
+  const focusedKey = state.routes[state.index]?.key;
+  const index = routes.findIndex((route) => route.key === focusedKey);
+
+  const history =
+    index === -1 ? [] : getRouteHistory(routes, index, backBehavior, initialRouteName);
+
+  if (backBehavior === 'fullHistory' && index !== -1) {
+    history[history.length - 1] = {
+      ...history[history.length - 1]!,
+      params: routes[index]!.params,
+    };
+  }
+
+  return { ...state, history };
+};
+
+const changeIndex = (
+  state: TabNavigationStateWithHistory,
   index: number,
   backBehavior: BackBehavior,
   initialRouteName: string | undefined
@@ -345,7 +375,8 @@ export function TabRouter({
       );
     },
 
-    getStateForRouteFocus(state, key) {
+    getStateForRouteFocus(inputState, key) {
+      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
       const index = state.routes.findIndex((r) => r.key === key);
 
       if (index === -1 || index === state.index) {
@@ -363,7 +394,9 @@ export function TabRouter({
       );
     },
 
-    getStateForAction(state, action, { routeParamList, routeGetIdList }) {
+    getStateForAction(inputState, action, { routeParamList, routeGetIdList }) {
+      const state = ensureStateHistory(inputState, backBehavior, initialRouteName);
+
       if (action.target && action.target !== state.key) {
         return null;
       }
@@ -706,8 +739,8 @@ export function TabRouter({
 }
 
 function removeReplacedRouteFromHistory(
-  previousState: TabNavigationState<ParamListBase>,
-  nextState: TabNavigationState<ParamListBase>
+  previousState: TabNavigationStateWithHistory,
+  nextState: TabNavigationStateWithHistory
 ) {
   const replacedRouteKey = previousState.routes[previousState.index]?.key;
   const focusedRouteKey = nextState.routes[nextState.index]?.key;

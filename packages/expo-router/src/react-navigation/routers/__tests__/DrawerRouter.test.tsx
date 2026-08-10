@@ -2,6 +2,7 @@ import { expect, jest, test } from '@jest/globals';
 
 import {
   CommonActions,
+  type DrawerActionType,
   DrawerActions,
   type DrawerNavigationState,
   DrawerRouter,
@@ -34,6 +35,79 @@ test('gets initial state from route names and params with initialRouteName', () 
     stale: false,
     type: 'drawer',
   });
+});
+
+test.each<[DrawerActionType, { type: string; key?: string; status?: string }[]]>([
+  [
+    DrawerActions.openDrawer(),
+    [
+      { type: 'route', key: 'bar' },
+      { type: 'drawer', status: 'open' },
+    ],
+  ],
+  [
+    DrawerActions.toggleDrawer(),
+    [
+      { type: 'route', key: 'bar' },
+      { type: 'drawer', status: 'open' },
+    ],
+  ],
+  [DrawerActions.closeDrawer(), [{ type: 'route', key: 'bar' }]],
+])('handles $type without history', (action, expectedHistory) => {
+  const router = DrawerRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'drawer',
+    key: 'root',
+    index: 0,
+    routeNames: ['bar'],
+    preloadedRouteKeys: [],
+    routes: [{ key: 'bar', name: 'bar' }],
+    default: 'closed',
+  };
+
+  expect(router.getStateForAction(state, action, options)?.history).toEqual(expectedHistory);
+});
+
+test('preserves reconstructed history after closing the drawer', () => {
+  const router = DrawerRouter({});
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+  const state: DrawerNavigationState<ParamListBase> = {
+    stale: false,
+    type: 'drawer',
+    key: 'root',
+    index: 1,
+    routeNames: options.routeNames,
+    preloadedRouteKeys: [],
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
+    ],
+    default: 'closed',
+  };
+
+  const openState = router.getStateForAction(
+    state,
+    DrawerActions.openDrawer(),
+    options
+  ) as DrawerNavigationState<ParamListBase>;
+  const closedState = router.getStateForAction(
+    openState,
+    CommonActions.goBack(),
+    options
+  ) as DrawerNavigationState<ParamListBase>;
+  const result = router.getStateForAction(closedState, CommonActions.goBack(), options);
+
+  expect(result?.routes[result.index ?? -1]?.name).toBe('bar');
 });
 
 test('gets initial state from route names and params without initialRouteName', () => {

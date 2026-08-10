@@ -38,7 +38,7 @@ export type DrawerNavigationState<ParamList extends ParamListBase> = Omit<
   /**
    * List of previously visited route keys and drawer open status.
    */
-  history: ({ type: 'route'; key: string } | { type: 'drawer'; status: DrawerStatus })[];
+  history?: ({ type: 'route'; key: string } | { type: 'drawer'; status: DrawerStatus })[];
 };
 
 export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList> & {
@@ -100,7 +100,7 @@ export function DrawerRouter({
     return {
       ...state,
       history: [
-        ...state.history,
+        ...(state.history ?? []),
         {
           type: 'drawer',
           status: defaultStatus === 'open' ? 'closed' : 'open',
@@ -118,7 +118,7 @@ export function DrawerRouter({
 
     return {
       ...state,
-      history: state.history.filter((it) => it.type !== 'drawer'),
+      history: (state.history ?? []).filter((it) => it.type !== 'drawer'),
     };
   };
 
@@ -195,6 +195,9 @@ export function DrawerRouter({
     },
 
     getStateForAction(state, action, options) {
+      // Restore route history before drawer actions can add drawer-only history.
+      state = router.getStateForRouteFocus(state, state.routes[state.index]?.key ?? '');
+
       switch (action.type) {
         case 'OPEN_DRAWER':
           return openDrawer(state);
