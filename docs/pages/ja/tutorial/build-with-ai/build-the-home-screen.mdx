@@ -1,0 +1,109 @@
+---
+title: ホーム画面を構築する
+description: この章では、AI エージェントに指示して、タブナビゲーション、写真ビューア、画像ピッカーを追加します。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+
+この章で、アプリは StickerSmash らしい見た目になっていきます。2 つのナビゲーションタブ、写真ビューア、そしてスマートフォンの写真ライブラリを開くボタンを追加します。
+
+<Step label="1">
+
+## ナビゲーションタブを追加する
+
+ほとんどのアプリには画面が複数あり、下部のタブで切り替えます。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+アプリにタブバーを追加して。タブは 2 つで、Home タブには現在のホーム画面を表示し、About タブにはいまは "About screen" と表示するだけの画面を置いて。ナビゲーションには Expo Router を使って。全体をダークテーマにして、画面の背景・ヘッダー・タブバーの色は #25292e、テキストは白、選択中のタブの色は黄色（#ffd33d）にして。各タブには内容に合ったアイコンを付けて。Home は家、About は情報の丸アイコンなど。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Add a tab bar to the app with two tabs: a Home tab showing the current home screen, and an About tab with a screen that says "About screen" for now. Use Expo Router for navigation. Style everything with a dark theme: the color #25292e for the screen backgrounds, headers, and tab bar, white text, and yellow (#ffd33d) as the color of the selected tab. Give each tab a fitting icon, such as a house for Home and an info circle for About.
+```
+
+</Collapsible>
+
+**表示されるもの**: アプリの下部に Home と About のタブバーが表示されます。表示中のタブは黄色でハイライトされ、もう一方をタップすると画面が切り替わります。
+
+<ContentSpotlight
+  alt="2 つのタブを持つレイアウトのアプリ"
+  src="/static/images/tutorial/04-tab-navigator-complete.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## 写真ビューアを追加する
+
+次は、ホーム画面の主役となる要素です。大きな写真と 2 つのボタンを配置します。プレースホルダーの写真と、あとで使う絵文字ステッカーをまとめたアセットパックを用意してあります。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+このアプリで使う画像アセットを https://docs.expo.dev/static/images/tutorial/sticker-smash-assets.zip からダウンロードして、assets/images フォルダに展開して。同じ名前のファイルは置き換えて。そのうえで Home 画面を作って。background-image.png の写真を画面の中央に大きく、角を丸くして表示して。その下に 2 つのボタンを縦に並べて。1 つは "Choose a photo" で、黄色い枠線・白い背景・濃い色のラベル・小さな画像アイコンを持つ目立つボタン。もう 1 つは白いテキストだけのシンプルな "Use this photo" ボタン。画像の表示には expo-image ライブラリを使って。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Download the image assets for this app from https://docs.expo.dev/static/images/tutorial/sticker-smash-assets.zip and extract them into the assets/images folder, replacing any files with the same names. Then build out the Home screen: show the background-image.png photo large in the center of the screen with rounded corners, and below it two buttons stacked vertically: "Choose a photo" — a prominent button with a yellow border, a white background, a dark label, and a small picture icon — and a plain "Use this photo" button with white text. Use the expo-image library to display the image.
+```
+
+</Collapsible>
+
+<Collapsible summary="アセットを自分でダウンロードしたい場合">
+
+エージェントがファイルをダウンロードまたは展開できない場合は、手動で行ってください。[sticker-smash-assets.zip](/static/images/tutorial/sticker-smash-assets.zip) をダウンロードして展開し、**StickerSmash** フォルダ内の **assets/images** フォルダに画像をコピーします。同じ名前のファイルは置き換えてください。そのうえで、上のプロンプトから最初の 1 文を除いたものをエージェントに渡して、画面を作ってもらいます。
+
+</Collapsible>
+
+**表示されるもの**: 海に架かる木製の遊歩道の写真が画面の大部分を占め、その下に 2 つのボタンが並びます。
+
+<ContentSpotlight
+  alt="写真ビューアと 2 つのボタンがあるホーム画面"
+  src="/static/images/tutorial/initial-layout.webp"
+  className="max-w-[300px]"
+/>
+
+</Step>
+
+<Step label="3">
+
+## ライブラリから写真を選ぶ
+
+いよいよ最初の本格的な機能です。自分の写真を選べるようにします。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+expo-image-picker ライブラリを追加して。"Choose a photo" をタップしたらスマートフォンの写真ライブラリを開いて画像を選べるようにして、選んだ画像をプレースホルダーの写真の代わりに表示して。何も選ばずにキャンセルした場合は、いま表示している写真をそのまま表示し続けて。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Add the expo-image-picker library. When I tap "Choose a photo", open my phone's photo library so I can pick an image, and show the one I pick in place of the placeholder photo. If I cancel without picking anything, keep showing the current photo.
+```
+
+</Collapsible>
+
+**表示されるもの**: **Choose a photo** をタップすると、スマートフォンの写真ライブラリが開きます。初回は写真へのアクセス許可を求められるので、**Allow**（許可）をタップしてください。選んだ写真がプレースホルダーの写真に置き換わります。
+
+</Step>
+
+> 結果が期待どおりにならない場合は、見えているものをそのままエージェントに伝えてください。前章の [うまくいかないとき](/ja/tutorial/build-with-ai/create-your-first-app/#うまくいかないとき) に対処法があります。
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/build-with-ai/build-the-home-screen"
+  name="BUILD_WITH_AI"
+  chapterTitle="第 3 章：ホーム画面を構築する"
+  summary="アプリにナビゲーションと、スタイルの整ったホーム画面、そして動作する画像ピッカーが揃いました。コードは 1 行も書いていません。"
+  nextChapterDescription="次の章では、絵文字ピッカーのモーダルを追加し、ジェスチャーでステッカーを操作できるようにします。"
+  nextChapterTitle="ステッカーを追加する"
+  nextChapterLink="/ja/tutorial/build-with-ai/add-stickers"
+/>
