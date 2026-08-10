@@ -15,6 +15,8 @@ const projectRoot = getRouterE2ERoot();
 const isWindows = platform === 'win32';
 
 test.describe('dev console errors', () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
@@ -29,7 +31,7 @@ test.describe('dev console errors', () => {
     },
   });
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     console.time('expo start');
     await expoStart.startAsync();
     console.timeEnd('expo start');
@@ -39,7 +41,7 @@ test.describe('dev console errors', () => {
     console.timeEnd('Eagerly bundled JS');
   });
 
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await expoStart.stopAsync();
   });
 
