@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals';
 import { act, render } from '@testing-library/react-native';
 import { StrictMode, use, type ReactNode } from 'react';
 import { Text } from 'react-native';
@@ -67,18 +66,8 @@ function RegistryProbe({ onRender }: { onRender: (registry: RouterRegistry) => v
 }
 
 describe(RouterRegistryProvider, () => {
-  it('warns when registering outside the provider', () => {
-    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-
-    try {
-      render(<Registrant entry={firstEntry} />);
-
-      expect(warn).toHaveBeenCalledWith(
-        'Router registry is unavailable. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
-      );
-    } finally {
-      warn.mockRestore();
-    }
+  it('allows navigators outside the provider', () => {
+    expect(() => render(<Registrant entry={firstEntry} />)).not.toThrow();
   });
 
   it('registers and unregisters entries', () => {

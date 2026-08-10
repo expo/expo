@@ -33,8 +33,7 @@ const renderFruitApp = (options: RenderRouterOptions = {}) =>
                 <TabTrigger name="apple" testID="goto-apple" href="/apple">
                   <Text>Apple</Text>
                 </TabTrigger>
-                {/* TODO(@ubax): Remove nested trigger href once headless tabs require direct-child hrefs (unify with NativeTabs). */}
-                <TabTrigger name="banana" testID="goto-banana" href="/banana/taste">
+                <TabTrigger name="banana" testID="goto-banana" href="/banana">
                   <Text>Banana</Text>
                 </TabTrigger>
                 <TabTrigger name="orange" testID="goto-orange" href="/orange">
@@ -96,8 +95,8 @@ it('should render the correct screen with nested navigators', () => {
   expect(screen).toHaveSegments(['(group)', 'apple']);
 
   fireEvent.press(screen.getByTestId('goto-banana'));
-  expect(screen.getByTestId('banana-dynamic')).toBeVisible();
-  expect(screen).toHaveSegments(['(group)', 'banana', '[dynamic]']);
+  expect(screen.getByTestId('banana')).toBeVisible();
+  expect(screen).toHaveSegments(['(group)', 'banana']);
   act(() => router.push('/banana/shape'));
   expect(screen).toHaveSegments(['(group)', 'banana', 'shape']);
   expect(screen.getByTestId('banana-shape')).toBeVisible();

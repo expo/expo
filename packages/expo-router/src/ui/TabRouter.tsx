@@ -33,8 +33,9 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
   const router: Router<
     TabNavigationState<ParamListBase>,
     ExpoTabActionType | CommonNavigationAction
-  > = {
+  > & { expoRouterType: 'expo-tab' } = {
     ...rnTabRouter,
+    expoRouterType: 'expo-tab',
     getStateForAction(state, action, routerConfigOptions) {
       if (action.type !== 'JUMP_TO') {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
@@ -64,11 +65,6 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
           }),
         };
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
-      } else if (route.state !== undefined) {
-        // TODO(@ubax): Remove this branch together with nested trigger href support. Refocusing
-        // a tab that hosts a navigator must not re-apply the trigger's nested payload
-        // (`params.screen`), which would reset the preserved child state.
-        return rnTabRouter.getStateForRouteFocus(state, route.key);
       } else {
         return rnTabRouter.getStateForAction(state, action, routerConfigOptions);
       }

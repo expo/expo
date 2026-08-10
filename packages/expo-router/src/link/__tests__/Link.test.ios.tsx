@@ -1090,9 +1090,9 @@ describe('Preview', () => {
       act(() => fireEvent.press(screen.getByText('Preload A and C')));
       act(() => emitters['link-onWillPreviewOpen']());
       expect(screen.getByTestId('slotB-test')).toBeVisible();
-      // Initial render, onWillPreviewOpen, setTimeout from prefetch
-      await waitFor(() => expect(NativeLinkPreview).toHaveBeenCalledTimes(3));
-      expect(NativeLinkPreview.mock.calls[2][0].nextScreenId).toMatch(/slotB-[-\w]+/);
+      await waitFor(() =>
+        expect(NativeLinkPreview.mock.calls.at(-1)?.[0].nextScreenId).toMatch(/slotB-[-\w]+/)
+      );
     });
     it('when there are three paths with the same name and all are preloaded, returns correct nextScreenId', async () => {
       const NativeLinkPreview = require('../preview/native').NativeLinkPreview;

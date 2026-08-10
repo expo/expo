@@ -33,10 +33,9 @@ export function useNextScreenId(): [
             setOpenPreviewKey(routeKey);
             setTabPath(tabPathFromRootState);
           });
+          // We found the preloaded state, so further state events are unrelated.
+          currentHref.current = undefined;
         }
-        // We got the preloaded state, so we can reset the currentHref
-        // to prevent unnecessary processing
-        currentHref.current = undefined;
       }
     });
   }, []);

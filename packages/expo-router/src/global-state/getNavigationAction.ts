@@ -1,23 +1,29 @@
 import { applyRedirects } from '../getRoutesRedirects';
 import { resolveHrefStringWithSegments } from '../link/href';
 import {
-  appendInternalExpoRouterParams,
   INTERNAL_EXPO_ROUTER_IS_PREVIEW_NAVIGATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   type InternalExpoRouterParams,
 } from '../navigationParams';
 import type { SingularOptions } from '../useScreens';
-import { findDivergentState, getPayloadFromStateRoute } from './stateUtils';
+import {
+  composeNavigationState,
+  DEFER_NAVIGATION,
+  getNavigationActionType,
+} from './composeNavigationState';
+import type { RouterRegistry } from './routerRegistry';
+import { findDivergentState } from './stateUtils';
 import { store } from './store';
 import type { LinkToOptions } from './types';
 
 export function getNavigateAction(
   baseHref: string,
   options: LinkToOptions,
-  type = 'NAVIGATE',
-  withAnchor?: boolean,
-  singular?: SingularOptions,
-  isPreviewNavigation?: boolean
+  type: string,
+  withAnchor: boolean | undefined,
+  singular: SingularOptions | undefined,
+  isPreviewNavigation: boolean | undefined,
+  registry: RouterRegistry
 ) {
   let href: string | undefined = baseHref;
   store.assertIsReady();
@@ -62,39 +68,14 @@ export function getNavigateAction(
    * Other parameters such as search params and hash are not evaluated.
    */
 
-  const { actionStateRoute, navigationState } = findDivergentState(
+  const { actionState, actionStateRoute, navigationState } = findDivergentState(
     state,
     rootState,
     type === 'PRELOAD'
   );
 
-  /*
-   * We found the target navigator, but the payload is in the incorrect format
-   * We need to convert the action state to a payload that can be dispatched
-   */
-  const rootPayload = getPayloadFromStateRoute(actionStateRoute || {});
-
-  if (withAnchor) {
-    if (rootPayload.params.initial) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(`The parameter 'initial' is a reserved parameter name in React Navigation`);
-      }
-    }
-    /*
-     * The logic for initial can seen backwards depending on your perspective
-     *   True: The initialRouteName is not loaded. The incoming screen is the initial screen (default)
-     *   False: The initialRouteName is loaded. THe incoming screen is placed after the initialRouteName
-     *
-     * withAnchor flips the perspective.
-     *   True: You want the initialRouteName to load.
-     *   False: You do not want the initialRouteName to load.
-     */
-    // Set initial on root and all nested params so anchors are loaded at every level
-    let currentParams = rootPayload.params;
-    while (currentParams) {
-      currentParams.initial = !withAnchor;
-      currentParams = currentParams.params;
-    }
+  if (!actionState || !actionStateRoute || !navigationState) {
+    return;
   }
 
   const expoParams: InternalExpoRouterParams = isPreviewNavigation
@@ -103,14 +84,46 @@ export function getNavigateAction(
         [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
       }
     : {};
-  const params = appendInternalExpoRouterParams(rootPayload.params, expoParams);
+
+  if (actionStateRoute.state) {
+    const composedState = composeNavigationState({
+      navigationState,
+      actionState,
+      actionType: type,
+      registry,
+      withAnchor,
+      singular,
+      internalParams: expoParams,
+    });
+    if (composedState === DEFER_NAVIGATION) {
+      return DEFER_NAVIGATION;
+    }
+    if (composedState === null) {
+      return;
+    }
+
+    // TODO(@ubax): Preserve the original action type for navigation observers and devtools.
+    return {
+      type: 'RESET',
+      target: navigationState.key,
+      payload: composedState,
+    };
+  }
+
+  const routerType = registry.get(navigationState.key)?.routerType ?? navigationState.type;
+  type = getNavigationActionType(type, routerType);
+
+  const params = {
+    ...actionStateRoute.params,
+    ...expoParams,
+  };
 
   return {
     type,
     target: navigationState.key,
     payload: {
       // key: rootPayload.key,
-      name: rootPayload.screen,
+      name: actionStateRoute.name,
       params,
       singular,
     },

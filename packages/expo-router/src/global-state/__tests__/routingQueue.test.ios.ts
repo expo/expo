@@ -1,186 +1,152 @@
 import type { RefObject } from 'react';
 
 import type { NavigationContainerRef, ParamListBase } from '../../react-navigation/native';
+import { DEFER_NAVIGATION } from '../composeNavigationState';
 import { getNavigateAction } from '../getNavigationAction';
+import type { RouterRegistry } from '../routerRegistry';
 import { routingQueue } from '../routingQueue';
 
 jest.mock('../getNavigationAction', () => ({
   getNavigateAction: jest.fn(),
 }));
 
-const mockGetNavigateAction = getNavigateAction as jest.MockedFunction<typeof getNavigateAction>;
+const mockGetNavigateAction = jest.mocked(getNavigateAction);
+const registry: RouterRegistry = new Map();
 
-function makeRef(
-  overrides: Partial<NavigationContainerRef<ParamListBase>> = {}
-): RefObject<NavigationContainerRef<ParamListBase>> {
+function makeRef(): RefObject<NavigationContainerRef<ParamListBase>> {
   return {
     current: {
       dispatch: jest.fn(),
-      navigate: jest.fn(),
-      reset: jest.fn(),
-      goBack: jest.fn(),
-      isFocused: jest.fn(),
-      canGoBack: jest.fn(),
-      getState: jest.fn(),
-      getRootState: jest.fn(),
-      getParent: jest.fn(),
-      addListener: jest.fn(),
-      removeListener: jest.fn(),
       isReady: jest.fn(() => true),
-      setParams: jest.fn(),
-      getCurrentRoute: jest.fn(),
-      getCurrentOptions: jest.fn(),
-      getId: jest.fn(),
-      resetRoot: jest.fn(),
-      ...overrides,
     } as unknown as NavigationContainerRef<ParamListBase>,
   };
 }
 
 beforeEach(() => {
   jest.clearAllMocks();
-  // Drain any leftover queue state
   routingQueue.queue = [];
+  routingQueue.version = 0;
   routingQueue.subscribers.clear();
 });
 
 describe('routingQueue', () => {
-  it('add() pushes action to queue and notifies subscribers', () => {
-    const callback = jest.fn();
-    routingQueue.subscribe(callback);
-
-    routingQueue.add({ type: 'GO_BACK' });
-
-    expect(routingQueue.queue).toHaveLength(1);
-    expect(routingQueue.queue[0]).toEqual({ type: 'GO_BACK' });
-    expect(callback).toHaveBeenCalledTimes(1);
-  });
-
-  it('subscribe() returns unsubscribe function', () => {
+  it('unsubscribes snapshot listeners', () => {
     const callback = jest.fn();
     const unsubscribe = routingQueue.subscribe(callback);
 
-    routingQueue.add({ type: 'GO_BACK' });
-    expect(callback).toHaveBeenCalledTimes(1);
-    callback.mockClear();
-
     unsubscribe();
-
     routingQueue.add({ type: 'GO_BACK' });
+
     expect(callback).not.toHaveBeenCalled();
   });
 
-  it('snapshot() returns the current queue array', () => {
+  it('publishes a new snapshot when an action is added', () => {
+    const callback = jest.fn();
+    routingQueue.subscribe(callback);
+    const previousSnapshot = routingQueue.snapshot();
+
+    routingQueue.add({ type: 'GO_BACK' });
+
+    expect(routingQueue.snapshot()).not.toBe(previousSnapshot);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('retains actions until the navigation ref is ready', () => {
+    routingQueue.add({ type: 'GO_BACK' });
+
+    routingQueue.run({ current: null }, registry);
+
+    expect(routingQueue.queue).toEqual([{ type: 'GO_BACK' }]);
+  });
+
+  it('dispatches plain actions in FIFO order', () => {
+    const ref = makeRef();
     routingQueue.add({ type: 'GO_BACK' });
     routingQueue.add({ type: 'POP_TO_TOP' });
 
-    const snapshot = routingQueue.snapshot();
+    routingQueue.run(ref, registry);
 
-    expect(snapshot).toHaveLength(2);
-    expect(snapshot[0]).toEqual({ type: 'GO_BACK' });
-    expect(snapshot[1]).toEqual({ type: 'POP_TO_TOP' });
+    expect(ref.current!.dispatch).toHaveBeenNthCalledWith(1, { type: 'GO_BACK' });
+    expect(ref.current!.dispatch).toHaveBeenNthCalledWith(2, { type: 'POP_TO_TOP' });
+    expect(routingQueue.queue).toEqual([]);
   });
 
-  it('run() drains the queue', () => {
+  it('leaves a deferred link at the head and blocks later actions', () => {
     const ref = makeRef();
-
-    routingQueue.add({ type: 'GO_BACK' });
-    routingQueue.add({ type: 'POP_TO_TOP' });
-
-    routingQueue.run(ref);
-
-    expect(routingQueue.queue).toHaveLength(0);
-  });
-
-  it('run() dispatches plain actions via ref.current.dispatch()', () => {
-    const ref = makeRef();
-
-    routingQueue.add({ type: 'GO_BACK' });
-
-    routingQueue.run(ref);
-
-    expect(ref.current!.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
-  });
-
-  it('run() converts ROUTER_LINK actions via getNavigateAction then dispatches', () => {
-    const ref = makeRef();
-    const navigateAction = {
-      type: 'NAVIGATE',
-      payload: { name: 'home', params: {}, singular: false },
-      target: '123',
+    mockGetNavigateAction.mockReturnValue(DEFER_NAVIGATION);
+    const link = {
+      type: 'ROUTER_LINK' as const,
+      payload: { href: '/parent/child', options: { event: 'NAVIGATE' as const } },
     };
-    mockGetNavigateAction.mockReturnValueOnce(navigateAction);
+    routingQueue.add(link);
+    routingQueue.add({ type: 'GO_BACK' });
 
+    routingQueue.run(ref, registry);
+
+    expect(routingQueue.queue).toEqual([link, { type: 'GO_BACK' }]);
+    expect(ref.current!.dispatch).not.toHaveBeenCalled();
+  });
+
+  it('recomputes a deferred href with the latest registry', () => {
+    const ref = makeRef();
+    const nextRegistry: RouterRegistry = new Map([
+      ['root', { routerType: 'stack', reduce: (state) => state }],
+    ]);
+    const action = { type: 'RESET', target: 'root', payload: {} };
+    mockGetNavigateAction
+      .mockReturnValueOnce(DEFER_NAVIGATION)
+      .mockReturnValueOnce(action as ReturnType<typeof getNavigateAction>);
     routingQueue.add({
       type: 'ROUTER_LINK',
-      payload: { href: '/home', options: { event: 'NAVIGATE' } },
+      payload: { href: '/parent/child', options: { event: 'NAVIGATE' } },
     });
 
-    routingQueue.run(ref);
+    routingQueue.run(ref, registry);
+    routingQueue.run(ref, nextRegistry);
 
-    expect(mockGetNavigateAction).toHaveBeenCalledWith(
-      '/home',
-      { event: 'NAVIGATE' },
-      'NAVIGATE',
-      undefined,
-      undefined,
-      false
-    );
-    expect(ref.current!.dispatch).toHaveBeenCalledWith(navigateAction);
+    expect(mockGetNavigateAction).toHaveBeenCalledTimes(2);
+    expect(mockGetNavigateAction.mock.calls[1]![6]).toBe(nextRegistry);
+    expect(ref.current!.dispatch).toHaveBeenCalledWith(action);
   });
 
-  it('run() does not dispatch when getNavigateAction returns undefined', () => {
+  it('stops after one composed RESET and schedules remaining work', () => {
     const ref = makeRef();
-    mockGetNavigateAction.mockReturnValueOnce(undefined);
+    const callback = jest.fn();
+    routingQueue.subscribe(callback);
+    mockGetNavigateAction.mockReturnValue({
+      type: 'RESET',
+      target: 'root',
+      payload: {},
+    } as ReturnType<typeof getNavigateAction>);
+    routingQueue.add({
+      type: 'ROUTER_LINK',
+      payload: { href: '/first/deep', options: { event: 'NAVIGATE' } },
+    });
+    routingQueue.add({
+      type: 'ROUTER_LINK',
+      payload: { href: '/second/deep', options: { event: 'NAVIGATE' } },
+    });
+    callback.mockClear();
 
+    routingQueue.run(ref, registry);
+
+    expect(ref.current!.dispatch).toHaveBeenCalledTimes(1);
+    expect(routingQueue.queue).toHaveLength(1);
+    expect(callback).toHaveBeenCalledTimes(1);
+  });
+
+  it('consumes a permanent no-op and continues', () => {
+    const ref = makeRef();
+    mockGetNavigateAction.mockReturnValue(undefined);
     routingQueue.add({
       type: 'ROUTER_LINK',
       payload: { href: '/redirect', options: { event: 'NAVIGATE' } },
     });
-
-    routingQueue.run(ref);
-
-    expect(ref.current!.dispatch).not.toHaveBeenCalled();
-  });
-
-  it('run() does nothing when ref.current is null', () => {
-    const ref = { current: null };
-
     routingQueue.add({ type: 'GO_BACK' });
 
-    routingQueue.run(ref as any);
+    routingQueue.run(ref, registry);
 
-    // Queue should still be drained (reset identity happens before dispatch loop)
-    expect(routingQueue.queue).toHaveLength(0);
-  });
-
-  it('run() resets queue identity so new actions during run go to a fresh array', () => {
-    const ref = makeRef();
-
-    routingQueue.add({ type: 'GO_BACK' });
-
-    const oldQueue = routingQueue.queue;
-
-    routingQueue.run(ref);
-
-    // The queue should be a new array reference
-    expect(routingQueue.queue).not.toBe(oldQueue);
-    expect(routingQueue.queue).toHaveLength(0);
-  });
-
-  it('multiple subscribers all get notified on add()', () => {
-    const callback1 = jest.fn();
-    const callback2 = jest.fn();
-    const callback3 = jest.fn();
-
-    routingQueue.subscribe(callback1);
-    routingQueue.subscribe(callback2);
-    routingQueue.subscribe(callback3);
-
-    routingQueue.add({ type: 'GO_BACK' });
-
-    expect(callback1).toHaveBeenCalledTimes(1);
-    expect(callback2).toHaveBeenCalledTimes(1);
-    expect(callback3).toHaveBeenCalledTimes(1);
+    expect(ref.current!.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
+    expect(routingQueue.queue).toEqual([]);
   });
 });

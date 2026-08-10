@@ -22,7 +22,15 @@ export function useOnGetState({ getState, getStateListeners }: Options) {
 
     // Avoid returning new route objects if we don't need to
     const routes = state.routes.map((route) => {
-      const childState = getStateListeners[route.key]?.();
+      const getChildState = getStateListeners[route.key];
+      if (!getChildState) {
+        return route;
+      }
+
+      const childState = getChildState();
+      if (childState === undefined && route.state !== undefined) {
+        return route;
+      }
 
       if (route.state === childState) {
         return route;

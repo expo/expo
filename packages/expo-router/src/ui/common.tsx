@@ -2,12 +2,7 @@ import type { UrlObject } from '../LocationProvider';
 import type { RouteNode } from '../Route';
 import { NOT_FOUND_ROUTE_NAME } from '../constants';
 import { resolveHref, resolveHrefStringWithSegments } from '../link/href';
-import type {
-  LinkingOptions,
-  ParamListBase,
-  PartialRoute,
-  Route,
-} from '../react-navigation/native';
+import type { LinkingOptions, ParamListBase } from '../react-navigation/native';
 import type { Href } from '../types';
 import { type ScreenProps, useSortedScreens } from '../useScreens';
 import { Slot } from './Slot';
@@ -164,9 +159,10 @@ export function useTriggersToScreens(
       nestedState = nestedRoute.state;
     }
 
-    // TODO(@ubax): Remove nested trigger href support to unify with other tab navigators.
-    const action = stateToAction(state, layoutRouteNode.route);
-    action.payload.params = { ...params, ...action.payload.params };
+    const action: JumpToNavigationAction = {
+      type: 'JUMP_TO',
+      payload: { name: routeState.name, params },
+    };
     configs.push({
       ...trigger,
       href: resolvedHref,
@@ -193,49 +189,5 @@ export function useTriggersToScreens(
   return {
     children,
     triggerMap,
-  };
-}
-
-// TODO(@ubax): Remove stateToAction together with nested trigger href support.
-export function stateToAction(
-  state: PartialRoute<Route<string, object | undefined>> | undefined,
-  startAtRoute?: string
-): JumpToNavigationAction {
-  const rootPayload: any = {};
-  let payload = rootPayload;
-
-  startAtRoute = startAtRoute === '' ? '__root' : startAtRoute;
-
-  let foundStartingPoint = startAtRoute === undefined || !state?.state;
-
-  while (state) {
-    if (foundStartingPoint) {
-      if (payload === rootPayload) {
-        payload.name = state.name;
-      } else {
-        payload.screen = state.name;
-      }
-      payload.params = state.params ? { ...state.params } : {};
-
-      state = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
-
-      if (state) {
-        payload.params ??= {};
-        payload = payload.params;
-      }
-    } else {
-      if (state.name === startAtRoute) {
-        foundStartingPoint = true;
-      }
-      const nextState = state.state?.routes[state.state.index ?? state.state.routes.length - 1];
-      if (nextState) {
-        state = nextState;
-      }
-    }
-  }
-
-  return {
-    type: 'JUMP_TO',
-    payload: rootPayload,
   };
 }

@@ -1,7 +1,6 @@
 import {
   appendInternalExpoRouterParams,
   getInternalExpoRouterParams,
-  INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
   removeParams,
@@ -23,8 +22,9 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
   const nativeTabRouter: Router<
     TabNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
-  > = {
+  > & { expoRouterType: 'native-tab' } = {
     ...tabRouter,
+    expoRouterType: 'native-tab',
     // @ts-expect-error TODO: For some reason this is not typed correctly
     getStateForAction: (state, action: TabActionType | CommonNavigationAction, options) => {
       switch (action.type) {
@@ -52,10 +52,6 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
               const expoParams: InternalExpoRouterParams = getInternalExpoRouterParams(
                 action.payload.params
               );
-
-              if (route.params && 'screen' in route.params) {
-                expoParams[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME] = true;
-              }
 
               if (process.env.NODE_ENV !== 'production') {
                 if (expoParams[INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]) {

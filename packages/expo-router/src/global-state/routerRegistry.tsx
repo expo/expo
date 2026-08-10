@@ -65,11 +65,6 @@ export function useRegisterRouter(stateKey: string, entry: RouterRegistryEntry):
 
   useClientLayoutEffect(() => {
     if (setters === undefined) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.warn(
-          'Router registry is unavailable. This is most likely a bug in expo-router. Please report it at https://github.com/expo/expo/issues.'
-        );
-      }
       return;
     }
 

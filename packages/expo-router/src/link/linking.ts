@@ -81,9 +81,7 @@ export function subscribe(
   redirects: StoreRedirects[] | undefined
 ) {
   return (listener: (url: string) => void) => {
-    let callback: (({ url }: { url: string }) => void) | undefined;
-
-    const legacySubscription = nativeLinking?.legacy_subscribe?.(listener);
+    let callback: ({ url }: { url: string }) => void;
 
     if (isExpoGo) {
       // This extra work is only done in the Expo Go app.
@@ -111,6 +109,7 @@ export function subscribe(
       };
     }
 
+    const legacySubscription = nativeLinking?.legacy_subscribe?.((url) => callback({ url }));
     const subscription = Linking.addEventListener('url', callback);
 
     return () => {

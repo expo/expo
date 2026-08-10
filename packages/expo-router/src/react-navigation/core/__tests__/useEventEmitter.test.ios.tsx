@@ -257,7 +257,7 @@ test('fires focus and blur events in nested navigator', () => {
   expect(thirdFocusCallback).toHaveBeenCalledTimes(0);
   expect(fourthFocusCallback).toHaveBeenCalledTimes(3);
 
-  act(() => parent.current.navigate('nested', { screen: 'third' }));
+  act(() => child.current.navigate('third'));
 
   expect(fourthBlurCallback).toHaveBeenCalledTimes(2);
   expect(thirdFocusCallback).toHaveBeenCalledTimes(1);
@@ -267,15 +267,18 @@ test('fires focus and blur events in nested navigator', () => {
   expect(firstFocusCallback).toHaveBeenCalledTimes(2);
   expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
 
-  act(() => parent.current.navigate('nested', { screen: 'fourth' }));
+  act(() => parent.current.navigate('nested'));
 
-  expect(fourthFocusCallback).toHaveBeenCalledTimes(4);
+  expect(thirdFocusCallback).toHaveBeenCalledTimes(2);
   expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
   expect(firstBlurCallback).toHaveBeenCalledTimes(2);
 
-  act(() => parent.current.navigate('nested', { screen: 'third' }));
+  act(() => child.current.navigate('fourth'));
+  expect(fourthFocusCallback).toHaveBeenCalledTimes(4);
 
-  expect(thirdFocusCallback).toHaveBeenCalledTimes(2);
+  act(() => child.current.navigate('third'));
+
+  expect(thirdFocusCallback).toHaveBeenCalledTimes(3);
   expect(fourthBlurCallback).toHaveBeenCalledTimes(3);
 
   // Make sure nothing else has changed
@@ -285,8 +288,8 @@ test('fires focus and blur events in nested navigator', () => {
   expect(secondFocusCallback).toHaveBeenCalledTimes(1);
   expect(secondBlurCallback).toHaveBeenCalledTimes(1);
 
-  expect(thirdFocusCallback).toHaveBeenCalledTimes(2);
-  expect(thirdBlurCallback).toHaveBeenCalledTimes(2);
+  expect(thirdFocusCallback).toHaveBeenCalledTimes(3);
+  expect(thirdBlurCallback).toHaveBeenCalledTimes(3);
 
   expect(fourthFocusCallback).toHaveBeenCalledTimes(4);
   expect(fourthBlurCallback).toHaveBeenCalledTimes(3);

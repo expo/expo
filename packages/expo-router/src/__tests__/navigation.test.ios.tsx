@@ -1772,7 +1772,7 @@ it('multiple pushes in useEffect are executed in order and added to stack', () =
   expect(screen).toHavePathname('/');
 });
 
-it('multiple pushes to different stack are executed in order and added separately to parent stack', () => {
+it('multiple pushes to a different stack are executed in order within that stack', () => {
   renderRouter(
     {
       _layout: () => <Stack />,
@@ -1813,17 +1813,14 @@ it('multiple pushes to different stack are executed in order and added separatel
   expect(store.state!.index).toBe(0);
   expect(store.state!.routes).toHaveLength(1);
   expect(store.state!.routes[0]!.name).toBe('__root');
-  // Both pushes from 'c' will create new routes in root layout. This is because both pushes are happening on the same state, where there is no 'b' stack yet.
-  expect(store.state!.routes[0]!.state!.routes).toHaveLength(3);
+  expect(store.state!.routes[0]!.state!.routes).toHaveLength(2);
   expect(store.state!.routes[0]!.state!.routes[0]!.name).toBe('a');
   expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes).toHaveLength(1);
   expect(store.state!.routes[0]!.state!.routes[0]!.state!.routes[0]!.name).toBe('c');
   expect(store.state!.routes[0]!.state!.routes[1]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(1);
+  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes).toHaveLength(2);
   expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes[0]!.name).toBe('d');
-  expect(store.state!.routes[0]!.state!.routes[2]!.name).toBe('b');
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes).toHaveLength(1);
-  expect(store.state!.routes[0]!.state!.routes[2]!.state!.routes[0]!.name).toBe('e');
+  expect(store.state!.routes[0]!.state!.routes[1]!.state!.routes[1]!.name).toBe('e');
 
   act(() => router.back());
   expect(screen.getByTestId('d')).toBeVisible();

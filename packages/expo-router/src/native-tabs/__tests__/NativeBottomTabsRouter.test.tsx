@@ -30,7 +30,8 @@ test('post-processes a first navigation to an unvisited tab', () => {
   const result = router.getStateForAction(
     state,
     CommonActions.navigate('second', {
-      screen: 'nested',
+      screen: 'ordinary',
+      [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true,
       [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: 'screen-id',
       [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME]: 'source-id',
     }),
@@ -43,7 +44,8 @@ test('post-processes a first navigation to an unvisited tab', () => {
   expect(params[INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]).toBe(true);
   expect(params).not.toHaveProperty(INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME);
   expect(params).not.toHaveProperty(INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME);
-  expect(params.params).toEqual({ [INTERNAL_EXPO_ROUTER_NO_ANIMATION_PARAM_NAME]: true });
+  expect(params.screen).toBe('ordinary');
+  expect(params).not.toHaveProperty('params');
   expect(warn).toHaveBeenCalledWith(
     'Zoom transition is not supported when navigating between tabs. Falling back to standard navigation transition.'
   );

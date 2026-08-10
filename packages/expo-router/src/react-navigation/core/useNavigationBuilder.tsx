@@ -7,7 +7,6 @@ import { isValidElementType } from 'react-is';
 import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
-  CommonActions,
   type DefaultRouterOptions,
   type NavigationAction,
   type NavigationState,
@@ -33,7 +32,6 @@ import {
   type DescriptorRouteProp,
   type EventMapBase,
   type EventMapCore,
-  type NavigatorScreenParams,
   PrivateValueStore,
   type RouteConfig,
 } from './types';
@@ -63,10 +61,8 @@ PrivateValueStore;
 
 type NavigatorRoute = {
   key: string;
-  params?: NavigatorScreenParams<ParamListBase>;
+  params?: object;
 };
-
-const CONSUMED_PARAMS = Symbol('CONSUMED_PARAMS');
 
 const isScreen = (
   child: React.ReactElement<unknown>
@@ -241,24 +237,6 @@ const getRouteConfigsFromChildren = <
   return configs;
 };
 
-const getStateFromParams = (params: NavigatorRoute['params']) => {
-  if (params?.state != null) {
-    return params.state;
-  } else if (typeof params?.screen === 'string' && params?.initial !== false) {
-    return {
-      routes: [
-        {
-          name: params.screen,
-          params: params.params,
-          path: params.path,
-        },
-      ],
-    };
-  }
-
-  return undefined;
-};
-
 /**
  * Hook for building navigators.
  *
@@ -287,11 +265,6 @@ export function useNavigationBuilder<
   const navigatorKey = useRegisterNavigator();
 
   const route = use(NavigationRouteContext) as NavigatorRoute | undefined;
-
-  const isNestedParamsConsumed =
-    typeof route?.params === 'object' && route.params != null
-      ? CONSUMED_PARAMS in route.params && route.params[CONSUMED_PARAMS] === route.params
-      : false;
 
   const {
     children,
@@ -397,176 +370,58 @@ export function useNavigationBuilder<
     setCurrentState(state);
   });
 
-  const [initializedState, isFirstStateInitialization, paramsUsedForInitialization] =
-    React.useMemo((): [State | undefined, boolean, object | undefined] => {
-      // If the state was already cleaned up, but we have it stored in ref,
-      // It likely got cleaned up due to `<Activity mode="hidden">`
-      // We should reuse this state to avoid remounting screens
-      if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
-        const state: State = isStateInitialized(lastStateRef.current)
-          ? lastStateRef.current
-          : router.getRehydratedState(lastStateRef.current, {
-              routeNames,
-              routeParamList,
-              routeGetIdList,
-            });
-
-        return [state, false, undefined];
-      }
-
-      const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
-        (acc, curr) => {
-          const initialParamsFromParams =
-            route?.params?.state == null &&
-            route?.params?.initial !== false &&
-            route?.params?.screen === curr
-              ? route.params.params
-              : undefined;
-
-          // Keep child route params separate from the parent's nested navigation params.
-          acc[curr] =
-            initialParamsFromParams !== undefined ? { ...initialParamsFromParams } : undefined;
-
-          return acc;
-        },
-        {}
-      );
-
-      // If the current state isn't initialized on first render, we initialize it
-      // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
-      // Otherwise assume that the state was provided as initial state
-      // So we need to rehydrate it to make it usable
-      if (
-        (currentState === undefined || !isStateValid(currentState)) &&
-        route?.params?.state == null &&
-        !(typeof route?.params?.screen === 'string' && route?.params?.initial !== false) &&
-        !isNestedParamsConsumed
-      ) {
-        return [
-          router.getInitialState({
+  const initializedState = React.useMemo((): State => {
+    // If the state was already cleaned up, but we have it stored in ref,
+    // It likely got cleaned up due to `<Activity mode="hidden">`
+    // We should reuse this state to avoid remounting screens
+    if (stateCleanupRef.current && lastStateRef.current && isStateValid(lastStateRef.current)) {
+      const state: State = isStateInitialized(lastStateRef.current)
+        ? lastStateRef.current
+        : router.getRehydratedState(lastStateRef.current, {
             routeNames,
-            routeParamList: initialRouteParamList,
+            routeParamList,
             routeGetIdList,
-          }),
-          true,
-          undefined,
-        ];
-      } else {
-        const paramsForState = isNestedParamsConsumed ? undefined : route?.params;
-        const stateFromParams = paramsForState ? getStateFromParams(paramsForState) : undefined;
+          });
 
-        const stateBeforeInitialization = (stateFromParams ?? currentState) as
-          | PartialState<State>
-          | undefined;
+      return state;
+    }
 
-        const hydratedState =
-          stateBeforeInitialization == null
-            ? router.getInitialState({
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              })
-            : router.getRehydratedState(stateBeforeInitialization, {
-                routeNames,
-                routeParamList: initialRouteParamList,
-                routeGetIdList,
-              });
+    // If the current state isn't initialized on first render, we initialize it
+    // We also need to re-initialize it if the state passed from parent was changed (maybe due to reset)
+    // Otherwise assume that the state was provided as initial state
+    // So we need to rehydrate it to make it usable
+    if (currentState === undefined || !isStateValid(currentState)) {
+      return router.getInitialState({
+        routeNames,
+        routeParamList,
+        routeGetIdList,
+      });
+    }
 
-        return [hydratedState, false, paramsForState];
-      }
-      // We explicitly don't include routeNames, route.params etc. in the dep list
-      // below. We want to avoid forcing a new state to be calculated in those cases
-      // Instead, we handle changes to these in the nextState code below. Note
-      // that some changes to routeConfigs are explicitly ignored.
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentState, router, isStateValid]);
+    // The context stores all navigator state types; this router only receives its own state.
+    const stateForRouter = currentState as State | PartialState<State>;
+    return router.getRehydratedState(stateForRouter, {
+      routeNames,
+      routeParamList,
+      routeGetIdList,
+    });
+    // We explicitly don't include routeNames, route.params etc. in the dep list
+    // below. We want to avoid forcing a new state to be calculated in those cases
+    // Instead, we handle changes to these in the nextState code below. Note
+    // that some changes to routeConfigs are explicitly ignored.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentState, router, isStateValid]);
 
-  let state =
+  const hydratedState =
     // If the state isn't initialized, or stale, use the state we initialized instead
     // The state won't update until there's a change needed in the state we have initialized locally
     // So it'll be `undefined` or stale until the first navigation event happens
     isStateInitialized(currentState) ? (currentState as State) : (initializedState as State);
 
-  let nextState: State = state;
+  useScheduleUpdate(() => {});
 
-  let didConsumeNestedParams = route?.params === paramsUsedForInitialization;
-
-  if (route?.params && !didConsumeNestedParams) {
-    let action: CommonActions.Action | undefined;
-
-    if (
-      typeof route.params.state === 'object' &&
-      route.params.state != null &&
-      !isNestedParamsConsumed
-    ) {
-      didConsumeNestedParams = true;
-
-      // If the route was updated with new state, we should reset to it
-      action = CommonActions.reset(route.params.state);
-    } else if (
-      typeof route.params.screen === 'string' &&
-      ((route.params.initial === false && isFirstStateInitialization) || !isNestedParamsConsumed)
-    ) {
-      didConsumeNestedParams = true;
-
-      // If the route was updated with new screen name and/or params, we should navigate there
-      action = CommonActions.navigate({
-        name: route.params.screen,
-        params: route.params.params,
-        path: route.params.path,
-        merge: route.params.merge,
-        pop: route.params.pop,
-      });
-    }
-
-    // The update should be limited to current navigator only, so we call the router manually
-    const updatedState = action
-      ? router.getStateForAction(nextState, action, {
-          routeNames,
-          routeParamList,
-          routeGetIdList,
-        })
-      : null;
-
-    nextState =
-      updatedState !== null
-        ? router.getRehydratedState(updatedState, {
-            routeNames,
-            routeParamList,
-            routeGetIdList,
-          })
-        : nextState;
-  }
-
-  React.useEffect(() => {
-    if (didConsumeNestedParams && typeof route?.params === 'object' && route.params != null) {
-      // Track whether the params have been already consumed
-      // Set it to the same object, so merged params can be handled again
-      Object.defineProperty(route.params, CONSUMED_PARAMS, {
-        value: route.params,
-        enumerable: false,
-      });
-    }
-  }, [didConsumeNestedParams, route?.params]);
-
-  const shouldUpdate = state !== nextState;
-
-  useScheduleUpdate(() => {
-    if (shouldUpdate) {
-      // Schedule an update if the state needs to be updated
-      setState(nextState);
-    }
-  });
-
-  // The up-to-date state will come in next render, but we don't need to wait for it
-  // We can't use the outdated state since the screens have changed, which will cause error due to mismatched config
-  // So we override the state object we return to use the latest state as soon as possible
-  state = nextState;
-
-  // Keep render consumers safe without committing a state outside the action pipeline. The router
-  // decides which survivor takes focus, so the interim render agrees with the state that
-  // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
-  state = router.getStateForDeclaredRoutes(state, routeNames);
+  // Keep render consumers aligned with declared routes without committing outside the action pipeline.
+  const state = router.getStateForDeclaredRoutes(hydratedState, routeNames);
 
   const reduce = React.useCallback<RouterRegistryEntry['reduce']>(
     (registryState, action) =>
@@ -578,9 +433,13 @@ export function useNavigationBuilder<
       }),
     [routeGetIdList, routeNames, routeParamList, router]
   );
+  const routerType =
+    'expoRouterType' in router && typeof router.expoRouterType === 'string'
+      ? router.expoRouterType
+      : router.type;
   const registryEntry = React.useMemo<RouterRegistryEntry>(
-    () => ({ reduce, routerType: router.type, contextKey: options.id }),
-    [options.id, reduce, router.type]
+    () => ({ reduce, routerType, contextKey: options.id }),
+    [options.id, reduce, routerType]
   );
 
   // TODO(@ubax): Nested navigators must stay mounted. Hide screen content with `<Activity>` instead.
@@ -588,7 +447,7 @@ export function useNavigationBuilder<
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
-    lastStateRef.current = nextState;
+    lastStateRef.current = hydratedState;
   });
 
   const lastNotifiedStateRef = React.useRef<State | null>(null);
@@ -606,8 +465,8 @@ export function useNavigationBuilder<
       // This is necessary for proper screen tracking, URL updates etc.
       // We only notify if the state is different what we already notified
       // Otherwise this goes into a loop when inside `<Activity mode="hidden">`
-      setState(nextState);
-      lastNotifiedStateRef.current = nextState;
+      setState(hydratedState);
+      lastNotifiedStateRef.current = hydratedState;
     }
 
     return () => {

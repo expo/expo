@@ -437,7 +437,7 @@ it('ignores the current route', () => {
 it('can prefetch a deeply nested route', () => {
   const jestFn = jest.fn();
 
-  renderRouter(
+  const result = renderRouter(
     {
       _layout: () => <Stack />,
       index: () => null,
@@ -491,6 +491,12 @@ it('can prefetch a deeply nested route', () => {
   expect(screen).toHavePathname('/directory');
   expect(jestFn.mock.calls).toEqual([['apple'], ['banana'], ['index']]);
 
+  const appleRoute = result.getRouterState()!.routes[0]!.state!.routes[0]!.state!.routes[1]!;
+  const bananaRoute = appleRoute.state!.routes[0]!;
+  expect(appleRoute.params).toStrictEqual({});
+  expect(bananaRoute.params).toBeUndefined();
+  expect(bananaRoute.state!.routes[0]!.params).toBeUndefined();
+
   expect(screen).toHaveRouterState({
     index: 0,
     key: expect.any(String),
@@ -523,13 +529,7 @@ it('can prefetch a deeply nested route', () => {
                   {
                     key: expect.any(String),
                     name: 'apple',
-                    params: {
-                      params: {
-                        params: {},
-                        screen: 'index',
-                      },
-                      screen: 'banana',
-                    },
+                    params: {},
                     state: {
                       index: 0,
                       key: expect.any(String),
@@ -538,8 +538,7 @@ it('can prefetch a deeply nested route', () => {
                         {
                           key: expect.any(String),
                           name: 'banana',
-                          params: { params: {}, screen: 'index' },
-                          path: undefined,
+                          params: undefined,
                           state: {
                             index: 0,
                             key: expect.any(String),
@@ -548,8 +547,8 @@ it('can prefetch a deeply nested route', () => {
                               {
                                 key: expect.any(String),
                                 name: 'index',
-                                params: {},
-                                path: undefined,
+                                params: undefined,
+                                path: '/directory/apple/banana',
                               },
                             ],
                             stale: false,
@@ -827,7 +826,6 @@ it('can still use <Screen /> while prefetching in tabs', () => {
     'Should only change after focus',
     'index',
     'Should only change after focus',
-    'index',
   ]);
 });
 
@@ -884,7 +882,7 @@ it('does not stamp zoom transition screen ID without zoom source param', () => {
   const preloadedRoute = stackState.routes[stackState.index + 1]!;
 
   expect(preloadedRoute.name).toBe('target');
-  expect(preloadedRoute.params).not.toHaveProperty(
+  expect(preloadedRoute.params ?? {}).not.toHaveProperty(
     INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME
   );
 });
@@ -905,6 +903,13 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
     });
   });
 
+  const preloadedState = (screen as ReturnType<typeof renderRouter>).getRouterState();
+  const preloadedInnerState = preloadedState?.routes[0]!.state;
+  if (preloadedInnerState?.type !== 'stack') {
+    throw new Error('Expected a stack navigator');
+  }
+  const preloadedRouteKey = preloadedInnerState.routes[preloadedInnerState.index! + 1]!.key;
+
   // Navigate to the preloaded route (with zoom params so it goes through the NAVIGATE/PUSH stamping)
   act(() => {
     router.push({
@@ -923,6 +928,7 @@ it('stamps zoom transition screen ID on preloaded route that is navigated to', (
   const navigatedRoute = innerState.routes[innerState.routes.length - 1]!;
 
   expect(navigatedRoute.name).toBe('target');
+  expect(navigatedRoute.key).toBe(preloadedRouteKey);
   expect(navigatedRoute.params).toHaveProperty(
     INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
     navigatedRoute.key
