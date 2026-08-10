@@ -10,4 +10,4 @@ export declare function createRequestHandler(params: {
 }): RequestHandler;
 export declare function convertHeaders(requestHeaders: http.IncomingMessage['headers']): Headers;
 export declare function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): Request;
-export declare function respond(res: http.ServerResponse, expoRes: Response): Promise<void>;
+export { respond } from './http';

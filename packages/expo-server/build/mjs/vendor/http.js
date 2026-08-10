@@ -1,6 +1,5 @@
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
 import { createRequestHandler as createExpoHandler, } from './abstract';
 import { createNodeEnv, createNodeRequestScope } from './environment/node';
 export { ExpoError } from './abstract';
@@ -122,15 +121,71 @@ export async function respond(nodeResponse, webResponse, options) {
     if (nodeResponse.writableEnded || nodeResponse.destroyed) {
         return;
     }
+    let _cancelled = false;
     nodeResponse.statusMessage = webResponse.statusText;
     nodeResponse.statusCode = webResponse.status;
     assignOutgoingMessageHeaders(nodeResponse, webResponse.headers);
-    if (webResponse.body && !options?.signal?.aborted) {
-        const body = Readable.fromWeb(webResponse.body);
-        await pipeline(body, nodeResponse, { signal: options?.signal });
-    }
-    else {
+    if (!webResponse.body || options?.signal?.aborted) {
         nodeResponse.end();
+        return;
+    }
+    else if (nodeResponse.destroyed) {
+        return;
+    }
+    const reader = webResponse.body.getReader();
+    const cancelBody = (reason) => {
+        if (!_cancelled) {
+            _cancelled = true;
+            (void reader.cancel(reason).catch(() => { }));
+        }
+    };
+    const onAbort = () => {
+        const reason = options?.signal?.reason;
+        cancelBody(reason);
+        if (!nodeResponse.destroyed) {
+            nodeResponse.destroy(reason instanceof Error ? reason : undefined);
+        }
+    };
+    const onClose = () => cancelBody();
+    try {
+        nodeResponse.once('close', onClose);
+        options?.signal?.addEventListener('abort', onAbort, { once: true });
+        while (!_cancelled) {
+            const result = await reader.read();
+            if (result.done) {
+                break;
+            }
+            else if (!nodeResponse.write(result.value)) {
+                await advanceResponse(nodeResponse);
+            }
+        }
+    }
+    catch (error) {
+        if (nodeResponse.headersSent && !nodeResponse.destroyed) {
+            nodeResponse.destroy(error instanceof Error ? error : undefined);
+        }
+        throw error;
+    }
+    finally {
+        nodeResponse.off('close', onClose);
+        options?.signal?.removeEventListener('abort', onAbort);
+        reader.releaseLock();
+    }
+    if (!_cancelled && !nodeResponse.destroyed) {
+        nodeResponse.end();
+    }
+}
+function advanceResponse(response) {
+    if (!response.destroyed) {
+        return new Promise((resolve) => {
+            function done() {
+                response.off('close', done);
+                response.off('drain', done);
+                resolve();
+            }
+            response.once('close', done);
+            response.once('drain', done);
+        });
     }
 }
 //# sourceMappingURL=http.js.map
