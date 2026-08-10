@@ -45,17 +45,25 @@ on:
   issue_comment:
     types: [created]
 
+# Scopes the automatic workflow token, which is what the AGENT step gets:
+# issue comments yes, repository contents never. The agent therefore cannot
+# push or write files even if an injected instruction tells it to — the
+# boundary is the token's permissions, not a command-pattern allowlist.
 permissions:
   contents: read
   issues: write
-  pull-requests: write
-
-concurrency:
-  group: verify-${{ github.event.issue.number }}
-  cancel-in-progress: true
+  pull-requests: read
 
 jobs:
   verify:
+    # Job-level, NOT workflow-level: a workflow-level group is claimed at run
+    # creation — before the `if:` below skips the job — so any unrelated
+    # comment on this issue would cancel an in-flight verification and strand
+    # its sandboxes and EAS builds. cancel-in-progress:false queues a second
+    # /verify instead of killing the first.
+    concurrency:
+      group: verify-${{ github.event.issue.number }}
+      cancel-in-progress: false
     # Comments starting with /verify, on issues or PRs, from maintainer
     # associations. The authoritative write-access check is the step below.
     # (Runs are backed by the expo-verification-bot service account.)
@@ -150,7 +158,12 @@ jobs:
           # engine — it holds a Claude Code OAuth token, hence this env var
           # (ANTHROPIC_API_KEY is for raw API keys).
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          # The AUTOMATIC workflow token, never the bot PAT: the bot PAT is
+          # push-capable and write-scoped beyond this repo (sync-template.yml
+          # pushes with it), and the job `permissions:` block does not limit
+          # it. This token IS limited by that block, so the worst an injected
+          # instruction achieves is an issue comment.
+          GH_TOKEN: ${{ github.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_KIND: ${{ github.event.issue.pull_request != null && 'pull request' || 'issue' }}
           TRIGGER_ACTOR: ${{ github.event.comment.user.login }}
@@ -158,9 +171,15 @@ jobs:
           # Pinned to Opus explicitly; override with a VERIFY_MODEL repo
           # variable (mirrors the code-review workflows' REVIEWER_MODEL).
           VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
-        # The tool allowlist is the enforcement of comment-only: MCP
-        # investigation tools plus read-only gh and the comment fallback.
-        # No Edit/Write on the runner, no git, no unrestricted Bash.
+        # Comment-only is enforced in THREE independent layers, because a
+        # command-pattern allowlist alone is not a boundary (`gh api` accepts
+        # -X POST, so a repos/<slug>/* rule would have permitted writes — it
+        # is deliberately absent):
+        #   1. the workflow token's `permissions:` block (no contents write),
+        #   2. this allowlist: read-scoped Read/Glob/Grep, four fixed `gh`
+        #      verbs, no Edit/Write/git/unrestricted Bash,
+        #   3. the MCP token itself, scoped server-side to one sandbox with
+        #      a short TTL (see Mint scoped token).
         # stream-json --verbose + a jq activity renderer, the same visibility
         # the code-review CLI gives its claude -p engine: every tool call and
         # assistant message lands in the Actions log live (which the announce
@@ -174,7 +193,7 @@ jobs:
 
           $prompt" \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
-            --allowedTools "Read,Glob,Grep,mcp__sandbox__create_sandbox,mcp__sandbox__destroy_sandbox,mcp__sandbox__list_sandboxes,mcp__sandbox__get_session_info,mcp__sandbox__sandbox_exec,mcp__sandbox__sandbox_write_file,mcp__sandbox__sandbox_edit_file,mcp__sandbox__sandbox_read_file,mcp__sandbox__sandbox_list_files,mcp__sandbox__sandbox_install_packages,mcp__sandbox__sandbox_process_logs,mcp__sandbox__sandbox_process_kill,mcp__sandbox__eas_build,mcp__sandbox__eas_build_status,mcp__sandbox__eas_build_list,mcp__sandbox__simulator_start,mcp__sandbox__simulator_status,mcp__sandbox__simulator_stop,mcp__sandbox__simulator_screenshot,mcp__sandbox__simulator_ui,mcp__sandbox__simulator_tap,mcp__sandbox__simulator_type,mcp__sandbox__simulator_open,mcp__sandbox__simulator_boot_app,mcp__sandbox__simulator_install_build,mcp__sandbox__simulator_relaunch_app,mcp__sandbox__simulator_census_status,mcp__sandbox__simulator_app_state,mcp__sandbox__simulator_artifacts,mcp__sandbox__simulator_record,mcp__sandbox__github_comment_issue,mcp__sandbox__expo_skill,Bash(gh issue view:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh issue comment:*),Bash(gh api repos/${REPO}/*)" \
+            --allowedTools "Read($GITHUB_WORKSPACE/**),Glob($GITHUB_WORKSPACE/**),Grep($GITHUB_WORKSPACE/**),mcp__sandbox__create_sandbox,mcp__sandbox__destroy_sandbox,mcp__sandbox__list_sandboxes,mcp__sandbox__get_session_info,mcp__sandbox__sandbox_exec,mcp__sandbox__sandbox_write_file,mcp__sandbox__sandbox_edit_file,mcp__sandbox__sandbox_read_file,mcp__sandbox__sandbox_list_files,mcp__sandbox__sandbox_install_packages,mcp__sandbox__sandbox_process_logs,mcp__sandbox__sandbox_process_kill,mcp__sandbox__eas_build,mcp__sandbox__eas_build_status,mcp__sandbox__eas_build_list,mcp__sandbox__simulator_start,mcp__sandbox__simulator_status,mcp__sandbox__simulator_stop,mcp__sandbox__simulator_screenshot,mcp__sandbox__simulator_ui,mcp__sandbox__simulator_tap,mcp__sandbox__simulator_type,mcp__sandbox__simulator_open,mcp__sandbox__simulator_boot_app,mcp__sandbox__simulator_install_build,mcp__sandbox__simulator_relaunch_app,mcp__sandbox__simulator_census_status,mcp__sandbox__simulator_app_state,mcp__sandbox__simulator_artifacts,mcp__sandbox__simulator_record,mcp__sandbox__github_comment_issue,mcp__sandbox__expo_skill,Bash(gh issue view:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh issue comment:*)" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
             | jq -r --unbuffered '
