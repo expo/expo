@@ -338,20 +338,7 @@ jobs:
             --allowedTools "$ALLOWED" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
-            | jq -r --unbuffered '
-                if .type == "system" and .subtype == "init" then
-                  "▶ session started — model \(.model // "?")"
-                elif .type == "assistant" then
-                  (.message.content[]? |
-                    if .type == "text" and ((.text // "") | length) > 0 then "🤖 \(.text)"
-                    elif .type == "tool_use" then "→ \(.name) \(.input | tostring | .[0:220])"
-                    else empty end)
-                elif .type == "user" then
-                  (.message.content[]? | select(.type == "tool_result") |
-                    "  ← \((.content | tostring) | .[0:220])")
-                elif .type == "result" then
-                  "✔ completed — \(((.duration_ms // 0) / 1000) | floor)s, \(.num_turns // "?") turn(s)\n===== FINAL RESULT =====\n\(.result // "(no result text)")"
-                else empty end'
+            | jq -rf .github/verify/render.jq
 
       # Raw engine transcript, kept like the code-review workflows keep
       # their run log — the console rendering above is lossy by design.
