@@ -15,7 +15,6 @@ import { MaterialTopTabView } from '../views/MaterialTopTabView';
 
 export interface MaterialTopTabNavigatorCreateProps {
   routeNames: string[];
-  preloadedRouteKeys: string[];
   preload: (name: string) => void;
 }
 
@@ -35,7 +34,6 @@ function MaterialTopTabNavigatorContent({
   actions,
   emitter,
   routeNames,
-  preloadedRouteKeys,
   preload,
   ...rest
 }: ContentArgs) {
@@ -82,7 +80,6 @@ function MaterialTopTabNavigatorContent({
       descriptors={topTabDescriptors}
       emitter={emitter}
       navigateToTab={navigateToTab}
-      preloadedRouteKeys={preloadedRouteKeys}
     />
   );
 }

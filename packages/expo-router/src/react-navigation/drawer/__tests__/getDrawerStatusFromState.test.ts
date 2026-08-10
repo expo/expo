@@ -12,7 +12,6 @@ const createState = (
   key: 'drawer-test',
   index: 0,
   routeNames: ['bar'],
-  preloadedRouteKeys: [],
   routes: [{ key: 'bar', name: 'bar' }],
   default: defaultStatus,
   history,
