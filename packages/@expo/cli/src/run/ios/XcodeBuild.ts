@@ -23,7 +23,7 @@ const CONCURRENT_BUILD_ERROR_MESSAGE_1 = 'database is locked';
 const CONCURRENT_BUILD_ERROR_MESSAGE_2 = 'there are two concurrent builds running';
 // Xcode prints this after a command fails, but it does not show the cause.
 const XCODE_BUILD_NO_OUTPUT_ERROR_MESSAGE =
-  /^error: the following command failed with exit code \d+ but produced no further output$/;
+  /error: the following command failed with exit code \d+ but produced no further output/;
 
 /** Get the generic Xcode destination string for a given OS type.
  * Used when building without targeting a specific device (build-only workflow).
@@ -415,7 +415,7 @@ export async function buildAsync(props: BuildProps): Promise<string> {
   const logFilePath = writeBuildLogs(projectRoot, results, error);
 
   if (code !== 0) {
-    if (formatter.errors.length > 0) {
+    if (_hasXcodeBuildErrorDetails(formatter.errors)) {
       // The formatter can miss another error, so include the build log path.
       throw new CommandError(_formatXcodeBuildFailure(code, logFilePath));
     }
@@ -430,6 +430,11 @@ export function _formatXcodeBuildFailure(code: number | null, logFilePath: strin
   return `Failed to build iOS project. "xcodebuild" exited with error code ${code}.\nBuild logs written to ${chalk.underline(
     logFilePath
   )}`;
+}
+
+// Exposed for testing.
+export function _hasXcodeBuildErrorDetails(errors: string[]): boolean {
+  return errors.some((error) => !isXcodeBuildNoOutputErrorLine(error));
 }
 
 // Exposed for testing.
@@ -475,12 +480,13 @@ export function _extractXcodeBuildErrorLines(output: string): string[] {
   const errors: string[] = [];
   for (const raw of output.split(/\r?\n/)) {
     const line = raw.trim();
-    if (/(?:^|\s)error:\s/.test(line) && !isXcodeBuildNoOutputErrorLine(line) && !seen.has(line)) {
+    if (/(?:^|\s)error:\s/.test(line) && !seen.has(line)) {
       seen.add(line);
       errors.push(line);
     }
   }
-  return errors;
+  const errorsWithDetails = errors.filter((error) => !isXcodeBuildNoOutputErrorLine(error));
+  return errorsWithDetails.length > 0 ? errorsWithDetails : errors;
 }
 
 function isXcodeBuildNoOutputErrorLine(line: string): boolean {
