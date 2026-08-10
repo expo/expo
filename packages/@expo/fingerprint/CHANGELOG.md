@@ -8,6 +8,7 @@
 - Hashed the built-in `react-native` source by its `package.json` name+version instead of the whole `package.json`, so fingerprints change once on upgrade. ([#47667](https://github.com/expo/expo/pull/47667) by [@kudo](https://github.com/kudo))
 - Changed the default preset to `balanced`, which changes the default fingerprint once on upgrade. Use `preset: 'strict'` to keep the previous behavior. ([#47668](https://github.com/expo/expo/pull/47668) by [@kudo](https://github.com/kudo))
 - Skipped `eas.json` and `.easignore` in the `balanced` and `relaxed` presets, which changes the default fingerprint once on upgrade for projects that have either file. ([#48586](https://github.com/expo/expo/pull/48586) by [@kudo](https://github.com/kudo))
+- Stopped treating packages installed in a virtual store, e.g. pnpm's **node_modules/.pnpm**, as nested `node_modules`. Their sources were dropped from the hash, so fingerprints change once on upgrade for projects using isolated installation. ([#48704](https://github.com/expo/expo/pull/48704) by [@kudo](https://github.com/kudo))
 
 ### 🎉 New features
 
