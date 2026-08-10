@@ -21,9 +21,9 @@ import { StackRouter, useNavigationBuilder } from './react-navigation/native';
 import { initScreensFeatureFlags } from './screensFeatureFlags';
 import type { RequireContext } from './types';
 import { parseUrlUsingCustomBase } from './utils/url';
+import { RootUnmatched } from './views/RootUnmatched';
 import { Sitemap } from './views/Sitemap';
 import * as SplashScreen from './views/Splash';
-import { Unmatched } from './views/Unmatched';
 
 export type ExpoRootProps = {
   context: RequireContext;
@@ -175,7 +175,7 @@ function ContextNavigator({
 function Content() {
   const children = [<Screen name={INTERNAL_SLOT_NAME} component={store.rootComponent} />];
   if (shouldAppendNotFound()) {
-    children.push(<Screen name={NOT_FOUND_ROUTE_NAME} component={Unmatched} />);
+    children.push(<Screen name={NOT_FOUND_ROUTE_NAME} component={RootUnmatched} />);
   }
   if (shouldAppendSitemap()) {
     children.push(<Screen name={SITEMAP_ROUTE_NAME} component={Sitemap} />);
