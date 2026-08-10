@@ -3,10 +3,6 @@ import { LoaderClient } from '../LoaderClient';
 const tick = () => Promise.resolve();
 
 describe(LoaderClient, () => {
-  afterEach(() => {
-    delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
-  });
-
   describe('notify', () => {
     it('bumps the version and wakes subscribers', () => {
       const client = new LoaderClient();
@@ -22,59 +18,42 @@ describe(LoaderClient, () => {
   });
 
   describe('subscribeLoader + execute', () => {
-    it('fetches once and settles the result into the store', async () => {
+    it('shares one in-flight fetch and delivers it to every subscriber before notifying', async () => {
       const client = new LoaderClient();
       const fetcher = jest.fn(async () => 'v1');
-      const results: unknown[] = [];
+      const events: unknown[] = [];
+      client.subscribeLoader('/p', (result, isCurrentSource) => {
+        events.push(['first', result, isCurrentSource]);
+      });
+      client.subscribeLoader('/p', (result, isCurrentSource) => {
+        events.push(['second', result, isCurrentSource]);
+      });
+      client.subscribe(() => events.push('notify'));
 
-      client.subscribeLoader('/p', (result) => results.push(result));
-      client.execute('/p', fetcher);
-      await tick();
-
-      expect(fetcher).toHaveBeenCalledTimes(1);
-      expect(results).toEqual([{ data: 'v1' }]);
-      expect(client.suspense.get('/p')).toEqual({ data: 'v1' });
-    });
-
-    it('shares one in-flight execution between concurrent execute calls', async () => {
-      const client = new LoaderClient();
-      const fetcher = jest.fn(async () => 'v1');
-
-      client.subscribeLoader('/p');
       client.execute('/p', fetcher);
       client.execute('/p', fetcher);
       await tick();
 
       expect(fetcher).toHaveBeenCalledTimes(1);
+      expect(events).toEqual([
+        ['first', { data: 'v1' }, true],
+        ['second', { data: 'v1' }, true],
+        'notify',
+      ]);
     });
 
-    it('does not execute on subscribe alone', () => {
+    it('does not execute a fetcher for a path without a source', () => {
       const client = new LoaderClient();
       const fetcher = jest.fn(async () => 'v1');
 
-      client.subscribeLoader('/p');
-      client.execute('/other', fetcher);
+      client.execute('/p', fetcher);
 
       expect(fetcher).not.toHaveBeenCalled();
     });
 
-    it('pushes the result to every subscriber', async () => {
-      const client = new LoaderClient();
-      const first = jest.fn();
-      const second = jest.fn();
-
-      client.subscribeLoader('/p', first);
-      client.subscribeLoader('/p', second);
-      client.execute('/p', async () => 'v1');
-      await tick();
-
-      expect(first).toHaveBeenCalledWith({ data: 'v1' });
-      expect(second).toHaveBeenCalledWith({ data: 'v1' });
-    });
-
     it('wraps fetch rejections with the route path', async () => {
       const client = new LoaderClient();
-      const results: any[] = [];
+      const results: ({ data: unknown } | { error: unknown })[] = [];
 
       client.subscribeLoader('/err', (result) => results.push(result));
       client.execute('/err', async () => {
@@ -82,67 +61,19 @@ describe(LoaderClient, () => {
       });
       await tick();
 
-      expect(results[0].error.message).toBe('Failed to load loader data for route: /err');
-      expect(results[0].error.cause.message).toBe('boom');
-      expect(client.suspense.get('/err')).toEqual({ error: results[0].error });
-    });
-  });
-
-  describe('teardown', () => {
-    it('tears down a disposed entry after the last unsubscribe', async () => {
-      const client = new LoaderClient();
-      client.suspense.set('/p', { data: 'v1' });
-
-      const unsubscribe = client.subscribeLoader('/p');
-      client.suspense.dispose('/p');
-      unsubscribe();
-      await tick();
-
-      expect(client.suspense.get('/p')).toBeUndefined();
+      const result = results[0];
+      expect(result).toEqual({ error: expect.any(Error) });
+      const error = (result as { error: Error }).error;
+      expect(error.message).toBe('Failed to load loader data for route: /err');
+      expect(error.cause).toEqual(new Error('boom'));
     });
 
-    it('keeps an undisposed entry across teardown', async () => {
-      const client = new LoaderClient();
-      client.suspense.set('/p', { data: 'v1' });
-
-      const unsubscribe = client.subscribeLoader('/p');
-      unsubscribe();
-      await tick();
-
-      expect(client.suspense.get('/p')).toEqual({ data: 'v1' });
-    });
-
-    it('keeps the entry while another subscriber holds the source', async () => {
-      const client = new LoaderClient();
-      client.suspense.set('/p', { data: 'v1' });
-
-      const first = client.subscribeLoader('/p');
-      client.subscribeLoader('/p');
-      client.suspense.dispose('/p');
-      first();
-      await tick();
-
-      expect(client.suspense.get('/p')).toEqual({ data: 'v1' });
-    });
-
-    it('cancels the teardown when a subscriber returns within the same tick (Strict Mode safe)', async () => {
-      const client = new LoaderClient();
-      client.suspense.set('/p', { data: 'v1' });
-
-      const unsubscribe = client.subscribeLoader('/p');
-      client.suspense.dispose('/p');
-      unsubscribe();
-      client.subscribeLoader('/p');
-      await tick();
-
-      expect(client.suspense.get('/p')).toEqual({ data: 'v1' });
-    });
-
-    it('does not settle into the store after the source is torn down', async () => {
+    it('marks results from a cleared source as stale', async () => {
       const client = new LoaderClient();
       let resolveFetch!: (value: string) => void;
+      const subscriber = jest.fn();
 
-      const unsubscribe = client.subscribeLoader('/p');
+      client.subscribeLoader('/p', subscriber);
       client.execute(
         '/p',
         () =>
@@ -150,118 +81,160 @@ describe(LoaderClient, () => {
             resolveFetch = resolve;
           })
       );
-      client.suspense.dispose('/p');
+      client.clear();
+      resolveFetch('stale');
+      await tick();
+
+      expect(subscriber).toHaveBeenCalledWith({ data: 'stale' }, false);
+    });
+  });
+
+  describe('teardown', () => {
+    it('calls onTearDown after the last unsubscribe', async () => {
+      const client = new LoaderClient();
+      const onTearDown = jest.fn();
+      const unsubscribe = client.subscribeLoader('/p');
+
+      unsubscribe(onTearDown);
+      expect(onTearDown).not.toHaveBeenCalled();
+      await tick();
+
+      expect(onTearDown).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not call onTearDown while a sibling subscriber remains', async () => {
+      const client = new LoaderClient();
+      const onTearDown = jest.fn();
+      const first = client.subscribeLoader('/p');
+      client.subscribeLoader('/p');
+
+      first(onTearDown);
+      await tick();
+
+      expect(onTearDown).not.toHaveBeenCalled();
+    });
+
+    it('cancels a pending onTearDown on remount and does not retain it for later teardown', async () => {
+      const client = new LoaderClient();
+      const cancelledOnTearDown = jest.fn();
+      const laterOnTearDown = jest.fn();
+      const first = client.subscribeLoader('/p');
+
+      first(cancelledOnTearDown);
+      const second = client.subscribeLoader('/p');
+      await tick();
+
+      expect(cancelledOnTearDown).not.toHaveBeenCalled();
+      second(laterOnTearDown);
+      await tick();
+
+      expect(cancelledOnTearDown).not.toHaveBeenCalled();
+      expect(laterOnTearDown).toHaveBeenCalledTimes(1);
+    });
+
+    it('does not let a cancelled attempt run a later teardown with the same onTearDown', async () => {
+      const client = new LoaderClient();
+      const events: string[] = [];
+      const onTearDown = () => events.push('onTearDown');
+      const first = client.subscribeLoader('/p');
+
+      first(onTearDown);
+      const second = client.subscribeLoader('/p');
+      queueMicrotask(() => events.push('between'));
+      second(onTearDown);
+      await tick();
+
+      expect(events).toEqual(['between', 'onTearDown']);
+    });
+
+    it('does not deliver a result after the subscriber tears down', async () => {
+      const client = new LoaderClient();
+      let resolveFetch!: (value: string) => void;
+      const subscriber = jest.fn();
+
+      const unsubscribe = client.subscribeLoader('/p', subscriber);
+      client.execute(
+        '/p',
+        () =>
+          new Promise<string>((resolve) => {
+            resolveFetch = resolve;
+          })
+      );
       unsubscribe();
       await tick();
 
       resolveFetch('stale');
       await tick();
 
-      expect(client.suspense.get('/p')).toBeUndefined();
+      expect(subscriber).not.toHaveBeenCalled();
     });
   });
 
-  describe('invalidateAll', () => {
-    it('re-executes paths with live subscribers and replaces the entry in place', async () => {
+  describe('revalidate', () => {
+    it('re-executes paths with live subscribers and returns their paths', async () => {
       const client = new LoaderClient();
       const fetcher = jest
         .fn<Promise<string>, [string]>()
         .mockResolvedValueOnce('v1')
         .mockResolvedValueOnce('v2');
+      const results: unknown[] = [];
 
-      client.subscribeLoader('/p');
+      client.subscribeLoader('/p', (result) => results.push(result));
       client.execute('/p', fetcher);
       await tick();
-      expect(client.suspense.get('/p')).toEqual({ data: 'v1' });
 
-      client.invalidateAll();
-      expect(client.suspense.get('/p')).toEqual({ data: 'v1' });
-
+      const inactive = client.subscribeLoader('/inactive');
+      const inactiveFetcher = jest.fn(async () => 'unused');
+      client.registerFetcher('/inactive', inactiveFetcher);
+      inactive();
+      const livePaths = client.revalidate();
       await tick();
-      expect(client.suspense.get('/p')).toEqual({ data: 'v2' });
+
+      expect(livePaths).toEqual(new Set(['/p']));
+      expect(results).toEqual([{ data: 'v1' }, { data: 'v2' }]);
       expect(fetcher).toHaveBeenCalledTimes(2);
+      expect(inactiveFetcher).not.toHaveBeenCalled();
     });
 
-    it('re-executes a hydration-seeded live path via its registered fetcher', async () => {
+    it('re-executes a registered fetcher for a live hydration-seeded path', async () => {
       const client = new LoaderClient();
       const fetcher = jest.fn(async () => 'post-edit');
-      client.suspense.seed('/index', 'seeded');
+      const subscriber = jest.fn();
 
-      client.subscribeLoader('/index');
+      client.subscribeLoader('/index', subscriber);
       client.registerFetcher('/index', fetcher);
-      client.invalidateAll();
+      const livePaths = client.revalidate();
       await tick();
 
+      expect(livePaths).toEqual(new Set(['/index']));
       expect(fetcher).toHaveBeenCalledTimes(1);
-      expect(client.suspense.get('/index')).toEqual({ data: 'post-edit' });
-    });
-
-    it('clears entries without live subscribers', () => {
-      const client = new LoaderClient();
-      client.suspense.set('/p', { data: 'v1' });
-
-      client.invalidateAll();
-
-      expect(client.suspense.get('/p')).toBeUndefined();
-    });
-
-    it('wakes subscribers', () => {
-      const client = new LoaderClient();
-      const listener = jest.fn();
-      client.subscribe(listener);
-      const before = client.getSnapshot();
-
-      client.invalidateAll();
-
-      expect(client.getSnapshot()).toBe(before + 1);
-      expect(listener).toHaveBeenCalledTimes(1);
+      expect(subscriber).toHaveBeenCalledWith({ data: 'post-edit' }, true);
     });
   });
 
   describe('clear', () => {
-    it('drops sources and resets the Suspense store', () => {
+    it('drops sources and registered fetchers', () => {
       const client = new LoaderClient();
       const fetcher = jest.fn(async () => 'v1');
       client.subscribeLoader('/p');
-      client.suspense.set('/p', { data: 'v1' });
+      client.registerFetcher('/p', fetcher);
 
       client.clear();
-      client.execute('/p', fetcher);
+      client.execute('/p');
 
-      expect(client.suspense.get('/p')).toBeUndefined();
       expect(fetcher).not.toHaveBeenCalled();
     });
-  });
 
-  describe('consumeHydrationData', () => {
-    it('lifts the server-injected value into the Suspense store and deletes the global key', () => {
+    it('cancels a pending onTearDown', async () => {
       const client = new LoaderClient();
-      globalThis.__EXPO_ROUTER_LOADER_DATA__ = { '/index': { seeded: true } };
+      const onTearDown = jest.fn();
+      const unsubscribe = client.subscribeLoader('/p');
 
-      client.consumeHydrationData('/index');
+      unsubscribe(onTearDown);
+      client.clear();
+      await tick();
 
-      expect(client.suspense.get('/index')).toEqual({ data: { seeded: true } });
-      expect(globalThis.__EXPO_ROUTER_LOADER_DATA__).not.toHaveProperty('/index');
-    });
-
-    it('does not replace an existing Suspense entry (set-if-absent)', () => {
-      const client = new LoaderClient();
-      client.suspense.set('/index', { data: 'existing' });
-      globalThis.__EXPO_ROUTER_LOADER_DATA__ = { '/index': 'seed' };
-
-      client.consumeHydrationData('/index');
-
-      expect(client.suspense.get('/index')).toEqual({ data: 'existing' });
-    });
-
-    it('is a no-op when no hydration data exists for the path', () => {
-      const client = new LoaderClient();
-      globalThis.__EXPO_ROUTER_LOADER_DATA__ = { '/other': 'value' };
-
-      client.consumeHydrationData('/index');
-
-      expect(client.suspense.get('/index')).toBeUndefined();
-      expect(globalThis.__EXPO_ROUTER_LOADER_DATA__).toHaveProperty('/other');
+      expect(onTearDown).not.toHaveBeenCalled();
     });
   });
 });

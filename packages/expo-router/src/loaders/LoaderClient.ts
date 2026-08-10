@@ -1,25 +1,25 @@
-import { createContext } from 'react';
-
-import { LoaderSuspenseStore } from './LoaderSuspenseStore';
-import { bumpDevLoaderRevision } from './utils';
-
 type LoaderFetcher = (path: string) => Promise<unknown>;
-type LoaderResult = { data: unknown } | { error: unknown };
-type LoaderSubscriber = (result: LoaderResult) => void;
+export type LoaderResult = { data: unknown } | { error: unknown };
+type LoaderSubscriber = (result: LoaderResult, isCurrentSource: boolean) => void;
+export type LoaderUnsubscribe = (onSourceTeardown?: () => void) => void;
 
 interface LoaderSource {
   subscribers: Set<LoaderSubscriber>;
-  fetching: boolean;
-  ending: boolean;
+  isFetching: boolean;
+  onTeardown?: () => void;
 }
 
+/**
+ * Coordinates loader execution, deduplication, and source subscriptions.
+ *
+ * Suspense state belongs to the React integration layer; this client must not access or mutate
+ * `LoaderSuspenseStore`.
+ */
 export class LoaderClient {
   private active = new Map<string, LoaderSource>();
   private fetchers = new Map<string, LoaderFetcher>();
   private version = 0;
   private listeners = new Set<() => void>();
-
-  readonly suspense = new LoaderSuspenseStore();
 
   // Arrow-bound so `loaderClient.subscribe` returns a stable reference across renders,
   // which keeps `useSyncExternalStore()` from tearing down and re-attaching every render.
@@ -41,24 +41,24 @@ export class LoaderClient {
     }
   }
 
-  subscribeLoader(path: string, callback: LoaderSubscriber = () => {}): () => void {
+  subscribeLoader(path: string, callback: LoaderSubscriber = () => {}): LoaderUnsubscribe {
     let source = this.active.get(path);
     if (!source) {
-      source = { subscribers: new Set(), fetching: false, ending: false };
+      source = { subscribers: new Set(), isFetching: false };
       this.active.set(path, source);
     }
-    source.ending = false;
+    source.onTeardown = undefined;
     source.subscribers.add(callback);
 
     let subscribed = true;
-    return () => {
+    return (onSourceTeardown) => {
       if (!subscribed) {
         return;
       }
       subscribed = false;
       source.subscribers.delete(callback);
       if (source.subscribers.size === 0) {
-        this.scheduleTeardown(path, source);
+        this.scheduleTeardown(path, source, onSourceTeardown);
       }
     };
   }
@@ -73,87 +73,60 @@ export class LoaderClient {
     }
     const source = this.active.get(path);
     const fetcherFn = this.fetchers.get(path);
-    if (!source || !fetcherFn || source.fetching) {
+    if (!source || !fetcherFn || source.isFetching) {
       return;
     }
 
-    source.fetching = true;
+    source.isFetching = true;
     fetcherFn(path).then(
       (data) => this.settle(path, source, { data }),
       (error) =>
         this.settle(path, source, {
-          error: new Error(`Failed to load loader data for route: ${path}`, { cause: error }),
+          error: new Error(`Failed to load loader data for route: ${path}`, {
+            cause: error,
+          }),
         })
     );
   }
 
-  invalidateAll() {
+  revalidate(): ReadonlySet<string> {
+    const livePaths = new Set<string>();
     for (const [path, source] of this.active) {
       if (source.subscribers.size > 0) {
+        livePaths.add(path);
         this.execute(path);
       }
     }
-    for (const path of this.suspense.keys()) {
-      const source = this.active.get(path);
-      if (!source || source.subscribers.size === 0) {
-        this.suspense.clear(path);
-      }
-    }
-    this.notify();
-  }
-
-  consumeHydrationData(path: string) {
-    const hydrationData = globalThis.__EXPO_ROUTER_LOADER_DATA__;
-    if (!hydrationData || !(path in hydrationData)) {
-      return;
-    }
-
-    this.suspense.seed(path, hydrationData[path]);
-    delete hydrationData[path];
+    return livePaths;
   }
 
   clear() {
     this.active.clear();
     this.fetchers.clear();
-    this.suspense.reset();
   }
 
-  private scheduleTeardown(path: string, source: LoaderSource) {
-    source.ending = true;
-    queueMicrotask(() => {
-      if (source.ending && source.subscribers.size === 0 && this.active.get(path) === source) {
+  private scheduleTeardown(path: string, source: LoaderSource, onSourceTeardown?: () => void) {
+    const onTeardown = () => {
+      if (
+        source.onTeardown === onTeardown &&
+        source.subscribers.size === 0 &&
+        this.active.get(path) === source
+      ) {
         this.active.delete(path);
-        this.suspense.teardown(path);
+        source.onTeardown = undefined;
+        onSourceTeardown?.();
       }
-    });
+    };
+    source.onTeardown = onTeardown;
+    queueMicrotask(onTeardown);
   }
 
   private settle(path: string, source: LoaderSource, result: LoaderResult) {
-    source.fetching = false;
-    if (this.active.get(path) === source) {
-      this.suspense.set(path, result);
-    }
+    source.isFetching = false;
+    const isCurrentSource = this.active.get(path) === source;
     for (const subscriber of source.subscribers) {
-      subscriber(result);
+      subscriber(result, isCurrentSource);
     }
     this.notify();
-  }
-}
-
-export const defaultLoaderClient = new LoaderClient();
-export const LoaderClientContext = createContext<LoaderClient>(defaultLoaderClient);
-
-// On `loader-invalidate`, drop any unconsumed server-injected data, bump the dev revision so
-// refetches bypass the platform cache, and refresh live readers in place.
-if (__DEV__ && typeof window !== 'undefined') {
-  globalThis.__EXPO_LOADER_INVALIDATE_LISTENERS__ ??= [];
-
-  if (!globalThis.__EXPO_LOADER_INVALIDATE_LISTENER_REGISTERED__) {
-    globalThis.__EXPO_LOADER_INVALIDATE_LISTENER_REGISTERED__ = true;
-    globalThis.__EXPO_LOADER_INVALIDATE_LISTENERS__.push(() => {
-      delete globalThis.__EXPO_ROUTER_LOADER_DATA__;
-      bumpDevLoaderRevision();
-      defaultLoaderClient.invalidateAll();
-    });
   }
 }
