@@ -1,13 +1,13 @@
 import isEqual from 'fast-deep-equal';
 import { type RefObject, useEffect, useState, useCallback, useRef, use } from 'react';
 
+import { routingQueue } from '../global-state/routingQueue';
 import { ServerContext } from '../global-state/serverLocationContext';
 import { useExpoRouterStore } from '../global-state/storeContext';
 import { getRootStackRouteNames } from '../global-state/utils';
 import {
   type LinkingOptions,
   findFocusedRoute,
-  getActionFromState as getActionFromStateDefault,
   getPathFromState as getPathFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
@@ -83,7 +83,6 @@ export function useLinking(
     config,
     getStateFromPath = getStateFromPathDefault,
     getPathFromState = getPathFromStateDefault,
-    getActionFromState = getActionFromStateDefault,
   }: Options,
   onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
@@ -136,14 +135,12 @@ export function useLinking(
   const configRef = useRef(config);
   const getStateFromPathRef = useRef(getStateFromPath);
   const getPathFromStateRef = useRef(getPathFromState);
-  const getActionFromStateRef = useRef(getActionFromState);
 
   useEffect(() => {
     enabledRef.current = enabled;
     configRef.current = config;
     getStateFromPathRef.current = getStateFromPath;
     getPathFromStateRef.current = getPathFromState;
-    getActionFromStateRef.current = getActionFromState;
   });
 
   const validateRoutesNotExistInRootState = useCallback(
@@ -270,23 +267,16 @@ export function useLinking(
           (index === previousIndex && (!record || `${record?.path}${location.hash}` === path))
           // END FORK
         ) {
-          const action = getActionFromStateRef.current(state, configRef.current);
-
-          if (action !== undefined) {
-            try {
-              navigation.dispatch(action);
-            } catch (e) {
-              // Ignore any errors from deep linking.
-              // This could happen in case of malformed links, navigation object not being initialized etc.
-              console.warn(
-                `An error occurred when trying to handle the link '${path}': ${
-                  typeof e === 'object' && e != null && 'message' in e ? e.message : e
-                }`
-              );
-            }
-          } else {
-            navigation.resetRoot(state);
-          }
+          routingQueue.add({
+            type: 'ROUTER_LINK',
+            payload: {
+              href: path,
+              options: { event: 'NAVIGATE' },
+              onDispatch: () => {
+                pendingPopStatePathRef.current = path;
+              },
+            },
+          });
         } else {
           navigation.resetRoot(state);
         }

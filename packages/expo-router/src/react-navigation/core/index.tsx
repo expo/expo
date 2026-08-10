@@ -16,7 +16,6 @@ export { findFocusedRoute } from './findFocusedRoute';
 /**
  * @deprecated Will be removed in a future SDK.
  */
-export { getActionFromState } from './getActionFromState';
 /**
  * @deprecated Will be removed in a future SDK.
  */

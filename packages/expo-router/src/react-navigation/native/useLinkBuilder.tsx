@@ -3,11 +3,8 @@ import * as React from 'react';
 import { use } from 'react';
 
 import {
-  CommonActions,
   findFocusedRoute,
-  getActionFromState,
   getPathFromState,
-  getStateFromPath,
   NavigationHelpersContext,
   NavigationRouteContext,
   useStateForPath,
@@ -100,47 +97,14 @@ export function useBuildHref() {
 }
 
 /**
- * Helper to build a navigation action from a href based on the linking options.
- */
-export const useBuildAction = () => {
-  const { options } = use(LinkingContext);
-
-  const getStateFromPathHelper = options?.getStateFromPath ?? getStateFromPath;
-  const getActionFromStateHelper = options?.getActionFromState ?? getActionFromState;
-
-  const buildAction = React.useCallback(
-    (href: string) => {
-      if (!href.startsWith('/')) {
-        throw new Error(`The href must start with '/' (${href}).`);
-      }
-
-      const state = getStateFromPathHelper(href, options?.config);
-
-      if (state) {
-        const action = getActionFromStateHelper(state, options?.config);
-
-        return action ?? CommonActions.reset(state);
-      } else {
-        throw new Error('Failed to parse the href to a navigation state.');
-      }
-    },
-    [options?.config, getStateFromPathHelper, getActionFromStateHelper]
-  );
-
-  return buildAction;
-};
-
-/**
  * Helpers to build href or action based on the linking options.
  *
- * @returns `buildHref` to build an `href` for screen and `buildAction` to build an action from an `href`.
+ * @returns `buildHref` to build an `href` for a screen.
  */
 export function useLinkBuilder() {
   const buildHref = useBuildHref();
-  const buildAction = useBuildAction();
 
   return {
     buildHref,
-    buildAction,
   };
 }

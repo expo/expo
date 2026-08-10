@@ -13,6 +13,7 @@ export interface LinkAction {
   payload: {
     options: LinkToOptions;
     href: string;
+    onDispatch?: () => void;
   };
 }
 
@@ -44,7 +45,7 @@ export const routingQueue = {
       if (ref.current) {
         if (action.type === 'ROUTER_LINK') {
           const {
-            payload: { href, options },
+            payload: { href, options, onDispatch },
           } = action as LinkAction;
 
           action = getNavigateAction(
@@ -57,6 +58,7 @@ export const routingQueue = {
           );
           // TODO: Consider warning when getNavigateAction returns undefined
           if (action) {
+            onDispatch?.();
             ref.current.dispatch(action);
           }
         } else {

@@ -18,7 +18,6 @@ import {
   LocaleDirContext,
   ThemeProvider,
   UNSTABLE_UnhandledLinkingContext as UnhandledLinkingContext,
-  getActionFromState,
   getPathFromState,
   getStateFromPath,
   validatePathConfig,
@@ -143,7 +142,6 @@ function NavigationContainerInner(
             prefixes: linking?.prefixes ?? [],
             getStateFromPath: linking?.getStateFromPath ?? getStateFromPath,
             getPathFromState: linking?.getPathFromState ?? getPathFromState,
-            getActionFromState: linking?.getActionFromState ?? getActionFromState,
           };
         },
       });

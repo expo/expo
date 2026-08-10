@@ -2,9 +2,9 @@ import * as ExpoLinking from 'expo-linking';
 import { type RefObject, useEffect, useCallback, useRef } from 'react';
 import { Linking, Platform } from 'react-native';
 
+import { routingQueue } from '../global-state/routingQueue';
 import {
   type LinkingOptions,
-  getActionFromState as getActionFromStateDefault,
   getStateFromPath as getStateFromPathDefault,
   type NavigationContainerRef,
   type ParamListBase,
@@ -47,7 +47,6 @@ export function useLinking(
       };
     },
     getStateFromPath = getStateFromPathDefault,
-    getActionFromState = getActionFromStateDefault,
   }: Options,
   onUnhandledLinking: (lastUnhandledLining: string | undefined) => void
 ) {
@@ -101,7 +100,6 @@ export function useLinking(
   const configRef = useRef(config);
   const getInitialURLRef = useRef(getInitialURL);
   const getStateFromPathRef = useRef(getStateFromPath);
-  const getActionFromStateRef = useRef(getActionFromState);
 
   useEffect(() => {
     enabledRef.current = enabled;
@@ -110,7 +108,6 @@ export function useLinking(
     configRef.current = config;
     getInitialURLRef.current = getInitialURL;
     getStateFromPathRef.current = getStateFromPath;
-    getActionFromStateRef.current = getActionFromState;
   });
 
   const getStateFromURL = useCallback(
@@ -182,22 +179,15 @@ export function useLinking(
           return;
         }
 
-        const action = getActionFromStateRef.current(state, configRef.current);
-
-        if (action !== undefined) {
-          try {
-            navigation.dispatch(action);
-          } catch (e) {
-            // Ignore any errors from deep linking.
-            // This could happen in case of malformed links, navigation object not being initialized etc.
-            console.warn(
-              `An error occurred when trying to handle the link '${url}': ${
-                typeof e === 'object' && e != null && 'message' in e ? e.message : e
-              }`
-            );
-          }
-        } else {
-          navigation.resetRoot(state);
+        const path = extractExpoPathFromURL(prefixes, url);
+        if (path !== undefined) {
+          routingQueue.add({
+            type: 'ROUTER_LINK',
+            payload: {
+              href: path.startsWith('/') ? path : `/${path}`,
+              options: { event: 'NAVIGATE' },
+            },
+          });
         }
       }
     };
