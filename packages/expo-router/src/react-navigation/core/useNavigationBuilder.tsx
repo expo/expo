@@ -4,6 +4,7 @@ import { use } from 'react';
 // TODO(@ubax) - RN Migration: remove this dependency and just add this function to our codebase
 import { isValidElementType } from 'react-is';
 
+import { type RouterRegistryEntry, useRegisterRouter } from '../../global-state/routerRegistry';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -566,6 +567,24 @@ export function useNavigationBuilder<
   // decides which survivor takes focus, so the interim render agrees with the state that
   // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
   state = router.getStateForDeclaredRoutes(state, routeNames);
+
+  const reduce = React.useCallback<RouterRegistryEntry['reduce']>(
+    (registryState, action) =>
+      // The registry stores states from different router types; this entry only receives its own state key.
+      router.getStateForAction(registryState as State, action, {
+        routeNames,
+        routeParamList,
+        routeGetIdList,
+      }),
+    [routeGetIdList, routeNames, routeParamList, router]
+  );
+  const registryEntry = React.useMemo<RouterRegistryEntry>(
+    () => ({ reduce, routerType: router.type, contextKey: options.id }),
+    [options.id, reduce, router.type]
+  );
+
+  // TODO(@ubax): Nested navigators must stay mounted. Hide screen content with `<Activity>` instead.
+  useRegisterRouter(state.key, registryEntry);
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`
   React.useEffect(() => {
