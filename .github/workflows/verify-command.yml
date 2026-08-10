@@ -25,14 +25,15 @@
 #   trigger itself (approval moves to the trigger, not skipped).
 #
 # SECRETS REQUIRED (repo settings):
-# - EXPO_SANDBOX_MCP_TOKEN   headless bearer token for the expo-sandbox-mcp
-#                            PROD deployment (the URL below). The
-#                            deployment's stored Expo credential decides
-#                            which account EAS builds bill; its stored
-#                            GitHub PAT posts the findings comments (plain
-#                            issues need Issues: Read and write on it).
-#                            Move to a full service account later — see the
-#                            trigger-gate TEMPORARY note.
+# - EXPO_SANDBOX_MCP_TOKEN   long-lived bearer for the expo-sandbox-mcp PROD
+#                            deployment, held by the expo-verification-bot
+#                            service account. The agent NEVER sees it — the
+#                            Mint scoped token step exchanges it for a
+#                            one-sandbox, 90-minute credential. The service
+#                            account's stored Expo credential is what EAS
+#                            builds bill; its stored GitHub PAT posts the
+#                            findings comments (plain issues need Issues:
+#                            Read and write on it).
 # - CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN  REUSED from the AI code-review
 #                            workflows — same engine (Claude Code CLI), one
 #                            model credential to rotate. If usage ever needs
@@ -133,19 +134,39 @@ jobs:
         if: steps.gate.outputs.ok == 'true'
         run: npm install -g @anthropic-ai/claude-code@2.1.212
 
-      - name: Configure MCP
+      # The long-lived secret never reaches the agent: it lives in THIS step's
+      # env only, and is exchanged for a derived token that can create ONE
+      # sandbox within 90 minutes and nothing else. Only the derived token is
+      # written to disk, so a config file read off the runner — or a token
+      # echoed into a public comment — buys one sandbox, not the account.
+      # (Deriving in-process rather than passing a token between jobs is
+      # deliberate: job outputs and artifacts are readable by anyone who can
+      # read the run, which on a public repository is everyone.)
+      - name: Mint scoped token
         if: steps.gate.outputs.ok == 'true'
         env:
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+          MCP_URL: https://agile-minnow-543.convex.site
         run: |
           umask 077
+          scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
+            -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
+            -H 'Content-Type: application/json' \
+            -d "{\"sandboxBudget\":1,\"ttlSeconds\":5400,\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
+            | jq -r '.token // empty')
+          if [ -z "$scoped" ]; then
+            echo "::error::Could not mint a scoped sandbox token"
+            exit 1
+          fi
+          # Mask it too: a scoped token is cheap, not free.
+          echo "::add-mask::$scoped"
           cat > "$RUNNER_TEMP/mcp.json" <<EOF
           {
             "mcpServers": {
               "sandbox": {
                 "type": "http",
-                "url": "https://agile-minnow-543.convex.site/mcp",
-                "headers": { "Authorization": "Bearer $EXPO_SANDBOX_MCP_TOKEN" }
+                "url": "$MCP_URL/mcp",
+                "headers": { "Authorization": "Bearer $scoped" }
               }
             }
           }
