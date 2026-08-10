@@ -1,0 +1,161 @@
+# Issue/PR verification agent, triggered by a maintainer comment:
+#   /verify        investigate the report and post findings with attested evidence
+#
+# The agent is headless Claude Code connected to the expo-sandbox-mcp server
+# (hosted E2B sandboxes, proxied EAS builds, hosted iOS simulators). It
+# reproduces the report where the hosted simulator can exhibit it, runs
+# cold-launch censuses / behavioral checks / crash loops as the issue
+# demands, and posts ONE findings comment whose evidence sections
+# (screenshots, census tables) are composed and attested by the server.
+#
+# SECURITY POSTURE (mirrors expo-code-review-command.yml):
+# - `issue_comment` is NOT fork-restricted: this always runs in base-repo
+#   context with secrets. We check out ONLY the trusted base ref, never a PR
+#   head; nothing from the issue/PR executes on this runner. Untrusted code
+#   from repro repos executes only inside the MCP server's sandboxes — that
+#   containment is the server's entire design.
+# - The gate controls who triggers: the `if:` filters to maintainer
+#   associations, and an authoritative permission check requires write
+#   access or higher (author_association alone does not prove write).
+# - The comment body reaches shell only via env.
+# - The agent reads attacker-authored issue text, so this workflow is
+#   COMMENT-ONLY by construction: no fix-PRs, no pushes — its Bash surface
+#   is a read-only gh allowlist plus a comment fallback, and the MCP
+#   create_sandbox allowlisting is authorized by the gated maintainer
+#   trigger itself (approval moves to the trigger, not skipped).
+#
+# SECRETS REQUIRED (repo settings):
+# - EXPO_SANDBOX_MCP_TOKEN   headless bearer token for the expo-sandbox-mcp
+#                            prod deployment; mint for a SERVICE account —
+#                            EAS builds bill its Expo token, and its stored
+#                            GitHub PAT posts the findings comments (needs
+#                            Issues: Read and write on this repo).
+# - CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN  REUSED from the AI code-review
+#                            workflows — same engine (Claude Code CLI), one
+#                            model credential to rotate. If usage ever needs
+#                            separate attribution, split it back out.
+# - EXPO_BOT_GITHUB_TOKEN    existing bot token (ack reactions, gh reads,
+#                            comment fallback).
+name: Verify issue (command)
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: verify-${{ github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    # Comments starting with /verify, on issues or PRs, from maintainer
+    # associations. The authoritative write-access check is the step below.
+    #
+    # TEMPORARY: restricted to @brentvatne while the run is backed by his
+    # personal credentials (EAS builds bill his account; findings comments
+    # post under his PAT). Remove the user.login clause once
+    # EXPO_SANDBOX_MCP_TOKEN is re-minted for a service account — the
+    # association filter + write-access check below are the real gate.
+    if: >-
+      startsWith(github.event.comment.body, '/verify') &&
+      github.event.comment.user.login == 'brentvatne' &&
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    # EAS builds take 10-20 min each and a verification may need up to three,
+    # plus censuses and the report. The MCP server TTL-reaps sandboxes
+    # server-side, so a timeout here orphans nothing.
+    timeout-minutes: 75
+    continue-on-error: true
+    steps:
+      # author_association MEMBER does not imply write on THIS repo; the
+      # requirement is write access or higher, checked against the
+      # collaborators permission API.
+      - name: Require write access
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ACTOR: ${{ github.event.comment.user.login }}
+        run: |
+          perm=$(gh api "repos/${{ github.repository }}/collaborators/$ACTOR/permission" --jq .permission || echo none)
+          case "$perm" in
+            admin|maintain|write) echo "ok=true" >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "ok=false" >> "$GITHUB_OUTPUT"
+              echo "/verify requires write access or higher; $ACTOR has: $perm"
+              ;;
+          esac
+
+      - name: Acknowledge
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+        run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
+
+      # Base ref only — the prompt file must come from the trusted branch,
+      # and no PR-head code may ever run on this runner.
+      - name: Checkout (base ref only — never the PR head)
+        if: steps.gate.outputs.ok == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Node
+        if: steps.gate.outputs.ok == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      # Pinned exactly, like the code-review workflows.
+      - name: Install Claude Code CLI
+        if: steps.gate.outputs.ok == 'true'
+        run: npm install -g @anthropic-ai/claude-code@2.1.212
+
+      - name: Configure MCP
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+        run: |
+          umask 077
+          cat > "$RUNNER_TEMP/mcp.json" <<EOF
+          {
+            "mcpServers": {
+              "sandbox": {
+                "type": "http",
+                "url": "https://agile-minnow-543.convex.site/mcp",
+                "headers": { "Authorization": "Bearer $EXPO_SANDBOX_MCP_TOKEN" }
+              }
+            }
+          }
+          EOF
+
+      - name: Run verification
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          # Same credential the code-review workflows feed their Claude Code
+          # engine — it holds a Claude Code OAuth token, hence this env var
+          # (ANTHROPIC_API_KEY is for raw API keys).
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_KIND: ${{ github.event.issue.pull_request != null && 'pull request' || 'issue' }}
+          TRIGGER_ACTOR: ${{ github.event.comment.user.login }}
+          REPO: ${{ github.repository }}
+        # The tool allowlist is the enforcement of comment-only: MCP
+        # investigation tools plus read-only gh and the comment fallback.
+        # No Edit/Write on the runner, no git, no unrestricted Bash.
+        run: |
+          prompt=$(cat .github/verify/prompt.md)
+          timeout 4200 claude -p \
+            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR.
+
+          $prompt" \
+            --mcp-config "$RUNNER_TEMP/mcp.json" \
+            --allowedTools "Read,Glob,Grep,mcp__sandbox__create_sandbox,mcp__sandbox__destroy_sandbox,mcp__sandbox__list_sandboxes,mcp__sandbox__get_session_info,mcp__sandbox__sandbox_exec,mcp__sandbox__sandbox_write_file,mcp__sandbox__sandbox_edit_file,mcp__sandbox__sandbox_read_file,mcp__sandbox__sandbox_list_files,mcp__sandbox__sandbox_install_packages,mcp__sandbox__sandbox_process_logs,mcp__sandbox__sandbox_process_kill,mcp__sandbox__eas_build,mcp__sandbox__eas_build_status,mcp__sandbox__eas_build_list,mcp__sandbox__simulator_start,mcp__sandbox__simulator_status,mcp__sandbox__simulator_stop,mcp__sandbox__simulator_screenshot,mcp__sandbox__simulator_ui,mcp__sandbox__simulator_tap,mcp__sandbox__simulator_type,mcp__sandbox__simulator_open,mcp__sandbox__simulator_boot_app,mcp__sandbox__simulator_install_build,mcp__sandbox__simulator_relaunch_app,mcp__sandbox__simulator_census_status,mcp__sandbox__simulator_app_state,mcp__sandbox__simulator_artifacts,mcp__sandbox__simulator_record,mcp__sandbox__github_comment_issue,mcp__sandbox__expo_skill,Bash(gh issue view:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh issue comment:*),Bash(gh api repos/${REPO}/*)" \
+            --output-format text
