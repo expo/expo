@@ -139,6 +139,19 @@ class AudioModule : Module() {
     }
   }
 
+  /**
+   * Mirrors media3's `AudioFocusManager.shouldHandleAudioFocus`:
+   * `playbackState != STATE_IDLE && focusGainToRequest == AUDIOFOCUS_GAIN`.
+   *
+   * Permanent focus is kept across pauses, buffering stalls and track transitions, but a
+   * transient or ducking request is abandoned as soon as playback stops, so the interrupted app
+   * un-ducks or resumes.
+   */
+  private fun shouldAbandonFocus(playbackState: Int): Boolean {
+    return playbackState == Player.STATE_IDLE ||
+      focusGainRequested != AudioManager.AUDIOFOCUS_GAIN
+  }
+
   private fun shouldReleaseFocus(): Boolean {
     return allPlayables.none { it.isPlaying }
   }
@@ -148,6 +161,13 @@ class AudioModule : Module() {
   }
 
   private enum class AudioFocusResult { GRANTED, DELAYED, FAILED, NOT_REQUESTED }
+
+  /**
+   * The focus gain we last asked the system for. Mirrors media3's
+   * `AudioFocusManager.focusGainToRequest`, which decides whether focus may be held across
+   * non-playing states.
+   */
+  private var focusGainRequested = AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
 
   private fun requestAudioFocus(): AudioFocusResult {
     if (focusAcquired) {
@@ -166,7 +186,8 @@ class AudioModule : Module() {
         } else {
           AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
         }
-      } ?: AudioManager.AUDIOFOCUS_GAIN
+      } ?: AudioManager.AUDIOFOCUS_GAIN_TRANSIENT
+      focusGainRequested = requestType
       audioFocusRequest = AudioFocusRequest.Builder(requestType).run {
         setAudioAttributes(
           AudioAttributes.Builder()
@@ -188,6 +209,7 @@ class AudioModule : Module() {
       } else {
         AudioManager.AUDIOFOCUS_GAIN_TRANSIENT_MAY_DUCK
       }
+      focusGainRequested = requestType
       audioManager.requestAudioFocus(audioFocusChangeListener, AudioManager.STREAM_MUSIC, requestType)
     }
 
@@ -397,7 +419,7 @@ class AudioModule : Module() {
               if (!focusAcquired) {
                 requestAudioFocus()
               }
-            } else if (player.ref.playbackState == Player.STATE_IDLE && shouldReleaseFocus()) {
+            } else if (shouldReleaseFocus() && shouldAbandonFocus(player.ref.playbackState)) {
               releaseAudioFocus()
             }
           }
@@ -756,7 +778,7 @@ class AudioModule : Module() {
               if (!focusAcquired) {
                 requestAudioFocus()
               }
-            } else if (playlist.ref.playbackState == Player.STATE_IDLE && shouldReleaseFocus()) {
+            } else if (shouldReleaseFocus() && shouldAbandonFocus(playlist.ref.playbackState)) {
               releaseAudioFocus()
             }
           }
