@@ -41,12 +41,25 @@ export declare const shadow: (params: {
     color?: Color;
 }) => ModifierConfig;
 /**
+ * The geometry properties copied from the source view by `matchedGeometryEffect`.
+ * `'frame'` combines both `'position'` and `'size'`.
+ */
+export type MatchedGeometryPropertiesValue = 'frame' | 'position' | 'size';
+/**
  * Adds a matched geometry effect to a view.
  * @param id - The id of the view.
  * @param namespaceId - The namespace id of the view. Use Namespace component to create a namespace.
+ * @param options - Optional parameters of the effect.
+ * @param options.properties - Which geometry properties to copy from the source view. Defaults to `'frame'`.
+ * @param options.anchor - The unit point of this view aligned with the source view's geometry. Defaults to `'center'`.
+ * @param options.isSource - Whether this view is the source of the geometry. Only one view per id should be the source. Defaults to `true`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:)).
  */
-export declare const matchedGeometryEffect: (id: string, namespaceId: string) => ModifierConfig;
+export declare const matchedGeometryEffect: (id: string, namespaceId: string, options?: {
+    properties?: MatchedGeometryPropertiesValue;
+    anchor?: UnitPointValue;
+    isSource?: boolean;
+}) => ModifierConfig;
 /**
  * Sets the frame properties of a view.
  * @param params - The frame parameters. Width, height, minWidth, maxWidth, minHeight, maxHeight, idealWidth, idealHeight and alignment.
