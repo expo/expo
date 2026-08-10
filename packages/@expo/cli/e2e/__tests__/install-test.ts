@@ -4,12 +4,8 @@ import fs from 'fs/promises';
 import path from 'path';
 
 import { executeExpoAsync } from '../utils/expo';
-import {
-  projectRoot,
-  getLoadedModulesAsync,
-  setupTestProjectWithOptionsAsync,
-  findProjectFiles,
-} from './utils';
+import { createPackageTarball } from '../utils/package';
+import { projectRoot, getLoadedModulesAsync, setupTestProjectWithOptionsAsync } from './utils';
 
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
@@ -60,25 +56,32 @@ it('runs `npx expo install --help`', async () => {
   `);
 });
 
-it('runs `npx expo install expo-sms`', async () => {
-  const projectRoot = await setupTestProjectWithOptionsAsync('basic-install', 'with-blank', {
-    reuseExisting: false,
-  });
+it('installs a local package tarball without network access', async () => {
+  const projectRoot = await setupTestProjectWithOptionsAsync(
+    'local-package-install',
+    'with-blank',
+    {
+      reuseExisting: false,
+    }
+  );
+  const tarball = await createPackageTarball(
+    projectRoot,
+    'packages/@expo/cli/e2e/fixtures/install-smoke-package'
+  );
 
-  // `npx expo install expo-sms`
-  await executeExpoAsync(projectRoot, ['install', 'expo-sms']);
+  await expect(
+    executeExpoAsync(projectRoot, ['install', tarball.packageReference, '--', '--offline'], {
+      env: {
+        EXPO_OFFLINE: '1',
+        EXPO_NO_NEW_ARCH_COMPAT_CHECK: '1',
+        HTTP_PROXY: 'http://127.0.0.1:9',
+        HTTPS_PROXY: 'http://127.0.0.1:9',
+        NO_PROXY: '',
+      },
+    })
+  ).resolves.toMatchObject({ exitCode: 0 });
 
   const pkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-
-  // Added expected package
-  expect(pkg?.dependencies!['expo-sms']).toBeTruthy();
-
-  expect(findProjectFiles(projectRoot)).toStrictEqual([
-    'App.js',
-    'app.json',
-    'index.js',
-    'metro.config.js',
-    'package.json',
-    'pnpm-lock.yaml',
-  ]);
+  expect(pkg.dependencies?.[tarball.name]).toEqual(expect.any(String));
+  expect(require.resolve(tarball.name, { paths: [projectRoot] })).toEqual(expect.any(String));
 });
