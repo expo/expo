@@ -25,7 +25,7 @@ None. You can access it through the Firebase console.
 
 ## Android build credentials
 
-A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. Signing proves that an update comes from the developer who owns the keystore. Google Play only accepts updates signed with the key registered for your app. For apps that use [App signing by Google Play](/app-signing/app-credentials/#app-signing-by-google-play) (the default for new apps), Google holds the app signing key. Your keystore is the upload key. The keystore alone doesn't let you submit to Google Play. Your Google account also needs access to the Google Play Console.
+A keystore and keystore password are required to sign a build for release to the Play Store. These are encrypted with KMS and additionally at rest. Signing proves that an update comes from the developer who owns the keystore. Google Play only accepts updates signed with the key registered for your app. For apps that use [App signing by Google Play](/app-signing/app-credentials/#app-signing-by-google-play) (the default for new apps), Google holds the app signing key and your keystore is the upload key. The keystore alone doesn't let you submit to Google Play: your Google account also needs access to the Google Play Console.
 
 ### Consequences if compromised
 
