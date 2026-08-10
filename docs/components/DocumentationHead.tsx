@@ -42,45 +42,21 @@ const DocumentationHead = ({
       />
       <link
         rel="icon"
-        href="/static/images/favicons/favicon-light-48x48.png"
+        href="/static/images/favicons/favicon-48x48.png"
         type="image/png"
         sizes="48x48"
-        media="(prefers-color-scheme: light)"
       />
       <link
         rel="icon"
-        href="/static/images/favicons/favicon-light-32x32.png"
+        href="/static/images/favicons/favicon-32x32.png"
         type="image/png"
         sizes="32x32"
-        media="(prefers-color-scheme: light)"
       />
       <link
         rel="icon"
-        href="/static/images/favicons/favicon-light-16x16.png"
+        href="/static/images/favicons/favicon-16x16.png"
         type="image/png"
         sizes="16x16"
-        media="(prefers-color-scheme: light)"
-      />
-      <link
-        rel="icon"
-        href="/static/images/favicons/favicon-dark-48x48.png"
-        type="image/png"
-        sizes="48x48"
-        media="(prefers-color-scheme: dark)"
-      />
-      <link
-        rel="icon"
-        href="/static/images/favicons/favicon-dark-32x32.png"
-        type="image/png"
-        sizes="32x32"
-        media="(prefers-color-scheme: dark)"
-      />
-      <link
-        rel="icon"
-        href="/static/images/favicons/favicon-dark-16x16.png"
-        type="image/png"
-        sizes="16x16"
-        media="(prefers-color-scheme: dark)"
       />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       {markdownPath && <link rel="alternate" type="text/markdown" href={markdownPath} />}
