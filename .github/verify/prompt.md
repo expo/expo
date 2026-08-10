@@ -52,12 +52,15 @@ proxied EAS builds, and hosted iOS simulators you can drive and screenshot.
      checkout pr`), or apply the PR's diff to a repro app via the patch
      flow when the change lives inside a package. Report before/after with
      evidence for both arms.
-   - **Check the diff for a truncation marker** before relying on it:
-     `pull-request.diff` ends with `*** DIFF TRUNCATED AT … ***` when the
-     change was too large to include whole. If you see that marker, do NOT
-     reason about the change from the diff — clone the PR head in the
-     sandbox and read the files there, and say in your report that the
-     provided diff was truncated.
+   - **`pull-request.diff` starts with a header stating whether it is
+     complete** (`*** complete: yes|NO ***`, with included-vs-total line and
+     byte counts; the same facts are in `pull-request.json` under `diff`).
+     The file is deliberately bounded to fit a single read, so that header is
+     always the first thing you see. If it says `NO`, do NOT reason about the
+     change from the diff: clone the PR head inside the sandbox, read the
+     files there, and say in your report that the provided diff was
+     truncated. Never assume a diff is complete because you saw no warning —
+     check the header.
 3. Investigate per archetype. Useful specifics:
    - "preview" iOS builds are Release-configuration simulator builds — the
      right instrument for release-only reports.

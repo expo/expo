@@ -200,23 +200,46 @@ jobs:
           if [ "$IS_PR" = "true" ]; then
             gh pr view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
               --json number,title,state,headRefName,baseRefName,files,body > pull-request.json
-            # A huge diff must not blow the agent's context — but a SILENTLY
-            # cut or failed diff is worse than a big one: the agent would post
-            # a public verdict built on it. So fetch in full (failing the step
-            # if gh fails), then truncate with an explicit marker the prompt
-            # tells the agent to look for. Piping straight into `head` would
-            # hide both failures: the default run: shell has no pipefail, and
-            # head closes the pipe, killing gh with SIGPIPE.
+            # A huge diff must not blow the agent's context, but a SILENTLY
+            # cut diff is worse than a big one: the agent would post a public
+            # verdict built on it. Three rules make that impossible to miss:
+            #
+            #  1. Fetch in full first — piping into `head` would hide both a
+            #     gh failure (the default run: shell has no pipefail) and the
+            #     SIGPIPE that truncation itself causes.
+            #  2. Bound by LINES as well as bytes, tighter than the agent's
+            #     own read window (~2000 lines), so the file the agent gets
+            #     always fits in ONE read. Nothing can hide below the fold.
+            #  3. Put the status in a HEADER AT THE TOP, always — present even
+            #     when the diff is complete. A trailing marker is unreachable:
+            #     the agent reads from the top and stops long before the end.
             gh pr diff "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
               > "$RUNNER_TEMP/full.diff"
-            limit=400000
-            if [ "$(wc -c < "$RUNNER_TEMP/full.diff")" -gt "$limit" ]; then
-              head -c "$limit" "$RUNNER_TEMP/full.diff" > pull-request.diff
-              printf '\n*** DIFF TRUNCATED AT %s BYTES — THIS IS NOT THE COMPLETE DIFF ***\n' \
-                "$limit" >> pull-request.diff
-            else
-              cp "$RUNNER_TEMP/full.diff" pull-request.diff
-            fi
+            max_bytes=400000
+            max_lines=1500
+            full_bytes=$(wc -c < "$RUNNER_TEMP/full.diff" | tr -d ' ')
+            full_lines=$(wc -l < "$RUNNER_TEMP/full.diff" | tr -d ' ')
+            head -c "$max_bytes" "$RUNNER_TEMP/full.diff" | head -n "$max_lines" > "$RUNNER_TEMP/cut.diff"
+            kept_bytes=$(wc -c < "$RUNNER_TEMP/cut.diff" | tr -d ' ')
+            kept_lines=$(wc -l < "$RUNNER_TEMP/cut.diff" | tr -d ' ')
+            if [ "$kept_bytes" -lt "$full_bytes" ]; then complete=NO; else complete=yes; fi
+            {
+              echo "*** VERIFY DIFF HEADER — READ THIS FIRST ***"
+              echo "*** complete: $complete"
+              echo "*** included: $kept_lines of $full_lines lines, $kept_bytes of $full_bytes bytes"
+              if [ "$complete" = "NO" ]; then
+                echo "*** THIS IS A PARTIAL DIFF. Do NOT reason about the change from this file."
+                echo "*** Clone the PR head inside the sandbox and read the files there instead,"
+                echo "*** and say in your report that the provided diff was truncated."
+              fi
+              echo "*** END HEADER ***"
+              echo
+              cat "$RUNNER_TEMP/cut.diff"
+            } > pull-request.diff
+            # Same facts in JSON, so the agent can check them without paging.
+            jq --argjson m "{\"complete\":$([ "$complete" = yes ] && echo true || echo false),\"includedLines\":$kept_lines,\"totalLines\":$full_lines,\"includedBytes\":$kept_bytes,\"totalBytes\":$full_bytes}" \
+              '. + {diff: $m}' pull-request.json > pull-request.tmp.json
+            mv pull-request.tmp.json pull-request.json
           fi
           ls -la
 
