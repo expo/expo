@@ -1,6 +1,5 @@
-'use strict';
-
 import {
+  AudioTrack,
   createVideoPlayer,
   SourceLoadEventPayload,
   SubtitleTrack,
@@ -10,6 +9,7 @@ import {
   VideoPlayerStatus,
   VideoSource,
   VideoSourceObject,
+  VideoTrack,
   VideoView,
 } from 'expo-video';
 import React from 'react';
@@ -74,22 +74,12 @@ const brokenSource = {
 
 // START: Expected return values from SourceLoadEventPayload
 
-/**
- * The expected payloads below are samples recorded from real `sourceLoad`
- * events. The assertions only read `duration`, `availableVideoTracks` and the
- * track counts, so this type spells out that subset: track fields no assertion
- * reads are omitted, and `videoSource` is kept for reference only.
- */
+/** Samples recorded from real `sourceLoad` events. `url` and `videoRange` vary per run. */
 type ExpectedSourceLoadPayload = {
   duration: number;
-  availableVideoTracks: Omit<
-    SourceLoadEventPayload['availableVideoTracks'][number],
-    'url' | 'videoRange'
-  >[];
-  availableAudioTracks: SourceLoadEventPayload['availableAudioTracks'];
-  availableSubtitleTracks: SourceLoadEventPayload['availableSubtitleTracks'];
-  /** Recorded for reference; no assertion compares it. */
-  videoSource?: unknown;
+  availableVideoTracks: Omit<VideoTrack, 'url' | 'videoRange'>[];
+  availableAudioTracks: AudioTrack[];
+  availableSubtitleTracks: SubtitleTrack[];
 };
 
 const bigBuckBunnySourceData: ExpectedSourceLoadPayload = {
@@ -105,32 +95,12 @@ const bigBuckBunnySourceData: ExpectedSourceLoadPayload = {
       averageBitrate: 1676863,
     },
   ],
-  videoSource: {
-    uri: 'https://expo-test-media.com/big_buck_bunny/bbb_720p.mp4',
-    metadata: {
-      artist: 'The Open Movie Project',
-      title: 'Big Buck Bunny',
-      artwork: 'https://expo-test-media.com/big_buck_bunny/artwork.jpg',
-    },
-    drm: null,
-    headers: null,
-    useCaching: false,
-    contentType: 'auto',
-  },
   availableAudioTracks: [],
   availableSubtitleTracks: [],
   duration: 634.533333,
 };
 
 const localVideoSourceData: ExpectedSourceLoadPayload = {
-  videoSource: {
-    headers: null,
-    contentType: 'auto',
-    drm: null,
-    uri: 'http://192.168.93.59:8081/assets/?unstable_path=.%2F..%2Ftest-suite%2Fassets/big_buck_bunny.mp4?platform=ios&hash=708733b3eb889d0a85427b938591c6b1',
-    useCaching: false,
-    metadata: { artwork: null, artist: 'Blender Foundation', title: 'Local Big Buck Bunny' },
-  },
   availableSubtitleTracks: [],
   availableAudioTracks: [{ language: 'und', label: 'Unknown language' }],
   availableVideoTracks: [
@@ -149,18 +119,6 @@ const localVideoSourceData: ExpectedSourceLoadPayload = {
 };
 
 const hlsSourceData: ExpectedSourceLoadPayload = {
-  videoSource: {
-    uri: 'https://expo-test-media.com/tos_hls/master.m3u8',
-    drm: null,
-    contentType: 'auto',
-    metadata: {
-      title: 'Sintel',
-      artist: 'Blender Foundation',
-      artwork: 'https://expo-test-media.com/tos_hls/artwork.jpg',
-    },
-    headers: null,
-    useCaching: false,
-  },
   duration: 734.167,
   availableSubtitleTracks: [
     { language: 'en', label: 'English' },
@@ -252,9 +210,10 @@ export async function test(
   t.afterEach(async () => {
     try {
       player.release();
-      cleanupPortal();
     } catch (error: any) {
       console.warn('Player release error:', error.message);
+    } finally {
+      cleanupPortal();
     }
   });
 
@@ -541,7 +500,7 @@ export async function test(
     });
 
     describe('Audio Tracks Events', () => {
-      let availableAudioTracks: SubtitleTrack[];
+      let availableAudioTracks: AudioTrack[];
       it('Receives availableAudioTracksChange event', async () => {
         const promise = waitForEvent(player, 'availableAudioTracksChange');
         player.replaceAsync(hlsSource);
