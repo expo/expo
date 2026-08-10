@@ -164,6 +164,7 @@ export async function respond(
     return;
   }
 
+  let _cancelled = false;
   nodeResponse.statusMessage = webResponse.statusText;
   nodeResponse.statusCode = webResponse.status;
   assignOutgoingMessageHeaders(nodeResponse, webResponse.headers);
@@ -176,11 +177,29 @@ export async function respond(
   }
 
   const reader = webResponse.body.getReader();
-  const cancelBody = () => (void reader.cancel().catch(() => {/*noop*/}));
+
+  const cancelBody = (reason?: unknown) => {
+    if (!_cancelled) {
+      _cancelled = true;
+      (void reader.cancel(reason).catch(() => {/*noop*/}));
+    }
+  };
+
+  const onAbort = () => {
+    const reason = options?.signal?.reason;
+    cancelBody(reason);
+    if (!nodeResponse.destroyed) {
+      nodeResponse.destroy(reason instanceof Error ? reason : undefined);
+    }
+  };
+
+  const onClose = () => cancelBody();
 
   try {
-    nodeResponse.once('close', cancelBody);
-    while (!nodeResponse.destroyed) {
+    nodeResponse.once('close', onClose);
+    options?.signal?.addEventListener('abort', onAbort, { once: true });
+
+    while (!_cancelled) {
       const result = await reader.read();
       if (result.done) {
         break;
@@ -194,11 +213,12 @@ export async function respond(
     }
     throw error;
   } finally {
-    nodeResponse.off('close', cancelBody);
+    nodeResponse.off('close', onClose);
+    options?.signal?.removeEventListener('abort', onAbort);
     reader.releaseLock();
   }
 
-  if (!nodeResponse.destroyed) {
+  if (!_cancelled && !nodeResponse.destroyed) {
     nodeResponse.end();
   }
 }
