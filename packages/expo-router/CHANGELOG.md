@@ -28,6 +28,7 @@
 - Upgrade react-native-screens to 4.26.0 ([#47770](https://github.com/expo/expo/pull/47770) by [@Ubax](https://github.com/Ubax))
 - Improve standard-navigation types for `createProps`. ([#47825](https://github.com/expo/expo/pull/47825) by [@Ubax](https://github.com/Ubax))
 - Add a `processScreens` option to the `standard-navigation` integration. ([#48290](https://github.com/expo/expo/pull/48290) by [@Ubax](https://github.com/Ubax))
+- Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
 
 ### 🐛 Bug fixes
 
