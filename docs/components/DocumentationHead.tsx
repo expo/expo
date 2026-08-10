@@ -36,7 +36,52 @@ const DocumentationHead = ({
       <meta charSet="utf-8" />
       <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <link rel="icon" type="image/png" href="/static/images/favicon.ico" sizes="32x32" />
+      <link
+        rel="apple-touch-icon"
+        href="https://static.expo.dev/static/brand/app-icon-512x512.png"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-light-48x48.png"
+        type="image/png"
+        sizes="48x48"
+        media="(prefers-color-scheme: light)"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-light-32x32.png"
+        type="image/png"
+        sizes="32x32"
+        media="(prefers-color-scheme: light)"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-light-16x16.png"
+        type="image/png"
+        sizes="16x16"
+        media="(prefers-color-scheme: light)"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-dark-48x48.png"
+        type="image/png"
+        sizes="48x48"
+        media="(prefers-color-scheme: dark)"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-dark-32x32.png"
+        type="image/png"
+        sizes="32x32"
+        media="(prefers-color-scheme: dark)"
+      />
+      <link
+        rel="icon"
+        href="/static/images/favicons/favicon-dark-16x16.png"
+        type="image/png"
+        sizes="16x16"
+        media="(prefers-color-scheme: dark)"
+      />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       {markdownPath && <link rel="alternate" type="text/markdown" href={markdownPath} />}
 
