@@ -1,0 +1,365 @@
+# Issue/PR verification agent, triggered by a maintainer comment:
+#   /verify        investigate the report and post findings with attested evidence
+#
+# The agent is headless Claude Code connected to the expo-sandbox-mcp server
+# (hosted E2B sandboxes, proxied EAS builds, hosted iOS simulators). It
+# reproduces the report where the hosted simulator can exhibit it, runs
+# cold-launch censuses / behavioral checks / crash loops as the issue
+# demands, and posts ONE findings comment whose evidence sections
+# (screenshots, census tables) are composed and attested by the server.
+#
+# SECURITY POSTURE (mirrors expo-code-review-command.yml):
+# - `issue_comment` is NOT fork-restricted: this always runs in base-repo
+#   context with secrets. We check out ONLY the trusted base ref, never a PR
+#   head; nothing from the issue/PR executes on this runner. Untrusted code
+#   from repro repos executes only inside the MCP server's sandboxes — that
+#   containment is the server's entire design.
+# - The gate controls who triggers: the `if:` filters to maintainer
+#   associations, and an authoritative permission check requires write
+#   access or higher (author_association alone does not prove write).
+# - The comment body reaches shell only via env.
+# - The agent reads attacker-authored issue text, so this workflow is
+#   COMMENT-ONLY by construction: no fix-PRs, no pushes, and NO SHELL — the
+#   agent has no Bash tool, so nothing it invokes can expand an environment
+#   variable into output. Its view of the target arrives as files; its only
+#   write path is the MCP server's findings-comment tool, whose arguments are
+#   literal JSON. MCP create_sandbox allowlisting is authorized by the gated
+#   maintainer trigger itself (approval moves to the trigger, not skipped).
+#
+# SECRETS REQUIRED (repo settings):
+# - EXPO_SANDBOX_MCP_TOKEN   long-lived bearer for the expo-sandbox-mcp PROD
+#                            deployment, held by the expo-verification-bot
+#                            service account. The agent NEVER sees it — the
+#                            Mint scoped token step exchanges it for a
+#                            one-sandbox, 90-minute credential. The service
+#                            account's stored Expo credential is what EAS
+#                            builds bill; its stored GitHub PAT posts the
+#                            findings comments (plain issues need Issues:
+#                            Read and write on it).
+# - CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN  REUSED from the AI code-review
+#                            workflows — same engine (Claude Code CLI), one
+#                            model credential to rotate. If usage ever needs
+#                            separate attribution, split it back out.
+# - EXPO_BOT_GITHUB_TOKEN    existing bot token, used only by fixed workflow
+#                            steps (ack reaction, announce comment, context
+#                            collection) — never placed in the agent's env.
+name: Verify issue (command)
+
+on:
+  issue_comment:
+    types: [created]
+
+# Scopes the automatic workflow token, which is what the AGENT step gets:
+# issue comments yes, repository contents never. The agent therefore cannot
+# push or write files even if an injected instruction tells it to — the
+# boundary is the token's permissions, not a command-pattern allowlist.
+permissions:
+  contents: read
+  issues: write
+  pull-requests: read
+
+jobs:
+  verify:
+    # Job-level, NOT workflow-level: a workflow-level group is claimed at run
+    # creation — before the `if:` below skips the job — so any unrelated
+    # comment on this issue would cancel an in-flight verification and strand
+    # its sandboxes and EAS builds. cancel-in-progress:false queues a second
+    # /verify instead of killing the first.
+    concurrency:
+      group: verify-${{ github.event.issue.number }}
+      cancel-in-progress: false
+    # Comments starting with /verify, on issues or PRs, from maintainer
+    # associations. The authoritative write-access check is the step below.
+    # (Runs are backed by the expo-verification-bot service account.)
+    if: >-
+      startsWith(github.event.comment.body, '/verify') &&
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+    runs-on: ubuntu-latest
+    # EAS builds take 10-20 min each and a verification may need up to three,
+    # plus censuses and the report. The MCP server TTL-reaps sandboxes
+    # server-side, so a timeout here orphans nothing.
+    timeout-minutes: 75
+    continue-on-error: true
+    steps:
+      # author_association MEMBER does not imply write on THIS repo; the
+      # requirement is write access or higher, checked against the
+      # collaborators permission API.
+      - name: Require write access
+        id: gate
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ACTOR: ${{ github.event.comment.user.login }}
+        run: |
+          perm=$(gh api "repos/${{ github.repository }}/collaborators/$ACTOR/permission" --jq .permission || echo none)
+          case "$perm" in
+            admin|maintain|write) echo "ok=true" >> "$GITHUB_OUTPUT" ;;
+            *)
+              echo "ok=false" >> "$GITHUB_OUTPUT"
+              echo "/verify requires write access or higher; $ACTOR has: $perm"
+              ;;
+          esac
+
+      - name: Acknowledge
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+        run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
+
+      # Watchable from the start: the Actions run streams the agent's live
+      # progress, so the thread gets that link the moment work begins (the
+      # findings comment lands separately when the investigation completes).
+      - name: Announce run
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+            --body "🔍 \`/verify\` started for @${{ github.event.comment.user.login }} — [watch the investigation run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Findings will be posted here when it completes."
+
+      # Base ref only — the prompt file must come from the trusted branch,
+      # and no PR-head code may ever run on this runner.
+      - name: Checkout (base ref only — never the PR head)
+        if: steps.gate.outputs.ok == 'true'
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Set up Node
+        if: steps.gate.outputs.ok == 'true'
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+          package-manager-cache: false
+
+      # Pinned exactly, like the code-review workflows.
+      - name: Install Claude Code CLI
+        if: steps.gate.outputs.ok == 'true'
+        run: npm install -g @anthropic-ai/claude-code@2.1.212
+
+      # The long-lived secret never reaches the agent: it lives in THIS step's
+      # env only, and is exchanged for a derived token bounded on every axis
+      # that costs money or is publicly visible — ONE sandbox, at most 5 EAS
+      # builds, comments ONLY on the triggering thread, and a TTL that does not
+      # outlive the job. One sandbox because every comparison an investigation
+      # needs (before/after arms, a stock-template control) is done by swapping
+      # the tree between submissions — verified in live runs, where a
+      # three-arm boot-hang census ran in a single sandbox. Five builds because
+      # that is also the sandbox's own per-session quota, so the token stops
+      # being the binding limit. Consequence accepted: a sandbox that breaks
+      # unrecoverably ends the run, and the maintainer re-triggers /verify.
+      # These numbers and the prompt's stated budget must stay equal.
+      # Server-side enforcement, not prompt text — the budgets are spent
+      # transactionally and the comment target is checked per call.
+      # Only the derived token is written to disk, so a config file read off
+      # the runner — or a token echoed anywhere — buys that bounded set.
+      # (Deriving in-process rather than passing a token between jobs is
+      # deliberate: job outputs and artifacts are readable by anyone who can
+      # read the run, which on a public repository is everyone.)
+      - name: Mint scoped token
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
+          MCP_URL: https://agile-minnow-543.convex.site
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          umask 077
+          scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
+            -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
+            -H 'Content-Type: application/json' \
+            -d "{\"sandboxBudget\":1,\"buildBudget\":5,\"ttlSeconds\":4200,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
+            | jq -r '.token // empty')
+          if [ -z "$scoped" ]; then
+            echo "::error::Could not mint a scoped sandbox token"
+            exit 1
+          fi
+          # Mask it too: a scoped token is cheap, not free.
+          echo "::add-mask::$scoped"
+          cat > "$RUNNER_TEMP/mcp.json" <<EOF
+          {
+            "mcpServers": {
+              "sandbox": {
+                "type": "http",
+                "url": "$MCP_URL/mcp",
+                "headers": { "Authorization": "Bearer $scoped" }
+              }
+            }
+          }
+          EOF
+
+      # The agent gets ZERO shell access (see the allowlist below), so its
+      # view of the target arrives as files it can Read. This is what lets the
+      # Bash surface go away: nothing the agent can invoke expands an
+      # environment variable, so no injected instruction can print a
+      # credential anywhere.
+      - name: Collect target context
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          IS_PR: ${{ github.event.issue.pull_request != null }}
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/.verify-context"
+          cd "$GITHUB_WORKSPACE/.verify-context"
+          gh issue view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+            --comments --json number,title,state,labels,body,comments > target.json
+          if [ "$IS_PR" = "true" ]; then
+            gh pr view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+              --json number,title,state,headRefName,baseRefName,files,body > pull-request.json
+            # A huge diff must not blow the agent's context, but a SILENTLY
+            # cut diff is worse than a big one: the agent would post a public
+            # verdict built on it. Three rules make that impossible to miss:
+            #
+            #  1. Fetch in full first — piping into `head` would hide both a
+            #     gh failure (the default run: shell has no pipefail) and the
+            #     SIGPIPE that truncation itself causes.
+            #  2. Bound by LINES as well as bytes, tighter than the agent's
+            #     own read window (~2000 lines), so the file the agent gets
+            #     always fits in ONE read. Nothing can hide below the fold.
+            #  3. Put the status in a HEADER AT THE TOP, always — present even
+            #     when the diff is complete. A trailing marker is unreachable:
+            #     the agent reads from the top and stops long before the end.
+            gh pr diff "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+              > "$RUNNER_TEMP/full.diff"
+            max_bytes=400000
+            max_lines=1500
+            full_bytes=$(wc -c < "$RUNNER_TEMP/full.diff" | tr -d ' ')
+            full_lines=$(wc -l < "$RUNNER_TEMP/full.diff" | tr -d ' ')
+            head -c "$max_bytes" "$RUNNER_TEMP/full.diff" | head -n "$max_lines" > "$RUNNER_TEMP/cut.diff"
+            kept_bytes=$(wc -c < "$RUNNER_TEMP/cut.diff" | tr -d ' ')
+            kept_lines=$(wc -l < "$RUNNER_TEMP/cut.diff" | tr -d ' ')
+            if [ "$kept_bytes" -lt "$full_bytes" ]; then complete=NO; else complete=yes; fi
+            {
+              echo "*** VERIFY DIFF HEADER — READ THIS FIRST ***"
+              echo "*** complete: $complete"
+              echo "*** included: $kept_lines of $full_lines lines, $kept_bytes of $full_bytes bytes"
+              if [ "$complete" = "NO" ]; then
+                echo "*** THIS IS A PARTIAL DIFF. Do NOT reason about the change from this file."
+                echo "*** Clone the PR head inside the sandbox and read the files there instead,"
+                echo "*** and say in your report that the provided diff was truncated."
+              fi
+              echo "*** END HEADER ***"
+              echo
+              cat "$RUNNER_TEMP/cut.diff"
+            } > pull-request.diff
+            # Same facts in JSON, so the agent can check them without paging.
+            jq --argjson m "{\"complete\":$([ "$complete" = yes ] && echo true || echo false),\"includedLines\":$kept_lines,\"totalLines\":$full_lines,\"includedBytes\":$kept_bytes,\"totalBytes\":$full_bytes}" \
+              '. + {diff: $m}' pull-request.json > pull-request.tmp.json
+            mv pull-request.tmp.json pull-request.json
+          fi
+          ls -la
+
+      - name: Run verification
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          # Same credential the code-review workflows feed their Claude Code
+          # engine — it holds a Claude Code OAuth token, hence this env var
+          # (ANTHROPIC_API_KEY is for raw API keys).
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+          # NO GitHub token in this step at all: the agent has no shell and no
+          # gh verb, so it needs none. The findings comment is posted by the
+          # MCP server from its own stored PAT, whose arguments are literal
+          # JSON — never a shell-expanded string.
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_KIND: ${{ github.event.issue.pull_request != null && 'pull request' || 'issue' }}
+          TRIGGER_ACTOR: ${{ github.event.comment.user.login }}
+          REPO: ${{ github.repository }}
+          # Pinned to Opus explicitly; override with a VERIFY_MODEL repo
+          # variable (mirrors the code-review workflows' REVIEWER_MODEL).
+          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+        # Comment-only is enforced structurally, not by command patterns —
+        # patterns proved to be the wrong instrument twice (a `gh api` rule
+        # permits -X POST; a `gh issue comment` rule permits
+        # --body "$SOME_SECRET", which would print a credential into a public
+        # comment). So:
+        #   1. NO Bash tool at all. The agent has no shell, so nothing it can
+        #      invoke expands an environment variable. Its view of the target
+        #      is the files written by Collect target context.
+        #   2. Read/Glob/Grep scoped to the workspace — RUNNER_TEMP (holding
+        #      the MCP config) is out of reach.
+        #   3. No GitHub token in this step's environment.
+        #   4. The MCP credential is server-scoped to a bounded sandbox
+        #      budget with a short TTL (see Mint scoped token).
+        # stream-json --verbose + a jq activity renderer, the same visibility
+        # the code-review CLI gives its claude -p engine: every tool call and
+        # assistant message lands in the Actions log live (which the announce
+        # comment links), and the raw JSONL is uploaded as an artifact below.
+        run: |
+          prompt=$(cat .github/verify/prompt.md)
+          set -o pipefail
+            # One entry per line so adding or removing a capability is a
+            # one-line diff — this list IS the security boundary, and a
+            # 1000-character string is not reviewable.
+            TOOLS=(
+              # Runner-side: read-only, scoped to the checkout. No Bash.
+              "Read($GITHUB_WORKSPACE/**)"
+              "Glob($GITHUB_WORKSPACE/**)"
+              "Grep($GITHUB_WORKSPACE/**)"
+              # Sandbox, EAS, and simulator work, plus the findings comment.
+              "mcp__sandbox__create_sandbox"
+              "mcp__sandbox__destroy_sandbox"
+              "mcp__sandbox__list_sandboxes"
+              "mcp__sandbox__get_session_info"
+              "mcp__sandbox__sandbox_exec"
+              "mcp__sandbox__sandbox_write_file"
+              "mcp__sandbox__sandbox_edit_file"
+              "mcp__sandbox__sandbox_read_file"
+              "mcp__sandbox__sandbox_list_files"
+              "mcp__sandbox__sandbox_install_packages"
+              "mcp__sandbox__sandbox_process_logs"
+              "mcp__sandbox__sandbox_process_kill"
+              "mcp__sandbox__eas_build"
+              "mcp__sandbox__eas_build_status"
+              "mcp__sandbox__eas_build_list"
+              "mcp__sandbox__simulator_start"
+              "mcp__sandbox__simulator_status"
+              "mcp__sandbox__simulator_stop"
+              "mcp__sandbox__simulator_screenshot"
+              "mcp__sandbox__simulator_ui"
+              "mcp__sandbox__simulator_tap"
+              "mcp__sandbox__simulator_type"
+              "mcp__sandbox__simulator_open"
+              "mcp__sandbox__simulator_boot_app"
+              "mcp__sandbox__simulator_install_build"
+              "mcp__sandbox__simulator_relaunch_app"
+              "mcp__sandbox__simulator_census_status"
+              "mcp__sandbox__simulator_app_state"
+              "mcp__sandbox__simulator_artifacts"
+              "mcp__sandbox__simulator_record"
+              "mcp__sandbox__github_comment_issue"
+              "mcp__sandbox__expo_skill"
+            )
+            IFS=","; ALLOWED="${TOOLS[*]}"; unset IFS
+          timeout 4200 claude -p \
+            --model "$VERIFY_MODEL" \
+            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR.
+
+          $prompt" \
+            --mcp-config "$RUNNER_TEMP/mcp.json" \
+            --allowedTools "$ALLOWED" \
+            --output-format stream-json --verbose \
+            | tee "$RUNNER_TEMP/verify-run.jsonl" \
+            | jq -r --unbuffered '
+                if .type == "system" and .subtype == "init" then
+                  "▶ session started — model \(.model // "?")"
+                elif .type == "assistant" then
+                  (.message.content[]? |
+                    if .type == "text" and ((.text // "") | length) > 0 then "🤖 \(.text)"
+                    elif .type == "tool_use" then "→ \(.name) \(.input | tostring | .[0:220])"
+                    else empty end)
+                elif .type == "user" then
+                  (.message.content[]? | select(.type == "tool_result") |
+                    "  ← \((.content | tostring) | .[0:220])")
+                elif .type == "result" then
+                  "✔ completed — \(((.duration_ms // 0) / 1000) | floor)s, \(.num_turns // "?") turn(s)\n===== FINAL RESULT =====\n\(.result // "(no result text)")"
+                else empty end'
+
+      # Raw engine transcript, kept like the code-review workflows keep
+      # their run log — the console rendering above is lossy by design.
+      - name: Upload run log
+        if: always() && steps.gate.outputs.ok == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verify-run-log-${{ github.event.issue.number }}
+          path: ${{ runner.temp }}/verify-run.jsonl
+          if-no-files-found: ignore
+          retention-days: 14
