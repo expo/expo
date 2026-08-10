@@ -37,10 +37,11 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
 
   /// Whether the response came off the network rather than out of a cache.
   ///
-  /// `nil` when the OS reported no transaction. `URLSession` timestamps a cache hit like any other
-  /// response, so this is the only way to tell a disk read from a download. Android needs no
-  /// equivalent: OkHttp skips the response-body callbacks for a cached response, so its
-  /// `measuredResponseEnd` stays null and the request drops out on its own.
+  /// `false` only when the OS positively identified a cache read. An unclassified fetch counts as
+  /// network, matching how the rest of this type treats missing information: `URLSession` timestamps
+  /// a cache hit like any other response, so this is the only way to tell a disk read from a
+  /// download, and guessing would cost real transfers. Android needs no equivalent, since OkHttp
+  /// skips the response-body callbacks for a cached response and it drops out on its own.
   public let cameFromNetwork: Bool?
 
   /// Phase-by-phase timings pulled from the most recent (post-redirect) transaction.
@@ -144,16 +145,6 @@ public struct NetworkRequestStarted: Sendable, Equatable, Identifiable {
   public let startedAt: Date
 }
 
-/// Adds two non-negative byte counts, pinning at `Int64.max` instead of trapping.
-///
-/// The operands come from `URLSessionTaskTransactionMetrics`, and Swift aborts the process on
-/// `Int64` overflow. No honest response reaches that total, but an observability library must not
-/// be able to take its host app down over a counter that doesn't make sense.
-private func clampedSum(_ lhs: Int64, _ rhs: Int64) -> Int64 {
-  let (sum, overflowed) = lhs.addingReportingOverflow(rhs)
-  return overflowed ? Int64.max : sum
-}
-
 extension NetworkRequest {
   /// Builds a snapshot from the data we have at task completion. The metrics argument may be `nil`
   /// for cache-only responses or in tests; in that case, callers fall back to wall-clock timestamps
@@ -181,9 +172,11 @@ extension NetworkRequest {
     // future need arises to surface per-hop timing, expose `metrics.transactionMetrics` here.
     let transaction = metrics?.transactionMetrics.last
 
-    // `.networkLoad` is the only fetch type that actually crossed the wire; `.localCache`,
-    // `.serverPush` and `.unknown` did not.
-    let cameFromNetwork = transaction.map { $0.resourceFetchType == .networkLoad }
+    // Only `.localCache` is positive evidence the bytes came off disk. `.unknown` means the OS
+    // didn't classify the fetch, which a task intercepted by an `NSURLProtocol` subclass reports
+    // routinely, so treating it as a cache read would drop real transfers from the throughput ratio
+    // for any app carrying such an SDK.
+    let cameFromNetwork = transaction.map { $0.resourceFetchType != .localCache }
 
     let timings = NetworkRequest.Timings(
       fetchStart: transaction?.fetchStartDate ?? fallbackStart,
@@ -211,10 +204,8 @@ extension NetworkRequest {
       if let transaction {
         // Clamped: these come from the OS and Swift traps on overflow, which must never take a host
         // app down from inside an observability library.
-        let fromTransaction = clampedSum(
-          transaction.countOfRequestHeaderBytesSent,
-          transaction.countOfRequestBodyBytesSent
-        )
+        let fromTransaction = transaction.countOfRequestHeaderBytesSent
+          .addingClamped(transaction.countOfRequestBodyBytesSent)
         if fromTransaction > 0 {
           return fromTransaction
         }
@@ -224,10 +215,8 @@ extension NetworkRequest {
     let responseBytesReceived: Int64? = {
       if let transaction {
         let fromTransaction =
-          clampedSum(
-            transaction.countOfResponseHeaderBytesReceived,
-            transaction.countOfResponseBodyBytesReceived
-          )
+          transaction.countOfResponseHeaderBytesReceived
+          .addingClamped(transaction.countOfResponseBodyBytesReceived)
         if fromTransaction > 0 {
           return fromTransaction
         }

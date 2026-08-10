@@ -709,6 +709,48 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
+  func `pins byte totals at the maximum instead of trapping`() {
+    let now = Date()
+    // Swift aborts the process on Int64 overflow, and these counts come from the OS. No honest
+    // response reaches the bound, but an observability library must not be able to take its host
+    // app down over a counter that doesn't make sense.
+    let huge = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: .max,
+      bytesReceived: .max,
+      fetchStart: now,
+      responseStart: now,
+      responseEnd: now.addingTimeInterval(1)
+    )
+    let summary = NetworkRequestSummary.from([huge, huge])
+    #expect(summary.bytesReceived == Int64.max)
+    #expect(summary.bytesSent == Int64.max)
+  }
+
+  @Test
+  func `keeps a request the OS did not classify in the throughput ratio`() {
+    let now = Date()
+    // `.unknown` means the fetch type wasn't reported, which a task intercepted by an
+    // NSURLProtocol subclass does routinely. Treating that as a cache read would drop real
+    // transfers for any app carrying such an SDK.
+    let unclassified = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 1.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 100_000,
+      fetchStart: now,
+      responseStart: now,
+      responseEnd: now.addingTimeInterval(1),
+      cameFromNetwork: true
+    )
+    let summary = NetworkRequestSummary.from([unclassified])
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 100_000) < 1.0)
+  }
+
+  @Test
   func `excludes a cache hit from throughput`() {
     let now = Date()
     // A cached read reports bytes AND timestamps just like a network response, so giving it a real

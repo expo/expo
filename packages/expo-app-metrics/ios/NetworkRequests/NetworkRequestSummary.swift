@@ -259,7 +259,7 @@ extension Int64 {
   /// Byte counts come from the OS, and an observability library has no business aborting its host
   /// app over one that doesn't make sense. Both operands are non-negative here, so only the upper
   /// bound is reachable.
-  fileprivate func addingClamped(_ other: Int64) -> Int64 {
+  func addingClamped(_ other: Int64) -> Int64 {
     let (sum, overflowed) = addingReportingOverflow(other)
     return overflowed ? Int64.max : sum
   }
