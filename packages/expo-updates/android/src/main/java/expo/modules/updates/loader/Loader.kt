@@ -164,7 +164,12 @@ abstract class Loader protected constructor(
       database.updateDao().setUpdateScopeKey(existingUpdateEntity, newUpdateEntity.scopeKey)
     }
 
-    if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY) {
+    // A READY update whose launch asset is missing is not actually ready -- it can only have got
+    // that way through a partial write or a deleted asset row, and short-circuiting here would
+    // leave it broken forever. Fall through to downloadAllAssets so the assets are re-registered.
+    if (existingUpdateEntity != null && existingUpdateEntity.status == UpdateStatus.READY &&
+      database.updateDao().loadLaunchAssetForUpdate(existingUpdateEntity.id) != null
+    ) {
       // hooray, we already have this update downloaded and ready to go!
       updateEntity = existingUpdateEntity
       return finish()

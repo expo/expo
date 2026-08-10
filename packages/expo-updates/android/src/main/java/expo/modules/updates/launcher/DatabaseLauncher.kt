@@ -161,6 +161,18 @@ class DatabaseLauncher(
       if (!configuration.hasEmbeddedUpdate && embeddedUpdate?.updateEntity?.id == update.id) {
         continue
       }
+
+      // An update whose launch asset is missing can never launch -- launch() would throw and the
+      // app would fall back to an emergency launch on every cold start. This happens when the
+      // process is killed between Loader's insertUpdate and insertAssets calls, or when the launch
+      // asset row is deleted out from under the update. Excluding it here lets LoaderTask see a
+      // newer embedded update (or none at all) and re-run the loader, which repairs the row.
+      if (update.status != UpdateStatus.DEVELOPMENT &&
+        database.updateDao().loadLaunchAssetForUpdate(update.id) == null
+      ) {
+        logger.warn("Skipping launchable update with no launch asset. Debug info: ${update.debugInfo()}")
+        continue
+      }
       filteredLaunchableUpdates.add(update)
     }
     val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)

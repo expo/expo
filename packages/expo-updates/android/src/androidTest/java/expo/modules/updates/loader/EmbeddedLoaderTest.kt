@@ -265,6 +265,11 @@ class EmbeddedLoaderTest {
     update.status = UpdateStatus.READY
     db.updateDao().insertUpdate(update)
 
+    val launchAsset = AssetEntity("bundle-1234", "js")
+    launchAsset.relativePath = "bundle-1234"
+    launchAsset.isLaunchAsset = true
+    db.assetDao().insertAssets(listOf(launchAsset), update)
+
     val result = loader.load { _ ->
       Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
     }
@@ -275,6 +280,39 @@ class EmbeddedLoaderTest {
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size.toLong())
     Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+
+    // short-circuited, so the manifest's assets were never registered
+    Assert.assertEquals(1, db.assetDao().loadAllAssets().size.toLong())
+  }
+
+  @Test
+  @Throws(IOException::class, NoSuchAlgorithmException::class)
+  fun testEmbeddedLoader_UpdateExists_ReadyButMissingLaunchAsset() = runTest {
+    val update = UpdateEntity(
+      manifest.updateEntity!!.id,
+      manifest.updateEntity!!.commitTime,
+      manifest.updateEntity!!.runtimeVersion,
+      manifest.updateEntity!!.scopeKey,
+      manifest.updateEntity!!.manifest,
+      null,
+      null
+    )
+    update.status = UpdateStatus.READY
+    db.updateDao().insertUpdate(update)
+
+    val result = loader.load { _ ->
+      Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    }
+
+    Assert.assertNotNull(result.updateEntity)
+
+    val updates = db.updateDao().loadAllUpdates()
+    Assert.assertEquals(1, updates.size.toLong())
+    Assert.assertEquals(UpdateStatus.READY, updates[0].status)
+
+    // the incomplete row is repaired rather than short-circuited
+    Assert.assertNotNull(db.updateDao().loadLaunchAssetForUpdate(update.id))
+    Assert.assertEquals(2, db.assetDao().loadAllAssets().size.toLong())
   }
 
   @Test

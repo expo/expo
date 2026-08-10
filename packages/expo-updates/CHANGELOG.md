@@ -12,6 +12,7 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix devices getting permanently stuck in emergency launch after the embedded update is registered only partially. An update row whose `launch_asset_id` is missing is now excluded from launchable updates and is no longer treated as `READY`, so the loader re-runs and repairs it instead of `DatabaseLauncher` throwing "Launch asset not found for update" on every cold start. ([#48733](https://github.com/expo/expo/pull/48733) by [@martintreurnicht](https://github.com/martintreurnicht))
 - [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
 - [Android] Widen `UpdatesLogEntry.create`'s catch from `JSONException` to `Exception` so log-line parse failures consistently degrade to "skip the entry" instead of propagating. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
 - [Android] Correct `UpdatesLogReader.ONE_DAY_MILLISECONDS` from `86400` (seconds) to `86_400_000` (milliseconds), so the "older than one day" purge filter actually retains a day's worth of entries instead of ~86 seconds' worth. ([#46182](https://github.com/expo/expo/pull/46182) by [@jakequade-pc](https://github.com/jakequade-pc))
