@@ -82,19 +82,32 @@ export function prepareServers(
     ...exportEnv,
   } as const;
 
+  let sharedProductionExport: Promise<string> | undefined;
+
+  async function prepareProductionDist(runtimeName: string) {
+    const sharedOutputName = generateOutputDir('shared', fixtureName, uniqueOutputKey);
+    const sharedOutputDir = path.join(projectRoot, sharedOutputName);
+
+    sharedProductionExport ??= executeExpoAsync(
+      projectRoot,
+      ['export', '-p', 'web', '--output-dir', sharedOutputName, ...exportCliFlags],
+      { env: defaultExportEnv }
+    ).then(() => sharedOutputDir);
+
+    const sourceDir = await sharedProductionExport;
+    const outputName = generateOutputDir(runtimeName, fixtureName, uniqueOutputKey);
+    const outputDir = path.join(projectRoot, outputName);
+
+    await fs.promises.rm(outputDir, { force: true, recursive: true });
+    await fs.promises.cp(sourceDir, outputDir, { recursive: true });
+
+    return [outputDir, outputName] as const;
+  }
+
   const knownRuntimeConfigs: Record<RuntimeType, Omit<ServerTestConfiguration, 'name'>> = {
     [RUNTIME_EXPO_SERVE]: {
       prepareDist: async () => {
-        const outputName = generateOutputDir('expo-serve', fixtureName, uniqueOutputKey);
-        const outputDir = path.join(projectRoot, outputName);
-
-        await executeExpoAsync(
-          projectRoot,
-          ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
-          { env: defaultExportEnv }
-        );
-
-        return [outputDir, outputName];
+        return await prepareProductionDist('expo-serve');
       },
       createServer: (overrideServe) =>
         createExpoServe({
@@ -123,16 +136,7 @@ export function prepareServers(
     },
     [RUNTIME_EXPRESS_SERVER]: {
       prepareDist: async () => {
-        const outputName = generateOutputDir('express', fixtureName, uniqueOutputKey);
-        const outputDir = path.join(projectRoot, outputName);
-
-        await executeExpoAsync(
-          projectRoot,
-          ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
-          { env: defaultExportEnv }
-        );
-
-        return [outputDir, outputName];
+        return await prepareProductionDist('express');
       },
       createServer: (overrideServe) =>
         createBackgroundServer({
@@ -148,14 +152,7 @@ export function prepareServers(
     },
     [RUNTIME_WORKERD]: {
       prepareDist: async () => {
-        const outputName = generateOutputDir('workerd', fixtureName, uniqueOutputKey);
-        const outputDir = path.join(projectRoot, outputName);
-
-        await executeExpoAsync(
-          projectRoot,
-          ['export', '-p', 'web', '--output-dir', outputName, ...exportCliFlags],
-          { env: defaultExportEnv }
-        );
+        const [outputDir] = await prepareProductionDist('workerd');
 
         await executeAsync(projectRoot, [
           'node_modules/.bin/esbuild',
