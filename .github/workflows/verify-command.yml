@@ -281,13 +281,56 @@ jobs:
         run: |
           prompt=$(cat .github/verify/prompt.md)
           set -o pipefail
+            # One entry per line so adding or removing a capability is a
+            # one-line diff — this list IS the security boundary, and a
+            # 1000-character string is not reviewable.
+            TOOLS=(
+              # Runner-side: read-only, scoped to the checkout. No Bash.
+              "Read($GITHUB_WORKSPACE/**)"
+              "Glob($GITHUB_WORKSPACE/**)"
+              "Grep($GITHUB_WORKSPACE/**)"
+              # Sandbox, EAS, and simulator work, plus the findings comment.
+              "mcp__sandbox__create_sandbox"
+              "mcp__sandbox__destroy_sandbox"
+              "mcp__sandbox__list_sandboxes"
+              "mcp__sandbox__get_session_info"
+              "mcp__sandbox__sandbox_exec"
+              "mcp__sandbox__sandbox_write_file"
+              "mcp__sandbox__sandbox_edit_file"
+              "mcp__sandbox__sandbox_read_file"
+              "mcp__sandbox__sandbox_list_files"
+              "mcp__sandbox__sandbox_install_packages"
+              "mcp__sandbox__sandbox_process_logs"
+              "mcp__sandbox__sandbox_process_kill"
+              "mcp__sandbox__eas_build"
+              "mcp__sandbox__eas_build_status"
+              "mcp__sandbox__eas_build_list"
+              "mcp__sandbox__simulator_start"
+              "mcp__sandbox__simulator_status"
+              "mcp__sandbox__simulator_stop"
+              "mcp__sandbox__simulator_screenshot"
+              "mcp__sandbox__simulator_ui"
+              "mcp__sandbox__simulator_tap"
+              "mcp__sandbox__simulator_type"
+              "mcp__sandbox__simulator_open"
+              "mcp__sandbox__simulator_boot_app"
+              "mcp__sandbox__simulator_install_build"
+              "mcp__sandbox__simulator_relaunch_app"
+              "mcp__sandbox__simulator_census_status"
+              "mcp__sandbox__simulator_app_state"
+              "mcp__sandbox__simulator_artifacts"
+              "mcp__sandbox__simulator_record"
+              "mcp__sandbox__github_comment_issue"
+              "mcp__sandbox__expo_skill"
+            )
+            IFS=","; ALLOWED="${TOOLS[*]}"; unset IFS
           timeout 4200 claude -p \
             --model "$VERIFY_MODEL" \
             "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR.
 
           $prompt" \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
-            --allowedTools "Read($GITHUB_WORKSPACE/**),Glob($GITHUB_WORKSPACE/**),Grep($GITHUB_WORKSPACE/**),mcp__sandbox__create_sandbox,mcp__sandbox__destroy_sandbox,mcp__sandbox__list_sandboxes,mcp__sandbox__get_session_info,mcp__sandbox__sandbox_exec,mcp__sandbox__sandbox_write_file,mcp__sandbox__sandbox_edit_file,mcp__sandbox__sandbox_read_file,mcp__sandbox__sandbox_list_files,mcp__sandbox__sandbox_install_packages,mcp__sandbox__sandbox_process_logs,mcp__sandbox__sandbox_process_kill,mcp__sandbox__eas_build,mcp__sandbox__eas_build_status,mcp__sandbox__eas_build_list,mcp__sandbox__simulator_start,mcp__sandbox__simulator_status,mcp__sandbox__simulator_stop,mcp__sandbox__simulator_screenshot,mcp__sandbox__simulator_ui,mcp__sandbox__simulator_tap,mcp__sandbox__simulator_type,mcp__sandbox__simulator_open,mcp__sandbox__simulator_boot_app,mcp__sandbox__simulator_install_build,mcp__sandbox__simulator_relaunch_app,mcp__sandbox__simulator_census_status,mcp__sandbox__simulator_app_state,mcp__sandbox__simulator_artifacts,mcp__sandbox__simulator_record,mcp__sandbox__github_comment_issue,mcp__sandbox__expo_skill" \
+            --allowedTools "$ALLOWED" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
             | jq -r --unbuffered '
