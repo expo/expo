@@ -77,7 +77,6 @@ export async function test(t: JasmineInterface) {
     // According to the documentation pausing should be supported on Android API >= 24,
     // unfortunately such test fails on Android v24.
     const pausingIsSupported = Platform.OS !== 'android' || Platform.Version >= 25;
-    // Recreated in `beforeEach` before each spec runs, and cleared in `afterEach`.
     let recorder: AudioRecorder = null!;
 
     t.beforeEach(async () => {

@@ -68,7 +68,6 @@ export function test({ describe, expect, it, ...t }: any) {
   });
 
   describe('Player instance', () => {
-    // Assigned by each spec before the `afterEach` below releases and clears it.
     let player: AudioPlayer = null!;
 
     t.beforeAll(async () => {
