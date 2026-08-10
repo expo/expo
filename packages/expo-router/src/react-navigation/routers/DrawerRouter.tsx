@@ -1,6 +1,7 @@
 import { nanoid } from 'nanoid/non-secure';
 
 import {
+  ensureStateHistory,
   type TabActionHelpers,
   TabActions,
   type TabActionType,
@@ -38,7 +39,7 @@ export type DrawerNavigationState<ParamList extends ParamListBase> = Omit<
   /**
    * List of previously visited route keys and drawer open status.
    */
-  history: ({ type: 'route'; key: string } | { type: 'drawer'; status: DrawerStatus })[];
+  history?: ({ type: 'route'; key: string } | { type: 'drawer'; status: DrawerStatus })[];
 };
 
 export type DrawerActionHelpers<ParamList extends ParamListBase> = TabActionHelpers<ParamList> & {
@@ -81,10 +82,21 @@ export function DrawerRouter({
   DrawerNavigationState<ParamListBase>,
   DrawerActionType | CommonNavigationAction
 > {
+  const { backBehavior = 'firstRoute', initialRouteName } = rest;
+
   const router = TabRouter(rest) as unknown as Router<
     DrawerNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
   >;
+
+  // `ensureStateHistory` is typed for the tab state. The drawer state differs only by the extra
+  // drawer entries in `history`, which reconstruction never produces.
+  const ensureDrawerStateHistory = (state: DrawerNavigationState<ParamListBase>) =>
+    ensureStateHistory(
+      state as unknown as TabNavigationState<ParamListBase>,
+      backBehavior,
+      initialRouteName
+    ) as unknown as DrawerNavigationState<ParamListBase>;
 
   const isDrawerInHistory = (
     state: DrawerNavigationState<ParamListBase> | PartialState<DrawerNavigationState<ParamListBase>>
@@ -100,7 +112,7 @@ export function DrawerRouter({
     return {
       ...state,
       history: [
-        ...state.history,
+        ...(state.history ?? []),
         {
           type: 'drawer',
           status: defaultStatus === 'open' ? 'closed' : 'open',
@@ -118,7 +130,7 @@ export function DrawerRouter({
 
     return {
       ...state,
-      history: state.history.filter((it) => it.type !== 'drawer'),
+      history: (state.history ?? []).filter((it) => it.type !== 'drawer'),
     };
   };
 
@@ -194,7 +206,10 @@ export function DrawerRouter({
       return closeDrawer(result);
     },
 
-    getStateForAction(state, action, options) {
+    getStateForAction(inputState, action, options) {
+      // Restore route history before drawer actions can add drawer-only history.
+      const state = ensureDrawerStateHistory(inputState);
+
       switch (action.type) {
         case 'OPEN_DRAWER':
           return openDrawer(state);

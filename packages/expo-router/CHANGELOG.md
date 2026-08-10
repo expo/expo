@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Make `history` optional in `TabNavigationState` and `DrawerNavigationState` ([#48709](https://github.com/expo/expo/pull/48709) by [@Ubax](https://github.com/Ubax))
 - Make navigation state `type` optional for custom routers. ([#48757](https://github.com/expo/expo/pull/48757) by [@Ubax](https://github.com/Ubax))
 - Handle `PUSH` in tab and drawer routers instead of coercing it to `NAVIGATE`. Custom routers must now handle the `PUSH` action in `getStateForAction`. ([#48752](https://github.com/expo/expo/pull/48752) by [@Ubax](https://github.com/Ubax))
 - Remove the `initialParams` prop from Expo Router screens and `routeParamList` from custom router action options. ([#48756](https://github.com/expo/expo/pull/48756) by [@Ubax](https://github.com/Ubax))

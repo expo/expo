@@ -1,4 +1,4 @@
-import { expect, jest, test } from '@jest/globals';
+import { describe, expect, jest, test } from '@jest/globals';
 import { expectTypeOf } from 'expect-type';
 
 import {
@@ -2295,7 +2295,7 @@ test('preserves params in history with backBehavior: fullHistory', () => {
   ) as TabNavigationState<ParamListBase>;
 
   expect(state.routes[1]!.params).toEqual({ value: 'first' });
-  expect(state.history[1]!.params).toEqual({ value: 'first' });
+  expect(state.history?.[1]!.params).toEqual({ value: 'first' });
 
   state = router.getStateForAction(
     state,
@@ -2304,7 +2304,7 @@ test('preserves params in history with backBehavior: fullHistory', () => {
   ) as TabNavigationState<ParamListBase>;
 
   expect(state.routes[2]!.params).toEqual({ value: 'second' });
-  expect(state.history[2]!.params).toEqual({ value: 'second' });
+  expect(state.history?.[2]!.params).toEqual({ value: 'second' });
 
   state = router.getStateForAction(
     state,
@@ -2313,7 +2313,7 @@ test('preserves params in history with backBehavior: fullHistory', () => {
   ) as TabNavigationState<ParamListBase>;
 
   expect(state.routes[2]!.params).toEqual({ value: 'updated with setParams' });
-  expect(state.history[2]!.params).toEqual({ value: 'updated with setParams' });
+  expect(state.history?.[2]!.params).toEqual({ value: 'updated with setParams' });
 
   state = router.getStateForAction(
     state,
@@ -2322,7 +2322,7 @@ test('preserves params in history with backBehavior: fullHistory', () => {
   ) as TabNavigationState<ParamListBase>;
 
   expect(state.routes[2]!.params).toEqual({ value: 'replaced params' });
-  expect(state.history[2]!.params).toEqual({ value: 'replaced params' });
+  expect(state.history?.[2]!.params).toEqual({ value: 'replaced params' });
 
   state = router.getStateForAction(
     state,
@@ -2331,7 +2331,7 @@ test('preserves params in history with backBehavior: fullHistory', () => {
   ) as TabNavigationState<ParamListBase>;
 
   expect(state.routes[1]!.params).toEqual({ value: 'updated' });
-  expect(state.history[3]!.params).toEqual({ value: 'updated' });
+  expect(state.history?.[3]!.params).toEqual({ value: 'updated' });
 
   state = router.getStateForAction(
     state,
@@ -3193,5 +3193,166 @@ test('handles screen preloading', () => {
       { key: 'qux-test', name: 'qux' },
     ],
     history: [{ type: 'route', key: 'qux-test' }],
+  });
+});
+
+describe('state without history', () => {
+  const options: RouterConfigOptions = {
+    routeNames: ['bar', 'baz', 'qux'],
+    routeParamList: {},
+    routeGetIdList: {},
+  };
+
+  const createState = (index = 1): TabNavigationState<ParamListBase> => ({
+    stale: false,
+    type: 'tab',
+    preloadedRouteKeys: [],
+    key: 'root',
+    index,
+    routeNames: options.routeNames,
+    routes: [
+      { key: 'bar', name: 'bar' },
+      { key: 'baz', name: 'baz' },
+      { key: 'qux', name: 'qux' },
+    ],
+  });
+
+  test.each<['firstRoute' | 'history' | 'fullHistory', string[]]>([
+    ['firstRoute', ['bar', 'qux']],
+    ['history', ['baz', 'qux']],
+    ['fullHistory', ['baz', 'qux']],
+  ])('handles navigation with backBehavior: %s', (backBehavior, expectedKeys) => {
+    const router = TabRouter({ backBehavior });
+
+    for (const action of [CommonActions.navigate('qux'), TabActions.jumpTo('qux')]) {
+      const result = router.getStateForAction(createState(), action, options);
+
+      expect(result?.history?.map((item) => item.key)).toEqual(expectedKeys);
+    }
+  });
+
+  test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>([
+    ['firstRoute', undefined, 'bar'],
+    ['initialRoute', 'baz', 'baz'],
+    ['order', undefined, 'baz'],
+  ])(
+    'reconstructs the back target with backBehavior: %s',
+    (backBehavior, initialRouteName, expectedName) => {
+      const router = TabRouter({ backBehavior, initialRouteName });
+      const result = router.getStateForAction(createState(2), CommonActions.goBack(), options);
+
+      expect(result && result.routes[result.index ?? -1]?.name).toBe(expectedName);
+      expect(result?.history).toBeDefined();
+    }
+  );
+
+  test.each(['history', 'fullHistory'] as const)(
+    'does not go back with an absent visit history and backBehavior: %s',
+    (backBehavior) => {
+      const router = TabRouter({ backBehavior });
+
+      expect(router.getStateForAction(createState(2), CommonActions.goBack(), options)).toBeNull();
+    }
+  );
+
+  test.each([
+    CommonActions.setParams({ answer: 42 }),
+    CommonActions.preload('bar'),
+    TabActions.replace('qux'),
+  ])('handles $type', (action) => {
+    const router = TabRouter({ backBehavior: 'history' });
+    const result = router.getStateForAction(createState(), action, options);
+
+    expect(result?.history).toBeDefined();
+  });
+
+  test('handles ROUTE_NAMES_CHANGED', () => {
+    const router = TabRouter({ backBehavior: 'history' });
+    const routeNames = ['qux', 'baz', 'bar'];
+    const result = router.getStateForAction(
+      createState(),
+      { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames } },
+      { ...options, routeNames }
+    );
+
+    expect(result?.history).toBeDefined();
+  });
+
+  test('handles route focus', () => {
+    const router = TabRouter({ backBehavior: 'history' });
+
+    expect(router.getStateForRouteFocus(createState(), 'qux').history).toEqual([
+      { type: 'route', key: 'baz' },
+      { type: 'route', key: 'qux' },
+    ]);
+  });
+
+  test('preserves params when reconstructing full history', () => {
+    const router = TabRouter({ backBehavior: 'fullHistory' });
+    const state = createState(0);
+    const stateWithParams = {
+      ...state,
+      routes: state.routes.map((route, index) =>
+        index === 0 ? { ...route, params: { answer: 42 } } : route
+      ),
+    };
+    // The action starts from a complete state and returns a complete state.
+    const navigatedState = router.getStateForAction(
+      stateWithParams,
+      TabActions.jumpTo('baz'),
+      options
+    ) as TabNavigationState<ParamListBase>;
+    const result = router.getStateForAction(navigatedState, CommonActions.goBack(), options);
+
+    expect(result?.routes[0]!.params).toEqual({ answer: 42 });
+  });
+
+  test('keeps the focused route in history when it is not declared', () => {
+    const router = TabRouter({});
+    const state = {
+      ...createState(1),
+      routeNames: ['bar'],
+      routes: [
+        { key: 'bar', name: 'bar' },
+        { key: 'zap', name: 'zap' },
+      ],
+    };
+
+    expect(router.getStateForRouteFocus(state, 'missing').history).toEqual([
+      { type: 'route', key: 'zap' },
+    ]);
+  });
+
+  test('keeps the params of an undeclared focused route with backBehavior: fullHistory', () => {
+    const router = TabRouter({ backBehavior: 'fullHistory' });
+    const state = {
+      ...createState(1),
+      routeNames: ['bar'],
+      routes: [
+        { key: 'bar', name: 'bar' },
+        { key: 'zap', name: 'zap', params: { answer: 42 } },
+      ],
+    };
+
+    // Going back must restore the params, not overwrite them with `undefined`.
+    const navigatedState = router.getStateForAction(
+      state,
+      TabActions.jumpTo('bar'),
+      options
+    ) as TabNavigationState<ParamListBase>;
+    const result = router.getStateForAction(navigatedState, CommonActions.goBack(), options);
+
+    expect(result?.routes[1]!.params).toEqual({ answer: 42 });
+  });
+
+  test('handles an empty state', () => {
+    const router = TabRouter({});
+    const state = {
+      ...createState(-1),
+      routeNames: [],
+      routes: [],
+    };
+
+    expect(router.getStateForRouteFocus(state, 'missing').history).toEqual([]);
   });
 });
