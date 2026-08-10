@@ -62,6 +62,96 @@ class FileDownloaderManifestParsingTest {
   }
 
   @Test
+  fun testManifestParsing_RelativeUrlsAgainstBaseWithoutPath() = runTest {
+    // A development server URL typed without a trailing slash has an empty path. Resolving a
+    // path-relative asset URL against it must still insert the `/` separator, otherwise the first
+    // path segment is spliced onto the port and the resulting authority fails to parse.
+    val manifestBody = """
+      {
+        "id": "0754dad0-d200-d634-113c-ef1f26106028",
+        "createdAt": "2021-11-23T00:57:14.437Z",
+        "runtimeVersion": "1",
+        "assets": [{
+          "hash": "cb65fafb5ed456fc3ed8a726cf4087d37b875184eba96f33f6d99104e6e2266d",
+          "key": "489ea2f19fa850b65653ab445637a181.jpg",
+          "contentType": "image/jpeg",
+          "url": "assets/node_modules/expo-asset/image.jpg?platform=android",
+          "fileExtension": ".jpg"
+        }],
+        "launchAsset": {
+          "hash": "323ddd1968ee76d4ddbb16b04fb2c3f1b6d1ab9b637d819699fecd6fa0ffb1a8",
+          "key": "696a70cf7035664c20ea86f67dae822b.bundle",
+          "contentType": "application/javascript",
+          "url": "apps/testproject/node_modules/expo-router/entry.bundle?platform=android",
+          "fileExtension": ".bundle"
+        },
+        "extra": { "scopeKey": "@test/app" }
+      }
+    """.trimIndent()
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("http://192.168.1.2:8081")
+      )
+    )
+    val fileDownloader = createFileDownloader(configuration)
+    val updateResponse = fileDownloader.parseRemoteUpdateResponse(response)
+    val resultUpdate = updateResponse.manifestUpdateResponsePart?.update
+    Assert.assertNotNull(resultUpdate)
+    val launchAsset = resultUpdate!!.assetEntityList.first { it.isLaunchAsset }
+    Assert.assertEquals(
+      "http://192.168.1.2:8081/apps/testproject/node_modules/expo-router/entry.bundle?platform=android",
+      launchAsset.url.toString()
+    )
+    // The authority must stay parseable: a spliced path segment yields port -1 instead of 8081.
+    Assert.assertEquals("192.168.1.2", launchAsset.url!!.host)
+    Assert.assertEquals(8081, launchAsset.url!!.port)
+    val imageAsset = resultUpdate.assetEntityList.first { !it.isLaunchAsset }
+    Assert.assertEquals(
+      "http://192.168.1.2:8081/assets/node_modules/expo-asset/image.jpg?platform=android",
+      imageAsset.url.toString()
+    )
+  }
+
+  @Test
+  fun testManifestParsing_RelativeUrlsAgainstNonHttpBase() = runTest {
+    // Normalizing the base must not narrow which schemes resolve: `exp://` URLs still reach here.
+    val manifestBody = """
+      {
+        "id": "0754dad0-d200-d634-113c-ef1f26106028",
+        "createdAt": "2021-11-23T00:57:14.437Z",
+        "runtimeVersion": "1",
+        "assets": [],
+        "launchAsset": {
+          "hash": "323ddd1968ee76d4ddbb16b04fb2c3f1b6d1ab9b637d819699fecd6fa0ffb1a8",
+          "key": "696a70cf7035664c20ea86f67dae822b.bundle",
+          "contentType": "application/javascript",
+          "url": "apps/testproject/node_modules/expo-router/entry.bundle?platform=android",
+          "fileExtension": ".bundle"
+        },
+        "extra": { "scopeKey": "@test/app" }
+      }
+    """.trimIndent()
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("exp://192.168.1.2:8081")
+      )
+    )
+    val fileDownloader = createFileDownloader(configuration)
+    val updateResponse = fileDownloader.parseRemoteUpdateResponse(response)
+    val resultUpdate = updateResponse.manifestUpdateResponsePart?.update
+    Assert.assertNotNull(resultUpdate)
+    val launchAsset = resultUpdate!!.assetEntityList.first { it.isLaunchAsset }
+    Assert.assertEquals(
+      "exp://192.168.1.2:8081/apps/testproject/node_modules/expo-router/entry.bundle?platform=android",
+      launchAsset.url.toString()
+    )
+  }
+
+  @Test
   fun testManifestParsing_MultipartBody() = runTest {
     val filesDirectory = temporaryFolder.newFolder()
     val logDirectory = temporaryFolder.newFolder()

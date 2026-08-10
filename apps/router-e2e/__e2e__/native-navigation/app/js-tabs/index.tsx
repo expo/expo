@@ -8,6 +8,12 @@ export default function Home() {
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
       <Text testID="e2e-screen">Home</Text>
       <Text testID="e2e-pathname">{pathname}</Text>
+      <Link testID="e2e-goto-profile-details" href="/js-tabs/profile/details">
+        Go to Profile Details
+      </Link>
+      <Link testID="e2e-goto-profile-details-anchor" href="/js-tabs/profile/details" withAnchor>
+        Go to Profile Details with anchor
+      </Link>
       <Link testID="e2e-goto-profile" href="/js-tabs/profile">
         Go to Profile
       </Link>

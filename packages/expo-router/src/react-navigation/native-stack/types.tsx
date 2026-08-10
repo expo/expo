@@ -7,6 +7,7 @@ import type {
 } from 'react-native';
 import type {
   ScreenProps,
+  ScreenStackProps,
   ScreenStackHeaderConfigProps,
   ScrollEdgeEffect,
   SearchBarProps,
@@ -16,6 +17,7 @@ import type { SFSymbol } from 'sf-symbols-typescript';
 import type {
   DefaultNavigatorOptions,
   Descriptor,
+  DescriptorRouteProp,
   NavigationHelpers,
   NavigationProp,
   ParamListBase,
@@ -78,7 +80,8 @@ export type NativeStackOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = NativeStackScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<NativeStackScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 
@@ -87,9 +90,19 @@ export type NativeStackNavigationHelpers = NavigationHelpers<
   NativeStackNavigationEventMap
 >;
 
-// We want it to be an empty object because navigator does not have any additional props
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export type NativeStackNavigationConfig = {};
+type NativeStackHostNativeProps = Partial<Omit<ScreenStackProps, 'children'>>;
+
+export type NativeStackNavigationConfig = {
+  /**
+   * Props passed to the underlying native stack host implementation in `react-native-screens`.
+   *
+   * > **Note:** This is an unstable API and may change or be removed in minor versions.
+   *
+   * @platform android
+   * @platform ios
+   */
+  unstable_nativeProps?: NativeStackHostNativeProps;
+};
 
 export type NativeStackScreenNativeProps = Partial<
   Omit<ScreenProps, 'children' | 'screenId' | 'activityState'>
@@ -1203,6 +1216,30 @@ export type NativeStackHeaderItem =
   | NativeStackHeaderItemMenu
   | NativeStackHeaderItemSpacing
   | NativeStackHeaderItemCustom;
+
+export type NativeStackEmit = NativeStackNavigationHelpers['emit'];
+
+export type NativeStackViewEmit = (
+  event:
+    | {
+        type: 'transitionStart' | 'transitionEnd';
+        target?: string;
+        data: { closing: boolean };
+      }
+    | { type: 'gestureCancel'; target?: string; data?: undefined }
+    | {
+        type: 'sheetDetentChange';
+        target?: string;
+        data: { index: number; stable: boolean };
+      }
+) => void;
+
+/**
+ * The navigator-level state consumed by `NativeStackView`.
+ *
+ * Routes after `index` are preloaded and rendered natively-detached.
+ */
+export type NativeStackViewState = Pick<StackNavigationState<ParamListBase>, 'index' | 'routes'>;
 
 export type NativeStackNavigatorProps = DefaultNavigatorOptions<
   ParamListBase,

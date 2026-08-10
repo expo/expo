@@ -27,4 +27,9 @@ describe('ExpoAgeRange', () => {
     // The mock represents the unsupported / unknown case (iOS < 26.4, Android, web).
     await expect(ExpoAgeRange.getRequiredRegulatoryFeaturesAsync()).resolves.toBeNull();
   });
+
+  it(`invokes requestAgeSignalsAccessAsync and resolves with null on unsupported platforms`, async () => {
+    // The mock represents the unsupported case (iOS and web).
+    await expect(ExpoAgeRange.requestAgeSignalsAccessAsync()).resolves.toBeNull();
+  });
 });

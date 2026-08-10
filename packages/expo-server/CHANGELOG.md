@@ -9,15 +9,31 @@
 ### 🎉 New features
 
 - Apply per-path `pageHeaders` to matching page responses ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
+- Apply `pageHeaders` rules to loader responses ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
-- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
-- Ensure external CSS imports are added to the server manifest so they reach the streaming renderer ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
+- Support web apps exported using SDK 55 ([#48351](https://github.com/expo/expo/pull/48351) by [@hassankhan](https://github.com/hassankhan))
 
 ### 💡 Others
 
 - Detach from global `@types/node`, `undici-types`, and `@cloudflare/workers-types` ([#46728](https://github.com/expo/expo/pull/46728) by [@kitten](https://github.com/kitten))
+
+## 57.0.1 - 2026-07-15
+
+_This version does not introduce any user-facing changes._
+
+## 57.0.0 - 2026-06-25
+
+### 🐛 Bug fixes
+
+- Ensure external CSS imports are added to the server manifest so they reach the streaming renderer ([#46984](https://github.com/expo/expo/pull/46984) by [@hassankhan](https://github.com/hassankhan))
+
+## 56.0.5 - 2026-06-05
+
+### 🐛 Bug fixes
+
+- Use favicon from app config when SSR is enabled ([#46570](https://github.com/expo/expo/pull/46570) by [@hassankhan](https://github.com/hassankhan))
 
 ## 56.0.4 — 2026-05-20
 

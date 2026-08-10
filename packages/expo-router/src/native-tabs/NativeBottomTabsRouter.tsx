@@ -30,9 +30,14 @@ export function NativeBottomTabsRouter(options: TabRouterOptions) {
       switch (action.type) {
         case 'NAVIGATE': {
           const newStateFromNavigation = tabRouter.getStateForAction(state, action, options);
-          const index = state.routes.findIndex((route) => route.name === action.payload.name);
 
-          if (index === -1 || !newStateFromNavigation) {
+          if (!newStateFromNavigation) {
+            return newStateFromNavigation;
+          }
+          const index = newStateFromNavigation.routes.findIndex(
+            (route) => route.name === action.payload.name
+          );
+          if (index === -1) {
             return newStateFromNavigation;
           }
 

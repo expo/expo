@@ -13,6 +13,7 @@ import {
   logLoadedEnv,
   parseEnvFiles,
   parseProjectEnv,
+  setNodeEnv,
 } from '../';
 
 jest.mock('node:console', () => {
@@ -36,6 +37,28 @@ beforeEach(() => {
 afterAll(() => {
   // Clear the mocked environment, reusing the original object instance
   process.env = originalEnv;
+});
+
+describe(setNodeEnv, () => {
+  it('overwrites an inherited NODE_ENV value', () => {
+    process.env.NODE_ENV = 'test';
+
+    expect(setNodeEnv('production')).toBe(process.env);
+    expect(process.env.NODE_ENV).toBe('production');
+  });
+
+  it('updates a custom environment without changing process.env', () => {
+    process.env.NODE_ENV = 'development';
+    const systemEnv = { NODE_ENV: 'test', EXAMPLE: 'value' };
+
+    expect(setNodeEnv('production', { systemEnv })).toBe(systemEnv);
+
+    expect(systemEnv).toEqual({
+      NODE_ENV: 'production',
+      EXAMPLE: 'value',
+    });
+    expect(process.env.NODE_ENV).toBe('development');
+  });
 });
 
 describe(getEnvFiles, () => {
@@ -302,6 +325,24 @@ describe(parseProjectEnv, () => {
 });
 
 describe(loadProjectEnv, () => {
+  it('sets NODE_ENV before loading project env files', () => {
+    process.env.NODE_ENV = 'test';
+    vol.fromJSON(
+      {
+        '.env.production': ['FOO=production', 'NODE_ENV=development'].join('\n'),
+      },
+      '/'
+    );
+
+    expect(loadProjectEnv('/', { mode: 'production' })).toMatchObject({
+      result: 'loaded',
+      env: { FOO: 'production' },
+      files: ['/.env.production'],
+      loaded: ['FOO'],
+    });
+    expect(process.env.NODE_ENV).toBe('production');
+  });
+
   it('parses .env file with mutating system environment variables', () => {
     delete process.env.FOO;
     vol.fromJSON({ '.env': 'FOO=bar' }, '/');

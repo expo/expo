@@ -1,5 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
+
 @MainActor
 class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
   private let manager: DevMenuManager
@@ -11,7 +13,11 @@ class DevMenuWindow: UIWindow, UISheetPresentationControllerDelegate {
     self.manager = manager
     self.devMenuViewController = DevMenuViewController(manager: manager)
 
-    super.init(frame: UIScreen.main.bounds)
+    if let windowScene = SceneGeometry.foregroundActiveScene() {
+      super.init(windowScene: windowScene)
+    } else {
+      super.init(frame: .zero)
+    }
 
     self.rootViewController = UIViewController()
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)

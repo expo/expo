@@ -901,6 +901,10 @@ type AppStoreConnectContext = {
     id: string;
     state: 'awaiting_upload' | 'processing' | 'failed' | 'complete';
     cf_bundle_version?: string;
+    cf_bundle_short_version_string?: string;
+    platform?: string;
+    uploaded_date?: string;
+    created_date?: string;
     build?: {
       id: string;
     };
@@ -941,6 +945,7 @@ jobs:
         Upload complete for App Store Connect app: ${{ app_store_connect.app.id }}
         Upload ID: ${{ app_store_connect.build_upload.id }}
         Upload state: ${{ app_store_connect.build_upload.state }}
+        Version: ${{ app_store_connect.build_upload.cf_bundle_short_version_string }} (${{ app_store_connect.build_upload.cf_bundle_version }})
 ```
 
 Use `build_upload.build.id` as the `asc_build_id` for a `testflight` job:
@@ -1347,20 +1352,13 @@ jobs:
       after_install_node_modules: step[] # optional
 ```
 
-When uploading and submitting with `build_id`, this job outputs the following properties:
+This job outputs the following properties, where `asc_build_id` is only set when submitting an already uploaded build:
 
 ```json
 {
   "apple_app_id": string | null, // Apple App ID. https://expo.fyi/asc-app-id
-  "ios_bundle_identifier": string | null // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
-}
-```
-
-When submitting an already uploaded build with `asc_build_id`, this job outputs the following properties:
-
-```json
-{
-  "asc_build_id": string | null // App Store Connect build ID
+  "ios_bundle_identifier": string | null, // iOS bundle identifier of the submitted build. https://expo.fyi/bundle-identifier
+  "asc_build_id": string | null // App Store Connect build ID. Only when submitting an already uploaded build.
 }
 ```
 
@@ -1568,7 +1566,7 @@ This job outputs the following properties:
 
 #### `apple-device-registration-request`
 
-Pauses the workflow until an iOS device enrolls for an Apple Team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
+Pauses the workflow until an iOS device enrolls for an Apple team and a team member approves the enrollment. See [Apple device registration request job documentation](/eas/workflows/pre-packaged-jobs#apple-device-registration-request) for detailed information and examples.
 
 ```yaml
 jobs:
@@ -1839,6 +1837,29 @@ jobs:
       - uses: eas/checkout
         # @end #
 ```
+
+For jobs with Git-based project sources, the step uses the job's recorded commit by default. Use `ref` to check out a different branch, tag, or commit:
+
+```yaml
+jobs:
+  my_job:
+    steps:
+      # @info #
+      - uses: eas/checkout
+        with:
+          ref: feature/add-icon
+        # @end #
+```
+
+`ref` accepts:
+
+- A branch, as a bare name such as `feature/add-icon` or a qualified ref such as `refs/heads/feature/add-icon`. The repository ends up on that branch.
+- A tag, as a qualified ref such as `refs/tags/v1.2.3`. The repository ends up on a detached `HEAD`.
+- A full commit SHA. The repository ends up on a detached `HEAD`.
+
+The step runs a shallow fetch (`--depth 1`) from the source repository's `origin`, so the ref must be reachable there.
+
+`ref` only works when your project sources come from a Git repository, for example a job triggered through the GitHub integration. Local builds and uploaded project tarballs do not support it. Set `ref` on the job's first `eas/checkout` step. Setting it on a later step fails, because the project is already checked out.
 
 <EASFunctionDescription name="checkout" />
 

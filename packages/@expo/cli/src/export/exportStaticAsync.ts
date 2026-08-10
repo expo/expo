@@ -11,7 +11,7 @@ import chalk from 'chalk';
 import type { RouteNode } from 'expo-router/build/Route';
 import { getContextKey, stripGroupSegmentsFromPath } from 'expo-router/build/matchers';
 import { shouldLinkExternally } from 'expo-router/build/utils/url';
-import type { RoutesManifest } from 'expo-server/private';
+import type { PageHeaderInfo, RoutesManifest } from 'expo-server/private';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 import { inspect } from 'util';
@@ -22,6 +22,7 @@ import type {
   MetroBundlerDevServer,
 } from '../start/server/metro/MetroBundlerDevServer';
 import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
+import { SSG_LOADER_HEADER_ALLOWLIST } from '../start/server/metro/resolveLoader';
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import {
   assetsRequiresSort,
@@ -86,11 +87,22 @@ function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
 
+export const SERVER_LOADER_DEFAULT_HEADER_RULE: PageHeaderInfo<string> = {
+  namedRegex: '^/_expo/loaders/.+$',
+  headers: { 'Cache-Control': 'no-store' },
+};
+
+type LoaderHeaderEntry = {
+  /** Allowlisted headers the loader response actually carried. */
+  declared: Record<string, string>;
+  /** Default values for headers the loader left undeclared. */
+  defaults: Record<string, string>;
+};
+
 export async function getFilesToExportFromServerAsync(
   projectRoot: string,
   {
     manifest,
-    serverManifest,
     renderAsync,
     // Servers can handle group routes automatically and therefore
     // don't require the build-time generation of every possible group
@@ -101,9 +113,6 @@ export async function getFilesToExportFromServerAsync(
     files = new Map(),
   }: {
     manifest: ExpoRouterRuntimeManifest;
-    // Optional: the `if (!exportServer && serverManifest)` guard below handles its absence,
-    // and callers exporting only HTML (e.g. tests) don't provide it.
-    serverManifest?: RoutesManifest;
     renderAsync: (requestLocation: HtmlRequestLocation) => Promise<string>;
     exportServer?: boolean;
     /**
@@ -116,20 +125,6 @@ export async function getFilesToExportFromServerAsync(
     files?: ExportAssetMap;
   }
 ): Promise<ExportAssetMap> {
-  if (!exportServer && serverManifest) {
-    // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
-    // EAS Hosting to recognize the `headers`, `pageHeaders`, and `redirects` configs
-    const subsetServerManifest: StaticManifest = {
-      headers: serverManifest.headers,
-      pageHeaders: serverManifest.pageHeaders,
-      redirects: serverManifest.redirects,
-    };
-    files.set('_expo/.routes.json', {
-      contents: JSON.stringify(subsetServerManifest, null, 2),
-      targetDomain: 'client',
-    });
-  }
-
   // Skip HTML pre-rendering in SSR mode since HTML will be rendered at runtime.
   if (skipHtmlPrerendering) {
     return files;
@@ -257,10 +252,14 @@ export async function exportFromServerAsync(
     withLoaders: loaderReferenceCount,
   });
 
+  // Group variations prerender several pathnames from one loader file, so these maps can differ
+  // in size.
+  const loaderHeadersByPage = new Map<string, LoaderHeaderEntry>();
+  const loaderHeadersByFile = new Map<string, LoaderHeaderEntry>();
+
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
     manifest,
-    serverManifest,
     exportServer,
     skipHtmlPrerendering: isExportingWithSSR,
     async renderAsync({ pathname, route }) {
@@ -284,6 +283,13 @@ export async function exportFromServerAsync(
             targetDomain: 'client',
             loaderId: loaderKey,
           });
+
+          const loaderHeaders = deriveStaticLoaderHeaders(loaderResponse.headers);
+          loaderHeadersByPage.set(normalizedPathname, loaderHeaders);
+          // NOTE(@hassankhan): Last-write-wins when concurrent group
+          // variations share a loader file; fine for SSG as loaders don't get
+          // a `request` and will produce identical headers.
+          loaderHeadersByFile.set(`/${fileSystemPath}`, loaderHeaders);
 
           renderOpts.loader = { data, key: loaderKey };
         }
@@ -312,6 +318,36 @@ export async function exportFromServerAsync(
       return html;
     },
   });
+
+  const defaultLoaderRules = [
+    ...toLoaderRules(loaderHeadersByPage, 'defaults'),
+    ...toLoaderRules(loaderHeadersByFile, 'defaults'),
+  ];
+  const declaredLoaderRules = [
+    ...toLoaderRules(loaderHeadersByPage, 'declared'),
+    ...toLoaderRules(loaderHeadersByFile, 'declared'),
+  ];
+
+  if (defaultLoaderRules.length || declaredLoaderRules.length) {
+    serverManifest.pageHeaders = buildLoaderPageHeaderRules(serverManifest.pageHeaders, {
+      defaults: defaultLoaderRules,
+      declared: declaredLoaderRules,
+    });
+  }
+
+  if (!exportServer) {
+    // When we're not exporting a `server` output, we provide a `_expo/.routes.json` for
+    // EAS Hosting to recognize the `headers`, `pageHeaders`, and `redirects` configs
+    const subsetServerManifest: StaticManifest = {
+      headers: serverManifest.headers,
+      pageHeaders: serverManifest.pageHeaders,
+      redirects: serverManifest.redirects,
+    };
+    files.set('_expo/.routes.json', {
+      contents: JSON.stringify(subsetServerManifest, null, 2),
+      targetDomain: 'client',
+    });
+  }
 
   getFilesFromSerialAssets(resources.artifacts, {
     platform,
@@ -345,6 +381,22 @@ export async function exportFromServerAsync(
       files.set(route, contents);
     }
 
+    const useServerLoaders = !!exp?.extra?.router?.unstable_useServerDataLoaders;
+    if (useServerLoaders || defaultLoaderRules.length || declaredLoaderRules.length) {
+      updateExportManifestInFiles({
+        files,
+        callback: (manifest) => {
+          manifest.pageHeaders = buildLoaderPageHeaderRules(manifest.pageHeaders, {
+            defaults: [
+              ...(useServerLoaders ? [SERVER_LOADER_DEFAULT_HEADER_RULE] : []),
+              ...defaultLoaderRules,
+            ],
+            declared: declaredLoaderRules,
+          });
+        },
+      });
+    }
+
     // Export SSR render module and add SSR configuration to routes manifest
     if (isExportingWithSSR) {
       await devServer.exportExpoRouterRenderModuleAsync({
@@ -354,7 +406,6 @@ export async function exportFromServerAsync(
       });
 
       // Export loader bundles for routes that have loader exports
-      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
       if (useServerLoaders) {
         // Get `loaderReferences` from client bundle metadata to determine which routes have loaders
         const loaderReferences = resources.artifacts?.flatMap(
@@ -646,7 +697,6 @@ export async function exportApiRoutesStandaloneAsync(
     // TODO: Export an HTML entry for each file. This is a temporary solution until we have SSR/SSG for RSC.
     await getFilesToExportFromServerAsync(devServer.projectRoot, {
       manifest: htmlManifest,
-      serverManifest,
       exportServer: true,
       files,
       renderAsync: async ({ pathname, filePath }) => {
@@ -801,4 +851,64 @@ function updateExportManifestInFiles({
       contents: JSON.stringify(manifest, null, 2),
     });
   }
+}
+
+/**
+ * Compiles a concrete pathname into an exact-match `namedRegex`. Exported pathnames are literal,
+ * so route syntax like `[param]` or `(group)` is escaped rather than parameterized.
+ *
+ * @see @expo/router-server/src/getNamedParametrizedRoute.ts
+ */
+export function getExactPathNamedRegex(pathname: string): string {
+  const escaped = pathname.replace(/[|\\{}()[\]^$+*?.-]/g, '\\$&');
+  return `^${escaped}(?:/)?$`;
+}
+
+/**
+ * Converts headers keyed by pathname into exact-match `pageHeaders` rules, sorted for
+ * deterministic manifest output.
+ */
+function toLoaderRules(
+  rulesByPath: Map<string, LoaderHeaderEntry>,
+  origin: keyof LoaderHeaderEntry
+): PageHeaderInfo<string>[] {
+  return [...rulesByPath.entries()]
+    .filter(([, entry]) => Object.keys(entry[origin]).length > 0)
+    .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+    .map(([pathname, entry]) => ({
+      namedRegex: getExactPathNamedRegex(pathname),
+      headers: entry[origin],
+    }));
+}
+
+/**
+ * Split a loader response's allowlisted headers from the SSG defaults for headers it left
+ * undeclared.
+ */
+export function deriveStaticLoaderHeaders(responseHeaders: Headers): LoaderHeaderEntry {
+  const declared: Record<string, string> = {};
+  for (const name of SSG_LOADER_HEADER_ALLOWLIST) {
+    const value = responseHeaders.get(name);
+    if (value) {
+      declared[name] = value;
+    }
+  }
+
+  const defaults: Record<string, string> = {};
+  if (!declared['Cache-Control']) {
+    defaults['Cache-Control'] = 'private, must-revalidate, max-age=0';
+  }
+
+  return { declared, defaults };
+}
+
+/**
+ * Order loader header rules around user-configured `pageHeaders`. Defaults come
+ * first so user configuration overrides them; loader-declared rules come last.
+ */
+export function buildLoaderPageHeaderRules(
+  pageHeaders: PageHeaderInfo<string>[] | undefined,
+  { defaults, declared }: { defaults: PageHeaderInfo<string>[]; declared: PageHeaderInfo<string>[] }
+): PageHeaderInfo<string>[] {
+  return [...defaults, ...(pageHeaders ?? []), ...declared];
 }

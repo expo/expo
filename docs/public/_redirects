@@ -15,10 +15,10 @@
 /module-config/ /modules/module-config 301
 
 # Development builds
-/development/build /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
-/development/build/ /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
-/development/getting-started /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
-/development/getting-started/ /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
+/development/build /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
+/development/build/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
+/development/getting-started /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
+/development/getting-started/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 /development/troubleshooting /develop/development-builds/introduction 301
 /development/troubleshooting/ /develop/development-builds/introduction 301
 /development/upgrading /develop/development-builds/introduction 301
@@ -27,8 +27,8 @@
 /development/extensions/ /develop/development-builds/development-workflows 301
 /development/develop-your-project /develop/development-builds/use-development-builds 301
 /development/develop-your-project/ /develop/development-builds/use-development-builds 301
-/develop/development-builds/installation /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
-/develop/development-builds/installation/ /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
+/develop/development-builds/installation /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
+/develop/development-builds/installation/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 
 # Guides that have been deleted
 /guides/web-performance /guides/analyzing-bundles 301
@@ -55,8 +55,8 @@
 /guides/color-schemes/ /develop/user-interface/color-themes 301
 /development/introduction /develop/development-builds/introduction 301
 /development/introduction/ /develop/development-builds/introduction 301
-/development/create-development-builds /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
-/development/create-development-builds/ /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
+/development/create-development-builds /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
+/development/create-development-builds/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 /development/use-development-builds /develop/development-builds/use-development-builds 301
 /development/use-development-builds/ /develop/development-builds/use-development-builds 301
 /development/development-workflows /develop/development-builds/development-workflows 301
@@ -103,22 +103,14 @@
 /bare/installing-unimodules/ /bare/installing-expo-modules 301
 /versions/latest/sdk/admob /versions/latest 301
 /versions/latest/sdk/admob/ /versions/latest 301
-/workflow/publishing /archive/classic-updates/publishing 301
-/workflow/publishing/ /archive/classic-updates/publishing 301
 /workflow/already-used-react-native /workflow/overview 301
 /workflow/already-used-react-native/ /workflow/overview 301
-/development/installation /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
-/development/installation/ /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
+/development/installation /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
+/development/installation/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 /bare/updating-your-app /eas-update/getting-started 301
 /bare/updating-your-app/ /eas-update/getting-started 301
 /technical-specs/expo-updates-0 /technical-specs/expo-updates-1 301
 /technical-specs/expo-updates-0/ /technical-specs/expo-updates-1 301
-/archive/expokit/eject /archive/glossary 301
-/archive/expokit/eject/ /archive/glossary 301
-/archive/expokit/overview /archive/glossary 301
-/archive/expokit/overview/ /archive/glossary 301
-/expokit/overview /archive/glossary 301
-/expokit/overview/ /archive/glossary 301
 /bare/existing-apps /bare/installing-expo-modules 301
 /bare/existing-apps/ /bare/installing-expo-modules 301
 /bare/exploring-bare-workflow /bare/overview 301
@@ -139,24 +131,10 @@
 /guides/setting-up-continuous-integration/ /build/building-on-ci 301
 
 # Moved classic updates
-/distribution/release-channels /archive/classic-updates/release-channels 301
-/distribution/release-channels/ /archive/classic-updates/release-channels 301
-/distribution/advanced-release-channels /archive/classic-updates/advanced-release-channels 301
-/distribution/advanced-release-channels/ /archive/classic-updates/advanced-release-channels 301
-/distribution/optimizing-updates /archive/classic-updates/optimizing-updates 301
-/distribution/optimizing-updates/ /archive/classic-updates/optimizing-updates 301
 /distribution/runtime-versions /eas-update/runtime-versions 301
 /distribution/runtime-versions/ /eas-update/runtime-versions 301
-/guides/offline-support /archive/classic-updates/offline-support 301
-/guides/offline-support/ /archive/classic-updates/offline-support 301
-/guides/preloading-and-caching-assets /archive/classic-updates/preloading-and-caching-assets 301
-/guides/preloading-and-caching-assets/ /archive/classic-updates/preloading-and-caching-assets 301
-/guides/configuring-updates /archive/classic-updates/configuring-updates 301
-/guides/configuring-updates/ /archive/classic-updates/configuring-updates 301
 /eas-update/bare-react-native /eas-update/getting-started 301
 /eas-update/bare-react-native/ /eas-update/getting-started 301
-/worfkflow/publishing /archive/classic-updates/publishing 301
-/worfkflow/publishing/ /archive/classic-updates/publishing 301
 /classic/building-standalone-apps /build/setup 301
 /classic/building-standalone-apps/ /build/setup 301
 /classic/turtle-cli /build/setup 301
@@ -185,8 +163,8 @@
 /distribution/custom-updates-server/ /versions/latest/sdk/updates 301
 /bare/error-recovery /eas-update/error-recovery 301
 /bare/error-recovery/ /eas-update/error-recovery 301
-/deploy/instant-updates /eas-update/send-over-the-air-updates 301
-/deploy/instant-updates/ /eas-update/send-over-the-air-updates 301
+/deploy/instant-updates /deploy/send-over-the-air-updates 301
+/deploy/instant-updates/ /deploy/send-over-the-air-updates 301
 /eas-update/publish /eas-update/getting-started 301
 /eas-update/publish/ /eas-update/getting-started 301
 /eas-update/debug-advanced /eas-update/debug 301
@@ -245,8 +223,6 @@
 /versions/latest/sdk/taskmanager/ /versions/latest/sdk/task-manager 301
 /versions/latest/sdk/videothumbnails /versions/latest/sdk/video-thumbnails 301
 /versions/latest/sdk/videothumbnails/ /versions/latest/sdk/video-thumbnails 301
-/versions/latest/sdk/appearance /versions/latest/react-native/appearance 301
-/versions/latest/sdk/appearance/ /versions/latest/react-native/appearance 301
 /versions/latest/sdk/app-loading /versions/latest/sdk/splash-screen 301
 /versions/latest/sdk/app-loading/ /versions/latest/sdk/splash-screen 301
 /versions/latest/sdk/app-auth /guides/authentication 301
@@ -633,8 +609,8 @@
 /guides/configuring-js-engines /archive/configuring-js-engines/ 301
 
 # After merging development build pages into the introduction (guided paths)
-/develop/development-builds/create-a-build /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
-/develop/development-builds/create-a-build/ /develop/development-builds/introduction/?buildenv=build-with-eas#create-a-development-build-with-eas 301
+/develop/development-builds/create-a-build /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
+/develop/development-builds/create-a-build/ /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
 /develop/development-builds/expo-go-to-dev-build /develop/development-builds/introduction/#build-locally 301
 /develop/development-builds/expo-go-to-dev-build/ /develop/development-builds/introduction/#build-locally 301
 /develop/development-builds/next-steps /develop/development-builds/faq/ 301
@@ -659,3 +635,14 @@
 /index.md /index.md 200
 /*/index.md /:splat/index.md 200
 /*.md /:splat/index.md 200
+
+# Retired llms full-context bundles; only the /llms.txt index remains
+/llms-full.txt /llms.txt 301
+/llms-eas.txt /llms.txt 301
+/llms-sdk.txt /llms.txt 301
+/llms-sdk-v51.0.0.txt /llms.txt 301
+/llms-sdk-v52.0.0.txt /llms.txt 301
+/llms-sdk-v53.0.0.txt /llms.txt 301
+/llms-sdk-v54.0.0.txt /llms.txt 301
+/llms-sdk-v55.0.0.txt /llms.txt 301
+/llms-sdk-v56.0.0.txt /llms.txt 301

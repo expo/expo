@@ -102,35 +102,35 @@ function CardContainerInner({
   });
 
   const handleOpen = () => {
-    const { route } = scene.descriptor;
+    const { route } = scene;
 
     onTransitionEnd({ route }, false);
     onOpenRoute({ route });
   };
 
   const handleClose = () => {
-    const { route } = scene.descriptor;
+    const { route } = scene;
 
     onTransitionEnd({ route }, true);
     onCloseRoute({ route });
   };
 
   const handleGestureBegin = () => {
-    const { route } = scene.descriptor;
+    const { route } = scene;
 
     onPageChangeStart();
     onGestureStart({ route });
   };
 
   const handleGestureCanceled = () => {
-    const { route } = scene.descriptor;
+    const { route } = scene;
 
     onPageChangeCancel();
     onGestureCancel({ route });
   };
 
   const handleGestureEnd = () => {
-    const { route } = scene.descriptor;
+    const { route } = scene;
 
     onGestureEnd({ route });
   };
@@ -138,7 +138,7 @@ function CardContainerInner({
   const handleTransition = ({ closing, gesture }: { closing: boolean; gesture: boolean }) => {
     wrapperRef.current?.setInert(closing);
 
-    const { route } = scene.descriptor;
+    const { route } = scene;
 
     onPageChangeConfirm?.({ gesture, active, closing });
 
@@ -184,7 +184,7 @@ function CardContainerInner({
   } = scene.descriptor.options;
 
   const { buildHref } = useLinkBuilder();
-  const previousScene = getPreviousScene({ route: scene.descriptor.route });
+  const previousScene = getPreviousScene({ route: scene.route });
 
   let backTitle: string | undefined;
   let href: string | undefined;

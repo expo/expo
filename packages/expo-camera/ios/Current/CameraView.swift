@@ -157,9 +157,7 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
   let onAvailableLensesChanged = EventDispatcher()
 
   internal var deviceOrientation: UIInterfaceOrientation {
-    UIApplication.shared.connectedScenes.compactMap {
-      $0 as? UIWindowScene
-    }.first?.interfaceOrientation ?? .unknown
+    SceneGeometry.interfaceOrientation(for: self)
   }
 
   required init(appContext: AppContext? = nil) {
@@ -254,12 +252,12 @@ public class CameraView: ExpoView, EXAppLifecycleListener, EXCameraInterface, Ca
         return
       }
       self.onAvailableLensesChanged([
-        "lenses": self.sessionManager.getAvailableLenses()
+        "lenses": self.getAvailableLenses().map { $0.toDictionary() }
       ])
     }
   }
 
-  func getAvailableLenses() -> [String] {
+  func getAvailableLenses() -> [LensInfo] {
     return sessionManager.getAvailableLenses()
   }
 

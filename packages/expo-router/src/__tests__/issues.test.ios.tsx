@@ -14,7 +14,12 @@ it('should return correct pathname for nested stack with initialRouteName', asyn
   const innerARenderCount = jest.fn();
   renderRouter({
     _layout: function Layout() {
-      return <Tabs />;
+      return (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="inner" />
+        </Tabs>
+      );
     },
     index: function Index() {
       indexRenderCount();
@@ -58,7 +63,12 @@ it('should return correct pathname for nested stack with initialRouteName, after
   const innerARenderCount = jest.fn();
   renderRouter({
     _layout: function Layout() {
-      return <Tabs />;
+      return (
+        <Tabs>
+          <Tabs.Screen name="index" />
+          <Tabs.Screen name="inner" />
+        </Tabs>
+      );
     },
     index: function Index() {
       indexRenderCount();

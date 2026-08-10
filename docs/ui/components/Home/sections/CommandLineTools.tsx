@@ -57,7 +57,7 @@ export function CommandLineTools() {
               <Terminal cmd={['$ npx eas-cli deploy']} className="rounded-md asset-shadow" />
               <CALLOUT theme="secondary">
                 For prerequisites and complete instructions, see{' '}
-                <A href="/deploy/web/#export-your-web-project/">our guide</A>.
+                <A href="/deploy/web/#export-your-web-project">our guide</A>.
               </CALLOUT>
             </div>
           </div>

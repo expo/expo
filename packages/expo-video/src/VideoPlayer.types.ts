@@ -825,6 +825,20 @@ export type ScrubbingModeOptions = {
 };
 
 /**
+ * Determines whether the player is allowed to call [`Surface.setFrameRate`](https://developer.android.com/reference/android/view/Surface#setFrameRate(float,%20int))
+ * to match the display refresh rate to the frame rate of the video being played.
+ * - `'onlyIfSeamless'`: the display refresh rate is changed only when the switch is seamless (no visual interruption). This is the ExoPlayer default.
+ * - `'off'`: the player never calls `Surface.setFrameRate`.
+ *
+ * > On devices with adaptive refresh rate displays (for example, Pixel 9 and 10 series), the platform can respond to a 30 fps video
+ * > by lowering the display render rate and capping the rendering of the entire app, including scrolling and animations, at 30 Hz
+ * > for as long as the video is visible. Set this option to `'off'` to keep the UI running at the full refresh rate, for example
+ * > in a vertical video feed. Frame rate matching mainly benefits TV-class displays, where mismatched rates cause judder.
+ * @platform android
+ */
+export type VideoChangeFrameRateStrategy = 'off' | 'onlyIfSeamless';
+
+/**
  * Options to apply to the player builder before the native constructor is invoked
  * @platform android
  */
@@ -842,6 +856,13 @@ export type PlayerBuilderOptions = {
    * @platform android
    */
   seekForwardIncrement?: number;
+
+  /**
+   * Determines whether the player is allowed to change the display refresh rate to match the frame rate of the video.
+   * @default 'onlyIfSeamless'
+   * @platform android
+   */
+  videoChangeFrameRateStrategy?: VideoChangeFrameRateStrategy;
 };
 
 /**

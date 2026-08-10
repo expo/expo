@@ -11,7 +11,12 @@ extension PHLivePhoto {
     contentMode: PHImageContentMode
   ) -> AsyncThrowingStream<(Bool, PHLivePhoto), Error> {
     return AsyncThrowingStream { continuation in
-      self.request(withResourceFileURLs: fileURLs, placeholderImage: image, targetSize: targetSize, contentMode: contentMode) { livePhoto, loadInfo in
+      self.request(
+        withResourceFileURLs: fileURLs,
+        placeholderImage: image,
+        targetSize: targetSize,
+        contentMode: contentMode
+      ) { livePhoto, loadInfo in
         let isLowQuality = loadInfo[PHLivePhotoInfoIsDegradedKey] as? Bool ?? false
         let error = loadInfo[PHLivePhotoInfoErrorKey] as? Error
 

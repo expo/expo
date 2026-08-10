@@ -1,3 +1,6 @@
+import fs from 'node:fs';
+import path from 'node:path';
+
 import {
   prepareServers,
   RUNTIME_EXPO_SERVE,
@@ -5,7 +8,6 @@ import {
   setupServer,
 } from '../../utils/runtime';
 import { findProjectFiles, getHtml, getPageAndLoaderData } from '../utils';
-/* eslint-env jest */
 import { runExportSideEffects } from './export-side-effects';
 
 runExportSideEffects();
@@ -214,12 +216,96 @@ describe.each(
     // NOTE(@hassankhan): expo-server returns `application/octet-stream` for extensionless files,
     // but the content is still valid JSON.
     // expect(response.headers.get('content-type')).toContain('application/json');
-    expect(response.headers.get('cache-control')).not.toBe('public, max-age=3600');
-    expect(response.headers.get('x-custom-header')).not.toBe('test-value');
+
+    expect(response.headers.get('cache-control')).toBe('public, max-age=604800');
+    // Non-allowlisted headers are stripped in dev and static exports
+    expect(response.headers.get('x-loader-header')).toBeNull();
 
     const data = await response.json();
     expect(data).toEqual({ foo: null });
   });
+
+  (server.isExpoStart ? it.skip : it)(
+    'applies the SSG default Cache-Control to a headerless loader',
+    async () => {
+      const response = await server.fetchAsync('/_expo/loaders/index');
+
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('private, must-revalidate, max-age=0');
+    }
+  );
+
+  it('passes a loader-declared no-store through verbatim', async () => {
+    const response = await server.fetchAsync('/_expo/loaders/second');
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('cache-control')).toBe('private, no-store');
+  });
+
+  (server.isExpoStart ? it.skip : it)(
+    'applies loader-declared `Cache-Control` to the pre-rendered page',
+    async () => {
+      const response = await server.fetchAsync('/response');
+      expect(response.status).toBe(200);
+      expect(response.headers.get('cache-control')).toBe('public, max-age=604800');
+    }
+  );
+
+  (server.isExpoStart ? it.skip : it)(
+    'writes loader and page `Cache-Control` rules to the manifest subset',
+    () => {
+      const routesJson = JSON.parse(
+        fs.readFileSync(path.join(server.outputDir, '_expo/.routes.json'), 'utf8')
+      );
+      const SSG_DEFAULT = { 'Cache-Control': 'private, must-revalidate, max-age=0' };
+
+      expect(routesJson.pageHeaders).toEqual([
+        // Header-less loader routes: the SSG default, applied to each page and loader file.
+        { namedRegex: '^/(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/\\(group\\)(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/env(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/meta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nested(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/null(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/\\(group\\)/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/env(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/error(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/meta(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nested/index(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/\\[value\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/null(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/nullish/undefined(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/\\[postId\\](?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/static\\-post\\-1(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/posts/static\\-post\\-2(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/request(?:/)?$', headers: SSG_DEFAULT },
+        { namedRegex: '^/_expo/loaders/static\\-helper(?:/)?$', headers: SSG_DEFAULT },
+        // Loader-declared headers: appended last so they win, applied to page and loader file.
+        {
+          namedRegex: '^/response(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        { namedRegex: '^/second(?:/)?$', headers: { 'Cache-Control': 'private, no-store' } },
+        {
+          namedRegex: '^/_expo/loaders/response(?:/)?$',
+          headers: { 'Cache-Control': 'public, max-age=604800' },
+        },
+        {
+          namedRegex: '^/_expo/loaders/second(?:/)?$',
+          headers: { 'Cache-Control': 'private, no-store' },
+        },
+      ]);
+    }
+  );
 
   it('renders meta tags from loader data in HTML', async () => {
     const response = await server.fetchAsync('/meta');

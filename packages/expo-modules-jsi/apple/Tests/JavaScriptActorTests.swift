@@ -136,7 +136,7 @@ struct JavaScriptActorTests {
     // async outside, async inside
     try await runtime.execute {
       JavaScriptActor.assertIsolated()
-      try await Task.sleep(nanoseconds: 0)  // makes the closure async
+      try await Task.sleep(nanoseconds: 0) // makes the closure async
       JavaScriptActor.assertIsolated()
     }
   }
@@ -146,7 +146,7 @@ struct JavaScriptActorTests {
     // sync outside, async inside
     try runtime.execute {
       JavaScriptActor.assertIsolated()
-      try await Task.sleep(nanoseconds: 0)  // makes the closure async
+      try await Task.sleep(nanoseconds: 0) // makes the closure async
       JavaScriptActor.assertIsolated()
     }
   }
