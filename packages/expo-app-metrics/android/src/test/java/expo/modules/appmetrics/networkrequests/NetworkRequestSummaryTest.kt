@@ -122,6 +122,36 @@ class NetworkRequestSummaryTest {
   }
 
   @Test
+  fun `keeps a slow response that broke mid-body as the slowest`() {
+    // The body-read fix gives a truncated transfer a 200 AND an error description. Keying
+    // "never completed" off the error string would drop it, which is backwards: a 9s response that
+    // died partway is exactly what a bad-network launch looks like.
+    val requests = listOf(
+      makeRequest(
+        url = "https://cdn.expo.dev/bundle",
+        statusCode = 200,
+        errorDescription = "unexpected end of stream",
+        responseBytesReceived = 4000,
+        totalDuration = 9.0,
+        fetchStart = Date(0),
+        responseStart = Date(500),
+        responseEnd = Date(9000)
+      ),
+      makeRequest(
+        url = "https://api.expo.dev/v2",
+        responseBytesReceived = 100,
+        totalDuration = 0.3,
+        fetchStart = Date(0),
+        responseStart = Date(100),
+        responseEnd = Date(300)
+      )
+    )
+    val summary = NetworkRequestSummary.from(requests)
+    assertEquals(9.0, summary.slowest!!.duration, 0.0001)
+    assertEquals("cdn.expo.dev", summary.slowest!!.host)
+  }
+
+  @Test
   fun `reports the slowest request's status code so an empty body can be explained`() {
     // A 304 revalidation is successful, so it's a candidate, but carries no body. Without the status
     // code a reader can't tell that from a 200 whose transfer broke.

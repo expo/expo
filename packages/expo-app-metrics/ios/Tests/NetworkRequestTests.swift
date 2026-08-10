@@ -406,6 +406,38 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
+  func `keeps a slow response that broke mid-body as the slowest`() {
+    let now = Date()
+    // A truncated transfer keeps the 200 its headers arrived with and gains an error string. Keying
+    // "never completed" off that string would drop it, which is backwards: a 9s response that died
+    // partway is exactly what a bad-network launch looks like.
+    let broken = makeRequest(
+      host: "cdn.expo.dev",
+      duration: 9.0,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 4000,
+      fetchStart: now,
+      error: "unexpected end of stream",
+      responseStart: now.addingTimeInterval(0.5),
+      responseEnd: now.addingTimeInterval(9.0)
+    )
+    let quick = makeRequest(
+      host: "api.expo.dev",
+      duration: 0.3,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 100,
+      fetchStart: now,
+      responseStart: now.addingTimeInterval(0.1),
+      responseEnd: now.addingTimeInterval(0.3)
+    )
+    let summary = NetworkRequestSummary.from([broken, quick])
+    #expect(summary.slowest?.duration == 9.0)
+    #expect(summary.slowest?.host == "cdn.expo.dev")
+  }
+
+  @Test
   func `reports the slowest request's status code so an empty body can be explained`() {
     let now = Date()
     // A 304 revalidation is successful, so it's a `slowest` candidate, but carries no body. Without
