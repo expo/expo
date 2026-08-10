@@ -1,7 +1,7 @@
 import Network
 
 struct DiscoveryResult {
-  let name: String?
+  let metadata: DevServerMetadata
   let endpoint: NWEndpoint
 }
 
