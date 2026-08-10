@@ -107,7 +107,9 @@ jobs:
         run: pnpm test:e2e --max-workers 1 --shard ${{ matrix.shard }}/${{ strategy.job-total }}
 
   jest-windows:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'schedule' && github.repository == 'expo/expo')
     runs-on: windows-2022
     strategy:
       fail-fast: false
@@ -236,7 +238,9 @@ jobs:
           retention-days: 30
 
   playwright-windows:
-    if: github.event_name != 'schedule' || github.repository == 'expo/expo'
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'schedule' && github.repository == 'expo/expo')
     runs-on: windows-2022
     strategy:
       fail-fast: false
