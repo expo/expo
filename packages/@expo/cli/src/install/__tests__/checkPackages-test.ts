@@ -202,39 +202,84 @@ describe(checkPackagesAsync, () => {
     );
   });
 
-  it(`fixes invalid packages`, async () => {
+  it(`delegates all invalid packages when fixing all dependencies`, async () => {
     const issues: Awaited<ReturnType<typeof getVersionedDependenciesAsync>> = [
       {
-        packageName: 'react-native',
+        packageName: 'expo-sms',
         packageType: 'dependencies',
-        expectedVersionOrRange: '^1.0.0',
-        actualVersion: '0.69.0',
+        expectedVersionOrRange: '~14.0.0',
+        actualVersion: '9.0.0',
       },
       {
-        packageName: 'expo',
+        packageName: 'expo-auth-session',
         packageType: 'dependencies',
-        expectedVersionOrRange: '^1.0.0',
-        actualVersion: '0.69.0',
+        expectedVersionOrRange: '~7.0.0',
+        actualVersion: '4.0.0',
       },
     ];
+    const packageManagerArguments = ['--ignore-scripts'];
 
     jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce(issues);
 
     await checkPackagesAsync('/', {
-      packages: ['react-native', 'expo'],
+      packages: [],
       options: { fix: true },
       // @ts-expect-error
       packageManager: {},
-      packageManagerArguments: [],
+      packageManagerArguments,
     });
 
     expect(fixPackagesAsync).toHaveBeenCalledWith('/', {
       packageManager: {},
-      packageManagerArguments: [],
+      packageManagerArguments,
       packages: issues,
       sdkVersion: '45.0.0',
     });
-    expect(logIncorrectDependencies).toHaveBeenCalledTimes(1);
+    expect(logIncorrectDependencies).toHaveBeenCalledWith(issues);
+  });
+
+  it(`delegates only the selected invalid package when fixing`, async () => {
+    const selectedIssue: Awaited<ReturnType<typeof getVersionedDependenciesAsync>> = [
+      {
+        packageName: 'expo-sms',
+        packageType: 'dependencies',
+        expectedVersionOrRange: '~14.0.0',
+        actualVersion: '9.0.0',
+      },
+    ];
+    const packageManager = {};
+    const packageManagerArguments = ['--ignore-scripts'];
+
+    jest.mocked(getVersionedDependenciesAsync).mockResolvedValueOnce(selectedIssue);
+
+    await checkPackagesAsync('/', {
+      packages: ['expo-sms'],
+      options: { fix: true },
+      // @ts-expect-error
+      packageManager,
+      packageManagerArguments,
+    });
+
+    expect(getVersionedDependenciesAsync).toHaveBeenCalledWith(
+      '/',
+      expect.objectContaining({ sdkVersion: '45.0.0' }),
+      {},
+      ['expo-sms']
+    );
+    expect(fixPackagesAsync).toHaveBeenCalledWith('/', {
+      packageManager,
+      packageManagerArguments,
+      packages: selectedIssue,
+      sdkVersion: '45.0.0',
+    });
+    expect(fixPackagesAsync).not.toHaveBeenCalledWith(
+      '/',
+      expect.objectContaining({
+        packages: expect.arrayContaining([
+          expect.objectContaining({ packageName: 'expo-auth-session' }),
+        ]),
+      })
+    );
   });
 
   it(`outputs JSON when --json flag is used with up-to-date dependencies`, async () => {

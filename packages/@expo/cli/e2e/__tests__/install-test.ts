@@ -3,7 +3,7 @@ import JsonFile from '@expo/json-file';
 import fs from 'fs/promises';
 import path from 'path';
 
-import { executePnpmAsync, executeExpoAsync } from '../utils/expo';
+import { executeExpoAsync } from '../utils/expo';
 import {
   projectRoot,
   getLoadedModulesAsync,
@@ -81,45 +81,6 @@ it('runs `npx expo install expo-sms`', async () => {
     'package.json',
     'pnpm-lock.yaml',
   ]);
-});
-
-it('runs `npx expo install --fix` fails', async () => {
-  const projectRoot = await setupTestProjectWithOptionsAsync('install-fix-fail', 'with-blank', {
-    reuseExisting: false,
-  });
-
-  // Install wrong package versions of `expo-sms` and `expo-auth-session`
-  await executePnpmAsync(projectRoot, ['install', 'expo-sms@9.0.0', 'expo-auth-session@4.0.0']);
-
-  // Load the installed and expected dependency versions
-  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
-
-  // Only fix `expo-sms`
-  await executeExpoAsync(projectRoot, ['install', '--fix', 'expo-sms']);
-
-  // Ensure `expo-sms` is fixed to match the expected version
-  expect(pkg.read().dependencies).toMatchObject({
-    'expo-sms': expect.not.stringContaining('9.0.0'), // Expect the version to change from `9.0.0`
-  });
-
-  // Ensure `expo-auth-session` is still invalid
-  await expect(
-    executeExpoAsync(projectRoot, ['install', '--check'], { verbose: false })
-  ).rejects.toThrow();
-
-  // Ensure `--check` didn't fix the version
-  expect(pkg.read().dependencies).toMatchObject({
-    'expo-auth-session': '4.0.0',
-  });
-
-  // Fix all versions
-  await executeExpoAsync(projectRoot, ['install', '--fix']);
-
-  // Ensure both `expo-sms` and `expo-auth-session` are fixed
-  expect(pkg.read().dependencies).toMatchObject({
-    'expo-sms': expect.not.stringContaining('9.0.0'), // Expect the version to change from `9.0.0`
-    'expo-auth-session': expect.not.stringContaining('4.0.0'), // Expect the version to change from `4.0.0`
-  });
 });
 
 it('runs `npx expo install expo@<version> --fix`', async () => {
