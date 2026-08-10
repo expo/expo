@@ -13,6 +13,7 @@ import type { NavigatorArgs } from 'standard-navigation';
 import type { HeaderOptions, PlatformPressable } from '../elements';
 import type {
   Descriptor,
+  DescriptorRouteProp,
   NavigationProp,
   ParamListBase,
   RouteProp,
@@ -92,7 +93,8 @@ export type BottomTabOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = BottomTabScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<BottomTabScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 

@@ -78,6 +78,16 @@
     ]
   },
 
+  // Bounded documentation research available directly to reviewer and cross-file
+  // passes. The built-in MCP sanitizes agent-authored API queries, restricts discovery
+  // and direct fetches to fixed official providers, and audits accepted results.
+  "research": {
+    "enabled": true,
+    "maxQueries": 20,
+    "resultsPerQuery": 2,
+    "timeoutMs": 30000
+  },
+
   // Large diffs are split into focused chunks by changed-line count, plus a
   // cross-cutting pass for multi-file issues. Diffs under maxChangedLines are one
   // full-context pass. Defaults shown; raise/lower per your model + PR sizes.

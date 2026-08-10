@@ -4,8 +4,11 @@
 
 ### 🛠 Breaking changes
 
+- Remove `NavigationContainerRefContext` fallback in `useNavigation`. The hook now throws when called outside a navigator, including components rendered via `ExpoRoot`'s `wrapper` prop. ([#48638](https://github.com/expo/expo/pull/48638) by [@Ubax](https://github.com/Ubax))
+- Allow `key` to be `undefined` in the `Descriptor` type and in routes passed to screen `options`, navigator `screenOptions`, and `RouteGroupConfig.screenOptions` callbacks. ([#48596](https://github.com/expo/expo/pull/48596) by [@Ubax](https://github.com/Ubax))
 - Unify JS Tabs, TopTabs, Drawer, and headless tabs with NativeTabs - only screens declared in the layout become visible. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
 - Make `href: null` hide JS tabs and make their routes unreachable, redirecting navigation to the initial tab. ([#48499](https://github.com/expo/expo/pull/48499) by [@Ubax](https://github.com/Ubax))
+- Remove `getStateForRouteNamesChange` from the `Router` interface on `expo-router/react-navigation`. Custom routers must handle the `ROUTE_NAMES_CHANGED` action in `getStateForAction` instead. ([#48479](https://github.com/expo/expo/pull/48479) by [@Ubax](https://github.com/Ubax))
 - Migrate the JS `TopTabs` navigator to the `standard-navigation` integration. ([#48498](https://github.com/expo/expo/pull/48498) by [@Ubax](https://github.com/Ubax))
 - Make `beforeRemove` non-preventable and add `removePrevented` event. ([#48347](https://github.com/expo/expo/pull/48347) by [@Ubax](https://github.com/Ubax))
 - Remove the `navigationKey` prop from layout `<Screen>` and `<Group>` components. ([#48502](https://github.com/expo/expo/pull/48502) by [@Ubax](https://github.com/Ubax))
@@ -32,6 +35,7 @@
 - Fixed `Tabs` and `TopTabs` (`expo-router/js-tabs`, `expo-router/js-top-tabs`) not being usable from RSC ([#48330](https://github.com/expo/expo/pull/48330) by [@Ubax](https://github.com/Ubax))
 - Redirect fully guarded navigators to parent ([#47984](https://github.com/expo/expo/pull/47984) by [@Ubax](https://github.com/Ubax))
 - Unset `nativeContainerStyle` in transparent presentations ([#48154](https://github.com/expo/expo/pull/48154) by [@Ubax](https://github.com/Ubax))
+- [ios] Fix broken navigation state when a long press on a `Link` with a menu is released before the context menu fully presents. ([#48104](https://github.com/expo/expo/pull/48104) by [@jiunshinn](https://github.com/jiunshinn))
 - [android] Disable safe area insets in Native Tabs on Android when tab bar is hidden. ([#47611](https://github.com/expo/expo/pull/47611) by [@debitan](https://github.com/debitan))
 - [ios] Fix memory leaks in the native toolbar and link preview from strong-reference cycles and closures that strongly captured `self`. ([#47378](https://github.com/expo/expo/pull/47378) by [@Ubax](https://github.com/Ubax))
 - [android][ios] Fix `expo-router/head` and `expo-router/stack` resolution on native platforms. ([#47870](https://github.com/expo/expo/pull/47870) by [@hassankhan](https://github.com/hassankhan))
@@ -40,6 +44,7 @@
 
 ### 💡 Others
 
+- Render only the focused tab route during the first render. ([#48618](https://github.com/expo/expo/pull/48618) by [@Ubax](https://github.com/Ubax))
 - Order JS Tabs, NativeTabs, headless tabs and Drawer by `routeNames` order ([#48374](https://github.com/expo/expo/pull/48374) by [@Ubax](https://github.com/Ubax))
 - Integrate native stack with standard navigation ([#48114](https://github.com/expo/expo/pull/48114) by [@Ubax](https://github.com/Ubax))
 - Refactor native-stack for compliance with standard-navigation integration ([#46592](https://github.com/expo/expo/pull/46592) by [@Ubax](https://github.com/Ubax))
@@ -49,6 +54,7 @@
 - Move `@testing-library/jest-dom` and `@testing-library/user-event` from `dependencies` to `devDependencies` ([#47820](https://github.com/expo/expo/pull/47820) by [@krystofwoldrich](https://github.com/krystofwoldrich))
 - Rewrite native tabs using standard-navigation ([#46457](https://github.com/expo/expo/pull/46457) by [@Ubax](https://github.com/Ubax))
 - [Internal] Split `useLoaderData()` into a document cache and a per-mount Suspense store ([#47365](https://github.com/expo/expo/pull/47365) by [@hassankhan](https://github.com/hassankhan))
+- [Internal] Read the development server URL from `expo/internal/bundle-origin` instead of duplicating its accessor ([#48278](https://github.com/expo/expo/pull/48278) by [@kitten](https://github.com/kitten))
 
 ## 57.0.9 - 2026-07-29
 

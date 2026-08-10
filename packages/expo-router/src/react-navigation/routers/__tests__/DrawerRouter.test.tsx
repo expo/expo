@@ -24,19 +24,12 @@ test('gets initial state from route names and params with initialRouteName', () 
       routeGetIdList: {},
     })
   ).toEqual({
-    index: 1,
+    index: 0,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-    ],
-    history: [
-      { type: 'route', key: 'bar-test' },
-      { type: 'route', key: 'baz-test' },
-    ],
+    routes: [{ key: 'baz-test', name: 'baz', params: { answer: 42 } }],
+    history: [{ type: 'route', key: 'baz-test' }],
     default: 'closed',
     stale: false,
     type: 'drawer',
@@ -60,11 +53,7 @@ test('gets initial state from route names and params without initialRouteName', 
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-    ],
+    routes: [{ key: 'bar-test', name: 'bar' }],
     history: [{ type: 'route', key: 'bar-test' }],
     default: 'closed',
     stale: false,
@@ -86,12 +75,13 @@ test('preserves drawer status when route names change', () => {
     options
   ) as DrawerNavigationState<ParamListBase>;
 
-  const state = router.getStateForRouteNamesChange(openState, {
-    ...options,
-    routeNames: ['baz', 'bar'],
-  });
+  const state = router.getStateForAction(
+    openState,
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'bar'] } },
+    { ...options, routeNames: ['baz', 'bar'] }
+  );
 
-  expect(state.history).toContainEqual({ type: 'drawer', status: 'open' });
+  expect(state!.history).toContainEqual({ type: 'drawer', status: 'open' });
 });
 
 test('restores route history without dropping drawer status when the active route is removed', () => {
@@ -108,12 +98,13 @@ test('restores route history without dropping drawer status when the active rout
     options
   ) as DrawerNavigationState<ParamListBase>;
 
-  const state = router.getStateForRouteNamesChange(openState, {
-    ...options,
-    routeNames: ['baz'],
-  });
+  const state = router.getStateForAction(
+    openState,
+    { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz'] } },
+    { ...options, routeNames: ['baz'] }
+  );
 
-  expect(state.history).toEqual([
+  expect(state!.history).toEqual([
     { type: 'route', key: 'baz-test' },
     { type: 'drawer', status: 'open' },
   ]);
@@ -148,7 +139,6 @@ test('gets rehydrated state from partial state', () => {
     preloadedRouteKeys: [],
     routes: [
       { key: 'bar-0', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
       { key: 'qux-1', name: 'qux', params: { name: 'Jane' } },
     ],
     history: [{ type: 'route', key: 'bar-0' }],
@@ -165,19 +155,12 @@ test('gets rehydrated state from partial state', () => {
       options
     )
   ).toEqual({
-    index: 1,
+    index: 0,
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-0', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-    ],
-    history: [
-      { type: 'route', key: 'bar-test' },
-      { type: 'route', key: 'baz-0' },
-    ],
+    routes: [{ key: 'baz-0', name: 'baz', params: { answer: 42 } }],
+    history: [{ type: 'route', key: 'baz-0' }],
     default: 'closed',
     stale: false,
     type: 'drawer',
@@ -227,11 +210,7 @@ test('gets rehydrated state from partial state', () => {
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-    ],
+    routes: [{ key: 'bar-test', name: 'bar' }],
     history: [{ type: 'route', key: 'bar-test' }],
     default: 'closed',
     stale: false,
@@ -257,11 +236,7 @@ test('gets rehydrated state from partial state', () => {
     key: 'drawer-test',
     routeNames: ['bar', 'baz', 'qux'],
     preloadedRouteKeys: [],
-    routes: [
-      { key: 'bar-test', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { answer: 42 } },
-      { key: 'qux-test', name: 'qux', params: { name: 'Jane' } },
-    ],
+    routes: [{ key: 'bar-test', name: 'bar' }],
     history: [
       { type: 'route', key: 'bar-test' },
       { type: 'drawer', status: 'open' },

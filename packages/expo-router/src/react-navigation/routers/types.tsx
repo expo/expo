@@ -1,6 +1,8 @@
 import type * as CommonActions from './CommonActions';
 
-export type CommonNavigationAction = CommonActions.Action;
+export type CommonNavigationAction =
+  | CommonActions.Action
+  | CommonActions.InternalRouteNamesChangedAction;
 
 export type NavigationRoute<
   ParamList extends ParamListBase,
@@ -167,13 +169,18 @@ export type Router<State extends NavigationState, Action extends NavigationActio
   ): State;
 
   /**
-   * Take the current state and updated list of route names, and return a new state.
+   * Take the current state and the route names the navigator declares, and return the state to
+   * render until `ROUTE_NAMES_CHANGED` has been reconciled.
    *
-   * @param state State object to update.
-   * @param options.routeNames New list of route names.
-   * @param options.routeParamsList Object containing params for each route.
+   * This is a render-phase fallback, not a state change. Return `state` when nothing was removed,
+   * and set `index` to `-1` when no declared route is left to focus.
+   *
+   * This function will only be called in development, when route file is removed.
+   *
+   * @param state State object to filter.
+   * @param routeNames Route names currently declared by the navigator.
    */
-  getStateForRouteNamesChange(state: State, options: RouterConfigOptions): State;
+  getStateForDeclaredRoutes(state: State, routeNames: string[]): State;
 
   /**
    * Take the current state and key of a route, and return a new state with the route focused
@@ -185,7 +192,8 @@ export type Router<State extends NavigationState, Action extends NavigationActio
 
   /**
    * Take the current state and action, and return a new state.
-   * If the action cannot be handled, return `null`.
+   * If the action cannot be handled, return `null`. Custom routers must explicitly handle
+   * `ROUTE_NAMES_CHANGED` to durably reconcile state when their declared routes change.
    *
    * @param state State object to apply the action on.
    * @param action Action object to apply.

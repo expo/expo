@@ -393,7 +393,7 @@ it('does not reset tab content when triggers are reordered', () => {
   expect(appleMounts).toBe(1);
   expect(tabState).toEqual({
     routeNames: ['orange', 'apple'],
-    routes: ['apple', 'orange'],
+    routes: ['apple'],
   });
   act(() => router.back());
   expect(screen).toHaveSegments(['orange']);
@@ -738,7 +738,7 @@ it('works with nested layouts', () => {
   expect(screen).toHaveSegments(['page']);
 });
 
-it('registers declared routes in trigger order', () => {
+it('starts with only the initial declared route', () => {
   function StateProbe() {
     const { state } = useNavigatorContext();
     return (
@@ -766,7 +766,7 @@ it('registers declared routes in trigger order', () => {
     { initialUrl: '/apple' }
   );
 
-  expect(screen.getByTestId('tab-state')).toHaveTextContent('orange,apple:apple');
+  expect(screen.getByTestId('tab-state')).toHaveTextContent('apple:apple');
 });
 
 it('redirects router.push from a filesystem route without a trigger', () => {

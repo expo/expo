@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
+- [iOS] Added an optional `kind` argument to the `contentShape` modifier, so a shape can be applied to drag previews, context menu previews, hover effects, or accessibility instead of only hit-testing. ([#48540](https://github.com/expo/expo/issues/48540) by [@sinhong2011](https://github.com/sinhong2011)) ([#48564](https://github.com/expo/expo/pull/48564) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 

@@ -19,6 +19,7 @@ import { SceneView } from './SceneView';
 import { ThemeContext } from './theming/ThemeContext';
 import type {
   Descriptor,
+  DescriptorRouteProp,
   EventMapBase,
   NavigationHelpers,
   NavigationProp,
@@ -53,7 +54,7 @@ type ScreenLayout<ScreenOptions extends {}> = (props: {
 type ScreenOptionsOrCallback<ScreenOptions extends {}> =
   | ScreenOptions
   | ((props: {
-      route: RouteProp<ParamListBase, string>;
+      route: DescriptorRouteProp<ParamListBase, string>;
       navigation: any;
       theme: ReactNavigation.Theme;
     }) => ScreenOptions);
@@ -65,6 +66,7 @@ type Options<
   EventMap extends EventMapBase,
 > = {
   routes: State['routes'];
+  routeNames: State['routeNames'];
   screens: Record<string, ScreenConfigWithParent<State, ScreenOptions, EventMap>>;
   navigation: NavigationHelpers<ParamListBase>;
   screenOptions: ScreenOptionsOrCallback<ScreenOptions> | undefined;
@@ -95,6 +97,7 @@ export function useDescriptors<
   EventMap extends EventMapBase,
 >({
   routes,
+  routeNames,
   screens,
   navigation,
   screenOptions,
@@ -140,8 +143,9 @@ export function useDescriptors<
     ]
   );
 
-  const navigations = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
+  const getNavigation = useNavigationCache<State, ScreenOptions, EventMap, ActionHelpers>({
     routes,
+    routeNames,
     getState,
     navigation,
     setOptions,
@@ -152,7 +156,7 @@ export function useDescriptors<
   const cachedRoutes = useRouteCache(routes);
 
   const getOptions = (
-    route: RouteProp<ParamListBase, string>,
+    route: DescriptorRouteProp<ParamListBase, string>,
     navigation: NavigationProp<
       ParamListBase,
       string,
@@ -258,18 +262,32 @@ export function useDescriptors<
     );
   };
 
-  const descriptors = cachedRoutes.reduce<
-    Record<
-      string,
-      Descriptor<
-        ScreenOptions,
-        NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions, EventMap> &
-          ActionHelpers,
-        RouteProp<ParamListBase>
-      >
+  // TODO: Unify this with the standard-navigation descriptor-map type.
+  type DescriptorMap = Record<
+    string,
+    Descriptor<
+      ScreenOptions,
+      NavigationProp<ParamListBase, string, string | undefined, State, ScreenOptions, EventMap> &
+        ActionHelpers,
+      RouteProp<ParamListBase>
     >
-  >((acc, route, i) => {
-    const navigation = navigations[route.key]!;
+  >;
+
+  const descriptors = cachedRoutes.reduce<DescriptorMap>((acc, route, i) => {
+    const navigation = getNavigation(route);
+
+    if (screens[route.name] === undefined) {
+      acc[route.key] = {
+        route,
+        // @ts-expect-error: it's missing action helpers, fix later
+        navigation,
+        options: {} as ScreenOptions,
+        render: () => null,
+      };
+
+      return acc;
+    }
+
     const customOptions = getOptions(route, navigation, options[route.key]!);
     const element = render(route, navigation, customOptions, routes[i]!.state);
 
@@ -287,5 +305,42 @@ export function useDescriptors<
     return acc;
   }, {});
 
-  return descriptors;
+  // Placeholder descriptors need a cast because `useNavigationCache` adds action helpers at
+  // runtime, but its return type omits them.
+  // TODO: Fix the `useNavigationCache` return type and remove these casts.
+  // TODO: Stabilize screens, options, descriptors, and `describe` without relying on React Compiler.
+  const describe = (route: DescriptorRouteProp<ParamListBase, string>) => {
+    if (route.key !== undefined) {
+      const descriptor = descriptors[route.key];
+      if (!descriptor) {
+        throw new Error(`Couldn't find a route with the key ${route.key}.`);
+      }
+      return descriptor;
+    }
+
+    const config = screens[route.name];
+    if (!config) {
+      return {
+        route,
+        navigation: getNavigation({ key: route.name, name: route.name }),
+        options: {} as ScreenOptions,
+        render: () => null,
+      } as DescriptorMap[string];
+    }
+
+    const describedRoute =
+      route.params === undefined && config.props.initialParams !== undefined
+        ? { ...route, params: config.props.initialParams }
+        : route;
+    const navigation = getNavigation({ key: route.name, name: route.name });
+    return {
+      route: describedRoute,
+      navigation,
+      options: getOptions(describedRoute, navigation, {}),
+      render: () => null,
+      routeSource: config.props.routeSource,
+    } as DescriptorMap[string];
+  };
+
+  return { describe, descriptors };
 }

@@ -14,9 +14,14 @@
 - Create `pageHeaders` rules from loader-declared `Cache-Control` headers for SSG ([#47774](https://github.com/expo/expo/pull/47774) by [@hassankhan](https://github.com/hassankhan))
 - Emit relative asset URLs and `bundleUrl` in manifest responses conditionally ([#47255](https://github.com/expo/expo/pull/47255) by [@kitten](https://github.com/kitten))
 - Resolve `hostUri`, `debuggerHost`, and `/_expo/link` deep links from forwarded request addresses ([#48267](https://github.com/expo/expo/pull/48267) by [@kitten](https://github.com/kitten))
+- Preserve loader `Cache-Control` headers in development ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
+- Use default loader `Cache-Control` header value of `no-store` for loader responses in development ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
+- Use default `Cache-Control` header value of `public, max-age=0, must-revalidate` for SSG loader files and their pages ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
+- Use default `Cache-Control` header value of `no-store` for SSR loader responses ([#48497](https://github.com/expo/expo/pull/48497) by [@hassankhan](https://github.com/hassankhan))
 
 ### 🐛 Bug fixes
 
+- Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing.
 - [Internal] Fix `LogStream.destroy()` racing a pending write and dropping log data ([#47181](https://github.com/expo/expo/pull/47181) by [@kitten](https://github.com/kitten))
 - Ignore simulators reported by `devicectl` and support json version 5 on Xcode 27 ([#48001](https://github.com/expo/expo/pull/48001) by [@crockalet](https://github.com/crockalet))
 - In non-interactive shells, automatically roll over to the next available port when default is busy, unless a specific port is specified with `--port` or `RCT_METRO_PORT` ([#47771](https://github.com/expo/expo/pull/47771) by [@kitten](https://github.com/kitten))

@@ -1,8 +1,10 @@
 import { nanoid } from 'nanoid/non-secure';
 
 import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
+import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
 import { createParamsFromAction } from './createParamsFromAction';
+import { createRouteFromAction } from './createRouteFromAction';
 import type {
   CommonNavigationAction,
   DefaultRouterOptions,
@@ -98,6 +100,36 @@ export type TabActionHelpers<ParamList extends ParamListBase> = {
 
 const TYPE_ROUTE = 'route' as const;
 
+const addFallbackRouteIfEmpty = (
+  routes: Route<string>[],
+  routeNames: string[],
+  routeParamList: ParamListBase,
+  initialRouteName: string | undefined
+) => {
+  if (routes.length > 0 || routeNames.length === 0) {
+    return routes;
+  }
+
+  const name =
+    initialRouteName !== undefined && routeNames.includes(initialRouteName)
+      ? initialRouteName
+      : routeNames[0]!;
+  return [{ name, key: `${name}-${nanoid()}`, params: routeParamList[name] }];
+};
+
+const addRouteIfMissing = (
+  routes: Route<string>[],
+  name: string,
+  createRoute: () => Route<string>
+) => {
+  const existingIndex = routes.findIndex((route) => route.name === name);
+  if (existingIndex !== -1) {
+    return { routes, index: existingIndex };
+  }
+
+  return { routes: [...routes, createRoute()], index: routes.length };
+};
+
 export const TabActions = {
   jumpTo(name: string, params?: object) {
     return {
@@ -119,6 +151,9 @@ const getRouteHistory = (
   backBehavior: BackBehavior,
   initialRouteName: string | undefined
 ) => {
+  if (routes.length === 0) {
+    return [];
+  }
   const history = [
     {
       type: TYPE_ROUTE,
@@ -171,6 +206,9 @@ const changeIndex = (
   backBehavior: BackBehavior,
   initialRouteName: string | undefined
 ) => {
+  if (state.routes.length === 0) {
+    return { ...state, index: -1, history: [] };
+  }
   let history = state.history;
 
   if (backBehavior === 'history' || backBehavior === 'fullHistory') {
@@ -221,6 +259,7 @@ export function TabRouter({
   TabNavigationState<ParamListBase>,
   TabActionType | CommonNavigationAction
 > {
+  // TODO: Simplify the action handling in this router.
   const router: Router<
     TabNavigationState<ParamListBase>,
     TabActionType | CommonNavigationAction
@@ -230,17 +269,8 @@ export function TabRouter({
     type: 'tab',
 
     getInitialState({ routeNames, routeParamList }) {
-      const index =
-        initialRouteName !== undefined && routeNames.includes(initialRouteName)
-          ? routeNames.indexOf(initialRouteName)
-          : 0;
-
-      const routes = routeNames.map((name) => ({
-        name,
-        key: `${name}-${nanoid()}`,
-        params: routeParamList[name],
-      }));
-
+      const routes = addFallbackRouteIfEmpty([], routeNames, routeParamList, initialRouteName);
+      const index = routes.length === 0 ? -1 : 0;
       const history = getRouteHistory(routes, index, backBehavior, initialRouteName);
 
       return {
@@ -262,31 +292,30 @@ export function TabRouter({
         return state;
       }
 
-      const routes = routeNames.map((name) => {
-        const route = (state as PartialState<TabNavigationState<ParamListBase>>).routes.find(
-          (r) => r.name === name
-        );
-
-        return {
+      const partialRoutes = (state as PartialState<TabNavigationState<ParamListBase>>).routes;
+      const filteredRoutes = partialRoutes
+        .filter((route) => routeNames.includes(route.name))
+        .map((route) => ({
           ...route,
-          name,
-          key: route && route.name === name && route.key ? route.key : `${name}-${nanoid()}`,
+          key: route.key || `${route.name}-${nanoid()}`,
           params:
-            routeParamList[name] !== undefined
+            routeParamList[route.name] !== undefined
               ? {
-                  ...routeParamList[name],
-                  ...(route ? route.params : undefined),
+                  ...routeParamList[route.name],
+                  ...route.params,
                 }
-              : route
-                ? route.params
-                : undefined,
-        } as Route<string>;
-      });
-
-      const index = Math.min(
-        Math.max(routeNames.indexOf(state.routes[state?.index ?? 0]?.name as string), 0),
-        routes.length - 1
+              : route.params,
+        }));
+      const routes = addFallbackRouteIfEmpty(
+        filteredRoutes,
+        routeNames,
+        routeParamList,
+        initialRouteName
       );
+
+      const focusedName = state.routes[state.index ?? 0]?.name;
+      const focusedIndex = routes.findIndex((route) => route.name === focusedName);
+      const index = Math.min(Math.max(focusedIndex, 0), routes.length - 1);
 
       const routeKeys = routes.map((route) => route.key);
 
@@ -310,59 +339,6 @@ export function TabRouter({
       );
     },
 
-    getStateForRouteNamesChange(state, { routeNames, routeParamList }) {
-      const routes = state.routes.filter((route) => routeNames.includes(route.name));
-
-      for (const name of routeNames) {
-        if (!routes.some((route) => route.name === name)) {
-          routes.push({
-            name,
-            key: `${name}-${nanoid()}`,
-            params: routeParamList[name],
-          });
-        }
-      }
-
-      const focusedName = state.routes[state.index]!.name;
-      const index = Math.max(
-        0,
-        routes.findIndex((route) => route.name === focusedName)
-      );
-
-      let history = state.history.filter(
-        // Type will always be 'route' for tabs, but could be different in a router extending this (e.g. drawer)
-        (it) => it.type !== 'route' || routes.find((r) => r.key === it.key)
-      );
-
-      // Static back behaviors follow display order, while history behaviors retain valid visits.
-      // Preserve non-route entries added by extending routers such as `DrawerRouter`.
-      if (
-        backBehavior === 'firstRoute' ||
-        backBehavior === 'initialRoute' ||
-        backBehavior === 'order'
-      ) {
-        const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
-        const orderedIndex = orderedRoutes.findIndex((route) => route.key === routes[index]!.key);
-        history = [
-          ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
-          ...history.filter((item) => item.type !== 'route'),
-        ];
-      } else if (!history.some((item) => item.type === 'route')) {
-        history = [
-          ...getRouteHistory(routes, index, backBehavior, initialRouteName),
-          ...history.filter((item) => item.type !== 'route'),
-        ];
-      }
-
-      return {
-        ...state,
-        history,
-        routeNames,
-        routes,
-        index,
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 
@@ -379,20 +355,113 @@ export function TabRouter({
       }
 
       switch (action.type) {
+        case 'ROUTE_NAMES_CHANGED': {
+          const routeNames = action.payload.routeNames;
+
+          if (isArrayEqual(state.routeNames, routeNames)) {
+            return state;
+          }
+
+          const routes = addFallbackRouteIfEmpty(
+            state.routes.filter((route) => routeNames.includes(route.name)),
+            routeNames,
+            routeParamList,
+            initialRouteName
+          );
+
+          if (routes.length === 0) {
+            return {
+              ...state,
+              routeNames,
+              routes,
+              index: -1,
+              history: [],
+              preloadedRouteKeys: [],
+            };
+          }
+
+          const focusedKey = state.routes[state.index]?.key;
+          const focusedIndex = routes.findIndex((route) => route.key === focusedKey);
+          const index = Math.max(focusedIndex, 0);
+          const routeKeys = routes.map((route) => route.key);
+          let history = state.history.filter(
+            (item) => item.type !== 'route' || routeKeys.includes(item.key)
+          );
+
+          if (
+            focusedIndex === -1 &&
+            (backBehavior === 'history' || backBehavior === 'fullHistory')
+          ) {
+            const currentRoute = routes[index]!;
+            const nonRouteHistory = history.filter((item) => item.type !== 'route');
+            let routeHistory = history.filter((item) => item.type === 'route');
+
+            if (backBehavior === 'history') {
+              routeHistory = routeHistory.filter((item) => item.key !== currentRoute.key);
+            } else if (routeHistory[routeHistory.length - 1]?.key === currentRoute.key) {
+              routeHistory = routeHistory.slice(0, -1);
+            }
+
+            history = [
+              ...routeHistory,
+              {
+                type: TYPE_ROUTE,
+                key: currentRoute.key,
+                params: backBehavior === 'fullHistory' ? currentRoute.params : undefined,
+              },
+              ...nonRouteHistory,
+            ];
+          }
+
+          if (
+            backBehavior === 'firstRoute' ||
+            backBehavior === 'initialRoute' ||
+            backBehavior === 'order'
+          ) {
+            const orderedRoutes = orderRoutesByRouteNames(routes, routeNames);
+            const orderedIndex = orderedRoutes.findIndex(
+              (route) => route.key === routes[index]!.key
+            );
+            history = [
+              ...getRouteHistory(orderedRoutes, orderedIndex, backBehavior, initialRouteName),
+              ...history.filter((item) => item.type !== 'route'),
+            ];
+          } else if (!history.some((item) => item.type === 'route')) {
+            history = [
+              ...getRouteHistory(routes, index, backBehavior, initialRouteName),
+              ...history.filter((item) => item.type !== 'route'),
+            ];
+          }
+
+          return {
+            ...state,
+            history,
+            routeNames,
+            routes,
+            index,
+            preloadedRouteKeys: state.preloadedRouteKeys.filter((key) => routeKeys.includes(key)),
+          };
+        }
+
         case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE':
         case 'NAVIGATE_DEPRECATED': {
-          const index = state.routes.findIndex((route) => route.name === action.payload.name);
-
-          if (index === -1) {
+          if (!state.routeNames.includes(action.payload.name)) {
             return null;
           }
+
+          const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
+            const route = createRouteFromAction({ action, routeParamList });
+            return action.type === 'NAVIGATE' && action.payload.path != null
+              ? { ...route, path: action.payload.path }
+              : route;
+          });
 
           const updatedState = changeIndex(
             {
               ...state,
-              routes: state.routes.map((route) => {
+              routes: routes.map((route) => {
                 if (route.name !== action.payload.name) {
                   return route;
                 }
@@ -441,7 +510,9 @@ export function TabRouter({
           const result = {
             ...updatedState,
             preloadedRouteKeys: updatedState.preloadedRouteKeys.filter(
-              (key) => key !== state.routes[updatedState.index]!.key
+              (key) =>
+                key !== updatedState.routes[updatedState.index]!.key &&
+                updatedState.routes.some((route) => route.key === key)
             ),
           };
 
@@ -482,6 +553,55 @@ export function TabRouter({
         }
 
         case 'GO_BACK': {
+          if (backBehavior === 'none') {
+            return null;
+          }
+
+          const focusedRoute = state.routes[state.index];
+          if (!focusedRoute) {
+            return null;
+          }
+          let backTargetName: string | undefined;
+
+          if (backBehavior === 'firstRoute') {
+            backTargetName = state.routeNames[0];
+          } else if (backBehavior === 'initialRoute') {
+            backTargetName =
+              initialRouteName !== undefined && state.routeNames.includes(initialRouteName)
+                ? initialRouteName
+                : state.routeNames[0];
+          } else if (backBehavior === 'order') {
+            const declaredIndex = state.routeNames.indexOf(focusedRoute.name);
+            backTargetName = declaredIndex > 0 ? state.routeNames[declaredIndex - 1] : undefined;
+          }
+
+          if (backTargetName !== undefined && backTargetName !== focusedRoute.name) {
+            const existingIndex = state.routes.findIndex((route) => route.name === backTargetName);
+            const targetIsPreloaded =
+              existingIndex !== -1 &&
+              state.preloadedRouteKeys.includes(state.routes[existingIndex]!.key);
+            const { routes, index } = addRouteIfMissing(state.routes, backTargetName, () => ({
+              name: backTargetName,
+              key: `${backTargetName}-${nanoid()}`,
+              params: routeParamList[backTargetName],
+            }));
+
+            if (targetIsPreloaded || routes !== state.routes) {
+              const result = changeIndex(
+                { ...state, routes },
+                index,
+                backBehavior,
+                initialRouteName
+              );
+              return {
+                ...result,
+                preloadedRouteKeys: result.preloadedRouteKeys.filter(
+                  (key) => key !== result.routes[result.index]!.key
+                ),
+              };
+            }
+          }
+
           if (state.history.length === 1) {
             return null;
           }
@@ -519,10 +639,19 @@ export function TabRouter({
         }
 
         case 'PRELOAD': {
+          if (!state.routeNames.includes(action.payload.name)) {
+            return null;
+          }
+
           const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
 
           if (routeIndex === -1) {
-            return null;
+            const route = createRouteFromAction({ action, routeParamList });
+            return {
+              ...state,
+              routes: [...state.routes, route],
+              preloadedRouteKeys: [...state.preloadedRouteKeys, route.key],
+            };
           }
 
           const route = state.routes[routeIndex]!;
