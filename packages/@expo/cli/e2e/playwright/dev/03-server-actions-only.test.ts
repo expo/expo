@@ -1,4 +1,6 @@
 import { test, expect } from '@playwright/test';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { clearEnv, restoreEnv } from '../../__tests__/export/export-side-effects';
 import { getRouterE2ERoot } from '../../__tests__/utils';
@@ -12,9 +14,15 @@ test.afterAll(() => restoreEnv());
 const projectRoot = getRouterE2ERoot();
 const testName = '03-server-actions-only';
 const inputDir = 'dist-' + testName;
+const mutatedServerAction = path.join(
+  projectRoot,
+  '__e2e__/03-server-actions-only/components/two-action.tsx'
+);
 
 test.describe(inputDir, () => {
   test.describe.configure({ mode: 'serial' });
+
+  let originalServerAction: string;
 
   const expoStart = createExpoStart({
     cwd: projectRoot,
@@ -32,7 +40,9 @@ test.describe(inputDir, () => {
     },
   });
 
-  test.beforeEach('bundle and serve', async () => {
+  test.beforeAll('bundle and serve', async () => {
+    originalServerAction = await fs.promises.readFile(mutatedServerAction, 'utf8');
+
     console.time('expo start');
     await expoStart.startAsync();
     console.timeEnd('expo start');
@@ -41,8 +51,12 @@ test.describe(inputDir, () => {
     await expoStart.fetchBundleAsync('/');
     console.timeEnd('Eagerly bundled JS');
   });
-  test.afterEach(async () => {
-    await expoStart.stopAsync();
+  test.afterAll(async () => {
+    try {
+      await expoStart.stopAsync();
+    } finally {
+      await fs.promises.writeFile(mutatedServerAction, originalServerAction);
+    }
   });
 
   test('renders RSC and calls server action', async ({ page }) => {
