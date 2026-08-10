@@ -246,7 +246,7 @@ class DevLauncherViewModel: ObservableObject {
     }
     await pingDiscoveryResults(browser.browseResults.map { result in
       DiscoveryResult(
-        name: NetworkUtilities.getNWBrowserResultName(result),
+        metadata: DevServerMetadata(result: result),
         endpoint: result.endpoint
       )
     })
@@ -433,7 +433,7 @@ class DevLauncherViewModel: ObservableObject {
           defer { self.pingTask = nil }
           await self.pingDiscoveryResults(results.map { result in
             DiscoveryResult(
-              name: NetworkUtilities.getNWBrowserResultName(result),
+              metadata: DevServerMetadata(result: result),
               endpoint: result.endpoint
             )
           })
@@ -481,8 +481,11 @@ class DevLauncherViewModel: ObservableObject {
       ) {
         return DevServer(
           url: host,
-          description: result.name ?? host,
-          source: "local"
+          description: result.metadata.name ?? host,
+          source: "local",
+          slug: result.metadata.slug,
+          bundleIdentifier: result.metadata.bundleIdentifier,
+          username: result.metadata.username
         )
       }
     } catch {
