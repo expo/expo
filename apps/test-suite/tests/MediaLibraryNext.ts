@@ -498,6 +498,7 @@ export async function test(t: any) {
     // the fixture has no edits, so both renditions exist. Their paths are not compared:
     // PhotoKit may back identical content with different files.
     t.it('resolves both uri versions', async () => {
+      const asset = await createImageAsset(pngFileLocalUri);
       const current = await asset.getUri({ version: AssetUriVersion.CURRENT });
       const original = await asset.getUri({ version: AssetUriVersion.ORIGINAL });
       t.expect(current.toLowerCase()).toMatch(/\.png/);
