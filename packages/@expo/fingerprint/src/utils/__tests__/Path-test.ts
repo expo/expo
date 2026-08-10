@@ -100,6 +100,40 @@ describe(isIgnoredPath, () => {
     ).toBe(true);
   });
 
+  it('should not treat a virtual store package as a nested dependency', () => {
+    const ignorePaths = ['**/node_modules/**/node_modules/**'];
+    expect(
+      isIgnoredPath('node_modules/.pnpm/module@1.0.0/node_modules/module/package.json', ignorePaths)
+    ).toBe(false);
+    expect(
+      isIgnoredPath(
+        '../../node_modules/.pnpm/@scope+module@1.0.0/node_modules/@scope/module/ios',
+        ignorePaths
+      )
+    ).toBe(false);
+  });
+
+  it('should still ignore nested dependencies', () => {
+    const ignorePaths = ['**/node_modules/**/node_modules/**'];
+    expect(isIgnoredPath('node_modules/module/node_modules/nested/index.js', ignorePaths)).toBe(
+      true
+    );
+    expect(
+      isIgnoredPath(
+        'node_modules/.pnpm/module@1.0.0/node_modules/module/node_modules/nested/index.js',
+        ignorePaths
+      )
+    ).toBe(true);
+  });
+
+  it('should keep matching other patterns inside a virtual store', () => {
+    expect(
+      isIgnoredPath('node_modules/.pnpm/sharp@1.0.0/node_modules/sharp/build/Release/sharp.node', [
+        '**/node_modules/**/*.node',
+      ])
+    ).toBe(true);
+  });
+
   it('should match .cxx from parent directories', () => {
     const ignorePaths = ['**/android/.cxx/**/*'];
     expect(isIgnoredPath('node_modules/module/android/.cxx/file', ignorePaths)).toBe(true);
@@ -157,6 +191,42 @@ describe(normalizeFilePath, () => {
     expect(normalizeFilePath('../../dir/app.json', options)).toBe('dir/app.json');
     expect(normalizeFilePath('../../node_modules/module', options)).toBe('node_modules/module');
     expect(normalizeFilePath('../../packages/module', options)).toBe('packages/module');
+  });
+
+  it('should collapse a virtual store segment', () => {
+    const options = {};
+    expect(
+      normalizeFilePath('node_modules/.pnpm/module@1.0.0/node_modules/module/package.json', options)
+    ).toBe('node_modules/module/package.json');
+    expect(
+      normalizeFilePath('node_modules/.bun/module@1.0.0/node_modules/module/package.json', options)
+    ).toBe('node_modules/module/package.json');
+    expect(
+      normalizeFilePath('node_modules/.store/module-npm-1.0.0/node_modules/module/ios', options)
+    ).toBe('node_modules/module/ios');
+    expect(
+      normalizeFilePath(
+        'node_modules/.pnpm/@scope+module@1.0.0/node_modules/@scope/module',
+        options
+      )
+    ).toBe('node_modules/@scope/module');
+  });
+
+  it('should keep a nested dependency inside a virtual store segment', () => {
+    const options = {};
+    expect(
+      normalizeFilePath(
+        'node_modules/.pnpm/module@1.0.0/node_modules/module/node_modules/nested/index.js',
+        options
+      )
+    ).toBe('node_modules/module/node_modules/nested/index.js');
+  });
+
+  it('should keep an unknown dot directory as is', () => {
+    const options = {};
+    expect(normalizeFilePath('node_modules/.cache/module@1.0.0/node_modules/module', options)).toBe(
+      'node_modules/.cache/module@1.0.0/node_modules/module'
+    );
   });
 });
 
