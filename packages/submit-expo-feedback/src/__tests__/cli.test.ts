@@ -7,7 +7,6 @@ import packageJson from '../../package.json';
 import {
   createFeedbackMetadataAsync,
   getProjectMetadata,
-  getUserMetadataAsync,
   resolveFeedbackAsync,
   resolveFeedbackId,
   runExpoFeedbackAsync,
@@ -84,6 +83,9 @@ describe('help output', () => {
       expect(helpOutput).toContain('Feedback messages can be up to 5,000 characters.');
       expect(helpOutput).toContain(
         'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected'
+      );
+      expect(helpOutput).toContain(
+        'Authenticated submissions are associated\n    with your Expo account.'
       );
     } finally {
       process.argv = originalArgv;
@@ -260,7 +262,6 @@ describe('project metadata', () => {
     await expect(
       createFeedbackMetadataAsync(
         projectRoot,
-        null,
         'docs',
         ' https://docs.expo.dev/router/introduction/ '
       )
@@ -277,37 +278,9 @@ describe('project metadata', () => {
       version: '1.0.0',
     });
 
-    const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'docs', '   ');
+    const metadata = await createFeedbackMetadataAsync(projectRoot, 'docs', '   ');
 
     expect(metadata).not.toHaveProperty('subject');
-  });
-});
-
-describe('user metadata', () => {
-  it('includes username and id from the local session state', async () => {
-    await expect(
-      getUserMetadataAsync({
-        sessionSecret: 'secret',
-        userId: 'user-id',
-        username: 'expo-user',
-      })
-    ).resolves.toEqual({
-      authType: 'session',
-      id: 'user-id',
-      username: 'expo-user',
-    });
-  });
-
-  it('does not shell out to expo whoami when username is missing', async () => {
-    await expect(
-      getUserMetadataAsync({
-        sessionSecret: 'secret',
-        userId: 'user-id',
-      })
-    ).resolves.toEqual({
-      authType: 'session',
-      id: 'user-id',
-    });
   });
 });
 
@@ -346,10 +319,8 @@ describe('feedback submission', () => {
     jest.spyOn(AbortSignal, 'timeout').mockReturnValue(timeoutSignal);
     const session = {
       sessionSecret: 'session-secret',
-      userId: 'user-id',
-      username: 'expo-user',
     };
-    const metadata = await createFeedbackMetadataAsync(projectRoot, session, 'mcp', 'expo-mcp');
+    const metadata = await createFeedbackMetadataAsync(projectRoot, 'mcp', 'expo-mcp');
 
     await sendFeedbackAsync({
       feedback: 'please make errors clearer',
@@ -393,12 +364,8 @@ describe('feedback submission', () => {
       project: {
         isExpoProject: false,
       },
-      user: {
-        authType: 'session',
-        id: 'user-id',
-        username: 'expo-user',
-      },
     });
+    expect(metadata).not.toHaveProperty('user');
   });
 
   it('does not submit feedback over the maximum length', async () => {
