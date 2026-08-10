@@ -57,31 +57,48 @@ it('runs `npx expo install --help`', async () => {
 });
 
 it('installs a local package tarball without network access', async () => {
-  const projectRoot = await setupTestProjectWithOptionsAsync(
-    'local-package-install',
-    'with-blank',
-    {
-      reuseExisting: false,
+  const offlineEnv = {
+    EXPO_OFFLINE: '1',
+    EXPO_NO_NEW_ARCH_COMPAT_CHECK: '1',
+    npm_config_offline: 'true',
+    HTTP_PROXY: 'http://127.0.0.1:9',
+    HTTPS_PROXY: 'http://127.0.0.1:9',
+    NO_PROXY: '',
+  };
+  const originalEnv = Object.fromEntries(
+    Object.keys(offlineEnv).map((key) => [key, process.env[key]])
+  );
+  Object.assign(process.env, offlineEnv);
+
+  try {
+    const projectRoot = await setupTestProjectWithOptionsAsync(
+      'local-package-install',
+      'with-blank',
+      {
+        reuseExisting: false,
+      }
+    );
+    const tarball = await createPackageTarball(
+      projectRoot,
+      'packages/@expo/cli/e2e/fixtures/install-smoke-package'
+    );
+
+    await expect(
+      executeExpoAsync(projectRoot, ['install', tarball.packageReference, '--', '--offline'], {
+        env: offlineEnv,
+      })
+    ).resolves.toMatchObject({ exitCode: 0 });
+
+    const pkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
+    expect(pkg.dependencies?.[tarball.name]).toEqual(expect.any(String));
+    expect(require.resolve(tarball.name, { paths: [projectRoot] })).toEqual(expect.any(String));
+  } finally {
+    for (const [key, value] of Object.entries(originalEnv)) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
     }
-  );
-  const tarball = await createPackageTarball(
-    projectRoot,
-    'packages/@expo/cli/e2e/fixtures/install-smoke-package'
-  );
-
-  await expect(
-    executeExpoAsync(projectRoot, ['install', tarball.packageReference, '--', '--offline'], {
-      env: {
-        EXPO_OFFLINE: '1',
-        EXPO_NO_NEW_ARCH_COMPAT_CHECK: '1',
-        HTTP_PROXY: 'http://127.0.0.1:9',
-        HTTPS_PROXY: 'http://127.0.0.1:9',
-        NO_PROXY: '',
-      },
-    })
-  ).resolves.toMatchObject({ exitCode: 0 });
-
-  const pkg: any = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
-  expect(pkg.dependencies?.[tarball.name]).toEqual(expect.any(String));
-  expect(require.resolve(tarball.name, { paths: [projectRoot] })).toEqual(expect.any(String));
+  }
 });
