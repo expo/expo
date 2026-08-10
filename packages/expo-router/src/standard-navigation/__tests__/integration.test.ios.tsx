@@ -403,12 +403,12 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
   });
 
-  // initialRouteName is a router option, not a NavigatorContent prop: it is destructured out of the
-  // props spread so it never reaches the content component (the focused route itself is URL-driven).
   it('does not leak initialRouteName to NavigatorContent', () => {
     renderRouter({
       _layout: () => (
-        <StandardTabs initialRouteName="second">
+        <StandardTabs
+          // @ts-expect-error `initialRouteName` is only supported through `unstable_settings`.
+          initialRouteName="second">
           <StandardTabs.Screen name="index" />
           <StandardTabs.Screen name="second" />
         </StandardTabs>

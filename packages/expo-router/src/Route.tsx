@@ -81,6 +81,16 @@ export function useRouteNode(): RouteNode | null {
   return use(CurrentRouteContext);
 }
 
+export function getValidInitialRouteName(node: RouteNode | null): string | undefined {
+  const initialRouteName = node?.initialRouteName;
+  if (!initialRouteName) {
+    return undefined;
+  }
+  return node?.children.find(
+    (child) => child.route === initialRouteName || child.route === `${initialRouteName}/index`
+  )?.route;
+}
+
 export function useContextKey(): string {
   const node = useRouteNode();
   if (node == null) {

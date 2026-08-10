@@ -1,5 +1,5 @@
 import type { RouteNode } from '../Route';
-import { sortRoutes } from '../Route';
+import { getValidInitialRouteName, sortRoutes } from '../Route';
 import { generateDynamic } from '../getRoutes';
 
 const asRouteNode = (route: string): RouteNode => {
@@ -86,5 +86,34 @@ describe(sortRoutes, () => {
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('index'))).toBe(1);
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('a'))).toBe(1);
     expect(sortRoutes(asRouteNode('[...a]'), asRouteNode('(a)'))).toBe(1);
+  });
+});
+
+describe(getValidInitialRouteName, () => {
+  it('returns the registered route name for a valid setting', () => {
+    const node = asRouteNode('_layout');
+    node.initialRouteName = 'a';
+    node.children = [asRouteNode('a')];
+
+    expect(getValidInitialRouteName(node)).toBe('a');
+  });
+
+  it('resolves a directory setting to its registered index route', () => {
+    const node = asRouteNode('_layout');
+    node.initialRouteName = 'a';
+    node.children = [asRouteNode('a/index')];
+
+    expect(getValidInitialRouteName(node)).toBe('a/index');
+  });
+
+  it('returns undefined for a missing route', () => {
+    const node = asRouteNode('_layout');
+    node.initialRouteName = 'missing';
+
+    expect(getValidInitialRouteName(node)).toBeUndefined();
+  });
+
+  it('returns undefined without a route node', () => {
+    expect(getValidInitialRouteName(null)).toBeUndefined();
   });
 });

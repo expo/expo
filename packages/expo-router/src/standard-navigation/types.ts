@@ -217,6 +217,9 @@ export type StandardRouterNavigatorProps<
   EventMap extends StandardNavigatorEventMapBase,
   NavigatorProps extends object,
   RouterOptions extends DefaultRouterOptions,
-> = StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap> &
-  NavigatorProps &
-  RouterOptions;
+> = Omit<
+  StandardUseNavigationBuilderOptions<State, NavigatorOptions, EventMap>,
+  'initialRouteName'
+> &
+  Omit<NavigatorProps, 'initialRouteName'> &
+  Omit<RouterOptions, 'initialRouteName'>;
