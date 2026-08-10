@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Get the development server address from the loaded bundle.
+
 ## 57.0.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._
