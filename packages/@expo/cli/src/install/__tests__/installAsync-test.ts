@@ -19,11 +19,6 @@ jest.mock('../../start/doctor/dependencies/getVersionedPackages', () => ({
   getVersionedPackagesAsync: jest.fn(),
 }));
 
-jest.mock('../../utils/nodeEnv', () => ({
-  loadEnvFiles: jest.fn(),
-  setNodeEnv: jest.fn(),
-}));
-
 jest.mock('../applyPlugins', () => ({
   applyPluginsAsync: jest.fn(),
 }));
@@ -123,6 +118,23 @@ describe(installAsync, () => {
       'expo-camera@~16.0.0',
       'react-native-reanimated@~3.17.0',
     ]);
+  });
+
+  it('keeps NODE_ENV when called internally', async () => {
+    const originalNodeEnv = process.env.NODE_ENV;
+    process.env.NODE_ENV = 'production';
+
+    try {
+      await installAsync([], { projectRoot });
+
+      expect(process.env.NODE_ENV).toBe('production');
+    } finally {
+      if (originalNodeEnv === undefined) {
+        Reflect.deleteProperty(process.env, 'NODE_ENV');
+      } else {
+        process.env.NODE_ENV = originalNodeEnv;
+      }
+    }
   });
 
   it('installs a resolved Expo canary first and forwards --fix to the follow-up command', async () => {
