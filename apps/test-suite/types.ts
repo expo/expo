@@ -1,3 +1,5 @@
+export type { JasmineInterface } from 'jasmine-core/lib/jasmine-core/jasmine';
+
 export type JasmineResult = {
   id: string;
   description: string;
