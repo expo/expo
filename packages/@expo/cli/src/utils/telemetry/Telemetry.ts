@@ -92,7 +92,7 @@ export class Telemetry {
 
   private recordInternal(records: TelemetryRecord[]) {
     const agent = getAgentTelemetryContext();
-    const sandboxId = getSandboxTelemetryContext();
+    const sandboxProvider = getSandboxTelemetryContext();
 
     return this.client.record(
       records.map((record) => ({
@@ -105,7 +105,7 @@ export class Telemetry {
         context: {
           ...this.context,
           sessionId: this.actor.sessionId,
-          ...(sandboxId ? { sandbox_provider: sandboxId } : {}),
+          ...(sandboxProvider ? { sandbox_provider: sandboxProvider } : {}),
           ...(agent ? { agent } : {}),
           client: { mode: this.client.strategy },
         },
