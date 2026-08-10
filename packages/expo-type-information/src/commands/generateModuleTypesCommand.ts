@@ -15,7 +15,7 @@ export function generateModuleTypesCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-module-types'))
     .description('generate a type declaration file content for a module')
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
-      const parsedArgs = await parseCommandArguments(options);
+      const parsedArgs = parseCommandArguments(options);
       if (!parsedArgs) {
         return;
       }
@@ -34,6 +34,6 @@ export function generateModuleTypesCommand(cli: commander.Command) {
         }
         writeStringToFileOrPrintToConsole(moduleTypesFileContent, realOutputPath);
       };
-      runCommandOnWatch(parsedArgs, command);
+      await runCommandOnWatch(parsedArgs, command);
     });
 }

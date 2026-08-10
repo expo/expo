@@ -156,7 +156,7 @@ function getMockedEnumInstance(enumType: EnumType): ts.Expression | undefined {
   }
 
   return ts.factory.createPropertyAccessExpression(
-    ts.factory.createRegularExpressionLiteral(enumType.name),
+    ts.factory.createIdentifier(enumType.name),
     firstCase
   );
 }
@@ -379,7 +379,7 @@ export async function generateMocks(
   const mocksDir = path.join(directoryPath, 'mocks');
   await fs.promises.mkdir(mocksDir, { recursive: true });
 
-  taskAll(modules, async ({ module, file }) => {
+  await taskAll(modules, async ({ module, file }) => {
     const code = generateTSMockForModule(module, file, isTypeScript);
     const prettified = await prettifyCode(code, isTypeScript ? 'typescript' : undefined);
     await fs.promises.writeFile(path.join(mocksDir, module.name + extension), prettified);

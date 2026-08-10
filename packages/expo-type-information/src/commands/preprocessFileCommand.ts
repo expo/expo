@@ -18,7 +18,7 @@ export function preprocessFileCommand(cli: commander.Command) {
       'print the preprocessed file(s) in the state right before parsing them using `sourcekitten`'
     )
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
-      const parsedArgs = await parseCommandArguments(options);
+      const parsedArgs = parseCommandArguments(options);
       if (!parsedArgs) {
         return;
       }
@@ -26,7 +26,7 @@ export function preprocessFileCommand(cli: commander.Command) {
         parsedArgs;
 
       const command = async () => {
-        withPreparedSingleFile(
+        await withPreparedSingleFile(
           {
             input: { type: 'file', inputFileAbsolutePaths: realInputPaths },
             typeInference,
@@ -39,6 +39,6 @@ export function preprocessFileCommand(cli: commander.Command) {
         );
       };
 
-      runCommandOnWatch(parsedArgs, command);
+      await runCommandOnWatch(parsedArgs, command);
     });
 }

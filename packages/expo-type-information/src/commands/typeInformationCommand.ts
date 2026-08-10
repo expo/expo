@@ -14,7 +14,7 @@ export function typeInformationCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('type-information'))
     .description('parse Swift module type information and outputs a `FileTypeInformation` JSON')
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
-      const parsedArgs = await parseCommandArguments(options);
+      const parsedArgs = parseCommandArguments(options);
       if (!parsedArgs) {
         return;
       }
@@ -30,6 +30,6 @@ export function typeInformationCommand(cli: commander.Command) {
         writeStringToFileOrPrintToConsole(typeInfoSerializedString, parsedArgs.realOutputPath);
       };
 
-      runCommandOnWatch(parsedArgs, command);
+      await runCommandOnWatch(parsedArgs, command);
     });
 }

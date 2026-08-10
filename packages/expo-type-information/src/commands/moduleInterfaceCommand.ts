@@ -27,11 +27,11 @@ If there are multiple modules provided, then a **Common.types.ts** file will be 
 `
     )
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
-      const parsedArgs = await parseCommandArguments(options, false);
+      const parsedArgs = parseCommandArguments(options, false);
       if (!parsedArgs) {
         return;
       }
-      maybePrepareOutputDirectory(parsedArgs.realOutputPath);
+      await maybePrepareOutputDirectory(parsedArgs.realOutputPath);
       const { realInputPaths, realOutputPath } = parsedArgs;
 
       const command = async () => {
@@ -76,6 +76,6 @@ If there are multiple modules provided, then a **Common.types.ts** file will be 
         await Promise.all(writeFilePromises);
       };
 
-      runCommandOnWatch(parsedArgs, command);
+      await runCommandOnWatch(parsedArgs, command);
     });
 }

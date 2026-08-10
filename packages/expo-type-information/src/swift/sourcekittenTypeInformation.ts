@@ -1,4 +1,4 @@
-import { execSync, exec } from 'child_process';
+import { execFile, exec } from 'child_process';
 import fs from 'fs';
 import { promisify } from 'util';
 import YAML from 'yaml';
@@ -31,6 +31,7 @@ import {
 import { Attribute, FileType, Structure } from '../types';
 import { taskAll } from '../utils';
 
+const execFileAsync = promisify(execFile);
 const execAsync = promisify(exec);
 
 type SourcekittenClosure = {
@@ -304,12 +305,13 @@ function mapSwiftTypeToTsType(type?: string): Type {
   };
 }
 
-function getStructureFromFile(file: FileType): Structure | null {
-  const command = 'sourcekitten structure --file ' + file.path;
-
+async function getStructureFromFile(file: FileType): Promise<Structure | null> {
   try {
-    const output = execSync(command, { maxBuffer: 10 * 1024 * 1024 });
-    return JSON.parse(output.toString());
+    // TODO(@HubertBer): Maybe add an option to configure the maxBuffer
+    const { stdout } = await execFileAsync('sourcekitten', ['structure', '--file', file.path], {
+      maxBuffer: 10 * 1024 * 1024,
+    });
+    return JSON.parse(stdout.toString());
   } catch (error) {
     console.error('An error occurred while executing the command:', error);
   }
@@ -423,19 +425,26 @@ async function findReturnType(structure: Structure, ctx: ParseContext): Promise<
   return null;
 }
 
-let cachedSDKPath: string | null = null;
-function getSDKPath(): string | null {
-  if (cachedSDKPath) {
-    return cachedSDKPath;
+let cachedSDKPathPromise: Promise<string | null> | null = null;
+async function getSDKPath(): Promise<string | null> {
+  if (cachedSDKPathPromise !== null) {
+    return await cachedSDKPathPromise;
   }
 
-  cachedSDKPath = execSync('xcrun --sdk iphoneos --show-sdk-path').toString().trim();
-  if (!cachedSDKPath) {
+  cachedSDKPathPromise = execAsync('xcrun --sdk iphoneos --show-sdk-path')
+    .then(({ stdout }) => stdout?.toString()?.trim() ?? null)
+    .catch((e) => {
+      console.error(e);
+      return null;
+    });
+
+  const sdkPath = await cachedSDKPathPromise;
+  if (!sdkPath) {
     console.error(`Couldn't find xcode sdk path!`);
     return null;
   }
 
-  return cachedSDKPath;
+  return sdkPath;
 }
 
 function getUnresolvedType(): Type {
@@ -476,9 +485,7 @@ function constructSourcekittenCursorInfoRequest({
     defaultStringType: 'QUOTE_DOUBLE',
     lineWidth: 0,
     defaultKeyType: 'PLAIN',
-  })
-    .replace('"source.request.cursorinfo"', 'source.request.cursorinfo')
-    .replaceAll('"', '\\"');
+  }).replace('"source.request.cursorinfo"', 'source.request.cursorinfo');
 
   return yamlRequest;
 }
@@ -490,7 +497,7 @@ async function getTypeOfByteOffsetVariable(
   byteOffset: number,
   file: FileType
 ): Promise<string | null> {
-  const sdkPath = getSDKPath();
+  const sdkPath = await getSDKPath();
   if (!sdkPath) {
     return null;
   }
@@ -499,9 +506,8 @@ async function getTypeOfByteOffsetVariable(
     byteOffset,
     sdkPath,
   });
-  const command = 'sourcekitten request --yaml "' + yamlRequest + '"';
   try {
-    const { stdout } = await execAsync(command);
+    const { stdout } = await execFileAsync('sourcekitten', ['request', '--yaml', yamlRequest]);
     const output = JSON.parse(stdout.toString());
     const inferredType = output['key.typename'];
     if (inferredType === '<<error type>>') {
@@ -1230,9 +1236,9 @@ export async function getSwiftFileTypeInformation(
   filePath: string,
   options: SwiftFileTypeInformationOptions
 ): Promise<FileTypeInformation | null> {
-  const file = { path: filePath, content: fs.readFileSync(filePath, 'utf8') };
+  const file = { path: filePath, content: await fs.promises.readFile(filePath, 'utf8') };
 
-  const fileStructure = getStructureFromFile(file);
+  const fileStructure = await getStructureFromFile(file);
   if (!fileStructure) {
     return null;
   }

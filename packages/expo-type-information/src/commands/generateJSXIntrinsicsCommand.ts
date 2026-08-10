@@ -16,7 +16,7 @@ export function generateJsxIntrinsics(cli: commander.Command) {
       'generate a declaration file for a View, update JSX intrinsics with the View props'
     )
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
-      const parsedArgs = await parseCommandArguments(options);
+      const parsedArgs = parseCommandArguments(options);
       if (!parsedArgs) {
         return;
       }
@@ -35,6 +35,6 @@ export function generateJsxIntrinsics(cli: commander.Command) {
         }
         writeStringToFileOrPrintToConsole(jsxIntrinsicViewFileContent, realOutputPath);
       };
-      runCommandOnWatch(parsedArgs, command);
+      await runCommandOnWatch(parsedArgs, command);
     });
 }

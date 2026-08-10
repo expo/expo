@@ -87,8 +87,8 @@ export function debounce<T extends (...args: any[]) => any>(
 }
 
 export async function runCommandOnWatch(parsedArgs: ParsedArguments, command: () => Promise<void>) {
-  const debounced_command = debounce(command, 1000);
-  debounced_command();
+  const debouncedCommand = debounce(command, 1000);
+  await command();
   if (!parsedArgs.watcher) {
     return;
   }
@@ -99,7 +99,7 @@ export async function runCommandOnWatch(parsedArgs: ParsedArguments, command: ()
       if (!fs.existsSync(realInputPath)) {
         return;
       }
-      debounced_command();
+      debouncedCommand();
     }
   });
 }

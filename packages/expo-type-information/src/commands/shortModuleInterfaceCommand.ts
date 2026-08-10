@@ -17,10 +17,10 @@ export function shortModuleInterfaceCommand(cli: commander.Command) {
         'Creates a short TypeScript interface for an Expo module. Overwrites **ModuleName.generated.ts** and creates **ModuleName.ts** if not present. Can be used with inline-modules.'
       )
   ).action(async (options: TypeInformationCommandCommonAllArguments) => {
-    const parsedArgs = await parseCommandArguments(options, false);
+    const parsedArgs = parseCommandArguments(options, false);
     if (!parsedArgs) return;
 
     const command = () => generateConciseTsFiles(parsedArgs);
-    runCommandOnWatch(parsedArgs, command);
+    await runCommandOnWatch(parsedArgs, command);
   });
 }

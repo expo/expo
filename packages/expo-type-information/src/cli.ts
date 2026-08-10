@@ -12,11 +12,10 @@ import { shortModuleInterfaceCommand } from './commands/shortModuleInterfaceComm
 import { typeInformationCommand } from './commands/typeInformationCommand';
 
 async function main(args: string[]) {
+  const cli = new Command();
   if (!isSourceKittenInstalled()) {
     console.error('Sourcekitten not found! Install it like so: brew install sourcekitten');
-    return;
   }
-  const cli = new Command();
   cli
     .name('expo-type-information')
     .version(require('../package.json').version)

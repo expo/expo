@@ -118,14 +118,14 @@ function constructModifiersArray(modifiers: {
 }
 
 export function joinTSNodesWithNewlines(nodes: ts.Node[][]): ts.Node[] {
-  const new_nodes: ts.Node[] = [];
+  const newNodes: ts.Node[] = [];
   for (const node of nodes) {
     if (node.length > 0) {
-      new_nodes.push(...node);
-      new_nodes.push(newlineIdentifier());
+      newNodes.push(...node);
+      newNodes.push(newlineIdentifier());
     }
   }
-  return new_nodes;
+  return newNodes;
 }
 
 const BASIC_TYPE_MAP: Record<BasicType, ts.KeywordTypeSyntaxKind> = {
@@ -502,8 +502,11 @@ function buildPropsMembers({ props, events }: ViewDeclaration): ts.TypeElement[]
       return undefined;
     }
     const name = propDeclaration.name;
-    const typeNode = mapTypeToTsTypeNode(propTypeArgument);
-    return createPropertySignature({ name, typeNode });
+    const optional = propTypeArgument.kind === TypeKind.OPTIONAL;
+    const typeNode = mapTypeToTsTypeNode(
+      optional ? (propTypeArgument.type as Type) : propTypeArgument
+    );
+    return createPropertySignature({ name, optional, typeNode });
   };
 
   return [
@@ -1126,57 +1129,50 @@ function createImportNodes(
   }: IdentifiersInfo,
   identifierDeclarationImportMap: IdentifierDeclarationImportMap
 ): ts.Node[] {
-  const valueIdentifiersToImport = usedValueIdentifiers
-    .difference(declaredValueIdentifiers)
-    .difference(declaredTypeIdentifiers)
-    .difference(GLOBAL_IDENTIFIERS);
-  const typeIdentifiersToImport = usedTypeIdentifiers
-    .difference(declaredTypeIdentifiers)
-    .difference(declaredValueIdentifiers)
-    .difference(GLOBAL_IDENTIFIERS)
-    .difference(valueIdentifiersToImport);
-  const typeImports = new Map<string, string[]>();
-  const valueImports = new Map<string, string[]>();
-  for (const typeIdent of typeIdentifiersToImport) {
-    const importPath = identifierDeclarationImportMap.get(typeIdent);
-    if (!importPath) {
-      console.warn(`No known declaration of ${typeIdent}.`);
-      continue;
+  const valueIdentifiersImportGroup = {
+    identifiersToImport: usedValueIdentifiers
+      .difference(declaredValueIdentifiers)
+      .difference(declaredTypeIdentifiers)
+      .difference(GLOBAL_IDENTIFIERS),
+    importsSet: new Map<string, string[]>(),
+    typeImport: false,
+  };
+  const typeIdentifiersImportGroup = {
+    identifiersToImport: usedTypeIdentifiers
+      .difference(declaredTypeIdentifiers)
+      .difference(declaredValueIdentifiers)
+      .difference(GLOBAL_IDENTIFIERS)
+      .difference(valueIdentifiersImportGroup.identifiersToImport),
+    importsSet: new Map<string, string[]>(),
+    typeImport: true,
+  };
+  const importGroups = [typeIdentifiersImportGroup, valueIdentifiersImportGroup];
+
+  for (const { identifiersToImport, importsSet } of importGroups) {
+    for (const typeIdent of identifiersToImport) {
+      const importPath = identifierDeclarationImportMap.get(typeIdent);
+      if (!importPath) {
+        console.warn(`No known declaration of ${typeIdent}.`);
+        continue;
+      }
+      if (!importsSet.has(importPath)) {
+        importsSet.set(importPath, []);
+      }
+      importsSet.get(importPath)?.push(typeIdent);
     }
-    if (!typeImports.has(importPath)) {
-      typeImports.set(importPath, []);
-    }
-    typeImports.get(importPath)?.push(typeIdent);
-  }
-  for (const valueIdent of valueIdentifiersToImport) {
-    const importPath = identifierDeclarationImportMap.get(valueIdent);
-    if (!importPath) {
-      console.warn(`No known declaration of ${valueIdent}.`);
-      continue;
-    }
-    if (!valueImports.has(importPath)) {
-      valueImports.set(importPath, []);
-    }
-    valueImports.get(importPath)?.push(valueIdent);
   }
 
   const importNodes: ts.Node[][] = [];
-  for (const [importFromName, typeIdentifiers] of typeImports) {
-    importNodes.push(
-      createImportDeclaration({
-        namedImportsNames: typeIdentifiers,
-        importFromName,
-        typeImport: true,
-      })
-    );
-  }
-  for (const [importFromName, identifiers] of valueImports) {
-    importNodes.push(
-      createImportDeclaration({
-        namedImportsNames: identifiers,
-        importFromName,
-      })
-    );
+  for (const { importsSet, typeImport } of importGroups) {
+    for (const [importFromName, typeIdentifiers] of importsSet) {
+      importNodes.push(
+        createImportDeclaration({
+          namedImportsNames: typeIdentifiers,
+          importFromName,
+          typeImport,
+        })
+      );
+    }
   }
 
   return importNodes.flat(1);

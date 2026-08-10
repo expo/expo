@@ -13,7 +13,7 @@ export function generateMocksForFileCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-mocks-for-file'))
     .description('generate mocks for a given Expo module')
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
-      const parsedArgs = await parseCommandArguments(options);
+      const parsedArgs = parseCommandArguments(options);
       if (!parsedArgs) {
         return;
       }
@@ -25,6 +25,6 @@ export function generateMocksForFileCommand(cli: commander.Command) {
         }
         generateMocks([typeInfo], 'typescript');
       };
-      runCommandOnWatch(parsedArgs, command);
+      await runCommandOnWatch(parsedArgs, command);
     });
 }

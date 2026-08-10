@@ -70,7 +70,7 @@ async function mergeFileContents(absoluteFilePaths: string[]): Promise<string> {
   const filesContents = await taskAll(absoluteFilePaths, (filePath) =>
     fs.promises.readFile(filePath, 'utf-8')
   );
-  return filesContents.join('');
+  return filesContents.join('\n');
 }
 
 async function withTempFile<T>(content: string, fn: (filePath: string) => Promise<T>): Promise<T> {
@@ -127,17 +127,7 @@ export async function getFileTypeInformation({
   mapUnicodeCharacters,
   removeRunOnQueue,
 }: GetFileTypeInformationOptions): Promise<FileTypeInformation | null> {
-  const shouldPreprocessFile =
-    typeInference === TypeInferenceOption.PREPROCESS_AND_INFERENCE ||
-    removeRunOnQueue ||
-    mapUnicodeCharacters;
   const typeInferenceOn = typeInference !== TypeInferenceOption.NO_INFERENCE;
-  if (!shouldPreprocessFile && input.type === 'file' && input.inputFileAbsolutePaths.length === 1) {
-    return getSwiftFileTypeInformation(input.inputFileAbsolutePaths[0] as string, {
-      typeInference: typeInferenceOn,
-    });
-  }
-
   return withPreparedSingleFile(
     { input, typeInference, mapUnicodeCharacters, removeRunOnQueue },
     async (tempFilePath) => {

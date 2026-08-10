@@ -14,7 +14,7 @@ export function generateViewTypesCommand(cli: commander.Command) {
   return addCommonOptions(cli.command('generate-view-types'))
     .description('generate a type declaration file for a native View')
     .action(async (options: TypeInformationCommandCommonAllArguments) => {
-      const parsedArgs = await parseCommandArguments(options);
+      const parsedArgs = parseCommandArguments(options);
       if (!parsedArgs) {
         return;
       }
@@ -34,6 +34,6 @@ export function generateViewTypesCommand(cli: commander.Command) {
         writeStringToFileOrPrintToConsole(viewTypesFileContent, realOutputPath);
       };
 
-      runCommandOnWatch(parsedArgs, command);
+      await runCommandOnWatch(parsedArgs, command);
     });
 }

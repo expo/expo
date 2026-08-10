@@ -75,10 +75,6 @@ async function hasSwiftModuleDefinition(absoluteFilePath: string): Promise<boole
   }
 }
 
-async function fileHasModuleDeclaration(filePath: string): Promise<boolean> {
-  return hasSwiftModuleDefinition(filePath);
-}
-
 async function inlineModulesWatcher({
   appJsonPath,
   typeInference,
@@ -115,7 +111,7 @@ async function inlineModulesWatcher({
         }
         const resolvedFilePath = path.resolve(dir, fileName);
         if (fs.existsSync(resolvedFilePath)) {
-          if (!(await fileHasModuleDeclaration(resolvedFilePath))) {
+          if (!(await hasSwiftModuleDefinition(resolvedFilePath))) {
             compileOnlyModules.add(resolvedFilePath);
             return;
           }
@@ -180,14 +176,18 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
       if (!parsedArgs) {
         return;
       }
-      maybePrepareOutputDirectory(parsedArgs?.realOutputPath);
 
       const { appJsonPath, watcher, mapUnicodeCharacters } = parsedArgs;
       if (!appJsonPath) {
         return;
       }
 
-      const watchedDirectories = await getResolvedWatchedDirectoriesFromAppJson(appJsonPath);
+      const prepareOutputDirectoryPromise = maybePrepareOutputDirectory(parsedArgs?.realOutputPath);
+      const watchedDirectoriesPromise = getResolvedWatchedDirectoriesFromAppJson(appJsonPath);
+      const [_, watchedDirectories] = await Promise.all([
+        prepareOutputDirectoryPromise,
+        watchedDirectoriesPromise,
+      ]);
       if (!watchedDirectories) {
         return;
       }
@@ -202,7 +202,7 @@ export async function inlineModulesInterfaceCommand(cli: commander.Command) {
           const resolvedFilePath = dirent.path;
           if (
             fs.existsSync(resolvedFilePath) &&
-            !(await fileHasModuleDeclaration(resolvedFilePath))
+            !(await hasSwiftModuleDefinition(resolvedFilePath))
           ) {
             compileOnlyModules.add(resolvedFilePath);
           } else {
