@@ -48,22 +48,21 @@ export const expoPrebuild: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx expo prebuild -h` shows as fast as possible.
-  const [
-    // ./prebuildAsync
-    { prebuildAsync },
-    // ./resolveOptions
-    { resolvePlatformOption, resolvePackageManagerOptions, resolveSkipDependencyUpdate },
-    // ../utils/errors
-    { logCmdError },
-  ] = await Promise.all([
-    import('./prebuildAsync.js'),
-    import('./resolveOptions.js'),
+  const [{ getConfigEnvMode, loadEnvFiles }, { logCmdError }] = await Promise.all([
+    import('../utils/nodeEnv.js'),
     import('../utils/errors.js'),
   ]);
 
-  return (() => {
-    return prebuildAsync(getProjectRoot(args), {
-      // Parsed options
+  return (async () => {
+    const projectRoot = getProjectRoot(args);
+    loadEnvFiles(projectRoot, { mode: getConfigEnvMode() });
+
+    const [
+      { prebuildAsync },
+      { resolvePlatformOption, resolvePackageManagerOptions, resolveSkipDependencyUpdate },
+    ] = await Promise.all([import('./prebuildAsync.js'), import('./resolveOptions.js')]);
+
+    return prebuildAsync(projectRoot, {
       clean: !args['--no-clean'],
 
       packageManager: resolvePackageManagerOptions(args),

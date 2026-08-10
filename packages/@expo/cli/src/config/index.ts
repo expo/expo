@@ -34,17 +34,20 @@ export const expoConfig: Command = async (argv) => {
   }
 
   // Load modules after the help prompt so `npx expo config -h` shows as fast as possible.
-  const [
-    // ./configAsync
-    { configAsync },
-    // ../utils/errors
-    { logCmdError },
-  ] = await Promise.all([import('./configAsync.js'), import('../utils/errors.js')]);
+  const [{ getConfigEnvMode, loadEnvFiles }, { logCmdError }] = await Promise.all([
+    import('../utils/nodeEnv.js'),
+    import('../utils/errors.js'),
+  ]);
 
-  return configAsync(getProjectRoot(args), {
-    // Parsed options
-    full: args['--full'],
-    json: args['--json'],
-    type: args['--type'],
-  }).catch(logCmdError);
+  return (async () => {
+    const projectRoot = getProjectRoot(args);
+    loadEnvFiles(projectRoot, { mode: getConfigEnvMode(), silent: args['--json'] });
+
+    const { configAsync } = await import('./configAsync.js');
+    return configAsync(projectRoot, {
+      full: args['--full'],
+      json: args['--json'],
+      type: args['--type'],
+    });
+  })().catch(logCmdError);
 };
