@@ -155,6 +155,65 @@ describe(installAsync, () => {
     expect(applyPluginsAsync).not.toHaveBeenCalled();
   });
 
+  describe('with EXPO_NO_DEPENDENCY_VALIDATION enabled', () => {
+    let originalNoDependencyValidation: string | undefined;
+
+    beforeEach(() => {
+      originalNoDependencyValidation = process.env.EXPO_NO_DEPENDENCY_VALIDATION;
+      process.env.EXPO_NO_DEPENDENCY_VALIDATION = '1';
+    });
+
+    afterEach(() => {
+      if (originalNoDependencyValidation === undefined) {
+        delete process.env.EXPO_NO_DEPENDENCY_VALIDATION;
+      } else {
+        process.env.EXPO_NO_DEPENDENCY_VALIDATION = originalNoDependencyValidation;
+      }
+    });
+
+    it('skips automatic compatibility checking but still versions and installs packages', async () => {
+      jest.mocked(getVersionedPackagesAsync).mockResolvedValueOnce({
+        packages: ['react-native-reanimated@~3.17.0'],
+        messages: [],
+        excludedNativeModules: [],
+      });
+
+      await installAsync(
+        ['react-native-reanimated'],
+        { projectRoot, pnpm: true },
+        packageManagerArguments
+      );
+
+      expect(checkPackagesCompatibility).not.toHaveBeenCalled();
+      expect(getVersionedPackagesAsync).toHaveBeenCalledWith(projectRoot, {
+        packages: ['react-native-reanimated'],
+        sdkVersion: '54.0.0',
+        pkg: {},
+      });
+      expect(packageManager.addAsync).toHaveBeenCalledWith([
+        ...packageManagerArguments,
+        'react-native-reanimated@~3.17.0',
+      ]);
+    });
+
+    it('still delegates an explicit dependency check', async () => {
+      const packages = ['expo-image'];
+      const options = { projectRoot, check: true, fix: false, pnpm: true };
+
+      await installAsync(packages, options, packageManagerArguments);
+
+      expect(checkPackagesAsync).toHaveBeenCalledWith(projectRoot, {
+        packages,
+        options,
+        packageManager,
+        packageManagerArguments,
+      });
+      expect(checkPackagesCompatibility).not.toHaveBeenCalled();
+      expect(getVersionedPackagesAsync).not.toHaveBeenCalled();
+      expect(packageManager.addAsync).not.toHaveBeenCalled();
+    });
+  });
+
   it('installs resolved dev dependencies with forwarded package-manager arguments', async () => {
     jest.mocked(getVersionedPackagesAsync).mockResolvedValueOnce({
       packages: ['eslint@^9.0.0'],

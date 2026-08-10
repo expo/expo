@@ -82,32 +82,3 @@ it('runs `npx expo install expo-sms`', async () => {
     'pnpm-lock.yaml',
   ]);
 });
-
-it('validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --check`', async () => {
-  const env = {
-    EXPO_NO_DEPENDENCY_VALIDATION: '1',
-  } as Partial<NodeJS.ProcessEnv> as NodeJS.ProcessEnv;
-  const projectRoot = await setupTestProjectWithOptionsAsync(
-    'install-check-no-validation',
-    'with-blank',
-    {
-      reuseExisting: false,
-    }
-  );
-  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
-
-  // Install wrong package version of `expo-image`
-  await expect(
-    executeExpoAsync(projectRoot, ['install', 'expo-image@1.0.0'], { env })
-  ).resolves.toMatchObject({
-    stdout: expect.stringContaining('Installing 1 other package using'),
-  });
-
-  // Ensure the wrong version is installed
-  expect(pkg.read().dependencies).toMatchObject({ 'expo-image': '1.0.0' });
-
-  // Ensure `expo install --check` does not throw when validation is disabled
-  await expect(() => {
-    return executeExpoAsync(projectRoot, ['install', '--check'], { env, verbose: false });
-  }).rejects.toThrow(/Found outdated dependencies/);
-});
