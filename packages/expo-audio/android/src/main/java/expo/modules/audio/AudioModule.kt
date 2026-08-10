@@ -152,6 +152,21 @@ class AudioModule : Module() {
       focusGainRequested != AudioManager.AUDIOFOCUS_GAIN
   }
 
+  /**
+   * Mirrors media3's `AudioFocusManager.release()`: focus is only worth holding while a player
+   * exists that could resume.
+   *
+   * Without this, `focusAcquired` stays `true` after the last player is removed — `remove()` only
+   * drops it from the map, and `releasePlayer()` detaches the listener before `ref.release()`, so
+   * no callback runs. `requestAudioFocus()` then returns early forever, and a later
+   * `setAudioModeAsync` switch can never rebuild the request.
+   */
+  private fun releaseFocusIfNoPlayables() {
+    if (allPlayables.none()) {
+      releaseAudioFocus()
+    }
+  }
+
   private fun shouldReleaseFocus(): Boolean {
     return allPlayables.none { it.isPlaying }
   }
@@ -603,6 +618,7 @@ class AudioModule : Module() {
 
       Function("remove") { player: AudioPlayer ->
         players.remove(player.id)
+        releaseFocusIfNoPlayables()
       }
     }
 
@@ -968,6 +984,7 @@ class AudioModule : Module() {
           playlist.clearLockScreenControls()
         }
         playlists.remove(playlist.id)
+        releaseFocusIfNoPlayables()
       }
     }
   }
