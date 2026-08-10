@@ -105,7 +105,7 @@ export class Telemetry {
         context: {
           ...this.context,
           sessionId: this.actor.sessionId,
-          ...(sandboxId ? { sandbox_id: sandboxId } : {}),
+          ...(sandboxId ? { sandbox_provider: sandboxId } : {}),
           ...(agent ? { agent } : {}),
           client: { mode: this.client.strategy },
         },

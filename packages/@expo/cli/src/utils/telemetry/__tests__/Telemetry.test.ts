@@ -50,7 +50,7 @@ it('waits until telemetry is initialized', () => {
       userHash: null,
       context: expect.not.objectContaining({
         agent: expect.anything(),
-        sandbox_id: expect.anything(),
+        sandbox_provider: expect.anything(),
       }),
     }),
   ]);
@@ -78,7 +78,7 @@ it('preprocesses all records', () => {
     }),
   ]);
   expect(client.record.mock.calls[0][0][0].context).not.toHaveProperty('agent');
-  expect(client.record.mock.calls[0][0][0].context).not.toHaveProperty('sandbox_id');
+  expect(client.record.mock.calls[0][0][0].context).not.toHaveProperty('sandbox_provider');
 
   // Ensure the user hash was used instead of the actual user id
   expect(client.record).toHaveBeenCalledWith([
@@ -119,7 +119,7 @@ it('adds detected sandbox context to all records', () => {
   expect(client.record).toHaveBeenCalledWith([
     expect.objectContaining({
       context: expect.objectContaining({
-        sandbox_id: 'e2b',
+        sandbox_provider: 'e2b',
       }),
     }),
   ]);
