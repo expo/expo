@@ -482,7 +482,10 @@ class DevLauncherViewModel: ObservableObject {
         return DevServer(
           url: host,
           description: result.name ?? host,
-          source: "local"
+          source: "local",
+          slug: nil,
+          bundleIdentifier: nil,
+          username: nil
         )
       }
     } catch {
