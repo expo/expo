@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.12 — 2026-08-10
+
+### 🎉 New features
+
+- Hide the splash screen when the built-in `+not-found` screen renders ([#48721](https://github.com/expo/expo/pull/48721) by [@Ubax](https://github.com/Ubax))
 
 ## 57.0.11 — 2026-08-06
 

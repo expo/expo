@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.20.7 — 2026-08-10
+
+_This version does not introduce any user-facing changes._
+
 ## 0.20.6 — 2026-07-22
 
 _This version does not introduce any user-facing changes._

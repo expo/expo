@@ -6,12 +6,16 @@
 
 ### 🎉 New features
 
-- [iOS] Added an optional `kind` argument to the `contentShape` modifier, so a shape can be applied to drag previews, context menu previews, hover effects, or accessibility instead of only hit-testing. ([#48540](https://github.com/expo/expo/issues/48540) by [@sinhong2011](https://github.com/sinhong2011)) ([#48564](https://github.com/expo/expo/pull/48564) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
-- [iOS] Added the `properties`, `anchor` and `isSource` parameters to the `matchedGeometryEffect` modifier, matching SwiftUI's signature. ([#48671](https://github.com/expo/expo/pull/48671) by [@Den1Marshall](https://github.com/Den1Marshall))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 57.0.10 — 2026-08-10
+
+### 🎉 New features
+
+- [iOS] Added an optional `kind` argument to the `contentShape` modifier, so a shape can be applied to drag previews, context menu previews, hover effects, or accessibility instead of only hit-testing. ([#48540](https://github.com/expo/expo/issues/48540) by [@sinhong2011](https://github.com/sinhong2011)) ([#48564](https://github.com/expo/expo/pull/48564) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `properties`, `anchor` and `isSource` parameters to the `matchedGeometryEffect` modifier, matching SwiftUI's signature. ([#48671](https://github.com/expo/expo/pull/48671) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ## 57.0.9 — 2026-08-04
 

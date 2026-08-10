@@ -4,15 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- [Android] Upgraded `com.google.android.play:age-signals` to `0.0.4`. Adds `ageRangeSource`, `significantChangeStatus`, `significantChangeApprovalDate` and `requestAgeSignalsAccessAsync`. Removed `userStatus`. ([#48487](https://github.com/expo/expo/pull/48487) by [@vonovak](https://github.com/vonovak))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- [iOS] Report `ageRangeDeclaration: 'confirmed'` for the six system-verified cases that iOS 26.2 added and iOS 26.5 deprecated, instead of reporting them as `'selfDeclared'`. ([#48486](https://github.com/expo/expo/pull/48486) by [@vonovak](https://github.com/vonovak))
-
 ### 💡 Others
+
+## 57.0.3 — 2026-08-10
+
+### 🛠 Breaking changes
+
+- [Android] Upgraded `com.google.android.play:age-signals` to `0.0.4`. Adds `ageRangeSource`, `significantChangeStatus`, `significantChangeApprovalDate` and `requestAgeSignalsAccessAsync`. Removed `userStatus`. ([#48487](https://github.com/expo/expo/pull/48487) by [@vonovak](https://github.com/vonovak))
+
+### 🐛 Bug fixes
+
+- [iOS] Report `ageRangeDeclaration: 'confirmed'` for the six system-verified cases that iOS 26.2 added and iOS 26.5 deprecated, instead of reporting them as `'selfDeclared'`. ([#48486](https://github.com/expo/expo/pull/48486) by [@vonovak](https://github.com/vonovak))
 
 ## 57.0.2 — 2026-07-15
 

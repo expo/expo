@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fix `base64` returning original (non-JPEG) image data when `allowsEditing` is `false`. ([#48005](https://github.com/expo/expo/pull/48005) by [@barthap](https://github.com/barthap))
-
 ### 💡 Others
+
+## 57.0.9 — 2026-08-10
+
+### 🐛 Bug fixes
+
+- [iOS] Fix `base64` returning original (non-JPEG) image data when `allowsEditing` is `false`. ([#48005](https://github.com/expo/expo/pull/48005) by [@barthap](https://github.com/barthap))
 
 ## 57.0.8 — 2026-08-06
 
