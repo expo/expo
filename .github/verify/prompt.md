@@ -16,8 +16,15 @@ proxied EAS builds, and hosted iOS simulators you can drive and screenshot.
   PRs, never modify this repository. If you identified the fix, DESCRIBE
   it in your comment (file, change, why) — a maintainer or a supervised
   session takes it from there.
-- **Budget**: at most 2 sandboxes and 3 EAS builds. Destroy every sandbox
-  you created before finishing (destroy_sandbox), even on failure.
+- **Budget**: your credential permits exactly **2 sandboxes** (the server
+  refuses a third) and you should use at most 3 EAS builds. Destroy every
+  sandbox you created before finishing (destroy_sandbox), even on failure —
+  a destroyed sandbox does not refund budget, so plan before you create.
+- **You have no shell and no `gh`.** The target's content is already on
+  disk: read `.verify-context/target.json` (issue/PR body, labels, all
+  comments) and, for a pull request, `.verify-context/pull-request.json`
+  plus `.verify-context/pull-request.diff`. Everything else you need
+  happens inside the sandbox through the `sandbox` MCP tools.
 - **Honesty**: the hosted device is an iOS simulator — a non-reproduction
   there is a finding, not a refutation, and hardware-only or Android-only
   reports should say up front that this environment cannot verify them.
@@ -25,7 +32,7 @@ proxied EAS builds, and hosted iOS simulators you can drive and screenshot.
 
 ## Procedure
 
-1. Read the target: `gh issue view <n> --comments` (or `gh pr view`).
+1. Read the target from `.verify-context/` (see above).
    Classify the archetype: build-matrix boot problem (needs Release
    "preview" builds + cold-launch census), behavioral check (drive the app
    in Expo Go / a dev build, usually 0 builds), native crash (development
@@ -74,9 +81,12 @@ Post exactly ONE findings comment on the target using
   healthy state observed).
 - `censusRunIds`: every census you cite.
 
-If github_comment_issue fails with a 403 naming missing permissions, fall
-back to `gh issue comment` and paste the capture URLs from your tool
-results into the body manually, noting they are unattested in that mode.
+`github_comment_issue` is your ONLY way to post. If it fails (for example a
+403 naming a missing Issues permission), do not look for another route —
+there is none by design. Instead print the full findings, including the
+capture URLs from your tool results, as your final message: the run log
+carries it, and the maintainer already has that link from the announce
+comment. Say clearly at the top that posting failed and why.
 
 Sign-off: your comment's server footer already attributes the automation;
 mention the triggering maintainer (@handle) in the body's first line.

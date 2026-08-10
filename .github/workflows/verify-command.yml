@@ -19,10 +19,12 @@
 #   access or higher (author_association alone does not prove write).
 # - The comment body reaches shell only via env.
 # - The agent reads attacker-authored issue text, so this workflow is
-#   COMMENT-ONLY by construction: no fix-PRs, no pushes — its Bash surface
-#   is a read-only gh allowlist plus a comment fallback, and the MCP
-#   create_sandbox allowlisting is authorized by the gated maintainer
-#   trigger itself (approval moves to the trigger, not skipped).
+#   COMMENT-ONLY by construction: no fix-PRs, no pushes, and NO SHELL — the
+#   agent has no Bash tool, so nothing it invokes can expand an environment
+#   variable into output. Its view of the target arrives as files; its only
+#   write path is the MCP server's findings-comment tool, whose arguments are
+#   literal JSON. MCP create_sandbox allowlisting is authorized by the gated
+#   maintainer trigger itself (approval moves to the trigger, not skipped).
 #
 # SECRETS REQUIRED (repo settings):
 # - EXPO_SANDBOX_MCP_TOKEN   long-lived bearer for the expo-sandbox-mcp PROD
@@ -38,8 +40,9 @@
 #                            workflows — same engine (Claude Code CLI), one
 #                            model credential to rotate. If usage ever needs
 #                            separate attribution, split it back out.
-# - EXPO_BOT_GITHUB_TOKEN    existing bot token (ack reactions, gh reads,
-#                            comment fallback).
+# - EXPO_BOT_GITHUB_TOKEN    existing bot token, used only by fixed workflow
+#                            steps (ack reaction, announce comment, context
+#                            collection) — never placed in the agent's env.
 name: Verify issue (command)
 
 on:
@@ -135,8 +138,11 @@ jobs:
         run: npm install -g @anthropic-ai/claude-code@2.1.212
 
       # The long-lived secret never reaches the agent: it lives in THIS step's
-      # env only, and is exchanged for a derived token that can create ONE
-      # sandbox within 90 minutes and nothing else. Only the derived token is
+      # env only, and is exchanged for a derived token that can create at most
+      # TWO sandboxes within 90 minutes and nothing else. Two, not one,
+      # because a PR verification runs before/after arms and a boot-hang
+      # investigation wants a control app — the prompt's stated budget and
+      # this number must stay equal. Only the derived token is
       # written to disk, so a config file read off the runner — or a token
       # echoed into a public comment — buys one sandbox, not the account.
       # (Deriving in-process rather than passing a token between jobs is
@@ -152,7 +158,7 @@ jobs:
           scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
             -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
             -H 'Content-Type: application/json' \
-            -d "{\"sandboxBudget\":1,\"ttlSeconds\":5400,\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
+            -d "{\"sandboxBudget\":2,\"ttlSeconds\":5400,\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
             | jq -r '.token // empty')
           if [ -z "$scoped" ]; then
             echo "::error::Could not mint a scoped sandbox token"
@@ -172,6 +178,30 @@ jobs:
           }
           EOF
 
+      # The agent gets ZERO shell access (see the allowlist below), so its
+      # view of the target arrives as files it can Read. This is what lets the
+      # Bash surface go away: nothing the agent can invoke expands an
+      # environment variable, so no injected instruction can print a
+      # credential anywhere.
+      - name: Collect target context
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          IS_PR: ${{ github.event.issue.pull_request != null }}
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/.verify-context"
+          cd "$GITHUB_WORKSPACE/.verify-context"
+          gh issue view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+            --comments --json number,title,state,labels,body,comments > target.json
+          if [ "$IS_PR" = "true" ]; then
+            gh pr view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+              --json number,title,state,headRefName,baseRefName,files,body > pull-request.json
+            # Truncated: a huge diff must not blow the agent's context.
+            gh pr diff "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+              | head -c 400000 > pull-request.diff
+          fi
+          ls -la
+
       - name: Run verification
         if: steps.gate.outputs.ok == 'true'
         env:
@@ -179,12 +209,10 @@ jobs:
           # engine — it holds a Claude Code OAuth token, hence this env var
           # (ANTHROPIC_API_KEY is for raw API keys).
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
-          # The AUTOMATIC workflow token, never the bot PAT: the bot PAT is
-          # push-capable and write-scoped beyond this repo (sync-template.yml
-          # pushes with it), and the job `permissions:` block does not limit
-          # it. This token IS limited by that block, so the worst an injected
-          # instruction achieves is an issue comment.
-          GH_TOKEN: ${{ github.token }}
+          # NO GitHub token in this step at all: the agent has no shell and no
+          # gh verb, so it needs none. The findings comment is posted by the
+          # MCP server from its own stored PAT, whose arguments are literal
+          # JSON — never a shell-expanded string.
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_KIND: ${{ github.event.issue.pull_request != null && 'pull request' || 'issue' }}
           TRIGGER_ACTOR: ${{ github.event.comment.user.login }}
@@ -192,15 +220,19 @@ jobs:
           # Pinned to Opus explicitly; override with a VERIFY_MODEL repo
           # variable (mirrors the code-review workflows' REVIEWER_MODEL).
           VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
-        # Comment-only is enforced in THREE independent layers, because a
-        # command-pattern allowlist alone is not a boundary (`gh api` accepts
-        # -X POST, so a repos/<slug>/* rule would have permitted writes — it
-        # is deliberately absent):
-        #   1. the workflow token's `permissions:` block (no contents write),
-        #   2. this allowlist: read-scoped Read/Glob/Grep, four fixed `gh`
-        #      verbs, no Edit/Write/git/unrestricted Bash,
-        #   3. the MCP token itself, scoped server-side to one sandbox with
-        #      a short TTL (see Mint scoped token).
+        # Comment-only is enforced structurally, not by command patterns —
+        # patterns proved to be the wrong instrument twice (a `gh api` rule
+        # permits -X POST; a `gh issue comment` rule permits
+        # --body "$SOME_SECRET", which would print a credential into a public
+        # comment). So:
+        #   1. NO Bash tool at all. The agent has no shell, so nothing it can
+        #      invoke expands an environment variable. Its view of the target
+        #      is the files written by Collect target context.
+        #   2. Read/Glob/Grep scoped to the workspace — RUNNER_TEMP (holding
+        #      the MCP config) is out of reach.
+        #   3. No GitHub token in this step's environment.
+        #   4. The MCP credential is server-scoped to a bounded sandbox
+        #      budget with a short TTL (see Mint scoped token).
         # stream-json --verbose + a jq activity renderer, the same visibility
         # the code-review CLI gives its claude -p engine: every tool call and
         # assistant message lands in the Actions log live (which the announce
@@ -214,7 +246,7 @@ jobs:
 
           $prompt" \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
-            --allowedTools "Read($GITHUB_WORKSPACE/**),Glob($GITHUB_WORKSPACE/**),Grep($GITHUB_WORKSPACE/**),mcp__sandbox__create_sandbox,mcp__sandbox__destroy_sandbox,mcp__sandbox__list_sandboxes,mcp__sandbox__get_session_info,mcp__sandbox__sandbox_exec,mcp__sandbox__sandbox_write_file,mcp__sandbox__sandbox_edit_file,mcp__sandbox__sandbox_read_file,mcp__sandbox__sandbox_list_files,mcp__sandbox__sandbox_install_packages,mcp__sandbox__sandbox_process_logs,mcp__sandbox__sandbox_process_kill,mcp__sandbox__eas_build,mcp__sandbox__eas_build_status,mcp__sandbox__eas_build_list,mcp__sandbox__simulator_start,mcp__sandbox__simulator_status,mcp__sandbox__simulator_stop,mcp__sandbox__simulator_screenshot,mcp__sandbox__simulator_ui,mcp__sandbox__simulator_tap,mcp__sandbox__simulator_type,mcp__sandbox__simulator_open,mcp__sandbox__simulator_boot_app,mcp__sandbox__simulator_install_build,mcp__sandbox__simulator_relaunch_app,mcp__sandbox__simulator_census_status,mcp__sandbox__simulator_app_state,mcp__sandbox__simulator_artifacts,mcp__sandbox__simulator_record,mcp__sandbox__github_comment_issue,mcp__sandbox__expo_skill,Bash(gh issue view:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh issue comment:*)" \
+            --allowedTools "Read($GITHUB_WORKSPACE/**),Glob($GITHUB_WORKSPACE/**),Grep($GITHUB_WORKSPACE/**),mcp__sandbox__create_sandbox,mcp__sandbox__destroy_sandbox,mcp__sandbox__list_sandboxes,mcp__sandbox__get_session_info,mcp__sandbox__sandbox_exec,mcp__sandbox__sandbox_write_file,mcp__sandbox__sandbox_edit_file,mcp__sandbox__sandbox_read_file,mcp__sandbox__sandbox_list_files,mcp__sandbox__sandbox_install_packages,mcp__sandbox__sandbox_process_logs,mcp__sandbox__sandbox_process_kill,mcp__sandbox__eas_build,mcp__sandbox__eas_build_status,mcp__sandbox__eas_build_list,mcp__sandbox__simulator_start,mcp__sandbox__simulator_status,mcp__sandbox__simulator_stop,mcp__sandbox__simulator_screenshot,mcp__sandbox__simulator_ui,mcp__sandbox__simulator_tap,mcp__sandbox__simulator_type,mcp__sandbox__simulator_open,mcp__sandbox__simulator_boot_app,mcp__sandbox__simulator_install_build,mcp__sandbox__simulator_relaunch_app,mcp__sandbox__simulator_census_status,mcp__sandbox__simulator_app_state,mcp__sandbox__simulator_artifacts,mcp__sandbox__simulator_record,mcp__sandbox__github_comment_issue,mcp__sandbox__expo_skill" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
             | jq -r --unbuffered '
