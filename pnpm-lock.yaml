@@ -1769,6 +1769,9 @@ importers:
       '@types/jasmine':
         specifier: ^5.1.15
         version: 5.1.15
+      '@types/jest':
+        specifier: ^29.2.1
+        version: 29.5.14
       '@types/react':
         specifier: ~19.2.0
         version: 19.2.14
