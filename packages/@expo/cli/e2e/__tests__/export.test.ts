@@ -374,4 +374,31 @@ describe('server', () => {
       'metadata.json',
     ]);
   });
+
+  // Regression test for: https://github.com/expo/expo/issues/35471
+  it('runs `npx expo export --platform=web --dev`', async () => {
+    await executeExpoAsync(
+      projectRoot,
+      ['export', '--source-maps', '--dump-assetmap', '--platform=web', '--dev'],
+      {
+        env: {
+          NODE_ENV: 'production',
+          TEST_BABEL_PRESET_EXPO_MODULE_ID: require.resolve('babel-preset-expo'),
+        },
+      }
+    );
+
+    // Ensure the app entry has the expected export name
+    expect(findProjectFiles(path.join(projectRoot, 'dist'))).toEqual([
+      expect.pathMatching(new RegExp(`_expo/static/js/web/index-${MD5_REGEX.source}\\.js$`)),
+      expect.pathMatching(new RegExp(`_expo/static/js/web/index-${MD5_REGEX.source}\\.js\\.map$`)),
+      'assetmap.json',
+      expect.pathMatching(new RegExp(`assets/assets/font\\.${MD5_REGEX.source}\\.ttf$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}\\.png$`)),
+      expect.pathMatching(new RegExp(`assets/assets/icon\\.${MD5_REGEX.source}@2x\\.png$`)),
+      'favicon.ico',
+      'index.html',
+      'metadata.json',
+    ]);
+  });
 });
