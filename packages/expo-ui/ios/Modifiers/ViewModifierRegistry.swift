@@ -1541,13 +1541,36 @@ public class ViewModifierRegistry {
   }
 }
 
+internal enum MatchedGeometryPropertiesOptions: String, Enumerable {
+  case frame
+  case position
+  case size
+
+  var toMatchedGeometryProperties: MatchedGeometryProperties {
+    switch self {
+    case .frame: return .frame
+    case .position: return .position
+    case .size: return .size
+    }
+  }
+}
+
 internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   @Field var id: String?
   @Field var namespaceId: String?
+  @Field var properties: MatchedGeometryPropertiesOptions = .frame
+  @Field var anchor: UnitPointOptions = .center
+  @Field var isSource: Bool = true
 
   func body(content: Content) -> some View {
     if let namespaceId, let namespace = NamespaceRegistry.shared.namespace(forKey: namespaceId) {
-      content.matchedGeometryEffect(id: id, in: namespace)
+      content.matchedGeometryEffect(
+        id: id,
+        in: namespace,
+        properties: properties.toMatchedGeometryProperties,
+        anchor: anchor.toUnitPoint,
+        isSource: isSource
+      )
     } else {
       content
     }
