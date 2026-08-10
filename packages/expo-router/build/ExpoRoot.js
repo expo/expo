@@ -52,9 +52,9 @@ const primitives_1 = require("./primitives");
 const native_1 = require("./react-navigation/native");
 const screensFeatureFlags_1 = require("./screensFeatureFlags");
 const url_1 = require("./utils/url");
+const RootUnmatched_1 = require("./views/RootUnmatched");
 const Sitemap_1 = require("./views/Sitemap");
 const SplashScreen = __importStar(require("./views/Splash"));
-const Unmatched_1 = require("./views/Unmatched");
 const isTestEnv = process.env.NODE_ENV === 'test';
 const INITIAL_METRICS = react_native_1.Platform.OS === 'web' || isTestEnv
     ? {
@@ -137,7 +137,7 @@ function ContextNavigator({ context, location: initialLocation = initialUrl, wra
 function Content() {
     const children = [(0, jsx_runtime_1.jsx)(primitives_1.Screen, { name: constants_1.INTERNAL_SLOT_NAME, component: router_store_1.store.rootComponent })];
     if ((0, utils_1.shouldAppendNotFound)()) {
-        children.push((0, jsx_runtime_1.jsx)(primitives_1.Screen, { name: constants_1.NOT_FOUND_ROUTE_NAME, component: Unmatched_1.Unmatched }));
+        children.push((0, jsx_runtime_1.jsx)(primitives_1.Screen, { name: constants_1.NOT_FOUND_ROUTE_NAME, component: RootUnmatched_1.RootUnmatched }));
     }
     if ((0, utils_1.shouldAppendSitemap)()) {
         children.push((0, jsx_runtime_1.jsx)(primitives_1.Screen, { name: constants_1.SITEMAP_ROUTE_NAME, component: Sitemap_1.Sitemap }));
