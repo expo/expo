@@ -169,7 +169,6 @@ class MediaLibraryNextModule : Module() {
         self.getShape()
       }
 
-      // the options argument only selects a rendition on iOS, MediaStore has no equivalent
       AsyncFunction("getUri") Coroutine { self: Asset, _: AssetUriOptions? ->
         self.getUri()
       }

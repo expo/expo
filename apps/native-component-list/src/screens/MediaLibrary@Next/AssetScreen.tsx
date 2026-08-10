@@ -40,6 +40,7 @@ const AssetScreen = () => {
   const [isNetworkAsset, setIsNetworkAsset] = useState<boolean | undefined>(undefined);
   const [pairedVideoUri, setPairedVideoUri] = useState<string | null | undefined>(undefined);
   const [uriVersions, setUriVersions] = useState<Record<AssetUriVersion, string> | null>(null);
+  const [hasExplainedUriVersions, setHasExplainedUriVersions] = useState(false);
   const [testState, setTestState] = useState<TestState>(TestState.START);
 
   const isVideo = assetInfo?.mediaType === MediaType.VIDEO;
@@ -154,10 +155,18 @@ const AssetScreen = () => {
     }
   };
 
-  // Edit the asset in the Photos app first, then run this. The Asset is re-instantiated because
-  // it caches its PHAsset, so an instance created before the edit would resolve a stale snapshot.
+  // The Asset is re-instantiated because it caches its PHAsset, so an instance created before the
+  // edit would resolve a stale snapshot.
   const handleCompareUriVersions = async () => {
     if (!asset) {
+      return;
+    }
+    if (!hasExplainedUriVersions) {
+      setHasExplainedUriVersions(true);
+      Alert.alert(
+        'Edit the asset first',
+        'Open the Photos app, edit this asset and save over the original, then tap this button again. The two URIs should then point to different files.'
+      );
       return;
     }
     try {
@@ -350,7 +359,7 @@ const styles = StyleSheet.create({
   buttonContainer: {
     marginVertical: 20,
     gap: 20,
-    flexDirection: 'row',
+    flexDirection: 'column',
     justifyContent: 'space-evenly',
   },
   statusText: {
