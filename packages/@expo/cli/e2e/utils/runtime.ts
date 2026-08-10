@@ -200,9 +200,15 @@ export function prepareServers(
       throw new Error(`Unknown runtime "${runtime}". Known runtimes: ${knownRuntimes.join(', ')}`);
     }
 
+    const config = knownRuntimeConfigs[runtime];
+    let preparedDist: ReturnType<ServerTestConfiguration['prepareDist']> | undefined;
+
     return {
-      ...knownRuntimeConfigs[runtime],
+      ...config,
       name: runtime,
+      // A configuration can be reused by multiple describe blocks that vary only the server
+      // environment. The exported files are identical, so prepare them once for the test file.
+      prepareDist: () => (preparedDist ??= config.prepareDist()),
     };
   });
 }
