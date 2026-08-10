@@ -33,6 +33,37 @@ async function delayAsync(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+/** A writable response mock that supports streaming Response bodies from the plugin server. */
+function createStreamingResponse() {
+  const chunks: Buffer[] = [];
+  const res = new Writable({
+    write(chunk, _encoding, callback) {
+      chunks.push(Buffer.from(chunk));
+      callback();
+    },
+  });
+  Object.assign(res, {
+    getHeader: jest.fn(),
+    setHeader: jest.fn(),
+    statusCode: 200,
+    body: () => Buffer.concat(chunks).toString(),
+  });
+  return res as unknown as ServerResponse & { body(): string };
+}
+
+function createServerRequest(url: string): ServerRequest {
+  return asReq({
+    url,
+    method: 'GET',
+    headers: { host: 'localhost:8081' },
+    rawHeaders: ['host', 'localhost:8081'],
+    socket: {} as any,
+    destroyed: false,
+    destroy: jest.fn() as any,
+    once: jest.fn() as any,
+  });
+}
+
 describe(DevToolsPluginMiddleware, () => {
   it('handleRequestAsync should return index.html from a matched plugin', async () => {
     const devToolsPluginManager = new MockDevToolsPluginManager('/');
