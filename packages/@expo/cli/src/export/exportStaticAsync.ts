@@ -208,6 +208,7 @@ export async function exportFromServerAsync(
     files = new Map(),
     exp,
     scriptTags,
+    mode,
   }: Options
 ): Promise<ExportAssetMap> {
   const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
@@ -500,7 +501,7 @@ export async function exportFromServerAsync(
       });
     }
   } else {
-    warnPossibleInvalidExportType(appDir);
+    warnPossibleInvalidExportType(appDir, mode);
   }
 
   return files;
@@ -746,7 +747,7 @@ async function exportApiRoutesAsync({
   return files;
 }
 
-function warnPossibleInvalidExportType(appDir: string) {
+function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
   const apiRoutes = getApiRoutesForDirectory(appDir);
   if (apiRoutes.length) {
     // TODO: Allow API Routes for native-only.
@@ -757,7 +758,7 @@ function warnPossibleInvalidExportType(appDir: string) {
     );
   }
 
-  const middlewareFile = getMiddlewareForDirectory(appDir);
+  const middlewareFile = getMiddlewareForDirectory(appDir, mode);
   if (middlewareFile) {
     Log.warn(
       chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
