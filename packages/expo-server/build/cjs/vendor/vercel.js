@@ -1,12 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ExpoError = void 0;
+exports.respond = exports.ExpoError = void 0;
 exports.createRequestHandler = createRequestHandler;
 exports.convertHeaders = convertHeaders;
 exports.convertRequest = convertRequest;
-exports.respond = respond;
-const node_stream_1 = require("node:stream");
-const promises_1 = require("node:stream/promises");
+const http_1 = require("./http");
 const abstract_1 = require("./abstract");
 const runtime_1 = require("../runtime");
 const node_1 = require("./environment/node");
@@ -47,7 +45,7 @@ function createRequestHandler(params) {
     const run = (0, runtime_1.createRequestScope)(STORE, makeRequestAPISetup);
     const onRequest = (0, abstract_1.createRequestHandler)((0, node_1.createNodeEnv)(params));
     return async (req, res) => {
-        return respond(res, await run(onRequest, convertRequest(req, res)));
+        return (0, http_1.respond)(res, await run(onRequest, convertRequest(req, res)));
     };
 }
 function convertHeaders(requestHeaders) {
@@ -100,14 +98,6 @@ function convertRequest(req, res) {
     }
     return new Request(url.href, init);
 }
-async function respond(res, expoRes) {
-    res.statusMessage = expoRes.statusText;
-    res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()].flat());
-    if (expoRes.body) {
-        await (0, promises_1.pipeline)(node_stream_1.Readable.fromWeb(expoRes.body), res);
-    }
-    else {
-        res.end();
-    }
-}
+var http_2 = require("./http");
+Object.defineProperty(exports, "respond", { enumerable: true, get: function () { return http_2.respond; } });
 //# sourceMappingURL=vercel.js.map

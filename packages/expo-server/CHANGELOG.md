@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Replace use of Node's `pipeline` helper for manual response draining to avoid treating cancellation cases as exceptions ([#48699](https://github.com/expo/expo/pull/48699) by [@kitten](https://github.com/kitten))
+
 ### 💡 Others
 
 ## 57.0.1 — 2026-07-15
