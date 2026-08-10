@@ -5,6 +5,11 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/log-box",
   "license": "MIT",
   "author": "Expo",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/log-box"
+  },
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {

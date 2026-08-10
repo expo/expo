@@ -11,9 +11,22 @@ export type MockActions = CommonNavigationAction | { type: 'NOOP' | 'UPDATE' };
 
 export const MockRouterKey = { current: 0 };
 
+function getStateForRouteNamesChange(state: NavigationState, routeNames: string[]) {
+  const routes = state.routes.filter((route) => routeNames.includes(route.name));
+
+  return {
+    ...state,
+    routeNames,
+    routes,
+    index: Math.min(state.index, routes.length - 1),
+  };
+}
+
 export function MockRouter(options: DefaultRouterOptions) {
   const router: Router<NavigationState, MockActions> = {
     type: 'test',
+
+    getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
 
     getInitialState({ routeNames, routeParamList }) {
       const index =
@@ -86,24 +99,6 @@ export function MockRouter(options: DefaultRouterOptions) {
       };
     },
 
-    getStateForRouteNamesChange(state, { routeNames }) {
-      const routes = state.routes.filter((route) => routeNames.includes(route.name));
-
-      if (routes.length === 0) {
-        routes.push({
-          name: routeNames[0]!,
-          key: `${routeNames[0]}-${MockRouterKey.current++}`,
-        });
-      }
-
-      return {
-        ...state,
-        routeNames,
-        routes,
-        index: Math.min(state.index, routes.length - 1),
-      };
-    },
-
     getStateForRouteFocus(state, key) {
       const index = state.routes.findIndex((r) => r.key === key);
 
@@ -116,6 +111,25 @@ export function MockRouter(options: DefaultRouterOptions) {
 
     getStateForAction(state, action, { routeParamList }) {
       switch (action.type) {
+        case 'ROUTE_NAMES_CHANGED': {
+          const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
+
+          if (nextState.routes.length !== 0) {
+            return nextState;
+          }
+
+          return {
+            ...nextState,
+            index: 0,
+            routes: [
+              {
+                name: action.payload.routeNames[0]!,
+                key: `${action.payload.routeNames[0]}-${MockRouterKey.current++}`,
+              },
+            ],
+          };
+        }
+
         case 'UPDATE':
           return { ...state };
 

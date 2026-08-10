@@ -23,6 +23,7 @@ import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
   useStateForPath,
+  type DescriptorRouteProp,
   type EventConsumer,
   type EventMapBase,
   type NavigationProp,
@@ -57,7 +58,7 @@ export type ScreenProps<
   initialParams?: Record<string, any>;
   options?:
     | TOptions
-    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
+    | ((prop: { route: DescriptorRouteProp<ParamListBase, string>; navigation: any }) => TOptions);
 
   listeners?:
     | ScreenListeners<TState, TEventMap>
@@ -507,10 +508,8 @@ export function screenOptionsFactory(
 
     // Prevent generated screens from showing up in the tab bar.
     if (route.internal || isGuarded) {
-      output.tabBarItemStyle = { display: 'none' };
-      output.tabBarButton = () => null;
-      // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-      output.drawerItemStyle = { height: 0, display: 'none' };
+      // TODO(@ubax): Document migrating withLayoutContext navigators to standard navigation,
+      // where processScreens can map hidden to navigator-specific options.
       output.hidden = true;
     }
 

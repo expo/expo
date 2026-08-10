@@ -4,6 +4,7 @@ import type { PanGesture } from 'react-native-gesture-handler';
 import type { HeaderOptions } from '../elements';
 import type {
   Descriptor,
+  DescriptorRouteProp,
   DrawerActionHelpers,
   DrawerNavigationState,
   NavigationHelpers,
@@ -37,6 +38,13 @@ export type DrawerNavigationConfig = {
 };
 
 export type DrawerNavigationOptions = HeaderOptions & {
+  /**
+   * Hides the drawer item. If the screen is focused, the navigator redirects to its initial
+   * visible screen.
+   * @default false
+   */
+  hidden?: boolean;
+
   /**
    * Title text for the screen.
    */
@@ -292,7 +300,8 @@ export type DrawerOptionsArgs<
   ParamList extends ParamListBase,
   RouteName extends keyof ParamList = keyof ParamList,
   NavigatorID extends string | undefined = undefined,
-> = DrawerScreenProps<ParamList, RouteName, NavigatorID> & {
+> = Omit<DrawerScreenProps<ParamList, RouteName, NavigatorID>, 'route'> & {
+  route: DescriptorRouteProp<ParamList, RouteName>;
   theme: Theme;
 };
 

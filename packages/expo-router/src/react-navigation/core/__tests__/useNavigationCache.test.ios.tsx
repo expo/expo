@@ -42,8 +42,9 @@ test('preserves reference for navigation objects', () => {
     const previous = React.useRef<any>(undefined);
 
     const emitter = useEventEmitter();
-    const navigations = useNavigationCache({
+    const getNavigation = useNavigationCache({
       routes: state.routes,
+      routeNames: state.routeNames,
       getState,
       navigation,
       setOptions,
@@ -51,9 +52,10 @@ test('preserves reference for navigation objects', () => {
       emitter,
     });
 
-    if (previous.current) {
-      Object.keys(navigations).forEach((key) => {
-        expect(navigations[key]).toBe(previous.current[key]);
+    const navigations = state.routes.map((route) => getNavigation(route));
+    if (previous.current !== undefined) {
+      navigations.forEach((navigation, index) => {
+        expect(navigation).toBe(previous.current[index]);
       });
     }
 
@@ -67,6 +69,54 @@ test('preserves reference for navigation objects', () => {
   const root = render(<Test />);
 
   root.update(<Test />);
+});
+
+test('preserves placeholder navigation after the route is created', () => {
+  let routeNames = ['Foo', 'Bar'];
+  let routes = [{ key: 'Foo-key', name: 'Foo' }];
+  const getState = () => ({
+    type: 'tab',
+    stale: false as const,
+    index: 0,
+    key: 'State',
+    routeNames,
+    routes,
+  });
+  const navigation = {
+    getId: () => 'State',
+    getParent: jest.fn(),
+  } as any;
+  const setOptions = (() => {}) as any;
+  const router = MockRouter({});
+  let getNavigation: ReturnType<typeof useNavigationCache>;
+
+  const Test = () => {
+    const emitter = useEventEmitter();
+    getNavigation = useNavigationCache({
+      routes,
+      routeNames,
+      getState,
+      navigation,
+      setOptions,
+      router,
+      emitter,
+    });
+    return null;
+  };
+
+  const root = render(<Test />);
+  const placeholderNavigation = getNavigation!({ key: 'Bar', name: 'Bar' });
+
+  routes = [...routes, { key: 'Bar-key', name: 'Bar' }];
+  root.update(<Test />);
+
+  expect(getNavigation!({ key: 'Bar', name: 'Bar' })).toBe(placeholderNavigation);
+
+  routeNames = ['Foo'];
+  routes = routes.filter((route) => route.name !== 'Bar');
+  root.update(<Test />);
+
+  expect(placeholderNavigation.getParent('State')).toBe(placeholderNavigation);
 });
 
 test('returns correct value for isFocused', () => {
@@ -120,7 +170,12 @@ test('returns correct value for isFocused after changing screens', () => {
     return {
       ...router,
 
-      getStateForRouteNamesChange(state, { routeNames }) {
+      getStateForAction(state, action, options) {
+        if (action.type !== 'ROUTE_NAMES_CHANGED') {
+          return router.getStateForAction(state, action, options);
+        }
+
+        const { routeNames } = action.payload;
         const routes = routeNames.map(
           (name) =>
             state.routes.find((r) => r.name === name) || {

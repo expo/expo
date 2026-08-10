@@ -239,7 +239,12 @@ it('should navigate as expected when nested Stacks & Tabs', async () => {
     index: () => <Text testID="index" />,
     'apple/_layout': () => <Stack />,
     'apple/index': () => <Text testID="apple" />,
-    'apple/[type]/_layout': () => <Tabs />,
+    'apple/[type]/_layout': () => (
+      <Tabs>
+        <Tabs.Screen name="color" />
+        <Tabs.Screen name="taste" />
+      </Tabs>
+    ),
     'apple/[type]/color': () => <Text testID="color" />,
     'apple/[type]/taste': () => <Text testID="taste" />,
   });
@@ -274,7 +279,13 @@ it('works in a nested layout Stack->Tab->Stack', () => {
   renderRouter({
     index: () => null,
     _layout: () => <Stack />,
-    '(tabs)/_layout': () => <Tabs />,
+    '(tabs)/_layout': () => (
+      <Tabs>
+        <Tabs.Screen name="a" />
+        <Tabs.Screen name="b" />
+        <Tabs.Screen name="c" />
+      </Tabs>
+    ),
     '(tabs)/a': () => <Text testID="a" />,
     '(tabs)/b': () => <Text testID="b" />,
     '(tabs)/c/_layout': () => <Stack />,
@@ -350,7 +361,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                     key: expect.any(String),
                     name: 'b',
                     params: {},
-                    path: undefined,
                   },
                   {
                     key: expect.any(String),
@@ -359,7 +369,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                       params: {},
                       screen: 'one',
                     },
-                    path: undefined,
                     state: {
                       index: 2,
                       key: expect.any(String),

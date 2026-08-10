@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
 });
 ```
 
-> **info** Since **ImageViewer** is a custom component, we are placing it in a separate directory instead of the **app** directory. Every file inside **app** directory is either a layout file or a route file. For more information, see [Non-navigation components live outside of app directory](/router/basics/core-concepts/#6-non-navigation-components-live-outside-the-srcapp-directory).
+> **info** Since **ImageViewer** is a custom component, we are placing it in a separate directory instead of the **app** directory. Every file inside **app** directory is either a layout file or a route file. For more information, see [Non-navigation components live outside the src/app directory](/router/basics/core-concepts/#6-non-navigation-components-live-outside-the-srcapp-directory).
 
 Import `ImageViewer` and use it in the **app/(tabs)/index.tsx**:
 
@@ -283,7 +283,6 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 28,
   },
   /* @tutinfo Add the styles the following styles. */
   footerContainer: {

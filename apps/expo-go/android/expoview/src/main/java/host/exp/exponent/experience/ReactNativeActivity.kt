@@ -394,7 +394,7 @@ abstract class ReactNativeActivity :
       jsBundleFilePath = nativeHost.jsBundleFile,
       useDevSupport = nativeHost.useDeveloperSupport,
       devBundleDownloadListener = devBundleDownloadListener,
-      devServerBundleUrl = ExponentUrls.toHttp(manifest!!.getBundleURL())
+      devServerBundleUrl = ExponentUrls.bundleUrlFromManifest(manifest!!, manifestUrl!!)
     )
     devSupportManager = reactHost.devSupportManager
 

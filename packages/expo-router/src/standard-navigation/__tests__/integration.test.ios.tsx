@@ -16,6 +16,10 @@ import {
   type TabRouterOptions,
 } from '../../react-navigation/routers';
 import { act, fireEvent, renderRouter, screen } from '../../testing-library';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../appendMissingPlaceholderTabRoutes';
 import { unstable_createStandardRouterNavigator, unstable_integrateWithRouter } from '../index';
 import type { NavigatorContentProps, StandardNavigatorDescriptor } from '../types';
 
@@ -41,20 +45,49 @@ const StandardTabs = unstable_createStandardRouterNavigator<
   TestEventMap,
   { tintColor?: string },
   TabRouterOptions
->(NavigatorContent, TabRouter);
+>(NavigatorContent, TabRouter, {
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+});
+
+const processedContentSpy = jest.fn();
+const processStateSpy = jest.fn();
+
+const ProcessedTabs = unstable_createStandardRouterNavigator<
+  TestOptions,
+  TabNavigationState<ParamListBase>,
+  TestEventMap,
+  object,
+  TabRouterOptions,
+  { processedRouteNames: string[] }
+>(
+  (args) => {
+    processedContentSpy(args);
+    return null;
+  },
+  TabRouter,
+  {
+    createProps: ({ state }) => ({
+      processedRouteNames: state.routes.map((route) => route.name),
+    }),
+    processDescriptors: appendMissingPlaceholderTabDescriptors,
+    processState: (state, descriptors) => {
+      processStateSpy(state, descriptors);
+      return appendMissingPlaceholderTabRoutes(state, descriptors);
+    },
+  }
+);
 
 const lastArgs = (): NavigatorArgs<TestOptions, TestEventMap> & Record<string, unknown> =>
   contentSpy.mock.calls.at(-1)![0];
 
-const hrefByName = () =>
-  Object.fromEntries(lastArgs().state.routes.map((r) => [r.name, r.href] as const));
-
 beforeEach(() => {
   contentSpy.mockClear();
+  processedContentSpy.mockClear();
+  processStateSpy.mockClear();
 });
 
 describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator', () => {
-  it('renders declared screens and exposes a well-formed state', () => {
+  it('keeps navigator state sparse by default', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -67,23 +100,33 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     });
 
     expect(screen.getByTestId('index')).toBeVisible();
-    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index', 'second']);
+    expect(lastArgs().state.routes.map((r) => r.name)).toEqual(['index']);
     expect(lastArgs().state.index).toBe(0);
   });
 
-  it('builds an href for every route', () => {
+  it('applies processState before converting navigator state', () => {
     renderRouter({
       _layout: () => (
-        <StandardTabs>
-          <StandardTabs.Screen name="index" />
-          <StandardTabs.Screen name="second" />
-        </StandardTabs>
+        <ProcessedTabs>
+          <ProcessedTabs.Screen name="index" />
+          <ProcessedTabs.Screen name="second" />
+        </ProcessedTabs>
       ),
       index: () => <View testID="index" />,
       second: () => <View testID="second" />,
     });
 
-    expect(hrefByName()).toEqual({ index: '/', second: '/second' });
+    const state = processedContentSpy.mock.calls.at(-1)![0].state;
+    expect(processStateSpy).toHaveBeenCalledTimes(1);
+    expect(state.routes).toEqual([
+      expect.objectContaining({ name: 'index', href: '/' }),
+      expect.objectContaining({ key: 'second', name: 'second', href: '/second' }),
+    ]);
+    expect(state.index).toBe(0);
+    expect(processedContentSpy.mock.calls.at(-1)![0].processedRouteNames).toEqual([
+      'index',
+      'second',
+    ]);
   });
 
   it('updates state when navigating imperatively', () => {
@@ -181,7 +224,7 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().tintColor).toBe('rebeccapurple');
   });
 
-  it('always registers undeclared filesystem routes', () => {
+  it('exposes placeholder descriptors for undeclared filesystem routes', () => {
     renderRouter({
       _layout: () => (
         <StandardTabs>
@@ -192,11 +235,10 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
       second: () => <View testID="second" />,
     });
 
+    expect(lastArgs().state.routes.map((route) => route.name)).toEqual(['index']);
     expect(
-      lastArgs()
-        .state.routes.map((r) => r.name)
-        .sort()
-    ).toEqual(['index', 'second']);
+      (lastArgs().descriptors.second as StandardNavigatorDescriptor<TestOptions>).routeSource
+    ).toBe('filesystem');
   });
 
   it('distinguishes declared and inferred routes via descriptor routeSource', () => {
@@ -211,12 +253,11 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     });
 
     const { state, descriptors } = lastArgs();
-    const routeSourceByName = Object.fromEntries(
-      state.routes.map((route) => [
-        route.name,
-        (descriptors[route.key]! as StandardNavigatorDescriptor<TestOptions>).routeSource,
-      ])
-    );
+    const index = state.routes[0]!;
+    const routeSourceByName = {
+      index: (descriptors[index.key]! as StandardNavigatorDescriptor<TestOptions>).routeSource,
+      second: (descriptors.second as StandardNavigatorDescriptor<TestOptions>).routeSource,
+    };
     expect(routeSourceByName).toEqual({ index: 'layout', second: 'filesystem' });
   });
 
@@ -235,10 +276,8 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     });
 
     const args = lastArgs();
-    const second = args.state.routes.find((route) => route.name === 'second')!;
-
-    expect(args.state.routes.map((route) => route.name)).toEqual(['index', 'second']);
-    expect(args.descriptors[second.key]!.options).toMatchObject({ hidden: true });
+    expect(args.state.routes.map((route) => route.name)).toEqual(['index']);
+    expect(args.descriptors.second!.options).toMatchObject({ hidden: true });
     expect(screen.queryByTestId('second')).toBeNull();
   });
 
@@ -383,13 +422,6 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
 });
 
 describe('processScreens', () => {
-  const optionsByName = () =>
-    Object.fromEntries(
-      lastArgs().state.routes.map(
-        (route) => [route.name, lastArgs().descriptors[route.key]!.options] as const
-      )
-    );
-
   it('transforms declared screen options before they are rendered', () => {
     const Prefixed = unstable_createStandardRouterNavigator<
       TestOptions,
@@ -398,6 +430,7 @@ describe('processScreens', () => {
       object,
       TabRouterOptions
     >(NavigatorContent, TabRouter, {
+      processDescriptors: appendMissingPlaceholderTabDescriptors,
       processScreens: (screens) =>
         screens.map((screen) => ({
           ...screen,
@@ -416,10 +449,11 @@ describe('processScreens', () => {
       second: () => <View testID="second" />,
     });
 
-    expect(optionsByName()).toMatchObject({
-      index: { title: 'processed-index' },
-      second: { title: 'processed-second' },
+    const args = lastArgs();
+    expect(args.descriptors[args.state.routes[0]!.key]!.options).toMatchObject({
+      title: 'processed-index',
     });
+    expect(args.descriptors.second!.options).toMatchObject({ title: 'processed-second' });
   });
 
   it('receives only the declared screens', () => {
@@ -431,6 +465,7 @@ describe('processScreens', () => {
       object,
       TabRouterOptions
     >(NavigatorContent, TabRouter, {
+      processDescriptors: appendMissingPlaceholderTabDescriptors,
       processScreens: (screens) => {
         names.length = 0;
         names.push(...screens.map((screen) => screen.name));
@@ -449,8 +484,7 @@ describe('processScreens', () => {
     });
 
     expect(names).toEqual(['index']);
-    // The undeclared route is still registered, it just never reaches the processor.
-    expect(lastArgs().state.routes.map((route) => route.name)).toContain('second');
+    expect(lastArgs().descriptors.second).toBeDefined();
   });
 
   it('rejects dropped screens', () => {
@@ -718,7 +752,10 @@ describe('custom-navigators guide example', () => {
     );
   }
 
-  const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter);
+  const Tabs = unstable_createStandardRouterNavigator(TabsContent, TabRouter, {
+    processDescriptors: appendMissingPlaceholderTabDescriptors,
+    processState: appendMissingPlaceholderTabRoutes,
+  });
 
   const renderExample = () =>
     renderRouter({

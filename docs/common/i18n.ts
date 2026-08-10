@@ -37,45 +37,14 @@ export function buildLocalePath(currentPath: string, targetLocale: SupportedLoca
   return `/ja${englishPath}`;
 }
 
-const EXPO_TUTORIAL_PATHS: ReadonlySet<string> = new Set([
-  '/tutorial/overview',
-  '/tutorial/introduction',
-  '/tutorial/create-your-first-app',
-  '/tutorial/add-navigation',
-  '/tutorial/build-a-screen',
-  '/tutorial/image-picker',
-  '/tutorial/create-a-modal',
-  '/tutorial/gestures',
-  '/tutorial/screenshot',
-  '/tutorial/platform-differences',
-  '/tutorial/configuration',
-  '/tutorial/follow-up',
-]);
-
-export function isTranslatableSection(path: string): boolean {
-  return EXPO_TUTORIAL_PATHS.has(getCanonicalPath(path));
-}
-
-const PATHS_WITH_JAPANESE: ReadonlySet<string> = new Set([
-  '/tutorial/overview',
-  '/tutorial/introduction',
-  '/tutorial/create-your-first-app',
-  '/tutorial/add-navigation',
-  '/tutorial/build-a-screen',
-  '/tutorial/image-picker',
-  '/tutorial/create-a-modal',
-  '/tutorial/gestures',
-  '/tutorial/screenshot',
-  '/tutorial/platform-differences',
-  '/tutorial/configuration',
-  '/tutorial/follow-up',
-]);
-
-export function hasJapaneseTranslation(path: string): boolean {
-  return PATHS_WITH_JAPANESE.has(getCanonicalPath(path));
-}
-
-const JA_SIDEBAR_TITLES: Record<string, string> = {
+/**
+ * Every page with a Japanese translation, mapped to its Japanese sidebar title.
+ *
+ * This is the single source of truth: a page is translated when it appears here,
+ * and `checks/ja/sync.test.ts` keeps the list and `pages/ja/**` from drifting apart.
+ * Keys are English canonical paths, matching the file layout under `pages/ja`.
+ */
+const JA_TRANSLATED_PAGES: Record<string, string> = {
   '/tutorial/overview': '概要',
   '/tutorial/introduction': 'はじめに',
   '/tutorial/create-your-first-app': '最初のアプリを作成する',
@@ -88,14 +57,32 @@ const JA_SIDEBAR_TITLES: Record<string, string> = {
   '/tutorial/platform-differences': 'プラットフォームの違いに対応する',
   '/tutorial/configuration': 'ステータスバー、スプラッシュスクリーン、アプリアイコンを設定する',
   '/tutorial/follow-up': '学習リソース',
+  '/tutorial/build-with-ai/introduction': 'はじめに',
+  '/tutorial/build-with-ai/set-up-your-tools': 'ツールを準備する',
+  '/tutorial/build-with-ai/create-your-first-app': '最初のアプリを作成する',
+  '/tutorial/build-with-ai/build-the-home-screen': 'ホーム画面を構築する',
+  '/tutorial/build-with-ai/add-stickers': 'ステッカーを追加する',
+  '/tutorial/build-with-ai/save-your-creation': '画像を保存する',
+  '/tutorial/build-with-ai/finishing-touches': '仕上げ',
 };
 
+export const JA_TRANSLATED_PATHS: ReadonlySet<string> = new Set(Object.keys(JA_TRANSLATED_PAGES));
+
+export function isTranslatableSection(path: string): boolean {
+  return JA_TRANSLATED_PATHS.has(getCanonicalPath(path));
+}
+
+export function hasJapaneseTranslation(path: string): boolean {
+  return JA_TRANSLATED_PATHS.has(getCanonicalPath(path));
+}
+
 export function getJapaneseSidebarTitle(path: string): string | undefined {
-  return JA_SIDEBAR_TITLES[getCanonicalPath(path)];
+  return JA_TRANSLATED_PAGES[getCanonicalPath(path)];
 }
 
 const JA_SECTION_TITLES: Record<string, string> = {
   'Expo tutorial': 'Expo チュートリアル',
+  'Build with AI tutorial': 'AI エージェントで作るチュートリアル',
   More: 'その他',
 };
 
