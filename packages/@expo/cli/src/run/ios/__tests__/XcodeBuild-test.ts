@@ -1,3 +1,4 @@
+import { ExpoRunFormatter } from '@expo/xcpretty';
 import path from 'path';
 
 import {
@@ -7,6 +8,7 @@ import {
   _assertXcodeBuildResults,
   _extractXcodeBuildErrorLines,
   _formatXcodeBuildFailure,
+  _hasXcodeBuildErrorDetails,
   matchEstimatedBinaryPath,
   getAppBinaryPath,
 } from '../XcodeBuild';
@@ -236,6 +238,25 @@ describe(_formatXcodeBuildFailure, () => {
   });
 });
 
+describe(_hasXcodeBuildErrorDetails, () => {
+  it(`returns false for Xcode's no-output message`, () => {
+    const formatter = ExpoRunFormatter.create('/', {
+      xcodeProject: { name: 'BareExpo' },
+      isDebug: false,
+    });
+    formatter.pipe(
+      'error: the following command failed with exit code 1 but produced no further output\n'
+    );
+
+    expect(formatter.errors).toHaveLength(1);
+    expect(_hasXcodeBuildErrorDetails(formatter.errors)).toBe(false);
+  });
+
+  it(`returns true for other errors`, () => {
+    expect(_hasXcodeBuildErrorDetails(['error: config generation failed'])).toBe(true);
+  });
+});
+
 describe(_extractXcodeBuildErrorLines, () => {
   it(`extracts and dedupes compiler error lines`, () => {
     const output = [
@@ -252,6 +273,13 @@ describe(_extractXcodeBuildErrorLines, () => {
 
   it(`returns nothing when no error lines are present`, () => {
     expect(_extractXcodeBuildErrorLines('** BUILD SUCCEEDED **\n› 0 error(s)')).toEqual([]);
+  });
+
+  it(`keeps Xcode's no-output message when it is the only error`, () => {
+    const message =
+      'error: the following command failed with exit code 1 but produced no further output';
+
+    expect(_extractXcodeBuildErrorLines(message)).toEqual([message]);
   });
 
   it(`skips Xcode's no-output message when another error is present`, () => {
