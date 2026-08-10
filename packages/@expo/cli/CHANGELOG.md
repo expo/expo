@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Re-enable sextant QR code for Zed ([#48382](https://github.com/expo/expo/pull/48382) by [@mchisolm0](https://github.com/mchisolm0))
+
 ## 56.1.23 — 2026-08-06
 
 ### 🐛 Bug fixes
