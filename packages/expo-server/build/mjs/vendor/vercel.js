@@ -1,5 +1,4 @@
-import { Readable } from 'node:stream';
-import { pipeline } from 'node:stream/promises';
+import { respond } from './http';
 import { createRequestHandler as createExpoHandler } from './abstract';
 import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
@@ -88,14 +87,5 @@ export function convertRequest(req, res) {
     }
     return new Request(url.href, init);
 }
-export async function respond(res, expoRes) {
-    res.statusMessage = expoRes.statusText;
-    res.writeHead(expoRes.status, expoRes.statusText, [...expoRes.headers.entries()].flat());
-    if (expoRes.body) {
-        await pipeline(Readable.fromWeb(expoRes.body), res);
-    }
-    else {
-        res.end();
-    }
-}
+export { respond } from './http';
 //# sourceMappingURL=vercel.js.map
