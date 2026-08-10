@@ -2,11 +2,7 @@ import { act, render, screen } from '@testing-library/react-native';
 import * as React from 'react';
 
 import { NavigationContainer } from '../../../fork/NavigationContainer';
-import {
-  createNavigationContainerRef,
-  NavigationRouteContext,
-  type NavigatorScreenParams,
-} from '../../core';
+import { createNavigationContainerRef, NavigationRouteContext } from '../../core';
 import { createStackNavigator } from '../__stubs__/createStackNavigator';
 import { useRoutePath } from '../useRoutePath';
 
@@ -77,9 +73,9 @@ test('gets path for route in root navigator screen', () => {
   expect(screen).toMatchInlineSnapshot(`"b: /qux?count=42"`);
 });
 
-test('gets path for route in nested navigator screen', () => {
+test('does not descend into a nested navigator from screen params', () => {
   type AStackParamList = {
-    a: NavigatorScreenParams<BStackParamList>;
+    a: { screen?: string };
   };
 
   type BStackParamList = {
@@ -121,5 +117,5 @@ test('gets path for route in nested navigator screen', () => {
 
   act(() => navigation.navigate('a', { screen: 'c' }));
 
-  expect(screen).toMatchInlineSnapshot(`"c: /baz"`);
+  expect(screen).toMatchInlineSnapshot(`"b: /foo/bar/apple"`);
 });

@@ -192,11 +192,7 @@ export function getPathDataFromState<ParamList extends object>(
 
         // Determine what screen the user wants to navigate to. If no screen is specified, assume there is an index screen
         // In the examples above, this ensures that /home/(a) navigates to /home/(a)/index
-        const targetScreen =
-          // This is typed as unknown, so we need to add these extra assertions
-          route.params && 'screen' in route.params && typeof route.params.screen === 'string'
-            ? route.params.screen
-            : 'index';
+        const targetScreen = 'index';
 
         // If the target screen is not in the screens object, default to the first screen
         // In the examples above, this ensures that /home/(profile) navigates to /home/(profile)/me
@@ -208,8 +204,7 @@ export function getPathDataFromState<ParamList extends object>(
           : undefined;
 
         if (screen && screens && currentOptions[route.name]!.screens?.[screen]) {
-          const nestedParams = (route.params as { params?: object } | undefined)?.params;
-          route = { ...screens[screen], name: screen, key: screen, params: nestedParams };
+          route = { ...screens[screen], name: screen, key: screen };
           currentOptions = screens;
         } else {
           hasNext = false;

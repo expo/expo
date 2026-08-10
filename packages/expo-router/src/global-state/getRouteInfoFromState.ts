@@ -32,18 +32,11 @@ type StrictState = (FocusedRouteState | NavigationState | PartialState<Navigatio
   routes: {
     key?: string;
     name: string;
-    params?: StrictFocusedRouteParams;
+    params?: object;
     path?: string;
     state?: StrictState;
   }[];
 };
-
-type StrictFocusedRouteParams =
-  | Record<string, string | string[]>
-  | {
-      screen?: string;
-      params?: StrictFocusedRouteParams;
-    };
 
 export function getRouteInfoFromState(state?: StrictState): UrlObject {
   if (!state) return defaultRouteInfo;
@@ -98,39 +91,9 @@ export function getRouteInfoFromState(state?: StrictState): UrlObject {
     })
   );
 
-  /**
-   * If React Navigation didn't render the entire tree (e.g it was interrupted in a layout)
-   * then the state may be incomplete. The rest of the path is in the params, instead of being a route
-   */
-  let routeParams: StrictFocusedRouteParams | undefined = route.params;
-  while (routeParams && 'screen' in routeParams) {
-    if (typeof routeParams.screen === 'string') {
-      const screen = routeParams.screen.startsWith('/')
-        ? routeParams.screen.slice(1)
-        : routeParams.screen;
-      segments.push(...screen.split('/'));
-    }
-
-    if (typeof routeParams.params === 'object' && !Array.isArray(routeParams.params)) {
-      routeParams = routeParams.params;
-    } else {
-      routeParams = undefined;
-    }
-  }
-
-  if (route.params && 'screen' in route.params && route.params.screen === 'string') {
-    const screen = route.params.screen.startsWith('/')
-      ? route.params.screen.slice(1)
-      : route.params.screen;
-    segments.push(...screen.split('/'));
-  }
-
   if (segments[segments.length - 1] === 'index') {
     segments.pop();
   }
-
-  delete params['screen'];
-  delete params['params'];
 
   const pathParams = new Set<string>();
 

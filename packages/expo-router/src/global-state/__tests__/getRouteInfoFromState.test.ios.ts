@@ -262,7 +262,7 @@ describe('getRouteInfoFromState', () => {
     expect(result.pathnameWithParams).toBe('/%E0%A4%A');
   });
 
-  it('handles incomplete state with screen/params nesting', () => {
+  it('handles incomplete nested route state', () => {
     const result = getRouteInfoFromState({
       routes: [
         {
@@ -271,11 +271,13 @@ describe('getRouteInfoFromState', () => {
             routes: [
               {
                 name: '(tabs)',
-                params: {
-                  screen: 'settings',
-                  params: {
-                    screen: 'profile',
-                  },
+                state: {
+                  routes: [
+                    {
+                      name: 'settings',
+                      state: { routes: [{ name: 'profile' }] },
+                    },
+                  ],
                 },
               },
             ],

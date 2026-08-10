@@ -33,22 +33,14 @@ export function fixCurrentParams(
 ) {
   // Better handle array params
   const currentParams = Object.fromEntries(
-    Object.entries(route.params!).flatMap(([key, value]) => {
-      if (key === 'screen' || key === 'params') {
-        return [];
-      }
-
-      return [
-        [
-          key,
-          stringify?.[key]
-            ? stringify[key](value)
-            : Array.isArray(value)
-              ? value.map(String)
-              : String(value),
-        ],
-      ];
-    })
+    Object.entries(route.params!).map(([key, value]) => [
+      key,
+      stringify?.[key]
+        ? stringify[key](value)
+        : Array.isArray(value)
+          ? value.map(String)
+          : String(value),
+    ])
   );
 
   // We always assign params, as non pattern routes may still have query params

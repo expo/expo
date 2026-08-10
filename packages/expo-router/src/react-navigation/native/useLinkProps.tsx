@@ -7,10 +7,7 @@ import {
   type NavigationAction,
   NavigationContainerRefContext,
   NavigationHelpersContext,
-  type NavigatorScreenParams,
-  type ParamListBase,
 } from '../core';
-import type { NavigationState, PartialState } from '../routers';
 import { LinkingContext } from './LinkingContext';
 
 export type LinkProps<
@@ -31,31 +28,6 @@ export type LinkProps<
       screen?: undefined;
       params?: undefined;
     };
-
-const getStateFromParams = (
-  params: NavigatorScreenParams<ParamListBase> | undefined
-): PartialState<NavigationState> | NavigationState | undefined => {
-  if (params?.state) {
-    return params.state;
-  }
-
-  if (params?.screen) {
-    return {
-      routes: [
-        {
-          name: params.screen,
-          params: params.params,
-          // @ts-expect-error this is fine 🔥
-          state: params.screen
-            ? getStateFromParams(params.params as NavigatorScreenParams<ParamListBase> | undefined)
-            : undefined,
-        },
-      ],
-    };
-  }
-
-  return undefined;
-};
 
 /**
  * Hook to get props for an anchor tag so it can work with in page navigation.
@@ -136,8 +108,6 @@ export function useLinkProps<ParamList extends ReactNavigation.RootParamList>({
                   name: screen,
                   // @ts-expect-error this is fine 🔥
                   params,
-                  // @ts-expect-error this is fine 🔥
-                  state: getStateFromParams(params),
                 },
               ],
             },

@@ -1,16 +1,14 @@
 import { getPathFromState, getPathDataFromState, type Options } from '../getPathFromState';
 
-it(`handles nested params.screen/params.params for dynamic routes`, () => {
+it(`serializes screen, params, and initial as ordinary search params`, () => {
   const state = {
     routes: [
       {
-        name: '(group)',
+        name: 'index',
         params: {
           screen: 'foo',
-          params: {
-            screen: '[id]/index',
-            params: { id: 'bar' },
-          },
+          params: 'bar',
+          initial: 'true',
         },
       },
     ],
@@ -18,20 +16,13 @@ it(`handles nested params.screen/params.params for dynamic routes`, () => {
 
   const config = {
     screens: {
-      '(group)': {
-        screens: {
-          foo: {
-            screens: {
-              index: '(group)/foo',
-              '[id]/index': '(group)/foo/:id',
-            },
-          },
-        },
-      },
+      index: '',
     },
   };
 
-  expect(getPathFromState(state, config as Options<object>)).toBe('/foo/bar');
+  expect(getPathFromState(state, config as Options<object>)).toBe(
+    '/?screen=foo&params=bar&initial=true'
+  );
 });
 
 describe('hash support', () => {
