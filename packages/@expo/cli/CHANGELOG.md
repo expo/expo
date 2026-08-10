@@ -14,6 +14,8 @@
 
 ### 💡 Others
 
+- [Internal] Add sandbox detection to telemetry context ([#47928](https://github.com/expo/expo/pull/47928) by [@davidmokos](https://github.com/davidmokos))
+
 ## 55.0.34 — 2026-07-15
 
 ### 🎉 New features

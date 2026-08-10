@@ -14085,6 +14085,11 @@ safe-regex@^1.1.0:
   resolved "https://registry.yarnpkg.com/safer-buffer/-/safer-buffer-2.1.2.tgz#44fa161b0187b9549dd84bb91802f9bd8385cd6a"
   integrity sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==
 
+sandbox-cli-detector@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/sandbox-cli-detector/-/sandbox-cli-detector-0.2.0.tgz#ebf563e4e994ff485e3ed9314b1a110c913aa5e8"
+  integrity sha512-4lyHX0ZU0AZKwjgZ1InxZAa3PNpyEb8rOQ+Zss1ReYmhNzW0Q+h1zE5nvniXN0HaAWZaZE1zgVNEirb0R7LmNg==
+
 sass@^1.60.0, sass@^1.70.0:
   version "1.93.2"
   resolved "https://registry.yarnpkg.com/sass/-/sass-1.93.2.tgz#e97d225d60f59a3b3dbb6d2ae3c1b955fd1f2cd1"
