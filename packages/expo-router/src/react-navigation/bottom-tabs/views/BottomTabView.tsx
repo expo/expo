@@ -27,7 +27,6 @@ type Props = BottomTabNavigationConfig & {
   descriptors: BottomTabDescriptorMap;
   emitter: BottomTabEmitter;
   navigateToTab: (routeKey: string) => void;
-  preloadedRouteKeys: string[];
   popNestedStackToTop: (routeKey: string) => void;
 };
 
@@ -69,7 +68,6 @@ export function BottomTabView(props: Props) {
     descriptors,
     emitter,
     navigateToTab,
-    preloadedRouteKeys,
     popNestedStackToTop,
     safeAreaInsets,
     detachInactiveScreens = Platform.OS === 'web' ||
@@ -224,18 +222,13 @@ export function BottomTabView(props: Props) {
         {routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const {
-            lazy = true,
             animation = 'none',
             sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation]!.sceneStyleInterpolator,
           } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = preloadedRouteKeys.includes(route.key);
 
-          if (
-            descriptor.route.key === undefined ||
-            (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded)
-          ) {
-            // Don't render placeholder or unloaded lazy screens.
+          if (descriptor.route.key === undefined) {
+            // Don't render placeholder screens.
             return null;
           }
 
@@ -279,7 +272,8 @@ export function BottomTabView(props: Props) {
               active={activityState}
               enabled={detachInactiveScreens}
               freezeOnBlur={freezeOnBlur}
-              shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}>
+              // TODO: A visited blurred tab re-preloaded with new params stays frozen until focused.
+              shouldFreeze={activityState === STATE_INACTIVE && loaded.includes(route.key)}>
               <BottomTabBarHeightContext.Provider
                 value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
                 <Screen

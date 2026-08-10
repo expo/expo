@@ -68,10 +68,6 @@ export type TabNavigationState<ParamList extends ParamListBase> = Omit<
    * List of previously visited route keys.
    */
   history?: { type: 'route'; key: string; params?: object | undefined }[];
-  /**
-   * List of routes' key, which are supposed to be preloaded before navigating to.
-   */
-  preloadedRouteKeys: string[];
 };
 
 export type TabActionHelpers<ParamList extends ParamListBase> = {
@@ -317,7 +313,6 @@ export function TabRouter({
         routeNames,
         history,
         routes,
-        preloadedRouteKeys: [],
       };
     },
 
@@ -366,8 +361,6 @@ export function TabRouter({
           routeNames,
           history,
           routes,
-          preloadedRouteKeys:
-            state.preloadedRouteKeys?.filter((key) => routeKeys.includes(key)) ?? [],
         },
         index,
         backBehavior,
@@ -423,7 +416,6 @@ export function TabRouter({
               routes,
               index: -1,
               history: [],
-              preloadedRouteKeys: [],
             };
           }
 
@@ -486,7 +478,6 @@ export function TabRouter({
             routeNames,
             routes,
             index,
-            preloadedRouteKeys: state.preloadedRouteKeys.filter((key) => routeKeys.includes(key)),
           };
         }
 
@@ -555,16 +546,9 @@ export function TabRouter({
             initialRouteName
           );
 
-          const result = {
-            ...updatedState,
-            preloadedRouteKeys: updatedState.preloadedRouteKeys.filter(
-              (key) =>
-                key !== updatedState.routes[updatedState.index]!.key &&
-                updatedState.routes.some((route) => route.key === key)
-            ),
-          };
-
-          return action.type === 'REPLACE' ? removeReplacedRouteFromHistory(state, result) : result;
+          return action.type === 'REPLACE'
+            ? removeReplacedRouteFromHistory(state, updatedState)
+            : updatedState;
         }
 
         case 'SET_PARAMS':
@@ -624,29 +608,14 @@ export function TabRouter({
           }
 
           if (backTargetName !== undefined && backTargetName !== focusedRoute.name) {
-            const existingIndex = state.routes.findIndex((route) => route.name === backTargetName);
-            const targetIsPreloaded =
-              existingIndex !== -1 &&
-              state.preloadedRouteKeys.includes(state.routes[existingIndex]!.key);
             const { routes, index } = addRouteIfMissing(state.routes, backTargetName, () => ({
               name: backTargetName,
               key: `${backTargetName}-${nanoid()}`,
               params: routeParamList[backTargetName],
             }));
 
-            if (targetIsPreloaded || routes !== state.routes) {
-              const result = changeIndex(
-                { ...state, routes },
-                index,
-                backBehavior,
-                initialRouteName
-              );
-              return {
-                ...result,
-                preloadedRouteKeys: result.preloadedRouteKeys.filter(
-                  (key) => key !== result.routes[result.index]!.key
-                ),
-              };
+            if (routes !== state.routes) {
+              return changeIndex({ ...state, routes }, index, backBehavior, initialRouteName);
             }
           }
 
@@ -678,9 +647,6 @@ export function TabRouter({
           return {
             ...state,
             routes,
-            preloadedRouteKeys: state.preloadedRouteKeys.filter(
-              (key) => key !== state.routes[index]!.key
-            ),
             history: state.history.slice(0, -1),
             index,
           };
@@ -692,38 +658,48 @@ export function TabRouter({
           }
 
           const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
+          let replacedKey: string | undefined;
+          let routes: Route<string>[];
 
           if (routeIndex === -1) {
             const route = createRouteFromAction({ action, routeParamList });
-            return {
-              ...state,
-              routes: [...state.routes, route],
-              preloadedRouteKeys: [...state.preloadedRouteKeys, route.key],
-            };
+            routes = [...state.routes, route];
+          } else {
+            const route = state.routes[routeIndex]!;
+            const getId = routeGetIdList[route.name];
+            const currentId = getId?.({ params: route.params });
+            const nextId = getId?.({ params: action.payload.params });
+            const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
+            const params = createParamsFromAction({ action, routeParamList });
+            const newRoute = params !== route.params ? { ...route, key, params } : route;
+
+            replacedKey = key === route.key ? undefined : route.key;
+            routes = state.routes.map((route, index) => (index === routeIndex ? newRoute : route));
           }
 
-          const route = state.routes[routeIndex]!;
+          let history = state.history;
 
-          const getId = routeGetIdList[route.name];
+          if (backBehavior === 'history' || backBehavior === 'fullHistory') {
+            if (replacedKey !== undefined) {
+              history = history.filter((record) => record.key !== replacedKey);
+            }
+          } else {
+            const orderedRoutes = orderRoutesByRouteNames(routes, state.routeNames);
+            const focusedKey = routes[state.index]?.key;
+            const focusedIndex = orderedRoutes.findIndex((route) => route.key === focusedKey);
+            const routeHistory =
+              focusedIndex === -1
+                ? []
+                : getRouteHistory(orderedRoutes, focusedIndex, backBehavior, initialRouteName);
 
-          const currentId = getId?.({ params: route.params });
-          const nextId = getId?.({ params: action.payload.params });
-
-          const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
-
-          const params = createParamsFromAction({ action, routeParamList });
-          const newRoute = params !== route.params ? { ...route, key, params } : route;
+            // TODO: Refactor history handling together with web state synchronization.
+            history = [...routeHistory, ...history.filter((item) => item.type !== 'route')];
+          }
 
           return {
             ...state,
-            preloadedRouteKeys: state.preloadedRouteKeys
-              .filter((key) => key !== route.key)
-              .concat(newRoute.key),
-            routes: state.routes.map((route, index) => (index === routeIndex ? newRoute : route)),
-            history:
-              key === route.key
-                ? state.history
-                : state.history.filter((record) => record.key !== route.key),
+            routes,
+            history,
           };
         }
 

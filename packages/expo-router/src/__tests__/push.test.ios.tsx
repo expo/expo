@@ -348,7 +348,6 @@ it('works in a nested layout Stack->Tab->Stack', () => {
                 ],
                 index: 2,
                 key: expect.any(String),
-                preloadedRouteKeys: [],
                 routeNames: ['a', 'b', 'c'],
                 routes: [
                   {
