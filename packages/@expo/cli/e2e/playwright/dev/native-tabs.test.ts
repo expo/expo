@@ -12,6 +12,8 @@ const projectRoot = getRouterE2ERoot();
 const inputDir = 'native-tabs';
 
 test.describe(inputDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
@@ -26,7 +28,7 @@ test.describe(inputDir, () => {
     },
   });
 
-  test.beforeEach(async () => {
+  test.beforeAll(async () => {
     console.time('expo start');
     await expoStart.startAsync();
     console.timeEnd('expo start');
@@ -35,7 +37,7 @@ test.describe(inputDir, () => {
     await expoStart.fetchBundleAsync('/');
     console.timeEnd('Eagerly bundled JS');
   });
-  test.afterEach(async () => {
+  test.afterAll(async () => {
     await expoStart.stopAsync();
   });
 
@@ -45,19 +47,23 @@ test.describe(inputDir, () => {
 
     await page.goto(new URL('/', expoStart.url).href);
 
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /nested/inner', exact: true }).click();
 
-    expect(page.getByTestId('native-tabs-nested-inner')).toBeDefined();
+    await expect(
+      page.getByTestId('native-tabs-nested-inner').filter({ visible: true })
+    ).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /', exact: true }).click();
 
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /nested', exact: true }).click();
 
-    expect(page.getByTestId('native-tabs-nested-index')).toBeDefined();
+    await expect(
+      page.getByTestId('native-tabs-nested-index').filter({ visible: true })
+    ).toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -68,35 +74,45 @@ test.describe(inputDir, () => {
 
     await page.goto(new URL('/', expoStart.url).href);
 
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
 
     // 1 is the badge value on the "nested" tab
     await page.getByRole('tab', { name: 'nested 1', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-index')).toBeDefined();
+    await expect(
+      page.getByTestId('native-tabs-nested-index').filter({ visible: true })
+    ).toBeVisible();
 
     await page.getByRole('tab', { name: 'Index label', exact: true }).click();
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /nested/inner', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-inner')).toBeDefined();
+    await expect(
+      page.getByTestId('native-tabs-nested-inner').filter({ visible: true })
+    ).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /', exact: true }).click();
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
 
     await page.getByRole('tab', { name: 'nested 1', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-inner')).toBeDefined();
+    await expect(
+      page.getByTestId('native-tabs-nested-inner').filter({ visible: true })
+    ).toBeVisible();
 
     await page.getByRole('tab', { name: 'Index label', exact: true }).click();
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
 
     await page.getByRole('link', { name: 'Go to /nested', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-index')).toBeDefined();
+    await expect(
+      page.getByTestId('native-tabs-nested-index').filter({ visible: true })
+    ).toBeVisible();
 
     await page.getByRole('tab', { name: 'Index label', exact: true }).click();
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
 
     await page.getByRole('tab', { name: 'nested 1', exact: true }).click();
-    expect(page.getByTestId('native-tabs-nested-index')).toBeDefined();
+    await expect(
+      page.getByTestId('native-tabs-nested-index').filter({ visible: true })
+    ).toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -107,14 +123,13 @@ test.describe(inputDir, () => {
 
     await page.goto(new URL('/', expoStart.url).href);
 
-    expect(page.getByTestId('native-tabs-index')).toBeDefined();
+    await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
 
-    expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).toBeDefined();
+    await expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).toBeVisible();
     await page.getByRole('tab', { name: 'Dynamic 9', exact: true }).click();
-    expect(page.getByTestId('native-tabs-dynamic')).toBeDefined();
-    expect(page.getByTestId('label-input')).toBeDefined();
+    await expect(page.getByTestId('label-input').filter({ visible: true })).toBeVisible();
 
-    expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).not.toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });

@@ -16,6 +16,8 @@ const projectRoot = getRouterE2ERoot();
 const baseDir = 'dist-react-compiler';
 
 test.describe(baseDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoServe = createExpoServe({
     cwd: projectRoot,
     env: {
@@ -26,7 +28,7 @@ test.describe(baseDir, () => {
   test.describe('default', () => {
     const inputDir = 'dist-react-compiler-default';
 
-    test.beforeEach('bundle and serve', async () => {
+    test.beforeAll('bundle and serve', async () => {
       console.time('expo export');
       await executeExpoAsync(projectRoot, ['export', '-p', 'web', '--output-dir', inputDir], {
         env: {
@@ -42,7 +44,7 @@ test.describe(baseDir, () => {
       await expoServe.startAsync([inputDir]);
       console.timeEnd('npx serve');
     });
-    test.afterEach(async () => {
+    test.afterAll(async () => {
       await expoServe.stopAsync();
     });
 
@@ -86,7 +88,7 @@ test.describe(baseDir, () => {
   test.describe('without live bindings', () => {
     const inputDir = 'dist-react-compiler-no-live-bindings';
 
-    test.beforeEach('bundle and serve', async () => {
+    test.beforeAll('bundle and serve', async () => {
       console.time('expo export');
       const res = await executeExpoAsync(
         projectRoot,
@@ -109,7 +111,7 @@ test.describe(baseDir, () => {
       await expoServe.startAsync([inputDir]);
       console.timeEnd('npx serve');
     });
-    test.afterEach(async () => {
+    test.afterAll(async () => {
       await expoServe.stopAsync();
     });
 
