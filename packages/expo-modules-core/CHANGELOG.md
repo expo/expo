@@ -14,6 +14,7 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed the tap that closes a SwiftUI menu also pressing the React Native view underneath it. ([#48419](https://github.com/expo/expo/issues/48419) by [@bohdanstefaniuk](https://github.com/bohdanstefaniuk)) ([#48463](https://github.com/expo/expo/pull/48463) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Fixed hosted Compose views missing layout after reattachment or in-place configuration changes. ([#48370](https://github.com/expo/expo/issues/48370) by [@lujjjh](https://github.com/lujjjh))
 
 ## 56.0.22 — 2026-07-23
