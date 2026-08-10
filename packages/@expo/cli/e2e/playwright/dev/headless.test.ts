@@ -52,19 +52,24 @@ test.describe(inputDir, () => {
     await page.getByText('Go to Tab functions').click();
 
     await expect(page.getByTestId('tab-home-functions').filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/tab-functions$/);
 
     await page.getByTestId('tab-movies').click();
 
     await expect(page.getByTestId('tab-movies-index').filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/movies$/);
 
     await page.getByTestId('tab-home').click();
 
     await expect(page.getByTestId('tab-home-index').filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/$/);
 
     expect(pageErrors.all).toEqual([]);
   });
 
-  test('when resetOnFocus is false, does reset the tab until second click', async ({ page }) => {
+  test('when resetOnFocus is false, does not reset the tab until second click', async ({
+    page,
+  }) => {
     // Listen for console logs and errors
     const pageErrors = pageCollectErrors(page);
 
@@ -76,29 +81,28 @@ test.describe(inputDir, () => {
 
     await page.getByRole('link', { name: 'Toy Story' }).click();
 
-    await expect(page.getByTestId('tab-movie-details').filter({ visible: true })).toBeVisible();
-    await expect(page.getByTestId('tab-movie-details').filter({ visible: true })).toContainText(
-      'Toy Story'
-    );
-    await expect(page.getByText('Lorem ipsum dolor sit amet')).toBeVisible();
+    const visibleMovieDetails = page.getByTestId('tab-movie-details').filter({ visible: true });
+    await expect(visibleMovieDetails).toContainText('Toy Story');
+    await expect(visibleMovieDetails).toContainText('Lorem ipsum dolor sit amet');
+    await expect(page).toHaveURL(/\/movies\/Toy%20Story$/);
 
     await page.getByTestId('tab-home').click();
 
     await expect(page.getByTestId('tab-home-index').filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/$/);
 
     await page.getByTestId('tab-movies').click();
 
     // Still on the movie details page
-    await expect(page.getByTestId('tab-movie-details').filter({ visible: true })).toBeVisible();
-    await expect(page.getByTestId('tab-movie-details').filter({ visible: true })).toContainText(
-      'Toy Story'
-    );
-    await expect(page.getByText('Lorem ipsum dolor sit amet')).toBeVisible();
+    await expect(visibleMovieDetails).toContainText('Toy Story');
+    await expect(visibleMovieDetails).toContainText('Lorem ipsum dolor sit amet');
+    await expect(page).toHaveURL(/\/movies\/Toy%20Story$/);
 
     // Second click on focused tab resets it
     await page.getByTestId('tab-movies').click();
 
     await expect(page.getByTestId('tab-movies-index').filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/movies$/);
 
     expect(pageErrors.all).toEqual([]);
   });

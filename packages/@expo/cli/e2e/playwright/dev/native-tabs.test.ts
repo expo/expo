@@ -54,16 +54,19 @@ test.describe(inputDir, () => {
     await expect(
       page.getByTestId('native-tabs-nested-inner').filter({ visible: true })
     ).toBeVisible();
+    await expect(page).toHaveURL(/\/nested\/inner$/);
 
     await page.getByRole('link', { name: 'Go to /', exact: true }).click();
 
     await expect(page.getByTestId('native-tabs-index').filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/$/);
 
     await page.getByRole('link', { name: 'Go to /nested', exact: true }).click();
 
     await expect(
       page.getByTestId('native-tabs-nested-index').filter({ visible: true })
     ).toBeVisible();
+    await expect(page).toHaveURL(/\/nested$/);
 
     expect(pageErrors.all).toEqual([]);
   });
@@ -128,8 +131,10 @@ test.describe(inputDir, () => {
     await expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).toBeVisible();
     await page.getByRole('tab', { name: 'Dynamic 9', exact: true }).click();
     await expect(page.getByTestId('label-input').filter({ visible: true })).toBeVisible();
+    await expect(page).toHaveURL(/\/dynamic$/);
 
     await expect(page.getByRole('tab', { name: 'Dynamic 9', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Tab 2 9+', exact: true })).toBeVisible();
 
     expect(pageErrors.all).toEqual([]);
   });
