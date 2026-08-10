@@ -1,0 +1,132 @@
+---
+title: 最初のアプリを作成する
+description: この章では、AI エージェントに指示して新しい Expo アプリを作成し、スマートフォンで実行します。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+この章では、エージェントに新しい Expo アプリを作成してもらい、スマートフォンで動かし、最初の変更を加えます。これはチュートリアルの残りの部分で繰り返すループです。
+
+<Step label="1">
+
+## 新しいフォルダでエージェントを起動する
+
+エージェントは一度に 1 つのフォルダの中で作業します。このプロジェクト専用のフォルダを作成し、そこでエージェントを起動しましょう。ターミナルで次を実行してください。
+
+<Terminal
+  cmd={['$ mkdir StickerSmash', '', '$ cd StickerSmash']}
+  cmdCopy={['$ mkdir StickerSmash && cd StickerSmash']}
+/>
+
+続けて、そのフォルダの中でエージェントを起動します。`claude` または `codex` を実行してください。Cursor を使っている場合は、**StickerSmash** という名前の新しいフォルダを作成し、**File** > **Open Folder** で開いてから、エージェントパネルを開いてください。
+
+</Step>
+
+<Step label="2">
+
+## アプリを作成する
+
+次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+npx create-expo-app@latest を実行して SDK 54 テンプレートを選び、このフォルダ（カレントディレクトリ）に新しい Expo アプリを作成して。スマートフォンの Expo Go でこのアプリをテストする予定で、Expo Go は SDK 54 を使っているから。作成できたら、プロジェクトの reset-project スクリプトを実行して最小構成のアプリから始められるようにし、そのスクリプトが残す app-example フォルダを削除して。開発サーバーは起動しないで。それは自分で実行するので。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Create a new Expo app in this folder (the current directory) by running npx create-expo-app@latest and choosing the SDK 54 template — I will test the app with Expo Go on my phone, which uses SDK 54. After it is created, run the project's reset-project script so we start from a minimal app, and delete the app-example folder that the script leaves behind. Don't start the development server; I will run that myself.
+```
+
+</Collapsible>
+
+エージェントがテンプレートをダウンロードし、依存関係をインストールするのに数分かかります。完了すると、プロジェクトの準備ができたと報告し、いくつかのファイルを含む最小限の **app** フォルダができているはずです。
+
+</Step>
+
+<Step label="3">
+
+## スマートフォンでアプリを実行する
+
+これはチュートリアルを通して自分で実行する唯一のコマンドです。スマートフォンにアプリをストリーミングする開発サーバーを起動します。**新しいターミナルウィンドウ**を開き（最初のウィンドウはエージェントを実行したままにしておきます）、次を実行してください。
+
+<Terminal
+  cmd={['$ cd StickerSmash', '', '$ npx expo start']}
+  cmdCopy={['$ cd StickerSmash && npx expo start']}
+/>
+
+ターミナルに QR コードが表示されます。アプリを開くには次のようにします。
+
+- **Android**: Expo Go を開いて **Scan QR code** をタップします。
+- **iOS**: 標準のカメラアプリを開いて QR コードにかざします。
+
+スマートフォンにほとんど何も表示されていない画面が出るはずです。これがあなたのアプリです。チュートリアルの残りの間、このターミナルウィンドウを開いたまま、スマートフォンを手元に置いておいてください。
+
+<Collapsible summary="スマートフォンが接続できない場合">
+
+スマートフォンとコンピュータは同じ Wi-Fi ネットワークに接続している必要があります。接続しているのにアプリが読み込まれない場合は、<kbd>Ctrl</kbd> + <kbd>C</kbd> でサーバーを停止し、異なるネットワーク間でも動作するトンネルモードで再起動してください。
+
+<Terminal cmd={['$ npx expo start --tunnel']} />
+
+スマートフォンとターミナルの両方で同じ Expo アカウントにサインインしていれば、Expo Go の **Projects** タブからもプロジェクトを見つけられます。
+
+</Collapsible>
+
+</Step>
+
+<Step label="4">
+
+## 最初の変更を加える
+
+ここでループを一周させましょう。エージェントに目に見える変更を依頼し、それがスマートフォンに反映されるのを確認します。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+ホーム画面を変更して、"Home screen" というテキストを白色で、色 #25292e の暗い背景の中央に表示して。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Change the home screen so it shows the text "Home screen" in white, centered on a dark background with the color #25292e.
+```
+
+</Collapsible>
+
+**表示されるもの**: エージェントの作業が完了してから数秒以内に、スマートフォンのアプリが再読み込みされ、暗い画面の中央に白い "Home screen" というテキストが表示されます。
+
+<ContentSpotlight
+  alt="更新されたテキストと背景色のアプリ"
+  src="/static/images/tutorial/02-index-screen-changes.webp"
+  className="max-w-[720px]"
+/>
+
+これがワークフローのすべてです。プロンプトを送り、エージェントが構築し、スマートフォンに結果が表示されます。
+
+</Step>
+
+## うまくいかないとき
+
+遅かれ早かれ、結果が依頼した内容と一致しないことがあります。それは普通のことで、直すこともワークフローの一部です。
+
+- **原因を推測せず、状態を説明する。** 見えているものと期待していたものをそのままエージェントに伝えます。「テキストは中央に来ているが、背景はまだ白いままです」のように。なぜそうなっているかを推測する必要はありません。
+- **エラーはそのまま貼り付ける。** スマートフォンに赤いエラー画面が表示されたり、ターミナルにエラーが出力されたりした場合は、メッセージ全文をそのままエージェントに渡します。エラーメッセージはプログラマー向けに書かれていて、エージェントもその一人です。
+- **エージェントに自分の作業を確認してもらう。**「何か壊れています。さっき加えた変更を見直して、問題を見つけて直してください」といったプロンプトが効果的です。
+- **アプリの動きが止まってしまったら**、スマートフォンを振って、表示されるメニューから **Reload** をタップします。それでも解決しない場合は、<kbd>Ctrl</kbd> + <kbd>C</kbd> で開発サーバーを停止し、もう一度 `npx expo start` を実行してください。
+
+以降の章では、末尾でこのセクションへのリンクとともに簡単なリマインダーが表示されます。
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/build-with-ai/create-your-first-app"
+  name="BUILD_WITH_AI"
+  chapterTitle="第 2 章：最初のアプリを作成する"
+  summary="アプリを作成し、スマートフォンで実行し、1 つのプロンプトで変更を加えました。"
+  nextChapterDescription="次の章では、この空の画面を実際のアプリへと作り上げていきます。ナビゲーションタブ、写真ビューア、画像ピッカーを追加します。"
+  nextChapterTitle="ホーム画面を構築する"
+  nextChapterLink="/ja/tutorial/build-with-ai/build-the-home-screen"
+/>

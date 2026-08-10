@@ -1,0 +1,77 @@
+---
+title: ステッカーを追加する
+description: この章では、AI エージェントに指示して絵文字ピッカーのモーダルを追加し、ドラッグとタップのジェスチャーでステッカーを操作できるようにします。
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
+import { ProgressTracker } from '~/ui/components/ProgressTracker';
+import { Step } from '~/ui/components/Step';
+
+この章で、アプリはいよいよその名前にふさわしくなります。スライド式のパネルから絵文字を選び、写真の上に貼り付けて、指で自由に動かせるようにします。
+
+<Step label="1">
+
+## 絵文字ピッカーを追加する
+
+写真が選ばれたら、アプリは「写真を選ぶ」モードから「写真を装飾する」モードに切り替わるべきです。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+写真が選ばれたら（ライブラリから選んだ場合でも、"Use this photo" をタップした場合でも）、2 つのボタンをオプションの行に置き換えて。左側には元のボタンに戻す "Reset" オプション、中央には丸い "+" ボタンを置いて。"+" をタップすると、画面下から "Choose a sticker" というタイトルのモーダルがスライドして表示され、assets/images フォルダ内の絵文字画像を横スクロールのリストで表示して。絵文字をタップしたらモーダルを閉じて、その絵文字を写真の上にステッカーとして配置して。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+When a photo has been chosen (either picked from the library or by tapping "Use this photo"), replace the two buttons with a row of options: a "Reset" option on the left that brings back the original buttons, and a circular "+" button in the middle. Tapping "+" should slide up a modal from the bottom titled "Choose a sticker" that shows the emoji images from the assets/images folder in a horizontally scrolling list. When I tap an emoji, close the modal and place that emoji on top of the photo as a sticker.
+```
+
+</Collapsible>
+
+**表示されるもの**: 写真を選ぶと、ボタンが新しいオプションの行に変わります。**+** をタップすると絵文字のパネルがスライドして表示され、リストを横にスクロールできます。いずれかをタップするとパネルが閉じて、写真の上に絵文字が表示されます。
+
+<ContentSpotlight
+  alt="画面下からスライドして表示される絵文字ピッカーのモーダル"
+  src="/static/images/tutorial/emoji-picker.webp"
+  className="max-w-[720px]"
+/>
+
+</Step>
+
+<Step label="2">
+
+## ステッカーを動かしたり大きさを変えたりする
+
+ステッカーが 1 か所に固定されたままでは面白くありません。次のプロンプトをエージェントに貼り付けてください。
+
+```text プロンプト|wrap
+react-native-gesture-handler と react-native-reanimated ライブラリを使って、ステッカーをインタラクティブにして。指でステッカーをドラッグして写真上の好きな場所に置けるようにして、ダブルタップすると大きさが 2 倍になるようにして（もう一度ダブルタップすると元の大きさに戻る）。移動とサイズ変更はスムーズにアニメーションするようにして。
+```
+
+<Collapsible summary="英語の原文プロンプト">
+
+```text Prompt|wrap
+Make the sticker interactive using the react-native-gesture-handler and react-native-reanimated libraries: I want to drag the sticker around with my finger to place it anywhere on the photo, and double-tap it to double its size (double-tapping again should shrink it back). The movement and resizing should animate smoothly.
+```
+
+</Collapsible>
+
+**表示されるもの**: 指で絵文字を写真の上にドラッグして動かせます。ダブルタップすると大きくなったり、元のサイズに戻ったりします。
+
+このステップは、あなたの役割を思い出させてくれます。エージェントは自分の書いたコードを読むことはできますが、ジェスチャーの感触までは分かりません。ドラッグの感触が正しいかどうかを確認できるのはあなただけです。ステッカーが遅れて動いたり、飛んだり、元の位置に戻ってしまったりする場合は、その様子をそのままエージェントに伝えてください。
+
+</Step>
+
+> 結果が期待どおりにならない場合は、見えているものをそのままエージェントに伝えてください。[うまくいかないとき](/ja/tutorial/build-with-ai/create-your-first-app/#うまくいかないとき) に対処法があります。
+
+## まとめ
+
+<ProgressTracker
+  currentChapterSlug="/tutorial/build-with-ai/add-stickers"
+  name="BUILD_WITH_AI"
+  chapterTitle="第 4 章：ステッカーを追加する"
+  summary="写真には、ドラッグでき、大きさも変えられる絵文字ステッカーが貼り付けられるようになりました。あとは、この作品を保存する方法だけです。"
+  nextChapterDescription="次の章では、装飾した写真をスマートフォンの写真ライブラリに保存します。"
+  nextChapterTitle="画像を保存する"
+  nextChapterLink="/ja/tutorial/build-with-ai/save-your-creation"
+/>
