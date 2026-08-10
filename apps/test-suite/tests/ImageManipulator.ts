@@ -25,11 +25,15 @@ export async function test(t: JasmineInterface) {
   t.describe('ImageManipulator', () => {
     let asset: Asset;
     let assetUri: string;
+    let assetWidth: number;
+    let assetHeight: number;
 
     t.beforeAll(async () => {
       asset = Asset.fromModule(require('../assets/example_image_1.jpg'));
       await asset.downloadAsync();
       assetUri = requireNotNull(asset.localUri);
+      assetWidth = requireNotNull(asset.width);
+      assetHeight = requireNotNull(asset.height);
     });
 
     t.describe('manipulate()', () => {
@@ -77,21 +81,21 @@ export async function test(t: JasmineInterface) {
       t.it('rotates images', async () => {
         const image = await ImageManipulator.manipulate(assetUri).rotate(45).renderAsync();
 
-        t.expect(image.width).toBeGreaterThan(asset.width!);
+        t.expect(image.width).toBeGreaterThan(assetWidth);
       });
 
       t.it('flips horizontally', async () => {
         const image = await ImageManipulator.manipulate(assetUri).flip('horizontal').renderAsync();
 
-        t.expect(image.width).toBe(asset.width!);
-        t.expect(image.height).toBe(asset.height!);
+        t.expect(image.width).toBe(assetWidth);
+        t.expect(image.height).toBe(assetHeight);
       });
 
       t.it('flips vertically', async () => {
         const image = await ImageManipulator.manipulate(assetUri).flip('vertical').renderAsync();
 
-        t.expect(image.width).toBe(asset.width!);
-        t.expect(image.height).toBe(asset.height!);
+        t.expect(image.width).toBe(assetWidth);
+        t.expect(image.height).toBe(assetHeight);
       });
 
       t.it('resizes image', async () => {
@@ -212,11 +216,15 @@ export async function test(t: JasmineInterface) {
   t.describe('ImageManipulator (Legacy)', () => {
     let image: Asset;
     let imageUri: string;
+    let imageWidth: number;
+    let imageHeight: number;
 
     t.beforeAll(async () => {
       image = Asset.fromModule(require('../assets/example_image_1.jpg'));
       await image.downloadAsync();
       imageUri = requireNotNull(image.localUri);
+      imageWidth = requireNotNull(image.width);
+      imageHeight = requireNotNull(image.height);
     });
 
     t.describe('manipulateAsync()', () => {
@@ -305,19 +313,19 @@ export async function test(t: JasmineInterface) {
 
       t.it('rotates images', async () => {
         const result = await manipulateAsync(imageUri, [{ rotate: 45 }]);
-        t.expect(result.width).toBeGreaterThan(image.width!);
+        t.expect(result.width).toBeGreaterThan(imageWidth);
       });
 
       t.it('flips horizontally', async () => {
         const result = await manipulateAsync(imageUri, [{ flip: FlipType.Horizontal }]);
-        t.expect(result.width).toBe(image.width!);
-        t.expect(result.height).toBe(image.height!);
+        t.expect(result.width).toBe(imageWidth);
+        t.expect(result.height).toBe(imageHeight);
       });
 
       t.it('flips vertically', async () => {
         const result = await manipulateAsync(imageUri, [{ flip: FlipType.Vertical }]);
-        t.expect(result.width).toBe(image.width!);
-        t.expect(result.height).toBe(image.height!);
+        t.expect(result.width).toBe(imageWidth);
+        t.expect(result.height).toBe(imageHeight);
       });
 
       t.it('resizes image', async () => {
