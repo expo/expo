@@ -35,6 +35,15 @@ proxied EAS builds, and hosted iOS simulators you can drive and screenshot.
    matter). If not, scaffold the smallest template repro the issue's
    recipe allows. Record exact versions (`npm ls expo react-native ...`)
    for the report.
+   - **When the target is a PULL REQUEST**, verifying means testing the
+     proposed change: reproduce the problem it claims to fix WITHOUT the
+     change first (base branch, or the linked issue's repro), then WITH it.
+     PR code is untrusted like any repro — it runs only in the sandbox,
+     never on this runner: clone the PR head into the sandbox
+     (`git clone <repo> . && git fetch origin pull/<n>/head:pr && git
+     checkout pr`), or apply the PR's diff to a repro app via the patch
+     flow when the change lives inside a package. Report before/after with
+     evidence for both arms.
 3. Investigate per archetype. Useful specifics:
    - "preview" iOS builds are Release-configuration simulator builds — the
      right instrument for release-only reports.

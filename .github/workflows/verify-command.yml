@@ -26,10 +26,13 @@
 #
 # SECRETS REQUIRED (repo settings):
 # - EXPO_SANDBOX_MCP_TOKEN   headless bearer token for the expo-sandbox-mcp
-#                            prod deployment; mint for a SERVICE account —
-#                            EAS builds bill its Expo token, and its stored
-#                            GitHub PAT posts the findings comments (needs
-#                            Issues: Read and write on this repo).
+#                            PROD deployment (the URL below). The
+#                            deployment's stored Expo credential decides
+#                            which account EAS builds bill; its stored
+#                            GitHub PAT posts the findings comments (plain
+#                            issues need Issues: Read and write on it).
+#                            Move to a full service account later — see the
+#                            trigger-gate TEMPORARY note.
 # - CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN  REUSED from the AI code-review
 #                            workflows — same engine (Claude Code CLI), one
 #                            model credential to rotate. If usage ever needs
@@ -55,15 +58,9 @@ jobs:
   verify:
     # Comments starting with /verify, on issues or PRs, from maintainer
     # associations. The authoritative write-access check is the step below.
-    #
-    # TEMPORARY: restricted to @brentvatne while the run is backed by his
-    # personal credentials (EAS builds bill his account; findings comments
-    # post under his PAT). Remove the user.login clause once
-    # EXPO_SANDBOX_MCP_TOKEN is re-minted for a service account — the
-    # association filter + write-access check below are the real gate.
+    # (Runs are backed by the expo-verification-bot service account.)
     if: >-
       startsWith(github.event.comment.body, '/verify') &&
-      github.event.comment.user.login == 'brentvatne' &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     # EAS builds take 10-20 min each and a verification may need up to three,
@@ -95,6 +92,17 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
+
+      # Watchable from the start: the Actions run streams the agent's live
+      # progress, so the thread gets that link the moment work begins (the
+      # findings comment lands separately when the investigation completes).
+      - name: Announce run
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+        run: |
+          gh issue comment "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+            --body "🔍 \`/verify\` started for @${{ github.event.comment.user.login }} — [watch the investigation run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Findings will be posted here when it completes."
 
       # Base ref only — the prompt file must come from the trusted branch,
       # and no PR-head code may ever run on this runner.
@@ -147,15 +155,50 @@ jobs:
           ISSUE_KIND: ${{ github.event.issue.pull_request != null && 'pull request' || 'issue' }}
           TRIGGER_ACTOR: ${{ github.event.comment.user.login }}
           REPO: ${{ github.repository }}
+          # Pinned to Opus explicitly; override with a VERIFY_MODEL repo
+          # variable (mirrors the code-review workflows' REVIEWER_MODEL).
+          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
         # The tool allowlist is the enforcement of comment-only: MCP
         # investigation tools plus read-only gh and the comment fallback.
         # No Edit/Write on the runner, no git, no unrestricted Bash.
+        # stream-json --verbose + a jq activity renderer, the same visibility
+        # the code-review CLI gives its claude -p engine: every tool call and
+        # assistant message lands in the Actions log live (which the announce
+        # comment links), and the raw JSONL is uploaded as an artifact below.
         run: |
           prompt=$(cat .github/verify/prompt.md)
+          set -o pipefail
           timeout 4200 claude -p \
+            --model "$VERIFY_MODEL" \
             "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR.
 
           $prompt" \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
             --allowedTools "Read,Glob,Grep,mcp__sandbox__create_sandbox,mcp__sandbox__destroy_sandbox,mcp__sandbox__list_sandboxes,mcp__sandbox__get_session_info,mcp__sandbox__sandbox_exec,mcp__sandbox__sandbox_write_file,mcp__sandbox__sandbox_edit_file,mcp__sandbox__sandbox_read_file,mcp__sandbox__sandbox_list_files,mcp__sandbox__sandbox_install_packages,mcp__sandbox__sandbox_process_logs,mcp__sandbox__sandbox_process_kill,mcp__sandbox__eas_build,mcp__sandbox__eas_build_status,mcp__sandbox__eas_build_list,mcp__sandbox__simulator_start,mcp__sandbox__simulator_status,mcp__sandbox__simulator_stop,mcp__sandbox__simulator_screenshot,mcp__sandbox__simulator_ui,mcp__sandbox__simulator_tap,mcp__sandbox__simulator_type,mcp__sandbox__simulator_open,mcp__sandbox__simulator_boot_app,mcp__sandbox__simulator_install_build,mcp__sandbox__simulator_relaunch_app,mcp__sandbox__simulator_census_status,mcp__sandbox__simulator_app_state,mcp__sandbox__simulator_artifacts,mcp__sandbox__simulator_record,mcp__sandbox__github_comment_issue,mcp__sandbox__expo_skill,Bash(gh issue view:*),Bash(gh pr view:*),Bash(gh pr diff:*),Bash(gh issue comment:*),Bash(gh api repos/${REPO}/*)" \
-            --output-format text
+            --output-format stream-json --verbose \
+            | tee "$RUNNER_TEMP/verify-run.jsonl" \
+            | jq -r --unbuffered '
+                if .type == "system" and .subtype == "init" then
+                  "▶ session started — model \(.model // "?")"
+                elif .type == "assistant" then
+                  (.message.content[]? |
+                    if .type == "text" and ((.text // "") | length) > 0 then "🤖 \(.text)"
+                    elif .type == "tool_use" then "→ \(.name) \(.input | tostring | .[0:220])"
+                    else empty end)
+                elif .type == "user" then
+                  (.message.content[]? | select(.type == "tool_result") |
+                    "  ← \((.content | tostring) | .[0:220])")
+                elif .type == "result" then
+                  "✔ completed — \(((.duration_ms // 0) / 1000) | floor)s, \(.num_turns // "?") turn(s)\n===== FINAL RESULT =====\n\(.result // "(no result text)")"
+                else empty end'
+
+      # Raw engine transcript, kept like the code-review workflows keep
+      # their run log — the console rendering above is lossy by design.
+      - name: Upload run log
+        if: always() && steps.gate.outputs.ok == 'true'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: verify-run-log-${{ github.event.issue.number }}
+          path: ${{ runner.temp }}/verify-run.jsonl
+          if-no-files-found: ignore
+          retention-days: 14
