@@ -445,13 +445,12 @@ export function _assertXcodeBuildResults(
   xcodeProject: { name: string },
   logFilePath: string
 ): void {
-  const errorTitle = `Failed to build iOS project. "xcodebuild" exited with error code ${code}.`;
+  const errorHeader = _formatXcodeBuildFailure(code, logFilePath);
 
   const throwWithMessage = (message: string): never => {
     throw new CommandError(
-      `${errorTitle}\nTo view more error logs, try building the app with Xcode directly, by opening ${xcodeProject.name}.\n\n` +
-        message +
-        `Build logs written to ${chalk.underline(logFilePath)}`
+      `${errorHeader}\nTo view more error logs, try building the app with Xcode directly, by opening ${xcodeProject.name}.\n\n` +
+        message
     );
   };
 

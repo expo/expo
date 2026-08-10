@@ -192,7 +192,7 @@ describe(_assertXcodeBuildResults, () => {
     );
   });
 
-  it(`surfaces the compile error before the raw log dump so it survives truncation`, () => {
+  it(`shows the log path and compile error before the raw log dump`, () => {
     let message = '';
     try {
       _assertXcodeBuildResults(
@@ -207,6 +207,10 @@ describe(_assertXcodeBuildResults, () => {
     }
     expect(message).toContain(
       "call to undeclared function 'RCTBundleURLProviderAllowPackagerServerAccess'"
+    );
+    expect(message).toContain('./output.log');
+    expect(message.indexOf('./output.log')).toBeLessThan(
+      message.indexOf('ComputeTargetDependencyGraph')
     );
     expect(message.indexOf('call to undeclared function')).toBeLessThan(
       message.indexOf('ComputeTargetDependencyGraph')
