@@ -83,43 +83,6 @@ it('runs `npx expo install expo-sms`', async () => {
   ]);
 });
 
-it('runs `npx expo install --check` fails', async () => {
-  const projectRoot = await setupTestProjectWithOptionsAsync('install-check-fail', 'with-blank', {
-    reuseExisting: false,
-  });
-
-  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
-
-  // Install wrong package versions of `expo-sms` and `expo-auth-session`
-  await executePnpmAsync(projectRoot, ['install', 'expo-sms@1.0.0', 'expo-auth-session@1.0.0']);
-
-  // Ensure the wrong versions are installed
-  expect(pkg.read().dependencies).toMatchObject({
-    'expo-sms': '1.0.0',
-    'expo-auth-session': '1.0.0',
-  });
-
-  // Ensure `expo install --check` throws for all wrong packages
-  try {
-    await executeExpoAsync(projectRoot, ['install', '--check'], { verbose: false });
-    throw new Error('SHOULD NOT HAPPEN');
-  } catch (error: any) {
-    expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~\d+\.\d+\.\d+/);
-    expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~\d+\.\d+\.\d+/);
-  }
-
-  // Ensure `expo install --check <package>` only throws for the selected package
-  await expect(
-    executeExpoAsync(projectRoot, ['install', 'expo-sms', '--check'], { verbose: false })
-  ).rejects.toThrow(/expo-sms@1\.0\.0 - expected version: ~\d+\.\d+\.\d+/);
-
-  // Ensure `--check` did not fix the version
-  expect(pkg.read().dependencies).toMatchObject({
-    'expo-sms': '1.0.0',
-    'expo-auth-session': '1.0.0',
-  });
-});
-
 it('runs `npx expo install --fix` fails', async () => {
   const projectRoot = await setupTestProjectWithOptionsAsync('install-fix-fail', 'with-blank', {
     reuseExisting: false,
