@@ -33,6 +33,11 @@ export const expoExportWeb: Command = async (argv) => {
   }
 
   const projectRoot = getProjectRoot(args);
+  const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
+  loadEnvFiles(projectRoot, {
+    mode: args['--dev'] ? 'development' : 'production',
+  });
+
   const { resolveOptionsAsync } = await import('./resolveOptions.js');
   const options = await resolveOptionsAsync(args).catch(logCmdError);
 
