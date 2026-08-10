@@ -266,26 +266,20 @@ extension Int64 {
 }
 
 extension NetworkRequest {
-  /// Whether the request never produced a response at all, so there is no status code to report.
-  /// Distinct from `isFailed`, which also counts a 4xx or 5xx the server did return.
+  /// Whether the request never produced a response, so there is no status code to report. The
+  /// predicate for `slowest` and the throughput subset.
   ///
   /// Keyed on the missing status rather than on `errorDescription`, because a response can carry
   /// both: a transfer that breaks mid-body keeps the 200 its headers arrived with and gains an
-  /// error string. That request waited real seconds and belongs in `slowest`.
-  ///
-  /// This is the predicate for `slowest` and for the throughput subset. A 503 that came back after
-  /// eight seconds is a real measurement of a slow backend, and on a launch that felt slow it is
-  /// often the answer; a timeout's duration is the client's own setting and says nothing about the
-  /// network.
+  /// error string, and it waited real seconds. A 503 after eight seconds is likewise a measurement
+  /// worth surfacing, whereas a timeout's duration is the client's own setting.
   var neverCompleted: Bool {
     return statusCode == nil
   }
 
-  /// A request is treated as failed if it errored, or returned a 4xx (client error) or 5xx (server
-  /// error) status. 1xx (informational), 2xx (success), and 3xx (redirection — usually followed
-  /// transparently by URLSession, but the unfollowed case is still a successful response from the
-  /// origin's perspective) are not failures. A missing status code (the request failed before
-  /// headers arrived) counts as failed.
+  /// A request is treated as failed if it errored, or returned a 4xx or 5xx status. 1xx, 2xx and
+  /// 3xx are not failures: a redirect URLSession didn't follow is still a successful response from
+  /// the origin's perspective. A missing status code counts as failed.
   var isFailed: Bool {
     if errorDescription != nil {
       return true
