@@ -185,8 +185,9 @@ public struct NetworkRequestSummary: Sendable, Equatable {
         return false
       }
       // A cache hit reports bytes and timestamps like any other response, so nothing else here
-      // excludes it. Its window measures a disk read, not the connection.
-      guard request.cameFromNetwork != false else {
+      // excludes it. Requires a positive answer: an unclassified fetch may be a disk read, and its
+      // window would measure that rather than the connection.
+      guard request.cameFromNetwork == true else {
         return false
       }
       guard (request.responseBytesReceived ?? 0) > 0 else {

@@ -730,24 +730,34 @@ struct NetworkRequestSummaryTests {
   }
 
   @Test
-  func `keeps a request the OS did not classify in the throughput ratio`() {
+  func `excludes a fetch the OS did not classify from throughput`() {
     let now = Date()
-    // `.unknown` means the fetch type wasn't reported, which a task intercepted by an
-    // NSURLProtocol subclass does routinely. Treating that as a cache read would drop real
-    // transfers for any app carrying such an SDK.
+    // A warm relaunch reads the bundle from `URLCache`, and the OS doesn't always say so: it
+    // reports the full byte count against a window of a few milliseconds. Counting that produced
+    // 2.6 GB/s on a device. Only a fetch identified as a network load feeds the ratio.
     let unclassified = makeRequest(
-      host: "cdn.expo.dev",
-      duration: 1.0,
+      host: "192.168.0.48",
+      duration: 0.003,
       status: 200,
       bytesSent: 0,
-      bytesReceived: 100_000,
+      bytesReceived: 7_584_879,
       fetchStart: now,
       responseStart: now,
-      responseEnd: now.addingTimeInterval(1),
-      cameFromNetwork: true
+      responseEnd: now.addingTimeInterval(0.00287),
+      cameFromNetwork: nil
     )
-    let summary = NetworkRequestSummary.from([unclassified])
-    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 100_000) < 1.0)
+    let real = makeRequest(
+      host: "192.168.0.48",
+      duration: 0.29,
+      status: 200,
+      bytesSent: 0,
+      bytesReceived: 3652,
+      fetchStart: now,
+      responseStart: now,
+      responseEnd: now.addingTimeInterval(0.29)
+    )
+    let summary = NetworkRequestSummary.from([unclassified, real])
+    #expect(abs((summary.throughputBytesPerSecond ?? 0) - 12_593) < 100)
   }
 
   @Test

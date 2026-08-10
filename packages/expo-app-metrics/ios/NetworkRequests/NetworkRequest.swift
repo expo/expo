@@ -37,11 +37,10 @@ public struct NetworkRequest: Sendable, Equatable, Identifiable {
 
   /// Whether the response came off the network rather than out of a cache.
   ///
-  /// `false` only when the OS positively identified a cache read. An unclassified fetch counts as
-  /// network, matching how the rest of this type treats missing information: `URLSession` timestamps
-  /// a cache hit like any other response, so this is the only way to tell a disk read from a
-  /// download, and guessing would cost real transfers. Android needs no equivalent, since OkHttp
-  /// skips the response-body callbacks for a cached response and it drops out on its own.
+  /// `true` only for a fetch the OS identified as a network load. `URLSession` timestamps a cache
+  /// hit like any other response, so this is the only way to tell a disk read from a download, and
+  /// an unclassified fetch is treated as unusable rather than assumed. Android needs no equivalent,
+  /// since OkHttp skips the response-body callbacks for a cached response.
   public let cameFromNetwork: Bool?
 
   /// Phase-by-phase timings pulled from the most recent (post-redirect) transaction.
@@ -172,11 +171,12 @@ extension NetworkRequest {
     // future need arises to surface per-hop timing, expose `metrics.transactionMetrics` here.
     let transaction = metrics?.transactionMetrics.last
 
-    // Only `.localCache` is positive evidence the bytes came off disk. `.unknown` means the OS
-    // didn't classify the fetch, which a task intercepted by an `NSURLProtocol` subclass reports
-    // routinely, so treating it as a cache read would drop real transfers from the throughput ratio
-    // for any app carrying such an SDK.
-    let cameFromNetwork = transaction.map { $0.resourceFetchType != .localCache }
+    // Only a fetch the OS positively identified as a network load counts. `.unknown` is excluded
+    // too: a cache hit reports byte counts and timestamps like any other response, so an
+    // unclassified fetch that was really a disk read would otherwise divide megabytes by the
+    // milliseconds it took to read them. Costs the rate for tasks an `NSURLProtocol` subclass
+    // intercepted, which also report `.unknown`, and a missing rate beats an impossible one.
+    let cameFromNetwork = transaction.map { $0.resourceFetchType == .networkLoad }
 
     let timings = NetworkRequest.Timings(
       fetchStart: transaction?.fetchStartDate ?? fallbackStart,
