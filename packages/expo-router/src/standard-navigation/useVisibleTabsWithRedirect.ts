@@ -1,8 +1,8 @@
 import { useEffect, useMemo } from 'react';
 
-import { useRouteNode } from '../Route';
+import { getValidInitialRouteName, useRouteNode } from '../Route';
 import { router } from '../imperative-api';
-import { normalizeRouteName, useGuardRedirect } from '../layouts/GuardContext';
+import { useGuardRedirect } from '../layouts/GuardContext';
 import {
   type Descriptor,
   type ParamListBase,
@@ -61,17 +61,19 @@ export function useVisibleTabsWithRedirect<
   // TODO(@ubax): https://github.com/expo/expo/pull/48618#discussion_r3735996409
   const focusedIndex = visibleFocusedIndex;
 
+  const initialRouteName = getValidInitialRouteName(routeNode);
+
   const redirectHref = useMemo(() => {
     if (guardRedirect !== undefined) {
       return guardRedirect;
     }
     const redirectRoute =
-      findRouteByName(visibleRoutes, routeNode?.initialRouteName) ?? visibleRoutes[0];
+      visibleRoutes.find((route) => route.name === initialRouteName) ?? visibleRoutes[0];
     if (redirectRoute) {
       return buildHref(redirectRoute);
     }
     return null;
-  }, [buildHref, guardRedirect, routeNode?.initialRouteName, visibleRoutes]);
+  }, [buildHref, guardRedirect, initialRouteName, visibleRoutes]);
 
   useEffect(() => {
     // TODO(@ubax): Consider throwing in __DEV__ instead of warning.
@@ -107,8 +109,4 @@ function isDeclaredInLayout<Options extends object>(
   descriptor: TabDescriptor<Options> | undefined
 ): boolean {
   return descriptor?.routeSource === 'layout';
-}
-
-function findRouteByName<Route extends TabRoute>(routes: Route[], name: string | undefined) {
-  return routes.find((route) => route.name === name || normalizeRouteName(route.name) === name);
 }
