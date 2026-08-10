@@ -54,9 +54,6 @@ export async function test(t: JasmineInterface) {
         const image = await context.renderAsync();
 
         t.expect(image).toBeDefined();
-        // @ts-expect-error `ImageManipulator.Image` is declared as an `ImageRef` instance rather than
-        // `typeof ImageRef`, so TypeScript does not accept it on the right of `instanceof`,
-        // even though the runtime value is the class.
         t.expect(image instanceof ImageManipulator.Image).toBe(true);
         t.expect(image.width).toBe(100);
         t.expect(image.height).toBe(100);
@@ -70,9 +67,6 @@ export async function test(t: JasmineInterface) {
         const image = await context.renderAsync();
 
         t.expect(image).toBeDefined();
-        // @ts-expect-error `ImageManipulator.Image` is declared as an `ImageRef` instance rather than
-        // `typeof ImageRef`, so TypeScript does not accept it on the right of `instanceof`,
-        // even though the runtime value is the class.
         t.expect(image instanceof ImageManipulator.Image).toBe(true);
         t.expect(image.width).toBe(100);
         t.expect(image.height).toBe(100);
