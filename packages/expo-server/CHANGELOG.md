@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Support web apps exported using SDK 55 ([#48351](https://github.com/expo/expo/pull/48351) by [@hassankhan](https://github.com/hassankhan))
+- Replace use of Node's `pipeline` helper for manual response draining to avoid treating cancellation cases as exceptions ([#48699](https://github.com/expo/expo/pull/48699) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
