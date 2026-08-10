@@ -1,5 +1,9 @@
 # Issue/PR verification agent, triggered by a maintainer comment:
-#   /verify        investigate the report and post findings with attested evidence
+#   /verify           investigate the report and post findings with attested evidence.
+#                     On an ISSUE this also opens a pull request when it can verify a
+#                     fix; on a PULL REQUEST it reports only.
+#   /verify --fix     also attempt a fix pull request (needed only on a pull request).
+#   /verify --no-fix  report only, never open a pull request.
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
 # (hosted E2B sandboxes, proxied EAS builds, hosted iOS simulators). It
@@ -98,6 +102,32 @@ jobs:
               echo "/verify requires write access or higher; $ACTOR has: $perm"
               ;;
           esac
+
+      # Comment body reaches shell only via env, never inline ${{ }}.
+      #
+      # Fix mode differs by target, because the two cases are not symmetric:
+      #  - ISSUE: implicit. A verified fix is the point of investigating a bug
+      #    report, and the change is authored against this repository's own
+      #    trusted base checkout.
+      #  - PULL REQUEST: explicit `--fix` only. The change under examination is
+      #    already somebody's proposed fix, and on a fork PR the head is
+      #    attacker-supplied; layering an agent-authored patch on top of it
+      #    muddies authorship and review, so the default there is to report
+      #    before/after and let the author act.
+      # `--no-fix` forces a report-only run on an issue.
+      - name: Parse command
+        id: cmd
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          COMMENT: ${{ github.event.comment.body }}
+          IS_PR: ${{ github.event.issue.pull_request != null }}
+        run: |
+          line=$(printf '%s' "$COMMENT" | head -n1 | tr -d '\r')
+          if [ "$IS_PR" = "true" ]; then fix=false; else fix=true; fi
+          case " $line " in *" --fix "*) fix=true ;; esac
+          case " $line " in *" --no-fix "*) fix=false ;; esac
+          echo "fix=$fix" >> "$GITHUB_OUTPUT"
+          echo "fix mode: $fix (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
 
       - name: Acknowledge
         if: steps.gate.outputs.ok == 'true'
@@ -266,6 +296,7 @@ jobs:
           # Pinned to Opus explicitly; override with a VERIFY_MODEL repo
           # variable (mirrors the code-review workflows' REVIEWER_MODEL).
           VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          FIX_MODE: ${{ steps.cmd.outputs.fix }}
         # Comment-only is enforced structurally, not by command patterns —
         # patterns proved to be the wrong instrument twice (a `gh api` rule
         # permits -X POST; a `gh issue comment` rule permits
@@ -328,10 +359,18 @@ jobs:
               "mcp__sandbox__github_comment_issue"
               "mcp__sandbox__expo_skill"
             )
+            # Fix mode only: let the agent EDIT THE CHECKOUT, so the proposed
+            # change is a real edit to real files rather than a hand-written
+            # diff (far more reliable). Nothing on this runner ever executes
+            # what it writes — the push step only runs git and gh — and the
+            # denylist there refuses patches that touch automation.
+            if [ "$FIX_MODE" = "true" ]; then
+              TOOLS+=( "Edit($GITHUB_WORKSPACE/**)" "Write($GITHUB_WORKSPACE/**)" )
+            fi
             IFS=","; ALLOWED="${TOOLS[*]}"; unset IFS
           timeout 4200 claude -p \
             --model "$VERIFY_MODEL" \
-            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR.
+            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR. FIX MODE: $FIX_MODE (when true, and only if your fix is verified, edit the checkout in $GITHUB_WORKSPACE and write .verify-out/pr.md — see 'Fix mode' below; when false, describe the fix in your comment and change nothing).
 
           $prompt" \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
@@ -339,6 +378,85 @@ jobs:
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
             | jq -rf .github/verify/render.jq
+
+      # Fix mode: turn the agent's verified edit into a pull request.
+      #
+      # This step runs NO agent instructions and executes NO agent code — only
+      # git and gh, on the edit already sitting in the checkout. What it does
+      # enforce is the denylist: paths where a patch stops being reviewable
+      # code and becomes control over automation, secrets, or dependency
+      # resolution. Everything else is ordinary code for a human to review,
+      # and the PR is labeled and bannered so nobody mistakes it for reviewed
+      # work. Nothing auto-merges; branch protection and CODEOWNERS still
+      # apply, and CI on the PR runs it exactly as it runs any contributor's.
+      - name: Open fix pull request
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.fix == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          TRIGGER_ACTOR: ${{ github.event.comment.user.login }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          set -o pipefail
+          cd "$GITHUB_WORKSPACE"
+          # Never commit the context we handed the agent or its scratch output.
+          printf '.verify-context/\n.verify-out/\n' >> .git/info/exclude
+          git add -A
+          changed=$(git diff --cached --name-only)
+          if [ -z "$changed" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "🔧 \`/verify --fix\` ran but proposed no code change — see the [findings comment and run log]($RUN_URL)."
+            exit 0
+          fi
+          # DENYLIST — a patch touching these is refused outright.
+          #  .github/**            workflows, actions, CODEOWNERS: changing what CI runs
+          #  .expo-code-review/**  the other automation's config, incl. its auth tokenEnv
+          #  scripts/**            scripts CI executes
+          #  lockfiles             unreviewable in practice, and a supply-chain swap
+          #  .npmrc/.yarnrc*       registry redirection
+          #  AGENTS.md/CLAUDE.md   instructions future agent runs will read
+          #  keys/certs            no legitimate fix ships these
+          denied=$(printf '%s\n' "$changed" | grep -E \
+            -e '^\.github/' \
+            -e '^\.expo-code-review/' \
+            -e '^scripts/' \
+            -e '(^|/)(yarn\.lock|package-lock\.json|pnpm-lock\.yaml|bun\.lockb?|Gemfile\.lock|Podfile\.lock|Cargo\.lock)$' \
+            -e '(^|/)\.npmrc$' -e '(^|/)\.yarnrc(\.yml)?$' \
+            -e '(^|/)(AGENTS|CLAUDE)\.md$' \
+            -e '\.(pem|key|p12|keystore|mobileprovision)$' || true)
+          if [ -n "$denied" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "$(printf '⛔ \`/verify --fix\` refused to open a pull request: the proposed change touches paths that are off-limits to an automated patch (automation, lockfiles, or agent instructions):\n\n```\n%s\n```\n\nThe findings comment still stands; a human can apply the change deliberately. [Run log](%s)' "$denied" "$RUN_URL")"
+            echo "::error::Denylisted paths in proposed fix:"; printf '%s\n' "$denied"
+            exit 1
+          fi
+          # A fix should be small. A sprawling diff is a signal, not a fix.
+          files=$(printf '%s\n' "$changed" | wc -l | tr -d ' ')
+          lines=$(git diff --cached --numstat | awk '{a+=$1; d+=$2} END {print a+d}')
+          if [ "$files" -gt 20 ] || [ "${lines:-0}" -gt 600 ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`/verify --fix\` refused to open a pull request: the proposed change is too large for an automated patch ($files files, $lines lines). The findings comment still stands. [Run log]($RUN_URL)"
+            exit 1
+          fi
+          title=$(head -n1 .verify-out/pr.md 2>/dev/null | sed 's/^#\+ *//')
+          [ -n "$title" ] || title="Fix for #$ISSUE_NUMBER (verified by /verify)"
+          branch="verify/${ISSUE_NUMBER}-${GITHUB_RUN_ID}"
+          git -c user.name='expo-bot' -c user.email='expo-bot@users.noreply.github.com' \
+            commit -q -m "$title" -m "Verified by /verify for #$ISSUE_NUMBER. Run: $RUN_URL"
+          git -c http.extraheader="AUTHORIZATION: bearer $GH_TOKEN" \
+            push -q origin "HEAD:refs/heads/$branch"
+          {
+            echo "> [!WARNING]"
+            echo "> **Agent-authored and NOT human-reviewed.** An automated \`/verify --fix\` run"
+            echo "> for #$ISSUE_NUMBER wrote this change and verified it in a sandbox; the"
+            echo "> reasoning and evidence are in the findings comment on that issue."
+            echo "> Review it as you would any external contribution."
+            echo ""
+            echo "Requested by @$TRIGGER_ACTOR · [investigation run]($RUN_URL) · refs #$ISSUE_NUMBER"
+            echo ""
+            tail -n +2 .verify-out/pr.md 2>/dev/null || echo "_No description was provided by the run._"
+          } > "$RUNNER_TEMP/pr-body.md"
+          url=$(gh pr create --head "$branch" --title "$title" \
+            --body-file "$RUNNER_TEMP/pr-body.md" --label "agent-authored" 2>/dev/null \
+            || gh pr create --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/pr-body.md")
+          gh issue comment "$ISSUE_NUMBER" --body "🔧 Opened $url with the verified fix — agent-authored, unreviewed. [Investigation run]($RUN_URL)"
 
       # Raw engine transcript, kept like the code-review workflows keep
       # their run log — the console rendering above is lossy by design.
