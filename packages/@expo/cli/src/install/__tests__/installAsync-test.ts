@@ -5,6 +5,7 @@ import { getVersionedPackagesAsync } from '../../start/doctor/dependencies/getVe
 import { applyPluginsAsync } from '../applyPlugins';
 import { checkPackagesAsync } from '../checkPackages';
 import { installAsync } from '../installAsync';
+import { installExpoPackageAsync } from '../installExpoPackage';
 import { checkPackagesCompatibility } from '../utils/checkPackagesCompatibility';
 
 jest.mock('@expo/config', () => ({
@@ -29,6 +30,10 @@ jest.mock('../applyPlugins', () => ({
 
 jest.mock('../checkPackages', () => ({
   checkPackagesAsync: jest.fn(),
+}));
+
+jest.mock('../installExpoPackage', () => ({
+  installExpoPackageAsync: jest.fn(),
 }));
 
 jest.mock('../utils/checkPackagesCompatibility', () => ({
@@ -118,6 +123,36 @@ describe(installAsync, () => {
       'expo-camera@~16.0.0',
       'react-native-reanimated@~3.17.0',
     ]);
+  });
+
+  it('installs a resolved Expo canary first and forwards --fix to the follow-up command', async () => {
+    jest.mocked(getVersionedPackagesAsync).mockResolvedValueOnce({
+      packages: ['expo@56.0.0-canary-20260810-abcd123'],
+      messages: [],
+      excludedNativeModules: [],
+    });
+
+    await installAsync(
+      ['expo@canary'],
+      { projectRoot, fix: true, pnpm: true },
+      packageManagerArguments
+    );
+
+    expect(getVersionedPackagesAsync).toHaveBeenCalledWith(projectRoot, {
+      packages: ['expo@canary'],
+      sdkVersion: '54.0.0',
+      pkg: {},
+    });
+    expect(installExpoPackageAsync).toHaveBeenCalledWith(projectRoot, {
+      packageManager,
+      packageManagerArguments,
+      expoPackageToInstall: 'expo@56.0.0-canary-20260810-abcd123',
+      followUpCommandArgs: ['--fix'],
+    });
+    expect(checkPackagesAsync).not.toHaveBeenCalled();
+    expect(packageManager.addAsync).not.toHaveBeenCalled();
+    expect(packageManager.addDevAsync).not.toHaveBeenCalled();
+    expect(applyPluginsAsync).not.toHaveBeenCalled();
   });
 
   it('installs resolved dev dependencies with forwarded package-manager arguments', async () => {

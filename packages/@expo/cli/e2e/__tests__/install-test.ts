@@ -83,33 +83,6 @@ it('runs `npx expo install expo-sms`', async () => {
   ]);
 });
 
-it('runs `npx expo install expo@<version> --fix`', async () => {
-  const projectRoot = await setupTestProjectWithOptionsAsync(
-    'install-expo-canary-fix',
-    'with-blank',
-    {
-      reuseExisting: false,
-    }
-  );
-  const pkg = new JsonFile(path.resolve(projectRoot, 'package.json'));
-
-  // Add a package that requires "fixing" when using canary
-  await executeExpoAsync(projectRoot, ['install', 'expo-dev-client']);
-
-  // Ensure `expo-dev-client` is installed
-  expect(pkg.read().dependencies).toMatchObject({
-    'expo-dev-client': expect.any(String),
-  });
-
-  // Add `expo@canary` to the project, and `--fix` project dependencies
-  await executeExpoAsync(projectRoot, ['install', 'expo@canary', '--fix']);
-
-  // Ensure `expo-dev-client` is using canary version
-  expect(pkg.read().dependencies).toMatchObject({
-    'expo-dev-client': expect.stringContaining('canary'),
-  });
-});
-
 it('validates when with `EXPO_NO_DEPENDENCY_VALIDATION=1 npx expo install --check`', async () => {
   const env = {
     EXPO_NO_DEPENDENCY_VALIDATION: '1',
