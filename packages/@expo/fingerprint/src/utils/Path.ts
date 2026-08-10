@@ -111,6 +111,12 @@ function isSubDirectory(parent: string, child: string): boolean {
 const STRIP_PARENT_PREFIX_REGEX = /^(\.\.\/)+/g;
 
 /**
+ * Virtual store directories used by package managers that support isolated installation:
+ * pnpm (`.pnpm`), Bun (`.bun`), and Yarn's pnpm linker (`.store`).
+ */
+const VIRTUAL_STORE_REGEX = /node_modules\/\.(?:pnpm|bun|store)\/[^/]+\/node_modules\//g;
+
+/**
  * Normalize the given `filePath` to be used for matching against `ignorePaths`.
  *
  * @param filePath The file path to normalize.
@@ -120,10 +126,14 @@ const STRIP_PARENT_PREFIX_REGEX = /^(\.\.\/)+/g;
  *   We need to strip the `../` prefix to match the node_modules from parent directories.
  */
 export function normalizeFilePath(filePath: string, options: { stripParentPrefix?: boolean }) {
+  // Collapse the virtual store segment, e.g. `node_modules/.pnpm/foo@1.0.0/node_modules/foo` ->
+  // `node_modules/foo`. Otherwise every isolated install looks like a nested dependency to the
+  // `**/node_modules/**/node_modules/**` ignore pattern and its sources are dropped from the hash.
+  let normalizedFilePath = filePath.replace(VIRTUAL_STORE_REGEX, 'node_modules/');
   if (options.stripParentPrefix) {
-    return filePath.replace(STRIP_PARENT_PREFIX_REGEX, '');
+    normalizedFilePath = normalizedFilePath.replace(STRIP_PARENT_PREFIX_REGEX, '');
   }
-  return filePath;
+  return normalizedFilePath;
 }
 
 const REGEXP_REPLACE_SLASHES = /\\/g;
