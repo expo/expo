@@ -99,7 +99,12 @@ const sortByName = <T extends { name?: string }>(entries: T[]): T[] =>
     .slice()
     .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '', undefined, { sensitivity: 'base' }));
 
-const PROP_EXCEPTIONS = new Set(['StackHeaderItemSharedProps']);
+const PROP_EXCEPTIONS = new Set([
+  'AppMetricsErrorBoundaryFallbackProps',
+  'AppMetricsErrorBoundaryProps',
+  'AppMetricsRootProps',
+  'StackHeaderItemSharedProps',
+]);
 
 const isProp = ({ name }: GeneratedData) =>
   name.includes('Props') &&
