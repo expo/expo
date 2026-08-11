@@ -759,6 +759,14 @@ jobs:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
-          OUTCOME: ${{ cancelled() && 'was cancelled' || 'failed' }}
+          # job.status, NOT cancelled(): status check functions are valid only
+          # in an `if:`, and one in an `env:` makes the whole workflow file
+          # invalid — GitHub then refuses to run it at all, including for the
+          # issue_comment trigger.
+          JOB_STATUS: ${{ job.status }}
         run: |
-          gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`/verify\` $OUTCOME before it could post findings — nothing here is a verdict on the report. [Run log]($RUN_URL) has the details, and the run can be re-triggered with \`/verify\`."
+          case "$JOB_STATUS" in
+            cancelled) outcome="was cancelled" ;;
+            *) outcome="failed" ;;
+          esac
+          gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`/verify\` $outcome before it could post findings — nothing here is a verdict on the report. [Run log]($RUN_URL) has the details, and the run can be re-triggered with \`/verify\`."
