@@ -307,7 +307,7 @@ fun getAssetDimensionsFromCursorFast(
  * @return Pair of integers: width and height, respectively
  */
 @Throws(IOException::class)
-fun getAssetDimensionsSlow(
+private fun getAssetDimensionsSlow(
   contentResolver: ContentResolver,
   exifInterface: ExifInterface?,
   pending: PendingAsset
