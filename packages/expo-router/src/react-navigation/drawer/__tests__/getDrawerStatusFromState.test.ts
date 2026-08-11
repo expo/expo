@@ -1,42 +1,57 @@
-import { expect, test } from '@jest/globals';
-
-import type { DrawerNavigationState, DrawerStatus, ParamListBase } from '../../native';
+import { DrawerRouter } from '../../routers';
 import { getDrawerStatusFromState } from '../utils/getDrawerStatusFromState';
 
-const createState = (
-  history: DrawerNavigationState<ParamListBase>['history'],
-  defaultStatus: DrawerStatus = 'closed'
-): DrawerNavigationState<ParamListBase> => ({
-  stale: false,
-  type: 'drawer',
-  key: 'drawer-test',
-  index: 0,
-  routeNames: ['bar'],
-  routes: [{ key: 'bar', name: 'bar' }],
-  default: defaultStatus,
-  history,
+const state = DrawerRouter({}).getInitialState({
+  routeNames: ['index'],
+  routeParamList: {},
+  routeGetIdList: {},
 });
 
-test.each<{ defaultStatus: DrawerStatus }>([
-  { defaultStatus: 'closed' },
-  { defaultStatus: 'open' },
-])('falls back to defaultStatus: $defaultStatus without history', ({ defaultStatus }) => {
-  expect(getDrawerStatusFromState(createState(undefined, defaultStatus))).toBe(defaultStatus);
+const openState = DrawerRouter({ defaultStatus: 'open' }).getInitialState({
+  routeNames: ['index'],
+  routeParamList: {},
+  routeGetIdList: {},
 });
 
-test('reads the status from the last drawer entry', () => {
+it.each(['closed', 'open'] as const)(
+  'uses the provided default status %s when history has no drawer entry',
+  (defaultStatus) => {
+    expect(getDrawerStatusFromState(state, defaultStatus)).toBe(defaultStatus);
+  }
+);
+
+it('reports open for a router with defaultStatus open and no drawer entry', () => {
+  expect(getDrawerStatusFromState(openState, 'open')).toBe('open');
+});
+
+it('reports closed for a router with defaultStatus open after the drawer is closed', () => {
   expect(
     getDrawerStatusFromState(
-      createState([
-        { type: 'route', key: 'bar' },
-        { type: 'drawer', status: 'open' },
-      ])
+      {
+        ...openState,
+        history: [...(openState.history ?? []), { type: 'drawer', status: 'closed' }],
+      },
+      'open'
     )
-  ).toBe('open');
+  ).toBe('closed');
 });
 
-test('falls back to defaultStatus when history has no drawer entry', () => {
-  expect(getDrawerStatusFromState(createState([{ type: 'route', key: 'bar' }], 'open'))).toBe(
-    'open'
-  );
+it('uses the last drawer status from history instead of the provided default', () => {
+  expect(
+    getDrawerStatusFromState(
+      {
+        ...state,
+        history: [
+          ...(state.history ?? []),
+          { type: 'drawer', status: 'open' },
+          { type: 'drawer', status: 'closed' },
+        ],
+      },
+      'open'
+    )
+  ).toBe('closed');
+});
+
+it('uses the provided default status when history is absent', () => {
+  expect(getDrawerStatusFromState({ ...state, history: undefined }, 'open')).toBe('open');
 });

@@ -112,7 +112,7 @@ function DrawerViewBase({
 
   const { colors } = useTheme();
 
-  const drawerStatus = getDrawerStatusFromState(state);
+  const drawerStatus = getDrawerStatusFromState(state, defaultStatus);
 
   const handleDrawerOpen = useLatestCallback(() => {
     navigation.dispatch({
