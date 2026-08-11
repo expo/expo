@@ -11,7 +11,8 @@
       },
       "ios": {
         "minimumVersion": "16.4",
-        "xcodeVersionRange": ">=26.4.0"
+        "xcodeVersionRange": ">=26.4.0",
+        "xcodeVersionCheckRange": ">=26.4.0"
       },
       "runtime": {
         "reactNative": "0.86",
@@ -55,7 +56,8 @@
       },
       "ios": {
         "minimumVersion": "15.1",
-        "xcodeVersionRange": ">=26.2.0"
+        "xcodeVersionRange": ">=26.2.0",
+        "xcodeVersionCheckRange": ">=26.0.0"
       },
       "runtime": {
         "reactNative": "0.83",
@@ -141,7 +143,8 @@
       },
       "ios": {
         "minimumVersion": "13.4",
-        "xcodeVersionRange": ">=15.4.0 <=16.2.0"
+        "xcodeVersionRange": ">=15.4.0 <=16.2.0",
+        "xcodeVersionCheckRange": "<=16.2.0"
       },
       "runtime": {
         "reactNative": "0.74",

@@ -92,6 +92,14 @@ export function validateSdkCompatibilityData(value: unknown): string[] {
       requireString(entry.ios.xcodeVersionRange, `${path}.ios.xcodeVersionRange`, errors, {
         semverRange: true,
       });
+      if (entry.ios.xcodeVersionCheckRange !== undefined) {
+        requireString(
+          entry.ios.xcodeVersionCheckRange,
+          `${path}.ios.xcodeVersionCheckRange`,
+          errors,
+          { semverRange: true }
+        );
+      }
     }
 
     if (!isRecord(entry.runtime)) {

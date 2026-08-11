@@ -24,11 +24,12 @@ export function getSdkCompatibility(sdkVersion: string): SdkCompatibility | null
 export function isXcodeVersionSupported(sdkVersion: string, xcodeVersion: string): boolean | null {
   const compatibility = getSdkCompatibility(sdkVersion);
   const normalizedXcodeVersion = semver.coerce(xcodeVersion);
-  if (!compatibility || !normalizedXcodeVersion) {
+  const xcodeVersionCheckRange = compatibility?.ios.xcodeVersionCheckRange;
+  if (!xcodeVersionCheckRange || !normalizedXcodeVersion) {
     return null;
   }
 
-  return semver.satisfies(normalizedXcodeVersion, compatibility.ios.xcodeVersionRange);
+  return semver.satisfies(normalizedXcodeVersion, xcodeVersionCheckRange);
 }
 
 export { validateSdkCompatibilityData };

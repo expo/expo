@@ -16,6 +16,9 @@ describe('SDK compatibility data', () => {
     for (const compatibility of sdkCompatibilityData.sdkVersions) {
       expect(semver.valid(compatibility.sdk)).not.toBeNull();
       expect(semver.validRange(compatibility.ios.xcodeVersionRange)).not.toBeNull();
+      if (compatibility.ios.xcodeVersionCheckRange) {
+        expect(semver.validRange(compatibility.ios.xcodeVersionCheckRange)).not.toBeNull();
+      }
       if (compatibility.node) {
         expect(semver.valid(compatibility.node.minimumVersion)).not.toBeNull();
       }
@@ -50,11 +53,21 @@ describe(isXcodeVersionSupported, () => {
     expect(isXcodeVersionSupported('57.0.12', '26.4')).toBe(true);
   });
 
-  it('enforces both boundaries of the legacy SDK 51 range', () => {
-    expect(isXcodeVersionSupported('51.0.0', '15.3')).toBe(false);
+  it('preserves the legacy SDK 51 upper-bound check', () => {
+    expect(isXcodeVersionSupported('51.0.0', '15.3')).toBe(true);
     expect(isXcodeVersionSupported('51.0.0', '15.4')).toBe(true);
     expect(isXcodeVersionSupported('51.0.0', '16.2')).toBe(true);
     expect(isXcodeVersionSupported('51.0.0', '16.3')).toBe(false);
+  });
+
+  it('preserves the legacy SDK 55 lower-bound check', () => {
+    expect(isXcodeVersionSupported('55.0.0', '25.4')).toBe(false);
+    expect(isXcodeVersionSupported('55.0.0', '26.0')).toBe(true);
+  });
+
+  it('does not enforce documented ranges without a known incompatibility', () => {
+    expect(isXcodeVersionSupported('52.0.0', '15.4')).toBeNull();
+    expect(isXcodeVersionSupported('56.0.0', '26.3')).toBeNull();
   });
 
   it('returns null when it cannot evaluate compatibility', () => {

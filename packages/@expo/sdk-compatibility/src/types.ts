@@ -8,6 +8,7 @@ export type AndroidCompatibility = {
 export type IosCompatibility = {
   minimumVersion: string;
   xcodeVersionRange: string;
+  xcodeVersionCheckRange?: string;
 };
 
 export type RuntimeCompatibility = {
