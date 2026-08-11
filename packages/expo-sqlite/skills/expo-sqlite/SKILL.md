@@ -20,15 +20,15 @@ Install with `npx expo install expo-sqlite`. Web needs extra Metro config — se
 
 ## Choose the right API
 
-| Task | API |
-| --- | --- |
-| One-time DDL / bulk statements, no user input | `db.execAsync(source)` |
-| Writes (`INSERT`/`UPDATE`/`DELETE`) | `db.runAsync(source, params)` → `{ lastInsertRowId, changes }` |
-| Read one row | `db.getFirstAsync<T>(source, params)` |
-| Read all rows | `db.getAllAsync<T>(source, params)` |
-| Iterate large results | `for await (const row of db.getEachAsync<T>(source, params))` |
-| Typed, concise queries | `` db.sql<T>`SELECT ...` `` tagged template |
-| Repeated query, hot path | `db.prepareAsync(source)` + `statement.executeAsync(params)` |
+| Task                                          | API                                                            |
+| --------------------------------------------- | -------------------------------------------------------------- |
+| One-time DDL / bulk statements, no user input | `db.execAsync(source)`                                         |
+| Writes (`INSERT`/`UPDATE`/`DELETE`)           | `db.runAsync(source, params)` → `{ lastInsertRowId, changes }` |
+| Read one row                                  | `db.getFirstAsync<T>(source, params)`                          |
+| Read all rows                                 | `db.getAllAsync<T>(source, params)`                            |
+| Iterate large results                         | `for await (const row of db.getEachAsync<T>(source, params))`  |
+| Typed, concise queries                        | `` db.sql<T>`SELECT ...` `` tagged template                    |
+| Repeated query, hot path                      | `db.prepareAsync(source)` + `statement.executeAsync(params)`   |
 
 Every method also has a `Sync` variant (`runSync`, `getAllSync`, …). Prefer the async APIs; synchronous calls block the JS thread.
 
@@ -46,12 +46,17 @@ await db.runAsync('DELETE FROM test WHERE value = $value', { $value: 'aaa' });
 The `db.sql` tagged template binds every `${value}` automatically, so interpolation is safe there:
 
 ```ts
-interface User { id: number; name: string; age: number }
+interface User {
+  id: number;
+  name: string;
+  age: number;
+}
 
 const sql = db.sql;
 const users = await sql<User>`SELECT * FROM users WHERE age > ${age}`; // User[]
 const user = await sql<User>`SELECT * FROM users WHERE id = ${1}`.first();
-const result = (await sql`INSERT INTO users (name, age) VALUES (${'Alice'}, ${30})`) as SQLite.SQLiteRunResult;
+const result =
+  (await sql`INSERT INTO users (name, age) VALUES (${'Alice'}, ${30})`) as SQLite.SQLiteRunResult;
 ```
 
 ## React integration
@@ -124,7 +129,9 @@ A throw inside either callback rolls the transaction back.
 Finalize statements when done — use `try`/`finally`:
 
 ```ts
-const statement = await db.prepareAsync('INSERT INTO test (value, intValue) VALUES ($value, $intValue)');
+const statement = await db.prepareAsync(
+  'INSERT INTO test (value, intValue) VALUES ($value, $intValue)'
+);
 try {
   await statement.executeAsync({ $value: 'bbb', $intValue: 101 });
   await statement.executeAsync({ $value: 'ccc', $intValue: 102 });

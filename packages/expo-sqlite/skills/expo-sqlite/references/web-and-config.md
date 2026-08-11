@@ -67,11 +67,11 @@ Build-time options (require a new native build; not available at runtime):
 }
 ```
 
-| Property | Default | Description |
-| --- | --- | --- |
-| `customBuildFlags` | — | Extra flags for the SQLite build. |
-| `enableFTS` | `true` | Enable the FTS3, FTS4, and FTS5 full-text-search extensions. |
-| `useSQLCipher` | `false` | Build with SQLCipher instead of plain SQLite. |
+| Property                 | Default | Description                                                              |
+| ------------------------ | ------- | ------------------------------------------------------------------------ |
+| `customBuildFlags`       | —       | Extra flags for the SQLite build.                                        |
+| `enableFTS`              | `true`  | Enable the FTS3, FTS4, and FTS5 full-text-search extensions.             |
+| `useSQLCipher`           | `false` | Build with SQLCipher instead of plain SQLite.                            |
 | `withSQLiteVecExtension` | `false` | Bundle the `sqlite-vec` extension (exposed through `bundledExtensions`). |
 
 `android` / `ios` keys override the shared values per platform.
@@ -99,7 +99,9 @@ const dbDirectory =
     ? Object.values(Paths.appleSharedContainers)?.[0]?.uri
     : defaultDatabaseDirectory;
 
-<SQLiteProvider databaseName="test.db" directory={dbDirectory}>...</SQLiteProvider>;
+<SQLiteProvider databaseName="test.db" directory={dbDirectory}>
+  ...
+</SQLiteProvider>;
 ```
 
 ## Change listeners
