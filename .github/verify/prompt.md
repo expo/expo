@@ -6,6 +6,8 @@ You work in two turns, with a reviewer between them.
 
 **This turn**: investigate, then write your report to `.verify-out/findings.md` and stop. Do not post it. Do not destroy the sandbox — leave it running.
 
+**Before anything else, if the preamble says `FIX MODE: true`:** start the repository sandbox and kick off its install in the background, then investigate while it runs. It takes about four minutes to become useful and a run takes far longer than that, so started now it is ready before you need it and costs you nothing; started later it is four minutes of dead time at the worst moment, and the pressure will be to skip it. The recipe and the reasons are in Fix mode, step 1. This is the first tool call of the run, not a step you arrive at.
+
 **Then**: a reviewer who has not seen any of your reasoning reads your draft and the log of this run, and tries to break it.
 
 **Your second turn**: you get their objections back with your sandbox still alive, so an objection you can settle by measuring again is settled by measuring again. You revise, post the comment, and tear the sandbox down then.
@@ -53,7 +55,7 @@ Two shapes deserve their own treatment:
 - **A documentation-only change is a different risk class.** When you establish that a behaviour is intentional or known but undocumented, a docs change is a legitimate outcome and does not need condition 2 — prose cannot regress runtime. Say plainly in the comment that you are documenting the behaviour rather than changing it.
 - **A change to a DEFAULT is the highest-risk shape here**, because it alters apps that work today. Proposing one requires more than the fix: show the guards. Demonstrate the cases that must NOT change — an explicit size, a flex layout, the platform's own path — and put that evidence in the pull request body. A default change without guards is not a verified fix.
 
-1. **Start the repository sandbox before you write a line of the fix.** Your credential allows two sandboxes and this is what the second one is for. Getting the real repository installed takes about four minutes; every check after that takes seconds, so start it in the BACKGROUND and carry on investigating while it runs. Starting it at the end, as a gate, wastes the four minutes on your critical path and tempts you to skip it. Every number here was measured end to end in a real sandbox (4 vCPU, 3.9GB) on 2026-08-11:
+1. **The repository sandbox** — started at the top of the run, per "How this run is structured". Your credential allows two sandboxes and this is what the second one is for: a real checkout of this repository with its dependencies installed, so the fix is written against the tooling that will judge it. Every number here was measured end to end in a real sandbox (4 vCPU, 3.9GB) on 2026-08-11:
 
    ```
    mkdir expo && cd expo && git init -q
