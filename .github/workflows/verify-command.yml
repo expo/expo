@@ -548,9 +548,16 @@ jobs:
             | jq -rf .github/verify/render.jq || true
           set -o pipefail
           agent_rc=$(cat "$rc_file" 2>/dev/null || echo 1)
+          # Do NOT exit here. A timeout kill (rc 124) still leaves a session to
+          # resume and, since findings.md is written incrementally, usually a
+          # report worth reviewing and posting. Exiting on rc first meant the
+          # step died BEFORE capturing SESSION_ID below, so the later phases had
+          # nothing to resume even when the draft was sitting on disk — an hour
+          # of work reduced to an artifact nobody reads. Record the outcome,
+          # finish gathering, and decide at the end.
           if [ "$agent_rc" != "0" ]; then
-            echo "::error::The investigation agent exited $agent_rc."
-            exit 1
+            echo "::warning::The investigation agent exited $agent_rc (124 = hit its time limit). Continuing to salvage whatever it wrote."
+            echo "cut_short=true" >> "$GITHUB_OUTPUT"
           fi
           # Render the reviewer's copy FROM THE TRANSCRIPT, not by teeing the
           # live pipeline. A fourth stage gave jq somewhere new to fail: with
@@ -574,6 +581,7 @@ jobs:
             echo "::error::The investigation wrote no .verify-out/findings.md, so there is nothing to review or post."
             exit 1
           fi
+          echo "findings=true" >> "$GITHUB_OUTPUT"
           # The last phase resumes THIS session, so it keeps the whole
           # investigation in context and can still drive the live sandbox.
           # Without that the reviewer's objections would be unanswerable.
@@ -652,13 +660,14 @@ jobs:
           # Via env, never inline ${{ }} — the same discipline the comment body
           # follows two steps down, applied to every value that reaches a shell.
           SESSION_ID: ${{ steps.investigate.outputs.session_id }}
+          CUT_SHORT: ${{ steps.investigate.outputs.cut_short }}
         run: |
           set -o pipefail
           review=$(cat .verify-out/review.md)
           set +o pipefail
           rc_file="$RUNNER_TEMP/revise.rc"
           { timeout 1800 claude -p --resume "$SESSION_ID" \
-            "A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the findings with your reason rather than silently ignoring it. The sandbox is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
+            "${CUT_SHORT:+YOUR INVESTIGATION WAS CUT SHORT — it hit its time limit rather than finishing, so the draft you are about to revise is whatever you had written by then. Do not present it as a completed investigation: say in the result that the run was cut short, name what you had established and what you never got to, and drop any claim the draft states more confidently than the evidence supports. }A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the findings with your reason rather than silently ignoring it. The sandbox is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
 
           Then, and only then: post the findings with mcp__sandbox__github_comment_issue, write .verify-out/pr.md if fix mode applies, and destroy the sandbox with mcp__sandbox__destroy_sandbox before you finish. Destroy it even if posting fails.
 
