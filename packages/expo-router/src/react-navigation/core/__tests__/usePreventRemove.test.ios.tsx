@@ -3,7 +3,6 @@ import * as React from 'react';
 import { use, useEffect } from 'react';
 
 import { CommonActions, type ParamListBase, StackActions, StackRouter } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { type PreventedRoutes, PreventRemoveContext } from '../PreventRemoveContext';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
@@ -11,6 +10,7 @@ import { useNavigationBuilder } from '../useNavigationBuilder';
 import { getPreventableRoutes } from '../useOnPreventRemove';
 import { usePreventRemove } from '../usePreventRemove';
 import { usePreventRemoveContext } from '../usePreventRemoveContext';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouterKey } from './__fixtures__/MockRouter';
 
 jest.mock('nanoid/non-secure', () => {

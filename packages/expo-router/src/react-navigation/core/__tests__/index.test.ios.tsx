@@ -8,12 +8,12 @@ import {
   type ParamListBase,
   type Router,
 } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Group } from '../Group';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useNavigation } from '../useNavigation';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {

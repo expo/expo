@@ -10,7 +10,7 @@ export type RouterRegistryEntry = {
     state: NavigationState,
     action: NavigationAction
   ) => NavigationState | PartialState<NavigationState> | null;
-  routerType: string;
+  routerType: string | undefined;
   contextKey?: string;
 };
 
@@ -22,6 +22,7 @@ type RouterRegistrySetters = {
   unregister: (stateKey: string, entry: RouterRegistryEntry) => void;
 };
 
+// React components read this map during render, so React state is intentional.
 export const RouterRegistryContext = createContext<RouterRegistry | undefined>(undefined);
 const RouterRegistrySettersContext = createContext<RouterRegistrySetters | undefined>(undefined);
 

@@ -1,6 +1,6 @@
 import { jest } from '@jest/globals';
 import { act, render } from '@testing-library/react-native';
-import { StrictMode, use, type ReactNode } from 'react';
+import { StrictMode, use, useState, type ReactNode } from 'react';
 import { Text } from 'react-native';
 
 import { ExpoRoot } from '../../ExpoRoot';
@@ -231,6 +231,29 @@ describe('navigation builder registration', () => {
     const nextState = entry.reduce(layoutState, StackActions.push('second'));
 
     expect(nextState?.routes.map((route) => route.name)).toEqual(['index', 'second']);
+  });
+
+  it('preserves registry identity when screens do not change', () => {
+    let rerenderLayout: () => void;
+    function Layout() {
+      const [, setRenderCount] = useState(0);
+      rerenderLayout = () => setRenderCount((count) => count + 1);
+      return <Stack />;
+    }
+
+    renderRouter({
+      _layout: Layout,
+      index: Probe,
+    });
+    const initialRegistry = registry;
+    const initialEntry = registry.get(getLayoutState().key);
+    const initialRenders = registryRenders;
+
+    act(() => rerenderLayout());
+
+    expect(registry).toBe(initialRegistry);
+    expect(registry.get(getLayoutState().key)).toBe(initialEntry);
+    expect(registryRenders).toBe(initialRenders);
   });
 
   it('replaces the entry when screens change', () => {

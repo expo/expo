@@ -568,15 +568,21 @@ export function useNavigationBuilder<
   // `ROUTE_NAMES_CHANGED` commits and no screen is focused only to be unfocused again.
   state = router.getStateForDeclaredRoutes(state, routeNames);
 
+  // TODO(@ubax): find a better way to implement this then ref approach
+  const registryConfigRef = React.useRef({ routeNames, routeGetIdList });
+  useClientLayoutEffect(() => {
+    registryConfigRef.current = { routeNames, routeGetIdList };
+  });
+  // Screen-list changes invalidate render consumers even though the reducer reads committed config.
+  const routeNamesKey = routeNames.join('\0');
   const reduce = React.useCallback<RouterRegistryEntry['reduce']>(
     (registryState, action) =>
       // The registry stores states from different router types; this entry only receives its own state key.
       router.getStateForAction(registryState as State, action, {
-        routeNames,
-        routeParamList,
-        routeGetIdList,
+        routeNames: registryConfigRef.current.routeNames,
+        routeGetIdList: registryConfigRef.current.routeGetIdList,
       }),
-    [routeGetIdList, routeNames, routeParamList, router]
+    [routeNamesKey, router]
   );
   const registryEntry = React.useMemo<RouterRegistryEntry>(
     () => ({ reduce, routerType: router.type, contextKey: options.id }),
@@ -584,6 +590,8 @@ export function useNavigationBuilder<
   );
 
   // TODO(@ubax): Nested navigators must stay mounted. Hide screen content with `<Activity>` instead.
+  // TODO(@ubax): Move registration to a fork-level context like `UnhandledActionContext` so
+  // vendored core no longer imports expo-router global state.
   useRegisterRouter(state.key, registryEntry);
 
   // Last state to reuse if component gets cleaned up due to `<Activity mode="hidden">`

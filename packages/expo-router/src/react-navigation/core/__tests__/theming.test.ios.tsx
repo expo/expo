@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { useTheme } from '../theming/useTheme';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter } from './__fixtures__/MockRouter';
 
 test('can get current theme with useTheme', () => {
