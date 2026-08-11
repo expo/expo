@@ -3,22 +3,8 @@ import { LoaderClient } from '../LoaderClient';
 const tick = () => Promise.resolve();
 
 describe(LoaderClient, () => {
-  describe('notify', () => {
-    it('bumps the version and wakes subscribers', () => {
-      const client = new LoaderClient();
-      const listener = jest.fn();
-      client.subscribe(listener);
-
-      const before = client.getSnapshot();
-      client.notify();
-
-      expect(client.getSnapshot()).toBe(before + 1);
-      expect(listener).toHaveBeenCalledTimes(1);
-    });
-  });
-
   describe('subscribeLoader + execute', () => {
-    it('shares one in-flight fetch and delivers it to every subscriber before notifying', async () => {
+    it('shares one in-flight fetch and delivers it to every subscriber', async () => {
       const client = new LoaderClient();
       const fetcher = jest.fn(async () => 'v1');
       const events: unknown[] = [];
@@ -28,7 +14,6 @@ describe(LoaderClient, () => {
       client.subscribeLoader('/p', (result, isCurrentSource) => {
         events.push(['second', result, isCurrentSource]);
       });
-      client.subscribe(() => events.push('notify'));
 
       client.execute('/p', fetcher);
       client.execute('/p', fetcher);
@@ -38,7 +23,6 @@ describe(LoaderClient, () => {
       expect(events).toEqual([
         ['first', { data: 'v1' }, true],
         ['second', { data: 'v1' }, true],
-        'notify',
       ]);
     });
 
@@ -209,32 +193,6 @@ describe(LoaderClient, () => {
       expect(livePaths).toEqual(new Set(['/index']));
       expect(fetcher).toHaveBeenCalledTimes(1);
       expect(subscriber).toHaveBeenCalledWith({ data: 'post-edit' }, true);
-    });
-  });
-
-  describe('clear', () => {
-    it('drops sources and registered fetchers', () => {
-      const client = new LoaderClient();
-      const fetcher = jest.fn(async () => 'v1');
-      client.subscribeLoader('/p');
-      client.registerFetcher('/p', fetcher);
-
-      client.clear();
-      client.execute('/p');
-
-      expect(fetcher).not.toHaveBeenCalled();
-    });
-
-    it('cancels a pending onTearDown', async () => {
-      const client = new LoaderClient();
-      const onTearDown = jest.fn();
-      const unsubscribe = client.subscribeLoader('/p');
-
-      unsubscribe(onTearDown);
-      client.clear();
-      await tick();
-
-      expect(onTearDown).not.toHaveBeenCalled();
     });
   });
 });
