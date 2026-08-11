@@ -10,7 +10,12 @@ import { installFormDataPatch } from './FormData';
 import { installGlobal as install } from './installGlobal';
 
 // https://encoding.spec.whatwg.org/#textdecoder
-install('TextDecoder', () => require('./TextDecoder').TextDecoder);
+// Hermes ships a native, WHATWG-conformant `TextDecoder` as of engine release
+// 260318099.0.0. Prefer it over the JS polyfill when available - it is faster
+// and supports more encodings than the UTF-8-only polyfill.
+if (typeof globalThis.TextDecoder === 'undefined') {
+  install('TextDecoder', () => require('./TextDecoder').TextDecoder);
+}
 // https://encoding.spec.whatwg.org/#interface-textdecoderstream
 install('TextDecoderStream', () => require('./TextDecoderStream').TextDecoderStream);
 // https://encoding.spec.whatwg.org/#interface-textencoderstream
