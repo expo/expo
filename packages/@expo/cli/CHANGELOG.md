@@ -30,6 +30,7 @@
 - Ignore an invalid `--port` or an out-of-range `RCT_METRO_PORT` and start on the preferred port instead of prompting to use port `null` ([#48300](https://github.com/expo/expo/pull/48300) by [@ramonclaudio](https://github.com/ramonclaudio))
 - Resolve the signed-in username for partner provisioned actors so Expo Go can verify the account match ([#48354](https://github.com/expo/expo/pull/48354) by [@davidko604](https://github.com/davidko604))
 - Switch `ManifestMiddleware` to `expo-server`'s response helpers to avoid cancellations being surfaced as exceptions ([#48700](https://github.com/expo/expo/pull/48700) by [@kitten](https://github.com/kitten))
+- Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
 
