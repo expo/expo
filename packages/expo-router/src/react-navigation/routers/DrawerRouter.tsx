@@ -32,10 +32,6 @@ export type DrawerNavigationState<ParamList extends ParamListBase> = Omit<
    */
   type: 'drawer';
   /**
-   * Default status of the drawer.
-   */
-  default: DrawerStatus;
-  /**
    * List of previously visited route keys and drawer open status.
    */
   history?: ({ type: 'route'; key: string } | { type: 'drawer'; status: DrawerStatus })[];
@@ -156,7 +152,6 @@ export function DrawerRouter({
 
       return {
         ...state,
-        default: defaultStatus,
         stale: false,
         type: 'drawer',
         key: `drawer-${nanoid()}`,
@@ -182,7 +177,6 @@ export function DrawerRouter({
 
       return {
         ...state,
-        default: defaultStatus,
         type: 'drawer',
         key: `drawer-${nanoid()}`,
       };
