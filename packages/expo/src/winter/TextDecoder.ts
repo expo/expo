@@ -36,6 +36,71 @@ function codePointsToString(codePoints: number[]): string {
   return s;
 }
 
+/**
+ * Decodes a well-formed UTF-8 byte sequence in a single index-based pass,
+ * avoiding the per-byte Stream/state-machine pipeline and the intermediate
+ * code point array. Returns `null` as soon as a malformed or truncated
+ * sequence is encountered, in which case the caller falls back to the spec
+ * state-machine decoder, preserving its exact error semantics for both the
+ * fatal and replacement error modes.
+ *
+ * Accepted sequences follow the WHATWG UTF-8 decoder ranges
+ * (https://encoding.spec.whatwg.org/#utf-8-decoder): no overlong encodings,
+ * no surrogate code points, and nothing above U+10FFFF.
+ */
+function decodeUTF8Fast(bytes: Uint8Array, start: number): string | null {
+  let s = '';
+  let i = start;
+  const len = bytes.length;
+  while (i < len) {
+    const b0 = bytes[i];
+    if (b0 < 0x80) {
+      s += String.fromCharCode(b0);
+      i += 1;
+    } else if (b0 >= 0xc2 && b0 <= 0xdf) {
+      if (i + 1 >= len) return null;
+      const b1 = bytes[i + 1];
+      if ((b1 & 0xc0) !== 0x80) return null;
+      s += String.fromCharCode(((b0 & 0x1f) << 6) | (b1 & 0x3f));
+      i += 2;
+    } else if (b0 >= 0xe0 && b0 <= 0xef) {
+      if (i + 2 >= len) return null;
+      const b1 = bytes[i + 1];
+      const b2 = bytes[i + 2];
+      if (
+        b1 < (b0 === 0xe0 ? 0xa0 : 0x80) ||
+        b1 > (b0 === 0xed ? 0x9f : 0xbf) ||
+        (b2 & 0xc0) !== 0x80
+      ) {
+        return null;
+      }
+      s += String.fromCharCode(((b0 & 0x0f) << 12) | ((b1 & 0x3f) << 6) | (b2 & 0x3f));
+      i += 3;
+    } else if (b0 >= 0xf0 && b0 <= 0xf4) {
+      if (i + 3 >= len) return null;
+      const b1 = bytes[i + 1];
+      const b2 = bytes[i + 2];
+      const b3 = bytes[i + 3];
+      if (
+        b1 < (b0 === 0xf0 ? 0x90 : 0x80) ||
+        b1 > (b0 === 0xf4 ? 0x8f : 0xbf) ||
+        (b2 & 0xc0) !== 0x80 ||
+        (b3 & 0xc0) !== 0x80
+      ) {
+        return null;
+      }
+      const cp =
+        (((b0 & 0x07) << 18) | ((b1 & 0x3f) << 12) | ((b2 & 0x3f) << 6) | (b3 & 0x3f)) - 0x10000;
+      s += String.fromCharCode((cp >> 10) + 0xd800, (cp & 0x3ff) + 0xdc00);
+      i += 4;
+    } else {
+      // 0x80-0xc1 (continuation or overlong lead) and 0xf5-0xff are invalid.
+      return null;
+    }
+  }
+  return s;
+}
+
 function normalizeBytes(input?: ArrayBuffer | DataView): Uint8Array {
   if (typeof input === 'object' && input instanceof ArrayBuffer) {
     return new Uint8Array(input);
@@ -361,6 +426,27 @@ export class TextDecoder {
 
   decode(input?: ArrayBuffer | DataView, options: { stream?: boolean } = {}): string {
     const bytes = normalizeBytes(input);
+
+    /*
+     * Fast path: one-shot UTF-8 decodes of well-formed input (by far the most
+     * common case, e.g. whole response bodies) run in a single pass. Malformed
+     * or truncated input falls through to the state machine below, so error
+     * semantics are identical in both error modes. Streaming decodes
+     * (`options.stream` or a pending flush from a previous chunk) always use
+     * the state machine.
+     */
+    if (!this._doNotFlush && !options.stream && this._encoding!.name === 'UTF-8') {
+      const skipBOM =
+        !this._ignoreBOM &&
+        bytes.length >= 3 &&
+        bytes[0] === 0xef &&
+        bytes[1] === 0xbb &&
+        bytes[2] === 0xbf;
+      const fast = decodeUTF8Fast(bytes, skipBOM ? 3 : 0);
+      if (fast !== null) {
+        return fast;
+      }
+    }
 
     // 1. If the do not flush flag is unset, set decoder to a new
     // encoding's decoder, set stream to a new stream, and unset the
