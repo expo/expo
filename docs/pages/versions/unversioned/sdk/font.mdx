@@ -50,6 +50,19 @@ On Android and iOS, the plugin allows you to embed font files at build time whic
                     "weight": 800
                   }
                 ]
+              },
+              {
+                "fontFamily": "Roboto Flex",
+                /* @info A variable font file. It backs every definition below, so the path is shared. */
+                "path": "./path/to/RobotoFlex.ttf",
+                /* @end */
+                "fontDefinitions": [
+                  { "weight": 400 },
+                  { "weight": 700 },
+                  /* @info The `slnt` axis draws the italic out of the same file. */
+                  { "weight": 400, "style": "italic", "axes": { "slnt": -10 } }
+                  /* @end */
+                ]
               }
             ]
           },
@@ -147,6 +160,10 @@ const styles = StyleSheet.create({
 ```
 
 </SnackInline>
+
+### Variable fonts
+
+The `Roboto Flex` entry in the example above is a variable font: one file that holds many faces, which you select with the `fontWeight` and `fontStyle` style props. Variable fonts also work with [`useFonts`](#usefonts). To learn more, see [Variable fonts](/develop/user-interface/fonts/#variable-fonts) in the Fonts guide.
 
 ## API
 
