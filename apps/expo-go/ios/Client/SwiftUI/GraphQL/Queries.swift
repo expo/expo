@@ -12,7 +12,7 @@ struct Queries {
         username
         firstName
         lastName
-        profilePhoto
+        primaryAccountProfileImageUrl
         bestContactEmail
         accounts {
           id
@@ -21,7 +21,7 @@ struct Queries {
           ownerUserActor {
             id
             username
-            profilePhoto
+            primaryAccountProfileImageUrl
             firstName
             fullName
             lastName
@@ -137,7 +137,7 @@ struct Queries {
             username
             firstName
             lastName
-            profilePhoto
+            primaryAccountProfileImageUrl
             bestContactEmail
             accounts {
               id
@@ -146,7 +146,7 @@ struct Queries {
               ownerUserActor {
                 id
                 username
-                profilePhoto
+                primaryAccountProfileImageUrl
                 firstName
                 fullName
                 lastName
