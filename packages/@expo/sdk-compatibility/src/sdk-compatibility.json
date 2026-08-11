@@ -19,7 +19,9 @@
         "reactNativeTvos": "0.86-stable",
         "react": "19.2.3"
       },
-      "nodeVersionRange": "22.13.x"
+      "node": {
+        "minimumVersion": "22.13.0"
+      }
     },
     {
       "sdk": "56.0.0",
@@ -39,7 +41,9 @@
         "reactNativeTvos": "0.85-stable",
         "react": "19.2.3"
       },
-      "nodeVersionRange": "20.19.x"
+      "node": {
+        "minimumVersion": "20.19.0"
+      }
     },
     {
       "sdk": "55.0.0",
@@ -59,7 +63,9 @@
         "reactNativeTvos": "0.83-stable",
         "react": "19.2.0"
       },
-      "nodeVersionRange": "20.19.x"
+      "node": {
+        "minimumVersion": "20.19.0"
+      }
     },
     {
       "sdk": "54.0.0",
@@ -79,7 +85,9 @@
         "reactNativeTvos": "0.81-stable",
         "react": "19.1.0"
       },
-      "nodeVersionRange": "20.19.x"
+      "node": {
+        "minimumVersion": "20.19.0"
+      }
     },
     {
       "sdk": "53.0.0",
@@ -99,7 +107,9 @@
         "reactNativeTvos": "0.79-stable",
         "react": "19.0.0"
       },
-      "nodeVersionRange": "20.18.x"
+      "node": {
+        "minimumVersion": "20.18.0"
+      }
     },
     {
       "sdk": "52.0.0",
@@ -119,7 +129,9 @@
         "reactNativeTvos": "0.77-stable",
         "react": "18.3.1"
       },
-      "nodeVersionRange": "20.18.x"
+      "node": {
+        "minimumVersion": "20.18.0"
+      }
     },
     {
       "sdk": "51.0.0",

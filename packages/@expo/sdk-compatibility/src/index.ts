@@ -35,6 +35,7 @@ export { validateSdkCompatibilityData };
 export type {
   AndroidCompatibility,
   IosCompatibility,
+  NodeCompatibility,
   RuntimeCompatibility,
   SdkCompatibility,
   SdkCompatibilityData,

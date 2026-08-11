@@ -12,14 +12,23 @@ describe('SDK compatibility data', () => {
     expect(validateSdkCompatibilityData(sdkCompatibilityData)).toEqual([]);
   });
 
-  it('contains valid SDK, Xcode, and Node version ranges', () => {
+  it('contains valid SDK versions, Xcode ranges, and Node minimum versions', () => {
     for (const compatibility of sdkCompatibilityData.sdkVersions) {
       expect(semver.valid(compatibility.sdk)).not.toBeNull();
       expect(semver.validRange(compatibility.ios.xcodeVersionRange)).not.toBeNull();
-      if ('nodeVersionRange' in compatibility) {
-        expect(semver.validRange(compatibility.nodeVersionRange)).not.toBeNull();
+      if (compatibility.node) {
+        expect(semver.valid(compatibility.node.minimumVersion)).not.toBeNull();
       }
     }
+  });
+
+  it('models the SDK 57 Node value as a minimum rather than a patch-line range', () => {
+    const minimumVersion = getSdkCompatibility('57.0.0')?.node?.minimumVersion;
+
+    expect(minimumVersion).toBe('22.13.0');
+    expect(semver.gte('22.14.0', minimumVersion!)).toBe(true);
+    expect(semver.gte('24.3.0', minimumVersion!)).toBe(true);
+    expect(semver.gte('22.12.0', minimumVersion!)).toBe(false);
   });
 });
 

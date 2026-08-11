@@ -107,10 +107,14 @@ export function validateSdkCompatibilityData(value: unknown): string[] {
       }
     }
 
-    if (entry.nodeVersionRange !== undefined) {
-      requireString(entry.nodeVersionRange, `${path}.nodeVersionRange`, errors, {
-        semverRange: true,
-      });
+    if (entry.node !== undefined) {
+      if (!isRecord(entry.node)) {
+        errors.push(`${path}.node must be an object.`);
+      } else {
+        requireString(entry.node.minimumVersion, `${path}.node.minimumVersion`, errors, {
+          semver: true,
+        });
+      }
     }
   });
 

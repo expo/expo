@@ -17,12 +17,16 @@ export type RuntimeCompatibility = {
   react?: string;
 };
 
+export type NodeCompatibility = {
+  minimumVersion: string;
+};
+
 export type SdkCompatibility = {
   sdk: string;
   android: AndroidCompatibility;
   ios: IosCompatibility;
   runtime: RuntimeCompatibility;
-  nodeVersionRange?: string;
+  node?: NodeCompatibility;
 };
 
 export type SdkCompatibilityData = {
