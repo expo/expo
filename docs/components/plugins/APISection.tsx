@@ -354,7 +354,11 @@ const renderAPI = (
       entry => componentsPropNames.has(entry.name)
     );
 
-    const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
+    const namespaces = filterDataByKind(
+      data,
+      TypeDocKind.Namespace,
+      entry => !['AppMetricsRoot'].includes(entry.name)
+    );
 
     const classes = [
       ...filterDataByKind(
