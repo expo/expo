@@ -60,6 +60,7 @@ const DocumentationHead = ({
       />
       {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
       {markdownPath && <link rel="alternate" type="text/markdown" href={markdownPath} />}
+      <link rel="llms-txt" href="/llms.txt" />
 
       <meta name="description" content={resolvedDescription} />
       <meta property="og:title" content={title} />
