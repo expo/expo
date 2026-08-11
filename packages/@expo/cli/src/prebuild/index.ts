@@ -3,6 +3,8 @@ import chalk from 'chalk';
 
 import type { Command } from '../index';
 import { assertArgs, getProjectRoot, printHelp } from '../utils/args';
+import { logCmdError } from '../utils/errors';
+import { getConfigEnvMode, loadEnvFiles } from '../utils/nodeEnv';
 
 export const expoPrebuild: Command = async (argv) => {
   const args = assertArgs(
@@ -46,12 +48,6 @@ export const expoPrebuild: Command = async (argv) => {
       ].join('\n')
     );
   }
-
-  // Load modules after the help prompt so `npx expo prebuild -h` shows as fast as possible.
-  const [{ getConfigEnvMode, loadEnvFiles }, { logCmdError }] = await Promise.all([
-    import('../utils/nodeEnv.js'),
-    import('../utils/errors.js'),
-  ]);
 
   return (async () => {
     const projectRoot = getProjectRoot(args);
