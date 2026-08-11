@@ -1,52 +1,53 @@
-'use strict';
-
 import Constants from 'expo-constants';
 import * as Location from 'expo-location';
 import * as TaskManager from 'expo-task-manager';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 
 const BACKGROUND_LOCATION_TASK = 'background-location-updates';
 const GEOFENCING_TASK = 'geofencing-task';
 
 export const name = 'Location';
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   const shouldSkipTestsRequiringPermissions =
     await TestUtils.shouldSkipTestsRequiringPermissionsAsync();
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : t.describe;
 
-  const testShapeOrUnauthorized = (testFunction) => async () => {
-    const providerStatus = await Location.getProviderStatusAsync();
-    if (providerStatus.locationServicesEnabled) {
-      const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Location.requestForegroundPermissionsAsync();
-      });
-      if (status === 'granted') {
-        const location = await testFunction();
-        testLocationShape(location);
+  const testShapeOrUnauthorized =
+    (testFunction: () => Promise<Location.LocationObject>) => async () => {
+      const providerStatus = await Location.getProviderStatusAsync();
+      if (providerStatus.locationServicesEnabled) {
+        const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
+          return Location.requestForegroundPermissionsAsync();
+        });
+        if (status === 'granted') {
+          const location = await testFunction();
+          testLocationShape(location);
+        } else {
+          let error: any;
+          try {
+            await testFunction();
+          } catch (e) {
+            error = e;
+          }
+          t.expect(error.message).toMatch(/Not authorized/);
+        }
       } else {
-        let error;
+        let error: any;
         try {
           await testFunction();
         } catch (e) {
           error = e;
         }
-        t.expect(error.message).toMatch(/Not authorized/);
+        t.expect(error.message).toMatch(/Location services are disabled/);
       }
-    } else {
-      let error;
-      try {
-        await testFunction();
-      } catch (e) {
-        error = e;
-      }
-      t.expect(error.message).toMatch(/Location services are disabled/);
-    }
-  };
+    };
 
-  function testLocationShape(location) {
+  function testLocationShape(location: Location.LocationObject) {
     t.expect(typeof location === 'object').toBe(true);
 
     const { coords, timestamp } = location;
@@ -70,7 +71,7 @@ export async function test(t) {
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
         if (Platform.OS === 'ios') {
-          t.expect(permission.scope).toBe('whenInUse');
+          t.expect(permission.ios?.scope).toBe('whenInUse');
         }
       });
     });
@@ -81,7 +82,7 @@ export async function test(t) {
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
         if (Platform.OS === 'ios') {
-          t.expect(permission.scope).toBe('whenInUse');
+          t.expect(permission.ios?.scope).toBe('whenInUse');
         }
       });
     });
@@ -92,7 +93,8 @@ export async function test(t) {
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
         if (Platform.OS === 'ios') {
-          t.expect(permission.scope).toBe('always');
+          // Typed as a plain `PermissionResponse`, but carries `ios.scope`.
+          t.expect((permission as Location.LocationPermissionResponse).ios?.scope).toBe('always');
         }
       });
     });
@@ -103,7 +105,8 @@ export async function test(t) {
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
         if (Platform.OS === 'ios') {
-          t.expect(permission.scope).toBe('always');
+          // Typed as a plain `PermissionResponse`, but carries `ios.scope`.
+          t.expect((permission as Location.LocationPermissionResponse).ios?.scope).toBe('always');
         }
       });
     });
@@ -121,7 +124,7 @@ export async function test(t) {
         'checks if location services are enabled',
         async () => {
           const result = await Location.getProviderStatusAsync();
-          t.expect(result.locationServicesEnabled).not.toBe(undefined);
+          t.expect(result.locationServicesEnabled).toBeDefined();
         },
         timeout
       );
@@ -167,7 +170,7 @@ export async function test(t) {
               const result = await Location.getProviderStatusAsync();
               t.expect(result.networkAvailable).toBe(true);
             }
-          } catch (error) {
+          } catch (error: any) {
             // User has denied the dialog.
             t.expect(error.code).toBe('E_LOCATION_SETTINGS_UNSATISFIED');
           }
@@ -278,7 +281,9 @@ export async function test(t) {
 
       t.it(
         'gets a result of the correct shape, or throws error if no permission or disabled',
-        testShapeOrUnauthorized(() => Location.getLastKnownPositionAsync()),
+        testShapeOrUnauthorized(async () =>
+          requireNotNull(await Location.getLastKnownPositionAsync())
+        ),
         timeout
       );
 
@@ -292,7 +297,7 @@ export async function test(t) {
 
           t.expect(current).not.toBeNull();
           t.expect(lastKnown).not.toBeNull();
-          t.expect(lastKnown.timestamp).toBeGreaterThanOrEqual(current.timestamp);
+          t.expect(lastKnown?.timestamp).toBeGreaterThanOrEqual(current.timestamp);
         },
         timeout
       );
@@ -354,14 +359,14 @@ export async function test(t) {
 
     describeWithPermissions('Location.watchPositionAsync()', () => {
       t.it('gets a result of the correct shape', async () => {
-        let subscriber;
-        const location = await new Promise(async (resolve) => {
+        let subscriber: Location.LocationSubscription | undefined;
+        const location = await new Promise<Location.LocationObject>(async (resolve) => {
           subscriber = await Location.watchPositionAsync({}, (location) => {
             setTimeout(() => resolve(location));
           });
         });
 
-        subscriber.remove();
+        subscriber?.remove();
         testLocationShape(location);
       });
 
@@ -381,7 +386,7 @@ export async function test(t) {
 
     if (Platform.OS !== 'web') {
       describeWithPermissions('Location.getHeadingAsync()', () => {
-        const testCompass = (options) => async () => {
+        const testCompass = () => async () => {
           // Disable Compass Test if in simulator
           if (Constants.isDevice) {
             const { status } = await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
@@ -396,7 +401,7 @@ export async function test(t) {
               let error;
               try {
                 await Location.getHeadingAsync();
-              } catch (e) {
+              } catch (e: any) {
                 error = e;
               }
               t.expect(error.message).toMatch(/Not authorized/);
@@ -453,11 +458,11 @@ export async function test(t) {
             });
             t.expect(Array.isArray(result)).toBe(true);
             t.expect(typeof result[0]).toBe('object');
-            const fields = ['city', 'street', 'region', 'country', 'postalCode', 'name'];
+            // Reads the first address; the module returns `null` for unresolved fields.
+            const fields = ['city', 'street', 'region', 'country', 'postalCode', 'name'] as const;
             fields.forEach((field) => {
-              t.expect(
-                typeof result[field] === 'string' || typeof result[field] === 'undefined'
-              ).toBe(true);
+              const value = result[0][field];
+              t.expect(typeof value === 'string' || value == null).toBe(true);
             });
           },
           timeout
@@ -467,7 +472,10 @@ export async function test(t) {
           let error;
           try {
             await Location.reverseGeocodeAsync({
+              // Deliberately not numbers — the spec asserts the module rejects them.
+              // @ts-expect-error
               latitude: '60',
+              // @ts-expect-error
               longitude: '24',
             });
           } catch (e) {
@@ -478,8 +486,11 @@ export async function test(t) {
       });
 
       describeWithPermissions('Location - background location updates', () => {
-        async function expectTaskAccuracyToBe(accuracy) {
-          const locationTask = await TaskManager.getTaskOptionsAsync(BACKGROUND_LOCATION_TASK);
+        async function expectTaskAccuracyToBe(accuracy: Location.LocationAccuracy) {
+          const locationTask =
+            await TaskManager.getTaskOptionsAsync<Location.LocationTaskOptions>(
+              BACKGROUND_LOCATION_TASK
+            );
 
           t.expect(locationTask).toBeDefined();
           t.expect(locationTask.accuracy).toBe(accuracy);
@@ -536,8 +547,10 @@ export async function test(t) {
           },
         ];
 
-        async function expectTaskRegionsToBeLike(regions) {
-          const geofencingTask = await TaskManager.getTaskOptionsAsync(GEOFENCING_TASK);
+        async function expectTaskRegionsToBeLike(regions: Location.LocationRegion[]) {
+          const geofencingTask = await TaskManager.getTaskOptionsAsync<{
+            regions: Location.LocationRegion[];
+          }>(GEOFENCING_TASK);
 
           t.expect(geofencingTask).toBeDefined();
           t.expect(geofencingTask.regions).toBeDefined();
@@ -593,6 +606,7 @@ export async function test(t) {
           await (async () => {
             let error;
             try {
+              // @ts-expect-error
               await Location.startGeofencingAsync(GEOFENCING_TASK, [{ longitude: 'not a number' }]);
             } catch (e) {
               error = e;
@@ -606,5 +620,5 @@ export async function test(t) {
 }
 
 // Define empty tasks, otherwise tasks might automatically unregister themselves if no task is defined.
-TaskManager.defineTask(BACKGROUND_LOCATION_TASK, () => {});
-TaskManager.defineTask(GEOFENCING_TASK, () => {});
+TaskManager.defineTask(BACKGROUND_LOCATION_TASK, async () => {});
+TaskManager.defineTask(GEOFENCING_TASK, async () => {});

@@ -1,12 +1,14 @@
 import * as BackgroundFetch from 'expo-background-fetch';
 import * as TaskManager from 'expo-task-manager';
 
+import type { JasmineInterface } from '../types';
+
 const DEFINED_TASK_NAME = 'defined task';
 const UNDEFINED_TASK_NAME = 'undefined task';
 
 export const name = 'TaskManager';
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   const backgroundFetchOptions = {
     minimumInterval: 15 * 60, // 15min in sec
     stopOnTerminate: false,
@@ -109,7 +111,7 @@ export async function test(t) {
         let error;
         try {
           await BackgroundFetch.unregisterTaskAsync(UNDEFINED_TASK_NAME);
-        } catch (e) {
+        } catch (e: any) {
           error = e;
         }
         t.expect(error).toBeDefined();
@@ -123,4 +125,7 @@ export async function test(t) {
 
 // Empty task so we can properly test some methods.
 // We are telling iOS that we successfully fetched new data, to prevent possible throttle from iOS
-TaskManager.defineTask(DEFINED_TASK_NAME, () => BackgroundFetch.BackgroundFetchResult.NewData);
+TaskManager.defineTask(
+  DEFINED_TASK_NAME,
+  async () => BackgroundFetch.BackgroundFetchResult.NewData
+);
