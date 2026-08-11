@@ -41,7 +41,7 @@
 #                            deployment, held by the expo-verification-bot
 #                            service account. The agent NEVER sees it — the
 #                            Mint scoped token step exchanges it for a
-#                            one-sandbox, two-hour credential (sized to
+#                            one-sandbox, three-hour credential (sized to
 #                            outlive the job; see timeout-minutes). The service
 #                            account's stored Expo credential is what EAS
 #                            builds bill; its stored GitHub PAT posts the
@@ -87,17 +87,25 @@ jobs:
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
     # ONE budget, in one place, and the ordering is the point:
-    #   scoped-token TTL (120m) > job timeout (110m) > sum of the phase
-    #   timeouts (60 + 15 + 30 = 105m) + setup.
+    #   scoped-token TTL (180m) > job timeout (150m) > sum of the phase
+    #   timeouts (90 + 15 + 30 = 135m) + setup.
     # Get it backwards and the credential dies mid-run — which is exactly what
     # happened when the phases were split in three against an unchanged
     # 70-minute token: up to 140 minutes of agent time on it, and the phase
     # most likely to find it dead was the last one, the only phase that posts
     # the findings and destroys the sandbox.
-    # EAS builds take 10-20 min each and a verification may need several,
-    # plus censuses and the report. The MCP server TTL-reaps sandboxes
-    # server-side, so a timeout here orphans nothing.
-    timeout-minutes: 110
+    # The MCP server TTL-reaps sandboxes server-side, so a timeout here
+    # orphans nothing.
+    #
+    # Investigation was 60m and that was measurably too short: on 2026-08-11
+    # #45314 and #48298 both died at exactly 3600s ("The investigation agent
+    # exited 124" — timeout's own code), losing an hour of work and the EAS
+    # builds already paid for. Both were build-heavy, which is the shape that
+    # overruns: the session budget allows 5 builds at 10-20 minutes each, so
+    # build wall-clock alone can approach 100 minutes. 90m covers a realistic
+    # four-build run. A genuine five-build matrix is still at risk, and the
+    # honest answer there is fewer arms, not more clock.
+    timeout-minutes: 150
     continue-on-error: true
     steps:
       # author_association MEMBER does not imply write on THIS repo; the
@@ -312,7 +320,7 @@ jobs:
           scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
             -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
             -H 'Content-Type: application/json' \
-            -d "{\"sandboxBudget\":1,\"buildBudget\":5,\"ttlSeconds\":7200,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
+            -d "{\"sandboxBudget\":1,\"buildBudget\":5,\"ttlSeconds\":10800,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
             | jq -r '.token // empty')
           if [ -z "$scoped" ]; then
             echo "::error::Could not mint a scoped sandbox token"
@@ -519,7 +527,7 @@ jobs:
           # go, and judge the step on that plus the artifacts it produced.
           set +o pipefail
           rc_file="$RUNNER_TEMP/claude.rc"
-          { timeout 3600 claude -p \
+          { timeout 5400 claude -p \
             --model "$VERIFY_MODEL" \
             "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR. FIX MODE: $FIX_MODE (when true, and only if your fix is verified, edit the checkout in $GITHUB_WORKSPACE and write .verify-out/pr.md — see 'Fix mode' below; when false, describe the fix in your comment and change nothing). CHECKOUT: $REPO at commit $CHECKOUT_SHA — permalink any file you cite as https://github.com/$REPO/blob/$CHECKOUT_SHA/<path>#L<start>-L<end>. THIS PHASE DOES NOT PUBLISH: write your findings to .verify-out/findings.md and STOP — do not post, and do NOT destroy the sandbox. A reviewer who has not seen your reasoning will attack the draft, and you will get the chance to answer with the sandbox still alive.
 
