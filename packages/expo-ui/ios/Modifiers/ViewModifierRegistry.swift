@@ -83,31 +83,71 @@ internal struct FrameModifier: ViewModifier, Record {
 }
 
 internal struct PaddingModifier: ViewModifier, Record {
-  @Field var all: CGFloat?
-  @Field var horizontal: CGFloat?
-  @Field var vertical: CGFloat?
+  @Field var all: PaddingValue?
+  @Field var horizontal: PaddingValue?
+  @Field var vertical: PaddingValue?
 
-  @Field var top: CGFloat?
-  @Field var leading: CGFloat?
-  @Field var bottom: CGFloat?
-  @Field var trailing: CGFloat?
+  @Field var top: PaddingValue?
+  @Field var leading: PaddingValue?
+  @Field var bottom: PaddingValue?
+  @Field var trailing: PaddingValue?
+
+  /**
+   The value of each edge, where a value set for a specific edge wins over the shorthands
+   covering that edge. A `nil` edge was not set at all and gets no padding.
+   */
+  private var resolvedEdges: (top: PaddingValue?, leading: PaddingValue?, bottom: PaddingValue?, trailing: PaddingValue?) {
+    (
+      top: top ?? vertical ?? all,
+      leading: leading ?? horizontal ?? all,
+      bottom: bottom ?? vertical ?? all,
+      trailing: trailing ?? horizontal ?? all
+    )
+  }
+
+  /**
+   The edges left to the system, which `EdgeInsets` cannot express.
+   */
+  private var autoEdges: Edge.Set {
+    let edges = resolvedEdges
+    var result: Edge.Set = []
+
+    if edges.top?.isAuto == true {
+      result.insert(.top)
+    }
+    if edges.leading?.isAuto == true {
+      result.insert(.leading)
+    }
+    if edges.bottom?.isAuto == true {
+      result.insert(.bottom)
+    }
+    if edges.trailing?.isAuto == true {
+      result.insert(.trailing)
+    }
+    return result
+  }
+
+  private var insets: EdgeInsets {
+    let edges = resolvedEdges
+
+    return EdgeInsets(
+      top: edges.top?.length ?? 0,
+      leading: edges.leading?.length ?? 0,
+      bottom: edges.bottom?.length ?? 0,
+      trailing: edges.trailing?.length ?? 0
+    )
+  }
 
   func body(content: Content) -> some View {
-    let hasCustomPadding = [
-      all, horizontal, vertical, top, leading, bottom, trailing
-    ].contains { $0 != nil }
+    let edges = resolvedEdges
 
-    if !hasCustomPadding {
+    if edges.top == nil && edges.leading == nil && edges.bottom == nil && edges.trailing == nil {
       // Default SwiftUI padding (system spacing)
       content.padding()
     } else {
-      let insets = EdgeInsets(
-        top: top ?? vertical ?? all ?? 0,
-        leading: leading ?? horizontal ?? all ?? 0,
-        bottom: bottom ?? vertical ?? all ?? 0,
-        trailing: trailing ?? horizontal ?? all ?? 0
-      )
-      content.padding(insets)
+      // `EdgeInsets` can only carry lengths, so the edges left to the system are applied by a
+      // second call. Padding modifiers add up and these two cover disjoint edges.
+      content.padding(insets).padding(autoEdges)
     }
   }
 }
