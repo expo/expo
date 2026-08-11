@@ -89,14 +89,53 @@ permissions:
   pull-requests: read
 
 jobs:
+  # Assigns the run to one of VERIFY_SLOTS queues. Actions has no "at most N
+  # concurrent" primitive — a concurrency group runs exactly one job at a
+  # time — so N queues, keyed by target number modulo N, is how you get N.
+  # Expressions cannot do modulo, hence a job: `concurrency` accepts the
+  # `needs` context, so the slot has to be computed before the job that uses
+  # it. It carries the SAME `if:` as verify, or every unrelated comment on
+  # the repository would spin up a runner.
+  #
+  # Same-target runs still serialise: one number always maps to one slot, so
+  # a second /verify on an issue still queues behind the first rather than
+  # racing it for the same sandboxes.
+  slot:
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (startsWith(github.event.comment.body, '/verify') &&
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+    runs-on: ubuntu-latest
+    outputs:
+      slot: ${{ steps.pick.outputs.slot }}
+    steps:
+      - id: pick
+        env:
+          # Four concurrent verifications is eight sandboxes against a
+          # 20-sandbox E2B account — the binding constraint, not CI minutes.
+          VERIFY_SLOTS: 4
+          TARGET: ${{ github.event.issue.number || inputs.target }}
+        run: |
+          echo "slot=$(( TARGET % VERIFY_SLOTS ))" >> "$GITHUB_OUTPUT"
+          echo "target $TARGET -> slot $(( TARGET % VERIFY_SLOTS )) of $VERIFY_SLOTS"
+
   verify:
+    needs: slot
     # Job-level, NOT workflow-level: a workflow-level group is claimed at run
     # creation — before the `if:` below skips the job — so any unrelated
     # comment on this issue would cancel an in-flight verification and strand
     # its sandboxes and EAS builds. cancel-in-progress:false queues a second
     # /verify instead of killing the first.
+    #
+    # KNOWN LIMIT, and it is GitHub's, not a choice here: a concurrency group
+    # holds at most ONE pending run. A third arrival into a busy slot cancels
+    # the one already waiting there. So this bounds concurrency at 4 and
+    # queues one deep per slot — it is not an unbounded queue, and under a
+    # burst some runs are dropped rather than delayed. The maintainer can
+    # re-trigger; nothing is spent, because a cancelled pending run never
+    # started.
     concurrency:
-      group: verify-${{ github.event.issue.number || inputs.target }}
+      group: verify-slot-${{ needs.slot.outputs.slot }}
       cancel-in-progress: false
     # Comments starting with /verify, on issues or PRs, from maintainer
     # associations. The authoritative write-access check is the step below.
