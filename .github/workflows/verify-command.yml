@@ -88,7 +88,7 @@ jobs:
     runs-on: ubuntu-latest
     # ONE budget, in one place, and the ordering is the point:
     #   scoped-token TTL (120m) > job timeout (110m) > sum of the phase
-    #   timeouts (60 + 15 + 25 = 100m) + setup.
+    #   timeouts (60 + 15 + 30 = 105m) + setup.
     # Get it backwards and the credential dies mid-run — which is exactly what
     # happened when the phases were split in three against an unchanged
     # 70-minute token: up to 140 minutes of agent time on it, and the phase
@@ -587,6 +587,14 @@ jobs:
       #
       # It has no sandbox, no MCP, no network and no way to publish. Its only
       # writable path is the review file itself.
+      #
+      # SEARCH is scoped to .verify-out and .verify-context; READ is not. Given
+      # Glob/Grep over the whole monorepo and "find the moment in the run log
+      # that establishes each claim", the reviewer spent longer than the
+      # investigation it was reviewing — 13+ minutes against 9m17s — and hit
+      # its timeout. It can still open any path the findings cite, which is
+      # what checking a citation actually needs; what it can no longer do is
+      # go exploring a very large tree.
       - name: Adversarial review of the draft findings
         if: steps.gate.outputs.ok == 'true'
         env:
@@ -606,7 +614,7 @@ jobs:
 
           $critic" \
             --disallowedTools Bash --strict-mcp-config \
-            --allowedTools "Read(/$GITHUB_WORKSPACE/**),Glob(/$GITHUB_WORKSPACE/**),Grep(/$GITHUB_WORKSPACE/**),Edit(/$GITHUB_WORKSPACE/.verify-out/review.md)" \
+            --allowedTools "Read(/$GITHUB_WORKSPACE/**),Glob(/$GITHUB_WORKSPACE/.verify-out/**),Glob(/$GITHUB_WORKSPACE/.verify-context/**),Grep(/$GITHUB_WORKSPACE/.verify-out/**),Grep(/$GITHUB_WORKSPACE/.verify-context/**),Edit(/$GITHUB_WORKSPACE/.verify-out/review.md)" \
             --output-format stream-json --verbose \
             ; echo $? > "$rc_file"; } \
             | tee "$RUNNER_TEMP/verify-critic.jsonl" \
@@ -634,7 +642,7 @@ jobs:
           review=$(cat .verify-out/review.md)
           set +o pipefail
           rc_file="$RUNNER_TEMP/revise.rc"
-          { timeout 1500 claude -p --resume "$SESSION_ID" \
+          { timeout 1800 claude -p --resume "$SESSION_ID" \
             "A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the findings with your reason rather than silently ignoring it. The sandbox is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
 
           Then, and only then: post the findings with mcp__sandbox__github_comment_issue, write .verify-out/pr.md if fix mode applies, and destroy the sandbox with mcp__sandbox__destroy_sandbox before you finish. Destroy it even if posting fails.

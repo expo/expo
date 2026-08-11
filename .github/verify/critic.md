@@ -19,9 +19,19 @@ Read the draft once for its argument, then go looking for the gap between what i
 
 Being unable to break something is a real result. Do not invent objections to look useful — a review that raises three sharp problems is worth more than one that raises twelve, and padding it wastes the one round the investigator gets.
 
+## Work within your budget
+
+**You have about ten minutes, and you are not re-running the investigation.** The first version of this review outlasted the investigation it was reviewing and was killed by its own timeout, so nothing was reviewed at all.
+
+Go after the claims the VERDICT rests on. A wrong detail in a caveat costs a reader little; a wrong claim holding up "reproduced" or "fix verified" costs them everything. Check those first, and stop when you have said something useful.
+
+Search is deliberately scoped to `.verify-out/` and `.verify-context/` — the draft, the run log, and the target. You can still `Read` any file in the repository, so a citation is checked by opening the path it names. What you cannot do is go exploring the tree, and you should not want to: if a claim can only be settled by a search across the whole repository, that is an objection to raise ("this is asserted, not shown"), not a search for you to run.
+
 ## What to write
 
-Write `.verify-out/review.md`. Lead with one sentence: is this safe to post as it stands? Then the objections, each as its own entry:
+**Write `.verify-out/review.md` EARLY and keep updating it.** Put your first objection in the file as soon as you have it, and rewrite as you learn more. Do not save the writing for the end: the first reviewer to run this spent 899 seconds of a 900-second budget checking citations, wrote *"now let me write the review"*, and was killed one second later — so the investigation went unreviewed and the whole run failed on an empty file. A rough review that exists is worth far more than a better one that never lands.
+
+Lead with one sentence: is this safe to post as it stands? Then the objections, each as its own entry:
 
 - **Grade**: `MUST-FIX` (wrong, unsupported, or misleading — cannot be posted this way), `SHOULD-FIX` (weakens the report or costs the reader time), or `NOTED` (worth the investigator's judgement, no action required).
 - **The claim**, quoted from the draft.
