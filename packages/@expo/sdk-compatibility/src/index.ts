@@ -1,0 +1,44 @@
+import semver from 'semver';
+
+import rawSdkCompatibilityData from './sdk-compatibility.json';
+import { assertSdkCompatibilityData, validateSdkCompatibilityData } from './schema';
+import type { SdkCompatibility, SdkCompatibilityData } from './types';
+
+assertSdkCompatibilityData(rawSdkCompatibilityData);
+
+export const sdkCompatibilityData: SdkCompatibilityData = rawSdkCompatibilityData;
+
+export function getSdkCompatibility(sdkVersion: string): SdkCompatibility | null {
+  const normalizedSdkVersion = semver.coerce(sdkVersion);
+  if (!normalizedSdkVersion) {
+    return null;
+  }
+
+  return (
+    sdkCompatibilityData.sdkVersions.find(
+      compatibility => semver.major(compatibility.sdk) === normalizedSdkVersion.major
+    ) ?? null
+  );
+}
+
+export function isXcodeVersionSupported(
+  sdkVersion: string,
+  xcodeVersion: string
+): boolean | null {
+  const compatibility = getSdkCompatibility(sdkVersion);
+  const normalizedXcodeVersion = semver.coerce(xcodeVersion);
+  if (!compatibility || !normalizedXcodeVersion) {
+    return null;
+  }
+
+  return semver.satisfies(normalizedXcodeVersion, compatibility.ios.xcodeVersionRange);
+}
+
+export { validateSdkCompatibilityData };
+export type {
+  AndroidCompatibility,
+  IosCompatibility,
+  RuntimeCompatibility,
+  SdkCompatibility,
+  SdkCompatibilityData,
+} from './types';
