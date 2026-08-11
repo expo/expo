@@ -10,7 +10,6 @@ import {
   Dimensions,
   FlatList,
   ListRenderItem,
-  Platform,
   RefreshControl,
   StyleSheet,
   View,
@@ -185,7 +184,7 @@ export default function MediaLibraryScreen({ navigation, route }: Props) {
 }
 
 // The fetching and sorting logic is split out from the navigation and permission logic for simplicity.
-function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
+function MediaLibraryView({ route, accessPrivileges }: Props) {
   const albumId = route.params?.albumId;
   const albumTitle = route.params?.albumTitle;
 
@@ -244,6 +243,13 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
         resolveWithFullInfo,
       });
       const lastFetchDurationMs = Math.round(performance.now() - fetchStartedAt);
+      const firstBatchAssetLocation = assets[0]?.location;
+      const batchLocationPreview =
+        state.endCursor == null
+          ? firstBatchAssetLocation != null
+            ? `${firstBatchAssetLocation.latitude}, ${firstBatchAssetLocation.longitude}`
+            : null
+          : state.batchLocationPreview;
 
       // Get the last asset currently in the state.
       const lastAsset = state.assets[state.assets.length - 1];
@@ -259,6 +265,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
           endCursor,
           hasNextPage,
           lastFetchDurationMs,
+          batchLocationPreview,
         });
       }
     } finally {
@@ -269,6 +276,7 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
     state.endCursor,
     state.hasNextPage,
     state.assets,
+    state.batchLocationPreview,
     mediaType,
     sortBy,
     albumId,
@@ -373,20 +381,18 @@ function MediaLibraryView({ navigation, route, accessPrivileges }: Props) {
               }}
             />
           )}
-          {Platform.OS === 'android' && (
-            <Button
-              style={styles.button}
-              title={`Resolve with full info: ${resolveWithFullInfo}`}
-              onPress={toggleResolveWithFullInfo}
-            />
-          )}
+          <Button
+            style={styles.button}
+            title={`Resolve with full info: ${resolveWithFullInfo}`}
+            onPress={toggleResolveWithFullInfo}
+          />
         </View>
         {state.lastFetchDurationMs != null && (
           <BodyText style={styles.headerMetadata}>
             {`Last fetch: ${state.lastFetchDurationMs} ms (${state.assets.length} assets loaded)`}
           </BodyText>
         )}
-        {Platform.OS === 'ios' && state.batchLocationPreview != null && (
+        {state.batchLocationPreview != null && (
           <BodyText style={styles.headerMetadata}>
             {`First batch asset location: ${state.batchLocationPreview}`}
           </BodyText>
