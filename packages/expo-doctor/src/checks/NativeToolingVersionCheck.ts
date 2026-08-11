@@ -42,9 +42,14 @@ async function checkMinimumXcodeVersionAsync(
     return null;
   }
 
+  const xcodeVersionCheckRange = compatibility.ios.xcodeVersionCheckRange;
+  if (!xcodeVersionCheckRange) {
+    return null;
+  }
+
   if (isXcodeVersionSupported(sdkVersion, xcodeVersion) === false) {
     const majorSdkVersion = semver.major(compatibility.sdk).toString();
-    return `Your Expo SDK version ${majorSdkVersion} is not compatible with Xcode ${xcodeVersion}. Required Xcode version: ${compatibility.ios.xcodeVersionRange}.`;
+    return `Your Expo SDK version ${majorSdkVersion} is not compatible with Xcode ${xcodeVersion}. Required Xcode version: ${xcodeVersionCheckRange}.`;
   }
 
   return null;

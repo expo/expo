@@ -412,7 +412,9 @@ function parseXcodeVersionRange(value: string) {
     )}`;
   }
 
-  return value;
+  throw new Error(
+    `--set xcode=${value} must use a minimum such as 26.4+ or a range such as 15.4 - 16.2.`
+  );
 }
 
 function parseNodeMinimumVersion(value: string) {
