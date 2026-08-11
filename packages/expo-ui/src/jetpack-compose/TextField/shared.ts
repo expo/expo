@@ -2,6 +2,7 @@ import type { ReactNode, Ref } from 'react';
 import type { ColorValue } from 'react-native';
 
 import { getStateId, type ObservableState, useWorkletProp, worklets } from '../../State';
+import { useTextInputKeyboardCoordination } from '../../keyboard';
 import type { ModifierConfig, ViewEvent } from '../../types';
 import { createViewModifierEventListener } from '../modifiers/utils';
 
@@ -222,6 +223,7 @@ export function useCommonTextFieldProps<T extends CommonTextFieldProperties>(
 
   const isWorklet = !!onValueChange && !!worklets?.isWorkletFunction?.(onValueChange);
   const workletCallback = useWorkletProp(isWorklet ? onValueChange : undefined, 'onValueChange');
+  const setFieldFocused = useTextInputKeyboardCoordination();
 
   return {
     ...rest,
@@ -233,7 +235,10 @@ export function useCommonTextFieldProps<T extends CommonTextFieldProperties>(
     onValueChangeSync: getStateId(workletCallback),
     onValueChange:
       !isWorklet && onValueChange ? (event) => onValueChange(event.nativeEvent.text) : undefined,
-    onFocusChanged: onFocusChanged ? (event) => onFocusChanged(event.nativeEvent.value) : undefined,
+    onFocusChanged: (event) => {
+      setFieldFocused(event.nativeEvent.value);
+      onFocusChanged?.(event.nativeEvent.value);
+    },
     onSelectionChange: onSelectionChange
       ? (event) => onSelectionChange({ start: event.nativeEvent.start, end: event.nativeEvent.end })
       : undefined,

@@ -1,6 +1,12 @@
 import { requireNativeView } from 'expo';
+import type { Ref } from 'react';
 import { I18nManager, type ColorValue, type StyleProp, type ViewStyle } from 'react-native';
 
+import {
+  KeyboardCoordinationContext,
+  useHostKeyboardCoordination,
+  type NativeViewRef,
+} from '../../keyboard';
 import { createViewModifierEventListener } from '../modifiers/utils';
 import { type CommonViewModifierProps } from '../types';
 
@@ -57,7 +63,11 @@ export interface HostProps extends CommonViewModifierProps {
 }
 
 const HostNativeView: React.ComponentType<
-  HostProps & { matchContentsVertical?: boolean; matchContentsHorizontal?: boolean }
+  HostProps & {
+    matchContentsVertical?: boolean;
+    matchContentsHorizontal?: boolean;
+    ref?: Ref<NativeViewRef>;
+  }
 > = requireNativeView('ExpoUI', 'HostView');
 
 /**
@@ -74,23 +84,28 @@ export function Host(props: HostProps) {
     ...restProps
   } = props;
 
+  const { hostRef, coordination } = useHostKeyboardCoordination();
+
   return (
-    <HostNativeView
-      modifiers={modifiers}
-      {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
-      matchContentsVertical={
-        typeof matchContents === 'object' ? matchContents.vertical : matchContents
-      }
-      matchContentsHorizontal={
-        typeof matchContents === 'object' ? matchContents.horizontal : matchContents
-      }
-      onLayoutContent={onLayoutContent}
-      layoutDirection={
-        layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
-      }
-      ignoreSafeArea={ignoreSafeArea}
-      seedColor={seedColor}
-      {...restProps}
-    />
+    <KeyboardCoordinationContext.Provider value={coordination}>
+      <HostNativeView
+        modifiers={modifiers}
+        {...(modifiers ? createViewModifierEventListener(modifiers) : undefined)}
+        matchContentsVertical={
+          typeof matchContents === 'object' ? matchContents.vertical : matchContents
+        }
+        matchContentsHorizontal={
+          typeof matchContents === 'object' ? matchContents.horizontal : matchContents
+        }
+        onLayoutContent={onLayoutContent}
+        layoutDirection={
+          layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
+        }
+        ignoreSafeArea={ignoreSafeArea}
+        seedColor={seedColor}
+        {...restProps}
+        ref={hostRef}
+      />
+    </KeyboardCoordinationContext.Provider>
   );
 }

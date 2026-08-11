@@ -388,8 +388,8 @@ private func virtualViewUnmountChild<Props: ExpoSwiftUI.ViewProps>(_ childCompon
 }
 
 @MainActor
-private func virtualViewResignFirstResponderInSubtree<ContentView: SwiftUI.View>(
-  contentView: ContentView, children: [any ExpoSwiftUI.AnyChild]?) {
+internal func virtualViewResignFirstResponderInSubtree(
+  contentView: Any, children: [any ExpoSwiftUI.AnyChild]?) {
   // Mirror UIView.removeFromSuperview, which resigns the first responder for a view and its subviews;
   // a field left first responder during SwiftUI's teardown crashes. Recurse into children so one
   // nested in a container (HStack, LabeledContent, …) is resigned too. https://github.com/expo/expo/issues/47682

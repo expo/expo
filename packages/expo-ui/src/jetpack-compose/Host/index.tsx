@@ -1,5 +1,5 @@
 import { requireNativeView } from 'expo';
-import { useMemo } from 'react';
+import { useMemo, type Ref } from 'react';
 import {
   type ColorSchemeName,
   type ColorValue,
@@ -9,6 +9,11 @@ import {
   useColorScheme as useRNColorScheme,
 } from 'react-native';
 
+import {
+  KeyboardCoordinationContext,
+  useHostKeyboardCoordination,
+  type NativeViewRef,
+} from '../../keyboard';
 import { getMaterialColors, HostPaletteContext } from '../colors';
 import { type PrimitiveBaseProps } from '../layout';
 
@@ -72,6 +77,7 @@ type NativeHostProps = Omit<HostProps, 'colorScheme'> & {
   matchContentsHorizontal?: boolean;
   colorScheme?: ColorSchemeName;
   seedColor?: ColorValue;
+  ref?: Ref<NativeViewRef>;
 };
 
 const HostNativeView: React.ComponentType<NativeHostProps> = requireNativeView(
@@ -98,24 +104,29 @@ export function Host(props: HostProps) {
     [resolvedScheme, seedColor]
   );
 
+  const { hostRef, coordination } = useHostKeyboardCoordination();
+
   return (
     <HostPaletteContext.Provider value={palette}>
-      <HostNativeView
-        {...restProps}
-        modifiers={modifiers}
-        matchContentsVertical={
-          typeof matchContents === 'object' ? matchContents.vertical : matchContents
-        }
-        matchContentsHorizontal={
-          typeof matchContents === 'object' ? matchContents.horizontal : matchContents
-        }
-        colorScheme={schemeString}
-        seedColor={seedColor}
-        onLayoutContent={onLayoutContent}
-        layoutDirection={
-          layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
-        }
-      />
+      <KeyboardCoordinationContext.Provider value={coordination}>
+        <HostNativeView
+          {...restProps}
+          ref={hostRef}
+          modifiers={modifiers}
+          matchContentsVertical={
+            typeof matchContents === 'object' ? matchContents.vertical : matchContents
+          }
+          matchContentsHorizontal={
+            typeof matchContents === 'object' ? matchContents.horizontal : matchContents
+          }
+          colorScheme={schemeString}
+          seedColor={seedColor}
+          onLayoutContent={onLayoutContent}
+          layoutDirection={
+            layoutDirection ?? (I18nManager.getConstants().isRTL ? 'rightToLeft' : 'leftToRight')
+          }
+        />
+      </KeyboardCoordinationContext.Provider>
     </HostPaletteContext.Provider>
   );
 }

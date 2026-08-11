@@ -193,6 +193,20 @@ extension ExpoSwiftUI {
     }
 
     /**
+     React Native sends the `blur` command when it dismisses the keyboard, for example from
+     `Keyboard.dismiss()` or a `ScrollView` with `keyboardShouldPersistTaps="never"`. The default
+     implementation resigns the first responder on the host itself, which is never the focused
+     field, so blur the hosted SwiftUI subtree instead.
+     */
+    public override func handleCommand(_ commandName: String, args: [Any]) {
+      if commandName == "blur" {
+        resignFirstResponderInSubtree()
+        return
+      }
+      super.handleCommand(commandName, args: args)
+    }
+
+    /**
      Setups layout constraints of the hosting controller view to match the layout set by React.
      */
     private func setupHostingViewConstraints() {
@@ -248,6 +262,12 @@ extension ExpoSwiftUI {
       return self.window?.contentViewController
     }
 #endif
+  }
+}
+
+extension ExpoSwiftUI.HostingView: ExpoSwiftUI.FocusableViewContainer {
+  func resignFirstResponderInSubtree() {
+    virtualViewResignFirstResponderInSubtree(contentView: contentView, children: props.children)
   }
 }
 
