@@ -1,17 +1,13 @@
-import { DrawerRouter } from '../../routers';
+import type { DrawerNavigationState, ParamListBase } from '../../routers';
 import { getDrawerStatusFromState } from '../utils/getDrawerStatusFromState';
 
-const state = DrawerRouter({}).getInitialState({
+const state: DrawerNavigationState<ParamListBase> = {
+  stale: false,
+  key: 'drawer',
+  index: 0,
   routeNames: ['index'],
-  routeParamList: {},
-  routeGetIdList: {},
-});
-
-const openState = DrawerRouter({ defaultStatus: 'open' }).getInitialState({
-  routeNames: ['index'],
-  routeParamList: {},
-  routeGetIdList: {},
-});
+  routes: [{ key: 'index', name: 'index' }],
+};
 
 it.each(['closed', 'open'] as const)(
   'uses the provided default status %s when history has no drawer entry',
@@ -20,20 +16,19 @@ it.each(['closed', 'open'] as const)(
   }
 );
 
-it('reports open for a router with defaultStatus open and no drawer entry', () => {
-  expect(getDrawerStatusFromState(openState, 'open')).toBe('open');
-});
-
-it('reports closed for a router with defaultStatus open after the drawer is closed', () => {
+it('ignores non-drawer history entries', () => {
   expect(
     getDrawerStatusFromState(
       {
-        ...openState,
-        history: [...(openState.history ?? []), { type: 'drawer', status: 'closed' }],
+        ...state,
+        history: [
+          { type: 'drawer', status: 'open' },
+          { type: 'route', key: 'index' },
+        ],
       },
-      'open'
+      'closed'
     )
-  ).toBe('closed');
+  ).toBe('open');
 });
 
 it('uses the last drawer status from history instead of the provided default', () => {
@@ -42,7 +37,6 @@ it('uses the last drawer status from history instead of the provided default', (
       {
         ...state,
         history: [
-          ...(state.history ?? []),
           { type: 'drawer', status: 'open' },
           { type: 'drawer', status: 'closed' },
         ],

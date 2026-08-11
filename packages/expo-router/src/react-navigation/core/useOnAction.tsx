@@ -7,7 +7,7 @@ import type {
   NavigationState,
   PartialState,
   Router,
-  RouterActionOptions,
+  RouterConfigOptions,
 } from '../routers';
 import { DeprecatedNavigationInChildContext } from './DeprecatedNavigationInChildContext';
 import {
@@ -35,7 +35,7 @@ type Options<State extends NavigationState> = {
   preventRemoveListeners: Record<string, ChildPreventRemoveListener | undefined>;
   beforeRemoveListeners: Record<string, ChildBeforeRemoveListener | undefined>;
   isRoutePrevented: IsRoutePrevented;
-  routerConfigOptions: RouterActionOptions;
+  routerConfigOptions: RouterConfigOptions;
   emitter: NavigationEventEmitter<EventMapCore<any>>;
 };
 
@@ -68,7 +68,7 @@ export function useOnAction<State extends NavigationState>({
   } = use(NavigationBuilderContext);
   const navigationInChildEnabled = use(DeprecatedNavigationInChildContext);
 
-  const routerConfigOptionsRef = React.useRef<RouterActionOptions>(routerConfigOptions);
+  const routerConfigOptionsRef = React.useRef<RouterConfigOptions>(routerConfigOptions);
 
   React.useEffect(() => {
     routerConfigOptionsRef.current = routerConfigOptions;

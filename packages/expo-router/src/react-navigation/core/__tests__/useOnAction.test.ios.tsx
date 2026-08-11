@@ -64,20 +64,37 @@ test("lets parent handle the action if child didn't", () => {
     );
   };
 
+  let dispatch: (action: { type: 'REVERSE' }) => void;
   const TestScreen = (props: any) => {
-    React.useEffect(() => {
-      props.navigation.dispatch({ type: 'REVERSE' });
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
+    dispatch = props.navigation.dispatch;
     return null;
   };
 
   const onStateChange = jest.fn();
 
   render(
-    <BaseNavigationContainer onStateChange={onStateChange}>
+    <BaseNavigationContainer
+      initialState={{
+        type: 'test',
+        index: 2,
+        key: '0',
+        routeNames: ['foo', 'bar', 'baz'],
+        routes: [
+          { name: 'foo' },
+          { name: 'bar' },
+          {
+            name: 'baz',
+            state: {
+              type: 'test',
+              index: 0,
+              key: '1',
+              routeNames: ['qux'],
+              routes: [{ name: 'qux' }],
+            },
+          },
+        ],
+      }}
+      onStateChange={onStateChange}>
       <ParentNavigator initialRouteName="baz">
         <Screen name="foo">{() => null}</Screen>
         <Screen name="bar">{() => null}</Screen>
@@ -92,17 +109,21 @@ test("lets parent handle the action if child didn't", () => {
     </BaseNavigationContainer>
   );
 
-  expect(onStateChange).toHaveBeenCalledTimes(1);
+  onStateChange.mockClear();
+
+  act(() => dispatch({ type: 'REVERSE' }));
+
+  expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenLastCalledWith({
     stale: false,
     type: 'test',
     index: 2,
-    key: '0',
+    key: '3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar' },
-      { key: 'foo', name: 'foo' },
+      { key: 'baz-2', name: 'baz', params: undefined, state: undefined },
+      { key: 'bar-1', name: 'bar', params: undefined },
+      { key: 'foo-0', name: 'foo', params: undefined },
     ],
   });
 });
@@ -287,6 +308,13 @@ test("lets children handle the action if parent didn't with NAVIGATE_DEPRECATED"
   const element = (
     <BaseNavigationContainer
       ref={navigation}
+      initialState={{
+        routes: [
+          { name: 'foo' },
+          { name: 'bar' },
+          { name: 'baz', state: { routes: [{ name: 'qux' }, { name: 'lex' }] } },
+        ],
+      }}
       onStateChange={onStateChange}
       onUnhandledAction={onUnhandledAction}>
       <TestNavigator>
@@ -778,14 +806,13 @@ test("prevents removing a screen with 'removePrevented' event", () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -793,11 +820,11 @@ test("prevents removing a screen with 'removePrevented' event", () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
       {
         key: 'baz-7',
         name: 'baz',
@@ -806,7 +833,6 @@ test("prevents removing a screen with 'removePrevented' event", () => {
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -816,15 +842,14 @@ test("prevents removing a screen with 'removePrevented' event", () => {
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       { key: 'baz-7', name: 'baz' },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => {
@@ -834,11 +859,10 @@ test("prevents removing a screen with 'removePrevented' event", () => {
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -902,14 +926,13 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -917,26 +940,26 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       {
         key: 'baz-6',
         name: 'baz',
+        params: undefined,
+        path: undefined,
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-9', name: 'qux' }],
+          routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -946,26 +969,24 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       {
         key: 'baz-6',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-9', name: 'qux' }],
+          routes: [{ key: 'qux-8', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => {
@@ -975,11 +996,10 @@ test("prevents removing a child screen with 'removePrevented' event", () => {
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -1048,14 +1068,13 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.navigate('baz'));
@@ -1063,39 +1082,38 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
-      { key: 'bar-5', name: 'bar' },
+      { key: 'foo-2', name: 'foo' },
+      { key: 'bar-5', name: 'bar', params: undefined, path: undefined },
       {
         key: 'baz-6',
         name: 'baz',
+        params: undefined,
+        path: undefined,
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux'],
           routes: [
             {
-              key: 'qux-9',
+              key: 'qux-8',
               name: 'qux',
               state: {
                 index: 0,
-                key: 'stack-12',
+                key: 'navigator-13',
                 routeNames: ['lex'],
-                routes: [{ key: 'lex-13', name: 'lex' }],
+                routes: [{ key: 'lex-12', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => ref.current?.dispatch(StackActions.popTo('foo')));
@@ -1105,39 +1123,36 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
 
   expect(ref.current?.getRootState()).toEqual({
     index: 2,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       { key: 'bar-5', name: 'bar' },
       {
         key: 'baz-6',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-8',
+          key: 'navigator-9',
           routeNames: ['qux'],
           routes: [
             {
-              key: 'qux-9',
+              key: 'qux-8',
               name: 'qux',
               state: {
                 index: 0,
-                key: 'stack-12',
+                key: 'navigator-13',
                 routeNames: ['lex'],
-                routes: [{ key: 'lex-13', name: 'lex' }],
+                routes: [{ key: 'lex-12', name: 'lex' }],
                 stale: false,
-                type: 'stack',
               },
             },
           ],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => {
@@ -1147,11 +1162,10 @@ test("prevents removing a grand child screen with 'removePrevented' event", () =
   expect(onStateChange).toHaveBeenCalledTimes(3);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -1264,11 +1278,10 @@ test("prevents removing by multiple screens with 'removePrevented' event", () =>
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz', 'bax'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });
 
@@ -1323,35 +1336,34 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
   expect(onStateChange).toHaveBeenCalledTimes(1);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       {
         key: 'baz-5',
         name: 'baz',
+        params: undefined,
+        path: undefined,
         state: {
           index: 0,
-          key: 'stack-7',
+          key: 'navigator-8',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-8', name: 'qux' }],
+          routes: [{ key: 'qux-7', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() =>
     ref.current?.resetRoot({
       index: 0,
-      key: 'stack-2',
+      key: 'navigator-3',
       routeNames: ['foo', 'bar', 'baz'],
-      routes: [{ key: 'foo-3', name: 'foo' }],
+      routes: [{ key: 'foo-2', name: 'foo' }],
       stale: false,
-      type: 'stack',
     })
   );
 
@@ -1360,25 +1372,23 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
 
   expect(ref.current?.getRootState()).toEqual({
     index: 1,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo-3', name: 'foo' },
+      { key: 'foo-2', name: 'foo' },
       {
         key: 'baz-5',
         name: 'baz',
         state: {
           index: 0,
-          key: 'stack-7',
+          key: 'navigator-8',
           routeNames: ['qux', 'lex'],
-          routes: [{ key: 'qux-8', name: 'qux' }],
+          routes: [{ key: 'qux-7', name: 'qux' }],
           stale: false,
-          type: 'stack',
         },
       },
     ],
     stale: false,
-    type: 'stack',
   });
 
   act(() => {
@@ -1388,21 +1398,19 @@ test("prevents removing a child screen with 'removePrevented' event with 'resetR
   act(() =>
     ref.current?.resetRoot({
       index: 0,
-      key: 'stack-2',
+      key: 'navigator-3',
       routeNames: ['foo', 'bar', 'baz'],
-      routes: [{ key: 'foo-3', name: 'foo' }],
+      routes: [{ key: 'foo-2', name: 'foo' }],
       stale: false,
-      type: 'stack',
     })
   );
 
   expect(onStateChange).toHaveBeenCalledTimes(2);
   expect(onStateChange).toHaveBeenCalledWith({
     index: 0,
-    key: 'stack-2',
+    key: 'navigator-3',
     routeNames: ['foo', 'bar', 'baz'],
-    routes: [{ key: 'foo-3', name: 'foo' }],
+    routes: [{ key: 'foo-2', name: 'foo' }],
     stale: false,
-    type: 'stack',
   });
 });

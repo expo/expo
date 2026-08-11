@@ -3,7 +3,9 @@ import {
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME,
   INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SOURCE_ID_PARAM_NAME,
 } from '../../navigationParams';
+import { createInitialState } from '../../react-navigation/core/createInitialState';
 import { CommonActions, type RouterConfigOptions } from '../../react-navigation/native';
+import type { ParamListBase, TabNavigationState } from '../../react-navigation/routers';
 import { NativeBottomTabsRouter } from '../NativeBottomTabsRouter';
 
 jest.mock('nanoid/non-secure', () => ({ nanoid: jest.fn(() => 'test') }));
@@ -22,10 +24,9 @@ test('post-processes a first navigation to an unvisited tab', () => {
   const router = NativeBottomTabsRouter({});
   const options: RouterConfigOptions = {
     routeNames: ['index', 'second'],
-    routeParamList: {},
     routeGetIdList: {},
   };
-  const state = router.getInitialState(options);
+  const state = createInitialState<TabNavigationState<ParamListBase>>(options);
 
   const result = router.getStateForAction(
     state,

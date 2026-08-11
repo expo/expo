@@ -22,31 +22,13 @@ function getStateForRouteNamesChange(state: NavigationState, routeNames: string[
   };
 }
 
-export function MockRouter(options: DefaultRouterOptions) {
+export function MockRouter(_options: DefaultRouterOptions) {
   const router: Router<NavigationState, MockActions> = {
     type: 'test',
 
     getStateForDeclaredRoutes: BaseRouter.getStateForDeclaredRoutes,
 
-    getInitialState({ routeNames, routeParamList }) {
-      const index =
-        options.initialRouteName === undefined ? 0 : routeNames.indexOf(options.initialRouteName);
-
-      return {
-        stale: false,
-        type: 'test',
-        key: String(MockRouterKey.current++),
-        index,
-        routeNames,
-        routes: routeNames.map((name) => ({
-          name,
-          key: name,
-          params: routeParamList[name],
-        })),
-      };
-    },
-
-    getRehydratedState(partialState, { routeNames, routeParamList }) {
+    getRehydratedState(partialState, { routeNames }) {
       const state = partialState;
 
       if (state.stale === false) {
@@ -60,13 +42,6 @@ export function MockRouter(options: DefaultRouterOptions) {
             ({
               ...route,
               key: route.key || `${route.name}-${MockRouterKey.current++}`,
-              params:
-                routeParamList[route.name] !== undefined
-                  ? {
-                      ...routeParamList[route.name],
-                      ...route.params,
-                    }
-                  : route.params,
             }) as Route<string>
         );
 
@@ -74,7 +49,6 @@ export function MockRouter(options: DefaultRouterOptions) {
         routes.push({
           name: routeNames[0]!,
           key: `${routeNames[0]}-${MockRouterKey.current++}`,
-          params: routeParamList[routeNames[0]!],
         });
       }
 

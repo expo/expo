@@ -8,7 +8,11 @@ import { useNavigationState } from '../useNavigationState';
 import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
+let mockNanoidCounter = 0;
+jest.mock('nanoid/non-secure', () => ({ nanoid: jest.fn(() => String(mockNanoidCounter++)) }));
+
 beforeEach(() => {
+  mockNanoidCounter = 0;
   MockRouterKey.current = 0;
 });
 
@@ -207,16 +211,8 @@ test('gets the current navigation state at navigator level', () => {
   "index": 0,
   "routes": [
     {
-      "name": "first",
-      "key": "first"
-    },
-    {
-      "name": "second",
-      "key": "second"
-    },
-    {
-      "name": "third",
-      "key": "third"
+      "key": "first-1",
+      "name": "first"
     }
   ]
 }"
@@ -229,16 +225,12 @@ test('gets the current navigation state at navigator level', () => {
   "index": 1,
   "routes": [
     {
-      "name": "first",
-      "key": "first"
+      "key": "first-1",
+      "name": "first"
     },
     {
       "name": "second",
-      "key": "second"
-    },
-    {
-      "name": "third",
-      "key": "third"
+      "key": "second-0"
     }
   ]
 }"
@@ -251,16 +243,16 @@ test('gets the current navigation state at navigator level', () => {
   "index": 2,
   "routes": [
     {
-      "name": "first",
-      "key": "first"
+      "key": "first-1",
+      "name": "first"
     },
     {
       "name": "second",
-      "key": "second"
+      "key": "second-0"
     },
     {
       "name": "third",
-      "key": "third"
+      "key": "third-1"
     }
   ]
 }"
@@ -273,16 +265,16 @@ test('gets the current navigation state at navigator level', () => {
   "index": 1,
   "routes": [
     {
-      "name": "first",
-      "key": "first"
+      "key": "first-1",
+      "name": "first"
     },
     {
       "name": "second",
-      "key": "second"
+      "key": "second-0"
     },
     {
       "name": "third",
-      "key": "third"
+      "key": "third-1"
     }
   ]
 }"

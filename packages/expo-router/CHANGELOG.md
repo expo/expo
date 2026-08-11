@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove `getInitialState` from the `Router` interface. Custom routers no longer create initial state; the navigator creates it and passes it to `getRehydratedState`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
+- Remove `routeParamList` from `RouterConfigOptions` and remove the `RouterActionOptions` type. Custom routers receive `RouterConfigOptions` in both `getRehydratedState` and `getStateForAction`. ([#48783](https://github.com/expo/expo/pull/48783) by [@Ubax](https://github.com/Ubax))
 - Remove the deprecated `NavigationContainer` export ([#48760](https://github.com/expo/expo/pull/48760) by [@Ubax](https://github.com/Ubax))
 - Remove the static `default` field from `DrawerNavigationState` and deprecate `getDrawerStatusFromState`. ([#48750](https://github.com/expo/expo/pull/48750) by [@Ubax](https://github.com/Ubax))
 - Remove the `preloadedRouteKeys` field from `TabNavigationState`. ([#48718](https://github.com/expo/expo/pull/48718) by [@Ubax](https://github.com/Ubax))
