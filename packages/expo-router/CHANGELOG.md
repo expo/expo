@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Remove the `initialParams` prop from Expo Router screens.
 - Remove the `initialRouteName` prop from Expo Router navigators.
 - Remove `NavigationContainerRefContext` fallback in `useNavigation`. The hook now throws when called outside a navigator, including components rendered via `ExpoRoot`'s `wrapper` prop. ([#48638](https://github.com/expo/expo/pull/48638) by [@Ubax](https://github.com/Ubax))
 - Allow `key` to be `undefined` in the `Descriptor` type and in routes passed to screen `options`, navigator `screenOptions`, and `RouteGroupConfig.screenOptions` callbacks. ([#48596](https://github.com/expo/expo/pull/48596) by [@Ubax](https://github.com/Ubax))

@@ -35,7 +35,6 @@ type TriggerConfig =
       href: string;
       routeNode: RouteNode;
       contextKey: string;
-      initialParams?: Record<string, any>;
       action: JumpToNavigationAction;
     }
   | { type: 'external'; name: string; href: string };
@@ -173,7 +172,6 @@ export function useTriggersToScreens(
       href: resolvedHref,
       routeNode,
       contextKey,
-      initialParams: params,
       action,
     });
   }
@@ -185,10 +183,8 @@ export function useTriggersToScreens(
     triggerMap[config.name] = config;
 
     if (config.type === 'internal') {
-      screenProps.push({
-        name: config.routeNode.route,
-        initialParams: config.initialParams,
-      });
+      // TODO(https://github.com/expo/expo/pull/TODO): Restore trigger default params for placeholder tabs, action-path route recreation, and rehydration.
+      screenProps.push({ name: config.routeNode.route });
     }
   }
 

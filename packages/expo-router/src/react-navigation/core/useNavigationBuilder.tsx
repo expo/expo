@@ -342,11 +342,8 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
-    const { initialParams } = screens[curr]!.props;
-    acc[curr] = initialParams;
-    return acc;
-  }, {});
+  // Expo Router gets params from navigation state, but routers still require this config field.
+  const routeParamList: Record<string, object | undefined> = {};
   const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
     (acc, curr) =>
       Object.assign(acc, {
@@ -418,7 +415,6 @@ export function useNavigationBuilder<
 
       const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
         (acc, curr) => {
-          const { initialParams } = screens[curr]!.props;
           const initialParamsFromParams =
             route?.params?.state == null &&
             route?.params?.initial !== false &&
@@ -426,13 +422,9 @@ export function useNavigationBuilder<
               ? route.params.params
               : undefined;
 
+          // Keep child route params separate from the parent's nested navigation params.
           acc[curr] =
-            initialParams !== undefined || initialParamsFromParams !== undefined
-              ? {
-                  ...initialParams,
-                  ...initialParamsFromParams,
-                }
-              : undefined;
+            initialParamsFromParams !== undefined ? { ...initialParamsFromParams } : undefined;
 
           return acc;
         },
@@ -484,8 +476,7 @@ export function useNavigationBuilder<
       // We explicitly don't include routeNames, route.params etc. in the dep list
       // below. We want to avoid forcing a new state to be calculated in those cases
       // Instead, we handle changes to these in the nextState code below. Note
-      // that some changes to routeConfigs are explicitly ignored, such as changes
-      // to initialParams
+      // that some changes to routeConfigs are explicitly ignored.
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentState, router, isStateValid]);
 
@@ -642,7 +633,7 @@ export function useNavigationBuilder<
       const config = screens[e.target];
 
       if (!route && config) {
-        route = { key: e.target, name: e.target, params: config.props.initialParams };
+        route = { key: e.target, name: e.target, params: undefined };
         isPlaceholder = true;
       }
 
