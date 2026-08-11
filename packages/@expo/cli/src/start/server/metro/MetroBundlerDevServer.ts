@@ -1231,16 +1231,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return;
     }
 
+    const mode = this.instanceMetroOptions.mode ?? 'development';
+
     observeFileChanges(
       {
         metro: this.metro,
         server: this.instance.server,
       },
-      getEnvFiles(this.projectRoot),
+      getEnvFiles(this.projectRoot, mode),
       () => {
         debugEvent('env_reload', {});
         // Force reload the environment variables.
-        reloadEnvFiles(this.projectRoot);
+        reloadEnvFiles(this.projectRoot, mode);
       }
     );
   }
