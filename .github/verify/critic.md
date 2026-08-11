@@ -14,7 +14,8 @@ Read the draft once for its argument, then go looking for the gap between what i
 6. **Broken or unfollowable references.** File citations must be permalinks at the checkout commit; commits and pull requests must be linked. A bare `Foo.kt:120-140` costs the reader the search the investigator already did.
 7. **The reporter's actual complaint.** Does the report answer it? A correct diagnosis of a different problem, or a verdict that quietly redefines the question, is a real defect.
 8. **Tone and overclaiming.** Confident language over thin evidence is worse than an honest "inconclusive". Flag verdicts stronger than what was measured.
-9. **Truncated inputs.** If the target is a pull request, `pull-request.diff` carries a completeness header. If it says the diff was cut and the report reasons about the change from it anyway, that is a must-fix.
+9. **Claims about what happens after the report.** The investigator does not open pull requests and cannot see whether one was created — a later step does that, after guards it never sees. "A fix is opened as a pull request", or any past-tense claim that a branch or pull request exists, is MUST-FIX; proposing one is fine. Two live issues carried that false claim before this check existed.
+10. **Truncated inputs.** If the target is a pull request, `pull-request.diff` carries a completeness header. If it says the diff was cut and the report reasons about the change from it anyway, that is a must-fix.
 
 Being unable to break something is a real result. Do not invent objections to look useful — a review that raises three sharp problems is worth more than one that raises twelve, and padding it wastes the one round the investigator gets.
 

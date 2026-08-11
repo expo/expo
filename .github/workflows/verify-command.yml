@@ -278,6 +278,30 @@ jobs:
           fi
           ls -la
 
+      # Fix mode ends in a push, and a push that cannot authenticate costs the
+      # whole run: the first time this step's push was ever reached it died on
+      # "could not read Username", after twelve minutes, a sandbox and two EAS
+      # builds, with a findings comment already posted claiming a pull request
+      # that did not exist. `--dry-run` performs the real connection, the real
+      # authentication and the real ref negotiation, and writes nothing — so
+      # this answers "can we push?" in seconds, before anything is spent.
+      #
+      # Its own step on purpose: "Run verification" holds NO GitHub token, and
+      # that is a property worth keeping.
+      - name: Preflight push credentials
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.fix == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+        run: |
+          gh auth setup-git
+          # No pipe here: `git ... | tail` would report tail's exit status and
+          # the check would pass no matter what git did.
+          if ! git push --dry-run origin "HEAD:refs/heads/verify-preflight-$GITHUB_RUN_ID"; then
+            echo "::error::EXPO_BOT_GITHUB_TOKEN cannot push to this repository, so fix mode could not open a pull request. Fix the credential before re-running."
+            exit 1
+          fi
+          echo "preflight: push credentials work; fix mode can open a pull request"
+
       - name: Run verification
         id: investigate
         if: steps.gate.outputs.ok == 'true'
@@ -577,8 +601,19 @@ jobs:
           branch="verify/${ISSUE_NUMBER}-${GITHUB_RUN_ID}"
           git -c user.name='expo-bot' -c user.email='expo-bot@users.noreply.github.com' \
             commit -q -m "$title" -m "Verified by /verify for #$ISSUE_NUMBER. Run: $RUN_URL"
-          git -c http.extraheader="AUTHORIZATION: bearer $GH_TOKEN" \
-            push -q origin "HEAD:refs/heads/$branch"
+          # The checkout runs with persist-credentials: false, so git has no
+          # credentials of its own. `AUTHORIZATION: bearer <token>` used to be
+          # supplied here by hand; GitHub's git endpoint accepts that for App
+          # installation tokens but rejects it for a PAT, and a rejected header
+          # makes git fall back to prompting for a username on a runner that
+          # has no terminal — "could not read Username", exit 128. gh's own
+          # credential helper sends the form GitHub actually accepts.
+          gh auth setup-git
+          if ! git push -q origin "HEAD:refs/heads/$branch"; then
+            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`/verify --fix\` verified a fix but could not push the branch, so no pull request was opened. The findings comment still stands and the change is described there. [Run log]($RUN_URL)"
+            echo "::error::git push failed; no pull request was opened."
+            exit 1
+          fi
           {
             echo "> [!WARNING]"
             echo "> **Agent-authored and NOT human-reviewed.** An automated \`/verify --fix\` run"
@@ -590,9 +625,16 @@ jobs:
             echo ""
             tail -n +2 .verify-out/pr.md 2>/dev/null || echo "_No description was provided by the run._"
           } > "$RUNNER_TEMP/pr-body.md"
+          # The branch is pushed at this point, so a failure here must not
+          # vanish: the thread would otherwise keep the findings comment with
+          # no word on what became of the fix.
           url=$(gh pr create --head "$branch" --title "$title" \
             --body-file "$RUNNER_TEMP/pr-body.md" --label "agent-authored" 2>/dev/null \
-            || gh pr create --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/pr-body.md")
+            || gh pr create --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/pr-body.md") || {
+            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`/verify --fix\` pushed the verified fix to \`$branch\` but could not open a pull request. The branch is there for a maintainer to open by hand; the findings comment describes the change. [Run log]($RUN_URL)"
+            echo "::error::gh pr create failed; the branch $branch was pushed but no pull request was opened."
+            exit 1
+          }
           gh issue comment "$ISSUE_NUMBER" --body "🔧 Opened $url with the verified fix — agent-authored, unreviewed. [Investigation run]($RUN_URL)"
 
       # Raw engine transcript, kept like the code-review workflows keep
