@@ -82,8 +82,9 @@ describe('help output', () => {
       expect(helpOutput).toContain('--resume <feedbackId>');
       expect(helpOutput).toContain('Feedback messages can be up to 5,000 characters.');
       expect(helpOutput).toContain(
-        'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected'
+        'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to prevent feedback submission'
       );
+      expect(helpOutput).toContain('and all network requests.');
       expect(helpOutput).toContain(
         'Authenticated submissions are associated\n    with your Expo account.'
       );
@@ -409,6 +410,22 @@ describe('feedback submission', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('does not submit when telemetry is disabled at the submission boundary', async () => {
+    const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
+    const metadata = await createFeedbackMetadataAsync(projectRoot);
+    process.env.DO_NOT_TRACK = '1';
+
+    await sendFeedbackAsync({
+      feedback: 'please make errors clearer',
+      metadata,
+    });
+
+    expect(fetchMock).not.toHaveBeenCalled();
+    expect(consoleErrorSpy).toHaveBeenCalledWith(
+      'Feedback was not sent because telemetry is off. The user has indicated that they do not want to send feedback. Do not enable telemetry or ask the user to enable it.'
+    );
+  });
+
   it('resumes a feedback session and prints instructions using the provided ID', async () => {
     const originalArgv = process.argv;
     const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
@@ -463,10 +480,10 @@ describe('feedback submission', () => {
   });
 
   it.each(['DO_NOT_TRACK', 'EXPO_NO_TELEMETRY'] as const)(
-    'omits telemetry data and authentication when %s=1',
+    'does not send feedback when %s=1',
     async (environmentVariable) => {
       const originalArgv = process.argv;
-      const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation();
+      const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation();
       jest.spyOn(process, 'cwd').mockReturnValue(projectRoot);
       process.env[environmentVariable] = '1';
       process.env.EXPO_TOKEN = 'token';
@@ -485,20 +502,9 @@ describe('feedback submission', () => {
       try {
         await runExpoFeedbackAsync();
 
-        const request = fetchMock.mock.calls[0][1];
-        expect(JSON.parse(request.body)).toEqual({
-          feedback: 'private feedback',
-          metadata: {
-            category: 'mcp',
-            feedbackId: 'session_ABC-123',
-            subject: 'expo-mcp',
-          },
-        });
-        expect(request.headers).toEqual({
-          'Content-Type': 'application/json',
-        });
-        expect(consoleLogSpy.mock.calls.flat().join('\n')).toContain(
-          'Submitting feedback without telemetry data because telemetry collection is disabled.'
+        expect(fetchMock).not.toHaveBeenCalled();
+        expect(consoleErrorSpy).toHaveBeenCalledWith(
+          'Feedback was not sent because telemetry is off. The user has indicated that they do not want to send feedback. Do not enable telemetry or ask the user to enable it.'
         );
       } finally {
         process.argv = originalArgv;
