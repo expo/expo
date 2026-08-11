@@ -8,6 +8,8 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import semver from 'semver';
 
+// Docs CI does not build workspace packages, and Node cannot type-strip TypeScript from
+// node_modules, so load the dependency-free validator directly from repository source.
 import { createSdkCompatibilityDataValidator } from '../../../packages/@expo/sdk-compatibility/src/validation.ts';
 
 const SDK_INPUT = /^(\d{2})(?:\.0\.0)?$/;
