@@ -32,15 +32,17 @@ export const expoExportWeb: Command = async (argv) => {
     );
   }
 
-  const projectRoot = getProjectRoot(args);
-  const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
-  loadEnvFiles(projectRoot, {
-    mode: args['--dev'] ? 'development' : 'production',
-  });
+  return (async () => {
+    const projectRoot = getProjectRoot(args);
+    const { loadEnvFiles } = await import('../../utils/nodeEnv.js');
+    loadEnvFiles(projectRoot, {
+      mode: args['--dev'] ? 'development' : 'production',
+    });
 
-  const { resolveOptionsAsync } = await import('./resolveOptions.js');
-  const options = await resolveOptionsAsync(args).catch(logCmdError);
+    const { resolveOptionsAsync } = await import('./resolveOptions.js');
+    const options = await resolveOptionsAsync(args);
 
-  const { exportWebAsync } = await import('./exportWebAsync.js');
-  return exportWebAsync(projectRoot, options).catch(logCmdError);
+    const { exportWebAsync } = await import('./exportWebAsync.js');
+    return exportWebAsync(projectRoot, options);
+  })().catch(logCmdError);
 };

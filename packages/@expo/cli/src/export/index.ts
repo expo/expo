@@ -63,29 +63,31 @@ export const expoExport: Command = async (argv) => {
     );
   }
 
-  // Handle --source-maps which can be a string or boolean (e.g., --source-maps or --source-maps inline)
-  const { resolveStringOrBooleanArgsAsync } = await import('../utils/resolveArgs.js');
-  const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
-    // Restrict to 'true', 'false', 'inline', 'external'. Other values are treated as project root.
-    '--source-maps': [Boolean, 'inline', 'external'],
-    '-s': '--source-maps',
-    // Deprecated
-    '--dump-sourcemap': '--source-maps',
-  }).catch(logCmdError);
+  return (async () => {
+    // Handle --source-maps which can be a string or boolean (e.g., --source-maps or --source-maps inline)
+    const { resolveStringOrBooleanArgsAsync } = await import('../utils/resolveArgs.js');
+    const parsed = await resolveStringOrBooleanArgsAsync(argv ?? [], rawArgsMap, {
+      // Restrict to 'true', 'false', 'inline', 'external'. Other values are treated as project root.
+      '--source-maps': [Boolean, 'inline', 'external'],
+      '-s': '--source-maps',
+      // Deprecated
+      '--dump-sourcemap': '--source-maps',
+    });
 
-  const projectRoot = path.resolve(parsed.projectRoot);
+    const projectRoot = path.resolve(parsed.projectRoot);
 
-  const { loadEnvFiles } = await import('../utils/nodeEnv.js');
-  loadEnvFiles(projectRoot, {
-    mode: args['--dev'] ? 'development' : 'production',
-  });
+    const { loadEnvFiles } = await import('../utils/nodeEnv.js');
+    loadEnvFiles(projectRoot, {
+      mode: args['--dev'] ? 'development' : 'production',
+    });
 
-  const { resolveOptionsAsync } = await import('./resolveOptions.js');
-  const options = await resolveOptionsAsync(projectRoot, {
-    ...args,
-    '--source-maps': parsed.args['--source-maps'],
-  }).catch(logCmdError);
+    const { resolveOptionsAsync } = await import('./resolveOptions.js');
+    const options = await resolveOptionsAsync(projectRoot, {
+      ...args,
+      '--source-maps': parsed.args['--source-maps'],
+    });
 
-  const { exportAsync } = await import('./exportAsync.js');
-  return exportAsync(projectRoot, options).catch(logCmdError);
+    const { exportAsync } = await import('./exportAsync.js');
+    return exportAsync(projectRoot, options);
+  })().catch(logCmdError);
 };
