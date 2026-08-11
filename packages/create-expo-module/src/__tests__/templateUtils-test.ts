@@ -2,7 +2,12 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 
-import { getGeneratedWebStubSentinel, getTemplateDistTag, updateWebStub } from '../templateUtils';
+import {
+  getGeneratedWebStubSentinel,
+  getTemplateDistTag,
+  normalizeNpmPackResult,
+  updateWebStub,
+} from '../templateUtils';
 import type { SubstitutionData } from '../types';
 
 const mockData: SubstitutionData = {
@@ -32,6 +37,25 @@ async function writeMinimalWebTemplate(templateDir: string) {
     'export default class <%- project.moduleName %> {}\n'
   );
 }
+
+describe(normalizeNpmPackResult, () => {
+  const packageInfo = { name: 'create-expo-module-template', filename: 'template.tgz' };
+
+  it('supports the npm 11 and earlier array format', () => {
+    expect(normalizeNpmPackResult([packageInfo])).toEqual([packageInfo]);
+  });
+
+  it('supports the npm 12 package-keyed object format', () => {
+    expect(normalizeNpmPackResult({ 'create-expo-module-template': packageInfo })).toEqual([
+      packageInfo,
+    ]);
+  });
+
+  it('rejects non-container values', () => {
+    expect(normalizeNpmPackResult(null)).toBeNull();
+    expect(normalizeNpmPackResult('template.tgz')).toBeNull();
+  });
+});
 
 describe('getTemplateDistTag', () => {
   it('maps an SDK-aligned version to its `sdk-<major>` tag', () => {
