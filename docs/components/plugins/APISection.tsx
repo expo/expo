@@ -146,8 +146,15 @@ const isComponent = (entry: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
-  !(type?.name && componentTypeNames.has(type?.name));
+  ![
+    'default',
+    'Constants',
+    'EventEmitter',
+    'SharedObject',
+    'NativeModule',
+    'AppMetrics',
+    'Observe',
+  ].includes(name) && !(type?.name && componentTypeNames.has(type?.name));
 
 const hasCategoryHeader = (entry: ApiDataEntry): boolean => {
   const signature = getEntrySignatures(entry)[0];
