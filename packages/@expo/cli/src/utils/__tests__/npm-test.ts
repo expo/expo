@@ -1,4 +1,21 @@
-import { sanitizeNpmPackageName } from '../npm';
+import { normalizeNpmPackResult, sanitizeNpmPackageName } from '../npm';
+
+describe(normalizeNpmPackResult, () => {
+  const packageInfo = { name: 'expo', filename: 'expo.tgz' };
+
+  it('supports the npm 11 and earlier array format', () => {
+    expect(normalizeNpmPackResult([packageInfo])).toEqual([packageInfo]);
+  });
+
+  it('supports the npm 12 package-keyed object format', () => {
+    expect(normalizeNpmPackResult({ expo: packageInfo })).toEqual([packageInfo]);
+  });
+
+  it('rejects non-container values', () => {
+    expect(normalizeNpmPackResult(null)).toBeNull();
+    expect(normalizeNpmPackResult('expo.tgz')).toBeNull();
+  });
+});
 
 describe(sanitizeNpmPackageName, () => {
   it(`leaves valid names`, () => {
