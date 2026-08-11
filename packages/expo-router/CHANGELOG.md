@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Make navigation state `type` optional for custom routers.
 - Remove the `initialParams` prop from Expo Router screens.
 - Remove the `initialRouteName` prop from Expo Router navigators.
 - Handle `PUSH` in tab and drawer routers instead of coercing it to `NAVIGATE`.

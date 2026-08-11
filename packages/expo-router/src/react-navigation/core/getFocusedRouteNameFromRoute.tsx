@@ -6,11 +6,12 @@ export function getFocusedRouteNameFromRoute(route: Partial<Route<string>>): str
   const state = route[CHILD_STATE] ?? route.state;
   const params = route.params as { screen?: unknown } | undefined;
 
+  // TODO(@ubax): https://github.com/expo/expo/pull/TODO - remove the stack.type check from here
   const routeName = state
     ? // Get the currently active route name in the nested navigator
       state.routes[
         // If we have a partial state without index, for tab/drawer, first screen will be focused one, and last for stack
-        // The type property will only exist for rehydrated state and not for state from deep link
+        // Deep-link partial states can omit both index and type; typeless full states still have an index
         state.index ??
           (typeof state.type === 'string' && state.type !== 'stack' ? 0 : state.routes.length - 1)
       ].name

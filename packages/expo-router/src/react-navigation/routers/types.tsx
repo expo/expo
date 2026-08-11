@@ -36,8 +36,9 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
    * Custom type for the state, whether it's for tab, stack, drawer etc.
    * During rehydration, the state will be discarded if type doesn't match with router type.
    * It can also be used to detect the type of the navigator we're dealing with.
+   * Custom states can omit it to opt out of type-based matching.
    */
-  type: string;
+  type?: string;
   /**
    * Whether the navigation state has been rehydrated.
    */
