@@ -706,9 +706,31 @@ jobs:
           # Never commit the context we handed the agent or its scratch output.
           printf '.verify-context/\n.verify-out/\n' >> .git/info/exclude
           git add -A
-          changed=$(git diff --cached --name-only)
-          if [ -z "$changed" ]; then
-            gh issue comment "$ISSUE_NUMBER" --body "🔧 \`/verify --fix\` ran but proposed no code change — see the [findings comment and run log]($RUN_URL)."
+          # Content, NOT the path list. The agent has no Bash, so it cannot
+          # DELETE a file — only empty one. When a run for #48029 verified a
+          # candidate fix, found it caused a regression and withdrew it, the
+          # empty file it had created stayed staged as a 0-byte addition. That
+          # made --name-only non-empty, so this step opened a pull request the
+          # agent had explicitly refused, took its title from the first line of
+          # pr.md (which read "DO NOT OPEN — no fix is proposed"), and then
+          # announced "Opened … with the verified fix". numstat counts lines, so
+          # an orphan like that no longer manufactures a change.
+          changed=$(git diff --cached --numstat | awk '($1 + $2) > 0 { print $3 }')
+          # An explicit refusal is honoured before anything else. The agent's
+          # only channel used to be the PR title; now it can say so and be
+          # heard. (Both spellings, because the model reaches for either.)
+          declined=no
+          if [ -s .verify-out/pr.md ] && head -n1 .verify-out/pr.md \
+            | grep -qiE 'do not open|no (pull request|pr) should'; then
+            declined=yes
+          fi
+          if [ "$declined" = "yes" ] || [ -z "$changed" ]; then
+            if [ "$declined" = "yes" ]; then
+              reason=$(sed -n '2,12p' .verify-out/pr.md | tr -d '\r' | sed '/^$/d' | head -c 900)
+              gh issue comment "$ISSUE_NUMBER" --body "$(printf '🔧 `/verify --fix` deliberately did NOT open a pull request. The run says why:\n\n%s\n\n[Findings comment and run log](%s)' "$reason" "$RUN_URL")"
+            else
+              gh issue comment "$ISSUE_NUMBER" --body "🔧 \`/verify --fix\` ran but proposed no code change — see the [findings comment and run log]($RUN_URL)."
+            fi
             exit 0
           fi
           # DENYLIST — a patch touching these is refused outright.
