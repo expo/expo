@@ -518,8 +518,15 @@ jobs:
             --allowedTools "$ALLOWED" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
-            | jq -rf .github/verify/render.jq \
-            | tee .verify-out/run-log.txt
+            | jq -rf .github/verify/render.jq
+          # Render the reviewer's copy FROM THE TRANSCRIPT, not by teeing the
+          # live pipeline. A fourth stage gave jq somewhere new to fail: with
+          # pipefail, an EPIPE on its last write fails the step — so a run
+          # whose investigation completed, wrote findings.md and edited the
+          # checkout was thrown away at the final byte, 25 minutes and two EAS
+          # builds in, before any of the three phases could post it.
+          jq -rf .github/verify/render.jq \
+            < "$RUNNER_TEMP/verify-run.jsonl" > .verify-out/run-log.txt || true
           # A silently un-writable checkout is the failure mode this whole
           # feature had on its first run: fix mode was on, the agent did the
           # work, every Edit was refused, and the step still exited 0 with an
