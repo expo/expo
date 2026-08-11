@@ -212,8 +212,13 @@ module Expo
         # dependencies that include statically linked binaries".
         # `build_type` is a private reader on Pod::Target, so read it via `send`;
         # hooks that override it define a public method, which `send` resolves too.
+        #
+        # Only a pod whose linkage differs from the one its own target definitions
+        # declare was flipped by such a hook. Under `use_frameworks! :linkage => :dynamic`
+        # every pod target is a dynamic framework already, so without that comparison this
+        # set would cover the whole install and skip the detection below entirely.
         dynamic_framework_pods = installer.pod_targets
-          .select { |t| t.send(:build_type).dynamic_framework? }
+          .select { |t| t.send(:build_type).dynamic_framework? && !declared_dynamic_framework?(t) }
           .map(&:name)
           .to_set
 
@@ -405,6 +410,13 @@ module Expo
         end
 
         true
+      end
+
+      # Returns true when the pod's own target definitions already ask for dynamic
+      # frameworks (`use_frameworks! :linkage => :dynamic`), meaning its build type was
+      # not overridden by another pre_install hook.
+      def declared_dynamic_framework?(pod_target)
+        pod_target.target_definitions.any? { |target_definition| target_definition.build_type.dynamic_framework? }
       end
 
       # Returns true if the pod target vendors .xcframework files.
