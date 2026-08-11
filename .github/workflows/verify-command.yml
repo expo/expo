@@ -1018,7 +1018,7 @@ jobs:
       # with no result. The job also runs continue-on-error, so nothing else
       # signals it either.
       - name: Report a run that did not finish
-        if: always() && steps.gate.outputs.ok == 'true' && (failure() || cancelled())
+        if: always() && steps.gate.outputs.ok == 'true' && env.QUIET != 'true' && (failure() || cancelled())
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
