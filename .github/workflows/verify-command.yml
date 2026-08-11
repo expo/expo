@@ -508,7 +508,18 @@ jobs:
           fi
           rm -f .verify-out/.permcheck
           echo "preflight: .verify-out is writable${FIX_MODE:+, fix mode = $FIX_MODE}"
-          timeout 3600 claude -p \
+          # The renderer is COSMETIC and must never decide the step's fate.
+          # It has now failed a completed investigation twice with
+          # "jq: error: writing output failed: Broken pipe" — once as a fourth
+          # pipe stage, once writing 14KB straight to the step log — and each
+          # time pipefail turned a finished 12-25 minute run, with findings
+          # written and the checkout edited, into a failure with all three
+          # phases skipped. Rather than guess at the cause a third time: take
+          # the AGENT's exit status through a file, let the pipeline's status
+          # go, and judge the step on that plus the artifacts it produced.
+          set +o pipefail
+          rc_file="$RUNNER_TEMP/claude.rc"
+          { timeout 3600 claude -p \
             --model "$VERIFY_MODEL" \
             "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR. FIX MODE: $FIX_MODE (when true, and only if your fix is verified, edit the checkout in $GITHUB_WORKSPACE and write .verify-out/pr.md — see 'Fix mode' below; when false, describe the fix in your comment and change nothing). CHECKOUT: $REPO at commit $CHECKOUT_SHA — permalink any file you cite as https://github.com/$REPO/blob/$CHECKOUT_SHA/<path>#L<start>-L<end>. THIS PHASE DOES NOT PUBLISH: write your findings to .verify-out/findings.md and STOP — do not post, and do NOT destroy the sandbox. A reviewer who has not seen your reasoning will attack the draft, and you will get the chance to answer with the sandbox still alive.
 
@@ -517,8 +528,15 @@ jobs:
             --disallowedTools Bash \
             --allowedTools "$ALLOWED" \
             --output-format stream-json --verbose \
+            ; echo $? > "$rc_file"; } \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
-            | jq -rf .github/verify/render.jq
+            | jq -rf .github/verify/render.jq || true
+          set -o pipefail
+          agent_rc=$(cat "$rc_file" 2>/dev/null || echo 1)
+          if [ "$agent_rc" != "0" ]; then
+            echo "::error::The investigation agent exited $agent_rc."
+            exit 1
+          fi
           # Render the reviewer's copy FROM THE TRANSCRIPT, not by teeing the
           # live pipeline. A fourth stage gave jq somewhere new to fail: with
           # pipefail, an EPIPE on its last write fails the step — so a run
@@ -571,7 +589,9 @@ jobs:
         run: |
           set -o pipefail
           critic=$(cat .github/verify/critic.md)
-          timeout 900 claude -p \
+          set +o pipefail
+          rc_file="$RUNNER_TEMP/critic.rc"
+          { timeout 900 claude -p \
             --model "$VERIFY_MODEL" \
             "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. The draft is .verify-out/findings.md and the run that produced it is .verify-out/run-log.txt. Write your review to .verify-out/review.md.
 
@@ -579,8 +599,10 @@ jobs:
             --disallowedTools Bash --strict-mcp-config \
             --allowedTools "Read(/$GITHUB_WORKSPACE/**),Glob(/$GITHUB_WORKSPACE/**),Grep(/$GITHUB_WORKSPACE/**),Edit(/$GITHUB_WORKSPACE/.verify-out/review.md)" \
             --output-format stream-json --verbose \
+            ; echo $? > "$rc_file"; } \
             | tee "$RUNNER_TEMP/verify-critic.jsonl" \
-            | jq -rf .github/verify/render.jq
+            | jq -rf .github/verify/render.jq || true
+          set -o pipefail
           if [ ! -s .verify-out/review.md ]; then
             echo "::error::The reviewer produced no .verify-out/review.md."
             exit 1
@@ -601,7 +623,9 @@ jobs:
         run: |
           set -o pipefail
           review=$(cat .verify-out/review.md)
-          timeout 1500 claude -p --resume "$SESSION_ID" \
+          set +o pipefail
+          rc_file="$RUNNER_TEMP/revise.rc"
+          { timeout 1500 claude -p --resume "$SESSION_ID" \
             "A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the findings with your reason rather than silently ignoring it. The sandbox is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
 
           Then, and only then: post the findings with mcp__sandbox__github_comment_issue, write .verify-out/pr.md if fix mode applies, and destroy the sandbox with mcp__sandbox__destroy_sandbox before you finish. Destroy it even if posting fails.
@@ -612,8 +636,15 @@ jobs:
             --disallowedTools Bash \
             --allowedTools "$ALLOWED,mcp__sandbox__github_comment_issue,mcp__sandbox__destroy_sandbox" \
             --output-format stream-json --verbose \
+            ; echo $? > "$rc_file"; } \
             | tee "$RUNNER_TEMP/verify-revise.jsonl" \
-            | jq -rf .github/verify/render.jq
+            | jq -rf .github/verify/render.jq || true
+          set -o pipefail
+          revise_rc=$(cat "$rc_file" 2>/dev/null || echo 1)
+          if [ "$revise_rc" != "0" ]; then
+            echo "::error::The revise-and-post phase exited $revise_rc."
+            exit 1
+          fi
 
       # The findings are public now, and they name the revision they tested.
       # If the contributor pushed while we worked, that verdict is about a
