@@ -1035,10 +1035,6 @@ export type PathConfig<ParamList extends {}> = Partial<PathConfigAlias> & {
    */
   stringify?: Record<string, (value: any) => string>;
   /**
-   * Additional path alias that will be matched to the same screen.
-   */
-  alias?: (string | PathConfigAlias)[];
-  /**
    * Path configuration for child screens.
    */
   screens?: PathConfigMap<ParamList>;

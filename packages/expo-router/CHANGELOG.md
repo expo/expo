@@ -4,6 +4,7 @@
 
 ### 🛠 Breaking changes
 
+- Remove the deprecated `NavigationContainer` export ([#48760](https://github.com/expo/expo/pull/48760) by [@Ubax](https://github.com/Ubax))
 - Remove the static `default` field from `DrawerNavigationState` and deprecate `getDrawerStatusFromState`. ([#48750](https://github.com/expo/expo/pull/48750) by [@Ubax](https://github.com/Ubax))
 - Remove the `preloadedRouteKeys` field from `TabNavigationState`. ([#48718](https://github.com/expo/expo/pull/48718) by [@Ubax](https://github.com/Ubax))
 - Make `history` optional in `TabNavigationState` and `DrawerNavigationState` ([#48709](https://github.com/expo/expo/pull/48709) by [@Ubax](https://github.com/Ubax))
