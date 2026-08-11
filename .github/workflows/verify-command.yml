@@ -22,12 +22,18 @@
 #   associations, and an authoritative permission check requires write
 #   access or higher (author_association alone does not prove write).
 # - The comment body reaches shell only via env.
-# - The agent reads attacker-authored issue text, so this workflow is
-#   COMMENT-ONLY by construction: no fix-PRs, no pushes, and NO SHELL — the
-#   agent has no Bash tool, so nothing it invokes can expand an environment
-#   variable into output. Its view of the target arrives as files; its only
-#   write path is the MCP server's findings-comment tool, whose arguments are
-#   literal JSON. MCP create_sandbox allowlisting is authorized by the gated
+# - The agent reads attacker-authored issue text, so it gets NO SHELL: every
+#   invocation passes --disallowedTools Bash, which REMOVES the tool. An
+#   allowlist alone does not — it pre-approves matching calls and leaves other
+#   tools reachable, which is how this file once claimed a shell-free agent it
+#   did not have. With Bash gone, nothing the agent invokes can expand
+#   CLAUDE_CODE_OAUTH_TOKEN out of the step's environment. Its view of the
+#   target arrives as files; it publishes only through the MCP server's
+#   findings-comment tool, whose arguments are literal JSON.
+# - The agent never pushes and never opens a pull request. In fix mode it
+#   edits the trusted base checkout, and a later step — git and gh only, no
+#   agent involvement — turns that edit into a PR behind a path denylist and a
+#   size cap. MCP create_sandbox allowlisting is authorized by the gated
 #   maintainer trigger itself (approval moves to the trigger, not skipped).
 #
 # SECRETS REQUIRED (repo settings):
@@ -35,7 +41,8 @@
 #                            deployment, held by the expo-verification-bot
 #                            service account. The agent NEVER sees it — the
 #                            Mint scoped token step exchanges it for a
-#                            one-sandbox, 90-minute credential. The service
+#                            one-sandbox, two-hour credential (sized to
+#                            outlive the job; see timeout-minutes). The service
 #                            account's stored Expo credential is what EAS
 #                            builds bill; its stored GitHub PAT posts the
 #                            findings comments (plain issues need Issues:
@@ -79,10 +86,18 @@ jobs:
       startsWith(github.event.comment.body, '/verify') &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
-    # EAS builds take 10-20 min each and a verification may need up to three,
+    # ONE budget, in one place, and the ordering is the point:
+    #   scoped-token TTL (120m) > job timeout (110m) > sum of the phase
+    #   timeouts (60 + 15 + 25 = 100m) + setup.
+    # Get it backwards and the credential dies mid-run — which is exactly what
+    # happened when the phases were split in three against an unchanged
+    # 70-minute token: up to 140 minutes of agent time on it, and the phase
+    # most likely to find it dead was the last one, the only phase that posts
+    # the findings and destroys the sandbox.
+    # EAS builds take 10-20 min each and a verification may need several,
     # plus censuses and the report. The MCP server TTL-reaps sandboxes
     # server-side, so a timeout here orphans nothing.
-    timeout-minutes: 75
+    timeout-minutes: 110
     continue-on-error: true
     steps:
       # author_association MEMBER does not imply write on THIS repo; the
@@ -167,6 +182,106 @@ jobs:
         if: steps.gate.outputs.ok == 'true'
         run: npm install -g @anthropic-ai/claude-code@2.1.212
 
+      # The agent gets ZERO shell access (see the allowlist below), so its
+      # view of the target arrives as files it can Read. This is what lets the
+      # Bash surface go away: nothing the agent can invoke expands an
+      # environment variable, so no injected instruction can print a
+      # credential anywhere.
+      - name: Collect target context
+        id: ctx
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          IS_PR: ${{ github.event.issue.pull_request != null }}
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/.verify-context"
+          cd "$GITHUB_WORKSPACE/.verify-context"
+          # `gh --json` emits COMPACT json: one enormous line. The agent's Read
+          # pages by line, so a thread that exceeds its window becomes
+          # unreachable past the first page — offsets cannot land inside a
+          # single line. Pretty-print so paging works, and bound it the same
+          # way the diff below is bounded, with the status in a header the
+          # agent cannot read past.
+          gh issue view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+            --comments --json number,title,state,labels,body,comments \
+            | jq . > "$RUNNER_TEMP/full-target.json"
+          t_lines=$(wc -l < "$RUNNER_TEMP/full-target.json" | tr -d ' ')
+          t_bytes=$(wc -c < "$RUNNER_TEMP/full-target.json" | tr -d ' ')
+          t_max_lines=1500
+          head -n "$t_max_lines" "$RUNNER_TEMP/full-target.json" > "$RUNNER_TEMP/cut-target.json"
+          k_lines=$(wc -l < "$RUNNER_TEMP/cut-target.json" | tr -d ' ')
+          if [ "$k_lines" -lt "$t_lines" ]; then t_complete=NO; else t_complete=yes; fi
+          if [ "$t_complete" = "yes" ]; then
+            cp "$RUNNER_TEMP/full-target.json" target.json
+          else
+            # Truncated JSON does not parse, so hand it over as text with the
+            # warning first and the comment count it should have had.
+            {
+              echo "*** TARGET CONTEXT TRUNCATED — complete: NO ***"
+              echo "*** included $k_lines of $t_lines lines ($t_bytes bytes total). ***"
+              echo "*** Later comments are NOT below; say so in your report if they matter. ***"
+              echo
+              cat "$RUNNER_TEMP/cut-target.json"
+            } > target.json
+          fi
+          if [ "$IS_PR" = "true" ]; then
+            # headRefOid/baseRefOid PIN the revision. Without them the diff
+            # below and the checkout the agent makes later are two different
+            # fetches of a MUTABLE ref: a contributor pushing mid-run makes the
+            # agent reason from revision A, test revision B, and publish a
+            # verdict about neither.
+            gh pr view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
+              --json number,title,state,headRefName,baseRefName,headRefOid,baseRefOid,files,body > pull-request.json
+            head_oid=$(jq -r .headRefOid pull-request.json)
+            base_oid=$(jq -r .baseRefOid pull-request.json)
+            echo "head_oid=$head_oid" >> "$GITHUB_OUTPUT"
+            echo "pinned PR revision: base $base_oid -> head $head_oid"
+            # A huge diff must not blow the agent's context, but a SILENTLY
+            # cut diff is worse than a big one: the agent would post a public
+            # verdict built on it. Three rules make that impossible to miss:
+            #
+            #  1. Fetch in full first — piping into `head` would hide both a
+            #     gh failure (the default run: shell has no pipefail) and the
+            #     SIGPIPE that truncation itself causes.
+            #  2. Bound by LINES as well as bytes, tighter than the agent's
+            #     own read window (~2000 lines), so the file the agent gets
+            #     always fits in ONE read. Nothing can hide below the fold.
+            #  3. Put the status in a HEADER AT THE TOP, always — present even
+            #     when the diff is complete. A trailing marker is unreachable:
+            #     the agent reads from the top and stops long before the end.
+            # Pinned to the two SHAs, not to `gh pr diff`, which re-resolves
+            # the head every time it runs.
+            gh api -H "Accept: application/vnd.github.v3.diff" \
+              "repos/${{ github.repository }}/compare/$base_oid...$head_oid" \
+              > "$RUNNER_TEMP/full.diff"
+            max_bytes=400000
+            max_lines=1500
+            full_bytes=$(wc -c < "$RUNNER_TEMP/full.diff" | tr -d ' ')
+            full_lines=$(wc -l < "$RUNNER_TEMP/full.diff" | tr -d ' ')
+            head -c "$max_bytes" "$RUNNER_TEMP/full.diff" | head -n "$max_lines" > "$RUNNER_TEMP/cut.diff"
+            kept_bytes=$(wc -c < "$RUNNER_TEMP/cut.diff" | tr -d ' ')
+            kept_lines=$(wc -l < "$RUNNER_TEMP/cut.diff" | tr -d ' ')
+            if [ "$kept_bytes" -lt "$full_bytes" ]; then complete=NO; else complete=yes; fi
+            {
+              echo "*** VERIFY DIFF HEADER — READ THIS FIRST ***"
+              echo "*** complete: $complete"
+              echo "*** included: $kept_lines of $full_lines lines, $kept_bytes of $full_bytes bytes"
+              if [ "$complete" = "NO" ]; then
+                echo "*** THIS IS A PARTIAL DIFF. Do NOT reason about the change from this file."
+                echo "*** Clone the PR head inside the sandbox and read the files there instead,"
+                echo "*** and say in your report that the provided diff was truncated."
+              fi
+              echo "*** END HEADER ***"
+              echo
+              cat "$RUNNER_TEMP/cut.diff"
+            } > pull-request.diff
+            # Same facts in JSON, so the agent can check them without paging.
+            jq --argjson m "{\"complete\":$([ "$complete" = yes ] && echo true || echo false),\"includedLines\":$kept_lines,\"totalLines\":$full_lines,\"includedBytes\":$kept_bytes,\"totalBytes\":$full_bytes}" \
+              '. + {diff: $m}' pull-request.json > pull-request.tmp.json
+            mv pull-request.tmp.json pull-request.json
+          fi
+          ls -la
+
       # The long-lived secret never reaches the agent: it lives in THIS step's
       # env only, and is exchanged for a derived token bounded on every axis
       # that costs money or is publicly visible — ONE sandbox, at most 5 EAS
@@ -197,7 +312,7 @@ jobs:
           scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
             -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
             -H 'Content-Type: application/json' \
-            -d "{\"sandboxBudget\":1,\"buildBudget\":5,\"ttlSeconds\":4200,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
+            -d "{\"sandboxBudget\":1,\"buildBudget\":5,\"ttlSeconds\":7200,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
             | jq -r '.token // empty')
           if [ -z "$scoped" ]; then
             echo "::error::Could not mint a scoped sandbox token"
@@ -216,67 +331,6 @@ jobs:
             }
           }
           EOF
-
-      # The agent gets ZERO shell access (see the allowlist below), so its
-      # view of the target arrives as files it can Read. This is what lets the
-      # Bash surface go away: nothing the agent can invoke expands an
-      # environment variable, so no injected instruction can print a
-      # credential anywhere.
-      - name: Collect target context
-        if: steps.gate.outputs.ok == 'true'
-        env:
-          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
-          IS_PR: ${{ github.event.issue.pull_request != null }}
-        run: |
-          mkdir -p "$GITHUB_WORKSPACE/.verify-context"
-          cd "$GITHUB_WORKSPACE/.verify-context"
-          gh issue view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
-            --comments --json number,title,state,labels,body,comments > target.json
-          if [ "$IS_PR" = "true" ]; then
-            gh pr view "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
-              --json number,title,state,headRefName,baseRefName,files,body > pull-request.json
-            # A huge diff must not blow the agent's context, but a SILENTLY
-            # cut diff is worse than a big one: the agent would post a public
-            # verdict built on it. Three rules make that impossible to miss:
-            #
-            #  1. Fetch in full first — piping into `head` would hide both a
-            #     gh failure (the default run: shell has no pipefail) and the
-            #     SIGPIPE that truncation itself causes.
-            #  2. Bound by LINES as well as bytes, tighter than the agent's
-            #     own read window (~2000 lines), so the file the agent gets
-            #     always fits in ONE read. Nothing can hide below the fold.
-            #  3. Put the status in a HEADER AT THE TOP, always — present even
-            #     when the diff is complete. A trailing marker is unreachable:
-            #     the agent reads from the top and stops long before the end.
-            gh pr diff "${{ github.event.issue.number }}" -R "${{ github.repository }}" \
-              > "$RUNNER_TEMP/full.diff"
-            max_bytes=400000
-            max_lines=1500
-            full_bytes=$(wc -c < "$RUNNER_TEMP/full.diff" | tr -d ' ')
-            full_lines=$(wc -l < "$RUNNER_TEMP/full.diff" | tr -d ' ')
-            head -c "$max_bytes" "$RUNNER_TEMP/full.diff" | head -n "$max_lines" > "$RUNNER_TEMP/cut.diff"
-            kept_bytes=$(wc -c < "$RUNNER_TEMP/cut.diff" | tr -d ' ')
-            kept_lines=$(wc -l < "$RUNNER_TEMP/cut.diff" | tr -d ' ')
-            if [ "$kept_bytes" -lt "$full_bytes" ]; then complete=NO; else complete=yes; fi
-            {
-              echo "*** VERIFY DIFF HEADER — READ THIS FIRST ***"
-              echo "*** complete: $complete"
-              echo "*** included: $kept_lines of $full_lines lines, $kept_bytes of $full_bytes bytes"
-              if [ "$complete" = "NO" ]; then
-                echo "*** THIS IS A PARTIAL DIFF. Do NOT reason about the change from this file."
-                echo "*** Clone the PR head inside the sandbox and read the files there instead,"
-                echo "*** and say in your report that the provided diff was truncated."
-              fi
-              echo "*** END HEADER ***"
-              echo
-              cat "$RUNNER_TEMP/cut.diff"
-            } > pull-request.diff
-            # Same facts in JSON, so the agent can check them without paging.
-            jq --argjson m "{\"complete\":$([ "$complete" = yes ] && echo true || echo false),\"includedLines\":$kept_lines,\"totalLines\":$full_lines,\"includedBytes\":$kept_bytes,\"totalBytes\":$full_bytes}" \
-              '. + {diff: $m}' pull-request.json > pull-request.tmp.json
-            mv pull-request.tmp.json pull-request.json
-          fi
-          ls -la
 
       # Fix mode ends in a push, and a push that cannot authenticate costs the
       # whole run: the first time this step's push was ever reached it died on
@@ -327,14 +381,24 @@ jobs:
         # permits -X POST; a `gh issue comment` rule permits
         # --body "$SOME_SECRET", which would print a credential into a public
         # comment). So:
-        #   1. NO Bash tool at all. The agent has no shell, so nothing it can
-        #      invoke expands an environment variable. Its view of the target
-        #      is the files written by Collect target context.
-        #   2. Read/Glob/Grep scoped to the workspace — RUNNER_TEMP (holding
+        #   1. NO Bash tool: --disallowedTools Bash, which REMOVES it. An
+        #      allowlist does not — `--allowedTools` pre-approves matching
+        #      calls and leaves every other tool reachable, so this comment
+        #      used to claim a property the file did not have. Verified by
+        #      test: with only Read/Glob/Grep allowlisted, `echo hello` ran
+        #      unprompted; with --disallowedTools Bash it fails closed. The
+        #      agent having no shell is what stops anything it invokes from
+        #      expanding CLAUDE_CODE_OAUTH_TOKEN out of this step's env, so
+        #      the flag is load-bearing, not decorative.
+        #   2. --strict-mcp-config: only the server in --mcp-config is
+        #      reachable, never one inherited from a config file on the
+        #      runner.
+        #   3. Read/Glob/Grep scoped to the workspace — RUNNER_TEMP (holding
         #      the MCP config) is out of reach.
-        #   3. No GitHub token in this step's environment.
-        #   4. The MCP credential is server-scoped to a bounded sandbox
-        #      budget with a short TTL (see Mint scoped token).
+        #   4. No GitHub token in this step's environment.
+        #   5. The MCP credential is server-scoped to a bounded sandbox
+        #      budget with a TTL that outlives the phases (see Mint scoped
+        #      token).
         # stream-json --verbose + a jq activity renderer, the same visibility
         # the code-review CLI gives its claude -p engine: every tool call and
         # assistant message lands in the Actions log live (which the announce
@@ -436,6 +500,7 @@ jobs:
           mkdir -p .verify-out && rm -f .verify-out/.permcheck
           claude -p "Write the single word ok to .verify-out/.permcheck. Say nothing else." \
             --model claude-haiku-4-5-20251001 \
+            --disallowedTools Bash --strict-mcp-config \
             --allowedTools "$ALLOWED" >/dev/null 2>&1 || true
           if [ ! -f .verify-out/.permcheck ]; then
             echo "::error::The agent cannot write .verify-out — the --allowedTools file rules do not match. Fix them before this runs for real."
@@ -443,12 +508,13 @@ jobs:
           fi
           rm -f .verify-out/.permcheck
           echo "preflight: .verify-out is writable${FIX_MODE:+, fix mode = $FIX_MODE}"
-          timeout 4200 claude -p \
+          timeout 3600 claude -p \
             --model "$VERIFY_MODEL" \
             "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR. FIX MODE: $FIX_MODE (when true, and only if your fix is verified, edit the checkout in $GITHUB_WORKSPACE and write .verify-out/pr.md — see 'Fix mode' below; when false, describe the fix in your comment and change nothing). CHECKOUT: $REPO at commit $CHECKOUT_SHA — permalink any file you cite as https://github.com/$REPO/blob/$CHECKOUT_SHA/<path>#L<start>-L<end>. THIS PHASE DOES NOT PUBLISH: write your findings to .verify-out/findings.md and STOP — do not post, and do NOT destroy the sandbox. A reviewer who has not seen your reasoning will attack the draft, and you will get the chance to answer with the sandbox still alive.
 
           $prompt" \
-            --mcp-config "$RUNNER_TEMP/mcp.json" \
+            --mcp-config "$RUNNER_TEMP/mcp.json" --strict-mcp-config \
+            --disallowedTools Bash \
             --allowedTools "$ALLOWED" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
@@ -498,11 +564,12 @@ jobs:
         run: |
           set -o pipefail
           critic=$(cat .github/verify/critic.md)
-          timeout 1800 claude -p \
+          timeout 900 claude -p \
             --model "$VERIFY_MODEL" \
             "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. The draft is .verify-out/findings.md and the run that produced it is .verify-out/run-log.txt. Write your review to .verify-out/review.md.
 
           $critic" \
+            --disallowedTools Bash --strict-mcp-config \
             --allowedTools "Read(/$GITHUB_WORKSPACE/**),Glob(/$GITHUB_WORKSPACE/**),Grep(/$GITHUB_WORKSPACE/**),Edit(/$GITHUB_WORKSPACE/.verify-out/review.md)" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-critic.jsonl" \
@@ -527,18 +594,39 @@ jobs:
         run: |
           set -o pipefail
           review=$(cat .verify-out/review.md)
-          timeout 2400 claude -p --resume "$SESSION_ID" \
+          timeout 1500 claude -p --resume "$SESSION_ID" \
             "A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the findings with your reason rather than silently ignoring it. The sandbox is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
 
           Then, and only then: post the findings with mcp__sandbox__github_comment_issue, write .verify-out/pr.md if fix mode applies, and destroy the sandbox with mcp__sandbox__destroy_sandbox before you finish. Destroy it even if posting fails.
 
           --- REVIEW ---
           $review" \
-            --mcp-config "$RUNNER_TEMP/mcp.json" \
+            --mcp-config "$RUNNER_TEMP/mcp.json" --strict-mcp-config \
+            --disallowedTools Bash \
             --allowedTools "$ALLOWED,mcp__sandbox__github_comment_issue,mcp__sandbox__destroy_sandbox" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-revise.jsonl" \
             | jq -rf .github/verify/render.jq
+
+      # The findings are public now, and they name the revision they tested.
+      # If the contributor pushed while we worked, that verdict is about a
+      # revision the PR no longer has — say so on the thread rather than
+      # leaving a stale conclusion standing unqualified.
+      - name: Note if the PR moved under the run
+        if: steps.gate.outputs.ok == 'true' && github.event.issue.pull_request != null
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          TESTED: ${{ steps.ctx.outputs.head_oid }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          now=$(gh pr view "$ISSUE_NUMBER" -R "${{ github.repository }}" --json headRefOid --jq .headRefOid)
+          if [ -n "$TESTED" ] && [ -n "$now" ] && [ "$now" != "$TESTED" ]; then
+            gh issue comment "$ISSUE_NUMBER" --body "⚠️ This pull request was updated while \`/verify\` was running. The findings above describe \`${TESTED:0:12}\`; the head is now \`${now:0:12}\`. Re-run \`/verify\` to check the current revision. [Run log]($RUN_URL)"
+            echo "PR head moved during the run: $TESTED -> $now"
+          else
+            echo "PR head unchanged during the run ($TESTED)"
+          fi
 
       # Fix mode: turn the agent's verified edit into a pull request.
       #
@@ -655,3 +743,22 @@ jobs:
             .verify-out/review.md
           if-no-files-found: ignore
           retention-days: 14
+
+      # The announce comment promises "findings will be posted here when it
+      # completes". Every path that breaks that promise ends here.
+      #
+      # Without this, a failure anywhere — CLI install, token mint, context
+      # collection, any of the three agent phases, a jq error — skips the
+      # remaining steps (a condition with no status function carries an
+      # implicit success()), and the thread keeps a "started" comment forever
+      # with no result. The job also runs continue-on-error, so nothing else
+      # signals it either.
+      - name: Report a run that did not finish
+        if: always() && steps.gate.outputs.ok == 'true' && (failure() || cancelled())
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          OUTCOME: ${{ cancelled() && 'was cancelled' || 'failed' }}
+        run: |
+          gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`/verify\` $OUTCOME before it could post findings — nothing here is a verdict on the report. [Run log]($RUN_URL) has the details, and the run can be re-triggered with \`/verify\`."
