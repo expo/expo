@@ -1,6 +1,7 @@
 // Cuts beta docs for a new SDK version and prints a JSON summary the docs-sdk-beta
 // workflow uses to raise a PR. Run: pnpm sdk-beta --sdk 58 [--dry-run].
 
+import { validateSdkCompatibilityData } from '@expo/sdk-compatibility';
 import type { SdkCompatibility, SdkCompatibilityData } from '@expo/sdk-compatibility/types';
 import { execFileSync, execSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
@@ -385,7 +386,8 @@ function readSdkCompatibilityData(): SdkCompatibilityData {
 }
 
 function parseIntegerOverride(field: string, value: string) {
-  const parsed = Number(value.replace(/\+$/, ''));
+  const normalized = value.replace(/\+$/, '');
+  const parsed = normalized ? Number(normalized) : Number.NaN;
   if (!Number.isInteger(parsed) || parsed < 0) {
     throw new Error(`--set ${field}=${value} must contain a non-negative integer.`);
   }
@@ -451,7 +453,7 @@ function applyCompatibilityOverride(row: SdkCompatibility, field: string, value:
       row.android.targetSdkVersion = parseIntegerOverride(field, value);
       break;
     case 'buildToolsVersion':
-      row.android.buildToolsVersion = value;
+      row.android.buildToolsVersion = normalizeThreePartVersion(value, field);
       break;
     case 'ios':
       row.ios.minimumVersion = value.replace(/\+$/, '');
@@ -469,7 +471,7 @@ function applyCompatibilityOverride(row: SdkCompatibility, field: string, value:
       row.runtime.reactNativeTvos = value;
       break;
     case 'react':
-      row.runtime.react = value;
+      row.runtime.react = normalizeThreePartVersion(value, field);
       break;
     case 'node':
       row.node = { minimumVersion: parseNodeMinimumVersion(value) };
@@ -541,6 +543,10 @@ function planSdkVersionsRow() {
   }
 
   const updatedTable = { ...table, sdkVersions: [row, ...table.sdkVersions] };
+  const validationErrors = validateSdkCompatibilityData(updatedTable);
+  if (validationErrors.length > 0) {
+    throw new Error(`Invalid SDK compatibility row:\n- ${validationErrors.join('\n- ')}`);
+  }
   return updatedTable;
 }
 
