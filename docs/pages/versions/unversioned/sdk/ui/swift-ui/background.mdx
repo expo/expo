@@ -1,0 +1,72 @@
+---
+title: Background
+description: A SwiftUI Background component for layering content behind another view.
+sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-ui'
+packageName: '@expo/ui'
+platforms: ['ios', 'tvOS', 'expo-go']
+---
+
+import APISection from '~/components/plugins/APISection';
+import { APIInstallSection } from '~/components/plugins/InstallSection';
+
+Expo UI Background matches the official SwiftUI [background](<https://developer.apple.com/documentation/swiftui/view/background(alignment:content:)>) modifier and draws another view behind a view, positioned with a specified alignment. The base view keeps its own size, and the background content is laid out behind it.
+
+> **info** To fill a view with a solid color instead of a view, use the `background` modifier from `@expo/ui/swift-ui/modifiers`.
+
+## Installation
+
+<APIInstallSection />
+
+## Usage
+
+### Basic background
+
+```tsx BackgroundExample.tsx
+import { Background, Host, RoundedRectangle, Text } from '@expo/ui/swift-ui';
+import { font, foregroundStyle, padding } from '@expo/ui/swift-ui/modifiers';
+
+export default function BackgroundExample() {
+  return (
+    <Host style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Background>
+        <Text modifiers={[font({ size: 17, weight: 'semibold' }), padding({ all: 16 })]}>
+          Card title
+        </Text>
+        <Background.Content>
+          <RoundedRectangle cornerRadius={12} modifiers={[foregroundStyle('#E8F0FE')]} />
+        </Background.Content>
+      </Background>
+    </Host>
+  );
+}
+```
+
+### Aligning the background content
+
+Use the `alignment` prop to position the background content relative to the base view. Because the background does not affect the layout of the base view, a smaller background can be pinned to one of its edges.
+
+```tsx BackgroundAlignmentExample.tsx
+import { Background, Host, Rectangle, Text } from '@expo/ui/swift-ui';
+import { font, foregroundStyle, frame } from '@expo/ui/swift-ui/modifiers';
+
+export default function BackgroundAlignmentExample() {
+  return (
+    <Host style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Background alignment="bottom">
+        <Text modifiers={[font({ size: 17 })]}>Underlined by its background</Text>
+        <Background.Content>
+          <Rectangle modifiers={[frame({ height: 3 }), foregroundStyle('#007AFF')]} />
+        </Background.Content>
+      </Background>
+    </Host>
+  );
+}
+```
+
+## API
+
+```tsx
+import { Background } from '@expo/ui/swift-ui';
+```
+
+<APISection packageName="expo-ui/swift-ui/background" apiName="Background" />

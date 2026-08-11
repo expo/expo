@@ -17,6 +17,7 @@
 - [iOS] Added the `listRowSeparatorTint` modifier, so a list row separator can be recolored and not only shown or hidden. ([#48804](https://github.com/expo/expo/issues/48804) by [@marco242424](https://github.com/marco242424)) ([#48810](https://github.com/expo/expo/pull/48810) by [@expo-bot](https://github.com/expo-bot))
 - [iOS] Added the `geometryGroup` modifier, so a view's subviews can resolve their geometry against it instead of an animating ancestor. Without it, a `Button` inside a container with an `animation` modifier can draw its label away from its own background while the animation runs. ([#48838](https://github.com/expo/expo/pull/48838) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [Android] Add a Jetpack Compose `Image` component. ([#48521](https://github.com/expo/expo/pull/48521) by [@jakex7](https://github.com/jakex7))
+- [iOS] Added the `Background` component, which draws any view behind another view with an optional `alignment`, matching SwiftUI's `background(alignment:content:)`. ([#48904](https://github.com/expo/expo/pull/48904) by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🐛 Bug fixes
 
