@@ -1,15 +1,71 @@
 import { SharedRef } from 'expo';
 import type { SharedRefType } from 'expo';
-import type { ImageResizeMode } from 'react-native';
+import type { ImageResizeMode, ImageStyle } from 'react-native';
 
 import type {
   ImageContentFit,
   ImageContentPosition,
   ImageContentPositionObject,
   ImageContentPositionString,
+  ImageNativeProps,
   ImageProps,
   ImageTransition,
 } from './Image.types';
+
+/**
+ * Style properties that already determine the layout size of the view.
+ */
+const SIZING_STYLE_PROPS = [
+  'width',
+  'height',
+  'minWidth',
+  'minHeight',
+  'aspectRatio',
+  'flex',
+  'flexGrow',
+  'flexBasis',
+] as const;
+
+/**
+ * Whether the style already determines the layout size of the view, either directly
+ * (`SIZING_STYLE_PROPS`, `position: 'absolute'`) or by giving a 0-content box a non-zero size
+ * of its own (any `padding*`/`borderWidth*` property, including their logical aliases like
+ * `paddingInline` or `borderStartWidth`).
+ */
+function isSizeDeterminedByStyle(style: ImageStyle): boolean {
+  if (style.position === 'absolute' || SIZING_STYLE_PROPS.some((prop) => style[prop] != null)) {
+    return true;
+  }
+  return Object.keys(style).some(
+    (prop) => prop.startsWith('padding') || (prop.startsWith('border') && prop.endsWith('Width'))
+  );
+}
+
+/**
+ * Returns the size declared by the image source, to be used as the default size of the view,
+ * the same way React Native's `<Image>` does. An asset loaded with `require` carries the size
+ * that the bundler read from the file and an `ImageSource` object can declare it explicitly.
+ * It is applied only when nothing in the style already determines the layout size, so it can
+ * affect only the images that would otherwise be laid out as 0x0.
+ */
+export function resolveDefaultSize(
+  source: ImageNativeProps['source'],
+  style: ImageStyle
+): { width: number; height: number } | null {
+  // Sources in an array may have different sizes, so there is no single default size to use.
+  if (!Array.isArray(source) || source.length !== 1) {
+    return null;
+  }
+  const { width, height } = source[0];
+
+  if (typeof width !== 'number' || typeof height !== 'number') {
+    return null;
+  }
+  if (isSizeDeterminedByStyle(style)) {
+    return null;
+  }
+  return { width, height };
+}
 
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
