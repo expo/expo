@@ -1,3 +1,5 @@
 #!/usr/bin/env node
 
-require('../build/index.js');
+const { logErrorAndExit, runExpoFeedbackAsync } = require('../build/index.js');
+
+runExpoFeedbackAsync().catch(logErrorAndExit);

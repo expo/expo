@@ -28,8 +28,11 @@ const GENERATED_FEEDBACK_ID_BYTES = 6;
 const MIN_FEEDBACK_ID_LENGTH = 6;
 const MAX_FEEDBACK_ID_LENGTH = 64;
 const FEEDBACK_ID_PATTERN = /^[A-Za-z0-9_-]+$/;
+const EAS_SIMULATOR_SESSION_ID_VARIABLE = 'EAS_SIMULATOR_SESSION_ID';
+const EAS_SIMULATOR_DOTENV_FILE = '.env.eas-simulator';
+const MAX_SIMULATOR_SESSION_ID_LENGTH = 128;
 
-type UserSession = {
+export type UserSession = {
   sessionSecret?: string;
   userId?: string;
   username?: string;
@@ -212,6 +215,7 @@ export async function createFeedbackMetadataAsync(
     },
     agentEnvironment: getAgentEnvironment(),
     sandboxEnvironment: getSandboxEnvironment(),
+    simulatorEnvironment: getSimulatorEnvironment(projectRoot),
     ci: ciInfo.isCI
       ? {
           name: ciInfo.name ?? null,
@@ -251,6 +255,57 @@ function getSandboxEnvironment(): CliFeedbackTelemetryMetadata['sandboxEnvironme
         sandbox: result.sandbox,
       }
     : { detected: false };
+}
+
+function getSimulatorEnvironment(
+  projectRoot: string
+): CliFeedbackTelemetryMetadata['simulatorEnvironment'] {
+  const sessionId =
+    normalizeSimulatorSessionId(process.env[EAS_SIMULATOR_SESSION_ID_VARIABLE]) ??
+    normalizeSimulatorSessionId(readSimulatorSessionIdFromDotenvFile(projectRoot));
+
+  return sessionId
+    ? {
+        detected: true,
+        simulator: { sessionId },
+      }
+    : { detected: false };
+}
+
+// .env.eas-simulator is managed by eas-cli and also holds controller connection credentials;
+// read only the session ID line.
+function readSimulatorSessionIdFromDotenvFile(projectRoot: string): string | undefined {
+  let contents: string;
+  try {
+    contents = readFileSync(path.join(projectRoot, EAS_SIMULATOR_DOTENV_FILE), 'utf8');
+  } catch {
+    return undefined;
+  }
+
+  const match = contents.match(new RegExp(`^${EAS_SIMULATOR_SESSION_ID_VARIABLE}=(.*)$`, 'm'));
+  if (!match) {
+    return undefined;
+  }
+
+  // eas-cli writes JSON-stringified values, but tolerate plain or single-quoted ones.
+  const value = match[1]?.trim();
+  if (!value) {
+    return undefined;
+  }
+  try {
+    const parsed: unknown = JSON.parse(value);
+    return typeof parsed === 'string' ? parsed : undefined;
+  } catch {
+    return value.replace(/^['"]|['"]$/g, '');
+  }
+}
+
+function normalizeSimulatorSessionId(value: string | undefined): string | undefined {
+  const sessionId = value?.trim();
+  if (!sessionId || sessionId.length > MAX_SIMULATOR_SESSION_ID_LENGTH || /\s/.test(sessionId)) {
+    return undefined;
+  }
+  return sessionId;
 }
 
 export async function getUserMetadataAsync(
@@ -324,7 +379,10 @@ function hasExpoProjectConfig(paths: ConfigFilePaths, pkg: PackageJson | null): 
 }
 
 function getDependencyVersion(
-  pkg: { dependencies?: Record<string, unknown>; devDependencies?: Record<string, unknown> } | null,
+  pkg: {
+    dependencies?: Record<string, unknown>;
+    devDependencies?: Record<string, unknown>;
+  } | null,
   name: string
 ): string | undefined {
   if (!pkg) {
@@ -346,7 +404,9 @@ function getPackageJson(projectRoot: string): PackageJson | null {
 function getInstalledPackageVersion(projectRoot: string, packageName: string): string | undefined {
   try {
     const packageJsonPath = getResolvedPackageJsonPath(projectRoot, packageName);
-    const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as { version?: unknown };
+    const pkg = JSON.parse(readFileSync(packageJsonPath, 'utf8')) as {
+      version?: unknown;
+    };
     return typeof pkg.version === 'string' ? pkg.version : undefined;
   } catch {
     return undefined;
@@ -474,7 +534,8 @@ function printHelp(): void {
 
   {bold Data collection}
     Feedback includes available agent/session identifiers, sandbox and environment
-    details, Expo project metadata, and Expo account identifiers.
+    details, the active EAS Simulator session ID, Expo project metadata, and Expo
+    account identifiers.
     Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected
     metadata and authentication.
 

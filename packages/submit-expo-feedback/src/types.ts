@@ -39,6 +39,15 @@ export type CliFeedbackSandboxEnvironment =
       };
     };
 
+export type CliFeedbackSimulatorEnvironment =
+  | { detected: false }
+  | {
+      detected: true;
+      simulator: {
+        sessionId: string;
+      };
+    };
+
 export type CliFeedbackProjectMetadata =
   | { isExpoProject: false }
   | {
@@ -69,6 +78,7 @@ export type CliFeedbackTelemetryMetadata = {
   };
   agentEnvironment: CliFeedbackAgentEnvironment;
   sandboxEnvironment: CliFeedbackSandboxEnvironment;
+  simulatorEnvironment: CliFeedbackSimulatorEnvironment;
   ci?: {
     name: string | null;
     isPr: boolean | null;
