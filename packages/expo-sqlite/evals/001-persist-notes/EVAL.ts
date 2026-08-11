@@ -6,7 +6,8 @@ import { check, score, type Scorer } from '../harness/types';
  * parameterized writes — this scorer checks whether those idioms landed.
  */
 const scorer: Scorer = async (ctx) => {
-  const source = ctx.sourceFiles()
+  const source = ctx
+    .sourceFiles()
     .map((f) => f.contents)
     .join('\n');
   const packageJson = ctx.packageJson();

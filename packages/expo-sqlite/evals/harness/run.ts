@@ -44,11 +44,13 @@ interface CaseRunResult {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const cases = discoverCases().filter(
-    (c) => args.cases.length === 0 || args.cases.includes(c.id)
-  );
+  const cases = discoverCases().filter((c) => args.cases.length === 0 || args.cases.includes(c.id));
   if (cases.length === 0) {
-    throw new Error(`No matching evals under ${EVALS_ROOT}. Known: ${discoverCases().map((c) => c.id).join(', ')}`);
+    throw new Error(
+      `No matching evals under ${EVALS_ROOT}. Known: ${discoverCases()
+        .map((c) => c.id)
+        .join(', ')}`
+    );
   }
 
   const conditions: Condition[] =
@@ -195,8 +197,7 @@ function printSummary(results: CaseRunResult[]) {
       `${r.result.passed ? 'PASS' : 'FAIL'}  ${r.caseId} [${r.condition}] ${passed}/${scored.length} checks${trigger}`
     );
     for (const c of r.result.checks) {
-      const marker =
-        c.status === 'passed' ? '✓' : c.status === 'failed' ? '✗' : `(${c.status})`;
+      const marker = c.status === 'passed' ? '✓' : c.status === 'failed' ? '✗' : `(${c.status})`;
       console.log(`      ${marker} ${c.name}${c.notes ? ` — ${c.notes}` : ''}`);
     }
   }

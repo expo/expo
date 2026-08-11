@@ -46,7 +46,11 @@ export async function runAgentAsync(options: AgentRunOptions): Promise<AgentRunR
   ) as NodeJS.ProcessEnv;
 
   const exit = await new Promise<{ exitCode: number | null; timedOut: boolean }>((resolve) => {
-    const child = spawn('claude', args, { cwd: options.workspace, env, stdio: ['ignore', 'pipe', 'pipe'] });
+    const child = spawn('claude', args, {
+      cwd: options.workspace,
+      env,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
     const timer = setTimeout(() => {
       child.kill('SIGKILL');
       resolve({ exitCode: null, timedOut: true });

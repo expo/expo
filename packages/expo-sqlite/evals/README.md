@@ -1,6 +1,6 @@
 # expo-sqlite agent evals
 
-Colocated evals for the agent skill this package ships in [`skills/expo-sqlite/`](../skills/expo-sqlite/SKILL.md). Each eval asks: *given an app and one concrete job, does a coding agent use expo-sqlite correctly?* Running them with and without the skill loaded measures what the skill actually buys.
+Colocated evals for the agent skill this package ships in [`skills/expo-sqlite/`](../skills/expo-sqlite/SKILL.md). Each eval asks: _given an app and one concrete job, does a coding agent use expo-sqlite correctly?_ Running them with and without the skill loaded measures what the skill actually buys.
 
 They also guard the reverse direction: an API change in this package that breaks agent-authored code shows up here before it ships.
 
@@ -45,11 +45,11 @@ Per eval × condition, the runner:
 
 Checks are deterministic (regexes over source, package.json facts, `tsc --noEmit`). Four statuses, following Expo's skill-eval harness:
 
-| Status | Counts toward pass? |
-| --- | --- |
-| `passed` / `failed` | yes |
-| `not_applicable` | no — the check's precondition doesn't hold (a clean pass would be absence of usage, not correct usage) |
-| `unavailable` | no — evidence couldn't be collected; infra gaps must never read as compliance |
+| Status              | Counts toward pass?                                                                                    |
+| ------------------- | ------------------------------------------------------------------------------------------------------ |
+| `passed` / `failed` | yes                                                                                                    |
+| `not_applicable`    | no — the check's precondition doesn't hold (a clean pass would be absence of usage, not correct usage) |
+| `unavailable`       | no — evidence couldn't be collected; infra gaps must never read as compliance                          |
 
 Agent runs are nondeterministic: treat a single run as a smoke signal and compare `with-skill` vs `without-skill` over several runs before drawing conclusions.
 

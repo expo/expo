@@ -7,7 +7,8 @@ import { check, notApplicable, score, type Scorer } from '../harness/types';
  * finalized in a finally block for the hot loop.
  */
 const scorer: Scorer = async (ctx) => {
-  const source = ctx.sourceFiles()
+  const source = ctx
+    .sourceFiles()
     .map((f) => f.contents)
     .join('\n');
   const usesPreparedStatement = /prepareAsync\(/.test(source);

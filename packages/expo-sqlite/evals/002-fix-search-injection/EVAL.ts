@@ -7,7 +7,8 @@ import { check, score, type Scorer } from '../harness/types';
  */
 const scorer: Scorer = async (ctx) => {
   const dbSource = ctx.read('src/db.ts');
-  const source = ctx.sourceFiles()
+  const source = ctx
+    .sourceFiles()
     .map((f) => f.contents)
     .join('\n');
 
@@ -17,13 +18,20 @@ const scorer: Scorer = async (ctx) => {
       source
     );
   const usesBinding =
-    /(getAllAsync|getFirstAsync|getEachAsync|runAsync)\s*(<[^>]*>)?\(\s*['"`][^'"`]*[?$]/.test(source) ||
+    /(getAllAsync|getFirstAsync|getEachAsync|runAsync)\s*(<[^>]*>)?\(\s*['"`][^'"`]*[?$]/.test(
+      source
+    ) ||
     /\.sql[<`]/.test(source) ||
     /prepareAsync\(/.test(source);
   const escapesByHand = /replace\s*\(\s*\/?.?'.*\)/.test(dbSource) && !usesBinding;
 
   return score([
-    check('searchNotesAsync still exists', /export\s+(async\s+)?function\s+searchNotesAsync|export\s+const\s+searchNotesAsync/.test(dbSource)),
+    check(
+      'searchNotesAsync still exists',
+      /export\s+(async\s+)?function\s+searchNotesAsync|export\s+const\s+searchNotesAsync/.test(
+        dbSource
+      )
+    ),
     check('no user input interpolated into SQL strings', !interpolatesIntoSql),
     check('binds the search term as a parameter', usesBinding),
     check(
