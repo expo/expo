@@ -1,4 +1,5 @@
-import XCTest
+import Foundation
+import Testing
 
 @testable import ExpoAppIntents
 
@@ -16,39 +17,43 @@ private actor EventRecorder {
   }
 }
 
-final class AppIntentDispatcherTests: XCTestCase {
-  private var dispatcher: AppIntentDispatcher!
-  private var defaults: UserDefaults!
+/// Serialized because every test works in the same `#file`-named UserDefaults suite.
+@Suite("AppIntentDispatcher", .serialized)
+struct AppIntentDispatcherTests {
+  private let dispatcher: AppIntentDispatcher
+  private let defaults: UserDefaults
 
-  override func setUp() {
-    super.setUp()
-    defaults = UserDefaults(suiteName: #file)
+  init() throws {
+    defaults = try #require(UserDefaults(suiteName: #file))
     defaults.removePersistentDomain(forName: #file)
     dispatcher = AppIntentDispatcher(store: AppIntentInvocationStore(defaults: defaults))
   }
 
-  func testDispatchPersistsBeforeAnyListener() async throws {
+  @Test
+  func `dispatch persists before any listener`() async throws {
     let id = await dispatcher.dispatch(name: "increaseCounter", params: ["by": 1])
 
     let pending = try await dispatcher.pendingInvocations()
-    XCTAssertEqual(pending.map(\.id), [id])
-    XCTAssertEqual(pending[0].name, "increaseCounter")
+    #expect(pending.map(\.id) == [id])
+    #expect(pending[0].name == "increaseCounter")
   }
 
-  func testDispatchYieldsInvocationEvent() async throws {
+  @Test
+  func `dispatch yields an invocation event`() async throws {
     let recorder = EventRecorder()
     let consumer = await subscribe(into: recorder)
 
     await dispatcher.dispatch(name: "startHike", params: ["trailId": "t1"])
 
     let delivered = await waitUntil { await recorder.names == ["startHike"] }
-    XCTAssertTrue(delivered, "expected the live listener to receive 'startHike'")
+    #expect(delivered, "expected the live listener to receive 'startHike'")
     let pending = try await dispatcher.pendingInvocations()
-    XCTAssertEqual(pending.count, 1)
+    #expect(pending.count == 1)
     consumer.cancel()
   }
 
-  func testTerminatingOldEventStreamDoesNotClearNewerListener() async {
+  @Test
+  func `terminating an old event stream does not clear a newer listener`() async {
     let oldRecorder = EventRecorder()
     let oldConsumer = await subscribe(into: oldRecorder)
 
@@ -61,16 +66,15 @@ final class AppIntentDispatcherTests: XCTestCase {
     await dispatcher.dispatch(name: "afterRefresh", params: [:])
 
     let delivered = await waitUntil { await newRecorder.names == ["afterRefresh"] }
-    XCTAssertTrue(delivered, "expected the newer listener to receive 'afterRefresh'")
+    #expect(delivered, "expected the newer listener to receive 'afterRefresh'")
     newConsumer.cancel()
   }
 
-  /**
-   Two `AppContext`s genuinely coexist, for example while a JavaScript reload settles. A second
-   subscription must not silence the first: with a single continuation the older context was deaf
-   for the rest of its life.
-   */
-  func testEverySubscriberReceivesEveryInvocation() async {
+  /// Two `AppContext`s genuinely coexist, for example while a JavaScript reload settles. A second
+  /// subscription must not silence the first: with a single continuation the older context was deaf
+  /// for the rest of its life.
+  @Test
+  func `every subscriber receives every invocation`() async {
     let firstRecorder = EventRecorder()
     let firstConsumer = await subscribe(into: firstRecorder)
     let secondRecorder = EventRecorder()
@@ -80,20 +84,19 @@ final class AppIntentDispatcherTests: XCTestCase {
 
     let firstGotIt = await waitUntil { await firstRecorder.names == ["startHike"] }
     let secondGotIt = await waitUntil { await secondRecorder.names == ["startHike"] }
-    XCTAssertTrue(firstGotIt, "expected the older subscriber to keep receiving")
-    XCTAssertTrue(secondGotIt, "expected the newer subscriber to receive")
+    #expect(firstGotIt, "expected the older subscriber to keep receiving")
+    #expect(secondGotIt, "expected the newer subscriber to receive")
     let firstFinished = await firstRecorder.didFinish
-    XCTAssertFalse(firstFinished, "a second subscription must not finish the first stream")
+    #expect(!firstFinished, "a second subscription must not finish the first stream")
 
     firstConsumer.cancel()
     secondConsumer.cancel()
   }
 
-  /**
-   Destroying the newest subscriber must not leave the app deaf. With a single continuation, the
-   remaining context had no way to register again and nothing listened to `onIntent` any more.
-   */
-  func testRemainingSubscriberStillReceivesAfterTheNewestIsDestroyed() async {
+  /// Destroying the newest subscriber must not leave the app deaf. With a single continuation, the
+  /// remaining context had no way to register again and nothing listened to `onIntent` any more.
+  @Test
+  func `the remaining subscriber still receives after the newest is destroyed`() async {
     let survivingRecorder = EventRecorder()
     let survivingConsumer = await subscribe(into: survivingRecorder)
 
@@ -105,23 +108,22 @@ final class AppIntentDispatcherTests: XCTestCase {
     await dispatcher.dispatch(name: "afterTeardown", params: [:])
 
     let delivered = await waitUntil { await survivingRecorder.names == ["afterTeardown"] }
-    XCTAssertTrue(delivered, "expected the surviving subscriber to still receive invocations")
+    #expect(delivered, "expected the surviving subscriber to still receive invocations")
     survivingConsumer.cancel()
   }
 
-  /**
-   A JavaScript reload briefly keeps two modules alive. The old module's `OnDestroy` cancels its
-   event task, but a cancelled task still runs its body, so it can still reach the dispatcher after
-   the new module registered its stream. Registering then would immediately terminate again and
-   leave nothing listening, and `onIntent` would never fire again.
-   */
-  func testCancelledTaskCannotReplaceLiveListener() async {
+  /// A JavaScript reload briefly keeps two modules alive. The old module's `OnDestroy` cancels its
+  /// event task, but a cancelled task still runs its body, so it can still reach the dispatcher after
+  /// the new module registered its stream. Registering then would immediately terminate again and
+  /// leave nothing listening, and `onIntent` would never fire again.
+  @Test
+  func `a cancelled task cannot replace the live listener`() async {
     let liveRecorder = EventRecorder()
     let liveConsumer = await subscribe(into: liveRecorder)
 
     let staleTask = Task { [dispatcher] in
       let subscription = AppIntentEventSubscription()
-      for await _ in await dispatcher!.invocationEvents(for: subscription) {}
+      for await _ in await dispatcher.invocationEvents(for: subscription) {}
     }
     staleTask.cancel()
     _ = await waitUntil { staleTask.isCancelled }
@@ -130,12 +132,13 @@ final class AppIntentDispatcherTests: XCTestCase {
     await dispatcher.dispatch(name: "afterReload", params: [:])
 
     let delivered = await waitUntil { await liveRecorder.names == ["afterReload"] }
-    XCTAssertTrue(delivered, "expected the live listener to keep receiving after a stale task ran")
+    #expect(delivered, "expected the live listener to keep receiving after a stale task ran")
     liveConsumer.cancel()
   }
 
   /// Same race, resolved through the token the destroyed module invalidated in `OnDestroy`.
-  func testInvalidatedSubscriptionCannotReplaceLiveListener() async {
+  @Test
+  func `an invalidated subscription cannot replace the live listener`() async {
     let liveRecorder = EventRecorder()
     let liveConsumer = await subscribe(into: liveRecorder)
 
@@ -152,26 +155,28 @@ final class AppIntentDispatcherTests: XCTestCase {
 
     let delivered = await waitUntil { await liveRecorder.names == ["afterReload"] }
     let staleNames = await staleRecorder.names
-    XCTAssertTrue(delivered, "expected the live listener to keep receiving after a stale token ran")
-    XCTAssertEqual(staleNames, [])
+    #expect(delivered, "expected the live listener to keep receiving after a stale token ran")
+    #expect(staleNames.isEmpty)
     liveConsumer.cancel()
     staleConsumer.cancel()
   }
 
-  func testRemovePendingInvocationAndClearPendingInvocations() async throws {
+  @Test
+  func `removes a pending invocation and clears the queue`() async throws {
     let id = await dispatcher.dispatch(name: "a", params: [:])
     await dispatcher.dispatch(name: "b", params: [:])
 
     try await dispatcher.removePendingInvocation(id: id)
     let afterRemove = try await dispatcher.pendingInvocations()
-    XCTAssertEqual(afterRemove.count, 1)
+    #expect(afterRemove.count == 1)
 
     await dispatcher.clearPendingInvocations()
     let afterClear = try await dispatcher.pendingInvocations()
-    XCTAssertEqual(afterClear.count, 0)
+    #expect(afterClear.isEmpty)
   }
 
-  func testRequestShortcutsRefreshInvokesHandler() async {
+  @Test
+  func `requestShortcutsRefresh invokes the registered handler`() async {
     let handlerCalled = EventRecorder()
     await dispatcher.setShortcutsRefreshHandler {
       await handlerCalled.record("refresh")
@@ -179,13 +184,14 @@ final class AppIntentDispatcherTests: XCTestCase {
 
     let refreshed = await dispatcher.requestShortcutsRefresh()
     let names = await handlerCalled.names
-    XCTAssertTrue(refreshed)
-    XCTAssertEqual(names, ["refresh"])
+    #expect(refreshed)
+    #expect(names == ["refresh"])
   }
 
-  func testRequestShortcutsRefreshWithoutHandlerReturnsFalse() async {
+  @Test
+  func `requestShortcutsRefresh without a handler returns false`() async {
     let refreshed = await dispatcher.requestShortcutsRefresh()
-    XCTAssertFalse(refreshed)
+    #expect(!refreshed)
   }
 
   /// Subscribes with a token of its own, because `invocationEvents(for:)` has no default one.
@@ -206,10 +212,8 @@ final class AppIntentDispatcherTests: XCTestCase {
     }
   }
 
-  /**
-   Polls until `condition` holds. Awaiting a task that never completes would hang the whole test
-   run, so every wait here is bounded and reported as a failed assertion instead.
-   */
+  /// Polls until `condition` holds. Awaiting a task that never completes would hang the whole test
+  /// run, so every wait here is bounded and reported as a failed assertion instead.
   private func waitUntil(
     timeout: UInt64 = 2_000_000_000,
     _ condition: @Sendable () async -> Bool

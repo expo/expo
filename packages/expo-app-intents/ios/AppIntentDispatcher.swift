@@ -1,11 +1,9 @@
 import Foundation
 
-/**
- * Ownership token for a single `AppIntentDispatcher.invocationEvents(for:)` subscription.
- *
- * Cancelling the read task alone still lets an old module receive invocations after a JavaScript
- * reload replaces it, so the token prevents it from subscribing at all.
- */
+/// Ownership token for a single `AppIntentDispatcher.invocationEvents(for:)` subscription.
+///
+/// Cancelling the read task alone still lets an old module receive invocations after a JavaScript
+/// reload replaces it, so the token prevents it from subscribing at all.
 internal final class AppIntentEventSubscription: @unchecked Sendable {
   private let lock = NSLock()
   private var isInvalidated = false
@@ -23,12 +21,10 @@ internal final class AppIntentEventSubscription: @unchecked Sendable {
   }
 }
 
-/**
- * The bridge between app-target App Intent code and the Expo runtime.
- * `AppIntent.perform()` implementations call `await AppIntentDispatcher.shared.dispatch(...)`.
- * The dispatcher persists the invocation first, then notifies JS if it is alive. The intents can be queried and handled
- * from the JS side.
- */
+/// The bridge between app-target App Intent code and the Expo runtime.
+/// `AppIntent.perform()` implementations call `await AppIntentDispatcher.shared.dispatch(...)`.
+/// The dispatcher persists the invocation first, then notifies JS if it is alive. The intents can be queried and handled
+/// from the JS side.
 public actor AppIntentDispatcher {
   public static let shared = AppIntentDispatcher()
 
@@ -36,22 +32,18 @@ public actor AppIntentDispatcher {
   private var eventContinuations: [Int: AsyncStream<AppIntentInvocation>.Continuation] = [:]
   private var nextSubscriptionKey = 0
 
-  /**
-   Set by the app-target `AppIntentsSetup` inline module. Must call
-   `AppShortcuts.updateAppShortcutParameters()` on the app's concrete
-   `AppShortcutsProvider` because the pod cannot reference that type.
-   */
+  /// Set by the app-target `AppIntentsSetup` inline module. Must call
+  /// `AppShortcuts.updateAppShortcutParameters()` on the app's concrete
+  /// `AppShortcutsProvider` because the pod cannot reference that type.
   private var shortcutsRefreshHandler: (@Sendable () async -> Void)?
 
   internal init(store: AppIntentInvocationStore = AppIntentInvocationStore()) {
     self.store = store
   }
 
-  /**
-   * Returns a stream of the invocations dispatched while JavaScript is running.
-   * Every subscription gets its own live stream, and the token has no default so a module replaced by
-   * a JavaScript reload cannot subscribe.
-   */
+  /// Returns a stream of the invocations dispatched while JavaScript is running.
+  /// Every subscription gets its own live stream, and the token has no default so a module replaced by
+  /// a JavaScript reload cannot subscribe.
   internal func invocationEvents(
     for subscription: AppIntentEventSubscription
   ) -> AsyncStream<AppIntentInvocation> {

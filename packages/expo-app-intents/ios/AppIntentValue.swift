@@ -1,14 +1,13 @@
-import Foundation
 import ExpoModulesCore
+import Foundation
 
 public typealias AppIntentParams = [String: AppIntentValue]
 
-/**
- A Codable, Sendable JSON value used to persist App Intent params while JS is cold.
- */
+/// A Codable, Sendable JSON value used to persist App Intent params while JS is cold.
 public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLiteral,
   ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral, ExpressibleByBooleanLiteral,
-  ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByNilLiteral {
+  ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByNilLiteral
+{
   case string(String)
   case int(Int)
   case double(Double)
@@ -33,9 +32,7 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
     self = .bool(value)
   }
 
-  /**
-   * Returns an equivalent value that JSON can represent.
-   */
+  /// Returns an equivalent value that JSON can represent.
   func jsonSafe() -> AppIntentValue {
     switch self {
     case .double(let value) where !value.isFinite:

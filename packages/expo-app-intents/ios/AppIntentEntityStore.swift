@@ -1,14 +1,12 @@
-import Foundation
 import ExpoModulesCore
+import Foundation
 
-/**
- * An entity exposed to App Intents parameter queries. JS populates catalogs with
- * `setEntityCatalogAsync`; app-target `EntityQuery` implementations read them through
- * `AppIntentEntityStore.shared`.
- *
- * Catalogs are stored in UserDefaults, so they should stay compact. Apps with large
- * datasets should publish only the subset needed for Siri and Shortcuts resolution.
- */
+/// An entity exposed to App Intents parameter queries. JS populates catalogs with
+/// `setEntityCatalogAsync`; app-target `EntityQuery` implementations read them through
+/// `AppIntentEntityStore.shared`.
+///
+/// Catalogs are stored in UserDefaults, so they should stay compact. Apps with large
+/// datasets should publish only the subset needed for Siri and Shortcuts resolution.
 public struct AppIntentEntityRecord: Codable, Record {
   @Field(.required) public var id: String = ""
   @Field(.required) public var title: String = ""
@@ -67,12 +65,10 @@ public actor AppIntentEntityStore {
     return value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
 
-  /**
-   * Returns the stored catalog of the given kind, throwing when the stored blob cannot be decoded.
-   * Nothing is set aside the way `AppIntentInvocationStore.pending()` sets a corrupt queue aside. A
-   * catalog is owned by JavaScript rather than accumulated natively, so the next `setCatalog` for the
-   * kind replaces the unreadable blob and nothing is lost by leaving it in place until then.
-   */
+  /// Returns the stored catalog of the given kind, throwing when the stored blob cannot be decoded.
+  /// Nothing is set aside the way `AppIntentInvocationStore.pending()` sets a corrupt queue aside. A
+  /// catalog is owned by JavaScript rather than accumulated natively, so the next `setCatalog` for the
+  /// kind replaces the unreadable blob and nothing is lost by leaving it in place until then.
   public func entities(ofKind kind: String) throws -> [AppIntentEntityRecord] {
     guard let data = defaults.data(forKey: storageKey(kind: kind)) else {
       return []
@@ -99,10 +95,8 @@ public actor AppIntentEntityStore {
     return try entities(ofKind: kind).filter { identifiers.contains($0.id) }
   }
 
-  /**
-   * Replaces the catalog of the given kind, throwing instead of leaving the previous one in place
-   * without saying so.
-   */
+  /// Replaces the catalog of the given kind, throwing instead of leaving the previous one in place
+  /// without saying so.
   internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) throws {
     // The kind names the catalog that app-target `EntityQuery` implementations read, so a blank
     // kind stores a catalog no query ever asks for.
@@ -145,7 +139,8 @@ public actor AppIntentEntityStore {
     } catch {
       // Every field of `AppIntentEntityRecord` is a string, so this should never happen.
       throw AppIntentEntityInvalidException(
-        "expo-app-intents could not save the '\(kind)' entity catalog. Encoding error: " + "\(error.localizedDescription)"
+        "expo-app-intents could not save the '\(kind)' entity catalog. Encoding error: "
+          + "\(error.localizedDescription)"
       )
     }
   }

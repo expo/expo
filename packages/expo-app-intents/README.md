@@ -9,4 +9,4 @@ App Intent types must be compiled into the iOS app target. Apple's build-time me
 - Shortcut phrases are compiled at build time and cannot be created from JavaScript at runtime. Only parameter values are dynamic.
 - A single classic App Shortcut phrase can interpolate at most one non-array parameter.
 - Maximum 10 App Shortcuts per app; every phrase must include `\(.applicationName)`.
-- iOS 16.4+.
+- iOS 16.4+, macOS 13.4+, and tvOS 16.4+.

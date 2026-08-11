@@ -4,10 +4,8 @@ import Testing
 @testable import ExpoAppIntents
 @testable import ExpoModulesCore
 
-/**
- Covers the module's JavaScript-facing surface. These go through the runtime rather than calling the
- actors directly, because what matters here is whether the JavaScript promise resolves or rejects.
- */
+/// Covers the module's JavaScript-facing surface. These go through the runtime rather than calling the
+/// actors directly, because what matters here is whether the JavaScript promise resolves or rejects.
 @Suite("ExpoAppIntentsModule", .serialized)
 @JavaScriptActor
 struct ExpoAppIntentsModuleTests {
@@ -26,11 +24,9 @@ struct ExpoAppIntentsModuleTests {
     )
   }
 
-  /**
-   A scaffold with no App Shortcut phrases has no `AppShortcutsProvider`, so nothing registers a
-   refresh handler. Publishing a catalog still has to succeed: there are no shortcut parameters to
-   re-train, and the catalog is already stored by the time the refresh is attempted.
-   */
+  /// A scaffold with no App Shortcut phrases has no `AppShortcutsProvider`, so nothing registers a
+  /// refresh handler. Publishing a catalog still has to succeed: there are no shortcut parameters to
+  /// re-train, and the catalog is already stored by the time the refresh is attempted.
   @Test
   func `publishing a catalog succeeds when no refresh handler is registered`() async throws {
     let kind = "testDraftWithoutRefreshHandler"
@@ -52,10 +48,8 @@ struct ExpoAppIntentsModuleTests {
     #expect(stored.map(\.id) == ["a"])
   }
 
-  /**
-   Asking for a refresh explicitly is different: there is nothing else the call could have
-   accomplished, so a missing handler has to surface rather than pass silently.
-   */
+  /// Asking for a refresh explicitly is different: there is nothing else the call could have
+  /// accomplished, so a missing handler has to surface rather than pass silently.
   @Test
   func `refreshing shortcuts fails when no refresh handler is registered`() async throws {
     await AppIntentDispatcher.shared.setShortcutsRefreshHandler(nil)
