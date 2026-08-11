@@ -1,6 +1,7 @@
 // Cuts beta docs for a new SDK version and prints a JSON summary the docs-sdk-beta
 // workflow uses to raise a PR. Run: pnpm sdk-beta --sdk 58 [--dry-run].
 
+import type { SdkCompatibility, SdkCompatibilityData } from '@expo/sdk-compatibility/types';
 import { execFileSync, execSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
@@ -10,6 +11,19 @@ const SDK_INPUT = /^(\d{2})(?:\.0\.0)?$/;
 const EXPO_DIST_TAGS_URL = 'https://registry.npmjs.org/-/package/expo/dist-tags';
 const CANARY_EXAMPLE = /`\d+\.\d+\.\d+-canary-\d{8}-[\da-f]+`/;
 const EXPOTOOLS_MAX_BUFFER = 64 * 1024 * 1024;
+const SDK_COMPATIBILITY_OVERRIDE_FIELDS = [
+  'android',
+  'compileSdkVersion',
+  'targetSdkVersion',
+  'buildToolsVersion',
+  'ios',
+  'xcode',
+  'react-native',
+  'react-native-web',
+  'react-native-tvos',
+  'react',
+  'node',
+] as const;
 
 const docsDir = process.cwd();
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
@@ -17,6 +31,14 @@ const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
   encoding: 'utf8',
 }).trim();
 const self = relative(root, fileURLToPath(import.meta.url));
+const sdkCompatibilityPath = join(
+  root,
+  'packages',
+  '@expo',
+  'sdk-compatibility',
+  'src',
+  'sdk-compatibility.json'
+);
 
 const git = (...args: string[]) =>
   execFileSync('git', args, { cwd: root, encoding: 'utf8' }).replace(/\n+$/, '');
@@ -63,7 +85,7 @@ function parseOptions() {
       if (splitAt < 1) {
         fail(
           `Could not read --set "${pair}".`,
-          'Each --set expects a key=value pair naming one field of the sdk-versions.json row.',
+          'Each --set expects a key=value pair naming one SDK compatibility field.',
           'For example: --set react-native=0.87 --set xcode=27.0+'
         );
       }
@@ -130,21 +152,16 @@ if (existsSync(pagesDir)) {
   );
 }
 
-const sdkVersionsPath = join(docsDir, 'ui', 'components', 'SDKTables', 'sdk-versions.json');
-const sdkVersionsFields = Object.keys(
-  (JSON.parse(readFileSync(sdkVersionsPath, 'utf8')) as { sdkVersions: Record<string, string>[] })
-    .sdkVersions[0] ?? {}
-);
 const unknownOverride = Object.keys(options.overrides).find(
-  key => !sdkVersionsFields.includes(key)
+  key => !(SDK_COMPATIBILITY_OVERRIDE_FIELDS as readonly string[]).includes(key)
 );
 
 if (unknownOverride) {
   fail(
     `--set ${unknownOverride} does not match any field in the compatibility table.`,
-    'Each --set writes one field of the new sdk-versions.json row, so an unrecognized key would be ' +
+    'Each --set writes one field of the shared SDK compatibility row, so an unrecognized key would be ' +
       'silently dropped instead of reaching the table.',
-    `Use one of: ${sdkVersionsFields.filter(field => field !== 'sdk').join(', ')}.`
+    `Use one of: ${SDK_COMPATIBILITY_OVERRIDE_FIELDS.join(', ')}.`
   );
 }
 
@@ -363,51 +380,157 @@ function createNativeModulesStub() {
 
 const carriedFields: string[] = [];
 
+function readSdkCompatibilityData(): SdkCompatibilityData {
+  return JSON.parse(readFileSync(sdkCompatibilityPath, 'utf8')) as SdkCompatibilityData;
+}
+
+function parseIntegerOverride(field: string, value: string) {
+  const parsed = Number(value.replace(/\+$/, ''));
+  if (!Number.isInteger(parsed) || parsed < 0) {
+    throw new Error(`--set ${field}=${value} must contain a non-negative integer.`);
+  }
+  return parsed;
+}
+
+function normalizeThreePartVersion(value: string, field: string) {
+  if (!/^\d+\.\d+(?:\.\d+)?$/.test(value)) {
+    throw new Error(`--set ${field}=${value} must contain a numeric version.`);
+  }
+  return value.split('.').length === 2 ? `${value}.0` : value;
+}
+
+function parseXcodeVersionRange(value: string) {
+  if (value.endsWith('+')) {
+    return `>=${normalizeThreePartVersion(value.slice(0, -1), 'xcode')}`;
+  }
+
+  const boundedRange = /^(\d+\.\d+(?:\.\d+)?)\s+-\s+(\d+\.\d+(?:\.\d+)?)$/.exec(value);
+  if (boundedRange) {
+    return `>=${normalizeThreePartVersion(boundedRange[1], 'xcode')} <=${normalizeThreePartVersion(
+      boundedRange[2],
+      'xcode'
+    )}`;
+  }
+
+  return value;
+}
+
+function formatXcodeVersionRange(range: string) {
+  const boundedRange = /^>=(\d+\.\d+)(?:\.0)? <=(\d+\.\d+)(?:\.0)?$/.exec(range);
+  if (boundedRange) {
+    return `${boundedRange[1]} - ${boundedRange[2]}`;
+  }
+
+  const minimumRange = /^>=(\d+\.\d+)(?:\.0)?$/.exec(range);
+  return minimumRange ? `${minimumRange[1]}+` : range;
+}
+
+function applyCompatibilityOverride(row: SdkCompatibility, field: string, value: string) {
+  switch (field) {
+    case 'android':
+      row.android.minimumVersion = parseIntegerOverride(field, value);
+      break;
+    case 'compileSdkVersion':
+      row.android.compileSdkVersion = parseIntegerOverride(field, value);
+      break;
+    case 'targetSdkVersion':
+      row.android.targetSdkVersion = parseIntegerOverride(field, value);
+      break;
+    case 'buildToolsVersion':
+      row.android.buildToolsVersion = value;
+      break;
+    case 'ios':
+      row.ios.minimumVersion = value.replace(/\+$/, '');
+      break;
+    case 'xcode':
+      row.ios.xcodeVersionRange = parseXcodeVersionRange(value);
+      break;
+    case 'react-native':
+      row.runtime.reactNative = value;
+      break;
+    case 'react-native-web':
+      row.runtime.reactNativeWeb = value;
+      break;
+    case 'react-native-tvos':
+      row.runtime.reactNativeTvos = value;
+      break;
+    case 'react':
+      row.runtime.react = value;
+      break;
+    case 'node':
+      row.nodeVersionRange = value;
+      break;
+    default:
+      throw new Error(`Unsupported SDK compatibility field: ${field}`);
+  }
+}
+
+function readCompatibilityField(row: SdkCompatibility, field: string) {
+  switch (field) {
+    case 'android':
+      return `${row.android.minimumVersion}+`;
+    case 'compileSdkVersion':
+      return String(row.android.compileSdkVersion);
+    case 'targetSdkVersion':
+      return row.android.targetSdkVersion?.toString() ?? '';
+    case 'buildToolsVersion':
+      return row.android.buildToolsVersion ?? '';
+    case 'ios':
+      return `${row.ios.minimumVersion}+`;
+    case 'xcode':
+      return formatXcodeVersionRange(row.ios.xcodeVersionRange);
+    case 'react-native':
+      return row.runtime.reactNative;
+    case 'react-native-web':
+      return row.runtime.reactNativeWeb;
+    case 'react-native-tvos':
+      return row.runtime.reactNativeTvos ?? '';
+    case 'react':
+      return row.runtime.react ?? '';
+    case 'node':
+      return row.nodeVersionRange ?? '';
+    default:
+      throw new Error(`Unsupported SDK compatibility field: ${field}`);
+  }
+}
+
 function planSdkVersionsRow() {
-  const tablePath = join(docsDir, 'ui', 'components', 'SDKTables', 'sdk-versions.json');
-  const table = JSON.parse(readFileSync(tablePath, 'utf8')) as {
-    sdkVersions: Record<string, string>[];
-  };
+  const table = readSdkCompatibilityData();
 
   if (table.sdkVersions.some(row => row.sdk === version)) {
-    notes.push(`sdk-versions.json already had a row for ${version} and was left alone.`);
+    notes.push(`sdk-compatibility.json already had a row for ${version} and was left alone.`);
     return null;
   }
 
   const previous = table.sdkVersions[0];
   if (!previous) {
-    throw new Error('sdk-versions.json has no existing rows to model the new one on.');
+    throw new Error('sdk-compatibility.json has no existing rows to model the new one on.');
   }
 
-  const row: Record<string, string> = { ...previous, sdk: version };
+  const row = structuredClone(previous);
+  row.sdk = version;
   for (const [key, value] of Object.entries(options.overrides)) {
-    if (!(key in row)) {
-      throw new Error(
-        `--set ${key} does not match any field in sdk-versions.json. Valid fields: ` +
-          `${Object.keys(previous).join(', ')}.`
-      );
-    }
-    row[key] = value;
+    applyCompatibilityOverride(row, key, value);
   }
 
   carriedFields.length = 0;
-  for (const key of Object.keys(previous)) {
-    if (key !== 'sdk' && !(key in options.overrides) && row[key] === previous[key]) {
-      carriedFields.push(`${key}: \`${row[key]}\``);
+  for (const key of SDK_COMPATIBILITY_OVERRIDE_FIELDS) {
+    if (!(key in options.overrides)) {
+      carriedFields.push(`${key}: \`${readCompatibilityField(row, key)}\``);
     }
   }
 
-  return { tablePath, table, row };
+  const updatedTable = { ...table, sdkVersions: [row, ...table.sdkVersions] };
+  return updatedTable;
 }
 
 function addSdkVersionsRow() {
-  const planned = planSdkVersionsRow();
-  if (!planned) {
+  const updatedTable = planSdkVersionsRow();
+  if (!updatedTable) {
     return;
   }
 
-  planned.table.sdkVersions.unshift(planned.row);
-  writeFileSync(planned.tablePath, `${JSON.stringify(planned.table, null, 2)}\n`);
+  writeFileSync(sdkCompatibilityPath, `${JSON.stringify(updatedTable, null, 2)}\n`);
 }
 
 function setBetaVersion() {

@@ -4383,6 +4383,9 @@ importers:
       '@expo/schemer':
         specifier: workspace:*
         version: link:../@expo/schemer
+      '@expo/sdk-compatibility':
+        specifier: workspace:*
+        version: link:../@expo/sdk-compatibility
       '@expo/spawn-async':
         specifier: ^1.8.0
         version: 1.8.0
