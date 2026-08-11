@@ -512,13 +512,31 @@ jobs:
           # This is unconditional now. Even outside fix mode the run depends on
           # writes: the draft the reviewer reads, and the review the last phase
           # reads back. An un-writable .verify-out means no findings at all.
+          #
+          # It runs on $VERIFY_MODEL, not a cheaper pinned one. The canary used
+          # claude-haiku-4-5-20251001 while the run used $VERIFY_MODEL, so it
+          # was proving a credential/model path the run never takes: a token
+          # with access to one but not the other fails here and blocks a run
+          # that would have worked, which is exactly what happened on
+          # 2026-08-11 after the CLAUDE_CODE_OAUTH_TOKEN secret was rotated.
+          # One trivial call on the real model is worth less than one wasted
+          # investigation.
+          #
+          # And it KEEPS THE CLI OUTPUT. Every cause — bad path rule, expired
+          # token, model not available, API outage — lands as the same missing
+          # file, so discarding stderr and then naming one of them was a guess
+          # printed as a diagnosis. That guess sent a maintainer to debug path
+          # rules that were correct. Report the symptom, show the output, let
+          # the reader conclude.
           mkdir -p .verify-out && rm -f .verify-out/.permcheck
           claude -p "Write the single word ok to .verify-out/.permcheck. Say nothing else." \
-            --model claude-haiku-4-5-20251001 \
+            --model "$VERIFY_MODEL" \
             --disallowedTools Bash --strict-mcp-config \
-            --allowedTools "$ALLOWED" >/dev/null 2>&1 || true
+            --allowedTools "$ALLOWED" > "$RUNNER_TEMP/permcheck.log" 2>&1 || true
           if [ ! -f .verify-out/.permcheck ]; then
-            echo "::error::The agent cannot write .verify-out — the --allowedTools file rules do not match. Fix them before this runs for real."
+            echo "::error::Preflight canary did not write .verify-out/.permcheck, so the run stopped before spending a sandbox. This is EITHER a file-permission rule that does not match OR the CLI failing to run at all (credential, model access, outage). The CLI output below says which:"
+            sed -n '1,40p' "$RUNNER_TEMP/permcheck.log" || true
+            echo "::error::--allowedTools was: $ALLOWED"
             exit 1
           fi
           rm -f .verify-out/.permcheck
