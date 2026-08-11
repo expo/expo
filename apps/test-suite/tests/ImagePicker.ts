@@ -3,13 +3,25 @@ import * as ImagePicker from 'expo-image-picker';
 import { Platform } from 'react-native';
 
 import * as TestUtils from '../TestUtils';
+import type { JasmineInterface } from '../types';
 import { isDeviceFarm } from '../utils/Environment';
+import { requireNotNull } from '../utils/requireNotNull';
 import { alertAndWaitForResponse } from './helpers';
 
 export const name = 'ImagePicker';
 
-export async function test({ it, beforeAll, expect, jasmine, describe, afterAll }) {
-  function testMediaObjectShape(shape, type) {
+export async function test({
+  it,
+  beforeAll,
+  expect,
+  jasmine,
+  describe,
+  afterAll,
+}: JasmineInterface) {
+  function testMediaObjectShape(
+    shape: ImagePicker.ImagePickerAsset,
+    type?: ImagePicker.ImagePickerAsset['type']
+  ) {
     expect(shape).toBeDefined();
 
     expect(typeof shape.uri).toBe('string');
@@ -32,10 +44,13 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
       expect(shape.duration).toBeGreaterThan(0);
     }
   }
-  function testResultShape(result, type) {
+  function testResultShape(
+    result: ImagePicker.ImagePickerResult,
+    type?: ImagePicker.ImagePickerAsset['type']
+  ) {
     expect(result.canceled).toBe(false);
 
-    for (const asset of result.assets) {
+    for (const asset of requireNotNull(result.assets)) {
       testMediaObjectShape(asset, type);
     }
   }
@@ -43,7 +58,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
   describe(name, () => {
     if (isDeviceFarm()) return;
 
-    let originalTimeout;
+    let originalTimeout = 0;
 
     beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
@@ -76,8 +91,8 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
           let err;
           try {
             await ImagePicker.launchCameraAsync();
-          } catch ({ code }) {
-            err = code;
+          } catch (error: any) {
+            err = error.code;
           }
           expect(err).toBe('ERR_CAMERA_UNAVAILABLE_ON_SIMULATOR');
         });
@@ -120,7 +135,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
 
         testResultShape(result, 'image');
 
-        for (const image of result.assets) {
+        for (const image of requireNotNull(result.assets)) {
           expect(typeof image.base64).toBe('string');
           expect(image.base64).not.toBe('');
           expect(image.base64).not.toContain('\n');
@@ -137,7 +152,7 @@ export async function test({ it, beforeAll, expect, jasmine, describe, afterAll 
 
           testResultShape(result, 'video');
 
-          for (const video of result.assets) {
+          for (const video of requireNotNull(result.assets)) {
             expect(Math.max(video.width, video.height)).toBeLessThanOrEqual(640);
             expect(Math.min(video.width, video.height)).toBeLessThanOrEqual(480);
           }

@@ -1,22 +1,23 @@
-'use strict';
 import { Asset } from 'expo-asset';
-import { GLView } from 'expo-gl';
+import { GLView, type ExpoWebGLRenderingContext } from 'expo-gl';
 import { Platform } from 'expo-modules-core';
 import React from 'react';
 
+import type { JasmineInterface, TestPortal } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
 import { mountAndWaitFor } from './helpers';
 
 export const name = 'GLView';
 const style = { width: 200, height: 200 };
 
 export async function test(
-  { it, xit, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
-  { setPortalChild, cleanupPortal }
+  { it, xit, describe, beforeAll, jasmine, afterAll, expect, afterEach }: JasmineInterface,
+  { setPortalChild, cleanupPortal }: TestPortal
 ) {
-  let instance = null;
-  let originalTimeout;
+  let instance: GLView | null = null;
+  let originalTimeout = 0;
 
-  const refSetter = (ref) => {
+  const refSetter = (ref: GLView | null) => {
     instance = ref;
   };
 
@@ -35,8 +36,8 @@ export async function test(
   });
 
   function getContextAsync() {
-    return new Promise(async (resolve) => {
-      await mountAndWaitFor(
+    return new Promise<ExpoWebGLRenderingContext>(async (resolve) => {
+      await mountAndWaitFor<ExpoWebGLRenderingContext>(
         <GLView onContextCreate={(context) => resolve(context)} ref={refSetter} style={style} />,
         'onContextCreate',
         setPortalChild
@@ -58,7 +59,10 @@ export async function test(
       // install path and these assertions no longer prove the at-launch
       // behavior. Skip them instead of asserting on tainted state.
       const itAtLaunch =
-        Platform.OS === 'web' || globalThis.__EXGLContexts === undefined ? it : xit;
+        Platform.OS === 'web' ||
+        (globalThis as { __EXGLContexts?: object }).__EXGLContexts === undefined
+          ? it
+          : xit;
 
       itAtLaunch('exposes the WebGLRenderingContext constructor on globalThis', () => {
         expect(typeof WebGLRenderingContext).toBe('function');
@@ -127,13 +131,13 @@ export async function test(
       it('takes a snapshot', async () => {
         await getContextAsync();
 
-        const snapshot = await instance.takeSnapshotAsync({ format: 'png' });
+        const snapshot = await instance?.takeSnapshotAsync({ format: 'png' });
         expect(snapshot).toBeDefined();
         if (Platform.OS === 'web') {
-          expect(snapshot.uri instanceof Blob).toBe(true);
+          expect(snapshot?.uri instanceof Blob).toBe(true);
         } else {
-          expect(snapshot.uri).toMatch(/^file:\/\//);
-          expect(snapshot.localUri).toMatch(/^file:\/\//);
+          expect(snapshot?.uri).toMatch(/^file:\/\//);
+          expect(snapshot?.localUri).toMatch(/^file:\/\//);
         }
       });
 
@@ -151,14 +155,14 @@ export async function test(
       it(`draws a texture`, async () => {
         const gl = await getContextAsync();
 
-        const vert = gl.createShader(gl.VERTEX_SHADER);
+        const vert = requireNotNull(gl.createShader(gl.VERTEX_SHADER));
         gl.shaderSource(vert, vertexShader);
         gl.compileShader(vert);
-        const frag = gl.createShader(gl.FRAGMENT_SHADER);
+        const frag = requireNotNull(gl.createShader(gl.FRAGMENT_SHADER));
         gl.shaderSource(frag, fragShader);
         gl.compileShader(frag);
 
-        const program = gl.createProgram();
+        const program = requireNotNull(gl.createProgram());
         gl.attachShader(program, vert);
         gl.attachShader(program, frag);
         gl.linkProgram(program);
@@ -179,6 +183,8 @@ export async function test(
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        // expo-gl accepts an `Asset` here on native; `TexImageSource` does not.
+        // @ts-expect-error
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, asset);
         gl.uniform1i(gl.getUniformLocation(program, 'texture'), 0);
 
@@ -191,15 +197,15 @@ export async function test(
       it(`draws a texture with a TypedArray`, async () => {
         const gl = await getContextAsync();
 
-        const vert = gl.createShader(gl.VERTEX_SHADER);
+        const vert = requireNotNull(gl.createShader(gl.VERTEX_SHADER));
         gl.shaderSource(vert, vertexShader);
 
         gl.compileShader(vert);
-        const frag = gl.createShader(gl.FRAGMENT_SHADER);
+        const frag = requireNotNull(gl.createShader(gl.FRAGMENT_SHADER));
         gl.shaderSource(frag, fragShader);
         gl.compileShader(frag);
 
-        const program = gl.createProgram();
+        const program = requireNotNull(gl.createProgram());
         gl.attachShader(program, vert);
         gl.attachShader(program, frag);
         gl.linkProgram(program);
