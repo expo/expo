@@ -28,6 +28,11 @@ const formatXcodeVersionRange = (range: string) => {
   return minimumRange ? `${minimumRange[1]}+` : range;
 };
 
+const formatNodeMinimumVersion = (version?: string) => {
+  const minimumVersion = /^(\d+\.\d+)\.0$/.exec(version ?? '');
+  return minimumVersion ? `${minimumVersion[1]}.x` : (version ?? '');
+};
+
 const toSdkVersionValues = (compatibility: SdkCompatibility): SdkVersionValues => ({
   sdk: compatibility.sdk,
   android: `${compatibility.android.minimumVersion}+`,
@@ -40,7 +45,7 @@ const toSdkVersionValues = (compatibility: SdkCompatibility): SdkVersionValues =
   'react-native-web': compatibility.runtime.reactNativeWeb,
   'react-native-tvos': compatibility.runtime.reactNativeTvos ?? '',
   react: compatibility.runtime.react ?? '',
-  node: compatibility.nodeVersionRange ?? '',
+  node: formatNodeMinimumVersion(compatibility.node?.minimumVersion),
 });
 
 export const sdkVersionValues = sdkCompatibilityData.sdkVersions.map(toSdkVersionValues);

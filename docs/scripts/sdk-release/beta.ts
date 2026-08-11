@@ -415,6 +415,13 @@ function parseXcodeVersionRange(value: string) {
   return value;
 }
 
+function parseNodeMinimumVersion(value: string) {
+  const documentationVersion = /^(\d+\.\d+)\.x$/.exec(value);
+  return documentationVersion
+    ? `${documentationVersion[1]}.0`
+    : normalizeThreePartVersion(value, 'node');
+}
+
 function formatXcodeVersionRange(range: string) {
   const boundedRange = /^>=(\d+\.\d+)(?:\.0)? <=(\d+\.\d+)(?:\.0)?$/.exec(range);
   if (boundedRange) {
@@ -423,6 +430,11 @@ function formatXcodeVersionRange(range: string) {
 
   const minimumRange = /^>=(\d+\.\d+)(?:\.0)?$/.exec(range);
   return minimumRange ? `${minimumRange[1]}+` : range;
+}
+
+function formatNodeMinimumVersion(version: string) {
+  const minimumVersion = /^(\d+\.\d+)\.0$/.exec(version);
+  return minimumVersion ? `${minimumVersion[1]}.x` : version;
 }
 
 function applyCompatibilityOverride(row: SdkCompatibility, field: string, value: string) {
@@ -458,7 +470,7 @@ function applyCompatibilityOverride(row: SdkCompatibility, field: string, value:
       row.runtime.react = value;
       break;
     case 'node':
-      row.nodeVersionRange = value;
+      row.node = { minimumVersion: parseNodeMinimumVersion(value) };
       break;
     default:
       throw new Error(`Unsupported SDK compatibility field: ${field}`);
@@ -488,7 +500,7 @@ function readCompatibilityField(row: SdkCompatibility, field: string) {
     case 'react':
       return row.runtime.react ?? '';
     case 'node':
-      return row.nodeVersionRange ?? '';
+      return row.node ? formatNodeMinimumVersion(row.node.minimumVersion) : '';
     default:
       throw new Error(`Unsupported SDK compatibility field: ${field}`);
   }
