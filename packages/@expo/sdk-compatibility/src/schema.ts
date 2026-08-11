@@ -54,9 +54,8 @@ export function validateSdkCompatibilityData(value: unknown): string[] {
     }
 
     requireString(entry.sdk, `${path}.sdk`, errors, { semver: true });
-    const sdkMajor = typeof entry.sdk === 'string' && semver.valid(entry.sdk)
-      ? semver.major(entry.sdk)
-      : null;
+    const sdkMajor =
+      typeof entry.sdk === 'string' && semver.valid(entry.sdk) ? semver.major(entry.sdk) : null;
     if (sdkMajor !== null) {
       if (seenSdkMajors.has(sdkMajor)) {
         errors.push(`${path}.sdk duplicates SDK major ${sdkMajor}.`);

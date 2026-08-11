@@ -1,7 +1,7 @@
 import semver from 'semver';
 
-import rawSdkCompatibilityData from './sdk-compatibility.json';
 import { assertSdkCompatibilityData, validateSdkCompatibilityData } from './schema';
+import rawSdkCompatibilityData from './sdk-compatibility.json';
 import type { SdkCompatibility, SdkCompatibilityData } from './types';
 
 assertSdkCompatibilityData(rawSdkCompatibilityData);
@@ -16,15 +16,12 @@ export function getSdkCompatibility(sdkVersion: string): SdkCompatibility | null
 
   return (
     sdkCompatibilityData.sdkVersions.find(
-      compatibility => semver.major(compatibility.sdk) === normalizedSdkVersion.major
+      (compatibility) => semver.major(compatibility.sdk) === normalizedSdkVersion.major
     ) ?? null
   );
 }
 
-export function isXcodeVersionSupported(
-  sdkVersion: string,
-  xcodeVersion: string
-): boolean | null {
+export function isXcodeVersionSupported(sdkVersion: string, xcodeVersion: string): boolean | null {
   const compatibility = getSdkCompatibility(sdkVersion);
   const normalizedXcodeVersion = semver.coerce(xcodeVersion);
   if (!compatibility || !normalizedXcodeVersion) {

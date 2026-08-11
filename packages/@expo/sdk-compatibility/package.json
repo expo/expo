@@ -1,18 +1,18 @@
 {
   "name": "@expo/sdk-compatibility",
   "version": "0.1.0",
-  "description": "Canonical Expo SDK platform and toolchain compatibility data",
   "private": true,
+  "description": "Canonical Expo SDK platform and toolchain compatibility data",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/@expo/sdk-compatibility"
   },
-  "sideEffects": false,
   "files": [
     "build"
   ],
+  "sideEffects": false,
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "exports": {
