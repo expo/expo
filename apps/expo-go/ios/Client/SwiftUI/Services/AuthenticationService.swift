@@ -88,18 +88,19 @@ class AuthenticationService: ObservableObject {
 
   private func fetchUserInfo() async {
     do {
-      let response: MeUserActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
-      user = response.data.meUserActor
-
-      if let username = user?.username {
-        UserDefaults.standard.set(username, forKey: Self.usernameKey)
+      let response: MeActorResponse = try await APIClient.shared.request(Queries.getCurrentUser())
+      guard let actor = response.data.meActor else {
+        print("[AuthenticationService] meActor was null. Signed in as an actor type Expo Go does not model.")
+        return
       }
+      user = actor
+      UserDefaults.standard.set(actor.username, forKey: Self.usernameKey)
 
-      if selectedAccountId == nil, let firstAccount = user?.accounts.first {
+      if selectedAccountId == nil, let firstAccount = actor.accounts.first {
         selectAccount(accountId: firstAccount.id)
       }
     } catch {
-      print("Failed to load user info: \(error)")
+      print("[AuthenticationService] Failed to load user info: \(error)")
     }
   }
 
