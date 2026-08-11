@@ -30,7 +30,10 @@ function getFocusedRoute(state: ResultState) {
   return state.routes[state.index ?? state.routes.length - 1];
 }
 
-export function getNavigationActionType(actionType: string, routerType: string): string {
+export function getNavigationActionType(
+  actionType: string,
+  routerType: string | undefined
+): string {
   if (actionType === 'PRELOAD' || actionType === 'REPLACE') {
     return actionType;
   }
