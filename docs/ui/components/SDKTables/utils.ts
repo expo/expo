@@ -9,12 +9,9 @@ export type SdkVersionValues = {
   buildToolsVersion: string;
   ios: string;
   xcode: string;
-  'react-native': string;
-  'react-native-web': string;
-  'react-native-tvos': string;
   react: string;
   node: string;
-};
+} & Record<'react-native' | 'react-native-web' | 'react-native-tvos', string>;
 
 const normalizeVersion = (version: string) => version.replace(/^v/, '');
 

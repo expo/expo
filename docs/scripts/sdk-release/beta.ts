@@ -393,7 +393,7 @@ function parseIntegerOverride(field: string, value: string) {
 }
 
 function normalizeThreePartVersion(value: string, field: string) {
-  if (!/^\d+\.\d+(?:\.\d+)?$/.test(value)) {
+  if (!/^\d+(?:\.\d+){1,2}$/.test(value)) {
     throw new Error(`--set ${field}=${value} must contain a numeric version.`);
   }
   return value.split('.').length === 2 ? `${value}.0` : value;
@@ -404,7 +404,7 @@ function parseXcodeVersionRange(value: string) {
     return `>=${normalizeThreePartVersion(value.slice(0, -1), 'xcode')}`;
   }
 
-  const boundedRange = /^(\d+\.\d+(?:\.\d+)?)\s+-\s+(\d+\.\d+(?:\.\d+)?)$/.exec(value);
+  const boundedRange = /^(\d+(?:\.\d+){1,2})\s+-\s+(\d+(?:\.\d+){1,2})$/.exec(value);
   if (boundedRange) {
     return `>=${normalizeThreePartVersion(boundedRange[1], 'xcode')} <=${normalizeThreePartVersion(
       boundedRange[2],
