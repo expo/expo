@@ -484,8 +484,7 @@ export function _extractXcodeBuildErrorLines(output: string): string[] {
       errors.push(line);
     }
   }
-  const errorsWithDetails = errors.filter((error) => !isXcodeBuildNoOutputErrorLine(error));
-  return errorsWithDetails.length > 0 ? errorsWithDetails : errors;
+  return errors;
 }
 
 function isXcodeBuildNoOutputErrorLine(line: string): boolean {
