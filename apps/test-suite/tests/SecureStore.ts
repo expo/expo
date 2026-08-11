@@ -1,15 +1,16 @@
-'use strict';
-
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'SecureStore';
 
-export function test(t) {
+export function test(t: JasmineInterface) {
   const value = 'value-to-test';
   const longValue =
     'EAAT3TDAdWacBAMjZAq4clOJEOvf8JW5ZAxAsRnZCGRBNb1IRVFrzwiNqsM2I5MyogyPCc78TL1KZAFZAnZAFHeZCjkN8VMytKpcKD4HQEtVZBoAS54WkGbA2STjOe1vV3XOx3BY9OsDpDcD4yTZAv1OcI1wNlVvryiujZBeheVnELK6KTyzUgrPM8zZA42ZAB6SEcZADoj4MNsX5DqrJ3FtG0cxjFCD0lhKfBmTQMrZBCmuefRrQZDZDEAAT3TDAdWacBAMjZAq4clOJEOvf8JW5ZAxAsRnZCGRBNb1IRVFrzwiNqsM2I5MyogyPCc78TL1KZAFZAnZAFHeZCjkN8VMytKpcKD4HQEtVZBoAS54WkGbA2STjOe1vV3XOx3BY9OsDpDcD4yTZAv1OcI1wNlVvryiujZBeheVnELK6KTyzUgrPM8zZA42ZAB6SEcZADoj4MNsX5DqrJ3FtG0cxjFCD0lhKfBmTQMrZBCmuefRrQZDZDEAAT3TDAdWacBAMjZAq4clOJEOvf8JW5ZAxAsRnZCGRBNb1IRVFrzwiNqsM2I5MyogyPCc78TL1KZAFZAnZAFHeZCjkN8VMytKpcKD4HQEtVZBoAS54WkGbA2STjOe1vV3XOx3BY9OsDpDcD4yTZAv1OcI1wNlVvryiujZBeheVnELK6KTyzUgrPM8zZA42ZAB6SEcZADoj4MNsX5DqrJ3FtG0cxjFCD0lhKfBmTQMrZBCmuefRrQZDZDEAAT3TDAdWacBAMjZAq4clOJEOvf8JW5ZAxAsRnZCGRBNb1IRVFrzwiNqsM2I5MyogyPCc78TL1KZAFZAnZAFHeZCjkN8VMytKpcKD4HQEtVZBoAS54WkGbA2STjOe1vV3XOx3BY9OsDpDcD4yTZAv1OcI1wNlVvryiujZBeheVnELK6KTyzUgrPM8zZA42ZAB6SEcZADoj4MNsX5DqrJ3FtG0cxjFCD0lhKfBmTQMrZBCmuefRrQZDZD';
   const key = 'key-to-test';
+  // Deliberately not strings — the specs assert `setItemAsync` rejects them.
   const emptyKey = null;
   const emptyValue = null;
   const optionsServiceA = { keychainService: 'service-A' };
@@ -20,7 +21,7 @@ export function test(t) {
         try {
           const result = await SecureStore.setItemAsync(key, value, {});
           t.expect(result).toBe(undefined);
-        } catch (e) {
+        } catch (e: any) {
           t.fail(e);
         }
       });
@@ -28,7 +29,7 @@ export function test(t) {
         try {
           const fetchedValue = await SecureStore.getItemAsync(key, {});
           t.expect(fetchedValue).toBe(value);
-        } catch (e) {
+        } catch (e: any) {
           t.fail(e);
         }
       });
@@ -36,7 +37,7 @@ export function test(t) {
         try {
           const result = await SecureStore.deleteItemAsync(key, {});
           t.expect(result).toBe(undefined);
-        } catch (e) {
+        } catch (e: any) {
           t.fail(e);
         }
       });
@@ -98,7 +99,7 @@ export function test(t) {
                 t.fail('Expected SecureStore.setItemAsync to succeed');
               }
             }
-          } catch (e) {
+          } catch (e: any) {
             t.fail(e);
           }
         });
@@ -107,8 +108,9 @@ export function test(t) {
     t.describe('store with empty key -> err:', () => {
       t.it('Sets a value with an empty key, expect error', async () => {
         try {
-          const result = await SecureStore.setItemAsync(emptyKey, value, {});
-          t.fail(result);
+          // @ts-expect-error
+          await SecureStore.setItemAsync(emptyKey, value, {});
+          t.fail('Expected SecureStore.setItemAsync to throw an error');
         } catch (e) {
           t.expect(e).toBeTruthy();
         }
@@ -117,8 +119,9 @@ export function test(t) {
     t.describe('store with empty Value -> err:', () => {
       t.it('Sets an empty value with a key, expect error', async () => {
         try {
-          const result = await SecureStore.setItemAsync(key, emptyValue, {});
-          t.fail(result);
+          // @ts-expect-error
+          await SecureStore.setItemAsync(key, emptyValue, {});
+          t.fail('Expected SecureStore.setItemAsync to throw an error');
         } catch (e) {
           t.expect(e).toBeTruthy();
         }
@@ -173,10 +176,11 @@ export function test(t) {
         });
         t.it('Set for access group without entitlements, expect error', async () => {
           try {
-            const result = await SecureStore.setItemAsync(key, emptyValue, {
+            // @ts-expect-error
+            await SecureStore.setItemAsync(key, emptyValue, {
               accessGroup: 'group.no.entitlement',
             });
-            t.fail(result);
+            t.fail('Expected SecureStore.setItemAsync to throw an error');
           } catch (e) {
             t.expect(e).toBeTruthy();
           }

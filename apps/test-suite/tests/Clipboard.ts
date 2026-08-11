@@ -1,11 +1,13 @@
 import * as Clipboard from 'expo-clipboard';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'Clipboard';
 
-export function test({ describe, expect, it, afterEach, ...t }) {
+export function test({ describe, expect, it, afterEach }: JasmineInterface) {
   describe('Clipboard', () => {
-    const throws = async (run) => {
+    const throws = async (run: () => Promise<unknown>) => {
       let error = null;
       try {
         await run();
@@ -114,7 +116,7 @@ export function test({ describe, expect, it, afterEach, ...t }) {
         hasImage = await Clipboard.hasImageAsync();
         expect(hasImage).toEqual(true);
         const result = await Clipboard.getImageAsync({ format: 'png' });
-        expect(result.data).toMatch(expectedResultRegex);
+        expect(result?.data).toMatch(expectedResultRegex);
       });
 
       if (Platform.OS !== 'web') {
@@ -128,7 +130,7 @@ export function test({ describe, expect, it, afterEach, ...t }) {
           hasImage = await Clipboard.hasImageAsync();
           expect(hasImage).toEqual(true);
           const result = await Clipboard.getImageAsync({ format: 'jpeg' });
-          expect(result.data).toMatch(expectedResultRegex);
+          expect(result?.data).toMatch(expectedResultRegex);
         });
 
         it('rejects invalid base64', async () => {
@@ -147,7 +149,7 @@ export function test({ describe, expect, it, afterEach, ...t }) {
             const hasImage = await Clipboard.hasImageAsync();
             expect(hasImage).toEqual(true);
             const result = await Clipboard.getImageAsync({ format: 'png' });
-            expect(result.data).toMatch(expectedResultRegex);
+            expect(result?.data).toMatch(expectedResultRegex);
           });
 
           it('sets an image with isSensitive false', async () => {
@@ -158,7 +160,7 @@ export function test({ describe, expect, it, afterEach, ...t }) {
             const hasImage = await Clipboard.hasImageAsync();
             expect(hasImage).toEqual(true);
             const result = await Clipboard.getImageAsync({ format: 'png' });
-            expect(result.data).toMatch(expectedResultRegex);
+            expect(result?.data).toMatch(expectedResultRegex);
           });
         }
       }

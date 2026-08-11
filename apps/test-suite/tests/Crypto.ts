@@ -1,7 +1,9 @@
 import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
 
-function areArrayBuffersEqual(a, b) {
+import type { JasmineInterface } from '../types';
+
+function areArrayBuffersEqual(a: ArrayBuffer, b: ArrayBuffer) {
   if (a.byteLength !== b.byteLength) {
     return false;
   }
@@ -10,7 +12,7 @@ function areArrayBuffersEqual(a, b) {
   return dv1.every((item, index) => item === dv2[index]);
 }
 
-function getArrayBufferFromHex(hex) {
+function getArrayBufferFromHex(hex: string) {
   const bytes = new Uint8Array(Math.ceil(hex.length / 2));
   return bytes.map((_, index) => parseInt(hex.substr(index * 2, 2), 16)).buffer;
 }
@@ -48,17 +50,19 @@ const UNSUPPORTED = Platform.select({
   android: ['MD2', 'MD4'],
   default: [],
 });
-function supportedAlgorithm(algorithm) {
+function supportedAlgorithm(algorithm: Crypto.CryptoDigestAlgorithm) {
   return !UNSUPPORTED.includes(algorithm);
 }
 
-export async function test({ describe, it, expect }) {
+export async function test({ describe, it, expect }: JasmineInterface) {
   describe('Crypto', () => {
     describe('digestStringAsync()', () => {
       it(`Invalid CryptoEncoding throws an error`, async () => {
         let error = null;
         try {
           await Crypto.digestStringAsync(CryptoDigestAlgorithm.SHA1, testValue, {
+            // Deliberately not a `CryptoEncoding` — that is what the spec asserts.
+            // @ts-expect-error
             encoding: 'INVALID',
           });
         } catch (e) {
