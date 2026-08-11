@@ -562,7 +562,16 @@ jobs:
           # The last phase resumes THIS session, so it keeps the whole
           # investigation in context and can still drive the live sandbox.
           # Without that the reviewer's objections would be unanswerable.
-          SESSION_ID=$(jq -r 'select(.session_id != null) | .session_id' "$RUNNER_TEMP/verify-run.jsonl" | head -n1)
+          # `first(inputs)` and NOT `jq ... | head -n1`. Nearly every line of
+          # the transcript carries a session_id, so that jq keeps producing
+          # after head has read its one line and exited — and every write past
+          # that point is an EPIPE. Under this step's pipefail (and bash -e on
+          # the assignment) it killed the step with jq's exit 2, AFTER a
+          # complete investigation had written findings.md and left its
+          # sandbox up. It is a race, so it spared short runs and took the
+          # long ones — the expensive ones. first() short-circuits: jq stops
+          # at the first match, exits 0, and there is no pipe to break.
+          SESSION_ID=$(jq -rn 'first(inputs | select(.session_id != null) | .session_id)' "$RUNNER_TEMP/verify-run.jsonl")
           if [ -z "$SESSION_ID" ] || [ "$SESSION_ID" = "null" ]; then
             echo "::error::Could not read a session id from the run transcript; the revise phase has nothing to resume."
             exit 1
