@@ -177,12 +177,31 @@ export async function packNpmTarballAsync(packageDir: string): Promise<string> {
     })
   ).stdout?.trim();
   try {
-    const [json] = JSON.parse(results) as { filename: string }[];
-    return path.resolve(packageDir, json.filename);
+    const packages = normalizeNpmPackResult(JSON.parse(results));
+    const packageInfo = packages?.[0];
+    assert(
+      packageInfo &&
+        typeof packageInfo === 'object' &&
+        'filename' in packageInfo &&
+        typeof packageInfo.filename === 'string',
+      'Expected filename property in npm pack JSON output of type "string"'
+    );
+    return path.resolve(packageDir, packageInfo.filename);
   } catch (error: any) {
     const cmdString = `npm ${cmdArgs.join(' ')}`;
     throw new Error(
       `Could not parse JSON returned from "${cmdString}".\n\n${results}\n\nError: ${error.message}`
     );
+  }
+}
+
+/** Normalize the npm pack JSON formats used before and after npm 12 */
+export function normalizeNpmPackResult(result: unknown): unknown[] | null {
+  if (Array.isArray(result)) {
+    return result;
+  } else if (result && typeof result === 'object') {
+    return Object.values(result);
+  } else {
+    return null;
   }
 }
