@@ -10,7 +10,7 @@ export type RouterRegistryEntry = {
     state: NavigationState,
     action: NavigationAction
   ) => NavigationState | PartialState<NavigationState> | null;
-  routerType: string;
+  routerType: string | undefined;
   contextKey?: string;
 };
 
