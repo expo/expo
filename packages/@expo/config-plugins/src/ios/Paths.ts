@@ -26,9 +26,17 @@ function platformGlob(pattern: string, platform?: ApplePlatform): string {
 /**
  * Narrows the mod compiler's platform to the Apple platform directory it writes to. The Apple mods
  * are registered under both `ios` and `tvos`, so any mod that resolves a path needs this.
+ *
+ * Throws for platforms without an Apple project directory: a silent `ios` fallback would make a
+ * future platform's mod pass (e.g. `macos`) read and write `ios/` instead of its own directory.
  */
 export function toApplePlatform(platform: ModPlatform): ApplePlatform {
-  return platform === 'tvos' ? 'tvos' : 'ios';
+  if (platform === 'ios' || platform === 'tvos') {
+    return platform;
+  }
+  throw new UnexpectedError(
+    `Platform "${platform}" does not map to an Apple platform directory. Expected one of: ios, tvos.`
+  );
 }
 
 interface ProjectFile<L extends string = string> {
