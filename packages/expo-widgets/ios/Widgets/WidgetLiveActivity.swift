@@ -15,10 +15,6 @@ public struct WidgetLiveActivity: Widget {
   @Environment(\.self) var env
   
   let widgetContext: AppContext = AppContext()
-  
-  var environment: [String: Any] {
-    return getLiveActivityEnvironment(environment: env)
-  }
 
   public init() {}
 
@@ -27,14 +23,14 @@ public struct WidgetLiveActivity: Widget {
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
         props: context.state.props,
-        environment: environment
+        environment: getLiveActivityEnvironment(for: env, in: context)
       )
       LiveActivityBannerView(context: context, nodes: nodes)
     } dynamicIsland: { context in
       let nodes = getLiveActivityNodes(
         forName: context.state.name,
         props: context.state.props,
-        environment: environment
+        environment: getLiveActivityEnvironment(for: env, in: context)
       )
       return DynamicIsland {
         DynamicIslandExpandedRegion(.center) {
