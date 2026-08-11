@@ -16,7 +16,12 @@ import type {
   SFSymbolEffectObject,
 } from './Image.types';
 import ImageModule from './ImageModule';
-import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
+import {
+  resolveContentFit,
+  resolveContentPosition,
+  resolveDefaultSize,
+  resolveTransition,
+} from './utils';
 import { resolveSource, resolveSources } from './utils/resolveSources';
 
 /**
@@ -329,11 +334,14 @@ export class Image extends React.PureComponent<ImageProps> {
     const isSFSymbol =
       Array.isArray(resolvedSource) && resolvedSource.some((s) => s?.uri?.startsWith('sf:/'));
 
-    // For SF Symbols, fontSize sets both the symbol point size and container dimensions
-    const resolvedStyle =
-      isSFSymbol && fontSizeStyle
-        ? { width: fontSizeStyle, height: fontSizeStyle, ...restStyle }
-        : restStyle;
+    // For SF Symbols, fontSize sets both the symbol point size and container dimensions.
+    // Any other image defaults to the size declared by its source, like React Native's `<Image>`.
+    const defaultSizeStyle = isSFSymbol
+      ? fontSizeStyle
+        ? { width: fontSizeStyle, height: fontSizeStyle }
+        : null
+      : resolveDefaultSize(resolvedSource, restStyle);
+    const resolvedStyle = defaultSizeStyle ? { ...defaultSizeStyle, ...restStyle } : restStyle;
 
     return (
       <ExpoImage

@@ -14,6 +14,7 @@
 
 - [iOS] Fixed `generateThumbhashAsync` crashing on images with extreme aspect ratios. ([#47189](https://github.com/expo/expo/issues/47189) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [Android] Replaced the deprecated RenderScript-based `blurRadius` blur with a software stack blur to fix a use-after-free crash under concurrent image loads (aborts under GrapheneOS hardened_malloc). ([#PR](https://github.com/expo/expo/pull/PR) by [@DimitrisTzimikas](https://github.com/DimitrisTzimikas))
+- Fixed images laying out as `0x0` when the size is declared by the source (an asset loaded with `require` or a `width`/`height` on the `ImageSource`) and not by the style. ([#45511](https://github.com/expo/expo/issues/45511))
 
 ### 💡 Others
 
