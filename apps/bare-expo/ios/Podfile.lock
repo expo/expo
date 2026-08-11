@@ -264,6 +264,11 @@ PODS:
     - ExpoModulesCore
   - ExpoAppIntegrity (57.0.1):
     - ExpoModulesCore
+  - ExpoAppIntents (0.1.0):
+    - ExpoModulesCore
+  - ExpoAppIntents/Tests (0.1.0):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoAppleAuthentication (57.0.1):
     - ExpoModulesCore
   - ExpoAppMetrics (57.0.7):
@@ -3349,6 +3354,8 @@ DEPENDENCIES:
   - Expo/Tests (from `../../../packages/expo`)
   - ExpoAgeRange (from `../../../packages/expo-age-range/ios`)
   - ExpoAppIntegrity (from `../../../packages/expo-app-integrity/ios`)
+  - ExpoAppIntents (from `../../../packages/expo-app-intents/ios`)
+  - ExpoAppIntents/Tests (from `../../../packages/expo-app-intents/ios`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
   - ExpoAppMetrics (from `../../../packages/expo-app-metrics/ios`)
   - ExpoAppMetrics/Tests (from `../../../packages/expo-app-metrics/ios`)
@@ -3597,6 +3604,9 @@ EXTERNAL SOURCES:
   ExpoAppIntegrity:
     inhibit_warnings: false
     :path: "../../../packages/expo-app-integrity/ios"
+  ExpoAppIntents:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-app-intents/ios"
   ExpoAppleAuthentication:
     inhibit_warnings: false
     :path: "../../../packages/expo-apple-authentication/ios"
@@ -4032,6 +4042,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 7a59e803916fbfd1b96c75ff91ea8dddac7e722f
   ExpoAgeRange: f30bef82f1a99c097e28f50ed41ca04d5e1cab1c
   ExpoAppIntegrity: c4f6d2065674ec9744881f8c04d52ade9b6cacd8
+  ExpoAppIntents: e4702a43af248c7f72ffe4855635f8d0319d330a
   ExpoAppleAuthentication: 97d113f0f2680067e6e76d3c9249e7e1fc026b42
   ExpoAppMetrics: edb2e75dba50059ba781c56b8ff0824aaeb9e74b
   ExpoAsset: a76534cf7b762978861dd31708308496c676166f

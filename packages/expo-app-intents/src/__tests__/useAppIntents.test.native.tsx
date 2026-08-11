@@ -56,18 +56,24 @@ function emitIntent(invocation: AppIntentInvocation) {
 describe(useAppIntents, () => {
   afterEach(() => {
     jest.clearAllMocks();
+    jest.restoreAllMocks();
     getPendingMock.mockImplementation(async () => []);
   });
 
-  it('calls the handler once with the pending snapshot and null', async () => {
+  it('continues delivery after the handler throws synchronously', async () => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
     const cold = makeInvocation('cold', 'coldIntent');
     getPendingMock.mockResolvedValue([cold]);
 
-    const handler = jest.fn();
+    const handler = jest.fn().mockImplementationOnce(() => {
+      throw new Error('handler failed');
+    });
     renderHook(() => useAppIntents(handler));
 
     await waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
     expect(handler).toHaveBeenCalledWith([cold], null);
+    emitIntent(makeInvocation('live', 'liveIntent'));
+    await waitFor(() => expect(handler).toHaveBeenCalledTimes(2));
   });
 
   it('delivers the initial snapshot before a live invocation that arrives during mount', async () => {
@@ -103,12 +109,15 @@ describe(useAppIntents, () => {
     // The first live invocation's pending read resolves after the second one's, so delivery
     // order must come from the hook, not from promise resolution order.
     const firstRead = deferred<AppIntentInvocation[]>();
+    const firstDelivery = deferred<void>();
     getPendingMock
       .mockImplementationOnce(async () => [])
       .mockImplementationOnce(() => firstRead.promise)
       .mockImplementation(async () => [first, second]);
 
-    const handler = jest.fn();
+    const handler = jest.fn((_pending, newIntent) =>
+      newIntent?.id === first.id ? firstDelivery.promise : undefined
+    );
     renderHook(() => useAppIntents(handler));
     await waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
 
@@ -119,12 +128,16 @@ describe(useAppIntents, () => {
     await flushMicrotasks();
     firstRead.resolve([first]);
 
+    await waitFor(() => expect(handler).toHaveBeenCalledTimes(2));
+    await flushMicrotasks();
+    expect(handler).toHaveBeenCalledTimes(2);
+    firstDelivery.resolve();
     await waitFor(() => expect(handler).toHaveBeenCalledTimes(3));
     expect(handler).toHaveBeenNthCalledWith(2, [first], first);
     expect(handler).toHaveBeenNthCalledWith(3, [first, second], second);
   });
 
-  it('does not deliver the same live invocation twice', async () => {
+  it('does not redeliver an initial pending invocation as live', async () => {
     const live = makeInvocation('live', 'liveIntent');
     getPendingMock.mockImplementation(async () => [live]);
 
@@ -135,7 +148,7 @@ describe(useAppIntents, () => {
     emitIntent(live);
     emitIntent(live);
 
-    await waitFor(() => expect(handler).toHaveBeenCalledTimes(2));
-    expect(handler).toHaveBeenNthCalledWith(2, [live], live);
+    await flushMicrotasks();
+    expect(handler).toHaveBeenCalledTimes(1);
   });
 });

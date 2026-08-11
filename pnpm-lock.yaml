@@ -135,6 +135,9 @@ importers:
       expo:
         specifier: workspace:*
         version: link:../../packages/expo
+      expo-app-intents:
+        specifier: workspace:*
+        version: link:../../packages/expo-app-intents
       expo-app-metrics:
         specifier: workspace:*
         version: link:../../packages/expo-app-metrics

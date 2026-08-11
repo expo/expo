@@ -10,9 +10,12 @@ import ExpoAppIntents from './ExpoAppIntentsModule';
 
 export type * from './ExpoAppIntents.types';
 
+const MAX_SEEN_INVOCATION_IDS = 100;
+
 /**
  * Returns whether App Intents are available on this device.
  * Returns `false` on Android, and web.
+ * @platform ios
  */
 export function isAvailable(): boolean {
   return ExpoAppIntents != null;
@@ -25,6 +28,7 @@ export function isAvailable(): boolean {
  * > Use [`getPendingInvocationsAsync()`](#appintentsgetpendinginvocationsasync) or
  * > [`useAppIntents()`](#appintentsuseappintentshandler) to read invocations recorded while
  * > JavaScript was not running.
+ * @platform ios
  */
 export function addAppIntentListener(
   listener: (invocation: AppIntentInvocation) => void
@@ -40,9 +44,11 @@ function callAppIntentsHandler(
   pendingIntents: AppIntentInvocation[],
   newIntent: AppIntentInvocation | null
 ) {
-  Promise.resolve(handler(pendingIntents, newIntent)).catch((error: unknown) => {
-    console.warn('Unhandled error in useAppIntents handler.', error);
-  });
+  return Promise.resolve()
+    .then(() => handler(pendingIntents, newIntent))
+    .catch((error: unknown) => {
+      console.warn('Unhandled error in useAppIntents handler.', error);
+    });
 }
 
 /**
@@ -58,6 +64,7 @@ function callAppIntentsHandler(
  * are dropped to make room, so a handler that never removes them does eventually lose invocations.
  *
  * The handler is called with an empty snapshot, and never again, when App Intents are unavailable.
+ * @platform ios
  */
 export function useAppIntents(handler: AppIntentsHandler): void {
   const handlerRef = useRef(handler);
@@ -81,17 +88,17 @@ export function useAppIntents(handler: AppIntentsHandler): void {
       if (!isMounted) {
         return;
       }
-      callAppIntentsHandler(handlerRef.current, pendingIntents, newIntent);
+      return callAppIntentsHandler(handlerRef.current, pendingIntents, newIntent);
     };
 
     const deliverNewIntent = async (newIntent: AppIntentInvocation) => {
       try {
         const pendingIntents = await getPendingInvocationsAsync();
-        notify(pendingIntents.length > 0 ? pendingIntents : [newIntent], newIntent);
+        await notify(pendingIntents.length > 0 ? pendingIntents : [newIntent], newIntent);
       } catch (error) {
         if (isMounted) {
           console.error('Could not read pending App Intents invocations.', error);
-          notify([newIntent], newIntent);
+          await notify([newIntent], newIntent);
         }
       }
     };
@@ -99,14 +106,15 @@ export function useAppIntents(handler: AppIntentsHandler): void {
     const deliverInitialPendingIntents = async () => {
       try {
         const pendingIntents = await getPendingInvocationsAsync();
-        notify(
-          pendingIntents.filter((invocation) => !seenLiveInvocationIds.has(invocation.id)),
-          null
+        const initialPendingIntents = pendingIntents.filter(
+          (invocation) => !seenLiveInvocationIds.has(invocation.id)
         );
+        initialPendingIntents.forEach(({ id }) => seenLiveInvocationIds.add(id));
+        await notify(initialPendingIntents, null);
       } catch (error) {
         if (isMounted) {
           console.error('Could not read pending App Intents invocations.', error);
-          notify([], null);
+          await notify([], null);
         }
       }
     };
@@ -118,6 +126,9 @@ export function useAppIntents(handler: AppIntentsHandler): void {
         return;
       }
       seenLiveInvocationIds.add(newIntent.id);
+      if (seenLiveInvocationIds.size > MAX_SEEN_INVOCATION_IDS) {
+        seenLiveInvocationIds.delete(seenLiveInvocationIds.values().next().value!);
+      }
       enqueue(() => deliverNewIntent(newIntent));
     });
 
@@ -138,6 +149,7 @@ export function useAppIntents(handler: AppIntentsHandler): void {
  *
  * Rejects when the stored queue cannot be read, which means the invocations waiting in it are not
  * delivered. The queue starts empty afterwards, so a later call succeeds.
+ * @platform ios
  */
 export async function getPendingInvocationsAsync(): Promise<AppIntentInvocation[]> {
   if (!ExpoAppIntents) {
@@ -154,6 +166,7 @@ export async function getPendingInvocationsAsync(): Promise<AppIntentInvocation[
  * invocation is not mistaken for success. A rejection caused by an unreadable queue leaves nothing
  * pending at all: the unreadable data is set aside, so every invocation that was waiting in it is
  * gone, not only this one.
+ * @platform ios
  */
 export async function removePendingInvocationAsync(id: string): Promise<void> {
   if (!ExpoAppIntents) {
@@ -165,6 +178,7 @@ export async function removePendingInvocationAsync(id: string): Promise<void> {
 /**
  * Removes all pending invocations.
  * Does nothing when App Intents are unavailable.
+ * @platform ios
  */
 export async function clearPendingInvocationsAsync(): Promise<void> {
   if (!ExpoAppIntents) {
@@ -185,6 +199,7 @@ export async function clearPendingInvocationsAsync(): Promise<void> {
  * one kept. The `kind` is invalid when it is empty or whitespace-only. An entity is invalid when
  * its `id` or `title` is empty or whitespace-only, or when another entity in the catalog has the
  * same `id`.
+ * @platform ios
  */
 export async function setEntityCatalogAsync(
   kind: string,
@@ -202,6 +217,7 @@ export async function setEntityCatalogAsync(
  * unavailable.
  *
  * Rejects when the stored catalog cannot be read.
+ * @platform ios
  */
 export async function getEntityCatalogAsync(kind: string): Promise<AppIntentEntity[]> {
   if (!ExpoAppIntents) {
@@ -217,6 +233,7 @@ export async function getEntityCatalogAsync(kind: string): Promise<AppIntentEnti
  * but the app has no `AppShortcutsProvider`, and so nothing to refresh. Publishing a catalog with
  * [`setEntityCatalogAsync()`](#appintentssetentitycatalogasynckind-entities) also refreshes
  * shortcuts.
+ * @platform ios
  */
 export async function refreshShortcutsAsync(): Promise<void> {
   if (!ExpoAppIntents) {
