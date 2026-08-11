@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Depend on `@react-native/js-polyfills` directly for `getPolyfills` instead of the `react-native/rn-get-polyfills` subpath removed in React Native 0.88. ([#48034](https://github.com/expo/expo/pull/48034) by [@alanjhughes](https://github.com/alanjhughes))
+- Emit a density `srcset` for multi-resolution image assets on web, so `@2x`/`@3x` files are used on high-density screens. ([#34136](https://github.com/expo/expo/issues/34136))
 
 ### 💡 Others
 

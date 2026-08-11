@@ -51,6 +51,26 @@ function getMockImageExport(): AssetData {
     fileHashes: ['4e3f888fc8475f69fd5fa32f1ad5216a'],
   } as AssetData;
 }
+// `icon.png` shipped alongside `icon@2x.png` and `icon@3x.png`.
+const MULTI_SCALE_FILE_HASHES = [
+  '4e3f888fc8475f69fd5fa32f1ad5216a',
+  '0d2b0f1c1e5d4a3b9c8e7f6a5b4c3d2e',
+  '1a2b3c4d5e6f708192a3b4c5d6e7f809',
+];
+function getMockMultiScaleImageDev(): AssetData {
+  return {
+    ...getMockImageDev(),
+    scales: [1, 2, 3],
+    fileHashes: MULTI_SCALE_FILE_HASHES,
+  } as AssetData;
+}
+function getMockMultiScaleImageExport(): AssetData {
+  return {
+    ...getMockImageExport(),
+    scales: [1, 2, 3],
+    fileHashes: MULTI_SCALE_FILE_HASHES,
+  } as AssetData;
+}
 
 jest.mock('fs');
 
@@ -195,6 +215,84 @@ it(`parses asset as string in client environment for web during export`, async (
     };"
   `);
   expect(results.reactClientReference).toBeUndefined();
+});
+
+it(`adds a density srcset for a multi-resolution asset for web`, async () => {
+  jest.mocked(getAssetData).mockResolvedValueOnce(getMockMultiScaleImageDev());
+  const results = await transform(
+    {
+      filename: '/root/local/foo.png',
+      options: {
+        platform: 'web',
+        publicPath: '/assets',
+        customTransformOptions: {},
+        projectRoot: '/root',
+      },
+    },
+    '[MOCK_ASSET_REGISTRY]',
+    []
+  );
+  expect(astString(results.ast)).toMatchInlineSnapshot(`
+    "module.exports = {
+      uri: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png",
+      width: 1024,
+      height: 1024,
+      srcset: "/assets/?unstable_path=.%2Fassets%2Fimages/icon.png 1x, /assets/?unstable_path=.%2Fassets%2Fimages/icon@2x.png 2x, /assets/?unstable_path=.%2Fassets%2Fimages/icon@3x.png 3x",
+      toString() {
+        return this.uri;
+      }
+    };"
+  `);
+});
+
+it(`adds a density srcset for a multi-resolution asset for web during export`, async () => {
+  jest.mocked(getAssetData).mockResolvedValueOnce(getMockMultiScaleImageExport());
+  const results = await transform(
+    {
+      filename: '/root/local/foo.png',
+      options: {
+        platform: 'web',
+        publicPath: EXPORT_PUBLIC_PATH,
+        customTransformOptions: {},
+        projectRoot: '/root',
+      },
+    },
+    '[MOCK_ASSET_REGISTRY]',
+    []
+  );
+  expect(astString(results.ast)).toMatchInlineSnapshot(`
+    "module.exports = {
+      uri: "/assets/assets/images/icon.ac83c8d6b16d2f88fae0494fe6388e4b.png",
+      width: 1024,
+      height: 1024,
+      srcset: "/assets/assets/images/icon.ac83c8d6b16d2f88fae0494fe6388e4b.png 1x, /assets/assets/images/icon.ac83c8d6b16d2f88fae0494fe6388e4b@2x.png 2x, /assets/assets/images/icon.ac83c8d6b16d2f88fae0494fe6388e4b@3x.png 3x",
+      toString() {
+        return this.uri;
+      }
+    };"
+  `);
+});
+
+it(`omits the srcset for a multi-resolution asset in a dom components export`, async () => {
+  // Every scale is written to the same `<md5>.png` file name, so there is nothing to pick between.
+  jest.mocked(getAssetData).mockResolvedValueOnce(getMockMultiScaleImageExport());
+  const results = await transform(
+    {
+      filename: '/root/local/foo.png',
+      options: {
+        platform: 'web',
+        publicPath: EXPORT_PUBLIC_PATH,
+        customTransformOptions: {
+          dom: '1',
+          useMd5Filename: true,
+        },
+        projectRoot: '/root',
+      },
+    },
+    '[MOCK_ASSET_REGISTRY]',
+    []
+  );
+  expect(astString(results.ast)).not.toContain('srcset');
 });
 
 it(`parses asset as string in react server environment for web`, async () => {

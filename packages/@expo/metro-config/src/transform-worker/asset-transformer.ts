@@ -31,10 +31,49 @@ const buildStaticObjectRef = template.statement(
   `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT };`
 );
 
+const buildStaticObjectRefWithSrcSet = template.statement(
+  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, srcset: SRC_SET };`
+);
+
 const buildStaticObjectClientRef = template.statement(
   // Matches the `ImageSource` type from React Native: https://reactnative.dev/docs/image#source
   `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, toString() { return this.uri } };`
 );
+
+const buildStaticObjectClientRefWithSrcSet = template.statement(
+  `module.exports = { uri: FILE_PATH, width: WIDTH, height: HEIGHT, srcset: SRC_SET, toString() { return this.uri } };`
+);
+
+/**
+ * Builds a density descriptor `srcset` (`icon.png 1x, icon@2x.png 2x, …`) for a
+ * multi-resolution asset so the browser can pick the file matching the device pixel ratio.
+ *
+ * Unlike native, web collapses a multi-resolution asset to a single `uri`, which is always the
+ * 1x file. Every scale is written next to it during export and served from the same location in
+ * development, so each candidate is the 1x path with an `@<scale>x` suffix before the extension.
+ *
+ * Returns `null` when there is nothing to choose between.
+ */
+function getDensitySrcSet(
+  assetPathWithoutType: string,
+  type: string,
+  scales: readonly number[] | undefined
+): string | null {
+  if (!scales || scales.length < 2) {
+    return null;
+  }
+  return scales
+    .map((scale) => {
+      const suffix = scale === 1 ? '' : `@${scale}x`;
+      // Whitespace and commas separate `srcset` candidates, so a file name containing either
+      // would otherwise produce an unparsable list.
+      const candidate = `${assetPathWithoutType}${suffix}${type}`
+        .replace(/,/g, '%2C')
+        .replace(/\s/g, '%20');
+      return `${candidate} ${scale}x`;
+    })
+    .join(', ');
+}
 
 export async function transform(
   {
@@ -113,14 +152,23 @@ export async function transform(
 
   if (isServerEnv || options.platform === 'web') {
     const type = !data.type ? '' : `.${data.type}`;
-    let assetPath: string;
+    let assetPathWithoutType: string;
     if (useMd5Filename) {
-      assetPath = data.hash + type;
+      assetPathWithoutType = data.hash;
     } else if (!isExport) {
-      assetPath = data.httpServerLocation + '/' + data.name + type;
+      assetPathWithoutType = data.httpServerLocation + '/' + data.name;
     } else {
-      assetPath = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name + type;
+      assetPathWithoutType = data.httpServerLocation.replace(/\.\.\//g, '_') + '/' + data.name;
     }
+    const assetPath = assetPathWithoutType + type;
+
+    // `srcset` is a browser concept, so it is only useful on web. `useMd5Filename` (DOM
+    // components) names every scale of an asset after the same content hash, so the scales are
+    // indistinguishable by URL and there is nothing for the browser to choose between.
+    const srcSet =
+      options.platform !== 'web' || useMd5Filename
+        ? null
+        : getDensitySrcSet(assetPathWithoutType, type, data.scales);
 
     // If size data is known then it should be passed back to ensure the correct dimensions are used.
     if (data.width != null || data.height != null) {
@@ -129,7 +177,15 @@ export async function transform(
         WIDTH: data.width != null ? t.numericLiteral(data.width) : t.buildUndefinedNode(),
         HEIGHT: data.height != null ? t.numericLiteral(data.height) : t.buildUndefinedNode(),
       };
-      const creatorFunction = isReactServer ? buildStaticObjectRef : buildStaticObjectClientRef;
+      let creatorFunction: typeof buildStaticObjectRef;
+      if (srcSet != null) {
+        options.SRC_SET = t.stringLiteral(srcSet);
+        creatorFunction = isReactServer
+          ? buildStaticObjectRefWithSrcSet
+          : buildStaticObjectClientRefWithSrcSet;
+      } else {
+        creatorFunction = isReactServer ? buildStaticObjectRef : buildStaticObjectClientRef;
+      }
 
       return {
         ast: {
