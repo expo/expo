@@ -35,6 +35,13 @@ import UIKit
       return
     }
 
+    if let expiredMessage = sessionExpiredMessage() {
+      AuthenticationService.clearSession()
+      showError(expiredMessage)
+      completion(false, nil)
+      return
+    }
+
     // Determine status text based on what we're opening
     let isLesson = (snackParams?["isLesson"] as? Bool) == true
     let isPlayground = (snackParams?["isPlayground"] as? Bool) == true
@@ -200,15 +207,33 @@ import UIKit
     return String(snackId[snackId.index(after: snackId.startIndex)..<slashIndex])
   }
 
+  static let expiredSessionMessage =
+    "Your Expo Go session has expired. Reload your project's preview and scan the new QR code to continue."
+
+  /// Non-nil when the stored session has expired, which only device auth sessions record.
+  @objc public func sessionExpiredMessage() -> String? {
+    return AuthenticationService.isSessionExpired() ? Self.expiredSessionMessage : nil
+  }
+
+  @objc public func showError(_ message: String) {
+    DispatchQueue.main.async { [weak self] in
+      self?.homeViewModel?.showError(message)
+    }
+  }
+
   @objc public func isAuthenticated() -> Bool {
-    return UserDefaults.standard.string(forKey: "expo-session-secret") != nil
+    guard !AuthenticationService.isSessionExpired() else {
+      return false
+    }
+    return UserDefaults.standard.string(forKey: AuthenticationService.sessionKey) != nil
   }
 
   @objc public func authenticatedUsername() -> String? {
-    guard UserDefaults.standard.string(forKey: "expo-session-secret") != nil else {
+    guard !AuthenticationService.isSessionExpired(),
+          UserDefaults.standard.string(forKey: AuthenticationService.sessionKey) != nil else {
       return nil
     }
-    return UserDefaults.standard.string(forKey: "expo-username")
+    return UserDefaults.standard.string(forKey: AuthenticationService.usernameKey)
   }
 
   @objc public func addHistoryItem(withUrl url: String, name: String, iconUrl: String?) {
