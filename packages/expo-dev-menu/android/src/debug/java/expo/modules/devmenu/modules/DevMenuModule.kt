@@ -44,8 +44,9 @@ class DevMenuModule : Module() {
       viewModel.onAction(DevMenuAction.Close)
     }
 
-    AsyncFunction<Unit>("setToolsButtonVisible") { visible: Boolean ->
+    AsyncFunction("setToolsButtonVisible") { visible: Boolean ->
       viewModel.menuPreferences.showFab = visible
+      Unit
     }
 
     AsyncFunction("addDevMenuCallbacks") { callbacks: List<DevMenuCallback> ->
