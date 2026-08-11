@@ -18,6 +18,7 @@ jest.mock('../exportWebAsync.js', () => ({ exportWebAsync: jest.fn(async () => {
 
 const { assertArgs } = require('../../../utils/args') as { assertArgs: jest.Mock };
 const { loadEnvFiles } = require('../../../utils/nodeEnv.js') as { loadEnvFiles: jest.Mock };
+const { logCmdError } = require('../../../utils/errors') as { logCmdError: jest.Mock };
 const { resolveOptionsAsync } = require('../resolveOptions.js') as {
   resolveOptionsAsync: jest.Mock;
 };
@@ -34,4 +35,16 @@ it.each([
   expect(loadEnvFiles.mock.invocationCallOrder[0]).toBeLessThan(
     resolveOptionsAsync.mock.invocationCallOrder[0]!
   );
+});
+
+it('handles env file errors', async () => {
+  const error = new Error('env error');
+  assertArgs.mockReturnValue({ '--dev': false });
+  loadEnvFiles.mockImplementationOnce(() => {
+    throw error;
+  });
+
+  await expoExportWeb([]);
+
+  expect(logCmdError).toHaveBeenCalledWith(error);
 });
