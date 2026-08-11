@@ -75,6 +75,19 @@ public final class UpdatesUtils: NSObject {
     return updatesDirectory
   }
 
+  /**
+   * Asset filenames are built from manifest-controlled values, so a filename holding a path
+   * separator or a `..` component would resolve outside the updates directory.
+   */
+  public static func isSafeFilename(_ filename: String) -> Bool {
+    return !filename.isEmpty &&
+      filename != "." &&
+      filename != ".." &&
+      !filename.contains("/") &&
+      !filename.contains("\\") &&
+      !filename.contains("\0")
+  }
+
   // MARK: - Internal methods
 
   public static func defaultNativeStateMachineContextJson() -> [String: Any?] {

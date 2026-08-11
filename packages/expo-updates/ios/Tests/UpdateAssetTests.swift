@@ -37,4 +37,44 @@ struct UpdateAssetTests {
     let assetWithDotPrefix = UpdateAsset(key: "cat", type: nil)
     #expect(assetWithDotPrefix.filename == "cat")
   }
+
+  @Test
+  func `is only safe when it is a plain filename`() {
+    let unsafe = [
+      "",
+      ".",
+      "..",
+      "../pwned.png",
+      "../../Library/Preferences/pwned.plist",
+      "nested/asset.png",
+      "nested\\asset.png",
+      "/etc/passwd",
+      "asset\0.png"
+    ]
+    for filename in unsafe {
+      #expect(!UpdatesUtils.isSafeFilename(filename), "expected \"\(filename)\" to be rejected")
+    }
+
+    let safe = [
+      "696a70cf7035664c20ea86f67dae822b.bundle",
+      "asset-1699999999-12345.png",
+      "..hidden.png",
+      "a..b.png"
+    ]
+    for filename in safe {
+      #expect(UpdatesUtils.isSafeFilename(filename), "expected \"\(filename)\" to be accepted")
+    }
+  }
+
+  @Test
+  func `escapes the updates directory when the key traverses`() {
+    let updatesDirectory = URL(fileURLWithPath: "/Documents/.expo-internal")
+    let asset = UpdateAsset(key: "../../Library/Preferences/pwned", type: "plist")
+
+    #expect(!UpdatesUtils.isSafeFilename(asset.filename))
+    #expect(
+      !updatesDirectory.appendingPathComponent(asset.filename).standardizedFileURL.path
+        .hasPrefix(updatesDirectory.path + "/")
+    )
+  }
 }
