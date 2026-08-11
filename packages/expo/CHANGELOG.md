@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Prefer the engine's native `TextDecoder` (shipped in Hermes 260318099.0.0 and newer) over the JS polyfill. ([#48790](https://github.com/expo/expo/pull/48790) by [@tomekzaw](https://github.com/tomekzaw))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `expo/fetch` streaming race between URLSession delegate callbacks and `startStreaming()` that could deliver an empty body on a 200 response, drop chunks, or leave the body stream open. ([#47796](https://github.com/expo/expo/pull/47796) by [@idoyana](https://github.com/idoyana))
