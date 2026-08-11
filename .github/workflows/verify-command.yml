@@ -279,6 +279,7 @@ jobs:
           ls -la
 
       - name: Run verification
+        id: investigate
         if: steps.gate.outputs.ok == 'true'
         env:
           # Same credential the code-review workflows feed their Claude Code
@@ -336,9 +337,11 @@ jobs:
               "Read(/$GITHUB_WORKSPACE/**)"
               "Glob(/$GITHUB_WORKSPACE/**)"
               "Grep(/$GITHUB_WORKSPACE/**)"
-              # Sandbox, EAS, and simulator work, plus the findings comment.
+              # Sandbox, EAS, and simulator work. Posting the comment and
+              # destroying the sandbox are NOT here: they belong to the last
+              # phase, after a reviewer has attacked the draft, and are added
+              # to this list only by "Revise and post".
               "mcp__sandbox__create_sandbox"
-              "mcp__sandbox__destroy_sandbox"
               "mcp__sandbox__list_sandboxes"
               "mcp__sandbox__get_session_info"
               "mcp__sandbox__sandbox_exec"
@@ -367,9 +370,12 @@ jobs:
               "mcp__sandbox__simulator_app_state"
               "mcp__sandbox__simulator_artifacts"
               "mcp__sandbox__simulator_record"
-              "mcp__sandbox__github_comment_issue"
               "mcp__sandbox__expo_skill"
             )
+            # Every run writes a draft and reads a review here, so this rule
+            # is unconditional — unlike the checkout-wide one below, which is
+            # the fix-mode capability and stays gated.
+            TOOLS+=( "Edit(/$GITHUB_WORKSPACE/.verify-out/**)" )
             # Fix mode only: let the agent EDIT THE CHECKOUT, so the proposed
             # change is a real edit to real files rather than a hand-written
             # diff (far more reliable). Nothing on this runner ever executes
@@ -383,6 +389,9 @@ jobs:
               TOOLS+=( "Edit(/$GITHUB_WORKSPACE/**)" )
             fi
             IFS=","; ALLOWED="${TOOLS[*]}"; unset IFS
+          # The later phases reuse this exact string, so the security boundary
+          # stays the single reviewable list above.
+          echo "ALLOWED=$ALLOWED" >> "$GITHUB_ENV"
           # Preflight: prove the checkout is writable BEFORE spending the run.
           #
           # A wrong file rule is invisible to review — `Write(<abs>/**)` and
@@ -396,39 +405,116 @@ jobs:
           # rule arriving in repo settings, a later edit to the pattern.
           # No --mcp-config: the MCP entries are simply unmatched allow rules
           # here, and starting the server for a canary write is waste.
-          if [ "$FIX_MODE" = "true" ]; then
-            mkdir -p .verify-out && rm -f .verify-out/.permcheck
-            claude -p "Write the single word ok to .verify-out/.permcheck. Say nothing else." \
-              --model claude-haiku-4-5-20251001 \
-              --allowedTools "$ALLOWED" >/dev/null 2>&1 || true
-            if [ ! -f .verify-out/.permcheck ]; then
-              echo "::error::Fix mode cannot write the checkout — the --allowedTools file rules do not match. Fix them before this runs for real."
-              exit 1
-            fi
-            rm -f .verify-out/.permcheck
-            echo "preflight: checkout is writable, fix mode can produce a pull request"
+          #
+          # This is unconditional now. Even outside fix mode the run depends on
+          # writes: the draft the reviewer reads, and the review the last phase
+          # reads back. An un-writable .verify-out means no findings at all.
+          mkdir -p .verify-out && rm -f .verify-out/.permcheck
+          claude -p "Write the single word ok to .verify-out/.permcheck. Say nothing else." \
+            --model claude-haiku-4-5-20251001 \
+            --allowedTools "$ALLOWED" >/dev/null 2>&1 || true
+          if [ ! -f .verify-out/.permcheck ]; then
+            echo "::error::The agent cannot write .verify-out — the --allowedTools file rules do not match. Fix them before this runs for real."
+            exit 1
           fi
+          rm -f .verify-out/.permcheck
+          echo "preflight: .verify-out is writable${FIX_MODE:+, fix mode = $FIX_MODE}"
           timeout 4200 claude -p \
             --model "$VERIFY_MODEL" \
-            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR. FIX MODE: $FIX_MODE (when true, and only if your fix is verified, edit the checkout in $GITHUB_WORKSPACE and write .verify-out/pr.md — see 'Fix mode' below; when false, describe the fix in your comment and change nothing). CHECKOUT: $REPO at commit $CHECKOUT_SHA — permalink any file you cite as https://github.com/$REPO/blob/$CHECKOUT_SHA/<path>#L<start>-L<end>.
+            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR. FIX MODE: $FIX_MODE (when true, and only if your fix is verified, edit the checkout in $GITHUB_WORKSPACE and write .verify-out/pr.md — see 'Fix mode' below; when false, describe the fix in your comment and change nothing). CHECKOUT: $REPO at commit $CHECKOUT_SHA — permalink any file you cite as https://github.com/$REPO/blob/$CHECKOUT_SHA/<path>#L<start>-L<end>. THIS PHASE DOES NOT PUBLISH: write your findings to .verify-out/findings.md and STOP — do not post, and do NOT destroy the sandbox. A reviewer who has not seen your reasoning will attack the draft, and you will get the chance to answer with the sandbox still alive.
 
           $prompt" \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
             --allowedTools "$ALLOWED" \
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
-            | jq -rf .github/verify/render.jq
+            | jq -rf .github/verify/render.jq \
+            | tee .verify-out/run-log.txt
           # A silently un-writable checkout is the failure mode this whole
           # feature had on its first run: fix mode was on, the agent did the
           # work, every Edit was refused, and the step still exited 0 with an
-          # empty diff. Refused writes are never acceptable in fix mode — fail
-          # the run so the cause is visible instead of looking like "the agent
-          # chose not to propose a change".
-          if [ "$FIX_MODE" = "true" ] \
-            && grep -q 'requested permissions to write' "$RUNNER_TEMP/verify-run.jsonl"; then
-            echo "::error::Fix mode was on but writes to the checkout were denied — the --allowedTools file rules are not matching."
+          # empty diff. Refused writes are never acceptable — fail the run so
+          # the cause is visible instead of looking like "the agent chose not
+          # to propose a change".
+          if grep -q 'requested permissions to write' "$RUNNER_TEMP/verify-run.jsonl"; then
+            echo "::error::Writes were denied during the investigation — the --allowedTools file rules are not matching."
             exit 1
           fi
+          if [ ! -s .verify-out/findings.md ]; then
+            echo "::error::The investigation wrote no .verify-out/findings.md, so there is nothing to review or post."
+            exit 1
+          fi
+          # The last phase resumes THIS session, so it keeps the whole
+          # investigation in context and can still drive the live sandbox.
+          # Without that the reviewer's objections would be unanswerable.
+          SESSION_ID=$(jq -r 'select(.session_id != null) | .session_id' "$RUNNER_TEMP/verify-run.jsonl" | head -n1)
+          if [ -z "$SESSION_ID" ] || [ "$SESSION_ID" = "null" ]; then
+            echo "::error::Could not read a session id from the run transcript; the revise phase has nothing to resume."
+            exit 1
+          fi
+          echo "session_id=$SESSION_ID" >> "$GITHUB_OUTPUT"
+
+      # An agent is a poor reviewer of its own conclusion. The draft that
+      # attached two screenshots of an unaffected platform labelled them
+      # "iOS never takes the android_res branch" — it already knew they proved
+      # nothing. So the reviewer here is a SEPARATE process with a fresh
+      # context: it reads the draft and the run log as a stranger would, and
+      # cannot be carried along by reasoning it never did.
+      #
+      # It has no sandbox, no MCP, no network and no way to publish. Its only
+      # writable path is the review file itself.
+      - name: Adversarial review of the draft findings
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          ISSUE_KIND: ${{ github.event.issue.pull_request != null && 'pull request' || 'issue' }}
+          REPO: ${{ github.repository }}
+          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+        run: |
+          set -o pipefail
+          critic=$(cat .github/verify/critic.md)
+          timeout 1800 claude -p \
+            --model "$VERIFY_MODEL" \
+            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. The draft is .verify-out/findings.md and the run that produced it is .verify-out/run-log.txt. Write your review to .verify-out/review.md.
+
+          $critic" \
+            --allowedTools "Read(/$GITHUB_WORKSPACE/**),Glob(/$GITHUB_WORKSPACE/**),Grep(/$GITHUB_WORKSPACE/**),Edit(/$GITHUB_WORKSPACE/.verify-out/review.md)" \
+            --output-format stream-json --verbose \
+            | tee "$RUNNER_TEMP/verify-critic.jsonl" \
+            | jq -rf .github/verify/render.jq
+          if [ ! -s .verify-out/review.md ]; then
+            echo "::error::The reviewer produced no .verify-out/review.md."
+            exit 1
+          fi
+
+      # Back to the investigator, with its context and its sandbox intact.
+      # This is the only phase that can publish, and the only one that can
+      # tear the sandbox down — both capabilities are added here and nowhere
+      # else.
+      - name: Revise and post
+        if: steps.gate.outputs.ok == 'true'
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+          VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
+          # Via env, never inline ${{ }} — the same discipline the comment body
+          # follows two steps down, applied to every value that reaches a shell.
+          SESSION_ID: ${{ steps.investigate.outputs.session_id }}
+        run: |
+          set -o pipefail
+          review=$(cat .verify-out/review.md)
+          timeout 2400 claude -p --resume "$SESSION_ID" \
+            "A reviewer read your draft and the log of this run WITHOUT seeing your reasoning, and tried to break it. Their review follows. Treat it as a colleague's objections, not as orders: answer every MUST-FIX, and where you disagree, say so in the findings with your reason rather than silently ignoring it. The sandbox is still alive — if an objection can be settled by measuring again, measure again instead of arguing. Drop any evidence they show supports no claim, and correct anything they show you asserted without checking.
+
+          Then, and only then: post the findings with mcp__sandbox__github_comment_issue, write .verify-out/pr.md if fix mode applies, and destroy the sandbox with mcp__sandbox__destroy_sandbox before you finish. Destroy it even if posting fails.
+
+          --- REVIEW ---
+          $review" \
+            --mcp-config "$RUNNER_TEMP/mcp.json" \
+            --allowedTools "$ALLOWED,mcp__sandbox__github_comment_issue,mcp__sandbox__destroy_sandbox" \
+            --output-format stream-json --verbose \
+            | tee "$RUNNER_TEMP/verify-revise.jsonl" \
+            | jq -rf .github/verify/render.jq
 
       # Fix mode: turn the agent's verified edit into a pull request.
       #
@@ -516,6 +602,14 @@ jobs:
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: verify-run-log-${{ github.event.issue.number }}
-          path: ${{ runner.temp }}/verify-run.jsonl
+          # All three phases, plus the draft and the review that passed
+          # between them — the review is deliberately not published to the
+          # thread, so this artifact is where it can be audited.
+          path: |
+            ${{ runner.temp }}/verify-run.jsonl
+            ${{ runner.temp }}/verify-critic.jsonl
+            ${{ runner.temp }}/verify-revise.jsonl
+            .verify-out/findings.md
+            .verify-out/review.md
           if-no-files-found: ignore
           retention-days: 14
