@@ -1,8 +1,10 @@
 import * as Haptics from 'expo-haptics';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'Haptics';
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   t.describe('Haptics', () => {
     t.it('selectionAsync()', async () => {
       const result = await Haptics.selectionAsync();

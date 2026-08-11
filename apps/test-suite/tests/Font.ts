@@ -2,9 +2,11 @@ import { isRunningInExpoGo } from 'expo';
 import * as Font from 'expo-font';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'Font';
 
-export async function test({ beforeEach, afterAll, describe, it, expect }) {
+export async function test({ beforeEach, afterAll, describe, it, expect }: JasmineInterface) {
   describe(name, () => {
     async function unloadFontAsync() {
       if (Platform.OS === 'web') {
@@ -51,13 +53,14 @@ export async function test({ beforeEach, afterAll, describe, it, expect }) {
 
         expect(Font.getLoadedFonts().length).toBe(loadedFontsPrior.length + 1);
 
-        const styleSheet = document.getElementById('expo-generated-fonts');
+        const styleSheet = document.getElementById('expo-generated-fonts') as HTMLStyleElement;
         expect(!!styleSheet).toBe(true);
-        const [rule] = [...styleSheet.sheet.cssRules].filter((rule) => {
+        const [rule] = [...(styleSheet?.sheet?.cssRules ?? [])].filter((rule) => {
           return (
             rule instanceof CSSFontFaceRule &&
             rule.style.fontFamily === 'cool-font' &&
-            rule.style.fontDisplay === 'swap'
+            // `font-display` is a `@font-face` descriptor, so it is not on the type.
+            (rule.style as CSSStyleDeclaration & { fontDisplay?: string }).fontDisplay === 'swap'
           );
         });
         expect(!!rule).toBe(true);

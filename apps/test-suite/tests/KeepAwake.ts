@@ -1,11 +1,10 @@
 import * as KeepAwake from 'expo-keep-awake';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'KeepAwake';
 
-export async function test(
-  { it, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
-  { setPortalChild, cleanupPortal }
-) {
+export async function test({ it, describe, afterAll }: JasmineInterface) {
   describe(name, () => {
     afterAll(async () => {
       if (await KeepAwake.isAvailableAsync()) {

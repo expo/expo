@@ -10,7 +10,6 @@ const TESTS = [
   // 'FileSystem',
   // 'Font',
   // 'Blur',
-  // 'LinearGradient',
   'Constants',
   // 'Contacts',
   'Crypto',

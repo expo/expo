@@ -1663,9 +1663,6 @@ importers:
       expo-keep-awake:
         specifier: workspace:*
         version: link:../../packages/expo-keep-awake
-      expo-linear-gradient:
-        specifier: workspace:*
-        version: link:../../packages/expo-linear-gradient
       expo-linking:
         specifier: workspace:*
         version: link:../../packages/expo-linking
@@ -17544,7 +17541,9 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
+      - bufferutil
       - supports-color
+      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 

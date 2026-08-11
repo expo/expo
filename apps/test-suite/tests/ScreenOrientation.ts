@@ -1,14 +1,24 @@
-'use strict';
-
 import * as ScreenOrientation from 'expo-screen-orientation';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'ScreenOrientation';
+
+type ApplyOptions = {
+  desiredOrientationLock?: ScreenOrientation.OrientationLock;
+  desiredOrientations?: ScreenOrientation.Orientation[];
+  validOrientations?: ScreenOrientation.Orientation[];
+};
 
 // Wait until we are in desiredOrientation
 // Fail if we are not in a validOrientation
-const applyAsync = ({ desiredOrientationLock, desiredOrientations, validOrientations }) => {
-  return new Promise(async function (resolve, reject) {
+const applyAsync = ({
+  desiredOrientationLock,
+  desiredOrientations,
+  validOrientations,
+}: ApplyOptions) => {
+  return new Promise<void>(async function (resolve, reject) {
     let subscriptionCancelled = false;
     const subscription = ScreenOrientation.addOrientationChangeListener(
       ({ orientationInfo, orientationLock }) => {
@@ -57,7 +67,7 @@ const applyAsync = ({ desiredOrientationLock, desiredOrientations, validOrientat
   });
 };
 
-export function test(t) {
+export function test(t: JasmineInterface) {
   t.describe('Screen Orientation', () => {
     t.describe('Screen Orientation locking, getters, setters, listeners, etc', () => {
       t.beforeEach(async () => {
@@ -113,7 +123,7 @@ export function test(t) {
       t.it(
         'Register for the callback, set to landscape orientation and get the correct orientation',
         async () => {
-          const callListenerAsync = new Promise(async function (resolve, reject) {
+          const callListenerAsync = new Promise<void>(async function (resolve, reject) {
             // Register for screen orientation changes
             ScreenOrientation.addOrientationChangeListener(({ orientationInfo }) => {
               const { orientation } = orientationInfo;
@@ -311,6 +321,8 @@ export function test(t) {
         for (const notLock of notLocks) {
           let hasError = false;
           try {
+            // Deliberately outside the enum — the spec asserts it is rejected.
+            // @ts-expect-error
             await ScreenOrientation.supportsOrientationLockAsync(notLock);
           } catch {
             hasError = true;

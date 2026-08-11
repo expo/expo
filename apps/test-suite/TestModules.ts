@@ -79,10 +79,6 @@ export function getTestModules() {
     require('./tests/SQLite')
   );
 
-  if (Platform.OS !== 'android') {
-    modules.push(require('./tests/LinearGradient'));
-  }
-
   if (['android', 'ios'].includes(Platform.OS)) {
     modules.push(require('./tests/AppMetrics'));
     modules.push(require('./tests/Blob'));

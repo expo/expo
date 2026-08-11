@@ -1,8 +1,7 @@
-import React, { type ReactElement, type ReactNode } from 'react';
+import React, { type ReactElement } from 'react';
 import { Alert } from 'react-native';
 
-/** Mounts a test element into the portal `TestScreen` renders below the results. */
-export type SetPortalChild = (child: ReactNode) => void;
+import type { SetPortalChild } from '../types';
 
 export const waitFor = (millis: number) =>
   new Promise<void>((resolve) => setTimeout(resolve, millis));

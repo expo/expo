@@ -47,7 +47,6 @@
     "expo-image-manipulator": "workspace:*",
     "expo-image-picker": "workspace:*",
     "expo-keep-awake": "workspace:*",
-    "expo-linear-gradient": "workspace:*",
     "expo-linking": "workspace:*",
     "expo-localization": "workspace:*",
     "expo-location": "workspace:*",
