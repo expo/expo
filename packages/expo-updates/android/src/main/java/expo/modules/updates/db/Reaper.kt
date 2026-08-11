@@ -2,6 +2,7 @@ package expo.modules.updates.db
 
 import android.util.Log
 import expo.modules.updates.UpdatesConfiguration
+import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.manifest.ManifestMetadata
@@ -47,7 +48,16 @@ object Reaper {
         )
         continue
       }
-      val path = File(updatesDirectory, asset.relativePath)
+      // A row written before asset filenames were validated may point outside the updates directory.
+      val relativePath = asset.relativePath
+      if (relativePath == null || !UpdatesUtils.isSafeFilename(relativePath)) {
+        Log.e(
+          TAG,
+          "Refusing to delete asset with URL " + asset.url + " at unsafe path " + relativePath
+        )
+        continue
+      }
+      val path = File(updatesDirectory, relativePath)
       try {
         if (path.exists() && !path.delete()) {
           Log.e(TAG, "Failed to delete asset with URL " + asset.url + " at path " + path.toString())
