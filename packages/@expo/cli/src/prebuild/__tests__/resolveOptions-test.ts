@@ -203,10 +203,27 @@ describe(ensureValidPlatforms, () => {
     });
     expect(ensureValidPlatforms(['ios', 'android'])).toStrictEqual(['android']);
   });
+  it(`strips every Apple platform on windows`, async () => {
+    Object.defineProperty(process, 'platform', {
+      value: 'win32',
+    });
+    expect(ensureValidPlatforms(['ios', 'tvos', 'android'] as any)).toStrictEqual(['android']);
+    expect(ensureValidPlatforms(['tvos'] as any)).toStrictEqual([]);
+  });
   it(`allows ios on all platforms except windows`, async () => {
     Object.defineProperty(process, 'platform', {
       value: 'other',
     });
     expect(ensureValidPlatforms(['ios', 'android'])).toStrictEqual(['ios', 'android']);
+  });
+  it(`allows tvos on all platforms except windows`, async () => {
+    Object.defineProperty(process, 'platform', {
+      value: 'darwin',
+    });
+    expect(ensureValidPlatforms(['ios', 'tvos', 'android'] as any)).toStrictEqual([
+      'ios',
+      'tvos',
+      'android',
+    ]);
   });
 });

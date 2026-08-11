@@ -91,10 +91,55 @@ describe(getMalformedNativeProjectsAsync, () => {
     const malformed = await getMalformedNativeProjectsAsync(projectRoot, [
       'windows',
       'macos',
-      'tvos',
       'androidtv',
     ] as any);
     expect(malformed).toStrictEqual([]);
+  });
+
+  it(`finds a malformed tvos project`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        'tvos/foo': null,
+      },
+      projectRoot
+    );
+    const malformed = await getMalformedNativeProjectsAsync(projectRoot, ['tvos'] as any);
+    expect(malformed).toStrictEqual(['tvos']);
+  });
+
+  it(`does not let a valid tvos project mask a malformed ios project`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        // Valid tvos project mirroring the ios fixture.
+        ...Object.entries(rnFixture).reduce((prev, [key, value]) => {
+          if (!key.startsWith('ios')) return prev;
+          return {
+            ...prev,
+            [key.replace(/^ios/, 'tvos')]: value,
+          };
+        }, {}),
+        // Malformed ios project: directory exists, required files missing.
+        'ios/foo': null,
+      },
+      projectRoot
+    );
+    const malformed = await getMalformedNativeProjectsAsync(projectRoot, ['ios', 'tvos'] as any);
+    expect(malformed).toStrictEqual(['ios']);
+  });
+
+  it(`does not let a valid ios project mask a malformed tvos project`, async () => {
+    const projectRoot = '/';
+    vol.fromJSON(
+      {
+        ...rnFixture,
+        'tvos/foo': null,
+      },
+      projectRoot
+    );
+    const malformed = await getMalformedNativeProjectsAsync(projectRoot, ['ios', 'tvos'] as any);
+    expect(malformed).toStrictEqual(['tvos']);
   });
 
   it(`finds a single platform`, async () => {

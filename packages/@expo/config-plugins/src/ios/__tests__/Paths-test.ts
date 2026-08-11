@@ -11,10 +11,25 @@ import {
   getXcodeProjectPath,
   getPBXProjectPath,
   getPodfilePath,
+  toApplePlatform,
 } from '../Paths';
 
 jest.mock('fs');
 jest.mock('../../utils/warnings');
+
+describe(toApplePlatform, () => {
+  it(`passes Apple platforms through`, () => {
+    expect(toApplePlatform('ios')).toBe('ios');
+    expect(toApplePlatform('tvos')).toBe('tvos');
+  });
+
+  it(`throws for platforms that have no Apple project directory`, () => {
+    // A silent 'ios' fallback would make a future macos (or android) mod pass
+    // write into the ios/ directory.
+    expect(() => toApplePlatform('android')).toThrow(UnexpectedError);
+    expect(() => toApplePlatform('macos' as any)).toThrow(/macos/);
+  });
+});
 
 describe(findSchemeNames, () => {
   afterEach(() => {

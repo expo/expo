@@ -133,22 +133,25 @@ async function downloadAndExtractRepoAsync(
   const directory = filePath.replace(/^\//, '').split('/').filter(Boolean);
   // Remove the (sub)directory paths, and the root folder added by GitHub
   const strip = directory.length + 1;
-  // Only extract the relevant (sub)directories, ignoring irrelevant files
-  // The filter auto-ignores dotfiles, unless explicitly included
-  const filter = createGlobFilter(
-    !directory.length
-      ? ['*/**', '*/ios/.xcode.env']
-      : [`*/${directory.join('/')}/**`, `*/${directory.join('/')}/ios/.xcode.env`],
-    {
-      // Always ignore the `.xcworkspace` folder
-      ignore: ['**/ios/*.xcworkspace/**'],
-    }
-  );
 
   return await extractNpmTarballFromUrlAsync(url, output, {
     ...props,
     strip,
-    filter,
+    filter: createTemplateFileFilter(directory),
+  });
+}
+
+/**
+ * Creates the filter selecting which files to extract from a GitHub template tarball.
+ * Only extracts the relevant (sub)directories, ignoring irrelevant files.
+ * The filter auto-ignores dotfiles, so the Apple platform directories' `.xcode.env` files are
+ * included explicitly.
+ */
+export function createTemplateFileFilter(directory: string[]): (path: string) => boolean {
+  const prefix = directory.length ? `*/${directory.join('/')}` : '*';
+  return createGlobFilter([`${prefix}/**`, `${prefix}/{ios,tvos}/.xcode.env`], {
+    // Always ignore the `.xcworkspace` folder
+    ignore: ['**/{ios,tvos}/*.xcworkspace/**'],
   });
 }
 

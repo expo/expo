@@ -12,6 +12,7 @@
 ### 🐛 Bug fixes
 
 - Fix `getApplicationIdAsync` and `setPackageInBuildGradle` failing with the Gradle assignment syntax (`applicationId = '...'`). ([#47711](https://github.com/expo/expo/pull/47711) by [@idoyana](https://github.com/idoyana))
+- [tvos] Throw from `toApplePlatform` for platforms without an Apple project directory, instead of silently falling back to `ios`. ([#46587](https://github.com/expo/expo/pull/46587) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 

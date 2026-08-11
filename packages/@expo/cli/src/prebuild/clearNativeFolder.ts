@@ -53,13 +53,18 @@ export async function hasRequiredAndroidFilesAsync(projectRoot: string): Promise
   }
 }
 
-/** Returns `true` if a certain subset of required iOS project files are intact. */
-export async function hasRequiredIOSFilesAsync(projectRoot: string) {
+/** Returns `true` if a certain subset of required Apple project files are intact. */
+export async function hasRequiredIOSFilesAsync(
+  projectRoot: string,
+  platform: IOSConfig.Paths.ApplePlatform = 'ios'
+) {
   try {
     // If any of the following required files are missing, then the project is malformed.
+    // Scope the search to the platform's own directory — an unscoped search would let a valid
+    // `tvos/` project mask a malformed `ios/` one, and the other way around.
     await Promise.all([
-      IOSConfig.Paths.getAllXcodeProjectPaths(projectRoot),
-      IOSConfig.Paths.getAllPBXProjectPaths(projectRoot),
+      IOSConfig.Paths.getAllXcodeProjectPaths(projectRoot, platform),
+      IOSConfig.Paths.getAllPBXProjectPaths(projectRoot, platform),
     ]);
     return true;
   } catch {
@@ -95,7 +100,8 @@ export async function getMalformedNativeProjectsAsync(
 ): Promise<ArbitraryPlatform[]> {
   const VERIFIERS: Record<ArbitraryPlatform, (root: string) => Promise<boolean>> = {
     android: hasRequiredAndroidFilesAsync,
-    ios: hasRequiredIOSFilesAsync,
+    ios: (root) => hasRequiredIOSFilesAsync(root, 'ios'),
+    tvos: (root) => hasRequiredIOSFilesAsync(root, 'tvos'),
   };
 
   const checkablePlatforms = platforms.filter((platform) => platform in VERIFIERS);
