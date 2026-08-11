@@ -3,6 +3,7 @@ import * as Linking from 'expo-linking';
 import * as WebBrowser from 'expo-web-browser';
 import { LogBox, Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
 import { waitFor } from './helpers';
 
 const validHttpUrl = 'http://exp.host/';
@@ -18,7 +19,7 @@ LogBox.ignoreLogs([
 
 export const name = 'Linking';
 
-export function test(t) {
+export function test(t: JasmineInterface) {
   t.describe('Linking', () => {
     t.describe('createURL', () => {
       t.it('returns correctly encoded URL ', () => {
@@ -63,7 +64,7 @@ export function test(t) {
         t.it('listener gets called with a proper URL when opened from a web modal', async () => {
           let handlerCalled = false;
           const testUrl = Linking.createURL('++message=hello');
-          const handler = ({ url }) => {
+          const handler = ({ url }: Linking.EventType) => {
             t.expect(url).toEqual(testUrl);
             handlerCalled = true;
           };
@@ -79,7 +80,7 @@ export function test(t) {
         // and we can't programmatically tap "Open".
         t.it('listener gets called with a proper URL when opened from a web browser', async () => {
           let handlerCalled = false;
-          const handler = ({ url }) => {
+          const handler = ({ url }: Linking.EventType) => {
             t.expect(url).toEqual(Linking.createURL('++message=Redirected automatically by timer'));
             handlerCalled = true;
           };
@@ -93,7 +94,7 @@ export function test(t) {
 
       t.it('listener gets called with a proper URL when opened from a web modal', async () => {
         let handlerCalled = false;
-        const handler = ({ url }) => {
+        const handler = ({ url }: Linking.EventType) => {
           t.expect(url).toEqual(Linking.createURL('++message=Redirected automatically by timer'));
           handlerCalled = true;
           if (Platform.OS === 'ios') WebBrowser.dismissBrowser();
@@ -107,7 +108,7 @@ export function test(t) {
 
       t.it('listener gets called with a proper URL when opened with Linking.openURL', async () => {
         let handlerCalled = false;
-        const handler = ({ url }) => {
+        const handler = () => {
           handlerCalled = true;
         };
         const subscription = Linking.addEventListener('url', handler);
@@ -119,12 +120,12 @@ export function test(t) {
 
       t.it('listener parses out deep link information correctly', async () => {
         let handlerCalled = false;
-        const handler = ({ url }) => {
+        const handler = ({ url }: Linking.EventType) => {
           const { path, queryParams } = Linking.parse(url);
           // ignore +'s on the front of path,
           // since there may be one or two depending on how test-suite is being served
-          t.expect(path.replace(/\+/g, '')).toEqual('test/path');
-          t.expect(queryParams.query).toEqual('param');
+          t.expect(path?.replace(/\+/g, '')).toEqual('test/path');
+          t.expect(queryParams?.query).toEqual('param');
           handlerCalled = true;
         };
         const subscription = Linking.addEventListener('url', handler);

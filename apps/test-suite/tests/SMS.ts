@@ -2,6 +2,7 @@ import * as SMS from 'expo-sms';
 import { Platform } from 'react-native';
 
 import { expectMethodToThrowAsync } from '../TestUtils';
+import type { JasmineInterface } from '../types';
 import { isInteractive } from '../utils/Environment';
 import {
   loadAttachmentsAsync,
@@ -15,7 +16,7 @@ import {
 
 export const name = 'SMS';
 
-export function test({ describe, it, expect, beforeAll, afterAll }) {
+export function test({ describe, it, expect, beforeAll, afterAll }: JasmineInterface) {
   describe('SMS', () => {
     if (isInteractive()) {
       describe(`sendSMSAsync()`, () => {
@@ -26,24 +27,28 @@ export function test({ describe, it, expect, beforeAll, afterAll }) {
         });
 
         it(`opens an SMS composer with single image attachment`, async () => {
-          await testSMSComposeWithSingleImageAttachment(expect);
+          await testSMSComposeWithSingleImageAttachment();
         });
 
         it(`opens an SMS composer with two image attachments. Only first one is used.`, async () => {
-          await testSMSComposeWithTwoImageAttachments(expect);
+          await testSMSComposeWithTwoImageAttachments();
         });
 
         it(`opens an SMS composer with audio attachment`, async () => {
-          await testSMSComposeWithAudioAttachment(expect);
+          await testSMSComposeWithAudioAttachment();
         });
 
         it(`throws when provided with undefined recipient`, async () => {
-          const error = await expectMethodToThrowAsync(testSMSComposeWithUndefinedRecipient);
+          const error = (await expectMethodToThrowAsync(testSMSComposeWithUndefinedRecipient)) as {
+            message: string;
+          };
           expect(error.message).toBe('undefined or null address');
         });
 
         it(`throws when provided with null recipient`, async () => {
-          const error = await expectMethodToThrowAsync(testSMSComposeWithNullRecipient);
+          const error = (await expectMethodToThrowAsync(testSMSComposeWithNullRecipient)) as {
+            message: string;
+          };
           expect(error.message).toBe('undefined or null address');
         });
 

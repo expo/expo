@@ -1,8 +1,8 @@
-'use strict';
 import * as Speech from 'expo-speech';
 import { Platform } from 'react-native';
 
 import ExponentTest from '../ExponentTest';
+import type { JasmineInterface } from '../types';
 import { waitFor } from './helpers';
 
 export const name = 'Speech';
@@ -15,7 +15,7 @@ const shortTextToSpeak = 'Hi!';
 // on another device: onDone and onStopped never get called.
 // #Android
 
-export function test(t) {
+export function test(t: JasmineInterface) {
   // NOTE(2018-03-08): These tests are failing on iOS; disable for CI
   const unreliablyDescribe =
     Platform.OS !== 'android' && ExponentTest.isInCI ? t.xdescribe : t.describe;
@@ -55,9 +55,13 @@ export function test(t) {
 
         const onError = t.jasmine.createSpy('onError');
 
-        await new Promise((resolve, reject) => {
+        await new Promise<void>((resolve, reject) => {
           try {
-            Speech.speak(shortTextToSpeak, { onError, onDone: resolve, voice: voice.identifier });
+            Speech.speak(shortTextToSpeak, {
+              onError,
+              onDone: () => resolve(),
+              voice: voice.identifier,
+            });
           } catch (error) {
             reject(error);
           }
@@ -71,9 +75,9 @@ export function test(t) {
         t.it("doesn't call onError if not needed", async () => {
           const onError = t.jasmine.createSpy('onError');
           const language = 'en-US';
-          await new Promise((resolve, reject) => {
+          await new Promise<void>((resolve, reject) => {
             try {
-              Speech.speak(shortTextToSpeak, { onError, language, onDone: resolve });
+              Speech.speak(shortTextToSpeak, { onError, language, onDone: () => resolve() });
             } catch (error) {
               reject(error);
             }

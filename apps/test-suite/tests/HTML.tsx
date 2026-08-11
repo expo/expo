@@ -38,9 +38,10 @@ import {
   TR,
   UL,
 } from '@expo/html-elements';
-import React from 'react';
+import React, { type ReactElement } from 'react';
 import { View, Text } from 'react-native';
 
+import type { JasmineInterface, TestPortal } from '../types';
 import { mountAndWaitFor as originalMountAndWaitFor } from './helpers';
 
 export const name = 'html-elements';
@@ -83,29 +84,27 @@ const viewElements = {
 };
 
 export async function test(
-  { it, describe, beforeAll, jasmine, afterAll, expect, afterEach, beforeEach },
-  { setPortalChild, cleanupPortal }
+  { it, describe, afterEach }: JasmineInterface,
+  { setPortalChild, cleanupPortal }: TestPortal
 ) {
   afterEach(async () => {
     await cleanupPortal();
   });
 
-  const mountAndWaitFor = (child, propName = 'onLayout') =>
+  const mountAndWaitFor = (child: ReactElement<any>, propName = 'onLayout') =>
     originalMountAndWaitFor(child, propName, setPortalChild);
 
   describe(name, () => {
     describe('Text', () => {
-      for (const elementName of Object.keys(textElements)) {
+      for (const [elementName, Element] of Object.entries(textElements)) {
         it(`renders text element ${elementName}`, async () => {
-          const Element = textElements[elementName];
           await mountAndWaitFor(<Element>Test contents</Element>);
         });
       }
     });
     describe('Views', () => {
-      for (const elementName of Object.keys(viewElements)) {
+      for (const [elementName, Element] of Object.entries(viewElements)) {
         it(`renders view elements ${elementName}`, async () => {
-          const Element = viewElements[elementName];
           await mountAndWaitFor(
             <Element>
               <Text>Hello</Text>

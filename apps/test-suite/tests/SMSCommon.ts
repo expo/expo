@@ -1,7 +1,18 @@
 import * as FS from 'expo-file-system/legacy';
 import * as SMS from 'expo-sms';
 
-async function assertExists(testFile, expectedToExist, expect) {
+import type { JasmineInterface } from '../types';
+
+type Expect = JasmineInterface['expect'];
+
+type AttachmentFile = {
+  localUri: string;
+  remoteUri: string;
+  md5: string;
+  mimeType: string;
+};
+
+async function assertExists(testFile: AttachmentFile, expectedToExist: boolean, expect: Expect) {
   const { exists } = await FS.getInfoAsync(testFile.localUri);
   if (expectedToExist) {
     expect(exists).toBeTruthy();
@@ -10,7 +21,7 @@ async function assertExists(testFile, expectedToExist, expect) {
   }
 }
 
-async function loadAndSaveFile(fileInfo, expect) {
+async function loadAndSaveFile(fileInfo: AttachmentFile, expect: Expect) {
   await FS.deleteAsync(fileInfo.localUri, { idempotent: true });
   await assertExists(fileInfo, false, expect);
   const { md5, headers } = await FS.downloadAsync(fileInfo.remoteUri, fileInfo.localUri, {
@@ -25,7 +36,7 @@ async function loadAndSaveFile(fileInfo, expect) {
   expect(headers['Content-Type'] || headers['content-type']).toBe(fileInfo.mimeType);
 }
 
-async function cleanupFile(fileInfo, expect) {
+async function cleanupFile(fileInfo: AttachmentFile, expect: Expect) {
   await FS.deleteAsync(fileInfo.localUri);
   await assertExists(fileInfo, false, expect);
 }
@@ -53,17 +64,17 @@ const audioFile = {
 
 const numbers = ['0123456789', '9876543210'];
 
-export async function loadAttachmentsAsync(expect) {
+export async function loadAttachmentsAsync(expect: Expect) {
   const files = [pngFile, gifFile, audioFile];
   await Promise.all(files.map((file) => loadAndSaveFile(file, expect)));
 }
 
-export async function cleanupAttachmentsAsync(expect) {
+export async function cleanupAttachmentsAsync(expect: Expect) {
   const files = [pngFile, gifFile, audioFile];
   await Promise.all(files.map((file) => cleanupFile(file, expect)));
 }
 
-export async function testSMSComposeWithSingleImageAttachment(expect) {
+export async function testSMSComposeWithSingleImageAttachment() {
   const contentUri = await FS.getContentUriAsync(pngFile.localUri);
   await SMS.sendSMSAsync(numbers, 'test with image', {
     attachments: {
@@ -74,7 +85,7 @@ export async function testSMSComposeWithSingleImageAttachment(expect) {
   });
 }
 
-export async function testSMSComposeWithTwoImageAttachments(expect) {
+export async function testSMSComposeWithTwoImageAttachments() {
   await SMS.sendSMSAsync(numbers, 'test with two images', {
     attachments: [
       {
@@ -91,7 +102,7 @@ export async function testSMSComposeWithTwoImageAttachments(expect) {
   });
 }
 
-export async function testSMSComposeWithAudioAttachment(expect) {
+export async function testSMSComposeWithAudioAttachment() {
   await SMS.sendSMSAsync(numbers, 'test with audio', {
     attachments: [
       {
@@ -104,9 +115,12 @@ export async function testSMSComposeWithAudioAttachment(expect) {
 }
 
 export async function testSMSComposeWithNullRecipient() {
+  // Deliberately not a recipient list — the specs assert the module rejects it.
+  // @ts-expect-error
   await SMS.sendSMSAsync(null, 'test with null recipient, no attachments', null);
 }
 
 export async function testSMSComposeWithUndefinedRecipient() {
+  // @ts-expect-error
   await SMS.sendSMSAsync(undefined, 'test with undefined recipient, no attachments', null);
 }

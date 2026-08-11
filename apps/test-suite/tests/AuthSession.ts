@@ -1,13 +1,15 @@
 import * as AuthSession from 'expo-auth-session';
 import * as PKCE from 'expo-auth-session/build/PKCE';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'AuthSession';
 
 // Open ID RP cert testing server https://openid.net/certification/rp_testing
 // TODO(Bacon): Test exchanges
 // const testUri = "https://rp.certification.openid.net:8080/expo-auth-session/";
 
-export async function test({ describe, it, expect, jasmine }) {
+export async function test({ describe, it, expect, jasmine }: JasmineInterface) {
   describe('OpenID Connect Auto Discovery', () => {
     const issuer = 'https://accounts.google.com';
 

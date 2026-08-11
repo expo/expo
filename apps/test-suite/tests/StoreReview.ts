@@ -1,9 +1,11 @@
 import * as StoreReview from 'expo-store-review';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'StoreReview';
 
-export function test({ describe, it, expect }) {
+export function test({ describe, it, expect }: JasmineInterface) {
   describe(`isAvailableAsync()`, () => {
     if (Platform.OS === 'android') {
       it(`is is available`, async () => {
