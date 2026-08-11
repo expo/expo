@@ -1,10 +1,10 @@
-'use strict';
-
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'Device';
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   t.describe(`Device.getDeviceType()`, () => {
     t.it(`returns enum values`, async () => {
       const deviceType = await Device.getDeviceTypeAsync();

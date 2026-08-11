@@ -3,9 +3,10 @@ import { isDevice } from 'expo-device';
 import { Platform } from 'react-native';
 
 import ExponentTest from '../ExponentTest';
+import type { JasmineInterface } from '../types';
 
 export const name = 'Application';
-export async function test({ describe, it, expect, jasmine }) {
+export async function test({ describe, it, expect, jasmine }: JasmineInterface) {
   describe(`Constants and methods common to Android and iOS`, () => {
     describe('constants tests', () => {
       it('gets Application.applicationName as a String', () => {

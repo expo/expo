@@ -1,11 +1,13 @@
 import * as Network from 'expo-network';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'Network';
 const Ipv4Regex =
   /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   if (Platform.OS === 'android') {
     t.describe(`Network.isAirplaneModeEnabledAsync()`, () => {
       t.it(`returns a boolean`, async () => {
@@ -54,12 +56,12 @@ export async function test(t) {
       }
       t.expect(typeof ipAddress).toEqual('string');
       t.expect(typeof error).toEqual('undefined');
-      t.expect(Ipv4Regex.test(ipAddress)).toBeTruthy();
+      t.expect(ipAddress).toMatch(Ipv4Regex);
     });
   });
   t.describe(`Network.getNetworkStateAsync()`, () => {
     t.it(`gets valid NetworkState types and valid NetworkStateType enums`, async () => {
-      function validateBoolean(result) {
+      function validateBoolean(result: unknown) {
         t.expect(result).toBeDefined();
         t.expect(typeof result).toBe('boolean');
       }
@@ -68,7 +70,7 @@ export async function test(t) {
         const { type, isConnected, isInternetReachable } = await Network.getNetworkStateAsync();
         validateBoolean(isConnected);
         validateBoolean(isInternetReachable);
-        t.expect(Object.values(Network.NetworkStateType).includes(type)).toBeTruthy();
+        t.expect(Object.values(Network.NetworkStateType)).toContain(type);
         t.expect(typeof error).toEqual('undefined');
       } catch (e) {
         error = e;

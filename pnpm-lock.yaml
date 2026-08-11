@@ -1766,6 +1766,9 @@ importers:
       '@types/getenv':
         specifier: ^1.0.0
         version: 1.0.3
+      '@types/i18n-js':
+        specifier: ^3.8.9
+        version: 3.8.9
       '@types/invariant':
         specifier: ^2.2.35
         version: 2.2.37
@@ -17541,9 +17544,7 @@ snapshots:
       metro-runtime: 0.84.4
     transitivePeerDependencies:
       - '@babel/core'
-      - bufferutil
       - supports-color
-      - utf-8-validate
 
   '@react-native/normalize-colors@0.74.89': {}
 

@@ -1,6 +1,9 @@
 import * as Localization from 'expo-localization';
 import i18n from 'i18n-js';
 
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
+
 const en = {
   good: 'good',
   morning: 'morning',
@@ -16,13 +19,15 @@ const pl = {
   morning: 'rano',
 };
 
+const translations: Record<string, Record<string, string>> = { en, fr, pl };
+
 export const name = 'Localization';
 
-export function test(t) {
-  function validateString(result) {
+export function test(t: JasmineInterface) {
+  function validateString(result: unknown) {
     t.expect(result).toBeDefined();
     t.expect(typeof result).toBe('string');
-    t.expect(result.length > 0).toBe(true);
+    t.expect(typeof result === 'string' && result.length > 0).toBe(true);
   }
 
   t.describe(`Localization methods`, () => {
@@ -77,20 +82,18 @@ export function test(t) {
   });
 
   t.describe(`Localization works with i18n-js`, () => {
-    i18n.locale = Localization.getLocales()[0].languageCode;
-    i18n.translations = { en, fr, pl };
+    i18n.locale = requireNotNull(Localization.getLocales()[0].languageCode);
+    i18n.translations = translations;
     i18n.missingTranslationPrefix = 'EE: ';
     i18n.fallbacks = true;
 
     t.it('expect language to match strings (en, pl, fr supported)', async () => {
       const target = 'good';
 
-      i18n.locale = Localization.getLocales()[0].languageCode;
+      const expoPredictedLangTag = requireNotNull(Localization.getLocales()[0].languageCode);
+      i18n.locale = expoPredictedLangTag;
 
-      const expoPredictedLangTag = Localization.getLocales()[0].languageCode;
-      const translation = i18n.translations[expoPredictedLangTag];
-
-      t.expect(translation[target]).toBe(i18n.t(target));
+      t.expect(translations[expoPredictedLangTag]?.[target]).toBe(i18n.t(target));
     });
   });
 }

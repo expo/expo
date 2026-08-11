@@ -2,9 +2,11 @@ import * as Battery from 'expo-battery';
 import * as Device from 'expo-device';
 import { Platform } from 'expo-modules-core';
 
+import type { JasmineInterface } from '../types';
+
 export const name = 'Battery';
 
-export async function test({ describe, it, expect, jasmine }) {
+export async function test({ describe, it, expect, jasmine }: JasmineInterface) {
   const isExpectedToSupport = Device.isDevice || Platform.OS === 'android';
   const isAvailable = await Battery.isAvailableAsync();
 

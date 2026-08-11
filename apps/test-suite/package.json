@@ -83,6 +83,7 @@
   "devDependencies": {
     "@types/async-retry": "^1.4.5",
     "@types/getenv": "^1.0.0",
+    "@types/i18n-js": "^3.8.9",
     "@types/invariant": "^2.2.35",
     "@types/jasmine": "^5.1.15",
     "@types/jest": "^29.2.1",

@@ -1,10 +1,10 @@
-'use strict';
-
 import * as EASClient from 'expo-eas-client';
+
+import type { JasmineInterface } from '../types';
 
 export const name = 'EASClient';
 
-export async function test(t) {
+export async function test(t: JasmineInterface) {
   t.describe('EASClient', () => {
     t.it('gets the EAS client ID', () => {
       const clientId = EASClient.clientID;
