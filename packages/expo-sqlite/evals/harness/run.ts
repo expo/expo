@@ -39,6 +39,8 @@ interface CaseRunResult {
   skillWasRead?: boolean;
   agentExitCode?: number | null;
   agentTimedOut?: boolean;
+  /** True when the agent subprocess failed — the workspace was not scored. */
+  agentFailed: boolean;
   result: ScoreResult;
 }
 
@@ -115,8 +117,24 @@ async function runCaseAsync(
     timeoutSeconds: args.timeoutSeconds,
   });
 
+  // A failed agent run is an infrastructure outcome, not an eval outcome:
+  // scoring an untouched workspace would report FAILs the agent never earned.
+  const agentFailed = agent.exitCode !== 0;
   const scorer = (await import(path.join(evalCase.dir, 'EVAL.ts'))).default as Scorer;
-  const result = await scorer(createEvalContext(workspace, condition));
+  const result: ScoreResult = agentFailed
+    ? {
+        passed: false,
+        checks: [
+          {
+            name: 'agent run completed',
+            status: 'unavailable',
+            notes: agent.timedOut
+              ? `timed out after ${args.timeoutSeconds}s`
+              : `claude exited with ${agent.exitCode} — see ${agent.transcriptPath}`,
+          },
+        ],
+      }
+    : await scorer(createEvalContext(workspace, condition));
   fs.writeFileSync(
     path.join(workspace, '.eval', 'results.json'),
     JSON.stringify({ evalCase: evalCase.id, condition, agent, result }, null, 2)
@@ -129,6 +147,7 @@ async function runCaseAsync(
     skillWasRead: condition === 'with-skill' ? agent.skillWasRead : undefined,
     agentExitCode: agent.exitCode,
     agentTimedOut: agent.timedOut,
+    agentFailed,
     result,
   };
 }
@@ -193,8 +212,9 @@ function printSummary(results: CaseRunResult[]) {
     const passed = scored.filter((c) => c.status === 'passed').length;
     const trigger =
       r.skillWasRead === undefined ? '' : r.skillWasRead ? ' skill:read' : ' skill:NOT-read';
+    const verdict = r.agentFailed ? 'ERROR' : r.result.passed ? 'PASS' : 'FAIL';
     console.log(
-      `${r.result.passed ? 'PASS' : 'FAIL'}  ${r.caseId} [${r.condition}] ${passed}/${scored.length} checks${trigger}`
+      `${verdict}  ${r.caseId} [${r.condition}] ${passed}/${scored.length} checks${trigger}`
     );
     for (const c of r.result.checks) {
       const marker = c.status === 'passed' ? '✓' : c.status === 'failed' ? '✗' : `(${c.status})`;
