@@ -24,12 +24,6 @@ type ValidationConfig = Pick<ExpoConfig, 'experiments' | '_internal'>;
 
 /**
  * Returns the directory that relative entries are resolved against.
- *
- * `expo-modules-autolinking` resolves every watched entry against the app root, so this plugin has
- * to use the same base. `process.cwd()` is only the app root when the config happens to be read
- * from there, which is not true for a monorepo build or an `npx expo config` run from elsewhere.
- * `_internal.projectRoot` is filled in by the config loader; it is absent when a plain config
- * object is passed straight to this plugin, and then the working directory is the best base left.
  */
 function projectRootOf(config: Pick<ExpoConfig, '_internal'>): string {
   return (config._internal?.projectRoot as string | undefined) ?? process.cwd();
@@ -37,12 +31,6 @@ function projectRootOf(config: Pick<ExpoConfig, '_internal'>): string {
 
 /**
  * Returns whether `directory` is `ancestor` itself or a directory nested inside it.
- *
- * Both sides are resolved first, so `'./app-intents'`, `'app-intents/'` and
- * `'app-intents/../app-intents'` all name the same directory. The result is then compared by path
- * segment: string comparison gets this wrong in both directions, because `'app-intents-extra'`
- * shares a prefix with `'app-intents'` without being nested inside it, while `'native/..intents'`
- * is nested inside `'native'` even though its relative path starts with two dots.
  */
 function isSameOrInside(ancestor: string, directory: string, projectRoot: string): boolean {
   const relativePath = path.relative(
@@ -77,16 +65,8 @@ function isWatchedDirectory(
   );
 }
 
-/**
- * Returns whether the project builds for iOS.
- *
- * App Intents exist only on iOS, and every JavaScript function in this module deliberately
- * degrades to a no-op elsewhere, so an Android-only or web-only project must not fail to resolve
- * its config over an iOS build step it never runs. `platforms` is optional; when it is missing the
- * target platforms are unknown, so iOS is assumed and the check still runs.
- */
 function buildsForIOS(config: Pick<ExpoConfig, 'platforms'>): boolean {
-  return config.platforms == null || config.platforms.includes('ios');
+  return !config.platforms || config.platforms.includes('ios');
 }
 
 export function withAppIntentsValidation<T extends ValidationConfig>(
@@ -123,8 +103,6 @@ export function withAppIntentsValidation<T extends ValidationConfig>(
 }
 
 const withAppIntents: ConfigPlugin<Props | void> = (config, props) => {
-  // Nothing here applies off iOS, and warning or throwing would only obstruct a build that never
-  // compiles an App Intent.
   if (!buildsForIOS(config)) {
     return config;
   }

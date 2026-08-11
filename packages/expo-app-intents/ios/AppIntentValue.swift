@@ -5,24 +5,11 @@ public typealias AppIntentParams = [String: AppIntentValue]
 
 /**
  A Codable, Sendable JSON value used to persist App Intent params while JS is cold.
-
- ExpoModulesCore performs the final conversion to JavaScript. This type exists before
- that, so queued invocations stay typed, serializable, and concurrency-safe.
  */
 public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLiteral,
   ExpressibleByIntegerLiteral, ExpressibleByFloatLiteral, ExpressibleByBooleanLiteral,
   ExpressibleByArrayLiteral, ExpressibleByDictionaryLiteral, ExpressibleByNilLiteral {
   case string(String)
-  /**
-   A whole number.
-
-   JavaScript has no integer type, so ExpoModulesCore delivers this as a `Number`, which is a
-   double. Magnitudes above `Number.MAX_SAFE_INTEGER` (2^53 - 1) therefore arrive in JavaScript
-   rounded, even though JSON and this enum both keep them exactly. The value is passed through
-   rather than replaced, because the rounded number is still closer to the truth than `null` would
-   be, and `jsonSafe()` logs a warning so the loss is not silent. Pass such a value as a `String`
-   when every digit matters, which is the same advice as for a 64-bit id in any other JSON API.
-   */
   case int(Int)
   case double(Double)
   case bool(Bool)
@@ -46,22 +33,8 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
     self = .bool(value)
   }
 
-  /// The largest magnitude JavaScript represents exactly: `Number.MAX_SAFE_INTEGER`, 2^53 - 1.
-  private static let maxSafeJSInteger = 9_007_199_254_740_991
-
   /**
-   Returns an equivalent value that JSON can represent.
-
-   `Double.nan` and the infinities have no JSON form, so `JSONEncoder` throws on them. Persisting
-   invocations happens before JS is involved and has nowhere to report that error to, so an
-   unrepresentable number would silently drop the invocation that carries it. Such numbers become
-   `null` instead, which is also what `JSON.stringify` produces for them in JavaScript, and the
-   substitution is logged.
-
-   An `Int` beyond JavaScript's safe-integer range is a different problem and gets a different
-   answer: JSON stores it exactly, so nothing here has to change it, but JavaScript still receives
-   it rounded. It is passed through with a warning rather than replaced, because dropping a mostly
-   correct number would lose more than it saves. See the note on `case int`.
+   * Returns an equivalent value that JSON can represent.
    */
   func jsonSafe() -> AppIntentValue {
     switch self {
@@ -72,14 +45,6 @@ public enum AppIntentValue: Codable, Equatable, Sendable, ExpressibleByStringLit
           + "dropped. Pass a finite number, or a string if the exact value matters."
       )
       return .null
-    case .int(let value) where value.magnitude > Self.maxSafeJSInteger.magnitude:
-      log.warn(
-        "expo-app-intents is passing the whole number \(value) in App Intent params to JavaScript, "
-          + "where it will be rounded: it is larger than Number.MAX_SAFE_INTEGER "
-          + "(\(Self.maxSafeJSInteger)), and JavaScript has no exact type for it. The persisted "
-          + "value stays exact. Pass it as a string if every digit matters."
-      )
-      return self
     case .array(let values):
       return .array(values.map { $0.jsonSafe() })
     case .object(let values):

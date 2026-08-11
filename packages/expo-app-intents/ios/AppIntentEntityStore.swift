@@ -2,18 +2,14 @@ import Foundation
 import ExpoModulesCore
 
 /**
- An entity exposed to App Intents parameter queries. JS populates catalogs with
- `setEntityCatalogAsync`; app-target `EntityQuery` implementations read them through
- `AppIntentEntityStore.shared`.
-
- Catalogs are stored in UserDefaults, so they should stay compact. Apps with large
- datasets should publish only the subset needed for Siri and Shortcuts resolution.
+ * An entity exposed to App Intents parameter queries. JS populates catalogs with
+ * `setEntityCatalogAsync`; app-target `EntityQuery` implementations read them through
+ * `AppIntentEntityStore.shared`.
+ *
+ * Catalogs are stored in UserDefaults, so they should stay compact. Apps with large
+ * datasets should publish only the subset needed for Siri and Shortcuts resolution.
  */
 public struct AppIntentEntityRecord: Codable, Record {
-  // `.required` despite the default value: `Record` needs `init()`, so every field has to be
-  // initialized, but a default alone makes the field optional at the JavaScript boundary. Without
-  // this, `setEntityCatalogAsync('dish', [{}])` from untyped JavaScript would store an entity with
-  // an empty id that Siri can never resolve, instead of telling the caller what is wrong.
   @Field(.required) public var id: String = ""
   @Field(.required) public var title: String = ""
   @Field public var subtitle: String?
@@ -67,17 +63,15 @@ public actor AppIntentEntityStore {
     return "dev.expo.appintents.entities.\(kind)"
   }
 
+  private func isBlank(_ value: String) -> Bool {
+    return value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+  }
+
   /**
-   Returns the stored catalog of the given kind, throwing when the stored blob cannot be decoded.
-
-   Returning an empty catalog instead would be indistinguishable from "JavaScript has not published
-   this kind yet": Siri would offer no values for the parameter, and the developer would have nothing
-   to go on. `getEntityCatalogAsync` turns the throw into a rejected promise, and an app-target
-   `EntityQuery` method is a throwing context too, so every call site can report the failure.
-
-   Nothing is set aside the way `AppIntentInvocationStore.pending()` sets a corrupt queue aside. A
-   catalog is owned by JavaScript rather than accumulated natively, so the next `setCatalog` for the
-   kind replaces the unreadable blob and nothing is lost by leaving it in place until then.
+   * Returns the stored catalog of the given kind, throwing when the stored blob cannot be decoded.
+   * Nothing is set aside the way `AppIntentInvocationStore.pending()` sets a corrupt queue aside. A
+   * catalog is owned by JavaScript rather than accumulated natively, so the next `setCatalog` for the
+   * kind replaces the unreadable blob and nothing is lost by leaving it in place until then.
    */
   public func entities(ofKind kind: String) throws -> [AppIntentEntityRecord] {
     guard let data = defaults.data(forKey: storageKey(kind: kind)) else {
@@ -106,24 +100,43 @@ public actor AppIntentEntityStore {
   }
 
   /**
-   Replaces the catalog of the given kind, throwing instead of leaving the previous one in place
-   without saying so.
-
-   `setEntityCatalogAsync` is the only caller, so the throw becomes a rejected promise in
-   JavaScript. Logging alone would not do: the global `log` writes to OSLog, which never reaches
-   Metro or LogBox, so the developer whose catalog was rejected would never see it.
+   * Replaces the catalog of the given kind, throwing instead of leaving the previous one in place
+   * without saying so.
    */
   internal func setCatalog(kind: String, entities: [AppIntentEntityRecord]) throws {
+    // The kind names the catalog that app-target `EntityQuery` implementations read, so a blank
+    // kind stores a catalog no query ever asks for.
+    if isBlank(kind) {
+      throw AppIntentEntityInvalidException(
+        "expo-app-intents rejected an entity catalog because its kind is empty. The kind names the "
+          + "catalog that your app-target EntityQuery reads through AppIntentEntityStore.shared, so "
+          + "it cannot be blank. Call setEntityCatalogAsync with the same non-empty kind your "
+          + "EntityQuery uses."
+      )
+    }
+
     // An entity without an identifier can never be resolved or matched, and an entity without a
     // title has nothing for Siri to match speech against. `@Field(.required)` rejects a missing
-    // key, but not a key explicitly set to an empty string.
-    if let invalid = entities.first(where: { $0.id.isEmpty || $0.title.isEmpty }) {
+    // key, but not a key explicitly set to an empty (or whitespace-only) string.
+    if let invalid = entities.first(where: { isBlank($0.id) || isBlank($0.title) }) {
       throw AppIntentEntityInvalidException(
         "expo-app-intents rejected the '\(kind)' entity catalog because an entity has an empty "
-          + "\(invalid.id.isEmpty ? "id" : "title"), and Siri and Shortcuts cannot resolve such an "
+          + "\(isBlank(invalid.id) ? "id" : "title"), and Siri and Shortcuts cannot resolve such an "
           + "entity. Give every entity a non-empty 'id' and 'title', then call "
           + "setEntityCatalogAsync again."
       )
+    }
+
+    // Two entities with one id cannot both be resolved, so the id no longer names one entity.
+    var seenIds = Set<String>()
+    for entity in entities {
+      if !seenIds.insert(entity.id).inserted {
+        throw AppIntentEntityInvalidException(
+          "expo-app-intents rejected the '\(kind)' entity catalog because more than one entity has "
+            + "the id '\(entity.id)', so Siri and Shortcuts cannot resolve that id to a single "
+            + "entity. Give every entity a unique 'id', then call setEntityCatalogAsync again."
+        )
+      }
     }
 
     do {
@@ -132,17 +145,12 @@ public actor AppIntentEntityStore {
     } catch {
       // Every field of `AppIntentEntityRecord` is a string, so this should never happen.
       throw AppIntentEntityInvalidException(
-        "expo-app-intents could not save the '\(kind)' entity catalog, so Siri and Shortcuts keep "
-          + "resolving against the previous one. This is a bug in expo-app-intents; please report "
-          + "it at https://github.com/expo/expo/issues. Encoding error: "
-          + "\(error.localizedDescription)"
+        "expo-app-intents could not save the '\(kind)' entity catalog. Encoding error: " + "\(error.localizedDescription)"
       )
     }
   }
 }
 
-/// Thrown when an entity catalog cannot be stored or read. Surfaces to JavaScript as a rejected
-/// promise.
 internal final class AppIntentEntityInvalidException: GenericException<String>, @unchecked Sendable {
   override var reason: String {
     return param

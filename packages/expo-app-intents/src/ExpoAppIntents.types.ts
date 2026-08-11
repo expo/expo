@@ -1,23 +1,25 @@
 /**
- * A single recorded App Intent invocation. Invocations are persisted natively until
- * removed with `removePendingInvocationAsync`, so delivery is at-least-once and handlers
- * must be idempotent per `id`.
+ * A single recorded App Intent invocation.
+ *
+ * Invocations are persisted natively until removed with `removePendingInvocationAsync`, so
+ * delivery is at-least-once and handlers must be idempotent per `id`.
  */
 export type AppIntentInvocation = {
-  /** Unique identifier of this invocation. Use it to remove the invocation after handling. */
+  /**
+   * Unique identifier of this invocation. Use it to remove the invocation after handling.
+   */
   id: string;
-  /** The invocation name passed to `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift. */
+  /**
+   * The invocation name passed to `await AppIntentDispatcher.shared.dispatch(name:params:)` in Swift.
+   */
   name: string;
   /**
    * Parameters passed from the native intent.
-   *
-   * > **Note:** Values arrive as JavaScript numbers, strings, booleans, `null`, arrays, and plain
-   * > objects. A whole number whose magnitude exceeds `Number.MAX_SAFE_INTEGER` is rounded on the
-   * > way in, because JavaScript has no exact type for it. Dispatch such a value as a string from
-   * > Swift when every digit matters.
    */
   params: Record<string, unknown>;
-  /** Unix timestamp in milliseconds at which the intent ran. */
+  /**
+   * Unix timestamp in milliseconds at which the intent ran.
+   */
   createdAt: number;
 };
 
@@ -31,17 +33,24 @@ export type AppIntentsHandler = (
 ) => void | Promise<void>;
 
 /**
- * An entity exposed to App Intents parameter queries, for example a dish the user can
- * name when talking to Siri.
+ * An entity exposed to App Intents parameter queries.
  */
 export type AppIntentEntity = {
-  /** Stable unique identifier. */
+  /**
+   * Stable unique identifier.
+   */
   id: string;
-  /** Display name shown by Siri and the Shortcuts app, and matched against speech. */
+  /**
+   * Display name shown by Siri and the Shortcuts app, and matched against speech.
+   */
   title: string;
-  /** Optional secondary text shown in disambiguation UI. */
+  /**
+   * Optional secondary text shown in disambiguation UI.
+   */
   subtitle?: string;
-  /** Alternative spoken names that resolve to this entity. */
+  /**
+   * Alternative spoken names that resolve to this entity.
+   */
   synonyms?: string[];
 };
 

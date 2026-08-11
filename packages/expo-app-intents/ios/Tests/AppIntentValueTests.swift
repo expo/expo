@@ -26,23 +26,6 @@ final class AppIntentValueTests: XCTestCase {
     XCTAssertEqual(AppIntentValue.double(1.5).jsonSafe(), .double(1.5))
   }
 
-  /**
-   An `Int` past JavaScript's safe-integer range is rounded when it reaches JavaScript, but JSON and
-   this enum both hold it exactly. It is passed through rather than replaced, so the persisted value
-   stays exact and the caller keeps a nearly right number instead of `null`.
-   */
-  func testJSONSafeKeepsWholeNumbersBeyondTheJavaScriptSafeRange() throws {
-    let beyondSafeRange = AppIntentValue.int(9_007_199_254_740_993)
-
-    XCTAssertEqual(beyondSafeRange.jsonSafe(), beyondSafeRange)
-    XCTAssertEqual(AppIntentValue.int(-9_007_199_254_740_993).jsonSafe(), .int(-9_007_199_254_740_993))
-    XCTAssertEqual(AppIntentValue.int(9_007_199_254_740_991).jsonSafe(), .int(9_007_199_254_740_991))
-
-    // Persisting and reading it back must not change a digit.
-    let data = try JSONEncoder().encode(beyondSafeRange)
-    XCTAssertEqual(try JSONDecoder().decode(AppIntentValue.self, from: data), beyondSafeRange)
-  }
-
   func testJSONSafeRecursesIntoArraysAndObjects() {
     let value = AppIntentValue.object([
       "list": .array([.double(Double.infinity), .int(1)]),

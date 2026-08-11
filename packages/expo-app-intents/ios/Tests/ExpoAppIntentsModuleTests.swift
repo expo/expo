@@ -34,8 +34,14 @@ struct ExpoAppIntentsModuleTests {
   @Test
   func `publishing a catalog succeeds when no refresh handler is registered`() async throws {
     let kind = "testDraftWithoutRefreshHandler"
-    // Cleared so the assertion below can only pass on what this test itself published.
-    UserDefaults.standard.removeObject(forKey: "dev.expo.appintents.entities.\(kind)")
+    let storageKey = "dev.expo.appintents.entities.\(kind)"
+    // Cleared so the assertion below can only pass on what this test itself published, and cleared
+    // again on the way out so the published catalog does not outlive the test in the standard
+    // UserDefaults of the test host.
+    UserDefaults.standard.removeObject(forKey: storageKey)
+    defer {
+      UserDefaults.standard.removeObject(forKey: storageKey)
+    }
     await AppIntentDispatcher.shared.setShortcutsRefreshHandler(nil)
 
     _ = try await runtime.evalAsync(

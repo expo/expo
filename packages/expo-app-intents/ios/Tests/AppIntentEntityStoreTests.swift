@@ -91,18 +91,57 @@ final class AppIntentEntityStoreTests: XCTestCase {
     )
   }
 
-  /// `.required` rejects a missing key, but an explicit empty string is just as unresolvable.
-  func testSetCatalogRejectsAnEmptyIdentifierOrTitle() async throws {
+  /**
+   `.required` rejects a missing key, but an explicit empty string is just as unresolvable, and so
+   is a string made only of whitespace.
+   */
+  func testSetCatalogRejectsAnEmptyOrBlankIdentifierOrTitle() async throws {
     for invalid in [
       AppIntentEntityRecord(id: "", title: "No id"),
-      AppIntentEntityRecord(id: "t1", title: "")
+      AppIntentEntityRecord(id: " ", title: "Blank id"),
+      AppIntentEntityRecord(id: "t1", title: ""),
+      AppIntentEntityRecord(id: "t1", title: "\n")
     ] {
       do {
         try await store.setCatalog(kind: "trail", entities: [invalid])
-        XCTFail("expected setCatalog to reject an entity with an empty id or title")
+        XCTFail("expected setCatalog to reject an entity with an empty or blank id or title")
       } catch {
         // Expected.
       }
+    }
+
+    let stored = try await store.entities(ofKind: "trail")
+    XCTAssertEqual(stored.count, 0, "a rejected catalog must not be stored")
+  }
+
+  /**
+   The kind names the catalog that app-target `EntityQuery` implementations read, so a blank kind
+   stores a catalog no query ever finds. Entities get this validation; the kind needs it too.
+   */
+  func testSetCatalogRejectsABlankKind() async throws {
+    for blankKind in ["", " ", "\n"] {
+      do {
+        try await store.setCatalog(
+          kind: blankKind, entities: [AppIntentEntityRecord(id: "t1", title: "A")])
+        XCTFail("expected setCatalog to reject the blank kind '\(blankKind)'")
+      } catch {
+        // Expected.
+      }
+    }
+  }
+
+  /// Two entities with one id cannot both be resolved, so the catalog is ambiguous as a whole.
+  func testSetCatalogRejectsDuplicateIdentifiers() async throws {
+    do {
+      try await store.setCatalog(
+        kind: "trail",
+        entities: [
+          AppIntentEntityRecord(id: "t1", title: "Eagle Peak"),
+          AppIntentEntityRecord(id: "t1", title: "Lake Loop")
+        ])
+      XCTFail("expected setCatalog to reject a catalog with a duplicate id")
+    } catch {
+      // Expected.
     }
 
     let stored = try await store.entities(ofKind: "trail")

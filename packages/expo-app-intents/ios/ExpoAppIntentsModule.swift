@@ -20,12 +20,14 @@ public final class ExpoAppIntentsModule: Module {
 
     OnCreate {
       // The token is created here, synchronously, so `OnDestroy` can invalidate it before the task
-      // below ever reaches the dispatcher. Cancelling the task alone cannot do that: a cancelled
-      // task still runs its body.
+      // below ever reaches the dispatcher.
       let subscription = AppIntentEventSubscription()
       invocationEventsSubscription = subscription
       invocationEventsTask = Task { [weak self] in
         for await invocation in await AppIntentDispatcher.shared.invocationEvents(for: subscription) {
+          guard !Task.isCancelled else {
+            break
+          }
           await self?.sendIntentEvent(invocation)
         }
       }
@@ -74,7 +76,6 @@ public final class ExpoAppIntentsModule: Module {
     }
   }
 
-  @MainActor
   private func sendIntentEvent(_ invocation: AppIntentInvocation) {
     sendEvent("onIntent", invocation.toDict())
   }
