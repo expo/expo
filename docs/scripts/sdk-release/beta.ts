@@ -522,6 +522,12 @@ function planSdkVersionsRow() {
   }
 
   const row = structuredClone(previous);
+  if (row.ios.xcodeVersionCheckRange) {
+    notes.push(
+      `The Xcode enforcement range \`${row.ios.xcodeVersionCheckRange}\` from SDK ${currentVersion} was not carried forward. Add \`ios.xcodeVersionCheckRange\` only after confirming a known incompatibility for SDK ${version}.`
+    );
+    delete row.ios.xcodeVersionCheckRange;
+  }
   row.sdk = version;
   for (const [key, value] of Object.entries(options.overrides)) {
     applyCompatibilityOverride(row, key, value);
