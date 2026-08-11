@@ -27,6 +27,12 @@ export type TabActionType =
       payload: { name: string; params?: object };
       source?: string;
       target?: string;
+    }
+  | {
+      type: 'PUSH';
+      payload: { name: string; params?: object };
+      source?: string;
+      target?: string;
     };
 
 export type BackBehavior =
@@ -349,6 +355,14 @@ export function TabRouter({
       return changeIndex(state, index, backBehavior, initialRouteName);
     },
 
+    shouldActionChangeFocus(action) {
+      return (
+        action.type === 'PUSH' ||
+        action.type === 'NAVIGATE' ||
+        action.type === 'NAVIGATE_DEPRECATED'
+      );
+    },
+
     getStateForAction(state, action, { routeParamList, routeGetIdList }) {
       if (action.target && action.target !== state.key) {
         return null;
@@ -443,6 +457,7 @@ export function TabRouter({
           };
         }
 
+        case 'PUSH':
         case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE':
