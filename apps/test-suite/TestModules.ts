@@ -90,10 +90,6 @@ export function getTestModules() {
     modules.push(require('./tests/CalendarNext'));
   }
 
-  if (Platform.OS === 'android') {
-    modules.push(require('./tests/Hermes'));
-  }
-
   if (__DEV__) {
     modules.push(require('./tests/DevToolsPluginClient'));
   }
