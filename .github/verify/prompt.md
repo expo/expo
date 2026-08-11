@@ -57,28 +57,30 @@ Two shapes deserve their own treatment:
 2. **Then edit the checkout.** This repository is checked out at `$GITHUB_WORKSPACE` (a clean copy of the default branch). Make the same change there with Edit/Write, in the repository's own source — the sandbox patch was your proof, this is the deliverable. Keep it minimal: the smallest change that fixes the cause, no drive-by refactors, no reformatting.
 3. **Check it against this repository's own tooling, in a SECOND sandbox.** Your credential allows two sandboxes for exactly this. Do not do it in the investigation sandbox — that one is running the repro app, and a monorepo install beside it fights for memory. This step exists because two of the first three fix pull requests this workflow opened failed `check-packages`: one on a type error the package's own `tsc -b tsconfig.all.json` catches in twelve seconds, and one on jest snapshots in a package the change never touched. Note the first one carefully — a hand-rolled `tsc --strict` against the PUBLISHED package does not catch it, because this repository's config adds `noUncheckedIndexedAccess`. Run the package's own declared scripts, never a command you compose yourself.
 
-   Create the second sandbox, fetch this repository at the CHECKOUT commit named in the preamble, write your edit into that clone exactly as you made it in `$GITHUB_WORKSPACE`, then run the changed package's own scripts. Every line here was measured in a real sandbox on 2026-08-11; the timings are from that run:
+   Create the second sandbox and run this. Every number below was measured end to end in a real sandbox (4 vCPU, 3.9GB) on 2026-08-11:
 
    ```
    mkdir expo && cd expo && git init -q
    git remote add origin https://github.com/expo/expo.git
-   git fetch --depth=1 -q origin <CHECKOUT_SHA> && git checkout -q FETCH_HEAD   # ~11s, 561MB
-   corepack prepare pnpm@10.33.0 --activate                                     # REQUIRED, see below
-   pnpm install --filter <changed-package>... --ignore-scripts                  # ~31s
-   cd packages/<changed-package> && pnpm run lint && pnpm run typecheck
+   git fetch --depth=1 -q origin <CHECKOUT_SHA> && git checkout -q FETCH_HEAD   #  11s, 561MB
+   corepack prepare pnpm@10.33.0 --activate                                     #   2s, REQUIRED
+   pnpm install                                                                 # 4m06s, 2.8GB
+   # …now write your edit into this tree, exactly as you made it in the checkout…
+   cd packages/<changed-package>
+   pnpm run typecheck && pnpm run lint && pnpm test                             #  ~10s
    ```
 
-   **Fetch shallow, not a full clone.** `git clone --filter=blob:none` of this repository took **110s**; the single-commit fetch above took **11s** and produced a byte-identical working tree. You do not need history.
+   That is **under five minutes to a complete, trustworthy answer**, and it reproduces what CI does. On the measured run, `expo-image` came back clean on all three: typecheck silent, lint clean over 44 files, **7 suites and 111 tests passing**. With the #48748 construct planted, typecheck reported `error TS2339: Property 'width' does not exist on type 'ImageSource | undefined'` — the exact error that failed CI.
 
-   **You must activate pnpm 10 yourself.** The root `package.json` sets `engines.pnpm: ^10.33.0` but has no `packageManager` field, so corepack serves its own default (11.x) and pnpm then refuses to run at all — `install`, `typecheck` and `test` all die with "the package's manifest has an engines.pnpm field specified" before doing any work. That error says nothing about your change; do not report it as a failed check.
+   Three things that will waste your time if you improvise instead:
 
-   **What these checks are worth, measured:**
+   - **Fetch shallow; do not clone.** `git clone --filter=blob:none` took **110s** against **11s** for the single-commit fetch above, and produced an identical working tree. You do not need history.
+   - **Activate pnpm 10 yourself.** The root `package.json` sets `engines.pnpm: ^10.33.0` with no `packageManager` field, so corepack serves 11.x and pnpm then refuses to run *at all* — install, typecheck and test each die before doing any work, with an error that says nothing about your change.
+   - **Run the FULL `pnpm install`, with scripts.** The tempting shortcut — `--filter <pkg>... --ignore-scripts` — installs in 31s but is a false economy: it skips the root `prepare` that builds the workspace, so `pnpm test` dies on `Cannot find module '…/babel-preset-expo/build/index.js'` (and that package cannot be built on its own from a filtered install), while `typecheck` fills with pre-existing `TS2307: Cannot find module …` noise from unbuilt siblings. Three and a half saved minutes buys you a check you cannot trust. Pay the four minutes.
 
-   - **`lint` is trustworthy as-is.** It ran clean in 0.1s over 44 files.
-   - **`typecheck` catches the real thing.** With the #48748 construct planted, it reported `error TS2339: Property 'width' does not exist on type 'ImageSource | undefined'` — the exact error that failed CI. But a filtered install leaves sibling workspace packages unbuilt, so it ALSO reports pre-existing `TS2307: Cannot find module …` errors under `../@expo/…`. Those are the environment, not you. **Only errors whose path is inside the package you edited are yours** — and if you want certainty, capture the error list before applying your change and compare.
-   - **`test` will NOT run in this setup, and you must not pretend otherwise.** jest dies with `Cannot find module '…/babel-preset-expo/build/index.js'` because `--ignore-scripts` skips the build, and building that package alone fails too — it is not installed under a filtered install. If you have not got the suite running, the pull-request body says **"the package's unit tests were not run"**, in those words.
+   If a check is red because of your change, fix `$GITHUB_WORKSPACE` and run it again. **If your change touches a file that another package reads at test time** — a template, a fixture — run that package's tests too: #48747 failed on jest snapshots in `@expo/config-plugins` after editing a file under `templates/`, and nothing about the changed package would have predicted it.
 
-   If a check is red because of your change, fix `$GITHUB_WORKSPACE` and run it again. If you cannot get the tooling to run at all, that is a legitimate outcome — but then write **"the repository's own checks were not run"** in the pull-request body and the findings comment. "Not run" must never be phrased so it reads as "passed": a previous run reported a green `tsc --strict` against a copy, and its pull request failed CI on the real thing.
+   If you genuinely cannot get the tooling to run, that is a legitimate outcome — but then write **"the repository's own checks were not run"** in the pull-request body and the findings comment, in those words. "Not run" must never be phrased so it reads as "passed": a previous run reported a green `tsc --strict` against a copy, and its pull request failed CI on the real thing.
 4. **Write `.verify-out/pr.md`.** First line is the pull-request title (imperative, specific — "Fix `use_dev_client` detection in EXUpdates.podspec", not "Fix bug"). The rest is the body: what changed, why that is the cause, and how it was verified, citing your evidence. The server prepends a banner marking the pull request agent-authored and unreviewed, and links the run — do not write your own disclaimer.
 
    **Do not hard-wrap the prose.** This is a file, so the instinct is to format it like source and break lines at 80 or 90 columns. GitHub renders a pull-request body as GitHub-Flavored Markdown, where a single newline is a VISIBLE line break — a wrapped paragraph arrives as a column of ragged short lines. Write each paragraph as ONE line, however long it runs, and let the browser wrap it. Blank lines still separate paragraphs; code fences, tables and list items keep their own line structure.
