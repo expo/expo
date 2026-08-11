@@ -11,6 +11,7 @@ export {
 } from './js';
 
 export {
+  AlbumType,
   AssetField,
   MediaSubtype,
   MediaType,
