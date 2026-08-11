@@ -74,9 +74,10 @@ on:
         required: true
         type: string
       fix:
-        description: "Attempt a fix pull request (issues default to yes on the comment path; here it is explicit)"
-        type: boolean
-        default: false
+        description: "Fix mode. auto = same rule as the comment path (issue yes, pull request no)"
+        type: choice
+        options: ["auto", "yes", "no"]
+        default: "auto"
 
 # Scopes the automatic workflow token, which is what the AGENT step gets:
 # issue comments yes, repository contents never. The agent therefore cannot
@@ -176,7 +177,16 @@ jobs:
             # Dispatch carries no comment, and nothing tells us whether the
             # number is an issue or a pull request — ask.
             IS_PR=$(gh api "repos/${{ github.repository }}/issues/$TARGET_NUMBER" --jq '.pull_request != null' 2>/dev/null || echo false)
-            fix=$INPUT_FIX
+            # 'auto' MUST resolve the same way the comment path does, or the
+            # same target behaves differently depending on how it was
+            # triggered — which is the kind of difference nobody remembers at
+            # the moment they need to. yes/no are the explicit overrides,
+            # equivalent to --fix and --no-fix.
+            case "$INPUT_FIX" in
+              yes) fix=true ;;
+              no)  fix=false ;;
+              *)   if [ "$IS_PR" = "true" ]; then fix=false; else fix=true; fi ;;
+            esac
           else
             line=$(printf '%s' "$COMMENT" | head -n1 | tr -d '\r')
             if [ "$IS_PR" = "true" ]; then fix=false; else fix=true; fi
