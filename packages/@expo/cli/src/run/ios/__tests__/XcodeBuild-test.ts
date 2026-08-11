@@ -192,7 +192,7 @@ describe(_assertXcodeBuildResults, () => {
     );
   });
 
-  it(`shows the log path and compile error before the raw log dump`, () => {
+  it(`shows the log path and compile error before the full build output`, () => {
     let message = '';
     try {
       _assertXcodeBuildResults(
@@ -286,7 +286,7 @@ describe(_extractXcodeBuildErrorLines, () => {
     expect(_extractXcodeBuildErrorLines(message)).toEqual([message]);
   });
 
-  it(`skips Xcode's no-output message when another error is present`, () => {
+  it(`keeps Xcode's no-output message with another error`, () => {
     const output = [
       'script.sh: error: config generation failed',
       'error: the following command failed with exit code 1 but produced no further output',
@@ -294,6 +294,7 @@ describe(_extractXcodeBuildErrorLines, () => {
 
     expect(_extractXcodeBuildErrorLines(output)).toEqual([
       'script.sh: error: config generation failed',
+      'error: the following command failed with exit code 1 but produced no further output',
     ]);
   });
 });
