@@ -134,12 +134,20 @@ export type RouterFactory<
 
 export type RouterConfigOptions = {
   routeNames: string[];
+  /**
+   * Params used when initializing or rehydrating routes.
+   */
   routeParamList: ParamListBase;
   routeGetIdList: Record<
     string,
     ((options: { params?: Record<string, any> }) => string | undefined) | undefined
   >;
 };
+
+/**
+ * Configuration used when applying navigation actions.
+ */
+export type RouterActionOptions = Omit<RouterConfigOptions, 'routeParamList'>;
 
 export type Router<State extends NavigationState, Action extends NavigationAction> = {
   /**
@@ -152,7 +160,7 @@ export type Router<State extends NavigationState, Action extends NavigationActio
    * Initialize the navigation state.
    *
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
+   * @param options.routeParamList Object containing params for each route.
    */
   getInitialState(options: RouterConfigOptions): State;
 
@@ -161,7 +169,7 @@ export type Router<State extends NavigationState, Action extends NavigationActio
    *
    * @param partialState Navigation state to rehydrate from.
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
+   * @param options.routeParamList Object containing params for each route.
    */
   getRehydratedState(
     partialState: PartialState<State> | State,
@@ -198,12 +206,11 @@ export type Router<State extends NavigationState, Action extends NavigationActio
    * @param state State object to apply the action on.
    * @param action Action object to apply.
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
    */
   getStateForAction(
     state: State,
     action: Action,
-    options: RouterConfigOptions
+    options: RouterActionOptions
   ): State | PartialState<State> | null;
 
   /**

@@ -4,6 +4,7 @@ import { expectTypeOf } from 'expect-type';
 import {
   CommonActions,
   type ParamListBase,
+  type RouterActionOptions,
   type RouterConfigOptions,
   TabActions,
   type TabActionHelpers,
@@ -279,6 +280,7 @@ test('gets rehydrated state from partial state', () => {
 
 test.each([
   CommonActions.navigate('baz', { value: 2 }),
+  CommonActions.navigateDeprecated('baz', { value: 2 }),
   TabActions.jumpTo('baz', { value: 2 }),
   TabActions.replace('baz', { value: 2 }),
 ])('$type mints and focuses an absent declared route', (action) => {
@@ -294,7 +296,7 @@ test.each([
 
   expect(result.routes).toEqual([
     { key: 'bar-test', name: 'bar' },
-    { key: 'baz-test', name: 'baz', params: { initial: true, value: 2 } },
+    { key: 'baz-test', name: 'baz', params: { value: 2 } },
   ]);
   expect(result.index).toBe(1);
   expect(result.routes.filter((route) => route.name === 'baz')).toHaveLength(1);
@@ -317,7 +319,7 @@ test('PRELOAD mints an absent declared route without changing focus', () => {
 
   expect(result.routes).toEqual([
     { key: 'bar-test', name: 'bar' },
-    { key: 'baz-test', name: 'baz', params: { initial: true, value: 2 } },
+    { key: 'baz-test', name: 'baz', params: { value: 2 } },
   ]);
   expect(result.index).toBe(0);
   expect(result.history).toEqual(state.history);
@@ -385,7 +387,7 @@ test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>
   const result = router.getStateForAction(state, CommonActions.goBack(), options)!;
 
   expect(result.routes.map((route) => route.name)).toEqual(['qux', name]);
-  expect(result.routes[result.index!]!.name).toBe(name);
+  expect(result.routes[result.index!]).toEqual({ key: `${name}-test`, name });
 });
 
 test.each<['firstRoute' | 'initialRoute' | 'order', string | undefined, string]>([
@@ -714,10 +716,6 @@ test('gets state on route names change', () => {
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
         routeGetIdList: {},
       }
     )
@@ -756,7 +754,6 @@ test('gets state on route names change', () => {
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['foo', 'fiz'] } },
       {
         routeNames: ['foo', 'fiz'],
-        routeParamList: {},
         routeGetIdList: {},
       }
     )
@@ -794,10 +791,6 @@ test('preserves focused route on route names change', () => {
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz', 'baz'] } },
       {
         routeNames: ['qux', 'foo', 'fiz', 'baz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
         routeGetIdList: {},
       }
     )
@@ -841,10 +834,6 @@ test('falls back to first route if route is removed on route names change', () =
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'foo', 'fiz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
         routeGetIdList: {},
       }
     )
@@ -1035,9 +1024,8 @@ test.each<['history' | 'fullHistory', string[]]>([
 
 test('handles navigate action', () => {
   const router = TabRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['bar', 'baz'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1076,9 +1064,8 @@ test('handles navigate action', () => {
 
 test('merges params on navigate when specified', () => {
   const router = TabRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['bar', 'baz'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -2577,11 +2564,8 @@ test("doesn't remove existing path on navigate if not provided", () => {
 
 test("doesn't merge params on navigate to an existing screen", () => {
   const router = TabRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      qux: { color: 'indigo' },
-    },
     routeGetIdList: {},
   };
 
@@ -2688,7 +2672,7 @@ test("doesn't merge params on navigate to an existing screen", () => {
     routes: [
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar' },
-      { key: 'qux', name: 'qux', params: { color: 'indigo', test: 12 } },
+      { key: 'qux', name: 'qux', params: { test: 12 } },
     ],
     history: [
       { type: 'route', key: 'baz' },

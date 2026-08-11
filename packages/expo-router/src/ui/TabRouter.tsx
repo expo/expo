@@ -54,9 +54,6 @@ export function ExpoTabRouter(options: ExpoTabRouterOptions) {
       }
 
       if (shouldReset) {
-        routerConfigOptions.routeParamList[route.name] = {
-          ...routerConfigOptions.routeParamList[route.name],
-        };
         state = {
           ...state,
           routes: state.routes.map((r) => {

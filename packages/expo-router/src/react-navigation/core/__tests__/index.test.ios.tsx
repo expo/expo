@@ -43,7 +43,7 @@ test('initializes state for a navigator on navigation', () => {
   const element = (
     <BaseNavigationContainer onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
-        <Screen name="foo" component={FooScreen} initialParams={{ count: 10 }} />
+        <Screen name="foo" component={FooScreen} />
         <Screen name="bar" component={React.Fragment} />
         <Screen name="baz">
           {() => (
@@ -66,7 +66,7 @@ test('initializes state for a navigator on navigation', () => {
     key: '0',
     routeNames: ['foo', 'bar', 'baz'],
     routes: [
-      { key: 'foo', name: 'foo', params: { count: 10 } },
+      { key: 'foo', name: 'foo' },
       { key: 'bar', name: 'bar' },
       { key: 'baz', name: 'baz' },
     ],
@@ -216,7 +216,7 @@ test("doesn't rehydrate state if the type of state didn't match router", () => {
   const element = (
     <BaseNavigationContainer initialState={initialState} onStateChange={onStateChange}>
       <TestNavigator initialRouteName="foo">
-        <Screen name="foo" component={FooScreen} initialParams={{ answer: 42 }} />
+        <Screen name="foo" component={FooScreen} />
         <Screen name="bar" component={React.Fragment} />
       </TestNavigator>
     </BaseNavigationContainer>
@@ -229,11 +229,7 @@ test("doesn't rehydrate state if the type of state didn't match router", () => {
     key: '0',
     routeNames: ['foo', 'bar'],
     routes: [
-      {
-        key: 'foo',
-        name: 'foo',
-        params: { answer: 42 },
-      },
+      { key: 'foo', name: 'foo' },
       { key: 'bar', name: 'bar' },
     ],
     stale: false,
@@ -903,8 +899,8 @@ test('navigates to nested child in a navigator', () => {
         <Screen name="bar">
           {() => (
             <TestNavigator initialRouteName="bar-a">
-              <Screen name="bar-a" component={TestComponent} initialParams={{ lol: 'why' }} />
-              <Screen name="bar-b" component={TestComponent} initialParams={{ some: 'stuff' }} />
+              <Screen name="bar-a" component={TestComponent} />
+              <Screen name="bar-b" component={TestComponent} />
             </TestNavigator>
           )}
         </Screen>
@@ -921,7 +917,7 @@ test('navigates to nested child in a navigator', () => {
     })
   );
 
-  expect(element).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff","test":42}]"`);
+  expect(element).toMatchInlineSnapshot(`"[bar-b, {"test":42}]"`);
 
   act(() =>
     navigation.navigate('bar', {
@@ -930,15 +926,15 @@ test('navigates to nested child in a navigator', () => {
     })
   );
 
-  expect(element).toMatchInlineSnapshot(`"[bar-a, {"lol":"why","whoa":"test"}]"`);
+  expect(element).toMatchInlineSnapshot(`"[bar-a, {"whoa":"test"}]"`);
 
   act(() => navigation.goBack());
 
-  expect(element).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff","test":42}]"`);
+  expect(element).toMatchInlineSnapshot(`"[bar-b, {"test":42}]"`);
 
   act(() => navigation.navigate('bar', { screen: 'bar-a' }));
 
-  expect(element).toMatchInlineSnapshot(`"[bar-a, {"lol":"why","whoa":"test"}]"`);
+  expect(element).toMatchInlineSnapshot(`"[bar-a, {"whoa":"test"}]"`);
 });
 
 test('navigates to nested child in a navigator with initial: false', () => {
@@ -1006,8 +1002,8 @@ test('navigates to nested child in a navigator with initial: false', () => {
         <Screen name="bar">
           {() => (
             <TestNavigator initialRouteName="bar-a">
-              <Screen name="bar-a" component={TestComponent} initialParams={{ lol: 'why' }} />
-              <Screen name="bar-b" component={TestComponent} initialParams={{ some: 'stuff' }} />
+              <Screen name="bar-a" component={TestComponent} />
+              <Screen name="bar-b" component={TestComponent} />
             </TestNavigator>
           )}
         </Screen>
@@ -1055,8 +1051,7 @@ test('navigates to nested child in a navigator with initial: false', () => {
     })
   );
 
-  expect(first).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff","test":42}]"`);
-
+  expect(first).toMatchInlineSnapshot(`"[bar-b, {"test":42}]"`);
   expect(navigation.getRootState()).toEqual({
     index: 2,
     key: '0',
@@ -1079,7 +1074,7 @@ test('navigates to nested child in a navigator with initial: false', () => {
             {
               key: 'bar-b-3',
               name: 'bar-b',
-              params: { some: 'stuff', test: 42 },
+              params: { test: 42 },
             },
           ],
           stale: false,
@@ -1105,8 +1100,8 @@ test('navigates to nested child in a navigator with initial: false', () => {
         <Screen name="bar">
           {() => (
             <TestNavigator initialRouteName="bar-a">
-              <Screen name="bar-a" component={TestComponent} initialParams={{ lol: 'why' }} />
-              <Screen name="bar-b" component={TestComponent} initialParams={{ some: 'stuff' }} />
+              <Screen name="bar-a" component={TestComponent} />
+              <Screen name="bar-b" component={TestComponent} />
             </TestNavigator>
           )}
         </Screen>
@@ -1171,16 +1166,8 @@ test('navigates to nested child in a navigator with initial: false', () => {
           key: '8',
           routeNames: ['bar-a', 'bar-b'],
           routes: [
-            {
-              key: 'bar-a',
-              name: 'bar-a',
-              params: { lol: 'why' },
-            },
-            {
-              key: 'bar-b',
-              name: 'bar-b',
-              params: { some: 'stuff' },
-            },
+            { key: 'bar-a', name: 'bar-a' },
+            { key: 'bar-b', name: 'bar-b' },
             { key: '9', name: 'bar-b', params: { test: 42 } },
           ],
           stale: false,
@@ -1230,8 +1217,8 @@ test('navigates to nested child in a navigator with initial: false', () => {
         <Screen name="bar">
           {() => (
             <TestNavigator initialRouteName="bar-a">
-              <Screen name="bar-a" component={TestComponent} initialParams={{ lol: 'why' }} />
-              <Screen name="bar-b" component={TestComponent} initialParams={{ some: 'stuff' }} />
+              <Screen name="bar-a" component={TestComponent} />
+              <Screen name="bar-b" component={TestComponent} />
             </TestNavigator>
           )}
         </Screen>
@@ -1310,8 +1297,8 @@ test('resets to nested child in a navigator', () => {
         <Screen name="bar">
           {() => (
             <TestNavigator initialRouteName="bar-a">
-              <Screen name="bar-a" component={TestComponent} initialParams={{ lol: 'why' }} />
-              <Screen name="bar-b" component={TestComponent} initialParams={{ some: 'stuff' }} />
+              <Screen name="bar-a" component={TestComponent} />
+              <Screen name="bar-b" component={TestComponent} />
             </TestNavigator>
           )}
         </Screen>
@@ -1336,7 +1323,7 @@ test('resets to nested child in a navigator', () => {
     })
   );
 
-  expect(element).toMatchInlineSnapshot(`"[bar-b, {"some":"stuff","test":42}]"`);
+  expect(element).toMatchInlineSnapshot(`"[bar-b, {"test":42}]"`);
 
   act(() =>
     navigation.reset({
@@ -1353,7 +1340,7 @@ test('resets to nested child in a navigator', () => {
     })
   );
 
-  expect(element).toMatchInlineSnapshot(`"[bar-a, {"lol":"why","whoa":"test"}]"`);
+  expect(element).toMatchInlineSnapshot(`"[bar-a, {"whoa":"test"}]"`);
 
   act(() =>
     navigation.reset({
@@ -1367,7 +1354,7 @@ test('resets to nested child in a navigator', () => {
     })
   );
 
-  expect(element).toMatchInlineSnapshot(`"[bar-a, {"lol":"why"}]"`);
+  expect(element).toMatchInlineSnapshot(`"[bar-a, undefined]"`);
 });
 
 test('resets state of a nested child in a navigator', () => {
@@ -1400,7 +1387,7 @@ test('resets state of a nested child in a navigator', () => {
           {() => (
             <TestNavigator initialRouteName="bar-a">
               <Screen name="bar-a" component={TestComponent} />
-              <Screen name="bar-b" component={TestComponent} initialParams={{ some: 'stuff' }} />
+              <Screen name="bar-b" component={TestComponent} />
             </TestNavigator>
           )}
         </Screen>
@@ -1475,11 +1462,7 @@ test('resets state of a nested child in a navigator', () => {
               key: 'bar-a-2',
               name: 'bar-a',
             },
-            {
-              key: 'bar-b-3',
-              name: 'bar-b',
-              params: { some: 'stuff' },
-            },
+            { key: 'bar-b-3', name: 'bar-b' },
           ],
           stale: false,
           type: 'test',
@@ -1529,16 +1512,8 @@ test('resets state of a nested child in a navigator', () => {
           key: '7',
           routeNames: ['bar-a', 'bar-b'],
           routes: [
-            {
-              key: '37',
-              name: 'bar-b',
-              params: { some: 'stuff' },
-            },
-            {
-              key: 'bar-b-5',
-              name: 'bar-b',
-              params: { some: 'stuff' },
-            },
+            { key: '37', name: 'bar-b' },
+            { key: 'bar-b-5', name: 'bar-b' },
             {
               key: 'bar-a-6',
               name: 'bar-a',
