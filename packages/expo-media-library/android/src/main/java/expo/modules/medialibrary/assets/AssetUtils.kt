@@ -103,7 +103,7 @@ suspend fun putAssetsInfo(
   if (!cursor.moveToPosition(offset)) {
     return
   }
-  val missingDimensionsVideos = mutableListOf<PendingAsset>()
+  val missingDimensionsAssets = mutableListOf<PendingAsset>()
   val pendingFullInfoAssets = mutableListOf<PendingAsset>()
   var i = 0
   while (i < limit && !cursor.isAfterLast) {
@@ -126,18 +126,36 @@ suspend fun putAssetsInfo(
       putDouble("duration", cursor.getInt(durationIndex) / 1000.0)
       putString("albumId", cursor.getString(albumIdIndex))
     }
-    if (dimensions == null && mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
-      missingDimensionsVideos.add(PendingAsset(asset, path))
+    if (dimensions == null) {
+      missingDimensionsAssets.add(PendingAsset(asset, path, mediaType))
     }
     if (resolveWithFullInfo && mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_IMAGE) {
-      pendingFullInfoAssets.add(PendingAsset(asset, path))
+      pendingFullInfoAssets.add(PendingAsset(asset, path, mediaType))
     }
     cursor.moveToNext()
     response.add(asset)
     i++
   }
 
-  if (missingDimensionsVideos.isNotEmpty() || pendingFullInfoAssets.isNotEmpty()) {
+  withContext(exifReadDispatcher) {
+    // These assets have missing dimensions that require opening the file to read. We do this in
+    // parallel so it runs more quickly.
+    if (missingDimensionsAssets.isNotEmpty()) {
+      missingDimensionsAssets.map { pending ->
+        async {
+          val (width, height) = getAssetDimensionsSlow(
+            contentResolver,
+            pending.path,
+            pending.mediaType,
+            pending.asset.getLong("width").toInt(),
+            pending.asset.getLong("height").toInt()
+          )
+          pending.asset.putLong("width", width.toLong())
+          pending.asset.putLong("height", height.toLong())
+        }
+      }.awaitAll()
+    }
+
     // When resolveWithFullInfo is true, per-file EXIF data (including GPS location) is read in
     // parallel across exifReadDispatcher instead of sequentially.
     //
@@ -145,52 +163,39 @@ suspend fun putAssetsInfo(
     //   so parallelizing them speeds up large queries by several times.
     // - Cursor access is not thread-safe. Paths are copied into pending asset lists during the
     //   cursor loop before parallel file work; workers never touch the cursor.
-    withContext(exifReadDispatcher) {
-      buildList {
-        addAll(
-          missingDimensionsVideos.map { pending ->
-            async {
-              val (width, height) = getVideoDimensionsSlow(contentResolver, pending.path)
-              pending.asset.putLong("width", width.toLong())
-              pending.asset.putLong("height", height.toLong())
-            }
+    if (pendingFullInfoAssets.isNotEmpty()) {
+      pendingFullInfoAssets.map { pending ->
+        async {
+          val localUri = "file://${pending.path}"
+          val assetId = pending.asset.getString("id") ?: return@async
+          val exifInterface = try {
+            ExifInterface(pending.path)
+          } catch (e: IOException) {
+            Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
+            e.printStackTrace()
+            return@async
           }
-        )
-        addAll(
-          pendingFullInfoAssets.map { pending ->
-            async {
-              val localUri = "file://${pending.path}"
-              val assetId = pending.asset.getString("id") ?: return@async
-              val exifInterface = try {
-                ExifInterface(pending.path)
-              } catch (e: IOException) {
-                Log.w("expo-media-library", "Could not parse EXIF tags for $localUri")
-                e.printStackTrace()
-                return@async
-              }
 
-              val (width, height) = getImageDimensionsSlow(
-                pending.path,
-                exifInterface,
-                pending.asset.getLong("width").toInt(),
-                pending.asset.getLong("height").toInt()
-              )
-              pending.asset.putLong("width", width.toLong())
-              pending.asset.putLong("height", height.toLong())
-
-              getExifFullInfo(exifInterface, pending.asset)
-
-              val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId)
-                getExifLocationForUri(contentResolver, photoUri)
-              } else {
-                getExifLocationLegacy(exifInterface)
-              }
-              pending.asset.putParcelable("location", location)
-              pending.asset.putString("localUri", localUri)
-            }
+          getRotatedImageDimensions(
+            exifInterface,
+            pending.asset.getLong("width").toInt(),
+            pending.asset.getLong("height").toInt()
+          )?.let { (resolvedWidth, resolvedHeight) ->
+            pending.asset.putLong("width", resolvedWidth.toLong())
+            pending.asset.putLong("height", resolvedHeight.toLong())
           }
-        )
+
+          getExifFullInfo(exifInterface, pending.asset)
+
+          val location = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val photoUri = Uri.withAppendedPath(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, assetId)
+            getExifLocationForUri(contentResolver, photoUri)
+          } else {
+            getExifLocationLegacy(exifInterface)
+          }
+          pending.asset.putParcelable("location", location)
+          pending.asset.putString("localUri", localUri)
+        }
       }.awaitAll()
     }
   }
@@ -295,59 +300,64 @@ fun getAssetDimensionsFromCursorFast(
 }
 
 /**
+ * Gets asset dimensions via file I/O when cursor columns are missing.
  * @return Pair of integers: width and height, respectively
  */
 @Throws(IOException::class)
-fun getVideoDimensionsSlow(
+fun getAssetDimensionsSlow(
   contentResolver: ContentResolver,
-  path: String
-): Pair<Int, Int> {
-  // Slow fallback for files not yet indexed by the media scanner.
-  val videoUri = Uri.parse("file://$path")
-  try {
-    contentResolver.openAssetFileDescriptor(videoUri, "r").use { photoDescriptor ->
-      MediaMetadataRetriever().use { retriever ->
-        retriever.setDataSource(photoDescriptor!!.fileDescriptor)
-        val videoWidth =
-          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt()
-        val videoHeight =
-          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)!!.toInt()
-        val videoOrientation =
-          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)!!.toInt()
-
-        return maybeRotateAssetSize(videoWidth, videoHeight, videoOrientation)
-      }
-    }
-  } catch (e: NumberFormatException) {
-    Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: ${e.message}")
-  } catch (e: FileNotFoundException) {
-    Log.e("expo-media-library", "ContentResolver failed to read $path: ${e.message}")
-  } catch (e: RuntimeException) {
-    Log.e("expo-media-library", "MediaMetadataRetriever finished with unexpected error: ${e.message}")
-  }
-  return Pair(0, 0)
-}
-
-/**
- * Gets image dimensions via file I/O when cursor columns are missing and/or EXIF orientation
- * is needed for [maybeRotateAssetSize].
- * @return Pair of integers: width and height, respectively
- */
-fun getImageDimensionsSlow(
   path: String,
-  exifInterface: ExifInterface,
+  mediaType: Int,
   width: Int,
   height: Int
 ): Pair<Int, Int> {
+  if (mediaType == MediaStore.Files.FileColumns.MEDIA_TYPE_VIDEO) {
+    // Slow fallback for files not yet indexed by the media scanner.
+    val videoUri = Uri.parse("file://$path")
+    try {
+      contentResolver.openAssetFileDescriptor(videoUri, "r").use { photoDescriptor ->
+        MediaMetadataRetriever().use { retriever ->
+          retriever.setDataSource(photoDescriptor!!.fileDescriptor)
+          val videoWidth =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH)!!.toInt()
+          val videoHeight =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT)!!.toInt()
+          val videoOrientation =
+            retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION)!!.toInt()
+
+          return maybeRotateAssetSize(videoWidth, videoHeight, videoOrientation)
+        }
+      }
+    } catch (e: NumberFormatException) {
+      Log.e("expo-media-library", "MediaMetadataRetriever unexpectedly returned non-integer: ${e.message}")
+    } catch (e: FileNotFoundException) {
+      Log.e("expo-media-library", "ContentResolver failed to read $path: ${e.message}")
+    } catch (e: RuntimeException) {
+      Log.e("expo-media-library", "MediaMetadataRetriever finished with unexpected error: ${e.message}")
+    }
+    return Pair(0, 0)
+  }
+
   var resolvedWidth = width
   var resolvedHeight = height
-  var orientation = 0
   if (resolvedWidth <= 0 || resolvedHeight <= 0) {
     val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
     BitmapFactory.decodeFile(path, options)
     resolvedWidth = options.outWidth
     resolvedHeight = options.outHeight
   }
+  return Pair(resolvedWidth, resolvedHeight)
+}
+
+/**
+ * Returns rotated image dimensions when EXIF orientation requires swapping width and height.
+ * @return Rotated dimensions, or `null` if no rotation is needed
+ */
+fun getRotatedImageDimensions(
+  exifInterface: ExifInterface,
+  width: Int,
+  height: Int
+): Pair<Int, Int>? {
   val exifOrientation = exifInterface.getAttributeInt(
     ExifInterface.TAG_ORIENTATION,
     ExifInterface.ORIENTATION_NORMAL
@@ -357,9 +367,9 @@ fun getImageDimensionsSlow(
     exifOrientation == ExifInterface.ORIENTATION_TRANSPOSE ||
     exifOrientation == ExifInterface.ORIENTATION_TRANSVERSE
   ) {
-    orientation = 90
+    return maybeRotateAssetSize(width, height, 90)
   }
-  return maybeRotateAssetSize(resolvedWidth, resolvedHeight, orientation)
+  return null
 }
 
 /**
@@ -414,5 +424,6 @@ private val exifReadDispatcher = Dispatchers.IO.limitedParallelism(32)
 
 private data class PendingAsset(
   val asset: Bundle,
-  val path: String
+  val path: String,
+  val mediaType: Int
 )
