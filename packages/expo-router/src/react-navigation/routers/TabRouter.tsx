@@ -26,6 +26,12 @@ export type TabActionType =
       payload: { name: string; params?: object };
       source?: string;
       target?: string;
+    }
+  | {
+      type: 'PUSH';
+      payload: { name: string; params?: object };
+      source?: string;
+      target?: string;
     };
 
 export type BackBehavior =
@@ -443,6 +449,7 @@ export function TabRouter({
           };
         }
 
+        case 'PUSH':
         case 'REPLACE':
         case 'JUMP_TO':
         case 'NAVIGATE':
