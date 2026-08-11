@@ -85,6 +85,7 @@ describe('help output', () => {
       expect(helpOutput).toContain(
         'Set DO_NOT_TRACK=1 or EXPO_NO_TELEMETRY=1 to omit automatically collected'
       );
+      expect(helpOutput).toContain('EAS Simulator session ID');
     } finally {
       process.argv = originalArgv;
       consoleLogSpy.mockRestore();
@@ -153,8 +154,14 @@ describe('feedback message resolution', () => {
 
   it('prompts for a category and message in interactive environments', async () => {
     const originalIsTTY = process.stdin.isTTY;
-    Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: true });
-    mockPrompts.mockResolvedValueOnce({ category: 'docs', feedback: 'Clarify this example.' });
+    Object.defineProperty(process.stdin, 'isTTY', {
+      configurable: true,
+      value: true,
+    });
+    mockPrompts.mockResolvedValueOnce({
+      category: 'docs',
+      feedback: 'Clarify this example.',
+    });
 
     try {
       await expect(resolveFeedbackAsync([])).resolves.toEqual({
@@ -178,7 +185,10 @@ describe('feedback message resolution', () => {
 
   it('requires a message without prompting in non-interactive environments', async () => {
     const originalIsTTY = process.stdin.isTTY;
-    Object.defineProperty(process.stdin, 'isTTY', { configurable: true, value: false });
+    Object.defineProperty(process.stdin, 'isTTY', {
+      configurable: true,
+      value: false,
+    });
 
     try {
       await expect(resolveFeedbackAsync([])).rejects.toThrow(
@@ -508,4 +518,110 @@ describe('feedback submission', () => {
       }
     }
   );
+});
+
+describe('simulator session metadata', () => {
+  const originalEnv = process.env;
+  let projectRoot: string;
+
+  beforeEach(() => {
+    projectRoot = createTempDir();
+    const env: NodeJS.ProcessEnv = { ...originalEnv };
+    delete env.EAS_SIMULATOR_SESSION_ID;
+    delete env.DO_NOT_TRACK;
+    delete env.EXPO_NO_TELEMETRY;
+    process.env = env;
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+    rmSync(projectRoot, { force: true, recursive: true });
+  });
+
+  it('detects a session from the EAS_SIMULATOR_SESSION_ID environment variable', async () => {
+    process.env.EAS_SIMULATOR_SESSION_ID = 'session-from-env';
+
+    const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'simulator');
+
+    expect(metadata).toMatchObject({
+      category: 'simulator',
+      simulatorEnvironment: {
+        detected: true,
+        simulator: { sessionId: 'session-from-env' },
+      },
+    });
+  });
+
+  it('falls back to the session ID written to .env.eas-simulator', async () => {
+    writeFileSync(
+      path.join(projectRoot, '.env.eas-simulator'),
+      '# Do not commit this file.\n' +
+        'EAS_SIMULATOR_SESSION_ID="session-from-dotenv"\n' +
+        'AGENT_DEVICE_DAEMON_BASE_URL="https://example.dev"\n' +
+        'AGENT_DEVICE_DAEMON_AUTH_TOKEN="super-secret-token"\n'
+    );
+
+    const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'simulator');
+
+    expect(metadata).toMatchObject({
+      simulatorEnvironment: {
+        detected: true,
+        simulator: { sessionId: 'session-from-dotenv' },
+      },
+    });
+    expect(JSON.stringify(metadata)).not.toContain('super-secret-token');
+    expect(JSON.stringify(metadata)).not.toContain('example.dev');
+  });
+
+  it('prefers the environment variable over .env.eas-simulator', async () => {
+    process.env.EAS_SIMULATOR_SESSION_ID = 'session-from-env';
+    writeFileSync(
+      path.join(projectRoot, '.env.eas-simulator'),
+      'EAS_SIMULATOR_SESSION_ID="session-from-dotenv"\n'
+    );
+
+    const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'simulator');
+
+    expect(metadata).toMatchObject({
+      simulatorEnvironment: {
+        detected: true,
+        simulator: { sessionId: 'session-from-env' },
+      },
+    });
+  });
+
+  it('reports no session when neither source has one', async () => {
+    writeFileSync(path.join(projectRoot, '.env.eas-simulator'), '# Do not commit this file.\n');
+
+    const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'simulator');
+
+    expect(metadata).toMatchObject({
+      simulatorEnvironment: { detected: false },
+    });
+  });
+
+  it.each(['   ', 'contains spaces', 'a'.repeat(129)])(
+    'ignores invalid session ID %p',
+    async (sessionId) => {
+      process.env.EAS_SIMULATOR_SESSION_ID = sessionId;
+
+      const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'simulator');
+
+      expect(metadata).toMatchObject({
+        simulatorEnvironment: { detected: false },
+      });
+    }
+  );
+
+  it('omits the session ID when telemetry is disabled', async () => {
+    process.env.EAS_SIMULATOR_SESSION_ID = 'session-from-env';
+    process.env.DO_NOT_TRACK = '1';
+
+    const metadata = await createFeedbackMetadataAsync(projectRoot, null, 'simulator');
+
+    expect(metadata).toEqual({
+      category: 'simulator',
+      feedbackId: expect.stringMatching(/^[a-f0-9]{12}$/),
+    });
+  });
 });

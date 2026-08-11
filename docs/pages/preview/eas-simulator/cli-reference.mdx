@@ -1,7 +1,7 @@
 ---
 title: EAS Simulator CLI reference
 sidebar_title: CLI reference
-description: Reference for the experimental EAS CLI commands that create, inspect, monitor, control, list, and stop remote simulator sessions.
+description: Reference for the experimental EAS CLI commands that create, inspect, monitor, control, list, and stop remote simulator sessions, and send feedback.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -25,6 +25,7 @@ The `--help` flag displays the available options for `simulator:start`.
 | [`simulator:get`](#simulatorget)                   | Get status, connection details, dashboard URL, timestamps, and artifacts |
 | [`simulator:list`](#simulatorlist)                 | List and filter sessions for the current project                         |
 | [`simulator:stop`](#simulatorstop)                 | Stop a session                                                           |
+| [`simulator:feedback`](#simulatorfeedback)         | Send feedback about EAS Simulator to the Expo team                       |
 
 ## `simulator:availability`
 
@@ -184,6 +185,24 @@ Stop a specific session:
 <Terminal cmd={['$ eas simulator:stop --id <session-id>']} />
 
 The stop mutation is idempotent.
+
+## `simulator:feedback`
+
+Send feedback about EAS Simulator to the Expo team:
+
+<Terminal
+  cmd={['$ eas simulator:feedback "Sessions boot fast, but simulator:exec output is noisy"']}
+/>
+
+Omit the message to be prompted in an interactive terminal. The command submits through [`submit-expo-feedback`](https://www.npmjs.com/package/submit-expo-feedback) with the `simulator` category and attaches the active session ID from **.env.eas-simulator**, so feedback can be correlated with session events.
+
+| Flag                | Description                                                                       |
+| ------------------- | --------------------------------------------------------------------------------- |
+| `--id`              | Simulator session ID to attach. Defaults to the session in **.env.eas-simulator** |
+| `--subject`         | Simulator command or feature the feedback is about, such as `simulator:exec`      |
+| `--non-interactive` | Fail instead of prompting when the message is missing                             |
+
+Set `DO_NOT_TRACK=1` or `EXPO_NO_TELEMETRY=1` to omit automatically collected metadata, including the session ID.
 
 ## **.env.eas-simulator**
 
