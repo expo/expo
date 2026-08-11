@@ -190,7 +190,9 @@ The stop mutation is idempotent.
 
 Send feedback about EAS Simulator to the Expo team:
 
-<Terminal cmd={['$ eas simulator:feedback "Sessions boot fast, but simulator:exec output is noisy"']} />
+<Terminal
+  cmd={['$ eas simulator:feedback "Sessions boot fast, but simulator:exec output is noisy"']}
+/>
 
 Omit the message to be prompted in an interactive terminal. The command submits through [`submit-expo-feedback`](https://www.npmjs.com/package/submit-expo-feedback) with the `simulator` category and attaches the active session ID from **.env.eas-simulator**, so feedback can be correlated with session events.
 
