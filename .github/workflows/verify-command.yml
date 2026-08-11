@@ -292,13 +292,20 @@ jobs:
 
       # The long-lived secret never reaches the agent: it lives in THIS step's
       # env only, and is exchanged for a derived token bounded on every axis
-      # that costs money or is publicly visible — ONE sandbox, at most 5 EAS
+      # that costs money or is publicly visible — TWO sandboxes, at most 5 EAS
       # builds, comments ONLY on the triggering thread, and a TTL that does not
-      # outlive the job. One sandbox because every comparison an investigation
-      # needs (before/after arms, a stock-template control) is done by swapping
-      # the tree between submissions — verified in live runs, where a
-      # three-arm boot-hang census ran in a single sandbox. Five builds because
-      # that is also the sandbox's own per-session quota, so the token stops
+      # outlive the job. The INVESTIGATION still gets exactly one: every
+      # comparison it needs (before/after arms, a stock-template control) is
+      # done by swapping the tree between submissions — verified in live runs,
+      # where a three-arm boot-hang census ran in a single sandbox. The second
+      # is earmarked for fix mode, where the agent clones this repository and
+      # runs the changed package's own typecheck/lint/test before proposing a
+      # pull request. It is separate because that install competes for memory
+      # with the repro app the first sandbox is running, and because two of the
+      # first three fix pull requests this workflow opened failed
+      # check-packages on exactly the checks a package can run for itself.
+      # Five builds because that is also the sandbox's own per-session quota,
+      # so the token stops
       # being the binding limit. Consequence accepted: a sandbox that breaks
       # unrecoverably ends the run, and the maintainer re-triggers /verify.
       # These numbers and the prompt's stated budget must stay equal.
@@ -320,7 +327,7 @@ jobs:
           scoped=$(curl -sf -m 30 "$MCP_URL/tokens/scoped" \
             -H "Authorization: Bearer $EXPO_SANDBOX_MCP_TOKEN" \
             -H 'Content-Type: application/json' \
-            -d "{\"sandboxBudget\":1,\"buildBudget\":5,\"ttlSeconds\":10800,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
+            -d "{\"sandboxBudget\":2,\"buildBudget\":5,\"ttlSeconds\":10800,\"commentTargets\":[\"${GITHUB_REPOSITORY}#${ISSUE_NUMBER}\"],\"name\":\"verify-run-${GITHUB_RUN_ID}\"}" \
             | jq -r '.token // empty')
           if [ -z "$scoped" ]; then
             echo "::error::Could not mint a scoped sandbox token"
@@ -782,10 +789,55 @@ jobs:
           # has no terminal — "could not read Username", exit 128. gh's own
           # credential helper sends the form GitHub actually accepts.
           gh auth setup-git
-          if ! git push -q origin "HEAD:refs/heads/$branch"; then
-            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`/verify --fix\` verified a fix but could not push the branch, so no pull request was opened. The findings comment still stands and the change is described there. [Run log]($RUN_URL)"
-            echo "::error::git push failed; no pull request was opened."
-            exit 1
+          # Push to the BOT'S FORK, not a branch on this repository.
+          #
+          # A pull request whose head is a fork runs CI in GitHub's restricted
+          # regime: no secrets on the runner and a read-only GITHUB_TOKEN. A
+          # same-repo branch gets the full secret environment — sdk.yml sets
+          # TURBO_TOKEN at workflow scope and check-packages runs `test`, so a
+          # same-repo verify branch means jest executes agent-authored code
+          # (a fix legitimately ships its own test file) next to a live secret.
+          # Nothing here has earned that, and forking costs us nothing: the
+          # runners are ephemeral and GitHub-hosted, so the restricted regime
+          # is exactly the posture this repository already grants every
+          # drive-by contributor.
+          #
+          # Falling back to a same-repo branch is deliberate and VISIBLE.
+          # Losing a verified fix over fork plumbing would be the worse
+          # failure, so the push still happens — but the pull request itself
+          # carries a note saying so, because a silent downgrade of a security
+          # property is how it stays downgraded, and a ::warning:: buried in a
+          # run log is not something a reviewer of that PR will ever see.
+          fork_owner=$(gh api user --jq .login 2>/dev/null || true)
+          fork=""
+          if [ -n "$fork_owner" ]; then
+            fork="$fork_owner/${GITHUB_REPOSITORY#*/}"
+            if ! gh repo view "$fork" >/dev/null 2>&1; then
+              # --default-branch-only keeps the fork small. Forking is async,
+              # so wait for it to become addressable before pushing into it.
+              gh repo fork "$GITHUB_REPOSITORY" --clone=false --default-branch-only >/dev/null 2>&1 || true
+              for _ in $(seq 1 30); do
+                gh repo view "$fork" >/dev/null 2>&1 && break
+                sleep 2
+              done
+            fi
+            gh repo view "$fork" >/dev/null 2>&1 || fork=""
+          fi
+          if [ -n "$fork" ] && git push -q "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
+            head_ref="$fork_owner:$branch"
+          else
+            if [ -n "$fork" ]; then
+              echo "::warning::push to fork $fork failed; falling back to a same-repo branch"
+            else
+              echo "::warning::could not resolve or create the bot fork; falling back to a same-repo branch"
+            fi
+            fork=""
+            if ! git push -q origin "HEAD:refs/heads/$branch"; then
+              gh issue comment "$ISSUE_NUMBER" --body "⛔ \`/verify --fix\` verified a fix but could not push the branch, so no pull request was opened. The findings comment still stands and the change is described there. [Run log]($RUN_URL)"
+              echo "::error::git push failed; no pull request was opened."
+              exit 1
+            fi
+            head_ref="$branch"
           fi
           {
             echo "> [!WARNING]"
@@ -795,16 +847,24 @@ jobs:
             echo "> Review it as you would any external contribution."
             echo ""
             echo "Requested by @$TRIGGER_ACTOR · [investigation run]($RUN_URL) · refs #$ISSUE_NUMBER"
+            if [ -z "$fork" ]; then
+              echo ""
+              echo "> [!NOTE]"
+              echo "> This branch lives on \`$GITHUB_REPOSITORY\` rather than the bot's fork,"
+              echo "> because the fork push failed. A fork pull request runs CI without"
+              echo "> secrets; this one runs with them, over agent-authored code. Treat it"
+              echo "> accordingly, and see the run log for why the fork was unavailable."
+            fi
             echo ""
             tail -n +2 .verify-out/pr.md 2>/dev/null || echo "_No description was provided by the run._"
           } > "$RUNNER_TEMP/pr-body.md"
           # The branch is pushed at this point, so a failure here must not
           # vanish: the thread would otherwise keep the findings comment with
           # no word on what became of the fix.
-          url=$(gh pr create --head "$branch" --title "$title" \
+          url=$(gh pr create --repo "$GITHUB_REPOSITORY" --head "$head_ref" --title "$title" \
             --body-file "$RUNNER_TEMP/pr-body.md" --label "agent-authored" 2>/dev/null \
-            || gh pr create --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/pr-body.md") || {
-            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`/verify --fix\` pushed the verified fix to \`$branch\` but could not open a pull request. The branch is there for a maintainer to open by hand; the findings comment describes the change. [Run log]($RUN_URL)"
+            || gh pr create --repo "$GITHUB_REPOSITORY" --head "$head_ref" --title "$title" --body-file "$RUNNER_TEMP/pr-body.md") || {
+            gh issue comment "$ISSUE_NUMBER" --body "⛔ \`/verify --fix\` pushed the verified fix to \`$head_ref\` but could not open a pull request. The branch is there for a maintainer to open by hand; the findings comment describes the change. [Run log]($RUN_URL)"
             echo "::error::gh pr create failed; the branch $branch was pushed but no pull request was opened."
             exit 1
           }
