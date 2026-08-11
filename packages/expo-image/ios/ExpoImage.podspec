@@ -37,9 +37,14 @@ Pod::Spec.new do |s|
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++20',
   }
 
-  s.source_files = "**/*.{h,m,swift}"
+  # The single .mm (ImageViewTraits) declares the view's shadow-node traits to
+  # react-native's renderer, which needs the React header environment.
+  install_modules_dependencies(s) if defined?(install_modules_dependencies)
+
+  s.source_files = "**/*.{h,m,mm,swift}"
   s.exclude_files = 'Tests/'
 
   s.test_spec 'Tests' do |test_spec|
