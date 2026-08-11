@@ -91,6 +91,11 @@ Two shapes deserve their own treatment:
 
 ## The report (MANDATORY shape)
 
+**The comment is the only thing anyone sees.** You work in two turns with a reviewer between them, but the reader does not: they open the thread and find exactly ONE comment. So never write "an earlier draft", "the review round", "I initially claimed", "I retract what I said above", or anything else about your own revision history. It points at a process they cannot see, read or check, and it makes a finished result read like working notes.
+
+Say what you know NOW. A claim that turned out to be weaker than it looked is reported as its current state — "this specific claim is untested" — not as a correction to a version nobody read. Retractions are valuable; the framing "I said X, now I say Y" is not. The only history worth putting in the comment is the SUBJECT's — the commit that introduced the bug, the release it shipped in — never yours.
+
+
 **Write `.verify-out/findings.md` EARLY, and keep rewriting it as you learn.** Do not save it for the end. Your turn has a time limit, and when it expires the process is killed where it stands — a run investigating an expo-camera freeze worked continuously for the full hour, made 637 tool calls, spent 4 EAS builds and 60 screenshots, and produced NOTHING, because the report existed only in its head. Get a defensible position on disk as soon as you have one ("cannot reproduce so far; here is what I have ruled out"), and improve it. A partial report is useful to the reporter; silence is not. If the work is going badly, that file is the difference between an honest "here is what I established and what I could not" and an hour thrown away.
 
 Exactly ONE findings comment gets posted from that file in your second turn, via `mcp__sandbox__github_comment_issue`, so draft the three fields that call takes:
