@@ -79,9 +79,9 @@ You can also nest tabs inside of an outer stack navigator. That is often more us
 
 ### Going back to the tab you came from
 
-A `Link` to a URL that belongs to another tab switches tabs, and the back button then pops the stack inside that tab. In the example above, opening `/feed/123` from the Settings tab lands on the post in the Feed tab, and going back returns to `feed/index` — not to Settings.
+A `Link` to a URL that belongs to another tab switches tabs, and the back button then pops the stack inside that tab. In the example above, opening `/feed/123` from the Settings tab lands on the post in the Feed tab. Going back returns to `feed/index`, not to Settings.
 
-With [native tabs](/router/advanced/native-tabs/), every tab is loaded as soon as the tab navigator mounts, so a tab that contains a stack is already sitting at that stack's first screen before you link into it. That screen ends up underneath the one you linked to whether or not you passed `withAnchor`.
+With [native tabs](/router/advanced/native-tabs/), the tab navigator loads every tab as soon as it mounts. A tab that contains a stack is already sitting at that stack's first screen before you link into it. That screen ends up underneath the one you linked to whether or not you pass `withAnchor`.
 
 If you want the back button to return to the screen you came from, keep the detail route out of the tabs and push it from an outer stack instead:
 
@@ -110,7 +110,7 @@ export default function RootLayout() {
 }
 ```
 
-`/feed/123` is now a screen of the root stack rather than of the Feed tab, so it is pushed on top of whichever tab is open and going back returns to that tab. This is also how detail screens usually behave in iOS apps.
+`/feed/123` is now a screen of the root stack rather than of the Feed tab. The router pushes it on top of whichever tab is open, and going back returns to that tab. This is also how detail screens usually behave in iOS apps.
 
 <BoxLink
   title="Nested navigators"
