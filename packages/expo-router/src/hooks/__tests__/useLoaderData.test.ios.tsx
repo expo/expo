@@ -1,6 +1,6 @@
 import { act } from '@testing-library/react-native';
 import { expectTypeOf } from 'expect-type';
-import React from 'react';
+import { type ReactNode, useLayoutEffect } from 'react';
 import { Text } from 'react-native';
 
 import { router, Slot } from '../../exports';
@@ -105,7 +105,7 @@ describe(useLoaderData, () => {
       '/index': { source: 'global' },
     };
 
-    const ServerWrapper = ({ children }: { children: React.ReactNode }) => (
+    const ServerWrapper = ({ children }: { children: ReactNode }) => (
       <ServerDataLoaderContext value={{ '/index': { source: 'server' } }}>
         {children}
       </ServerDataLoaderContext>
@@ -126,10 +126,7 @@ describe(useLoaderData, () => {
       '/index': { fromHydration: true },
     };
 
-    const loaderContextValue = createLoaderContextValue(new LoaderClient());
-    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
-    );
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
 
     const firstMount = renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
@@ -141,7 +138,7 @@ describe(useLoaderData, () => {
 
     firstMount.unmount();
     await act(async () => {});
-    expect(loaderContextValue.store.get('/index')).toBeUndefined();
+    expect(ctx.store.get('/index')).toBeUndefined();
 
     renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
@@ -159,10 +156,7 @@ describe(useLoaderData, () => {
       '/': { home: true },
     };
 
-    const loaderContextValue = createLoaderContextValue(new LoaderClient());
-    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
-    );
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
 
     renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
@@ -175,7 +169,7 @@ describe(useLoaderData, () => {
       await fetchLoaderMock.mock.results[0]!.value;
     });
 
-    expect(loaderContextValue.store.get('/users/123')).toEqual({
+    expect(ctx.store.get('/users/123')).toEqual({
       data: { fromFetch: true },
     });
   });
@@ -185,12 +179,8 @@ describe(useLoaderData, () => {
       '/users/123': { fromHydration: true },
     };
 
-    const loaderContextValue = createLoaderContextValue(new LoaderClient());
-    loaderContextValue.store.set('/users/123', { data: { fromStore: true } });
-
-    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
-    );
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
+    ctx.store.set('/users/123', { data: { fromStore: true } });
 
     const { result } = renderHook(() => useLoaderData(), ['users/[id]'], {
       initialUrl: '/users/123',
@@ -208,10 +198,10 @@ describe(useLoaderData, () => {
     firstValue.store.set('/index', { data: { owner: 'first' } });
     secondValue.store.set('/index', { data: { owner: 'second' } });
 
-    const FirstWrapper = ({ children }: { children: React.ReactNode }) => (
+    const FirstWrapper = ({ children }: { children: ReactNode }) => (
       <LoaderContext value={firstValue}>{children}</LoaderContext>
     );
-    const SecondWrapper = ({ children }: { children: React.ReactNode }) => (
+    const SecondWrapper = ({ children }: { children: ReactNode }) => (
       <LoaderContext value={secondValue}>{children}</LoaderContext>
     );
 
@@ -231,11 +221,8 @@ describe(useLoaderData, () => {
   it('reuses a hydrated entry across a same-tick Strict Mode remount', async () => {
     const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
     fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
-    const loaderContextValue = createLoaderContextValue(new LoaderClient());
-    loaderContextValue.store.seed('/index', { hydrated: true });
-    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
-    );
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
+    ctx.store.seed('/index', { hydrated: true });
 
     const first = renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
@@ -249,18 +236,15 @@ describe(useLoaderData, () => {
     await act(async () => {});
 
     expect(remount.result.current).toEqual({ hydrated: true });
-    expect(loaderContextValue.store.get('/index')).toEqual({
+    expect(ctx.store.get('/index')).toEqual({
       data: { hydrated: true },
     });
     expect(fetchLoaderMock).not.toHaveBeenCalled();
   });
 
   it('keeps a shared entry while a sibling reader remains mounted', async () => {
-    const loaderContextValue = createLoaderContextValue(new LoaderClient());
-    loaderContextValue.store.seed('/index', { shared: true });
-    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
-    );
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
+    ctx.store.seed('/index', { shared: true });
 
     const first = renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
@@ -274,32 +258,30 @@ describe(useLoaderData, () => {
     first.unmount();
     await act(async () => {});
     expect(second.result.current).toEqual({ shared: true });
-    expect(loaderContextValue.store.get('/index')).toEqual({
+    expect(ctx.store.get('/index')).toEqual({
       data: { shared: true },
     });
 
     second.unmount();
     await act(async () => {});
-    expect(loaderContextValue.store.get('/index')).toBeUndefined();
+    expect(ctx.store.get('/index')).toBeUndefined();
   });
 
   it('refreshes a live entry in place during HMR coordination', async () => {
     const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
     fetchLoaderMock.mockResolvedValueOnce({ version: 2 });
-    const loaderContextValue = createLoaderContextValue(new LoaderClient());
-    loaderContextValue.store.seed('/index', { version: 1 });
-    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
-    );
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { version: 1 },
+    };
     const hook = renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
 
     act(() => {
-      const { client, store } = loaderContextValue;
+      const { client, store } = ctx;
       store.retain(client.revalidate());
-      client.notify();
     });
 
     expect(hook.result.current).toEqual({ version: 1 });
@@ -307,35 +289,245 @@ describe(useLoaderData, () => {
       await fetchLoaderMock.mock.results[0]!.value;
     });
     expect(hook.result.current).toEqual({ version: 2 });
-    expect(loaderContextValue.store.get('/index')).toEqual({
+    expect(ctx.store.get('/index')).toEqual({
       data: { version: 2 },
     });
+  });
+
+  it('moves from server-provided data to normal store reads and refreshes in place', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockResolvedValueOnce({ version: 2 });
+    const loaderContextValue = createLoaderContextValue(new LoaderClient());
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { version: 1 },
+    };
+    let serverData: Record<string, unknown> | null = {
+      '/index': { source: 'server' },
+    };
+    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
+      <LoaderContext value={loaderContextValue}>
+        <ServerDataLoaderContext value={serverData}>{children}</ServerDataLoaderContext>
+      </LoaderContext>
+    );
+    const hook = renderHook(() => useLoaderData(), ['index'], {
+      initialUrl: '/',
+      wrapper: LoaderWrapper,
+    });
+
+    expect(hook.result.current).toEqual({ source: 'server' });
+
+    serverData = null;
+    hook.rerender(undefined);
+    expect(hook.result.current).toEqual({ version: 1 });
+
+    act(() => {
+      const { client, store } = loaderContextValue;
+      store.retain(client.revalidate());
+    });
+    await act(async () => {
+      await fetchLoaderMock.mock.results[0]!.value;
+    });
+
+    expect(hook.result.current).toEqual({ version: 2 });
   });
 
   it('clears inactive entries while retaining live entries during HMR coordination', () => {
     const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
     fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
-    const loaderContextValue = createLoaderContextValue(new LoaderClient());
-    loaderContextValue.store.seed('/index', { live: true });
-    loaderContextValue.store.seed('/inactive', { stale: true });
-    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
-    );
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
+    ctx.store.seed('/index', { live: true });
+    ctx.store.seed('/inactive', { stale: true });
     renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
       wrapper: LoaderWrapper,
     });
 
     act(() => {
-      const { client, store } = loaderContextValue;
+      const { client, store } = ctx;
       store.retain(client.revalidate());
-      client.notify();
     });
 
-    expect(loaderContextValue.store.get('/index')).toEqual({
+    expect(ctx.store.get('/index')).toEqual({
       data: { live: true },
     });
-    expect(loaderContextValue.store.get('/inactive')).toBeUndefined();
+    expect(ctx.store.get('/inactive')).toBeUndefined();
+  });
+
+  it('updates the settled path without re-rendering a non-focused reader', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockResolvedValue({ tab: 'home', fresh: true });
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { tab: 'home' },
+      '/profile': { tab: 'profile' },
+    };
+
+    let indexRenders = 0;
+    let profileRenders = 0;
+    let indexResult: unknown;
+    let profileResult: unknown;
+    renderRouter(
+      {
+        _layout: () => (
+          <Tabs>
+            <Tabs.Screen name="index" />
+            <Tabs.Screen name="profile" />
+          </Tabs>
+        ),
+        index: function Home() {
+          indexRenders++;
+          indexResult = useLoaderData();
+          return <Text>Home</Text>;
+        },
+        profile: function Profile() {
+          profileRenders++;
+          profileResult = useLoaderData();
+          return <Text>Profile</Text>;
+        },
+      },
+      { initialUrl: '/' }
+    );
+    jest.useRealTimers();
+
+    expect(indexResult).toEqual({ tab: 'home' });
+    act(() => router.push('/profile'));
+    expect(profileResult).toEqual({ tab: 'profile' });
+    expect(indexResult).toEqual({ tab: 'home' });
+    const indexBefore = indexRenders;
+    const profileBefore = profileRenders;
+
+    await act(async () => {
+      defaultLoaderContextValue.client.execute('/index');
+    });
+
+    expect(indexResult).toEqual({ tab: 'home', fresh: true });
+    expect(profileResult).toEqual({ tab: 'profile' });
+    expect(indexRenders).toBeGreaterThan(indexBefore);
+    expect(profileRenders).toBe(profileBefore);
+  });
+
+  it('re-renders every same-path sibling reader when its loader settles', async () => {
+    const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
+    fetchLoaderMock.mockResolvedValue({ version: 2 });
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/index': { version: 1 },
+    };
+
+    const renders: [number, number] = [0, 0];
+    function Reader({ index }: { index: 0 | 1 }) {
+      renders[index]++;
+      useLoaderData();
+      return null;
+    }
+
+    renderRouter({
+      index: () => (
+        <>
+          <Reader index={0} />
+          <Reader index={1} />
+        </>
+      ),
+    });
+    jest.useRealTimers();
+    const rendersBefore: [number, number] = [...renders];
+
+    await act(async () => {
+      defaultLoaderContextValue.client.execute('/index');
+    });
+
+    expect(renders[0]).toBeGreaterThan(rendersBefore[0]);
+    expect(renders[1]).toBeGreaterThan(rendersBefore[1]);
+  });
+
+  it('catches a store update between render and effect subscription', () => {
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
+    ctx.store.seed('/index', { version: 1 });
+
+    const { result } = renderHook(
+      () => {
+        const data = useLoaderData();
+        useLayoutEffect(() => {
+          ctx.store.set('/index', { data: { version: 2 } });
+        }, []);
+        return data;
+      },
+      ['index'],
+      { initialUrl: '/', wrapper: LoaderWrapper }
+    );
+
+    expect(result.current).toEqual({ version: 2 });
+  });
+
+  it('does not wake or update a reader when a replaced source settles', async () => {
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
+    ctx.store.seed('/index', { version: 1 });
+    const oldFetch = createDeferred<{ version: number }>();
+    let renders = 0;
+    const hook = renderHook(
+      () => {
+        renders++;
+        return useLoaderData();
+      },
+      ['index'],
+      { initialUrl: '/', wrapper: LoaderWrapper }
+    );
+
+    ctx.client.execute('/index', () => oldFetch.promise);
+    ctx.client.clear();
+    const replacementUnsubscribe = ctx.client.subscribeLoader('/index');
+    ctx.store.set('/index', { data: { version: 2 } });
+    hook.rerender(undefined);
+    const rendersBeforeOldSettle = renders;
+
+    await act(async () => {
+      oldFetch.resolve({ version: 3 });
+    });
+
+    expect(hook.result.current).toEqual({ version: 2 });
+    expect(ctx.store.get('/index')).toEqual({ data: { version: 2 } });
+    expect(renders).toBe(rendersBeforeOldSettle);
+    replacementUnsubscribe();
+  });
+
+  it('unsubscribes from the old resolved path and subscribes to the new path', async () => {
+    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
+      '/users/1': { id: 1 },
+      '/users/2': { id: 2 },
+    };
+    const { ctx, LoaderWrapper } = createLoaderTestContext();
+    const subscribeLoaderSpy = jest.spyOn(ctx.client, 'subscribeLoader');
+    const oldFetch = createDeferred<{ id: number }>();
+    let renders = 0;
+    let latestData: unknown;
+
+    renderRouter(
+      {
+        'users/[id]': function User() {
+          const data = useLoaderData() as { id: number };
+          renders++;
+          latestData = data;
+          return <Text>User: {data.id}</Text>;
+        },
+      },
+      { initialUrl: '/users/1', wrapper: LoaderWrapper }
+    );
+    jest.useRealTimers();
+
+    expect(subscribeLoaderSpy.mock.calls.map(([path]) => path)).toEqual(['/users/1']);
+
+    ctx.client.execute('/users/1', () => oldFetch.promise);
+
+    act(() => router.replace('/users/2'));
+
+    expect(subscribeLoaderSpy.mock.calls.map(([path]) => path)).toEqual(['/users/1', '/users/2']);
+    expect(latestData).toEqual({ id: 2 });
+    const rendersBeforeOldSettle = renders;
+
+    await act(async () => {
+      oldFetch.resolve({ id: 3 });
+    });
+
+    expect(latestData).toEqual({ id: 2 });
+    expect(renders).toBe(rendersBeforeOldSettle);
   });
 
   it(`uses the loader function's return types`, () => {
@@ -399,3 +591,19 @@ describe(useLoaderData, () => {
     expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
   });
 });
+
+function createLoaderTestContext() {
+  const ctx = createLoaderContextValue(new LoaderClient());
+  const LoaderWrapper = ({ children }: { children: ReactNode }) => (
+    <LoaderContext value={ctx}>{children}</LoaderContext>
+  );
+  return { ctx, LoaderWrapper };
+}
+
+function createDeferred<T>() {
+  let resolve!: (value: T) => void;
+  const promise = new Promise<T>((promiseResolve) => {
+    resolve = promiseResolve;
+  });
+  return { promise, resolve };
+}
