@@ -810,6 +810,53 @@ jobs:
           }
           gh issue comment "$ISSUE_NUMBER" --body "🔧 Opened $url with the verified fix — agent-authored, unreviewed. [Investigation run]($RUN_URL)"
 
+      # Last line of defence against a total loss. `if: always()` genuinely
+      # runs on step failure AND on cancellation — verified on real runs
+      # (31505614243 failed, 31463049146 cancelled; the upload succeeded in
+      # both) — so saving what EXISTS was never the problem. The problem is
+      # that findings.md is written once, at the end, and a killed run leaves
+      # nothing to save: an expo-camera investigation worked continuously for
+      # its full hour, spent 4 EAS builds and 60 screenshots, and its artifact
+      # held 2.2MB of transcript and no report.
+      #
+      # The transcript does hold the substance, just not in a form anyone
+      # reads. So when there is no findings.md, render the agent's own running
+      # narrative out of it. On that run the salvage recovers "reproduced
+      # twice at cycle 6, with a clean control arm", "the patch never reached
+      # the build — both binaries are byte-identical", and "the JS thread never
+      # stalled while the display froze — that isolates the block to the UI
+      # thread". That is a real handoff to a maintainer instead of silence.
+      - name: Salvage a partial report if the run died before writing one
+        id: salvage
+        if: always() && steps.gate.outputs.ok == 'true'
+        run: |
+          set -o pipefail
+          mkdir -p .verify-out
+          if [ -s .verify-out/findings.md ]; then
+            echo "findings.md exists; nothing to salvage"
+            exit 0
+          fi
+          t="$RUNNER_TEMP/verify-run.jsonl"
+          if [ ! -s "$t" ]; then
+            echo "no transcript either; nothing to salvage"
+            exit 0
+          fi
+          {
+            echo "# Partial findings (salvaged from the run transcript)"
+            echo
+            echo "This run did not finish, so it never wrote its report. What follows is"
+            echo "the investigating agent's own running narrative, extracted from the"
+            echo "transcript in order. It is NOT a verdict and has NOT been reviewed —"
+            echo "treat it as notes from an interrupted session."
+            echo
+            jq -r 'select(.type=="assistant") | .message.content[]? | select(.type=="text") | .text' "$t" \
+              | grep -v '^[[:space:]]*$' | sed 's/^/- /'
+          } > .verify-out/partial-findings.md || true
+          if [ -s .verify-out/partial-findings.md ]; then
+            echo "salvaged=true" >> "$GITHUB_OUTPUT"
+            echo "salvaged $(wc -l < .verify-out/partial-findings.md) lines into .verify-out/partial-findings.md"
+          fi
+
       # Raw engine transcript, kept like the code-review workflows keep
       # their run log — the console rendering above is lossy by design.
       - name: Upload run log
@@ -826,6 +873,7 @@ jobs:
             ${{ runner.temp }}/verify-revise.jsonl
             .verify-out/findings.md
             .verify-out/review.md
+            .verify-out/partial-findings.md
           if-no-files-found: ignore
           retention-days: 14
 
@@ -849,9 +897,17 @@ jobs:
           # invalid — GitHub then refuses to run it at all, including for the
           # issue_comment trigger.
           JOB_STATUS: ${{ job.status }}
+          SALVAGED: ${{ steps.salvage.outputs.salvaged }}
         run: |
           case "$JOB_STATUS" in
             cancelled) outcome="was cancelled" ;;
             *) outcome="failed" ;;
           esac
-          gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`/verify\` $outcome before it could post findings — nothing here is a verdict on the report. [Run log]($RUN_URL) has the details, and the run can be re-triggered with \`/verify\`."
+          # Point at the salvage when there is one. An interrupted run often
+          # established real things before it died, and a maintainer should be
+          # told where they are rather than left to assume nothing survived.
+          extra=""
+          if [ "$SALVAGED" = "true" ]; then
+            extra=" Partial notes from the interrupted session were recovered from the transcript and attached to the run as \`partial-findings.md\` — unreviewed, not a verdict, but they may save repeating the work."
+          fi
+          gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`/verify\` $outcome before it could post findings — nothing here is a verdict on the report.$extra [Run log]($RUN_URL) has the details, and the run can be re-triggered with \`/verify\`."
