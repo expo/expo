@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Ship an agent skill (`skills/expo-sqlite/`) in the npm package, discoverable by `npx expo skills`. ([#48796](https://github.com/expo/expo/pull/48796) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 - [tvOS] Fix path for DB creation. ([#46715](https://github.com/expo/expo/pull/46715) by [@douglowder](https://github.com/douglowder))
