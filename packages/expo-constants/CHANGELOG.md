@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fix the build failing — or silently producing an app without `app.config` — when the project path contains a space, by quoting the script path that `bash -l -c` re-parses in `EXConstants.podspec` and the `basename` operand in `get-app-config-ios.sh`. ([#48705](https://github.com/expo/expo/issues/48705))
+
 ### 💡 Others
 
 ## 57.0.8 - 2026-07-29
