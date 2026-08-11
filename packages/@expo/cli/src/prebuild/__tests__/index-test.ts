@@ -5,19 +5,11 @@ jest.mock('../../utils/args', () => ({
   getProjectRoot: jest.fn(() => '/app'),
   printHelp: jest.fn(),
 }));
-jest.mock(
-  '../../utils/nodeEnv.js',
-  () => ({
-    getConfigEnvMode: jest.fn(() => 'development'),
-    loadEnvFiles: jest.fn(),
-  }),
-  {
-    virtual: true,
-  }
-);
-jest.mock('../../utils/errors.js', () => ({ logCmdError: jest.fn() }), {
-  virtual: true,
-});
+jest.mock('../../utils/nodeEnv', () => ({
+  getConfigEnvMode: jest.fn(() => 'development'),
+  loadEnvFiles: jest.fn(),
+}));
+jest.mock('../../utils/errors', () => ({ logCmdError: jest.fn() }));
 jest.mock('../prebuildAsync.js', () => ({ prebuildAsync: jest.fn(async () => {}) }), {
   virtual: true,
 });
@@ -31,10 +23,10 @@ jest.mock(
   { virtual: true }
 );
 
-const { loadEnvFiles } = require('../../utils/nodeEnv.js') as {
+const { loadEnvFiles } = require('../../utils/nodeEnv') as {
   loadEnvFiles: jest.Mock;
 };
-const { getConfigEnvMode } = require('../../utils/nodeEnv.js') as {
+const { getConfigEnvMode } = require('../../utils/nodeEnv') as {
   getConfigEnvMode: jest.Mock;
 };
 const { prebuildAsync } = require('../prebuildAsync.js') as {
