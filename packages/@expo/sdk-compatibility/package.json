@@ -25,7 +25,6 @@
       "default": "./build/index.js"
     },
     "./data": "./src/sdk-compatibility.json",
-    "./schema": "./src/schema.ts",
     "./types": "./src/types.ts",
     "./package.json": "./package.json"
   },

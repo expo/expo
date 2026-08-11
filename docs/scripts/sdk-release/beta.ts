@@ -1,12 +1,14 @@
 // Cuts beta docs for a new SDK version and prints a JSON summary the docs-sdk-beta
 // workflow uses to raise a PR. Run: pnpm sdk-beta --sdk 58 [--dry-run].
 
-import { validateSdkCompatibilityData } from '@expo/sdk-compatibility/schema';
 import type { SdkCompatibility, SdkCompatibilityData } from '@expo/sdk-compatibility/types';
 import { execFileSync, execSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import semver from 'semver';
+
+import { createSdkCompatibilityDataValidator } from '../../../packages/@expo/sdk-compatibility/src/validation.ts';
 
 const SDK_INPUT = /^(\d{2})(?:\.0\.0)?$/;
 const EXPO_DIST_TAGS_URL = 'https://registry.npmjs.org/-/package/expo/dist-tags';
@@ -25,6 +27,7 @@ const SDK_COMPATIBILITY_OVERRIDE_FIELDS = [
   'react',
   'node',
 ] as const;
+const validateSdkCompatibilityData = createSdkCompatibilityDataValidator(semver);
 
 const docsDir = process.cwd();
 const root = execFileSync('git', ['rev-parse', '--show-toplevel'], {
