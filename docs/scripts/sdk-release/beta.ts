@@ -1,7 +1,7 @@
 // Cuts beta docs for a new SDK version and prints a JSON summary the docs-sdk-beta
 // workflow uses to raise a PR. Run: pnpm sdk-beta --sdk 58 [--dry-run].
 
-import { validateSdkCompatibilityData } from '@expo/sdk-compatibility';
+import { validateSdkCompatibilityData } from '@expo/sdk-compatibility/schema';
 import type { SdkCompatibility, SdkCompatibilityData } from '@expo/sdk-compatibility/types';
 import { execFileSync, execSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
