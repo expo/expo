@@ -16,6 +16,7 @@
 #include "ExpoViewEventEmitter.h"
 #include "ExpoViewProps.h"
 #include "ExpoViewState.h"
+#include "ExpoViewTraits.h"
 
 namespace expo {
 
@@ -245,6 +246,15 @@ private:
 
   void initialize() noexcept {
     auto &viewProps = static_cast<const ExpoViewProps &>(*this->props_);
+
+    // Traits the module view declared for this component name (see
+    // ExpoViewTraits). Every Expo view shares this shadow node class, so
+    // per-view traits cannot come from BaseTraits() — they are applied
+    // per-instance from the registry instead. This is how a view opts into
+    // layout behaviors react-native recognizes by trait, e.g. an expo-image
+    // backed <img> declaring itself an inline replaced element.
+    const auto declared = ExpoViewTraits::declaredFor(std::string{this->getComponentName()});
+    this->traits_.set(declared.get());
 
     if (viewProps.collapsableChildren) {
       this->traits_.set(react::ShadowNodeTraits::Trait::ChildrenFormStackingContext);
