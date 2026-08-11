@@ -336,10 +336,9 @@ export class Image extends React.PureComponent<ImageProps> {
 
     // For SF Symbols, fontSize sets both the symbol point size and container dimensions.
     // Any other image defaults to the size declared by its source, like React Native's `<Image>`.
+    const symbolSizeStyle = fontSizeStyle ? { width: fontSizeStyle, height: fontSizeStyle } : null;
     const defaultSizeStyle = isSFSymbol
-      ? fontSizeStyle
-        ? { width: fontSizeStyle, height: fontSizeStyle }
-        : null
+      ? symbolSizeStyle
       : resolveDefaultSize(resolvedSource, restStyle);
     const resolvedStyle = defaultSizeStyle ? { ...defaultSizeStyle, ...restStyle } : restStyle;
 
