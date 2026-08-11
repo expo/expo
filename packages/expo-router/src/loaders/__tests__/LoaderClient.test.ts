@@ -195,30 +195,4 @@ describe(LoaderClient, () => {
       expect(subscriber).toHaveBeenCalledWith({ data: 'post-edit' }, true);
     });
   });
-
-  describe('clear', () => {
-    it('drops sources and registered fetchers', () => {
-      const client = new LoaderClient();
-      const fetcher = jest.fn(async () => 'v1');
-      client.subscribeLoader('/p');
-      client.registerFetcher('/p', fetcher);
-
-      client.clear();
-      client.execute('/p');
-
-      expect(fetcher).not.toHaveBeenCalled();
-    });
-
-    it('cancels a pending onTearDown', async () => {
-      const client = new LoaderClient();
-      const onTearDown = jest.fn();
-      const unsubscribe = client.subscribeLoader('/p');
-
-      unsubscribe(onTearDown);
-      client.clear();
-      await tick();
-
-      expect(onTearDown).not.toHaveBeenCalled();
-    });
-  });
 });

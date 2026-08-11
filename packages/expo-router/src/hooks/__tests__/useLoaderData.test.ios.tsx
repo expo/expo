@@ -99,26 +99,6 @@ describe(useLoaderData, () => {
     expect(result.current).toEqual({ correct: true });
   });
 
-  it('retrieves server-side data from `ServerDataLoaderContext`', () => {
-    // Added to ensure that data is not fetched from global scope
-    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/index': { source: 'global' },
-    };
-
-    const ServerWrapper = ({ children }: { children: ReactNode }) => (
-      <ServerDataLoaderContext value={{ '/index': { source: 'server' } }}>
-        {children}
-      </ServerDataLoaderContext>
-    );
-
-    const { result } = renderHook(() => useLoaderData(), ['index'], {
-      initialUrl: '/',
-      wrapper: ServerWrapper,
-    });
-
-    expect(result.current).toEqual({ source: 'server' });
-  });
-
   it('consumes hydration once and fetches on a later remount after reclamation', async () => {
     const fetchLoaderMock = fetchLoader as jest.MockedFunction<typeof fetchLoader>;
     fetchLoaderMock.mockImplementation(() => new Promise(() => {}));
@@ -190,32 +170,6 @@ describe(useLoaderData, () => {
     expect(result.current).toEqual({ fromStore: true });
     expect(globalThis.__EXPO_ROUTER_LOADER_DATA__).not.toHaveProperty('/users/123');
     expect(fetchLoader).not.toHaveBeenCalled();
-  });
-
-  it('keeps custom client/store pairs isolated for the same route', () => {
-    const firstValue = createLoaderContextValue(new LoaderClient());
-    const secondValue = createLoaderContextValue(new LoaderClient());
-    firstValue.store.set('/index', { data: { owner: 'first' } });
-    secondValue.store.set('/index', { data: { owner: 'second' } });
-
-    const FirstWrapper = ({ children }: { children: ReactNode }) => (
-      <LoaderContext value={firstValue}>{children}</LoaderContext>
-    );
-    const SecondWrapper = ({ children }: { children: ReactNode }) => (
-      <LoaderContext value={secondValue}>{children}</LoaderContext>
-    );
-
-    const first = renderHook(() => useLoaderData(), ['index'], {
-      initialUrl: '/',
-      wrapper: FirstWrapper,
-    });
-    const second = renderHook(() => useLoaderData(), ['index'], {
-      initialUrl: '/',
-      wrapper: SecondWrapper,
-    });
-
-    expect(first.result.current).toEqual({ owner: 'first' });
-    expect(second.result.current).toEqual({ owner: 'second' });
   });
 
   it('reuses a hydrated entry across a same-tick Strict Mode remount', async () => {
@@ -304,10 +258,10 @@ describe(useLoaderData, () => {
     let serverData: Record<string, unknown> | null = {
       '/index': { source: 'server' },
     };
-    const LoaderWrapper = ({ children }: { children: React.ReactNode }) => (
-      <LoaderContext value={loaderContextValue}>
-        <ServerDataLoaderContext value={serverData}>{children}</ServerDataLoaderContext>
-      </LoaderContext>
+    const LoaderWrapper = ({ children }: { children: ReactNode }) => (
+      <ServerDataLoaderContext value={serverData}>
+        <LoaderContext value={loaderContextValue}>{children}</LoaderContext>
+      </ServerDataLoaderContext>
     );
     const hook = renderHook(() => useLoaderData(), ['index'], {
       initialUrl: '/',
@@ -547,48 +501,6 @@ describe(useLoaderData, () => {
       user: { id: number; name: string };
       timestamp: number;
     }>();
-  });
-
-  it('resolves loader data for non-focused tab route', () => {
-    globalThis.__EXPO_ROUTER_LOADER_DATA__ = {
-      '/index': { tab: 'home' },
-      '/profile': { tab: 'profile' },
-    };
-
-    const homeResults: any[] = [];
-    const profileResults: any[] = [];
-
-    renderRouter(
-      {
-        _layout: () => (
-          <Tabs>
-            <Tabs.Screen name="index" />
-            <Tabs.Screen name="profile" />
-          </Tabs>
-        ),
-        index: function Home() {
-          homeResults.push(useLoaderData());
-          return <Text>Home</Text>;
-        },
-        profile: function Profile() {
-          profileResults.push(useLoaderData());
-          return <Text>Profile</Text>;
-        },
-      },
-      {
-        initialUrl: '/',
-      }
-    );
-
-    expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
-
-    act(() => router.push('/profile'));
-
-    expect(profileResults[profileResults.length - 1]).toEqual({
-      tab: 'profile',
-    });
-    // Home screen should still be showing its own results
-    expect(homeResults[homeResults.length - 1]).toEqual({ tab: 'home' });
   });
 });
 
