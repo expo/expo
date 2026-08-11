@@ -1,6 +1,7 @@
 package expo.modules.kotlin.views
 
 import android.view.View
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.StateWrapper
@@ -41,6 +42,11 @@ class SimpleViewManagerWrapper(
   override fun onAfterUpdateTransaction(view: View) {
     super.onAfterUpdateTransaction(view)
     viewWrapperDelegate.onViewDidUpdateProps(view)
+  }
+
+  override fun receiveCommand(view: View, commandId: String, args: ReadableArray?) {
+    (view as? ExpoView)?.receiveCommand(commandId, args)
+    super.receiveCommand(view, commandId, args)
   }
 
   override fun getNativeProps(): MutableMap<String, String> {

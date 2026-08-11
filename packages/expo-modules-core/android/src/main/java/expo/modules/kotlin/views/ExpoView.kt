@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.widget.LinearLayout
 import androidx.annotation.UiThread
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.BackgroundStyleApplicator
 import com.facebook.react.uimanager.StateWrapper
 import expo.modules.kotlin.AppContext
@@ -53,6 +54,12 @@ abstract class ExpoView(
       post { measureAndLayout() }
     }
   }
+
+  /**
+   * Called when React Native dispatches a view command, such as the `focus` and `blur` commands
+   * that `TextInputState` sends.
+   */
+  open fun receiveCommand(commandName: String, args: ReadableArray?) = Unit
 
   open fun clipToPaddingBox(canvas: Canvas) {
     // When the border radius is set, we need to clip the content to the padding box.

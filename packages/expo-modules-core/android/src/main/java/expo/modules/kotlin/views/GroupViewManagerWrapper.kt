@@ -2,6 +2,7 @@ package expo.modules.kotlin.views
 
 import android.view.View
 import android.view.ViewGroup
+import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.uimanager.ReactStylesDiffMap
 import com.facebook.react.uimanager.StateWrapper
 import com.facebook.react.uimanager.ThemedReactContext
@@ -33,6 +34,11 @@ class GroupViewManagerWrapper(
   override fun onAfterUpdateTransaction(view: ViewGroup) {
     super.onAfterUpdateTransaction(view)
     viewWrapperDelegate.onViewDidUpdateProps(view)
+  }
+
+  override fun receiveCommand(view: ViewGroup, commandId: String, args: ReadableArray?) {
+    (view as? ExpoView)?.receiveCommand(commandId, args)
+    super.receiveCommand(view, commandId, args)
   }
 
   override fun updateState(

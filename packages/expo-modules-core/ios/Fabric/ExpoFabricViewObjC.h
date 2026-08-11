@@ -37,6 +37,12 @@
  */
 - (void)unmountChildComponentView:(nonnull UIView *)childComponentView index:(NSInteger)index;
 
+/*
+ * Called when React Native dispatches a view command, such as the `focus` and `blur` commands
+ * that `TextInputState` sends.
+ */
+- (void)handleCommand:(nonnull NSString *)commandName args:(nonnull NSArray *)args;
+
 @end
 
 #endif // __cplusplus
