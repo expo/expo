@@ -943,6 +943,28 @@ jobs:
             fi
             gh repo view "$fork" >/dev/null 2>&1 || fork=""
           fi
+          # SYNC THE FORK FIRST. A branch pushed to a stale fork introduces
+          # every upstream commit between the fork's tip and this checkout —
+          # including any that touch .github/workflows/** — and a classic PAT
+          # carrying public_repo (which deliberately excludes `workflow`) is
+          # refused outright. Observed on run 31540508035:
+          #
+          #   ! [remote rejected] HEAD -> verify/48804-31540508035 (refusing to
+          #     allow a Personal Access Token to create or update workflow
+          #     `.github/workflows/verify-command.yml` without `workflow` scope)
+          #
+          # The path denylist above already refuses an agent patch that touches
+          # .github/**, so once the fork is level with upstream the push carries
+          # only the agent's own commit and there is no workflow file in it.
+          # Note this gets WORSE the staler the fork is, so it is not optional.
+          if [ -n "$fork" ]; then
+            fork_default=$(gh api "repos/$fork" --jq .default_branch 2>/dev/null || echo main)
+            if gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
+              echo "synced $fork ($fork_default) with upstream before pushing"
+            else
+              echo "::warning::could not sync $fork with upstream; the push may be rejected for workflow scope"
+            fi
+          fi
           if [ -n "$fork" ] && git push -q "https://github.com/$fork.git" "HEAD:refs/heads/$branch"; then
             head_ref="$fork_owner:$branch"
           else
