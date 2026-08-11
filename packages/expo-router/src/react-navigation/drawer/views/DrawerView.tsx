@@ -94,7 +94,8 @@ function DrawerViewBase({
     ) {
       const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
-      if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
+      if (prevRoute?.state?.key) {
+        // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
         navigation.dispatch({
           ...StackActions.popToTop(),
           target: prevRoute.state.key,

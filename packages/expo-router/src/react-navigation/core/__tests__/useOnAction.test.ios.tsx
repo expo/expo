@@ -107,6 +107,34 @@ test("lets parent handle the action if child didn't", () => {
   });
 });
 
+test('handles an unsupported targeted action as a no-op without bubbling', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  const onUnhandledAction = jest.fn();
+
+  const TestNavigator = (props: any) => {
+    const { state, descriptors, NavigationContent } = useNavigationBuilder(MockRouter, props);
+
+    return (
+      <NavigationContent>{descriptors[state.routes[state.index]!.key]!.render()}</NavigationContent>
+    );
+  };
+
+  render(
+    <BaseNavigationContainer ref={ref} onUnhandledAction={onUnhandledAction}>
+      <TestNavigator>
+        <Screen name="foo">{() => null}</Screen>
+      </TestNavigator>
+    </BaseNavigationContainer>
+  );
+
+  const state = ref.current!.getRootState();
+
+  act(() => ref.dispatch({ type: 'POP_TO_TOP', target: state.key }));
+
+  expect(ref.current!.getRootState()).toBe(state);
+  expect(onUnhandledAction).not.toHaveBeenCalled();
+});
+
 test("lets children handle the action if parent didn't with navigationInChildEnabled", () => {
   const CurrentParentRouter = MockRouter;
 

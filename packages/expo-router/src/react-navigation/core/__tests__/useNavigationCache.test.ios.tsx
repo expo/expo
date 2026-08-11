@@ -1,7 +1,12 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { CommonActions, type ParamListBase, StackRouter } from '../../routers';
+import {
+  CommonActions,
+  type NavigationState,
+  type ParamListBase,
+  StackRouter,
+} from '../../routers';
 import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
@@ -21,7 +26,7 @@ afterEach(() => {
 test('preserves reference for navigation objects', () => {
   expect.assertions(2);
 
-  const state = {
+  const state: NavigationState = {
     type: 'tab',
     stale: false as const,
     index: 1,
@@ -74,7 +79,7 @@ test('preserves reference for navigation objects', () => {
 test('preserves placeholder navigation after the route is created', () => {
   let routeNames = ['Foo', 'Bar'];
   let routes = [{ key: 'Foo-key', name: 'Foo' }];
-  const getState = () => ({
+  const getState = (): NavigationState => ({
     type: 'tab',
     stale: false as const,
     index: 0,
