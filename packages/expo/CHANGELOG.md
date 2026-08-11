@@ -24,6 +24,8 @@
 
 ### 💡 Others
 
+- Speed up the `TextDecoder` polyfill ~9-10x on Hermes with a single-pass fast path for one-shot decodes of well-formed UTF-8. ([#48791](https://github.com/expo/expo/pull/48791) by [@tomekzaw](https://github.com/tomekzaw))
+
 - [Android] `ExpoReactHostFactory` now passes host handlers' `DevSupportManagerFactory` to `ReactHostImpl`. ([#47637](https://github.com/expo/expo/pull/47637) by [@alanjhughes](https://github.com/alanjhughes))
 - [macOS] Fix build by guarding the `bundleConfiguration` override, which requires react-native 0.84+. ([#48494](https://github.com/expo/expo/pull/48494) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - Restore RCTHostRuntimeDelegate conformance for react-native-macos ([#46420](https://github.com/expo/expo/pull/46420) by [@gabrieldonadel](https://github.com/gabrieldonadel))
