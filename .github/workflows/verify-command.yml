@@ -317,14 +317,25 @@ jobs:
         run: |
           prompt=$(cat .github/verify/prompt.md)
           set -o pipefail
+          # The agent has no shell, so it cannot ask git what it is looking at.
+          # Hand it the exact commit: without one, a citation of file:line is
+          # unresolvable for a reader, and every permalink it writes would be a
+          # branch URL that drifts off the lines it is pointing at.
+          CHECKOUT_SHA=$(git -C "$GITHUB_WORKSPACE" rev-parse HEAD)
             # One entry per line so adding or removing a capability is a
             # one-line diff — this list IS the security boundary, and a
             # 1000-character string is not reviewable.
             TOOLS=(
               # Runner-side: read-only, scoped to the checkout. No Bash.
-              "Read($GITHUB_WORKSPACE/**)"
-              "Glob($GITHUB_WORKSPACE/**)"
-              "Grep($GITHUB_WORKSPACE/**)"
+              #
+              # The leading `//` is load-bearing: in a permission rule one `/`
+              # anchors to the project root (so `/home/runner/...` resolves to
+              # `$CWD/home/runner/...` and matches nothing), and only `//` means
+              # an absolute filesystem path. $GITHUB_WORKSPACE already begins
+              # with `/`, hence the extra one written here.
+              "Read(/$GITHUB_WORKSPACE/**)"
+              "Glob(/$GITHUB_WORKSPACE/**)"
+              "Grep(/$GITHUB_WORKSPACE/**)"
               # Sandbox, EAS, and simulator work, plus the findings comment.
               "mcp__sandbox__create_sandbox"
               "mcp__sandbox__destroy_sandbox"
@@ -364,13 +375,42 @@ jobs:
             # diff (far more reliable). Nothing on this runner ever executes
             # what it writes — the push step only runs git and gh — and the
             # denylist there refuses patches that touch automation.
+            #
+            # ONE rule, and it must say `Edit`: a `Write(...)` rule is not
+            # consulted by file permission checks at all, and an `Edit(...)`
+            # rule already covers every file-editing tool including Write.
             if [ "$FIX_MODE" = "true" ]; then
-              TOOLS+=( "Edit($GITHUB_WORKSPACE/**)" "Write($GITHUB_WORKSPACE/**)" )
+              TOOLS+=( "Edit(/$GITHUB_WORKSPACE/**)" )
             fi
             IFS=","; ALLOWED="${TOOLS[*]}"; unset IFS
+          # Preflight: prove the checkout is writable BEFORE spending the run.
+          #
+          # A wrong file rule is invisible to review — `Write(<abs>/**)` and
+          # `Edit(/abs/**)` both read as correct and both grant nothing — and
+          # it does not surface until the agent tries to edit, twelve minutes,
+          # one sandbox and several EAS builds in. The sandbox budget is ONE
+          # per run and cannot be replaced, so that discovery costs a full
+          # re-trigger. This exercises the real $ALLOWED string through the
+          # real CLI in the real working directory, so it also catches causes
+          # nobody predicted: a change in how path rules are parsed, a deny
+          # rule arriving in repo settings, a later edit to the pattern.
+          # No --mcp-config: the MCP entries are simply unmatched allow rules
+          # here, and starting the server for a canary write is waste.
+          if [ "$FIX_MODE" = "true" ]; then
+            mkdir -p .verify-out && rm -f .verify-out/.permcheck
+            claude -p "Write the single word ok to .verify-out/.permcheck. Say nothing else." \
+              --model claude-haiku-4-5-20251001 \
+              --allowedTools "$ALLOWED" >/dev/null 2>&1 || true
+            if [ ! -f .verify-out/.permcheck ]; then
+              echo "::error::Fix mode cannot write the checkout — the --allowedTools file rules do not match. Fix them before this runs for real."
+              exit 1
+            fi
+            rm -f .verify-out/.permcheck
+            echo "preflight: checkout is writable, fix mode can produce a pull request"
+          fi
           timeout 4200 claude -p \
             --model "$VERIFY_MODEL" \
-            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR. FIX MODE: $FIX_MODE (when true, and only if your fix is verified, edit the checkout in $GITHUB_WORKSPACE and write .verify-out/pr.md — see 'Fix mode' below; when false, describe the fix in your comment and change nothing).
+            "Repository: $REPO. Target: $ISSUE_KIND #$ISSUE_NUMBER. Triggered by maintainer @$TRIGGER_ACTOR. FIX MODE: $FIX_MODE (when true, and only if your fix is verified, edit the checkout in $GITHUB_WORKSPACE and write .verify-out/pr.md — see 'Fix mode' below; when false, describe the fix in your comment and change nothing). CHECKOUT: $REPO at commit $CHECKOUT_SHA — permalink any file you cite as https://github.com/$REPO/blob/$CHECKOUT_SHA/<path>#L<start>-L<end>.
 
           $prompt" \
             --mcp-config "$RUNNER_TEMP/mcp.json" \
@@ -378,6 +418,17 @@ jobs:
             --output-format stream-json --verbose \
             | tee "$RUNNER_TEMP/verify-run.jsonl" \
             | jq -rf .github/verify/render.jq
+          # A silently un-writable checkout is the failure mode this whole
+          # feature had on its first run: fix mode was on, the agent did the
+          # work, every Edit was refused, and the step still exited 0 with an
+          # empty diff. Refused writes are never acceptable in fix mode — fail
+          # the run so the cause is visible instead of looking like "the agent
+          # chose not to propose a change".
+          if [ "$FIX_MODE" = "true" ] \
+            && grep -q 'requested permissions to write' "$RUNNER_TEMP/verify-run.jsonl"; then
+            echo "::error::Fix mode was on but writes to the checkout were denied — the --allowedTools file rules are not matching."
+            exit 1
+          fi
 
       # Fix mode: turn the agent's verified edit into a pull request.
       #
