@@ -13,7 +13,10 @@ import type {
 } from './Image.types';
 
 /**
- * Style properties that already determine the layout size of the view.
+ * Style properties that already determine the layout size of the view — either directly
+ * (`width`, `flex`, …) or by giving a 0-content box a non-zero size of its own: padding and
+ * border widths add to the content box in Yoga, so a leaf styled with only those is already
+ * laid out at a visible size today.
  */
 const SIZING_STYLE_PROPS = [
   'width',
@@ -24,21 +27,42 @@ const SIZING_STYLE_PROPS = [
   'flex',
   'flexGrow',
   'flexBasis',
-] as const;
+  'padding',
+  'paddingBlock',
+  'paddingBlockEnd',
+  'paddingBlockStart',
+  'paddingBottom',
+  'paddingEnd',
+  'paddingHorizontal',
+  'paddingInline',
+  'paddingInlineEnd',
+  'paddingInlineStart',
+  'paddingLeft',
+  'paddingRight',
+  'paddingStart',
+  'paddingTop',
+  'paddingVertical',
+  'borderWidth',
+  'borderBottomWidth',
+  'borderEndWidth',
+  'borderLeftWidth',
+  'borderRightWidth',
+  'borderStartWidth',
+  'borderTopWidth',
+] as const satisfies readonly (keyof ImageStyle)[];
 
 /**
- * Whether the style already determines the layout size of the view, either directly
- * (`SIZING_STYLE_PROPS`, `position: 'absolute'`) or by giving a 0-content box a non-zero size
- * of its own (any `padding*`/`borderWidth*` property, including their logical aliases like
- * `paddingInline` or `borderStartWidth`).
+ * Whether the style already determines the layout size of the view.
  */
 function isSizeDeterminedByStyle(style: ImageStyle): boolean {
-  if (style.position === 'absolute' || SIZING_STYLE_PROPS.some((prop) => style[prop] != null)) {
-    return true;
-  }
-  return Object.keys(style).some(
-    (prop) => prop.startsWith('padding') || (prop.startsWith('border') && prop.endsWith('Width'))
-  );
+  return style.position === 'absolute' || SIZING_STYLE_PROPS.some((prop) => style[prop] != null);
+}
+
+/**
+ * Whether the value is a size that can actually give the view a visible box.
+ */
+function isUsableSize(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value > 0;
 }
 
 /**
@@ -56,9 +80,11 @@ export function resolveDefaultSize(
   if (!Array.isArray(source) || source.length !== 1) {
     return null;
   }
-  const { width, height } = source[0];
+  const [resolvedSource] = source;
+  const { width, height } = resolvedSource ?? {};
 
-  if (typeof width !== 'number' || typeof height !== 'number') {
+  // A source declaring a zero, negative or non-finite size has no usable size to fall back to.
+  if (!isUsableSize(width) || !isUsableSize(height)) {
     return null;
   }
   if (isSizeDeterminedByStyle(style)) {

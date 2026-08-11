@@ -22,6 +22,16 @@ describe('resolveDefaultSize', () => {
     expect(resolveDefaultSize([{ uri: 'file:///image.png', width: 100 }], {})).toBeNull();
   });
 
+  it.each([
+    [0, 0],
+    [100, 0],
+    [-1, -1],
+    [NaN, NaN],
+    [Infinity, 100],
+  ])('returns null when the source declares an unusable size (%p x %p)', (width, height) => {
+    expect(resolveDefaultSize([{ uri: 'file:///image.png', width, height }], {})).toBeNull();
+  });
+
   it('returns null when there is no source or more than one', () => {
     expect(resolveDefaultSize([], {})).toBeNull();
     expect(resolveDefaultSize([...source, ...source], {})).toBeNull();
@@ -50,19 +60,34 @@ describe('resolveDefaultSize', () => {
     expect(resolveDefaultSize(source, { position: 'absolute' })).toBeNull();
   });
 
-  it.each(['padding', 'paddingHorizontal', 'paddingTop', 'paddingInline', 'paddingBlockStart'])(
-    'returns null when the style sets %s',
-    (property) => {
-      expect(resolveDefaultSize(source, { [property]: 10 } as ImageStyle)).toBeNull();
-    }
-  );
-
-  it.each(['borderWidth', 'borderTopWidth', 'borderStartWidth'])(
-    'returns null when the style sets %s',
-    (property) => {
-      expect(resolveDefaultSize(source, { [property]: 2 } as ImageStyle)).toBeNull();
-    }
-  );
+  // Padding and border widths add to a 0-content box in Yoga, so an image styled with only these
+  // is already visible today and its layout must not change.
+  it.each([
+    'padding',
+    'paddingBlock',
+    'paddingBlockEnd',
+    'paddingBlockStart',
+    'paddingBottom',
+    'paddingEnd',
+    'paddingHorizontal',
+    'paddingInline',
+    'paddingInlineEnd',
+    'paddingInlineStart',
+    'paddingLeft',
+    'paddingRight',
+    'paddingStart',
+    'paddingTop',
+    'paddingVertical',
+    'borderWidth',
+    'borderBottomWidth',
+    'borderEndWidth',
+    'borderLeftWidth',
+    'borderRightWidth',
+    'borderStartWidth',
+    'borderTopWidth',
+  ])('returns null when the style sets %s', (property) => {
+    expect(resolveDefaultSize(source, { [property]: 10 } as ImageStyle)).toBeNull();
+  });
 
   it('returns the size when the style sets a non-sizing border/color property', () => {
     expect(resolveDefaultSize(source, { borderColor: 'red', borderRadius: 4 })).toEqual({
