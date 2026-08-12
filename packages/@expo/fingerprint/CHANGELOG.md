@@ -17,6 +17,8 @@
 
 ### 🐛 Bug fixes
 
+- Set development mode before loading Expo config and `.env` files. ([#48839](https://github.com/expo/expo/pull/48839) by [@ramonclaudio](https://github.com/ramonclaudio))
+
 ### 💡 Others
 
 - Hoisted the ignore-path Minimatch build out of the per-module filter in `ExpoConfigLoader`, avoiding O(modules × patterns) Minimatch constructions during config load. Byte-identical fingerprint hash. ([#48367](https://github.com/expo/expo/pull/48367) by [@alfonsocj](https://github.com/alfonsocj))
