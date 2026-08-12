@@ -180,7 +180,6 @@ test('dismissAll nested', () => {
           ],
           index: 2,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
@@ -300,7 +299,6 @@ test('dismissAll nested', () => {
           ],
           index: 2,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
@@ -408,7 +406,6 @@ test('dismissAll nested', () => {
           ],
           index: 2,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['a', 'b', 'one'],
           routes: [
             {
