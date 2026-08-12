@@ -98,6 +98,8 @@ Write `.verify-out/findings.md` early and update it throughout the run. The repo
 
 Put implementation detail, related issue/PR research, the proportionality decision, changed files, and exact verification commands in `<details>` blocks. Leave a blank line after each `</summary>` tag so GitHub renders the body correctly. Keep the visible portion concise.
 
+**Do not hard-wrap the prose,** here or in `pr.md`. These are files, so the instinct is to break lines at 80 or 90 columns like source. GitHub renders a comment body as GitHub-Flavored Markdown, where a single newline is a VISIBLE line break, so a wrapped paragraph arrives as a column of ragged short lines. Write each paragraph as ONE line, however long, and let the browser wrap it. Blank lines still separate paragraphs; code fences, tables, and list items keep their own line structure.
+
 Every source, commit, issue, and pull request reference must be followable. Use source permalinks at the pinned PR head SHA; link commits and pull requests; use `#123` for issues in this repository. Cite only items you actually inspected.
 
 The final resumed turn posts with `mcp__sandbox__github_comment_issue`. Include attested screenshot/census evidence only when device behavior was actually part of the chosen tier. A Tier 1 or Tier 2 report normally has no screenshots; exact repository commands and their output are the relevant evidence.

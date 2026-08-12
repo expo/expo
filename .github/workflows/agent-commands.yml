@@ -1368,20 +1368,21 @@ jobs:
             head_ref="$branch"
           fi
           {
+            # ONE LINE PER PARAGRAPH, however long. GitHub renders a newline
+            # inside a comment or pull-request body as a hard <br>, unlike a
+            # .md file in the tree, so source lines wrapped for readability
+            # here become ragged short lines in the rendered callout — which
+            # is what the first fix pull requests looked like. Let the browser
+            # wrap it. This is the same "do not hard-wrap prose" rule the
+            # agent's own prompt gives it for pr.md.
             echo "> [!WARNING]"
-            echo "> **Agent-authored and NOT human-reviewed.** An automated \`$command_name\` run"
-            echo "> for #$ISSUE_NUMBER wrote this change and checked it in a sandbox; the"
-            echo "> reasoning and evidence are in the outcome comment on that issue."
-            echo "> Review it as you would any external contribution."
+            echo "> **Agent-authored and NOT human-reviewed.** An automated \`$command_name\` run for #$ISSUE_NUMBER wrote this change and checked it in a sandbox; the reasoning and evidence are in the outcome comment on that issue. Review it as you would any external contribution."
             echo ""
             echo "Requested by @$TRIGGER_ACTOR · [$run_name]($RUN_URL) · refs #$ISSUE_NUMBER"
             if [ -z "$fork" ]; then
               echo ""
               echo "> [!NOTE]"
-              echo "> This branch lives on \`$GITHUB_REPOSITORY\` rather than the bot's fork,"
-              echo "> because the fork push failed. A fork pull request runs CI without"
-              echo "> secrets; this one runs with them, over agent-authored code. Treat it"
-              echo "> accordingly, and see the run log for why the fork was unavailable."
+              echo "> This branch lives on \`$GITHUB_REPOSITORY\` rather than the bot's fork, because the fork push failed. A fork pull request runs CI without secrets; this one runs with them, over agent-authored code. Treat it accordingly, and see the run log for why the fork was unavailable."
             fi
             echo ""
             tail -n +2 .verify-out/pr.md 2>/dev/null || echo "_No description was provided by the run._"
