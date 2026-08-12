@@ -21,63 +21,7 @@ agentEval(
   {
     title: 'import thousands of rows atomically',
     prompt: `Add an importNotesAsync(texts: string[]) function to this app that inserts up to a few thousand notes at once. If any row fails, none of them should be saved. It runs while the rest of the app keeps querying the database, and it should be reasonably fast.`,
-    seed: {
-      files: {
-        'src/db.ts': `import * as SQLite from 'expo-sqlite';
-
-export interface Note {
-  id: number;
-  text: string;
-}
-
-let db: SQLite.SQLiteDatabase | null = null;
-
-export async function getDatabaseAsync(): Promise<SQLite.SQLiteDatabase> {
-  if (!db) {
-    db = await SQLite.openDatabaseAsync('notes.db');
-    await db.execAsync(\`
-PRAGMA journal_mode = WAL;
-CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY NOT NULL, text TEXT NOT NULL);
-\`);
-  }
-  return db;
-}
-
-export async function listNotesAsync(): Promise<Note[]> {
-  const database = await getDatabaseAsync();
-  return await database.getAllAsync<Note>('SELECT * FROM notes ORDER BY id DESC');
-}
-`,
-        'App.tsx': `import { useEffect, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
-
-import { listNotesAsync, type Note } from './src/db';
-
-export default function App() {
-  const [notes, setNotes] = useState<Note[]>([]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      // The list refreshes on an interval, so queries run while imports happen.
-      listNotesAsync().then(setNotes);
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  return (
-    <View style={{ flex: 1, padding: 24, gap: 12 }}>
-      <Text style={{ fontSize: 24 }}>Notes ({notes.length})</Text>
-      <FlatList
-        data={notes}
-        keyExtractor={(note) => String(note.id)}
-        renderItem={({ item }) => <Text>{item.text}</Text>}
-      />
-    </View>
-  );
-}
-`,
-      },
-    },
+    seed: { fixture: 'notes-db' },
   },
   (check) => {
     check('importNotesAsync exists', (ws) => {

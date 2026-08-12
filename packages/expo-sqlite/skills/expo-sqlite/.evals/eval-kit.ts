@@ -42,56 +42,14 @@ const SKILL_LINK_NAME = 'npm-expo-sqlite-expo-sqlite';
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
 /**
- * The blank app every workspace starts from. Cases declare deltas on top of
- * it through `seed`; they never ship a whole app.
+ * Named seed workspaces under fixtures/. Every workspace starts from
+ * fixtures/blank (the complete app scaffold), with the case's named fixture(s)
+ * layered on top — fixtures are real files, so they get syntax highlighting
+ * and lint, can hold binary assets (e.g. a bundled .db), and can be shared
+ * between cases.
  */
-const BASE_PACKAGE_JSON = {
-  name: 'app',
-  version: '1.0.0',
-  private: true,
-  main: 'index.ts',
-  scripts: { typecheck: 'tsc --noEmit' },
-  dependencies: {
-    expo: 'latest',
-    'expo-sqlite': '*',
-    react: '*',
-    'react-native': '*',
-  },
-  devDependencies: { '@types/react': '*', typescript: '*' },
-};
-
-const BASE_FILES: Record<string, string> = {
-  'tsconfig.json': `{
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true
-  }
-}
-`,
-  'app.json': `{
-  "expo": {
-    "name": "app",
-    "slug": "app"
-  }
-}
-`,
-  'index.ts': `import { registerRootComponent } from 'expo';
-
-import App from './App';
-
-registerRootComponent(App);
-`,
-  'App.tsx': `import { Text, View } from 'react-native';
-
-export default function App() {
-  return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Hello</Text>
-    </View>
-  );
-}
-`,
-};
+const FIXTURES_ROOT = path.join(EVALS_ROOT, 'fixtures');
+const BASE_FIXTURE = 'blank';
 
 export type Condition = 'with-skill' | 'without-skill';
 
@@ -119,15 +77,16 @@ export interface EvalWorkspace {
 }
 
 export interface SeedOptions {
+  /**
+   * Named fixture directory(ies) under fixtures/, layered in order over the
+   * blank base scaffold. Fixtures hold app files only; declare dependency
+   * changes through `dependencies` so they stay visible in the eval file.
+   */
+  fixture?: string | string[];
   /** Extra package.json dependencies merged into the base fixture's. */
   dependencies?: Record<string, string>;
-  /** Files written over the base fixture, workspace-relative path → contents. */
+  /** One-off files written over the fixtures, workspace-relative path → contents. */
   files?: Record<string, string>;
-  /**
-   * Escape hatch for seeds that need real files (binary assets, many files):
-   * a directory copied over the base fixture before `files` apply.
-   */
-  localDir?: URL | string;
 }
 
 export interface AgentEvalOptions {
@@ -183,23 +142,27 @@ export function agentEval(caseUrl: string, options: AgentEvalOptions, defineChec
 function seedWorkspace(seed: SeedOptions, condition: Condition): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-sqlite-eval-'));
 
-  for (const [relativePath, contents] of Object.entries(BASE_FILES)) {
-    writeWorkspaceFile(root, relativePath, contents);
-  }
-  if (seed.localDir) {
-    fs.cpSync(seed.localDir instanceof URL ? fileURLToPath(seed.localDir) : seed.localDir, root, {
-      recursive: true,
-    });
+  const fixtures = [BASE_FIXTURE, seed.fixture ?? []].flat();
+  for (const fixture of fixtures) {
+    const fixtureRoot = path.join(FIXTURES_ROOT, fixture);
+    if (!fs.existsSync(fixtureRoot)) {
+      throw new Error(`Unknown fixture '${fixture}' — expected directory ${fixtureRoot}`);
+    }
+    fs.cpSync(fixtureRoot, root, { recursive: true });
   }
   for (const [relativePath, contents] of Object.entries(seed.files ?? {})) {
     writeWorkspaceFile(root, relativePath, contents);
   }
 
-  // Base package.json + the seed's extra dependencies, with the expo-sqlite
-  // under test resolved to this package instead of the registry.
-  const packageJson = structuredClone(BASE_PACKAGE_JSON) as Record<string, any>;
-  Object.assign(packageJson.dependencies, seed.dependencies);
-  packageJson.dependencies['expo-sqlite'] = `file:${PACKAGE_ROOT}`;
+  // The blank fixture's package.json + the seed's extra dependencies, with the
+  // expo-sqlite under test resolved to this package instead of the registry.
+  const packageJsonPath = path.join(root, 'package.json');
+  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+  packageJson.dependencies = {
+    ...packageJson.dependencies,
+    ...seed.dependencies,
+    'expo-sqlite': `file:${PACKAGE_ROOT}`,
+  };
   writeWorkspaceFile(root, 'package.json', JSON.stringify(packageJson, null, 2) + '\n');
 
   if (condition === 'with-skill') {

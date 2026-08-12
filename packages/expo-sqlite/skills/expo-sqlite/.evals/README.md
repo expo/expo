@@ -8,7 +8,7 @@ Evals live inside the skill they guard, so a rename or split takes them along. B
 
 ## Format: one flat `*.eval.ts` per case — vitest is the runner
 
-A case is a single file holding the prompt, the seed, and the checks ([evalite](https://www.evalite.dev/)-style: `.eval.ts` is the new `.test.ts`). The case id is the filename — nothing to keep in sync:
+A case is a single file holding the prompt, a named fixture reference, and the checks ([evalite](https://www.evalite.dev/)-style: `.eval.ts` is the new `.test.ts`). The case id is the filename — nothing to keep in sync:
 
 ```
 .evals/
@@ -16,6 +16,11 @@ A case is a single file holding the prompt, the seed, and the checks ([evalite](
   eval-kit.ts                        # agentEval() vitest adapter + base fixture (moves to a shared package later)
   vitest.config.ts
   package.json                       # anchors vitest's project root here; declares the opt-in AST parser
+  fixtures/                          # named seed workspaces — real files, shareable between cases
+    blank/                           # the complete app scaffold every workspace starts from
+    notes-in-memory/                 # per-scenario fixtures layered over blank/
+    notes-search/
+    …
   001-persist-notes.eval.ts
   002-fix-search-injection.eval.ts
   003-drop-async-storage.eval.ts
@@ -33,8 +38,8 @@ agentEval(
     title: 'replace async-storage with what expo-sqlite already provides',
     prompt: `We're trimming dependencies. …`,
     seed: {
+      fixture: 'notes-settings', // fixtures/notes-settings/ layered over fixtures/blank/
       dependencies: { '@react-native-async-storage/async-storage': '^2.1.0' },
-      files: { 'src/settings.ts': `…` },
     },
   },
   (check) => {
@@ -45,7 +50,9 @@ agentEval(
 );
 ```
 
-`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace from the kit's blank base fixture plus the case's `seed` (`files` overlay the fixture, `dependencies` merge into its package.json), points the `expo-sqlite` dependency at this package, links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`), and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers.
+`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace by layering `fixtures/blank/` (the complete app scaffold), then the case's named `seed.fixture`(s), then any one-off `seed.files`; `seed.dependencies` merge into package.json and the `expo-sqlite` dependency is pointed at this package. It links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`) and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers.
+
+Fixtures are real files: they get syntax highlighting and lint, can hold binary assets (a bundled `.db` for `assetSource`), and can be shared between cases. Keep dependency changes in the eval file's `seed.dependencies` — not in a fixture package.json — so they stay visible where the checks are.
 
 ## Check tiers
 
@@ -56,8 +63,6 @@ The helpers cover the same check axes as Expo's eval-experiments harness, cheape
 | Lexical     | `ws.source()` (comment-stripped concat), `ws.read(path)` (raw) | `source()` strips comments so commented-out code can neither satisfy a positive pattern nor trip a negative one.                                                                                                                                                                                                                                                                                                      |
 | Structural  | `ws.glob(pattern)`, `ws.exists(path)`, `ws.packageJson()`      | Globs support `*`, `**`, and `{a,b}` (Node ≥ 22 `fs.globSync`). See `005-migrations-folder`.                                                                                                                                                                                                                                                                                                                          |
 | Syntax tree | `loadAstSupport()` → `parse()` + `walk()`                      | Opt-in: run `npm install` in this directory first (`@babel/parser` is a devDependency here). When the parser isn't installed the check must `skip()` — evidence unavailable never reads as compliance. Reach for this only where a well-anchored regex genuinely can't verify the rule, and pair it with a lexical approximation so the case still measures its goal without the parser. See `006-single-connection`. |
-
-Seeds that need real files — binary assets such as a bundled `.db` for `assetSource`, or many large files — can use the `seed.localDir` escape hatch instead of inlining.
 
 Reusing vitest buys the runner, assertions, `-t` filtering, reporters, and per-file parallelism for free. Two semantics are deliberately mapped onto it:
 
@@ -80,6 +85,6 @@ npx -y vitest run 003                                      # one case (file filt
 ## Adding an eval
 
 1. Create `NNN-short-name.eval.ts`: an `agentEval(import.meta.url, …)` block whose prompt is written the way a real user asks. Put discoverable context in the seed, not the prompt.
-2. Declare the starting state through `seed` — only the delta from the blank base fixture.
+2. Declare the starting state through `seed.fixture` — reuse a directory under `fixtures/` or add a new one holding only the scenario's app files.
 3. Scope checks so seeded code cannot pass them on the agent's behalf, and accept every valid API the skill allows (string-source params, `db.sql` tagged templates, and prepared statements are all legitimate bindings).
 4. Verify the seed can't pass by itself: `EXPO_SKILL_EVAL_DRY=1 npx -y vitest run NNN` should fail its checks.

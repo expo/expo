@@ -8,74 +8,7 @@ agentEval(
   {
     title: 'split inline schema setup into ordered migration files',
     prompt: `Our whole database schema lives in one execAsync blob in src/db.ts and it keeps growing. Restructure it: put each schema change in its own ordered migration file under src/db/migrations, apply the pending ones at startup, and keep track of which migrations have already run so we can safely add more later.`,
-    seed: {
-      files: {
-        'src/db.ts': `import * as SQLite from 'expo-sqlite';
-
-export interface Note {
-  id: number;
-  text: string;
-  tagId: number | null;
-}
-
-export interface Tag {
-  id: number;
-  name: string;
-}
-
-let db: SQLite.SQLiteDatabase | null = null;
-
-export async function getDatabaseAsync(): Promise<SQLite.SQLiteDatabase> {
-  if (!db) {
-    db = await SQLite.openDatabaseAsync('app.db');
-    // Every schema change so far, in one ever-growing blob.
-    await db.execAsync(\`
-PRAGMA journal_mode = WAL;
-CREATE TABLE IF NOT EXISTS notes (id INTEGER PRIMARY KEY NOT NULL, text TEXT NOT NULL);
-CREATE TABLE IF NOT EXISTS tags (id INTEGER PRIMARY KEY NOT NULL, name TEXT NOT NULL);
-ALTER TABLE notes ADD COLUMN tagId INTEGER REFERENCES tags(id);
-CREATE INDEX IF NOT EXISTS idx_notes_tag ON notes(tagId);
-\`);
-  }
-  return db;
-}
-
-export async function listNotesAsync(): Promise<Note[]> {
-  const database = await getDatabaseAsync();
-  return await database.getAllAsync<Note>('SELECT * FROM notes ORDER BY id DESC');
-}
-
-export async function listTagsAsync(): Promise<Tag[]> {
-  const database = await getDatabaseAsync();
-  return await database.getAllAsync<Tag>('SELECT * FROM tags ORDER BY name');
-}
-`,
-        'App.tsx': `import { useEffect, useState } from 'react';
-import { FlatList, Text, View } from 'react-native';
-
-import { listNotesAsync, type Note } from './src/db';
-
-export default function App() {
-  const [notes, setNotes] = useState<Note[]>([]);
-
-  useEffect(() => {
-    listNotesAsync().then(setNotes);
-  }, []);
-
-  return (
-    <View style={{ flex: 1, padding: 24, gap: 12 }}>
-      <Text style={{ fontSize: 24 }}>Notes</Text>
-      <FlatList
-        data={notes}
-        keyExtractor={(note) => String(note.id)}
-        renderItem={({ item }) => <Text>{item.text}</Text>}
-      />
-    </View>
-  );
-}
-`,
-      },
-    },
+    seed: { fixture: 'notes-schema-blob' },
   },
   (check) => {
     // Structure: migration files exist where the prompt asked for them.
