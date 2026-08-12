@@ -1,14 +1,23 @@
+import { loadProjectEnv } from '@expo/env';
+
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
 import { VectorIconsCheck } from '../checks/VectorIconsCheck';
 import type { DoctorCheck } from '../checks/checks.types';
 import {
+  actionAsync,
   printCheckResultSummaryOnComplete,
   printFailedCheckIssueAndAdvice,
   runChecksAsync,
 } from '../doctor';
+import * as CheckResolver from '../utils/checkResolver';
 import { resolveChecksInScope } from '../utils/checkResolver';
+import * as ProjectConfig from '../utils/getProjectConfig';
 import { Log } from '../utils/log';
 
+jest.mock('@expo/env', () => ({
+  ...jest.requireActual('@expo/env'),
+  loadProjectEnv: jest.fn(),
+}));
 jest.mock(`../utils/log`);
 
 jest.mock('../utils/ora', () => ({
@@ -50,6 +59,34 @@ class MockUnexpectedThrowCheck implements DoctorCheck {
   sdkVersionRange = '*';
   runAsync = jest.fn(() => Promise.reject(new Error('Unexpected error thrown from check.')));
 }
+
+describe(actionAsync, () => {
+  afterEach(() => {
+    delete process.env.EXPO_CONFIG_MODE;
+    jest.mocked(loadProjectEnv).mockReset();
+    jest.restoreAllMocks();
+  });
+
+  it('removes EXPO_CONFIG_MODE loaded from .env before Expo config runs', async () => {
+    let configModeAtConfig: string | undefined;
+
+    jest.mocked(loadProjectEnv).mockImplementation(() => {
+      process.env.EXPO_CONFIG_MODE = 'development';
+      return { result: 'skipped', loaded: [] };
+    });
+    jest.spyOn(ProjectConfig, 'getProjectConfigAsync').mockImplementation(async () => {
+      configModeAtConfig = process.env.EXPO_CONFIG_MODE;
+      return additionalProjectProps;
+    });
+    jest.spyOn(CheckResolver, 'resolveChecksInScope').mockReturnValue([]);
+
+    await actionAsync('/app', false, 'production');
+
+    expect(loadProjectEnv).toHaveBeenCalledWith('/app', { mode: 'production' });
+    expect(ProjectConfig.getProjectConfigAsync).toHaveBeenCalledWith('/app', 'production');
+    expect(configModeAtConfig).toBeUndefined();
+  });
+});
 
 describe(resolveChecksInScope, () => {
   beforeEach(() => {

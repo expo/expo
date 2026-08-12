@@ -27,7 +27,7 @@ describe(getProjectConfigAsync, () => {
       pid: 1234,
     });
 
-    const result = await getProjectConfigAsync('/project');
+    const result = await getProjectConfigAsync('/project', 'production');
 
     expect(result).toEqual({
       exp: configOutput.exp,
@@ -37,14 +37,10 @@ describe(getProjectConfigAsync, () => {
       dynamicConfigPath: null,
     });
 
-    expect(mockSpawnExpoCLI).toHaveBeenCalledWith(
-      '/project',
-      ['config', '--json', '--full'],
-      expect.objectContaining({
-        stdio: 'pipe',
-        env: expect.objectContaining({ EXPO_DEBUG: '0' }),
-      })
-    );
+    expect(mockSpawnExpoCLI).toHaveBeenCalledWith('/project', ['config', '--json', '--full'], {
+      stdio: 'pipe',
+      env: { EXPO_CONFIG_MODE: 'production', EXPO_DEBUG: '0' },
+    });
   });
 
   it('throws on invalid JSON output', async () => {
@@ -57,7 +53,9 @@ describe(getProjectConfigAsync, () => {
       pid: 1234,
     });
 
-    await expect(getProjectConfigAsync('/project')).rejects.toThrow(/Failed to parse JSON output/);
+    await expect(getProjectConfigAsync('/project', 'development')).rejects.toThrow(
+      /Failed to parse JSON output/
+    );
   });
 
   it('throws when exp or pkg fields are missing', async () => {
@@ -70,7 +68,7 @@ describe(getProjectConfigAsync, () => {
       pid: 1234,
     });
 
-    await expect(getProjectConfigAsync('/project')).rejects.toThrow(
+    await expect(getProjectConfigAsync('/project', 'development')).rejects.toThrow(
       /missing 'exp' or 'pkg' fields/
     );
   });
@@ -90,7 +88,7 @@ describe(getProjectConfigAsync, () => {
       pid: 1234,
     });
 
-    const result = await getProjectConfigAsync('/project');
+    const result = await getProjectConfigAsync('/project', 'development');
 
     expect(result.hasUnusedStaticConfig).toBe(false);
     expect(result.staticConfigPath).toBeNull();
@@ -110,7 +108,7 @@ describe(getProjectConfigAsync, () => {
       pid: 1234,
     });
 
-    await expect(getProjectConfigAsync('/project')).rejects.toThrow(
+    await expect(getProjectConfigAsync('/project', 'development')).rejects.toThrow(
       /Cannot determine the project's Expo SDK version/
     );
   });
