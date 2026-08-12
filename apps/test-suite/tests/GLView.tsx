@@ -5,7 +5,7 @@ import React from 'react';
 
 import type { JasmineInterface, TestPortal } from '../types';
 import { requireNotNull } from '../utils/requireNotNull';
-import { mountAndWaitFor } from './helpers';
+import { mountAndWaitFor, waitFor } from './helpers';
 
 export const name = 'GLView';
 const style = { width: 200, height: 200 };
@@ -35,7 +35,7 @@ export async function test(
     await cleanupPortal();
   });
 
-  function getContextAsync() {
+  function mountContextAsync() {
     return new Promise<ExpoWebGLRenderingContext>(async (resolve) => {
       await mountAndWaitFor<ExpoWebGLRenderingContext>(
         <GLView onContextCreate={(context) => resolve(context)} ref={refSetter} style={style} />,
@@ -43,6 +43,22 @@ export async function test(
         setPortalChild
       );
     });
+  }
+
+  // Emulators intermittently hand back no EGL surface once a long run has created
+  // a number of them, and then `onContextCreate` simply never fires. Remounting
+  // clears it. Without this the spec sits until jasmine's 30s timeout instead.
+  async function getContextAsync(): Promise<ExpoWebGLRenderingContext> {
+    for (let attempt = 1; ; attempt++) {
+      const context = await Promise.race([mountContextAsync(), waitFor(8000).then(() => null)]);
+      if (context) {
+        return context;
+      }
+      if (attempt === 3) {
+        throw new Error('GLView did not provide a context after 3 attempts');
+      }
+      await cleanupPortal();
+    }
   }
 
   describe('GLView', () => {
