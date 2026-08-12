@@ -1,4 +1,4 @@
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from './setup';
 
 // Demonstrates directory-structure checks (ws.glob) alongside lexical ones.
 // The seed keeps all DDL in one growing execAsync blob; the ask is ordered

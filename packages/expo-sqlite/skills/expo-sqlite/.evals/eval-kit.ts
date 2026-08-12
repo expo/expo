@@ -1,9 +1,14 @@
 /**
- * Thin vitest adapter for agent evals — the piece that moves to a shared
- * package (so case files only change their import path). `agentEval()` wraps
- * `describe()`: a beforeAll hook builds a temp workspace (base fixture + the
- * case's inline seed), runs the coding agent with the case's prompt, and each
- * `check()` becomes a `test()` receiving workspace helpers.
+ * Thin vitest adapter for agent evals. This file is package-agnostic by
+ * design — it is the piece that moves to a shared package, unchanged.
+ * Package-specific configuration lives in setup.ts, which calls
+ * `createAgentEval(config)` and re-exports the configured `agentEval` that
+ * case files import. At extraction time only setup.ts changes its import.
+ *
+ * `agentEval()` wraps `describe()`: a beforeAll hook builds a temp workspace
+ * (a cached `bunx create-expo-app` scaffold + the case's named fixtures),
+ * runs the coding agent with the case's prompt, and each `check()` becomes a
+ * `test()` receiving workspace helpers.
  *
  * The case id is derived from the eval filename (`003-drop-async-storage.eval.ts`
  * → `003-drop-async-storage`), so it can never drift from what's on disk; the
@@ -33,23 +38,20 @@ import { afterAll, beforeAll, describe, test } from 'vitest';
 
 export { expect } from 'vitest';
 
-const EVALS_ROOT = path.dirname(fileURLToPath(import.meta.url));
-const SKILL_ROOT = path.resolve(EVALS_ROOT, '..');
-const PACKAGE_ROOT = path.resolve(EVALS_ROOT, '..', '..', '..');
-/** Mirrors the link name `npx expo skills` creates for this package's skill. */
-const SKILL_LINK_NAME = 'npm-expo-sqlite-expo-sqlite';
-
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
-/**
- * Named seed workspaces under fixtures/. Every workspace starts from
- * fixtures/blank (the complete app scaffold), with the case's named fixture(s)
- * layered on top — fixtures are real files, so they get syntax highlighting
- * and lint, can hold binary assets (e.g. a bundled .db), and can be shared
- * between cases.
- */
-const FIXTURES_ROOT = path.join(EVALS_ROOT, 'fixtures');
-const BASE_FIXTURE = 'blank';
+export interface EvalSetupConfig {
+  /** The npm package under test, e.g. 'expo-sqlite'. */
+  packageName: string;
+  /** Root of the package under test; its build is linked into every workspace. */
+  packageRoot: URL | string;
+  /** The skill directory to link for the with-skill condition. */
+  skillDir: URL | string;
+  /** Directory of named seed workspaces layered over the scaffold. */
+  fixturesDir: URL | string;
+  /** create-expo-app template for the base scaffold. @default 'blank-typescript' */
+  baseTemplate?: string;
+}
 
 export type Condition = 'with-skill' | 'without-skill';
 
@@ -78,12 +80,12 @@ export interface EvalWorkspace {
 
 export interface SeedOptions {
   /**
-   * Named fixture directory(ies) under fixtures/, layered in order over the
-   * blank base scaffold. Fixtures hold app files only; declare dependency
+   * Named fixture directory(ies) under the fixtures dir, layered in order
+   * over the base scaffold. Fixtures hold app files only; declare dependency
    * changes through `dependencies` so they stay visible in the eval file.
    */
   fixture?: string | string[];
-  /** Extra package.json dependencies merged into the base fixture's. */
+  /** Extra package.json dependencies merged into the scaffold's. */
   dependencies?: Record<string, string>;
   /** One-off files written over the fixtures, workspace-relative path → contents. */
   files?: Record<string, string>;
@@ -101,87 +103,177 @@ type CheckContext = { skip: (note?: string) => void };
 type CheckFn = (workspace: EvalWorkspace, ctx: CheckContext) => void | Promise<void>;
 type DefineChecks = (check: (name: string, fn: CheckFn) => void) => void;
 
-/** `caseUrl` is the eval file's `import.meta.url`; the case id is its basename. */
-export function agentEval(caseUrl: string, options: AgentEvalOptions, defineChecks: DefineChecks) {
-  const id = path.basename(fileURLToPath(caseUrl)).replace(/\.eval\.tsx?$/, '');
-  const condition: Condition =
-    process.env.EXPO_SKILL_EVAL_CONDITION === 'without-skill' ? 'without-skill' : 'with-skill';
-  const timeoutSeconds = Number(process.env.EXPO_SKILL_EVAL_TIMEOUT ?? 900);
-  const name = options.title ? `${id} — ${options.title}` : id;
+export type AgentEval = (
+  caseUrl: string,
+  options: AgentEvalOptions,
+  defineChecks: DefineChecks
+) => void;
 
-  describe(`${name} [${condition}]`, () => {
-    let workspace: EvalWorkspace;
+/** Builds the `agentEval` bound to one package's setup — see setup.ts. */
+export function createAgentEval(config: EvalSetupConfig): AgentEval {
+  const packageRoot = toPath(config.packageRoot);
+  const skillDir = toPath(config.skillDir);
+  const fixturesDir = toPath(config.fixturesDir);
+  // Mirrors the link name `npx expo skills` creates for the package's skill.
+  const skillLinkName = `npm-${config.packageName.replace(/^@/, '').replace(/\//g, '-')}-${path.basename(skillDir)}`;
+  const baseTemplate = config.baseTemplate ?? 'blank-typescript';
 
-    beforeAll(
-      async () => {
-        const root = seedWorkspace(options.seed ?? {}, condition);
-        if (process.env.EXPO_SKILL_EVAL_DRY !== '1') {
-          await runAgentAsync(root, options.prompt, timeoutSeconds);
+  return function agentEval(caseUrl, options, defineChecks) {
+    const id = path.basename(fileURLToPath(caseUrl)).replace(/\.eval\.tsx?$/, '');
+    const condition: Condition =
+      process.env.EXPO_SKILL_EVAL_CONDITION === 'without-skill' ? 'without-skill' : 'with-skill';
+    const timeoutSeconds = Number(process.env.EXPO_SKILL_EVAL_TIMEOUT ?? 900);
+    const name = options.title ? `${id} — ${options.title}` : id;
+
+    describe(`${name} [${condition}]`, () => {
+      let workspace: EvalWorkspace;
+
+      beforeAll(
+        async () => {
+          const scaffold = await scaffoldBaseAppAsync(baseTemplate);
+          const root = seedWorkspace(scaffold, options.seed ?? {});
+          if (condition === 'with-skill') {
+            // Copy of the layout `npx expo skills` links for claude-code.
+            fs.cpSync(skillDir, path.join(root, '.claude', 'skills', skillLinkName), {
+              recursive: true,
+              filter: (source) => !source.includes(`${path.sep}.evals`),
+            });
+          }
+          if (process.env.EXPO_SKILL_EVAL_DRY !== '1') {
+            await runAgentAsync(root, options.prompt, timeoutSeconds, skillLinkName);
+          }
+          workspace = createWorkspace(root, condition);
+        },
+        (timeoutSeconds + 300) * 1000
+      );
+
+      afterAll(() => {
+        if (workspace && process.env.EXPO_SKILL_EVAL_KEEP !== '1') {
+          fs.rmSync(workspace.root, { recursive: true, force: true });
         }
-        workspace = createWorkspace(root, condition);
-      },
-      (timeoutSeconds + 120) * 1000
-    );
+      });
 
-    afterAll(() => {
-      if (workspace && process.env.EXPO_SKILL_EVAL_KEEP !== '1') {
-        fs.rmSync(workspace.root, { recursive: true, force: true });
-      }
-    });
-
-    defineChecks((checkName, fn) => {
-      test(checkName, async (t) => {
-        await fn(workspace, {
-          skip: (note) => t.skip(note ?? 'not applicable'),
+      defineChecks((checkName, fn) => {
+        test(checkName, async (t) => {
+          await fn(workspace, {
+            skip: (note) => t.skip(note ?? 'not applicable'),
+          });
         });
       });
     });
-  });
-}
-
-function seedWorkspace(seed: SeedOptions, condition: Condition): string {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-sqlite-eval-'));
-
-  const fixtures = [BASE_FIXTURE, seed.fixture ?? []].flat();
-  for (const fixture of fixtures) {
-    const fixtureRoot = path.join(FIXTURES_ROOT, fixture);
-    if (!fs.existsSync(fixtureRoot)) {
-      throw new Error(`Unknown fixture '${fixture}' — expected directory ${fixtureRoot}`);
-    }
-    fs.cpSync(fixtureRoot, root, { recursive: true });
-  }
-  for (const [relativePath, contents] of Object.entries(seed.files ?? {})) {
-    writeWorkspaceFile(root, relativePath, contents);
-  }
-
-  // The blank fixture's package.json + the seed's extra dependencies, with the
-  // expo-sqlite under test resolved to this package instead of the registry.
-  const packageJsonPath = path.join(root, 'package.json');
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  packageJson.dependencies = {
-    ...packageJson.dependencies,
-    ...seed.dependencies,
-    'expo-sqlite': `file:${PACKAGE_ROOT}`,
   };
-  writeWorkspaceFile(root, 'package.json', JSON.stringify(packageJson, null, 2) + '\n');
 
-  if (condition === 'with-skill') {
-    // Copy of the layout `npx expo skills` links for claude-code.
-    fs.cpSync(SKILL_ROOT, path.join(root, '.claude', 'skills', SKILL_LINK_NAME), {
-      recursive: true,
-      filter: (source) => !source.includes(`${path.sep}.evals`),
-    });
+  function seedWorkspace(scaffold: string, seed: SeedOptions): string {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-skill-eval-'));
+    fs.cpSync(scaffold, root, { recursive: true });
+
+    for (const fixture of [seed.fixture ?? []].flat()) {
+      const fixtureRoot = path.join(fixturesDir, fixture);
+      if (!fs.existsSync(fixtureRoot)) {
+        throw new Error(`Unknown fixture '${fixture}' — expected directory ${fixtureRoot}`);
+      }
+      fs.cpSync(fixtureRoot, root, { recursive: true });
+    }
+    for (const [relativePath, contents] of Object.entries(seed.files ?? {})) {
+      const absolutePath = path.join(root, relativePath);
+      fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+      fs.writeFileSync(absolutePath, contents);
+    }
+
+    // The scaffold's package.json + the seed's extra dependencies, with the
+    // package under test resolved to the local checkout, not the registry.
+    const packageJsonPath = path.join(root, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      ...seed.dependencies,
+      [config.packageName]: `file:${packageRoot}`,
+    };
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+    return root;
   }
-  return root;
 }
 
-function writeWorkspaceFile(root: string, relativePath: string, contents: string) {
-  const absolutePath = path.join(root, relativePath);
-  fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
-  fs.writeFileSync(absolutePath, contents);
+/**
+ * Scaffolds the base app once per template with `bunx create-expo-app`
+ * (network on the first run) and caches it; later runs copy the cache.
+ * Vitest runs suites in parallel workers and concurrent `bunx
+ * create-expo-app` invocations collide in bun's link step, so a
+ * cross-process lock (atomic mkdir) serializes scaffolding: the winner
+ * builds the cache, the others wait for it.
+ */
+async function scaffoldBaseAppAsync(template: string): Promise<string> {
+  const cacheDir = path.join(os.tmpdir(), `expo-skill-eval-base-${template}`);
+  const isReady = () => fs.existsSync(path.join(cacheDir, 'package.json'));
+  if (isReady()) {
+    return cacheDir;
+  }
+
+  const lockDir = `${cacheDir}.lock`;
+  for (;;) {
+    if (isReady()) {
+      return cacheDir;
+    }
+    try {
+      fs.mkdirSync(lockDir);
+      break;
+    } catch {
+      // Steal locks left behind by a crashed process.
+      const age =
+        Date.now() - (fs.statSync(lockDir, { throwIfNoEntry: false })?.mtimeMs ?? Date.now());
+      if (age > 5 * 60_000) {
+        fs.rmSync(lockDir, { recursive: true, force: true });
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+  }
+
+  try {
+    if (isReady()) {
+      return cacheDir;
+    }
+    await scaffoldIntoCacheAsync(template, cacheDir);
+    return cacheDir;
+  } finally {
+    fs.rmSync(lockDir, { recursive: true, force: true });
+  }
 }
 
-async function runAgentAsync(root: string, prompt: string, timeoutSeconds: number) {
+async function scaffoldIntoCacheAsync(template: string, cacheDir: string): Promise<void> {
+  const stagingDir = `${cacheDir}-staging-${process.pid}`;
+  fs.rmSync(stagingDir, { recursive: true, force: true });
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(
+      'bunx',
+      ['create-expo-app@latest', stagingDir, '--template', template, '--no-install'],
+      {
+        env: { ...process.env, CI: '1', EXPO_NO_TELEMETRY: '1' },
+        stdio: ['ignore', 'pipe', 'pipe'],
+      }
+    );
+    let output = '';
+    child.stdout.on('data', (chunk) => (output += chunk));
+    child.stderr.on('data', (chunk) => (output += chunk));
+    child.on('close', (code) =>
+      code === 0
+        ? resolve()
+        : reject(
+            new Error(`bunx create-expo-app exited with ${code} (is bun installed?):\n${output}`)
+          )
+    );
+    child.on('error', (error) => reject(new Error(`Could not run bunx: ${error}`)));
+  });
+  fs.rmSync(path.join(stagingDir, '.git'), { recursive: true, force: true });
+  fs.rmSync(path.join(stagingDir, 'node_modules'), { recursive: true, force: true });
+  fs.renameSync(stagingDir, cacheDir);
+}
+
+async function runAgentAsync(
+  root: string,
+  prompt: string,
+  timeoutSeconds: number,
+  skillLinkName: string
+) {
   const transcriptPath = path.join(root, '.eval', 'transcript.jsonl');
   fs.mkdirSync(path.dirname(transcriptPath), { recursive: true });
   const transcript = fs.createWriteStream(transcriptPath);
@@ -232,7 +324,7 @@ async function runAgentAsync(root: string, prompt: string, timeoutSeconds: numbe
     );
   }
 
-  const skillWasRead = fs.readFileSync(transcriptPath, 'utf8').includes(SKILL_LINK_NAME);
+  const skillWasRead = fs.readFileSync(transcriptPath, 'utf8').includes(skillLinkName);
   console.info(`agent finished; skill ${skillWasRead ? 'was' : 'was NOT'} read`);
 }
 
@@ -294,6 +386,12 @@ function createWorkspace(root: string, condition: Condition): EvalWorkspace {
         )
         .sort(),
   };
+}
+
+function toPath(location: URL | string): string {
+  return location instanceof URL || String(location).startsWith('file:')
+    ? fileURLToPath(location)
+    : String(location);
 }
 
 /**
@@ -361,10 +459,10 @@ export interface AstSupport {
 }
 
 /**
- * AST checks are opt-in: they need `@babel/parser`, declared in this
+ * AST checks are opt-in: they need `@babel/parser`, declared in the evals
  * directory's package.json but not vendored. Returns null when it isn't
  * installed — the calling check should `skip()` (evidence unavailable must
- * never read as compliance), pointing at `npm install` in `.evals/`.
+ * never read as compliance), pointing at `npm install` in the evals directory.
  */
 export async function loadAstSupport(): Promise<AstSupport | null> {
   let parser: any;

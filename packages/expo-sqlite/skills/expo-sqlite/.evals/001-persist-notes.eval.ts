@@ -1,4 +1,4 @@
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from './setup';
 
 // The prompt asks for durable notes plus a schema-evolution story. The skill
 // teaches PRAGMA user_version migrations, SQLiteProvider onInit, and

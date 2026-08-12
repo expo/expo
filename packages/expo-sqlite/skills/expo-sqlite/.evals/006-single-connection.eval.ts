@@ -1,4 +1,4 @@
-import { agentEval, expect, loadAstSupport } from './eval-kit';
+import { agentEval, expect, loadAstSupport } from './setup';
 
 // Demonstrates an AST check for a rule regex can't verify honestly: counting
 // real openDatabaseAsync call sites. A regex over source can be fooled by the

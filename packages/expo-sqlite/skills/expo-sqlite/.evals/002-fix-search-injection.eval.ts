@@ -1,4 +1,4 @@
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from './setup';
 
 // The seeded src/db.ts interpolates user input into a SQL string. A correct
 // fix binds the parameter (?/$ placeholders or the db.sql tagged template).

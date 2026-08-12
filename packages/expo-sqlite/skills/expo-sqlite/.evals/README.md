@@ -13,12 +13,12 @@ A case is a single file holding the prompt, a named fixture reference, and the c
 ```
 .evals/
   README.md
-  eval-kit.ts                        # agentEval() vitest adapter + base fixture (moves to a shared package later)
+  eval-kit.ts                        # package-agnostic vitest adapter (moves to a shared package, unchanged)
+  setup.ts                           # the one file that knows this is expo-sqlite; cases import from here
   vitest.config.ts
   package.json                       # anchors vitest's project root here; declares the opt-in AST parser
   fixtures/                          # named seed workspaces — real files, shareable between cases
-    blank/                           # the complete app scaffold every workspace starts from
-    notes-in-memory/                 # per-scenario fixtures layered over blank/
+    notes-in-memory/                 # per-scenario fixtures layered over the create-expo-app scaffold
     notes-search/
     …
   001-persist-notes.eval.ts
@@ -30,7 +30,7 @@ A case is a single file holding the prompt, a named fixture reference, and the c
 ```
 
 ```ts
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from './setup';
 
 agentEval(
   import.meta.url, // the case id derives from this filename
@@ -50,7 +50,11 @@ agentEval(
 );
 ```
 
-`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace by layering `fixtures/blank/` (the complete app scaffold), then the case's named `seed.fixture`(s), then any one-off `seed.files`; `seed.dependencies` merge into package.json and the `expo-sqlite` dependency is pointed at this package. It links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`) and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers.
+`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace by layering the base scaffold, then the case's named `seed.fixture`(s), then any one-off `seed.files`; `seed.dependencies` merge into package.json and the `expo-sqlite` dependency is pointed at this package. It links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`) and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers.
+
+The base scaffold is a real `bunx create-expo-app --template blank-typescript` app — nothing hand-maintained (no checked-in tsconfig/app.json). It is created once per template on first run (network + bun required) and cached under the OS temp directory; a cross-process lock serializes the scaffold because concurrent `bunx create-expo-app` invocations collide in bun's link step.
+
+`eval-kit.ts` is package-agnostic by design: `setup.ts` is the only file that knows this is expo-sqlite (`createAgentEval({ packageName, packageRoot, skillDir, fixturesDir })`), and case files import from `setup.ts`. When the kit extracts to a shared package, only setup.ts's import changes — case files stay untouched.
 
 Fixtures are real files: they get syntax highlighting and lint, can hold binary assets (a bundled `.db` for `assetSource`), and can be shared between cases. Keep dependency changes in the eval file's `seed.dependencies` — not in a fixture package.json — so they stay visible where the checks are.
 
@@ -71,7 +75,7 @@ Reusing vitest buys the runner, assertions, `-t` filtering, reporters, and per-f
 
 ## Running
 
-Requires the `claude` CLI on PATH. From this directory:
+Requires the `claude` CLI and `bun` on PATH (the base scaffold runs `bunx create-expo-app` on first use). From this directory:
 
 ```bash
 npx -y vitest run                                          # all cases, with-skill

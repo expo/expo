@@ -1,4 +1,4 @@
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from './setup';
 
 // The skill's guidance: expo-sqlite/kv-store is a drop-in AsyncStorage
 // replacement, so removing the dependency should be an import swap — not a

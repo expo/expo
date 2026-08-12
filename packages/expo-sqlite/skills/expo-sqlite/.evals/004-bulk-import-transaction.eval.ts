@@ -1,4 +1,4 @@
-import { agentEval, expect, type EvalWorkspace } from './eval-kit';
+import { agentEval, expect, type EvalWorkspace } from './setup';
 
 // Atomic bulk insert while other queries run concurrently: the skill's
 // guidance is withExclusiveTransactionAsync (plain withTransactionAsync lets
