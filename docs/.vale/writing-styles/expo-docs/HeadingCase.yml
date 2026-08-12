@@ -147,6 +147,7 @@ exceptions:
   - '.*Link component.*'
   - '.*Linking.*'
   - '.*MCP*'
+  - '.*Mac Catalyst.*'
   - '.*Material Symbols.*'
   - '.*MultiBrowse.*'
   - '.*macOS.*'
