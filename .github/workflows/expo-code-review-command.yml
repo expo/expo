@@ -130,6 +130,20 @@ jobs:
           ECR_EXPECTED_TOKEN_ENV: ${{ vars.ECR_EXPECTED_TOKEN_ENV || 'CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN' }}
         run: ./scripts/expo-code-review ecr verify-config
 
+      # ecr ci inherits CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN from GITHUB_ENV —
+      # do not re-bind it from secrets.* or this step is overwritten.
+      - name: Prepare model env
+        if: steps.cmd.outputs.run == 'true'
+        uses: ./.github/actions/prepare-model-env
+        with:
+          c1: ${{ secrets.ECR_1 }}
+          c2: ${{ secrets.ECR_2 }}
+          c3: ${{ secrets.ECR_3 }}
+          c4: ${{ secrets.ECR_4 }}
+          c5: ${{ secrets.ECR_5 }}
+          fallback: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+          model: ${{ vars.REVIEWER_MODEL || 'claude-sonnet-5' }}
+
       - name: Run AI review
         if: steps.cmd.outputs.run == 'true'
         continue-on-error: true
@@ -138,9 +152,8 @@ jobs:
           # Layer-1 auth lock: the CLI refuses to run when the tokenEnv it would honor
           # differs from this. Keep it in sync with the guard's EXPECTED.
           ECR_EXPECTED_TOKEN_ENV: ${{ vars.ECR_EXPECTED_TOKEN_ENV || 'CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN' }}
-          # Model credential — the env var named by auth.tokenEnv in config.jsonc.
-          # Store each as a repo secret under the same name.
-          CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN: ${{ secrets.CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN }}
+          # Model credential is inherited from Prepare model env (same env name
+          # as auth.tokenEnv).
           # Search-only credential used for fixed, site-scoped documentation discovery.
           BRAVE_SEARCH_API_KEY: ${{ secrets.BRAVE_SEARCH_API_KEY }}
           # Optional: override the model for every agent.
