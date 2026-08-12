@@ -1,4 +1,6 @@
-import { getFaviconFromExpoConfigAsync } from '../../../export/favicon';
+import { parse } from 'url';
+
+import { getFaviconFromExpoConfigAsync, isSvgPath } from '../../../export/favicon';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { event } from './events';
 import type { ServerNext, ServerRequest, ServerResponse } from './server.types';
@@ -33,21 +35,22 @@ export class FaviconMiddleware extends ExpoMiddleware {
       return next();
     }
 
-    const requestedKind: 'svg' | 'ico' = req.url?.endsWith('.svg') ? 'svg' : 'ico';
+    // Match on the pathname, not the raw URL: `shouldHandleRequest` dispatches on the
+    // query-stripped pathname, so `/favicon.svg?v=2` reaches this handler and would
+    // otherwise be misread as a `.ico` request.
+    const pathname = parse(req.url ?? '').pathname ?? '';
+    const requestedKind: 'svg' | 'ico' = isSvgPath(pathname) ? 'svg' : 'ico';
 
     try {
       const data = await getFaviconFromExpoConfigAsync(this.projectRoot, { force: true });
       if (!data) {
         return next();
       }
-      const configuredKind: 'svg' | 'ico' = data.path.endsWith('.svg') ? 'svg' : 'ico';
+      const configuredKind: 'svg' | 'ico' = isSvgPath(data.path) ? 'svg' : 'ico';
       if (configuredKind !== requestedKind) {
         return next();
       }
-      res.setHeader(
-        'Content-Type',
-        configuredKind === 'svg' ? 'image/svg+xml' : 'image/x-icon'
-      );
+      res.setHeader('Content-Type', configuredKind === 'svg' ? 'image/svg+xml' : 'image/x-icon');
       res.end(data.source);
     } catch (error: any) {
       // Pass through on ENOENT errors

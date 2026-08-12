@@ -135,6 +135,33 @@ it(`serves an SVG favicon with the SVG MIME type`, async () => {
   expect((res.end as jest.Mock).mock.calls[0][0].toString()).toBe(svg);
 });
 
+it(`serves an SVG favicon when the request carries a query string`, async () => {
+  // `shouldHandleRequest` dispatches on the query-stripped pathname, so a cache-busted
+  // `/favicon.svg?v=2` reaches the handler and must still be classified as SVG.
+  const svg = '<svg xmlns="http://www.w3.org/2000/svg"/>';
+  vol.fromJSON(
+    {
+      'assets/favicon.svg': svg,
+      'package.json': JSON.stringify({}),
+      'app.json': JSON.stringify({
+        sdkVersion: '49.0.0',
+        web: { favicon: './assets/favicon.svg' },
+      }),
+    },
+    '/'
+  );
+
+  const middleware = new FaviconMiddleware('/').getHandler();
+
+  const res = getMockRes();
+  const next = jest.fn();
+  await middleware(asRequest({ url: '/favicon.svg?v=2', method: 'GET' }), res, next);
+
+  expect(next).toHaveBeenCalledTimes(0);
+  expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'image/svg+xml');
+  expect((res.end as jest.Mock).mock.calls[0][0].toString()).toBe(svg);
+});
+
 it(`falls through /favicon.svg when web.favicon is a raster image`, async () => {
   vol.fromJSON(
     {

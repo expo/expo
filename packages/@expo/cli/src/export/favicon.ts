@@ -9,8 +9,13 @@ import { debugEvent } from './events';
 import { getUserDefinedFile } from './publicFolder';
 import type { ExportAssetMap } from './saveAssets';
 
-/** @returns whether the given path looks like an SVG (by file extension). */
-function isSvgPath(p: string): boolean {
+/**
+ * @returns whether the given path looks like an SVG (by file extension).
+ *
+ * Works for both filesystem paths and query-stripped URL pathnames, so the export pipeline
+ * and the dev-server middleware classify a favicon the same way.
+ */
+export function isSvgPath(p: string): boolean {
   return path.extname(p).toLowerCase() === '.svg';
 }
 
@@ -27,6 +32,11 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
  * (or to disk if no asset map is provided). Accepts either a raster image (rasterized to a
  * multi-size `favicon.ico`) or an SVG (copied byte-for-byte to `favicon.svg`, preserving
  * features like `prefers-color-scheme` media queries inside the SVG).
+ *
+ * A favicon in the public folder wins over `web.favicon`, matching the pre-existing behavior
+ * for `public/favicon.ico`. So `public/favicon.svg` suppresses generation from `web.favicon`
+ * too — a user who wants an `.ico` fallback for older browsers alongside it should add their
+ * own `public/favicon.ico`, which browsers auto-discover.
  *
  * @returns the public href for the generated favicon (`.ico` or `.svg`), or `null` when a
  *   user-supplied `favicon.ico` already exists in the public folder (browsers resolve it at

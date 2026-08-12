@@ -1,6 +1,7 @@
 import { isValidElement, type ReactElement } from 'react';
 import ReactDOMServer from 'react-dom/server';
 
+import { createFaviconAsString } from '../html';
 import { createFaviconAsNode, createInjectedExternalCssAsNodes } from '../react';
 
 describe(createFaviconAsNode, () => {
@@ -34,10 +35,25 @@ describe(createFaviconAsNode, () => {
     ).toBe('<link rel="icon" href="/favicon.ico"/>');
   });
 
-  it('renders SVG hrefs with the SVG MIME type — byte-equivalent to createFaviconAsString', () => {
+  it('renders SVG hrefs with the SVG MIME type', () => {
     expect(
       ReactDOMServer.renderToStaticMarkup(createFaviconAsNode('/favicon.svg') as ReactElement)
     ).toBe('<link rel="icon" type="image/svg+xml" href="/favicon.svg"/>');
+  });
+
+  // The two builders feed the SSR and SPA paths respectively; `createFaviconAsString`'s doc
+  // comment requires them to agree byte-for-byte. Compare them against each other rather than
+  // against hardcoded markup, so a change to either one has to break this test to land.
+  it.each([
+    '/favicon.ico',
+    '/favicon.svg',
+    '/app/favicon.svg',
+    '/favicon.svg?v=2',
+    '/icons?size=32&q="x"',
+  ])('renders identically to createFaviconAsString for %s', (href) => {
+    expect(ReactDOMServer.renderToStaticMarkup(createFaviconAsNode(href) as ReactElement)).toBe(
+      createFaviconAsString(href)
+    );
   });
 });
 

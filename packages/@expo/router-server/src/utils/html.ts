@@ -62,6 +62,16 @@ export function createInjectedScriptsAsString(srcs: string[]): string {
 }
 
 /**
+ * Returns whether a favicon href points to an SVG, ignoring any query string or fragment.
+ *
+ * Shared by `createFaviconAsString` and `createFaviconAsNode` so the SPA and SSR paths can
+ * never disagree about whether a given href needs the `image/svg+xml` type hint.
+ */
+export function isSvgFaviconHref(href: string): boolean {
+  return /\.svg([?#]|$)/i.test(href);
+}
+
+/**
  * Returns a `<link rel="icon" />` HTML string for the given favicon href. When the href
  * points to an SVG (extension `.svg`), the tag also carries `type="image/svg+xml"` so
  * browsers know to use the vector asset in preference to any auto-discovered `/favicon.ico`.
@@ -72,7 +82,7 @@ export function createInjectedScriptsAsString(srcs: string[]): string {
  */
 export function createFaviconAsString(href: string): string {
   const safeHref = escapeHtmlAttribute(href);
-  if (href.endsWith('.svg')) {
+  if (isSvgFaviconHref(href)) {
     return `<link rel="icon" type="image/svg+xml" href="${safeHref}"/>`;
   }
   return `<link rel="icon" href="${safeHref}"/>`;

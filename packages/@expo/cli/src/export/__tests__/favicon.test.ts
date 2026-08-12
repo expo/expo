@@ -49,6 +49,9 @@ describe(generateFaviconAssetAsync, () => {
 
     expect(result).toEqual({ href: '/app/favicon.svg' });
     expect(files.size).toBe(0);
+    // The raster pipeline is the pre-patch crash path for SVG input; assert it stays skipped.
+    const { generateImageAsync } = jest.requireMock('@expo/image-utils');
+    expect(generateImageAsync).not.toHaveBeenCalled();
   });
 
   it('returns `null` when `web.favicon` is not set', async () => {

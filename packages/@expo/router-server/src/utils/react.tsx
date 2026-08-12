@@ -1,7 +1,11 @@
 import type { ServerFontResourceDescriptor } from 'expo-font';
 import { type ReactNode } from 'react';
 
-import { getHydrationFlagScriptContents, getLoaderDataScriptContents } from './html';
+import {
+  getHydrationFlagScriptContents,
+  getLoaderDataScriptContents,
+  isSvgFaviconHref,
+} from './html';
 
 type CreateNodeResult = {
   headNodes?: ReactNode[];
@@ -76,7 +80,7 @@ export function getBootstrapContents({
 }
 
 export function createFaviconAsNode(href: string): ReactNode {
-  if (href.endsWith('.svg')) {
+  if (isSvgFaviconHref(href)) {
     return <link key="favicon" rel="icon" type="image/svg+xml" href={href} />;
   }
   return <link key="favicon" rel="icon" href={href} />;

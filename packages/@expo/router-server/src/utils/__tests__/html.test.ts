@@ -1,5 +1,6 @@
 import {
   createFaviconAsString,
+  isSvgFaviconHref,
   createInjectedCssAsString,
   createInjectedScriptsAsString,
   createLoaderDataScriptAsString,
@@ -84,6 +85,22 @@ describe(createInjectedScriptsAsString, () => {
     const result = createInjectedScriptsAsString(['/a.js', '/b.js']);
     expect(result).toBe('<script src="/a.js" defer></script>\n<script src="/b.js" defer></script>');
   });
+});
+
+describe(isSvgFaviconHref, () => {
+  it.each(['/favicon.svg', '/app/favicon.svg', '/favicon.SVG', '/f.svg?v=2', '/f.svg#x'])(
+    'treats %s as an SVG',
+    (href) => {
+      expect(isSvgFaviconHref(href)).toBe(true);
+    }
+  );
+
+  it.each(['/favicon.ico', '/favicon.png', '/svg', '/not-svg.ico', '/favicon.svgz'])(
+    'does not treat %s as an SVG',
+    (href) => {
+      expect(isSvgFaviconHref(href)).toBe(false);
+    }
+  );
 });
 
 describe(createFaviconAsString, () => {
