@@ -7,7 +7,6 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.ui.graphics.toArgb
-import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -68,7 +67,7 @@ class ExpoUIModule : Module() {
       val context = requireNotNull(appContext.reactContext) {
         "ExpoUIModule requires an active React context"
       }
-      okHttpClient = OkHttpClientProvider.createClientBuilder(context).build()
+      okHttpClient = appContext.createOkHttpClientBuilder().build()
       imageLoader = ImageLoader(context, requireNotNull(okHttpClient))
     }
 

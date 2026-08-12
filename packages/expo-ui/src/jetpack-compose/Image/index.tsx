@@ -137,7 +137,7 @@ const ImageNativeView: React.ComponentType<NativeImageProps> = requireNativeView
  */
 export function Image(props: ImageProps) {
   const { source, onLoad, onError, ...restProps } = props;
-  console.log(ReactNativeImage.resolveAssetSource(source));
+
   return (
     <ImageNativeView
       {...transformProps(restProps)}
