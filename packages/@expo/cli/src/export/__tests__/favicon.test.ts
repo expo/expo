@@ -1,6 +1,6 @@
 import path from 'node:path';
 
-import { generateFaviconAssetAsync } from '../favicon';
+import { generateFaviconAssetAsync, getSvgFaviconHref } from '../favicon';
 import type { ExportAssetMap } from '../saveAssets';
 
 jest.mock('../publicFolder', () => ({
@@ -167,5 +167,41 @@ describe(generateFaviconAssetAsync, () => {
     } finally {
       fsMock.mockRestore();
     }
+  });
+});
+
+describe(getSvgFaviconHref, () => {
+  beforeEach(() => {
+    getUserDefinedFile.mockReturnValue(null);
+  });
+
+  it('returns the SVG href for an SVG `web.favicon`', () => {
+    expect(
+      getSvgFaviconHref('/project', { name: '', slug: '', web: { favicon: './icon.svg' } } as any)
+    ).toBe('/favicon.svg');
+  });
+
+  it('returns the SVG href for a `public/favicon.svg`', () => {
+    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.svg');
+    expect(getSvgFaviconHref('/project', { name: '', slug: '' } as any)).toBe('/favicon.svg');
+  });
+
+  // `.ico` needs no tag: browsers auto-discover `/favicon.ico`, which is why the dev server
+  // never had to inject one before SVG support.
+  it('returns `null` for a raster `web.favicon`', () => {
+    expect(
+      getSvgFaviconHref('/project', { name: '', slug: '', web: { favicon: './icon.png' } } as any)
+    ).toBeNull();
+  });
+
+  it('returns `null` for a `public/favicon.ico`', () => {
+    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.ico');
+    expect(
+      getSvgFaviconHref('/project', { name: '', slug: '', web: { favicon: './icon.svg' } } as any)
+    ).toBeNull();
+  });
+
+  it('returns `null` when no favicon is configured', () => {
+    expect(getSvgFaviconHref('/project', { name: '', slug: '' } as any)).toBeNull();
   });
 });

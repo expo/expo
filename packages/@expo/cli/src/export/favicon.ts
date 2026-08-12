@@ -28,6 +28,23 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
 }
 
 /**
+ * Resolve the favicon href that needs an explicit `<link>` tag, without generating anything.
+ * Used by the dev server, where the bytes are served on demand by `FaviconMiddleware` (or by
+ * the static middleware for public-folder files) rather than written to an output directory.
+ *
+ * @returns `/favicon.svg` when the resolved favicon is an SVG, or `null` otherwise — `.ico`
+ *   favicons need no tag, since browsers auto-discover `/favicon.ico`.
+ */
+export function getSvgFaviconHref(projectRoot: string, exp?: ExpoConfig): string | null {
+  const existing = getUserDefinedFaviconFile(projectRoot);
+  if (existing) {
+    return isSvgPath(existing) ? '/favicon.svg' : null;
+  }
+  const src = exp?.web?.favicon;
+  return src && isSvgPath(src) ? '/favicon.svg' : null;
+}
+
+/**
  * Generate a favicon from `web.favicon` in the Expo config and write it into the asset map
  * (or to disk if no asset map is provided). Accepts either a raster image (rasterized to a
  * multi-size `favicon.ico`) or an SVG (copied byte-for-byte to `favicon.svg`, preserving
