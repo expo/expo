@@ -365,3 +365,7 @@ div.tippy-box {
 .react-player > video {
   outline: none;
 }
+
+:lang(ja) {
+  line-break: strict;
+}

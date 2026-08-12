@@ -53,6 +53,7 @@ export function createMetroMiddleware(
 const noCacheMiddleware: connect.NextHandleFunction = (req, res, next) => {
   // Loader responses set their own `Cache-Control`, so skip the blanket no-cache headers.
   if (req.url?.startsWith('/_expo/loaders/')) {
+    req.url = stripLoaderCacheBustParam(req.url);
     return next();
   }
 
@@ -138,3 +139,20 @@ const ensureFileInRootDirectory = async (root: string, file: string): Promise<st
     return null;
   }
 };
+
+// NOTE(@hassankhan): Appended to loader fetches after an HMR `loader-invalidate`
+const LOADER_CACHE_BUST_PARAM = '_expo_loader_v';
+
+function stripLoaderCacheBustParam(url: string): string {
+  const queryIndex = url.indexOf('?');
+  if (queryIndex === -1) {
+    return url;
+  }
+  const params = new URLSearchParams(url.slice(queryIndex + 1));
+  if (!params.has(LOADER_CACHE_BUST_PARAM)) {
+    return url;
+  }
+  params.delete(LOADER_CACHE_BUST_PARAM);
+  const query = params.toString();
+  return query ? `${url.slice(0, queryIndex)}?${query}` : url.slice(0, queryIndex);
+}

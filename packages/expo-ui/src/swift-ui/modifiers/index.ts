@@ -63,13 +63,30 @@ export const shadow = (params: { radius: number; x?: number; y?: number; color?:
   createModifier('shadow', params);
 
 /**
+ * The geometry properties copied from the source view by `matchedGeometryEffect`.
+ * `'frame'` combines both `'position'` and `'size'`.
+ */
+export type MatchedGeometryPropertiesValue = 'frame' | 'position' | 'size';
+
+/**
  * Adds a matched geometry effect to a view.
  * @param id - The id of the view.
  * @param namespaceId - The namespace id of the view. Use Namespace component to create a namespace.
+ * @param options - Optional parameters of the effect.
+ * @param options.properties - Which geometry properties to copy from the source view. Defaults to `'frame'`.
+ * @param options.anchor - The unit point of this view aligned with the source view's geometry. Defaults to `'center'`.
+ * @param options.isSource - Whether this view is the source of the geometry. Only one view per id should be the source. Defaults to `true`.
  * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/matchedgeometryeffect(id:in:properties:anchor:issource:)).
  */
-export const matchedGeometryEffect = (id: string, namespaceId: string) =>
-  createModifier('matchedGeometryEffect', { id, namespaceId });
+export const matchedGeometryEffect = (
+  id: string,
+  namespaceId: string,
+  options?: {
+    properties?: MatchedGeometryPropertiesValue;
+    anchor?: UnitPointValue;
+    isSource?: boolean;
+  }
+) => createModifier('matchedGeometryEffect', { id, namespaceId, ...options });
 
 /**
  * Sets the frame properties of a view.
@@ -1071,6 +1088,15 @@ export const listRowSeparator = (
 ) => createModifier('listRowSeparator', { visibility, edges });
 
 /**
+ * Sets the tint color of the separator for a list row.
+ * @param color - The color to apply to the separator (hex string). For example, `#FF0000`. When omitted, the default separator color is used.
+ * @param edges - The edges where the separator tint applies.
+ * @see Official [SwiftUI documentation](https://developer.apple.com/documentation/swiftui/view/listrowseparatortint(_:edges:)).
+ */
+export const listRowSeparatorTint = (color?: Color, edges?: 'all' | 'top' | 'bottom') =>
+  createModifier('listRowSeparatorTint', { color, edges });
+
+/**
  * Sets the vertical spacing between adjacent rows in a list.
  * @param spacing - The spacing value to use. When omitted, the default spacing is used.
  * @platform ios 15.0+
@@ -1689,6 +1715,7 @@ export type BuiltInModifier =
   | ReturnType<typeof environment>
   | ReturnType<typeof listRowBackground>
   | ReturnType<typeof listRowSeparator>
+  | ReturnType<typeof listRowSeparatorTint>
   | ReturnType<typeof listRowSpacing>
   | ReturnType<typeof truncationMode>
   | ReturnType<typeof allowsTightening>

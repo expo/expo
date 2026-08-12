@@ -20,6 +20,8 @@ const tempRoute = '/temp-route.tsx';
 const renamedRoute = '/renamed.tsx';
 
 test.describe(inputDir, () => {
+  test.describe.configure({ mode: 'serial' });
+
   const expoStart = createExpoStart({
     cwd: projectRoot,
     env: {
@@ -34,8 +36,13 @@ test.describe(inputDir, () => {
     },
   });
 
+  test.beforeAll(async () => {
+    console.time('expo start');
+    await expoStart.startAsync();
+    console.timeEnd('expo start');
+  });
   test.beforeEach(async () => {
-    // Ensure `const ROUTE_VALUE = 'ROUTE_VALUE_1';` -> `const ROUTE_VALUE = 'ROUTE_VALUE';` before starting
+    // Restore fixture state while keeping Metro's process and graph alive.
     await mutateFile(indexFile, (contents) => {
       return contents.replace(/ROUTE_VALUE_[\d\w]+/g, 'ROUTE_VALUE');
     });
@@ -44,18 +51,12 @@ test.describe(inputDir, () => {
       return contents.replace(/LAYOUT_VALUE_[\d\w]+/g, 'LAYOUT_VALUE');
     });
 
-    console.time('expo start');
-    await expoStart.startAsync();
-    console.timeEnd('expo start');
-
     console.time('Eagerly bundled JS');
     await expoStart.fetchBundleAsync('/').then((response) => response.text());
     console.timeEnd('Eagerly bundled JS');
   });
   test.afterEach(async () => {
-    await expoStart.stopAsync();
-
-    // Ensure `const ROUTE_VALUE = 'ROUTE_VALUE_1';` -> `const ROUTE_VALUE = 'ROUTE_VALUE';` before starting
+    // Ensure mutations never leak into the next test or the worktree.
     await mutateFile(indexFile, (contents) => {
       return contents.replace(/ROUTE_VALUE_[\d\w]+/g, 'ROUTE_VALUE');
     });
@@ -69,6 +70,9 @@ test.describe(inputDir, () => {
     if (fs.existsSync(appDir + renamedRoute)) {
       await fsPromise.unlink(appDir + renamedRoute);
     }
+  });
+  test.afterAll(async () => {
+    await expoStart.stopAsync();
   });
 
   const targetDirectory = path.join(projectRoot, '__e2e__/fast-refresh/app');

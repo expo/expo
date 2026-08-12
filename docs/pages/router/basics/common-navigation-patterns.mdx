@@ -77,6 +77,41 @@ You can also navigate from any other tab to a post in the feed tab with the same
 
 You can also nest tabs inside of an outer stack navigator. That is often more useful for displaying modals over the tabs.
 
+### Going back to the tab you came from
+
+A `Link` to a URL that belongs to another tab switches tabs, and the back button then pops the stack inside that tab. In the example above, opening `/feed/123` from the Settings tab lands on the post in the Feed tab. Going back returns to `feed/index`, not to Settings.
+
+With [native tabs](/router/advanced/native-tabs/), the tab navigator loads every tab as soon as it mounts. A tab that contains a stack is already sitting at that stack's first screen before you link into it. That screen ends up underneath the one you linked to whether or not you pass `withAnchor`.
+
+If you want the back button to return to the screen you came from, keep the detail route out of the tabs and push it from an outer stack instead:
+
+<FileTree
+  files={[
+    ['src/app/\_layout.tsx', 'stack that contains the tabs'],
+    ['src/app/(tabs)/\_layout.tsx'],
+    ['src/app/(tabs)/index.tsx'],
+    ['src/app/(tabs)/feed/\_layout.tsx'],
+    ['src/app/(tabs)/feed/index.tsx'],
+    ['src/app/(tabs)/settings.tsx'],
+    ['src/app/feed/[postId].tsx', 'pushed above the tab bar'],
+  ]}
+/>
+
+```tsx src/app/_layout.tsx
+import { Stack } from 'expo-router';
+
+export default function RootLayout() {
+  return (
+    <Stack>
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="feed/[postId]" options={{ title: 'Post' }} />
+    </Stack>
+  );
+}
+```
+
+`/feed/123` is now a screen of the root stack rather than of the Feed tab. The router pushes it on top of whichever tab is open, and going back returns to that tab. This is also how detail screens usually behave in iOS apps.
+
 <BoxLink
   title="Nested navigators"
   description="Learn more about how to use nested navigators in your Expo Router app."
