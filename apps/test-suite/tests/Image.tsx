@@ -14,6 +14,8 @@ const REMOTE_SOURCE = {
   blurhash: 'LPC6uxxa9GWB01WBs:R*?uayV@WB',
 };
 const NON_EXISTENT_SOURCE = { uri: 'file://non_existent_path.jpg' };
+// Blurhash of `../assets/icons/app.png` at 4x3 components.
+const LOCAL_ASSET_BLURHASH = 'L4BYE^o#9GkXIrfQNGay0Lay~Uj[';
 const ANIMATED_IMAGE_SOURCE = {
   uri: 'https://media1.giphy.com/media/gZEBpuOkPuydi/giphy.gif?cid=ecf05e47fc23hje74g3ryyry6xnui81pej12o4eojtd9ruax&ep=v1_gifs_search&rid=giphy.gif&ct=g',
 };
@@ -335,8 +337,11 @@ export async function test(t: JasmineInterface, { setPortalChild, cleanupPortal 
     if (Platform.OS === 'ios') {
       t.describe('generateBlurhashAsync', () => {
         t.it('returns a correct blurhash for url', async () => {
-          const result = await Image.generateBlurhashAsync(REMOTE_SOURCE.uri, [4, 3]);
-          t.expect(result).toBe(REMOTE_SOURCE.blurhash);
+          // A bundled asset, so the bytes the hash is computed from never change.
+          // The remote image this used to read was re-encoded upstream and drifted.
+          const asset = await Asset.fromModule(require('../assets/icons/app.png')).downloadAsync();
+          const result = await Image.generateBlurhashAsync(requireNotNull(asset.localUri), [4, 3]);
+          t.expect(result).toBe(LOCAL_ASSET_BLURHASH);
         });
         t.it('rejects on a missing url', async () => {
           await throws(() => Image.generateBlurhashAsync(NON_EXISTENT_SOURCE.uri, [4, 3]));

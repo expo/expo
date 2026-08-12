@@ -71,7 +71,9 @@ export async function test(t: JasmineInterface) {
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
         if (Platform.OS === 'ios') {
-          t.expect(permission.ios?.scope).toBe('whenInUse');
+          // `always` also grants foreground access, and the two scopes cannot both
+          // be held: once the background specs below grant `always`, this reports it.
+          t.expect(['whenInUse', 'always']).toContain(permission.ios?.scope);
         }
       });
     });
@@ -82,7 +84,9 @@ export async function test(t: JasmineInterface) {
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
         if (Platform.OS === 'ios') {
-          t.expect(permission.ios?.scope).toBe('whenInUse');
+          // `always` also grants foreground access, and the two scopes cannot both
+          // be held: once the background specs below grant `always`, this reports it.
+          t.expect(['whenInUse', 'always']).toContain(permission.ios?.scope);
         }
       });
     });
@@ -93,8 +97,7 @@ export async function test(t: JasmineInterface) {
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
         if (Platform.OS === 'ios') {
-          // Typed as a plain `PermissionResponse`, but carries `ios.scope`.
-          t.expect((permission as Location.LocationPermissionResponse).ios?.scope).toBe('always');
+          t.expect(permission.ios?.scope).toBe('always');
         }
       });
     });
@@ -105,8 +108,7 @@ export async function test(t: JasmineInterface) {
         t.expect(permission.granted).toBe(true);
         t.expect(permission.status).toBe(Location.PermissionStatus.GRANTED);
         if (Platform.OS === 'ios') {
-          // Typed as a plain `PermissionResponse`, but carries `ios.scope`.
-          t.expect((permission as Location.LocationPermissionResponse).ios?.scope).toBe('always');
+          t.expect(permission.ios?.scope).toBe('always');
         }
       });
     });
