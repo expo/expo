@@ -499,7 +499,7 @@ Fenced code blocks support dynamic variable substitution using `{{variableName}}
 
 The rendered output will show the resolved values (for example, `"expo": "~55.0.0"`). The copy button also copies the resolved values.
 
-All variables are defined in `common/code-utilities.ts` and sourced from `sdkVersionValues` in `ui/components/SDKTables/utils.ts`, which reads `@expo/sdk-compatibility/data`. To add a new variable, add an entry to the `CODE_BLOCK_VARIABLES` map in `common/code-utilities.ts`.
+All variables are defined in `common/code-utilities.ts` and sourced from `sdkVersionValues` in `ui/components/SDKTables/utils.ts`, which reads `@expo/sdk-compatibility/data`. To add a new variable, add a new key to the object returned by `buildVariablesForSdk` in `common/code-utilities.ts`.
 
 > [!NOTE]
 > These variables only work inside fenced code blocks. For dynamic values in prose text, import `latestSdkVersionValues` from `~/ui/components/SDKTables` and use JSX expressions directly.
