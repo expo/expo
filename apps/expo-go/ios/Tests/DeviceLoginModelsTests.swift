@@ -80,8 +80,7 @@ final class DeviceLoginModelsTests: XCTestCase {
   }
 
   func testMapsMatchingRequiredWithNoOptionsToInvalid() throws {
-    // Three options are always sent. Their absence means the contract changed, not that we should
-    // show an empty picker.
+    // Their absence means the contract changed, not that we should show an empty picker.
     XCTAssertEqual(try outcome(#"{"data":{"error":"matching_required"}}"#), .invalid)
   }
 

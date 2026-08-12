@@ -29,7 +29,7 @@ final class DeviceLoginViewModel: ObservableObject {
     self.verificationURI = verificationURI
   }
 
-  /// The partner's own page when the QR supplied one, otherwise whatever the server told us to use.
+  /// The override page when the QR supplied one, otherwise whatever the server told us to use.
   var displayURI: URL? {
     verificationURI ?? serverVerificationURI
   }
@@ -53,8 +53,6 @@ final class DeviceLoginViewModel: ObservableObject {
       self.authorization = authorization
       self.serverVerificationURI = authorization.verificationURI
       self.userCode = authorization.userCode
-      // `let`, not `var`: `firstStep` is a non-mutating computed property, so a `var` here earns a
-      // "never mutated" warning.
       let machine = DeviceLoginStateMachine(
         interval: authorization.interval,
         expiresIn: authorization.expiresIn,
@@ -125,9 +123,7 @@ final class DeviceLoginViewModel: ObservableObject {
         deviceCode: authorization.deviceCode,
         matchValue: matchValue
       )
-      // Cancellation is checked again here, not only before the request. A task cancelled while this
-      // await was in flight would otherwise still write `phase`, stomping the state a fresh restart()
-      // had just set up.
+      // Re-checked after the await so a cancelled poll cannot write phase.
       guard !Task.isCancelled else {
         return
       }
@@ -149,7 +145,7 @@ final class DeviceLoginViewModel: ObservableObject {
       phase = .failed(.invalid)
       return
     }
-    await AuthenticationService.storePartnerSession(
+    await AuthenticationService.storeDeviceAuthSession(
       sessionSecret: secret,
       username: username,
       expiresAt: expiresAt
@@ -157,8 +153,7 @@ final class DeviceLoginViewModel: ObservableObject {
     onSignedIn?()
   }
 
-  /// The token response carries no username, and `meUserActor` is null for a partner actor, so the
-  /// username has to come from `meActor`.
+  /// The token response carries no username, and `meUserActor` is null for some actor types, so username comes from `meActor`.
   private func resolveUsername(sessionSecret: String) async -> String? {
     await APIClient.shared.setSession(sessionSecret)
     do {
@@ -174,12 +169,7 @@ final class DeviceLoginViewModel: ObservableObject {
     }
   }
 
-  /// A transport failure is worth retrying in place. Anything the API actively refused, such as the ten
-  /// device authorizations per minute per IP limit, needs its own message rather than being reported as
-  /// a connection problem.
-  ///
-  /// `LoginError` shadows rather than overrides `localizedDescription`, because it does not conform to
-  /// `LocalizedError`. A bare `error.localizedDescription` would lose the API's message.
+  /// A transport failure can be retried in place. An API refusal, like a rate limit, needs its own message.
   private func failure(for error: Error) -> DeviceLoginFailure {
     guard let loginError = error as? LoginError else {
       return .network
