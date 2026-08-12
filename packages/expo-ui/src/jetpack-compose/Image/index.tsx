@@ -5,10 +5,18 @@ import {
   type ImageResolvedAssetSource,
 } from 'react-native';
 
-import { type PrimitiveBaseProps, transformProps } from '../layout-types';
+import { type ViewEvent } from '../../types';
+import { type ContentAlignment, type PrimitiveBaseProps, transformProps } from '../layout-types';
 
 /** Controls how an image is scaled inside its bounds. */
-export type ImageContentScale = 'fit' | 'crop' | 'fillBounds';
+export type ImageContentScale =
+  | 'fit'
+  | 'crop'
+  | 'fillBounds'
+  | 'fillWidth'
+  | 'fillHeight'
+  | 'inside'
+  | 'none';
 
 /** A bundled image or a single URI-based image source. */
 export type ImageSource =
@@ -42,6 +50,12 @@ export interface ImageProps extends PrimitiveBaseProps {
    * ```
    */
   contentScale?: ImageContentScale;
+
+  /**
+   * How the image should be aligned within its bounds.
+   * @default 'center'
+   */
+  alignment?: ContentAlignment;
 
   /**
    * Accessibility label for the image.
@@ -79,12 +93,24 @@ export interface ImageProps extends PrimitiveBaseProps {
    * ```
    */
   alpha?: number;
+
+  /**
+   * Callback that is called when the image loads successfully.
+   */
+  onLoad?: () => void;
+
+  /**
+   * Callback that is called when the image fails to load.
+   */
+  onError?: (error: string) => void;
 }
 
 /** @hidden */
-export type NativeImageProps = Omit<ImageProps, 'source'> & {
-  source: ImageResolvedAssetSource | null;
-};
+export type NativeImageProps = Omit<ImageProps, 'source' | 'onLoad' | 'onError'> &
+  ViewEvent<'onLoad', void> &
+  ViewEvent<'onError', { error: string }> & {
+    source: ImageResolvedAssetSource | null;
+  };
 
 const ImageNativeView: React.ComponentType<NativeImageProps> = requireNativeView(
   'ExpoUI',
@@ -110,11 +136,14 @@ const ImageNativeView: React.ComponentType<NativeImageProps> = requireNativeView
  * ```
  */
 export function Image(props: ImageProps) {
-  const { source, ...restProps } = props;
+  const { source, onLoad, onError, ...restProps } = props;
+  console.log(ReactNativeImage.resolveAssetSource(source));
   return (
     <ImageNativeView
       {...transformProps(restProps)}
       source={ReactNativeImage.resolveAssetSource(source)}
+      onLoad={onLoad}
+      onError={onError ? ({ nativeEvent }) => onError(nativeEvent.error) : undefined}
     />
   );
 }

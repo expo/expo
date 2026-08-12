@@ -7,6 +7,7 @@ import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.ui.graphics.toArgb
+import com.facebook.react.modules.network.OkHttpClientProvider
 import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -28,6 +29,7 @@ import expo.modules.ui.button.IconButtonContent
 import expo.modules.ui.button.FilledIconButtonContent
 import expo.modules.ui.button.FilledTonalIconButtonContent
 import expo.modules.ui.button.OutlinedIconButtonContent
+import expo.modules.ui.graphics.ImageLoader
 import expo.modules.ui.icon.IconView
 import expo.modules.ui.image.ImageView
 import expo.modules.ui.menu.DropdownMenuContent
@@ -56,15 +58,23 @@ import okhttp3.OkHttpClient
 class ExpoUIModule : Module() {
   var okHttpClient: OkHttpClient? = null
     private set
+  var imageLoader: ImageLoader? = null
+    private set
 
   override fun definition() = ModuleDefinition {
     Name("ExpoUI")
 
     OnCreate {
-      okHttpClient = OkHttpClient.Builder().build()
+      val context = requireNotNull(appContext.reactContext) {
+        "ExpoUIModule requires an active React context"
+      }
+      okHttpClient = OkHttpClientProvider.createClientBuilder(context).build()
+      imageLoader = ImageLoader(context, requireNotNull(okHttpClient))
     }
 
     OnDestroy {
+      imageLoader?.close()
+      imageLoader = null
       okHttpClient?.dispatcher?.executorService?.shutdown()
       okHttpClient?.connectionPool?.evictAll()
       okHttpClient?.cache?.close()
@@ -175,7 +185,9 @@ class ExpoUIModule : Module() {
     View(InnerTextFieldView::class)
     View(PlaceholderView::class)
     View(IconView::class)
-    View(ImageView::class)
+    View(ImageView::class) {
+      Events("onLoad", "onError")
+    }
     View(LazyColumnView::class)
     View(LazyRowView::class)
 

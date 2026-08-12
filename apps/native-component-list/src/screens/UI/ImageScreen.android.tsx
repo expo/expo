@@ -7,19 +7,21 @@ export default function ImageScreen() {
   return (
     <Host style={{ flex: 1 }}>
       <LazyColumn verticalArrangement={{ spacedBy: 16 }} modifiers={[padding(16, 16, 16, 16)]}>
-        {(['fit', 'crop', 'fillBounds'] as const).map((contentScale) => (
-          <Card key={contentScale} modifiers={[fillMaxWidth()]}>
-            <Column verticalArrangement={{ spacedBy: 8 }} modifiers={[padding(16, 16, 16, 16)]}>
-              <Text>{contentScale}</Text>
-              <Image
-                source={photo}
-                contentScale={contentScale}
-                contentDescription={`Example image using ${contentScale}`}
-                modifiers={[size(240, 120)]}
-              />
-            </Column>
-          </Card>
-        ))}
+        {(['fit', 'crop', 'fillBounds', 'fillWidth', 'fillHeight', 'inside', 'none'] as const).map(
+          (contentScale) => (
+            <Card key={contentScale} modifiers={[fillMaxWidth()]}>
+              <Column verticalArrangement={{ spacedBy: 8 }} modifiers={[padding(16, 16, 16, 16)]}>
+                <Text>{contentScale}</Text>
+                <Image
+                  source={photo}
+                  contentScale={contentScale}
+                  contentDescription={`Example image using ${contentScale}`}
+                  modifiers={[size(240, 120)]}
+                />
+              </Column>
+            </Card>
+          )
+        )}
       </LazyColumn>
     </Host>
   );

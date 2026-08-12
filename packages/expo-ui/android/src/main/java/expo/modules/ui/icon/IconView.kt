@@ -26,7 +26,6 @@ import expo.modules.ui.ModifierList
 import expo.modules.ui.ModifierRegistry
 import expo.modules.ui.compose
 import expo.modules.kotlin.views.OptimizedComposeProps
-import expo.modules.ui.graphics.ImageLoader
 import expo.modules.ui.graphics.ImageSource
 import expo.modules.ui.graphics.rememberDrawablePainter
 import expo.modules.ui.graphics.resolveUri
@@ -48,11 +47,7 @@ class IconView(context: Context, appContext: AppContext) :
 
   private val iconLoader by lazy {
     val module = appContext.registry.getModule<ExpoUIModule>()
-    val okHttpClient = requireNotNull(module?.okHttpClient) { "ExpoUIModule.okHttpClient is not initialized" }
-    ImageLoader(
-      context = context,
-      okHttpClient = okHttpClient
-    )
+    requireNotNull(module?.imageLoader) { "ExpoUIModule.imageLoader is not initialized" }
   }
 
   @Composable
