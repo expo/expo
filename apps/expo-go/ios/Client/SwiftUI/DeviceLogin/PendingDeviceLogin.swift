@@ -2,31 +2,46 @@
 
 import Foundation
 
-/// Not persisted: a device code lives ten minutes, so a stale pending sign in would only produce `expired_token`.
+/// Not persisted: a device code lives ten minutes. Keyed by project URL so a cancelled sign in cannot resurface on a different project.
 @objc(EXPendingDeviceLogin)
 public final class PendingDeviceLogin: NSObject {
   @objc public static let shared = PendingDeviceLogin()
 
   private let lock = NSLock()
   private var storedURI: URL?
+  private var storedProjectURL: URL?
 
   private override init() {
     super.init()
   }
 
-  @objc public var current: URL? {
+  @objc(currentForProjectURL:)
+  public func current(forProjectURL projectURL: URL) -> URL? {
     lock.lock()
     defer { lock.unlock() }
+    guard storedProjectURL?.absoluteString == projectURL.absoluteString else {
+      return nil
+    }
     return storedURI
   }
 
-  @objc public func set(_ uri: URL?) {
+  @objc(setURI:forProjectURL:)
+  public func set(_ uri: URL?, forProjectURL projectURL: URL) {
     lock.lock()
     defer { lock.unlock() }
+    guard let uri else {
+      storedURI = nil
+      storedProjectURL = nil
+      return
+    }
     storedURI = uri
+    storedProjectURL = projectURL
   }
 
   @objc public func clear() {
-    set(nil)
+    lock.lock()
+    defer { lock.unlock() }
+    storedURI = nil
+    storedProjectURL = nil
   }
 }

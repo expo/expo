@@ -130,9 +130,28 @@ final class DeviceLoginLinkTests: XCTestCase {
 
   func testPendingHolderStoresAndClears() throws {
     let uri = try url("https://verify.example/p/123")
-    PendingDeviceLogin.shared.set(uri)
-    XCTAssertEqual(PendingDeviceLogin.shared.current, uri)
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.set(uri, forProjectURL: project)
+    XCTAssertEqual(PendingDeviceLogin.shared.current(forProjectURL: project), uri)
     PendingDeviceLogin.shared.clear()
-    XCTAssertNil(PendingDeviceLogin.shared.current)
+    XCTAssertNil(PendingDeviceLogin.shared.current(forProjectURL: project))
+  }
+
+  func testPendingHolderDoesNotLeakToAnotherProject() throws {
+    let uri = try url("https://verify.example/p/123")
+    let scanned = try url("exp://10.0.0.5:8081/")
+    let unrelated = try url("exp://10.0.0.9:8081/")
+    PendingDeviceLogin.shared.set(uri, forProjectURL: scanned)
+    XCTAssertNil(PendingDeviceLogin.shared.current(forProjectURL: unrelated))
+    XCTAssertEqual(PendingDeviceLogin.shared.current(forProjectURL: scanned), uri)
+    PendingDeviceLogin.shared.clear()
+  }
+
+  func testPendingHolderSettingNilClearsTheRecord() throws {
+    let uri = try url("https://verify.example/p/123")
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.set(uri, forProjectURL: project)
+    PendingDeviceLogin.shared.set(nil, forProjectURL: project)
+    XCTAssertNil(PendingDeviceLogin.shared.current(forProjectURL: project))
   }
 }

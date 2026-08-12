@@ -88,6 +88,12 @@ struct HomeRootView: View {
         AccountSheet()
           .environmentObject(viewModel)
       }
+      .sheet(item: $viewModel.deviceLoginRequest) { request in
+        DeviceLoginSheet(verificationURI: request.verificationURI) { signedIn in
+          request.completion(signedIn)
+          viewModel.deviceLoginRequest = nil
+        }
+      }
       .alert(item: $viewModel.errorToShow) { error in
         Alert(
           title: Text("Error"),
