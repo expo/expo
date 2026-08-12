@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Added the `listRowSeparatorTint` modifier, so a list row separator can be recolored and not only shown or hidden. ([#48804](https://github.com/expo/expo/issues/48804) by [@marco242424](https://github.com/marco242424)) ([#48810](https://github.com/expo/expo/pull/48810) by [@expo-bot](https://github.com/expo-bot))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

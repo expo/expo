@@ -957,6 +957,23 @@ internal struct ListRowSeparator: ViewModifier, Record {
   }
 }
 
+internal struct ListRowSeparatorTint: ViewModifier, Record {
+  @Field var color: Color?
+  @Field var edges: VerticalEdgeOptions?
+
+  func body(content: Content) -> some View {
+#if os(tvOS)
+    content
+#else
+    if let edges {
+      content.listRowSeparatorTint(color, edges: edges.toVerticalEdges())
+    } else {
+      content.listRowSeparatorTint(color)
+    }
+#endif
+  }
+}
+
 internal struct ListRowSpacing: ViewModifier, Record {
   @Field var spacing: Double?
 
@@ -1957,6 +1974,10 @@ extension ViewModifierRegistry {
 
     register("listRowSeparator") { params, appContext, _ in
       return try ListRowSeparator(from: params, appContext: appContext)
+    }
+
+    register("listRowSeparatorTint") { params, appContext, _ in
+      return try ListRowSeparatorTint(from: params, appContext: appContext)
     }
 
     register("listRowSpacing") { params, appContext, _ in
