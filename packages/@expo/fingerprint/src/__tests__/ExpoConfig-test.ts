@@ -3,22 +3,63 @@ import resolveFrom from 'resolve-from';
 import { getExpoConfigAsync, diffLoadedModules } from '../ExpoConfig';
 import type { LoadedModuleSource } from '../ExpoConfigLoader';
 import { normalizeOptionsAsync } from '../Options';
+import { spawnWithIpcAsync } from '../utils/SpawnIPC';
 
 jest.mock('resolve-from');
 jest.mock('../ProjectWorkflow');
+jest.mock('../utils/SpawnIPC');
 
 describe(getExpoConfigAsync, () => {
-  it('should return null if the expo package is not found', async () => {
-    const result = await getExpoConfigAsync('/app', await normalizeOptionsAsync('/app'));
-    const mockedResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
-    mockedResolveFrom.mockImplementationOnce((fromDirectory: string, moduleId: string) => {
-      const actualResolver = jest.requireActual('resolve-from').silent;
-      // To fake the case as no expo installed, trying to resolve as **nonexist/expo/config** module
-      return actualResolver(fromDirectory, 'nonexist/expo/config');
+  const originalEnv = process.env;
+  const actualResolveFromSilent = jest.requireActual('resolve-from').silent;
+
+  beforeEach(() => {
+    process.env = { ...originalEnv };
+    jest
+      .mocked(resolveFrom.silent)
+      .mockImplementation((_fromDirectory, moduleId) =>
+        actualResolveFromSilent(__dirname, moduleId)
+      );
+    jest.mocked(spawnWithIpcAsync).mockResolvedValue({
+      output: [],
+      stdout: JSON.stringify({ config: null, loadedModules: [] }),
+      message: JSON.stringify({ config: null, loadedModules: [] }),
+      stderr: '',
+      signal: null,
+      status: 0,
     });
+  });
+
+  afterEach(() => {
+    process.env = originalEnv;
+    jest.clearAllMocks();
+  });
+
+  it('should return null if the expo package is not found', async () => {
+    jest
+      .mocked(resolveFrom.silent)
+      .mockImplementation((_fromDirectory, moduleId) =>
+        moduleId === 'expo/config' ? undefined : actualResolveFromSilent(__dirname, moduleId)
+      );
+
+    const result = await getExpoConfigAsync('/app', await normalizeOptionsAsync('/app'));
 
     expect(result.config).toBeNull();
     expect(result.loadedModules).toBeNull();
+  });
+
+  it('uses development mode for the config loader', async () => {
+    process.env.NODE_ENV = 'production';
+    process.env.EXPO_CONFIG_MODE = 'production';
+
+    await getExpoConfigAsync('/app', await normalizeOptionsAsync('/app'));
+
+    expect(spawnWithIpcAsync).toHaveBeenCalledTimes(2);
+    for (const [, args, options] of jest.mocked(spawnWithIpcAsync).mock.calls) {
+      expect(args).toEqual(expect.arrayContaining(['--mode', 'development']));
+      expect(options?.env).toMatchObject({ NODE_ENV: 'development' });
+      expect(options?.env?.EXPO_CONFIG_MODE).toBeUndefined();
+    }
   });
 });
 
