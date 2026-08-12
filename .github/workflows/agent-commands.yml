@@ -124,6 +124,11 @@ jobs:
   # a second /verify on an issue still queues behind the first rather than
   # racing it for the same sandboxes.
   slot:
+    # Display name, NOT a key rename: the key `slot` anchors `needs:` and the
+    # concurrency group, while this name is what the run graph and the jobs
+    # API show. `verify ls` in expo-sandbox-mcp matches on the API name, so
+    # the two repositories have to be renamed together.
+    name: Assign queue slot
     if: >-
       github.event_name == 'workflow_dispatch' ||
       ((startsWith(github.event.comment.body, '/verify') ||
@@ -134,7 +139,10 @@ jobs:
     outputs:
       slot: ${{ steps.pick.outputs.slot }}
     steps:
-      - id: pick
+      # Named, or the Actions UI shows the first line of the script — which is
+      # a comment — as the step title.
+      - name: Pick the slot
+        id: pick
         env:
           # Four concurrent verifications is eight sandboxes against a
           # 20-sandbox E2B account — the binding constraint, not CI minutes.
@@ -156,6 +164,10 @@ jobs:
           esac
 
   verify:
+    # "verify" predates work mode — this job runs whichever agent command was
+    # issued. Display name only; the key stays `verify` because `needs:` and
+    # the concurrency group reference it.
+    name: Agent command
     needs: slot
     # Job-level, NOT workflow-level: a workflow-level group is claimed at run
     # creation — before the `if:` below skips the job — so any unrelated
