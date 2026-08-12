@@ -11904,10 +11904,10 @@ ms@2.1.3, ms@^2.1.1, ms@^2.1.3:
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.1.3.tgz#574c8138ce1d2b5861f0b44579dbadd60c6615b2"
   integrity sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==
 
-multitars@^1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/multitars/-/multitars-1.0.0.tgz#50828be6b04328242e1c0f8439fbca4f6569e761"
-  integrity sha512-H/J4fMLedtudftaYMOg7ajzLYgT3/rwbWVJbqr/iUgB8DQztn38ys5HOqI1CzSxx8QhXXwOOnnBvd4v3jG5+Mg==
+multitars@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/multitars/-/multitars-1.0.2.tgz#340f48eebdfe94cc4e7cf287dfcdeedb9f779003"
+  integrity sha512-6GwVw5eLi9sThdtlS4PKwC7yRLaf45pYhIEzKBHdKxi+YOXGKFX8acIniH+Uh/+k9mS2lQOupTccjoe5r0/1IQ==
 
 mute-stream@0.0.8:
   version "0.0.8"
