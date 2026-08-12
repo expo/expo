@@ -111,7 +111,7 @@ iOS 実機向けの開発ビルドを作成するには、`build.development` �
 
 初めてビルドを作成するとき、このコマンドは次の質問を表示します。
 
-- **What would you like your iOS bundle identifier to be?**（iOS のバンドル識別子を何にしますか？）<kbd>Return</kbd> を押して、表示されるデフォルト値を選びます。まだ定義されていなければ、**app.json** に [`ios.bundleIdentifier`](/versions/latest/config/app/#package) が追加されます。
+- **What would you like your iOS bundle identifier to be?**（iOS のバンドル識別子を何にしますか？）<kbd>Return</kbd> を押して、表示されるデフォルト値を選びます。まだ定義されていなければ、**app.json** に [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) が追加されます。
 - **Do you want to log in to your Apple account?**（Apple アカウントにログインしますか？）開発ビルドを作るのは初めてなので、**Generate a new Apple Distribution Certificate**（新しい Apple Distribution Certificate を生成しますか？）も尋ねられます。どちらも <kbd>Y</kbd> を押します。
 - **Select a device for ad hoc build**.（ad hoc ビルド用のデバイスを選んでください）ここが重要な部分で、事前にプロビジョニングプロファイルを登録しておいたのはこのためです。登録済みのデバイスから 1 台または全部を選び、return を押せば、後でそれらのデバイスにビルドをインストールできます。
 
