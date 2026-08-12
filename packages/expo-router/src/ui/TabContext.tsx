@@ -22,17 +22,20 @@ export type ExpoTabsNavigatorScreenOptions = {
   lazy?: boolean;
 };
 
-export type ExpoTabsNavigatorOptions = DefaultNavigatorOptions<
-  ParamListBase,
-  string | undefined,
-  TabNavigationState<ParamListBase>,
-  ExpoTabsScreenOptions,
-  TabNavigationEventMap,
-  ExpoTabsNavigationProp<ParamListBase>
-> &
+export type ExpoTabsNavigatorOptions = Omit<
+  DefaultNavigatorOptions<
+    ParamListBase,
+    string | undefined,
+    TabNavigationState<ParamListBase>,
+    ExpoTabsScreenOptions,
+    TabNavigationEventMap,
+    ExpoTabsNavigationProp<ParamListBase>
+  > &
+    TabRouterOptions &
+    ExpoTabsNavigatorScreenOptions,
   // Should be set through `unstable_settings`
-  Omit<TabRouterOptions, 'initialRouteName'> &
-  ExpoTabsNavigatorScreenOptions;
+  'initialRouteName'
+>;
 
 export type ExpoTabsNavigationProp<
   ParamList extends ParamListBase,

@@ -67,7 +67,7 @@ const Nav = unstable_createStandardRouterNavigator<
   Opts,
   TabNavigationState<ParamListBase>,
   EventMap,
-  object,
+  { initialRouteName?: string },
   TabRouterOptions
 >(Content, TabRouter);
 
@@ -81,6 +81,14 @@ export type _HasProtected = Expect<
 // ---------------------------------------------------------------------------
 
 type Props = ComponentProps<typeof Nav>;
+
+// ---------------------------------------------------------------------------
+// initialRouteName is only supported through unstable_settings
+// ---------------------------------------------------------------------------
+
+export type _ElementLacksInitialRouteName = Expect<
+  Equal<'initialRouteName' extends keyof Props ? true : false, false>
+>;
 
 type ListenersFn = Extract<Props['screenListeners'], (...args: any) => any>;
 type OptionsFn = Extract<Props['screenOptions'], (...args: any) => any>;
