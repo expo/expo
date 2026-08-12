@@ -6,6 +6,7 @@ import { Platform } from 'react-native';
 import * as TestUtils from '../TestUtils';
 import type { JasmineInterface } from '../types';
 import { requireNotNull } from '../utils/requireNotNull';
+import { waitFor } from './helpers';
 
 const BACKGROUND_LOCATION_TASK = 'background-location-updates';
 const GEOFENCING_TASK = 'geofencing-task';
@@ -62,6 +63,19 @@ export async function test(t: JasmineInterface) {
     t.expect(typeof speed === 'number' || speed === null).toBe(true);
     t.expect(typeof timestamp === 'number').toBe(true);
   }
+
+  // Android images without Google APIs ship no Geocoder, and both geocoding APIs
+  // then reject with ERR_NO_GEOCODE. Probe once so only those specs are skipped —
+  // any other failure still surfaces.
+  const hasGeocoder = await Promise.race([
+    Location.geocodeAsync('900 State St, Salem, OR').then(
+      () => true,
+      (error: any) => error?.code !== 'ERR_NO_GEOCODE'
+    ),
+    // Bounded: this runs before jasmine starts, so a hang would stall the run.
+    waitFor(5000).then(() => true),
+  ]);
+  const describeWithGeocoder = hasGeocoder ? t.describe : t.xdescribe;
 
   t.describe('Location', () => {
     // On Android, foreground permission needs to be asked before the background permissions
@@ -420,7 +434,7 @@ export async function test(t: JasmineInterface) {
         );
       });
 
-      t.describe('Location.geocodeAsync()', () => {
+      describeWithGeocoder('Location.geocodeAsync()', () => {
         const timeout = 2000;
 
         t.it(
@@ -448,7 +462,7 @@ export async function test(t: JasmineInterface) {
         );
       });
 
-      t.describe('Location.reverseGeocodeAsync()', () => {
+      describeWithGeocoder('Location.reverseGeocodeAsync()', () => {
         const timeout = 2000;
 
         t.it(

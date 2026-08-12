@@ -15,11 +15,21 @@ const shortTextToSpeak = 'Hi!';
 // on another device: onDone and onStopped never get called.
 // #Android
 
-export function test(t: JasmineInterface) {
+export async function test(t: JasmineInterface) {
   // NOTE(2018-03-08): These tests are failing on iOS; disable for CI
   const unreliablyDescribe =
     Platform.OS !== 'android' && ExponentTest.isInCI ? t.xdescribe : t.describe;
-  unreliablyDescribe('Speech', () => {
+  // Speaking needs a speech synthesis engine. Plain AOSP emulator images ship
+  // without one, and then every spec here times out waiting for a callback.
+  // The probe is bounded because it runs before jasmine starts: without an engine
+  // it can hang, which would stall the whole run rather than just this module.
+  const voices = await Promise.race([
+    Speech.getAvailableVoicesAsync().catch(() => []),
+    waitFor(3000).then(() => []),
+  ]);
+  const hasSpeechEngine = voices.length > 0;
+  const describeWithEngine = hasSpeechEngine ? unreliablyDescribe : t.xdescribe;
+  describeWithEngine('Speech', () => {
     t.describe('Speech.speak()', () => {
       t.it('calls onStart', async () => {
         const onStart = t.jasmine.createSpy('onStart');

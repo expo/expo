@@ -121,7 +121,9 @@ export async function test({ describe, it, expect, jasmine }: JasmineInterface) 
         expect(error).toBeNull();
       });
 
-      if (ExponentTest && !ExponentTest.isInCI) {
+      // The install referrer comes from the Play Store, which emulator images and
+      // sideloaded builds do not have.
+      if (ExponentTest && !ExponentTest.isInCI && isDevice) {
         it(`Application.getInstallReferrerAsync() returns String`, async () => {
           let error = null;
           let installReferrer;
