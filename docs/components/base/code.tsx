@@ -195,7 +195,7 @@ export const CodeBlock = ({ children, theme, className, inline = false }: CodeBl
     <Element
       className={mergeClasses(
         'm-0 px-1 py-1.5 whitespace-pre',
-        inline && 'inline-flex whitespace-pre-wrap p-0!'
+        inline && 'inline-flex p-0! whitespace-pre-wrap'
       )}
       {...attributes}>
       <CODE
