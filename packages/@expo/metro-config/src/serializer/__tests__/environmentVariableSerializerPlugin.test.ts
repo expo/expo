@@ -1,7 +1,71 @@
 import {
+  environmentVariableSerializerPlugin,
   getTransformEnvironment,
   getEnvVarDevString,
+  serverPreludeSerializerPlugin,
 } from '../environmentVariableSerializerPlugin';
+
+describe(serverPreludeSerializerPlugin, () => {
+  it('updates lineCount after modifying the server prelude', () => {
+    const data = {
+      code: 'process=this.process||{},first\nsecond',
+      lineCount: 99,
+    };
+    const prelude = {
+      path: '__prelude__',
+      output: [{ type: 'js/script', data }],
+    };
+
+    serverPreludeSerializerPlugin(
+      '/index.js',
+      [prelude] as any,
+      { transformOptions: { customTransformOptions: { environment: 'node' } } } as any,
+      {} as any
+    );
+
+    expect(data).toEqual({
+      code: 'first\nsecond',
+      lineCount: 2,
+    });
+  });
+});
+
+describe(environmentVariableSerializerPlugin, () => {
+  it('sets lineCount when inserting the environment prelude', () => {
+    const preModules: any[] = [];
+
+    environmentVariableSerializerPlugin(
+      '/index.js',
+      preModules,
+      { transformOptions: { customTransformOptions: { environment: 'client' } } } as any,
+      { dev: true } as any
+    );
+
+    const data = preModules[0].output[0].data;
+    expect(data.lineCount).toBe(data.code.split(/\r\n?|\n|\u2028|\u2029/).length);
+  });
+
+  it('updates lineCount after replacing the environment prelude', () => {
+    const data = {
+      code: 'first\nsecond\nthird',
+      lineCount: 3,
+    };
+    const prelude = {
+      path: '\0polyfill:environment-variables',
+      output: [{ type: 'js/script', data }],
+    };
+
+    environmentVariableSerializerPlugin(
+      '/index.js',
+      [prelude] as any,
+      { transformOptions: { customTransformOptions: { environment: 'client' } } } as any,
+      { dev: true } as any
+    );
+
+    expect(data.code).toBe(getEnvVarDevString());
+    expect(data.lineCount).toBe(1);
+  });
+});
 
 describe(getTransformEnvironment, () => {
   [
