@@ -729,7 +729,8 @@ describe('Stack.Screen types', () => {
   it('accepts layout navigation props', () => {
     expectTypeOf<ScreenProps>().not.toHaveProperty('redirect');
     expectTypeOf<StackScreenProps>().not.toHaveProperty('redirect');
-    expectTypeOf({ name: 'profile', initialParams: { id: '123' } }).toExtend<StackScreenProps>();
+    expectTypeOf<ScreenProps>().not.toHaveProperty('initialParams');
+    expectTypeOf<StackScreenProps>().not.toHaveProperty('initialParams');
     expectTypeOf({ name: 'settings', dangerouslySingular: true }).toExtend<StackScreenProps>();
     expectTypeOf({
       name: 'details',

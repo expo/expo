@@ -6,6 +6,7 @@ import {
   type DrawerNavigationState,
   DrawerRouter,
   type ParamListBase,
+  type RouterActionOptions,
   type RouterConfigOptions,
 } from '..';
 
@@ -280,9 +281,8 @@ test("doesn't rehydrate state if it's not stale", () => {
 
 test('handles navigate action', () => {
   const router = DrawerRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -323,9 +323,8 @@ test('handles navigate action', () => {
 
 test('handles navigate action with open drawer', () => {
   const router = DrawerRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -369,9 +368,8 @@ test('handles navigate action with open drawer', () => {
 
 test('closes open drawer on replace with backBehavior: fullHistory', () => {
   const router = DrawerRouter({ backBehavior: 'fullHistory' });
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -415,9 +413,8 @@ test('closes open drawer on replace with backBehavior: fullHistory', () => {
 
 test('handles open drawer action', () => {
   const router = DrawerRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -481,9 +478,8 @@ test('handles open drawer action', () => {
 
 test('handles close drawer action', () => {
   const router = DrawerRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -547,9 +543,8 @@ test('handles close drawer action', () => {
 
 test('handles toggle drawer action', () => {
   const router = DrawerRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 

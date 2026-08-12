@@ -3,7 +3,6 @@ import { nanoid } from 'nanoid/non-secure';
 import { orderRoutesByRouteNames } from '../../utils/orderRoutesByRouteNames';
 import { isArrayEqual } from '../core/isArrayEqual';
 import { BaseRouter } from './BaseRouter';
-import { createParamsFromAction } from './createParamsFromAction';
 import { createRouteFromAction } from './createRouteFromAction';
 import type {
   CommonNavigationAction,
@@ -103,7 +102,7 @@ const TYPE_ROUTE = 'route' as const;
 const addFallbackRouteIfEmpty = (
   routes: Route<string>[],
   routeNames: string[],
-  routeParamList: ParamListBase,
+  routeParamList: ParamListBase | undefined,
   initialRouteName: string | undefined
 ) => {
   if (routes.length > 0 || routeNames.length === 0) {
@@ -114,7 +113,7 @@ const addFallbackRouteIfEmpty = (
     initialRouteName !== undefined && routeNames.includes(initialRouteName)
       ? initialRouteName
       : routeNames[0]!;
-  return [{ name, key: `${name}-${nanoid()}`, params: routeParamList[name] }];
+  return [{ name, key: `${name}-${nanoid()}`, params: routeParamList?.[name] }];
 };
 
 const addRouteIfMissing = (
@@ -349,7 +348,7 @@ export function TabRouter({
       return changeIndex(state, index, backBehavior, initialRouteName);
     },
 
-    getStateForAction(state, action, { routeParamList, routeGetIdList }) {
+    getStateForAction(state, action, { routeGetIdList }) {
       if (action.target && action.target !== state.key) {
         return null;
       }
@@ -365,7 +364,8 @@ export function TabRouter({
           const routes = addFallbackRouteIfEmpty(
             state.routes.filter((route) => routeNames.includes(route.name)),
             routeNames,
-            routeParamList,
+            // Actions don't receive configured route params.
+            undefined,
             initialRouteName
           );
 
@@ -452,7 +452,7 @@ export function TabRouter({
           }
 
           const { routes, index } = addRouteIfMissing(state.routes, action.payload.name, () => {
-            const route = createRouteFromAction({ action, routeParamList });
+            const route = createRouteFromAction({ action });
             return action.type === 'NAVIGATE' && action.payload.path != null
               ? { ...route, path: action.payload.path }
               : route;
@@ -481,15 +481,14 @@ export function TabRouter({
                   currentId === nextId
                 ) {
                   params =
-                    action.payload.params !== undefined || routeParamList[route.name] !== undefined
+                    action.payload.params !== undefined
                       ? {
-                          ...routeParamList[route.name],
                           ...route.params,
                           ...action.payload.params,
                         }
                       : route.params;
                 } else {
-                  params = createParamsFromAction({ action, routeParamList });
+                  params = action.payload.params;
                 }
 
                 const path =
@@ -583,7 +582,6 @@ export function TabRouter({
             const { routes, index } = addRouteIfMissing(state.routes, backTargetName, () => ({
               name: backTargetName,
               key: `${backTargetName}-${nanoid()}`,
-              params: routeParamList[backTargetName],
             }));
 
             if (targetIsPreloaded || routes !== state.routes) {
@@ -646,7 +644,7 @@ export function TabRouter({
           const routeIndex = state.routes.findIndex((route) => route.name === action.payload.name);
 
           if (routeIndex === -1) {
-            const route = createRouteFromAction({ action, routeParamList });
+            const route = createRouteFromAction({ action });
             return {
               ...state,
               routes: [...state.routes, route],
@@ -663,7 +661,7 @@ export function TabRouter({
 
           const key = currentId === nextId ? route.key : `${route.name}-${nanoid()}`;
 
-          const params = createParamsFromAction({ action, routeParamList });
+          const params = action.payload.params;
           const newRoute = params !== route.params ? { ...route, key, params } : route;
 
           return {

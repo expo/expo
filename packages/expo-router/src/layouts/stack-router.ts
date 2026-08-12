@@ -117,8 +117,6 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
         );
       }
 
-      const { routeParamList } = options;
-
       switch (action.type) {
         case 'PUSH':
         case 'NAVIGATE': {
@@ -176,22 +174,14 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
 
           if (action.type === 'NAVIGATE' && action.payload.merge && route) {
             params =
-              action.payload.params !== undefined ||
-              routeParamList[action.payload.name] !== undefined
+              action.payload.params !== undefined
                 ? {
-                    ...routeParamList[action.payload.name],
                     ...route.params,
                     ...action.payload.params,
                   }
                 : route.params;
           } else {
-            params =
-              routeParamList[action.payload.name] !== undefined
-                ? {
-                    ...routeParamList[action.payload.name],
-                    ...action.payload.params,
-                  }
-                : action.payload.params;
+            params = action.payload.params;
           }
 
           let routes: Route<string>[];
@@ -357,43 +347,29 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
                 if (r.key !== route?.key) {
                   return r;
                 }
-                const mergedParams =
-                  routeParamList[action.payload.name] !== undefined
-                    ? {
-                        ...routeParamList[action.payload.name],
-                        ...action.payload.params,
-                      }
-                    : action.payload.params;
                 return {
                   ...r,
                   params: preloadZoomTransitionId
                     ? {
-                        ...mergedParams,
+                        ...action.payload.params,
                         [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: r.key,
                       }
-                    : mergedParams,
+                    : action.payload.params,
                 };
               }),
             };
           } else {
             // START FORK
             const preloadedRouteKey = `${action.payload.name}-${nanoid()}`;
-            const preloadedRouteParams =
-              routeParamList[action.payload.name] !== undefined
-                ? {
-                    ...routeParamList[action.payload.name],
-                    ...action.payload.params,
-                  }
-                : action.payload.params;
             const currentPreloadedRoute: (typeof state)['routes'][number] = {
               key: preloadedRouteKey,
               name: action.payload.name,
               params: preloadZoomTransitionId
                 ? {
-                    ...preloadedRouteParams,
+                    ...action.payload.params,
                     [INTERNAL_EXPO_ROUTER_ZOOM_TRANSITION_SCREEN_ID_PARAM_NAME]: preloadedRouteKey,
                   }
-                : preloadedRouteParams,
+                : action.payload.params,
             };
             // END FORK
             return {
@@ -410,23 +386,6 @@ export const stackRouterOverride: NonNullable<NativeStackNavigatorProps['UNSTABL
                   (r) => r.name !== action.payload.name || id !== getId?.({ params: r.params })
                 )
               ),
-              // preloadedRoutes: state.preloadedRoutes
-              //   .filter(
-              //     (r) =>
-              //       r.name !== action.payload.name ||
-              //       id !== getId?.({ params: r.params })
-              //   )
-              //   .concat({
-              //     key: `${action.payload.name}-${nanoid()}`,
-              //     name: action.payload.name,
-              //     params:
-              //       routeParamList[action.payload.name] !== undefined
-              //         ? {
-              //             ...routeParamList[action.payload.name],
-              //             ...action.payload.params,
-              //           }
-              //         : action.payload.params,
-              //   }),
               // END FORK
             };
           }

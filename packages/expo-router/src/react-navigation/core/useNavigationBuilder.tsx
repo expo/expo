@@ -342,11 +342,6 @@ export function useNavigationBuilder<
   }, {});
 
   const routeNames = routeConfigs.map((config) => config.props.name);
-  const routeParamList = routeNames.reduce<Record<string, object | undefined>>((acc, curr) => {
-    const { initialParams } = screens[curr]!.props;
-    acc[curr] = initialParams;
-    return acc;
-  }, {});
   const routeGetIdList = routeNames.reduce<RouterConfigOptions['routeGetIdList']>(
     (acc, curr) =>
       Object.assign(acc, {
@@ -409,7 +404,8 @@ export function useNavigationBuilder<
           ? lastStateRef.current
           : router.getRehydratedState(lastStateRef.current, {
               routeNames,
-              routeParamList,
+              // Existing state should not receive nested initial params again.
+              routeParamList: {},
               routeGetIdList,
             });
 
@@ -418,7 +414,6 @@ export function useNavigationBuilder<
 
       const initialRouteParamList = routeNames.reduce<Record<string, object | undefined>>(
         (acc, curr) => {
-          const { initialParams } = screens[curr]!.props;
           const initialParamsFromParams =
             route?.params?.state == null &&
             route?.params?.initial !== false &&
@@ -426,13 +421,9 @@ export function useNavigationBuilder<
               ? route.params.params
               : undefined;
 
+          // Copy the params so the child's route params don't alias the parent's nested params.
           acc[curr] =
-            initialParams !== undefined || initialParamsFromParams !== undefined
-              ? {
-                  ...initialParams,
-                  ...initialParamsFromParams,
-                }
-              : undefined;
+            initialParamsFromParams !== undefined ? { ...initialParamsFromParams } : undefined;
 
           return acc;
         },
@@ -484,8 +475,7 @@ export function useNavigationBuilder<
       // We explicitly don't include routeNames, route.params etc. in the dep list
       // below. We want to avoid forcing a new state to be calculated in those cases
       // Instead, we handle changes to these in the nextState code below. Note
-      // that some changes to routeConfigs are explicitly ignored, such as changes
-      // to initialParams
+      // that some changes to routeConfigs are explicitly ignored.
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentState, router, isStateValid]);
 
@@ -531,7 +521,6 @@ export function useNavigationBuilder<
     const updatedState = action
       ? router.getStateForAction(nextState, action, {
           routeNames,
-          routeParamList,
           routeGetIdList,
         })
       : null;
@@ -540,7 +529,8 @@ export function useNavigationBuilder<
       updatedState !== null
         ? router.getRehydratedState(updatedState, {
             routeNames,
-            routeParamList,
+            // Action-produced state should only contain explicit action params.
+            routeParamList: {},
             routeGetIdList,
           })
         : nextState;
@@ -642,7 +632,7 @@ export function useNavigationBuilder<
       const config = screens[e.target];
 
       if (!route && config) {
-        route = { key: e.target, name: e.target, params: config.props.initialParams };
+        route = { key: e.target, name: e.target };
         isPlaceholder = true;
       }
 
@@ -718,7 +708,6 @@ export function useNavigationBuilder<
     isRoutePrevented,
     routerConfigOptions: {
       routeNames,
-      routeParamList,
       routeGetIdList,
     },
     emitter,
