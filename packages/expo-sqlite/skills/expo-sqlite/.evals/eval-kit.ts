@@ -104,9 +104,18 @@ export interface EvalWorkspace {
   exists(relativePath: string): boolean;
   /** Every source file in the workspace, excluding node_modules and dot directories. */
   sourceFiles(): { path: string; contents: string }[];
-  /** All source files concatenated — for whole-workspace pattern checks. */
+  /**
+   * All source files concatenated, with comments stripped — so commented-out
+   * code can neither satisfy a positive pattern check nor trip a negative one.
+   */
   source(): string;
   packageJson(): Record<string, any> | undefined;
+  /**
+   * Workspace-relative paths matching a glob (e.g. `src/db/migrations/*.ts`,
+   * `app/**\/index.*`) — for directory-structure checks. Excludes node_modules
+   * and dot directories.
+   */
+  glob(pattern: string): string[];
 }
 
 export interface SeedOptions {
@@ -304,7 +313,7 @@ function createWorkspace(root: string, condition: Condition): EvalWorkspace {
     sourceFiles,
     source: () =>
       sourceFiles()
-        .map((f) => f.contents)
+        .map((f) => stripComments(f.contents))
         .join('\n'),
     packageJson: () => {
       try {
@@ -313,5 +322,114 @@ function createWorkspace(root: string, condition: Condition): EvalWorkspace {
         return undefined;
       }
     },
+    glob: (pattern) =>
+      fs
+        .globSync(pattern, { cwd: root })
+        .filter(
+          (match) =>
+            !match.split(path.sep).some((part) => part === 'node_modules' || part.startsWith('.'))
+        )
+        .sort(),
+  };
+}
+
+/**
+ * Strips // and /* *\/ comments while leaving string and template contents
+ * intact, so lexical checks scan only live code. Mirrors the comment-stripped
+ * scan the expo eval-experiments harness runs its lexical checks on.
+ */
+export function stripComments(code: string): string {
+  let result = '';
+  let state: 'code' | 'line' | 'block' | 'single' | 'double' | 'template' = 'code';
+  for (let i = 0; i < code.length; i++) {
+    const pair = code.slice(i, i + 2);
+    const char = code[i];
+    switch (state) {
+      case 'code':
+        if (pair === '//') {
+          state = 'line';
+          i++;
+        } else if (pair === '/*') {
+          state = 'block';
+          i++;
+        } else {
+          if (char === "'") state = 'single';
+          else if (char === '"') state = 'double';
+          else if (char === '`') state = 'template';
+          result += char;
+        }
+        break;
+      case 'line':
+        if (char === '\n') {
+          state = 'code';
+          result += char;
+        }
+        break;
+      case 'block':
+        if (pair === '*/') {
+          state = 'code';
+          i++;
+        } else if (char === '\n') {
+          result += char;
+        }
+        break;
+      case 'single':
+      case 'double':
+      case 'template': {
+        result += char;
+        const terminator = state === 'single' ? "'" : state === 'double' ? '"' : '`';
+        if (char === '\\') {
+          result += code[++i] ?? '';
+        } else if (char === terminator || (state !== 'template' && char === '\n')) {
+          state = 'code';
+        }
+        break;
+      }
+    }
+  }
+  return result;
+}
+
+export interface AstSupport {
+  /** Parses TypeScript/JSX source into a Babel AST. */
+  parse(code: string, filename: string): any;
+  /** Depth-first walk over every node in the tree (plain recursion, no @babel/traverse). */
+  walk(node: any, visit: (node: any) => void): void;
+}
+
+/**
+ * AST checks are opt-in: they need `@babel/parser`, declared in this
+ * directory's package.json but not vendored. Returns null when it isn't
+ * installed — the calling check should `skip()` (evidence unavailable must
+ * never read as compliance), pointing at `npm install` in `.evals/`.
+ */
+export async function loadAstSupport(): Promise<AstSupport | null> {
+  let parser: any;
+  try {
+    parser = await import('@babel/parser');
+  } catch {
+    return null;
+  }
+  const walk = (node: any, visit: (node: any) => void) => {
+    if (!node || typeof node.type !== 'string') {
+      return;
+    }
+    visit(node);
+    for (const value of Object.values(node)) {
+      if (Array.isArray(value)) {
+        for (const item of value) walk(item, visit);
+      } else if (value && typeof value === 'object') {
+        walk(value, visit);
+      }
+    }
+  };
+  return {
+    parse: (code, filename) =>
+      parser.parse(code, {
+        sourceType: 'module',
+        sourceFilename: filename,
+        plugins: ['typescript', 'jsx'],
+      }),
+    walk,
   };
 }

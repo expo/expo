@@ -15,11 +15,13 @@ A case is a single file holding the prompt, the seed, and the checks ([evalite](
   README.md
   eval-kit.ts                        # agentEval() vitest adapter + base fixture (moves to a shared package later)
   vitest.config.ts
-  package.json                       # anchors vitest's project root here
+  package.json                       # anchors vitest's project root here; declares the opt-in AST parser
   001-persist-notes.eval.ts
   002-fix-search-injection.eval.ts
   003-drop-async-storage.eval.ts
   004-bulk-import-transaction.eval.ts
+  005-migrations-folder.eval.ts      # demonstrates directory-structure checks (ws.glob)
+  006-single-connection.eval.ts      # demonstrates the lexical → AST check cascade
 ```
 
 ```ts
@@ -43,7 +45,17 @@ agentEval(
 );
 ```
 
-`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace from the kit's blank base fixture plus the case's `seed` (`files` overlay the fixture, `dependencies` merge into its package.json), points the `expo-sqlite` dependency at this package, links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`), and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers (`source()`, `read()`, `sourceFiles()`, `packageJson()`).
+`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace from the kit's blank base fixture plus the case's `seed` (`files` overlay the fixture, `dependencies` merge into its package.json), points the `expo-sqlite` dependency at this package, links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`), and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers.
+
+## Check tiers
+
+The helpers cover the same check axes as Expo's eval-experiments harness, cheapest first:
+
+| Tier        | Helper                                                         | Notes                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| ----------- | -------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Lexical     | `ws.source()` (comment-stripped concat), `ws.read(path)` (raw) | `source()` strips comments so commented-out code can neither satisfy a positive pattern nor trip a negative one.                                                                                                                                                                                                                                                                                                      |
+| Structural  | `ws.glob(pattern)`, `ws.exists(path)`, `ws.packageJson()`      | Globs support `*`, `**`, and `{a,b}` (Node ≥ 22 `fs.globSync`). See `005-migrations-folder`.                                                                                                                                                                                                                                                                                                                          |
+| Syntax tree | `loadAstSupport()` → `parse()` + `walk()`                      | Opt-in: run `npm install` in this directory first (`@babel/parser` is a devDependency here). When the parser isn't installed the check must `skip()` — evidence unavailable never reads as compliance. Reach for this only where a well-anchored regex genuinely can't verify the rule, and pair it with a lexical approximation so the case still measures its goal without the parser. See `006-single-connection`. |
 
 Seeds that need real files — binary assets such as a bundled `.db` for `assetSource`, or many large files — can use the `seed.localDir` escape hatch instead of inlining.
 
