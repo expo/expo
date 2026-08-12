@@ -16,6 +16,14 @@ const { getUserDefinedFile } = jest.requireMock('../publicFolder') as {
   getUserDefinedFile: jest.Mock;
 };
 
+/** Make the `getUserDefinedFile` mock resolve against a given set of public folder files. */
+function mockPublicFolder(publicFiles: string[]) {
+  getUserDefinedFile.mockImplementation((_projectRoot: string, possiblePaths: string[]) => {
+    const match = possiblePaths.find((possiblePath) => publicFiles.includes(possiblePath));
+    return match ? `/project/public/${match.replace(/^\.\//, '')}` : null;
+  });
+}
+
 describe(generateFaviconAssetAsync, () => {
   beforeEach(() => {
     getUserDefinedFile.mockReturnValue(null);
@@ -37,7 +45,7 @@ describe(generateFaviconAssetAsync, () => {
     // Browsers don't auto-discover SVG favicons the way they do
     // `/favicon.ico`, so a `<link>` tag must still be emitted. The SVG file
     // itself is copied to the output by `copyPublicFolderAsync`, not here.
-    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.svg');
+    mockPublicFolder(['./favicon.svg']);
 
     const files: ExportAssetMap = new Map();
     const result = await generateFaviconAssetAsync('/project', {
@@ -58,7 +66,7 @@ describe(generateFaviconAssetAsync, () => {
     // A project that has both used to get a generated `favicon.ico`. The public SVG takes the
     // `<link>`, but dropping the ICO would silently remove the fallback older browsers
     // auto-discover at `/favicon.ico`.
-    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.svg');
+    mockPublicFolder(['./favicon.svg']);
 
     const files: ExportAssetMap = new Map();
     const result = await generateFaviconAssetAsync('/project', {
@@ -75,8 +83,27 @@ describe(generateFaviconAssetAsync, () => {
     });
   });
 
+  it('does not overwrite a public favicon.ico when the public folder also holds an SVG', async () => {
+    // `getUserDefinedFaviconFile` reports the SVG (it wins the `<link>`) and never mentions the
+    // sibling ICO, so generation has to re-check the output path: `copyPublicFolderAsync` has
+    // already copied the user's own `favicon.ico` there, and writing over it would replace a
+    // hand-crafted multi-size icon with a rasterized `web.favicon`.
+    mockPublicFolder(['./favicon.svg', './favicon.ico']);
+
+    const files: ExportAssetMap = new Map();
+    const result = await generateFaviconAssetAsync('/project', {
+      baseUrl: '',
+      outputDir: '/out',
+      files,
+      exp: { name: '', slug: '', web: { favicon: './icon.png' } } as any,
+    });
+
+    expect(result).toEqual({ href: '/favicon.svg' });
+    expect(files.size).toBe(0);
+  });
+
   it('does not double-write favicon.svg when a public SVG is paired with an SVG web.favicon', async () => {
-    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.svg');
+    mockPublicFolder(['./favicon.svg']);
     const readFileMock = jest
       .spyOn(require('fs').promises, 'readFile')
       .mockResolvedValue(Buffer.from('<svg/>'));
@@ -182,7 +209,7 @@ describe(getSvgFaviconHref, () => {
   });
 
   it('returns the SVG href for a `public/favicon.svg`', () => {
-    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.svg');
+    mockPublicFolder(['./favicon.svg']);
     expect(getSvgFaviconHref('/project', { name: '', slug: '' } as any)).toBe('/favicon.svg');
   });
 

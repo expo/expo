@@ -53,8 +53,9 @@ export function getSvgFaviconHref(projectRoot: string, exp?: ExpoConfig): string
  * A favicon in the public folder wins the `<link>`, matching the pre-existing behavior for
  * `public/favicon.ico`. A `public/favicon.svg` does *not* suppress `favicon.ico` generation,
  * though: a raster `web.favicon` is still rasterized so that browsers without SVG favicon
- * support keep auto-discovering `/favicon.ico`. (An SVG `web.favicon` is skipped in that case,
- * since it would write to the same `favicon.svg` path the public file already occupies.)
+ * support keep auto-discovering `/favicon.ico`. Generation is skipped only when the public
+ * folder already ships a file at the same output path, since `copyPublicFolderAsync` has
+ * copied it there and writing over it would replace the user's own icon.
  *
  * @returns the public href for the favicon to link (`.ico` or `.svg`), or `null` when a
  *   user-supplied `favicon.ico` already exists in the public folder (browsers resolve it at
@@ -85,10 +86,13 @@ export async function generateFaviconAssetAsync(
 
   // Generate the configured favicon even when a public SVG takes the `<link>`, so that a
   // raster `web.favicon` keeps producing the `/favicon.ico` older browsers auto-discover.
-  // Skip it only when it would collide with the public file's own output path.
-  const isCollidingWithPublicSvg = !!publicSvgHref && !!data && isSvgPath(data.path);
+  // Skip it only when the public folder already owns that output path — `getUserDefinedFaviconFile`
+  // reports just the winning file, so a project holding both `favicon.svg` and `favicon.ico`
+  // would otherwise rasterize `web.favicon` over the user's own ICO.
+  const isOutputPathOwnedByPublicFolder =
+    !!data && !!getUserDefinedFile(projectRoot, [`./${data.path}`]);
 
-  if (data && !isCollidingWithPublicSvg) {
+  if (data && !isOutputPathOwnedByPublicFolder) {
     const assetPath = path.join(outputDir, data.path);
     if (files) {
       debugEvent('favicon:storing_asset', { assetPath });
