@@ -11,7 +11,7 @@ export const name = 'GLView';
 const style = { width: 200, height: 200 };
 
 export async function test(
-  { it, xit, describe, beforeAll, jasmine, afterAll, expect }: JasmineInterface,
+  { it, xit, describe, beforeAll, jasmine, afterAll, expect, afterEach }: JasmineInterface,
   { setPortalChild, cleanupPortal }: TestPortal
 ) {
   let instance: GLView | null = null;
@@ -30,8 +30,7 @@ export async function test(
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
   });
 
-  afterAll(async () => {
-    sharedContext = null;
+  afterEach(async () => {
     instance = null;
     await cleanupPortal();
   });
@@ -44,15 +43,6 @@ export async function test(
         setPortalChild
       );
     });
-  }
-
-  // Mounting a GLView per spec means a fresh EGL surface per spec. Emulators run
-  // out after a handful and then `onContextCreate` never fires, so the specs that
-  // only need *a* working context share one.
-  let sharedContext: ExpoWebGLRenderingContext | null = null;
-  async function getSharedContextAsync() {
-    sharedContext ??= await getContextAsync();
-    return sharedContext;
   }
 
   describe('GLView', () => {
@@ -139,7 +129,7 @@ export async function test(
       });
 
       it('takes a snapshot', async () => {
-        await getSharedContextAsync();
+        await getContextAsync();
 
         const snapshot = await instance?.takeSnapshotAsync({ format: 'png' });
         expect(snapshot).toBeDefined();
@@ -152,18 +142,18 @@ export async function test(
       });
 
       it('has Expo methods', async () => {
-        const context = await getSharedContextAsync();
+        const context = await getContextAsync();
         expect(typeof context.endFrameEXP).toBe('function');
       });
       it('clears to blue without throwing', async () => {
-        const gl = await getSharedContextAsync();
+        const gl = await getContextAsync();
         gl.clearColor(0, 0, 1, 1);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         gl.endFrameEXP();
       });
 
       it(`draws a texture`, async () => {
-        const gl = await getSharedContextAsync();
+        const gl = await getContextAsync();
 
         const vert = requireNotNull(gl.createShader(gl.VERTEX_SHADER));
         gl.shaderSource(vert, vertexShader);
@@ -205,7 +195,7 @@ export async function test(
       });
 
       it(`draws a texture with a TypedArray`, async () => {
-        const gl = await getSharedContextAsync();
+        const gl = await getContextAsync();
 
         const vert = requireNotNull(gl.createShader(gl.VERTEX_SHADER));
         gl.shaderSource(vert, vertexShader);
@@ -266,7 +256,7 @@ export async function test(
       });
 
       it('takes a snapshot', async () => {
-        const context = await getSharedContextAsync();
+        const context = await getContextAsync();
 
         const snapshot = await GLView.takeSnapshotAsync(context, { format: 'png' });
         expect(snapshot).toBeDefined();
