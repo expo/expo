@@ -1,9 +1,13 @@
 /**
  * Thin vitest adapter for agent evals — the piece that moves to a shared
  * package (so case files only change their import path). `agentEval()` wraps
- * `describe()`: a beforeAll hook seeds a temp workspace from the case's
- * local/ files, runs the coding agent with the case's prompt, and each
+ * `describe()`: a beforeAll hook builds a temp workspace (base fixture + the
+ * case's inline seed), runs the coding agent with the case's prompt, and each
  * `check()` becomes a `test()` receiving workspace helpers.
+ *
+ * The case id is derived from the eval filename (`003-drop-async-storage.eval.ts`
+ * → `003-drop-async-storage`), so it can never drift from what's on disk; the
+ * optional `title` adds prose to reports.
  *
  * Semantics preserved from the four-status check model:
  * - `skip(note)` inside a check = not_applicable — the check's precondition
@@ -37,6 +41,58 @@ const SKILL_LINK_NAME = 'npm-expo-sqlite-expo-sqlite';
 
 const SOURCE_EXTENSIONS = new Set(['.ts', '.tsx', '.js', '.jsx']);
 
+/**
+ * The blank app every workspace starts from. Cases declare deltas on top of
+ * it through `seed`; they never ship a whole app.
+ */
+const BASE_PACKAGE_JSON = {
+  name: 'app',
+  version: '1.0.0',
+  private: true,
+  main: 'index.ts',
+  scripts: { typecheck: 'tsc --noEmit' },
+  dependencies: {
+    expo: 'latest',
+    'expo-sqlite': '*',
+    react: '*',
+    'react-native': '*',
+  },
+  devDependencies: { '@types/react': '*', typescript: '*' },
+};
+
+const BASE_FILES: Record<string, string> = {
+  'tsconfig.json': `{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true
+  }
+}
+`,
+  'app.json': `{
+  "expo": {
+    "name": "app",
+    "slug": "app"
+  }
+}
+`,
+  'index.ts': `import { registerRootComponent } from 'expo';
+
+import App from './App';
+
+registerRootComponent(App);
+`,
+  'App.tsx': `import { Text, View } from 'react-native';
+
+export default function App() {
+  return (
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+      <Text>Hello</Text>
+    </View>
+  );
+}
+`,
+};
+
 export type Condition = 'with-skill' | 'without-skill';
 
 export interface EvalWorkspace {
@@ -53,28 +109,44 @@ export interface EvalWorkspace {
   packageJson(): Record<string, any> | undefined;
 }
 
+export interface SeedOptions {
+  /** Extra package.json dependencies merged into the base fixture's. */
+  dependencies?: Record<string, string>;
+  /** Files written over the base fixture, workspace-relative path → contents. */
+  files?: Record<string, string>;
+  /**
+   * Escape hatch for seeds that need real files (binary assets, many files):
+   * a directory copied over the base fixture before `files` apply.
+   */
+  localDir?: URL | string;
+}
+
 export interface AgentEvalOptions {
+  /** Optional prose for reports; the id always comes from the eval filename. */
+  title?: string;
   /** The task, written the way a real user asks. */
   prompt: string;
-  /** The case's seed workspace, e.g. `new URL('./local/', import.meta.url)`. */
-  localDir: URL | string;
+  seed?: SeedOptions;
 }
 
 type CheckContext = { skip: (note?: string) => void };
 type CheckFn = (workspace: EvalWorkspace, ctx: CheckContext) => void | Promise<void>;
 type DefineChecks = (check: (name: string, fn: CheckFn) => void) => void;
 
-export function agentEval(name: string, options: AgentEvalOptions, defineChecks: DefineChecks) {
+/** `caseUrl` is the eval file's `import.meta.url`; the case id is its basename. */
+export function agentEval(caseUrl: string, options: AgentEvalOptions, defineChecks: DefineChecks) {
+  const id = path.basename(fileURLToPath(caseUrl)).replace(/\.eval\.tsx?$/, '');
   const condition: Condition =
     process.env.EXPO_SKILL_EVAL_CONDITION === 'without-skill' ? 'without-skill' : 'with-skill';
   const timeoutSeconds = Number(process.env.EXPO_SKILL_EVAL_TIMEOUT ?? 900);
+  const name = options.title ? `${id} — ${options.title}` : id;
 
   describe(`${name} [${condition}]`, () => {
     let workspace: EvalWorkspace;
 
     beforeAll(
       async () => {
-        const root = seedWorkspace(options.localDir, condition);
+        const root = seedWorkspace(options.seed ?? {}, condition);
         if (process.env.EXPO_SKILL_EVAL_DRY !== '1') {
           await runAgentAsync(root, options.prompt, timeoutSeconds);
         }
@@ -99,19 +171,27 @@ export function agentEval(name: string, options: AgentEvalOptions, defineChecks:
   });
 }
 
-function seedWorkspace(localDir: URL | string, condition: Condition): string {
+function seedWorkspace(seed: SeedOptions, condition: Condition): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'expo-sqlite-eval-'));
-  fs.cpSync(localDir instanceof URL ? fileURLToPath(localDir) : localDir, root, {
-    recursive: true,
-  });
 
-  // Resolve the expo-sqlite under test to this package, not the registry.
-  const packageJsonPath = path.join(root, 'package.json');
-  const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
-  if (packageJson.dependencies?.['expo-sqlite']) {
-    packageJson.dependencies['expo-sqlite'] = `file:${PACKAGE_ROOT}`;
+  for (const [relativePath, contents] of Object.entries(BASE_FILES)) {
+    writeWorkspaceFile(root, relativePath, contents);
   }
-  fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+  if (seed.localDir) {
+    fs.cpSync(seed.localDir instanceof URL ? fileURLToPath(seed.localDir) : seed.localDir, root, {
+      recursive: true,
+    });
+  }
+  for (const [relativePath, contents] of Object.entries(seed.files ?? {})) {
+    writeWorkspaceFile(root, relativePath, contents);
+  }
+
+  // Base package.json + the seed's extra dependencies, with the expo-sqlite
+  // under test resolved to this package instead of the registry.
+  const packageJson = structuredClone(BASE_PACKAGE_JSON) as Record<string, any>;
+  Object.assign(packageJson.dependencies, seed.dependencies);
+  packageJson.dependencies['expo-sqlite'] = `file:${PACKAGE_ROOT}`;
+  writeWorkspaceFile(root, 'package.json', JSON.stringify(packageJson, null, 2) + '\n');
 
   if (condition === 'with-skill') {
     // Copy of the layout `npx expo skills` links for claude-code.
@@ -121,6 +201,12 @@ function seedWorkspace(localDir: URL | string, condition: Condition): string {
     });
   }
   return root;
+}
+
+function writeWorkspaceFile(root: string, relativePath: string, contents: string) {
+  const absolutePath = path.join(root, relativePath);
+  fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+  fs.writeFileSync(absolutePath, contents);
 }
 
 async function runAgentAsync(root: string, prompt: string, timeoutSeconds: number) {

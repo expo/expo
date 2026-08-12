@@ -6,33 +6,34 @@ They also guard the reverse direction: an API change in this package that breaks
 
 Evals live inside the skill they guard, so a rename or split takes them along. Because `.evals` is a hidden directory with no `SKILL.md`, `npx expo skills` never links it for consumers (the npm tarball excludes it via `.npmignore`), and agents don't load it unprompted.
 
-## Format: `case.eval.ts` — vitest is the runner
+## Format: one flat `*.eval.ts` per case — vitest is the runner
 
-Each case is one directory holding a single eval file (prompt and checks together, [evalite](https://www.evalite.dev/)-style: `.eval.ts` is the new `.test.ts`) plus a complete seed workspace:
+A case is a single file holding the prompt, the seed, and the checks ([evalite](https://www.evalite.dev/)-style: `.eval.ts` is the new `.test.ts`). The case id is the filename — nothing to keep in sync:
 
 ```
 .evals/
   README.md
-  eval-kit.ts             # agentEval() vitest adapter (moves to a shared package later)
+  eval-kit.ts                        # agentEval() vitest adapter + base fixture (moves to a shared package later)
   vitest.config.ts
-  001-persist-notes/
-    case.eval.ts          # prompt + checks in one file
-    local/                # hermetic seed app the agent starts from
-  002-fix-search-injection/
-  003-drop-async-storage/
-  004-bulk-import-transaction/
+  package.json                       # anchors vitest's project root here
+  001-persist-notes.eval.ts
+  002-fix-search-injection.eval.ts
+  003-drop-async-storage.eval.ts
+  004-bulk-import-transaction.eval.ts
 ```
 
-A case file reads like a test suite:
-
 ```ts
-import { agentEval, expect } from '../eval-kit';
+import { agentEval, expect } from './eval-kit';
 
 agentEval(
-  '003 replace async-storage with what expo-sqlite already provides',
+  import.meta.url, // the case id derives from this filename
   {
+    title: 'replace async-storage with what expo-sqlite already provides',
     prompt: `We're trimming dependencies. …`,
-    localDir: new URL('./local/', import.meta.url),
+    seed: {
+      dependencies: { '@react-native-async-storage/async-storage': '^2.1.0' },
+      files: { 'src/settings.ts': `…` },
+    },
   },
   (check) => {
     check('uses expo-sqlite/kv-store', (ws) => {
@@ -42,7 +43,9 @@ agentEval(
 );
 ```
 
-`agentEval()` wraps `describe()`: a `beforeAll` hook copies `local/` into a temp workspace, points the `expo-sqlite` dependency at this package, links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`), and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers (`source()`, `read()`, `sourceFiles()`, `packageJson()`).
+`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace from the kit's blank base fixture plus the case's `seed` (`files` overlay the fixture, `dependencies` merge into its package.json), points the `expo-sqlite` dependency at this package, links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`), and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers (`source()`, `read()`, `sourceFiles()`, `packageJson()`).
+
+Seeds that need real files — binary assets such as a bundled `.db` for `assetSource`, or many large files — can use the `seed.localDir` escape hatch instead of inlining.
 
 Reusing vitest buys the runner, assertions, `-t` filtering, reporters, and per-file parallelism for free. Two semantics are deliberately mapped onto it:
 
@@ -57,14 +60,14 @@ Requires the `claude` CLI on PATH. From this directory:
 npx -y vitest run                                          # all cases, with-skill
 EXPO_SKILL_EVAL_CONDITION=without-skill npx -y vitest run  # baseline (expected to fail more checks)
 EXPO_SKILL_EVAL_DRY=1 npx -y vitest run                    # score untouched seeds, no agent (checks should fail)
-npx -y vitest run -t "kv-store"                            # filter checks
+npx -y vitest run 003                                      # one case (file filter)
 ```
 
 `EXPO_SKILL_EVAL_KEEP=1` keeps workspaces for inspection; `EXPO_SKILL_EVAL_TIMEOUT` overrides the 900 s agent timeout. The without-skill condition is a baseline for comparison, not a gate — the interesting number is the delta against with-skill over several runs, since agent runs are nondeterministic.
 
 ## Adding an eval
 
-1. Create `NNN-short-name/case.eval.ts`: an `agentEval()` block whose prompt is written the way a real user asks. Put discoverable context in the seed app, not the prompt.
-2. Add a complete, hermetic `local/` app (no shared fixture).
+1. Create `NNN-short-name.eval.ts`: an `agentEval(import.meta.url, …)` block whose prompt is written the way a real user asks. Put discoverable context in the seed, not the prompt.
+2. Declare the starting state through `seed` — only the delta from the blank base fixture.
 3. Scope checks so seeded code cannot pass them on the agent's behalf, and accept every valid API the skill allows (string-source params, `db.sql` tagged templates, and prepared statements are all legitimate bindings).
-4. Verify the seed can't pass by itself: `EXPO_SKILL_EVAL_DRY=1 npx -y vitest run -t <case>` should fail its checks.
+4. Verify the seed can't pass by itself: `EXPO_SKILL_EVAL_DRY=1 npx -y vitest run NNN` should fail its checks.

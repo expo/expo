@@ -6,6 +6,5 @@
     "strict": true,
     "types": []
   },
-  "include": ["./**/*.ts"],
-  "exclude": ["**/local/**"]
+  "include": ["./**/*.ts"]
 }
