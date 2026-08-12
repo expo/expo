@@ -1,6 +1,5 @@
 package expo.modules.medialibrary.assets
 
-import android.os.Build
 import android.os.Bundle
 import androidx.exifinterface.media.ExifInterface
 import expo.modules.medialibrary.EXIF_TAGS
@@ -11,10 +10,6 @@ import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkClass
-import io.mockk.mockkConstructor
-import io.mockk.mockkStatic
-import io.mockk.unmockkConstructor
-import io.mockk.unmockkStatic
 import io.mockk.verify
 import kotlinx.coroutines.test.runTest
 import org.junit.After
