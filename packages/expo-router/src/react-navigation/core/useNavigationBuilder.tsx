@@ -22,6 +22,7 @@ import { NavigationHelpersContext } from './NavigationHelpersContext';
 import { NavigationMetaContext } from './NavigationMetaContext';
 import { NavigationRouteContext } from './NavigationProvider';
 import { NavigationStateContext } from './NavigationStateContext';
+import { NavigatorTypeContext } from './NavigatorTypeContext';
 import { PreventRemoveContext } from './PreventRemoveContext';
 import { Screen } from './Screen';
 import { UnhandledActionContext } from './UnhandledActionContext';
@@ -798,7 +799,9 @@ export function useNavigationBuilder<
           <NavigationStateListenerProvider state={state}>
             <FocusedRouteKeyContext.Provider value={state.routes[state.index]?.key}>
               <PreventRemoveContext.Provider value={preventRemoveContextValue}>
-                {element}
+                <NavigatorTypeContext.Provider value={router.type}>
+                  {element}
+                </NavigatorTypeContext.Provider>
               </PreventRemoveContext.Provider>
             </FocusedRouteKeyContext.Provider>
           </NavigationStateListenerProvider>
