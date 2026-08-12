@@ -41,7 +41,12 @@ agentEval(
     check('binds row values as parameters', (ws) => {
       const source = importSource(ws);
       const bindsParameters =
-        /(runAsync|executeAsync)\s*(<[^>]*>)?\(\s*[^)]*[?$]/.test(source) ||
+        // ?/$ placeholders inside the SQL string. Scan within the quotes, not
+        // to the first ')': a column list like (text) closes a paren before
+        // the placeholder ever appears.
+        /(runAsync|executeAsync|prepareAsync)\s*(<[^>]*>)?\(\s*['"`][^'"`]*[?$]/.test(source) ||
+        // Named parameters bound through an executeAsync object argument.
+        /executeAsync\s*(<[^>]*>)?\(\s*\{[^}]*\$/.test(source) ||
         /\.sql[<`]/.test(source);
       expect(bindsParameters).toBe(true);
     });

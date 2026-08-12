@@ -26,6 +26,8 @@
  * - EXPO_SKILL_EVAL_DRY: '1' scores the untouched seed without running the
  *   agent — checks should fail; use it to verify a new case can't be passed
  *   by its own seed.
+ * - EXPO_SKILL_EVAL_MODEL: model passed to the agent (e.g. 'claude-sonnet-5');
+ *   the agent CLI's default when unset
  * - EXPO_SKILL_EVAL_TIMEOUT: agent timeout in seconds (default 900)
  * - EXPO_SKILL_EVAL_KEEP: '1' keeps workspaces for inspection
  */
@@ -357,19 +359,21 @@ async function runAgentAsync(
     Object.entries(process.env).filter(([key]) => key !== 'CLAUDECODE')
   ) as NodeJS.ProcessEnv;
 
+  const args = [
+    '-p',
+    prompt,
+    '--output-format',
+    'stream-json',
+    '--verbose',
+    '--dangerously-skip-permissions',
+  ];
+  const model = process.env.EXPO_SKILL_EVAL_MODEL;
+  if (model) {
+    args.push('--model', model);
+  }
+
   const exit = await new Promise<{ code: number | null; timedOut: boolean }>((resolve) => {
-    const child = spawn(
-      'claude',
-      [
-        '-p',
-        prompt,
-        '--output-format',
-        'stream-json',
-        '--verbose',
-        '--dangerously-skip-permissions',
-      ],
-      { cwd: root, env, stdio: ['ignore', 'pipe', 'pipe'] }
-    );
+    const child = spawn('claude', args, { cwd: root, env, stdio: ['ignore', 'pipe', 'pipe'] });
     const timer = setTimeout(() => {
       child.kill('SIGKILL');
       resolve({ code: null, timedOut: true });

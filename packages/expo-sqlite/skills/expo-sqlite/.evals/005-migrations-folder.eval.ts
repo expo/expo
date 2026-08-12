@@ -12,15 +12,21 @@ agentEval(
     projectSetup: setupProject({ fixture: 'notes-schema-blob' }),
   },
   (check) => {
-    // Structure: migration files exist where the prompt asked for them.
+    // Structure: numbered migration files exist where the prompt asked.
     check('creates migration files under src/db/migrations', (ws) => {
-      expect(ws.glob('src/db/migrations/*.{ts,tsx,js,sql}').length).toBeGreaterThan(0);
+      const numbered = ws
+        .glob('src/db/migrations/*.{ts,tsx,js,sql}')
+        .filter((file) => /^\d+/.test(file.split('/').pop() ?? ''));
+      expect(numbered.length).toBeGreaterThan(0);
     });
 
-    // Structure: every migration filename starts with an order prefix.
-    // Engagement-gated: with no migration files there is nothing to order.
+    // Structure: every migration filename starts with an order prefix. An
+    // index barrel next to the migrations is a legitimate layout, so it is
+    // excluded. Engagement-gated: with no files there is nothing to order.
     check('migration filenames are ordered', (ws, { skip }) => {
-      const files = ws.glob('src/db/migrations/*.{ts,tsx,js,sql}');
+      const files = ws
+        .glob('src/db/migrations/*.{ts,tsx,js,sql}')
+        .filter((file) => !(file.split('/').pop() ?? '').startsWith('index.'));
       if (files.length === 0) {
         skip('no migration files');
         return;

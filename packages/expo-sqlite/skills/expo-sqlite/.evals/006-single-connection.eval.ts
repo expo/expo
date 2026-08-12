@@ -13,40 +13,48 @@ agentEval(
     projectSetup: setupProject({ fixture: 'notes-tags-split' }),
   },
   (check) => {
+    // A single SQLiteProvider is also a valid "one shared connection" —
+    // the skill itself teaches it — so both count toward the total.
+
     // Lexical tier: cheap approximation that always runs. Counts textual
     // occurrences in comment-stripped source — a string mentioning the API
     // would fool it, which is exactly what the AST tier below is for.
     check('opens exactly one database connection (lexical)', (ws) => {
-      const occurrences = ws.source().match(/openDatabaseAsync\s*\(/g) ?? [];
-      expect(occurrences).toHaveLength(1);
+      const source = ws.source();
+      const connections =
+        (source.match(/openDatabaseAsync\s*\(/g) ?? []).length +
+        (source.match(/<SQLiteProvider[\s/>]/g) ?? []).length;
+      expect(connections).toBe(1);
     });
 
-    // AST tier: exactly one real openDatabaseAsync call site across the app.
+    // AST tier: exactly one real connection site (openDatabaseAsync call or
+    // SQLiteProvider element) across the app.
     check('opens exactly one database connection (AST)', async (ws, { skip }) => {
       const ast = await loadAstSupport();
       if (!ast) {
         skip('@babel/parser not installed — run npm install in .evals/');
         return;
       }
-      let callSites = 0;
+      let connectionSites = 0;
       for (const file of ws.sourceFiles()) {
         ast.walk(ast.parse(file.contents, file.path), (node) => {
-          if (node.type !== 'CallExpression') {
-            return;
-          }
-          const callee = node.callee;
-          const name =
-            callee?.type === 'Identifier'
-              ? callee.name
-              : callee?.type === 'MemberExpression' && !callee.computed
-                ? callee.property?.name
-                : undefined;
-          if (name === 'openDatabaseAsync') {
-            callSites++;
+          if (node.type === 'CallExpression') {
+            const callee = node.callee;
+            const name =
+              callee?.type === 'Identifier'
+                ? callee.name
+                : callee?.type === 'MemberExpression' && !callee.computed
+                  ? callee.property?.name
+                  : undefined;
+            if (name === 'openDatabaseAsync') {
+              connectionSites++;
+            }
+          } else if (node.type === 'JSXOpeningElement' && node.name?.name === 'SQLiteProvider') {
+            connectionSites++;
           }
         });
       }
-      expect(callSites).toBe(1);
+      expect(connectionSites).toBe(1);
     });
 
     check('notes and tags APIs preserved', (ws) => {

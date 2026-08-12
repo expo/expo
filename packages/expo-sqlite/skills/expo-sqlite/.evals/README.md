@@ -86,7 +86,7 @@ EXPO_SKILL_EVAL_DRY=1 npx -y vitest run                    # score untouched see
 npx -y vitest run 003                                      # one case (file filter)
 ```
 
-`EXPO_SKILL_EVAL_KEEP=1` keeps workspaces for inspection; `EXPO_SKILL_EVAL_TIMEOUT` overrides the 900 s agent timeout; `EXPO_SKILL_EVAL_INSTALL=1` runs the setup's install steps per workspace (network-heavy, off by default). The without-skill condition is a baseline for comparison, not a gate — the interesting number is the delta against with-skill over several runs, since agent runs are nondeterministic.
+`EXPO_SKILL_EVAL_KEEP=1` keeps workspaces for inspection; `EXPO_SKILL_EVAL_TIMEOUT` overrides the 900 s agent timeout; `EXPO_SKILL_EVAL_INSTALL=1` runs the setup's install steps per workspace (network-heavy, off by default); `EXPO_SKILL_EVAL_MODEL` selects the agent model (e.g. `EXPO_SKILL_EVAL_MODEL=claude-haiku-4-5 npx -y vitest run` — the agent CLI's default when unset). The without-skill condition is a baseline for comparison, not a gate — the interesting number is the delta against with-skill over several runs, since agent runs are nondeterministic.
 
 ## Adding an eval
 
