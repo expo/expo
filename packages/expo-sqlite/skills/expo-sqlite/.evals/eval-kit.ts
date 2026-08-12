@@ -252,11 +252,13 @@ async function runCommandAsync(
     }, timeoutSeconds * 1000);
     child.on('close', (code) => {
       clearTimeout(timer);
-      code === 0
-        ? resolve()
-        : reject(
-            new Error(`${command} ${args.join(' ')} exited with ${code}:\n${output.slice(-4000)}`)
-          );
+      if (code === 0) {
+        resolve();
+      } else {
+        reject(
+          new Error(`${command} ${args.join(' ')} exited with ${code}:\n${output.slice(-4000)}`)
+        );
+      }
     });
     child.on('error', (error) => {
       clearTimeout(timer);
