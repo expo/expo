@@ -1,12 +1,14 @@
 import type { ExpoConfig, ExpoGoConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
 import { getConfig } from '@expo/config';
 import { resolveRelativeEntryPoint } from '@expo/config/paths';
+import { createFaviconAsString } from '@expo/router-server/build/utils/html';
 import { respond } from 'expo-server/adapter/http';
 import { posix } from 'node:path';
 import { resolve } from 'url';
 
 import { getActorDisplayName, getUserAsync } from '../../../api/user/user';
 import { isEnableHermesManaged } from '../../../export/exportHermes';
+import { getSvgFaviconHref } from '../../../export/favicon';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { toPosixPath } from '../../../utils/filePath';
@@ -357,9 +359,15 @@ export abstract class ManifestMiddleware<
     // Read from headers
     const bundleUrl = this.getWebBundleUrl();
 
+    // SVG favicons need an explicit `<link>` — unlike `/favicon.ico`, browsers don't
+    // auto-discover them, so without this the dev server would render no favicon at all
+    // for a project configured with one.
+    const faviconHref = getSvgFaviconHref(this.projectRoot, this.initialProjectConfig.exp);
+
     return createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
       exp: this.initialProjectConfig.exp,
       scripts: [bundleUrl],
+      extraHead: faviconHref ? createFaviconAsString(faviconHref) : undefined,
     });
   }
 
