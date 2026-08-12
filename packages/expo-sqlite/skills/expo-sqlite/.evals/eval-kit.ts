@@ -51,6 +51,23 @@ export interface EvalSetupConfig {
   fixturesDir: URL | string;
   /** create-expo-app template for the base scaffold. @default 'blank-typescript' */
   baseTemplate?: string;
+  /**
+   * Package-specific workspace preparation, run after seeding and before the
+   * agent — e.g. `runAsync('npx', ['expo', 'install', 'expo-sqlite'])`. A
+   * non-zero exit throws, erroring the suite (infrastructure, not a score).
+   * The kit re-points the package under test at the local checkout afterwards,
+   * so installs here provide realistic dependency resolution and node_modules
+   * without replacing the code being tested.
+   */
+  prepareWorkspaceAsync?: (context: PrepareWorkspaceContext) => Promise<void>;
+}
+
+export interface PrepareWorkspaceContext {
+  /** Absolute path to the workspace being prepared. */
+  root: string;
+  condition: Condition;
+  /** Runs a command inside the workspace; throws (with output) on non-zero exit. */
+  runAsync(command: string, args: string[], options?: { timeoutSeconds?: number }): Promise<void>;
 }
 
 export type Condition = 'with-skill' | 'without-skill';
@@ -132,6 +149,15 @@ export function createAgentEval(config: EvalSetupConfig): AgentEval {
         async () => {
           const scaffold = await scaffoldBaseAppAsync(baseTemplate);
           const root = seedWorkspace(scaffold, options.seed ?? {});
+          await config.prepareWorkspaceAsync?.({
+            root,
+            condition,
+            runAsync: (command, args, runOptions) =>
+              runCommandAsync(root, command, args, runOptions?.timeoutSeconds ?? 600),
+          });
+          // Last word on the dependency: the package under test always
+          // resolves to the local checkout, whatever preparation installed.
+          linkPackageUnderTest(root);
           if (condition === 'with-skill') {
             // Copy of the layout `npx expo skills` links for claude-code.
             fs.cpSync(skillDir, path.join(root, '.claude', 'skills', skillLinkName), {
@@ -180,18 +206,63 @@ export function createAgentEval(config: EvalSetupConfig): AgentEval {
       fs.writeFileSync(absolutePath, contents);
     }
 
-    // The scaffold's package.json + the seed's extra dependencies, with the
-    // package under test resolved to the local checkout, not the registry.
+    // The scaffold's package.json + the seed's extra dependencies.
     const packageJsonPath = path.join(root, 'package.json');
     const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
     packageJson.dependencies = {
       ...packageJson.dependencies,
       ...seed.dependencies,
-      [config.packageName]: `file:${packageRoot}`,
+      [config.packageName]: '*',
     };
     fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
     return root;
   }
+
+  /** Resolves the package under test to the local checkout, not the registry. */
+  function linkPackageUnderTest(root: string) {
+    const packageJsonPath = path.join(root, 'package.json');
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath, 'utf8'));
+    packageJson.dependencies = {
+      ...packageJson.dependencies,
+      [config.packageName]: `file:${packageRoot}`,
+    };
+    fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2) + '\n');
+  }
+}
+
+/** Runs a command inside a workspace, capturing output; throws on non-zero exit. */
+async function runCommandAsync(
+  root: string,
+  command: string,
+  args: string[],
+  timeoutSeconds: number
+): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
+    const child = spawn(command, args, {
+      cwd: root,
+      env: { ...process.env, CI: '1', EXPO_NO_TELEMETRY: '1' },
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    let output = '';
+    child.stdout.on('data', (chunk) => (output += chunk));
+    child.stderr.on('data', (chunk) => (output += chunk));
+    const timer = setTimeout(() => {
+      child.kill('SIGKILL');
+      reject(new Error(`${command} ${args.join(' ')} timed out after ${timeoutSeconds}s`));
+    }, timeoutSeconds * 1000);
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      code === 0
+        ? resolve()
+        : reject(
+            new Error(`${command} ${args.join(' ')} exited with ${code}:\n${output.slice(-4000)}`)
+          );
+    });
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      reject(new Error(`Could not run ${command}: ${error}`));
+    });
+  });
 }
 
 /**

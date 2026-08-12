@@ -54,7 +54,9 @@ agentEval(
 
 The base scaffold is a real `bunx create-expo-app --template blank-typescript` app — nothing hand-maintained (no checked-in tsconfig/app.json). It is created once per template on first run (network + bun required) and cached under the OS temp directory; a cross-process lock serializes the scaffold because concurrent `bunx create-expo-app` invocations collide in bun's link step.
 
-`eval-kit.ts` is package-agnostic by design: `setup.ts` is the only file that knows this is expo-sqlite (`createAgentEval({ packageName, packageRoot, skillDir, fixturesDir })`), and case files import from `setup.ts`. When the kit extracts to a shared package, only setup.ts's import changes — case files stay untouched.
+`eval-kit.ts` is package-agnostic by design: `setup.ts` is the only file that knows this is expo-sqlite (`createAgentEval({ packageName, packageRoot, skillDir, fixturesDir, prepareWorkspaceAsync })`), and case files import from `setup.ts`. When the kit extracts to a shared package, only setup.ts's import changes — case files stay untouched.
+
+`prepareWorkspaceAsync` is the hook for package-specific workspace preparation: this setup runs `npm install` + `npx expo install expo-sqlite` when `EXPO_SKILL_EVAL_INSTALL=1`, giving realistic SDK-matched dependency resolution and a real node_modules per workspace. The kit re-points `expo-sqlite` at this checkout afterwards, so the published install never replaces the code under test; a failing preparation command errors the suite (infrastructure, not a score).
 
 Fixtures are real files: they get syntax highlighting and lint, can hold binary assets (a bundled `.db` for `assetSource`), and can be shared between cases. Keep dependency changes in the eval file's `seed.dependencies` — not in a fixture package.json — so they stay visible where the checks are.
 
@@ -84,7 +86,7 @@ EXPO_SKILL_EVAL_DRY=1 npx -y vitest run                    # score untouched see
 npx -y vitest run 003                                      # one case (file filter)
 ```
 
-`EXPO_SKILL_EVAL_KEEP=1` keeps workspaces for inspection; `EXPO_SKILL_EVAL_TIMEOUT` overrides the 900 s agent timeout. The without-skill condition is a baseline for comparison, not a gate — the interesting number is the delta against with-skill over several runs, since agent runs are nondeterministic.
+`EXPO_SKILL_EVAL_KEEP=1` keeps workspaces for inspection; `EXPO_SKILL_EVAL_TIMEOUT` overrides the 900 s agent timeout; `EXPO_SKILL_EVAL_INSTALL=1` runs the setup's install steps per workspace (network-heavy, off by default). The without-skill condition is a baseline for comparison, not a gate — the interesting number is the delta against with-skill over several runs, since agent runs are nondeterministic.
 
 ## Adding an eval
 
