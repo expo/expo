@@ -24,7 +24,7 @@ See [`packages/expo-sqlite/skills/expo-sqlite/.evals/`](../../expo-sqlite/skills
 | --------------------------- | ----------------------------------------------------------------- |
 | `EXPO_SKILL_EVAL_CONDITION` | `with-skill` (default) or `without-skill` (baseline measurement)  |
 | `EXPO_SKILL_EVAL_DRY`       | `1` scores untouched seeds without running the agent              |
-| `EXPO_SKILL_EVAL_MODEL`     | model passed to the agent CLI                                     |
+| `EXPO_SKILL_EVAL_MODEL`     | model passed to the agent CLI (default `claude-sonnet-5`)         |
 | `EXPO_SKILL_EVAL_INSTALL`   | consumed by setup `prepareAsync` hooks for per-workspace installs |
 | `EXPO_SKILL_EVAL_TIMEOUT`   | agent timeout in seconds (default 900)                            |
 | `EXPO_SKILL_EVAL_KEEP`      | `1` keeps workspaces for inspection                               |

@@ -31,10 +31,9 @@ export async function runAgentAsync(
     '--verbose',
     '--dangerously-skip-permissions',
   ];
-  const model = process.env.EXPO_SKILL_EVAL_MODEL;
-  if (model) {
-    args.push('--model', model);
-  }
+  // Pin a default model so results are comparable across machines and time;
+  // override per run with EXPO_SKILL_EVAL_MODEL.
+  args.push('--model', process.env.EXPO_SKILL_EVAL_MODEL || 'claude-sonnet-5');
 
   const exit = await new Promise<{ code: number | null; timedOut: boolean }>((resolve) => {
     const child = spawn('claude', args, { cwd: root, env, stdio: ['ignore', 'pipe', 'pipe'] });

@@ -28,8 +28,8 @@
  * - EXPO_SKILL_EVAL_DRY: '1' scores the untouched seed without running the
  *   agent — checks should fail; use it to verify a new case can't be passed
  *   by its own seed.
- * - EXPO_SKILL_EVAL_MODEL: model passed to the agent (e.g. 'claude-sonnet-5');
- *   the agent CLI's default when unset
+ * - EXPO_SKILL_EVAL_MODEL: model passed to the agent
+ *   (default 'claude-sonnet-5')
  * - EXPO_SKILL_EVAL_TIMEOUT: agent timeout in seconds (default 900)
  * - EXPO_SKILL_EVAL_KEEP: '1' keeps workspaces for inspection
  */
