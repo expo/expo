@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Emit `type="image/svg+xml"` on the favicon `<link>` when the href points to an SVG ([#48026](https://github.com/expo/expo/pull/48026) by [@danfitz36](https://github.com/danfitz36))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

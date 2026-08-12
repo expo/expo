@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Support SVG favicons via `web.favicon` and `public/favicon.svg` ([#48026](https://github.com/expo/expo/pull/48026) by [@danfitz36](https://github.com/danfitz36))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
