@@ -3,6 +3,7 @@ import fs from 'fs';
 import os from 'os';
 import path from 'path';
 
+import { shouldSkipCache } from './cache-store';
 import { event } from './events';
 
 // On macOS `os.tmpdir()` returns `/var/folders/...` while its realpath is
@@ -56,13 +57,8 @@ export class FileStore<T> extends UpstreamFileStore<T> {
   }
 
   async set(key: Buffer, value: any): Promise<void> {
-    const data = value?.output?.find(
-      (output: any) => output?.data?.skipCache || output?.data?.css?.skipCache
-    )?.data;
-    if (data) {
-      if (data?.css?.skipCache) {
-        event('cache:skipped_css', { path: value.path });
-      }
+    if (shouldSkipCache(value)) {
+      event('cache:skipped', {});
       return;
     }
     return await super.set(key, value);
