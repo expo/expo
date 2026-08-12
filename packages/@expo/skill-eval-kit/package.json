@@ -1,6 +1,7 @@
 {
   "name": "@expo/skill-eval-kit",
   "version": "0.1.0",
+  "private": true,
   "description": "Vitest harness for agent skill evals colocated with Expo packages",
   "keywords": [],
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/skill-eval-kit#readme",
@@ -13,7 +14,6 @@
     "url": "https://github.com/expo/expo.git",
     "directory": "packages/@expo/skill-eval-kit"
   },
-  "private": true,
   "files": [
     "build"
   ],
