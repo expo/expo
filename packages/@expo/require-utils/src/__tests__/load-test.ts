@@ -5,6 +5,11 @@ import { evalModule } from '../load';
 const basepath = path.join(__dirname, 'fixtures');
 
 describe('evalModule', () => {
+  afterEach(() => {
+    jest.dontMock('node:module');
+    jest.dontMock('typescript');
+  });
+
   it('accepts .js code and turns it to CommonJS with default imports', () => {
     const mod = evalModule(
       `
@@ -120,5 +125,47 @@ describe('evalModule', () => {
     }
 
     expect(caught).toEqual({ code: 'CUSTOM_THROW' });
+  });
+
+  it('falls back to Node TypeScript stripping defaults when transform options are unsupported', () => {
+    jest.isolateModules(() => {
+      const actualNodeModule = jest.requireActual('node:module');
+      const stripTypeScriptTypes = jest.fn((code: string, options?: { mode?: string }) => {
+        if (options?.mode === 'transform') {
+          const error = new TypeError(
+            "The property 'options.mode' must be one of: 'strip'. Received 'transform'"
+          ) as NodeJS.ErrnoException;
+          error.code = 'ERR_INVALID_ARG_VALUE';
+          throw error;
+        }
+        return code.replace(' as string', '');
+      });
+      const moduleNotFoundError = new Error(
+        "Cannot find module 'typescript'"
+      ) as NodeJS.ErrnoException;
+      moduleNotFoundError.code = 'MODULE_NOT_FOUND';
+
+      jest.doMock('node:module', () => ({
+        ...actualNodeModule,
+        stripTypeScriptTypes,
+      }));
+      jest.doMock('typescript', () => {
+        throw moduleNotFoundError;
+      });
+
+      const { evalModule } = require('../load') as typeof import('../load');
+      const mod = evalModule(
+        `module.exports = { value: 'test' as string };`,
+        path.join(basepath, 'eval.ts')
+      );
+
+      expect(mod).toEqual({ value: 'test' });
+      expect(stripTypeScriptTypes).toHaveBeenCalledTimes(2);
+      expect(stripTypeScriptTypes).toHaveBeenNthCalledWith(1, expect.any(String), {
+        mode: 'transform',
+        sourceMap: true,
+      });
+      expect(stripTypeScriptTypes).toHaveBeenNthCalledWith(2, expect.any(String));
+    });
   });
 });

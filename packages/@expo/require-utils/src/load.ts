@@ -278,6 +278,28 @@ function containsModuleSyntax(code: string): boolean {
 
 const hasStripTypeScriptTypes = typeof nodeModule.stripTypeScriptTypes === 'function';
 
+function isInvalidStripTypeScriptOptionsError(error: any): boolean {
+  return (
+    error?.code === 'ERR_INVALID_ARG_VALUE' &&
+    typeof error?.message === 'string' &&
+    /\boptions\.(?:mode|sourceMap)\b/.test(error.message)
+  );
+}
+
+function stripTypeScriptTypes(code: string): string {
+  try {
+    return nodeModule.stripTypeScriptTypes(code, {
+      mode: 'transform',
+      sourceMap: true,
+    });
+  } catch (error: any) {
+    if (!isInvalidStripTypeScriptOptionsError(error)) {
+      throw error;
+    }
+    return nodeModule.stripTypeScriptTypes(code);
+  }
+}
+
 function evalModule(
   code: string,
   filename: string,
@@ -331,10 +353,7 @@ function evalModule(
 
     if (hasStripTypeScriptTypes && inputCode === code) {
       // This may throw its own error, but this contains a code-frame already
-      inputCode = nodeModule.stripTypeScriptTypes(code, {
-        mode: 'transform',
-        sourceMap: true,
-      });
+      inputCode = stripTypeScriptTypes(code);
       if (format.mode === 'commonjs-typescript') {
         inputCode = toCommonJS(filename, inputCode);
       }
