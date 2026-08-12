@@ -15,6 +15,7 @@ class HomeViewModel: ObservableObject {
   @Published var showingFeedbackForm = false
   @Published var errorToShow: ErrorInfo?
   @Published var isNetworkAvailable = true
+  @Published var deviceLoginRequest: DeviceLoginRequest?
 
   @Published var user: UserActor?
   @Published var selectedAccountId: String?
@@ -222,6 +223,15 @@ class HomeViewModel: ObservableObject {
     errorToShow = ErrorInfo(message: message, apiError: apiError)
   }
 
+  /// Presents the device login sheet and resolves once the user signs in or backs out.
+  func presentDeviceLogin(verificationURI: URL?) async -> Bool {
+    await withCheckedContinuation { continuation in
+      deviceLoginRequest = DeviceLoginRequest(verificationURI: verificationURI) { signedIn in
+        continuation.resume(returning: signedIn)
+      }
+    }
+  }
+
   private func setupSubscriptions() {
     authService.$user
       .sink { [weak self] in self?.user = $0 }
@@ -328,4 +338,10 @@ enum ExpoGoError: Error {
   case noSessionSecret
   case notImplemented(String)
   case missingURLScheme
+}
+
+struct DeviceLoginRequest: Identifiable {
+  let id = UUID()
+  let verificationURI: URL?
+  let completion: (Bool) -> Void
 }
