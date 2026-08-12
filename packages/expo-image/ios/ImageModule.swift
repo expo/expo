@@ -78,6 +78,10 @@ public final class ImageModule: Module {
         view.imageTintColor = tintColor
       }
 
+      Prop("svgVariables") { (view, svgVariables: [String: String]?) in
+        view.svgVariables = svgVariables ?? [:]
+      }
+
       Prop("priority") { (view, priority: ImagePriority?) in
         view.loadingOptions.remove([.lowPriority, .highPriority])
 
