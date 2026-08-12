@@ -15,6 +15,8 @@ Log in with `eas login`. By default, each command reads the project ID from the 
 
 Run any command with `--help` to see the flags supported by your installed EAS CLI version.
 
+Some data is available only on certain plans. When your account's plan does not include what a command asks for, the command fails with an upgrade message that links to your billing page. Session timelines are checked before the interactive picker runs, so a blocked plan is reported immediately. See [Pricing](https://expo.dev/pricing) for what each plan includes.
+
 ## Commands
 
 | Command                       | What it shows                                                       |
@@ -28,7 +30,7 @@ Run any command with `--help` to see the flags supported by your installed EAS C
 
 Every command accepts these flags:
 
-- `--platform android` or `--platform ios`: filter by platform. Both are included by default.
+- `--platform android` or `--platform ios`: filter by platform. Both are included by default. Not available on `observe:session`, which already targets one session.
 - `--days <number>`: show data from the last N days.
 - `--start <ISO date>` and `--end <ISO date>`: set an explicit time range. Mutually exclusive with `--days`.
 - `--project-id <id>`: query a project without running inside its directory.
@@ -159,12 +161,14 @@ Shows every metric and log event recorded during one session, in order. Use it a
   ]}
 />
 
-The session ID is a positional argument. Omitting it in interactive mode prompts you to pick from a list of candidate sessions. Session IDs are also included in the `--json` output of `observe:metrics` and `observe:events`.
+The session ID is a positional argument. Omitting it in interactive mode prompts you to pick from a list of candidate sessions. In non-interactive mode, including under `--json`, the session ID is required. Session IDs are also included in the `--json` output of `observe:metrics` and `observe:events`.
 
 Command flags:
 
 - `--event-name <name>`: the metric or user-defined event used to build the candidate list, such as `tti` or `onboarding.completed`.
 - `--sort <order>`: orders the candidate events. One of `slowest`, `fastest`, `newest`, or `oldest`.
+
+> **info** The flags that build the candidate list — `--event-name`, `--sort`, `--days`, `--start`, and `--end` — describe how to _find_ a session, so they cannot be combined with a session ID. Pass the ID on its own to inspect a session you already have.
 
 ## `eas observe:events`
 
