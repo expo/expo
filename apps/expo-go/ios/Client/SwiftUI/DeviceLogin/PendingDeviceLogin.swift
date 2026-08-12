@@ -2,11 +2,7 @@
 
 import Foundation
 
-/// Carries the verification URI from `EXKernelLinkingManager.openUrl:`, which reads it, to
-/// `ExpoGoHomeBridge` and `EXAppLoaderExpoUpdates`, which act on it.
-///
-/// Deliberately not persisted. A device code lives ten minutes, so a pending sign in that survived a
-/// relaunch would only produce a confusing `expired_token`.
+/// Not persisted: a device code lives ten minutes, so a stale pending sign in would only produce `expired_token`.
 @objc(EXPendingDeviceLogin)
 public final class PendingDeviceLogin: NSObject {
   @objc public static let shared = PendingDeviceLogin()

@@ -60,8 +60,7 @@ struct DeviceTokenResponse: Decodable {
   let data: DeviceTokenPayload
 }
 
-/// The token endpoint reports in-flight and terminal states as HTTP 200 with an `error` string rather
-/// than an HTTP error code, so success and failure share one shape.
+/// The token endpoint reports in-flight and terminal states as HTTP 200 with an `error` string, not an HTTP error code.
 struct DeviceTokenPayload: Decodable {
   let sessionSecret: String?
   let expiresAt: String?
@@ -89,8 +88,7 @@ enum TokenOutcome: Equatable {
 
   init(payload: DeviceTokenPayload) {
     if let secret = payload.sessionSecret {
-      // A session with an unreadable expiry is still a working session. Dropping the expiry only
-      // costs us the local staleness check, which is better than discarding a valid credential.
+      // A session with an unreadable expiry is still valid. Drop the expiry, not the credential.
       let expiresAt = payload.expiresAt.flatMap(DeviceLoginDates.parseExpiry)
       if payload.expiresAt != nil, expiresAt == nil {
         print("[DeviceLogin] Could not parse expires_at: \(payload.expiresAt ?? "")")
