@@ -56,9 +56,13 @@ export class FileStore<T> extends UpstreamFileStore<T> {
   }
 
   async set(key: Buffer, value: any): Promise<void> {
-    // Prevent caching of CSS files that have the skipCache flag set.
-    if (value?.output?.[0]?.data?.css?.skipCache) {
-      event('cache:skipped_css', { path: value.path });
+    const data = value?.output?.find(
+      (output: any) => output?.data?.skipCache || output?.data?.css?.skipCache
+    )?.data;
+    if (data) {
+      if (data?.css?.skipCache) {
+        event('cache:skipped_css', { path: value.path });
+      }
       return;
     }
     return await super.set(key, value);

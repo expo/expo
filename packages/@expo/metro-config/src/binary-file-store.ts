@@ -67,9 +67,13 @@ class BinaryFileStore<T> extends UpstreamFileStore<T> {
   }
 
   async set(key: Buffer, value: T): Promise<void> {
-    // Prevent caching of CSS files that have the skipCache flag set.
-    if ((value as any)?.output?.[0]?.data?.css?.skipCache) {
-      event('cache:skipped_css', { path: (value as any).path });
+    const data = (value as any)?.output?.find(
+      (output: any) => output?.data?.skipCache || output?.data?.css?.skipCache
+    )?.data;
+    if (data) {
+      if (data?.css?.skipCache) {
+        event('cache:skipped_css', { path: (value as any).path });
+      }
       return;
     }
 
