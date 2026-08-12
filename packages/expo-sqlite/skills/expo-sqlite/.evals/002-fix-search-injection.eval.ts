@@ -1,4 +1,5 @@
-import { agentEval, expect } from './setup';
+import { agentEval, expect } from './eval-kit';
+import { setupProject } from './setup';
 
 // The seeded src/db.ts interpolates user input into a SQL string. A correct
 // fix binds the parameter (?/$ placeholders or the db.sql tagged template).
@@ -8,7 +9,7 @@ agentEval(
   {
     title: 'fix the crashing (and injectable) search query',
     prompt: `Users report that searching notes crashes the app when the search text contains an apostrophe, like "don't". The search code is in src/db.ts. Please fix it properly.`,
-    seed: { fixture: 'notes-search' },
+    projectSetup: setupProject({ fixture: 'notes-search' }),
   },
   (check) => {
     check('searchNotesAsync still exists', (ws) => {

@@ -1,4 +1,5 @@
-import { agentEval, expect } from './setup';
+import { agentEval, expect } from './eval-kit';
+import { setupProject } from './setup';
 
 // The skill's guidance: expo-sqlite/kv-store is a drop-in AsyncStorage
 // replacement, so removing the dependency should be an import swap — not a
@@ -8,10 +9,10 @@ agentEval(
   {
     title: 'replace async-storage with what expo-sqlite already provides',
     prompt: `We're trimming dependencies. This app already uses expo-sqlite for its notes, but src/settings.ts pulls in @react-native-async-storage/async-storage just for a few key-value settings. Get rid of that extra dependency without changing how settings behave.`,
-    seed: {
+    projectSetup: setupProject({
       fixture: 'notes-settings',
       dependencies: { '@react-native-async-storage/async-storage': '^2.1.0' },
-    },
+    }),
   },
   (check) => {
     check('dependency removed from package.json', (ws) => {

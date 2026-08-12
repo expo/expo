@@ -13,8 +13,8 @@ A case is a single file holding the prompt, a named fixture reference, and the c
 ```
 .evals/
   README.md
-  eval-kit.ts                        # package-agnostic vitest adapter (moves to a shared package, unchanged)
-  setup.ts                           # the one file that knows this is expo-sqlite; cases import from here
+  eval-kit.ts                        # package-agnostic vitest adapter (later a re-export shim of a shared package)
+  setup.ts                           # pure expo-sqlite config; imports nothing from the kit
   vitest.config.ts
   package.json                       # anchors vitest's project root here; declares the opt-in AST parser
   fixtures/                          # named seed workspaces — real files, shareable between cases
@@ -50,13 +50,13 @@ agentEval(
 );
 ```
 
-`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace by layering the base scaffold, then the case's named `seed.fixture`(s), then any one-off `seed.files`; `seed.dependencies` merge into package.json and the `expo-sqlite` dependency is pointed at this package. It links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`) and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers.
+`agentEval()` wraps `describe()`: a `beforeAll` hook builds a temp workspace by layering the base scaffold, then the project's named `fixture`(s), then any one-off `files`; `dependencies` merge into package.json and the `expo-sqlite` dependency is pointed at this package. It links the skill the way `npx expo skills` does (`.claude/skills/npm-expo-sqlite-expo-sqlite`) and runs `claude -p` with the prompt. Each `check()` is a `test()` receiving workspace helpers.
 
 The base scaffold is a real `bunx create-expo-app --template blank-typescript` app — nothing hand-maintained (no checked-in tsconfig/app.json). It is created once per template on first run (network + bun required) and cached under the OS temp directory; a cross-process lock serializes the scaffold because concurrent `bunx create-expo-app` invocations collide in bun's link step.
 
-`eval-kit.ts` is package-agnostic by design: `setup.ts` is the only file that knows this is expo-sqlite (`createAgentEval({ packageName, packageRoot, skillDir, fixturesDir, prepareWorkspaceAsync })`), and case files import from `setup.ts`. When the kit extracts to a shared package, only setup.ts's import changes — case files stay untouched.
+`eval-kit.ts` is package-agnostic and `setup.ts` is pure config that imports nothing from it: `setupProject(options)` returns a plain descriptor (package facts + the case's starting state) that cases pass as `projectSetup`. When the kit extracts to a shared package, `eval-kit.ts` shrinks to a re-export shim — neither setup.ts nor case files change.
 
-`prepareWorkspaceAsync` is the hook for package-specific workspace preparation: this setup runs `npm install` + `npx expo install expo-sqlite` when `EXPO_SKILL_EVAL_INSTALL=1`, giving realistic SDK-matched dependency resolution and a real node_modules per workspace. The kit re-points `expo-sqlite` at this checkout afterwards, so the published install never replaces the code under test; a failing preparation command errors the suite (infrastructure, not a score).
+The descriptor's `prepareAsync` hook covers package-specific workspace preparation: this setup runs `npm install` + `npx expo install expo-sqlite` when `EXPO_SKILL_EVAL_INSTALL=1`, giving realistic SDK-matched dependency resolution and a real node_modules per workspace. The kit re-points `expo-sqlite` at this checkout afterwards, so the published install never replaces the code under test; a failing preparation command errors the suite (infrastructure, not a score).
 
 Fixtures are real files: they get syntax highlighting and lint, can hold binary assets (a bundled `.db` for `assetSource`), and can be shared between cases. Keep dependency changes in the eval file's `seed.dependencies` — not in a fixture package.json — so they stay visible where the checks are.
 
@@ -91,6 +91,6 @@ npx -y vitest run 003                                      # one case (file filt
 ## Adding an eval
 
 1. Create `NNN-short-name.eval.ts`: an `agentEval(import.meta.url, …)` block whose prompt is written the way a real user asks. Put discoverable context in the seed, not the prompt.
-2. Declare the starting state through `seed.fixture` — reuse a directory under `fixtures/` or add a new one holding only the scenario's app files.
+2. Declare the starting state through `projectSetup: setupProject({ fixture: … })` — reuse a directory under `fixtures/` or add a new one holding only the scenario's app files.
 3. Scope checks so seeded code cannot pass them on the agent's behalf, and accept every valid API the skill allows (string-source params, `db.sql` tagged templates, and prepared statements are all legitimate bindings).
 4. Verify the seed can't pass by itself: `EXPO_SKILL_EVAL_DRY=1 npx -y vitest run NNN` should fail its checks.

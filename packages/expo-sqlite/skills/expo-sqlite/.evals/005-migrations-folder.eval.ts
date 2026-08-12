@@ -1,4 +1,5 @@
-import { agentEval, expect } from './setup';
+import { agentEval, expect } from './eval-kit';
+import { setupProject } from './setup';
 
 // Demonstrates directory-structure checks (ws.glob) alongside lexical ones.
 // The seed keeps all DDL in one growing execAsync blob; the ask is ordered
@@ -8,7 +9,7 @@ agentEval(
   {
     title: 'split inline schema setup into ordered migration files',
     prompt: `Our whole database schema lives in one execAsync blob in src/db.ts and it keeps growing. Restructure it: put each schema change in its own ordered migration file under src/db/migrations, apply the pending ones at startup, and keep track of which migrations have already run so we can safely add more later.`,
-    seed: { fixture: 'notes-schema-blob' },
+    projectSetup: setupProject({ fixture: 'notes-schema-blob' }),
   },
   (check) => {
     // Structure: migration files exist where the prompt asked for them.

@@ -1,4 +1,5 @@
-import { agentEval, expect, loadAstSupport } from './setup';
+import { agentEval, expect, loadAstSupport } from './eval-kit';
+import { setupProject } from './setup';
 
 // Demonstrates an AST check for a rule regex can't verify honestly: counting
 // real openDatabaseAsync call sites. A regex over source can be fooled by the
@@ -9,7 +10,7 @@ agentEval(
   {
     title: 'consolidate to a single shared database connection',
     prompt: `src/notes.ts and src/tags.ts each open their own database connection with openDatabaseAsync. Refactor so the app opens one shared connection and everything reuses it.`,
-    seed: { fixture: 'notes-tags-split' },
+    projectSetup: setupProject({ fixture: 'notes-tags-split' }),
   },
   (check) => {
     // Lexical tier: cheap approximation that always runs. Counts textual

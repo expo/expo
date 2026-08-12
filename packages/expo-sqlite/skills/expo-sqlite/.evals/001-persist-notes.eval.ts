@@ -1,4 +1,5 @@
-import { agentEval, expect } from './setup';
+import { agentEval, expect } from './eval-kit';
+import { setupProject } from './setup';
 
 // The prompt asks for durable notes plus a schema-evolution story. The skill
 // teaches PRAGMA user_version migrations, SQLiteProvider onInit, and
@@ -9,7 +10,7 @@ agentEval(
   {
     title: 'persist notes across restarts, with a migration path',
     prompt: `Notes in this app disappear whenever I restart it. Store them on the device so they survive restarts. We'll definitely add more fields to notes later, so set the storage up in a way that lets us change the schema without wiping people's existing notes.`,
-    seed: { fixture: 'notes-in-memory' },
+    projectSetup: setupProject({ fixture: 'notes-in-memory' }),
   },
   (check) => {
     check('imports expo-sqlite', (ws) => {

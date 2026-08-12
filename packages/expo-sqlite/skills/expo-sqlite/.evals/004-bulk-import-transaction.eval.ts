@@ -1,4 +1,5 @@
-import { agentEval, expect, type EvalWorkspace } from './setup';
+import { agentEval, expect, type EvalWorkspace } from './eval-kit';
+import { setupProject } from './setup';
 
 // Atomic bulk insert while other queries run concurrently: the skill's
 // guidance is withExclusiveTransactionAsync (plain withTransactionAsync lets
@@ -21,7 +22,7 @@ agentEval(
   {
     title: 'import thousands of rows atomically',
     prompt: `Add an importNotesAsync(texts: string[]) function to this app that inserts up to a few thousand notes at once. If any row fails, none of them should be saved. It runs while the rest of the app keeps querying the database, and it should be reasonably fast.`,
-    seed: { fixture: 'notes-db' },
+    projectSetup: setupProject({ fixture: 'notes-db' }),
   },
   (check) => {
     check('importNotesAsync exists', (ws) => {
