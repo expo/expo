@@ -16,6 +16,7 @@
 - [Internal] Deduplicate find-up `package.json` search utilities ([#47127](https://github.com/expo/expo/pull/47127) by [@kitten](https://github.com/kitten))
 - Add `woff` and `woff2` to default list of `assetExts` ([#47565](https://github.com/expo/expo/pull/47565) by [@kitten](https://github.com/kitten))
 - [Internal] Migrate an initial set of events to `2g` ([#47655](https://github.com/expo/expo/pull/47655) by [@kitten](https://github.com/kitten))
+- Expand `skipCache` flag to data and support `prewarm` custom transform option ([#48836](https://github.com/expo/expo/pull/48836) by [@kitten](https://github.com/kitten))
 
 ## 57.0.7 - 2026-07-22
 
