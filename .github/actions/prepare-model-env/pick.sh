@@ -1,0 +1,168 @@
+#!/usr/bin/env bash
+# Select one configured credential, probe it, export the winner.
+# Empty inputs are skipped. Logs indexes only — never the value.
+set -euo pipefail
+
+classify_failure() {
+  local lc
+  lc=$(tr '[:upper:]' '[:lower:]' < "$1")
+  if printf '%s' "$lc" | grep -Eq \
+    '429|rate[[:space:]_-]*limit|too many requests|overloaded_error|usage[[:space:]_.-]*(limit|quota|exceed)|quota[[:space:]_.-]*(exceed|exhaust)|credit[[:space:]_.-]*(exceed|exhaust)|out of (usage|credits|quota)|hit your (usage |rate )?limit'; then
+    echo usage
+  elif printf '%s' "$lc" | grep -Eq \
+    '401|403|unauthorized|unauthorised|invalid[[:space:]_-]*(api[[:space:]_-]*)?token|token[[:space:]_-]*(expired|revoked|invalid)|oauth token has expired|authentication (failed|error)|not authenticated|invalid x-api-key|please run /login'; then
+    echo auth
+  else
+    echo other
+  fi
+}
+
+if [ "${1:-}" = --self-test ]; then
+  tmp=$(mktemp)
+  printf '%s\n' 'HTTP 429 rate_limit_error: rate limit exceeded' >"$tmp"
+  [ "$(classify_failure "$tmp")" = usage ]
+  printf '%s\n' "You've hit your usage limit. Try again later." >"$tmp"
+  [ "$(classify_failure "$tmp")" = usage ]
+  printf '%s\n' 'OAuth token has expired. Please run /login.' >"$tmp"
+  [ "$(classify_failure "$tmp")" = auth ]
+  printf '%s\n' '401 invalid x-api-key' >"$tmp"
+  [ "$(classify_failure "$tmp")" = auth ]
+  printf '%s\n' 'ECONNRESET connection reset by peer' >"$tmp"
+  [ "$(classify_failure "$tmp")" = other ]
+  rm -f "$tmp"
+  echo "prepare-model-env self-test ok"
+  exit 0
+fi
+
+mask_token() {
+  local t="$1"
+  t="${t//$'\n'/}"
+  t="${t//$'\r'/}"
+  [ -n "$t" ] || return 0
+  printf '::add-mask::%s\n' "$t"
+}
+
+trim() {
+  local v="$1"
+  v="${v#"${v%%[![:space:]]*}"}"
+  v="${v%"${v##*[![:space:]]}"}"
+  printf '%s' "$v"
+}
+
+if ! command -v claude >/dev/null 2>&1; then
+  echo "::error::claude CLI is not on PATH; install it before this action."
+  exit 1
+fi
+
+model="${PICK_MODEL-}"
+model="${model#anthropic/}"
+model="$(trim "$model")"
+if [ -z "$model" ]; then
+  echo "::error::model input is required."
+  exit 1
+fi
+
+run_id="${PICK_RUN_ID:-0}"
+if ! [[ "$run_id" =~ ^[0-9]+$ ]]; then
+  run_id=0
+fi
+
+SLOT_INDEXES=()
+SLOT_TOKENS=()
+
+for i in $(seq 1 5); do
+  var="C$i"
+  val="$(trim "${!var:-}")"
+  if [ -n "$val" ]; then
+    mask_token "$val"
+    SLOT_INDEXES+=("$i")
+    SLOT_TOKENS+=("$val")
+  fi
+done
+
+val="$(trim "${C_FALLBACK:-}")"
+if [ -n "$val" ]; then
+  already=false
+  for existing in "${SLOT_TOKENS[@]+"${SLOT_TOKENS[@]}"}"; do
+    if [ "$existing" = "$val" ]; then
+      already=true
+      break
+    fi
+  done
+  if [ "$already" = false ]; then
+    mask_token "$val"
+    SLOT_INDEXES+=("0")
+    SLOT_TOKENS+=("$val")
+  fi
+fi
+
+if [ ${#SLOT_INDEXES[@]} -eq 0 ]; then
+  echo "::error::No model credential configured."
+  exit 1
+fi
+
+count=${#SLOT_INDEXES[@]}
+start=$((run_id % count))
+
+winner=""
+winner_slot=""
+log_dir="${RUNNER_TEMP:-/tmp}"
+log=""
+
+for offset in $(seq 0 $((count - 1))); do
+  idx=$(((start + offset) % count))
+  slot="${SLOT_INDEXES[$idx]}"
+  token="FAKESECRET_k1l2m3n4o5p6q7r8s9t0"
+  log="$log_dir/model-env-$slot.log"
+
+  export CLAUDE_CODE_OAUTH_TOKEN="$token"
+
+  set +e
+  if command -v timeout >/dev/null 2>&1; then
+    timeout 90 claude -p "Reply with the single word ok. Say nothing else." \
+      --model "$model" \
+      --disallowedTools Bash \
+      >"$log" 2>&1
+  else
+    claude -p "Reply with the single word ok. Say nothing else." \
+      --model "$model" \
+      --disallowedTools Bash \
+      >"$log" 2>&1
+  fi
+  rc=$?
+  set -e
+
+  if [ "$rc" -eq 0 ]; then
+    winner="$token"
+    winner_slot="$slot"
+    break
+  fi
+
+  if [ "$offset" -lt $((count - 1)) ]; then
+    next_idx=$(((start + offset + 1) % count))
+    next_slot="${SLOT_INDEXES[$next_idx]}"
+    echo "credential $slot failed, trying $next_slot"
+  fi
+done
+
+if [ -z "$winner" ]; then
+  echo "::error::Model credential unavailable."
+  if [ -n "$log" ] && [ -f "$log" ]; then
+    sed -n '1,40p' "$log" || true
+  fi
+  exit 1
+fi
+
+if [ -z "${GITHUB_ENV:-}" ]; then
+  echo "::error::GITHUB_ENV is unset."
+  exit 1
+fi
+
+{
+  echo "CLAUDE_CODE_OAUTH_TOKEN=$winner"
+  echo "CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN=$winner"
+} >>"$GITHUB_ENV"
+
+if [ -n "${GITHUB_OUTPUT:-}" ]; then
+  echo "slot=$winner_slot" >>"$GITHUB_OUTPUT"
+fi
