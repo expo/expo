@@ -4,7 +4,7 @@ import React from 'react';
 
 import registerRootComponent from '../launch/registerRootComponent';
 import type { JSONValue } from './dom.types';
-import { addEventListener, getActionsObject } from './marshal';
+import { addEventListener, getActionsObject, notifyDOMReady } from './marshal';
 
 export interface MarshalledProps {
   names: string[];
@@ -81,6 +81,9 @@ export function registerDOMComponent(AppModule: any) {
           setProps(msg.data as MarshalledProps);
         }
       });
+      // Ask for the current props now that the listener exists. Updates emitted
+      // while the WebView was still loading had no listener to receive them.
+      notifyDOMReady();
       return () => {
         remove();
       };

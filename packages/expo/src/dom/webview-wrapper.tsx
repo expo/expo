@@ -11,6 +11,7 @@ import type { DOMPropsInternal } from './dom-internal.types';
 import type { BridgeMessage, WebViewProps, WebViewRef } from './dom.types';
 import { _emitGlobalEvent } from './global-events';
 import {
+  DOM_READY,
   getInjectBodySizeObserverScript,
   getInjectEventScript,
   MATCH_CONTENTS_EVENT,
@@ -174,6 +175,14 @@ const RawWebView = React.forwardRef<object, Props>((props, ref) => {
             height: data.height,
           });
         }
+        return;
+      }
+
+      if (type === DOM_READY) {
+        // The DOM side only starts listening for `$$props` after it mounts, so
+        // any update emitted while the WebView was loading was dropped. Re-send
+        // the current props now that we know there is a listener.
+        emit({ type: '$$props', data: smartActions });
         return;
       }
 
