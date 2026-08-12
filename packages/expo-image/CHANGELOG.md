@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- [iOS] Documented that slow animated WebP decoding is a known reason to set `useAppleWebpCodec` to `false`. ([#PR](https://github.com/expo/expo/pull/PR) by [@expo-bot](https://github.com/expo-bot))
+
 ## 57.0.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._
