@@ -3,6 +3,7 @@ import { expect, jest, test } from '@jest/globals';
 import {
   CommonActions,
   type ParamListBase,
+  type RouterActionOptions,
   type RouterConfigOptions,
   StackActions,
   StackRouter,
@@ -239,10 +240,6 @@ test('gets state on route names change', () => {
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['qux', 'baz', 'foo', 'fiz'] } },
       {
         routeNames: ['qux', 'baz', 'foo', 'fiz'],
-        routeParamList: {
-          qux: { name: 'John' },
-          fiz: { fruit: 'apple' },
-        },
         routeGetIdList: {},
       }
     )
@@ -274,9 +271,6 @@ test('gets state on route names change', () => {
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
       {
         routeNames: ['baz', 'qux'],
-        routeParamList: {
-          baz: { name: 'John' },
-        },
         routeGetIdList: {},
       }
     )
@@ -284,7 +278,7 @@ test('gets state on route names change', () => {
     index: 0,
     key: 'stack-test',
     routeNames: ['baz', 'qux'],
-    routes: [{ key: 'baz-test', name: 'baz', params: { name: 'John' } }],
+    routes: [{ key: 'baz-test', name: 'baz' }],
     stale: false,
     type: 'stack',
   });
@@ -309,9 +303,6 @@ test('gets state on route names change with initialRouteName', () => {
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['baz', 'qux'] } },
       {
         routeNames: ['baz', 'qux'],
-        routeParamList: {
-          baz: { name: 'John' },
-        },
         routeGetIdList: {},
       }
     )
@@ -337,7 +328,7 @@ test('returns the same stack state when route names already match', () => {
     router.getStateForAction(
       state,
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['bar', 'baz'] } },
-      { routeNames: ['bar', 'baz'], routeParamList: {}, routeGetIdList: {} }
+      { routeNames: ['bar', 'baz'], routeGetIdList: {} }
     )
   ).toBe(state);
 });
@@ -361,7 +352,7 @@ test('promotes a surviving preloaded route when every active route is removed', 
     router.getStateForAction(
       state,
       { type: 'ROUTE_NAMES_CHANGED', payload: { routeNames: ['preloaded', 'new'] } },
-      { routeNames: ['preloaded', 'new'], routeParamList: {}, routeGetIdList: {} }
+      { routeNames: ['preloaded', 'new'], routeGetIdList: {} }
     )
   ).toEqual({
     ...state,
@@ -373,9 +364,8 @@ test('promotes a surviving preloaded route when every active route is removed', 
 
 test('handles navigate action', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -444,9 +434,8 @@ test('handles navigate action', () => {
 
 test('updates params on navigate if already on the screen', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -481,9 +470,8 @@ test('updates params on navigate if already on the screen', () => {
 
 test('merges params on navigate when specified', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -895,9 +883,8 @@ test('goes back to matching ID for navigate if pop: true', () => {
 
 test('handles navigate action (legacy)', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1479,9 +1466,8 @@ test('handles pop to top action', () => {
 
 test('replaces focused screen with replace', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['foo', 'bar', 'baz', 'qux'],
-    routeParamList: {},
     routeGetIdList: {},
   };
 
@@ -1665,11 +1651,8 @@ test("doesn't handle replace if screen to replace with isn't present", () => {
 
 test('handles push action', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      baz: { foo: 21 },
-    },
     routeGetIdList: {},
   };
 
@@ -1694,7 +1677,7 @@ test('handles push action', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { foo: 21 } },
+      { key: 'baz-test', name: 'baz', params: undefined },
     ],
   });
 
@@ -1719,7 +1702,7 @@ test('handles push action', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'bar', name: 'bar' },
-      { key: 'baz-test', name: 'baz', params: { foo: 21, bar: 29 } },
+      { key: 'baz-test', name: 'baz', params: { bar: 29 } },
     ],
   });
 
@@ -2176,11 +2159,8 @@ test("doesn't popTo to nonexistent screen", () => {
 
 test("doesn't merge params on popTo to an existing screen", () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {},
   };
 
@@ -2209,7 +2189,7 @@ test("doesn't merge params on popTo to an existing screen", () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { color: 'test' } },
+      { key: 'bar', name: 'bar', params: undefined },
     ],
   });
 
@@ -2237,19 +2217,15 @@ test("doesn't merge params on popTo to an existing screen", () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { color: 'test', fruit: 'orange' } },
+      { key: 'bar', name: 'bar', params: { fruit: 'orange' } },
     ],
   });
 });
 
 test('merges params on popTo to an existing screen if merge: true', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-      baz: { foo: 12 },
-    },
     routeGetIdList: {},
   };
 
@@ -2279,7 +2255,7 @@ test('merges params on popTo to an existing screen if merge: true', () => {
     routeNames: ['baz', 'bar', 'qux'],
     routes: [
       { key: 'baz', name: 'baz' },
-      { key: 'bar', name: 'bar', params: { color: 'test', answer: 42 } },
+      { key: 'bar', name: 'bar', params: { answer: 42 } },
     ],
   });
 
@@ -2310,7 +2286,7 @@ test('merges params on popTo to an existing screen if merge: true', () => {
       {
         key: 'bar',
         name: 'bar',
-        params: { color: 'test', fruit: 'orange', answer: 42 },
+        params: { fruit: 'orange', answer: 42 },
       },
     ],
   });
@@ -2341,7 +2317,7 @@ test('merges params on popTo to an existing screen if merge: true', () => {
       {
         key: 'baz',
         name: 'baz',
-        params: { foo: 12, test: 99, color: 'black' },
+        params: { test: 99, color: 'black' },
       },
     ],
   });
@@ -2465,12 +2441,8 @@ test("doesn't handle popTo if source key isn't present when target is specified"
 
 test('adds route to preloaded list with preload', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-      baz: { foo: 12 },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2504,7 +2476,7 @@ test('adds route to preloaded list with preload', () => {
       { key: 'baz', name: 'baz' },
       { key: 'bar', name: 'bar', params: { answer: 42 } },
       { key: 'qux', name: 'qux' },
-      { key: 'bar-test', name: 'bar', params: { color: 'test' } },
+      { key: 'bar-test', name: 'bar', params: undefined },
     ],
   });
 
@@ -2539,7 +2511,7 @@ test('adds route to preloaded list with preload', () => {
       {
         key: 'bar-existing',
         name: 'bar',
-        params: { answer: 42, color: 'test', something: 'else' },
+        params: { answer: 42, something: 'else' },
       },
       { key: 'baz', name: 'baz' },
     ],
@@ -2579,7 +2551,7 @@ test('adds route to preloaded list with preload', () => {
         params: { answer: 42, toBe: 'notMerged' },
       },
       { key: 'baz', name: 'baz' },
-      { key: 'bar-test', name: 'bar', params: { answer: 43, color: 'test' } },
+      { key: 'bar-test', name: 'bar', params: { answer: 43 } },
     ],
   });
 });
@@ -2686,12 +2658,8 @@ test('uses preloaded route when pushing a route with the same name', () => {
 
 test('uses preloaded route when pushing a route with the same ID', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-      baz: { foo: 12 },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2734,7 +2702,6 @@ test('uses preloaded route when pushing a route with the same ID', () => {
       {
         key: 'bar-test',
         params: {
-          color: 'test',
           answer: 41,
         },
         name: 'bar',
@@ -2805,12 +2772,8 @@ test('partitions active history from multiple preloaded routes', () => {
 
 test('does not use preloaded route when pushing a route with different ID', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-      baz: { foo: 12 },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -2854,7 +2817,6 @@ test('does not use preloaded route when pushing a route with different ID', () =
       {
         key: 'bar-test',
         params: {
-          color: 'test',
           answer: 41,
         },
         name: 'bar',
@@ -2971,11 +2933,8 @@ test('uses preloaded route with the same ID when replacing current route', () =>
 
 test('does not use preloaded route with different ID when replacing current route', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -3013,7 +2972,7 @@ test('does not use preloaded route with different ID when replacing current rout
       {
         key: 'bar-test',
         name: 'bar',
-        params: { color: 'test', answer: 42 },
+        params: { answer: 42 },
       },
       {
         key: 'bar-preloaded',
@@ -3124,11 +3083,8 @@ test('uses preloaded route with the same ID when popTo replaces current route', 
 
 test('does not use preloaded route with different ID when popTo replaces current route', () => {
   const router = StackRouter({});
-  const options: RouterConfigOptions = {
+  const options: RouterActionOptions = {
     routeNames: ['baz', 'bar', 'qux'],
-    routeParamList: {
-      bar: { color: 'test' },
-    },
     routeGetIdList: {
       bar: ({ params }) => params?.answer,
     },
@@ -3166,7 +3122,7 @@ test('does not use preloaded route with different ID when popTo replaces current
       {
         key: 'bar-test',
         name: 'bar',
-        params: { color: 'test', answer: 42 },
+        params: { answer: 42 },
       },
       {
         key: 'bar-preloaded',
@@ -3238,7 +3194,6 @@ test.each(['secret', 'nonExisting'])(
         { type: 'REMOVE_ROUTES', payload: { routeNames: [name] } },
         {
           routeNames: state.routeNames,
-          routeParamList: {},
           routeGetIdList: {},
         }
       )

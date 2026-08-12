@@ -109,7 +109,7 @@ export function MockRouter(options: DefaultRouterOptions) {
       return { ...state, index };
     },
 
-    getStateForAction(state, action, { routeParamList }) {
+    getStateForAction(state, action) {
       switch (action.type) {
         case 'ROUTE_NAMES_CHANGED': {
           const nextState = getStateForRouteNamesChange(state, action.payload.routeNames);
@@ -152,13 +152,7 @@ export function MockRouter(options: DefaultRouterOptions) {
               {
                 name: action.payload.name,
                 key: `${action.payload.name}-${MockRouterKey.current++}`,
-                params:
-                  action.payload.params !== undefined
-                    ? {
-                        ...routeParamList[action.payload.name],
-                        ...action.payload.params,
-                      }
-                    : routeParamList[action.payload.name],
+                params: action.payload.params,
               },
             ];
             index = routes.length - 1;

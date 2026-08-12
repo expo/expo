@@ -215,11 +215,16 @@ export default function RefreshableListExample() {
 
 ### Row styling
 
-Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows.
+Use [`listRowBackground`](modifiers/#listrowbackgroundcolor), [`listRowSeparator`](modifiers/#listrowseparatorvisibility-edges), [`listRowSeparatorTint`](modifiers/#listrowseparatortintcolor-edges), and [`listRowInsets`](modifiers/#listrowinsetsparams) modifiers to customize individual rows.
 
 ```tsx RowStylingExample.tsx
 import { Host, List, Text, Section } from '@expo/ui/swift-ui';
-import { listRowBackground, listRowSeparator, listRowInsets } from '@expo/ui/swift-ui/modifiers';
+import {
+  listRowBackground,
+  listRowSeparator,
+  listRowSeparatorTint,
+  listRowInsets,
+} from '@expo/ui/swift-ui/modifiers';
 
 export default function RowStylingExample() {
   return (
@@ -228,6 +233,7 @@ export default function RowStylingExample() {
         <Section title="Styled Rows">
           <Text modifiers={[listRowBackground('blue')]}>Blue background</Text>
           <Text modifiers={[listRowSeparator('hidden')]}>Hidden separator</Text>
+          <Text modifiers={[listRowSeparatorTint('red')]}>Red separator</Text>
           <Text modifiers={[listRowInsets({ leading: 40 })]}>Extra leading inset</Text>
           <Text modifiers={[listRowInsets({ leading: 0, trailing: 0 })]}>No horizontal insets</Text>
         </Section>

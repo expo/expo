@@ -408,7 +408,6 @@ it('can use replace navigation', () => {
           ],
           index: 1,
           key: expect.any(String),
-          preloadedRouteKeys: [],
           routeNames: ['one', 'two'],
           routes: [
             {

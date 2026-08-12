@@ -28,7 +28,6 @@ type Props = MaterialTopTabNavigationConfig & {
   descriptors: MaterialTopTabDescriptorMap;
   emitter: MaterialTopTabEmitter;
   navigateToTab: (routeKey: string) => void;
-  preloadedRouteKeys: string[];
 };
 
 const renderTabBarDefault = (props: MaterialTopTabBarProps) => <MaterialTopTabBar {...props} />;
@@ -39,7 +38,6 @@ export function MaterialTopTabView({
   descriptors,
   emitter,
   navigateToTab,
-  preloadedRouteKeys,
   ...rest
 }: Props) {
   const { colors } = useTheme();
@@ -79,9 +77,7 @@ export function MaterialTopTabView({
       renderLazyPlaceholder={({ route }) =>
         descriptors[route.key]!.options.lazyPlaceholder?.() ?? null
       }
-      lazy={({ route }) =>
-        descriptors[route.key]!.options.lazy === true && !preloadedRouteKeys.includes(route.key)
-      }
+      lazy={({ route }) => descriptors[route.key]!.route.key === undefined}
       lazyPreloadDistance={focusedOptions.lazyPreloadDistance}
       swipeEnabled={focusedOptions.swipeEnabled}
       animationEnabled={focusedOptions.animationEnabled}

@@ -1,10 +1,10 @@
 {
   "source": {
     "url": "https://raw.githubusercontent.com/expo/eas-cli/main/packages/eas-cli/README.md",
-    "fetchedAt": "2026-08-11T08:21:52.448Z",
-    "cliVersion": "21.7.1"
+    "fetchedAt": "2026-08-12T08:30:48.380Z",
+    "cliVersion": "21.8.0"
   },
-  "totalCommands": 142,
+  "totalCommands": 145,
   "commands": [
     {
       "command": "eas account:audit [ACCOUNT_NAME]",
@@ -380,6 +380,21 @@
       "command": "eas integrations:posthog:disconnect",
       "description": "remove the PostHog project link for the current Expo app from EAS servers",
       "usage": "USAGE\n  $ eas integrations:posthog:disconnect [--json] [--non-interactive] [-y]\n\nFLAGS\n  -y, --yes              Skip confirmation prompt\n      --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  remove the PostHog project link for the current Expo app from EAS servers"
+    },
+    {
+      "command": "eas integrations:supabase:connect",
+      "description": "authorize Supabase, link or provision a project, install the SDK, and write EXPO_PUBLIC_SUPABASE_URL / EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
+      "usage": "USAGE\n  $ eas integrations:supabase:connect [--json] [--non-interactive] [--region <value>] [--organization <value>] [--link <value>]\n    [--reauth] [--overwrite] [--environment <value>]\n\nFLAGS\n  --environment=<value>   EAS environments for a separate hosted project (e.g. preview). Requires prior primary connect;\n                          writes URL/key only there. Incompatible with --link and --reauth\n  --json                  Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --link=<value>          Existing project URL or Reference ID (Project Settings → General). Sets the app primary\n                          instead of provisioning. Incompatible with --environment\n  --non-interactive       Run the command in non-interactive mode.\n  --organization=<value>  Supabase org slug for a new primary project. Ignored with --link; incompatible with\n                          --environment\n  --overwrite             Replace existing EXPO_PUBLIC_SUPABASE_* in .env.local and EAS without prompting\n  --reauth                Disconnect the existing Supabase OAuth connection, then re-authorize in the browser. Removes\n                          the EAS connection and primary project link (Supabase projects are kept). Then prompts to link\n                          an existing project (default) or provision a new one; pass --link to skip the prompt.\n                          Interactive only; incompatible with --environment\n  --region=<value>        Region when provisioning (americas | emea | apac, or e.g. us-east-1). Required with\n                          --non-interactive if provisioning. Ignored with --link or if already linked\n\nDESCRIPTION\n  authorize Supabase, link or provision a project, install the SDK, and write EXPO_PUBLIC_SUPABASE_URL /\n  EXPO_PUBLIC_SUPABASE_PUBLISHABLE_KEY\n\nEXAMPLES\n  $ eas integrations:supabase:connect\n\n  $ eas integrations:supabase:connect --link <project-url>\n\n  $ eas integrations:supabase:connect --environment preview\n\n  $ eas integrations:supabase:connect --environment preview --region americas --non-interactive --overwrite\n\n  $ eas integrations:supabase:connect --reauth"
+    },
+    {
+      "command": "eas integrations:supabase:dashboard",
+      "description": "open this app's primary Supabase project in the dashboard (or print the URL with --non-interactive)",
+      "usage": "USAGE\n  $ eas integrations:supabase:dashboard [--json] [--non-interactive]\n\nFLAGS\n  --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n  --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  open this app's primary Supabase project in the dashboard (or print the URL with --non-interactive)\n\nEXAMPLES\n  $ eas integrations:supabase:dashboard\n\n  $ eas integrations:supabase:dashboard --non-interactive"
+    },
+    {
+      "command": "eas integrations:supabase:disconnect",
+      "description": "remove this app's Supabase project link from EAS (keeps the Supabase project; does not delete EXPO_PUBLIC_SUPABASE_* env vars)",
+      "usage": "USAGE\n  $ eas integrations:supabase:disconnect [--json] [--non-interactive] [-y]\n\nFLAGS\n  -y, --yes              Skip confirmation prompt\n      --json             Enable JSON output, non-JSON messages will be printed to stderr. Implies --non-interactive.\n      --non-interactive  Run the command in non-interactive mode.\n\nDESCRIPTION\n  remove this app's Supabase project link from EAS (keeps the Supabase project; does not delete EXPO_PUBLIC_SUPABASE_*\n  env vars)\n\nEXAMPLES\n  $ eas integrations:supabase:disconnect\n\n  $ eas integrations:supabase:disconnect --yes"
     },
     {
       "command": "eas login",

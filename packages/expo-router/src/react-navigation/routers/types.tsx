@@ -35,9 +35,11 @@ export type NavigationState<ParamList extends ParamListBase = ParamListBase> = R
   /**
    * Custom type for the state, whether it's for tab, stack, drawer etc.
    * During rehydration, the state will be discarded if type doesn't match with router type.
-   * It can also be used to detect the type of the navigator we're dealing with.
+   * It can also be used to detect the type of the navigator we're dealing with. Note that initial
+   * state does not include type, so an action needs to be dispatched in a navigator, in order
+   * for the type to be set
    */
-  type: string;
+  type?: string;
   /**
    * Whether the navigation state has been rehydrated.
    */
@@ -134,6 +136,9 @@ export type RouterFactory<
 
 export type RouterConfigOptions = {
   routeNames: string[];
+  /**
+   * Params used when initializing or rehydrating routes.
+   */
   routeParamList: ParamListBase;
   routeGetIdList: Record<
     string,
@@ -141,18 +146,30 @@ export type RouterConfigOptions = {
   >;
 };
 
-export type Router<State extends NavigationState, Action extends NavigationAction> = {
-  /**
-   * Type of the router. Should match the `type` property in state.
-   * If the type doesn't match, the state will be discarded during rehydration.
-   */
-  type: State['type'];
+/**
+ * Configuration used when applying navigation actions.
+ */
+export type RouterActionOptions = Omit<RouterConfigOptions, 'routeParamList'>;
 
+/**
+ * Type of the router. Should match the `type` property in state.
+ * If the type doesn't match, the state will be discarded during rehydration.
+ * Only routers whose state has no `type` may omit it, since a state without a `type`
+ * is accepted by every router.
+ */
+type RouterType<State extends NavigationState> = undefined extends State['type']
+  ? { type?: State['type'] }
+  : { type: State['type'] };
+
+export type Router<
+  State extends NavigationState,
+  Action extends NavigationAction,
+> = RouterType<State> & {
   /**
    * Initialize the navigation state.
    *
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
+   * @param options.routeParamList Object containing params for each route.
    */
   getInitialState(options: RouterConfigOptions): State;
 
@@ -161,7 +178,7 @@ export type Router<State extends NavigationState, Action extends NavigationActio
    *
    * @param partialState Navigation state to rehydrate from.
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
+   * @param options.routeParamList Object containing params for each route.
    */
   getRehydratedState(
     partialState: PartialState<State> | State,
@@ -198,12 +215,11 @@ export type Router<State extends NavigationState, Action extends NavigationActio
    * @param state State object to apply the action on.
    * @param action Action object to apply.
    * @param options.routeNames List of valid route names as defined in the screen components.
-   * @param options.routeParamsList Object containing params for each route.
    */
   getStateForAction(
     state: State,
     action: Action,
-    options: RouterConfigOptions
+    options: RouterActionOptions
   ): State | PartialState<State> | null;
 
   /**

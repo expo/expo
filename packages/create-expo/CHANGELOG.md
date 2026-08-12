@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Bump to `multitars@1.0.2` to address symlink and unicode bugs ([#48833](https://github.com/expo/expo/pull/48833) by [@kitten](https://github.com/kitten))
+
 ## 5.0.0 - 2026-06-25
 
 _This version does not introduce any user-facing changes._

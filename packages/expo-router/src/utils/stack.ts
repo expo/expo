@@ -6,6 +6,8 @@ export function getHistoryLength(state: ReactNavigationState): number {
     return state.history.length;
   }
 
+  // This only matters for preloaded rotues, and in oreder to preload
+  // an action needs to be dispatched, so type will be set
   if (state.type === 'stack') {
     if (state.index === undefined) {
       return 1;
@@ -22,6 +24,7 @@ export function isRoutePreloadedInStack(
   navigationState: NavigationState | undefined,
   route: { key: string }
 ): boolean {
+  // A typeless stack cannot be detected here, including after PRELOAD preserves its missing type.
   if (!navigationState || navigationState.type !== 'stack') {
     return false;
   }

@@ -403,12 +403,12 @@ describe('unstable_integrateWithRouter / unstable_createStandardRouterNavigator'
     expect(lastArgs().state.routes[lastArgs().state.index]!.name).toBe('second');
   });
 
-  // initialRouteName is a router option, not a NavigatorContent prop: it is destructured out of the
-  // props spread so it never reaches the content component (the focused route itself is URL-driven).
   it('does not leak initialRouteName to NavigatorContent', () => {
     renderRouter({
       _layout: () => (
-        <StandardTabs initialRouteName="second">
+        <StandardTabs
+          // @ts-expect-error `initialRouteName` is only supported through `unstable_settings`.
+          initialRouteName="second">
           <StandardTabs.Screen name="index" />
           <StandardTabs.Screen name="second" />
         </StandardTabs>
@@ -794,13 +794,13 @@ describe('custom-navigators guide example', () => {
   // TabRouter and preloads the route. The previous `POP_TO_TOP` example was a silent no-op on tabs
   // (only StackRouter handles it), so a copy-paste user got a button that did nothing.
   //
-  // `preloadedNames` is derived from the raw `state` — exactly the "router-specific information that
-  // is not part of the standard state" that `createProps` exists to expose (TabRouter keeps preloaded
-  // routes in `preloadedRouteKeys`, which the standard contract does not project).
+  // `materializedNames` is derived from non-focused routes in the raw `state` — exactly the
+  // "router-specific information that is not part of the standard state" that `createProps` exists
+  // to expose.
   type CreatePropsProps = {
     activeRouteKey: string;
     preload: (name: string) => void;
-    preloadedNames: string[];
+    materializedNames: string[];
   };
   type ContentProps = NavigatorContentProps<
     { title?: string },
@@ -829,9 +829,9 @@ describe('custom-navigators guide example', () => {
     createProps: ({ state, dispatch }) => ({
       activeRouteKey: state.routes[state.index]!.key,
       preload: (name: string) => dispatch({ type: 'PRELOAD', payload: { name } }),
-      preloadedNames: state.preloadedRouteKeys
-        .map((key) => state.routes.find((route) => route.key === key)?.name)
-        .filter((name): name is string => name !== undefined),
+      materializedNames: state.routes
+        .filter((_, index) => index !== state.index)
+        .map((route) => route.name),
     }),
   });
 
@@ -858,12 +858,12 @@ describe('custom-navigators guide example', () => {
 
   it('preloads a route via the createProps PRELOAD dispatch without moving focus', () => {
     renderExample();
-    expect(lastProps().preloadedNames).toEqual([]);
+    expect(lastProps().materializedNames).toEqual([]);
 
     act(() => lastProps().preload('settings'));
 
     // The action reached the TabRouter: `settings` is now preloaded, and focus stayed on `index`.
-    expect(lastProps().preloadedNames).toEqual(['settings']);
+    expect(lastProps().materializedNames).toEqual(['settings']);
     expect(lastProps().state.index).toBe(0);
     expect(lastProps().state.routes[lastProps().state.index]!.name).toBe('index');
   });
