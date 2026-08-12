@@ -2116,6 +2116,14 @@ extension ViewModifierRegistry {
       return try MenuOrderModifier(from: params, appContext: appContext)
     }
 
+    register("menuStyle") { params, appContext, _ in
+      return try MenuStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("menuIndicator") { params, appContext, _ in
+      return try MenuIndicatorModifier(from: params, appContext: appContext)
+    }
+
     register("submitLabel") { params, appContext, _ in
       return try SubmitLabelModifier(from: params, appContext: appContext)
     }
