@@ -33,12 +33,13 @@ export function getUserDefinedFaviconFile(projectRoot: string): string | null {
  * multi-size `favicon.ico`) or an SVG (copied byte-for-byte to `favicon.svg`, preserving
  * features like `prefers-color-scheme` media queries inside the SVG).
  *
- * A favicon in the public folder wins over `web.favicon`, matching the pre-existing behavior
- * for `public/favicon.ico`. So `public/favicon.svg` suppresses generation from `web.favicon`
- * too — a user who wants an `.ico` fallback for older browsers alongside it should add their
- * own `public/favicon.ico`, which browsers auto-discover.
+ * A favicon in the public folder wins the `<link>`, matching the pre-existing behavior for
+ * `public/favicon.ico`. A `public/favicon.svg` does *not* suppress `favicon.ico` generation,
+ * though: a raster `web.favicon` is still rasterized so that browsers without SVG favicon
+ * support keep auto-discovering `/favicon.ico`. (An SVG `web.favicon` is skipped in that case,
+ * since it would write to the same `favicon.svg` path the public file already occupies.)
  *
- * @returns the public href for the generated favicon (`.ico` or `.svg`), or `null` when a
+ * @returns the public href for the favicon to link (`.ico` or `.svg`), or `null` when a
  *   user-supplied `favicon.ico` already exists in the public folder (browsers resolve it at
  *   `/favicon.ico` automatically), or when no `web.favicon` is configured.
  */
@@ -52,35 +53,44 @@ export async function generateFaviconAssetAsync(
   }: { outputDir: string; baseUrl: string; files?: ExportAssetMap; exp?: ExpoConfig }
 ): Promise<{ href: string } | null> {
   const existing = getUserDefinedFaviconFile(projectRoot);
-  if (existing) {
-    if (isSvgPath(existing)) {
-      // A user-supplied `public/favicon.svg` is copied to the output by
-      // `copyPublicFolderAsync`; we still need to inject the `<link>` tag,
-      // because browsers don't auto-discover SVG favicons the way they do
-      // `/favicon.ico`.
-      return { href: `${baseUrl}/favicon.svg` };
-    }
+  if (existing && !isSvgPath(existing)) {
     return null;
   }
+
+  // A user-supplied `public/favicon.svg` is copied to the output by `copyPublicFolderAsync`,
+  // but still needs a `<link>` tag: browsers don't auto-discover SVG favicons the way they do
+  // `/favicon.ico`.
+  const publicSvgHref = existing ? `${baseUrl}/favicon.svg` : null;
 
   const data = await getFaviconFromExpoConfigAsync(projectRoot, {
     exp,
   });
 
-  if (!data) {
-    return null;
+  // Generate the configured favicon even when a public SVG takes the `<link>`, so that a
+  // raster `web.favicon` keeps producing the `/favicon.ico` older browsers auto-discover.
+  // Skip it only when it would collide with the public file's own output path.
+  const isCollidingWithPublicSvg = !!publicSvgHref && !!data && isSvgPath(data.path);
+
+  if (data && !isCollidingWithPublicSvg) {
+    const assetPath = path.join(outputDir, data.path);
+    if (files) {
+      debugEvent('favicon:storing_asset', { assetPath });
+      files.set(data.path, {
+        contents: data.source,
+        targetDomain: 'client',
+      });
+    } else {
+      debugEvent('favicon:writing_asset', { assetPath });
+      await fs.promises.writeFile(assetPath, data.source);
+    }
   }
 
-  const assetPath = path.join(outputDir, data.path);
-  if (files) {
-    debugEvent('favicon:storing_asset', { assetPath });
-    files.set(data.path, {
-      contents: data.source,
-      targetDomain: 'client',
-    });
-  } else {
-    debugEvent('favicon:writing_asset', { assetPath });
-    await fs.promises.writeFile(assetPath, data.source);
+  if (publicSvgHref) {
+    return { href: publicSvgHref };
+  }
+
+  if (!data) {
+    return null;
   }
 
   return { href: `${baseUrl}/${data.path}` };

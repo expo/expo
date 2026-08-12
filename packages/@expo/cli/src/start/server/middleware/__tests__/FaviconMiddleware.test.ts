@@ -123,11 +123,7 @@ it(`serves an SVG favicon with the SVG MIME type`, async () => {
 
   const res = getMockRes();
   const next = jest.fn();
-  await middleware(
-    asRequest({ url: '/favicon.svg', method: 'GET' }),
-    res,
-    next
-  );
+  await middleware(asRequest({ url: '/favicon.svg', method: 'GET' }), res, next);
 
   expect(next).toHaveBeenCalledTimes(0);
   expect(res.setHeader).toHaveBeenCalledWith('Content-Type', 'image/svg+xml');
@@ -179,11 +175,7 @@ it(`falls through /favicon.svg when web.favicon is a raster image`, async () => 
 
   const res = getMockRes();
   const next = jest.fn();
-  await middleware(
-    asRequest({ url: '/favicon.svg', method: 'GET' }),
-    res,
-    next
-  );
+  await middleware(asRequest({ url: '/favicon.svg', method: 'GET' }), res, next);
 
   // Configured format is ICO; request was for SVG — pass through so the
   // static middleware can serve a hand-crafted SVG if the user provides one.
@@ -209,11 +201,7 @@ it(`falls through /favicon.ico when web.favicon is an SVG`, async () => {
 
   const res = getMockRes();
   const next = jest.fn();
-  await middleware(
-    asRequest({ url: '/favicon.ico', method: 'GET' }),
-    res,
-    next
-  );
+  await middleware(asRequest({ url: '/favicon.ico', method: 'GET' }), res, next);
 
   // Configured format is SVG; old browsers asking for /favicon.ico fall
   // through so a hand-crafted `public/favicon.ico` can serve as fallback.

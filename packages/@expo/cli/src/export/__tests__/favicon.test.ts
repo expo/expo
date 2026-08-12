@@ -54,6 +54,50 @@ describe(generateFaviconAssetAsync, () => {
     expect(generateImageAsync).not.toHaveBeenCalled();
   });
 
+  it('still generates favicon.ico when a public SVG is paired with a raster web.favicon', async () => {
+    // A project that has both used to get a generated `favicon.ico`. The public SVG takes the
+    // `<link>`, but dropping the ICO would silently remove the fallback older browsers
+    // auto-discover at `/favicon.ico`.
+    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.svg');
+
+    const files: ExportAssetMap = new Map();
+    const result = await generateFaviconAssetAsync('/project', {
+      baseUrl: '',
+      outputDir: '/out',
+      files,
+      exp: { name: '', slug: '', web: { favicon: './icon.png' } } as any,
+    });
+
+    expect(result).toEqual({ href: '/favicon.svg' });
+    expect(files.get('favicon.ico')).toEqual({
+      contents: Buffer.from([1, 2, 3]),
+      targetDomain: 'client',
+    });
+  });
+
+  it('does not double-write favicon.svg when a public SVG is paired with an SVG web.favicon', async () => {
+    getUserDefinedFile.mockReturnValueOnce('/project/public/favicon.svg');
+    const readFileMock = jest
+      .spyOn(require('fs').promises, 'readFile')
+      .mockResolvedValue(Buffer.from('<svg/>'));
+
+    try {
+      const files: ExportAssetMap = new Map();
+      const result = await generateFaviconAssetAsync('/project', {
+        baseUrl: '',
+        outputDir: '/out',
+        files,
+        exp: { name: '', slug: '', web: { favicon: './icon.svg' } } as any,
+      });
+
+      // The public file already occupies `favicon.svg` in the output.
+      expect(result).toEqual({ href: '/favicon.svg' });
+      expect(files.size).toBe(0);
+    } finally {
+      readFileMock.mockRestore();
+    }
+  });
+
   it('returns `null` when `web.favicon` is not set', async () => {
     const result = await generateFaviconAssetAsync('/project', {
       baseUrl: '',
