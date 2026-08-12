@@ -1,11 +1,16 @@
-/**
- * Set the environment to production or development
- * lots of tools use this to determine if they should run in a dev mode.
- */
-export function setNodeEnv(mode: 'development' | 'production') {
-  process.env.NODE_ENV = process.env.NODE_ENV || mode;
-  process.env.BABEL_ENV = process.env.BABEL_ENV || process.env.NODE_ENV;
+import type { EnvMode } from '@expo/env';
 
-  // @ts-expect-error: Add support for external React libraries being loaded in the same process.
-  globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
+export function getConfigEnvMode(): EnvMode {
+  const mode = process.env.EXPO_CONFIG_MODE;
+  delete process.env.EXPO_CONFIG_MODE;
+
+  if (!mode) {
+    return 'development';
+  }
+  if (mode !== 'development' && mode !== 'production') {
+    throw new Error(
+      `Invalid EXPO_CONFIG_MODE value: "${mode}". Use "development" or "production".`
+    );
+  }
+  return mode;
 }

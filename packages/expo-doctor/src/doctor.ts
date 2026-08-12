@@ -1,4 +1,4 @@
-import { load as loadEnv } from '@expo/env';
+import { loadProjectEnv, type EnvMode } from '@expo/env';
 import chalk from 'chalk';
 
 import type { DoctorCheck, DoctorCheckParams, DoctorCheckResult } from './checks/checks.types';
@@ -8,7 +8,6 @@ import { isNetworkError } from './utils/errors';
 import { getProjectConfigAsync } from './utils/getProjectConfig';
 import { isInteractive } from './utils/interactive';
 import { Log } from './utils/log';
-import { setNodeEnv } from './utils/nodeEnv';
 import { logNewSection } from './utils/ora';
 import { endTimer, formatMilliseconds, startTimer } from './utils/timer';
 import { ltSdkVersion } from './utils/versions';
@@ -123,12 +122,14 @@ export async function runChecksAsync(
   );
 }
 
-function maybeLoadEnv(projectRoot: string) {
+function maybeLoadEnv(projectRoot: string, mode: EnvMode) {
   try {
-    loadEnv(projectRoot);
+    loadProjectEnv(projectRoot, { mode });
   } catch {
     // NOTE(@kitten): It's unclear why we load env files here in expo-doctor, and it's likely optional, even with us loading the project config
     // If this fails, e.g. because the Node.js version is too out of date, ignore the error
+  } finally {
+    delete process.env.EXPO_CONFIG_MODE;
   }
 }
 
@@ -136,13 +137,17 @@ function maybeLoadEnv(projectRoot: string) {
  * Run the expo-doctor checks on the project.
  * @param projectRoot The root of the project to check.
  * @param showVerboseTestResults if true, show passes and failures; otherwise show number of tests passed and failure details only
+ * @param mode The mode to use for .env files and Expo config.
  */
-export async function actionAsync(projectRoot: string, showVerboseTestResults: boolean) {
+export async function actionAsync(
+  projectRoot: string,
+  showVerboseTestResults: boolean,
+  mode: EnvMode
+) {
   try {
-    setNodeEnv('development');
-    maybeLoadEnv(projectRoot);
+    maybeLoadEnv(projectRoot, mode);
 
-    const projectConfig = await getProjectConfigAsync(projectRoot);
+    const projectConfig = await getProjectConfigAsync(projectRoot, mode);
 
     // expo-doctor relies on versioned CLI, which is only available for 44+
     if (ltSdkVersion(projectConfig.exp, '46.0.0')) {

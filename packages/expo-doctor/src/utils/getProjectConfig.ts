@@ -1,12 +1,17 @@
+import type { EnvMode } from '@expo/env';
+
 import type { DoctorCheckParams } from '../checks/checks.types';
 import { spawnExpoCLI } from './spawnExpoCLI';
 
 type ProjectConfig = Omit<DoctorCheckParams, 'projectRoot'>;
 
-export async function getProjectConfigAsync(projectRoot: string): Promise<ProjectConfig> {
+export async function getProjectConfigAsync(
+  projectRoot: string,
+  mode: EnvMode
+): Promise<ProjectConfig> {
   const result = await spawnExpoCLI(projectRoot, ['config', '--json', '--full'], {
     stdio: 'pipe',
-    env: { ...process.env, EXPO_DEBUG: '0' },
+    env: { EXPO_CONFIG_MODE: mode, EXPO_DEBUG: '0' },
   });
 
   let parsed: any;
