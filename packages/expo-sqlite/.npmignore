@@ -21,7 +21,7 @@ __rsc_tests__
 /scripts/
 
 # Agent evals are development-only; the agent skills in /skills/ do ship
-/skills/.evals/
+/skills/*/.evals/
 
 # Exclude source of dev-plugin-webui to reduce package size
 /dev-plugin-webui/

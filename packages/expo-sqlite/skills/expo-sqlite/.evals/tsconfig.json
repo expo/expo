@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "es2022",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "types": []
+  },
+  "include": ["./**/*.ts"],
+  "exclude": ["**/local/**"]
+}
