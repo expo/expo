@@ -37,6 +37,14 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
   EXKernelAppRecord *destinationApp = nil;
   NSURL *urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
 
+  // Strip on any change, so an override that failed validation is cleared too.
+  NSURL *verificationURI = [EXDeviceLoginLink verificationURIFromURL:urlToRoute];
+  NSURL *strippedUrl = [EXDeviceLoginLink urlByRemovingOverrideFromURL:urlToRoute];
+  if (![strippedUrl isEqual:urlToRoute]) {
+    [[EXPendingDeviceLogin shared] setURI:verificationURI forProjectURL:strippedUrl];
+    urlToRoute = strippedUrl;
+  }
+
   for (NSString *recordId in [appRegistry appEnumerator]) {
     EXKernelAppRecord *appRecord = [appRegistry recordForId:recordId];
     if (!appRecord || appRecord.status != kEXKernelAppRecordStatusRunning) {
