@@ -1,5 +1,5 @@
 {
-  "name": "expo-sqlite-eval-fixture",
+  "name": "notes-app",
   "version": "1.0.0",
   "private": true,
   "main": "index.ts",

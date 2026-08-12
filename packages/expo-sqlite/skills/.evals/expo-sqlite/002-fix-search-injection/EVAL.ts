@@ -1,4 +1,4 @@
-import { check, score, type Scorer } from '../harness/types';
+import { check, score, type Scorer } from '../../types';
 
 /**
  * The seeded src/db.ts interpolates user input into a SQL string. A correct

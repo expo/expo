@@ -20,8 +20,8 @@ __rsc_tests__
 # Scripts are only for sqlite3 source code prebuilding
 /scripts/
 
-# Agent evals are development-only; the agent skill in /skills/ does ship
-/evals/
+# Agent evals are development-only; the agent skills in /skills/ do ship
+/skills/.evals/
 
 # Exclude source of dev-plugin-webui to reduce package size
 /dev-plugin-webui/

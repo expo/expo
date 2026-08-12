@@ -1,4 +1,4 @@
-import { check, score, type Scorer } from '../harness/types';
+import { check, score, type Scorer } from '../../types';
 
 /**
  * The skill's guidance: expo-sqlite/kv-store is a drop-in AsyncStorage

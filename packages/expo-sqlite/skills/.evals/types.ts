@@ -1,4 +1,12 @@
 /**
+ * The scorer contract between this package's eval cases and the eval harness.
+ *
+ * The harness itself lives outside this package: it is responsible for seeding
+ * a workspace from a case's local/ files, running the coding agent with the
+ * case's PROMPT.md (with or without the skill linked), and then calling the
+ * case's default-exported `Scorer` with an `EvalContext` for the workspace.
+ * This file only defines that boundary so EVAL.ts files are self-describing.
+ *
  * Check statuses follow the four-state model from Expo's skill-eval harness:
  * only `passed`/`failed` are scored. `not_applicable` means the check's
  * precondition doesn't hold for this workspace (a clean pass would be absence
@@ -39,7 +47,7 @@ export interface TypecheckResult {
   output: string;
 }
 
-/** What an `EVAL.ts` scorer receives. Score what the agent produced, never what the harness seeded. */
+/** What an `EVAL.ts` scorer receives. Score what the agent produced, never what the case seeded. */
 export interface EvalContext {
   /** Absolute path to the agent's workspace. */
   workspace: string;

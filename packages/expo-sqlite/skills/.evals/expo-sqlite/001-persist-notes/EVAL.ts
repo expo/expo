@@ -1,9 +1,10 @@
-import { check, score, type Scorer } from '../harness/types';
+import { check, score, type Scorer } from '../../types';
 
 /**
  * The prompt asks for durable notes plus a schema-evolution story. The skill
  * teaches PRAGMA user_version migrations, SQLiteProvider onInit, and
  * parameterized writes — this scorer checks whether those idioms landed.
+ * The seeded app is in-memory only, so any expo-sqlite usage is the agent's.
  */
 const scorer: Scorer = async (ctx) => {
   const source = ctx

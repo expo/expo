@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 - Ship an agent skill (`skills/expo-sqlite/`) in the npm package, discoverable by `npx expo skills`. ([#48796](https://github.com/expo/expo/pull/48796) by [@kudo](https://github.com/kudo))
-- Add colocated agent evals (`evals/`, development-only) for the shipped skill. ([#48798](https://github.com/expo/expo/pull/48798) by [@kudo](https://github.com/kudo))
+- Add colocated agent evals (`skills/.evals/`, development-only) for the shipped skill. ([#48798](https://github.com/expo/expo/pull/48798) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
