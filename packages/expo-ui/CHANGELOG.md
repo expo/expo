@@ -16,6 +16,7 @@
 
 ### 🐛 Bug fixes
 
+- [universal] Fix `Cannot use shared object that was already released` when a worklet callback prop closes over an unstable value. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [universal] Add an explicit type annotation to `BottomSheetTextInput` so its type doesn't depend on referencing React Native's internal `TextInputType`. ([#48218](https://github.com/expo/expo/pull/48218) by [@zoontek](https://github.com/zoontek))
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
