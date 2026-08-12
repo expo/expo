@@ -9,17 +9,13 @@ platforms: ['android', 'ios', 'tvos']
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 
-`expo-observe` is a library that collects performance metrics and user-defined events from your app and dispatches them to [EAS Observe](/eas/observe/introduction/), a performance monitoring service from Expo. It measures real-world startup performance, such as [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render-ttr) and [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive-tti), from apps running in production.
+`expo-observe` is a library that collects performance metrics and user-defined events from your app and dispatches them to [EAS Observe](/eas/observe/introduction/), a performance monitoring service from Expo, or to your preferred OpenTelemetry (OTEL)-compliant backend, a performance monitoring service from Expo. It measures real-world startup performance, such as [Time to First Render (TTR)](/eas/observe/reference/metrics/#time-to-first-render-ttr) and [Time to Interactive (TTI)](/eas/observe/reference/metrics/#time-to-interactive-tti), from apps running in production.
 
-> **important** EAS Observe is not available in Expo Go because it relies on the `expo-observe` native library. To use it, create a [development build](/develop/development-builds/introduction/).
+> **warning** `expo-observe` is not available in Expo Go. To use it, create a [development build](/develop/development-builds/introduction/).
 
 ## Installation
 
 <APIInstallSection />
-
-<br />
-
-After installing the library, **follow the [EAS Observe Get started guide](/eas/observe/get-started/) to instrument your app and view your first metrics.**
 
 ## Configuration
 
