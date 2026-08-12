@@ -318,7 +318,7 @@ export interface NativeTabsProps extends PropsWithChildren {
   /**
    * The background color of the tab bar.
    *
-   * On iOS 26 and later, the tab bar background is drawn by the system and this prop has no effect.
+   * On iOS 26 and later, the system draws the tab bar background and this prop has no effect.
    */
   backgroundColor?: ColorValue;
   /**
