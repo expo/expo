@@ -6,6 +6,7 @@
   "include": ["./src"],
   "compilerOptions": {
     "rootDir": "./src",
-    "noEmit": true
+    "noEmit": true,
+    "types": ["jest", "node"]
   }
 }

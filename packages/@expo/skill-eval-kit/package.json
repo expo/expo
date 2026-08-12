@@ -32,6 +32,7 @@
     "@babel/parser": "^7.28.0"
   },
   "devDependencies": {
+    "@types/node": "^22.14.0",
     "expo-module-scripts": "workspace:*",
     "vitest": "^4.0.0"
   },
