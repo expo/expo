@@ -1190,8 +1190,21 @@ jobs:
               gh api "repos/$WORK_HEAD_REPO/git/blobs/$blob_oid" --jq '.content' \
                 | tr -d '\n' | base64 --decode > "$destination"
             }
-            additions='[]'
-            deletions='[]'
+            # Contents and the accumulating arrays live in FILES, never in
+            # argv. Linux caps a SINGLE argument at MAX_ARG_STRLEN (128KB), and
+            # base64 inflates by 4/3, so a file over ~96KB cannot be passed
+            # with `jq --arg contents`, and the whole-array `--argjson` breaks
+            # sooner still. Not an edge case: the first work run (31563776320)
+            # mirrored a 95KB packages/expo/CHANGELOG.md, whose base64 is 127KB
+            # and whose two-file array is 133KB, so jq died with "Argument list
+            # too long" — exit 126 — AFTER 52 minutes and a fully validated
+            # change. A changelog entry is the commonest change in this
+            # repository, so this path has to be size-independent, and
+            # --rawfile/--slurpfile read from disk where size stops mattering.
+            additions_json="$RUNNER_TEMP/work-additions.json"
+            deletions_json="$RUNNER_TEMP/work-deletions.json"
+            printf '[]' > "$additions_json"
+            printf '[]' > "$deletions_json"
             lines=0
             i=0
             while IFS= read -r path; do
@@ -1209,8 +1222,11 @@ jobs:
                 n=$(wc -l < "$path" | tr -d ' ')
               fi
               lines=$((lines + n))
-              contents=$(base64 < "$path" | tr -d '\n')
-              additions=$(printf '%s' "$additions" | jq --arg path "$path" --arg contents "$contents" '. + [{path:$path, contents:$contents}]')
+              base64 < "$path" | tr -d '\n' > "$RUNNER_TEMP/work-b64"
+              jq --arg path "$path" --rawfile contents "$RUNNER_TEMP/work-b64" \
+                '. + [{path:$path, contents:$contents}]' "$additions_json" \
+                > "$RUNNER_TEMP/work-acc.json"
+              mv "$RUNNER_TEMP/work-acc.json" "$additions_json"
             done < <(jq -r '.additions[]' .verify-out/changes.json)
             while IFS= read -r path; do
               old="$RUNNER_TEMP/work-deleted-$((i + 1))"
@@ -1221,7 +1237,9 @@ jobs:
               fi
               n=$(wc -l < "$old" | tr -d ' ')
               lines=$((lines + n))
-              deletions=$(printf '%s' "$deletions" | jq --arg path "$path" '. + [{path:$path}]')
+              jq --arg path "$path" '. + [{path:$path}]' "$deletions_json" \
+                > "$RUNNER_TEMP/work-acc.json"
+              mv "$RUNNER_TEMP/work-acc.json" "$deletions_json"
             done < <(jq -r '.deletions[]' .verify-out/changes.json)
           else
             lines=$(git diff --cached --numstat | awk '{a+=$1; d+=$2} END {print a+d}')
@@ -1231,8 +1249,10 @@ jobs:
             exit 1
           fi
           if [ "$MODE" = "work" ]; then
-            body=$(tail -n +2 .verify-out/pr.md 2>/dev/null || true)
-            body="$body"$'\n\n'"$commit_footer"
+            # Through a file, for the same argv reason as the file contents:
+            # pr.md is agent-written prose of no fixed length.
+            body_file="$RUNNER_TEMP/work-commit-body.txt"
+            { tail -n +2 .verify-out/pr.md 2>/dev/null || true; printf '\n%s\n' "$commit_footer"; } > "$body_file"
             # GraphQL variable markers are literal here.
             # shellcheck disable=SC2016
             query='mutation($input: CreateCommitOnBranchInput!) { createCommitOnBranch(input: $input) { commit { oid url } } }'
@@ -1242,10 +1262,10 @@ jobs:
               --arg ref "$WORK_HEAD_REF" \
               --arg oid "$WORK_HEAD_SHA" \
               --arg headline "$title" \
-              --arg body "$body" \
-              --argjson additions "$additions" \
-              --argjson deletions "$deletions" \
-              '{query:$query, variables:{input:{branch:{repositoryNameWithOwner:$repo, branchName:$ref}, expectedHeadOid:$oid, message:{headline:$headline, body:$body}, fileChanges:{additions:$additions, deletions:$deletions}}}}' \
+              --rawfile body "$body_file" \
+              --slurpfile additions "$additions_json" \
+              --slurpfile deletions "$deletions_json" \
+              '{query:$query, variables:{input:{branch:{repositoryNameWithOwner:$repo, branchName:$ref}, expectedHeadOid:$oid, message:{headline:$headline, body:$body}, fileChanges:{additions:$additions[0], deletions:$deletions[0]}}}}' \
               > "$RUNNER_TEMP/create-commit.json"
             # Ensure the review label is present before mutation. agent-authored
             # is desirable provenance; ai-review is mandatory and has no
