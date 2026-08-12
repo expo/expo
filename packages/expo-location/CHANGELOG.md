@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - [iOS] Remove the stale top-level `scope` and `accuracy` properties from the permission response returned by `getForegroundPermissionsAsync` and `requestForegroundPermissionsAsync`. Use the values under `ios` instead. ([#48009](https://github.com/expo/expo/pull/48009) by [@Wenszel](https://github.com/Wenszel))
+- [iOS] Did the same for `getBackgroundPermissionsAsync` and `requestBackgroundPermissionsAsync`, which were missed: `scope` and `accuracy` now live under `ios` there too, and both are typed as `LocationPermissionResponse`. ([#PR](https://github.com/expo/expo/pull/PR) by [@vonovak](https://github.com/vonovak))
 
 ### 🎉 New features
 

@@ -151,7 +151,15 @@ static SEL alwaysAuthorizationSelector;
     }
   }
   
-  return @{ @"status": @(status), @"scope": @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none"), @"accuracy": [self accuracyAuthorizationString] };
+  NSString *scope = @(systemStatus == kCLAuthorizationStatusAuthorizedWhenInUse ? "whenInUse" : systemStatus == kCLAuthorizationStatusAuthorizedAlways ? "always" : "none");
+  NSString *accuracy = [self accuracyAuthorizationString];
+
+  return @{ @"status": @(status),
+            @"ios": @{
+              @"scope": scope,
+              @"accuracy": accuracy
+            },
+         };
 }
 
 @end
