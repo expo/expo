@@ -1,4 +1,5 @@
 import type { ProjectConfig } from '@expo/config';
+import { getOriginalEnv, setNodeEnv } from '@expo/env';
 import fs from 'fs/promises';
 import os from 'os';
 import path from 'path';
@@ -7,6 +8,8 @@ import resolveFrom from 'resolve-from';
 import { getExpoConfigLoaderPath, type LoadedModuleSource } from './ExpoConfigLoader';
 import type { NormalizedOptions } from './Fingerprint.types';
 import { spawnWithIpcAsync } from './utils/SpawnIPC';
+
+const FINGERPRINT_ENV_MODE = 'development';
 
 /**
  * An out-of-process `expo/config` loader that can be used to get the Expo config and loaded modules.
@@ -60,11 +63,19 @@ async function spawnConfigLoaderAsync(
   ignoredFile: string,
   skipPlugins: boolean
 ): Promise<{ config: ProjectConfig | null; loadedModules: LoadedModuleSource[] | null }> {
-  const args = [getExpoConfigLoaderPath(), path.resolve(projectRoot), ignoredFile];
+  const args = [
+    getExpoConfigLoaderPath(),
+    path.resolve(projectRoot),
+    ignoredFile,
+    '--mode',
+    FINGERPRINT_ENV_MODE,
+  ];
   if (skipPlugins) {
     args.push('--skipPlugins');
   }
-  const { message } = await spawnWithIpcAsync('node', args, { cwd: projectRoot });
+  const childEnv = setNodeEnv(FINGERPRINT_ENV_MODE, { systemEnv: getOriginalEnv() });
+  delete childEnv.EXPO_CONFIG_MODE;
+  const { message } = await spawnWithIpcAsync('node', args, { cwd: projectRoot, env: childEnv });
   return JSON.parse(message);
 }
 

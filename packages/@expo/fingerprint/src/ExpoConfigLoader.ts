@@ -2,6 +2,7 @@
  * A helper script to load the Expo config and loaded plugins from a project
  */
 
+import { loadProjectEnv } from '@expo/env';
 import fs from 'fs/promises';
 import module from 'module';
 import process from 'node:process';
@@ -13,7 +14,9 @@ import { buildPathMatchObjects, isIgnoredPathWithMatchObjects, toPosixPath } fro
 
 async function runAsync(programName: string, args: string[] = []) {
   if (args[0] == null) {
-    console.log(`Usage: ${programName} <projectRoot> [ignoredFile] [--skipPlugins]`);
+    console.log(
+      `Usage: ${programName} <projectRoot> [ignoredFile] --mode <development|production> [--skipPlugins]`
+    );
     return;
   }
 
@@ -22,8 +25,16 @@ async function runAsync(programName: string, args: string[] = []) {
   const ignoredFileArg = args[1] && !args[1].startsWith('--') ? args[1] : null;
   const ignoredFile = ignoredFileArg ? path.resolve(ignoredFileArg) : null;
 
-  setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
+  const modeFlagIndex = args.indexOf('--mode');
+  const mode = modeFlagIndex >= 0 ? args[modeFlagIndex + 1] : undefined;
+  if (mode !== 'development' && mode !== 'production') {
+    throw new Error(`Unsupported Expo config mode: ${mode}`);
+  }
+  try {
+    loadProjectEnv(projectRoot, { mode });
+  } finally {
+    delete process.env.EXPO_CONFIG_MODE;
+  }
 
   const { getCapturedModules, uninstall } = installModuleCaptureHook();
   let config;
@@ -201,18 +212,6 @@ export async function resolveLoadedModuleSourcesAsync(
  */
 export function getExpoConfigLoaderPath() {
   return path.join(__dirname, 'ExpoConfigLoader.js');
-}
-
-/**
- * Set the environment to production or development
- * Replicates the code from `@expo/cli` to ensure the same environment is set.
- */
-function setNodeEnv(mode: 'development' | 'production') {
-  process.env.NODE_ENV = process.env.NODE_ENV || mode;
-  process.env.BABEL_ENV = process.env.BABEL_ENV || process.env.NODE_ENV;
-
-  // @ts-expect-error: Add support for external React libraries being loaded in the same process.
-  globalThis.__DEV__ = process.env.NODE_ENV !== 'production';
 }
 
 // Ignore known non-native packages loaded while applying config plugins, which the plugins-skipped
