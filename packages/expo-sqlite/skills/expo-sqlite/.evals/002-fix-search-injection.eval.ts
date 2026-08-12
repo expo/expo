@@ -1,4 +1,5 @@
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from '@expo/skill-eval-kit';
+
 import { setupProject } from './setup';
 
 // The seeded src/db.ts interpolates user input into a SQL string. A correct

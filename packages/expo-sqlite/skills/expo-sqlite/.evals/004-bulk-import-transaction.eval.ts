@@ -1,4 +1,5 @@
-import { agentEval, expect, type EvalWorkspace } from './eval-kit';
+import { agentEval, expect, type EvalWorkspace } from '@expo/skill-eval-kit';
+
 import { setupProject } from './setup';
 
 // Atomic bulk insert while other queries run concurrently: the skill's

@@ -1,0 +1,44 @@
+{
+  "name": "@expo/skill-eval-kit",
+  "version": "0.1.0",
+  "description": "Vitest harness for agent skill evals colocated with Expo packages",
+  "keywords": [],
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/skill-eval-kit#readme",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/skill-eval-kit"
+  },
+  "private": true,
+  "files": [
+    "build"
+  ],
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-build cjs:src",
+    "clean": "expo-module clean",
+    "lint": "oxlint --config oxlint.config.mjs .",
+    "format": "expo-module format",
+    "test": "jest",
+    "depscheck": "expo-module depscheck",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.28.0"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "workspace:*",
+    "vitest": "^4.0.0"
+  },
+  "peerDependencies": {
+    "vitest": "*"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  }
+}

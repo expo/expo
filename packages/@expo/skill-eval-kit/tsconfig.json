@@ -1,0 +1,11 @@
+{
+  // Relative extends on purpose: consumers run this package from source via a
+  // vitest alias, and vite's transform loads this tsconfig — a bare
+  // 'expo-module-scripts/tsconfig.node' specifier would need node_modules.
+  "extends": "../../expo-module-scripts/tsconfig.node.json",
+  "include": ["./src"],
+  "compilerOptions": {
+    "rootDir": "./src",
+    "noEmit": true
+  }
+}

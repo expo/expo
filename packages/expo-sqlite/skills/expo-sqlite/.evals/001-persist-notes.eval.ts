@@ -1,4 +1,5 @@
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from '@expo/skill-eval-kit';
+
 import { setupProject } from './setup';
 
 // The prompt asks for durable notes plus a schema-evolution story. The skill

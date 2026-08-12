@@ -13,10 +13,9 @@ A case is a single file holding the prompt, a named fixture reference, and the c
 ```
 .evals/
   README.md
-  eval-kit.ts                        # package-agnostic vitest adapter (later a re-export shim of a shared package)
   setup.ts                           # pure expo-sqlite config; imports nothing from the kit
-  vitest.config.ts
-  package.json                       # anchors vitest's project root here; declares the opt-in AST parser
+  vitest.config.ts                   # aliases @expo/skill-eval-kit to its in-repo source
+  package.json                       # anchors vitest's project root here
   fixtures/                          # named seed workspaces — real files, shareable between cases
     notes-in-memory/                 # per-scenario fixtures layered over the create-expo-app scaffold
     notes-search/
@@ -54,7 +53,7 @@ agentEval(
 
 The base scaffold is a real `bunx create-expo-app --template blank-typescript` app — nothing hand-maintained (no checked-in tsconfig/app.json). It is created once per template on first run (network + bun required) and cached under the OS temp directory; a cross-process lock serializes the scaffold because concurrent `bunx create-expo-app` invocations collide in bun's link step.
 
-`eval-kit.ts` is package-agnostic and `setup.ts` is pure config that imports nothing from it: `setupProject(options)` returns a plain descriptor (package facts + the case's starting state) that cases pass as `projectSetup`. When the kit extracts to a shared package, `eval-kit.ts` shrinks to a re-export shim — neither setup.ts nor case files change.
+The harness lives in [`@expo/skill-eval-kit`](../../../../@expo/skill-eval-kit) (private for now); the vitest config aliases it to its in-repo source so no build or install step is needed. `setup.ts` is pure config that imports nothing from the kit: `setupProject(options)` returns a plain descriptor (package facts + the case's starting state) that cases pass as `projectSetup`. When the kit publishes, the alias is deleted and the dependency declared — case files don't change.
 
 The descriptor's `prepareAsync` hook covers package-specific workspace preparation: this setup runs `npm install` + `npx expo install expo-sqlite` when `EXPO_SKILL_EVAL_INSTALL=1`, giving realistic SDK-matched dependency resolution and a real node_modules per workspace. The kit re-points `expo-sqlite` at this checkout afterwards, so the published install never replaces the code under test; a failing preparation command errors the suite (infrastructure, not a score).
 

@@ -1,4 +1,5 @@
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from '@expo/skill-eval-kit';
+
 import { setupProject } from './setup';
 
 // Demonstrates directory-structure checks (ws.glob) alongside lexical ones.

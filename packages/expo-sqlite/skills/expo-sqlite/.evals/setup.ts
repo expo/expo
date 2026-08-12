@@ -1,9 +1,8 @@
 /**
  * Package-specific eval setup — the one file that knows this is expo-sqlite.
- * It deliberately imports nothing from eval-kit.ts: `setupProject()` returns
- * a plain descriptor (structurally matching the kit's `ProjectSetup`) that
- * case files pass to `agentEval` as `projectSetup`. Pure config stays
- * portable when the kit moves to a shared package.
+ * It deliberately imports nothing from @expo/skill-eval-kit: `setupProject()`
+ * returns a plain descriptor (structurally matching the kit's `ProjectSetup`)
+ * that case files pass to `agentEval` as `projectSetup`.
  */
 
 export interface ProjectSetupOptions {

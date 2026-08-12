@@ -1,4 +1,5 @@
-import { agentEval, expect, loadAstSupport } from './eval-kit';
+import { agentEval, expect, loadAstSupport } from '@expo/skill-eval-kit';
+
 import { setupProject } from './setup';
 
 // Demonstrates an AST check for a rule regex can't verify honestly: counting
@@ -30,9 +31,11 @@ agentEval(
     // AST tier: exactly one real connection site (openDatabaseAsync call or
     // SQLiteProvider element) across the app.
     check('opens exactly one database connection (AST)', async (ws, { skip }) => {
-      const ast = await loadAstSupport();
+      const ast = await loadAstSupport(ws);
       if (!ast) {
-        skip('@babel/parser not installed — run npm install in .evals/');
+        skip(
+          '@babel/parser unavailable — npm install in .evals/, or run with EXPO_SKILL_EVAL_INSTALL=1'
+        );
         return;
       }
       let connectionSites = 0;

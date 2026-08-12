@@ -2,8 +2,5 @@
   "name": "expo-sqlite-skill-evals",
   "version": "0.0.0",
   "private": true,
-  "description": "Anchors vitest's project root to this directory so `npx vitest run` works here without a local install. Run `npm install` here only to enable the opt-in AST checks.",
-  "devDependencies": {
-    "@babel/parser": "^7.28.0"
-  }
+  "description": "Anchors vitest's project root to this directory so `npx vitest run` works here without a local install."
 }

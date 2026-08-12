@@ -1,4 +1,5 @@
-import { agentEval, expect } from './eval-kit';
+import { agentEval, expect } from '@expo/skill-eval-kit';
+
 import { setupProject } from './setup';
 
 // The skill's guidance: expo-sqlite/kv-store is a drop-in AsyncStorage
