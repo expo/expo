@@ -73,7 +73,7 @@ iOS Simulator 向けの開発ビルドは **.app** 形式で生成され、iOS �
 
 初めてビルドを作成するとき、このコマンドは次の質問を表示します。
 
-- **What would you like your iOS bundle identifier to be?**（iOS のバンドル識別子を何にしますか？）<kbd>Return</kbd> を押して、表示されるデフォルト値を選びます。これにより **app.json** に [`ios.bundleIdentifier`](/versions/latest/config/app/#package) が追加されます。
+- **What would you like your iOS bundle identifier to be?**（iOS のバンドル識別子を何にしますか？）<kbd>Return</kbd> を押して、表示されるデフォルト値を選びます。これにより **app.json** に [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) が追加されます。
 - **iOS app only uses standard/exempt encryption?**（この iOS アプリは標準的な、または適用除外の暗号化のみを使いますか？）<kbd>Y</kbd> を押してデフォルト値を選びます。このアプリは暗号化を使っていないため、**Info.plist** ファイルの `ITSAppUsesNonExemptEncryption` が `NO` に設定され、TestFlight や Apple App Store にリリースする際のコンプライアンスチェックが処理されます。自分のアプリをリリースする際に暗号化を使っている場合は、`N` を選べば次回からこの質問を省略できます。
 
 質問に答えると EAS Build がキューに入り、EAS CLI が EAS ダッシュボードでビルドの詳細と進捗を確認できるリンクを表示します。
