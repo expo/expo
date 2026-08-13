@@ -58,7 +58,7 @@ jobs:
       # the only line. persist-credentials off — the CLI's own git fetches
       # authenticate through `gh` from GH_TOKEN, so the token never lands in
       # .git/config.
-      # @ref LLP 0009#workflow-security-posture [implements] — immutable base commit, never PR head/merge ref
+      # @ref LLP 0009#workflow-security-posture [implements] — trusted base branch, never PR head/merge ref
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           # base.REF, not base.SHA. The security property is "never the PR head
