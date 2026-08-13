@@ -16,6 +16,7 @@ import { ExpoConfigCommonIssueCheck } from '../checks/ExpoConfigCommonIssueCheck
 import { ExpoConfigSchemaCheck } from '../checks/ExpoConfigSchemaCheck';
 import { ExpoRouterReactNavigationCheck } from '../checks/ExpoRouterReactNavigationCheck';
 import { GlobalPackageInstalledLocallyCheck } from '../checks/GlobalPackageInstalledLocallyCheck';
+import { HermesV1VersionCheck } from '../checks/HermesV1VersionCheck';
 import { IllegalPackageCheck } from '../checks/IllegalPackageCheck';
 import { InstalledDependencyVersionCheck } from '../checks/InstalledDependencyVersionCheck';
 import { LockfileCheck } from '../checks/LockfileCheck';
@@ -63,6 +64,7 @@ export function resolveChecksInScope(exp: ExpoConfig, pkg: PackageJSONConfig): D
     new SupportPackageVersionCheck(),
     new NativeToolingVersionCheck(),
     new DependencyVersionOverrideCheck(),
+    new HermesV1VersionCheck(),
 
     // Compatibility Checks
     new StoreCompatibilityCheck(),
