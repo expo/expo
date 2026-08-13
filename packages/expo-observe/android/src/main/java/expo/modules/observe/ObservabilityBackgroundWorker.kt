@@ -17,6 +17,7 @@ import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
+import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.SessionManager
 
 /**
@@ -52,7 +53,8 @@ class ObservabilityBackgroundWorker(
       pendingMetricsManager = pendingMetricsManager,
       pendingLogsManager = pendingLogsManager,
       baseUrl = baseUrl,
-      isDebugBuild = BuildConfig.DEBUG
+      isDebugBuild = BuildConfig.DEBUG,
+      spanDao = MetricsDatabase.getDatabase(context).spanDao()
     )
   }
 
@@ -83,6 +85,7 @@ class ObservabilityBackgroundWorker(
       observabilityManager.cleanup()
       observabilityManager.dispatchUnsentMetrics()
       observabilityManager.dispatchUnsentLogs()
+      observabilityManager.dispatchUnsentSpans()
       Log.d(OBSERVE_TAG, "Successfully dispatched unsent metrics and logs")
       Result.success()
     } catch (e: Exception) {
