@@ -12,7 +12,7 @@ import useSourceSelection from './web/useSourceSelection';
 loadStyle();
 
 type ExpoImageWebProps = ImageNativeProps & {
-  dataSet?: Record<string, unknown>;
+  dataSet?: Record<string, string | undefined>;
 };
 
 function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
@@ -176,7 +176,7 @@ export default function ExpoImage({
     <View
       ref={containerViewRef}
       // @ts-expect-error: TODO(@kitten): This is related to react-native-web presumably
-      dataSet={{ ...dataSet, expoimage: true }}
+      dataSet={{ ...dataSet, expoimage: 'true' }}
       style={[{ overflow: 'hidden' }, style]}
       {...props}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>

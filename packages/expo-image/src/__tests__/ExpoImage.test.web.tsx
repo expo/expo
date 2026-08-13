@@ -8,6 +8,6 @@ describe('ExpoImage', () => {
       dataSet: { test: 'value' },
     });
 
-    expect(element.props.dataSet).toEqual({ test: 'value', expoimage: true });
+    expect(element.props.dataSet).toEqual({ test: 'value', expoimage: 'true' });
   });
 });
