@@ -276,6 +276,15 @@ describe('TextDecoder', () => {
     });
   });
 
+  it('accepts callable options dictionaries', () => {
+    const options = () => {};
+
+    // @ts-expect-error Web IDL dictionaries accept callable objects
+    expect(new TextDecoder('utf-8', options).fatal).toBe(false);
+    // @ts-expect-error Web IDL dictionaries accept callable objects
+    expect(new TextDecoder().decode(new Uint8Array([0x61]), options)).toBe('a');
+  });
+
   // https://github.com/inexorabletash/text-encoding/blob/3f330964c0e97e1ed344c2a3e963f4598610a7ad/test/test-misc.js#L383
   it('encode() called with falsy arguments (polyfill bindings)', () => {
     const encoder = new TextEncoder();

@@ -30,10 +30,13 @@ function normalizeBytes(input: ArrayBuffer | ArrayBufferView | undefined): Uint8
     return EMPTY_BYTES;
   } else if (input instanceof Uint8Array) {
     return input;
-  } else if (input instanceof ArrayBuffer) {
-    return new Uint8Array(input);
   } else if (ArrayBuffer.isView(input)) {
     return new Uint8Array(input.buffer, input.byteOffset, input.byteLength);
+  } else if (
+    (input[Symbol.toStringTag] as string) === 'ArrayBuffer' ||
+    (input[Symbol.toStringTag] as string) === 'SharedArrayBuffer'
+  ) {
+    return new Uint8Array(input as ArrayBuffer);
   } else {
     throw new TypeError('The input must be an ArrayBuffer or ArrayBufferView');
   }
@@ -372,7 +375,7 @@ export class TextDecoder {
   private readonly _state: TextDecoderState;
 
   constructor(label: string = 'utf-8', options: { fatal?: boolean; ignoreBOM?: boolean } = {}) {
-    if (options == null || typeof options !== 'object') {
+    if (options == null || (typeof options !== 'object' && typeof options !== 'function')) {
       throw new TypeError(
         'Second argument of TextDecoder must be undefined or an object, e.g. { fatal: true }'
       );
@@ -400,7 +403,7 @@ export class TextDecoder {
   }
 
   decode(input?: ArrayBuffer | ArrayBufferView, options: { stream?: boolean } = {}): string {
-    if (options == null || typeof options !== 'object') {
+    if (options == null || (typeof options !== 'object' && typeof options !== 'function')) {
       throw new TypeError('The options argument must be undefined or an object');
     }
     const bytes = normalizeBytes(input);
