@@ -463,7 +463,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkSpansConfiguration(enabled: false)
       ) {
         return "s"
@@ -478,7 +478,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
       let persistence = NetworkRequestPersistence(
-        database: database,
+        writer: SpanWriter(database: database),
         configuration: NetworkSpansConfiguration(enabled: true, hosts: ["API.myapp.com"], methods: nil)
       ) {
         return "s"
@@ -497,7 +497,7 @@ struct NetworkRequestPersistenceTests {
     // "Applies forward": rows persisted before the change stay in the table and still dispatch.
     try withTemporaryDatabase { database in
       try insertSession(id: "s", into: database)
-      let persistence = NetworkRequestPersistence(database: database) {
+      let persistence = NetworkRequestPersistence(writer: SpanWriter(database: database)) {
         return "s"
       }
       persistence.persist(makeRequest())
@@ -511,7 +511,7 @@ struct NetworkRequestPersistenceTests {
   func `persists a completed request as a span attributed to the provided session`() throws {
     try withTemporaryDatabase { database in
       try insertSession(id: "main-session", into: database)
-      let persistence = NetworkRequestPersistence(database: database) {
+      let persistence = NetworkRequestPersistence(writer: SpanWriter(database: database)) {
         return "main-session"
       }
       persistence.persist(makeRequest())
@@ -528,7 +528,7 @@ struct NetworkRequestPersistenceTests {
     try withTemporaryDatabase { database in
       try insertSession(id: "main-session", into: database)
       let monitor = NetworkRequestMonitor()
-      monitor.persistence = NetworkRequestPersistence(database: database) {
+      monitor.persistence = NetworkRequestPersistence(writer: SpanWriter(database: database)) {
         return "main-session"
       }
       monitor.record(makeRequest(method: "GET"))
@@ -543,7 +543,7 @@ struct NetworkRequestPersistenceTests {
     // The sessions FK protects referential integrity; persistence must degrade to a dropped
     // row rather than throw into the monitor's record path.
     try withTemporaryDatabase { database in
-      let persistence = NetworkRequestPersistence(database: database) {
+      let persistence = NetworkRequestPersistence(writer: SpanWriter(database: database)) {
         return "never-inserted"
       }
       persistence.persist(makeRequest())

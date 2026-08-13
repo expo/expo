@@ -17,7 +17,7 @@ public class AppMetricsAppDelegateSubscriber: ExpoAppDelegateSubscriber {
       // The persisted recording policy applies from the first observed request; JS can replace
       // it later via `setNetworkSpansConfig`, affecting subsequent requests only.
       NetworkRequestMonitor.shared.persistence = NetworkRequestPersistence(
-        database: AppMetrics.database,
+        writer: AppMetrics.spanWriter,
         configuration: AppMetricsUserDefaults.networkSpansConfiguration ?? NetworkSpansConfiguration()
       ) {
         return AppMetrics.mainSession.id

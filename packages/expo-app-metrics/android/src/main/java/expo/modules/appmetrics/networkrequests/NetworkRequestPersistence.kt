@@ -2,18 +2,12 @@
 
 package expo.modules.appmetrics.networkrequests
 
-import android.util.Log
-import expo.modules.appmetrics.storage.MetricsDatabase
+import expo.modules.appmetrics.spans.SpanWriter
 import expo.modules.appmetrics.storage.Span
-import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLDecoder
-
-private const val TAG = "ExpoAppMetrics"
 
 /**
  * Records completed network requests as trace spans in the `spans` table.
@@ -21,8 +15,7 @@ private const val TAG = "ExpoAppMetrics"
  * Mirrors the iOS `NetworkRequestPersistence`.
  */
 class NetworkRequestPersistence(
-  private val database: MetricsDatabase,
-  private val scope: CoroutineScope,
+  private val writer: SpanWriter,
   initialConfiguration: NetworkSpansConfiguration = NetworkSpansConfiguration(),
   // A plain value rather than a provider: the id is constant for an instance, and resolving it
   // eagerly keeps the monitor's record path off module state a teardown could have invalidated.
@@ -50,20 +43,9 @@ class NetworkRequestPersistence(
     if (!configuration.allows(request.url, request.method)) {
       return
     }
-    // Converts and inserts on `scope`, so OkHttp dispatcher threads pay neither the URL parsing
-    // and JSON building nor the database write. Matches `persistBuffered`.
-    scope.launch {
-      val span = request.toSpan(sessionId) ?: return@launch
-      try {
-        database.spanDao().insert(span)
-      } catch (e: CancellationException) {
-        // A torn-down scope is routine (a JS reload), not a failure worth warning about.
-        throw e
-      } catch (e: Exception) {
-        // Swallowed: recording telemetry must never break the monitor's fan-out to its delegates.
-        Log.w(TAG, "Failed to persist a network request span", e)
-      }
-    }
+    // Converts on the writer's scope, not here: this runs on an OkHttp dispatcher thread for
+    // every completed request, and `persistBuffered` defers the same work for the same reason.
+    writer.write { request.toSpan(sessionId) }
   }
 
   /**
@@ -75,29 +57,13 @@ class NetworkRequestPersistence(
     if (requests.isEmpty()) {
       return
     }
-    // One coroutine, converting inside it: the install path shares the module's serial queue
-    // with the session INSERT and crash-report processing, so converting up to 200 requests
-    // there would be the most expensive place to do it.
-    scope.launch {
-      for (request in requests) {
-        if (!configuration.allows(request.url, request.method)) {
-          continue
-        }
-        val span = request.toSpan(sessionId) ?: continue
-        try {
-          database.spanDao().insert(span)
-        } catch (e: CancellationException) {
-          // Must not be swallowed: `CancellationException` is an `Exception`, so a blanket catch
-          // would let the loop finish and report completion for a batch that never wrote its
-          // remaining rows, losing the buffered requests the caller means to retry.
-          throw e
-        } catch (e: Exception) {
-          Log.w(TAG, "Failed to persist a network request span", e)
-        }
+    // The conversion runs lazily inside the writer's batch coroutine: the install path shares
+    // the module's serial queue with the session INSERT and crash-report processing, so
+    // converting up to 200 requests there would be the most expensive place to do it.
+    writer.writeAll(onComplete) {
+      requests.mapNotNull { request ->
+        request.takeIf { configuration.allows(it.url, it.method) }?.toSpan(sessionId)
       }
-      // Deliberately not in a `finally`: a cancelled batch must not report completion, so the
-      // caller can retry the drain on the next install.
-      onComplete()
     }
   }
 }
