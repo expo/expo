@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Embed the project fingerprint (`app.fingerprint`) in debug builds, next to the embedded app config. `npx expo needs-rebuild` reads it to detect when the installed app is stale. Release builds do not compute or ship the file. Set `EXPO_SKIP_FINGERPRINT_EMBED=1` to opt out.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
