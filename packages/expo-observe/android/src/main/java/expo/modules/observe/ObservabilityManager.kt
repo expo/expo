@@ -5,7 +5,9 @@ import android.util.Log
 import expo.modules.easclient.EASClientID
 import expo.modules.observe.storage.PendingLogsManager
 import expo.modules.observe.storage.PendingMetricsManager
+import expo.modules.appmetrics.storage.MetricsDatabase
 import expo.modules.appmetrics.storage.SessionManager
+import expo.modules.appmetrics.storage.SpanDao
 import expo.modules.appmetrics.utils.TimeUtils
 import expo.modules.interfaces.constants.ConstantsInterface
 import kotlinx.coroutines.sync.Mutex
@@ -42,7 +44,8 @@ class ObservabilityManager(
       pendingLogsManager = pendingLogsManager,
       projectId = projectId,
       baseUrl = baseUrl,
-      isDebugBuild = BuildConfig.DEBUG
+      isDebugBuild = BuildConfig.DEBUG,
+      spanDao = MetricsDatabase.getDatabase(context).spanDao()
     )
 
     sessionManager.addMetricsInsertListener { metricIds ->
@@ -59,6 +62,10 @@ class ObservabilityManager(
 
   suspend fun dispatchUnsentLogs() {
     baseManager.dispatchUnsentLogs()
+  }
+
+  suspend fun dispatchUnsentSpans() {
+    baseManager.dispatchUnsentSpans()
   }
 
   fun scheduleBackgroundDispatch() {
@@ -81,8 +88,20 @@ class BaseObservabilityManager(
   private val deterministicUniformValueProvider: () -> Double = {
     EASClientID.deterministicUniformValue(EASClientID(context).uuid)
   },
-  private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() }
+  private val currentTimeMs: () -> Long = { TimeUtils.getWallClockMillis() },
+  /**
+   * Source of persisted spans, or `null` to disable the traces signal (kept optional so
+   * existing constructions and tests that don't exercise spans stay valid).
+   */
+  private val spanDao: SpanDao? = null
 ) {
+  companion object {
+    /**
+     * Maximum spans per request accepted by the ingestion endpoint; it rejects everything past
+     * this count within one POST, so larger backlogs are sent as sequential chunks.
+     */
+    const val MAX_SPANS_PER_REQUEST = 512
+  }
   private val eventDispatcher = EventDispatcher(
     context = context,
     projectId = projectId,
@@ -104,6 +123,7 @@ class BaseObservabilityManager(
    */
   private var metricsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
   private var logsRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
+  private var spansRetryGate: DispatchUtils.RetryGateState = DispatchUtils.RetryGateState.initial
 
   /**
    * Per-signal mutexes that serialize same-signal dispatch calls. Two `dispatchEvents`
@@ -118,6 +138,7 @@ class BaseObservabilityManager(
    */
   private val metricsDispatchMutex = Mutex()
   private val logsDispatchMutex = Mutex()
+  private val spansDispatchMutex = Mutex()
 
   /**
    * Returns true and logs when an active retry gate suppresses this dispatch round. Called
@@ -267,6 +288,71 @@ class BaseObservabilityManager(
           "Dropping batch of ${dispatchedLogIds.size} log event(s): ${result.reason}"
         )
       is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+    }
+  }
+
+  /**
+   * Dispatches persisted spans to `/v1/traces`.
+   *
+   * Unlike metrics and logs there is no pending-ids store: nothing else reads the `spans` rows
+   * back, so a consumed (or deliberately dropped) batch is deleted outright and the table
+   * itself acts as the queue. Rows survive on a retryable failure and go out on the next
+   * dispatch. Batches are chunked at the server's per-request span limit.
+   */
+  suspend fun dispatchUnsentSpans(): Unit = spansDispatchMutex.withLock {
+    val spanDao = spanDao ?: return
+
+    if (retryGateBlocks(spansRetryGate, "spans")) {
+      return
+    }
+
+    if (!shouldDispatch()) {
+      // Drop the backlog without materializing it; one MAX query is enough to know how far to
+      // delete. Mirrors metrics/logs removing pending ids they won't send.
+      spanDao.getMaxId()?.let { spanDao.deleteUpTo(it) }
+      return
+    }
+
+    val pendingSpans = spanDao.getAll()
+    if (pendingSpans.isEmpty()) {
+      return
+    }
+
+    // Rows arrive ordered by id; a chunk that fails retryably stops the loop and leaves its
+    // rows (and everything after them) for the next dispatch.
+    for (chunk in pendingSpans.chunked(MAX_SPANS_PER_REQUEST)) {
+      val batches = chunk.groupBy { it.sessionId }.mapNotNull { (sessionId, spans) ->
+        // Spans whose session row no longer exists are skipped — their rows are about to be
+        // deleted below anyway.
+        val session = sessionManager.getSessionRow(sessionId) ?: return@mapNotNull null
+        SpanBatch(
+          event = Event(metadata = Metadata.fromSessionMetadata(session), metrics = emptyList()),
+          spans = spans.map { it.toOTSpan() }
+        )
+      }
+      val highestId = chunk.last().id
+      if (batches.isEmpty()) {
+        spanDao.deleteUpTo(highestId)
+        continue
+      }
+      val result = eventDispatcher.dispatchSpans(batches)
+      spansRetryGate = nextGate(spansRetryGate, result)
+      when (result) {
+        is DispatchResult.PartialSuccess ->
+          Log.w(
+            OBSERVE_TAG,
+            "Partial success on batch of ${chunk.size} span(s): " +
+              "server rejected ${result.partial.rejectedCount} " +
+              "(${result.partial.errorMessage ?: "no error message"})"
+          )
+        is DispatchResult.NonRetryableFailure ->
+          Log.w(OBSERVE_TAG, "Dropping batch of ${chunk.size} span(s): ${result.reason}")
+        is DispatchResult.Success, is DispatchResult.RetryableFailure -> Unit
+      }
+      if (!DispatchUtils.shouldRemovePending(result)) {
+        return
+      }
+      spanDao.deleteUpTo(highestId)
     }
   }
 
