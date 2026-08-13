@@ -1,0 +1,89 @@
+name: expo-bot help
+
+# Maintainer comment `@expo-bot help` (or a bare `@expo-bot`) posts a short
+# command list and publishes .github/expo-bot.md to the expo-bot profile
+# README when that copy is behind. A daily cron does the same publish so
+# the profile stays current even if nobody asks for help. No model.
+
+on:
+  issue_comment:
+    types: [created]
+  schedule:
+    # Once a day. Offset from :00 so we are not in the hourly stampede.
+    - cron: '17 8 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  help:
+    # `startsWith('@expo-bot help')` (no trailing space) so a newline or tab
+    # after `help` still matches — expression literals cannot name those
+    # characters. The two-space form is a separate prefix because
+    # `startsWith('@expo-bot help')` is false for `@expo-bot  help`.
+    if: >-
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.comment.user.login != 'expo-bot' &&
+      (github.event.comment.body == '@expo-bot' ||
+      startsWith(github.event.comment.body, '@expo-bot help') ||
+      startsWith(github.event.comment.body, '@expo-bot  help')) &&
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require write access
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          ACTOR: ${{ github.event.comment.user.login }}
+        run: |
+          # `|| echo none` on purpose: a non-collaborator gets a 404, and under
+          # `bash -e` a bare assignment would kill the step before the error
+          # below could name the reason. Same pattern as agent-commands.yml.
+          permission=$(gh api "repos/${{ github.repository }}/collaborators/$ACTOR/permission" --jq .permission 2>/dev/null || echo none)
+          case "$permission" in
+            admin|maintain|write) ;;
+            *) echo "::error::$ACTOR has '$permission' permission; write access is required."; exit 1 ;;
+          esac
+
+      # Default branch only — the manpage on main is what we publish, never
+      # a PR-head edit of .github/expo-bot.md.
+      - name: Checkout (default branch)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Publish manpage if stale
+        # Comments still post if sync fails; cron/dispatch should surface a miss.
+        continue-on-error: ${{ github.event_name == 'issue_comment' }}
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+        run: bash .github/scripts/sync-expo-bot-manpage.sh
+
+      - name: Post command list
+        if: github.event_name == 'issue_comment'
+        env:
+          GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          NUMBER: ${{ github.event.issue.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          cat > /tmp/expo-bot-help.md <<'MARKDOWN'
+          <!-- expo-bot:help -->
+          **@expo-bot** — maintainer commands on [expo/expo](https://github.com/expo/expo). Full manpage: https://github.com/expo-bot
+
+          | Command | What it does |
+          | --- | --- |
+          | `@expo-bot help` | This list (and refresh the manpage if it is behind) |
+          | `@expo-bot verify` | Investigate; on an issue may also open a fix PR (`/verify`) |
+          | `@expo-bot review` | One-shot AI review on a PR (`/review`) |
+          | `@expo-bot dismiss` / `undismiss` | Hide or restore a finding |
+          | `@expo-bot <task>` | Follow-up on an open expo-bot PR |
+
+          Review, dismiss, and work are pull-request only. Verify and help also run on issues.
+          MARKDOWN
+          gh issue comment "$NUMBER" -R "$REPO" --body-file /tmp/expo-bot-help.md

@@ -1,6 +1,7 @@
 'use client';
 import React, { useCallback, useEffect } from 'react';
 
+import { getValidInitialRouteName, useRouteNode } from '../../Route';
 import type { ExtendedStackNavigationOptions } from '../../layouts/StackClient';
 import { withLayoutContext } from '../../layouts/withLayoutContext';
 import type {
@@ -32,11 +33,8 @@ import {
   isTransparentModalPresentation,
 } from './utils';
 
-function ModalStackNavigator({
-  initialRouteName,
-  children,
-  screenOptions,
-}: ModalStackNavigatorProps) {
+function ModalStackNavigator({ children, screenOptions }: ModalStackNavigatorProps) {
+  const routeNode = useRouteNode();
   const { state, navigation, descriptors, NavigationContent } = useNavigationBuilder<
     StackNavigationState<ParamListBase>,
     StackRouterOptions,
@@ -46,7 +44,7 @@ function ModalStackNavigator({
   >(StackRouter, {
     children,
     screenOptions,
-    initialRouteName,
+    initialRouteName: getValidInitialRouteName(routeNode),
   });
 
   useEffect(

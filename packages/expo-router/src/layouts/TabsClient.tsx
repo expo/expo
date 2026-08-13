@@ -52,11 +52,11 @@ const Tabs = unstable_integrateWithRouter<
   processState: appendMissingPlaceholderTabRoutes,
   createProps: ({ state, dispatch }) => ({
     routeNames: state.routeNames,
-    preloadedRouteKeys: state.preloadedRouteKeys,
     preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
     popNestedStackToTop: (routeKey) => {
       const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
-      if (nestedState?.type === 'stack' && nestedState.key) {
+      // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
+      if (nestedState?.key) {
         dispatch({ ...StackActions.popToTop(), target: nestedState.key });
       }
     },

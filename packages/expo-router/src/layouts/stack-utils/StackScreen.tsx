@@ -34,13 +34,6 @@ export interface StackScreenProps extends PropsWithChildren {
   options?: StackBaseScreenProps['options'];
 
   /**
-   * Initial params to pass to the route.
-   *
-   * Only supported when used inside a Layout component.
-   */
-  initialParams?: StackBaseScreenProps['initialParams'];
-
-  /**
    * Listeners for navigation events.
    *
    * Only supported when used inside a Layout component.

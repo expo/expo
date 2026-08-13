@@ -1,13 +1,18 @@
 import { act, render } from '@testing-library/react-native';
 import * as React from 'react';
 
-import { CommonActions, type ParamListBase, StackRouter } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
+import {
+  CommonActions,
+  type NavigationState,
+  type ParamListBase,
+  StackRouter,
+} from '../../routers';
 import { Screen } from '../Screen';
 import { createNavigationContainerRef } from '../createNavigationContainerRef';
 import { useEventEmitter } from '../useEventEmitter';
 import { useNavigationBuilder } from '../useNavigationBuilder';
 import { useNavigationCache } from '../useNavigationCache';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 beforeEach(() => {
@@ -21,7 +26,7 @@ afterEach(() => {
 test('preserves reference for navigation objects', () => {
   expect.assertions(2);
 
-  const state = {
+  const state: NavigationState = {
     type: 'tab',
     stale: false as const,
     index: 1,
@@ -74,7 +79,7 @@ test('preserves reference for navigation objects', () => {
 test('preserves placeholder navigation after the route is created', () => {
   let routeNames = ['Foo', 'Bar'];
   let routes = [{ key: 'Foo-key', name: 'Foo' }];
-  const getState = () => ({
+  const getState = (): NavigationState => ({
     type: 'tab',
     stale: false as const,
     index: 0,
@@ -139,7 +144,11 @@ test('returns correct value for isFocused', () => {
   };
 
   render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />
@@ -213,7 +222,11 @@ test('returns correct value for isFocused after changing screens', () => {
   };
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer
+      initialState={{
+        index: 0,
+        routes: [{ name: 'first' }, { name: 'second' }, { name: 'third' }],
+      }}>
       <TestNavigator>
         <Screen name="first">{() => null}</Screen>
         <Screen name="second" component={Test} />

@@ -26,7 +26,7 @@ import { SSG_LOADER_HEADER_ALLOWLIST } from '../start/server/metro/resolveLoader
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import {
   assetsRequiresSort,
-  serializeHtmlWithAssets,
+  serialAssetsToStaticContentAssets,
   sortMatchedAssetsByEntryPoints,
 } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
@@ -208,6 +208,7 @@ export async function exportFromServerAsync(
     files = new Map(),
     exp,
     scriptTags,
+    mode,
   }: Options
 ): Promise<ExportAssetMap> {
   const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
@@ -219,7 +220,6 @@ export async function exportFromServerAsync(
   Log.log(logOutput);
 
   const platform = 'web';
-  const isExporting = true;
   const isExportingWithSSR =
     exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
@@ -295,19 +295,15 @@ export async function exportFromServerAsync(
         }
       }
 
-      if (faviconAsset) {
-        renderOpts.assets = { css: [], js: [], favicon: faviconAsset.href };
-      }
-
-      const template = await renderAsync(normalizedPathname, route, renderOpts);
-      let html = serializeHtmlWithAssets({
-        isExporting,
-        resources: resources.artifacts,
-        template,
+      renderOpts.hydrate = true;
+      renderOpts.assets = serialAssetsToStaticContentAssets(resources.artifacts, {
+        isExporting: true,
         baseUrl,
         route,
-        hydrate: true,
+        favicon: faviconAsset?.href,
       });
+
+      let html = await renderAsync(normalizedPathname, route, renderOpts);
 
       if (scriptTags) {
         // Inject script tags into the HTML.
@@ -500,7 +496,7 @@ export async function exportFromServerAsync(
       });
     }
   } else {
-    warnPossibleInvalidExportType(appDir);
+    warnPossibleInvalidExportType(appDir, mode);
   }
 
   return files;
@@ -746,7 +742,7 @@ async function exportApiRoutesAsync({
   return files;
 }
 
-function warnPossibleInvalidExportType(appDir: string) {
+function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
   const apiRoutes = getApiRoutesForDirectory(appDir);
   if (apiRoutes.length) {
     // TODO: Allow API Routes for native-only.
@@ -757,7 +753,7 @@ function warnPossibleInvalidExportType(appDir: string) {
     );
   }
 
-  const middlewareFile = getMiddlewareForDirectory(appDir);
+  const middlewareFile = getMiddlewareForDirectory(appDir, mode);
   if (middlewareFile) {
     Log.warn(
       chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`

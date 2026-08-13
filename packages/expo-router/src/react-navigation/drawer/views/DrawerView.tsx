@@ -77,6 +77,8 @@ function DrawerViewBase({
     overlayAccessibilityLabel,
   } = descriptors[focusedRouteKey]!.options;
 
+  // Keys of routes that have been focused during this mount. Only blurred routes from this list are
+  // frozen, so a route is never frozen before it has rendered once.
   const [loaded, setLoaded] = React.useState([focusedRouteKey]);
 
   if (!loaded.includes(focusedRouteKey)) {
@@ -94,7 +96,8 @@ function DrawerViewBase({
     ) {
       const prevRoute = state.routes.find((route) => route.key === previousRouteKey);
 
-      if (prevRoute?.state?.type === 'stack' && prevRoute.state.key) {
+      if (prevRoute?.state?.key) {
+        // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
         navigation.dispatch({
           ...StackActions.popToTop(),
           target: prevRoute.state.key,
@@ -109,7 +112,7 @@ function DrawerViewBase({
 
   const { colors } = useTheme();
 
-  const drawerStatus = getDrawerStatusFromState(state);
+  const drawerStatus = getDrawerStatusFromState(state, defaultStatus);
 
   const handleDrawerOpen = useLatestCallback(() => {
     navigation.dispatch({
@@ -206,15 +209,10 @@ function DrawerViewBase({
       <MaybeScreenContainer enabled={detachInactiveScreens} hasTwoStates style={styles.content}>
         {state.routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
-          const { lazy = true } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = state.preloadedRouteKeys.includes(route.key);
 
-          if (
-            descriptor.route.key === undefined ||
-            (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded)
-          ) {
-            // Don't render placeholder or unloaded lazy screens.
+          if (descriptor.route.key === undefined) {
+            // Don't render placeholder screens.
             return null;
           }
 
@@ -250,7 +248,8 @@ function DrawerViewBase({
               visible={isFocused}
               enabled={detachInactiveScreens}
               freezeOnBlur={freezeOnBlur}
-              shouldFreeze={!isFocused && !isPreloaded}>
+              // TODO: A visited blurred route re-preloaded with new params stays frozen until focused.
+              shouldFreeze={!isFocused && loaded.includes(route.key)}>
               <Screen
                 focused={isFocused}
                 route={route}

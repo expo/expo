@@ -328,15 +328,11 @@ export function useDescriptors<
       } as DescriptorMap[string];
     }
 
-    const describedRoute =
-      route.params === undefined && config.props.initialParams !== undefined
-        ? { ...route, params: config.props.initialParams }
-        : route;
     const navigation = getNavigation({ key: route.name, name: route.name });
     return {
-      route: describedRoute,
+      route,
       navigation,
-      options: getOptions(describedRoute, navigation, {}),
+      options: getOptions(route, navigation, {}),
       render: () => null,
       routeSource: config.props.routeSource,
     } as DescriptorMap[string];

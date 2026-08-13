@@ -38,11 +38,16 @@ function collectJaToJaAnchors(): AnchorLink[] {
 /**
  * Every id the target page registers, in document order. Markdown headings drive the
  * common case; `Collapsible` and `Requirement` register ids too, so they count as well.
+ * `Prerequisites` registers a fixed `prerequisites` anchor rather than one derived from
+ * its text, so it stays the same in every locale.
  */
 function headingIds(mdxPath: string): Set<string> {
   const slugger = new GithubSlugger();
   const ids = new Set<string>();
   for (const line of fs.readFileSync(mdxPath, 'utf8').split('\n')) {
+    if (line.includes('<Prerequisites')) {
+      ids.add('prerequisites');
+    }
     const heading = line.match(/^#{2,5}\s+(.*)$/);
     const summary = line.match(/<Collapsible\s+summary="([^"]+)"/);
     const title = heading?.[1] ?? summary?.[1];

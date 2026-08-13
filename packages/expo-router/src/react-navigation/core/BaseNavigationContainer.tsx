@@ -2,6 +2,7 @@
 import * as React from 'react';
 import { use } from 'react';
 
+import { findFocusedRoute } from '../../fork/findFocusedRoute';
 import useLatestCallback from '../../utils/useLatestCallback';
 import {
   CommonActions,
@@ -22,7 +23,6 @@ import { UnhandledActionContext } from './UnhandledActionContext';
 import { checkDuplicateRouteNames } from './checkDuplicateRouteNames';
 import { checkSerializable } from './checkSerializable';
 import { NOT_INITIALIZED_ERROR } from './createNavigationContainerRef';
-import { findFocusedRoute } from './findFocusedRoute';
 import { ThemeProvider } from './theming/ThemeProvider';
 import type {
   NavigationContainerEventMap,

@@ -957,6 +957,23 @@ internal struct ListRowSeparator: ViewModifier, Record {
   }
 }
 
+internal struct ListRowSeparatorTint: ViewModifier, Record {
+  @Field var color: Color?
+  @Field var edges: VerticalEdgeOptions?
+
+  func body(content: Content) -> some View {
+#if os(tvOS)
+    content
+#else
+    if let edges {
+      content.listRowSeparatorTint(color, edges: edges.toVerticalEdges())
+    } else {
+      content.listRowSeparatorTint(color)
+    }
+#endif
+  }
+}
+
 internal struct ListRowSpacing: ViewModifier, Record {
   @Field var spacing: Double?
 
@@ -1577,6 +1594,16 @@ internal struct MatchedGeometryEffectModifier: ViewModifier, Record {
   }
 }
 
+internal struct GeometryGroupModifier: ViewModifier, Record {
+  func body(content: Content) -> some View {
+    if #available(iOS 17.0, tvOS 17.0, macOS 14.0, *) {
+      content.geometryGroup()
+    } else {
+      content
+    }
+  }
+}
+
 internal enum ButtonStyle: String, Enumerable {
   case automatic
   case bordered
@@ -1903,6 +1930,10 @@ extension ViewModifierRegistry {
       return try MatchedGeometryEffectModifier.init(from: params, appContext: appContext)
     }
 
+    register("geometryGroup") { params, appContext, _ in
+      return try GeometryGroupModifier(from: params, appContext: appContext)
+    }
+
     register("fixedSize") { params, appContext, _ in
       return try FixedSizeModifier(from: params, appContext: appContext)
     }
@@ -1957,6 +1988,10 @@ extension ViewModifierRegistry {
 
     register("listRowSeparator") { params, appContext, _ in
       return try ListRowSeparator(from: params, appContext: appContext)
+    }
+
+    register("listRowSeparatorTint") { params, appContext, _ in
+      return try ListRowSeparatorTint(from: params, appContext: appContext)
     }
 
     register("listRowSpacing") { params, appContext, _ in
@@ -2093,6 +2128,14 @@ extension ViewModifierRegistry {
 
     register("menuOrder") { params, appContext, _ in
       return try MenuOrderModifier(from: params, appContext: appContext)
+    }
+
+    register("menuStyle") { params, appContext, _ in
+      return try MenuStyleModifier(from: params, appContext: appContext)
+    }
+
+    register("menuIndicator") { params, appContext, _ in
+      return try MenuIndicatorModifier(from: params, appContext: appContext)
     }
 
     register("submitLabel") { params, appContext, _ in

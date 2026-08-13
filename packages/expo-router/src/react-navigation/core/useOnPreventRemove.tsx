@@ -28,6 +28,8 @@ export const getPreventableRoutes = (
   state: NavigationState | { type?: string; index?: number; routes: { key?: string }[] },
   type = state.type
 ) =>
+  // In order to preload routes in stack, an action needs to be dispatched, so the type will be always
+  // set when there are preloaded routes
   type === 'stack'
     ? state.routes.slice(0, (state.index ?? state.routes.length - 1) + 1)
     : state.routes;
