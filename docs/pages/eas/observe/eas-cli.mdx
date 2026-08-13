@@ -1,17 +1,33 @@
 ---
 title: Querying with EAS CLI
+sidebar_title: EAS CLI
 description: Query EAS Observe metrics, events, and sessions from the terminal with the eas observe commands.
 ---
 
+import { Prerequisites, Requirement } from '~/ui/components/Prerequisites';
 import { Terminal } from '~/ui/components/Snippet';
 
 Everything the [EAS Observe dashboard](/eas/observe/dashboard/) shows is also available from the terminal. Use the `eas observe` commands to compare releases, investigate slow sessions, and pipe results into scripts.
 
-## Before you start
+## Prerequisites
 
-Log in with `eas login`. By default, each command reads the project ID from the app config in the current directory. Pass `--project-id` to query a project from anywhere, using an account that has access to it:
+<Prerequisites>
+  <Requirement title="The EAS CLI">
+    Follow the [instructions for installing the CLI](/eas/cli#installation).
+  </Requirement>
+  <Requirement title="An app already using EAS Observe">
+    Follow [Get started](/eas/observe/get-started/) to install `expo-observe` and create your first
+    build.
+  </Requirement>
+  <Requirement title="Authentication to the EAS CLI from your project directory">
+    Log in with `eas login`. By default, each command reads the project ID from the app config in
+    the current directory. Pass `--project-id` to query a project from anywhere, using an account
+    that has access to it:
+    <Terminal cmd={['$ eas observe:metrics-summary --project-id <project-id>']} />
+  </Requirement>
+</Prerequisites>
 
-<Terminal cmd={['$ eas observe:metrics-summary --project-id <project-id>']} />
+## EAS CLI help
 
 Run any command with `--help` to see the flags supported by your installed EAS CLI version.
 
