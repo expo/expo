@@ -1,3 +1,4 @@
+import { loadProjectEnv, logLoadedEnv } from '@expo/env';
 import chalk from 'chalk';
 import { getConfig, type ExpoConfig } from 'expo/config';
 import { type ModPlatform } from 'expo/config-plugins';
@@ -39,12 +40,12 @@ export async function patchProjectAsync(
   const { ensureValidPlatforms } = require(
     resolveFromExpoCli(projectRoot, 'build/src/prebuild/resolveOptions')
   ) as typeof import('@expo/cli/src/prebuild/resolveOptions');
-  const { setNodeEnv } = require(
-    resolveFromExpoCli(projectRoot, 'build/src/utils/nodeEnv')
-  ) as typeof import('@expo/cli/src/utils/nodeEnv');
-
-  setNodeEnv('development');
-  require('@expo/env').load(projectRoot);
+  try {
+    const envInfo = loadProjectEnv(projectRoot, { mode: 'development' });
+    logLoadedEnv(envInfo);
+  } finally {
+    delete process.env.EXPO_CONFIG_MODE;
+  }
 
   const { exp } = await getConfig(projectRoot);
   const patchRoot = options.patchRoot || 'cng-patches';
