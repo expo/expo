@@ -7,14 +7,14 @@ import expo.modules.appmetrics.TAG
  * Prefix reserved for internal Expo event names. Callers cannot use it so SDK-emitted
  * events stay distinguishable from app-emitted ones in the backend.
  */
-private const val RESERVED_EVENT_NAME_PREFIX = "expo."
+const val RESERVED_EVENT_NAME_PREFIX = "expo."
 
 /**
  * Maximum length of a log event name in characters. Names beyond this length are
  * dropped with a warning — most log backends balk on very long names and a runaway
  * template literal can easily blow past a few hundred characters by accident.
  */
-private const val MAX_EVENT_NAME_LENGTH = 256
+const val MAX_EVENT_NAME_LENGTH = 256
 
 /**
  * Validates and normalizes a caller-provided log event name.
