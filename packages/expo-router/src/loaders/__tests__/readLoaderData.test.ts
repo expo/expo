@@ -4,8 +4,16 @@ import { readLoaderData } from '../readLoaderData';
 
 const tick = () => Promise.resolve();
 const createLoaderContext = () => createLoaderContextValue(new LoaderClient());
-const read = <T>(ctx: LoaderContextValue, path: string, fetcher: (path: string) => Promise<T>) =>
-  readLoaderData(ctx, path, fetcher);
+const subscribeCommitted = (
+  { client }: LoaderContextValue,
+  path: string,
+  callback?: Parameters<LoaderClient['subscribeLoader']>[1]
+) => client.subscribeLoader(path, callback, { committed: true });
+const read = <T>(
+  ctx: LoaderContextValue,
+  path: string,
+  fetcher: (path: string, requestInit: RequestInit) => Promise<T>
+) => readLoaderData(ctx, path, fetcher);
 const revalidate = ({ client, store }: LoaderContextValue) => {
   store.retain(client.revalidate());
 };
@@ -56,7 +64,7 @@ describe(readLoaderData, () => {
       .mockResolvedValueOnce('v2');
 
     await read(ctx, '/p', fetcher);
-    const unsubscribe = ctx.client.subscribeLoader('/p');
+    const unsubscribe = subscribeCommitted(ctx, '/p');
     ctx.store.dispose('/p');
     unsubscribe(() => ctx.store.teardown('/p'));
     await tick();
@@ -73,10 +81,10 @@ describe(readLoaderData, () => {
     const fetcher = jest.fn(async () => 'v1');
 
     await read(ctx, '/sm', fetcher);
-    const unsubscribe = ctx.client.subscribeLoader('/sm');
+    const unsubscribe = subscribeCommitted(ctx, '/sm');
     ctx.store.dispose('/sm');
     unsubscribe(() => ctx.store.teardown('/sm'));
-    ctx.client.subscribeLoader('/sm');
+    subscribeCommitted(ctx, '/sm');
     await tick();
 
     expect(read(ctx, '/sm', fetcher)).toBe('v1');
@@ -86,7 +94,7 @@ describe(readLoaderData, () => {
   it('keeps a fresh result written between disposal and confirmed teardown', async () => {
     const ctx = createLoaderContext();
     ctx.store.set('/p', { data: 'old' });
-    const unsubscribe = ctx.client.subscribeLoader('/p');
+    const unsubscribe = subscribeCommitted(ctx, '/p');
 
     ctx.store.dispose('/p');
     unsubscribe(() => ctx.store.teardown('/p'));
@@ -169,38 +177,75 @@ describe(readLoaderData, () => {
     expect(ctx.store.get('/p')).toBeUndefined();
   });
 
-  it('lets a detached source resolve its caller without restoring reset state', async () => {
+  it('does not restore reset state when an aborted fetcher later resolves', async () => {
     const ctx = createLoaderContext();
     let resolveFetch!: (result: string) => void;
-    const pending = read(
+    read(
       ctx,
       '/p',
       () =>
         new Promise<string>((resolve) => {
           resolveFetch = resolve;
         })
-    ) as Promise<string>;
+    );
 
     ctx.client.clear();
     ctx.store.reset();
     resolveFetch('detached');
+    await tick();
 
-    await expect(pending).resolves.toBe('detached');
     expect(ctx.store.get('/p')).toBeUndefined();
+  });
+
+  it('keeps intentional abort pending without caching an error or emitting an unhandled rejection', async () => {
+    const ctx = createLoaderContext();
+    const onUnhandledRejection = jest.fn();
+    process.on('unhandledRejection', onUnhandledRejection);
+
+    try {
+      const pending = read(
+        ctx,
+        '/p',
+        (_path, requestInit) =>
+          new Promise<string>((_resolve, reject) => {
+            const signal = requestInit.signal as AbortSignal;
+            signal.addEventListener('abort', () => reject(signal.reason));
+          })
+      ) as Promise<string>;
+      let settled = false;
+      pending.then(
+        () => {
+          settled = true;
+        },
+        () => {
+          settled = true;
+        }
+      );
+
+      ctx.client.abort('/p');
+      await tick();
+      await tick();
+
+      expect(settled).toBe(false);
+      expect(ctx.store.get('/p')).toBe(pending);
+      expect(onUnhandledRejection).not.toHaveBeenCalled();
+    } finally {
+      process.off('unhandledRejection', onUnhandledRejection);
+    }
   });
 
   it('does not let a replaced source overwrite the newer pending entry', async () => {
     const ctx = createLoaderContext();
     let resolveOld!: (result: string) => void;
     let resolveNew!: (result: string) => void;
-    const oldPending = read(
+    read(
       ctx,
       '/p',
       () =>
         new Promise<string>((resolve) => {
           resolveOld = resolve;
         })
-    ) as Promise<string>;
+    );
 
     ctx.client.clear();
     ctx.store.reset();
@@ -214,7 +259,7 @@ describe(readLoaderData, () => {
     ) as Promise<string>;
 
     resolveOld('old');
-    await expect(oldPending).resolves.toBe('old');
+    await tick();
     expect(ctx.store.get('/p')).toBe(newPending);
 
     resolveNew('new');
@@ -222,27 +267,25 @@ describe(readLoaderData, () => {
     expect(ctx.store.get('/p')).toEqual({ data: 'new' });
   });
 
-  it('keeps a settled result from an abandoned render for the next mount to adopt', async () => {
+  it('starts a fresh request after an abandoned pending entry is removed', async () => {
     const ctx = createLoaderContext();
-    let resolveFetch!: (result: string) => void;
-    const fetcher = jest.fn(
-      () =>
-        new Promise<string>((resolve) => {
-          resolveFetch = resolve;
-        })
-    );
+    const signals: AbortSignal[] = [];
+    const fetcher = jest.fn((_path: string, requestInit: RequestInit) => {
+      signals.push(requestInit.signal as AbortSignal);
+      return new Promise<string>(() => {});
+    });
 
-    const mountedUnsubscribe = ctx.client.subscribeLoader('/p');
-    const abandoned = read(ctx, '/p', fetcher) as Promise<string>;
-    ctx.store.dispose('/p');
-    mountedUnsubscribe(() => ctx.store.teardown('/p'));
-    await tick();
+    const first = read(ctx, '/p', fetcher);
+    ctx.client.abort('/p');
+    if (ctx.store.get('/p') === first) {
+      ctx.store.clear('/p');
+    }
+    const second = read(ctx, '/p', fetcher);
 
-    resolveFetch('adopted');
-    await expect(abandoned).resolves.toBe('adopted');
-
-    expect(read(ctx, '/p', fetcher)).toBe('adopted');
-    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(second).not.toBe(first);
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(signals[0]!.aborted).toBe(true);
+    expect(signals[1]!.aborted).toBe(false);
   });
 
   it('refreshes a live entry in place during invalidation', async () => {
@@ -253,7 +296,7 @@ describe(readLoaderData, () => {
       .mockResolvedValueOnce('v2');
 
     await read(ctx, '/p', fetcher);
-    ctx.client.subscribeLoader('/p', (result, isCurrentSource) => {
+    subscribeCommitted(ctx, '/p', (result, isCurrentSource) => {
       if (isCurrentSource) {
         ctx.store.set('/p', result);
       }
@@ -275,8 +318,8 @@ describe(readLoaderData, () => {
       .mockResolvedValueOnce('v2');
 
     await read(ctx, '/p', fetcher);
-    const sibling = ctx.client.subscribeLoader('/p');
-    ctx.client.subscribeLoader('/p', (result, isCurrentSource) => {
+    const sibling = subscribeCommitted(ctx, '/p');
+    subscribeCommitted(ctx, '/p', (result, isCurrentSource) => {
       if (isCurrentSource) {
         ctx.store.set('/p', result);
       }
@@ -306,5 +349,41 @@ describe(readLoaderData, () => {
     expect(revisit).toBeInstanceOf(Promise);
     await expect(revisit).resolves.toBe('v2');
     expect(fetcher).toHaveBeenCalledTimes(2);
+  });
+
+  it('abandons an uncommitted pending read during invalidation', async () => {
+    const ctx = createLoaderContext();
+    const signals: AbortSignal[] = [];
+    let resolveFirst!: (value: string) => void;
+    let resolveSecond!: (value: string) => void;
+    const fetcher = jest.fn((_path: string, requestInit: RequestInit) => {
+      signals.push(requestInit.signal as AbortSignal);
+      return new Promise<string>((resolve) => {
+        if (signals.length === 1) {
+          resolveFirst = resolve;
+        } else {
+          resolveSecond = resolve;
+        }
+      });
+    });
+    const first = read(ctx, '/pending', fetcher);
+
+    revalidate(ctx);
+
+    expect(signals[0]!.aborted).toBe(true);
+    expect(ctx.store.get('/pending')).toBeUndefined();
+
+    const second = read(ctx, '/pending', fetcher);
+    expect(second).not.toBe(first);
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(signals[1]!.aborted).toBe(false);
+
+    resolveFirst('pre-edit');
+    await tick();
+    expect(ctx.store.get('/pending')).toBe(second);
+
+    resolveSecond('post-edit');
+    await expect(second).resolves.toBe('post-edit');
+    expect(ctx.store.get('/pending')).toEqual({ data: 'post-edit' });
   });
 });
