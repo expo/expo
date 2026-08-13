@@ -99,7 +99,12 @@ const sortByName = <T extends { name?: string }>(entries: T[]): T[] =>
     .slice()
     .sort((a, b) => (a.name ?? '').localeCompare(b.name ?? '', undefined, { sensitivity: 'base' }));
 
-const PROP_EXCEPTIONS = new Set(['StackHeaderItemSharedProps']);
+const PROP_EXCEPTIONS = new Set([
+  'AppMetricsErrorBoundaryFallbackProps',
+  'AppMetricsErrorBoundaryProps',
+  'AppMetricsRootProps',
+  'StackHeaderItemSharedProps',
+]);
 
 const isProp = ({ name }: GeneratedData) =>
   name.includes('Props') &&
@@ -141,8 +146,15 @@ const isComponent = (entry: GeneratedData) => {
 };
 
 const isConstant = ({ name, type }: GeneratedData) =>
-  !['default', 'Constants', 'EventEmitter', 'SharedObject', 'NativeModule'].includes(name) &&
-  !(type?.name && componentTypeNames.has(type?.name));
+  ![
+    'default',
+    'Constants',
+    'EventEmitter',
+    'SharedObject',
+    'NativeModule',
+    'AppMetrics',
+    'Observe',
+  ].includes(name) && !(type?.name && componentTypeNames.has(type?.name));
 
 const hasCategoryHeader = (entry: ApiDataEntry): boolean => {
   const signature = getEntrySignatures(entry)[0];
@@ -342,7 +354,11 @@ const renderAPI = (
       entry => componentsPropNames.has(entry.name)
     );
 
-    const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
+    const namespaces = filterDataByKind(
+      data,
+      TypeDocKind.Namespace,
+      entry => !['AppMetricsRoot'].includes(entry.name)
+    );
 
     const classes = [
       ...filterDataByKind(

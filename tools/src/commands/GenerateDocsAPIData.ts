@@ -286,6 +286,7 @@ export const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-age-range': ['index.ts'],
   'expo-app-integrity': ['index.ts'],
   'expo-glass-effect': ['index.ts'],
+  'expo-observe': ['index.ts'],
   'expo-widgets': ['index.ts'],
   ...uiPackagesMapping,
 };
