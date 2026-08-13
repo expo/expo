@@ -252,8 +252,16 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
     return;
   }
   if (isDevServer && (expoGoUsername == nil || ![manifestUsername isEqualToString:expoGoUsername])) {
+    // _manifestUrl is what createNewApp was given, so it matches the key the linking manager set.
+    NSURL *verificationURI = [[EXPendingDeviceLogin shared] currentForProjectURL:_manifestUrl];
     NSString *message;
-    if (expoGoUsername == nil || [expoGoUsername length] == 0) {
+    if (verificationURI != nil) {
+      // The QR asked for a sign in, so the account can be switched here rather than on a computer.
+      message = [NSString stringWithFormat:
+        @"This project belongs to \"%@\", and you're signed in to Expo Go as \"%@\". Sign in as \"%@\" to open it. Expo Go will show you a code to enter at %@, then tap Try Again.",
+        manifestUsername, expoGoUsername ?: @"someone else", manifestUsername, verificationURI.host];
+      [[ExpoGoHomeBridge shared] offerDeviceLoginWithVerificationURI:verificationURI];
+    } else if (expoGoUsername == nil || [expoGoUsername length] == 0) {
       message = [NSString stringWithFormat:
         @"You're signed in to Expo CLI as \"%@\", but not signed in to Expo Go. Sign in to Expo Go as \"%@\" to open this project.",
         manifestUsername, manifestUsername];
