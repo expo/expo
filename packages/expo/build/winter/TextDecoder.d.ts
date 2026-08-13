@@ -1,10 +1,5 @@
 export declare class TextDecoder {
-    private _encoding;
-    private _ignoreBOM;
-    private _errorMode;
-    private _BOMseen;
-    private _doNotFlush;
-    private _decoder;
+    private readonly _state;
     constructor(label?: string, options?: {
         fatal?: boolean;
         ignoreBOM?: boolean;
@@ -12,9 +7,8 @@ export declare class TextDecoder {
     get encoding(): string;
     get fatal(): boolean;
     get ignoreBOM(): boolean;
-    decode(input?: ArrayBuffer | DataView, options?: {
+    decode(input?: ArrayBuffer | ArrayBufferView, options?: {
         stream?: boolean;
     }): string;
-    private serializeStream;
 }
 //# sourceMappingURL=TextDecoder.d.ts.map
