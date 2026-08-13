@@ -696,8 +696,12 @@ jobs:
               exit 1
             fi
             fork_default=$(gh api "repos/$fork" --jq .default_branch)
-            if ! gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
+            # Keep the API body: 409/422/403/404 say different things (conflict,
+            # not a fork, token cannot write this repo). Swallowing it made a
+            # permission miss look like a stale-workflow policy refusal.
+            if ! sync_out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" 2>&1); then
               echo "::error::Could not synchronize $fork with upstream; refusing a push that may include stale workflow commits."
+              printf '%s\n' "$sync_out"
               exit 1
             fi
             gh auth setup-git
@@ -1421,9 +1425,10 @@ jobs:
           # Note this gets WORSE the staler the fork is, so it is not optional.
           if [ -n "$fork" ]; then
             fork_default=$(gh api "repos/$fork" --jq .default_branch 2>/dev/null || echo main)
-            if ! gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" >/dev/null 2>&1; then
+            if ! sync_out=$(gh api -X POST "repos/$fork/merge-upstream" -f branch="$fork_default" 2>&1); then
               gh issue comment "$ISSUE_NUMBER" --body "⛔ \`$command_name\` prepared the $change_name but could not synchronize the bot fork. It refused to push a branch that might include stale workflow commits, and refused the secret-bearing same-repository fallback. The outcome comment still stands and describes the change. [Run log]($RUN_URL)"
               echo "::error::could not sync $fork with upstream; refusing to push."
+              printf '%s\n' "$sync_out"
               exit 1
             fi
             echo "synced $fork ($fork_default) with upstream before pushing"
