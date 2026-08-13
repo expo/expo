@@ -95,6 +95,9 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
     Log.log('Rebundling the Expo config file');
     // Re-bundle the config file the same way the app was originally bundled.
+    // No platform argument is passed on purpose: the rebundled binary no longer matches a
+    // single project state, so the script removes the embedded `app.fingerprint` instead of
+    // refreshing it, and `npx expo needs-rebuild` reports "cannot determine" for this binary.
     await spawnAsync('node', [
       // TODO(@kitten): This isn't correct. The template installs expo-constants, but expo also depends on it
       // This however means that the top-level module doesn't have to exist. With isolated dependencies this will then fail

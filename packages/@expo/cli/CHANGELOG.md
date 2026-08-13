@@ -11,6 +11,7 @@
 ### 🎉 New features
 
 - Add fingerprint and device-inspection utilities. ([#48920](https://github.com/expo/expo/pull/48920) by [@vonovak](https://github.com/vonovak))
+- Added `npx expo needs-rebuild` — checks whether the installed native app matches the project fingerprint and exits with 0 (up to date), 1 (rebuild needed), 2 (prebuild + rebuild needed), or 3 (cannot determine); `expo prebuild` now records a fingerprint marker so stale generated native directories are detected. ([#48921](https://github.com/expo/expo/pull/48921) by [@vonovak](https://github.com/vonovak))
 - Add `pageHeaders` to exported routes manifests ([#47429](https://github.com/expo/expo/pull/47429) by [@hassankhan](https://github.com/hassankhan))
 - Apply `pageHeaders` when serving static exports with `expo serve` ([#47781](https://github.com/expo/expo/pull/47781) by [@hassankhan](https://github.com/hassankhan))
 - Create `pageHeaders` rules from loader-declared `Cache-Control` headers for SSG ([#47774](https://github.com/expo/expo/pull/47774) by [@hassankhan](https://github.com/hassankhan))
