@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Rewrite the `TextDecoder` implementation to increase decoding performance ([#48877](https://github.com/expo/expo/pull/48877) by [@kitten](https://github.com/kitten))
+
 ## 54.0.36 — 2026-07-15
 
 _This version does not introduce any user-facing changes._
