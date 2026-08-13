@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Documented that the default `cachePolicy` of `'disk'` does not use the memory cache, so every mount of the same image reads and decodes it from the disk again. ([#PR](https://github.com/expo/expo/pull/PR))
+
 ## 57.0.1 - 2026-07-15
 
 _This version does not introduce any user-facing changes._

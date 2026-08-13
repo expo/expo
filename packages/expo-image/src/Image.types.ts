@@ -243,6 +243,10 @@ export interface ImageProps extends Omit<ViewProps, 'style' | 'children'> {
    * - `'none'` - Image is not cached at all.
    *
    * - `'disk'` - Image is queried from the disk cache if exists, otherwise it's downloaded and then stored on the disk.
+   * On Android and iOS, the decoded image is not kept in memory, so every mount of the image reads it from the disk
+   * and decodes it again. That keeps memory usage low, but it makes repeated renders of the same image — a list of
+   * avatars or custom emojis, a screen that remounts, a list row that recycles — much slower than a memory cache hit,
+   * especially for large or animated images. Prefer `'memory-disk'` when the same image is rendered many times.
    *
    * - `'memory'` - Image is cached in memory. Might be useful when you render a high-resolution picture many times.
    * Memory cache may be purged very quickly to prevent high memory usage and the risk of out of memory exceptions.
