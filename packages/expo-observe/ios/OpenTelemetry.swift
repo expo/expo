@@ -156,6 +156,48 @@ struct OTResourceLogs: Codable, Sendable {
   let schemaUrl: String
 }
 
+/// One OTLP span. Optionals (`parentSpanId`, `status`) rely on synthesized Codable's
+/// `encodeIfPresent`: the ingestion endpoint rejects a span whose present `parentSpanId` isn't
+/// valid hex, so a root span must omit the key entirely rather than send null or "".
+struct OTSpan: Codable, Sendable {
+  let traceId: String
+  let spanId: String
+  let parentSpanId: String?
+  let name: String
+  let kind: Int
+  let startTimeUnixNano: UInt64
+  let endTimeUnixNano: UInt64
+  let attributes: [OTAttribute]
+  let events: [OTSpanEvent]
+  let droppedEventsCount: Int
+  let status: OTSpanStatus?
+}
+
+/// `Span.Event` per the OTLP proto — used for redirect hops.
+struct OTSpanEvent: Codable, Sendable {
+  let timeUnixNano: UInt64
+  let name: String
+  let attributes: [OTAttribute]
+}
+
+/// `Status` per the OTLP proto. Only attached when the span represents a failure; a successful
+/// client span stays UNSET by omitting the status entirely, per the semantic conventions.
+struct OTSpanStatus: Codable, Sendable {
+  let code: Int
+  let message: String?
+}
+
+struct OTScopeSpans: Codable, Sendable {
+  let scope: OTScope
+  let spans: [OTSpan]
+}
+
+struct OTResourceSpans: Codable, Sendable {
+  let resource: OTMetadata
+  let scopeSpans: [OTScopeSpans]
+  let schemaUrl: String
+}
+
 // MARK: -- Event extensions for Open Telemetry
 
 /// OpenTelemetry Semantic Conventions schema URL referenced by the resource on
@@ -263,6 +305,87 @@ extension Event.Log {
       droppedAttributesCount: totalDrops > 0 ? totalDrops : nil
     )
   }
+}
+
+/// Maximum span events the ingestion endpoint keeps per span; anything past it is counted as
+/// dropped server-side, so the SDK truncates locally and reports the loss itself instead of
+/// shipping payload that is guaranteed to be discarded.
+private let maxSpanEventCount = 32
+
+/// Converts a persisted unix-epoch millisecond timestamp to nanoseconds, saturating instead of
+/// trapping: a corrupt row or a device clock set far into the future must never crash the host
+/// app from inside the telemetry library.
+private func spanNanoseconds(fromMilliseconds milliseconds: Int64) -> UInt64 {
+  let maxRepresentableMs = Int64(UInt64.max / 1_000_000)
+  return UInt64(min(max(0, milliseconds), maxRepresentableMs)) * 1_000_000
+}
+
+extension SpanRow {
+  /// Maps one persisted span row onto the OTLP wire shape. The mapping is producer-agnostic:
+  /// attributes and events were shaped by whichever producer recorded the row (per its own
+  /// semantic conventions), and this conversion only handles the generic concerns — timestamps,
+  /// the session attribute, the event cap, and the JSON-to-`AnyValue` typing.
+  func toOTSpan() -> OTSpan {
+    // Millisecond precision matches the backend's DateTime64(3) storage. A clock adjustment
+    // mid-span can invert the two wall-clock timestamps, and the server rejects a span whose
+    // end precedes its start, so the end clamps to the start.
+    let startNs = spanNanoseconds(fromMilliseconds: startTimestampMs)
+    let endNs = max(startNs, spanNanoseconds(fromMilliseconds: endTimestampMs))
+
+    var otAttributes: [OTAttribute] = [
+      OTAttribute(key: "session.id", rawValue: sessionId)
+    ]
+    if let attributesDict = decodeJSONObject(attributes) {
+      otAttributes.append(contentsOf: otAttributesFromUserDict(attributesDict).attributes)
+    }
+
+    // The ingestion endpoint keeps at most `maxSpanEventCount` events per span and counts the
+    // rest as dropped; truncating locally reports the same loss without shipping payload that
+    // is guaranteed to be discarded.
+    let allEvents = decodeJSONArray(events) ?? []
+    let otEvents = allEvents.prefix(maxSpanEventCount).compactMap { event -> OTSpanEvent? in
+      guard let name = event["name"] as? String else {
+        return nil
+      }
+      let eventAttributes = (event["attributes"] as? [String: Any]).map {
+        otAttributesFromUserDict($0).attributes
+      }
+      // Producers may record a per-event timestamp; without one the event anchors to the span
+      // start, which keeps it inside the span window.
+      let timeNs = (event["timeMs"] as? Int64).map(spanNanoseconds(fromMilliseconds:)) ?? startNs
+      return OTSpanEvent(timeUnixNano: timeNs, name: name, attributes: eventAttributes ?? [])
+    }
+
+    return OTSpan(
+      traceId: traceId,
+      spanId: spanId,
+      parentSpanId: parentSpanId,
+      name: name,
+      kind: kind,
+      startTimeUnixNano: startNs,
+      endTimeUnixNano: endNs,
+      attributes: otAttributes,
+      events: otEvents,
+      droppedEventsCount: max(0, allEvents.count - maxSpanEventCount),
+      status: statusCode.map { OTSpanStatus(code: $0, message: statusMessage) }
+    )
+  }
+}
+
+/// Decodes a JSON-object column into a dictionary, or `nil` when absent or malformed.
+private func decodeJSONObject(_ json: String?) -> [String: Any]? {
+  guard let json, let data = json.data(using: .utf8) else {
+    return nil
+  }
+  return (try? JSONSerialization.jsonObject(with: data)) as? [String: Any]
+}
+
+/// Decodes a JSON-array column into an array of objects, or `nil` when absent or malformed.
+private func decodeJSONArray(_ json: String?) -> [[String: Any]]? {
+  guard let json, let data = json.data(using: .utf8) else {
+    return nil
+  }
+  return (try? JSONSerialization.jsonObject(with: data)) as? [[String: Any]]
 }
 
 /// Maps a caller-supplied attribute dictionary to typed `OTAttribute`s. Returns the
@@ -417,6 +540,22 @@ extension Event {
       schemaUrl: semConvSchemaUrl
     )
   }
+
+  /// Wraps already-mapped spans in this event's resource envelope. Spans are passed in rather
+  /// than derived from the event because they come from `spans` rows, which are not part of the
+  /// `Event` payload shape the metrics/logs signals share.
+  func toOTResourceSpans(_ easClientId: String, spans: [OTSpan]) -> OTResourceSpans {
+    OTResourceSpans(
+      resource: toOTMetadata(easClientId),
+      scopeSpans: [
+        OTScopeSpans(
+          scope: OTScope(name: "expo-observe", version: ObserveVersions.clientVersion),
+          spans: spans
+        )
+      ],
+      schemaUrl: semConvSchemaUrl
+    )
+  }
 }
 
 // MARK: -- Request body for Open Telemetry events
@@ -429,19 +568,24 @@ internal struct OTLogsRequestBody: Codable, Sendable {
   let resourceLogs: [OTResourceLogs]
 }
 
+internal struct OTTracesRequestBody: Codable, Sendable {
+  let resourceSpans: [OTResourceSpans]
+}
+
 // MARK: -- Response shapes for Open Telemetry endpoints
 
-/// Per OTLP/HTTP, both `/v1/metrics` and `/v1/logs` return an `ExportXServiceResponse` with an
-/// optional `partial_success` object. Our server emits it (with camelCase JSON keys — no
-/// snake_case translation) only when there were actual rejections, e.g.
+/// Per OTLP/HTTP, the `/v1/metrics`, `/v1/logs` and `/v1/traces` endpoints return an
+/// `ExportXServiceResponse` with an optional `partial_success` object. Our server emits it (with
+/// camelCase JSON keys — no snake_case translation) only when there were actual rejections, e.g.
 /// `{ "partialSuccess": { "rejectedDataPoints": 3, "errorMessage": "..." } }`. We model the
-/// union — `rejectedDataPoints` for metrics responses, `rejectedLogRecords` for logs responses
-/// — so a single decoder works for either endpoint.
+/// union — `rejectedDataPoints` for metrics, `rejectedLogRecords` for logs, `rejectedSpans` for
+/// traces — so a single decoder works for any of the endpoints.
 ///
 /// Spec: https://github.com/open-telemetry/opentelemetry-proto/blob/main/docs/specification.md
 internal struct OTPartialSuccess: Codable, Equatable, Sendable {
   let rejectedDataPoints: Int64?
   let rejectedLogRecords: Int64?
+  let rejectedSpans: Int64?
   let errorMessage: String?
 
   /// Count of records the server says it rejected from this batch. The OTLP spec also allows
@@ -449,7 +593,7 @@ internal struct OTPartialSuccess: Codable, Equatable, Sendable {
   /// `errorMessage`); the dispatch classifier treats that as a successful send with a logged
   /// warning rather than a batch drop.
   var rejectedCount: Int64 {
-    (rejectedDataPoints ?? 0) + (rejectedLogRecords ?? 0)
+    (rejectedDataPoints ?? 0) + (rejectedLogRecords ?? 0) + (rejectedSpans ?? 0)
   }
 }
 
