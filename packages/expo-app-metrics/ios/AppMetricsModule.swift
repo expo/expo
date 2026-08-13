@@ -181,6 +181,72 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
         observer.setFilter(filter)
       }
     }
+
+    Function("startSpan") { (name: String, options: StartSpanOptions?, parent: SpanHandle?) -> SpanHandle in
+      let recorder = SpanRecorder(
+        name: try validatedSpanName(name),
+        sessionId: AppMetrics.mainSession.id,
+        parentTraceId: parent?.recorder.traceId,
+        parentSpanId: parent?.recorder.spanId,
+        attributes: options?.attributes,
+        startTimestampMs: options?.startTime.flatMap(unixMilliseconds(from:)) ?? currentUnixMilliseconds()
+      )
+      return SpanHandle(recorder: recorder, onEnd: insertSpanRow)
+    }
+
+    Function("recordSpan") { (name: String, options: RecordSpanOptions) in
+      guard
+        let start = options.startTime.flatMap(unixMilliseconds(from:)),
+        let end = options.endTime.flatMap(unixMilliseconds(from:))
+      else {
+        throw MissingSpanWindowException()
+      }
+      // One code path with `startSpan`: an ephemeral recorder validates the attributes and
+      // produces the same write-once row shape.
+      let recorder = SpanRecorder(
+        name: try validatedSpanName(name),
+        sessionId: AppMetrics.mainSession.id,
+        attributes: options.attributes,
+        startTimestampMs: start
+      )
+      if let row = recorder.end(statusCode: nil, statusMessage: nil, endTimestampMs: end) {
+        insertSpanRow(row)
+      }
+    }
+
+    Class("Span", SpanHandle.self) {
+      Constructor { () -> SpanHandle in
+        throw SpanConstructorUnavailableException()
+      }
+
+      Property("traceId") { (span: SpanHandle) in
+        return span.recorder.traceId
+      }
+
+      Property("spanId") { (span: SpanHandle) in
+        return span.recorder.spanId
+      }
+
+      Function("setAttributes") { (span: SpanHandle, attributes: [String: Any]) in
+        span.recorder.setAttributes(attributes)
+      }
+
+      Function("addEvent") { (span: SpanHandle, name: String, options: SpanEventOptions?) in
+        span.recorder.addEvent(
+          name: name,
+          attributes: options?.attributes,
+          timeMs: options?.time.flatMap(unixMilliseconds(from:)) ?? currentUnixMilliseconds()
+        )
+      }
+
+      Function("end") { (span: SpanHandle, options: SpanEndOptions?) in
+        span.end(
+          statusCode: try spanStatusCode(from: options?.status),
+          statusMessage: options?.message,
+          endTimestampMs: options?.endTime.flatMap(unixMilliseconds(from:)) ?? currentUnixMilliseconds()
+        )
+      }
+    }
   }
 
   public func updatesStateDidChange(_ event: [String: Any]) {
@@ -218,6 +284,146 @@ private func storedSession(id: String) throws -> StoredSession? {
 internal struct NetworkTracesConfigParam {
   var enabled: Bool = true
   var filter: NetworkRequestFilter?
+}
+
+internal struct StartSpanOptions: Record {
+  @Field
+  var attributes: [String: Any]?
+
+  /// Unix-epoch milliseconds overriding "now" as the span start.
+  @Field
+  var startTime: Double?
+}
+
+internal struct SpanEventOptions: Record {
+  @Field
+  var attributes: [String: Any]?
+
+  /// Unix-epoch milliseconds overriding "now" as the event time.
+  @Field
+  var time: Double?
+}
+
+internal struct SpanEndOptions: Record {
+  /// `"ok"` or `"error"`; anything else throws. Omitted means UNSET, per the conventions.
+  @Field
+  var status: String?
+
+  @Field
+  var message: String?
+
+  /// Unix-epoch milliseconds overriding "now" as the span end.
+  @Field
+  var endTime: Double?
+}
+
+internal struct RecordSpanOptions: Record {
+  @Field
+  var startTime: Double?
+
+  @Field
+  var endTime: Double?
+
+  @Field
+  var attributes: [String: Any]?
+}
+
+/// Validates a caller-provided span name, applying the rules `validateEventName` applies to log
+/// events. Unlike `logEvent`, which drops a bad record, `startSpan` has to return a handle, so a
+/// rejection throws instead.
+private func validatedSpanName(_ name: String) throws -> String {
+  let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+  guard !trimmed.isEmpty else {
+    throw EmptySpanNameException()
+  }
+  guard !trimmed.hasPrefix(reservedEventNamePrefix) else {
+    throw ReservedSpanNameException(trimmed)
+  }
+  guard trimmed.count <= maxEventNameLength else {
+    throw SpanNameTooLongException(trimmed.count)
+  }
+  return trimmed
+}
+
+/// Maps the JS `status` option to the OTLP status code. `nil` stays UNSET.
+private func spanStatusCode(from status: String?) throws -> Int? {
+  switch status {
+  case nil:
+    return nil
+  case "ok":
+    return SpanRow.statusOk
+  case "error":
+    return SpanRow.statusError
+  case .some(let other):
+    throw InvalidSpanStatusException(other)
+  }
+}
+
+/// Inserts a completed span row, hopping to the metrics actor. Failures are logged and
+/// swallowed — recording telemetry must never break the caller.
+private func insertSpanRow(_ row: SpanRow) {
+  Task { @AppMetricsActor in
+    guard let database = AppMetrics.database else {
+      return
+    }
+    do {
+      try database.insert(span: row)
+    } catch {
+      logger.warn("[AppMetrics] Failed to persist span \"\(row.name)\": \(error.localizedDescription)")
+    }
+  }
+}
+
+private func currentUnixMilliseconds() -> Int64 {
+  return Int64((Date().timeIntervalSince1970 * 1_000).rounded())
+}
+
+/// Unix-epoch milliseconds from a JS number, or `nil` when the value can't be one.
+///
+/// `Int64(_:)` traps on NaN, infinity, and anything outside its range, and JS hands all three
+/// over as ordinary numbers (`Number(header)` is NaN when the header is missing). Android's
+/// `toLong()` saturates instead, so clamping here also keeps the platforms in step.
+private func unixMilliseconds(from value: Double) -> Int64? {
+  guard value.isFinite, value >= Double(Int64.min), value <= Double(Int64.max) else {
+    return nil
+  }
+  return Int64(value)
+}
+
+internal final class EmptySpanNameException: Exception {
+  override var reason: String {
+    "A span needs a non-empty name because the server rejects nameless spans. Pass a short, stable identifier for the operation being measured, like 'checkout' or 'image-decode'."
+  }
+}
+
+internal final class InvalidSpanStatusException: GenericException<String> {
+  override var reason: String {
+    "'\(param)' is not a valid span status. Pass 'error' for a failed operation, 'ok' to explicitly mark success, or omit the status to leave it unset (the usual choice for successful spans)."
+  }
+}
+
+internal final class ReservedSpanNameException: GenericException<String> {
+  override var reason: String {
+    "A span name can't start with `expo.` (got `\(param)`) because that prefix is reserved for spans the SDK itself records, like network requests. Pick a name from your own namespace, like 'checkout' or 'image-decode'."
+  }
+}
+
+internal final class SpanNameTooLongException: GenericException<Int> {
+  override var reason: String {
+    "A span name can't exceed \(maxEventNameLength) characters (got \(param)) because the server rejects longer ones. Use a short, stable identifier and move the variable details into attributes."
+  }
+}
+
+internal final class MissingSpanWindowException: Exception {
+  override var reason: String {
+    "recordSpan needs both startTime and endTime (unix-epoch milliseconds) because it records an already-measured operation. To time an operation as it runs, use startSpan() and end() instead."
+  }
+}
+
+internal final class SpanConstructorUnavailableException: Exception {
+  override var reason: String {
+    "Span objects can't be constructed directly because a span's identity and session attribution are assigned natively at start time. Get one from AppMetrics.startSpan() instead."
+  }
 }
 
 struct MetricAttributes: Record {

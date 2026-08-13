@@ -2,12 +2,12 @@
 
 /// Prefix reserved for internal Expo event names. Callers cannot use it so SDK-emitted
 /// events stay distinguishable from app-emitted ones in the backend.
-private let reservedEventNamePrefix = "expo."
+let reservedEventNamePrefix = "expo."
 
 /// Maximum length of a log event name in characters. Names beyond this length are
 /// dropped with a warning — most log backends balk on very long names and a runaway
 /// template literal can easily blow past a few hundred characters by accident.
-private let maxEventNameLength = 256
+let maxEventNameLength = 256
 
 /// Validates and normalizes a caller-provided log event name.
 ///

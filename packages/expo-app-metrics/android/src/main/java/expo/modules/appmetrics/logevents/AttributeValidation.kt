@@ -60,7 +60,10 @@ data class SanitizedLogAttributes(
  * Each rule warns with its own message so the developer can tell at a glance
  * which rule fired.
  */
-internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): SanitizedLogAttributes {
+internal fun sanitizeLogEventAttributes(
+  attributes: Map<String, Any?>?,
+  source: String = "logEvent"
+): SanitizedLogAttributes {
   if (attributes == null) {
     return SanitizedLogAttributes(attributes = null, droppedCount = 0)
   }
@@ -98,20 +101,20 @@ internal fun sanitizeLogEventAttributes(attributes: Map<String, Any?>?): Sanitiz
   if (emptyKeyDrops > 0) {
     Log.w(
       TAG,
-      "[AppMetrics] logEvent dropped $emptyKeyDrops attribute(s) with empty or whitespace-only keys."
+      "[AppMetrics] $source dropped $emptyKeyDrops attribute(s) with empty or whitespace-only keys."
     )
   }
   if (reservedKeyDrops.isNotEmpty()) {
     val formattedKeys = reservedKeyDrops.sorted().joinToString(", ") { "`$it`" }
     Log.w(
       TAG,
-      "[AppMetrics] logEvent dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: $formattedKeys."
+      "[AppMetrics] $source dropped attributes that overlap SDK-set keys or use the reserved `expo.` namespace: $formattedKeys."
     )
   }
   if (overflowDrops > 0) {
     Log.w(
       TAG,
-      "[AppMetrics] logEvent dropped $overflowDrops attribute(s) past the $MAX_ATTRIBUTE_COUNT-attribute per-record cap."
+      "[AppMetrics] $source dropped $overflowDrops attribute(s) past the $MAX_ATTRIBUTE_COUNT-attribute per-record cap."
     )
   }
 
