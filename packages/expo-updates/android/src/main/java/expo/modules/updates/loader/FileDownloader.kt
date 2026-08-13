@@ -687,6 +687,12 @@ class FileDownloader(
     }
 
     val filename = UpdatesUtils.createFilenameForAsset(asset)
+    if (!UpdatesUtils.isSafeFilename(filename)) {
+      val message = "Failed to download asset ${asset.key}"
+      val error = IOException("Asset filename \"$filename\" would resolve outside the updates directory")
+      logger.error(message, error, UpdatesErrorCode.AssetsFailedToLoad)
+      throw IOException(message, error)
+    }
     val path = File(destinationDirectory, filename)
 
     if (path.exists()) {

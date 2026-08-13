@@ -62,6 +62,72 @@ class FileDownloaderManifestParsingTest {
   }
 
   @Test
+  fun testManifestParsing_RejectsAssetKeyEscapingUpdatesDirectory() = runTest {
+    val manifestBody = manifestBodyWithAsset(key = "../../shared_prefs/pwned", fileExtension = ".xml")
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val fileDownloader = createFileDownloader(configurationWithUpdateUrl())
+
+    val exception = Assert.assertThrows(Exception::class.java) {
+      fileDownloader.parseRemoteUpdateResponse(response)
+    }
+    Assert.assertTrue(
+      exception.localizedMessageWithCauseLocalizedMessage().contains("../../shared_prefs/pwned")
+    )
+  }
+
+  @Test
+  fun testManifestParsing_RejectsFileExtensionEscapingUpdatesDirectory() = runTest {
+    val manifestBody = manifestBodyWithAsset(key = "image", fileExtension = ".png/../../pwned")
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val fileDownloader = createFileDownloader(configurationWithUpdateUrl())
+
+    Assert.assertThrows(Exception::class.java) {
+      fileDownloader.parseRemoteUpdateResponse(response)
+    }
+  }
+
+  @Test
+  fun testManifestParsing_AcceptsAssetKeyWithLeadingDots() = runTest {
+    val manifestBody = manifestBodyWithAsset(key = "..hidden", fileExtension = ".png")
+    val response = manifestBody.asJSONResponse(mapOf("expo-protocol-version" to "0").toHeaders())
+    val fileDownloader = createFileDownloader(configurationWithUpdateUrl())
+
+    val resultUpdate = fileDownloader.parseRemoteUpdateResponse(response).manifestUpdateResponsePart?.update
+    Assert.assertNotNull(resultUpdate)
+    Assert.assertEquals("..hidden", resultUpdate!!.assetEntityList.first { !it.isLaunchAsset }.key)
+  }
+
+  private fun configurationWithUpdateUrl() = UpdatesConfiguration(
+    null,
+    mapOf(
+      UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test")
+    )
+  )
+
+  private fun manifestBodyWithAsset(key: String, fileExtension: String) = """
+    {
+      "id": "0754dad0-d200-d634-113c-ef1f26106028",
+      "createdAt": "2021-11-23T00:57:14.437Z",
+      "runtimeVersion": "1",
+      "assets": [{
+        "hash": "cb65fafb5ed456fc3ed8a726cf4087d37b875184eba96f33f6d99104e6e2266d",
+        "key": "$key",
+        "contentType": "image/png",
+        "url": "https://url.to/asset",
+        "fileExtension": "$fileExtension"
+      }],
+      "launchAsset": {
+        "hash": "323ddd1968ee76d4ddbb16b04fb2c3f1b6d1ab9b637d819699fecd6fa0ffb1a8",
+        "key": "696a70cf7035664c20ea86f67dae822b.bundle",
+        "contentType": "application/javascript",
+        "url": "https://url.to/bundle",
+        "fileExtension": ".bundle"
+      },
+      "extra": { "scopeKey": "@test/app" }
+    }
+  """.trimIndent()
+
+  @Test
   fun testManifestParsing_MultipartBody() = runTest {
     val filesDirectory = temporaryFolder.newFolder()
     val logDirectory = temporaryFolder.newFolder()
