@@ -34,14 +34,14 @@ Centers one large hero item between two small peek items — ideal for spotlight
 
 ```tsx CenteredHeroExample.tsx
 import { Host, HorizontalCenteredHeroCarousel, Box, Text } from '@expo/ui/jetpack-compose';
-import { size, background } from '@expo/ui/jetpack-compose/modifiers';
+import { size, background, Shapes } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function CenteredHeroExample() {
   const colors = ['#6200EE', '#03DAC5', '#FF5722', '#4CAF50', '#2196F3'];
 
   return (
     <Host matchContents={{ vertical: true }} style={{ width: '100%' }}>
-      <HorizontalCenteredHeroCarousel itemSpacing={8}>
+      <HorizontalCenteredHeroCarousel itemSpacing={8} maskShape={Shapes.RoundedCorner(28)}>
         {colors.map((color, index) => (
           <Box
             key={index}

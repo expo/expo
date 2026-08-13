@@ -9,7 +9,13 @@ import {
   LazyColumn,
   Text as ComposeText,
 } from '@expo/ui/jetpack-compose';
-import { background, fillMaxWidth, padding, size } from '@expo/ui/jetpack-compose/modifiers';
+import {
+  background,
+  fillMaxWidth,
+  padding,
+  Shapes,
+  size,
+} from '@expo/ui/jetpack-compose/modifiers';
 import * as React from 'react';
 
 export default function CarouselScreen() {
@@ -20,9 +26,13 @@ export default function CarouselScreen() {
           <Column verticalArrangement={{ spacedBy: 12 }} modifiers={[padding(16, 16, 16, 16)]}>
             <ComposeText style={{ typography: 'titleMedium' }}>Centered Hero</ComposeText>
             <ComposeText style={{ typography: 'bodySmall' }} color="#666666">
-              One large centered item with small peek items on each side.
+              One large centered item with small peek items on each side. Items are masked to a
+              rounded shape with maskShape.
             </ComposeText>
-            <HorizontalCenteredHeroCarousel itemSpacing={8} modifiers={[fillMaxWidth()]}>
+            <HorizontalCenteredHeroCarousel
+              itemSpacing={8}
+              maskShape={Shapes.RoundedCorner(28)}
+              modifiers={[fillMaxWidth()]}>
               <Box modifiers={[size(300, 200), background('#6200EE')]} contentAlignment="center">
                 <ComposeText color="#FFFFFF">1</ComposeText>
               </Box>

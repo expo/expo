@@ -247,7 +247,7 @@ data class TestIDParams(
   @Field val testID: String? = null
 ) : Record
 
-internal enum class BuiltinShapeType(val value: String) : Enumerable {
+enum class BuiltinShapeType(val value: String) : Enumerable {
   RECTANGLE("rectangle"),
   CIRCLE("circle"),
   ROUNDED_CORNER("roundedCorner"),
@@ -256,7 +256,7 @@ internal enum class BuiltinShapeType(val value: String) : Enumerable {
 }
 
 @OptimizedRecord
-internal data class BuiltinShapeRecord(
+data class BuiltinShapeRecord(
   @Field val type: BuiltinShapeType = BuiltinShapeType.RECTANGLE,
   @Field val radius: Float? = null,
   @Field val topStart: Float? = null,
@@ -330,7 +330,7 @@ object ModifierRegistry {
   private val modifierFactories: MutableMap<String, ModifierFactory> = mutableMapOf()
 
   @Composable
-  private fun resolveShape(shape: BuiltinShapeRecord): Shape? {
+  internal fun resolveShape(shape: BuiltinShapeRecord): Shape? {
     return when (shape.type) {
       BuiltinShapeType.RECTANGLE -> RectangleShape
       BuiltinShapeType.CIRCLE -> CircleShape
