@@ -8,7 +8,11 @@ platforms: ['android', 'ios', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
-import { ConfigReactNative } from '~/ui/components/ConfigSection';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/ui/components/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { PlatformTags } from '~/ui/components/Tag/PlatformTags';
 
@@ -53,6 +57,62 @@ For existing React Native projects, add the entitlement to your project's **ios/
 ```xml
 <key>com.apple.developer.declared-age-range</key>
 <true/>
+```
+
+</ConfigReactNative>
+
+### Set up the Android project
+
+You can configure `expo-age-range` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([Continuous Native Generation (CNG)](/workflow/continuous-native-generation/)). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect. If your app does **not** use CNG, then you'll need to manually configure the library.
+
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-age-range",
+        {
+          "enableFakeAgeSignals": true
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'enableFakeAgeSignals',
+      platform: 'android',
+      description:
+        'Whether [`setFakeAgeSignalsAsync`](#agerangesetfakeagesignalsasyncfake) can report fake age signals in this build, so that you can test your age gate against age ranges Play will not report to your own accounts. See [Testing age signals on Android](#testing-age-signals-on-android).',
+      default: 'false',
+    },
+  ]}
+/>
+
+Read the property from an environment variable in **app.config.js** so that only the profiles you test with opt in, and production builds never do:
+
+```js app.config.js
+export default {
+  // ...
+  plugins: [
+    ['expo-age-range', { enableFakeAgeSignals: process.env.ENABLE_FAKE_AGE_SIGNALS === '1' }],
+  ],
+};
+```
+
+<ConfigReactNative>
+
+For existing React Native projects, add the flag to your project's **android/app/src/main/AndroidManifest.xml**:
+
+```xml
+<meta-data android:name="expo.modules.agerange.ENABLE_FAKE_AGE_SIGNALS" android:value="true" />
 ```
 
 </ConfigReactNative>
@@ -122,45 +182,27 @@ const styles = StyleSheet.create({
 
 Play only reports live age signals to accounts in the cohorts Google has enabled, and those accounts cannot be created elsewhere. To exercise your age gate against every age range, source, and error, use [`setFakeAgeSignalsAsync`](#agerangesetfakeagesignalsasyncfake), which reports Play's [`FakeAgeSignalsManager`](https://developer.android.com/google/play/age-signals/test-age-signals-api) signals instead of the real ones.
 
-Your app has to opt in, so that the fake cannot be reached in production. Set the `enableFakeAgeSignals` property of the config plugin in your [app config](../config/app/) file:
+Only builds that set [`enableFakeAgeSignals`](#configurable-properties) can do this, so a production build cannot report fake age signals. The property is read at runtime rather than tied to debug builds, so a release build that opts in can be handed to QA. Everywhere else `setFakeAgeSignalsAsync` rejects with `ERR_AGE_RANGE_FAKE_SIGNALS_DISABLED`, and [`isFakeAgeSignalsEnabledAsync`](#agerangeisfakeagesignalsenabledasync) reports which kind of build your code is running in.
 
-```json app.json
-{
-  "expo": {
-    "plugins": [
-      [
-        "expo-age-range",
-        {
-          "enableFakeAgeSignals": true
-        }
-      ]
-    ]
-  }
-}
+Fake signals are reported by the same code path as real ones, so the rest of your app is unchanged:
+
+```ts
+// Report a supervised 13 to 15 year old whose guardian has not approved the latest change.
+await AgeRange.setFakeAgeSignalsAsync({
+  ageSignalsStatus: 'SHARED',
+  lowerBound: 13,
+  upperBound: 15,
+  ageRangeSource: 'TIER_B',
+  significantChangeStatus: 'PENDING',
+});
+
+// Your age gate runs against those signals, without knowing they are faked.
+const status = await AgeRange.requestAgeSignalsAccessAsync();
+const { lowerBound } = await AgeRange.requestAgeRangeAsync({ threshold1: 18 });
+
+// Report the real signals again.
+await AgeRange.setFakeAgeSignalsAsync(null);
 ```
-
-Builds without the property, and builds that do not use the plugin at all, cannot report fake age signals. To keep production builds in that group while your test builds opt in, read the property from an environment variable in **app.config.js** and set it for those build profiles only:
-
-```js app.config.js
-export default {
-  // ...
-  plugins: [
-    ['expo-age-range', { enableFakeAgeSignals: process.env.ENABLE_FAKE_AGE_SIGNALS === '1' }],
-  ],
-};
-```
-
-<ConfigReactNative>
-
-For existing React Native projects, add the flag to your project's **AndroidManifest.xml**:
-
-```xml
-<meta-data android:name="expo.modules.agerange.ENABLE_FAKE_AGE_SIGNALS" android:value="true" />
-```
-
-</ConfigReactNative>
-
-The flag is read at runtime rather than tied to debug builds, so release builds that opt in can be handed to QA. `setFakeAgeSignalsAsync` rejects with `ERR_AGE_RANGE_FAKE_SIGNALS_DISABLED` in any build without the flag, and [`isFakeAgeSignalsEnabledAsync`](#agerangeisfakeagesignalsenabledasync) tells you which kind of build you are in.
 
 ## Additional resources
 
