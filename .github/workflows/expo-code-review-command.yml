@@ -172,13 +172,12 @@ jobs:
           # file only after it has probed a credential, so its absence means the
           # step failed before any probe and the secrets are not the cause.
           reason=$(cat "$RUNNER_TEMP/model-env-reason" 2>/dev/null || echo unprobed)
-          slots="\`ECR_1\`…\`ECR_5\` and \`CLAUDE_CODE_REVIEW_EXPO_OSS_API_TOKEN\`"
-          forks="This is not a fork limitation — the command path has secrets."
+          forks="This is not a fork limitation."
           case "$reason" in
-            auth)  body="⚠️ The AI reviewer did not start: every configured model credential ($slots) was rejected as invalid. $forks Check the [run log]($RUN_URL) for each slot's shape/len (never the secret), then rotate or correct the failed setup token or API key." ;;
-            usage) body="⚠️ The AI reviewer did not start: every configured model credential ($slots) is over its usage or rate limit. $forks The credentials are valid — nothing to rotate. Re-run later, or configure a spare slot. [Run log]($RUN_URL)" ;;
-            other) body="⚠️ The AI reviewer did not start: every configured model credential ($slots) failed for a reason that is neither authentication nor usage — a network fault, a timeout, or a model outage. $forks [Run log]($RUN_URL) has each slot's error." ;;
-            *)     body="⚠️ The AI reviewer did not start: the model-env step failed **before it tested any credential**, so this is not a credential problem and there is nothing to rotate. $forks [Run log]($RUN_URL) has the error." ;;
+            auth)  body="⚠️ The AI reviewer did not start: its model credential was rejected, so a maintainer needs to take a look. $forks Nothing is wrong with this PR. [Run log]($RUN_URL)" ;;
+            usage) body="⚠️ The AI reviewer did not start: it is temporarily over its model usage limit. $forks Nothing is misconfigured and nothing is wrong with this PR — re-running the command later should work. [Run log]($RUN_URL)" ;;
+            other) body="⚠️ The AI reviewer did not start: it could not reach the model — a network fault, a timeout, or a provider outage. $forks Nothing is wrong with this PR. [Run log]($RUN_URL)" ;;
+            *)     body="⚠️ The AI reviewer did not start: it failed before reaching the model, so this is a workflow problem rather than a credential or PR problem. $forks [Run log]($RUN_URL)" ;;
           esac
           gh pr comment "$PR" --repo "${{ github.repository }}" --body "$body"
 

@@ -472,11 +472,12 @@ jobs:
       # Pinned exactly, like the code-review workflows.
       - name: Install Claude Code CLI
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
-        run: npm install -g @anthropic-ai/claude-code@2.1.212
+        run: npm install -g @anthropic-ai/claude-code@2.1.229
 
       # Later claude steps inherit CLAUDE_CODE_OAUTH_TOKEN from GITHUB_ENV —
       # do not re-bind it from secrets.* or this step is overwritten.
       - name: Prepare model env
+        id: model-env
         if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         uses: ./.github/actions/prepare-model-env
         with:
@@ -1616,11 +1617,22 @@ EOF
           JOB_STATUS: ${{ job.status }}
           SALVAGED: ${{ steps.salvage.outputs.salvaged }}
           MODE: ${{ steps.cmd.outputs.mode }}
+          MODEL_ENV: ${{ steps.model-env.outcome }}
         run: |
           case "$JOB_STATUS" in
             cancelled) outcome="was cancelled" ;;
             *) outcome="failed" ;;
           esac
+          cause=""
+          if [ "$MODEL_ENV" = "failure" ]; then
+            reason=$(cat "$RUNNER_TEMP/model-env-reason" 2>/dev/null || echo unprobed)
+            case "$reason" in
+              auth)  cause=" The cause is its model credential, which was rejected — a maintainer needs to take a look." ;;
+              usage) cause=" The cause is a temporary model usage limit; nothing is misconfigured, so trying again later should work." ;;
+              other) cause=" The cause is a failure reaching the model — a network fault, a timeout, or a provider outage." ;;
+              *)     cause=" It failed before reaching the model, so this is a workflow problem rather than a credential one." ;;
+            esac
+          fi
           # Point at the salvage when there is one. An interrupted run often
           # established real things before it died, and a maintainer should be
           # told where they are rather than left to assume nothing survived.
@@ -1637,4 +1649,4 @@ EOF
             unfinished="before it could post findings — nothing here is a verdict on the report"
             retry="re-trigger \`/verify\`"
           fi
-          gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`$command_name\` $outcome $unfinished.$extra [Run log]($RUN_URL) has the details; $retry to try again."
+          gh issue comment "$ISSUE_NUMBER" --body "⚠️ \`$command_name\` $outcome $unfinished.$cause$extra [Run log]($RUN_URL) has the details; $retry to try again."

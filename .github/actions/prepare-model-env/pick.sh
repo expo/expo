@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Select one configured credential, probe it, export the winner.
-# Empty inputs are skipped. Logs indexes only — never the value.
+# Empty inputs are skipped.
 set -euo pipefail
 
 classify_failure() {
@@ -150,6 +150,7 @@ winner_slot=""
 winner_env=""
 log_dir="${RUNNER_TEMP:-/tmp}"
 log=""
+rm -f "$log_dir/model-env-reason"
 # Fresh config so a runner-image login cannot mask a bad secret, and so CI
 # matches a laptop canary that set CLAUDE_CONFIG_DIR.
 probe_cfg=$(mktemp -d)
@@ -184,7 +185,6 @@ for offset in $(seq 0 $((count - 1))); do
   slot="${SLOT_INDEXES[$idx]}"
   token="${SLOT_TOKENS[$idx]}"
   log="$log_dir/model-env-$slot.log"
-  echo "credential $slot: shape=$(token_shape "$token") len=${#token}"
 
   for env_name in $(probe_order "$token"); do
     if probe_with_env "$env_name" "$token" "$log"; then
@@ -198,12 +198,6 @@ for offset in $(seq 0 $((count - 1))); do
   # Classify on EVERY slot, not only the ones that have a successor: the last
   # slot's verdict is the one a caller reports.
   reason=$(classify_failure "$log")
-
-  if [ "$offset" -lt $((count - 1)) ]; then
-    next_idx=$(((start + offset + 1) % count))
-    next_slot="${SLOT_INDEXES[$next_idx]}"
-    echo "credential $slot failed ($reason), trying $next_slot"
-  fi
 done
 
 if [ -z "$winner" ]; then
