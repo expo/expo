@@ -10,8 +10,11 @@
 
 - Fix `isUpdatePending` incorrectly becoming `true` after a fetch or check that finds no new update to download. ([#47830](https://github.com/expo/expo/pull/47830) by [@kudo](https://github.com/kudo))
 - [iOS] Set `always_out_of_date` on the `Generate updates resources for expo-updates` script_phase to silence the Xcode "run script phase will run on every build" dependency-analysis warning. ([#47622](https://github.com/expo/expo/pull/47622) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Reject updates whose asset key or file extension contains a path separator, which previously let a manifest write and delete files outside the updates directory. ([#48762](https://github.com/expo/expo/pull/48762), [#48763](https://github.com/expo/expo/pull/48763) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
+
+- [iOS] Link `libc++` in the test spec so the unit test bundle resolves the C++ symbols it pulls from `ExpoModulesCore`. ([#48762](https://github.com/expo/expo/pull/48762) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 55.0.26 — 2026-07-15
 
