@@ -180,7 +180,9 @@ export async function respond(
   const cancelBody = (reason?: unknown) => {
     if (!_cancelled) {
       _cancelled = true;
-      (void reader.cancel(reason).catch(() => {/*noop*/}));
+      reader.cancel(reason).catch(() => {
+        /*noop*/
+      });
     }
   };
 

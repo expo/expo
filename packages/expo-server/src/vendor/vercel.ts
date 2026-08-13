@@ -3,8 +3,8 @@
 // our interface types
 import * as http from 'http';
 
-import { respond } from './http';
 import { createRequestHandler as createExpoHandler } from './abstract';
+import { respond } from './http';
 import { createRequestScope } from '../runtime';
 import { createNodeEnv } from './environment/node';
 import { ScopeDefinition } from '../runtime/scope';
