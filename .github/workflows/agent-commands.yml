@@ -1178,6 +1178,26 @@ jobs:
             git add -A
             changed=$(git diff --cached --numstat | awk '($1 + $2) > 0 { print $3 }')
           fi
+          # "verified fix" is the announcement for a code change. A docs-only
+          # tree is a legitimate verify outcome (document the observed
+          # behavior) but it is not a fix. Classify from the paths, not the
+          # agent title — that can claim either way.
+          if [ "$MODE" != "work" ] && [ -n "$changed" ]; then
+            docs_only=yes
+            while IFS= read -r f; do
+              [ -z "$f" ] && continue
+              case "$f" in
+                docs/*|*.md|*.mdx) ;;
+                *) docs_only=no; break ;;
+              esac
+            done <<EOF
+$changed
+EOF
+            if [ "$docs_only" = yes ]; then
+              change_name="documentation change"
+              default_title="Document #$ISSUE_NUMBER (from /verify)"
+            fi
+          fi
           # Content, NOT the path list. The agent has no Bash, so it cannot
           # DELETE a file — only empty one. When a run for #48029 verified a
           # candidate fix, found it caused a regression and withdrew it, the
