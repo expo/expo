@@ -29,6 +29,7 @@ private const val TAG = "ExpoAppMetrics"
 class NetworkRequestPersistence(
   private val database: MetricsDatabase,
   private val scope: CoroutineScope,
+  initialConfiguration: NetworkSpansConfiguration = NetworkSpansConfiguration(),
   /**
    * A plain value, not a provider: the id is constant for a persistence instance (it is
    * constructed after the main session exists), and resolving it eagerly means the monitor's
@@ -38,11 +39,30 @@ class NetworkRequestPersistence(
   private val sessionId: String
 ) {
   /**
+   * Capture-time recording policy. Volatile because the monitor calls in from OkHttp dispatcher
+   * threads while JS reconfigures from the modules queue. Checked before each insert so a change
+   * takes effect for future requests immediately; rows persisted earlier are untouched.
+   */
+  @Volatile
+  private var configuration: NetworkSpansConfiguration = initialConfiguration
+
+  /**
+   * Applies a new recording policy to subsequent requests. Called when JS reconfigures
+   * `traces.network`; the caller persists the value separately.
+   */
+  fun setConfiguration(configuration: NetworkSpansConfiguration) {
+    this.configuration = configuration
+  }
+
+  /**
    * Persists one completed request as a span. The insert runs on `scope` so the monitor's
    * record path (OkHttp dispatcher threads) never blocks on the database; failures are logged
    * and swallowed — persistence must never break the monitor's fan-out.
    */
   fun persist(request: NetworkRequest) {
+    if (!configuration.allows(request.url, request.method)) {
+      return
+    }
     val span = request.toSpan(sessionId) ?: return
     scope.launch {
       try {
@@ -66,6 +86,9 @@ class NetworkRequestPersistence(
     }
     scope.launch {
       for (request in requests) {
+        if (!configuration.allows(request.url, request.method)) {
+          continue
+        }
         val span = request.toSpan(sessionId) ?: continue
         try {
           database.spanDao().insertCapped(span)

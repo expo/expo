@@ -19,6 +19,7 @@
 
 ### 💡 Others
 
+- Add an internal `setNetworkSpansConfig` to gate and filter network span recording at capture time. ([#48891](https://github.com/expo/expo/pull/48891) by [@tsapeta](https://github.com/tsapeta))
 - Rename the no-update `downloadComplete` state event to `downloadCompleteUnavailable`. ([#47902](https://github.com/expo/expo/pull/47902) by [@kudo](https://github.com/kudo))
 - [iOS] Measure the JS bundle load time against the app startup end marker to stay compatible with upcoming React Native versions. ([#47782](https://github.com/expo/expo/pull/47782) by [@tsapeta](https://github.com/tsapeta))
 - Add a `caught` source to the private `reportError` for errors reported from user code. ([#47871](https://github.com/expo/expo/pull/47871) by [@tsapeta](https://github.com/tsapeta))
