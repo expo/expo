@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Support npm@12's dictionary-based `npm pack --json` format ([#48761](https://github.com/expo/expo/pull/48761) by [@kitten](https://github.com/kitten))
+- Fail when `--private-key-path` is passed without `updates.codeSigningCertificate` in the resolved app config, instead of ignoring the flag and continuing without signing. ([#48631](https://github.com/expo/expo/pull/48631) by [@gwdp](https://github.com/gwdp))
 
 ### 💡 Others
 
