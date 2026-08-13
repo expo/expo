@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Resolve symlinks in the Gradle plugin `sourceDir` before it reaches `includeBuild`. Android Studio failed to sync with `Missing ExternalProject for :` in pnpm workspaces with a patched dependency. ([#48495](https://github.com/expo/expo/pull/48495) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix autolinking pure C++ React Native modules published without `includesGeneratedCode: true`. ([#48514](https://github.com/expo/expo/pull/48514) by [@satya164](https://github.com/satya164))
 
 ### 💡 Others
 

@@ -62,14 +62,18 @@ async function resolveDependencyConfigImplAndroidAsync(packageRoot, reactNativeC
         (await parseComponentDescriptorsAsync(packageRoot, packageJson));
     let cmakeListsPath = reactNativeConfig?.cmakeListsPath
         ? path_1.default.join(androidDir, reactNativeConfig?.cmakeListsPath)
-        : path_1.default.join(androidDir, 'build/generated/source/codegen/jni/CMakeLists.txt');
+        : isPureCxxDependency
+            ? null
+            : path_1.default.join(androidDir, 'build/generated/source/codegen/jni/CMakeLists.txt');
     const cxxModuleCMakeListsModuleName = reactNativeConfig?.cxxModuleCMakeListsModuleName || null;
     const cxxModuleHeaderName = reactNativeConfig?.cxxModuleHeaderName || null;
     let cxxModuleCMakeListsPath = reactNativeConfig?.cxxModuleCMakeListsPath
         ? path_1.default.join(androidDir, reactNativeConfig?.cxxModuleCMakeListsPath)
         : null;
     if (process.platform === 'win32') {
-        cmakeListsPath = cmakeListsPath.replace(/\\/g, '/');
+        if (cmakeListsPath) {
+            cmakeListsPath = cmakeListsPath.replace(/\\/g, '/');
+        }
         if (cxxModuleCMakeListsPath) {
             cxxModuleCMakeListsPath = cxxModuleCMakeListsPath.replace(/\\/g, '/');
         }
