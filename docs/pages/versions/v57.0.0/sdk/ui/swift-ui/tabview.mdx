@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 Expo UI TabView matches the official SwiftUI [TabView API](https://developer.apple.com/documentation/swiftui/tabview) and switches between styles via the [`tabViewStyle`](modifiers/#tabviewstyleconfig) modifier.
@@ -34,7 +35,13 @@ Each page is a `<TabView.Tab>` child, identified by a `value` prop. `TabView` do
 
 Use `tabViewStyle({ type: 'page' })` for a horizontal pager with optional dot indicators. Pass `defaultSelection` to start the pager on a specific page without controlling it from React.
 
-```tsx PagerExample.tsx
+<ComponentExample
+  title="PagerExample.tsx"
+  src="/static/images/expo-ui/examples/tabview-pager-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tabview-pager-ios-dark.webp"
+  alt="A teal pager page labeled Page 2, with three dot indicators and the middle dot active">
+
+```tsx
 import { Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
 import {
   background,
@@ -78,11 +85,19 @@ function Page({ label, color }: { label: string; color: string }) {
 }
 ```
 
+</ComponentExample>
+
 ### Controlled selection
 
 Pass `selection` and `onSelectionChange` to drive the active tab from React state. Each `<TabView.Tab>`'s `value` is matched against `selection`. Add the [`animation`](modifiers/#animationanimationobject-animatedvalue) modifier to animate transitions when `selection` changes from JS.
 
-```tsx ControlledTabViewExample.tsx
+<ComponentExample
+  title="ControlledTabViewExample.tsx"
+  src="/static/images/expo-ui/examples/tabview-controlled-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tabview-controlled-ios-dark.webp"
+  alt="A Selected 0 readout and a Go to page 3 button above a purple pager page labeled Page 1">
+
+```tsx
 import { useState } from 'react';
 import { Button, Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
 import {
@@ -142,11 +157,19 @@ function Page({ label, color }: { label: string; color: string }) {
 }
 ```
 
+</ComponentExample>
+
 ### Page indicator dots
 
 Use the [`indexViewStyle`](modifiers/#indexviewstyleconfig) modifier together with `tabViewStyle({ type: 'page' })` to control the dot indicators. Set `indexDisplayMode` to `'always'`, `'never'`, or `'automatic'`, and `backgroundDisplayMode` to render a translucent pill behind the dots.
 
-```tsx PageIndicatorExample.tsx
+<ComponentExample
+  title="PageIndicatorExample.tsx"
+  src="/static/images/expo-ui/examples/tabview-page-indicator-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tabview-page-indicator-ios-dark.webp"
+  alt="A blue pager page labeled Page 1 with three dots inside a translucent pill">
+
+```tsx
 import { Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
 import {
   background,
@@ -196,13 +219,21 @@ function Page({ label, color }: { label: string; color: string }) {
 }
 ```
 
+</ComponentExample>
+
 ### Bottom tab bar
 
 Use `tabViewStyle({ type: 'automatic' })` for the SwiftUI default tab bar. Each tab's `label` and `systemImage` populate the bar item. Use the [`badge`](modifiers/#badgevalue) modifier on a tab to attach a badge to its bar item.
 
 > **Note:** For routed bottom-tab navigation across full-screen routes, use [`expo-router/unstable-native-tabs`](/router/advanced/native-tabs/) instead.
 
-```tsx BottomTabsExample.tsx
+<ComponentExample
+  title="BottomTabsExample.tsx"
+  src="/static/images/expo-ui/examples/tabview-bottom-tabs-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/tabview-bottom-tabs-ios-dark.webp"
+  alt="A blue Inbox page above a tab bar with Inbox, Sent, and Drafts, where Inbox carries a red badge reading 3">
+
+```tsx
 import { useState } from 'react';
 import { Host, Spacer, TabView, Text, VStack } from '@expo/ui/swift-ui';
 import {
@@ -251,6 +282,8 @@ function Page({ label, color }: { label: string; color: string }) {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
