@@ -170,6 +170,39 @@ export async function getPackageInfoAsync(
   return await getServer().runAsync(adbShellArgs(device.pid, 'dumpsys', 'package', appId));
 }
 
+/**
+ * Get the paths of the installed APKs for an app based on its Android package name.
+ * Returns an empty list when the app is not installed. Transport-level failures
+ * (device offline or unauthorized) throw — they say nothing about the app.
+ */
+export async function getPackagePathsAsync(
+  device: DeviceContext,
+  { appId }: { appId: string }
+): Promise<string[]> {
+  let output: string;
+  try {
+    output = await getServer().runAsync(
+      adbShellArgs(device.pid, 'pm', 'path', '--user', env.EXPO_ADB_USER, appId)
+    );
+  } catch (error: any) {
+    const message = `${error.message ?? ''} ${error.stderr ?? ''}`;
+    // adb quotes the serial in some forms: `error: device 'emulator-5554' not found`.
+    if (
+      /device (?:'[^']*' )?(offline|unauthorized|still connecting|not found)/i.test(message) ||
+      /insufficient permissions for device|more than one device\/emulator/i.test(message)
+    ) {
+      throw error;
+    }
+    // `pm path` exits non-zero when the package is not installed.
+    return [];
+  }
+  return output
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('package:'))
+    .map((line) => line.slice('package:'.length));
+}
+
 /** Install an app on a connected device. */
 export async function installAsync(device: DeviceContext, { filePath }: { filePath: string }) {
   // TODO: Handle the `INSTALL_FAILED_INSUFFICIENT_STORAGE` error.
@@ -196,7 +229,7 @@ export function adbShellArgs(pid: Device['pid'], ...command: string[]): string[]
   return adbArgs(pid, 'shell', ...command.map(shellQuote));
 }
 
-function shellQuote(value: string): string {
+export function shellQuote(value: string): string {
   return `'${value.replace(/'/g, `'\\''`)}'`;
 }
 

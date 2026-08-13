@@ -12,6 +12,7 @@ import {
   launchActivityAsync,
   sanitizeAdbDeviceName,
   openUrlAsync,
+  getPackagePathsAsync,
 } from '../adb';
 
 jest.mock('../ADBServer', () => ({
@@ -46,6 +47,48 @@ describe(openUrlAsync, () => {
     expect(getServer().runAsync).toHaveBeenCalledWith(
       expect.arrayContaining(["'acme://x; reboot'"])
     );
+  });
+});
+
+describe(getPackagePathsAsync, () => {
+  it(`returns the APK paths of an installed app`, async () => {
+    jest
+      .mocked(getServer().runAsync)
+      .mockResolvedValueOnce('package:/data/app/~~abc==/dev.bacon.app-xyz==/base.apk\n');
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([
+      '/data/app/~~abc==/dev.bacon.app-xyz==/base.apk',
+    ]);
+    expect(getServer().runAsync).toHaveBeenCalledWith([
+      '-s',
+      '123',
+      'shell',
+      "'pm'",
+      "'path'",
+      "'--user'",
+      "'0'",
+      "'dev.bacon.app'",
+    ]);
+  });
+
+  it(`returns an empty list when the app is not installed`, async () => {
+    jest.mocked(getServer().runAsync).mockResolvedValueOnce('');
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([]);
+  });
+
+  it(`returns an empty list when pm path exits non-zero for a missing package`, async () => {
+    jest.mocked(getServer().runAsync).mockRejectedValueOnce(new Error('package not found'));
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).resolves.toEqual([]);
+  });
+
+  // Real adb transport-error message forms; each must throw instead of reading as "not installed".
+  it.each([
+    'error: device offline',
+    "error: device 'emulator-5554' not found",
+    'error: insufficient permissions for device: missing udev rules?',
+    'adb: more than one device/emulator',
+  ])(`rethrows the transport error %p`, async (message) => {
+    jest.mocked(getServer().runAsync).mockRejectedValueOnce(new Error(message));
+    await expect(getPackagePathsAsync(device, { appId: 'dev.bacon.app' })).rejects.toThrow(message);
   });
 });
 

@@ -12,6 +12,7 @@ import * as Log from '../../log';
 import { debugEvent } from '../../run/events';
 import { ensureDependenciesAsync } from '../../start/doctor/dependencies/ensureDependenciesAsync';
 import { CommandError } from '../errors';
+import { importFingerprint } from '../nativeFingerprint';
 import { moduleNameIsDirectFileReference, moduleNameIsPackageReference } from './helpers';
 
 export const resolveBuildCacheProvider = async (
@@ -166,25 +167,14 @@ async function calculateFingerprintHashAsync({
     );
   }
 
-  const Fingerprint = importFingerprintForDev(projectRoot);
-  if (!Fingerprint) {
+  const resolved = importFingerprint(projectRoot);
+  if (!resolved) {
     Log.warn('@expo/fingerprint is not installed in the project, skipping build cache.');
     return null;
   }
-  const fingerprint = await Fingerprint.createFingerprintAsync(projectRoot);
+  const fingerprint = await resolved.Fingerprint.createFingerprintAsync(projectRoot);
 
   return fingerprint.hash;
-}
-
-function importFingerprintForDev(projectRoot: string): null | typeof import('@expo/fingerprint') {
-  try {
-    return require(require.resolve('@expo/fingerprint', { paths: [projectRoot] }));
-  } catch (error: any) {
-    if ('code' in error && error.code === 'MODULE_NOT_FOUND') {
-      return null;
-    }
-    throw error;
-  }
 }
 
 /**
