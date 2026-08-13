@@ -1,12 +1,17 @@
 # Maintainer-directed agent commands. One workflow owns the security and
 # publishing machinery for both modes:
-#   /verify           investigate the report and post findings with attested evidence.
-#                     On an ISSUE this also opens a pull request when it can verify a
-#                     fix; on a PULL REQUEST it reports only.
-#   /verify --fix     also attempt a fix pull request (needed only on a pull request).
-#   /verify --no-fix  report only, never open a pull request.
-#   @expo-bot <task>  on an open PR authored by expo-bot, carry out a concrete
-#                     follow-up task and push the checked commit to that PR.
+#   /verify                  investigate the report and post findings with attested evidence.
+#   @expo-bot verify         same as /verify (mention form).
+#                            On an ISSUE this also opens a pull request when it can verify a
+#                            fix; on a PULL REQUEST it reports only.
+#   /verify --fix            also attempt a fix pull request (needed only on a pull request).
+#   @expo-bot verify --fix   same as /verify --fix.
+#   /verify --no-fix         report only, never open a pull request.
+#   @expo-bot verify --no-fix  same as /verify --no-fix.
+#   @expo-bot <task>         on an open PR authored by expo-bot, carry out a concrete
+#                            follow-up task and push the checked commit to that PR.
+#   Reserved verbs (handled by other workflows, never work mode):
+#     review, dismiss, undismiss, help.
 #
 # The agent is headless Claude Code connected to the expo-sandbox-mcp server
 # (hosted E2B sandboxes, proxied EAS builds, hosted iOS simulators). It
@@ -130,8 +135,12 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' ||
       ((startsWith(github.event.comment.body, '/verify') ||
-      github.event.comment.body == '@expo-bot' ||
-      startsWith(github.event.comment.body, '@expo-bot ')) &&
+      startsWith(github.event.comment.body, '@expo-bot verify') ||
+      (startsWith(github.event.comment.body, '@expo-bot ') &&
+      !startsWith(github.event.comment.body, '@expo-bot review') &&
+      !startsWith(github.event.comment.body, '@expo-bot dismiss') &&
+      !startsWith(github.event.comment.body, '@expo-bot undismiss') &&
+      !startsWith(github.event.comment.body, '@expo-bot help'))) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     outputs:
@@ -189,6 +198,9 @@ jobs:
     # not trigger. Deliberate: matching a bare `@expo-bot` prefix would fire
     # on `@expo-bot!` and similar asides, and each false fire ends in a
     # public parse-failure comment.
+    # `@expo-bot verify` is /verify, so it must run on issues as well as PRs.
+    # Other `@expo-bot …` forms stay PR-only (work mode), except reserved
+    # verbs (review, dismiss, undismiss, help) which other workflows own.
     # Excluding expo-bot itself prevents a result comment from forming a loop.
     # The authoritative write-access check is the step below.
     # (Runs are backed by the expo-verification-bot service account.)
@@ -196,9 +208,13 @@ jobs:
       github.event_name == 'workflow_dispatch' ||
       (github.event.comment.user.login != 'expo-bot' &&
       (startsWith(github.event.comment.body, '/verify') ||
+      startsWith(github.event.comment.body, '@expo-bot verify') ||
       (github.event.issue.pull_request != null &&
-      (github.event.comment.body == '@expo-bot' ||
-      startsWith(github.event.comment.body, '@expo-bot ')))) &&
+      startsWith(github.event.comment.body, '@expo-bot ') &&
+      !startsWith(github.event.comment.body, '@expo-bot review') &&
+      !startsWith(github.event.comment.body, '@expo-bot dismiss') &&
+      !startsWith(github.event.comment.body, '@expo-bot undismiss') &&
+      !startsWith(github.event.comment.body, '@expo-bot help'))) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     # ONE budget, in one place, and the ordering is the point:
@@ -288,9 +304,19 @@ jobs:
           else
             line=$(printf '%s' "$COMMENT" | head -n1 | tr -d '\r')
             first=$(printf '%s' "$line" | awk '{print tolower($1)}')
+            second=$(printf '%s' "$line" | awk '{print tolower($2)}')
             case "$first" in
-              @expo-bot) mode=work ;;
               /verify) mode=verify ;;
+              @expo-bot)
+                case "$second" in
+                  verify) mode=verify ;;
+                  review|dismiss|undismiss|help)
+                    echo "This mention is handled by another workflow."
+                    exit 0
+                    ;;
+                  *) mode=work ;;
+                esac
+                ;;
               *)
                 echo "::error::The first token must be /verify or @expo-bot."
                 exit 1
