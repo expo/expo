@@ -398,7 +398,6 @@ it('can use replace navigation', () => {
       {
         key: expect.any(String),
         name: '__root',
-        params: undefined,
         state: {
           history: [
             {
@@ -413,7 +412,6 @@ it('can use replace navigation', () => {
             {
               key: expect.any(String),
               name: 'one',
-              params: undefined,
               path: '/one',
             },
             {

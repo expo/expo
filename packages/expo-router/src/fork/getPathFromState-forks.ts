@@ -1,8 +1,8 @@
 import * as queryString from 'query-string';
 
 import { matchDynamicName, matchGroupName } from '../matchers';
-import { validatePathConfig as RNValidatePathConfig, type Route } from '../react-navigation/native';
-import type { Options, State, StringifyConfig } from './getPathFromState';
+import type { Route } from '../react-navigation/native';
+import type { State, StringifyConfig } from './getPathFromState';
 
 export type ExpoOptions = {
   preserveDynamicRoutes?: boolean;
@@ -15,15 +15,6 @@ export type ExpoConfigItem = {
   initialRouteName?: string;
 };
 
-export function validatePathConfig<ParamList extends object>({
-  preserveDynamicRoutes,
-  preserveGroups,
-  shouldEncodeURISegment,
-  ...options
-}: Options<ParamList>) {
-  RNValidatePathConfig(options);
-}
-
 export function fixCurrentParams(
   allParams: Record<string, any>,
   route: Route<string> & {
@@ -34,7 +25,7 @@ export function fixCurrentParams(
   // Better handle array params
   const currentParams = Object.fromEntries(
     Object.entries(route.params!).flatMap(([key, value]) => {
-      if (key === 'screen' || key === 'params') {
+      if (key === 'screen' || key === 'params' || value === undefined) {
         return [];
       }
 

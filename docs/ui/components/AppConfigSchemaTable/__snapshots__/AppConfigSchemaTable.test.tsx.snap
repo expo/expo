@@ -762,7 +762,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Example
         </p>
         <span
-          class="m-0 px-1 py-1.5 whitespace-pre inline-flex p-0!"
+          class="m-0 px-1 py-1.5 inline-flex p-0! whitespace-pre-wrap"
           data-text="true"
         >
           <code

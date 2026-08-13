@@ -1191,9 +1191,10 @@ jobs:
                 docs/*|*.md|*.mdx) ;;
                 *) docs_only=no; break ;;
               esac
-            done <<EOF
-$changed
-EOF
+            # Process substitution, not a here-doc: a column-0 EOF would
+            # terminate this YAML `run: |` block and fail every push that
+            # loads the file (seen on 31677154748).
+            done < <(printf '%s\n' "$changed")
             if [ "$docs_only" = yes ]; then
               change_name="documentation change"
               default_title="Document #$ISSUE_NUMBER (from /verify)"

@@ -9,6 +9,7 @@ import { useDomComponentNavigation } from './domComponents/useDomComponentNaviga
 import { NavigationContainer as UpstreamNavigationContainer } from './fork/NavigationContainer';
 import type { ExpoLinkingOptions } from './getLinkingConfig';
 import { store, useStore } from './global-state/router-store';
+import { RouterRegistryProvider } from './global-state/routerRegistry';
 import type { ServerContextType } from './global-state/serverLocationContext';
 import { ServerContext } from './global-state/serverLocationContext';
 import { StoreContext } from './global-state/storeContext';
@@ -154,20 +155,22 @@ function ContextNavigator({
 
   return (
     <StoreContext.Provider value={store}>
-      <UpstreamNavigationContainer
-        ref={store.navigationRef}
-        initialState={store.state}
-        linking={store.linking as LinkingOptions<any>}
-        onUnhandledAction={onUnhandledAction}
-        onStateChange={store.onStateChange}
-        documentTitle={documentTitle}
-        onReady={onNavigationReady}>
-        <ServerContext.Provider value={serverContext}>
-          <WrapperComponent>
-            <Content />
-          </WrapperComponent>
-        </ServerContext.Provider>
-      </UpstreamNavigationContainer>
+      <RouterRegistryProvider>
+        <UpstreamNavigationContainer
+          ref={store.navigationRef}
+          initialState={store.state}
+          linking={store.linking as LinkingOptions<any>}
+          onUnhandledAction={onUnhandledAction}
+          onStateChange={store.onStateChange}
+          documentTitle={documentTitle}
+          onReady={onNavigationReady}>
+          <ServerContext.Provider value={serverContext}>
+            <WrapperComponent>
+              <Content />
+            </WrapperComponent>
+          </ServerContext.Provider>
+        </UpstreamNavigationContainer>
+      </RouterRegistryProvider>
     </StoreContext.Provider>
   );
 }

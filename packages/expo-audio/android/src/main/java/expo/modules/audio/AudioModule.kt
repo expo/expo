@@ -374,7 +374,7 @@ class AudioModule : Module() {
     }
 
     Class(AudioPlayer::class) {
-      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double ->
+      Constructor { source: AudioSource?, updateInterval: Double, keepAudioSessionActive: Boolean, preferredForwardBufferDuration: Double, /* allowsExternalPlayback - iOS only */ _: Boolean? ->
         val mediaSource = createMediaItem(source)
         val bufferDurationMs = (preferredForwardBufferDuration * 1000).toLong()
         runOnMain {

@@ -33,6 +33,18 @@ const EAS_TUTORIAL_PAGES = [
   '/tutorial/eas/next-steps',
 ];
 
+const CICD_TUTORIAL_PAGES = [
+  '/tutorial/cicd/introduction',
+  '/tutorial/cicd/first-workflow',
+  '/tutorial/cicd/development-builds',
+  '/tutorial/cicd/preview-builds',
+  '/tutorial/cicd/e2e-tests',
+  '/tutorial/cicd/production',
+  '/tutorial/cicd/tag-based-releases',
+  '/tutorial/cicd/web-deployments',
+  '/tutorial/cicd/next-steps',
+];
+
 describe('hasJapaneseTranslation', () => {
   it('covers the Expo tutorial', () => {
     expect(hasJapaneseTranslation('/tutorial/overview')).toBe(true);
@@ -53,8 +65,15 @@ describe('hasJapaneseTranslation', () => {
     }
   });
 
+  it('covers the CI/CD tutorial', () => {
+    for (const path of CICD_TUTORIAL_PAGES) {
+      expect(hasJapaneseTranslation(path)).toBe(true);
+      expect(hasJapaneseTranslation(`/ja${path}`)).toBe(true);
+    }
+  });
+
   it('excludes sections that are not translated yet', () => {
-    expect(hasJapaneseTranslation('/tutorial/cicd/introduction')).toBe(false);
+    expect(hasJapaneseTranslation('/eas/workflows/introduction')).toBe(false);
     expect(hasJapaneseTranslation('/get-started/create-a-project')).toBe(false);
   });
 });
@@ -64,8 +83,9 @@ describe('isTranslatableSection', () => {
     for (const path of [
       ...BUILD_WITH_AI_PAGES,
       ...EAS_TUTORIAL_PAGES,
+      ...CICD_TUTORIAL_PAGES,
       '/tutorial/overview',
-      '/tutorial/cicd/introduction',
+      '/eas/workflows/introduction',
     ]) {
       expect(isTranslatableSection(path)).toBe(hasJapaneseTranslation(path));
     }

@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- [Internal] Inject CSS and JavaScript bundle tags within `getStaticContent()`. ([#47006](https://github.com/expo/expo/pull/47006) by [@hassankhan](https://github.com/hassankhan))
+
 ## 57.0.4 - 2026-07-22
 
 _This version does not introduce any user-facing changes._

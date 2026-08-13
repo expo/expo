@@ -2,10 +2,10 @@ import { act, render, renderHook } from '@testing-library/react-native';
 import * as React from 'react';
 
 import type { DefaultRouterOptions, NavigationState, Router } from '../../routers';
-import { BaseNavigationContainer } from '../BaseNavigationContainer';
 import { Group } from '../Group';
 import { Screen } from '../Screen';
 import { useNavigationBuilder } from '../useNavigationBuilder';
+import { BaseNavigationContainer } from './__fixtures__/BaseNavigationContainer';
 import { type MockActions, MockRouter, MockRouterKey } from './__fixtures__/MockRouter';
 
 jest.useFakeTimers();
@@ -15,25 +15,13 @@ beforeEach(() => {
 });
 
 test('describes absent routes on demand', () => {
-  function SparseRouter(options: DefaultRouterOptions) {
-    const router = MockRouter(options);
-
-    return {
-      ...router,
-      getInitialState(config: Parameters<typeof router.getInitialState>[0]) {
-        const state = router.getInitialState(config);
-        return { ...state, routes: state.routes.slice(0, 1) };
-      },
-    };
-  }
-
   const barOptions = jest.fn(() => ({ title: 'Bar' }));
   const wrapper = ({ children }: React.PropsWithChildren) => (
     <BaseNavigationContainer>{children}</BaseNavigationContainer>
   );
   const { result } = renderHook(
     () =>
-      useNavigationBuilder(SparseRouter, {
+      useNavigationBuilder(MockRouter, {
         children: [
           <Screen key="foo" name="foo" component={React.Fragment} options={{ title: 'Foo' }} />,
           <Screen key="bar" name="bar" component={React.Fragment} options={barOptions} />,
@@ -42,11 +30,13 @@ test('describes absent routes on demand', () => {
     { wrapper }
   );
 
-  expect(result.current.descriptors.foo).toMatchObject({
-    route: { key: 'foo', name: 'foo' },
+  const foo = result.current.state.routes[0]!;
+
+  expect(result.current.descriptors[foo.key]).toMatchObject({
+    route: foo,
     options: { title: 'Foo' },
   });
-  expect(result.current.descriptors.foo!.render()).not.toBeNull();
+  expect(result.current.descriptors[foo.key]!.render()).not.toBeNull();
   expect(result.current.descriptors.bar).toBeUndefined();
   expect(barOptions).not.toHaveBeenCalled();
 
@@ -184,7 +174,7 @@ test('sets options with screenOptions prop as an object', () => {
   const TestScreenB = (): any => 'Test screen B';
 
   const root = render(
-    <BaseNavigationContainer>
+    <BaseNavigationContainer initialState={{ routes: [{ name: 'foo' }, { name: 'bar' }] }}>
       <TestNavigator screenOptions={{ title: 'Hello world' }}>
         <Screen name="foo" component={TestScreenA} />
         <Screen name="bar" component={TestScreenB} />
