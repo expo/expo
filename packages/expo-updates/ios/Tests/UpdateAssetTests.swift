@@ -49,7 +49,10 @@ struct UpdateAssetTests {
       "nested/asset.png",
       "nested\\asset.png",
       "/etc/passwd",
-      "asset\0.png"
+      "asset\0.png",
+      // "/" followed by a combining mark is a single Character that does not equal "/", so a
+      // grapheme-level check passes this even though the separator byte reaches the filesystem.
+      "..\u{2F}\u{0338}pwned.png"
     ]
     for filename in unsafe {
       #expect(!UpdatesUtils.isSafeFilename(filename), "expected \"\(filename)\" to be rejected")

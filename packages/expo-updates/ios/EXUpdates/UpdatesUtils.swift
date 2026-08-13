@@ -78,14 +78,18 @@ public final class UpdatesUtils: NSObject {
   /**
    * Asset filenames are built from manifest-controlled values, so a filename holding a path
    * separator or a `..` component would resolve outside the updates directory.
+   *
+   * Matching is done on unicode scalars because `String.contains` compares grapheme clusters, and
+   * a separator followed by a combining mark forms one cluster that does not equal the separator.
+   * The filesystem still sees the separator byte.
    */
   public static func isSafeFilename(_ filename: String) -> Bool {
     return !filename.isEmpty &&
       filename != "." &&
       filename != ".." &&
-      !filename.contains("/") &&
-      !filename.contains("\\") &&
-      !filename.contains("\0")
+      !filename.unicodeScalars.contains("/") &&
+      !filename.unicodeScalars.contains("\\") &&
+      !filename.unicodeScalars.contains("\0")
   }
 
   // MARK: - Internal methods
