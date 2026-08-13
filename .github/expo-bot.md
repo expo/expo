@@ -2,7 +2,7 @@
 
 These commands run on the [expo/expo](https://github.com/expo/expo) repository — Expo’s open-source SDK, apps, and docs. Mention `@expo-bot` on an [issue](https://github.com/expo/expo/issues) or [pull request](https://github.com/expo/expo/pulls) there, or use the slash form. They do nothing on other repos. Only people with write access on expo/expo (OWNER / MEMBER / COLLABORATOR) can trigger them.
 
-Comment `@expo-bot help` on an expo/expo thread for a short list. That command also publishes this file to the [expo-bot profile](https://github.com/expo-bot) when the copy there is behind.
+Comment `@expo-bot help` on an expo/expo thread for a short list. That command also publishes this file to the [expo-bot profile](https://github.com/expo-bot) when the copy there is behind. A daily cron does the same publish.
 
 ## Commands
 
