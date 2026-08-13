@@ -2,11 +2,16 @@ name: expo-bot help
 
 # Maintainer comment `@expo-bot help` (or a bare `@expo-bot`) posts a short
 # command list and publishes .github/expo-bot.md to the expo-bot profile
-# README when that copy is behind. No model, no model credential.
+# README when that copy is behind. A daily cron does the same publish so
+# the profile stays current even if nobody asks for help. No model.
 
 on:
   issue_comment:
     types: [created]
+  schedule:
+    # Once a day. Offset from :00 so we are not in the hourly stampede.
+    - cron: '17 8 * * *'
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -16,11 +21,13 @@ permissions:
 jobs:
   help:
     if: >-
-      github.event.comment.user.login != 'expo-bot' &&
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event.comment.user.login != 'expo-bot' &&
       (github.event.comment.body == '@expo-bot' ||
       github.event.comment.body == '@expo-bot help' ||
       startsWith(github.event.comment.body, '@expo-bot help')) &&
-      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
+      contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -33,12 +40,14 @@ jobs:
           persist-credentials: false
 
       - name: Publish manpage if stale
-        continue-on-error: true
+        # Comments still post if sync fails; cron/dispatch should surface a miss.
+        continue-on-error: ${{ github.event_name == 'issue_comment' }}
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         run: bash .github/scripts/sync-expo-bot-manpage.sh
 
       - name: Post command list
+        if: github.event_name == 'issue_comment'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           NUMBER: ${{ github.event.issue.number }}
