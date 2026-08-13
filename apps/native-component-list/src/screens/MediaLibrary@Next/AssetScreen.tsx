@@ -177,9 +177,6 @@ const AssetScreen = () => {
       const original = await freshAsset.getUri({ version: AssetUriVersion.ORIGINAL });
       const finished = Date.now();
 
-      console.log(
-        `current: ${startedOriginal - startedCurrent} ms, original: ${finished - startedOriginal} ms`
-      );
       setUriVersions({ [AssetUriVersion.CURRENT]: current, [AssetUriVersion.ORIGINAL]: original });
     } catch (e) {
       console.error('Error comparing uri versions:', e);
