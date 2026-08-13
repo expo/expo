@@ -58,6 +58,10 @@ export async function serveAsync(inputDir: string, options: Options) {
 
 async function startStaticServerAsync(dist: string, options: Options) {
   const staticManifest = await loadStaticManifestAsync(dist);
+  // Only `web.output: 'static'` exports write `_expo/.routes.json`, and they emit one HTML file per
+  // route, so a missing file there is a genuine 404. A `web.output: 'single'` export emits nothing
+  // but `index.html`, so client-side routes have to fall back to it to survive a reload or deep link.
+  const useSpaFallback = !staticManifest && (await fileExistsAsync(path.join(dist, 'index.html')));
 
   const server = http.createServer((req, res) => {
     // Remove query strings and decode URI
@@ -82,6 +86,15 @@ async function startStaticServerAsync(dist: string, options: Options) {
       })
       .on('error', (err: any) => {
         if (err.status === 404) {
+          if (useSpaFallback && isNavigationRequest(req)) {
+            send(req, '/index.html', { root: dist })
+              .on('error', (fallbackError: any) => {
+                res.statusCode = fallbackError.status || 500;
+                res.end('Internal Server Error');
+              })
+              .pipe(res);
+            return;
+          }
           res.statusCode = 404;
           res.end('Not Found');
           return;
@@ -93,6 +106,18 @@ async function startStaticServerAsync(dist: string, options: Options) {
   });
 
   server.listen(options.port!);
+}
+
+/**
+ * Whether the request is a document navigation, such as opening a URL or reloading a page.
+ * Only navigations may fall back to the single-page app shell — a missing script, stylesheet,
+ * or image must still 404 instead of resolving to HTML.
+ */
+function isNavigationRequest(req: http.IncomingMessage): boolean {
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return false;
+  }
+  return !!req.headers.accept?.includes('text/html');
 }
 
 async function startDynamicServerAsync(dist: string, options: Options) {
