@@ -4,6 +4,7 @@ import type { GenerateMetadataFunction, LoaderFunction } from 'expo-server';
 import { createContext, use, type ComponentType, type PropsWithChildren } from 'react';
 
 import { getContextKey } from './matchers';
+import type { PartialRoute, Route as NavigationRoute } from './react-navigation/routers';
 import { sortRoutesWithInitial, sortRoutes } from './sortRoutes';
 import type { SuspenseFallbackProps } from './views/SuspenseFallback';
 import type { ErrorBoundaryProps } from './views/Try';
@@ -82,15 +83,27 @@ export function useRouteNode(): RouteNode | null {
 }
 
 export function findRouteNodeByName(
-  children: RouteNode[] | undefined,
-  routeName: string | undefined
+  node: RouteNode | null | undefined,
+  name: string | undefined
 ): RouteNode | undefined {
-  if (!routeName) {
-    return undefined;
+  return node?.children.find((child) => child.route === name);
+}
+
+export function findRouteNodeForState(
+  node: RouteNode | null | undefined,
+  route: PartialRoute<NavigationRoute<string>> | undefined
+): RouteNode | undefined {
+  // TODO: Use a precomputed route-node index to avoid scanning children at every state level.
+  let currentNode = findRouteNodeByName(node, route?.name);
+  let currentRoute = route;
+
+  while (currentNode && currentRoute?.state) {
+    currentRoute =
+      currentRoute.state.routes[currentRoute.state.index ?? currentRoute.state.routes.length - 1];
+    currentNode = findRouteNodeByName(currentNode, currentRoute?.name);
   }
-  return children?.find(
-    (child) => child.route === routeName || child.route === `${routeName}/index`
-  );
+
+  return currentNode;
 }
 
 export function getValidInitialRoute(
@@ -101,7 +114,9 @@ export function getValidInitialRoute(
   if (!node || !initialRouteName) {
     return undefined;
   }
-  const route = findRouteNodeByName(node.children, initialRouteName);
+  const route =
+    findRouteNodeByName(node, initialRouteName) ||
+    findRouteNodeByName(node, `${initialRouteName}/index`);
   if (!route) {
     throw new Error(
       `The initial route name "${initialRouteName}"${groupName ? ` for group "${groupName}"` : ''} was not found in the layout at "${node.contextKey}". ` +
