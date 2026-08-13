@@ -4,7 +4,6 @@ import React
 
 public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNativeFactoryProtocol {
   private let defaultModuleName = "main"
-  private var _bundleConfiguration: RCTBundleConfiguration?
 
   @MainActor
   private lazy var reactDelegate: ExpoReactDelegate = {
@@ -27,24 +26,23 @@ public class ExpoReactNativeFactory: ExpoReactNativeFactoryObjC, ExpoReactNative
     super.init(delegate: delegate, releaseLevel: releaseLevel)
   }
 
+  // `RCTBundleConfiguration` is only available in react-native 0.84+, so it doesn't exist yet on react-native-macos.
+#if os(iOS) || os(tvOS)
+  private var _bundleConfiguration: RCTBundleConfiguration?
+
   public override var bundleConfiguration: RCTBundleConfiguration {
     get {
       if let _bundleConfiguration {
         return _bundleConfiguration
       }
-#if os(iOS) || os(tvOS)
       adoptInfoPlistMetroPort()
       return ExpoBundleConfiguration.configuration(bundleURL: self.delegate?.bundleURL())
-#else
-      return super.bundleConfiguration
-#endif
     }
     set {
       _bundleConfiguration = newValue
     }
   }
 
-#if os(iOS) || os(tvOS)
   private func adoptInfoPlistMetroPort() {
 #if DEBUG
     if NSClassFromString("EXDevLauncherController") != nil {
