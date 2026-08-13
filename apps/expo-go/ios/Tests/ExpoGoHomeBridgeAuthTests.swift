@@ -4,6 +4,8 @@ import XCTest
 @testable import Expo_Go
 
 final class ExpoGoHomeBridgeAuthTests: XCTestCase {
+  private let defaults = UserDefaults.standard
+
   override func setUp() {
     super.setUp()
     AuthenticationService.clearSession()
@@ -17,41 +19,37 @@ final class ExpoGoHomeBridgeAuthTests: XCTestCase {
   func testNoSessionIsNotAuthenticated() {
     XCTAssertFalse(ExpoGoHomeBridge.shared.isAuthenticated())
     XCTAssertNil(ExpoGoHomeBridge.shared.authenticatedUsername())
-    XCTAssertNil(ExpoGoHomeBridge.shared.sessionExpiredMessage())
+    XCTAssertNil(ExpoGoHomeBridge.shared.expiredPartnerSessionMessage())
   }
 
-  func testLiveSessionReportsUsername() async {
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: "secret",
-      username: "test-user",
-      expiresAt: Date().addingTimeInterval(60)
-    )
+  func testLiveSessionReportsUsername() {
+    defaults.set("secret", forKey: AuthenticationService.sessionKey)
+    defaults.set("partner-private-test", forKey: AuthenticationService.usernameKey)
+    defaults.set(Date().addingTimeInterval(60).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
+
     XCTAssertTrue(ExpoGoHomeBridge.shared.isAuthenticated())
-    XCTAssertEqual(ExpoGoHomeBridge.shared.authenticatedUsername(), "test-user")
-    XCTAssertNil(ExpoGoHomeBridge.shared.sessionExpiredMessage())
+    XCTAssertEqual(ExpoGoHomeBridge.shared.authenticatedUsername(), "partner-private-test")
+    XCTAssertNil(ExpoGoHomeBridge.shared.expiredPartnerSessionMessage())
   }
 
-  func testExpiredSessionReportsNeitherAuthNorUsername() async {
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: "secret",
-      username: "test-user",
-      expiresAt: Date().addingTimeInterval(-1)
-    )
+  func testExpiredSessionReportsNeitherAuthNorUsername() {
+    defaults.set("secret", forKey: AuthenticationService.sessionKey)
+    defaults.set("partner-private-test", forKey: AuthenticationService.usernameKey)
+    defaults.set(Date().addingTimeInterval(-1).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
+
     XCTAssertFalse(ExpoGoHomeBridge.shared.isAuthenticated())
     XCTAssertNil(ExpoGoHomeBridge.shared.authenticatedUsername())
     XCTAssertEqual(
-      ExpoGoHomeBridge.shared.sessionExpiredMessage(),
+      ExpoGoHomeBridge.shared.expiredPartnerSessionMessage(),
       ExpoGoHomeBridge.expiredSessionMessage
     )
   }
 
-  func testSessionWithoutExpiryReportsUsername() async {
-    await AuthenticationService.storeDeviceAuthSession(
-      sessionSecret: "secret",
-      username: "test-user",
-      expiresAt: nil
-    )
+  func testSessionWithoutExpiryReportsUsername() {
+    defaults.set("secret", forKey: AuthenticationService.sessionKey)
+    defaults.set("partner-private-test", forKey: AuthenticationService.usernameKey)
+
     XCTAssertTrue(ExpoGoHomeBridge.shared.isAuthenticated())
-    XCTAssertEqual(ExpoGoHomeBridge.shared.authenticatedUsername(), "test-user")
+    XCTAssertEqual(ExpoGoHomeBridge.shared.authenticatedUsername(), "partner-private-test")
   }
 }

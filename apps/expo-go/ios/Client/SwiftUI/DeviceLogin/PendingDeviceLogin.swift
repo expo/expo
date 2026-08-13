@@ -10,30 +10,42 @@ public final class PendingDeviceLogin: NSObject {
   private let lock = NSLock()
   private var storedURI: URL?
   private var storedProjectURL: URL?
+  private var hasOffered = false
 
   private override init() {
     super.init()
   }
 
+  /// The URI while it is stored, offered or not. The mismatch error reads this after the sheet has
+  /// already been declined.
   @objc(currentForProjectURL:)
   public func current(forProjectURL projectURL: URL) -> URL? {
     lock.lock()
     defer { lock.unlock() }
-    guard storedProjectURL?.absoluteString == projectURL.absoluteString else {
+    return matches(projectURL) ? storedURI : nil
+  }
+
+  /// The URI the first time only. Returning it once is what stops the open loop from re-presenting.
+  @objc(offerOnceForProjectURL:)
+  public func offerOnce(forProjectURL projectURL: URL) -> URL? {
+    lock.lock()
+    defer { lock.unlock() }
+    guard matches(projectURL), !hasOffered, let storedURI else {
       return nil
     }
+    hasOffered = true
     return storedURI
   }
 
   @objc(setURI:forProjectURL:)
   public func set(_ uri: URL?, forProjectURL projectURL: URL) {
-    lock.lock()
-    defer { lock.unlock() }
     guard let uri else {
-      storedURI = nil
-      storedProjectURL = nil
+      clear()
       return
     }
+    lock.lock()
+    defer { lock.unlock() }
+    hasOffered = false
     storedURI = uri
     storedProjectURL = projectURL
   }
@@ -43,5 +55,10 @@ public final class PendingDeviceLogin: NSObject {
     defer { lock.unlock() }
     storedURI = nil
     storedProjectURL = nil
+    hasOffered = false
+  }
+
+  private func matches(_ projectURL: URL) -> Bool {
+    storedProjectURL?.absoluteString == projectURL.absoluteString
   }
 }

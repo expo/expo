@@ -147,6 +147,43 @@ final class DeviceLoginLinkTests: XCTestCase {
     PendingDeviceLogin.shared.clear()
   }
 
+  func testPendingHolderOffersOnlyOnce() throws {
+    let uri = try url("https://partner.dev/p/123")
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.set(uri, forProjectURL: project)
+
+    XCTAssertEqual(PendingDeviceLogin.shared.offerOnce(forProjectURL: project), uri)
+    XCTAssertNil(PendingDeviceLogin.shared.offerOnce(forProjectURL: project))
+    // Still readable after being offered, which is what the mismatch error uses.
+    XCTAssertEqual(PendingDeviceLogin.shared.current(forProjectURL: project), uri)
+
+    PendingDeviceLogin.shared.clear()
+  }
+
+  func testPendingHolderOffersAgainAfterANewScan() throws {
+    let uri = try url("https://partner.dev/p/123")
+    let project = try url("exp://10.0.0.5:8081/")
+    PendingDeviceLogin.shared.set(uri, forProjectURL: project)
+    _ = PendingDeviceLogin.shared.offerOnce(forProjectURL: project)
+
+    PendingDeviceLogin.shared.set(uri, forProjectURL: project)
+    XCTAssertEqual(PendingDeviceLogin.shared.offerOnce(forProjectURL: project), uri)
+
+    PendingDeviceLogin.shared.clear()
+  }
+
+  func testPendingHolderDoesNotOfferForAnotherProject() throws {
+    let uri = try url("https://partner.dev/p/123")
+    let scanned = try url("exp://10.0.0.5:8081/")
+    let unrelated = try url("exp://10.0.0.9:8081/")
+    PendingDeviceLogin.shared.set(uri, forProjectURL: scanned)
+
+    XCTAssertNil(PendingDeviceLogin.shared.offerOnce(forProjectURL: unrelated))
+    XCTAssertEqual(PendingDeviceLogin.shared.offerOnce(forProjectURL: scanned), uri)
+
+    PendingDeviceLogin.shared.clear()
+  }
+
   func testPendingHolderSettingNilClearsTheRecord() throws {
     let uri = try url("https://verify.example/p/123")
     let project = try url("exp://10.0.0.5:8081/")
