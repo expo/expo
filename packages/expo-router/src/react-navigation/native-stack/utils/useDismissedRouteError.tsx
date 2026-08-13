@@ -15,8 +15,8 @@ export function useDismissedRouteError(state: NativeStackViewState) {
     if (dismissedRouteName) {
       const message =
         `The screen '${dismissedRouteName}' was removed natively but didn't get removed from JS state. ` +
-        `This can happen if the action was prevented in a 'beforeRemove' listener, which is not fully supported in native-stack.\n\n` +
-        `Consider using a 'usePreventRemove' hook with 'headerBackButtonMenuEnabled: false' to prevent users from natively going back multiple screens.`;
+        `This can happen if the action was prevented with 'usePreventRemove' after native dismissal began.\n\n` +
+        `Keep 'usePreventRemove' enabled until the blocked navigation attempt has completed.`;
 
       console.error(message);
     }

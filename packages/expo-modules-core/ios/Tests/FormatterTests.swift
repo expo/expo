@@ -1,6 +1,5 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 import Testing
-import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 

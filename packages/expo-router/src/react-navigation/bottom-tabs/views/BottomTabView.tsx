@@ -27,7 +27,6 @@ type Props = BottomTabNavigationConfig & {
   descriptors: BottomTabDescriptorMap;
   emitter: BottomTabEmitter;
   navigateToTab: (routeKey: string) => void;
-  preloadedRouteKeys: string[];
   popNestedStackToTop: (routeKey: string) => void;
 };
 
@@ -69,7 +68,6 @@ export function BottomTabView(props: Props) {
     descriptors,
     emitter,
     navigateToTab,
-    preloadedRouteKeys,
     popNestedStackToTop,
     safeAreaInsets,
     detachInactiveScreens = Platform.OS === 'web' ||
@@ -79,9 +77,8 @@ export function BottomTabView(props: Props) {
 
   const focusedRouteKey = state.routes[state.index]!.key;
 
-  /**
-   * List of loaded tabs, tabs will be loaded when navigated to.
-   */
+  // Keys of tabs that have been focused during this mount. Only blurred tabs from this list are
+  // frozen, so a tab is never frozen before it has rendered once.
   const [loaded, setLoaded] = React.useState([focusedRouteKey]);
 
   if (!loaded.includes(focusedRouteKey)) {
@@ -224,15 +221,13 @@ export function BottomTabView(props: Props) {
         {routes.map((route, index) => {
           const descriptor = descriptors[route.key]!;
           const {
-            lazy = true,
             animation = 'none',
             sceneStyleInterpolator = NAMED_TRANSITIONS_PRESETS[animation]!.sceneStyleInterpolator,
           } = descriptor.options;
           const isFocused = state.index === index;
-          const isPreloaded = preloadedRouteKeys.includes(route.key);
 
-          if (lazy && !loaded.includes(route.key) && !isFocused && !isPreloaded) {
-            // Don't render a lazy screen if we've never navigated to it or it wasn't preloaded
+          if (descriptor.route.key === undefined) {
+            // Don't render placeholder screens.
             return null;
           }
 
@@ -276,19 +271,20 @@ export function BottomTabView(props: Props) {
               active={activityState}
               enabled={detachInactiveScreens}
               freezeOnBlur={freezeOnBlur}
-              shouldFreeze={activityState === STATE_INACTIVE && !isPreloaded}>
+              // TODO: A visited blurred tab re-preloaded with new params stays frozen until focused.
+              shouldFreeze={activityState === STATE_INACTIVE && loaded.includes(route.key)}>
               <BottomTabBarHeightContext.Provider
                 value={tabBarPosition === 'bottom' ? tabBarHeight : 0}>
                 <Screen
                   focused={isFocused}
-                  route={descriptor.route}
+                  route={route}
                   navigation={descriptor.navigation}
                   headerShown={headerShown}
                   headerStatusBarHeight={headerStatusBarHeight}
                   headerTransparent={headerTransparent}
                   header={header({
                     layout: dimensions,
-                    route: descriptor.route,
+                    route,
                     navigation: descriptor.navigation as BottomTabNavigationProp<ParamListBase>,
                     options: descriptor.options,
                   })}

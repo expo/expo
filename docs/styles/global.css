@@ -3,13 +3,18 @@
 
 @import './tailwind-compat.css';
 
-:root {
+/* Selectors are doubled to outrank the same-specificity declarations in
+   @expo/styleguide/dist/expo-theme.css, which _app.tsx imports after this file. */
+:root:root {
   /* AA contrast on palette blue3/blue4 backgrounds, where text-link falls short */
   --expo-theme-text-link-on-blue: #0c6bbf;
+  /* AA contrast: styleguide maps tertiary text to slate-10, a solid-background step */
+  --expo-theme-text-tertiary: #686c75;
 }
 
-.dark-theme {
+.dark-theme.dark-theme {
   --expo-theme-text-link-on-blue: var(--blue-11);
+  --expo-theme-text-tertiary: #888c94;
 }
 
 @layer base {
@@ -359,4 +364,8 @@ div.tippy-box {
 
 .react-player > video {
   outline: none;
+}
+
+:lang(ja) {
+  line-break: strict;
 }

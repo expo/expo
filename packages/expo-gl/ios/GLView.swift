@@ -329,6 +329,10 @@ internal final class GLView: ExpoView, EXGLContextDelegate {
 
   // MARK: - EXGLContextDelegate
 
+  func glContextGetScale() -> CGFloat {
+    return contentScaleFactor
+  }
+
   // [GL thread]
   func glContextFlushed(_ context: EXGLContext) {
     // blit framebuffers if endFrameEXP was called

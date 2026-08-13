@@ -1,8 +1,12 @@
-import Ionicons from '@expo/vector-icons/Ionicons';
-import { ThemeType } from 'ThemeProvider';
-import { type NativeStackNavigationOptions, useRouter } from 'expo-router';
+import Ionicons from '@react-native-vector-icons/ionicons';
+import { ThemeType, useTheme } from 'ThemeProvider';
+import { Stack, router, type NativeStackNavigationOptions, useRouter } from 'expo-router';
 import * as React from 'react';
 import { View, Platform, TouchableOpacity } from 'react-native';
+
+// iOS takes an SF Symbol name, Android needs an xml drawable.
+const searchIcon =
+  process.env.EXPO_OS === 'ios' ? 'magnifyingglass' : require('@expo/material-symbols/search.xml');
 
 export function getStackScreenOptions(theme: ThemeType): NativeStackNavigationOptions {
   return {
@@ -10,9 +14,32 @@ export function getStackScreenOptions(theme: ThemeType): NativeStackNavigationOp
     headerStyle: { backgroundColor: theme.background.default },
     headerTintColor: theme.icon.info,
     headerTitleStyle: { color: theme.text.default },
-    // TODO(kudo,20260802): Convert this into a `Stack.Toolbar.Right` once we adopt the native toolbar API.
-    headerRight: () => <HeaderRightComponent theme={theme} />,
   };
+}
+
+/** Header search button, rendered by the screens that browse the API and component lists. */
+export function SearchToolbar() {
+  const { theme } = useTheme();
+
+  // Toolbar items have no native counterpart on web, so `asChild` renders a JS button instead.
+  if (Platform.OS === 'web') {
+    return (
+      <Stack.Toolbar placement="right" asChild>
+        <HeaderRightComponent theme={theme} />
+      </Stack.Toolbar>
+    );
+  }
+
+  return (
+    <Stack.Toolbar placement="right">
+      <Stack.Toolbar.Button
+        accessibilityLabel="Search"
+        icon={searchIcon}
+        tintColor={theme.icon.info}
+        onPress={() => router.push('/search')}
+      />
+    </Stack.Toolbar>
+  );
 }
 
 const HeaderRightComponent = ({ theme }: { theme: ThemeType }) => {

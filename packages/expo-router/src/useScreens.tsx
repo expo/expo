@@ -3,7 +3,14 @@
 import React, { use, useEffect } from 'react';
 
 import type { LoadedRoute, RouteNode } from './Route';
-import { SuspenseFallbackContext, Route, sortRoutesWithInitial, useRouteNode } from './Route';
+import {
+  findRouteNodeByName,
+  getValidInitialRouteName,
+  SuspenseFallbackContext,
+  Route,
+  sortRoutesWithInitial,
+  useRouteNode,
+} from './Route';
 import { useExpoRouterStore } from './global-state/storeContext';
 import { useColorSchemeChangesIfNeeded } from './global-state/utils';
 // Direct import to prevent a require cycle
@@ -23,6 +30,7 @@ import { Screen } from './primitives';
 import type { BottomTabNavigationEventMap } from './react-navigation/bottom-tabs';
 import {
   useStateForPath,
+  type DescriptorRouteProp,
   type EventConsumer,
   type EventMapBase,
   type NavigationProp,
@@ -54,10 +62,9 @@ export type ScreenProps<
 > = {
   /** Name is required when used inside a Layout component. */
   name?: string;
-  initialParams?: Record<string, any>;
   options?:
     | TOptions
-    | ((prop: { route: RouteProp<ParamListBase, string>; navigation: any }) => TOptions);
+    | ((prop: { route: DescriptorRouteProp<ParamListBase, string>; navigation: any }) => TOptions);
 
   listeners?:
     | ScreenListeners<TState, TEventMap>
@@ -96,15 +103,13 @@ function getSortedChildren<
   const entries = [...children];
 
   const ordered = order
-    .map(({ name, initialParams, listeners, options, getId, dangerouslySingular: singular }) => {
+    .map(({ name, listeners, options, getId, dangerouslySingular: singular }) => {
       if (!entries.length) {
         console.warn(`[Layout children]: Too many screens defined. Route "${name}" is extraneous.`);
         return null;
       }
-      const matchIndex = entries.findIndex(
-        (child) => child.route === name || child.route === `${name}/index`
-      );
-      if (matchIndex === -1) {
+      const match = findRouteNodeByName(entries, name);
+      if (!match) {
         console.warn(
           `[Layout children]: No route named "${name}" exists in nested children:`,
           children.map(({ route }) => route)
@@ -112,8 +117,7 @@ function getSortedChildren<
         return null;
       } else {
         // Get match and remove from entries
-        const match = entries[matchIndex];
-        entries.splice(matchIndex, 1);
+        entries.splice(entries.indexOf(match), 1);
 
         if (getId) {
           console.warn(
@@ -135,7 +139,7 @@ function getSortedChildren<
 
         return {
           route: match,
-          props: { initialParams, listeners, options, getId },
+          props: { listeners, options, getId },
           routeSource: 'layout' as const,
         };
       }
@@ -170,7 +174,9 @@ export function useSortedScreens<
   const node = useRouteNode();
 
   const children = node?.children ?? [];
-  const sorted = children.length ? getSortedChildren(children, order, node?.initialRouteName) : [];
+  const sorted = children.length
+    ? getSortedChildren(children, order, getValidInitialRouteName(node))
+    : [];
   return React.useMemo(() => {
     const screensWithGuarded = sorted.map((value) => {
       const route = value.route.route;
@@ -507,10 +513,8 @@ export function screenOptionsFactory(
 
     // Prevent generated screens from showing up in the tab bar.
     if (route.internal || isGuarded) {
-      output.tabBarItemStyle = { display: 'none' };
-      output.tabBarButton = () => null;
-      // TODO: React Navigation doesn't provide a way to prevent rendering the drawer item.
-      output.drawerItemStyle = { height: 0, display: 'none' };
+      // TODO(@ubax): Document migrating withLayoutContext navigators to standard navigation,
+      // where processScreens can map hidden to navigator-specific options.
       output.hidden = true;
     }
 

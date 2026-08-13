@@ -34,7 +34,7 @@ Centers one large hero item between two small peek items — ideal for spotlight
 
 ```tsx CenteredHeroExample.tsx
 import { Host, HorizontalCenteredHeroCarousel, Box, Text } from '@expo/ui/jetpack-compose';
-import { size, background } from '@expo/ui/jetpack-compose/modifiers';
+import { size, background, maskClip, Shapes } from '@expo/ui/jetpack-compose/modifiers';
 
 export default function CenteredHeroExample() {
   const colors = ['#6200EE', '#03DAC5', '#FF5722', '#4CAF50', '#2196F3'];
@@ -46,7 +46,7 @@ export default function CenteredHeroExample() {
           <Box
             key={index}
             contentAlignment="center"
-            modifiers={[size(300, 200), background(color)]}>
+            modifiers={[size(300, 200), maskClip(Shapes.RoundedCorner(28)), background(color)]}>
             <Text color="#FFFFFF">Slide {index + 1}</Text>
           </Box>
         ))}

@@ -436,6 +436,7 @@ export const general = [
         makePage('troubleshooting/application-has-not-been-registered.mdx'),
         makePage('troubleshooting/clear-cache-macos-linux.mdx'),
         makePage('troubleshooting/clear-cache-windows.mdx'),
+        makePage('troubleshooting/expo-go-version-mismatch.mdx'),
         makePage('troubleshooting/react-native-version-mismatch.mdx'),
         makePage('troubleshooting/proxies.mdx'),
       ]),
@@ -477,6 +478,7 @@ export const eas = [
     makePage('eas/workflows/get-started.mdx'),
     makePage('eas/workflows/pre-packaged-jobs.mdx'),
     makePage('eas/workflows/syntax.mdx'),
+    makePage('eas/workflows/custom-functions.mdx'),
     makePage('eas/workflows/environment.mdx'),
     makePage('eas/workflows/automating-eas-cli.mdx'),
     makePage('eas/workflows/rest-api.mdx'),
@@ -759,27 +761,6 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Classic Updates', [
-    makePage('archive/classic-updates/introduction.mdx'),
-    makeSection('Guides', [
-      makePage('archive/classic-updates/configuring-updates.mdx'),
-      makePage('archive/classic-updates/preloading-and-caching-assets.mdx'),
-    ]),
-    makeSection('Distribution', [
-      makePage('archive/classic-updates/release-channels.mdx'),
-      makePage('archive/classic-updates/advanced-release-channels.mdx'),
-      makePage('archive/classic-updates/hosting-your-app.mdx'),
-      makePage('archive/classic-updates/offline-support.mdx'),
-      makePage('archive/classic-updates/optimizing-updates.mdx'),
-    ]),
-    makeSection('Workflow', [makePage('archive/classic-updates/publishing.mdx')]),
-    makeSection('Bare Workflow', [makePage('archive/classic-updates/updating-your-app.mdx')]),
-  ]),
-  makeSection('Technical specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
-  makeSection('Push notifications', [
-    makePage('archive/push-notifications/sending-notifications-custom-fcm-legacy.mdx'),
-    makePage('archive/push-notifications/notification-channels.mdx'),
-  ]),
   makeSection('More', [
     makePage('archive/publishing-websites-webpack.mdx'),
     makePage('archive/customizing-webpack.mdx'),
@@ -981,6 +962,7 @@ function pagesFromDir(dir) {
       const metaJsonPath = path.join(dirPath, folder.name, 'metadata.json');
       let sidebarTitle = folder.name.toUpperCase();
       let expanded = true;
+      let sidebarOrder;
 
       if (fs.existsSync(metaJsonPath)) {
         try {
@@ -992,13 +974,16 @@ function pagesFromDir(dir) {
           if (typeof meta.expanded === 'boolean') {
             expanded = meta.expanded;
           }
+          if (typeof meta.order === 'number') {
+            sidebarOrder = meta.order;
+          }
         } catch (error) {
           // fallback to default behavior
           console.warn(`Invalid metadata.json in ${metaJsonPath}:`, error.message);
         }
       }
 
-      return makeGroup(sidebarTitle, sortedFolderPages, { expanded });
+      return makeGroup(sidebarTitle, sortedFolderPages, { expanded, sidebarOrder });
     })
     .filter(Boolean);
 
@@ -1009,6 +994,13 @@ function pagesFromDir(dir) {
     }
     if (!a.isIndex && b.isIndex) {
       return 1;
+    }
+
+    // an explicit `order` in metadata.json wins; anything without one stays alphabetical
+    if (a.sidebarOrder !== undefined || b.sidebarOrder !== undefined) {
+      return (
+        (a.sidebarOrder ?? Number.MAX_SAFE_INTEGER) - (b.sidebarOrder ?? Number.MAX_SAFE_INTEGER)
+      );
     }
 
     // otherwise sort by name (title)

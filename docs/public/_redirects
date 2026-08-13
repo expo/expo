@@ -103,8 +103,6 @@
 /bare/installing-unimodules/ /bare/installing-expo-modules 301
 /versions/latest/sdk/admob /versions/latest 301
 /versions/latest/sdk/admob/ /versions/latest 301
-/workflow/publishing /archive/classic-updates/publishing 301
-/workflow/publishing/ /archive/classic-updates/publishing 301
 /workflow/already-used-react-native /workflow/overview 301
 /workflow/already-used-react-native/ /workflow/overview 301
 /development/installation /develop/development-builds/introduction/?buildenv=build-with-eas#how-would-you-like-to-build-your-development-build 301
@@ -133,24 +131,10 @@
 /guides/setting-up-continuous-integration/ /build/building-on-ci 301
 
 # Moved classic updates
-/distribution/release-channels /archive/classic-updates/release-channels 301
-/distribution/release-channels/ /archive/classic-updates/release-channels 301
-/distribution/advanced-release-channels /archive/classic-updates/advanced-release-channels 301
-/distribution/advanced-release-channels/ /archive/classic-updates/advanced-release-channels 301
-/distribution/optimizing-updates /archive/classic-updates/optimizing-updates 301
-/distribution/optimizing-updates/ /archive/classic-updates/optimizing-updates 301
 /distribution/runtime-versions /eas-update/runtime-versions 301
 /distribution/runtime-versions/ /eas-update/runtime-versions 301
-/guides/offline-support /archive/classic-updates/offline-support 301
-/guides/offline-support/ /archive/classic-updates/offline-support 301
-/guides/preloading-and-caching-assets /archive/classic-updates/preloading-and-caching-assets 301
-/guides/preloading-and-caching-assets/ /archive/classic-updates/preloading-and-caching-assets 301
-/guides/configuring-updates /archive/classic-updates/configuring-updates 301
-/guides/configuring-updates/ /archive/classic-updates/configuring-updates 301
 /eas-update/bare-react-native /eas-update/getting-started 301
 /eas-update/bare-react-native/ /eas-update/getting-started 301
-/worfkflow/publishing /archive/classic-updates/publishing 301
-/worfkflow/publishing/ /archive/classic-updates/publishing 301
 /classic/building-standalone-apps /build/setup 301
 /classic/building-standalone-apps/ /build/setup 301
 /classic/turtle-cli /build/setup 301
@@ -651,3 +635,14 @@
 /index.md /index.md 200
 /*/index.md /:splat/index.md 200
 /*.md /:splat/index.md 200
+
+# Retired llms full-context bundles; only the /llms.txt index remains
+/llms-full.txt /llms.txt 301
+/llms-eas.txt /llms.txt 301
+/llms-sdk.txt /llms.txt 301
+/llms-sdk-v51.0.0.txt /llms.txt 301
+/llms-sdk-v52.0.0.txt /llms.txt 301
+/llms-sdk-v53.0.0.txt /llms.txt 301
+/llms-sdk-v54.0.0.txt /llms.txt 301
+/llms-sdk-v55.0.0.txt /llms.txt 301
+/llms-sdk-v56.0.0.txt /llms.txt 301

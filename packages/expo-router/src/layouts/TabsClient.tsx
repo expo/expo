@@ -21,12 +21,19 @@ import {
   type TabRouterOptions,
 } from '../react-navigation/native';
 import { unstable_integrateWithRouter } from '../standard-navigation';
+import {
+  appendMissingPlaceholderTabDescriptors,
+  appendMissingPlaceholderTabRoutes,
+} from '../standard-navigation/appendMissingPlaceholderTabRoutes';
 import type { Href } from '../types';
 
 // Keep React Navigation client-only so the entry evaluates in React Server Components.
 export * from '../react-navigation/bottom-tabs';
 
-export type TabsScreenOptions = BottomTabNavigationOptions & { href?: Href | null };
+export type TabsScreenOptions = BottomTabNavigationOptions & {
+  // TODO: Consider deprecating `href`.
+  href?: Href | null;
+};
 
 /**
  * Renders a tabs navigator.
@@ -41,11 +48,15 @@ const Tabs = unstable_integrateWithRouter<
   TabRouterOptions,
   BottomTabNavigatorCreateProps
 >(createStandardBottomTabNavigator, TabRouter, {
+  processDescriptors: appendMissingPlaceholderTabDescriptors,
+  processState: appendMissingPlaceholderTabRoutes,
   createProps: ({ state, dispatch }) => ({
-    preloadedRouteKeys: state.preloadedRouteKeys,
+    routeNames: state.routeNames,
+    preload: (name) => dispatch({ type: 'PRELOAD', payload: { name } }),
     popNestedStackToTop: (routeKey) => {
       const nestedState = state.routes.find((route) => route.key === routeKey)?.state;
-      if (nestedState?.type === 'stack' && nestedState.key) {
+      // A targeted POP_TO_TOP is a no-op for nested navigators that are not stacks.
+      if (nestedState?.key) {
         dispatch({ ...StackActions.popToTop(), target: nestedState.key });
       }
     },
@@ -58,15 +69,21 @@ const Tabs = unstable_integrateWithRouter<
         if (options.tabBarButton) {
           throw new Error('Cannot use `href` and `tabBarButton` together.');
         }
+        if (href === null) {
+          // TODO(@ubax): Update the hiding-a-tab guide for the new redirect behavior.
+          return {
+            ...screen,
+            options: {
+              ...options,
+              hidden: true,
+            },
+          };
+        }
         return {
           ...screen,
           options: {
             ...options,
-            tabBarItemStyle: href == null ? { display: 'none' } : options.tabBarItemStyle,
             tabBarButton: (props) => {
-              if (href == null) {
-                return null;
-              }
               const children =
                 Platform.OS === 'web' ? props.children : <Pressable>{props.children}</Pressable>;
               // TODO: React Navigation types these props as Animated.WithAnimatedValue<StyleProp<ViewStyle>>

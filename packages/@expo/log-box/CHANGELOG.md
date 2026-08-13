@@ -9,8 +9,11 @@
 ### 🐛 Bug fixes
 
 - Fix the web overlay bundle printing a `Deep imports from the 'react-native' package are deprecated` warning on every load. ([#47772](https://github.com/expo/expo/pull/47772) by [@ramonclaudio](https://github.com/ramonclaudio))
+- Resolve development server requests from the URL the bundle was loaded from, instead of the default Metro address ([#48276](https://github.com/expo/expo/pull/48276) by [@kitten](https://github.com/kitten))
 
 ### 💡 Others
+
+- Get the development server address from the loaded bundle. ([#48722](https://github.com/expo/expo/pull/48722) by [@ramonclaudio](https://github.com/ramonclaudio))
 
 ## 57.0.2 - 2026-07-29
 

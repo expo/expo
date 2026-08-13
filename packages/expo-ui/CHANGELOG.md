@@ -5,13 +5,22 @@
 ### 🛠 Breaking changes
 
 - [iOS] Fix `<Host>` centering its content instead of top-aligning it, so a `flex: 1` host matches Android's top-leading layout. ([#47561](https://github.com/expo/expo/pull/47561) by [@nishan](https://github.com/intergalacticspacehighway))
+- [iOS] Fix `HStack`, `VStack` and `GlassEffectContainer` collapsing an unset `spacing` to `0` instead of forwarding `nil` to SwiftUI, so they now use the system default spacing like `Grid`, `LazyHStack` and `LazyVStack` already do. Pass `spacing={0}` explicitly to keep the previous layout. (by [@Den1Marshall](https://github.com/Den1Marshall))
 
 ### 🎉 New features
 
+- [android] Added `maskClip` modifier, exposing Compose's `CarouselItemScope.maskClip` so carousel items keep their shape while the carousel masks them. ([#48852](https://github.com/expo/expo/pull/48852) by [@SchroederNathan](https://github.com/SchroederNathan))
 - [iOS] Added `presentationBackground` SwiftUI modifier and applied it in `community/bottom-sheet`. ([#46285](https://github.com/expo/expo/pull/46285) by [@duyanhv](https://github.com/duyanhv))
+- [iOS] Added `menuStyle` and `menuIndicator` SwiftUI modifiers, which together with `buttonStyle('plain')` keep a `Menu`'s custom label as its entire trigger on Mac Catalyst. ([#48447](https://github.com/expo/expo/issues/48447) by [@cvburgess](https://github.com/cvburgess)) ([#48448](https://github.com/expo/expo/pull/48448) by [@cvburgess](https://github.com/cvburgess))
+- [iOS] Added an optional `kind` argument to the `contentShape` modifier, so a shape can be applied to drag previews, context menu previews, hover effects, or accessibility instead of only hit-testing. ([#48540](https://github.com/expo/expo/issues/48540) by [@sinhong2011](https://github.com/sinhong2011)) ([#48564](https://github.com/expo/expo/pull/48564) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [iOS] Added the `properties`, `anchor` and `isSource` parameters to the `matchedGeometryEffect` modifier, matching SwiftUI's signature. ([#48671](https://github.com/expo/expo/pull/48671) by [@Den1Marshall](https://github.com/Den1Marshall))
+- [iOS] Added the `listRowSeparatorTint` modifier, so a list row separator can be recolored and not only shown or hidden. ([#48804](https://github.com/expo/expo/issues/48804) by [@marco242424](https://github.com/marco242424)) ([#48810](https://github.com/expo/expo/pull/48810) by [@expo-bot](https://github.com/expo-bot))
+- [iOS] Added the `geometryGroup` modifier, so a view's subviews can resolve their geometry against it instead of an animating ancestor. Without it, a `Button` inside a container with an `animation` modifier can draw its label away from its own background while the animation runs. ([#48838](https://github.com/expo/expo/pull/48838) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+- [Android] Add a Jetpack Compose `Image` component. ([#48521](https://github.com/expo/expo/pull/48521) by [@jakex7](https://github.com/jakex7))
 
 ### 🐛 Bug fixes
 
+- [universal] Fix `Cannot use shared object that was already released` when a worklet callback prop closes over an unstable value. ([#48819](https://github.com/expo/expo/pull/48819) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [universal] Add an explicit type annotation to `BottomSheetTextInput` so its type doesn't depend on referencing React Native's internal `TextInputType`. ([#48218](https://github.com/expo/expo/pull/48218) by [@zoontek](https://github.com/zoontek))
 - [iOS] Fix `community/bottom-sheet` close callbacks firing before the sheet finished dismissing. ([#48389](https://github.com/expo/expo/issues/48389) by [@nicklamont](https://github.com/nicklamont)) ([#48436](https://github.com/expo/expo/pull/48436) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 - [iOS] Fix the `community/datetime-picker` field collapsing to zero width — invisible and untappable — when its parent doesn't stretch it (e.g. `alignItems: 'center'`). ([#47033](https://github.com/expo/expo/pull/47033) by [@nishan](https://github.com/intergalacticspacehighway))
@@ -21,6 +30,7 @@
 
 - [Android] Change modifiers type and provide appContext. ([#47616](https://github.com/expo/expo/pull/47616) by [@jakex7](https://github.com/jakex7))
 - [Android] Change `Text` color props to `ColorValue`. ([#47739](https://github.com/expo/expo/pull/47739) by [@jakex7](https://github.com/jakex7))
+- [Android] Expose `getMaterialColorTokens` for `expo-widgets`. ([#48453](https://github.com/expo/expo/pull/48453) by [@jakex7](https://github.com/jakex7))
 
 ## 57.0.8 - 2026-07-29
 

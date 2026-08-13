@@ -61,7 +61,6 @@ export default defineConfig([
     '**/out',
     '**/public',
     'pages/versions/latest',
-    'scripts/generate-llms/talks.js',
     'types/global.d.ts',
     'README.md',
     'next-env.d.ts',

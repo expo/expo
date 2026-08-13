@@ -50,7 +50,8 @@ struct DevServersView: View {
 
       LazyVStack(alignment: .leading, spacing: 6) {
         if viewModel.devServers.isEmpty {
-          if viewModel.permissionStatus != .denied {
+          // Nothing left to search for when discovery found servers and the filters hid them all.
+          if viewModel.hiddenDevServerCount == 0 && viewModel.permissionStatus != .denied {
             HStack {
               Text("Searching for development servers...")
                 .foregroundColor(.secondary)
@@ -68,6 +69,11 @@ struct DevServersView: View {
             }
           }
         }
+
+        if viewModel.hiddenDevServerCount > 0 {
+          HiddenDevServersNotice(count: viewModel.hiddenDevServerCount)
+        }
+
         if viewModel.hasEmbeddedBundle {
           embeddedBundleRow
         }
@@ -223,6 +229,28 @@ struct DevServersView: View {
     }
     .disabled(urlText.isEmpty)
     .buttonStyle(.plain)
+  }
+}
+
+struct HiddenDevServersNotice: View {
+  let count: Int
+
+  private var message: String {
+    let servers = count == 1 ? "1 server" : "\(count) servers"
+    return "\(servers) hidden by your discovery filters. Change them in Settings."
+  }
+
+  var body: some View {
+    HStack(spacing: 6) {
+      Image(systemName: "line.3.horizontal.decrease.circle")
+        .foregroundColor(.secondary)
+      Text(message)
+        .font(.system(size: 13))
+        .foregroundColor(.secondary)
+      Spacer()
+    }
+    .padding(.horizontal)
+    .padding(.vertical, 8)
   }
 }
 

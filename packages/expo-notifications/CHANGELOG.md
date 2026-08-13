@@ -6,9 +6,12 @@
 
 ### 🎉 New features
 
+- [ios] Forward notification center calls to a `UNUserNotificationCenterDelegate` that another library set, so that both libraries keep working. ([#48313](https://github.com/expo/expo/pull/48313) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 - [Android] Prevented `onUserLeaveHint` from firing when a notification tap opens the app, which made picture-in-picture implementations enter PiP unexpectedly. ([#48471](https://github.com/expo/expo/pull/48471) by [@stareezy-1](https://github.com/stareezy-1))
+- [iOS] Avoid warning when an aborted push token registration request rejects with a native fetch cancellation error. ([#48547](https://github.com/expo/expo/pull/48547) by [@JoaoPauloCMarra](https://github.com/JoaoPauloCMarra))
 - [Android] Prevent a crash on notification tap when `getLaunchIntentForPackage` throws on some OEM ROMs. ([#47889](https://github.com/expo/expo/pull/47889) by [@nunocaseiro](https://github.com/nunocaseiro))
 - [web] Fixed crash when browser storage is blocked (e.g. Safari's "Block All Cookies"), where reading `localStorage` throws a `SecurityError` instead of returning `null`. ([#48033](https://github.com/expo/expo/pull/48033) by [@Ignigena](https://github.com/Ignigena))
 

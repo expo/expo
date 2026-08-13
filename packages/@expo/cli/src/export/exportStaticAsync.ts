@@ -26,7 +26,7 @@ import { SSG_LOADER_HEADER_ALLOWLIST } from '../start/server/metro/resolveLoader
 import { getApiRoutesForDirectory, getMiddlewareForDirectory } from '../start/server/metro/router';
 import {
   assetsRequiresSort,
-  serializeHtmlWithAssets,
+  serialAssetsToStaticContentAssets,
   sortMatchedAssetsByEntryPoints,
 } from '../start/server/metro/serializeHtml';
 import { learnMore } from '../utils/link';
@@ -86,6 +86,18 @@ export function injectScriptTags(html: string, scriptTags: ExtraScriptTag[]): st
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
+
+export const SERVER_LOADER_DEFAULT_HEADER_RULE: PageHeaderInfo<string> = {
+  namedRegex: '^/_expo/loaders/.+$',
+  headers: { 'Cache-Control': 'no-store' },
+};
+
+type LoaderHeaderEntry = {
+  /** Allowlisted headers the loader response actually carried. */
+  declared: Record<string, string>;
+  /** Default values for headers the loader left undeclared. */
+  defaults: Record<string, string>;
+};
 
 export async function getFilesToExportFromServerAsync(
   projectRoot: string,
@@ -196,6 +208,7 @@ export async function exportFromServerAsync(
     files = new Map(),
     exp,
     scriptTags,
+    mode,
   }: Options
 ): Promise<ExportAssetMap> {
   const useServerRendering = exp?.extra?.router?.unstable_useServerRendering ?? false;
@@ -207,7 +220,6 @@ export async function exportFromServerAsync(
   Log.log(logOutput);
 
   const platform = 'web';
-  const isExporting = true;
   const isExportingWithSSR =
     exportServer && useServerRendering && !devServer.isReactServerComponentsEnabled;
   const appDir = path.join(projectRoot, routerRoot);
@@ -242,8 +254,8 @@ export async function exportFromServerAsync(
 
   // Group variations prerender several pathnames from one loader file, so these maps can differ
   // in size.
-  const loaderHeadersByPage = new Map<string, Record<string, string>>();
-  const loaderHeadersByFile = new Map<string, Record<string, string>>();
+  const loaderHeadersByPage = new Map<string, LoaderHeaderEntry>();
+  const loaderHeadersByFile = new Map<string, LoaderHeaderEntry>();
 
   await getFilesToExportFromServerAsync(projectRoot, {
     files,
@@ -272,38 +284,26 @@ export async function exportFromServerAsync(
             loaderId: loaderKey,
           });
 
-          const declaredHeaders: Record<string, string> = {};
-          for (const name of SSG_LOADER_HEADER_ALLOWLIST) {
-            const value = loaderResponse.headers.get(name);
-            if (value) {
-              declaredHeaders[name] = value;
-            }
-          }
-          if (Object.keys(declaredHeaders).length) {
-            loaderHeadersByPage.set(normalizedPathname, declaredHeaders);
-            // NOTE(@hassankhan): Last-write-wins when concurrent group
-            // variations share a loader file; fine for SSG as loaders don't get
-            // a `request` and will produce identical headers.
-            loaderHeadersByFile.set(`/${fileSystemPath}`, declaredHeaders);
-          }
+          const loaderHeaders = deriveStaticLoaderHeaders(loaderResponse.headers);
+          loaderHeadersByPage.set(normalizedPathname, loaderHeaders);
+          // NOTE(@hassankhan): Last-write-wins when concurrent group
+          // variations share a loader file; fine for SSG as loaders don't get
+          // a `request` and will produce identical headers.
+          loaderHeadersByFile.set(`/${fileSystemPath}`, loaderHeaders);
 
           renderOpts.loader = { data, key: loaderKey };
         }
       }
 
-      if (faviconAsset) {
-        renderOpts.assets = { css: [], js: [], favicon: faviconAsset.href };
-      }
-
-      const template = await renderAsync(normalizedPathname, route, renderOpts);
-      let html = serializeHtmlWithAssets({
-        isExporting,
-        resources: resources.artifacts,
-        template,
+      renderOpts.hydrate = true;
+      renderOpts.assets = serialAssetsToStaticContentAssets(resources.artifacts, {
+        isExporting: true,
         baseUrl,
         route,
-        hydrate: true,
+        favicon: faviconAsset?.href,
       });
+
+      let html = await renderAsync(normalizedPathname, route, renderOpts);
 
       if (scriptTags) {
         // Inject script tags into the HTML.
@@ -315,14 +315,20 @@ export async function exportFromServerAsync(
     },
   });
 
-  const loaderHeaderRules = [
-    ...toLoaderRules(loaderHeadersByPage),
-    ...toLoaderRules(loaderHeadersByFile),
+  const defaultLoaderRules = [
+    ...toLoaderRules(loaderHeadersByPage, 'defaults'),
+    ...toLoaderRules(loaderHeadersByFile, 'defaults'),
+  ];
+  const declaredLoaderRules = [
+    ...toLoaderRules(loaderHeadersByPage, 'declared'),
+    ...toLoaderRules(loaderHeadersByFile, 'declared'),
   ];
 
-  // Appended after any pre-existing rules so the loader-declared values win.
-  if (loaderHeaderRules.length) {
-    serverManifest.pageHeaders = [...(serverManifest.pageHeaders ?? []), ...loaderHeaderRules];
+  if (defaultLoaderRules.length || declaredLoaderRules.length) {
+    serverManifest.pageHeaders = buildLoaderPageHeaderRules(serverManifest.pageHeaders, {
+      defaults: defaultLoaderRules,
+      declared: declaredLoaderRules,
+    });
   }
 
   if (!exportServer) {
@@ -371,12 +377,18 @@ export async function exportFromServerAsync(
       files.set(route, contents);
     }
 
-    // Add any loader-declared headers
-    if (loaderHeaderRules.length) {
+    const useServerLoaders = !!exp?.extra?.router?.unstable_useServerDataLoaders;
+    if (useServerLoaders || defaultLoaderRules.length || declaredLoaderRules.length) {
       updateExportManifestInFiles({
         files,
         callback: (manifest) => {
-          manifest.pageHeaders = [...(manifest.pageHeaders ?? []), ...loaderHeaderRules];
+          manifest.pageHeaders = buildLoaderPageHeaderRules(manifest.pageHeaders, {
+            defaults: [
+              ...(useServerLoaders ? [SERVER_LOADER_DEFAULT_HEADER_RULE] : []),
+              ...defaultLoaderRules,
+            ],
+            declared: declaredLoaderRules,
+          });
         },
       });
     }
@@ -390,7 +402,6 @@ export async function exportFromServerAsync(
       });
 
       // Export loader bundles for routes that have loader exports
-      const useServerLoaders = exp?.extra?.router?.unstable_useServerDataLoaders;
       if (useServerLoaders) {
         // Get `loaderReferences` from client bundle metadata to determine which routes have loaders
         const loaderReferences = resources.artifacts?.flatMap(
@@ -485,7 +496,7 @@ export async function exportFromServerAsync(
       });
     }
   } else {
-    warnPossibleInvalidExportType(appDir);
+    warnPossibleInvalidExportType(appDir, mode);
   }
 
   return files;
@@ -731,7 +742,7 @@ async function exportApiRoutesAsync({
   return files;
 }
 
-function warnPossibleInvalidExportType(appDir: string) {
+function warnPossibleInvalidExportType(appDir: string, mode: Options['mode']) {
   const apiRoutes = getApiRoutesForDirectory(appDir);
   if (apiRoutes.length) {
     // TODO: Allow API Routes for native-only.
@@ -742,7 +753,7 @@ function warnPossibleInvalidExportType(appDir: string) {
     );
   }
 
-  const middlewareFile = getMiddlewareForDirectory(appDir);
+  const middlewareFile = getMiddlewareForDirectory(appDir, mode);
   if (middlewareFile) {
     Log.warn(
       chalk.yellow`Skipping export for middleware because \`web.output\` is not "server". You may want to remove ${path.relative(appDir, middlewareFile)}`
@@ -853,11 +864,47 @@ export function getExactPathNamedRegex(pathname: string): string {
  * Converts headers keyed by pathname into exact-match `pageHeaders` rules, sorted for
  * deterministic manifest output.
  */
-function toLoaderRules(rulesByPath: Map<string, Record<string, string>>): PageHeaderInfo<string>[] {
+function toLoaderRules(
+  rulesByPath: Map<string, LoaderHeaderEntry>,
+  origin: keyof LoaderHeaderEntry
+): PageHeaderInfo<string>[] {
   return [...rulesByPath.entries()]
+    .filter(([, entry]) => Object.keys(entry[origin]).length > 0)
     .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
-    .map(([pathname, headers]) => ({
+    .map(([pathname, entry]) => ({
       namedRegex: getExactPathNamedRegex(pathname),
-      headers,
+      headers: entry[origin],
     }));
+}
+
+/**
+ * Split a loader response's allowlisted headers from the SSG defaults for headers it left
+ * undeclared.
+ */
+export function deriveStaticLoaderHeaders(responseHeaders: Headers): LoaderHeaderEntry {
+  const declared: Record<string, string> = {};
+  for (const name of SSG_LOADER_HEADER_ALLOWLIST) {
+    const value = responseHeaders.get(name);
+    if (value) {
+      declared[name] = value;
+    }
+  }
+
+  const defaults: Record<string, string> = {};
+  if (!declared['Cache-Control']) {
+    defaults['Cache-Control'] = 'private, must-revalidate, max-age=0';
+  }
+
+  return { declared, defaults };
+}
+
+/**
+ * Order loader header rules around user-configured `pageHeaders`. Defaults come
+ * first so user configuration overrides them; loader-declared rules come last.
+ */
+export function buildLoaderPageHeaderRules(
+  pageHeaders: PageHeaderInfo<string>[] | undefined,
+  { defaults, declared }: { defaults: PageHeaderInfo<string>[]; declared: PageHeaderInfo<string>[] }
+): PageHeaderInfo<string>[] {
+  return [...defaults, ...(pageHeaders ?? []), ...declared];
 }

@@ -6,6 +6,9 @@ import * as FS from 'expo-file-system/legacy';
 import { fetch } from 'expo/fetch';
 import { Platform } from 'react-native';
 
+import type { JasmineInterface } from '../types';
+import { requireNotNull } from '../utils/requireNotNull';
+
 export const name = 'FileSystem';
 const shouldSkipTestsRequiringPermissions = true;
 
@@ -13,7 +16,7 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-export async function test({ describe, expect, it, ...t }) {
+export async function test({ describe, expect, it, ...t }: JasmineInterface) {
   const describeWithPermissions = shouldSkipTestsRequiringPermissions ? t.xdescribe : describe;
 
   const testDirectory = FS.documentDirectory + 'tests/';
@@ -52,7 +55,7 @@ export async function test({ describe, expect, it, ...t }) {
     }
 
     describeWithPermissions('picker operations', () => {
-      let originalTimeout;
+      let originalTimeout: number;
       t.beforeAll(async () => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
         t.jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout * 10;
@@ -225,7 +228,7 @@ export async function test({ describe, expect, it, ...t }) {
     });
 
     describe('watching files and directories', () => {
-      let originalTimeout;
+      let originalTimeout: number;
 
       t.beforeAll(() => {
         originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -1574,13 +1577,13 @@ export async function test({ describe, expect, it, ...t }) {
         const url = 'https://picsum.photos/id/237/200/300';
         const file = new File(testDirectory, 'image.jpeg');
         file.create();
-        let error;
+        let error: unknown;
         try {
           await File.downloadFileAsync(url, file);
         } catch (e) {
           error = e;
         }
-        expect(error.message.includes('Destination already exists')).toBe(true);
+        expect((error as Error).message.includes('Destination already exists')).toBe(true);
       });
 
       it('downloads file when headers are set', async () => {
@@ -1802,7 +1805,7 @@ export async function test({ describe, expect, it, ...t }) {
         file.writeSync('Hello world');
         expect(file.creationTime).not.toBeNull();
         expect(file.modificationTime).not.toBeNull();
-        expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime);
+        expect(file.creationTime).toBeLessThanOrEqual(file.modificationTime!);
       });
 
       it('computes md5', async () => {
@@ -1870,6 +1873,8 @@ export async function test({ describe, expect, it, ...t }) {
 
       it('returns null size and md5 for nonexistent files', async () => {
         const file = new File(testDirectory, 'file2.txt');
+        // @ts-expect-error `size` is typed `number`, but a nonexistent file reports
+        // `null`, which is what this spec checks.
         expect(file.size).toBe(null);
         expect(file.md5).toBe(null);
       });
@@ -1980,11 +1985,11 @@ export async function test({ describe, expect, it, ...t }) {
     describe('Exposes common app directories', () => {
       it('exposes cache directory', () => {
         expect(Paths.cache instanceof Directory).toBe(true);
-        expect(Paths.cache.uri).toBe(FS.cacheDirectory);
+        expect(Paths.cache.uri).toBe(FS.cacheDirectory!);
       });
       it('exposes document directory', () => {
         expect(Paths.document instanceof Directory).toBe(true);
-        expect(Paths.document.uri).toBe(FS.documentDirectory);
+        expect(Paths.document.uri).toBe(FS.documentDirectory!);
       });
       it('can be easily used with joining paths', () => {
         const file = new File(Paths.document, 'file.txt');
@@ -2292,11 +2297,11 @@ export async function test({ describe, expect, it, ...t }) {
       expect((await reader.read(array1)).done).toBe(false);
       const result = await reader.read(array2);
       expect(result.done).toBe(false);
-      expect(result.value[4999]).toBe(alphabet.charCodeAt(9999));
+      expect(result.value?.[4999]).toBe(alphabet.charCodeAt(9999));
 
       const result2 = await reader.read(array3);
       expect(result2.done).toBe(true);
-      expect(result2.value.length).toBe(0);
+      expect(result2.value?.length).toBe(0);
     });
 
     it('Provides a WriteableStream', async () => {
@@ -2312,7 +2317,7 @@ export async function test({ describe, expect, it, ...t }) {
 
     it('Returns correct file type', async () => {
       const asset = await Asset.fromModule(require('../assets/qrcode_expo.jpg')).downloadAsync();
-      const src = new File(asset.localUri);
+      const src = new File(requireNotNull(asset.localUri));
       expect(src.type).toBe('image/jpeg');
       const src2 = new File(testDirectory, 'file.txt');
       src2.writeSync('abcde');
@@ -2374,7 +2379,7 @@ export async function test({ describe, expect, it, ...t }) {
   addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t });
 }
 
-function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
+function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }: JasmineInterface) {
   const firstContainer = Object.values(Paths.appleSharedContainers)?.[0];
   const sharedContainerTestDir = firstContainer ? firstContainer.uri + 'test/' : null;
   const scopedIt = sharedContainerTestDir ? it : t.xit;
@@ -2393,14 +2398,16 @@ function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
     });
 
     scopedIt('Writes a string to a file reference', () => {
-      const outputFile = new File(sharedContainerTestDir, 'file.txt');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const outputFile = new File(containerDir, 'file.txt');
       expect(outputFile.exists).toBe(false);
       outputFile.writeSync('Hello world');
       expect(outputFile.exists).toBe(true);
     });
 
     scopedIt('Deletes a file reference', () => {
-      const outputFile = new File(sharedContainerTestDir, 'file3.txt');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const outputFile = new File(containerDir, 'file3.txt');
       outputFile.writeSync('Hello world');
       expect(outputFile.exists).toBe(true);
 
@@ -2409,13 +2416,15 @@ function addAppleAppGroupsTestSuiteAsync({ describe, expect, it, ...t }) {
     });
 
     scopedIt('Creates a folder', () => {
-      const folder = new Directory(sharedContainerTestDir, 'newFolder');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const folder = new Directory(containerDir, 'newFolder');
       folder.create();
       expect(folder.exists).toBe(true);
     });
 
     scopedIt('Deletes a folder', () => {
-      const folder = new Directory(sharedContainerTestDir, 'newFolder');
+      const containerDir = requireNotNull(sharedContainerTestDir);
+      const folder = new Directory(containerDir, 'newFolder');
       folder.create();
       expect(folder.exists).toBe(true);
 

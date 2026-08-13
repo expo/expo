@@ -7,6 +7,7 @@ import type { BundlerStartOptions } from '../start/server/BundlerDevServer';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { env } from '../utils/env';
 import { isInteractive } from '../utils/interactive';
+import type { EnvironmentMode } from '../utils/nodeEnv';
 
 export async function startBundlerAsync(
   projectRoot: string,
@@ -14,10 +15,12 @@ export async function startBundlerAsync(
     port,
     headless,
     scheme,
+    mode,
   }: {
     port: number;
     headless?: boolean;
     scheme?: string;
+    mode: EnvironmentMode;
   }
 ): Promise<DevServerManager> {
   const options: BundlerStartOptions = {
@@ -25,6 +28,7 @@ export async function startBundlerAsync(
     headless,
     devClient: true,
     minify: false,
+    mode,
 
     location: {
       scheme,

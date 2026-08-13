@@ -6,6 +6,15 @@ import Testing
 
 import EXManifests
 
+class TestStateChangeEventManager: UpdatesEventManager {
+  var lastContext: UpdatesStateContext? = nil
+  weak var observer: (any EXUpdates.UpdatesEventManagerObserver)?
+
+  func sendStateMachineContextEvent(context: EXUpdates.UpdatesStateContext) {
+    lastContext = context
+  }
+}
+
 @Suite("UpdatesStateMachine")
 struct UpdatesStateMachineTests {
   @Test
