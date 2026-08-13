@@ -2,9 +2,9 @@
   "source": {
     "repo": "expo/skills",
     "url": "https://api.github.com/repos/expo/skills/contents/plugins/expo/skills",
-    "fetchedAt": "2026-08-05T08:58:03.233Z"
+    "fetchedAt": "2026-08-13T18:42:57.000Z"
   },
-  "totalSkills": 21,
+  "totalSkills": 22,
   "skills": [
     {
       "name": "eas-app-stores",
@@ -59,6 +59,12 @@
       "category": "framework",
       "description": "Use when implementing or debugging ANY network request, API call, or data fetching. Covers fetch API, React Query, SWR, error handling, caching, offline support, and Expo Router data loaders (`useLoaderData`).",
       "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-data-fetching/SKILL.md"
+    },
+    {
+      "name": "expo-design-system",
+      "category": "framework",
+      "description": "Build and maintain a design system inside an Expo app - a reusable theme of design tokens (color, spacing, typography, radius, shadow, motion), reusable component structure with variant/size/state prop conventions, and rules for when to extract a repeated view into a shared component. Use when creating or organizing theme files and design tokens (theme.ts / theme/), extending an existing theme or styling library (NativeWind, Tamagui, Restyle, Unistyles) in its own idiom, standardizing styles so screens (including AI-generated ones) look consistent and polished, building an in-app component library, or auditing an app for design-system drift (hardcoded colors, spacing, fonts). For platform styling specifics (semantic colors, HIG rules, native controls) use expo-native-ui; for Tailwind/CSS setup use expo-tailwind-setup; for folder layout of a new app use expo-project-structure.",
+      "githubUrl": "https://github.com/expo/skills/blob/main/plugins/expo/skills/expo-design-system/SKILL.md"
     },
     {
       "name": "expo-dev-client",
