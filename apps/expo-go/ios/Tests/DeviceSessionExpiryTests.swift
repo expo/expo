@@ -17,27 +17,27 @@ final class DeviceSessionExpiryTests: XCTestCase {
   }
 
   func testNoStoredExpiryIsNotExpired() {
-    XCTAssertFalse(AuthenticationService.isPartnerSessionExpired())
+    XCTAssertFalse(AuthenticationService.isSessionExpired())
   }
 
   func testFutureExpiryIsNotExpired() {
     defaults.set(Date().addingTimeInterval(60).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
-    XCTAssertFalse(AuthenticationService.isPartnerSessionExpired())
+    XCTAssertFalse(AuthenticationService.isSessionExpired())
   }
 
   func testPastExpiryIsExpired() {
     defaults.set(Date().addingTimeInterval(-1).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
-    XCTAssertTrue(AuthenticationService.isPartnerSessionExpired())
+    XCTAssertTrue(AuthenticationService.isSessionExpired())
   }
 
   func testNilExpiryIsNeverExpired() {
     defaults.removeObject(forKey: AuthenticationService.sessionExpiresAtKey)
-    XCTAssertFalse(AuthenticationService.isPartnerSessionExpired())
+    XCTAssertFalse(AuthenticationService.isSessionExpired())
   }
 
   func testClearSessionRemovesEveryKey() {
     defaults.set("secret", forKey: AuthenticationService.sessionKey)
-    defaults.set("partner-private-test", forKey: AuthenticationService.usernameKey)
+    defaults.set("test-user", forKey: AuthenticationService.usernameKey)
     defaults.set("acc1", forKey: AuthenticationService.selectedAccountKey)
     defaults.set(Date().addingTimeInterval(60).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
 

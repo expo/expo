@@ -37,11 +37,12 @@ EX_REGISTER_SINGLETON_MODULE(KernelLinkingManager);
   EXKernelAppRecord *destinationApp = nil;
   NSURL *urlToRoute = [[self class] uriTransformedForLinking:url isUniversalLink:isUniversalLink];
 
-  // Strip on any change, so an override that failed validation is cleared too.
+  // Strip on any change, so stray or invalid device auth params are cleared too.
+  BOOL promptRequested = [EXDeviceLoginLink promptRequestedInURL:urlToRoute];
   NSURL *verificationURI = [EXDeviceLoginLink verificationURIFromURL:urlToRoute];
-  NSURL *strippedUrl = [EXDeviceLoginLink urlByRemovingOverrideFromURL:urlToRoute];
+  NSURL *strippedUrl = [EXDeviceLoginLink urlByRemovingDeviceAuthParamsFromURL:urlToRoute];
   if (![strippedUrl isEqual:urlToRoute]) {
-    [[EXPendingDeviceLogin shared] setURI:verificationURI forProjectURL:strippedUrl];
+    [[EXPendingDeviceLogin shared] setPending:promptRequested verificationURI:verificationURI forProjectURL:strippedUrl];
     urlToRoute = strippedUrl;
   }
 

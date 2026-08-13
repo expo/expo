@@ -253,13 +253,23 @@ static BOOL isEASUpdateHost(NSString * _Nullable host)
   }
   if (isDevServer && (expoGoUsername == nil || ![manifestUsername isEqualToString:expoGoUsername])) {
     // _manifestUrl is what createNewApp was given, so it matches the key the linking manager set.
-    NSURL *verificationURI = [[EXPendingDeviceLogin shared] currentForProjectURL:_manifestUrl];
+    BOOL hasPendingDeviceAuth = [[EXPendingDeviceLogin shared] hasPendingForProjectURL:_manifestUrl];
+    NSURL *verificationURI = [[EXPendingDeviceLogin shared] verificationURIForProjectURL:_manifestUrl];
     NSString *message;
-    if (verificationURI != nil) {
+    if (hasPendingDeviceAuth) {
       // The QR asked for a sign in, so the account can be switched here rather than on a computer.
-      message = [NSString stringWithFormat:
-        @"This project belongs to \"%@\", and you're signed in to Expo Go as \"%@\". Sign in as \"%@\" to open it. Expo Go will show you a code to enter at %@, then tap Try Again.",
-        manifestUsername, expoGoUsername ?: @"someone else", manifestUsername, verificationURI.host];
+      NSString *codeSentence = verificationURI.host
+        ? [NSString stringWithFormat:@"Expo Go will show you a code to enter at %@, then tap Try Again.", verificationURI.host]
+        : @"Expo Go will show you a code and where to enter it, then tap Try Again.";
+      if (expoGoUsername != nil && [expoGoUsername length] > 0) {
+        message = [NSString stringWithFormat:
+          @"This project belongs to \"%@\", and you're signed in to Expo Go as \"%@\". Sign in as \"%@\" to open it. %@",
+          manifestUsername, expoGoUsername, manifestUsername, codeSentence];
+      } else {
+        message = [NSString stringWithFormat:
+          @"This project belongs to \"%@\", and you're not signed in to Expo Go. Sign in as \"%@\" to open it. %@",
+          manifestUsername, manifestUsername, codeSentence];
+      }
       [[ExpoGoHomeBridge shared] offerDeviceLoginWithVerificationURI:verificationURI];
     } else if (expoGoUsername == nil || [expoGoUsername length] == 0) {
       message = [NSString stringWithFormat:

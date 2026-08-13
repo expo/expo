@@ -73,12 +73,12 @@ struct DeviceLoginCodeView: View {
     .frame(maxWidth: .infinity, alignment: .leading)
   }
 
-  /// VoiceOver reads "BCDFGHJK" as a word. Spelling it out makes it transcribable.
   private func copyCode() {
     UIPasteboard.general.string = userCode
     UIImpactFeedbackGenerator(style: .light).impactOccurred()
   }
 
+  /// VoiceOver reads "BCDFGHJK" as a word. Spelling it out makes it transcribable.
   private func spelledOut(_ code: String) -> String {
     code.map { $0 == "-" ? "dash" : String($0) }.joined(separator: " ")
   }

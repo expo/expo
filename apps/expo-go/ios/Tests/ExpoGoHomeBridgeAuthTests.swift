@@ -19,37 +19,37 @@ final class ExpoGoHomeBridgeAuthTests: XCTestCase {
   func testNoSessionIsNotAuthenticated() {
     XCTAssertFalse(ExpoGoHomeBridge.shared.isAuthenticated())
     XCTAssertNil(ExpoGoHomeBridge.shared.authenticatedUsername())
-    XCTAssertNil(ExpoGoHomeBridge.shared.expiredPartnerSessionMessage())
+    XCTAssertNil(ExpoGoHomeBridge.shared.sessionExpiredMessage())
   }
 
   func testLiveSessionReportsUsername() {
     defaults.set("secret", forKey: AuthenticationService.sessionKey)
-    defaults.set("partner-private-test", forKey: AuthenticationService.usernameKey)
+    defaults.set("test-user", forKey: AuthenticationService.usernameKey)
     defaults.set(Date().addingTimeInterval(60).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
 
     XCTAssertTrue(ExpoGoHomeBridge.shared.isAuthenticated())
-    XCTAssertEqual(ExpoGoHomeBridge.shared.authenticatedUsername(), "partner-private-test")
-    XCTAssertNil(ExpoGoHomeBridge.shared.expiredPartnerSessionMessage())
+    XCTAssertEqual(ExpoGoHomeBridge.shared.authenticatedUsername(), "test-user")
+    XCTAssertNil(ExpoGoHomeBridge.shared.sessionExpiredMessage())
   }
 
   func testExpiredSessionReportsNeitherAuthNorUsername() {
     defaults.set("secret", forKey: AuthenticationService.sessionKey)
-    defaults.set("partner-private-test", forKey: AuthenticationService.usernameKey)
+    defaults.set("test-user", forKey: AuthenticationService.usernameKey)
     defaults.set(Date().addingTimeInterval(-1).timeIntervalSince1970, forKey: AuthenticationService.sessionExpiresAtKey)
 
     XCTAssertFalse(ExpoGoHomeBridge.shared.isAuthenticated())
     XCTAssertNil(ExpoGoHomeBridge.shared.authenticatedUsername())
     XCTAssertEqual(
-      ExpoGoHomeBridge.shared.expiredPartnerSessionMessage(),
+      ExpoGoHomeBridge.shared.sessionExpiredMessage(),
       ExpoGoHomeBridge.expiredSessionMessage
     )
   }
 
   func testSessionWithoutExpiryReportsUsername() {
     defaults.set("secret", forKey: AuthenticationService.sessionKey)
-    defaults.set("partner-private-test", forKey: AuthenticationService.usernameKey)
+    defaults.set("test-user", forKey: AuthenticationService.usernameKey)
 
     XCTAssertTrue(ExpoGoHomeBridge.shared.isAuthenticated())
-    XCTAssertEqual(ExpoGoHomeBridge.shared.authenticatedUsername(), "partner-private-test")
+    XCTAssertEqual(ExpoGoHomeBridge.shared.authenticatedUsername(), "test-user")
   }
 }
