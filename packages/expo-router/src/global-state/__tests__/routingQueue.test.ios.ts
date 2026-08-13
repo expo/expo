@@ -182,6 +182,47 @@ describe('routingQueue', () => {
     expect(dispatch.mock.calls).toEqual([[navigateAction], [{ type: 'GO_BACK' }]]);
   });
 
+  it('run() reports the queued action when handling fails', () => {
+    const ref = makeRef();
+    mockGetNavigateAction.mockImplementationOnce(() => {
+      throw new Error('malformed');
+    });
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    routingQueue.add({
+      type: 'NAVIGATE_TO_HREF',
+      payload: {
+        href: '/home',
+        originalHref: 'example://home',
+        options: { event: 'NAVIGATE' },
+      },
+    });
+
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
+
+    expect(warn).toHaveBeenCalledWith(
+      'An error occurred when trying to handle navigation action ' +
+        '{"type":"NAVIGATE_TO_HREF","payload":{"href":"/home","originalHref":"example://home","options":{"event":"NAVIGATE"}}}: malformed'
+    );
+    warn.mockRestore();
+  });
+
+  it('run() invokes onDispatch immediately before dispatching', () => {
+    const calls: string[] = [];
+    const ref = makeRef({ dispatch: jest.fn(() => calls.push('dispatch')) });
+    const action = { type: 'RESET', payload: undefined };
+
+    routingQueue.add({
+      type: 'ACTION',
+      payload: { action },
+      onDispatch: () => calls.push('onDispatch'),
+    });
+
+    routingQueue.run(ref, defaultRouteInfo, navigationActionContext(ref.current!));
+
+    expect(calls).toEqual(['onDispatch', 'dispatch']);
+  });
+
   it('run() warns when a path is invalid', () => {
     const ref = makeRef();
     mockGetNavigateAction.mockReturnValueOnce({

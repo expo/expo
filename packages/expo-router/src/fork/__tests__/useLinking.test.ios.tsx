@@ -1,13 +1,58 @@
 import { expect, jest, test } from '@jest/globals';
 import { render, type RenderAPI } from '@testing-library/react-native';
 
+import { routingQueue } from '../../global-state/routingQueue';
 import { createNavigationContainerRef, type ParamListBase } from '../../react-navigation/core';
 import { useLinking } from '../useLinking';
 
-let errorSpy: jest.SpiedFunction<typeof console.error>;
+let errorSpy: jest.SpiedFunction<typeof console.error> | undefined;
+
+beforeEach(() => {
+  routingQueue.queue = [];
+});
 
 afterEach(() => {
-  errorSpy.mockRestore();
+  errorSpy?.mockRestore();
+});
+
+test('queues an incoming deep link using its extracted app path', () => {
+  const ref = createNavigationContainerRef<ParamListBase>();
+  ref.current = {
+    getRootState: () => ({ routeNames: ['home'] }),
+  } as typeof ref.current;
+  let listener: ((url: string) => void) | undefined;
+  const getStateFromPath = jest.fn(() => ({ routes: [{ name: 'home' }] }));
+
+  function Sample() {
+    useLinking(
+      ref,
+      {
+        prefixes: ['example://'],
+        getStateFromPath,
+        subscribe: (nextListener) => {
+          listener = nextListener;
+          return () => {};
+        },
+      },
+      () => {}
+    );
+    return null;
+  }
+
+  render(<Sample />);
+  listener?.('example://home?from=link');
+
+  expect(getStateFromPath).toHaveBeenCalledWith('home?from=link', undefined);
+  expect(routingQueue.queue).toEqual([
+    {
+      type: 'NAVIGATE_TO_HREF',
+      payload: {
+        href: '/home?from=link',
+        originalHref: 'example://home?from=link',
+        options: { event: 'NAVIGATE' },
+      },
+    },
+  ]);
 });
 
 test('throws if multiple instances of useLinking are used', () => {
