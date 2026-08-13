@@ -47,6 +47,7 @@ Pod::Spec.new do |s|
   s.exclude_files = 'Tests'
 
   s.test_spec 'Tests' do |test_spec|
+    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.source_files = 'Tests'
     test_spec.pod_target_xcconfig = {
       'OTHER_LDFLAGS' => '-lc++'

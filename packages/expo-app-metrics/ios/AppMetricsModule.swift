@@ -4,12 +4,11 @@ import Foundation
 
 internal let logger = Logger(logHandlers: [createOSLogHandler(category: Logger.EXPO_LOG_CATEGORY)])
 
+@ExpoModule("ExpoAppMetrics", classes: [SpanHandle.self])
 public final class AppMetricsModule: Module, UpdatesStateChangeListener {
   var subscription: UpdatesStateChangeSubscription?
 
   public func definition() -> ModuleDefinition {
-    Name("ExpoAppMetrics")
-
     OnCreate {
       AppMetricsActor.isolated {
         AppMetrics.mainSession.updatesMonitor.patchAppInfoIfNeeded()
@@ -181,6 +180,35 @@ public final class AppMetricsModule: Module, UpdatesStateChangeListener {
         observer.setFilter(filter)
       }
     }
+
+    Function("startSpan") { (name: String, options: StartSpanOptions?, parent: SpanHandle?) -> SpanHandle in
+      let recorder = SpanRecorder(
+        name: try validatedSpanName(name),
+        sessionId: AppMetrics.mainSession.id,
+        parentTraceId: parent?.recorder.traceId,
+        parentSpanId: parent?.recorder.spanId,
+        attributes: options?.attributes,
+        startTimestampMs: resolvedTimestamp(options?.startTime, field: "startTime")
+      )
+      return SpanHandle(recorder: recorder, onEnd: insertSpanRow)
+    }
+
+    Function("recordSpan") { (name: String, options: RecordSpanOptions) in
+      let start = try requiredTimestamp(options.startTime, field: "startTime")
+      let end = try requiredTimestamp(options.endTime, field: "endTime")
+      // One code path with `startSpan`: an ephemeral recorder validates the attributes and
+      // produces the same write-once row shape.
+      let recorder = SpanRecorder(
+        name: try validatedSpanName(name),
+        sessionId: AppMetrics.mainSession.id,
+        attributes: options.attributes,
+        startTimestampMs: start,
+        attributeSource: "recordSpan"
+      )
+      if let row = recorder.end(statusCode: nil, statusMessage: nil, endTimestampMs: end) {
+        insertSpanRow(row)
+      }
+    }
   }
 
   public func updatesStateDidChange(_ event: [String: Any]) {
@@ -218,6 +246,178 @@ private func storedSession(id: String) throws -> StoredSession? {
 internal struct NetworkTracesConfigParam {
   var enabled: Bool = true
   var filter: NetworkRequestFilter?
+}
+
+internal struct StartSpanOptions: Record {
+  @Field
+  var attributes: [String: Any]?
+
+  /// Unix-epoch milliseconds overriding "now" as the span start.
+  @Field
+  var startTime: Double?
+}
+
+internal struct SpanEventOptions: Record {
+  @Field
+  var attributes: [String: Any]?
+
+  /// Unix-epoch milliseconds overriding "now" as the event time.
+  @Field
+  var time: Double?
+}
+
+internal struct SpanEndOptions: Record {
+  /// `"ok"` or `"error"`; anything else throws. Omitted means UNSET, per the conventions.
+  @Field
+  var status: String?
+
+  @Field
+  var message: String?
+
+  /// Unix-epoch milliseconds overriding "now" as the span end.
+  @Field
+  var endTime: Double?
+}
+
+internal struct RecordSpanOptions: Record {
+  @Field
+  var startTime: Double?
+
+  @Field
+  var endTime: Double?
+
+  @Field
+  var attributes: [String: Any]?
+}
+
+/// Validates a caller-provided span name, applying the rules `validateEventName` applies to log
+/// events. Unlike `logEvent`, which drops a bad record, `startSpan` has to return a handle, so a
+/// rejection throws instead.
+internal func validatedSpanName(_ name: String) throws -> String {
+  let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+  guard !trimmed.isEmpty else {
+    throw EmptySpanNameException()
+  }
+  guard !trimmed.hasPrefix(reservedEventNamePrefix) else {
+    throw ReservedSpanNameException(trimmed)
+  }
+  guard trimmed.count <= maxEventNameLength else {
+    throw SpanNameTooLongException(trimmed.count)
+  }
+  return trimmed
+}
+
+/// Maps the JS `status` option to the OTLP status code. `nil` stays UNSET.
+internal func spanStatusCode(from status: String?) throws -> Int? {
+  switch status {
+  case nil:
+    return nil
+  case "ok":
+    return SpanRow.statusOk
+  case "error":
+    return SpanRow.statusError
+  case .some(let other):
+    throw InvalidSpanStatusException(other)
+  }
+}
+
+/// Inserts a completed span row, hopping to the metrics actor. Failures are logged and
+/// swallowed — recording telemetry must never break the caller.
+private func insertSpanRow(_ row: SpanRow) {
+  Task { @AppMetricsActor in
+    guard let database = AppMetrics.database else {
+      return
+    }
+    do {
+      try database.insert(span: row)
+    } catch {
+      logger.warn("[AppMetrics] Failed to persist span \"\(row.name)\": \(error.localizedDescription)")
+    }
+  }
+}
+
+private func currentUnixMilliseconds() -> Int64 {
+  return Int64((Date().timeIntervalSince1970 * 1_000).rounded())
+}
+
+/// The earliest timestamp accepted from JavaScript, 2001-09-09T01:46:40Z. A smaller value almost
+/// always comes from the wrong clock or is in the wrong unit: `performance.now()` measures uptime,
+/// and a timestamp in seconds is 1000 times too small.
+internal let minTimestampMs: Int64 = 1_000_000_000_000
+
+/// Resolves a caller-supplied timestamp, falling back to now when it is missing or unusable.
+///
+/// An unusable value warns rather than passing silently: substituting now would otherwise record
+/// a plausible-looking span whose window the caller never chose.
+internal func resolvedTimestamp(_ value: Double?, field: String) -> Int64 {
+  guard let value else {
+    return currentUnixMilliseconds()
+  }
+  guard let milliseconds = unixMilliseconds(from: value) else {
+    logger.warn(
+      "[AppMetrics] Ignoring `\(field)`: \(value) is not a unix-epoch timestamp in milliseconds. Values from `performance.now()` and timestamps in seconds are common causes. Using the current time instead; pass a value from `Date.now()`."
+    )
+    return currentUnixMilliseconds()
+  }
+  return milliseconds
+}
+
+/// Converts a required `recordSpan` timestamp, throwing when it is missing or unusable.
+internal func requiredTimestamp(_ value: Double?, field: String) throws -> Int64 {
+  guard let value else {
+    throw MissingSpanWindowException()
+  }
+  guard let milliseconds = unixMilliseconds(from: value) else {
+    throw InvalidSpanTimestampException((field: field, value: value))
+  }
+  return milliseconds
+}
+
+/// Unix-epoch milliseconds from a JS number, or `nil` when the value can't be one: NaN, infinity,
+/// a value past the `Int64` range, or one before `minTimestampMs`.
+internal func unixMilliseconds(from value: Double) -> Int64? {
+  // `Int64(exactly:)` rather than a range comparison: `Double(Int64.max)` rounds up to 2^63, so
+  // `value <= Double(Int64.max)` would admit the one value the conversion traps on.
+  guard let milliseconds = Int64(exactly: value.rounded(.towardZero)), milliseconds >= minTimestampMs else {
+    return nil
+  }
+  return milliseconds
+}
+
+internal final class EmptySpanNameException: Exception {
+  override var reason: String {
+    "A span needs a non-empty name because the server rejects nameless spans. Pass a short, stable identifier for the operation being measured, like 'checkout' or 'image-decode'."
+  }
+}
+
+internal final class InvalidSpanStatusException: GenericException<String> {
+  override var reason: String {
+    "'\(param)' is not a valid span status. Pass 'error' for a failed operation, 'ok' to explicitly mark success, or omit the status to leave it unset (the usual choice for successful spans)."
+  }
+}
+
+internal final class ReservedSpanNameException: GenericException<String> {
+  override var reason: String {
+    "A span name can't start with `expo.` (got `\(param)`) because that prefix is reserved for spans the SDK itself records, like network requests. Pick a name from your own namespace, like 'checkout' or 'image-decode'."
+  }
+}
+
+internal final class SpanNameTooLongException: GenericException<Int> {
+  override var reason: String {
+    "A span name can't exceed \(maxEventNameLength) characters (got \(param)) because the server rejects longer ones. Use a short, stable identifier and move the variable details into attributes."
+  }
+}
+
+internal final class MissingSpanWindowException: Exception {
+  override var reason: String {
+    "recordSpan needs both startTime and endTime (unix-epoch milliseconds) because it records an already-measured operation. To time an operation as it runs, use startSpan() and end() instead."
+  }
+}
+
+internal final class InvalidSpanTimestampException: GenericException<(field: String, value: Double)> {
+  override var reason: String {
+    "recordSpan received \(param.value) as `\(param.field)`, which is not a unix-epoch timestamp in milliseconds. Values from `performance.now()` and timestamps in seconds are common causes. Pass a value from `Date.now()`."
+  }
 }
 
 struct MetricAttributes: Record {
