@@ -221,6 +221,9 @@ describe('getParsedHeaders', () => {
 describe('_getManifestResponseAsync', () => {
   beforeEach(() => {
     delete process.env.EXPO_OFFLINE;
+    // `expo-updates` returns `null` when it can't determine a runtime version, e.g. when it isn't
+    // installed. The manifest then falls back to the config-plugin calculation.
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue(null);
     jest.mocked(getUserAsync).mockImplementation(async () => ({
       __typename: 'User',
       id: 'userwat',
@@ -847,5 +850,109 @@ describe('_getManifestResponseAsync', () => {
     }
 
     expect(partsSeen.has('manifest')).toBeTruthy();
+  });
+
+  it('resolves the runtime version once per dev-server session', async () => {
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockResolvedValue('testrtv');
+
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+
+    // A dev client re-fetches the manifest on every launch and reload. Resolving the runtime
+    // version shells out to `expo-updates runtimeversion:resolve`, which recomputes the whole
+    // native fingerprint under `runtimeVersion: { policy: 'fingerprint' }`.
+    for (let i = 0; i < 3; i++) {
+      const response = await middleware._getManifestResponseAsync({
+        responseContentType: ResponseContentType.APPLICATION_JSON,
+        platform: 'android',
+        expectSignature: null,
+        hostname: 'localhost',
+      });
+      // Every response, cached or not, must carry the same resolved runtime version.
+      expect(await response.json()).toMatchObject({ runtimeVersion: 'testrtv' });
+    }
+
+    expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('resolves the runtime version separately for each platform', async () => {
+    jest
+      .mocked(resolveRuntimeVersionWithExpoUpdatesAsync)
+      .mockImplementation(async ({ platform }) => `testrtv-${platform}`);
+
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+
+    for (const platform of ['ios', 'android', 'ios', 'android'] as const) {
+      const response = await middleware._getManifestResponseAsync({
+        responseContentType: ResponseContentType.APPLICATION_JSON,
+        platform,
+        expectSignature: null,
+        hostname: 'localhost',
+      });
+      expect(await response.json()).toMatchObject({ runtimeVersion: `testrtv-${platform}` });
+    }
+
+    expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(2);
+  });
+
+  it('de-duplicates runtime version resolutions that are still in flight', async () => {
+    let resolveRuntimeVersion: (runtimeVersion: string) => void;
+    jest.mocked(resolveRuntimeVersionWithExpoUpdatesAsync).mockReturnValue(
+      new Promise<string>((resolve) => {
+        resolveRuntimeVersion = resolve;
+      })
+    );
+
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+
+    // Requests that arrive while the first resolution is still running must join it instead of
+    // spawning their own `expo-updates` process.
+    const responses = Promise.all(
+      [0, 1, 2].map(() =>
+        middleware._getManifestResponseAsync({
+          responseContentType: ResponseContentType.APPLICATION_JSON,
+          platform: 'android',
+          expectSignature: null,
+          hostname: 'localhost',
+        })
+      )
+    );
+
+    resolveRuntimeVersion!('testrtv');
+
+    for (const response of await responses) {
+      expect(await response.json()).toMatchObject({ runtimeVersion: 'testrtv' });
+    }
+
+    expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(1);
+  });
+
+  it('does not cache a failed runtime version resolution', async () => {
+    jest
+      .mocked(resolveRuntimeVersionWithExpoUpdatesAsync)
+      .mockRejectedValueOnce(new Error('expo-updates CLI failed'))
+      .mockResolvedValue('testrtv');
+
+    const middleware = createMiddleware();
+    process.env.EXPO_OFFLINE = '1';
+
+    const request = {
+      responseContentType: ResponseContentType.APPLICATION_JSON,
+      platform: 'android',
+      expectSignature: null,
+      hostname: 'localhost',
+    } as const;
+
+    await expect(middleware._getManifestResponseAsync(request)).rejects.toThrow(
+      'expo-updates CLI failed'
+    );
+
+    // A transient failure must not be remembered for the rest of the session.
+    const response = await middleware._getManifestResponseAsync(request);
+    expect(await response.json()).toMatchObject({ runtimeVersion: 'testrtv' });
+
+    expect(resolveRuntimeVersionWithExpoUpdatesAsync).toHaveBeenCalledTimes(2);
   });
 });
