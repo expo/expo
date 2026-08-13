@@ -8,6 +8,7 @@ platforms: ['ios', 'tvos', 'expo-go']
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
+import { ComponentExample } from '~/ui/components/ComponentExample';
 import { ContentSpotlight } from '~/ui/components/ContentSpotlight';
 
 > **info** For cross-platform usage, see the universal [`BottomSheet`](../universal/bottomsheet) — it renders the appropriate native component per platform.
@@ -32,7 +33,13 @@ Expo UI BottomSheet matches the official SwiftUI [sheet API](<https://developer.
 
 Pass the control that opens the sheet as the `anchor` prop. The children are the sheet's content.
 
-```tsx BasicBottomSheetExample.tsx
+<ComponentExample
+  title="BasicBottomSheetExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-basic-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-basic-ios-dark.webp"
+  alt="A bottom sheet filling the screen with the text Hello, world! centered">
+
+```tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
 
@@ -54,11 +61,19 @@ export default function BasicBottomSheetExample() {
 }
 ```
 
+</ComponentExample>
+
 ### React Native view as an anchor
 
 The anchor can be a React Native view. Wrap it in [`RNHostView`](rnhostview).
 
-```tsx BottomSheetRNAnchorExample.tsx
+<ComponentExample
+  title="BottomSheetRNAnchorExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-rn-anchor-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-rn-anchor-ios-dark.webp"
+  alt="A blue React Native button above a bottom sheet sized to its content">
+
+```tsx
 import { useState } from 'react';
 import { Pressable, Text as RNText } from 'react-native';
 import { Host, BottomSheet, Button, RNHostView, Text, VStack } from '@expo/ui/swift-ui';
@@ -98,11 +113,19 @@ export default function BottomSheetRNAnchorExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Bottom sheet that fits content
 
 Use the [`fitToContents`](#fittocontents) prop to automatically size the sheet to fit its content.
 
-```tsx BottomSheetFitsContentExample.tsx
+<ComponentExample
+  title="BottomSheetFitsContentExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-fits-content-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-fits-content-ios-dark.webp"
+  alt="A bottom sheet sized to one line of text and a Close button">
+
+```tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, Text, VStack } from '@expo/ui/swift-ui';
 
@@ -128,13 +151,21 @@ export default function BottomSheetFitsContentExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Custom background color
 
 By default, a sheet uses the system's translucent material background (Liquid Glass on iOS 26). Use the [`presentationBackground`](modifiers/#presentationbackgroundcolor) modifier on `Group` to paint the sheet with a solid color instead, which also opts the sheet out of that translucent material.
 
 > **info** Prefer `presentationBackground` over a `background` modifier on the sheet's content. A `background` sits _behind_ the content's own background, so a `Form` or `List` covers it, and the color shows inconsistently as the sheet moves between detents. `presentationBackground` colors the sheet surface itself, so it stays consistent at every detent. When the content is a `Form` or `List`, also add [`scrollContentBackground('hidden')`](modifiers/#scrollcontentbackgroundvisible) so the sheet color shows through the grouped background.
 
-```tsx BottomSheetBackgroundColorExample.tsx
+<ComponentExample
+  title="BottomSheetBackgroundColorExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-background-color-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-background-color-ios-dark.webp"
+  alt="A bottom sheet with a solid white background at the medium detent">
+
+```tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
 import {
@@ -171,6 +202,8 @@ export default function BottomSheetBackgroundColorExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Bottom sheet with presentation detents
 
 Use the [`presentationDetents`](modifiers/#presentationdetentsdetents-options) modifier on `Group` to control the available heights. You can use:
@@ -180,7 +213,13 @@ Use the [`presentationDetents`](modifiers/#presentationdetentsdetents-options) m
 - `{ fraction: number }`: Fraction of screen height (0-1)
 - `{ height: number }`: Fixed height in points
 
-```tsx BottomSheetWithDetentsExample.tsx
+<ComponentExample
+  title="BottomSheetWithDetentsExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-detents-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-detents-ios-dark.webp"
+  alt="A bottom sheet at the medium detent showing text about snapping to multiple heights">
+
+```tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
 import { presentationDetents } from '@expo/ui/swift-ui/modifiers';
@@ -208,11 +247,19 @@ export default function BottomSheetWithDetentsExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Bottom sheet with detent selection tracking
 
 Pass `selection` and `onSelectionChange` options to [`presentationDetents`](modifiers/#presentationdetentsdetents-options) to programmatically control which detent the sheet snaps to.
 
-```tsx BottomSheetWithDetentSelectionExample.tsx
+<ComponentExample
+  title="BottomSheetWithDetentSelectionExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-detent-selection-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-detent-selection-ios-dark.webp"
+  alt="A bottom sheet listing detent options with the current detent shown as medium">
+
+```tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, List, Section, Text, VStack, Group } from '@expo/ui/swift-ui';
 import {
@@ -269,11 +316,19 @@ export default function BottomSheetWithDetentSelectionExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Bottom sheet with background interaction
 
 Use the [`presentationBackgroundInteraction`](modifiers/#presentationbackgroundinteractioninteraction) modifier to allow interactions with content behind the sheet.
 
-```tsx BottomSheetWithBackgroundInteractionExample.tsx
+<ComponentExample
+  title="BottomSheetWithBackgroundInteractionExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-background-interaction-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-background-interaction-ios-dark.webp"
+  alt="A bottom sheet at the medium detent over an undimmed background">
+
+```tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
 import {
@@ -305,11 +360,19 @@ export default function BottomSheetWithBackgroundInteractionExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Non-dismissible bottom sheet
 
 Use the [`interactiveDismissDisabled`](modifiers/#interactivedismissdisabledisdisabled) modifier to prevent users from dismissing the sheet by swiping.
 
-```tsx NonDismissibleBottomSheetExample.tsx
+<ComponentExample
+  title="NonDismissibleBottomSheetExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-non-dismissible-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-non-dismissible-ios-dark.webp"
+  alt="A full-height bottom sheet with text and a Close button">
+
+```tsx
 import { useState } from 'react';
 import { Host, BottomSheet, Button, Group, Text, VStack } from '@expo/ui/swift-ui';
 import { interactiveDismissDisabled } from '@expo/ui/swift-ui/modifiers';
@@ -337,13 +400,21 @@ export default function NonDismissibleBottomSheetExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Bottom sheet with React Native content
 
 Use `RNHostView` to embed React Native components inside the bottom sheet. Set `matchContents` to automatically size the host view to fit its content.
 
-```tsx BottomSheetWithRNContentExample.tsx
+<ComponentExample
+  title="BottomSheetWithRNContentExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-rn-content-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-rn-content-ios-dark.webp"
+  alt="A bottom sheet holding React Native text, a counter, and Increment and Close buttons">
+
+```tsx
 import { useState } from 'react';
-import { Pressable, Text as RNText, View } from 'react-native';
+import { PlatformColor, Pressable, Text as RNText, View } from 'react-native';
 import { Host, BottomSheet, Button, Group, RNHostView, VStack } from '@expo/ui/swift-ui';
 import { presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
 
@@ -362,7 +433,13 @@ export default function BottomSheetWithRNContentExample() {
           <Group modifiers={[presentationDragIndicator('visible')]}>
             <RNHostView matchContents>
               <View style={{ padding: 24 }}>
-                <RNText style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>
+                <RNText
+                  style={{
+                    fontSize: 18,
+                    fontWeight: 'bold',
+                    marginBottom: 8,
+                    color: PlatformColor('label'),
+                  }}>
                   React Native Content
                 </RNText>
                 <RNText style={{ color: '#666', marginBottom: 16 }}>Counter: {counter}</RNText>
@@ -397,11 +474,19 @@ export default function BottomSheetWithRNContentExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Bottom sheet with flexible React Native content
 
 When using React Native content with `flex: 1`, omit the `matchContents` prop on `RNHostView` and use [`presentationDetents`](modifiers/#presentationdetentsdetents-options) to control the sheet height.
 
-```tsx BottomSheetWithFlexRNContentExample.tsx
+<ComponentExample
+  title="BottomSheetWithFlexRNContentExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-flex-rn-content-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-flex-rn-content-ios-dark.webp"
+  alt="A bottom sheet filled by a blue React Native view at the medium detent">
+
+```tsx
 import { useState } from 'react';
 import { Text as RNText, View } from 'react-native';
 import { Host, BottomSheet, Button, Group, RNHostView, VStack } from '@expo/ui/swift-ui';
@@ -440,13 +525,21 @@ export default function BottomSheetWithFlexRNContentExample() {
 }
 ```
 
+</ComponentExample>
+
 ### Scrollable React Native content
 
 Nest a scrollable React Native list such as `FlatList`, `ScrollView`, or a high-performance list like [FlashList](https://shopify.github.io/flash-list/) or [Legend List](https://github.com/LegendApp/legend-list) inside the sheet with `RNHostView`. Size the sheet with [`presentationDetents`](modifiers/#presentationdetentsdetents-options) and the list scrolls within that height.
 
-```tsx BottomSheetWithScrollableContentExample.tsx
+<ComponentExample
+  title="BottomSheetWithScrollableContentExample.tsx"
+  src="/static/images/expo-ui/examples/bottomsheet-scrollable-content-ios-light.webp"
+  darkSrc="/static/images/expo-ui/examples/bottomsheet-scrollable-content-ios-dark.webp"
+  alt="A bottom sheet at the medium detent listing Item 1 through Item 8">
+
+```tsx
 import { useState } from 'react';
-import { FlatList, Text as RNText, View } from 'react-native';
+import { FlatList, PlatformColor, Text as RNText, View } from 'react-native';
 import { Host, BottomSheet, Button, Group, RNHostView, VStack } from '@expo/ui/swift-ui';
 import { presentationDetents, presentationDragIndicator } from '@expo/ui/swift-ui/modifiers';
 
@@ -455,8 +548,10 @@ const DATA = Array.from({ length: 50 }, (_, i) => `Item ${i + 1}`);
 export default function BottomSheetWithScrollableContentExample() {
   const [isPresented, setIsPresented] = useState(false);
 
+  // `matchContents` sizes the host to the anchor instead of filling the space.
+  // The anchor then sits at the leading edge.
   return (
-    <Host matchContents>
+    <Host style={{ flex: 1 }}>
       <VStack>
         <BottomSheet
           isPresented={isPresented}
@@ -472,7 +567,11 @@ export default function BottomSheetWithScrollableContentExample() {
                 <FlatList
                   data={DATA}
                   keyExtractor={item => item}
-                  renderItem={({ item }) => <RNText style={{ paddingVertical: 16 }}>{item}</RNText>}
+                  renderItem={({ item }) => (
+                    <RNText style={{ paddingVertical: 16, color: PlatformColor('label') }}>
+                      {item}
+                    </RNText>
+                  )}
                 />
               </View>
             </RNHostView>
@@ -483,6 +582,8 @@ export default function BottomSheetWithScrollableContentExample() {
   );
 }
 ```
+
+</ComponentExample>
 
 ## API
 
