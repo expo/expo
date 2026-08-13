@@ -195,15 +195,26 @@ for offset in $(seq 0 $((count - 1))); do
     fi
   done
 
+  # Classify on EVERY slot, not only the ones that have a successor: the last
+  # slot's verdict is the one a caller reports.
+  reason=$(classify_failure "$log")
+
   if [ "$offset" -lt $((count - 1)) ]; then
     next_idx=$(((start + offset + 1) % count))
     next_slot="${SLOT_INDEXES[$next_idx]}"
-    echo "credential $slot failed ($(classify_failure "$log")), trying $next_slot"
+    echo "credential $slot failed ($reason), trying $next_slot"
   fi
 done
 
 if [ -z "$winner" ]; then
-  echo "::error::Model credential unavailable."
+  # A FILE, not a step output. This step is failing, so a caller must not have
+  # to rely on outputs propagating out of a failed composite action. The file's
+  # ABSENCE is itself the useful signal: it means no probe ever ran, so the
+  # failure is not about the credentials at all — a missing local action, a bad
+  # input, a runner fault. Callers that blame the secrets unconditionally send
+  # maintainers off to rotate five working tokens.
+  printf '%s\n' "${reason:-other}" >"$log_dir/model-env-reason" || true
+  echo "::error::Model credential unavailable (${reason:-other})."
   if [ -n "$log" ] && [ -f "$log" ]; then
     sed -n '1,40p' "$log" || true
   fi

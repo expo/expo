@@ -38,14 +38,19 @@ mcp_call() {
   local arguments=$3
   jq -cn --argjson id "$id" --arg name "$name" --argjson arguments "$arguments" \
     '{jsonrpc:"2.0", id:$id, method:"tools/call", params:{name:$name, arguments:$arguments}}' |
-    curl -fsS --max-time 180 "$url" \
+    curl -sS --fail-with-body --max-time 45 --connect-timeout 10 \
+      --retry 2 --retry-connrefused "$url" \
       -H "Authorization: $authorization" \
       -H 'Content-Type: application/json' \
       --data-binary @-
 }
 
 if ! mcp_call 1 list_sandboxes '{}' >"$response"; then
+  # --fail-with-body keeps the server's body on an HTTP error, so a 401 from an
+  # expired token, a 429, and a 502 are distinguishable. Plain `curl -f`
+  # discarded it and made all three print this one indistinguishable line.
   echo "::error::Could not list scoped sandbox sessions for cleanup."
+  sed -n '1,10p' "$response" || true
   exit 1
 fi
 if ! jq -e '.error == null and .result.isError != true' "$response" >/dev/null; then

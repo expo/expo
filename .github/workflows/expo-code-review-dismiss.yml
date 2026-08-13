@@ -18,10 +18,6 @@ permissions:
   pull-requests: write
   issues: write
 
-concurrency:
-  group: ai-code-review-dismiss-${{ github.event.issue.number }}
-  cancel-in-progress: false
-
 jobs:
   dismiss:
     # PR comments starting with /dismiss, /undismiss, or the @expo-bot forms.
@@ -38,6 +34,13 @@ jobs:
       startsWith(github.event.comment.body, '@expo-bot undismiss ')) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)
     runs-on: ubuntu-latest
+    # Job-level, NOT workflow-level: `issue_comment` fires for EVERY comment in
+    # the repository, and a workflow-level group is claimed at run creation,
+    # before the `if:` above can skip the job. A group holds one pending run, so
+    # unrelated chatter on a PR could displace a real /dismiss waiting its turn.
+    concurrency:
+      group: ai-code-review-dismiss-${{ github.event.issue.number }}
+      cancel-in-progress: false
     # @ref LLP 0009#guard-step-ordering-and-job-budgets [constrained-by] — no review budget to cover; capped low regardless
     timeout-minutes: 10
     continue-on-error: true

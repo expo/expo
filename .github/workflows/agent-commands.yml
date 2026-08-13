@@ -145,7 +145,8 @@ jobs:
       !startsWith(github.event.comment.body, '@expo-bot dismiss ') &&
       github.event.comment.body != '@expo-bot undismiss' &&
       !startsWith(github.event.comment.body, '@expo-bot undismiss ') &&
-      github.event.comment.body != '@expo-bot help')) &&
+      github.event.comment.body != '@expo-bot help' &&
+      !startsWith(github.event.comment.body, '@expo-bot help '))) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     outputs:
@@ -224,7 +225,8 @@ jobs:
       !startsWith(github.event.comment.body, '@expo-bot dismiss ') &&
       github.event.comment.body != '@expo-bot undismiss' &&
       !startsWith(github.event.comment.body, '@expo-bot undismiss ') &&
-      github.event.comment.body != '@expo-bot help')) &&
+      github.event.comment.body != '@expo-bot help' &&
+      !startsWith(github.event.comment.body, '@expo-bot help '))) &&
       contains(fromJson('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association))
     runs-on: ubuntu-latest
     # ONE budget, in one place, and the ordering is the point:
@@ -324,6 +326,18 @@ jobs:
                     echo "This mention is handled by another workflow."
                     exit 0
                     ;;
+                  # A word that merely BEGINS with a reserved verb is prose,
+                  # not a command: "reviewers", "dismissing", "verified",
+                  # "verify-fix", "helpful". Treating it as a work task made
+                  # every such aside either fail loudly in public or, worse,
+                  # fall through to a full verify investigation. Decline
+                  # quietly instead — the maintainer did not ask for anything.
+                  # `verif*`, not `verify*`: "verified" is verif+ied and does
+                  # not start with "verify" at all.
+                  verif*|review*|dismiss*|undismiss*|help*)
+                    echo "'$second' begins with a reserved verb but is not one; treating the comment as prose."
+                    exit 0
+                    ;;
                   *) mode=work ;;
                 esac
                 ;;
@@ -333,6 +347,14 @@ jobs:
                 ;;
             esac
           fi
+          # route=true means "this comment really is a command for THIS
+          # workflow". Every later step gates on it, so any `exit 0` above —
+          # a mention another workflow owns, or prose that merely starts with
+          # a reserved verb — leaves it unset and stops the job dead. Without
+          # it, `exit 0` counted as success and the run continued with an
+          # empty mode, which the prompt selector reads as verify: a comment
+          # asking for help launched a full investigation.
+          echo "route=true" >> "$GITHUB_OUTPUT"
           # Write mode before validating the task so the always-run failure
           # reporter still names an empty @expo-bot request correctly.
           echo "mode=$mode" >> "$GITHUB_OUTPUT"
@@ -396,7 +418,7 @@ jobs:
           echo "mode: $mode; fix mode: $fix (target is $([ "$IS_PR" = true ] && echo 'a pull request' || echo 'an issue'))"
 
       - name: Acknowledge
-        if: steps.gate.outputs.ok == 'true' && env.QUIET != 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && env.QUIET != 'true'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
         run: gh api -X POST "repos/${{ github.repository }}/issues/comments/${{ github.event.comment.id }}/reactions" -f content=eyes
@@ -405,7 +427,7 @@ jobs:
       # progress, so the thread gets that link the moment work begins (the
       # findings comment lands separately when the investigation completes).
       - name: Announce run
-        if: steps.gate.outputs.ok == 'true' && env.QUIET != 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && env.QUIET != 'true'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           MODE: ${{ steps.cmd.outputs.mode }}
@@ -420,7 +442,7 @@ jobs:
       # Base ref only — the prompt file must come from the trusted branch,
       # and no PR-head code may ever run on this runner.
       - name: Checkout (base ref only — never the PR head)
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 1
@@ -430,7 +452,7 @@ jobs:
       # every prompt and executable renderer before granting that capability;
       # later phases must never read their policy back from mutable files.
       - name: Pin trusted agent policy
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         run: |
           mkdir -p "$RUNNER_TEMP/agent-policy"
           cp .github/verify/prompt.md "$RUNNER_TEMP/agent-policy/prompt.md"
@@ -439,7 +461,7 @@ jobs:
           cp .github/verify/render.jq "$RUNNER_TEMP/agent-policy/render.jq"
 
       - name: Set up Node
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 24
@@ -447,13 +469,13 @@ jobs:
 
       # Pinned exactly, like the code-review workflows.
       - name: Install Claude Code CLI
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         run: npm install -g @anthropic-ai/claude-code@2.1.212
 
       # Later claude steps inherit CLAUDE_CODE_OAUTH_TOKEN from GITHUB_ENV —
       # do not re-bind it from secrets.* or this step is overwritten.
       - name: Prepare model env
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         uses: ./.github/actions/prepare-model-env
         with:
           c1: ${{ secrets.ECR_1 }}
@@ -471,7 +493,7 @@ jobs:
       # credential anywhere.
       - name: Collect target context
         id: ctx
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           IS_PR: ${{ steps.cmd.outputs.is_pr }}
@@ -603,7 +625,7 @@ jobs:
       # deliberate: job outputs and artifacts are readable by anyone who can
       # read the run, which on a public repository is everyone.)
       - name: Mint scoped token
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
           EXPO_SANDBOX_MCP_TOKEN: ${{ secrets.EXPO_SANDBOX_MCP_TOKEN }}
           MCP_URL: https://agile-minnow-543.convex.site
@@ -644,7 +666,7 @@ jobs:
       # Its own step on purpose: "Run agent command" holds NO GitHub token, and
       # that is a property worth keeping.
       - name: Preflight push credentials
-        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.fix == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && steps.cmd.outputs.fix == 'true'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           MODE: ${{ steps.cmd.outputs.mode }}
@@ -690,7 +712,7 @@ jobs:
 
       - name: Run agent command
         id: investigate
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
           # The canonical Claude credential variable selected by Prepare
           # model env is inherited through GITHUB_ENV.
@@ -976,7 +998,7 @@ jobs:
       # what checking a citation actually needs; what it can no longer do is
       # go exploring a very large tree.
       - name: Adversarial review of the draft outcome
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
           ISSUE_KIND: ${{ steps.cmd.outputs.is_pr == 'true' && 'pull request' || 'issue' }}
@@ -1010,7 +1032,7 @@ jobs:
       # tear the sandbox down — both capabilities are added here and nowhere
       # else.
       - name: Revise and post
-        if: steps.gate.outputs.ok == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         env:
           VERIFY_MODEL: ${{ vars.VERIFY_MODEL || 'claude-opus-5' }}
           # Via env, never inline ${{ }} — the same discipline the comment body
@@ -1058,7 +1080,7 @@ jobs:
       # revision the PR no longer has — say so on the thread rather than
       # leaving a stale conclusion standing unqualified.
       - name: Note if the PR moved under the run
-        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.mode == 'verify' && steps.cmd.outputs.is_pr == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && steps.cmd.outputs.mode == 'verify' && steps.cmd.outputs.is_pr == 'true'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           TESTED: ${{ steps.ctx.outputs.head_oid }}
@@ -1084,7 +1106,7 @@ jobs:
       # work. Nothing auto-merges; branch protection and CODEOWNERS still
       # apply, and CI on the PR runs it exactly as it runs any contributor's.
       - name: Publish agent-authored change
-        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.fix == 'true'
+        if: steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && steps.cmd.outputs.fix == 'true'
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
@@ -1443,14 +1465,6 @@ jobs:
           }
           gh issue comment "$ISSUE_NUMBER" --body "🔧 Opened $url with the $change_name — agent-authored, unreviewed, and queued for AI review. [$run_name]($RUN_URL)"
 
-      # The resumed agent is asked to destroy its sandboxes, but cancellation,
-      # timeout, or a failed model call can prevent that turn from running.
-      # This fixed backstop uses the scoped child token, whose list_sandboxes
-      # view contains only sessions created by this job.
-      - name: Destroy leftover sandboxes
-        if: always() && steps.gate.outputs.ok == 'true'
-        run: bash .github/scripts/cleanup-agent-sandboxes.sh "$RUNNER_TEMP/mcp.json"
-
       # Last line of defence against a total loss. `if: always()` genuinely
       # runs on step failure AND on cancellation — verified on real runs
       # (31505614243 failed, 31463049146 cancelled; the upload succeeded in
@@ -1469,7 +1483,7 @@ jobs:
       # thread". That is a real handoff to a maintainer instead of silence.
       - name: Salvage a partial report if the run died before writing one
         id: salvage
-        if: always() && steps.gate.outputs.ok == 'true'
+        if: always() && steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         run: |
           set -o pipefail
           mkdir -p .verify-out
@@ -1501,7 +1515,7 @@ jobs:
       # Raw engine transcript, kept like the code-review workflows keep
       # their run log — the console rendering above is lossy by design.
       - name: Upload run log
-        if: always() && steps.gate.outputs.ok == 'true'
+        if: always() && steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: agent-command-run-log-${{ env.TARGET_NUMBER }}
@@ -1518,6 +1532,28 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      # The resumed agent is asked to destroy its sandboxes, but cancellation,
+      # timeout, or a failed model call can prevent that turn from running.
+      # This fixed backstop uses the scoped child token, whose list_sandboxes
+      # view contains only sessions created by this job.
+      #
+      # AFTER the artifact upload, and isolated, both deliberately:
+      #  - Ordering: each MCP call can stall for its full --max-time, and on a
+      #    cancelled job the grace window is finite. Ahead of the upload, a
+      #    slow server could eat the window and lose the transcript — the very
+      #    total loss the salvage step above exists to prevent.
+      #  - continue-on-error: a leftover sandbox is not permanent (the server's
+      #    reaper kills sessions past TTL), so failing to tidy up must not be
+      #    reported as the COMMAND failing. Without this, a transient MCP error
+      #    made failure() true and the reporter below told the thread the work
+      #    was "not complete" and to try again — directly under the outcome
+      #    comment and the PR this run had already opened.
+      - name: Destroy leftover sandboxes
+        if: always() && steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true'
+        continue-on-error: true
+        timeout-minutes: 3
+        run: bash .github/scripts/cleanup-agent-sandboxes.sh "$RUNNER_TEMP/mcp.json"
+
       # The announce comment promises "findings will be posted here when it
       # completes". Every path that breaks that promise ends here.
       #
@@ -1528,7 +1564,7 @@ jobs:
       # with no result. The job also runs continue-on-error, so nothing else
       # signals it either.
       - name: Report a run that did not finish
-        if: always() && steps.gate.outputs.ok == 'true' && env.QUIET != 'true' && (failure() || cancelled())
+        if: always() && steps.gate.outputs.ok == 'true' && steps.cmd.outputs.route == 'true' && env.QUIET != 'true' && (failure() || cancelled())
         env:
           GH_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           ISSUE_NUMBER: ${{ env.TARGET_NUMBER }}
