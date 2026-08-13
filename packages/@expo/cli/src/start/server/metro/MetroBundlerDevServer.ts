@@ -55,6 +55,7 @@ import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { DevToolsPluginMiddleware } from '../middleware/DevToolsPluginMiddleware';
 import { createDomComponentsMiddleware } from '../middleware/DomComponentsMiddleware';
 import { FaviconMiddleware } from '../middleware/FaviconMiddleware';
+import { FingerprintMiddleware } from '../middleware/FingerprintMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
 import { OpenHostSupportEntry, OpenMiddleware, OpenPlatform } from '../middleware/OpenMiddleware';
@@ -79,6 +80,7 @@ import {
 } from './createServerComponentsMiddleware';
 import { createRouteHandlerMiddleware } from './createServerRouteMiddleware';
 import { fetchManifest, inflateManifest } from './fetchRouterManifest';
+import { createFingerprintService } from './fingerprintService';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { debugEvent } from './metroDebugEvents';
 import {
@@ -1407,6 +1409,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
       middleware.use(openMiddleware.getHandler());
 
+      // Serve the current project fingerprint and record client-announced embedded
+      // fingerprints, so running apps and tooling can detect stale native builds.
+      const fingerprintService = createFingerprintService(this.projectRoot, {
+        warn: (message) => {
+          // `unstable_server_log` is handled by the CLI's TerminalReporter but is missing
+          // from Metro's ReportableEvent union.
+          metro._reporter.update({
+            type: 'unstable_server_log',
+            level: 'warn',
+            data: [message],
+          } as any);
+        },
+      });
+      middleware.use(
+        new FingerprintMiddleware(this.projectRoot, {
+          getFingerprintAsync: fingerprintService.getFingerprintAsync,
+          recordClientFingerprint: fingerprintService.recordClientFingerprint,
+        }).getHandler()
+      );
+
       const domComponentRenderer = createDomComponentsMiddleware(
         { projectRoot: this.projectRoot },
         instanceMetroOptions
@@ -1483,6 +1505,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           }
         );
       }
+
+      // Any watched file can be a fingerprint input (config, plugins, node_modules), so every
+      // change invalidates the cached project fingerprint. Registered after the API-route
+      // watcher so existing call-order expectations remain stable. Note: in environments where
+      // Metro's file watching is disabled (e.g. CI), the cache lives for the server's lifetime.
+      observeAnyFileChanges({ metro, server }, () => fingerprintService.onFileChange());
 
       // If React 19 is enabled, then add RSC middleware to the dev server.
       if (isReactServerComponentsEnabled) {

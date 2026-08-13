@@ -8,6 +8,8 @@
 
 ### 🎉 New features
 
+- Added `checkFingerprintAsync()` — compares the fingerprint embedded in the installed app against the current project fingerprint from the dev server to detect stale native builds. Development builds also announce their embedded fingerprint to the dev server on startup, so the terminal warns when a rebuild is required. ([#48923](https://github.com/expo/expo/pull/48923) by [@vonovak](https://github.com/vonovak))
+
 ### 🐛 Bug fixes
 
 - [iOS] Fix `expo/fetch` streaming race between URLSession delegate callbacks and `startStreaming()` that could deliver an empty body on a 200 response, drop chunks, or leave the body stream open. ([#47796](https://github.com/expo/expo/pull/47796) by [@idoyana](https://github.com/idoyana))
