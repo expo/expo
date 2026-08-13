@@ -8,16 +8,20 @@ import type {
 import { getNavigateAction } from './getNavigationAction';
 import type { LinkToOptions } from './types';
 
-export interface LinkAction {
-  type: 'ROUTER_LINK';
+interface NavigateToHrefIntent {
+  type: 'NAVIGATE_TO_HREF';
   payload: {
     options: LinkToOptions;
     href: string;
   };
 }
 
+export type RoutingIntent =
+  | NavigateToHrefIntent
+  | { type: 'ACTION'; payload: { action: NavigationAction } };
+
 export const routingQueue = {
-  queue: [] as (NavigationAction | LinkAction)[],
+  queue: [] as RoutingIntent[],
   subscribers: new Set<() => void>(),
   subscribe(callback: () => void) {
     routingQueue.subscribers.add(callback);
@@ -28,8 +32,8 @@ export const routingQueue = {
   snapshot() {
     return routingQueue.queue;
   },
-  add(action: NavigationAction | LinkAction) {
-    routingQueue.queue.push(action);
+  add(intent: RoutingIntent) {
+    routingQueue.queue.push(intent);
     for (const callback of routingQueue.subscribers) {
       callback();
     }
@@ -38,16 +42,16 @@ export const routingQueue = {
     // Reset the identity of the queue.
     const events = routingQueue.queue;
     routingQueue.queue = [];
-    let action: NavigationAction | LinkAction | undefined;
-    while ((action = events.shift())) {
+    let intent: RoutingIntent | undefined;
+    while ((intent = events.shift())) {
       // TODO: Consider warning when ref.current is null — actions are silently dropped
       if (ref.current) {
-        if (action.type === 'ROUTER_LINK') {
+        if (intent.type === 'NAVIGATE_TO_HREF') {
           const {
             payload: { href, options },
-          } = action as LinkAction;
+          } = intent;
 
-          action = getNavigateAction(
+          const action = getNavigateAction(
             href,
             options,
             options.event,
@@ -60,7 +64,7 @@ export const routingQueue = {
             ref.current.dispatch(action);
           }
         } else {
-          ref.current.dispatch(action);
+          ref.current.dispatch(intent.payload.action);
         }
       }
     }

@@ -45,14 +45,17 @@ beforeEach(() => {
 });
 
 describe('routingQueue', () => {
-  it('add() pushes action to queue and notifies subscribers', () => {
+  it('add() pushes intent to queue and notifies subscribers', () => {
     const callback = jest.fn();
     routingQueue.subscribe(callback);
 
-    routingQueue.add({ type: 'GO_BACK' });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 
     expect(routingQueue.queue).toHaveLength(1);
-    expect(routingQueue.queue[0]).toEqual({ type: 'GO_BACK' });
+    expect(routingQueue.queue[0]).toEqual({
+      type: 'ACTION',
+      payload: { action: { type: 'GO_BACK' } },
+    });
     expect(callback).toHaveBeenCalledTimes(1);
   });
 
@@ -60,49 +63,54 @@ describe('routingQueue', () => {
     const callback = jest.fn();
     const unsubscribe = routingQueue.subscribe(callback);
 
-    routingQueue.add({ type: 'GO_BACK' });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
     expect(callback).toHaveBeenCalledTimes(1);
     callback.mockClear();
 
     unsubscribe();
 
-    routingQueue.add({ type: 'GO_BACK' });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
     expect(callback).not.toHaveBeenCalled();
   });
 
   it('snapshot() returns the current queue array', () => {
-    routingQueue.add({ type: 'GO_BACK' });
-    routingQueue.add({ type: 'POP_TO_TOP' });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
 
     const snapshot = routingQueue.snapshot();
 
     expect(snapshot).toHaveLength(2);
-    expect(snapshot[0]).toEqual({ type: 'GO_BACK' });
-    expect(snapshot[1]).toEqual({ type: 'POP_TO_TOP' });
+    expect(snapshot[0]).toEqual({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+    expect(snapshot[1]).toEqual({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
   });
 
   it('run() drains the queue', () => {
     const ref = makeRef();
 
-    routingQueue.add({ type: 'GO_BACK' });
-    routingQueue.add({ type: 'POP_TO_TOP' });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'POP_TO_TOP' } } });
 
     routingQueue.run(ref);
 
     expect(routingQueue.queue).toHaveLength(0);
   });
 
-  it('run() dispatches plain actions via ref.current.dispatch()', () => {
+  it.each([
+    { type: 'GO_BACK' },
+    { type: 'POP', payload: { count: 2 } },
+    { type: 'POP_TO_TOP' },
+    { type: 'CUSTOM_ACTION', payload: { value: 1 } },
+  ])('run() dispatches ACTION intent payload %j unchanged', (action) => {
     const ref = makeRef();
 
-    routingQueue.add({ type: 'GO_BACK' });
+    routingQueue.add({ type: 'ACTION', payload: { action } });
 
     routingQueue.run(ref);
 
-    expect(ref.current!.dispatch).toHaveBeenCalledWith({ type: 'GO_BACK' });
+    expect(ref.current!.dispatch).toHaveBeenCalledWith(action);
   });
 
-  it('run() converts ROUTER_LINK actions via getNavigateAction then dispatches', () => {
+  it('run() converts NAVIGATE_TO_HREF intents via getNavigateAction then dispatches', () => {
     const ref = makeRef();
     const navigateAction = {
       type: 'NAVIGATE',
@@ -112,7 +120,7 @@ describe('routingQueue', () => {
     mockGetNavigateAction.mockReturnValueOnce(navigateAction);
 
     routingQueue.add({
-      type: 'ROUTER_LINK',
+      type: 'NAVIGATE_TO_HREF',
       payload: { href: '/home', options: { event: 'NAVIGATE' } },
     });
 
@@ -129,12 +137,30 @@ describe('routingQueue', () => {
     expect(ref.current!.dispatch).toHaveBeenCalledWith(navigateAction);
   });
 
+  it('run() dispatches mixed NAVIGATE_TO_HREF and ACTION intents in queue order', () => {
+    const ref = makeRef();
+    const navigateAction = {
+      type: 'NAVIGATE',
+      payload: { name: 'a', params: {}, singular: false },
+      target: 'root',
+    };
+    mockGetNavigateAction.mockReturnValueOnce(navigateAction);
+
+    routingQueue.add({ type: 'NAVIGATE_TO_HREF', payload: { href: '/a', options: {} } });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
+
+    routingQueue.run(ref);
+
+    const dispatch = ref.current!.dispatch as jest.Mock;
+    expect(dispatch.mock.calls).toEqual([[navigateAction], [{ type: 'GO_BACK' }]]);
+  });
+
   it('run() does not dispatch when getNavigateAction returns undefined', () => {
     const ref = makeRef();
     mockGetNavigateAction.mockReturnValueOnce(undefined);
 
     routingQueue.add({
-      type: 'ROUTER_LINK',
+      type: 'NAVIGATE_TO_HREF',
       payload: { href: '/redirect', options: { event: 'NAVIGATE' } },
     });
 
@@ -146,7 +172,7 @@ describe('routingQueue', () => {
   it('run() does nothing when ref.current is null', () => {
     const ref = { current: null };
 
-    routingQueue.add({ type: 'GO_BACK' });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 
     routingQueue.run(ref as any);
 
@@ -157,7 +183,7 @@ describe('routingQueue', () => {
   it('run() resets queue identity so new actions during run go to a fresh array', () => {
     const ref = makeRef();
 
-    routingQueue.add({ type: 'GO_BACK' });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 
     const oldQueue = routingQueue.queue;
 
@@ -177,7 +203,7 @@ describe('routingQueue', () => {
     routingQueue.subscribe(callback2);
     routingQueue.subscribe(callback3);
 
-    routingQueue.add({ type: 'GO_BACK' });
+    routingQueue.add({ type: 'ACTION', payload: { action: { type: 'GO_BACK' } } });
 
     expect(callback1).toHaveBeenCalledTimes(1);
     expect(callback2).toHaveBeenCalledTimes(1);
