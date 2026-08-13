@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Mark the `AppMetrics` export as deprecated in favor of `Observe`.
+- Mark the `AppMetrics` export as deprecated in favor of `Observe`. ([#48901](https://github.com/expo/expo/pull/48901) by [@kadikraman](https://github.com/kadikraman))
 
 ## 57.0.9 — 2026-07-29
 
